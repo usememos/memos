@@ -2,15 +2,21 @@ package v1
 
 import (
 	"context"
-	"strings"
+	"fmt"
+	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	"github.com/usememos/memos/internal/profile"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
+	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/auth"
 	"github.com/usememos/memos/store"
 	teststore "github.com/usememos/memos/store/test"
@@ -46,24 +52,334 @@ func collectEventsFor(ch <-chan []byte, d time.Duration) []string {
 	}
 }
 
-// ---- context suppression ----
+func requireMemoChanged(t *testing.T, ch <-chan []byte) {
+	t.Helper()
+	require.Equal(t, memoChangedSSEFrame, string(mustReceive(t, ch, time.Second)))
+}
 
-func TestSuppressSSEContext(t *testing.T) {
+func requireNoMemoChanged(t *testing.T, ch <-chan []byte) {
+	t.Helper()
+	select {
+	case event := <-ch:
+		require.Failf(t, "unexpected SSE event", "received %q", event)
+	default:
+	}
+}
+
+func TestAttachmentMutationsPublishMemoChangedOnlyWhenBound(t *testing.T) {
 	ctx := context.Background()
-
-	t.Run("default context is not suppressed", func(t *testing.T) {
-		assert.False(t, isSSESuppressed(ctx))
+	svc := newIntegrationService(t)
+	owner := createSpaceTestUser(ctx, t, svc, "sse-attachment-owner", store.RoleUser)
+	ownerCtx := userCtx(ctx, owner.ID)
+	memo, err := svc.CreateMemo(ownerCtx, &v1pb.CreateMemoRequest{
+		Memo: &v1pb.Memo{Content: "attachment event memo", Visibility: v1pb.Visibility_PRIVATE},
 	})
+	require.NoError(t, err)
 
-	t.Run("withSuppressSSE marks context as suppressed", func(t *testing.T) {
-		assert.True(t, isSSESuppressed(withSuppressSSE(ctx)))
-	})
+	client := svc.SSEHub.Subscribe()
+	defer svc.SSEHub.Unsubscribe(client)
+	createAttachment := func(filename string, memoName *string) *v1pb.Attachment {
+		t.Helper()
+		attachment, err := svc.CreateAttachment(ownerCtx, &v1pb.CreateAttachmentRequest{Attachment: &v1pb.Attachment{
+			Filename: filename,
+			Type:     "text/plain",
+			Content:  []byte(filename),
+			Memo:     memoName,
+		}})
+		require.NoError(t, err)
+		return attachment
+	}
 
-	t.Run("suppression does not bleed into parent context", func(t *testing.T) {
-		suppressed := withSuppressSSE(ctx)
-		_ = suppressed
-		assert.False(t, isSSESuppressed(ctx))
+	unbound := createAttachment("sse-unbound.txt", nil)
+	requireNoMemoChanged(t, client.events)
+	_, err = svc.UpdateAttachment(ownerCtx, &v1pb.UpdateAttachmentRequest{
+		Attachment: &v1pb.Attachment{Name: unbound.Name, Filename: "sse-unbound-renamed.txt"},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"filename"}},
 	})
+	require.NoError(t, err)
+	requireNoMemoChanged(t, client.events)
+	_, err = svc.DeleteAttachment(ownerCtx, &v1pb.DeleteAttachmentRequest{Name: unbound.Name})
+	require.NoError(t, err)
+	requireNoMemoChanged(t, client.events)
+
+	bound := createAttachment("sse-bound.txt", &memo.Name)
+	requireMemoChanged(t, client.events)
+	_, err = svc.UpdateAttachment(ownerCtx, &v1pb.UpdateAttachmentRequest{
+		Attachment: &v1pb.Attachment{Name: bound.Name, Filename: "sse-bound-renamed.txt"},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"filename"}},
+	})
+	require.NoError(t, err)
+	requireMemoChanged(t, client.events)
+	_, err = svc.DeleteAttachment(ownerCtx, &v1pb.DeleteAttachmentRequest{Name: bound.Name})
+	require.NoError(t, err)
+	requireMemoChanged(t, client.events)
+
+	firstUnbound := createAttachment("sse-batch-unbound-first.txt", nil)
+	secondUnbound := createAttachment("sse-batch-unbound-second.txt", nil)
+	requireNoMemoChanged(t, client.events)
+	_, err = svc.BatchDeleteAttachments(ownerCtx, &v1pb.BatchDeleteAttachmentsRequest{
+		Names: []string{firstUnbound.Name, secondUnbound.Name},
+	})
+	require.NoError(t, err)
+	requireNoMemoChanged(t, client.events)
+
+	mixedUnbound := createAttachment("sse-batch-mixed-unbound.txt", nil)
+	mixedBound := createAttachment("sse-batch-mixed-bound.txt", &memo.Name)
+	requireMemoChanged(t, client.events)
+	_, err = svc.BatchDeleteAttachments(ownerCtx, &v1pb.BatchDeleteAttachmentsRequest{
+		Names: []string{mixedUnbound.Name, mixedBound.Name},
+	})
+	require.NoError(t, err)
+	requireMemoChanged(t, client.events)
+}
+
+func TestUpdateAttachmentPublishesAfterCommittedAccessChange(t *testing.T) {
+	ctx := context.Background()
+	svc := newIntegrationService(t)
+	owner := createSpaceTestUser(ctx, t, svc, "sse-attachment-access-owner", store.RoleUser)
+	ownerCtx := userCtx(ctx, owner.ID)
+	space, err := svc.CreateSpace(ownerCtx, &v1pb.CreateSpaceRequest{
+		SpaceId: "sse-attachment-access-space",
+		Space:   &v1pb.Space{Title: "Attachment access space"},
+	})
+	require.NoError(t, err)
+	spaceName := space.Name
+	memo, err := svc.CreateMemo(ownerCtx, &v1pb.CreateMemoRequest{Memo: &v1pb.Memo{
+		Content:    "attachment access changed during update",
+		Visibility: v1pb.Visibility_SPACE,
+		Space:      &spaceName,
+	}})
+	require.NoError(t, err)
+	attachment, err := svc.CreateAttachment(ownerCtx, &v1pb.CreateAttachmentRequest{Attachment: &v1pb.Attachment{
+		Filename: "before.txt",
+		Type:     "text/plain",
+		Content:  []byte("attachment"),
+		Memo:     &memo.Name,
+	}})
+	require.NoError(t, err)
+	attachmentUID, err := ExtractAttachmentUIDFromName(attachment.Name)
+	require.NoError(t, err)
+	storedAttachment, err := svc.Store.GetAttachment(ctx, &store.FindAttachment{UID: &attachmentUID})
+	require.NoError(t, err)
+	require.NotNil(t, storedAttachment)
+
+	// Authorization is checked before the attachment update. Simulate membership
+	// changing in the same transaction so the committed response can no longer be
+	// built through the read-authorized GetAttachment service method.
+	trigger := fmt.Sprintf(`
+		CREATE TRIGGER revoke_attachment_owner_membership
+		AFTER UPDATE OF filename ON attachment
+		WHEN NEW.id = %d
+		BEGIN
+			DELETE FROM space_member WHERE user_id = %d;
+		END`, storedAttachment.ID, owner.ID)
+	_, err = svc.Store.GetDriver().GetDB().ExecContext(ctx, trigger)
+	require.NoError(t, err)
+
+	client := svc.SSEHub.Subscribe()
+	defer svc.SSEHub.Unsubscribe(client)
+	updated, err := svc.UpdateAttachment(ownerCtx, &v1pb.UpdateAttachmentRequest{
+		Attachment: &v1pb.Attachment{Name: attachment.Name, Filename: "after.txt"},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"filename"}},
+	})
+	require.NoError(t, err)
+	require.Equal(t, "after.txt", updated.Filename)
+	requireMemoChanged(t, client.events)
+	requireNoMemoChanged(t, client.events)
+
+	_, err = svc.GetAttachment(ownerCtx, &v1pb.GetAttachmentRequest{Name: attachment.Name})
+	require.Equal(t, codes.PermissionDenied, status.Code(err), "the authorized read would fail after the committed membership change")
+}
+
+func TestDeleteAttachmentPublishesBeforeStorageCleanupFailure(t *testing.T) {
+	ctx := context.Background()
+	svc := newIntegrationService(t)
+	owner := createSpaceTestUser(ctx, t, svc, "sse-attachment-cleanup-owner", store.RoleUser)
+	ownerCtx := userCtx(ctx, owner.ID)
+	memo, err := svc.CreateMemo(ownerCtx, &v1pb.CreateMemoRequest{
+		Memo: &v1pb.Memo{Content: "attachment cleanup failure", Visibility: v1pb.Visibility_PRIVATE},
+	})
+	require.NoError(t, err)
+	attachment, err := svc.CreateAttachment(ownerCtx, &v1pb.CreateAttachmentRequest{Attachment: &v1pb.Attachment{
+		Filename: "cleanup.txt",
+		Type:     "text/plain",
+		Content:  []byte("attachment"),
+		Memo:     &memo.Name,
+	}})
+	require.NoError(t, err)
+
+	client := svc.SSEHub.Subscribe()
+	defer svc.SSEHub.Unsubscribe(client)
+	_, err = svc.DeleteAttachment(store.WithDeleteAttachmentStorageFailpoint(ownerCtx), &v1pb.DeleteAttachmentRequest{Name: attachment.Name})
+	require.Equal(t, codes.Internal, status.Code(err))
+	require.ErrorContains(t, err, "attachments were deleted but storage cleanup failed")
+	requireMemoChanged(t, client.events)
+	requireNoMemoChanged(t, client.events)
+
+	attachmentUID, err := ExtractAttachmentUIDFromName(attachment.Name)
+	require.NoError(t, err)
+	storedAttachment, err := svc.Store.GetAttachment(ctx, &store.FindAttachment{UID: &attachmentUID})
+	require.NoError(t, err)
+	require.Nil(t, storedAttachment, "the database deletion must remain committed")
+}
+
+func TestSpaceMutationsPublishMemoChanged(t *testing.T) {
+	ctx := context.Background()
+	svc := newIntegrationService(t)
+	owner := createSpaceTestUser(ctx, t, svc, "sse-space-owner", store.RoleAdmin)
+	member := createSpaceTestUser(ctx, t, svc, "sse-space-member", store.RoleUser)
+	ownerCtx := userCtx(ctx, owner.ID)
+	client := svc.SSEHub.Subscribe()
+	defer svc.SSEHub.Unsubscribe(client)
+
+	space, err := svc.CreateSpace(ownerCtx, &v1pb.CreateSpaceRequest{
+		SpaceId: "sse-space",
+		Space:   &v1pb.Space{Title: "SSE Space"},
+	})
+	require.NoError(t, err)
+	requireMemoChanged(t, client.events)
+
+	space.Title = "Renamed SSE Space"
+	_, err = svc.UpdateSpace(ownerCtx, &v1pb.UpdateSpaceRequest{
+		Space:      space,
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"title"}},
+	})
+	require.NoError(t, err)
+	requireMemoChanged(t, client.events)
+
+	membership, err := svc.CreateSpaceMember(ownerCtx, &v1pb.CreateSpaceMemberRequest{
+		Parent: space.Name,
+		SpaceMember: &v1pb.SpaceMember{
+			User: BuildUserName(member.Username),
+			Role: v1pb.SpaceMember_USER,
+		},
+	})
+	require.NoError(t, err)
+	requireMemoChanged(t, client.events)
+
+	membership.Role = v1pb.SpaceMember_ADMIN
+	_, err = svc.UpdateSpaceMember(ownerCtx, &v1pb.UpdateSpaceMemberRequest{
+		SpaceMember: membership,
+		UpdateMask:  &fieldmaskpb.FieldMask{Paths: []string{"role"}},
+	})
+	require.NoError(t, err)
+	requireMemoChanged(t, client.events)
+
+	_, err = svc.DeleteSpaceMember(ownerCtx, &v1pb.DeleteSpaceMemberRequest{Name: membership.Name})
+	require.NoError(t, err)
+	requireMemoChanged(t, client.events)
+
+	_, err = svc.DeleteSpace(ownerCtx, &v1pb.DeleteSpaceRequest{Name: space.Name})
+	require.NoError(t, err)
+	requireMemoChanged(t, client.events)
+}
+
+func TestUpdateMemoSSEBroadcastsToAllSubscribers(t *testing.T) {
+	ctx := context.Background()
+	svc := newIntegrationService(t)
+	owner, err := svc.Store.CreateUser(ctx, &store.User{
+		Username: "audience-owner", Role: store.RoleAdmin, Email: "audience-owner@example.com",
+	})
+	require.NoError(t, err)
+	ownerCtx := userCtx(ctx, owner.ID)
+	memo, err := svc.CreateMemo(ownerCtx, &v1pb.CreateMemoRequest{
+		Memo: &v1pb.Memo{Content: "public before update", Visibility: v1pb.Visibility_PUBLIC},
+	})
+	require.NoError(t, err)
+
+	ownerClient := svc.SSEHub.Subscribe()
+	defer svc.SSEHub.Unsubscribe(ownerClient)
+	otherClient := svc.SSEHub.Subscribe()
+	defer svc.SSEHub.Unsubscribe(otherClient)
+
+	_, err = svc.UpdateMemo(ownerCtx, &v1pb.UpdateMemoRequest{
+		Memo:       &v1pb.Memo{Name: memo.Name, Visibility: v1pb.Visibility_PRIVATE},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"visibility"}},
+	})
+	require.NoError(t, err)
+	requireMemoChanged(t, ownerClient.events)
+	requireMemoChanged(t, otherClient.events)
+
+	_, err = svc.UpdateMemo(ownerCtx, &v1pb.UpdateMemoRequest{
+		Memo:       &v1pb.Memo{Name: memo.Name, Content: "private after update"},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"content"}},
+	})
+	require.NoError(t, err)
+	requireMemoChanged(t, ownerClient.events)
+	requireMemoChanged(t, otherClient.events)
+}
+
+func TestMoveSpaceAudienceMemoSSEBroadcastsWithoutAudienceCalculation(t *testing.T) {
+	ctx := context.Background()
+	svc := newIntegrationService(t)
+	owner := createSpaceTestUser(ctx, t, svc, "move-audience-owner", store.RoleAdmin)
+	sourceMember := createSpaceTestUser(ctx, t, svc, "move-source-member", store.RoleUser)
+	targetMember := createSpaceTestUser(ctx, t, svc, "move-target-member", store.RoleUser)
+	ownerCtx := userCtx(ctx, owner.ID)
+
+	source, err := svc.CreateSpace(ownerCtx, &v1pb.CreateSpaceRequest{
+		SpaceId: "move-source-space",
+		Space:   &v1pb.Space{Title: "Source"},
+	})
+	require.NoError(t, err)
+	target, err := svc.CreateSpace(ownerCtx, &v1pb.CreateSpaceRequest{
+		SpaceId: "move-target-space",
+		Space:   &v1pb.Space{Title: "Target"},
+	})
+	require.NoError(t, err)
+	_, err = svc.CreateSpaceMember(ownerCtx, &v1pb.CreateSpaceMemberRequest{
+		Parent: source.Name,
+		SpaceMember: &v1pb.SpaceMember{
+			User: BuildUserName(sourceMember.Username),
+			Role: v1pb.SpaceMember_USER,
+		},
+	})
+	require.NoError(t, err)
+	_, err = svc.CreateSpaceMember(ownerCtx, &v1pb.CreateSpaceMemberRequest{
+		Parent: target.Name,
+		SpaceMember: &v1pb.SpaceMember{
+			User: BuildUserName(targetMember.Username),
+			Role: v1pb.SpaceMember_USER,
+		},
+	})
+	require.NoError(t, err)
+
+	sourceName := source.Name
+	memo, err := svc.CreateMemo(ownerCtx, &v1pb.CreateMemoRequest{Memo: &v1pb.Memo{
+		Content:    "move between spaces",
+		Visibility: v1pb.Visibility_SPACE,
+		Space:      &sourceName,
+	}})
+	require.NoError(t, err)
+	sourceClient := svc.SSEHub.Subscribe()
+	defer svc.SSEHub.Unsubscribe(sourceClient)
+	targetClient := svc.SSEHub.Subscribe()
+	defer svc.SSEHub.Unsubscribe(targetClient)
+	outsiderClient := svc.SSEHub.Subscribe()
+	defer svc.SSEHub.Unsubscribe(outsiderClient)
+
+	targetName := target.Name
+	_, err = svc.UpdateMemo(ownerCtx, &v1pb.UpdateMemoRequest{
+		Memo: &v1pb.Memo{
+			Name:       memo.Name,
+			Visibility: v1pb.Visibility_SPACE,
+			Space:      &targetName,
+		},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"space", "visibility"}},
+	})
+	require.NoError(t, err)
+	requireMemoChanged(t, sourceClient.events)
+	requireMemoChanged(t, targetClient.events)
+	requireMemoChanged(t, outsiderClient.events)
+
+	_, err = svc.UpdateMemo(ownerCtx, &v1pb.UpdateMemoRequest{
+		Memo:       &v1pb.Memo{Name: memo.Name, Content: "target only now"},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"content"}},
+	})
+	require.NoError(t, err)
+	requireMemoChanged(t, sourceClient.events)
+	requireMemoChanged(t, targetClient.events)
+	requireMemoChanged(t, outsiderClient.events)
 }
 
 // ---- CreateMemoComment double-broadcast fix ----
@@ -91,13 +407,12 @@ func TestCreateMemoComment_NoDuplicateSSEBroadcast(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	// Subscribe after the parent memo is created so the memo.created event
-	// for the parent does not pollute the assertion window.
-	client := svc.SSEHub.Subscribe(author.ID, store.RoleAdmin)
+	// Subscribe after the parent memo is created so its change event does not
+	// pollute the assertion window.
+	client := svc.SSEHub.Subscribe()
 	defer svc.SSEHub.Unsubscribe(client)
 
-	// Create a comment.  Before the fix, this fired both memo.created (for the
-	// comment memo) and memo.comment.created (for the parent).
+	// Comment creation is one mutation and emits one invalidation event.
 	_, err = svc.CreateMemoComment(commenterCtx, &v1pb.CreateMemoCommentRequest{
 		Name:    parent.Name,
 		Comment: &v1pb.Memo{Content: "a comment", Visibility: v1pb.Visibility_PUBLIC},
@@ -109,8 +424,40 @@ func TestCreateMemoComment_NoDuplicateSSEBroadcast(t *testing.T) {
 	events := collectEventsFor(client.events, 150*time.Millisecond)
 
 	require.Len(t, events, 1, "expected exactly one SSE event for a comment creation, got: %v", events)
-	assert.True(t, strings.Contains(events[0], `"memo.comment.created"`),
-		"expected memo.comment.created, got: %s", events[0])
+	assert.Equal(t, memoChangedSSEFrame, events[0])
+}
+
+func TestCreateMemoComment_SSEBroadcastContainsNoSubject(t *testing.T) {
+	ctx := context.Background()
+	svc := newIntegrationService(t)
+	author, err := svc.Store.CreateUser(ctx, &store.User{
+		Username: "comment-context-author", Role: store.RoleAdmin, Email: "comment-context-author@example.com",
+	})
+	require.NoError(t, err)
+	commenter, err := svc.Store.CreateUser(ctx, &store.User{
+		Username: "private-comment-author", Role: store.RoleUser, Email: "private-comment-author@example.com",
+	})
+	require.NoError(t, err)
+
+	parent, err := svc.CreateMemo(userCtx(ctx, author.ID), &v1pb.CreateMemoRequest{
+		Memo: &v1pb.Memo{Content: "public context", Visibility: v1pb.Visibility_PUBLIC},
+	})
+	require.NoError(t, err)
+	authorClient := svc.SSEHub.Subscribe()
+	defer svc.SSEHub.Unsubscribe(authorClient)
+	commenterClient := svc.SSEHub.Subscribe()
+	defer svc.SSEHub.Unsubscribe(commenterClient)
+
+	_, err = svc.CreateMemoComment(userCtx(ctx, commenter.ID), &v1pb.CreateMemoCommentRequest{
+		Name: parent.Name,
+		Comment: &v1pb.Memo{
+			Content:    "private reply",
+			Visibility: v1pb.Visibility_PRIVATE,
+		},
+	})
+	require.NoError(t, err)
+	requireMemoChanged(t, commenterClient.events)
+	requireMemoChanged(t, authorClient.events)
 }
 
 func TestCreateMemoWithAttachment_NoDuplicateUpdatedSSEBroadcast(t *testing.T) {
@@ -133,10 +480,10 @@ func TestCreateMemoWithAttachment_NoDuplicateUpdatedSSEBroadcast(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	client := svc.SSEHub.Subscribe(user.ID, store.RoleAdmin)
+	client := svc.SSEHub.Subscribe()
 	defer svc.SSEHub.Unsubscribe(client)
 
-	memo, err := svc.CreateMemo(uctx, &v1pb.CreateMemoRequest{
+	_, err = svc.CreateMemo(uctx, &v1pb.CreateMemoRequest{
 		Memo: &v1pb.Memo{
 			Content:    "memo with initial attachment",
 			Visibility: v1pb.Visibility_PUBLIC,
@@ -150,14 +497,10 @@ func TestCreateMemoWithAttachment_NoDuplicateUpdatedSSEBroadcast(t *testing.T) {
 	events := collectEventsFor(client.events, 150*time.Millisecond)
 
 	require.Len(t, events, 1, "expected exactly one SSE event for memo creation with attachment, got: %v", events)
-	assert.Contains(t, events[0], `"memo.created"`)
-	assert.Contains(t, events[0], memo.Name)
-	assert.NotContains(t, events[0], `"memo.updated"`)
+	assert.Equal(t, memoChangedSSEFrame, events[0])
 }
 
-// ---- Reaction SSE events carry correct visibility / parent fields ----
-
-func TestUpsertMemoReaction_SSEEvent(t *testing.T) {
+func TestUpsertMemoReactionPublishesMemoChanged(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
 
@@ -172,7 +515,7 @@ func TestUpsertMemoReaction_SSEEvent(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	client := svc.SSEHub.Subscribe(user.ID, store.RoleAdmin)
+	client := svc.SSEHub.Subscribe()
 	defer svc.SSEHub.Unsubscribe(client)
 
 	_, err = svc.UpsertMemoReaction(uctx, &v1pb.UpsertMemoReactionRequest{
@@ -183,14 +526,11 @@ func TestUpsertMemoReaction_SSEEvent(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	data := mustReceive(t, client.events, time.Second)
-	payload := string(data)
-	assert.Contains(t, payload, `"reaction.upserted"`)
-	assert.Contains(t, payload, memo.Name)
+	requireMemoChanged(t, client.events)
 	mustNotReceive(t, client.events, 100*time.Millisecond)
 }
 
-func TestDeleteMemoReaction_SSEEvent(t *testing.T) {
+func TestDeleteMemoReactionPublishesMemoChanged(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
 
@@ -213,7 +553,7 @@ func TestDeleteMemoReaction_SSEEvent(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	client := svc.SSEHub.Subscribe(user.ID, store.RoleAdmin)
+	client := svc.SSEHub.Subscribe()
 	defer svc.SSEHub.Unsubscribe(client)
 
 	_, err = svc.DeleteMemoReaction(uctx, &v1pb.DeleteMemoReactionRequest{
@@ -221,14 +561,113 @@ func TestDeleteMemoReaction_SSEEvent(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	data := mustReceive(t, client.events, time.Second)
-	payload := string(data)
-	assert.Contains(t, payload, `"reaction.deleted"`)
-	assert.Contains(t, payload, memo.Name)
+	requireMemoChanged(t, client.events)
 	mustNotReceive(t, client.events, 100*time.Millisecond)
 }
 
-func TestSetMemoAttachments_EmitsMemoUpdatedSSEEvent(t *testing.T) {
+func TestDeleteMemo_DeletesOnlyRequestedMemo(t *testing.T) {
+	ctx := context.Background()
+	svc := newIntegrationService(t)
+	rootAuthor, err := svc.Store.CreateUser(ctx, &store.User{
+		Username: "delete-root-author", Role: store.RoleAdmin, Email: "delete-root-author@example.com",
+	})
+	require.NoError(t, err)
+	commentAuthor, err := svc.Store.CreateUser(ctx, &store.User{
+		Username: "delete-comment-author", Role: store.RoleUser, Email: "delete-comment-author@example.com",
+	})
+	require.NoError(t, err)
+	replyAuthor, err := svc.Store.CreateUser(ctx, &store.User{
+		Username: "delete-reply-author", Role: store.RoleUser, Email: "delete-reply-author@example.com",
+	})
+	require.NoError(t, err)
+
+	root, err := svc.CreateMemo(userCtx(ctx, rootAuthor.ID), &v1pb.CreateMemoRequest{
+		Memo: &v1pb.Memo{Content: "context memo", Visibility: v1pb.Visibility_PUBLIC},
+	})
+	require.NoError(t, err)
+	comment, err := svc.CreateMemoComment(userCtx(ctx, commentAuthor.ID), &v1pb.CreateMemoCommentRequest{
+		Name:    root.Name,
+		Comment: &v1pb.Memo{Content: "branch", Visibility: v1pb.Visibility_PUBLIC},
+	})
+	require.NoError(t, err)
+	reply, err := svc.CreateMemoComment(userCtx(ctx, replyAuthor.ID), &v1pb.CreateMemoCommentRequest{
+		Name:    comment.Name,
+		Comment: &v1pb.Memo{Content: "nested reply"},
+	})
+	require.NoError(t, err)
+
+	replyClient := svc.SSEHub.Subscribe()
+	defer svc.SSEHub.Unsubscribe(replyClient)
+	_, err = svc.DeleteMemo(userCtx(ctx, commentAuthor.ID), &v1pb.DeleteMemoRequest{Name: comment.Name})
+	require.NoError(t, err)
+	requireMemoChanged(t, replyClient.events)
+
+	commentUID, err := ExtractMemoUIDFromName(comment.Name)
+	require.NoError(t, err)
+	storedComment, err := svc.Store.GetMemo(ctx, &store.FindMemo{UID: &commentUID})
+	require.NoError(t, err)
+	require.Nil(t, storedComment)
+	replyUID, err := ExtractMemoUIDFromName(reply.Name)
+	require.NoError(t, err)
+	storedReply, err := svc.Store.GetMemo(ctx, &store.FindMemo{UID: &replyUID})
+	require.NoError(t, err)
+	require.NotNil(t, storedReply, "deleting a COMMENT endpoint must not cascade to the replying memo")
+	rootUID, err := ExtractMemoUIDFromName(root.Name)
+	require.NoError(t, err)
+	storedRoot, err := svc.Store.GetMemo(ctx, &store.FindMemo{UID: &rootUID})
+	require.NoError(t, err)
+	require.NotNil(t, storedRoot)
+}
+
+func TestDeleteMemoCleansAttachmentStorage(t *testing.T) {
+	ctx := context.Background()
+	svc := newIntegrationService(t)
+	owner, err := svc.Store.CreateUser(ctx, &store.User{
+		Username: "delete-cleanup-owner", Role: store.RoleAdmin, Email: "delete-cleanup-owner@example.com",
+	})
+	require.NoError(t, err)
+	ownerCtx := userCtx(ctx, owner.ID)
+	memo, err := svc.CreateMemo(ownerCtx, &v1pb.CreateMemoRequest{
+		Memo: &v1pb.Memo{Content: "attachment cleanup", Visibility: v1pb.Visibility_PRIVATE},
+	})
+	require.NoError(t, err)
+	memoUID, err := ExtractMemoUIDFromName(memo.Name)
+	require.NoError(t, err)
+	storedMemo, err := svc.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
+	require.NoError(t, err)
+	require.NotNil(t, storedMemo)
+	attachmentPath := filepath.Join(t.TempDir(), "sse-delete-cleanup.txt")
+	require.NoError(t, os.WriteFile(attachmentPath, []byte("cleanup"), 0o600))
+	attachment, err := svc.Store.CreateAttachment(ctx, &store.Attachment{
+		UID:         "sse-delete-cleanup",
+		CreatorID:   owner.ID,
+		Filename:    "cleanup.txt",
+		Type:        "text/plain",
+		Size:        7,
+		Blob:        []byte("cleanup"),
+		StorageType: storepb.AttachmentStorageType_LOCAL,
+		Reference:   attachmentPath,
+		MemoID:      &storedMemo.ID,
+	})
+	require.NoError(t, err)
+
+	client := svc.SSEHub.Subscribe()
+	defer svc.SSEHub.Unsubscribe(client)
+	_, err = svc.DeleteMemo(ownerCtx, &v1pb.DeleteMemoRequest{Name: memo.Name})
+	require.NoError(t, err, "committed deletion must not be reported as a failure")
+	requireMemoChanged(t, client.events)
+
+	deletedMemo, err := svc.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
+	require.NoError(t, err)
+	require.Nil(t, deletedMemo)
+	deletedAttachment, err := svc.Store.GetAttachment(ctx, &store.FindAttachment{ID: &attachment.ID})
+	require.NoError(t, err)
+	require.Nil(t, deletedAttachment)
+	_, err = os.Stat(attachmentPath)
+	require.ErrorIs(t, err, os.ErrNotExist)
+}
+
+func TestSetMemoAttachmentsPublishesMemoChanged(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
 
@@ -253,7 +692,7 @@ func TestSetMemoAttachments_EmitsMemoUpdatedSSEEvent(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	client := svc.SSEHub.Subscribe(user.ID, store.RoleAdmin)
+	client := svc.SSEHub.Subscribe()
 	defer svc.SSEHub.Unsubscribe(client)
 
 	_, err = svc.SetMemoAttachments(uctx, &v1pb.SetMemoAttachmentsRequest{
@@ -264,14 +703,11 @@ func TestSetMemoAttachments_EmitsMemoUpdatedSSEEvent(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	data := mustReceive(t, client.events, time.Second)
-	payload := string(data)
-	assert.Contains(t, payload, `"memo.updated"`)
-	assert.Contains(t, payload, memo.Name)
+	requireMemoChanged(t, client.events)
 	mustNotReceive(t, client.events, 100*time.Millisecond)
 }
 
-func TestSetMemoRelations_EmitsMemoUpdatedSSEEvent(t *testing.T) {
+func TestSetMemoRelationsPublishesMemoChanged(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
 
@@ -290,7 +726,7 @@ func TestSetMemoRelations_EmitsMemoUpdatedSSEEvent(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	client := svc.SSEHub.Subscribe(user.ID, store.RoleAdmin)
+	client := svc.SSEHub.Subscribe()
 	defer svc.SSEHub.Unsubscribe(client)
 
 	_, err = svc.SetMemoRelations(uctx, &v1pb.SetMemoRelationsRequest{
@@ -304,9 +740,6 @@ func TestSetMemoRelations_EmitsMemoUpdatedSSEEvent(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	data := mustReceive(t, client.events, time.Second)
-	payload := string(data)
-	assert.Contains(t, payload, `"memo.updated"`)
-	assert.Contains(t, payload, memo1.Name)
+	requireMemoChanged(t, client.events)
 	mustNotReceive(t, client.events, 100*time.Millisecond)
 }

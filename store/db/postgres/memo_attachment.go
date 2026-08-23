@@ -20,6 +20,44 @@ func (d *DB) ApplyMemoMutation(ctx context.Context, mutation *store.MemoMutation
 	defer func() {
 		_ = tx.Rollback()
 	}()
+	if err := validatePostgresMemoRelationEndpoints(ctx, tx, mutation); err != nil {
+		return err
+	}
+	if create := mutation.MemoCreate; create != nil {
+		if err := validatePostgresMemoCreate(ctx, tx, create); err != nil {
+			return err
+		}
+		if mutation.CommentContextMemoID != nil {
+			if err := authorizePostgresMemoComment(ctx, tx, *mutation.CommentContextMemoID, create.CreatorID); err != nil {
+				return err
+			}
+		}
+		if err := insertPostgresMemo(ctx, tx, create); err != nil {
+			return err
+		}
+		mutation.MemoID = create.ID
+		mutation.MemoCreatorID = create.CreatorID
+		mutation.ExpectedMemoContent = create.Content
+		for _, relation := range mutation.ReferenceRelations {
+			if relation != nil {
+				relation.MemoID = create.ID
+			}
+		}
+		if mutation.CommentContextMemoID != nil {
+			if err := insertPostgresMemoCommentRelation(ctx, tx, create.ID, *mutation.CommentContextMemoID); err != nil {
+				return err
+			}
+		}
+	}
+	policy := mutation.Policy
+	if policy == nil && mutation.MemoUpdate != nil {
+		policy = mutation.MemoUpdate.Policy
+	}
+	if policy != nil {
+		if err := validatePostgresMemoWritePolicy(ctx, tx, mutation.MemoID, policy, mutation.MemoUpdate); err != nil {
+			return err
+		}
+	}
 
 	var creatorID int32
 	var content string
@@ -31,6 +69,18 @@ func (d *DB) ApplyMemoMutation(ctx context.Context, mutation *store.MemoMutation
 	}
 	if creatorID != mutation.MemoCreatorID || content != mutation.ExpectedMemoContent {
 		return errors.Wrap(store.ErrMemoMutationConflict, "memo changed while applying mutation")
+	}
+	removedAttachments, err := listPostgresAttachmentSnapshots(ctx, tx, mutation.RemovedAttachmentIDs)
+	if err != nil {
+		return errors.Wrap(err, "failed to read removed attachments")
+	}
+	if len(removedAttachments) != len(mutation.RemovedAttachmentIDs) {
+		return errors.Wrap(store.ErrMemoMutationConflict, "removed attachment no longer exists")
+	}
+	for _, attachment := range removedAttachments {
+		if attachment.CreatorID != mutation.MemoCreatorID || attachment.MemoID == nil || *attachment.MemoID != mutation.MemoID {
+			return errors.Wrap(store.ErrMemoMutationConflict, "attachment is no longer removable from the memo")
+		}
 	}
 
 	for _, binding := range mutation.Bindings {
@@ -53,13 +103,14 @@ func (d *DB) ApplyMemoMutation(ctx context.Context, mutation *store.MemoMutation
 			return errors.Wrap(err, "failed to bind attachment")
 		}
 	}
-
-	for _, attachmentID := range mutation.RemovedAttachmentIDs {
-		result, err := tx.ExecContext(ctx, `UPDATE attachment SET memo_id = NULL WHERE id = $1 AND memo_id = $2`, attachmentID, mutation.MemoID)
+	for _, attachment := range removedAttachments {
+		result, err := tx.ExecContext(ctx, `DELETE FROM attachment WHERE id = $1 AND memo_id = $2`, attachment.ID, mutation.MemoID)
 		if err != nil {
-			return errors.Wrap(err, "failed to detach attachment")
+			return errors.Wrap(err, "failed to delete removed attachment")
 		}
-		if rows, err := result.RowsAffected(); err != nil || rows != 1 {
+		if rows, err := result.RowsAffected(); err != nil {
+			return errors.Wrap(err, "failed to count deleted removed attachment")
+		} else if rows != 1 {
 			return errors.Wrap(store.ErrMemoMutationConflict, "attachment is no longer bound to the memo")
 		}
 	}
@@ -89,6 +140,17 @@ func (d *DB) ApplyMemoMutation(ctx context.Context, mutation *store.MemoMutation
 	}
 	if err := tx.Commit(); err != nil {
 		return errors.Wrap(err, "failed to commit memo transaction")
+	}
+	return nil
+}
+
+func insertPostgresMemoCommentRelation(ctx context.Context, tx *sql.Tx, memoID, contextMemoID int32) error {
+	if memoID <= 0 || contextMemoID <= 0 || memoID == contextMemoID {
+		return errors.New("invalid COMMENT relation")
+	}
+	if _, err := tx.ExecContext(ctx, `INSERT INTO memo_relation (memo_id, related_memo_id, type) VALUES ($1, $2, $3)`,
+		memoID, contextMemoID, store.MemoRelationComment); err != nil {
+		return errors.Wrap(err, "failed to insert COMMENT relation")
 	}
 	return nil
 }
@@ -149,6 +211,11 @@ func applyMemoUpdate(ctx context.Context, executor memoUpdateExecer, update *sto
 			return errors.Wrap(err, "failed to marshal memo payload")
 		}
 		appendValue("payload", string(payload))
+	}
+	if update.ClearSpace {
+		set = append(set, "space_id = NULL")
+	} else if v := update.SpaceID; v != nil {
+		appendValue("space_id", *v)
 	}
 	if len(set) == 0 {
 		return nil

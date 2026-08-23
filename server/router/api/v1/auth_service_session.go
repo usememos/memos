@@ -257,10 +257,14 @@ func (s *APIV1Service) fetchCurrentUser(ctx context.Context) (*store.User, error
 	if user == nil {
 		return nil, errors.Errorf("user %d not found", userID)
 	}
-	if user.RowStatus == store.Archived {
+	if !isActiveCurrentUser(user) {
 		return nil, nil
 	}
 	return user, nil
+}
+
+func isActiveCurrentUser(user *store.User) bool {
+	return user != nil && user.RowStatus == store.Normal
 }
 
 // extractClientInfo extracts comprehensive client information from the request context.

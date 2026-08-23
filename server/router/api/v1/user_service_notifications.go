@@ -14,6 +14,7 @@ import (
 
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
+	"github.com/usememos/memos/server/access"
 	"github.com/usememos/memos/store"
 )
 
@@ -60,7 +61,7 @@ func (s *APIV1Service) ListUserNotifications(ctx context.Context, request *v1pb.
 
 	notifications := []*v1pb.UserNotification{}
 	for _, inbox := range inboxes {
-		notification, err := s.convertInboxToUserNotificationWithUsersAndMemos(inbox, currentUser, usersByID, memosByID)
+		notification, err := s.convertInboxToUserNotificationWithUsersAndMemos(ctx, inbox, currentUser, usersByID, memosByID)
 		if err != nil {
 			if status.Code(err) == codes.NotFound {
 				slog.Warn("Skipping notification with missing user",
@@ -72,7 +73,7 @@ func (s *APIV1Service) ListUserNotifications(ctx context.Context, request *v1pb.
 			}
 			return nil, status.Errorf(codes.Internal, "failed to convert inbox: %v", err)
 		}
-		if notification.Type == v1pb.UserNotification_TYPE_UNSPECIFIED {
+		if notification == nil || notification.Type == v1pb.UserNotification_TYPE_UNSPECIFIED {
 			continue
 		}
 		notifications = append(notifications, notification)
@@ -120,6 +121,17 @@ func (s *APIV1Service) UpdateUserNotification(ctx context.Context, request *v1pb
 	if inbox.ReceiverID != currentUser.ID {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
+	memosByID, err := s.listMemosByID(ctx, collectInboxMemoIDs([]*store.Inbox{inbox}))
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to list notification memos: %v", err)
+	}
+	accessible, err := s.canAccessNotificationMemos(ctx, currentUser, inbox, memosByID)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to authorize notification: %v", err)
+	}
+	if !accessible {
+		return nil, status.Errorf(codes.NotFound, "notification not found")
+	}
 
 	// Build update request based on field mask
 	update := &store.UpdateInbox{
@@ -153,6 +165,9 @@ func (s *APIV1Service) UpdateUserNotification(ctx context.Context, request *v1pb
 	notification, err := s.convertInboxToUserNotification(ctx, updatedInbox, currentUser)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to convert inbox: %v", err)
+	}
+	if notification == nil {
+		return nil, status.Errorf(codes.NotFound, "notification not found")
 	}
 
 	return notification, nil
@@ -212,7 +227,7 @@ func (s *APIV1Service) convertInboxToUserNotification(ctx context.Context, inbox
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list notification memos: %v", err)
 	}
-	return s.convertInboxToUserNotificationWithUsersAndMemos(inbox, viewer, usersByID, memosByID)
+	return s.convertInboxToUserNotificationWithUsersAndMemos(ctx, inbox, viewer, usersByID, memosByID)
 }
 
 func collectInboxMemoIDs(inboxes []*store.Inbox) []int32 {
@@ -225,12 +240,22 @@ func collectInboxMemoIDs(inboxes []*store.Inbox) []int32 {
 		case storepb.InboxMessage_MEMO_COMMENT:
 			payload := inbox.Message.GetMemoComment()
 			if payload != nil {
-				memoIDs = append(memoIDs, payload.MemoId, payload.RelatedMemoId)
+				if payload.MemoId > 0 {
+					memoIDs = append(memoIDs, payload.MemoId)
+				}
+				if payload.RelatedMemoId > 0 {
+					memoIDs = append(memoIDs, payload.RelatedMemoId)
+				}
 			}
 		case storepb.InboxMessage_MEMO_MENTION:
 			payload := inbox.Message.GetMemoMention()
 			if payload != nil {
-				memoIDs = append(memoIDs, payload.MemoId, payload.RelatedMemoId)
+				if payload.MemoId > 0 {
+					memoIDs = append(memoIDs, payload.MemoId)
+				}
+				if payload.RelatedMemoId > 0 {
+					memoIDs = append(memoIDs, payload.RelatedMemoId)
+				}
 			}
 		default:
 			// Ignore notification types without memo references.
@@ -239,7 +264,14 @@ func collectInboxMemoIDs(inboxes []*store.Inbox) []int32 {
 	return memoIDs
 }
 
-func (s *APIV1Service) convertInboxToUserNotificationWithUsersAndMemos(inbox *store.Inbox, viewer *store.User, usersByID map[int32]*store.User, memosByID map[int32]*store.Memo) (*v1pb.UserNotification, error) {
+func (s *APIV1Service) convertInboxToUserNotificationWithUsersAndMemos(ctx context.Context, inbox *store.Inbox, viewer *store.User, usersByID map[int32]*store.User, memosByID map[int32]*store.Memo) (*v1pb.UserNotification, error) {
+	accessible, err := s.canAccessNotificationMemos(ctx, viewer, inbox, memosByID)
+	if err != nil {
+		return nil, err
+	}
+	if !accessible {
+		return nil, nil
+	}
 	receiver := usersByID[inbox.ReceiverID]
 	if receiver == nil {
 		return nil, status.Errorf(codes.NotFound, "notification receiver not found")
@@ -271,7 +303,7 @@ func (s *APIV1Service) convertInboxToUserNotificationWithUsersAndMemos(inbox *st
 		switch inbox.Message.Type {
 		case storepb.InboxMessage_MEMO_COMMENT:
 			notification.Type = v1pb.UserNotification_MEMO_COMMENT
-			payload, err := s.convertMemoCommentNotificationPayload(viewer, inbox.Message, memosByID)
+			payload, err := s.convertMemoCommentNotificationPayload(inbox.Message, memosByID)
 			if err != nil {
 				return nil, err
 			}
@@ -282,7 +314,7 @@ func (s *APIV1Service) convertInboxToUserNotificationWithUsersAndMemos(inbox *st
 			}
 		case storepb.InboxMessage_MEMO_MENTION:
 			notification.Type = v1pb.UserNotification_MEMO_MENTION
-			payload, err := s.convertMemoMentionNotificationPayload(viewer, inbox.Message, memosByID)
+			payload, err := s.convertMemoMentionNotificationPayload(inbox.Message, memosByID)
 			if err != nil {
 				return nil, err
 			}
@@ -299,20 +331,55 @@ func (s *APIV1Service) convertInboxToUserNotificationWithUsersAndMemos(inbox *st
 	return notification, nil
 }
 
-func canViewerAccessMemo(viewer *store.User, memo *store.Memo) bool {
-	if memo == nil {
-		return false
+func (s *APIV1Service) canAccessNotificationMemos(ctx context.Context, viewer *store.User, inbox *store.Inbox, memosByID map[int32]*store.Memo) (bool, error) {
+	if viewer == nil || viewer.RowStatus != store.Normal {
+		return false, nil
 	}
-	if viewer != nil && isSuperUser(viewer) {
-		return true
+	if inbox == nil || inbox.Message == nil {
+		return true, nil
 	}
-	if memo.Visibility == store.Private {
-		return viewer != nil && viewer.ID == memo.CreatorID
+	check := func(id int32) (bool, error) {
+		if id <= 0 {
+			return false, nil
+		}
+		memo := memosByID[id]
+		if memo == nil {
+			return false, nil
+		}
+		readContext, err := s.buildMemoReadContextForViewer(ctx, memo, viewer, false, nil)
+		if err != nil {
+			if status.Code(err) == codes.NotFound {
+				return false, nil
+			}
+			return false, err
+		}
+		return access.CheckMemoReadContext(readContext).Allowed(), nil
 	}
-	if memo.Visibility == store.Protected {
-		return viewer != nil
+
+	switch inbox.Message.Type {
+	case storepb.InboxMessage_MEMO_COMMENT:
+		payload := inbox.Message.GetMemoComment()
+		if payload == nil {
+			return false, nil
+		}
+		canReadComment, err := check(payload.MemoId)
+		if err != nil || !canReadComment {
+			return canReadComment, err
+		}
+		return check(payload.RelatedMemoId)
+	case storepb.InboxMessage_MEMO_MENTION:
+		payload := inbox.Message.GetMemoMention()
+		if payload == nil {
+			return false, nil
+		}
+		canReadMemo, err := check(payload.MemoId)
+		if err != nil || !canReadMemo || payload.RelatedMemoId <= 0 {
+			return canReadMemo, err
+		}
+		return check(payload.RelatedMemoId)
+	default:
+		return true, nil
 	}
-	return true
 }
 
 func (s *APIV1Service) memoNotificationSnippet(memo *store.Memo) (string, error) {
@@ -327,21 +394,14 @@ func (s *APIV1Service) memoNotificationSnippet(memo *store.Memo) (string, error)
 	return snippet, nil
 }
 
-func (s *APIV1Service) convertMemoCommentNotificationPayload(viewer *store.User, message *storepb.InboxMessage, memosByID map[int32]*store.Memo) (*v1pb.UserNotification_MemoCommentPayload, error) {
+func (s *APIV1Service) convertMemoCommentNotificationPayload(message *storepb.InboxMessage, memosByID map[int32]*store.Memo) (*v1pb.UserNotification_MemoCommentPayload, error) {
 	memoComment := message.GetMemoComment()
 	if message == nil || message.Type != storepb.InboxMessage_MEMO_COMMENT || memoComment == nil {
 		return nil, nil
 	}
 
 	commentMemo := memosByID[memoComment.MemoId]
-	if !canViewerAccessMemo(viewer, commentMemo) {
-		return nil, nil
-	}
-
 	relatedMemo := memosByID[memoComment.RelatedMemoId]
-	if !canViewerAccessMemo(viewer, relatedMemo) {
-		return nil, nil
-	}
 
 	memoSnippet, err := s.memoNotificationSnippet(commentMemo)
 	if err != nil {
@@ -360,16 +420,13 @@ func (s *APIV1Service) convertMemoCommentNotificationPayload(viewer *store.User,
 	}, nil
 }
 
-func (s *APIV1Service) convertMemoMentionNotificationPayload(viewer *store.User, message *storepb.InboxMessage, memosByID map[int32]*store.Memo) (*v1pb.UserNotification_MemoMentionPayload, error) {
+func (s *APIV1Service) convertMemoMentionNotificationPayload(message *storepb.InboxMessage, memosByID map[int32]*store.Memo) (*v1pb.UserNotification_MemoMentionPayload, error) {
 	memoMention := message.GetMemoMention()
 	if message == nil || message.Type != storepb.InboxMessage_MEMO_MENTION || memoMention == nil {
 		return nil, nil
 	}
 
 	memo := memosByID[memoMention.MemoId]
-	if !canViewerAccessMemo(viewer, memo) {
-		return nil, nil
-	}
 
 	memoSnippet, err := s.memoNotificationSnippet(memo)
 	if err != nil {
@@ -382,7 +439,7 @@ func (s *APIV1Service) convertMemoMentionNotificationPayload(viewer *store.User,
 	}
 	if memoMention.RelatedMemoId != 0 {
 		relatedMemo := memosByID[memoMention.RelatedMemoId]
-		if canViewerAccessMemo(viewer, relatedMemo) {
+		if relatedMemo != nil {
 			payload.RelatedMemo = fmt.Sprintf("%s%s", MemoNamePrefix, relatedMemo.UID)
 			relatedMemoSnippet, err := s.memoNotificationSnippet(relatedMemo)
 			if err != nil {

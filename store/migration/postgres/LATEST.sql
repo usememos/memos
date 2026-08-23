@@ -28,6 +28,24 @@ CREATE TABLE user_setting (
   UNIQUE(user_id, key)
 );
 
+-- space
+CREATE TABLE space (
+  id SERIAL PRIMARY KEY,
+  uid TEXT NOT NULL UNIQUE,
+  title TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT ''
+);
+
+-- space membership
+CREATE TABLE space_member (
+  space_id INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
+  role TEXT NOT NULL CHECK (role IN ('ADMIN', 'USER')),
+  PRIMARY KEY (space_id, user_id)
+);
+
+CREATE INDEX idx_space_member_user_id ON space_member(user_id, space_id);
+
 -- memo
 CREATE TABLE memo (
   id SERIAL PRIMARY KEY,
@@ -39,8 +57,11 @@ CREATE TABLE memo (
   content TEXT NOT NULL,
   visibility TEXT NOT NULL DEFAULT 'PRIVATE',
   pinned BOOLEAN NOT NULL DEFAULT FALSE,
-  payload JSONB NOT NULL DEFAULT '{}'
+  payload JSONB NOT NULL DEFAULT '{}',
+  space_id INTEGER DEFAULT NULL
 );
+
+CREATE INDEX idx_memo_space_id ON memo(space_id, row_status, created_ts DESC, id DESC);
 
 -- memo_relation
 CREATE TABLE memo_relation (
@@ -49,6 +70,9 @@ CREATE TABLE memo_relation (
   type TEXT NOT NULL,
   UNIQUE(memo_id, related_memo_id, type)
 );
+
+CREATE INDEX idx_memo_relation_related_type_memo
+  ON memo_relation(related_memo_id, type, memo_id);
 
 -- attachment
 CREATE TABLE attachment (

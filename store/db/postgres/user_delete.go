@@ -29,6 +29,19 @@ func (d *DB) DeleteUser(ctx context.Context, delete *store.DeleteUser) (*store.D
 	defer func() {
 		_ = tx.Rollback()
 	}()
+	var userID int32
+	if err := tx.QueryRowContext(ctx, `SELECT id FROM "user" WHERE id = $1`, delete.ID).Scan(&userID); errors.Is(err, sql.ErrNoRows) {
+		return &store.DeleteUserResult{}, nil
+	} else if err != nil {
+		return nil, errors.Wrap(err, "failed to read user")
+	}
+	var membershipCount int
+	if err := tx.QueryRowContext(ctx, "SELECT COUNT(*) FROM space_member WHERE user_id = $1", delete.ID).Scan(&membershipCount); err != nil {
+		return nil, errors.Wrap(err, "failed to check user space memberships")
+	}
+	if membershipCount != 0 {
+		return nil, store.ErrUserHasSpaceMembership
+	}
 
 	targets, err := collectDeleteUserTargets(ctx, tx, delete.ID)
 	if err != nil {
@@ -56,7 +69,7 @@ func (d *DB) DeleteUser(ctx context.Context, delete *store.DeleteUser) (*store.D
 func collectDeleteUserTargets(ctx context.Context, tx *sql.Tx, userID int32) (*deleteUserTargetSet, error) {
 	targets := &deleteUserTargetSet{}
 
-	memoIDs, err := listDeleteUserMemoTree(ctx, tx, userID)
+	memoIDs, err := listDeleteUserMemos(ctx, tx, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +88,7 @@ func collectDeleteUserTargets(ctx context.Context, tx *sql.Tx, userID int32) (*d
 	}
 	targets.userSettingKeys = userSettingKeys
 
-	inboxIDs, err := listDeleteUserInboxIDs(ctx, tx, userID, memoIDSet(memoIDs))
+	inboxIDs, err := listDeleteUserInboxIDs(ctx, tx, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -123,25 +136,8 @@ func deleteUserTargetsTx(ctx context.Context, tx *sql.Tx, userID int32, targets 
 	return nil
 }
 
-func listDeleteUserMemoTree(ctx context.Context, tx *sql.Tx, userID int32) ([]int32, error) {
-	return listDeleteUserMemoTreeRecursive(ctx, tx, userID)
-}
-
-func listDeleteUserMemoTreeRecursive(ctx context.Context, tx *sql.Tx, userID int32) ([]int32, error) {
-	rows, err := tx.QueryContext(ctx, `
-		WITH RECURSIVE memo_tree(id) AS (
-			SELECT id
-			FROM memo
-			WHERE creator_id = `+deleteUserPlaceholder(1)+`
-			UNION
-			SELECT child.id
-			FROM memo child
-			JOIN memo_relation rel ON rel.memo_id = child.id AND rel.type = 'COMMENT'
-			JOIN memo_tree parent ON rel.related_memo_id = parent.id
-		)
-		SELECT id
-		FROM memo_tree
-	`, userID)
+func listDeleteUserMemos(ctx context.Context, tx *sql.Tx, userID int32) ([]int32, error) {
+	rows, err := tx.QueryContext(ctx, `SELECT id FROM memo WHERE creator_id = $1 ORDER BY id`, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -261,24 +257,7 @@ func deleteUserSettingKeysQuery() string {
 	return `SELECT key FROM user_setting WHERE user_id = ` + deleteUserPlaceholder(1)
 }
 
-func listDeleteUserInboxIDs(ctx context.Context, tx *sql.Tx, userID int32, memoIDSet map[int32]struct{}) ([]int32, error) {
-	directIDs, err := listDeleteUserDirectInboxIDs(ctx, tx, userID)
-	if err != nil {
-		return nil, err
-	}
-	inboxIDs := append([]int32{}, directIDs...)
-	if len(memoIDSet) == 0 {
-		return inboxIDs, nil
-	}
-
-	memoIDs, err := listDeleteUserMemoReferencedInboxIDs(ctx, tx, userID, memoIDSet)
-	if err != nil {
-		return nil, err
-	}
-	return append(inboxIDs, memoIDs...), nil
-}
-
-func listDeleteUserDirectInboxIDs(ctx context.Context, tx *sql.Tx, userID int32) ([]int32, error) {
+func listDeleteUserInboxIDs(ctx context.Context, tx *sql.Tx, userID int32) ([]int32, error) {
 	rows, err := tx.QueryContext(ctx, `
 		SELECT id
 		FROM inbox
@@ -302,76 +281,6 @@ func listDeleteUserDirectInboxIDs(ctx context.Context, tx *sql.Tx, userID int32)
 	}
 
 	return inboxIDs, nil
-}
-
-func listDeleteUserMemoReferencedInboxIDs(ctx context.Context, tx *sql.Tx, userID int32, memoIDSet map[int32]struct{}) ([]int32, error) {
-	rows, err := tx.QueryContext(ctx, `
-		SELECT id, message
-		FROM inbox
-		WHERE sender_id <> `+deleteUserPlaceholder(1)+`
-			AND receiver_id <> `+deleteUserPlaceholder(2), userID, userID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	inboxIDs := make([]int32, 0)
-	for rows.Next() {
-		var (
-			inboxID    int32
-			messageRaw []byte
-		)
-		if err := rows.Scan(&inboxID, &messageRaw); err != nil {
-			return nil, err
-		}
-		if len(messageRaw) == 0 {
-			continue
-		}
-
-		message := &storepb.InboxMessage{}
-		if err := protojsonUnmarshaler.Unmarshal(messageRaw, message); err != nil {
-			return nil, err
-		}
-		if inboxMessageTouchesMemoSet(message, memoIDSet) {
-			inboxIDs = append(inboxIDs, inboxID)
-		}
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return inboxIDs, nil
-}
-
-func inboxMessageTouchesMemoSet(message *storepb.InboxMessage, memoIDSet map[int32]struct{}) bool {
-	if message == nil {
-		return false
-	}
-
-	switch message.Type {
-	case storepb.InboxMessage_MEMO_COMMENT:
-		payload := message.GetMemoComment()
-		if payload == nil {
-			return false
-		}
-		return memoIDInSet(payload.MemoId, memoIDSet) || memoIDInSet(payload.RelatedMemoId, memoIDSet)
-	case storepb.InboxMessage_MEMO_MENTION:
-		payload := message.GetMemoMention()
-		if payload == nil {
-			return false
-		}
-		return memoIDInSet(payload.MemoId, memoIDSet) || memoIDInSet(payload.RelatedMemoId, memoIDSet)
-	default:
-		return false
-	}
-}
-
-func memoIDInSet(id int32, memoIDSet map[int32]struct{}) bool {
-	if id == 0 {
-		return false
-	}
-	_, exists := memoIDSet[id]
-	return exists
 }
 
 func deleteReactionsByMemoIDsTx(ctx context.Context, tx *sql.Tx, memoIDs []int32) error {
@@ -488,14 +397,6 @@ func deleteUserBatches[T any](values []T, size int) [][]T {
 		batches = append(batches, values[start:end])
 	}
 	return batches
-}
-
-func memoIDSet(memoIDs []int32) map[int32]struct{} {
-	idSet := make(map[int32]struct{}, len(memoIDs))
-	for _, id := range memoIDs {
-		idSet[id] = struct{}{}
-	}
-	return idSet
 }
 
 func attachmentIDsFromList(attachments []*store.Attachment) []int32 {

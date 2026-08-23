@@ -463,6 +463,88 @@ func (s *ConnectServiceHandler) BatchGetLinkMetadata(ctx context.Context, req *c
 	return connect.NewResponse(resp), nil
 }
 
+// SpaceService
+
+func (s *ConnectServiceHandler) CreateSpace(ctx context.Context, req *connect.Request[v1pb.CreateSpaceRequest]) (*connect.Response[v1pb.Space], error) {
+	resp, err := s.APIV1Service.CreateSpace(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) ListSpaces(ctx context.Context, req *connect.Request[v1pb.ListSpacesRequest]) (*connect.Response[v1pb.ListSpacesResponse], error) {
+	resp, err := s.APIV1Service.ListSpaces(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) GetSpace(ctx context.Context, req *connect.Request[v1pb.GetSpaceRequest]) (*connect.Response[v1pb.Space], error) {
+	resp, err := s.APIV1Service.GetSpace(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) UpdateSpace(ctx context.Context, req *connect.Request[v1pb.UpdateSpaceRequest]) (*connect.Response[v1pb.Space], error) {
+	resp, err := s.APIV1Service.UpdateSpace(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) DeleteSpace(ctx context.Context, req *connect.Request[v1pb.DeleteSpaceRequest]) (*connect.Response[emptypb.Empty], error) {
+	resp, err := s.APIV1Service.DeleteSpace(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) CreateSpaceMember(ctx context.Context, req *connect.Request[v1pb.CreateSpaceMemberRequest]) (*connect.Response[v1pb.SpaceMember], error) {
+	resp, err := s.APIV1Service.CreateSpaceMember(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) ListSpaceMembers(ctx context.Context, req *connect.Request[v1pb.ListSpaceMembersRequest]) (*connect.Response[v1pb.ListSpaceMembersResponse], error) {
+	resp, err := s.APIV1Service.ListSpaceMembers(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) GetSpaceMember(ctx context.Context, req *connect.Request[v1pb.GetSpaceMemberRequest]) (*connect.Response[v1pb.SpaceMember], error) {
+	resp, err := s.APIV1Service.GetSpaceMember(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) UpdateSpaceMember(ctx context.Context, req *connect.Request[v1pb.UpdateSpaceMemberRequest]) (*connect.Response[v1pb.SpaceMember], error) {
+	resp, err := s.APIV1Service.UpdateSpaceMember(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) DeleteSpaceMember(ctx context.Context, req *connect.Request[v1pb.DeleteSpaceMemberRequest]) (*connect.Response[emptypb.Empty], error) {
+	resp, err := s.APIV1Service.DeleteSpaceMember(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
 // AttachmentService
 
 func (s *ConnectServiceHandler) CreateAttachment(ctx context.Context, req *connect.Request[v1pb.CreateAttachmentRequest]) (*connect.Response[v1pb.Attachment], error) {

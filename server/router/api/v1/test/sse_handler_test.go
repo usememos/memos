@@ -12,6 +12,7 @@ import (
 	"github.com/labstack/echo/v5"
 	"github.com/stretchr/testify/require"
 
+	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	"github.com/usememos/memos/server/auth"
 	apiv1 "github.com/usememos/memos/server/router/api/v1"
 )
@@ -103,14 +104,18 @@ func TestSSEHandler_Authentication(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, "\n", line)
 
-		ts.Service.SSEHub.Broadcast(&apiv1.SSEEvent{
-			Type: apiv1.SSEEventMemoUpdated,
-			Name: "memos/streamed",
+		_, err = ts.Service.CreateMemo(ts.CreateUserContext(ctx, user.ID), &v1pb.CreateMemoRequest{
+			MemoId: "streamed",
+			Memo: &v1pb.Memo{
+				Content:    "streamed memo",
+				Visibility: v1pb.Visibility_PUBLIC,
+			},
 		})
+		require.NoError(t, err)
 
 		line, err = reader.ReadString('\n')
 		require.NoError(t, err)
-		require.Equal(t, "data: {\"type\":\"memo.updated\",\"name\":\"memos/streamed\"}\n", line)
+		require.Equal(t, "data: {\"type\":\"memo.changed\"}\n", line)
 		line, err = reader.ReadString('\n')
 		require.NoError(t, err)
 		require.Equal(t, "\n", line)

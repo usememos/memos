@@ -314,7 +314,48 @@ func TestServeAttachmentFile_CanonicalRouteAndVisibilityAwareCache(t *testing.T)
 	require.Equal(t, privateAttachmentCacheControl, rec.Header().Get(echo.HeaderCacheControl))
 }
 
-func TestServeAttachmentFile_CommentFollowsCurrentParentVisibility(t *testing.T) {
+func TestServeAttachmentFileMemoCreatorLifecycle(t *testing.T) {
+	ctx := context.Background()
+	svc, fs, stores, cleanup := newShareAttachmentTestServices(ctx, t)
+	defer cleanup()
+
+	creator, err := stores.CreateUser(ctx, &store.User{
+		Username: "file-memo-creator-lifecycle", Role: store.RoleUser, Email: "file-creator@example.com",
+	})
+	require.NoError(t, err)
+	creatorCtx := context.WithValue(ctx, auth.UserIDContextKey, creator.ID)
+	attachment, err := svc.CreateAttachment(creatorCtx, &apiv1.CreateAttachmentRequest{Attachment: &apiv1.Attachment{
+		Filename: "creator-lifecycle.txt", Type: "text/plain", Content: []byte("creator lifecycle"),
+	}})
+	require.NoError(t, err)
+	memo, err := svc.CreateMemo(creatorCtx, &apiv1.CreateMemoRequest{Memo: &apiv1.Memo{
+		Content: "public file", Visibility: apiv1.Visibility_PUBLIC, Attachments: []*apiv1.Attachment{{Name: attachment.Name}},
+	}})
+	require.NoError(t, err)
+
+	e := echo.New()
+	fs.RegisterRoutes(e)
+	url := fmt.Sprintf("/file/%s/%s", attachment.Name, attachment.Filename)
+	archived := store.Archived
+	_, err = stores.UpdateUser(ctx, &store.UpdateUser{ID: creator.ID, RowStatus: &archived})
+	require.NoError(t, err)
+	recorder := httptest.NewRecorder()
+	e.ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, url, nil))
+	require.Equal(t, http.StatusOK, recorder.Code, "an archived creator does not invalidate the memo's PUBLIC audience")
+
+	memoUID := strings.TrimPrefix(memo.Name, "memos/")
+	storedMemo, err := stores.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
+	require.NoError(t, err)
+	require.NotNil(t, storedMemo)
+	_, err = stores.GetDriver().GetDB().ExecContext(ctx,
+		fmt.Sprintf("UPDATE memo SET creator_id = 2147483000 WHERE id = %d", storedMemo.ID))
+	require.NoError(t, err)
+	recorder = httptest.NewRecorder()
+	e.ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, url, nil))
+	require.Equal(t, http.StatusNotFound, recorder.Code, "a dangling memo creator must fail closed for files")
+}
+
+func TestServeAttachmentFile_CommentUsesOwnVisibility(t *testing.T) {
 	ctx := context.Background()
 	svc, fs, _, cleanup := newShareAttachmentTestServices(ctx, t)
 	defer cleanup()
@@ -333,10 +374,11 @@ func TestServeAttachmentFile_CommentFollowsCurrentParentVisibility(t *testing.T)
 		Content:  []byte("comment image"),
 	}})
 	require.NoError(t, err)
-	_, err = svc.CreateMemoComment(commenterCtx, &apiv1.CreateMemoCommentRequest{
+	comment, err := svc.CreateMemoComment(commenterCtx, &apiv1.CreateMemoCommentRequest{
 		Name: parent.Name,
 		Comment: &apiv1.Memo{
 			Content:     "comment",
+			Visibility:  apiv1.Visibility_PUBLIC,
 			Attachments: []*apiv1.Attachment{{Name: attachment.Name}},
 		},
 	})
@@ -351,6 +393,16 @@ func TestServeAttachmentFile_CommentFollowsCurrentParentVisibility(t *testing.T)
 
 	_, err = svc.UpdateMemo(ownerCtx, &apiv1.UpdateMemoRequest{
 		Memo:       &apiv1.Memo{Name: parent.Name, Visibility: apiv1.Visibility_PRIVATE},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"visibility"}},
+	})
+	require.NoError(t, err)
+	rec = httptest.NewRecorder()
+	e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, url, nil))
+	require.Equal(t, http.StatusOK, rec.Code, "changing the context memo must not change attachment access")
+	require.Equal(t, publicAttachmentCacheControl, rec.Header().Get(echo.HeaderCacheControl))
+
+	_, err = svc.UpdateMemo(commenterCtx, &apiv1.UpdateMemoRequest{
+		Memo:       &apiv1.Memo{Name: comment.Name, Visibility: apiv1.Visibility_PROTECTED},
 		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"visibility"}},
 	})
 	require.NoError(t, err)

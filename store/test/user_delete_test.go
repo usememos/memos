@@ -10,6 +10,22 @@ import (
 	"github.com/usememos/memos/store"
 )
 
+func TestDeleteUserIsIdempotent(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	defer ts.Close()
+
+	user, err := createTestingUserWithRole(ctx, ts, "delete-idempotent", store.RoleUser)
+	require.NoError(t, err)
+	first, err := ts.DeleteUser(ctx, &store.DeleteUser{ID: user.ID})
+	require.NoError(t, err)
+	require.NotNil(t, first)
+	second, err := ts.DeleteUser(ctx, &store.DeleteUser{ID: user.ID})
+	require.NoError(t, err)
+	require.NotNil(t, second)
+	require.Empty(t, second.UserSettingKeys)
+}
+
 func TestDeleteUserCleansRelatedData(t *testing.T) {
 	t.Parallel()
 
@@ -36,31 +52,17 @@ func TestDeleteUserCleansRelatedData(t *testing.T) {
 		Visibility: store.Public,
 	})
 	require.NoError(t, err)
-	peerCommentOnOwnMemo, err := ts.CreateMemo(ctx, &store.Memo{
-		UID:        "delete-peer-comment",
-		CreatorID:  peer.ID,
-		Content:    "peer comment on owner memo",
-		Visibility: store.Public,
-	})
+	peerCommentOnOwnMemo, err := ts.CreateMemoComment(ctx, &store.Memo{
+		UID:       "delete-peer-comment",
+		CreatorID: peer.ID,
+		Content:   "peer comment on owner memo",
+	}, ownMemo.ID, peer.ID)
 	require.NoError(t, err)
-	_, err = ts.UpsertMemoRelation(ctx, &store.MemoRelation{
-		MemoID:        peerCommentOnOwnMemo.ID,
-		RelatedMemoID: ownMemo.ID,
-		Type:          store.MemoRelationComment,
-	})
-	require.NoError(t, err)
-	userCommentOnPeerMemo, err := ts.CreateMemo(ctx, &store.Memo{
-		UID:        "delete-user-comment",
-		CreatorID:  user.ID,
-		Content:    "owner comment on peer memo",
-		Visibility: store.Public,
-	})
-	require.NoError(t, err)
-	_, err = ts.UpsertMemoRelation(ctx, &store.MemoRelation{
-		MemoID:        userCommentOnPeerMemo.ID,
-		RelatedMemoID: peerMemo.ID,
-		Type:          store.MemoRelationComment,
-	})
+	userCommentOnPeerMemo, err := ts.CreateMemoComment(ctx, &store.Memo{
+		UID:       "delete-user-comment",
+		CreatorID: user.ID,
+		Content:   "owner comment on peer memo",
+	}, peerMemo.ID, user.ID)
 	require.NoError(t, err)
 
 	ownerAttachment, err := ts.CreateAttachment(ctx, &store.Attachment{
@@ -139,7 +141,7 @@ func TestDeleteUserCleansRelatedData(t *testing.T) {
 		Message:    &storepb.InboxMessage{Type: storepb.InboxMessage_MEMO_MENTION},
 	})
 	require.NoError(t, err)
-	_, err = ts.CreateInbox(ctx, &store.Inbox{
+	referencingDeletedMemoInbox, err := ts.CreateInbox(ctx, &store.Inbox{
 		SenderID:   peer.ID,
 		ReceiverID: peer.ID,
 		Status:     store.UNREAD,
@@ -191,14 +193,16 @@ func TestDeleteUserCleansRelatedData(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, keptUser)
 
-	for _, memo := range []*store.Memo{ownMemo, peerCommentOnOwnMemo, userCommentOnPeerMemo} {
+	for _, memo := range []*store.Memo{ownMemo, userCommentOnPeerMemo} {
 		got, getErr := ts.GetMemo(ctx, &store.FindMemo{ID: &memo.ID})
 		require.NoError(t, getErr)
 		require.Nil(t, got, memo.UID)
 	}
-	keptMemo, err := ts.GetMemo(ctx, &store.FindMemo{ID: &peerMemo.ID})
-	require.NoError(t, err)
-	require.NotNil(t, keptMemo)
+	for _, memo := range []*store.Memo{peerMemo, peerCommentOnOwnMemo} {
+		got, getErr := ts.GetMemo(ctx, &store.FindMemo{ID: &memo.ID})
+		require.NoError(t, getErr)
+		require.NotNil(t, got, memo.UID)
+	}
 
 	for _, attachment := range []*store.Attachment{ownerAttachment, peerAttachmentOnDeletedMemo} {
 		got, getErr := ts.GetAttachment(ctx, &store.FindAttachment{ID: &attachment.ID})
@@ -211,7 +215,7 @@ func TestDeleteUserCleansRelatedData(t *testing.T) {
 
 	deletedMemoRelations, err := ts.ListMemoRelations(ctx, &store.FindMemoRelation{MemoIDList: []int32{ownMemo.ID, peerCommentOnOwnMemo.ID, userCommentOnPeerMemo.ID}})
 	require.NoError(t, err)
-	require.Empty(t, deletedMemoRelations)
+	require.Empty(t, deletedMemoRelations, "relations incident to deleted memos must be removed without deleting the other endpoint")
 
 	keptReactions, err := ts.ListReactions(ctx, &store.FindReaction{MemoID: &peerMemo.ID})
 	require.NoError(t, err)
@@ -231,6 +235,9 @@ func TestDeleteUserCleansRelatedData(t *testing.T) {
 	deletedReceivedInboxes, err := ts.ListInboxes(ctx, &store.FindInbox{ReceiverID: &user.ID})
 	require.NoError(t, err)
 	require.Empty(t, deletedReceivedInboxes)
+	referencedInboxes, err := ts.ListInboxes(ctx, &store.FindInbox{ID: &referencingDeletedMemoInbox.ID})
+	require.NoError(t, err)
+	require.Len(t, referencedInboxes, 1, "deleting a referenced memo must not control another user's inbox lifecycle")
 	keptInboxes, err := ts.ListInboxes(ctx, &store.FindInbox{ID: &inboxToKeep.ID})
 	require.NoError(t, err)
 	require.Len(t, keptInboxes, 1)

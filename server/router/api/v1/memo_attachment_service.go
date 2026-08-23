@@ -2,7 +2,6 @@ package v1
 
 import (
 	"context"
-	stderrors "errors"
 	"net/url"
 	"slices"
 	"strings"
@@ -48,15 +47,15 @@ func (s *APIV1Service) SetMemoAttachments(ctx context.Context, request *v1pb.Set
 	if err != nil {
 		return nil, err
 	}
-	updatedTs := time.Now().Unix()
-	if err := s.applyMemoMutation(ctx, memo, prepared, &store.UpdateMemo{ID: memo.ID, UpdatedTs: &updatedTs}, requiredAttachmentIDs, nil); err != nil {
+	updatedTsSec := time.Now().Unix()
+	if err := s.applyMemoMutation(ctx, memo, prepared, &store.UpdateMemo{ID: memo.ID, UpdatedTs: &updatedTsSec}, requiredAttachmentIDs, nil); err != nil {
 		return nil, err
 	}
-	updatedMemo, parentMemo, memoMessage, err := s.buildUpdatedMemoState(ctx, memo.ID)
+	_, _, memoMessage, err := s.buildUpdatedMemoState(ctx, memo.ID)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to build updated memo state")
 	}
-	s.dispatchMemoUpdatedSideEffects(ctx, updatedMemo, parentMemo, memoMessage)
+	s.dispatchMemoUpdatedSideEffects(ctx, memoMessage)
 
 	return &emptypb.Empty{}, nil
 }
@@ -73,11 +72,15 @@ func (s *APIV1Service) prepareMemoAttachments(
 	memo *store.Memo,
 	requestAttachments []*v1pb.Attachment,
 ) (*preparedMemoAttachments, error) {
-	currentAttachments, err := s.Store.ListAttachments(ctx, &store.FindAttachment{
-		MemoID: &memo.ID,
-	})
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list attachments")
+	currentAttachments := []*store.Attachment{}
+	if memo.ID > 0 {
+		var err error
+		currentAttachments, err = s.Store.ListAttachments(ctx, &store.FindAttachment{
+			MemoID: &memo.ID,
+		})
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to list attachments")
+		}
 	}
 
 	normalizedAttachments, err := s.normalizeMemoAttachmentRequest(ctx, memo, currentAttachments, requestAttachments)
@@ -96,7 +99,7 @@ func (s *APIV1Service) prepareMemoAttachments(
 			if attachment.CreatorID != memo.CreatorID {
 				return nil, status.Errorf(codes.FailedPrecondition, "cannot remove another user's attachment from this memo")
 			}
-			if attachment.CreatorID != user.ID && !isSuperUser(user) {
+			if attachment.CreatorID != user.ID {
 				return nil, status.Errorf(codes.PermissionDenied, "cannot remove another user's attachment")
 			}
 			removedAttachments = append(removedAttachments, attachment)
@@ -110,16 +113,9 @@ func (s *APIV1Service) prepareMemoAttachments(
 	}, nil
 }
 
-func (s *APIV1Service) applyMemoMutation(
-	ctx context.Context,
-	memo *store.Memo,
-	prepared *preparedMemoAttachments,
-	memoUpdate *store.UpdateMemo,
-	requiredAttachmentIDs []int32,
-	referenceRelations *[]*store.MemoRelation,
-) error {
+func buildMemoAttachmentMutationBindings(prepared *preparedMemoAttachments) ([]*store.MemoAttachmentBinding, []int32) {
 	if prepared == nil {
-		prepared = &preparedMemoAttachments{}
+		return nil, nil
 	}
 	currentIDs := make(map[int32]struct{}, len(prepared.current))
 	for _, attachment := range prepared.current {
@@ -130,12 +126,11 @@ func (s *APIV1Service) applyMemoMutation(
 	slices.Reverse(normalizedAttachments)
 	bindings := make([]*store.MemoAttachmentBinding, 0, len(normalizedAttachments))
 	for index, attachment := range normalizedAttachments {
-		updatedTs := time.Now().Unix() + int64(index)
 		_, wasBoundToMemo := currentIDs[attachment.ID]
 		bindings = append(bindings, &store.MemoAttachmentBinding{
 			ID:             attachment.ID,
 			UID:            attachment.UID,
-			UpdatedTs:      updatedTs,
+			UpdatedTs:      time.Now().Unix() + int64(index),
 			WasBoundToMemo: wasBoundToMemo,
 		})
 	}
@@ -148,10 +143,85 @@ func (s *APIV1Service) applyMemoMutation(
 		}
 		return 0
 	})
+
 	removedAttachmentIDs := make([]int32, 0, len(prepared.removed))
 	for _, attachment := range prepared.removed {
 		removedAttachmentIDs = append(removedAttachmentIDs, attachment.ID)
 	}
+	return bindings, removedAttachmentIDs
+}
+
+// createMemoWithMutation creates the memo row, binds attachments, and writes
+// reference relations in one database transaction. A failure in any dependent
+// write therefore cannot leave an orphan memo behind.
+func (s *APIV1Service) createMemoWithMutation(
+	ctx context.Context,
+	user *store.User,
+	create *store.Memo,
+	commentContextMemoID *int32,
+	prepared *preparedMemoAttachments,
+	requiredAttachmentIDs []int32,
+	referenceRelations []*store.MemoRelation,
+) error {
+	if user == nil || create == nil || create.CreatorID != user.ID {
+		return store.ErrMemoPermissionDenied
+	}
+	bindings, _ := buildMemoAttachmentMutationBindings(prepared)
+	relations := make([]*store.MemoRelation, 0, len(referenceRelations))
+	for _, relation := range referenceRelations {
+		if relation == nil {
+			continue
+		}
+		relations = append(relations, &store.MemoRelation{
+			RelatedMemoID: relation.RelatedMemoID,
+			Type:          relation.Type,
+		})
+	}
+	return s.Store.ApplyMemoMutation(ctx, &store.MemoMutation{
+		MemoCreate:                create,
+		CommentContextMemoID:      commentContextMemoID,
+		MemoCreatorID:             create.CreatorID,
+		ExpectedMemoContent:       create.Content,
+		Bindings:                  bindings,
+		RequiredAttachmentIDs:     requiredAttachmentIDs,
+		ReplaceReferenceRelations: len(relations) > 0,
+		ReferenceRelations:        relations,
+	})
+}
+
+func (s *APIV1Service) applyMemoMutation(
+	ctx context.Context,
+	memo *store.Memo,
+	prepared *preparedMemoAttachments,
+	memoUpdate *store.UpdateMemo,
+	requiredAttachmentIDs []int32,
+	referenceRelations *[]*store.MemoRelation,
+) error {
+	user, err := s.fetchCurrentUser(ctx)
+	if err != nil {
+		return status.Error(codes.Internal, "failed to get current user")
+	}
+	if user == nil {
+		return status.Error(codes.Unauthenticated, "user not authenticated")
+	}
+	if memo.CreatorID != user.ID {
+		return status.Error(codes.PermissionDenied, "permission denied")
+	}
+	policy := memoWritePolicy(user.ID, false)
+	if memoUpdate != nil && memoUpdate.Policy != nil {
+		policy = memoUpdate.Policy
+	} else if memoUpdate != nil {
+		memoUpdate.Policy = policy
+	}
+	if prepared == nil {
+		prepared = &preparedMemoAttachments{}
+	}
+	if len(prepared.removed) > 0 {
+		if _, err := s.validateAttachmentMotionGroupDeletion(ctx, user, prepared.removed); err != nil {
+			return err
+		}
+	}
+	bindings, removedAttachmentIDs := buildMemoAttachmentMutationBindings(prepared)
 	if referenceRelations != nil {
 		relations := make([]*store.MemoRelation, 0, len(*referenceRelations))
 		for _, relation := range *referenceRelations {
@@ -172,26 +242,17 @@ func (s *APIV1Service) applyMemoMutation(
 		RemovedAttachmentIDs:      removedAttachmentIDs,
 		RequiredAttachmentIDs:     requiredAttachmentIDs,
 		ReplaceReferenceRelations: referenceRelations != nil,
+		Policy:                    policy,
 	}
 	if referenceRelations != nil {
 		mutation.ReferenceRelations = *referenceRelations
 	}
 	if err := s.Store.ApplyMemoMutation(ctx, mutation); err != nil {
-		if stderrors.Is(err, store.ErrMemoMutationConflict) {
-			return status.Errorf(codes.FailedPrecondition, "memo state changed: %v", err)
-		}
-		return status.Errorf(codes.Internal, "failed to apply memo mutation: %v", err)
+		return mapMemoWriteError(err, "failed to apply memo mutation")
 	}
-
-	// Rows are detached in the transaction above. Delete storage one at a time so
-	// local cleanup remains storage-first; on failure the unlinked row remains and
-	// the owner can safely retry deletion.
-	for _, attachment := range prepared.removed {
-		if err := s.Store.DeleteAttachment(ctx, &store.DeleteAttachment{ID: attachment.ID}); err != nil {
-			return status.Errorf(codes.Internal, "failed to delete attachment: %v", err)
-		}
+	if err := s.cleanupDeletedAttachmentStorage(ctx, prepared.removed); err != nil {
+		return status.Errorf(codes.Internal, "memo was updated but attachment storage cleanup failed: %v", err)
 	}
-
 	return nil
 }
 
@@ -437,7 +498,7 @@ func (s *APIV1Service) ListMemoAttachments(ctx context.Context, request *v1pb.Li
 		return nil, status.Errorf(codes.NotFound, "memo not found")
 	}
 
-	if err := s.checkMemoAndParentReadAccess(ctx, memo); err != nil {
+	if err := s.checkMemoReadAccess(ctx, memo); err != nil {
 		return nil, err
 	}
 

@@ -11,7 +11,33 @@ import (
 )
 
 func (d *DB) UpsertReaction(ctx context.Context, upsert *store.Reaction) (*store.Reaction, error) {
-	if err := d.db.QueryRowContext(ctx, `
+	if upsert.Policy == nil {
+		return upsertPostgresReaction(ctx, d.db, upsert)
+	}
+	tx, err := d.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to begin reaction upsert transaction")
+	}
+	defer func() { _ = tx.Rollback() }()
+	if err := validatePostgresReactionWritePolicy(ctx, tx, upsert); err != nil {
+		return nil, err
+	}
+	reaction, err := upsertPostgresReaction(ctx, tx, upsert)
+	if err != nil {
+		return nil, err
+	}
+	if err := tx.Commit(); err != nil {
+		return nil, errors.Wrap(err, "failed to commit reaction upsert transaction")
+	}
+	return reaction, nil
+}
+
+type postgresReactionUpsertQuerier interface {
+	QueryRowContext(context.Context, string, ...any) *sql.Row
+}
+
+func upsertPostgresReaction(ctx context.Context, querier postgresReactionUpsertQuerier, upsert *store.Reaction) (*store.Reaction, error) {
+	if err := querier.QueryRowContext(ctx, `
 		INSERT INTO reaction (creator_id, memo_id, reaction_type)
 		SELECT $1, memo.id, $2
 		FROM memo
@@ -28,8 +54,7 @@ func (d *DB) UpsertReaction(ctx context.Context, upsert *store.Reaction) (*store
 		return nil, err
 	}
 
-	reaction := upsert
-	return reaction, nil
+	return upsert, nil
 }
 
 func (d *DB) ListReactions(ctx context.Context, find *store.FindReaction) ([]*store.Reaction, error) {
@@ -106,6 +131,9 @@ func (d *DB) GetReaction(ctx context.Context, find *store.FindReaction) (*store.
 }
 
 func (d *DB) DeleteReaction(ctx context.Context, delete *store.DeleteReaction) error {
+	if delete.ActorUserID != nil {
+		return d.deleteReactionAsCreator(ctx, delete)
+	}
 	where, args := []string{}, []any{}
 	if delete.ID != nil {
 		where, args = append(where, "id = "+placeholder(len(args)+1)), append(args, *delete.ID)
@@ -119,4 +147,39 @@ func (d *DB) DeleteReaction(ctx context.Context, delete *store.DeleteReaction) e
 
 	_, err := d.db.ExecContext(ctx, "DELETE FROM reaction WHERE "+strings.Join(where, " AND "), args...)
 	return err
+}
+
+func (d *DB) deleteReactionAsCreator(ctx context.Context, delete *store.DeleteReaction) error {
+	tx, err := d.db.BeginTx(ctx, nil)
+	if err != nil {
+		return errors.Wrap(err, "failed to begin authorized reaction delete transaction")
+	}
+	defer func() { _ = tx.Rollback() }()
+	if delete.Policy != nil {
+		if err := validatePostgresReactionWritePolicy(ctx, tx, &store.Reaction{
+			CreatorID: *delete.ActorUserID,
+			MemoID:    *delete.MemoID,
+			Policy:    delete.Policy,
+		}); err != nil {
+			return err
+		}
+	}
+
+	var creatorID, memoID int32
+	if err := tx.QueryRowContext(ctx, "SELECT creator_id, memo_id FROM reaction WHERE id = $1", *delete.ID).Scan(&creatorID, &memoID); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil
+		}
+		return errors.Wrap(err, "failed to read reaction for deletion")
+	}
+	if creatorID != *delete.ActorUserID || (delete.MemoID != nil && memoID != *delete.MemoID) {
+		return store.ErrReactionPermissionDenied
+	}
+	if _, err := tx.ExecContext(ctx, "DELETE FROM reaction WHERE id = $1", *delete.ID); err != nil {
+		return errors.Wrap(err, "failed to delete reaction")
+	}
+	if err := tx.Commit(); err != nil {
+		return errors.Wrap(err, "failed to commit authorized reaction delete transaction")
+	}
+	return nil
 }

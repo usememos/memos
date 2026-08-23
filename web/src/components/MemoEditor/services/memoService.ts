@@ -1,6 +1,7 @@
 import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema, timestampDate, timestampFromDate } from "@bufbuild/protobuf/wkt";
 import { isEqual } from "lodash-es";
+import { getEditorReferenceRelations } from "@/components/MemoMetadata/Relation/relationHelpers";
 import { memoServiceClient } from "@/connect";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
@@ -40,9 +41,11 @@ function buildUpdateMask(
     mask.add("attachments");
     patch.attachments = toAttachmentReferences(allAttachments);
   }
-  if (!isEqual(state.metadata.relations, prevMemo.relations)) {
+  const previousReferenceRelations = getEditorReferenceRelations(prevMemo.relations, prevMemo.name);
+  const nextReferenceRelations = getEditorReferenceRelations(state.metadata.relations, prevMemo.name);
+  if (!isEqual(nextReferenceRelations, previousReferenceRelations)) {
     mask.add("relations");
-    patch.relations = state.metadata.relations;
+    patch.relations = nextReferenceRelations;
   }
   if (!isEqual(state.metadata.location, prevMemo.location)) {
     mask.add("location");

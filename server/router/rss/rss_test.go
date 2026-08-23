@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/labstack/echo/v5"
 	"github.com/stretchr/testify/require"
@@ -37,19 +38,12 @@ func TestPublicRSSExcludesComments(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	comment, err := stores.CreateMemo(ctx, &store.Memo{
+	_, err = stores.CreateMemoComment(ctx, &store.Memo{
 		UID:        "rss-public-comment",
 		CreatorID:  user.ID,
 		Content:    "public comment should not be in rss",
-		Visibility: store.Public,
-	})
-	require.NoError(t, err)
-
-	_, err = stores.UpsertMemoRelation(ctx, &store.MemoRelation{
-		MemoID:        comment.ID,
-		RelatedMemoID: parent.ID,
-		Type:          store.MemoRelationComment,
-	})
+		Visibility: store.Private,
+	}, parent.ID, user.ID)
 	require.NoError(t, err)
 
 	service := NewRSSService(stores, markdown.NewService())
@@ -101,6 +95,47 @@ func TestPrivateInstanceDisablesRSS(t *testing.T) {
 	}
 }
 
+func TestRSSIfNoneMatchRemainsStableAcrossSeconds(t *testing.T) {
+	ctx := context.Background()
+	stores := teststore.NewTestingStore(ctx, t)
+	defer stores.Close()
+	setInstanceAccessMode(ctx, t, stores, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC)
+
+	user, err := stores.CreateUser(ctx, &store.User{
+		Username: "rss-etag-owner",
+		Role:     store.RoleUser,
+		Email:    "rss-etag-owner@example.com",
+	})
+	require.NoError(t, err)
+	_, err = stores.CreateMemo(ctx, &store.Memo{
+		UID:        "rss-etag-stable",
+		CreatorID:  user.ID,
+		Content:    "stable feed content",
+		Visibility: store.Public,
+	})
+	require.NoError(t, err)
+
+	service := NewRSSService(stores, markdown.NewService())
+	explore := requestRSS(t, service, "/explore/rss.xml", "", "")
+	userFeed := requestRSS(t, service, "/u/rss-etag-owner/rss.xml", user.Username, "")
+	require.Equal(t, http.StatusOK, explore.Code)
+	require.Equal(t, http.StatusOK, userFeed.Code)
+	exploreETag := explore.Header().Get("ETag")
+	userETag := userFeed.Header().Get("ETag")
+	require.NotEmpty(t, exploreETag)
+	require.NotEmpty(t, userETag)
+
+	// The previous request-time channel timestamp changed once per second even
+	// when no feed data changed, causing these conditional reads to return 200.
+	time.Sleep(1100 * time.Millisecond)
+	explore = requestRSS(t, service, "/explore/rss.xml", "", exploreETag)
+	userFeed = requestRSS(t, service, "/u/rss-etag-owner/rss.xml", user.Username, userETag)
+	require.Equal(t, http.StatusNotModified, explore.Code)
+	require.Equal(t, http.StatusNotModified, userFeed.Code)
+	require.Equal(t, exploreETag, explore.Header().Get("ETag"))
+	require.Equal(t, userETag, userFeed.Header().Get("ETag"))
+}
+
 func setInstanceAccessMode(ctx context.Context, t *testing.T, stores *store.Store, mode storepb.InstanceAccessMode) {
 	t.Helper()
 	_, err := stores.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
@@ -114,10 +149,20 @@ func setInstanceAccessMode(ctx context.Context, t *testing.T, stores *store.Stor
 
 func renderRSS(t *testing.T, service *RSSService, target string, username string) string {
 	t.Helper()
+	rec := requestRSS(t, service, target, username, "")
+	require.Equal(t, http.StatusOK, rec.Code)
+	return rec.Body.String()
+}
+
+func requestRSS(t *testing.T, service *RSSService, target, username, ifNoneMatch string) *httptest.ResponseRecorder {
+	t.Helper()
 
 	e := echo.New()
 	req := httptest.NewRequest(http.MethodGet, target, strings.NewReader(""))
 	req.Host = "example.com"
+	if ifNoneMatch != "" {
+		req.Header.Set("If-None-Match", ifNoneMatch)
+	}
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 	if username != "" {
@@ -131,6 +176,5 @@ func renderRSS(t *testing.T, service *RSSService, target string, username string
 		err = service.GetUserRSS(c)
 	}
 	require.NoError(t, err)
-	require.Equal(t, http.StatusOK, rec.Code)
-	return rec.Body.String()
+	return rec
 }

@@ -37,3 +37,33 @@ func TestValidateAndGenerateUIDValidatesUserProvidedResourceIDs(t *testing.T) {
 		})
 	}
 }
+
+func TestExtractSpaceUIDFromName(t *testing.T) {
+	uid, err := ExtractSpaceUIDFromName("spaces/team-notes")
+	if err != nil {
+		t.Fatalf("ExtractSpaceUIDFromName() returned error: %v", err)
+	}
+	if uid != "team-notes" {
+		t.Fatalf("ExtractSpaceUIDFromName() = %q, want %q", uid, "team-notes")
+	}
+	for _, name := range []string{"", "spaces/", "memos/team-notes", "spaces/team/members/alice"} {
+		if _, err := ExtractSpaceUIDFromName(name); err == nil {
+			t.Errorf("ExtractSpaceUIDFromName(%q) succeeded, want error", name)
+		}
+	}
+}
+
+func TestExtractSpaceMemberTokensFromName(t *testing.T) {
+	spaceUID, username, err := ExtractSpaceMemberTokensFromName("spaces/team-notes/members/alice")
+	if err != nil {
+		t.Fatalf("ExtractSpaceMemberTokensFromName() returned error: %v", err)
+	}
+	if spaceUID != "team-notes" || username != "alice" {
+		t.Fatalf("ExtractSpaceMemberTokensFromName() = (%q, %q)", spaceUID, username)
+	}
+	for _, name := range []string{"spaces/team-notes", "spaces/team-notes/users/alice", "spaces//members/alice", "spaces/team-notes/members/"} {
+		if _, _, err := ExtractSpaceMemberTokensFromName(name); err == nil {
+			t.Errorf("ExtractSpaceMemberTokensFromName(%q) succeeded, want error", name)
+		}
+	}
+}

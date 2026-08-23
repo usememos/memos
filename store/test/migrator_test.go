@@ -29,6 +29,16 @@ func (d *delayedInstanceSettingCreateDriver) CreateInstanceSettingIfNotExists(ct
 	return d.Driver.CreateInstanceSettingIfNotExists(ctx, create)
 }
 
+func requireQueryError(ctx context.Context, t *testing.T, db *sql.DB, query, message string) {
+	t.Helper()
+	rows, err := db.QueryContext(ctx, query)
+	if rows != nil {
+		defer rows.Close()
+		require.NoError(t, rows.Err())
+	}
+	require.Error(t, err, message)
+}
+
 // TestFreshInstall verifies that LATEST.sql applies correctly on a fresh database.
 // This is essentially what NewTestingStore already does, but we make it explicit.
 func TestFreshInstall(t *testing.T) {
@@ -48,6 +58,42 @@ func TestFreshInstall(t *testing.T) {
 	instanceSetting, err := ts.GetInstanceBasicSetting(ctx)
 	require.NoError(t, err)
 	require.Equal(t, currentSchemaVersion, instanceSetting.SchemaVersion)
+
+	// The fresh schema supports memo-local Space placement without adding a
+	// canonical thread shape. COMMENT remains an ordinary relation row.
+	driver := getDriverFromEnv()
+	insertSpace := "INSERT INTO space (id, uid, title, description) VALUES (?, ?, ?, ?)"
+	insertMemo := "INSERT INTO memo (id, uid, creator_id, content, visibility, payload, space_id) VALUES (?, ?, ?, ?, ?, ?, ?)"
+	insertRelation := "INSERT INTO memo_relation (memo_id, related_memo_id, type) VALUES (?, ?, ?)"
+	if driver == "postgres" {
+		insertSpace = "INSERT INTO space (id, uid, title, description) VALUES ($1, $2, $3, $4)"
+		insertMemo = "INSERT INTO memo (id, uid, creator_id, content, visibility, payload, space_id) VALUES ($1, $2, $3, $4, $5, $6, $7)"
+		insertRelation = "INSERT INTO memo_relation (memo_id, related_memo_id, type) VALUES ($1, $2, $3)"
+	}
+	_, err = ts.GetDriver().GetDB().ExecContext(ctx, insertSpace, 900001, "fresh-space", "Fresh Space", "schema fixture")
+	require.NoError(t, err)
+	_, err = ts.GetDriver().GetDB().ExecContext(ctx, insertMemo, 900001, "fresh-context", 1, "context", store.Public, `{}`, nil)
+	require.NoError(t, err)
+	_, err = ts.GetDriver().GetDB().ExecContext(ctx, insertMemo, 900002, "fresh-comment", 1, "comment", store.SpaceAudience, `{}`, 900001)
+	require.NoError(t, err)
+	_, err = ts.GetDriver().GetDB().ExecContext(ctx, insertRelation, 900002, 900001, store.MemoRelationComment)
+	require.NoError(t, err)
+
+	var relationCount int
+	require.NoError(t, ts.GetDriver().GetDB().QueryRowContext(ctx,
+		"SELECT COUNT(*) FROM memo_relation WHERE memo_id = 900002 AND related_memo_id = 900001 AND type = 'COMMENT'",
+	).Scan(&relationCount))
+	require.Equal(t, 1, relationCount)
+
+	requireQueryError(ctx, t, ts.GetDriver().GetDB(), "SELECT parent_memo_id, root_memo_id FROM memo LIMIT 0", "fresh memo schema must not contain canonical-root columns")
+	requireQueryError(ctx, t, ts.GetDriver().GetDB(), "SELECT row_status FROM space LIMIT 0", "fresh Space schema has no archived state")
+	if driver == "sqlite" {
+		var indexName string
+		require.NoError(t, ts.GetDriver().GetDB().QueryRowContext(ctx,
+			"SELECT name FROM sqlite_master WHERE type = 'index' AND name = 'idx_memo_creator_id'",
+		).Scan(&indexName))
+		require.Equal(t, "idx_memo_creator_id", indexName)
+	}
 }
 
 // TestMigrationReRun verifies that re-running the migration on an already
@@ -102,6 +148,123 @@ func TestMigrationWithData(t *testing.T) {
 	memo, err := ts.GetMemo(ctx, &store.FindMemo{UID: &originalMemo.UID})
 	require.NoError(t, err, "should retrieve memo after migration")
 	require.Equal(t, "Data before migration re-run", memo.Content, "memo content should be preserved")
+}
+
+func TestMigrationMultiSpacesPreservesMemosAndRelations(t *testing.T) {
+	ctx := context.Background()
+	driver := getDriverFromEnv()
+	dsn := getTestingProfileForDriver(t, driver).DSN
+	db, err := sql.Open(driver, dsn)
+	require.NoError(t, err)
+	_, err = db.ExecContext(ctx, legacySchemaFixture(driver))
+	require.NoError(t, err)
+
+	basicSetting, err := protojson.Marshal(&storepb.InstanceBasicSetting{SchemaVersion: "0.31.3"})
+	require.NoError(t, err)
+	insertSetting := "INSERT INTO system_setting (name, value, description) VALUES (?, ?, '')"
+	insertMemo := "INSERT INTO memo (id, uid, content, visibility, row_status, pinned, payload) VALUES (?, ?, ?, ?, ?, ?, ?)"
+	insertRelation := "INSERT INTO memo_relation (memo_id, related_memo_id, type) VALUES (?, ?, ?)"
+	if driver == "postgres" {
+		insertSetting = "INSERT INTO system_setting (name, value, description) VALUES ($1, $2, '')"
+		insertMemo = "INSERT INTO memo (id, uid, content, visibility, row_status, pinned, payload) VALUES ($1, $2, $3, $4, $5, $6, $7)"
+		insertRelation = "INSERT INTO memo_relation (memo_id, related_memo_id, type) VALUES ($1, $2, $3)"
+	}
+	_, err = db.ExecContext(ctx, insertSetting, "BASIC", string(basicSetting))
+	require.NoError(t, err)
+	for _, memo := range []struct {
+		id         int32
+		uid        string
+		visibility store.Visibility
+		rowStatus  store.RowStatus
+		pinned     bool
+		payload    string
+	}{
+		{id: 1, uid: "legacy-root", visibility: store.Public, rowStatus: store.Normal, pinned: true, payload: `{"property":{"hasLink":true}}`},
+		{id: 2, uid: "legacy-direct-comment", visibility: store.Public, rowStatus: store.Normal, payload: `{}`},
+		{id: 3, uid: "legacy-nested-comment", visibility: store.Protected, rowStatus: store.Archived, payload: `{"property":{"hasTaskList":true}}`},
+		{id: 4, uid: "legacy-reference-target", visibility: store.Private, rowStatus: store.Normal, payload: `{}`},
+	} {
+		_, err = db.ExecContext(ctx, insertMemo, memo.id, memo.uid, memo.uid, memo.visibility, memo.rowStatus, memo.pinned, memo.payload)
+		require.NoError(t, err)
+	}
+	for _, relation := range []struct {
+		memoID, relatedMemoID int32
+		typeName              store.MemoRelationType
+	}{
+		{memoID: 2, relatedMemoID: 1, typeName: store.MemoRelationComment},
+		{memoID: 3, relatedMemoID: 2, typeName: store.MemoRelationComment},
+		{memoID: 1, relatedMemoID: 4, typeName: store.MemoRelationReference},
+	} {
+		_, err = db.ExecContext(ctx, insertRelation, relation.memoID, relation.relatedMemoID, relation.typeName)
+		require.NoError(t, err)
+	}
+	if driver == "sqlite" {
+		_, err = db.ExecContext(ctx, "CREATE INDEX idx_memo_creator_id ON memo(creator_id)")
+		require.NoError(t, err)
+	}
+	require.NoError(t, db.Close())
+
+	ts := NewTestingStoreWithDSN(ctx, t, driver, dsn)
+	require.NoError(t, ts.Migrate(ctx))
+	defer ts.Close()
+
+	assertMemo := func(id int32, uid string, visibility store.Visibility, rowStatus store.RowStatus, pinned bool, payload string) {
+		t.Helper()
+		var gotUID, content string
+		var gotVisibility store.Visibility
+		var gotRowStatus store.RowStatus
+		var gotPinned bool
+		var gotPayload []byte
+		var spaceID sql.NullInt64
+		query := "SELECT uid, content, visibility, row_status, pinned, payload, space_id FROM memo WHERE id = ?"
+		if driver == "postgres" {
+			query = "SELECT uid, content, visibility, row_status, pinned, payload, space_id FROM memo WHERE id = $1"
+		}
+		require.NoError(t, ts.GetDriver().GetDB().QueryRowContext(ctx, query, id).Scan(
+			&gotUID, &content, &gotVisibility, &gotRowStatus, &gotPinned, &gotPayload, &spaceID,
+		))
+		require.Equal(t, uid, gotUID)
+		require.Equal(t, uid, content)
+		require.Equal(t, visibility, gotVisibility)
+		require.Equal(t, rowStatus, gotRowStatus)
+		require.Equal(t, pinned, gotPinned)
+		require.JSONEq(t, payload, string(gotPayload))
+		require.False(t, spaceID.Valid)
+	}
+	assertMemo(1, "legacy-root", store.Public, store.Normal, true, `{"property":{"hasLink":true}}`)
+	assertMemo(2, "legacy-direct-comment", store.Public, store.Normal, false, `{}`)
+	assertMemo(3, "legacy-nested-comment", store.Protected, store.Archived, false, `{"property":{"hasTaskList":true}}`)
+	assertMemo(4, "legacy-reference-target", store.Private, store.Normal, false, `{}`)
+
+	type relationRow struct {
+		memoID, relatedMemoID int32
+		typeName              store.MemoRelationType
+	}
+	rows, err := ts.GetDriver().GetDB().QueryContext(ctx, "SELECT memo_id, related_memo_id, type FROM memo_relation ORDER BY memo_id, related_memo_id, type")
+	require.NoError(t, err)
+	defer rows.Close()
+	var relations []relationRow
+	for rows.Next() {
+		var relation relationRow
+		require.NoError(t, rows.Scan(&relation.memoID, &relation.relatedMemoID, &relation.typeName))
+		relations = append(relations, relation)
+	}
+	require.NoError(t, rows.Err())
+	require.Equal(t, []relationRow{
+		{memoID: 1, relatedMemoID: 4, typeName: store.MemoRelationReference},
+		{memoID: 2, relatedMemoID: 1, typeName: store.MemoRelationComment},
+		{memoID: 3, relatedMemoID: 2, typeName: store.MemoRelationComment},
+	}, relations)
+
+	requireQueryError(ctx, t, ts.GetDriver().GetDB(), "SELECT parent_memo_id, root_memo_id FROM memo LIMIT 0", "memo-local schema must not add canonical-root columns")
+	requireQueryError(ctx, t, ts.GetDriver().GetDB(), "SELECT row_status FROM space LIMIT 0", "Space has no archived state")
+	if driver == "sqlite" {
+		var indexName string
+		require.NoError(t, ts.GetDriver().GetDB().QueryRowContext(ctx,
+			"SELECT name FROM sqlite_master WHERE type = 'index' AND name = 'idx_memo_creator_id'",
+		).Scan(&indexName))
+		require.Equal(t, "idx_memo_creator_id", indexName, "memo rebuild must preserve the creator lookup index")
+	}
 }
 
 // TestMigrationMultipleReRuns verifies that migration is idempotent
@@ -834,7 +997,21 @@ func legacySchemaFixture(driver string) string {
 			);
 			CREATE TABLE memo (
 				id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-				uid VARCHAR(256) NOT NULL UNIQUE
+				uid VARCHAR(256) NOT NULL UNIQUE,
+				creator_id INT NOT NULL DEFAULT 0,
+				created_ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+				updated_ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+				row_status VARCHAR(256) NOT NULL DEFAULT 'NORMAL',
+				content TEXT NOT NULL DEFAULT (''),
+				visibility VARCHAR(256) NOT NULL DEFAULT 'PRIVATE',
+				pinned BOOLEAN NOT NULL DEFAULT FALSE,
+				payload JSON NOT NULL DEFAULT (JSON_OBJECT())
+			);
+			CREATE TABLE memo_relation (
+				memo_id INT NOT NULL,
+				related_memo_id INT NOT NULL,
+				type VARCHAR(256) NOT NULL,
+				UNIQUE(memo_id, related_memo_id, type)
 			);
 			CREATE TABLE reaction (
 				id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -887,7 +1064,21 @@ func legacySchemaFixture(driver string) string {
 			);
 			CREATE TABLE memo (
 				id SERIAL PRIMARY KEY,
-				uid TEXT NOT NULL UNIQUE
+				uid TEXT NOT NULL UNIQUE,
+				creator_id INTEGER NOT NULL DEFAULT 0,
+				created_ts BIGINT NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
+				updated_ts BIGINT NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
+				row_status TEXT NOT NULL DEFAULT 'NORMAL',
+				content TEXT NOT NULL DEFAULT '',
+				visibility TEXT NOT NULL DEFAULT 'PRIVATE',
+				pinned BOOLEAN NOT NULL DEFAULT FALSE,
+				payload JSONB NOT NULL DEFAULT '{}'
+			);
+			CREATE TABLE memo_relation (
+				memo_id INTEGER NOT NULL,
+				related_memo_id INTEGER NOT NULL,
+				type TEXT NOT NULL,
+				UNIQUE(memo_id, related_memo_id, type)
 			);
 			CREATE TABLE reaction (
 				id SERIAL PRIMARY KEY,
@@ -942,7 +1133,21 @@ func legacySchemaFixture(driver string) string {
 			);
 			CREATE TABLE memo (
 				id INTEGER PRIMARY KEY AUTOINCREMENT,
-				uid TEXT NOT NULL UNIQUE
+				uid TEXT NOT NULL UNIQUE,
+				creator_id INTEGER NOT NULL DEFAULT 0,
+				created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
+				updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
+				row_status TEXT NOT NULL CHECK (row_status IN ('NORMAL', 'ARCHIVED')) DEFAULT 'NORMAL',
+				content TEXT NOT NULL DEFAULT '',
+				visibility TEXT NOT NULL CHECK (visibility IN ('PUBLIC', 'PROTECTED', 'PRIVATE')) DEFAULT 'PRIVATE',
+				pinned INTEGER NOT NULL CHECK (pinned IN (0, 1)) DEFAULT 0,
+				payload TEXT NOT NULL DEFAULT '{}'
+			);
+			CREATE TABLE memo_relation (
+				memo_id INTEGER NOT NULL,
+				related_memo_id INTEGER NOT NULL,
+				type TEXT NOT NULL,
+				UNIQUE(memo_id, related_memo_id, type)
 			);
 			CREATE TABLE reaction (
 				id INTEGER PRIMARY KEY AUTOINCREMENT,

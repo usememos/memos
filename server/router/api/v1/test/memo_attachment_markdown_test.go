@@ -236,7 +236,7 @@ func TestMemoManagedAttachmentImages(t *testing.T) {
 		require.Nil(t, stored)
 	})
 
-	t.Run("local deletion failure leaves a detached row that can be retried", func(t *testing.T) {
+	t.Run("local deletion failure reports committed row deletion", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 		user, err := ts.CreateRegularUser(ctx, "managed-delete-retry")
@@ -260,24 +260,21 @@ func TestMemoManagedAttachmentImages(t *testing.T) {
 			"LOCAL", localReference, storedImage.ID,
 		)
 		require.NoError(t, err)
-
 		_, err = ts.Service.UpdateMemo(store.WithDeleteAttachmentStorageFailpoint(userCtx), &v1pb.UpdateMemoRequest{
 			Memo:       &v1pb.Memo{Name: memo.Name, Content: "attachment removed", Attachments: []*v1pb.Attachment{}},
 			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"content", "attachments"}},
 		})
 		require.Equal(t, codes.Internal, status.Code(err))
+		require.ErrorContains(t, err, "memo was updated but attachment storage cleanup failed")
+		require.ErrorContains(t, err, store.ErrDeleteAttachmentStorageFailpoint.Error())
 		storedMemo, getErr := ts.Service.GetMemo(userCtx, &v1pb.GetMemoRequest{Name: memo.Name})
 		require.NoError(t, getErr)
 		require.Equal(t, "attachment removed", storedMemo.Content)
 		storedImage, getErr = ts.Store.GetAttachment(ctx, &store.FindAttachment{UID: &uid})
 		require.NoError(t, getErr)
-		require.NotNil(t, storedImage)
-		require.Nil(t, storedImage.MemoID)
-
-		_, err = ts.Service.DeleteAttachment(userCtx, &v1pb.DeleteAttachmentRequest{Name: image.Name})
-		require.NoError(t, err)
+		require.Nil(t, storedImage)
 		_, statErr := os.Stat(localPath)
-		require.ErrorIs(t, statErr, os.ErrNotExist)
+		require.NoError(t, statErr)
 	})
 
 	t.Run("failed content validation does not mutate the memo", func(t *testing.T) {

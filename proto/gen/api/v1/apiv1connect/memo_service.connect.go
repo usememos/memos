@@ -94,16 +94,18 @@ const (
 // MemoServiceClient is a client for the memos.api.v1.MemoService service.
 type MemoServiceClient interface {
 	// CreateMemo creates a memo. The request body is a Memo; set its content
-	// (Markdown) and visibility (PRIVATE | PROTECTED | PUBLIC, default PRIVATE).
+	// (Markdown) and visibility (PRIVATE | PROTECTED | PUBLIC | SPACE,
+	// default PRIVATE).
 	// The memo is owned by the authenticated user; requires authentication.
 	CreateMemo(context.Context, *connect.Request[v1.CreateMemoRequest]) (*connect.Response[v1.Memo], error)
-	// ListMemos lists memos with pagination and filter.
+	// ListMemos lists readable non-comment memos with pagination and filter.
 	ListMemos(context.Context, *connect.Request[v1.ListMemosRequest]) (*connect.Response[v1.ListMemosResponse], error)
 	// GetMemo gets a memo.
 	GetMemo(context.Context, *connect.Request[v1.GetMemoRequest]) (*connect.Response[v1.Memo], error)
 	// UpdateMemo updates a memo.
 	UpdateMemo(context.Context, *connect.Request[v1.UpdateMemoRequest]) (*connect.Response[v1.Memo], error)
-	// DeleteMemo deletes a memo.
+	// DeleteMemo deletes only the named memo and its owned resources. It removes
+	// incident relations but never deletes another memo.
 	DeleteMemo(context.Context, *connect.Request[v1.DeleteMemoRequest]) (*connect.Response[emptypb.Empty], error)
 	// SetMemoAttachments replaces the full set of attachments on a memo with the
 	// provided list (not an append). Pass the complete desired set; an empty list
@@ -111,13 +113,15 @@ type MemoServiceClient interface {
 	SetMemoAttachments(context.Context, *connect.Request[v1.SetMemoAttachmentsRequest]) (*connect.Response[emptypb.Empty], error)
 	// ListMemoAttachments lists attachments for a memo.
 	ListMemoAttachments(context.Context, *connect.Request[v1.ListMemoAttachmentsRequest]) (*connect.Response[v1.ListMemoAttachmentsResponse], error)
-	// SetMemoRelations replaces the full set of relations on a memo with the
-	// provided list (not an append). Pass the complete desired set; an empty list
-	// clears all relations. Idempotent.
+	// SetMemoRelations replaces the full set of mutable REFERENCE relations on a
+	// memo. COMMENT relations are immutable creation context and are rejected by
+	// this RPC. An empty list clears references without changing COMMENT.
 	SetMemoRelations(context.Context, *connect.Request[v1.SetMemoRelationsRequest]) (*connect.Response[emptypb.Empty], error)
 	// ListMemoRelations lists relations for a memo.
 	ListMemoRelations(context.Context, *connect.Request[v1.ListMemoRelationsRequest]) (*connect.Response[v1.ListMemoRelationsResponse], error)
-	// CreateMemoComment creates a comment for a memo.
+	// CreateMemoComment atomically creates an independent memo plus one immutable
+	// COMMENT context relation to the named memo. The new memo keeps its own
+	// placement, visibility, authorship, and lifecycle.
 	CreateMemoComment(context.Context, *connect.Request[v1.CreateMemoCommentRequest]) (*connect.Response[v1.Memo], error)
 	// ListMemoComments lists comments for a memo.
 	ListMemoComments(context.Context, *connect.Request[v1.ListMemoCommentsRequest]) (*connect.Response[v1.ListMemoCommentsResponse], error)
@@ -403,16 +407,18 @@ func (c *memoServiceClient) BatchGetLinkMetadata(ctx context.Context, req *conne
 // MemoServiceHandler is an implementation of the memos.api.v1.MemoService service.
 type MemoServiceHandler interface {
 	// CreateMemo creates a memo. The request body is a Memo; set its content
-	// (Markdown) and visibility (PRIVATE | PROTECTED | PUBLIC, default PRIVATE).
+	// (Markdown) and visibility (PRIVATE | PROTECTED | PUBLIC | SPACE,
+	// default PRIVATE).
 	// The memo is owned by the authenticated user; requires authentication.
 	CreateMemo(context.Context, *connect.Request[v1.CreateMemoRequest]) (*connect.Response[v1.Memo], error)
-	// ListMemos lists memos with pagination and filter.
+	// ListMemos lists readable non-comment memos with pagination and filter.
 	ListMemos(context.Context, *connect.Request[v1.ListMemosRequest]) (*connect.Response[v1.ListMemosResponse], error)
 	// GetMemo gets a memo.
 	GetMemo(context.Context, *connect.Request[v1.GetMemoRequest]) (*connect.Response[v1.Memo], error)
 	// UpdateMemo updates a memo.
 	UpdateMemo(context.Context, *connect.Request[v1.UpdateMemoRequest]) (*connect.Response[v1.Memo], error)
-	// DeleteMemo deletes a memo.
+	// DeleteMemo deletes only the named memo and its owned resources. It removes
+	// incident relations but never deletes another memo.
 	DeleteMemo(context.Context, *connect.Request[v1.DeleteMemoRequest]) (*connect.Response[emptypb.Empty], error)
 	// SetMemoAttachments replaces the full set of attachments on a memo with the
 	// provided list (not an append). Pass the complete desired set; an empty list
@@ -420,13 +426,15 @@ type MemoServiceHandler interface {
 	SetMemoAttachments(context.Context, *connect.Request[v1.SetMemoAttachmentsRequest]) (*connect.Response[emptypb.Empty], error)
 	// ListMemoAttachments lists attachments for a memo.
 	ListMemoAttachments(context.Context, *connect.Request[v1.ListMemoAttachmentsRequest]) (*connect.Response[v1.ListMemoAttachmentsResponse], error)
-	// SetMemoRelations replaces the full set of relations on a memo with the
-	// provided list (not an append). Pass the complete desired set; an empty list
-	// clears all relations. Idempotent.
+	// SetMemoRelations replaces the full set of mutable REFERENCE relations on a
+	// memo. COMMENT relations are immutable creation context and are rejected by
+	// this RPC. An empty list clears references without changing COMMENT.
 	SetMemoRelations(context.Context, *connect.Request[v1.SetMemoRelationsRequest]) (*connect.Response[emptypb.Empty], error)
 	// ListMemoRelations lists relations for a memo.
 	ListMemoRelations(context.Context, *connect.Request[v1.ListMemoRelationsRequest]) (*connect.Response[v1.ListMemoRelationsResponse], error)
-	// CreateMemoComment creates a comment for a memo.
+	// CreateMemoComment atomically creates an independent memo plus one immutable
+	// COMMENT context relation to the named memo. The new memo keeps its own
+	// placement, visibility, authorship, and lifecycle.
 	CreateMemoComment(context.Context, *connect.Request[v1.CreateMemoCommentRequest]) (*connect.Response[v1.Memo], error)
 	// ListMemoComments lists comments for a memo.
 	ListMemoComments(context.Context, *connect.Request[v1.ListMemoCommentsRequest]) (*connect.Response[v1.ListMemoCommentsResponse], error)

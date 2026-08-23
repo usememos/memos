@@ -11,6 +11,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	"github.com/usememos/memos/internal/testutil"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
@@ -142,6 +143,109 @@ func TestCreateAttachment(t *testing.T) {
 		require.Equal(t, []byte("first-image"), firstBlob)
 		require.Equal(t, []byte("second-image"), secondBlob)
 	})
+}
+
+func TestCreateAttachmentCleansSavedBlobWhenStoreCreateFails(t *testing.T) {
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+	ctx := context.Background()
+
+	user, err := ts.CreateRegularUser(ctx, "attachment-create-compensation")
+	require.NoError(t, err)
+	userCtx := ts.CreateUserContext(ctx, user.ID)
+	_, err = ts.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_STORAGE,
+		Value: &storepb.InstanceSetting_StorageSetting{
+			StorageSetting: &storepb.InstanceStorageSetting{
+				StorageType:      storepb.InstanceStorageSetting_LOCAL,
+				FilepathTemplate: "assets/{filename}",
+			},
+		},
+	})
+	require.NoError(t, err)
+
+	const attachmentID = "attachment-create-failure"
+	_, err = ts.Service.CreateAttachment(userCtx, &v1pb.CreateAttachmentRequest{
+		AttachmentId: attachmentID,
+		Attachment: &v1pb.Attachment{
+			Filename: "kept.txt",
+			Type:     "text/plain",
+			Content:  []byte("kept"),
+		},
+	})
+	require.NoError(t, err)
+	keptPath := filepath.Join(ts.Profile.Data, "assets", "kept.txt")
+	require.FileExists(t, keptPath)
+
+	_, err = ts.Service.CreateAttachment(userCtx, &v1pb.CreateAttachmentRequest{
+		AttachmentId: attachmentID,
+		Attachment: &v1pb.Attachment{
+			Filename: "orphan.txt",
+			Type:     "text/plain",
+			Content:  []byte("must be removed"),
+		},
+	})
+	require.Equal(t, codes.Internal, status.Code(err))
+	require.Contains(t, err.Error(), "failed to create attachment")
+	_, statErr := os.Stat(filepath.Join(ts.Profile.Data, "assets", "orphan.txt"))
+	require.ErrorIs(t, statErr, os.ErrNotExist)
+	kept, err := os.ReadFile(keptPath)
+	require.NoError(t, err)
+	require.Equal(t, []byte("kept"), kept)
+
+	memo, err := ts.Service.CreateMemo(userCtx, &v1pb.CreateMemoRequest{Memo: &v1pb.Memo{Content: "attachment compensation policy"}})
+	require.NoError(t, err)
+	policyRejectionPath := filepath.Join(ts.Profile.Data, "assets", "policy-rejected.txt")
+	_, err = ts.Service.CreateAttachment(store.WithCreateAttachmentPolicyFailpoint(userCtx), &v1pb.CreateAttachmentRequest{
+		AttachmentId: "attachment-policy-rejection",
+		Attachment: &v1pb.Attachment{
+			Filename: "policy-rejected.txt",
+			Type:     "text/plain",
+			Content:  []byte("must be removed"),
+			Memo:     &memo.Name,
+		},
+	})
+	require.Equal(t, codes.PermissionDenied, status.Code(err))
+	_, statErr = os.Stat(policyRejectionPath)
+	require.ErrorIs(t, statErr, os.ErrNotExist)
+	policyRejectionUID := "attachment-policy-rejection"
+	persistedPolicyRejection, err := ts.Store.GetAttachment(ctx, &store.FindAttachment{UID: &policyRejectionUID})
+	require.NoError(t, err)
+	require.Nil(t, persistedPolicyRejection)
+
+	postCommitPath := filepath.Join(ts.Profile.Data, "assets", "post-commit.txt")
+	_, err = ts.Service.CreateAttachment(store.WithCreateAttachmentPostCommitFailpoint(userCtx), &v1pb.CreateAttachmentRequest{
+		AttachmentId: "attachment-post-commit",
+		Attachment: &v1pb.Attachment{
+			Filename: "post-commit.txt",
+			Type:     "text/plain",
+			Content:  []byte("must be preserved"),
+		},
+	})
+	require.Equal(t, codes.Internal, status.Code(err))
+	require.Contains(t, err.Error(), store.ErrCreateAttachmentPostCommitFailpoint.Error())
+	require.FileExists(t, postCommitPath, "a matching persisted row must suppress compensation")
+	postCommitUID := "attachment-post-commit"
+	persistedPostCommit, err := ts.Store.GetAttachment(ctx, &store.FindAttachment{UID: &postCommitUID})
+	require.NoError(t, err)
+	require.NotNil(t, persistedPostCommit)
+	require.Equal(t, postCommitPath, filepath.FromSlash(persistedPostCommit.Reference))
+
+	cleanupFailurePath := filepath.Join(ts.Profile.Data, "assets", "cleanup-failure.txt")
+	t.Cleanup(func() { _ = os.Remove(cleanupFailurePath) })
+	cleanupFailureCtx := store.WithDeleteAttachmentStorageFailpoint(store.WithCreateAttachmentPolicyFailpoint(userCtx))
+	_, err = ts.Service.CreateAttachment(cleanupFailureCtx, &v1pb.CreateAttachmentRequest{
+		AttachmentId: "attachment-cleanup-failure",
+		Attachment: &v1pb.Attachment{
+			Filename: "cleanup-failure.txt",
+			Type:     "text/plain",
+			Content:  []byte("cleanup failure"),
+			Memo:     &memo.Name,
+		},
+	})
+	require.Equal(t, codes.PermissionDenied, status.Code(err))
+	require.NotContains(t, err.Error(), store.ErrDeleteAttachmentStorageFailpoint.Error())
+	require.FileExists(t, cleanupFailurePath, "the failpoint must prove compensation was attempted")
 }
 
 func TestAttachmentMetadataFollowsMemoVisibility(t *testing.T) {
@@ -286,6 +390,94 @@ func TestCreateAttachmentMemoPermission(t *testing.T) {
 		require.NoError(t, err)
 		require.Empty(t, attachments)
 	})
+}
+
+func TestLinkedAttachmentMutationsRevalidateMemoSpaceMembership(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	owner, err := ts.CreateRegularUser(ctx, "attachment-lifecycle-owner")
+	require.NoError(t, err)
+	member, err := ts.CreateRegularUser(ctx, "attachment-lifecycle-member")
+	require.NoError(t, err)
+	memberCtx := ts.CreateUserContext(ctx, member.ID)
+	space, err := ts.Store.CreateSpace(ctx, &store.Space{UID: "attachment-lifecycle-space", Title: "Attachment Lifecycle"}, owner.ID)
+	require.NoError(t, err)
+	_, err = ts.Store.CreateSpaceMember(ctx, &store.SpaceMember{
+		SpaceID: space.ID, UserID: member.ID, Role: store.SpaceMemberRoleUser,
+	}, owner.ID)
+	require.NoError(t, err)
+	root, err := ts.Store.CreateMemo(ctx, &store.Memo{
+		UID: "attachment-lifecycle-root", CreatorID: member.ID, Content: "root", Visibility: store.SpaceAudience, SpaceID: &space.ID,
+	})
+	require.NoError(t, err)
+	comment, err := ts.Store.CreateMemoComment(ctx, &store.Memo{
+		UID: "attachment-lifecycle-comment", CreatorID: member.ID, Content: "comment", Visibility: store.SpaceAudience, SpaceID: &space.ID,
+	}, root.ID, member.ID)
+	require.NoError(t, err)
+	memoName := apiv1.MemoNamePrefix + comment.UID
+
+	createLinked := func(filename string) *v1pb.Attachment {
+		t.Helper()
+		attachment, createErr := ts.Service.CreateAttachment(memberCtx, &v1pb.CreateAttachmentRequest{Attachment: &v1pb.Attachment{
+			Filename: filename,
+			Type:     "text/plain",
+			Content:  []byte(filename),
+			Memo:     &memoName,
+		}})
+		require.NoError(t, createErr)
+		return attachment
+	}
+	updateTarget := createLinked("update-before-revoke.txt")
+	deleteTarget := createLinked("delete-after-revoke.txt")
+	batchTarget := createLinked("batch-after-revoke.txt")
+
+	_, err = ts.Service.UpdateAttachment(memberCtx, &v1pb.UpdateAttachmentRequest{
+		Attachment: &v1pb.Attachment{Name: updateTarget.Name, Filename: "updated-before-revoke.txt"},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"filename"}},
+	})
+	require.NoError(t, err)
+	require.NoError(t, ts.Store.DeleteSpaceMember(ctx, &store.DeleteSpaceMember{SpaceID: space.ID, UserID: member.ID}, owner.ID))
+
+	_, err = ts.Service.CreateAttachment(memberCtx, &v1pb.CreateAttachmentRequest{Attachment: &v1pb.Attachment{
+		Filename: "create-after-revoke.txt", Type: "text/plain", Content: []byte("blocked"), Memo: &memoName,
+	}})
+	require.Equal(t, codes.PermissionDenied, status.Code(err))
+	_, err = ts.Service.UpdateAttachment(memberCtx, &v1pb.UpdateAttachmentRequest{
+		Attachment: &v1pb.Attachment{Name: updateTarget.Name, Filename: "must-not-rename.txt"},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"filename"}},
+	})
+	require.Equal(t, codes.PermissionDenied, status.Code(err))
+	_, err = ts.Service.DeleteAttachment(memberCtx, &v1pb.DeleteAttachmentRequest{Name: deleteTarget.Name})
+	require.Equal(t, codes.PermissionDenied, status.Code(err))
+	_, err = ts.Service.BatchDeleteAttachments(memberCtx, &v1pb.BatchDeleteAttachmentsRequest{Names: []string{batchTarget.Name}})
+	require.Equal(t, codes.PermissionDenied, status.Code(err))
+
+	for _, attachment := range []*v1pb.Attachment{updateTarget, deleteTarget, batchTarget} {
+		uid, extractErr := apiv1.ExtractAttachmentUIDFromName(attachment.Name)
+		require.NoError(t, extractErr)
+		stored, getErr := ts.Store.GetAttachment(ctx, &store.FindAttachment{UID: &uid})
+		require.NoError(t, getErr)
+		require.NotNil(t, stored)
+		require.NotNil(t, stored.MemoID)
+		require.Equal(t, comment.ID, *stored.MemoID)
+	}
+	updateUID, err := apiv1.ExtractAttachmentUIDFromName(updateTarget.Name)
+	require.NoError(t, err)
+	storedUpdate, err := ts.Store.GetAttachment(ctx, &store.FindAttachment{UID: &updateUID})
+	require.NoError(t, err)
+	require.Equal(t, "updated-before-revoke.txt", storedUpdate.Filename)
+
+	_, err = ts.Store.CreateSpaceMember(ctx, &store.SpaceMember{
+		SpaceID: space.ID, UserID: member.ID, Role: store.SpaceMemberRoleUser,
+	}, owner.ID)
+	require.NoError(t, err)
+	_, err = ts.Service.UpdateAttachment(memberCtx, &v1pb.UpdateAttachmentRequest{
+		Attachment: &v1pb.Attachment{Name: updateTarget.Name, Filename: "renamed-after-rejoin.txt"},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"filename"}},
+	})
+	require.NoError(t, err)
 }
 
 func memoIDFromName(ctx context.Context, t *testing.T, ts *TestService, name string) int32 {
@@ -519,7 +711,7 @@ func TestBatchDeleteAttachments(t *testing.T) {
 	})
 }
 
-func TestBatchDeleteAttachmentsStorageFailureIsRetriable(t *testing.T) {
+func TestBatchDeleteAttachmentsReportsPostCommitStorageCleanupFailure(t *testing.T) {
 	ts := NewTestService(t)
 	defer ts.Cleanup()
 	ctx := context.Background()
@@ -564,23 +756,21 @@ func TestBatchDeleteAttachmentsStorageFailureIsRetriable(t *testing.T) {
 	names := []string{attachments[0].Name, attachments[1].Name}
 	_, err = ts.Service.BatchDeleteAttachments(store.WithDeleteAttachmentStorageFailpoint(userCtx), &v1pb.BatchDeleteAttachmentsRequest{Names: names})
 	require.Equal(t, codes.Internal, status.Code(err))
+	require.ErrorContains(t, err, "attachments were deleted but storage cleanup failed")
+	require.ErrorContains(t, err, store.ErrDeleteAttachmentStorageFailpoint.Error())
 	for _, attachment := range attachments {
 		uid, err := apiv1.ExtractAttachmentUIDFromName(attachment.Name)
 		require.NoError(t, err)
 		stored, err := ts.Store.GetAttachment(ctx, &store.FindAttachment{UID: &uid})
 		require.NoError(t, err)
-		require.NotNil(t, stored)
-		require.Nil(t, stored.MemoID)
+		require.Nil(t, stored)
 	}
 	listed, err := ts.Service.ListMemoAttachments(userCtx, &v1pb.ListMemoAttachmentsRequest{Name: memo.Name})
 	require.NoError(t, err)
 	require.Empty(t, listed.Attachments)
-
-	_, err = ts.Service.BatchDeleteAttachments(userCtx, &v1pb.BatchDeleteAttachmentsRequest{Names: names})
-	require.NoError(t, err)
 	for _, path := range localPaths {
 		_, err := os.Stat(path)
-		require.ErrorIs(t, err, os.ErrNotExist)
+		require.NoError(t, err, "storage cleanup failure happens after the database deletion commits")
 	}
 }
 

@@ -65,9 +65,7 @@ func (*MetadataInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc 
 		// Prevent browser caching of API responses to avoid stale data issues
 		// See: https://github.com/usememos/memos/issues/5470
 		if !isNilAnyResponse(resp) && resp.Header() != nil {
-			resp.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
-			resp.Header().Set("Pragma", "no-cache")
-			resp.Header().Set("Expires", "0")
+			setAPIResponseNoStoreHeaders(resp.Header())
 		}
 
 		return resp, err

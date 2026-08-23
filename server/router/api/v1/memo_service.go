@@ -3,9 +3,7 @@ package v1
 import (
 	"context"
 	stderrors "errors"
-	"fmt"
 	"log/slog"
-	"strings"
 	"time"
 
 	"github.com/pkg/errors"
@@ -16,72 +14,11 @@ import (
 
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/server/access"
 	"github.com/usememos/memos/server/runner/memopayload"
 	"github.com/usememos/memos/store"
 )
 
-// suppressSSEKey is a context key used to suppress the SSE broadcast from
-// CreateMemo when it is called internally (e.g., from CreateMemoComment).
-type suppressSSEKey struct{}
-
 const maxBatchGetLinkMetadata = 10
-
-func withSuppressSSE(ctx context.Context) context.Context {
-	return context.WithValue(ctx, suppressSSEKey{}, true)
-}
-
-func isSSESuppressed(ctx context.Context) bool {
-	v, ok := ctx.Value(suppressSSEKey{}).(bool)
-	return ok && v
-}
-
-func (s *APIV1Service) checkMemoReadAccess(ctx context.Context, memo *store.Memo) error {
-	return s.checkMemoReadAccessWithParent(ctx, memo, nil)
-}
-
-func (s *APIV1Service) checkMemoAndParentReadAccess(ctx context.Context, memo *store.Memo) error {
-	var parent *store.Memo
-	if memo != nil && memo.ParentUID != nil {
-		var err error
-		parent, err = s.Store.GetMemo(ctx, &store.FindMemo{UID: memo.ParentUID})
-		if err != nil {
-			return status.Errorf(codes.Internal, "failed to get parent memo")
-		}
-		if parent == nil {
-			return status.Errorf(codes.NotFound, "memo not found")
-		}
-	}
-	return s.checkMemoReadAccessWithParent(ctx, memo, parent)
-}
-
-func (s *APIV1Service) checkMemoReadAccessWithParent(ctx context.Context, memo, parent *store.Memo) error {
-	user, err := s.fetchCurrentUser(ctx)
-	if err != nil {
-		return status.Errorf(codes.Internal, "failed to get user")
-	}
-	allowAnonymous := false
-	if user == nil {
-		allowAnonymous, err = s.Store.AllowsAnonymousAccess(ctx)
-		if err != nil {
-			return status.Errorf(codes.Internal, "failed to resolve instance access policy")
-		}
-	}
-	return memoAccessDecisionError(access.CheckMemoRead(memo, parent, user, allowAnonymous, nil))
-}
-
-func memoAccessDecisionError(decision access.MemoReadDecision) error {
-	switch decision.Denial {
-	case access.MemoReadDenialNone:
-		return nil
-	case access.MemoReadDenialNotFound:
-		return status.Errorf(codes.NotFound, "memo not found")
-	case access.MemoReadDenialUnauthenticated:
-		return status.Errorf(codes.Unauthenticated, "user not authenticated")
-	default:
-		return status.Errorf(codes.PermissionDenied, "permission denied")
-	}
-}
 
 func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoRequest) (*v1pb.Memo, error) {
 	user, err := s.fetchCurrentUser(ctx)
@@ -100,78 +37,21 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 		return nil, err
 	}
 
-	create := &store.Memo{
-		UID:        memoUID,
-		CreatorID:  user.ID,
-		Content:    request.Memo.Content,
-		Visibility: convertVisibilityToStore(request.Memo.Visibility),
-	}
-
-	// Set custom timestamps if provided in the request.
-	if request.Memo.CreateTime != nil && request.Memo.CreateTime.IsValid() {
-		createdTs := request.Memo.CreateTime.AsTime().Unix()
-		create.CreatedTs = createdTs
-	}
-	if request.Memo.UpdateTime != nil && request.Memo.UpdateTime.IsValid() {
-		updatedTs := request.Memo.UpdateTime.AsTime().Unix()
-		create.UpdatedTs = updatedTs
-	}
-
-	contentLengthLimit, err := s.getContentLengthLimit(ctx)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get content length limit")
-	}
-	if len(create.Content) > contentLengthLimit {
-		return nil, status.Errorf(codes.InvalidArgument, "content too long (max %d characters)", contentLengthLimit)
-	}
-	if err := memopayload.RebuildMemoPayload(ctx, create, s.MarkdownService); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to rebuild memo payload: %v", err)
-	}
-	if request.Memo.Location != nil {
-		create.Payload.Location = convertLocationToStore(request.Memo.Location)
-	}
-
-	preparedAttachments, err := s.prepareMemoAttachments(ctx, user, create, request.Memo.Attachments)
-	if err != nil {
-		return nil, err
-	}
-	requiredAttachmentIDs, err := s.resolveMemoAttachmentReferences(create.Content, preparedAttachments.normalized)
-	if err != nil {
-		return nil, err
-	}
-	preparedRelations, err := s.prepareMemoRelations(ctx, create, request.Memo.Relations)
+	prepared, err := s.prepareMemoCreate(ctx, user, request.Memo, memoUID)
 	if err != nil {
 		return nil, err
 	}
 
-	memo, err := s.Store.CreateMemo(ctx, create)
-	if err != nil {
-		// Check for unique constraint violation (AIP-133 compliance)
-		errMsg := err.Error()
-		if strings.Contains(errMsg, "UNIQUE constraint failed") ||
-			strings.Contains(errMsg, "duplicate key") ||
-			strings.Contains(errMsg, "Duplicate entry") {
-			return nil, status.Errorf(codes.AlreadyExists, "memo with ID %q already exists", memoUID)
-		}
-		return nil, err
+	if err := s.createMemoWithMutation(ctx, user, prepared.memo, nil, prepared.attachments, prepared.requiredAttachmentIDs, prepared.referenceRelations); err != nil {
+		return nil, mapMemoCreateError(err, memoUID, "failed to create memo")
 	}
+	memo := prepared.memo
 
-	attachments := []*store.Attachment{}
-	if len(preparedAttachments.normalized) > 0 || len(preparedRelations) > 0 {
-		var relations *[]*store.MemoRelation
-		if len(preparedRelations) > 0 {
-			relations = &preparedRelations
-		}
-		if err := s.applyMemoMutation(ctx, memo, preparedAttachments, nil, requiredAttachmentIDs, relations); err != nil {
-			return nil, err
-		}
-		a, err := s.Store.ListAttachments(ctx, &store.FindAttachment{
-			MemoID: &memo.ID,
-		})
-		if err != nil {
-			return nil, errors.Wrap(err, "failed to get memo attachments")
-		}
-		attachments = a
+	attachments, err := s.Store.ListAttachments(ctx, &store.FindAttachment{
+		MemoID: &memo.ID,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get memo attachments")
 	}
 
 	relations, err := s.loadMemoRelations(ctx, memo)
@@ -187,19 +67,9 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 		slog.Warn("Failed to dispatch memo created webhook", slog.Any("err", err))
 	}
 
-	// Broadcast live refresh event (skipped when called from CreateMemoComment).
-	if !isSSESuppressed(ctx) {
-		s.SSEHub.Broadcast(&SSEEvent{
-			Type:       SSEEventMemoCreated,
-			Name:       memoMessage.Name,
-			Visibility: memo.Visibility,
-			CreatorID:  resolveSSECreatorID(memo, nil),
-		})
-	}
+	s.SSEHub.publishMemoChanged()
 
-	if !isMentionNotificationSuppressed(ctx) {
-		s.dispatchMemoMentionNotificationsBestEffort(ctx, memo, nil, "")
-	}
+	s.dispatchMemoMentionNotificationsBestEffort(ctx, memo, nil, "")
 
 	return memoMessage, nil
 }
@@ -209,17 +79,34 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 		// Exclude comments by default.
 		ExcludeComments: true,
 	}
-	currentUser, err := s.fetchCurrentUser(ctx)
+	accessScope, currentUser, err := s.resolveMemoAccessScope(ctx)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get user")
+		return nil, status.Errorf(codes.Internal, "%v", err)
 	}
-	if currentUser == nil {
-		allowAnonymous, err := s.Store.AllowsAnonymousAccess(ctx)
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to resolve instance access policy")
-		}
-		if !allowAnonymous {
-			return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	// An anonymous caller may only list at all when the instance permits it.
+	if currentUser == nil && !accessScope.AllowPublic {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
+	memoFind.Access = accessScope
+
+	if request.Scope != nil {
+		switch scope := request.Scope.(type) {
+		case *v1pb.ListMemosRequest_Space:
+			if currentUser == nil {
+				return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+			}
+			space, err := s.resolveWritableSpaceByName(ctx, scope.Space, currentUser.ID)
+			if err != nil {
+				return nil, err
+			}
+			memoFind.SpaceID = &space.ID
+		case *v1pb.ListMemosRequest_Unassigned:
+			if !scope.Unassigned {
+				return nil, status.Errorf(codes.InvalidArgument, "unassigned scope must be true")
+			}
+			memoFind.Unassigned = true
+		default:
+			return nil, status.Errorf(codes.InvalidArgument, "unsupported memo scope")
 		}
 	}
 
@@ -251,17 +138,6 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 			return nil, status.Errorf(codes.InvalidArgument, "invalid filter: %v", err)
 		}
 		memoFind.Filters = append(memoFind.Filters, request.Filter)
-	}
-
-	if currentUser == nil {
-		memoFind.VisibilityList = []store.Visibility{store.Public}
-	} else {
-		if memoFind.CreatorID == nil {
-			filter := fmt.Sprintf(`creator_id == %d || visibility in ["PUBLIC", "PROTECTED"]`, currentUser.ID)
-			memoFind.Filters = append(memoFind.Filters, filter)
-		} else if *memoFind.CreatorID != currentUser.ID {
-			memoFind.VisibilityList = []store.Visibility{store.Public, store.Protected}
-		}
 	}
 
 	var limit, offset int
@@ -388,7 +264,7 @@ func (s *APIV1Service) GetMemo(ctx context.Context, request *v1pb.GetMemoRequest
 		return nil, status.Errorf(codes.NotFound, "memo not found")
 	}
 
-	if err := s.checkMemoAndParentReadAccess(ctx, memo); err != nil {
+	if err := s.checkMemoReadAccess(ctx, memo); err != nil {
 		return nil, err
 	}
 
@@ -416,16 +292,6 @@ func (s *APIV1Service) GetMemo(ctx context.Context, request *v1pb.GetMemoRequest
 			return nil, status.Errorf(codes.NotFound, "memo creator not found")
 		}
 		return nil, errors.Wrap(err, "failed to convert memo")
-	}
-	if memo.ParentUID != nil {
-		parent, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: memo.ParentUID})
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to get parent memo")
-		}
-		if parent == nil {
-			return nil, status.Errorf(codes.NotFound, "memo not found")
-		}
-		memoMessage.Visibility = convertVisibilityFromStore(parent.Visibility)
 	}
 	return memoMessage, nil
 }
@@ -458,14 +324,64 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 	if user == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
-	// Only the creator or admin can update the memo.
-	if memo.CreatorID != user.ID && !isSuperUser(user) {
+	// Application administrators are not implicit memo collaborators. Ordinary
+	// content updates remain author-controlled.
+	if memo.CreatorID != user.ID {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
 	update := &store.UpdateMemo{
 		ID: memo.ID,
 	}
+	updatePaths := make(map[string]bool, len(request.UpdateMask.Paths))
+	for _, path := range request.UpdateMask.Paths {
+		updatePaths[path] = true
+	}
+	lifecycleOnly := updatePaths["space"]
+	for path := range updatePaths {
+		if path != "space" && path != "visibility" {
+			lifecycleOnly = false
+		}
+	}
+	nextSpaceID := memo.SpaceID
+	if updatePaths["space"] {
+		if request.Memo.Space == nil || request.Memo.GetSpace() == "" {
+			nextSpaceID = nil
+			update.ClearSpace = true
+		} else {
+			target, err := s.resolveWritableSpaceByName(ctx, request.Memo.GetSpace(), user.ID)
+			if err != nil {
+				return nil, err
+			}
+			nextSpaceID = &target.ID
+			update.SpaceID = &target.ID
+			update.ClearSpace = false
+		}
+	}
+
+	nextVisibility := memo.Visibility
+	if updatePaths["visibility"] {
+		nextVisibility, err = validateUpdateMemoVisibility(request.Memo.Visibility)
+		if err != nil {
+			return nil, err
+		}
+		update.Visibility = &nextVisibility
+	}
+	spaceChanged := !sameOptionalInt32(memo.SpaceID, nextSpaceID)
+	// A removed author receives a lifecycle exception only for a real withdraw
+	// or move. Merely including the current Space in the mask must not smuggle
+	// an audience-only mutation past membership checks.
+	lifecycleOnly = lifecycleOnly && spaceChanged
+	if nextVisibility == store.SpaceAudience && nextSpaceID == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "SPACE visibility requires a space")
+	}
+	if memo.Visibility == store.SpaceAudience && spaceChanged && !updatePaths["visibility"] {
+		return nil, status.Errorf(codes.InvalidArgument, "moving a memo with SPACE visibility requires an explicit visibility update")
+	}
+	if memo.Visibility == store.SpaceAudience && nextSpaceID == nil && nextVisibility == store.SpaceAudience {
+		return nil, status.Errorf(codes.InvalidArgument, "unassigning a memo with SPACE visibility requires a replacement visibility")
+	}
+	update.Policy = memoWritePolicy(user.ID, lifecycleOnly)
 	previousContent := memo.Content
 	contentUpdated := false
 	attachmentsUpdated := false
@@ -477,6 +393,11 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 	}
 
 	for _, path := range request.UpdateMask.Paths {
+		// Collaboration fields were validated together above so placement and
+		// audience transitions cannot be observed independently.
+		if path == "visibility" || path == "space" {
+			continue
+		}
 		if path == "content" {
 			contentUpdated = true
 			contentLengthLimit, err := s.getContentLengthLimit(ctx)
@@ -492,19 +413,6 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 			}
 			update.Content = &nextMemo.Content
 			update.Payload = nextMemo.Payload
-		} else if path == "visibility" {
-			visibility := convertVisibilityToStore(request.Memo.Visibility)
-			if memo.ParentUID != nil {
-				parentMemo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: memo.ParentUID})
-				if err != nil {
-					return nil, status.Errorf(codes.Internal, "failed to get parent memo")
-				}
-				if parentMemo == nil {
-					return nil, status.Errorf(codes.NotFound, "memo not found")
-				}
-				visibility = parentMemo.Visibility
-			}
-			update.Visibility = &visibility
 		} else if path == "pinned" {
 			update.Pinned = &request.Memo.Pinned
 		} else if path == "state" {
@@ -517,11 +425,11 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 			createdTs := request.Memo.CreateTime.AsTime().Unix()
 			update.CreatedTs = &createdTs
 		} else if path == "update_time" {
-			updatedTs := time.Now().Unix()
+			updatedTsSec := time.Now().Unix()
 			if request.Memo.UpdateTime != nil {
-				updatedTs = request.Memo.UpdateTime.AsTime().Unix()
+				updatedTsSec = request.Memo.UpdateTime.AsTime().Unix()
 			}
-			update.UpdatedTs = &updatedTs
+			update.UpdatedTs = &updatedTsSec
 		} else if path == "display_time" {
 			return nil, status.Errorf(codes.InvalidArgument, "display_time is not supported")
 		} else if path == "location" {
@@ -534,6 +442,8 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 			attachmentsUpdated = true
 		} else if path == "relations" {
 			relationsUpdated = true
+		} else {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid update path: %s", path)
 		}
 	}
 
@@ -577,23 +487,17 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 			return nil, err
 		}
 	} else if err = s.Store.UpdateMemo(ctx, update); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to update memo")
+		return nil, mapMemoWriteError(err, "failed to update memo")
 	}
 
-	memo, err = s.Store.GetMemo(ctx, &store.FindMemo{
-		ID: &memo.ID,
-	})
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to get memo")
-	}
-	memo, parentMemo, memoMessage, err := s.buildUpdatedMemoState(ctx, memo.ID)
+	memo, commentContext, memoMessage, err := s.buildUpdatedMemoState(ctx, memo.ID)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to build updated memo state")
 	}
 	if contentUpdated {
-		s.dispatchMemoMentionNotificationsBestEffort(ctx, memo, parentMemo, previousContent)
+		s.dispatchMemoMentionNotificationsBestEffort(ctx, memo, commentContext, previousContent)
 	}
-	s.dispatchMemoUpdatedSideEffects(ctx, memo, parentMemo, memoMessage)
+	s.dispatchMemoUpdatedSideEffects(ctx, memoMessage)
 
 	return memoMessage, nil
 }
@@ -620,57 +524,55 @@ func (s *APIV1Service) DeleteMemo(ctx context.Context, request *v1pb.DeleteMemoR
 	if user == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
-	// Only the creator or admin can update the memo.
-	if memo.CreatorID != user.ID && !isSuperUser(user) {
+	// Application administrators do not receive ordinary content-deletion
+	// authority merely from their instance role.
+	if memo.CreatorID != user.ID {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
-
-	reactions, err := s.Store.ListReactions(ctx, &store.FindReaction{
-		MemoID: &memo.ID,
-	})
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list reactions")
+	var deletedMemoMessage *v1pb.Memo
+	// Deletion is a narrow author lifecycle capability and may remain available
+	// after the author loses read access to a memo with the SPACE audience. Only
+	// build a content-bearing webhook payload when the author can still read the
+	// memo immediately before deletion.
+	if s.checkMemoReadAccess(ctx, memo) == nil {
+		reactions, err := s.Store.ListReactions(ctx, &store.FindReaction{MemoID: &memo.ID})
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to list reactions")
+		}
+		attachments, err := s.Store.ListAttachments(ctx, &store.FindAttachment{MemoID: &memo.ID})
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to list attachments")
+		}
+		deleteRelations, _ := s.loadMemoRelations(ctx, memo)
+		if memoMessage, err := s.convertMemoFromStore(ctx, memo, reactions, attachments, deleteRelations); err == nil {
+			deletedMemoMessage = memoMessage
+		}
 	}
 
-	attachments, err := s.Store.ListAttachments(ctx, &store.FindAttachment{
-		MemoID: &memo.ID,
-	})
+	deleteResult, err := s.Store.DeleteMemoWithPolicy(ctx, &store.DeleteMemoWithPolicy{MemoID: memo.ID, ActorUserID: user.ID})
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list attachments")
+		switch {
+		case stderrors.Is(err, store.ErrMemoPermissionDenied):
+			return nil, status.Error(codes.PermissionDenied, "permission denied")
+		case stderrors.Is(err, store.ErrMemoMutationConflict):
+			return nil, status.Error(codes.FailedPrecondition, "memo changed or no longer exists")
+		default:
+			return nil, status.Errorf(codes.Internal, "failed to delete memo: %v", err)
+		}
+	}
+	if deleteResult == nil {
+		return nil, status.Error(codes.Internal, "memo was deleted without authorization state")
 	}
 
-	deleteRelations, _ := s.loadMemoRelations(ctx, memo)
-	if memoMessage, err := s.convertMemoFromStore(ctx, memo, reactions, attachments, deleteRelations); err == nil {
-		// Try to dispatch webhook when memo is deleted.
-		if err := s.DispatchMemoDeletedWebhook(ctx, memoMessage); err != nil {
+	s.SSEHub.publishMemoChanged()
+	if deletedMemoMessage != nil && deleteResult.ActorCanRead {
+		if err := s.DispatchMemoDeletedWebhook(ctx, deletedMemoMessage); err != nil {
 			slog.Warn("Failed to dispatch memo deleted webhook", slog.Any("err", err))
 		}
 	}
-
-	// Delete memo comments first (store.DeleteMemo handles their reactions, relations and attachments)
-	commentType := store.MemoRelationComment
-	relations, err := s.Store.ListMemoRelations(ctx, &store.FindMemoRelation{RelatedMemoID: &memo.ID, Type: &commentType})
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list memo comments")
+	if err := s.cleanupDeletedAttachmentStorage(ctx, deleteResult.Attachments); err != nil {
+		return nil, status.Errorf(codes.Internal, "memo was deleted but attachment storage cleanup failed: %v", err)
 	}
-	for _, relation := range relations {
-		if err := s.Store.DeleteMemo(ctx, &store.DeleteMemo{ID: relation.MemoID}); err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to delete memo comment")
-		}
-	}
-
-	// Delete the memo (store.DeleteMemo handles reaction, relation and attachment cleanup)
-	if err = s.Store.DeleteMemo(ctx, &store.DeleteMemo{ID: memo.ID}); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to delete memo")
-	}
-
-	// Broadcast live refresh event.
-	s.SSEHub.Broadcast(&SSEEvent{
-		Type:       SSEEventMemoDeleted,
-		Name:       request.Name,
-		Visibility: memo.Visibility,
-		CreatorID:  resolveSSECreatorID(memo, nil),
-	})
 
 	return &emptypb.Empty{}, nil
 }

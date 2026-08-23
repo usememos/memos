@@ -2,10 +2,15 @@ package store
 
 import (
 	"context"
+	stderrors "errors"
 	"strconv"
 
 	"github.com/pkg/errors"
 )
+
+// ErrUserHasSpaceMembership blocks account deletion until its Space lifecycle
+// has been resolved explicitly.
+var ErrUserHasSpaceMembership = stderrors.New("user still has space memberships")
 
 // Role is the type of a role.
 type Role string
@@ -168,6 +173,8 @@ func (s *Store) GetUser(ctx context.Context, find *FindUser) (*User, error) {
 	return user, nil
 }
 
+// DeleteUser removes a user and returns cache invalidation state. Deleting an
+// already-missing user is idempotent and returns an empty result.
 func (s *Store) DeleteUser(ctx context.Context, delete *DeleteUser) (*DeleteUserResult, error) {
 	result, err := s.driver.DeleteUser(ctx, delete)
 	if err != nil {

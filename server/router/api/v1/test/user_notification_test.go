@@ -107,6 +107,96 @@ func TestListUserNotificationsStoresMemoCommentPayloadInInbox(t *testing.T) {
 	require.NotZero(t, inboxes[0].Message.GetMemoComment().RelatedMemoId)
 }
 
+func TestAssignedPublicMemoCommentNotifiesReadableRemovedAuthor(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	var sentMessage *email.Message
+	ts.Service.NotificationEmailSender = func(_ *email.Config, message *email.Message) {
+		sentMessage = message
+	}
+	_, err := ts.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_NOTIFICATION,
+		Value: &storepb.InstanceSetting_NotificationSetting{
+			NotificationSetting: &storepb.InstanceNotificationSetting{
+				Email: &storepb.InstanceNotificationSetting_EmailSetting{
+					Enabled:   true,
+					SmtpHost:  "smtp.example.com",
+					SmtpPort:  587,
+					FromEmail: "bot@example.com",
+				},
+			},
+		},
+	})
+	require.NoError(t, err)
+
+	owner, err := ts.CreateRegularUser(ctx, "removed-comment-owner")
+	require.NoError(t, err)
+	commenter, err := ts.CreateRegularUser(ctx, "remaining-comment-member")
+	require.NoError(t, err)
+	ownerCtx := ts.CreateUserContext(ctx, owner.ID)
+	commenterCtx := ts.CreateUserContext(ctx, commenter.ID)
+	space, err := ts.Store.CreateSpace(ctx, &store.Space{UID: "removed-owner-comments", Title: "Removed owner comments"}, owner.ID)
+	require.NoError(t, err)
+	_, err = ts.Store.CreateSpaceMember(ctx, &store.SpaceMember{
+		SpaceID: space.ID,
+		UserID:  commenter.ID,
+		Role:    store.SpaceMemberRoleAdmin,
+	}, owner.ID)
+	require.NoError(t, err)
+	memo, err := ts.Service.CreateMemo(ownerCtx, &apiv1.CreateMemoRequest{Memo: &apiv1.Memo{
+		Content:    "assigned public memo",
+		Visibility: apiv1.Visibility_PUBLIC,
+		Space:      ptr("spaces/" + space.UID),
+	}})
+	require.NoError(t, err)
+	require.NoError(t, ts.Store.DeleteSpaceMember(ctx, &store.DeleteSpaceMember{SpaceID: space.ID, UserID: owner.ID}, owner.ID))
+
+	_, err = ts.Service.CreateMemoComment(commenterCtx, &apiv1.CreateMemoCommentRequest{
+		Name: memo.Name,
+		Comment: &apiv1.Memo{
+			Content:    "public comment visible to removed owner",
+			Visibility: apiv1.Visibility_PUBLIC,
+		},
+	})
+	require.NoError(t, err)
+	require.NotNil(t, sentMessage, "membership does not add a read gate to PUBLIC memo endpoints")
+
+	messageType := storepb.InboxMessage_MEMO_COMMENT
+	inboxes, err := ts.Store.ListInboxes(ctx, &store.FindInbox{ReceiverID: &owner.ID, MessageType: &messageType})
+	require.NoError(t, err)
+	require.Len(t, inboxes, 1)
+	response, err := ts.Service.ListUserNotifications(ownerCtx, &apiv1.ListUserNotificationsRequest{Parent: "users/" + owner.Username})
+	require.NoError(t, err)
+	require.Len(t, response.Notifications, 1)
+
+	_, err = ts.Store.CreateSpaceMember(ctx, &store.SpaceMember{
+		SpaceID: space.ID,
+		UserID:  owner.ID,
+		Role:    store.SpaceMemberRoleUser,
+	}, commenter.ID)
+	require.NoError(t, err)
+	sentMessage = nil
+	_, err = ts.Service.CreateMemoComment(commenterCtx, &apiv1.CreateMemoCommentRequest{
+		Name: memo.Name,
+		Comment: &apiv1.Memo{
+			Content:    "comment visible while owner is a member",
+			Visibility: apiv1.Visibility_PUBLIC,
+		},
+	})
+	require.NoError(t, err)
+	require.NotNil(t, sentMessage)
+	inboxes, err = ts.Store.ListInboxes(ctx, &store.FindInbox{ReceiverID: &owner.ID, MessageType: &messageType})
+	require.NoError(t, err)
+	require.Len(t, inboxes, 2)
+
+	require.NoError(t, ts.Store.DeleteSpaceMember(ctx, &store.DeleteSpaceMember{SpaceID: space.ID, UserID: owner.ID}, commenter.ID))
+	response, err = ts.Service.ListUserNotifications(ownerCtx, &apiv1.ListUserNotificationsRequest{Parent: "users/" + owner.Username})
+	require.NoError(t, err)
+	require.Len(t, response.Notifications, 2, "both PUBLIC endpoints remain readable after membership revocation")
+}
+
 func TestCreateMemoCommentSendsEmailNotificationWhenEnabled(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
@@ -286,7 +376,7 @@ func TestCreateMemoCommentSkipsEmailNotificationWithoutInstanceURL(t *testing.T)
 	require.Nil(t, sentMessage)
 }
 
-func TestListUserNotificationsOmitsPayloadWhenMemosDeleted(t *testing.T) {
+func TestListUserNotificationsOmitsNotificationWhenMemoDeleted(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
@@ -325,9 +415,7 @@ func TestListUserNotificationsOmitsPayloadWhenMemosDeleted(t *testing.T) {
 		Parent: fmt.Sprintf("users/%s", owner.Username),
 	})
 	require.NoError(t, err)
-	require.Len(t, resp.Notifications, 1)
-	require.Equal(t, apiv1.UserNotification_MEMO_COMMENT, resp.Notifications[0].Type)
-	require.Nil(t, resp.Notifications[0].GetMemoComment())
+	require.Empty(t, resp.Notifications, "a notification whose memo subject is no longer readable must be omitted in full")
 }
 
 func TestListUserNotificationsSkipsNotificationsWithMissingUsers(t *testing.T) {

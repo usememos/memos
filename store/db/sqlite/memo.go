@@ -2,6 +2,7 @@ package sqlite
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"strings"
 
@@ -14,17 +15,35 @@ import (
 )
 
 func (d *DB) CreateMemo(ctx context.Context, create *store.Memo) (*store.Memo, error) {
-	fields := []string{"`uid`", "`creator_id`", "`content`", "`visibility`", "`payload`"}
-	placeholder := []string{"?", "?", "?", "?", "?"}
+	tx, err := d.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = tx.Rollback() }()
+	if err := validateSQLiteMemoCreate(ctx, tx, create); err != nil {
+		return nil, err
+	}
+	if err := insertSQLiteMemo(ctx, tx, create); err != nil {
+		return nil, err
+	}
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+	return create, nil
+}
+
+func insertSQLiteMemo(ctx context.Context, tx dbExecutor, create *store.Memo) error {
+	fields := []string{"`uid`", "`creator_id`", "`content`", "`visibility`", "`payload`", "`space_id`"}
+	placeholder := []string{"?", "?", "?", "?", "?", "?"}
 	payload := "{}"
 	if create.Payload != nil {
 		payloadBytes, err := protojson.Marshal(create.Payload)
 		if err != nil {
-			return nil, err
+			return err
 		}
 		payload = string(payloadBytes)
 	}
-	args := []any{create.UID, create.CreatorID, create.Content, create.Visibility, payload}
+	args := []any{create.UID, create.CreatorID, create.Content, create.Visibility, payload, create.SpaceID}
 
 	// Add custom timestamps if provided
 	if create.CreatedTs != 0 {
@@ -39,16 +58,50 @@ func (d *DB) CreateMemo(ctx context.Context, create *store.Memo) (*store.Memo, e
 	}
 
 	stmt := "INSERT INTO `memo` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ") RETURNING `id`, `created_ts`, `updated_ts`, `row_status`"
-	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(
+	if err := tx.QueryRowContext(ctx, stmt, args...).Scan(
 		&create.ID,
 		&create.CreatedTs,
 		&create.UpdatedTs,
 		&create.RowStatus,
 	); err != nil {
-		return nil, err
+		return err
 	}
+	return nil
+}
 
-	return create, nil
+func validateSQLiteMemoCreate(ctx context.Context, tx dbExecutor, create *store.Memo) error {
+	var actorStatus store.RowStatus
+	err := tx.QueryRowContext(ctx, "SELECT row_status FROM user WHERE id = ?", create.CreatorID).Scan(&actorStatus)
+	if errors.Is(err, sql.ErrNoRows) || (err == nil && actorStatus != store.Normal) {
+		return store.ErrMemoSpaceMembershipRequired
+	}
+	if err != nil {
+		return err
+	}
+	if create.SpaceID != nil {
+		return validateSQLiteMemoSpaceMember(ctx, tx, *create.SpaceID, create.CreatorID)
+	}
+	return nil
+}
+
+func validateSQLiteMemoSpaceMember(ctx context.Context, tx dbExecutor, spaceID, userID int32) error {
+	var exists bool
+	if err := tx.QueryRowContext(ctx, "SELECT EXISTS(SELECT 1 FROM space WHERE id = ?)", spaceID).Scan(&exists); err != nil {
+		return err
+	}
+	if !exists {
+		return store.ErrMemoSpaceNotWritable
+	}
+	err := tx.QueryRowContext(ctx, `SELECT EXISTS(
+		SELECT 1 FROM space_member sm JOIN user u ON u.id = sm.user_id
+		WHERE sm.space_id = ? AND sm.user_id = ? AND sm.role IN ('ADMIN', 'USER') AND u.row_status = 'NORMAL')`, spaceID, userID).Scan(&exists)
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return store.ErrMemoSpaceMembershipRequired
+	}
+	return nil
 }
 
 func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo, error) {
@@ -101,8 +154,28 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		}
 		where = append(where, fmt.Sprintf("`memo`.`visibility` IN (%s)", strings.Join(placeholder, ",")))
 	}
+	if v := find.SpaceID; v != nil {
+		where, args = append(where, "`memo`.`space_id` = ?"), append(args, *v)
+	}
+	if v := find.CommentContextMemoID; v != nil {
+		where, args = append(where, `EXISTS (
+			SELECT 1 FROM memo_relation AS comment_context
+			WHERE comment_context.memo_id = memo.id
+				AND comment_context.related_memo_id = ?
+				AND comment_context.type = 'COMMENT'
+		)`), append(args, *v)
+	}
+	if find.Unassigned {
+		where = append(where, "`memo`.`space_id` IS NULL")
+	}
+	if access := find.Access; access != nil {
+		where = append(where, sqliteMemoAccessPredicate(access, "`memo`", "`access_member`", &args))
+	}
 	if find.ExcludeComments {
-		where = append(where, "`parent_uid` IS NULL")
+		where = append(where, `NOT EXISTS (
+			SELECT 1 FROM memo_relation AS comment_relation
+			WHERE comment_relation.memo_id = memo.id AND comment_relation.type = 'COMMENT'
+		)`)
 	}
 
 	order := "DESC"
@@ -130,16 +203,19 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		"`memo`.`visibility` AS `visibility`",
 		"`memo`.`pinned` AS `pinned`",
 		"`memo`.`payload` AS `payload`",
-		"CASE WHEN `parent_memo`.`uid` IS NOT NULL THEN `parent_memo`.`uid` ELSE NULL END AS `parent_uid`",
+		"`memo`.`space_id` AS `space_id`",
+		`(SELECT parent_memo.uid
+			FROM memo_relation AS parent_relation
+			JOIN memo AS parent_memo ON parent_memo.id = parent_relation.related_memo_id
+			WHERE parent_relation.memo_id = memo.id AND parent_relation.type = 'COMMENT'
+			ORDER BY parent_memo.id LIMIT 1) AS parent_uid`,
 	}
 	if !find.ExcludeContent {
 		fields = append(fields, "`memo`.`content` AS `content`")
 	}
 
-	query := "SELECT " + strings.Join(fields, ", ") + "FROM `memo` " +
+	query := "SELECT " + strings.Join(fields, ", ") + " FROM `memo` " +
 		"LEFT JOIN `user` AS `memo_creator` ON `memo`.`creator_id` = `memo_creator`.`id` " +
-		"LEFT JOIN `memo_relation` ON `memo`.`id` = `memo_relation`.`memo_id` AND `memo_relation`.`type` = \"COMMENT\" " +
-		"LEFT JOIN `memo` AS `parent_memo` ON `memo_relation`.`related_memo_id` = `parent_memo`.`id` " +
 		"WHERE " + strings.Join(where, " AND ") + " " +
 		"ORDER BY " + strings.Join(orderBy, ", ")
 	if find.Limit != nil {
@@ -169,6 +245,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 			&memo.Visibility,
 			&memo.Pinned,
 			&payloadBytes,
+			&memo.SpaceID,
 			&memo.ParentUID,
 		}
 		if !find.ExcludeContent {
@@ -193,7 +270,21 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 }
 
 func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
-	return applyMemoUpdate(ctx, d.db, update)
+	if update.Policy == nil {
+		return applyMemoUpdate(ctx, d.db, update)
+	}
+	tx, err := d.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = tx.Rollback() }()
+	if err := validateSQLiteMemoWritePolicy(ctx, tx, update.ID, update.Policy, update); err != nil {
+		return err
+	}
+	if err := applyMemoUpdate(ctx, tx, update); err != nil {
+		return err
+	}
+	return tx.Commit()
 }
 
 func (d *DB) DeleteMemo(ctx context.Context, delete *store.DeleteMemo) error {
