@@ -328,16 +328,21 @@ func (s *APIV1Service) UpdateAttachment(ctx context.Context, request *v1pb.Updat
 	if err := s.Store.UpdateAttachment(ctx, update); err != nil {
 		return nil, mapMemoWriteError(err, "failed to update attachment")
 	}
-	response, err := s.GetAttachment(ctx, &v1pb.GetAttachmentRequest{
-		Name: request.Attachment.Name,
-	})
+	updatedAttachment, err := s.Store.GetAttachment(ctx, &store.FindAttachment{UID: &attachmentUID})
 	if err != nil {
-		return nil, err
+		// The update already committed, and the current memo binding is unknown.
+		// Publish conservatively so clients do not retain stale memo state.
+		s.SSEHub.publishMemoChanged()
+		return nil, status.Errorf(codes.Internal, "attachment was updated but failed to reload: %v", err)
 	}
-	if response.Memo != nil {
+	if updatedAttachment == nil {
+		s.SSEHub.publishMemoChanged()
+		return nil, status.Error(codes.Internal, "attachment was updated but no longer exists")
+	}
+	if updatedAttachment.MemoID != nil {
 		s.SSEHub.publishMemoChanged()
 	}
-	return response, nil
+	return convertAttachmentFromStore(updatedAttachment), nil
 }
 
 func (s *APIV1Service) DeleteAttachment(ctx context.Context, request *v1pb.DeleteAttachmentRequest) (*emptypb.Empty, error) {
@@ -365,9 +370,6 @@ func (s *APIV1Service) DeleteAttachment(ctx context.Context, request *v1pb.Delet
 	attachments := []*store.Attachment{attachment}
 	if err := s.deleteAttachmentsAtomically(ctx, user, attachments); err != nil {
 		return nil, err
-	}
-	if attachmentsIncludeMemo(attachments) {
-		s.SSEHub.publishMemoChanged()
 	}
 	return &emptypb.Empty{}, nil
 }
@@ -416,9 +418,6 @@ func (s *APIV1Service) BatchDeleteAttachments(ctx context.Context, request *v1pb
 	}
 	if err := s.deleteAttachmentsAtomically(ctx, user, attachments); err != nil {
 		return nil, err
-	}
-	if attachmentsIncludeMemo(attachments) {
-		s.SSEHub.publishMemoChanged()
 	}
 
 	return &emptypb.Empty{}, nil
@@ -527,6 +526,9 @@ func (s *APIV1Service) deleteAttachmentsAtomically(ctx context.Context, user *st
 		ExpectedMemoContents: expectedMemoContents,
 	}, attachmentIDs); err != nil {
 		return mapMemoWriteError(err, "failed to delete attachments")
+	}
+	if attachmentsIncludeMemo(attachments) {
+		s.SSEHub.publishMemoChanged()
 	}
 	if err := s.cleanupDeletedAttachmentStorage(ctx, attachments); err != nil {
 		return status.Errorf(codes.Internal, "attachments were deleted but storage cleanup failed: %v", err)

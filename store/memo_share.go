@@ -63,6 +63,9 @@ func (s *Store) DeleteMemoShare(ctx context.Context, delete *DeleteMemoShare) er
 	if delete == nil {
 		return errors.New("memo share deletion is required")
 	}
+	if delete.ID == nil && delete.UID == nil {
+		return errors.New("memo share deletion requires id or uid")
+	}
 	if err := validateMemoWritePolicy(delete.Policy); err != nil {
 		return err
 	}

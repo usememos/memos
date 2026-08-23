@@ -49,6 +49,7 @@ func TestAuthorizerPrivateInstanceRegistration(t *testing.T) {
 	require.NoError(t, authorizer.CheckAccess(ctx, listMemos, nil))
 	require.NoError(t, authorizer.CheckAccess(ctx, listReactions, nil))
 	require.NoError(t, authorizer.CheckAccess(ctx, listRelations, nil))
+	require.NoError(t, ts.SetInstanceAccessMode(ctx, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE))
 
 	// Once a user exists, CreateUser remains reachable so UserService can enforce
 	// disallow_user_registration and disallow_password_auth.

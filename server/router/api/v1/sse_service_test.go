@@ -2,6 +2,7 @@ package v1
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -9,6 +10,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	"github.com/usememos/memos/internal/profile"
@@ -128,6 +131,96 @@ func TestAttachmentMutationsPublishMemoChangedOnlyWhenBound(t *testing.T) {
 	})
 	require.NoError(t, err)
 	requireMemoChanged(t, client.events)
+}
+
+func TestUpdateAttachmentPublishesAfterCommittedAccessChange(t *testing.T) {
+	ctx := context.Background()
+	svc := newIntegrationService(t)
+	owner := createSpaceTestUser(ctx, t, svc, "sse-attachment-access-owner", store.RoleUser)
+	ownerCtx := userCtx(ctx, owner.ID)
+	space, err := svc.CreateSpace(ownerCtx, &v1pb.CreateSpaceRequest{
+		SpaceId: "sse-attachment-access-space",
+		Space:   &v1pb.Space{Title: "Attachment access space"},
+	})
+	require.NoError(t, err)
+	spaceName := space.Name
+	memo, err := svc.CreateMemo(ownerCtx, &v1pb.CreateMemoRequest{Memo: &v1pb.Memo{
+		Content:    "attachment access changed during update",
+		Visibility: v1pb.Visibility_SPACE,
+		Space:      &spaceName,
+	}})
+	require.NoError(t, err)
+	attachment, err := svc.CreateAttachment(ownerCtx, &v1pb.CreateAttachmentRequest{Attachment: &v1pb.Attachment{
+		Filename: "before.txt",
+		Type:     "text/plain",
+		Content:  []byte("attachment"),
+		Memo:     &memo.Name,
+	}})
+	require.NoError(t, err)
+	attachmentUID, err := ExtractAttachmentUIDFromName(attachment.Name)
+	require.NoError(t, err)
+	storedAttachment, err := svc.Store.GetAttachment(ctx, &store.FindAttachment{UID: &attachmentUID})
+	require.NoError(t, err)
+	require.NotNil(t, storedAttachment)
+
+	// Authorization is checked before the attachment update. Simulate membership
+	// changing in the same transaction so the committed response can no longer be
+	// built through the read-authorized GetAttachment service method.
+	trigger := fmt.Sprintf(`
+		CREATE TRIGGER revoke_attachment_owner_membership
+		AFTER UPDATE OF filename ON attachment
+		WHEN NEW.id = %d
+		BEGIN
+			DELETE FROM space_member WHERE user_id = %d;
+		END`, storedAttachment.ID, owner.ID)
+	_, err = svc.Store.GetDriver().GetDB().ExecContext(ctx, trigger)
+	require.NoError(t, err)
+
+	client := svc.SSEHub.Subscribe()
+	defer svc.SSEHub.Unsubscribe(client)
+	updated, err := svc.UpdateAttachment(ownerCtx, &v1pb.UpdateAttachmentRequest{
+		Attachment: &v1pb.Attachment{Name: attachment.Name, Filename: "after.txt"},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"filename"}},
+	})
+	require.NoError(t, err)
+	require.Equal(t, "after.txt", updated.Filename)
+	requireMemoChanged(t, client.events)
+	requireNoMemoChanged(t, client.events)
+
+	_, err = svc.GetAttachment(ownerCtx, &v1pb.GetAttachmentRequest{Name: attachment.Name})
+	require.Equal(t, codes.PermissionDenied, status.Code(err), "the authorized read would fail after the committed membership change")
+}
+
+func TestDeleteAttachmentPublishesBeforeStorageCleanupFailure(t *testing.T) {
+	ctx := context.Background()
+	svc := newIntegrationService(t)
+	owner := createSpaceTestUser(ctx, t, svc, "sse-attachment-cleanup-owner", store.RoleUser)
+	ownerCtx := userCtx(ctx, owner.ID)
+	memo, err := svc.CreateMemo(ownerCtx, &v1pb.CreateMemoRequest{
+		Memo: &v1pb.Memo{Content: "attachment cleanup failure", Visibility: v1pb.Visibility_PRIVATE},
+	})
+	require.NoError(t, err)
+	attachment, err := svc.CreateAttachment(ownerCtx, &v1pb.CreateAttachmentRequest{Attachment: &v1pb.Attachment{
+		Filename: "cleanup.txt",
+		Type:     "text/plain",
+		Content:  []byte("attachment"),
+		Memo:     &memo.Name,
+	}})
+	require.NoError(t, err)
+
+	client := svc.SSEHub.Subscribe()
+	defer svc.SSEHub.Unsubscribe(client)
+	_, err = svc.DeleteAttachment(store.WithDeleteAttachmentStorageFailpoint(ownerCtx), &v1pb.DeleteAttachmentRequest{Name: attachment.Name})
+	require.Equal(t, codes.Internal, status.Code(err))
+	require.ErrorContains(t, err, "attachments were deleted but storage cleanup failed")
+	requireMemoChanged(t, client.events)
+	requireNoMemoChanged(t, client.events)
+
+	attachmentUID, err := ExtractAttachmentUIDFromName(attachment.Name)
+	require.NoError(t, err)
+	storedAttachment, err := svc.Store.GetAttachment(ctx, &store.FindAttachment{UID: &attachmentUID})
+	require.NoError(t, err)
+	require.Nil(t, storedAttachment, "the database deletion must remain committed")
 }
 
 func TestSpaceMutationsPublishMemoChanged(t *testing.T) {
