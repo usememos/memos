@@ -651,6 +651,8 @@
       "configured-reactions": "Configured reactions",
       "content-length-limit": "Content length limit (Byte)",
       "content-length-limit-description": "Maximum memo body size accepted by the server.",
+      "content-length-limit-error": "Content length limit must be a whole number between {{min}} and {{max}} bytes.",
+      "content-length-limit-minimum": "Minimum: {{min}} bytes",
       "double-click-edit-description": "Allow users to open memo editing by double-clicking a memo.",
       "editing-description": "Control memo editing behavior and server-side content limits.",
       "editing-title": "Editing",

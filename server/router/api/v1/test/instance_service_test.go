@@ -7,6 +7,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 	colorpb "google.golang.org/genproto/googleapis/type/color"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
@@ -465,6 +467,45 @@ func TestTestInstanceEmailSettingRequiresPasswordWhenSMTPIdentityChanges(t *test
 
 func TestUpdateInstanceSetting(t *testing.T) {
 	ctx := context.Background()
+
+	t.Run("UpdateInstanceSetting - memo related content length limit", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		admin, err := ts.CreateHostUser(ctx, "memo-setting-admin")
+		require.NoError(t, err)
+		adminCtx := ts.CreateUserContext(ctx, admin.ID)
+		settingForLimit := func(limit int32) *v1pb.InstanceSetting {
+			return &v1pb.InstanceSetting{
+				Name: "instance/settings/MEMO_RELATED",
+				Value: &v1pb.InstanceSetting_MemoRelatedSetting_{
+					MemoRelatedSetting: &v1pb.InstanceSetting_MemoRelatedSetting{
+						ContentLengthLimit: limit,
+					},
+				},
+			}
+		}
+
+		updated, err := ts.Service.UpdateInstanceSetting(adminCtx, &v1pb.UpdateInstanceSettingRequest{Setting: settingForLimit(0)})
+		require.NoError(t, err)
+		require.Equal(t, int32(8192), updated.GetMemoRelatedSetting().GetContentLengthLimit())
+		got, err := ts.Service.GetInstanceSetting(ctx, &v1pb.GetInstanceSettingRequest{Name: "instance/settings/MEMO_RELATED"})
+		require.NoError(t, err)
+		require.Equal(t, int32(8192), got.GetMemoRelatedSetting().GetContentLengthLimit())
+
+		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &v1pb.UpdateInstanceSettingRequest{Setting: settingForLimit(8191)})
+		require.Equal(t, codes.InvalidArgument, status.Code(err))
+
+		for _, limit := range []int32{8192, 16384} {
+			updated, err := ts.Service.UpdateInstanceSetting(adminCtx, &v1pb.UpdateInstanceSettingRequest{Setting: settingForLimit(limit)})
+			require.NoError(t, err, "limit %d", limit)
+			require.Equal(t, limit, updated.GetMemoRelatedSetting().GetContentLengthLimit())
+
+			got, err := ts.Service.GetInstanceSetting(ctx, &v1pb.GetInstanceSettingRequest{Name: "instance/settings/MEMO_RELATED"})
+			require.NoError(t, err, "limit %d", limit)
+			require.Equal(t, limit, got.GetMemoRelatedSetting().GetContentLengthLimit())
+		}
+	})
 
 	t.Run("UpdateInstanceSetting - access setting", func(t *testing.T) {
 		ts := NewTestService(t)
