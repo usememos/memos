@@ -2,7 +2,7 @@ package v1
 
 import (
 	"context"
-	"sort"
+	"slices"
 
 	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
@@ -52,7 +52,7 @@ func (s *APIV1Service) validateFilterSpaceAccess(ctx context.Context, filterText
 	for name := range spaceNames {
 		names = append(names, name)
 	}
-	sort.Strings(names)
+	slices.Sort(names)
 	for _, name := range names {
 		if _, err := s.resolveWritableSpaceByName(ctx, name, user.ID); err != nil {
 			return err
@@ -120,6 +120,8 @@ func collectSpaceFilterNames(condition filterpkg.Condition, negated bool, names 
 		if condition.Field == "space" {
 			return errors.New("space does not support list operations")
 		}
+	default:
+		// Other condition types cannot reference a space.
 	}
 	return nil
 }
@@ -136,6 +138,8 @@ func valueReferencesSpace(value filterpkg.ValueExpr) bool {
 		}
 	case *filterpkg.FieldAccessorValue:
 		return value.Field == "space"
+	default:
+		// Other value expressions cannot reference a space.
 	}
 	return false
 }
