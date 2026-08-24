@@ -41,6 +41,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   cacheKey,
   memo,
   parentMemoName,
+  defaultSpace,
   autoFocus,
   onFocusModeExit,
   placeholder,
@@ -286,6 +287,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   const handleSave = useMemoSave({
     memoName,
     parentMemoName,
+    defaultSpace,
     defaultVisibility,
     defaultCreateTime,
     discardDraft,

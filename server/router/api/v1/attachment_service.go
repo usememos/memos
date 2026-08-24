@@ -10,12 +10,10 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/usememos/memos/internal/filter"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	"github.com/usememos/memos/store"
 )
@@ -234,11 +232,10 @@ func (s *APIV1Service) ListAttachments(ctx context.Context, request *v1pb.ListAt
 		Limit:     &pageSize,
 		Offset:    &offset,
 	}
-
 	// Parse filter if provided
 	if request.Filter != "" {
-		if err := s.validateAttachmentFilter(ctx, request.Filter); err != nil {
-			return nil, status.Errorf(codes.InvalidArgument, "invalid filter: %v", err)
+		if err := s.validateAttachmentFilterForUser(ctx, request.Filter, user); err != nil {
+			return nil, err
 		}
 		findAttachment.Filters = append(findAttachment.Filters, request.Filter)
 	}
@@ -543,22 +540,6 @@ func attachmentsIncludeMemo(attachments []*store.Attachment) bool {
 		}
 	}
 	return false
-}
-
-func (s *APIV1Service) validateAttachmentFilter(ctx context.Context, filterStr string) error {
-	if filterStr == "" {
-		return errors.New("filter cannot be empty")
-	}
-
-	engine, err := filter.DefaultAttachmentEngine()
-	if err != nil {
-		return err
-	}
-
-	if _, err := engine.CompileToStatement(ctx, filterStr, filter.RenderOptions{Dialect: s.filterDialect()}); err != nil {
-		return errors.Wrap(err, "failed to compile filter")
-	}
-	return nil
 }
 
 // checkAttachmentAccess verifies the user has permission to access the attachment.

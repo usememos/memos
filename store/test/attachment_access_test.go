@@ -56,6 +56,77 @@ func TestAttachmentAccessScopeFiltersBeforePagination(t *testing.T) {
 	require.Equal(t, unlinked.ID, attachments[0].ID, "the inaccessible newer row must be removed before LIMIT is applied")
 }
 
+func TestAttachmentSpaceFilterFiltersByMemoPlacement(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	defer ts.Close()
+
+	owner, err := ts.CreateUser(ctx, &store.User{Username: "attachment-scope-owner", Role: store.RoleUser, PasswordHash: "hash"})
+	require.NoError(t, err)
+	spaceA, err := ts.CreateSpace(ctx, &store.Space{UID: "attachment-scope-a", Title: "A"}, owner.ID)
+	require.NoError(t, err)
+	spaceB, err := ts.CreateSpace(ctx, &store.Space{UID: "attachment-scope-b", Title: "B"}, owner.ID)
+	require.NoError(t, err)
+
+	unassignedMemo, err := ts.CreateMemo(ctx, &store.Memo{
+		UID: "attachment-scope-unassigned", CreatorID: owner.ID, Content: "unassigned", Visibility: store.Private,
+	})
+	require.NoError(t, err)
+	spaceAMemo, err := ts.CreateMemo(ctx, &store.Memo{
+		UID: "attachment-scope-a-memo", CreatorID: owner.ID, Content: "a", Visibility: store.Private, SpaceID: &spaceA.ID,
+	})
+	require.NoError(t, err)
+	spaceBMemo, err := ts.CreateMemo(ctx, &store.Memo{
+		UID: "attachment-scope-b-memo", CreatorID: owner.ID, Content: "b", Visibility: store.Public, SpaceID: &spaceB.ID,
+	})
+	require.NoError(t, err)
+
+	createAttachment := func(uid string, memoID *int32) *store.Attachment {
+		t.Helper()
+		attachment, createErr := ts.CreateAttachment(ctx, &store.Attachment{
+			UID: uid, CreatorID: owner.ID, Filename: uid + ".txt", Type: "text/plain", MemoID: memoID,
+		})
+		require.NoError(t, createErr)
+		return attachment
+	}
+	unlinked := createAttachment("attachment-scope-unlinked", nil)
+	unassigned := createAttachment("attachment-scope-unassigned-file", &unassignedMemo.ID)
+	inSpaceANewer := createAttachment("attachment-scope-a-newer", &spaceAMemo.ID)
+	inSpaceAOlder := createAttachment("attachment-scope-a-older", &spaceAMemo.ID)
+	inSpaceB := createAttachment("attachment-scope-b-file", &spaceBMemo.ID)
+
+	baseTime := time.Now().Unix() - 100
+	for attachment, updatedTs := range map[*store.Attachment]int64{
+		inSpaceB:      baseTime + 50,
+		inSpaceANewer: baseTime + 40,
+		unlinked:      baseTime + 30,
+		inSpaceAOlder: baseTime + 20,
+		unassigned:    baseTime + 10,
+	} {
+		require.NoError(t, ts.UpdateAttachment(ctx, &store.UpdateAttachment{ID: attachment.ID, UpdatedTs: &updatedTs}))
+	}
+
+	access := &store.MemoAccessScope{UserID: &owner.ID, AllowPublic: true, AllowProtected: true}
+	limit, firstOffset := 1, 0
+	spaceAttachments, err := ts.ListAttachments(ctx, &store.FindAttachment{
+		CreatorID: &owner.ID, Access: access, Filters: []string{`space == "spaces/attachment-scope-a"`}, Limit: &limit, Offset: &firstOffset,
+	})
+	require.NoError(t, err)
+	require.Equal(t, []int32{inSpaceANewer.ID}, attachmentIDs(spaceAttachments), "filter must be applied before the first page")
+	secondOffset := 1
+	spaceAttachments, err = ts.ListAttachments(ctx, &store.FindAttachment{
+		CreatorID: &owner.ID, Access: access, Filters: []string{`space == "spaces/attachment-scope-a"`}, Limit: &limit, Offset: &secondOffset,
+	})
+	require.NoError(t, err)
+	require.Equal(t, []int32{inSpaceAOlder.ID}, attachmentIDs(spaceAttachments), "filter must be applied before the second page")
+
+	unassignedAttachments, err := ts.ListAttachments(ctx, &store.FindAttachment{
+		CreatorID: &owner.ID, Access: access, Filters: []string{`space == null`}, SkipDefaultLimit: true,
+	})
+	require.NoError(t, err)
+	require.ElementsMatch(t, []int32{unlinked.ID, unassigned.ID}, attachmentIDs(unassignedAttachments))
+}
+
 func TestAttachmentAccessScopeUsesDirectMemoAudience(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)

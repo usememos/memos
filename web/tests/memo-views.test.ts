@@ -56,6 +56,16 @@ describe("memo views", () => {
     );
   });
 
+  it("maps the Space audience without falling back to Private", () => {
+    expect(
+      buildMemoFilter({
+        filters: [],
+        includePinned: false,
+        visibilities: [Visibility.PUBLIC, Visibility.PROTECTED, Visibility.SPACE],
+      }),
+    ).toBe('visibility in ["PUBLIC", "PROTECTED", "SPACE"]');
+  });
+
   it("maps property filter factors to their CEL flags", () => {
     expect(
       buildMemoFilter({

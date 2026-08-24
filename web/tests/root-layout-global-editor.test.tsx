@@ -27,6 +27,11 @@ vi.mock("@/contexts/InstanceContext", () => ({
   useInstance: () => ({ profile: instanceState }),
 }));
 
+vi.mock("@/contexts/SpaceContext", () => ({
+  SpaceProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  useSpaceContext: () => ({ selectedSpaceName: undefined }),
+}));
+
 vi.mock("@/hooks/useCurrentUser", () => ({
   default: () => authState.currentUser,
 }));

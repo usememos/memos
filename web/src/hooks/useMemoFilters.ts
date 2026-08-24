@@ -3,21 +3,8 @@ import { type MemoFilter, useMemoFilterContext } from "@/contexts/MemoFilterCont
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoViews } from "@/hooks/useUserQueries";
 import { BUILTIN_TASKS_VIEW_FILTER, BUILTIN_TASKS_VIEW_ID, getMemoViewId } from "@/lib/memo-views";
-import { buildMemoCreatorFilter } from "@/lib/resource-names";
+import { buildMemoCreatorFilter, getVisibilityName } from "@/lib/resource-names";
 import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
-
-const getVisibilityName = (visibility: Visibility): string => {
-  switch (visibility) {
-    case Visibility.PUBLIC:
-      return "PUBLIC";
-    case Visibility.PROTECTED:
-      return "PROTECTED";
-    case Visibility.PRIVATE:
-      return "PRIVATE";
-    default:
-      return "PRIVATE";
-  }
-};
 
 const escapeFilterValue = (value: string): string => JSON.stringify(value);
 

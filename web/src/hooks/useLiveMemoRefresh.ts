@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useSyncExternalStore } from "react";
 import { getRequestToken, refreshAccessToken } from "@/connect";
 import { useAuth } from "@/contexts/AuthContext";
+import { attachmentKeys } from "@/hooks/useAttachmentQueries";
 import { memoKeys } from "@/hooks/useMemoQueries";
 import { userKeys } from "@/hooks/useUserQueries";
 
@@ -466,4 +467,5 @@ function handleSSEEvent(event: SSEChangeEvent, queryClient: ReturnType<typeof us
 function invalidateLiveMemoQueries(queryClient: ReturnType<typeof useQueryClient>) {
   queryClient.invalidateQueries({ queryKey: memoKeys.all, refetchType: "active" });
   queryClient.invalidateQueries({ queryKey: userKeys.stats(), refetchType: "active" });
+  queryClient.invalidateQueries({ queryKey: attachmentKeys.lists(), refetchType: "active" });
 }

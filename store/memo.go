@@ -80,9 +80,7 @@ type FindMemo struct {
 
 	// Domain specific fields
 	VisibilityList       []Visibility
-	SpaceID              *int32
 	CommentContextMemoID *int32
-	Unassigned           bool
 	Access               *MemoAccessScope
 	ExcludeContent       bool
 	ExcludeComments      bool

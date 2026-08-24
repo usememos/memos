@@ -89,27 +89,6 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 	}
 	memoFind.Access = accessScope
 
-	if request.Scope != nil {
-		switch scope := request.Scope.(type) {
-		case *v1pb.ListMemosRequest_Space:
-			if currentUser == nil {
-				return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
-			}
-			space, err := s.resolveWritableSpaceByName(ctx, scope.Space, currentUser.ID)
-			if err != nil {
-				return nil, err
-			}
-			memoFind.SpaceID = &space.ID
-		case *v1pb.ListMemosRequest_Unassigned:
-			if !scope.Unassigned {
-				return nil, status.Errorf(codes.InvalidArgument, "unassigned scope must be true")
-			}
-			memoFind.Unassigned = true
-		default:
-			return nil, status.Errorf(codes.InvalidArgument, "unsupported memo scope")
-		}
-	}
-
 	if request.State == v1pb.State_ARCHIVED {
 		state := store.Archived
 		memoFind.RowStatus = &state
@@ -134,8 +113,8 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 	}
 
 	if request.Filter != "" {
-		if err := s.validateFilter(ctx, request.Filter); err != nil {
-			return nil, status.Errorf(codes.InvalidArgument, "invalid filter: %v", err)
+		if err := s.validateMemoFilterForUser(ctx, request.Filter, currentUser); err != nil {
+			return nil, err
 		}
 		memoFind.Filters = append(memoFind.Filters, request.Filter)
 	}

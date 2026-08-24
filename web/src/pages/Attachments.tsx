@@ -1,6 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import { LoaderCircleIcon, Trash2Icon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import {
   AttachmentAudioRows,
@@ -16,10 +16,12 @@ import PreviewImageDialog from "@/components/PreviewImageDialog";
 import { Button } from "@/components/ui/button";
 import { attachmentServiceClient } from "@/connect";
 import { useAppSidebar } from "@/contexts/AppSidebarContext";
+import { useSpaceContext } from "@/contexts/SpaceContext";
 import { useAttachmentLibrary, useUnusedAttachmentLibrary } from "@/hooks/useAttachmentLibrary";
 import { useBatchDeleteAttachments } from "@/hooks/useAttachmentQueries";
 import useDialog from "@/hooks/useDialog";
 import i18n from "@/i18n";
+import { combineCELFilters } from "@/lib/cel-filter";
 import { handleError } from "@/lib/error";
 import { ListAttachmentsRequestSchema } from "@/types/proto/api/v1/attachment_service_pb";
 import { useTranslate } from "@/utils/i18n";
@@ -37,14 +39,18 @@ const chunkNames = (names: string[], size: number) => {
   return chunks;
 };
 
-const listUnusedAttachmentNames = async () => {
+const listUnusedAttachmentNames = async (filter: string | undefined, selectedSpaceName: string | undefined) => {
+  if (selectedSpaceName) {
+    return [];
+  }
+
   const names: string[] = [];
   let pageToken = "";
 
   do {
     const response = await attachmentServiceClient.listAttachments(
       create(ListAttachmentsRequestSchema, {
-        filter: "memo_id == null",
+        filter: combineCELFilters("memo_id == null", filter),
         pageSize: UNUSED_PAGE_SIZE,
         pageToken,
       }),
@@ -60,7 +66,8 @@ const listUnusedAttachmentNames = async () => {
 const Attachments = () => {
   const t = useTranslate();
   const deleteUnusedAttachmentsDialog = useDialog();
-  const { attachmentSection } = useAppSidebar();
+  const { attachmentSection, setAttachmentSection } = useAppSidebar();
+  const { memoFilter, selectedSpaceName } = useSpaceContext();
   const [previewState, setPreviewState] = useState({ open: false, initialIndex: 0 });
   const { mutateAsync: batchDeleteAttachments, isPending: isDeletingUnused } = useBatchDeleteAttachments();
   const {
@@ -77,7 +84,7 @@ const Attachments = () => {
     mediaPreviewItems,
     refetch,
     stats,
-  } = useAttachmentLibrary(i18n.language);
+  } = useAttachmentLibrary(i18n.language, memoFilter);
   const {
     error: unusedError,
     isComplete: unusedIsComplete,
@@ -85,7 +92,13 @@ const Attachments = () => {
     isLoading: unusedIsLoading,
     refetch: refetchUnused,
     unusedItems: completeUnusedItems,
-  } = useUnusedAttachmentLibrary(i18n.language, attachmentSection === "unused");
+  } = useUnusedAttachmentLibrary(i18n.language, memoFilter, attachmentSection === "unused" && !selectedSpaceName);
+
+  useEffect(() => {
+    if (selectedSpaceName && attachmentSection === "unused") {
+      setAttachmentSection("all");
+    }
+  }, [attachmentSection, selectedSpaceName, setAttachmentSection]);
 
   const handlePreview = (itemId: string) => {
     const initialIndex = mediaPreviewItems.findIndex((item) => item.id === itemId);
@@ -94,7 +107,7 @@ const Attachments = () => {
 
   const handleDeleteUnusedAttachments = async () => {
     try {
-      const names = await listUnusedAttachmentNames();
+      const names = await listUnusedAttachmentNames(memoFilter, selectedSpaceName);
 
       if (names.length === 0) {
         await Promise.all([refetch(), refetchUnused()]);

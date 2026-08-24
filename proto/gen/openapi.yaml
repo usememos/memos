@@ -61,7 +61,11 @@ paths:
                     Optional. Filter to apply to the list results.
                      Example: "mime_type==\"image/png\"" or "filename.contains(\"test\")"
                      Supported operators: =, !=, <, <=, >, >=, : (contains), in
-                     Supported fields: filename, mime_type, create_time, memo
+                     Supported fields: filename, mime_type, create_time, memo_id, space.
+                     `space` only supports a non-negated `==` comparison with a Space resource
+                     name or null.
+                     `space` is the linked memo's space resource name, or null when the
+                     attachment is unlinked or its linked memo has no space.
                   schema:
                     type: string
                 - name: orderBy
@@ -663,6 +667,7 @@ paths:
                        content (string), creator (string, e.g. "users/1"),
                        created_ts / updated_ts (timestamp), pinned (bool),
                        visibility (string: PRIVATE | PROTECTED | PUBLIC | SPACE),
+                       space (string resource name or null when the memo has no space),
                        tags (list<string>; match with `"work" in tags`, not `tag == "work"`),
                        has_task_list / has_link / has_code / has_incomplete_tasks (bool),
                        has_location (bool; true when the memo has a location attached).
@@ -670,6 +675,7 @@ paths:
                      the create_time / update_time names used by order_by.
                      Examples:
                        pinned == true && visibility == "PUBLIC"
+                       space == "spaces/team" or space == null
                        tags.exists(t, t == "urgent")
                        content.contains("roadmap") && created_ts > now - duration("168h")
                   schema:
@@ -677,18 +683,6 @@ paths:
                 - name: showDeleted
                   in: query
                   description: Optional. If true, show deleted memos in the response.
-                  schema:
-                    type: boolean
-                - name: space
-                  in: query
-                  description: |-
-                    Optional. Limit results to readable non-comment memos in a space of
-                     which the caller is an active member.
-                  schema:
-                    type: string
-                - name: unassigned
-                  in: query
-                  description: Optional. Limit results to memos with no space. Must be true when set.
                   schema:
                     type: boolean
             responses:
@@ -2624,6 +2618,13 @@ paths:
                   in: path
                   description: The user id.
                   required: true
+                  schema:
+                    type: string
+                - name: filter
+                  in: query
+                  description: |-
+                    Optional. CEL expression selecting the readable non-comment memos to
+                     include. Supports the same fields as ListMemos, including `space`.
                   schema:
                     type: string
             responses:

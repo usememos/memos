@@ -13,6 +13,7 @@ const mocks = vi.hoisted(() => ({
   loadMemoEditor: vi.fn(),
   setMobileOpen: vi.fn(),
   setQuickFindOpen: vi.fn(),
+  selectedSpaceName: undefined as string | undefined,
 }));
 
 vi.mock("@/components/MemoEditor/loader", () => ({
@@ -25,6 +26,10 @@ vi.mock("@/contexts/AppSidebarContext", () => ({
 
 vi.mock("@/contexts/AuthContext", () => ({
   useAuth: () => ({ isUserSettingsInitialized: mocks.isUserSettingsInitialized }),
+}));
+
+vi.mock("@/contexts/SpaceContext", () => ({
+  useSpaceContext: () => ({ selectedSpaceName: mocks.selectedSpaceName }),
 }));
 
 vi.mock("@/hooks/useCurrentUser", () => ({
@@ -111,6 +116,7 @@ describe("GlobalMemoEditorProvider", () => {
     mocks.loadMemoEditor.mockResolvedValue({ default: MockMemoEditor });
     mocks.setMobileOpen.mockClear();
     mocks.setQuickFindOpen.mockClear();
+    mocks.selectedSpaceName = undefined;
   });
 
   it("opens a modal focus-mode editor, closes the sidebar surfaces, and restores focus after Escape", async () => {
@@ -253,5 +259,21 @@ describe("GlobalMemoEditorProvider", () => {
     fireEvent.keyDown(window, { key: "m", shiftKey: true, metaKey: true });
 
     expect(mocks.loadMemoEditor).not.toHaveBeenCalled();
+  });
+
+  it("snapshots the selected Space when opening the composer", async () => {
+    mocks.selectedSpaceName = "spaces/product";
+    await openViaTrigger();
+
+    expect(mocks.editorProps).toMatchObject({
+      cacheKey: "global-memo-editor:spaces/product",
+      defaultSpace: "spaces/product",
+    });
+
+    mocks.selectedSpaceName = "spaces/other";
+    expect(mocks.editorProps).toMatchObject({
+      cacheKey: "global-memo-editor:spaces/product",
+      defaultSpace: "spaces/product",
+    });
   });
 });

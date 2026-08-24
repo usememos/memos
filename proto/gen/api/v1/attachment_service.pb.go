@@ -783,7 +783,11 @@ type ListAttachmentsRequest struct {
 	// Optional. Filter to apply to the list results.
 	// Example: "mime_type==\"image/png\"" or "filename.contains(\"test\")"
 	// Supported operators: =, !=, <, <=, >, >=, : (contains), in
-	// Supported fields: filename, mime_type, create_time, memo
+	// Supported fields: filename, mime_type, create_time, memo_id, space.
+	// `space` only supports a non-negated `==` comparison with a Space resource
+	// name or null.
+	// `space` is the linked memo's space resource name, or null when the
+	// attachment is unlinked or its linked memo has no space.
 	Filter string `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
 	// Optional. The order to sort results by.
 	// Example: "create_time desc" or "filename asc"
@@ -1170,13 +1174,14 @@ const file_api_v1_attachment_service_proto_rawDesc = "" +
 	"\n" +
 	"attachment\x18\x01 \x01(\v2\x18.memos.api.v1.AttachmentB\x03\xe0A\x02R\n" +
 	"attachment\x12(\n" +
-	"\rattachment_id\x18\x02 \x01(\tB\x03\xe0A\x01R\fattachmentId\"\x9b\x01\n" +
+	"\rattachment_id\x18\x02 \x01(\tB\x03\xe0A\x01R\fattachmentId\"\xba\x01\n" +
 	"\x16ListAttachmentsRequest\x12 \n" +
 	"\tpage_size\x18\x01 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
 	"page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
 	"\x06filter\x18\x03 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x04 \x01(\tB\x03\xe0A\x01R\aorderBy\"}\n" +
+	"\border_by\x18\x04 \x01(\tB\x03\xe0A\x01R\aorderByJ\x04\b\x05\x10\x06J\x04\b\x06\x10\aR\x05spaceR\n" +
+	"unassigned\"}\n" +
 	"\x17ListAttachmentsResponse\x12:\n" +
 	"\vattachments\x18\x01 \x03(\v2\x18.memos.api.v1.AttachmentR\vattachments\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"K\n" +

@@ -151,6 +151,7 @@ func (d *DB) ListAttachments(ctx context.Context, find *store.FindAttachment) ([
 
 	query := "SELECT " + strings.Join(fields, ", ") + " FROM `attachment`" + " " +
 		"LEFT JOIN `memo` ON `attachment`.`memo_id` = `memo`.`id`" + " " +
+		"LEFT JOIN `space` AS `attachment_space` ON `memo`.`space_id` = `attachment_space`.`id`" + " " +
 		"WHERE " + strings.Join(where, " AND ") + " " +
 		"ORDER BY `updated_ts` DESC"
 	if find.Limit != nil {

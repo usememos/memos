@@ -17,6 +17,12 @@ vi.mock("@/contexts/AuthContext", () => ({
   useAuth: () => ({ currentUser: { name: "users/test" } }),
 }));
 
+vi.mock("@/hooks/useAttachmentQueries", () => ({
+  attachmentKeys: {
+    lists: () => ["attachments", "list"],
+  },
+}));
+
 vi.mock("@/hooks/useMemoQueries", () => ({
   memoKeys: {
     all: ["memos"],
@@ -230,6 +236,8 @@ describe("useLiveMemoRefresh", () => {
       expect(secondInvalidate).toHaveBeenCalledWith({ queryKey: ["memos"], refetchType: "active" });
       expect(firstInvalidate).toHaveBeenCalledWith({ queryKey: ["users", "stats"], refetchType: "active" });
       expect(secondInvalidate).toHaveBeenCalledWith({ queryKey: ["users", "stats"], refetchType: "active" });
+      expect(firstInvalidate).toHaveBeenCalledWith({ queryKey: ["attachments", "list"], refetchType: "active" });
+      expect(secondInvalidate).toHaveBeenCalledWith({ queryKey: ["attachments", "list"], refetchType: "active" });
     });
 
     first.unmount();

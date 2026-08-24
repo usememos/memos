@@ -556,6 +556,7 @@ type ListMemosRequest struct {
 	//	content (string), creator (string, e.g. "users/1"),
 	//	created_ts / updated_ts (timestamp), pinned (bool),
 	//	visibility (string: PRIVATE | PROTECTED | PUBLIC | SPACE),
+	//	space (string resource name or null when the memo has no space),
 	//	tags (list<string>; match with `"work" in tags`, not `tag == "work"`),
 	//	has_task_list / has_link / has_code / has_incomplete_tasks (bool),
 	//	has_location (bool; true when the memo has a location attached).
@@ -565,16 +566,12 @@ type ListMemosRequest struct {
 	// Examples:
 	//
 	//	pinned == true && visibility == "PUBLIC"
+	//	space == "spaces/team" or space == null
 	//	tags.exists(t, t == "urgent")
 	//	content.contains("roadmap") && created_ts > now - duration("168h")
 	Filter string `protobuf:"bytes,5,opt,name=filter,proto3" json:"filter,omitempty"`
 	// Optional. If true, show deleted memos in the response.
-	ShowDeleted bool `protobuf:"varint,6,opt,name=show_deleted,json=showDeleted,proto3" json:"show_deleted,omitempty"`
-	// Types that are valid to be assigned to Scope:
-	//
-	//	*ListMemosRequest_Space
-	//	*ListMemosRequest_Unassigned
-	Scope         isListMemosRequest_Scope `protobuf_oneof:"scope"`
+	ShowDeleted   bool `protobuf:"varint,6,opt,name=show_deleted,json=showDeleted,proto3" json:"show_deleted,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -650,50 +647,6 @@ func (x *ListMemosRequest) GetShowDeleted() bool {
 	}
 	return false
 }
-
-func (x *ListMemosRequest) GetScope() isListMemosRequest_Scope {
-	if x != nil {
-		return x.Scope
-	}
-	return nil
-}
-
-func (x *ListMemosRequest) GetSpace() string {
-	if x != nil {
-		if x, ok := x.Scope.(*ListMemosRequest_Space); ok {
-			return x.Space
-		}
-	}
-	return ""
-}
-
-func (x *ListMemosRequest) GetUnassigned() bool {
-	if x != nil {
-		if x, ok := x.Scope.(*ListMemosRequest_Unassigned); ok {
-			return x.Unassigned
-		}
-	}
-	return false
-}
-
-type isListMemosRequest_Scope interface {
-	isListMemosRequest_Scope()
-}
-
-type ListMemosRequest_Space struct {
-	// Optional. Limit results to readable non-comment memos in a space of
-	// which the caller is an active member.
-	Space string `protobuf:"bytes,7,opt,name=space,proto3,oneof"`
-}
-
-type ListMemosRequest_Unassigned struct {
-	// Optional. Limit results to memos with no space. Must be true when set.
-	Unassigned bool `protobuf:"varint,8,opt,name=unassigned,proto3,oneof"`
-}
-
-func (*ListMemosRequest_Space) isListMemosRequest_Scope() {}
-
-func (*ListMemosRequest_Unassigned) isListMemosRequest_Scope() {}
 
 type ListMemosResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -2424,7 +2377,7 @@ const file_api_v1_memo_service_proto_rawDesc = "" +
 	"\tlongitude\x18\x03 \x01(\x01B\x03\xe0A\x01R\tlongitude\"^\n" +
 	"\x11CreateMemoRequest\x12+\n" +
 	"\x04memo\x18\x01 \x01(\v2\x12.memos.api.v1.MemoB\x03\xe0A\x02R\x04memo\x12\x1c\n" +
-	"\amemo_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x06memoId\"\xc9\x02\n" +
+	"\amemo_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x06memoId\"\x8c\x02\n" +
 	"\x10ListMemosRequest\x12 \n" +
 	"\tpage_size\x18\x01 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
@@ -2432,13 +2385,8 @@ const file_api_v1_memo_service_proto_rawDesc = "" +
 	"\x05state\x18\x03 \x01(\x0e2\x13.memos.api.v1.StateB\x03\xe0A\x01R\x05state\x12\x1e\n" +
 	"\border_by\x18\x04 \x01(\tB\x03\xe0A\x01R\aorderBy\x12\x1b\n" +
 	"\x06filter\x18\x05 \x01(\tB\x03\xe0A\x01R\x06filter\x12&\n" +
-	"\fshow_deleted\x18\x06 \x01(\bB\x03\xe0A\x01R\vshowDeleted\x12/\n" +
-	"\x05space\x18\a \x01(\tB\x17\xfaA\x14\n" +
-	"\x12memos.api.v1/SpaceH\x00R\x05space\x12 \n" +
-	"\n" +
-	"unassigned\x18\b \x01(\bH\x00R\n" +
-	"unassignedB\a\n" +
-	"\x05scope\"e\n" +
+	"\fshow_deleted\x18\x06 \x01(\bB\x03\xe0A\x01R\vshowDeletedJ\x04\b\a\x10\bJ\x04\b\b\x10\tR\x05spaceR\n" +
+	"unassigned\"e\n" +
 	"\x11ListMemosResponse\x12(\n" +
 	"\x05memos\x18\x01 \x03(\v2\x12.memos.api.v1.MemoR\x05memos\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"?\n" +
@@ -2739,10 +2687,6 @@ func file_api_v1_memo_service_proto_init() {
 	file_api_v1_attachment_service_proto_init()
 	file_api_v1_common_proto_init()
 	file_api_v1_memo_service_proto_msgTypes[1].OneofWrappers = []any{}
-	file_api_v1_memo_service_proto_msgTypes[4].OneofWrappers = []any{
-		(*ListMemosRequest_Space)(nil),
-		(*ListMemosRequest_Unassigned)(nil),
-	}
 	file_api_v1_memo_service_proto_msgTypes[23].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

@@ -25,6 +25,7 @@ vi.mock("@/contexts/ViewContext", async () => {
 
 import { useFilteredMemoStats } from "@/hooks/useFilteredMemoStats";
 import { useAllUserStats, useUserStats } from "@/hooks/useUserQueries";
+import { State } from "@/types/proto/api/v1/common_pb";
 
 const wrapper = ({ children }: { children: ReactNode }) => children as never;
 
@@ -117,7 +118,55 @@ describe("useFilteredMemoStats", () => {
 
     renderHook(() => useFilteredMemoStats({ userName: "users/test", context: "explore", enabled: false }), { wrapper });
 
-    expect(useUserStats).toHaveBeenCalledWith("users/test", { enabled: false });
+    expect(useUserStats).toHaveBeenCalledWith("users/test", { enabled: false, filter: undefined });
     expect(useAllUserStats).toHaveBeenCalledWith(expect.anything(), { enabled: false });
+  });
+
+  it("passes the selected Space filter to Home statistics", () => {
+    mockUseView.mockReturnValue({
+      timeBasis: "create_time",
+      orderByTimeAsc: false,
+      setOrderByTimeAsc: vi.fn(),
+      setTimeBasis: vi.fn(),
+    });
+    const filter = 'space == "spaces/product"';
+
+    renderHook(() => useFilteredMemoStats({ userName: "users/test", context: "home", filter }), { wrapper });
+
+    expect(useUserStats).toHaveBeenCalledWith("users/test", { enabled: true, filter });
+  });
+
+  it("scopes Explore statistics and includes the Space audience", () => {
+    mockUseView.mockReturnValue({
+      timeBasis: "create_time",
+      orderByTimeAsc: false,
+      setOrderByTimeAsc: vi.fn(),
+      setTimeBasis: vi.fn(),
+    });
+    const filter = 'space == "spaces/product"';
+
+    renderHook(() => useFilteredMemoStats({ context: "explore", filter, includeSpaceVisibility: true }), { wrapper });
+
+    expect(useAllUserStats).toHaveBeenCalledWith(
+      {
+        state: State.NORMAL,
+        filter: '(space == "spaces/product") && (visibility in ["PUBLIC", "PROTECTED", "SPACE"])',
+      },
+      { enabled: true },
+    );
+  });
+
+  it("uses the no-Space filter for Memos statistics", () => {
+    mockUseView.mockReturnValue({
+      timeBasis: "create_time",
+      orderByTimeAsc: false,
+      setOrderByTimeAsc: vi.fn(),
+      setTimeBasis: vi.fn(),
+    });
+    const filter = "space == null";
+
+    renderHook(() => useFilteredMemoStats({ context: "archived", filter }), { wrapper });
+
+    expect(useAllUserStats).toHaveBeenCalledWith({ state: State.ARCHIVED, filter }, { enabled: true });
   });
 });

@@ -10,6 +10,8 @@ export interface MemoEditorProps {
   /** Existing memo to edit. When provided, the editor initializes from it without fetching. */
   memo?: Memo;
   parentMemoName?: string;
+  /** Assigns a newly created top-level memo to this Space. Ignored for edits and comments. */
+  defaultSpace?: string;
   autoFocus?: boolean;
   /**
    * Marks the instance as *hosted*: a host (the global composer dialog) presents

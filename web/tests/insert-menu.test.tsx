@@ -10,6 +10,7 @@ vi.mock("@/utils/i18n", async (importOriginal) => ({
 }));
 vi.mock("@/hooks/useCurrentUser", () => ({ default: () => undefined }));
 vi.mock("@/contexts/AuthContext", () => ({ useAuth: () => ({ userGeneralSetting: undefined }) }));
+vi.mock("@/contexts/SpaceContext", () => ({ useSpaceContext: () => ({ selectedSpaceName: undefined }) }));
 vi.mock("@/components/map/useReverseGeocoding", () => ({ useReverseGeocoding: () => ({ data: undefined }) }));
 
 beforeAll(() => {

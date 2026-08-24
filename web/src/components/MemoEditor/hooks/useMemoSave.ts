@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { toast } from "react-hot-toast";
 import { useNewMemo } from "@/contexts/NewMemoContext";
+import { attachmentKeys } from "@/hooks/useAttachmentQueries";
 import { memoKeys } from "@/hooks/useMemoQueries";
 import { userKeys } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
@@ -13,6 +14,7 @@ import { useEditorContext } from "../state";
 interface UseMemoSaveOptions {
   memoName?: string;
   parentMemoName?: string;
+  defaultSpace?: string;
   defaultVisibility?: Visibility;
   defaultCreateTime?: Date;
   discardDraft: () => void;
@@ -28,6 +30,7 @@ interface UseMemoSaveOptions {
 export function useMemoSave({
   memoName,
   parentMemoName,
+  defaultSpace,
   defaultVisibility,
   defaultCreateTime,
   discardDraft,
@@ -50,7 +53,7 @@ export function useMemoSave({
     dispatch(actions.setLoading("saving", true));
 
     try {
-      const result = await memoService.save(state, { memoName, parentMemoName });
+      const result = await memoService.save(state, { memoName, parentMemoName, space: defaultSpace });
 
       if (!result.hasChanges) {
         toast.error(t("editor.no-changes-detected"));
@@ -64,6 +67,7 @@ export function useMemoSave({
       const invalidationPromises = [
         queryClient.invalidateQueries({ queryKey: memoKeys.lists() }),
         queryClient.invalidateQueries({ queryKey: userKeys.stats() }),
+        queryClient.invalidateQueries({ queryKey: attachmentKeys.lists() }),
       ];
       if (memoName) {
         invalidationPromises.push(queryClient.invalidateQueries({ queryKey: memoKeys.detail(memoName) }));
@@ -98,6 +102,7 @@ export function useMemoSave({
   }, [
     actions,
     defaultCreateTime,
+    defaultSpace,
     defaultVisibility,
     discardDraft,
     dispatch,

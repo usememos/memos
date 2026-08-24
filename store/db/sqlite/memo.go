@@ -154,9 +154,6 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		}
 		where = append(where, fmt.Sprintf("`memo`.`visibility` IN (%s)", strings.Join(placeholder, ",")))
 	}
-	if v := find.SpaceID; v != nil {
-		where, args = append(where, "`memo`.`space_id` = ?"), append(args, *v)
-	}
 	if v := find.CommentContextMemoID; v != nil {
 		where, args = append(where, `EXISTS (
 			SELECT 1 FROM memo_relation AS comment_context
@@ -164,9 +161,6 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 				AND comment_context.related_memo_id = ?
 				AND comment_context.type = 'COMMENT'
 		)`), append(args, *v)
-	}
-	if find.Unassigned {
-		where = append(where, "`memo`.`space_id` IS NULL")
 	}
 	if access := find.Access; access != nil {
 		where = append(where, sqliteMemoAccessPredicate(access, "`memo`", "`access_member`", &args))
@@ -216,6 +210,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 
 	query := "SELECT " + strings.Join(fields, ", ") + " FROM `memo` " +
 		"LEFT JOIN `user` AS `memo_creator` ON `memo`.`creator_id` = `memo_creator`.`id` " +
+		"LEFT JOIN `space` AS `memo_space` ON `memo`.`space_id` = `memo_space`.`id` " +
 		"WHERE " + strings.Join(where, " AND ") + " " +
 		"ORDER BY " + strings.Join(orderBy, ", ")
 	if find.Limit != nil {

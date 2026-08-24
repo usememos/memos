@@ -11,6 +11,8 @@ import {
 } from "@/types/proto/api/v1/memo_service_pb";
 
 const clients = vi.hoisted(() => ({
+  createMemo: vi.fn(),
+  createMemoComment: vi.fn(),
   getMemo: vi.fn(),
   updateMemo: vi.fn(),
 }));
@@ -20,8 +22,8 @@ vi.mock("@/connect", () => ({
     createAttachment: vi.fn(),
   },
   memoServiceClient: {
-    createMemo: vi.fn(),
-    createMemoComment: vi.fn(),
+    createMemo: clients.createMemo,
+    createMemoComment: clients.createMemoComment,
     getMemo: clients.getMemo,
     updateMemo: clients.updateMemo,
   },
@@ -47,7 +49,37 @@ const createEditorState = (memo: Memo): EditorState => ({
 
 describe("memo editor relation updates", () => {
   beforeEach(() => {
+    clients.createMemo.mockReset().mockImplementation(async ({ memo }: { memo: Memo }) => ({ ...memo, name: "memos/created" }));
+    clients.createMemoComment
+      .mockReset()
+      .mockImplementation(async ({ comment }: { comment: Memo }) => ({ ...comment, name: "memos/comment" }));
+    clients.getMemo.mockReset();
+    clients.updateMemo.mockReset();
     clients.updateMemo.mockImplementation(async ({ memo }: { memo: Memo }) => memo);
+  });
+
+  it("assigns a new top-level memo to the selected Space", async () => {
+    const state = createInitialState();
+    state.content = "Roadmap";
+
+    await memoService.save(state, { space: "spaces/product" });
+
+    expect(clients.createMemo).toHaveBeenCalledWith({
+      memo: expect.objectContaining({ content: "Roadmap", space: "spaces/product" }),
+    });
+  });
+
+  it("does not inherit the selected Space when creating a comment", async () => {
+    const state = createInitialState();
+    state.content = "Reply";
+
+    await memoService.save(state, { parentMemoName: "memos/parent", space: "spaces/product" });
+
+    expect(clients.createMemoComment).toHaveBeenCalledOnce();
+    const request = clients.createMemoComment.mock.calls[0][0];
+    expect(request.name).toBe("memos/parent");
+    expect(request.comment.content).toBe("Reply");
+    expect(request.comment.space).toBeUndefined();
   });
 
   it("sends only mutable references when editing a comment", async () => {
