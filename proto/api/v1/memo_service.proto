@@ -340,6 +340,7 @@ message ListMemosRequest {
   //   content (string), creator (string, e.g. "users/1"),
   //   created_ts / updated_ts (timestamp), pinned (bool),
   //   visibility (string: PRIVATE | PROTECTED | PUBLIC | SPACE),
+  //   space (string resource name or null when the memo has no space),
   //   tags (list<string>; match with `"work" in tags`, not `tag == "work"`),
   //   has_task_list / has_link / has_code / has_incomplete_tasks (bool),
   //   has_location (bool; true when the memo has a location attached).
@@ -347,6 +348,7 @@ message ListMemosRequest {
   // the create_time / update_time names used by order_by.
   // Examples:
   //   pinned == true && visibility == "PUBLIC"
+  //   space == "spaces/team" or space == null
   //   tags.exists(t, t == "urgent")
   //   content.contains("roadmap") && created_ts > now - duration("168h")
   string filter = 5 [(google.api.field_behavior) = OPTIONAL];
@@ -354,14 +356,8 @@ message ListMemosRequest {
   // Optional. If true, show deleted memos in the response.
   bool show_deleted = 6 [(google.api.field_behavior) = OPTIONAL];
 
-  oneof scope {
-    // Optional. Limit results to readable non-comment memos in a space of
-    // which the caller is an active member.
-    string space = 7 [(google.api.resource_reference) = {type: "memos.api.v1/Space"}];
-
-    // Optional. Limit results to memos with no space. Must be true when set.
-    bool unassigned = 8;
-  }
+  reserved 7, 8;
+  reserved "space", "unassigned";
 }
 
 message ListMemosResponse {

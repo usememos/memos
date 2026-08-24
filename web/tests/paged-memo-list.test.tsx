@@ -12,15 +12,19 @@ const feed = vi.hoisted(() => ({
   fetchNextPage: vi.fn(async () => undefined),
 }));
 const readiness = vi.hoisted(() => ({ userSettings: true }));
+const memoQuery = vi.hoisted(() => ({ request: undefined as Record<string, unknown> | undefined }));
 
 vi.mock("@/hooks/useMemoQueries", () => ({
-  useInfiniteMemos: () => ({
-    data: { pages: [{ memos: feed.memos, nextPageToken: "" }] },
-    fetchNextPage: feed.fetchNextPage,
-    hasNextPage: feed.hasNextPage,
-    isFetchingNextPage: false,
-    isLoading: feed.isLoading,
-  }),
+  useInfiniteMemos: (request: Record<string, unknown>) => {
+    memoQuery.request = request;
+    return {
+      data: { pages: [{ memos: feed.memos, nextPageToken: "" }] },
+      fetchNextPage: feed.fetchNextPage,
+      hasNextPage: feed.hasNextPage,
+      isFetchingNextPage: false,
+      isLoading: feed.isLoading,
+    };
+  },
 }));
 
 vi.mock("@/contexts/MemoFilterContext", () => ({
@@ -68,6 +72,7 @@ describe("<PagedMemoList>", () => {
     feed.isLoading = false;
     feed.fetchNextPage.mockClear();
     readiness.userSettings = true;
+    memoQuery.request = undefined;
   });
 
   it("keeps fetched memo content hidden until privacy settings settle", () => {
@@ -151,6 +156,18 @@ describe("<PagedMemoList>", () => {
 
     expect(screen.getByText("No data found.")).toBeInTheDocument();
     expect(screen.getByTestId("placeholder-sprite")).toBeInTheDocument();
+  });
+
+  it("combines the selected Space filter with the memo list filter", () => {
+    render(
+      <QueryClientProvider client={new QueryClient()}>
+        <PagedMemoList renderer={() => <div />} contextFilter={'space == "spaces/product"'} filter="pinned == true" />
+      </QueryClientProvider>,
+    );
+
+    expect(memoQuery.request).toMatchObject({
+      filter: '(space == "spaces/product") && (pinned == true)',
+    });
   });
 
   it("shows the empty state below route-owned leading content", () => {

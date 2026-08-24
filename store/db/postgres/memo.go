@@ -146,9 +146,6 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		}
 		where = append(where, fmt.Sprintf("memo.visibility in (%s)", strings.Join(holders, ", ")))
 	}
-	if v := find.SpaceID; v != nil {
-		where, args = append(where, "memo.space_id = "+placeholder(len(args)+1)), append(args, *v)
-	}
 	if v := find.CommentContextMemoID; v != nil {
 		contextHolder := placeholder(len(args) + 1)
 		args = append(args, *v)
@@ -158,9 +155,6 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 				AND comment_context.related_memo_id = `+contextHolder+`
 				AND comment_context.type = 'COMMENT'
 		)`)
-	}
-	if find.Unassigned {
-		where = append(where, "memo.space_id IS NULL")
 	}
 	if access := find.Access; access != nil {
 		where = append(where, postgresMemoAccessPredicate(access, "memo", "access_member", &args))
@@ -211,6 +205,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	query := `SELECT ` + strings.Join(fields, ", ") + `
 		FROM memo
 		LEFT JOIN "user" AS memo_creator ON memo.creator_id = memo_creator.id
+		LEFT JOIN space AS memo_space ON memo.space_id = memo_space.id
 		WHERE ` + strings.Join(where, " AND ") + `
 		ORDER BY ` + strings.Join(orderBy, ", ")
 	if find.Limit != nil {

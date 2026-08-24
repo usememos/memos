@@ -74,6 +74,33 @@ func TestCompileRejectsStartsWithOnUnsupportedField(t *testing.T) {
 	require.Contains(t, err.Error(), "does not support text matching")
 }
 
+func TestRenderSpaceFilters(t *testing.T) {
+	t.Parallel()
+
+	for _, schema := range []Schema{NewSchema(), NewAttachmentSchema()} {
+		engine, err := NewEngine(schema)
+		require.NoError(t, err)
+		for _, dialect := range []DialectName{DialectSQLite, DialectMySQL, DialectPostgres} {
+			assigned, err := engine.CompileToStatement(
+				context.Background(),
+				`space == "spaces/team"`,
+				RenderOptions{Dialect: dialect},
+			)
+			require.NoError(t, err, schema.Name, dialect)
+			require.Contains(t, assigned.SQL, "spaces/", schema.Name, dialect)
+			require.Equal(t, []any{"spaces/team"}, assigned.Args, schema.Name, dialect)
+
+			unassigned, err := engine.CompileToStatement(context.Background(), `space == null`, RenderOptions{Dialect: dialect})
+			require.NoError(t, err, schema.Name, dialect)
+			require.Contains(t, unassigned.SQL, "IS NULL", schema.Name, dialect)
+			require.Empty(t, unassigned.Args, schema.Name, dialect)
+		}
+
+		_, err = engine.Compile(context.Background(), `space != null`)
+		require.ErrorContains(t, err, `operator != not allowed for field "space"`)
+	}
+}
+
 func TestCompileContainsEscapesLikeWildcards(t *testing.T) {
 	t.Parallel()
 

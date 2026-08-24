@@ -480,6 +480,109 @@ func TestLinkedAttachmentMutationsRevalidateMemoSpaceMembership(t *testing.T) {
 	require.NoError(t, err)
 }
 
+func TestListAttachmentsSpaceFilter(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	owner, err := ts.CreateRegularUser(ctx, "attachment-scope-owner")
+	require.NoError(t, err)
+	member, err := ts.CreateRegularUser(ctx, "attachment-scope-member")
+	require.NoError(t, err)
+	outsider, err := ts.CreateRegularUser(ctx, "attachment-scope-outsider")
+	require.NoError(t, err)
+	spaceA, err := ts.Store.CreateSpace(ctx, &store.Space{UID: "attachment-api-scope-a", Title: "A"}, owner.ID)
+	require.NoError(t, err)
+	_, err = ts.Store.CreateSpaceMember(ctx, &store.SpaceMember{
+		SpaceID: spaceA.ID, UserID: member.ID, Role: store.SpaceMemberRoleUser,
+	}, owner.ID)
+	require.NoError(t, err)
+	spaceB, err := ts.Store.CreateSpace(ctx, &store.Space{UID: "attachment-api-scope-b", Title: "B"}, owner.ID)
+	require.NoError(t, err)
+
+	unassignedMemo, err := ts.Store.CreateMemo(ctx, &store.Memo{
+		UID: "attachment-api-unassigned", CreatorID: owner.ID, Content: "unassigned", Visibility: store.Private,
+	})
+	require.NoError(t, err)
+	spaceAMemo, err := ts.Store.CreateMemo(ctx, &store.Memo{
+		UID: "attachment-api-space-a", CreatorID: owner.ID, Content: "a", Visibility: store.Private, SpaceID: &spaceA.ID,
+	})
+	require.NoError(t, err)
+	spaceBMemo, err := ts.Store.CreateMemo(ctx, &store.Memo{
+		UID: "attachment-api-space-b", CreatorID: owner.ID, Content: "b", Visibility: store.Public, SpaceID: &spaceB.ID,
+	})
+	require.NoError(t, err)
+
+	createAttachment := func(uid string, memoID *int32) {
+		t.Helper()
+		_, createErr := ts.Store.CreateAttachment(ctx, &store.Attachment{
+			UID: uid, CreatorID: owner.ID, Filename: uid + ".txt", Type: "text/plain", MemoID: memoID,
+		})
+		require.NoError(t, createErr)
+	}
+	createAttachment("attachment-api-unlinked", nil)
+	createAttachment("attachment-api-unassigned-file", &unassignedMemo.ID)
+	createAttachment("attachment-api-space-a-file", &spaceAMemo.ID)
+	createAttachment("attachment-api-space-b-file", &spaceBMemo.ID)
+
+	attachmentFilenames := func(response *v1pb.ListAttachmentsResponse) []string {
+		t.Helper()
+		filenames := make([]string, 0, len(response.Attachments))
+		for _, attachment := range response.Attachments {
+			filenames = append(filenames, attachment.Filename)
+		}
+		return filenames
+	}
+	ownerCtx := ts.CreateUserContext(ctx, owner.ID)
+	allResponse, err := ts.Service.ListAttachments(ownerCtx, &v1pb.ListAttachmentsRequest{PageSize: 100})
+	require.NoError(t, err)
+	require.Len(t, allResponse.Attachments, 4, "omitting the filter must preserve the creator's full readable library")
+
+	spaceResponse, err := ts.Service.ListAttachments(ownerCtx, &v1pb.ListAttachmentsRequest{
+		PageSize: 100,
+		Filter:   `space == "spaces/` + spaceA.UID + `"`,
+	})
+	require.NoError(t, err)
+	require.Equal(t, []string{"attachment-api-space-a-file.txt"}, attachmentFilenames(spaceResponse))
+
+	unassignedResponse, err := ts.Service.ListAttachments(ownerCtx, &v1pb.ListAttachmentsRequest{
+		PageSize: 100,
+		Filter:   `space == null`,
+	})
+	require.NoError(t, err)
+	require.ElementsMatch(t, []string{"attachment-api-unlinked.txt", "attachment-api-unassigned-file.txt"}, attachmentFilenames(unassignedResponse))
+
+	unusedInMemos, err := ts.Service.ListAttachments(ownerCtx, &v1pb.ListAttachmentsRequest{
+		PageSize: 100,
+		Filter:   "memo_id == null && space == null",
+	})
+	require.NoError(t, err)
+	require.Equal(t, []string{"attachment-api-unlinked.txt"}, attachmentFilenames(unusedInMemos))
+	unusedInSpace, err := ts.Service.ListAttachments(ownerCtx, &v1pb.ListAttachmentsRequest{
+		PageSize: 100,
+		Filter:   `memo_id == null && space == "spaces/` + spaceA.UID + `"`,
+	})
+	require.NoError(t, err)
+	require.Empty(t, unusedInSpace.Attachments)
+
+	memberResponse, err := ts.Service.ListAttachments(ts.CreateUserContext(ctx, member.ID), &v1pb.ListAttachmentsRequest{
+		PageSize: 100,
+		Filter:   `space == "spaces/` + spaceA.UID + `"`,
+	})
+	require.NoError(t, err)
+	require.Empty(t, memberResponse.Attachments, "the attachment library remains creator-owned")
+
+	_, err = ts.Service.ListAttachments(ts.CreateUserContext(ctx, outsider.ID), &v1pb.ListAttachmentsRequest{
+		Filter: `space == "spaces/` + spaceA.UID + `"`,
+	})
+	require.Equal(t, codes.NotFound, status.Code(err))
+
+	_, err = ts.Service.ListAttachments(ownerCtx, &v1pb.ListAttachmentsRequest{
+		Filter: `space != null`,
+	})
+	require.Equal(t, codes.InvalidArgument, status.Code(err))
+}
+
 func memoIDFromName(ctx context.Context, t *testing.T, ts *TestService, name string) int32 {
 	t.Helper()
 	memoUID, err := apiv1.ExtractMemoUIDFromName(name)

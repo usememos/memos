@@ -2,8 +2,17 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import Home from "@/pages/Home";
 
+const state = vi.hoisted(() => ({
+  selectedSpaceName: undefined as string | undefined,
+  editorProps: undefined as Record<string, unknown> | undefined,
+  listProps: undefined as Record<string, unknown> | undefined,
+}));
+
 vi.mock("@/components/MemoEditor", () => ({
-  default: () => <div data-testid="memo-editor" />,
+  default: (props: Record<string, unknown>) => {
+    state.editorProps = props;
+    return <div data-testid="memo-editor" />;
+  },
 }));
 
 vi.mock("@/components/MemoView", () => ({
@@ -14,15 +23,19 @@ vi.mock("@/components/PagedMemoList", () => ({
   default: ({
     renderer,
     renderLeading,
+    ...props
   }: {
     renderer: (memo: { name: string }, options: { compact: boolean }) => React.ReactNode;
     renderLeading: (options: { useGrid: boolean }) => React.ReactNode;
-  }) => (
-    <>
-      {renderLeading({ useGrid: false })}
-      {renderer({ name: "memos/1" }, { compact: false })}
-    </>
-  ),
+  } & Record<string, unknown>) => {
+    state.listProps = props;
+    return (
+      <>
+        {renderLeading({ useGrid: false })}
+        {renderer({ name: "memos/1" }, { compact: false })}
+      </>
+    );
+  },
   getMemoKey: (memo: { name: string }) => memo.name,
 }));
 
@@ -36,6 +49,13 @@ vi.mock("@/contexts/MemoFilterContext", () => ({
 
 vi.mock("@/contexts/NewMemoContext", () => ({
   NewMemoProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
+
+vi.mock("@/contexts/SpaceContext", () => ({
+  useSpaceContext: () => ({
+    selectedSpaceName: state.selectedSpaceName,
+    memoFilter: state.selectedSpaceName ? `space == "${state.selectedSpaceName}"` : "space == null",
+  }),
 }));
 
 vi.mock("@/hooks", () => ({
@@ -53,9 +73,22 @@ vi.mock("@/utils/i18n", () => ({
 
 describe("<Home>", () => {
   it("renders the editor and memo cards synchronously without blank placeholders", () => {
+    state.selectedSpaceName = undefined;
     render(<Home />);
 
     expect(screen.getByTestId("memo-editor")).toBeInTheDocument();
     expect(screen.getByTestId("memo-view")).toBeInTheDocument();
+    expect(state.listProps).toMatchObject({ contextFilter: "space == null" });
+  });
+
+  it("filters the feed and sets new memo placement to the selected Space", () => {
+    state.selectedSpaceName = "spaces/product";
+    render(<Home />);
+
+    expect(state.listProps).toMatchObject({ contextFilter: 'space == "spaces/product"' });
+    expect(state.editorProps).toMatchObject({
+      cacheKey: "home-memo-editor:spaces/product",
+      defaultSpace: "spaces/product",
+    });
   });
 });

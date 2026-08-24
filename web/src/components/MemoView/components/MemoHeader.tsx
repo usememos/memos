@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import type { User } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
-import { convertVisibilityToString } from "@/utils/memo";
+import { getVisibilityOption } from "@/utils/memo";
 import MemoActionMenu from "../../MemoActionMenu";
 import { ReactionSelector } from "../../MemoReactionListView";
 import UserAvatar from "../../UserAvatar";
@@ -26,6 +26,7 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, sh
   const { memo, creator, currentUser, parentPage, isArchived, readonly, openEditor } = useMemoViewContext();
   const { createTime, updateTime, displayTime: memoDisplayTime, isDisplayingUpdatedTime, relativeTimeFormat } = useMemoViewDerived();
   const { newMemoName } = useNewMemo();
+  const visibilityOption = getVisibilityOption(memo.visibility);
 
   const navigateTo = useNavigateTo();
   const handleGotoMemoDetailPage = useCallback(() => {
@@ -85,9 +86,7 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, sh
                 <VisibilityIcon visibility={memo.visibility} />
               </span>
             </TooltipTrigger>
-            <TooltipContent>
-              {t(`memo.visibility.${convertVisibilityToString(memo.visibility).toLowerCase()}` as Parameters<typeof t>[0])}
-            </TooltipContent>
+            <TooltipContent>{visibilityOption && t(visibilityOption.labelKey)}</TooltipContent>
           </Tooltip>
         )}
 

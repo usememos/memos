@@ -5,7 +5,9 @@ import type { MemoEditorProps } from "@/components/MemoEditor/types";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
 import { useAppSidebar } from "@/contexts/AppSidebarContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSpaceContext } from "@/contexts/SpaceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { spaceScopedCacheKey } from "@/lib/resource-names";
 import { useTranslate } from "@/utils/i18n";
 
 interface GlobalMemoEditorContextValue {
@@ -35,11 +37,13 @@ const findVisibleFocusTarget = (selector: string): HTMLElement | null =>
 export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) {
   const t = useTranslate();
   const currentUserName = useCurrentUser()?.name;
+  const { selectedSpaceName } = useSpaceContext();
   const { isUserSettingsInitialized } = useAuth();
   const { setMobileOpen, setQuickFindOpen } = useAppSidebar();
-  // Keyed by the user who opened it, so signing out closes the composer in the
-  // same render and a different user signing in cannot resurrect it.
-  const [openedFor, setOpenedFor] = useState<string>();
+  // One snapshot taken when the composer opens: keyed by the user who opened it, so
+  // signing out closes the composer in the same render and a different user signing
+  // in cannot resurrect it, and pinned to the Space that was selected at that moment.
+  const [opened, setOpened] = useState<{ user: string; space?: string }>();
   const [EditorComponent, setEditorComponent] = useState<ComponentType<MemoEditorProps>>();
   // Only ever read from event handlers, so a ref keeps each save from
   // re-rendering the provider and the whole editor tree it hosts.
@@ -50,7 +54,7 @@ export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) 
   const closeEditor = useCallback(() => {
     openRequestVersionRef.current += 1;
     isSavingRef.current = false;
-    setOpenedFor(undefined);
+    setOpened(undefined);
   }, []);
   const requestCloseEditor = useCallback(() => {
     if (!isSavingRef.current) closeEditor();
@@ -79,10 +83,10 @@ export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) 
       .then(({ default: MemoEditor }) => {
         if (openRequestVersionRef.current !== requestVersion) return;
         setEditorComponent(() => MemoEditor);
-        setOpenedFor(currentUserName);
+        setOpened({ user: currentUserName, space: selectedSpaceName });
       })
       .catch(() => undefined);
-  }, [canOpen, currentUserName, setMobileOpen, setQuickFindOpen]);
+  }, [canOpen, currentUserName, selectedSpaceName, setMobileOpen, setQuickFindOpen]);
 
   useEffect(() => {
     // RootLayout remains mounted when a public instance moves from Home to
@@ -102,7 +106,7 @@ export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) 
     return remembered ?? findVisibleFocusTarget("[data-new-memo-trigger]") ?? findVisibleFocusTarget("[data-mobile-navigation-trigger]");
   }, []);
 
-  const editorIsOpen = openedFor !== undefined && openedFor === currentUserName;
+  const editorIsOpen = opened !== undefined && opened.user === currentUserName;
   const value = useMemo(() => ({ canOpen, openEditor }), [canOpen, openEditor]);
 
   return (
@@ -116,7 +120,7 @@ export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) 
             return;
           }
           if (open) {
-            setOpenedFor(currentUserName);
+            setOpened((previous) => (currentUserName ? { user: currentUserName, space: previous?.space } : undefined));
           } else {
             closeEditor();
           }
@@ -136,7 +140,8 @@ export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) 
               </VisuallyHidden>
               <EditorComponent
                 autoFocus
-                cacheKey="global-memo-editor"
+                cacheKey={spaceScopedCacheKey("global-memo-editor", opened?.space)}
+                defaultSpace={opened?.space}
                 placeholder={t("editor.any-thoughts")}
                 onConfirm={closeEditor}
                 onCancel={closeEditor}

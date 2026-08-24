@@ -434,7 +434,9 @@
       "protected": "Protected",
       "protected-description": "Visible to signed-in users",
       "public": "Public",
-      "public-description": "Visible to everyone"
+      "public-description": "Visible to everyone",
+      "space": "Space",
+      "space-description": "Visible to members of this space"
     }
   },
   "message": {
@@ -946,6 +948,19 @@
       "refresh": "Refresh",
       "load-error": "Failed to load statistics"
     }
+  },
+  "space": {
+    "create": "Create space",
+    "create-description": "Create a shared place for memos and members.",
+    "create-success": "Space created",
+    "creator-admin-note": "You'll become the first admin.",
+    "current": "Space",
+    "description-placeholder": "What is this space for?",
+    "load-error": "Couldn't load spaces",
+    "loading": "Loading spaces…",
+    "name-placeholder": "e.g. Product",
+    "spaces": "Spaces",
+    "switch": "Switch space"
   },
   "tag": {
     "all-tags": "All Tags",

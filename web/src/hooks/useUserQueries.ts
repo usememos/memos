@@ -26,7 +26,8 @@ export const userKeys = {
   details: () => [...userKeys.all, "detail"] as const,
   detail: (name: string) => [...userKeys.details(), name] as const,
   stats: () => [...userKeys.all, "stats"] as const,
-  userStats: (name: string) => [...userKeys.stats(), name] as const,
+  userStats: (name: string, filter?: string) =>
+    filter ? ([...userKeys.stats(), name, filter] as const) : ([...userKeys.stats(), name] as const),
   allUserStats: (request: Partial<ListAllUserStatsQuery>) => [...userKeys.stats(), "all", request] as const,
   currentUser: () => [...userKeys.all, "current"] as const,
   memoViews: (parent?: string) => [...userKeys.all, "memoViews", parent] as const,
@@ -49,14 +50,14 @@ export function useUser(name: string, options?: { enabled?: boolean }) {
   });
 }
 
-export function useUserStats(username?: string, options?: { enabled?: boolean }) {
+export function useUserStats(username?: string, options?: { enabled?: boolean; filter?: string }) {
   return useQuery({
-    queryKey: username ? userKeys.userStats(username) : userKeys.stats(),
+    queryKey: username ? userKeys.userStats(username, options?.filter) : userKeys.stats(),
     queryFn: async () => {
       if (!username) {
         throw new Error("Username is required");
       }
-      const stats = await userServiceClient.getUserStats({ name: username });
+      const stats = await userServiceClient.getUserStats({ name: username, filter: options?.filter });
       return stats;
     },
     enabled: !!username && (options?.enabled ?? true),

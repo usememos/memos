@@ -10,6 +10,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { memoServiceClient } from "@/connect";
+import { attachmentKeys } from "@/hooks/useAttachmentQueries";
 import { userKeys } from "@/hooks/useUserQueries";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/lib/constants";
 import type { ListMemosRequest, ListMemosResponse, Memo } from "@/types/proto/api/v1/memo_service_pb";
@@ -199,6 +200,8 @@ export function useCreateMemo() {
       queryClient.setQueryData(memoKeys.detail(newMemo.name), newMemo);
       // Invalidate user stats
       queryClient.invalidateQueries({ queryKey: userKeys.stats() });
+      // Creating a memo can bind previously unlinked attachments.
+      queryClient.invalidateQueries({ queryKey: attachmentKeys.lists() });
     },
   });
 }
@@ -255,6 +258,8 @@ export function useUpdateMemo() {
       }
       // Invalidate user stats
       queryClient.invalidateQueries({ queryKey: userKeys.stats() });
+      // Placement changes move linked attachments between scoped libraries.
+      queryClient.invalidateQueries({ queryKey: attachmentKeys.lists() });
     },
   });
 }
@@ -274,6 +279,8 @@ export function useDeleteMemo() {
       queryClient.invalidateQueries({ queryKey: memoKeys.lists() });
       // Invalidate user stats
       queryClient.invalidateQueries({ queryKey: userKeys.stats() });
+      // Memo deletion can remove or unlink associated attachments.
+      queryClient.invalidateQueries({ queryKey: attachmentKeys.lists() });
     },
   });
 }

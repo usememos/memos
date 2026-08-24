@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import { type MemoTimeBasis, useView } from "@/contexts/ViewContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useAllUserStats, useUserStats } from "@/hooks/useUserQueries";
+import { combineCELFilters } from "@/lib/cel-filter";
 import { mergeTagCounts } from "@/lib/tag";
 import { State } from "@/types/proto/api/v1/common_pb";
 import type { UserStats } from "@/types/proto/api/v1/user_service_pb";
@@ -22,6 +23,8 @@ export interface UseFilteredMemoStatsOptions {
   userName?: string;
   context?: MemoStatsContext;
   enabled?: boolean;
+  filter?: string;
+  includeSpaceVisibility?: boolean;
 }
 
 const toDateString = (date: Date) => dayjs(date).format("YYYY-MM-DD");
@@ -38,21 +41,26 @@ const timestampsForBasis = (stats: UserStats, basis: MemoTimeBasis) => {
 };
 
 export const useFilteredMemoStats = (options: UseFilteredMemoStatsOptions = {}): FilteredMemoStats => {
-  const { userName, context, enabled = true } = options;
+  const { userName, context, enabled = true, filter, includeSpaceVisibility = false } = options;
   const currentUser = useCurrentUser();
   const { timeBasis } = useView();
 
   // home/profile: use backend per-user stats (full tag set, not page-limited)
-  const { data: userStats, isLoading: isLoadingUserStats } = useUserStats(userName, { enabled });
+  const { data: userStats, isLoading: isLoadingUserStats } = useUserStats(userName, { enabled, filter });
   // explore/archived: fetch backend grouped stats and aggregate them locally.
   // ListAllUserStats AND's the request filter with the server's auth filter, so
   // private memos are not included unless explicitly visible to the current user.
-  const exploreVisibilityFilter = currentUser != null ? 'visibility in ["PUBLIC", "PROTECTED"]' : 'visibility in ["PUBLIC"]';
+  const exploreVisibilityFilter =
+    currentUser != null
+      ? includeSpaceVisibility
+        ? 'visibility in ["PUBLIC", "PROTECTED", "SPACE"]'
+        : 'visibility in ["PUBLIC", "PROTECTED"]'
+      : 'visibility in ["PUBLIC"]';
   const allUserStatsRequest =
     context === "explore"
-      ? { state: State.NORMAL, filter: exploreVisibilityFilter }
+      ? { state: State.NORMAL, filter: combineCELFilters(filter, exploreVisibilityFilter) }
       : context === "archived"
-        ? { state: State.ARCHIVED }
+        ? { state: State.ARCHIVED, filter }
         : {};
   const shouldFetchAllUserStats = context === "explore" || (context === "archived" && !!currentUser?.name);
   const { data: allUserStats = [], isLoading: isLoadingAllUserStats } = useAllUserStats(allUserStatsRequest, {

@@ -148,6 +148,7 @@ func (d *DB) ListAttachments(ctx context.Context, find *store.FindAttachment) ([
 			%s
 		FROM attachment
 		LEFT JOIN memo ON attachment.memo_id = memo.id
+		LEFT JOIN space AS attachment_space ON memo.space_id = attachment_space.id
 		WHERE %s
 		ORDER BY attachment.updated_ts DESC
 	`, strings.Join(fields, ", "), strings.Join(where, " AND "))

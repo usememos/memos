@@ -62,3 +62,7 @@ export const getVisibilityName = (visibility: Visibility): string => {
   }
   return name;
 };
+
+// Namespaces an editor draft cache key by Space, so drafts never bleed across contexts.
+// Memos (no Space selected) keeps the bare key it has always used.
+export const spaceScopedCacheKey = (baseKey: string, spaceName?: string): string => (spaceName ? `${baseKey}:${spaceName}` : baseKey);
