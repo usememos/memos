@@ -58,6 +58,7 @@ function SpaceSwitcher({ className }: { className?: string }) {
   const t = useTranslate();
   const { spaces, selectedSpace, selectedSpaceName, isLoadingSpaces, isSpacesError, selectMemos, selectSpace } = useSpaceContext();
   const [createOpen, setCreateOpen] = useState(false);
+  const currentContextLabel = selectedSpaceName ? selectedSpace?.title || t("space.current") : t("common.memos");
 
   return (
     <>
@@ -66,7 +67,7 @@ function SpaceSwitcher({ className }: { className?: string }) {
           render={
             <button
               type="button"
-              aria-label={t("space.switch")}
+              aria-label={`${t("space.switch")}: ${currentContextLabel}`}
               className={cn(
                 "group flex h-9 min-w-0 max-w-full items-center gap-1 rounded-md px-0.5 text-start focus-visible:outline-none",
                 className,

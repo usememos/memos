@@ -44,7 +44,7 @@ describe("SpaceSwitcher", () => {
   it("lists Memos, every available Space, and the create entry", async () => {
     render(<SpaceSwitcher />);
 
-    fireEvent.click(screen.getByRole("button", { name: "space.switch" }));
+    fireEvent.click(screen.getByRole("button", { name: "space.switch: common.memos" }));
 
     expect(await screen.findByRole("menuitemradio", { name: "Memos" })).toHaveAttribute("aria-checked", "true");
     expect(screen.getByRole("menuitemradio", { name: "Product" })).toHaveAttribute("aria-checked", "false");
@@ -57,7 +57,7 @@ describe("SpaceSwitcher", () => {
     spaceState.selectedSpace = spaceState.spaces[0];
     render(<SpaceSwitcher />);
 
-    fireEvent.click(screen.getByRole("button", { name: "space.switch" }));
+    fireEvent.click(screen.getByRole("button", { name: "space.switch: Product" }));
 
     const rows = await screen.findAllByRole("menuitemradio");
     expect(rows.map((row) => row.getAttribute("aria-checked"))).toEqual(["false", "true", "false"]);
@@ -71,19 +71,19 @@ describe("SpaceSwitcher", () => {
 
   it("switches context without navigation and opens Space creation", async () => {
     render(<SpaceSwitcher />);
-    fireEvent.click(screen.getByRole("button", { name: "space.switch" }));
+    fireEvent.click(screen.getByRole("button", { name: "space.switch: common.memos" }));
     fireEvent.click(await screen.findByRole("menuitemradio", { name: "Product" }));
     expect(spaceState.selectSpace).toHaveBeenCalledWith(spaceState.spaces[0]);
 
     await waitFor(() => expect(screen.queryByRole("menu")).not.toBeInTheDocument());
 
     // Selecting Memos is how a signed-in user gets back to the home feed.
-    fireEvent.click(screen.getByRole("button", { name: "space.switch" }));
+    fireEvent.click(screen.getByRole("button", { name: "space.switch: common.memos" }));
     fireEvent.click(await screen.findByRole("menuitemradio", { name: "Memos" }));
     expect(spaceState.selectMemos).toHaveBeenCalledOnce();
 
     await waitFor(() => expect(screen.queryByRole("menu")).not.toBeInTheDocument());
-    fireEvent.click(screen.getByRole("button", { name: "space.switch" }));
+    fireEvent.click(screen.getByRole("button", { name: "space.switch: common.memos" }));
     fireEvent.click(await screen.findByRole("menuitem", { name: "space.create" }));
     expect(screen.getByRole("dialog", { name: "" })).toHaveTextContent("Create Space dialog");
   });

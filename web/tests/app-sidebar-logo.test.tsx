@@ -175,7 +175,7 @@ describe("App sidebar logo", () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByRole("button", { name: "space.switch" })).toHaveTextContent("Memos logo");
+    expect(screen.getByRole("button", { name: "space.switch: common.memos" })).toHaveTextContent("Memos logo");
     fireEvent.click(screen.getByRole("button", { name: "editor.new-memo" }));
     expect(globalEditorState.openEditor).toHaveBeenCalledOnce();
     expect(screen.queryByText("common.calendar")).not.toBeInTheDocument();
@@ -232,7 +232,7 @@ describe("App sidebar logo", () => {
     );
 
     expect(screen.getByRole("link", { name: "Memos logo" })).toHaveAttribute("href", "/explore");
-    expect(screen.queryByRole("button", { name: "space.switch" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^space\.switch:/ })).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: "common.explore" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "common.about" })).toHaveAttribute("href", "/about");
     expect(screen.getByRole("link", { name: "common.sign-in-to-memos" }).closest("footer")).not.toBeNull();
@@ -399,7 +399,7 @@ describe("App sidebar logo", () => {
     );
 
     expect(screen.getByRole("button", { name: "Open navigation" })).toHaveAttribute("data-mobile-navigation-trigger");
-    expect(screen.getByRole("button", { name: "space.switch" })).toHaveTextContent("Memos logo");
+    expect(screen.getByRole("button", { name: "space.switch: common.memos" })).toHaveTextContent("Memos logo");
     expect(screen.queryByRole("button", { name: "common.search" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "editor.new-memo" })).not.toBeInTheDocument();
   });

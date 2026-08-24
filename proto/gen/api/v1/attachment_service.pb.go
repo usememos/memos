@@ -784,6 +784,8 @@ type ListAttachmentsRequest struct {
 	// Example: "mime_type==\"image/png\"" or "filename.contains(\"test\")"
 	// Supported operators: =, !=, <, <=, >, >=, : (contains), in
 	// Supported fields: filename, mime_type, create_time, memo_id, space.
+	// `space` only supports a non-negated `==` comparison with a Space resource
+	// name or null.
 	// `space` is the linked memo's space resource name, or null when the
 	// attachment is unlinked or its linked memo has no space.
 	Filter string `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
