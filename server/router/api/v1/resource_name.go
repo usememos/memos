@@ -25,6 +25,7 @@ const (
 	WebhookNamePrefix          = "webhooks/"
 	SpaceNamePrefix            = "spaces/"
 	SpaceMemberNamePrefix      = "members/"
+	SpaceInvitationNamePrefix  = "invitations/"
 )
 
 // GetNameParentTokens returns the tokens from a resource name.
@@ -107,6 +108,16 @@ func ExtractSpaceUIDFromName(name string) (string, error) {
 // SpaceMember resource name.
 func ExtractSpaceMemberTokensFromName(name string) (string, string, error) {
 	tokens, err := GetNameParentTokens(name, SpaceNamePrefix, SpaceMemberNamePrefix)
+	if err != nil {
+		return "", "", err
+	}
+	return tokens[0], tokens[1], nil
+}
+
+// ExtractSpaceInvitationTokensFromName returns the Space UID and invitee
+// username from a SpaceInvitation resource name.
+func ExtractSpaceInvitationTokensFromName(name string) (string, string, error) {
+	tokens, err := GetNameParentTokens(name, SpaceNamePrefix, SpaceInvitationNamePrefix)
 	if err != nil {
 		return "", "", err
 	}

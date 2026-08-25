@@ -17,7 +17,7 @@ func TestValidateSQLiteMemoCreatePreservesQueryErrors(t *testing.T) {
 	_, err = db.Exec(`
 		CREATE TABLE user (id INTEGER PRIMARY KEY, row_status TEXT NOT NULL);
 		CREATE TABLE space (id INTEGER PRIMARY KEY);
-		CREATE TABLE space_member (space_id INTEGER, user_id INTEGER, role TEXT);
+		CREATE TABLE space_member (space_id INTEGER, user_id INTEGER, status TEXT, role TEXT);
 		INSERT INTO user (id, row_status) VALUES (1, 'NORMAL'), (2, 'ARCHIVED');
 	`)
 	require.NoError(t, err)

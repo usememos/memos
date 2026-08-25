@@ -1455,6 +1455,207 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/v1/spaces/{space}/invitations:
+        get:
+            tags:
+                - SpaceService
+            description: ListSpaceInvitations lists the pending invitations for a space.
+            operationId: SpaceService_ListSpaceInvitations
+            parameters:
+                - name: space
+                  in: path
+                  description: The space id.
+                  required: true
+                  schema:
+                    type: string
+                - name: pageSize
+                  in: query
+                  description: Optional. The maximum number of invitations to return.
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageToken
+                  in: query
+                  description: Optional. A token from a previous ListSpaceInvitations response.
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListSpaceInvitationsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - SpaceService
+            description: CreateSpaceInvitation invites an existing active user to a space.
+            operationId: SpaceService_CreateSpaceInvitation
+            parameters:
+                - name: space
+                  in: path
+                  description: The space id.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SpaceInvitation'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SpaceInvitation'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/spaces/{space}/invitations/{invitation}:
+        get:
+            tags:
+                - SpaceService
+            description: GetSpaceInvitation gets one pending invitation.
+            operationId: SpaceService_GetSpaceInvitation
+            parameters:
+                - name: space
+                  in: path
+                  description: The space id.
+                  required: true
+                  schema:
+                    type: string
+                - name: invitation
+                  in: path
+                  description: The invitation id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SpaceInvitation'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        delete:
+            tags:
+                - SpaceService
+            description: DeleteSpaceInvitation revokes a pending invitation.
+            operationId: SpaceService_DeleteSpaceInvitation
+            parameters:
+                - name: space
+                  in: path
+                  description: The space id.
+                  required: true
+                  schema:
+                    type: string
+                - name: invitation
+                  in: path
+                  description: The invitation id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/spaces/{space}/invitations/{invitation}:accept:
+        post:
+            tags:
+                - SpaceService
+            description: AcceptSpaceInvitation accepts a pending invitation and creates a membership.
+            operationId: SpaceService_AcceptSpaceInvitation
+            parameters:
+                - name: space
+                  in: path
+                  description: The space id.
+                  required: true
+                  schema:
+                    type: string
+                - name: invitation
+                  in: path
+                  description: The invitation id.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/AcceptSpaceInvitationRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SpaceMember'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/spaces/{space}/invitations/{invitation}:decline:
+        post:
+            tags:
+                - SpaceService
+            description: DeclineSpaceInvitation declines a pending invitation.
+            operationId: SpaceService_DeclineSpaceInvitation
+            parameters:
+                - name: space
+                  in: path
+                  description: The space id.
+                  required: true
+                  schema:
+                    type: string
+                - name: invitation
+                  in: path
+                  description: The invitation id.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DeclineSpaceInvitationRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/spaces/{space}/members:
         get:
             tags:
@@ -1486,37 +1687,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/ListSpaceMembersResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-        post:
-            tags:
-                - SpaceService
-            description: CreateSpaceMember directly adds an existing active user to a space.
-            operationId: SpaceService_CreateSpaceMember
-            parameters:
-                - name: space
-                  in: path
-                  description: The space id.
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/SpaceMember'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/SpaceMember'
                 default:
                     description: Default error response
                     content:
@@ -2275,6 +2445,43 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/v1/users/{user}/spaceInvitations:
+        get:
+            tags:
+                - SpaceService
+            description: ListUserSpaceInvitations lists the authenticated user's pending space invitations.
+            operationId: SpaceService_ListUserSpaceInvitations
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+                - name: pageSize
+                  in: query
+                  description: Optional. The maximum number of invitations to return.
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageToken
+                  in: query
+                  description: Optional. A token from a previous ListUserSpaceInvitations response.
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListUserSpaceInvitationsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/users/{user}/views:
         get:
             tags:
@@ -2704,6 +2911,14 @@ paths:
                                 $ref: '#/components/schemas/Status'
 components:
     schemas:
+        AcceptSpaceInvitationRequest:
+            required:
+                - name
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: 'Required. Format: spaces/{space}/invitations/{username}.'
         Attachment:
             required:
                 - filename
@@ -3025,6 +3240,14 @@ components:
                     description: |-
                         The actual token value - only returned on creation.
                          This is the only time the token value will be visible.
+        DeclineSpaceInvitationRequest:
+            required:
+                - name
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: 'Required. Format: spaces/{space}/invitations/{username}.'
         FieldMapping:
             type: object
             properties:
@@ -3555,6 +3778,15 @@ components:
                 nextPageToken:
                     type: string
                     description: A token for the next page of results.
+        ListSpaceInvitationsResponse:
+            type: object
+            properties:
+                spaceInvitations:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/SpaceInvitation'
+                nextPageToken:
+                    type: string
         ListSpaceMembersResponse:
             type: object
             properties:
@@ -3596,6 +3828,15 @@ components:
                         A token that can be sent as `page_token` to retrieve the next page.
                          If this field is omitted, there are no subsequent pages.
             description: Response message for ListUserSettings method.
+        ListUserSpaceInvitationsResponse:
+            type: object
+            properties:
+                spaceInvitations:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/SpaceInvitation'
+                nextPageToken:
+                    type: string
         ListUserWebhooksResponse:
             type: object
             properties:
@@ -4136,6 +4377,34 @@ components:
                     type: string
                     description: Optional. A description of the space.
             description: Space is a collaboration boundary for placed memos.
+        SpaceInvitation:
+            required:
+                - invitee
+                - role
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: 'The resource name. Format: spaces/{space}/invitations/{username}.'
+                invitee:
+                    type: string
+                    description: 'Required. The invited user. Format: users/{username}.'
+                role:
+                    enum:
+                        - ROLE_UNSPECIFIED
+                        - ADMIN
+                        - USER
+                    type: string
+                    description: Required. The role the user will receive after accepting the invitation.
+                    format: enum
+                space:
+                    readOnly: true
+                    allOf:
+                        - $ref: '#/components/schemas/Space'
+                    description: |-
+                        Output only. The Space the user is invited to. This lets an invitee
+                         understand the invitation without granting membership-based GetSpace access.
+            description: SpaceInvitation is a pending invitation for an existing user to join a space.
         SpaceMember:
             required:
                 - user

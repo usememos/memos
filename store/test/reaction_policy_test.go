@@ -75,7 +75,7 @@ func TestReactionWritePolicySpaceParticipationIsMemoLocal(t *testing.T) {
 
 	space, err := ts.CreateSpace(ctx, &store.Space{UID: "reaction-space", Title: "Reaction Space"}, owner.ID)
 	require.NoError(t, err)
-	_, err = ts.CreateSpaceMember(ctx, &store.SpaceMember{SpaceID: space.ID, UserID: member.ID, Role: store.SpaceMemberRoleUser}, owner.ID)
+	_, err = createSpaceMemberForTest(ctx, ts, &store.SpaceMember{SpaceID: space.ID, UserID: member.ID, Role: store.SpaceMemberRoleUser}, owner.ID)
 	require.NoError(t, err)
 	spaceMemo, err := ts.CreateMemo(ctx, &store.Memo{
 		UID: "reaction-space-memo", CreatorID: owner.ID, Content: "space memo", Visibility: store.SpaceAudience, SpaceID: &space.ID,
@@ -101,7 +101,7 @@ func TestReactionWritePolicySpaceParticipationIsMemoLocal(t *testing.T) {
 		UID: "reaction-space-private", CreatorID: owner.ID, Content: "private", Visibility: store.Private, SpaceID: &space.ID,
 	})
 	require.NoError(t, err)
-	_, err = ts.CreateSpaceMember(ctx, &store.SpaceMember{SpaceID: space.ID, UserID: member.ID, Role: store.SpaceMemberRoleUser}, owner.ID)
+	_, err = createSpaceMemberForTest(ctx, ts, &store.SpaceMember{SpaceID: space.ID, UserID: member.ID, Role: store.SpaceMemberRoleUser}, owner.ID)
 	require.NoError(t, err)
 	_, err = ts.UpsertReaction(ctx, &store.Reaction{
 		CreatorID: member.ID, MemoID: assignedPrivate.ID, ReactionType: "private-member", Policy: reactionWritePolicy(member.ID),
@@ -147,7 +147,7 @@ func TestDeleteReactionAtomicallyEnforcesCreatorAndParticipation(t *testing.T) {
 	require.NoError(t, err)
 	space, err := ts.CreateSpace(ctx, &store.Space{UID: "reaction-delete-space", Title: "Delete Reactions"}, owner.ID)
 	require.NoError(t, err)
-	_, err = ts.CreateSpaceMember(ctx, &store.SpaceMember{SpaceID: space.ID, UserID: member.ID, Role: store.SpaceMemberRoleUser}, owner.ID)
+	_, err = createSpaceMemberForTest(ctx, ts, &store.SpaceMember{SpaceID: space.ID, UserID: member.ID, Role: store.SpaceMemberRoleUser}, owner.ID)
 	require.NoError(t, err)
 	memo, err := ts.CreateMemo(ctx, &store.Memo{
 		UID: "reaction-delete-memo", CreatorID: owner.ID, Content: "memo", Visibility: store.SpaceAudience, SpaceID: &space.ID,
@@ -171,7 +171,7 @@ func TestDeleteReactionAtomicallyEnforcesCreatorAndParticipation(t *testing.T) {
 	require.ErrorIs(t, err, store.ErrMemoSpaceMembershipRequired)
 	requireReactionPresent(ctx, t, ts, reaction.ID)
 
-	_, err = ts.CreateSpaceMember(ctx, &store.SpaceMember{SpaceID: space.ID, UserID: member.ID, Role: store.SpaceMemberRoleUser}, owner.ID)
+	_, err = createSpaceMemberForTest(ctx, ts, &store.SpaceMember{SpaceID: space.ID, UserID: member.ID, Role: store.SpaceMemberRoleUser}, owner.ID)
 	require.NoError(t, err)
 	require.NoError(t, ts.DeleteReaction(ctx, &store.DeleteReaction{
 		ID: &reaction.ID, MemoID: &memo.ID, ActorUserID: &member.ID, Policy: reactionWritePolicy(member.ID),

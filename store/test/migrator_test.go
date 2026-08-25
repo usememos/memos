@@ -267,6 +267,42 @@ func TestMigrationMultiSpacesPreservesMemosAndRelations(t *testing.T) {
 	}
 }
 
+func TestMigrationSpaceMemberStatusBackfillsActive(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+
+	owner, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+	space, err := ts.CreateSpace(ctx, &store.Space{
+		UID:   "status-migration-space",
+		Title: "Status migration",
+	}, owner.ID)
+	require.NoError(t, err)
+
+	db := ts.GetDriver().GetDB()
+	_, err = db.ExecContext(ctx, "ALTER TABLE space_member DROP COLUMN status")
+	require.NoError(t, err)
+
+	basicSetting, err := ts.GetInstanceBasicSetting(ctx)
+	require.NoError(t, err)
+	basicSetting.SchemaVersion = "0.31.4"
+	_, err = ts.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key:   storepb.InstanceSettingKey_BASIC,
+		Value: &storepb.InstanceSetting_BasicSetting{BasicSetting: basicSetting},
+	})
+	require.NoError(t, err)
+
+	require.NoError(t, ts.Migrate(ctx))
+
+	query := "SELECT status FROM space_member WHERE space_id = ? AND user_id = ?"
+	if getDriverFromEnv() == "postgres" {
+		query = "SELECT status FROM space_member WHERE space_id = $1 AND user_id = $2"
+	}
+	var status store.SpaceMemberStatus
+	require.NoError(t, db.QueryRowContext(ctx, query, space.ID, owner.ID).Scan(&status))
+	require.Equal(t, store.SpaceMemberStatusActive, status)
+}
+
 // TestMigrationMultipleReRuns verifies that migration is idempotent
 // even when run multiple times in succession.
 func TestMigrationMultipleReRuns(t *testing.T) {

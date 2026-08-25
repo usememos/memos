@@ -16,7 +16,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file api/v1/space_service.proto.
  */
 export const file_api_v1_space_service: GenFile = /*@__PURE__*/
-  fileDesc("ChphcGkvdjEvc3BhY2Vfc2VydmljZS5wcm90bxIMbWVtb3MuYXBpLnYxIoYBCgVTcGFjZRIRCgRuYW1lGAEgASgJQgPgQQgSEgoFdGl0bGUYAiABKAlCA+BBAhIYCgtkZXNjcmlwdGlvbhgDIAEoCUID4EEBOjzqQTkKEm1lbW9zLmFwaS52MS9TcGFjZRIOc3BhY2VzL3tzcGFjZX0aBG5hbWUqBnNwYWNlczIFc3BhY2UikAIKC1NwYWNlTWVtYmVyEhEKBG5hbWUYASABKAlCA+BBCBInCgR1c2VyGAIgASgJQhngQQL6QRMKEW1lbW9zLmFwaS52MS9Vc2VyEjEKBHJvbGUYAyABKA4yHi5tZW1vcy5hcGkudjEuU3BhY2VNZW1iZXIuUm9sZUID4EECIjEKBFJvbGUSFAoQUk9MRV9VTlNQRUNJRklFRBAAEgkKBUFETUlOEAESCAoEVVNFUhACOl/qQVwKGG1lbW9zLmFwaS52MS9TcGFjZU1lbWJlchIfc3BhY2VzL3tzcGFjZX0vbWVtYmVycy97bWVtYmVyfRoEbmFtZSoMc3BhY2VNZW1iZXJzMgtzcGFjZU1lbWJlciJUChJDcmVhdGVTcGFjZVJlcXVlc3QSJwoFc3BhY2UYASABKAsyEy5tZW1vcy5hcGkudjEuU3BhY2VCA+BBAhIVCghzcGFjZV9pZBgCIAEoCUID4EEBIkQKEUxpc3RTcGFjZXNSZXF1ZXN0EhYKCXBhZ2Vfc2l6ZRgBIAEoBUID4EEBEhcKCnBhZ2VfdG9rZW4YAiABKAlCA+BBASJSChJMaXN0U3BhY2VzUmVzcG9uc2USIwoGc3BhY2VzGAEgAygLMhMubWVtb3MuYXBpLnYxLlNwYWNlEhcKD25leHRfcGFnZV90b2tlbhgCIAEoCSI7Cg9HZXRTcGFjZVJlcXVlc3QSKAoEbmFtZRgBIAEoCUIa4EEC+kEUChJtZW1vcy5hcGkudjEvU3BhY2UicwoSVXBkYXRlU3BhY2VSZXF1ZXN0EicKBXNwYWNlGAEgASgLMhMubWVtb3MuYXBpLnYxLlNwYWNlQgPgQQISNAoLdXBkYXRlX21hc2sYAiABKAsyGi5nb29nbGUucHJvdG9idWYuRmllbGRNYXNrQgPgQQIiPgoSRGVsZXRlU3BhY2VSZXF1ZXN0EigKBG5hbWUYASABKAlCGuBBAvpBFAoSbWVtb3MuYXBpLnYxL1NwYWNlIoIBChhDcmVhdGVTcGFjZU1lbWJlclJlcXVlc3QSMAoGcGFyZW50GAEgASgJQiDgQQL6QRoSGG1lbW9zLmFwaS52MS9TcGFjZU1lbWJlchI0CgxzcGFjZV9tZW1iZXIYAiABKAsyGS5tZW1vcy5hcGkudjEuU3BhY2VNZW1iZXJCA+BBAiJ8ChdMaXN0U3BhY2VNZW1iZXJzUmVxdWVzdBIwCgZwYXJlbnQYASABKAlCIOBBAvpBGhIYbWVtb3MuYXBpLnYxL1NwYWNlTWVtYmVyEhYKCXBhZ2Vfc2l6ZRgCIAEoBUID4EEBEhcKCnBhZ2VfdG9rZW4YAyABKAlCA+BBASJlChhMaXN0U3BhY2VNZW1iZXJzUmVzcG9uc2USMAoNc3BhY2VfbWVtYmVycxgBIAMoCzIZLm1lbW9zLmFwaS52MS5TcGFjZU1lbWJlchIXCg9uZXh0X3BhZ2VfdG9rZW4YAiABKAkiRwoVR2V0U3BhY2VNZW1iZXJSZXF1ZXN0Ei4KBG5hbWUYASABKAlCIOBBAvpBGgoYbWVtb3MuYXBpLnYxL1NwYWNlTWVtYmVyIoYBChhVcGRhdGVTcGFjZU1lbWJlclJlcXVlc3QSNAoMc3BhY2VfbWVtYmVyGAEgASgLMhkubWVtb3MuYXBpLnYxLlNwYWNlTWVtYmVyQgPgQQISNAoLdXBkYXRlX21hc2sYAiABKAsyGi5nb29nbGUucHJvdG9idWYuRmllbGRNYXNrQgPgQQIiSgoYRGVsZXRlU3BhY2VNZW1iZXJSZXF1ZXN0Ei4KBG5hbWUYASABKAlCIOBBAvpBGgoYbWVtb3MuYXBpLnYxL1NwYWNlTWVtYmVyMtAKCgxTcGFjZVNlcnZpY2USawoLQ3JlYXRlU3BhY2USIC5tZW1vcy5hcGkudjEuQ3JlYXRlU3BhY2VSZXF1ZXN0GhMubWVtb3MuYXBpLnYxLlNwYWNlIiXaQQVzcGFjZYLT5JMCFzoFc3BhY2UiDi9hcGkvdjEvc3BhY2VzEmoKCkxpc3RTcGFjZXMSHy5tZW1vcy5hcGkudjEuTGlzdFNwYWNlc1JlcXVlc3QaIC5tZW1vcy5hcGkudjEuTGlzdFNwYWNlc1Jlc3BvbnNlIhnaQQCC0+STAhASDi9hcGkvdjEvc3BhY2VzEmYKCEdldFNwYWNlEh0ubWVtb3MuYXBpLnYxLkdldFNwYWNlUmVxdWVzdBoTLm1lbW9zLmFwaS52MS5TcGFjZSIm2kEEbmFtZYLT5JMCGRIXL2FwaS92MS97bmFtZT1zcGFjZXMvKn0ShgEKC1VwZGF0ZVNwYWNlEiAubWVtb3MuYXBpLnYxLlVwZGF0ZVNwYWNlUmVxdWVzdBoTLm1lbW9zLmFwaS52MS5TcGFjZSJA2kERc3BhY2UsdXBkYXRlX21hc2uC0+STAiY6BXNwYWNlMh0vYXBpL3YxL3tzcGFjZS5uYW1lPXNwYWNlcy8qfRJvCgtEZWxldGVTcGFjZRIgLm1lbW9zLmFwaS52MS5EZWxldGVTcGFjZVJlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHkiJtpBBG5hbWWC0+STAhkqFy9hcGkvdjEve25hbWU9c3BhY2VzLyp9EqUBChFDcmVhdGVTcGFjZU1lbWJlchImLm1lbW9zLmFwaS52MS5DcmVhdGVTcGFjZU1lbWJlclJlcXVlc3QaGS5tZW1vcy5hcGkudjEuU3BhY2VNZW1iZXIiTdpBE3BhcmVudCxzcGFjZV9tZW1iZXKC0+STAjE6DHNwYWNlX21lbWJlciIhL2FwaS92MS97cGFyZW50PXNwYWNlcy8qfS9tZW1iZXJzEpUBChBMaXN0U3BhY2VNZW1iZXJzEiUubWVtb3MuYXBpLnYxLkxpc3RTcGFjZU1lbWJlcnNSZXF1ZXN0GiYubWVtb3MuYXBpLnYxLkxpc3RTcGFjZU1lbWJlcnNSZXNwb25zZSIy2kEGcGFyZW50gtPkkwIjEiEvYXBpL3YxL3twYXJlbnQ9c3BhY2VzLyp9L21lbWJlcnMSggEKDkdldFNwYWNlTWVtYmVyEiMubWVtb3MuYXBpLnYxLkdldFNwYWNlTWVtYmVyUmVxdWVzdBoZLm1lbW9zLmFwaS52MS5TcGFjZU1lbWJlciIw2kEEbmFtZYLT5JMCIxIhL2FwaS92MS97bmFtZT1zcGFjZXMvKi9tZW1iZXJzLyp9ErcBChFVcGRhdGVTcGFjZU1lbWJlchImLm1lbW9zLmFwaS52MS5VcGRhdGVTcGFjZU1lbWJlclJlcXVlc3QaGS5tZW1vcy5hcGkudjEuU3BhY2VNZW1iZXIiX9pBGHNwYWNlX21lbWJlcix1cGRhdGVfbWFza4LT5JMCPjoMc3BhY2VfbWVtYmVyMi4vYXBpL3YxL3tzcGFjZV9tZW1iZXIubmFtZT1zcGFjZXMvKi9tZW1iZXJzLyp9EoUBChFEZWxldGVTcGFjZU1lbWJlchImLm1lbW9zLmFwaS52MS5EZWxldGVTcGFjZU1lbWJlclJlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHkiMNpBBG5hbWWC0+STAiMqIS9hcGkvdjEve25hbWU9c3BhY2VzLyovbWVtYmVycy8qfUKpAQoQY29tLm1lbW9zLmFwaS52MUIRU3BhY2VTZXJ2aWNlUHJvdG9QAVowZ2l0aHViLmNvbS91c2VtZW1vcy9tZW1vcy9wcm90by9nZW4vYXBpL3YxO2FwaXYxogIDTUFYqgIMTWVtb3MuQXBpLlYxygIMTWVtb3NcQXBpXFYx4gIYTWVtb3NcQXBpXFYxXEdQQk1ldGFkYXRh6gIOTWVtb3M6OkFwaTo6VjFiBnByb3RvMw", [file_google_api_annotations, file_google_api_client, file_google_api_field_behavior, file_google_api_resource, file_google_protobuf_empty, file_google_protobuf_field_mask]);
+  fileDesc("ChphcGkvdjEvc3BhY2Vfc2VydmljZS5wcm90bxIMbWVtb3MuYXBpLnYxIoYBCgVTcGFjZRIRCgRuYW1lGAEgASgJQgPgQQgSEgoFdGl0bGUYAiABKAlCA+BBAhIYCgtkZXNjcmlwdGlvbhgDIAEoCUID4EEBOjzqQTkKEm1lbW9zLmFwaS52MS9TcGFjZRIOc3BhY2VzL3tzcGFjZX0aBG5hbWUqBnNwYWNlczIFc3BhY2UikAIKC1NwYWNlTWVtYmVyEhEKBG5hbWUYASABKAlCA+BBCBInCgR1c2VyGAIgASgJQhngQQL6QRMKEW1lbW9zLmFwaS52MS9Vc2VyEjEKBHJvbGUYAyABKA4yHi5tZW1vcy5hcGkudjEuU3BhY2VNZW1iZXIuUm9sZUID4EECIjEKBFJvbGUSFAoQUk9MRV9VTlNQRUNJRklFRBAAEgkKBUFETUlOEAESCAoEVVNFUhACOl/qQVwKGG1lbW9zLmFwaS52MS9TcGFjZU1lbWJlchIfc3BhY2VzL3tzcGFjZX0vbWVtYmVycy97bWVtYmVyfRoEbmFtZSoMc3BhY2VNZW1iZXJzMgtzcGFjZU1lbWJlciKhAgoPU3BhY2VJbnZpdGF0aW9uEhEKBG5hbWUYASABKAlCA+BBCBIqCgdpbnZpdGVlGAIgASgJQhngQQL6QRMKEW1lbW9zLmFwaS52MS9Vc2VyEjEKBHJvbGUYAyABKA4yHi5tZW1vcy5hcGkudjEuU3BhY2VNZW1iZXIuUm9sZUID4EECEicKBXNwYWNlGAQgASgLMhMubWVtb3MuYXBpLnYxLlNwYWNlQgPgQQM6c+pBcAocbWVtb3MuYXBpLnYxL1NwYWNlSW52aXRhdGlvbhInc3BhY2VzL3tzcGFjZX0vaW52aXRhdGlvbnMve2ludml0YXRpb259GgRuYW1lKhBzcGFjZUludml0YXRpb25zMg9zcGFjZUludml0YXRpb24iVAoSQ3JlYXRlU3BhY2VSZXF1ZXN0EicKBXNwYWNlGAEgASgLMhMubWVtb3MuYXBpLnYxLlNwYWNlQgPgQQISFQoIc3BhY2VfaWQYAiABKAlCA+BBASJEChFMaXN0U3BhY2VzUmVxdWVzdBIWCglwYWdlX3NpemUYASABKAVCA+BBARIXCgpwYWdlX3Rva2VuGAIgASgJQgPgQQEiUgoSTGlzdFNwYWNlc1Jlc3BvbnNlEiMKBnNwYWNlcxgBIAMoCzITLm1lbW9zLmFwaS52MS5TcGFjZRIXCg9uZXh0X3BhZ2VfdG9rZW4YAiABKAkiOwoPR2V0U3BhY2VSZXF1ZXN0EigKBG5hbWUYASABKAlCGuBBAvpBFAoSbWVtb3MuYXBpLnYxL1NwYWNlInMKElVwZGF0ZVNwYWNlUmVxdWVzdBInCgVzcGFjZRgBIAEoCzITLm1lbW9zLmFwaS52MS5TcGFjZUID4EECEjQKC3VwZGF0ZV9tYXNrGAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLkZpZWxkTWFza0ID4EECIj4KEkRlbGV0ZVNwYWNlUmVxdWVzdBIoCgRuYW1lGAEgASgJQhrgQQL6QRQKEm1lbW9zLmFwaS52MS9TcGFjZSKSAQocQ3JlYXRlU3BhY2VJbnZpdGF0aW9uUmVxdWVzdBI0CgZwYXJlbnQYASABKAlCJOBBAvpBHhIcbWVtb3MuYXBpLnYxL1NwYWNlSW52aXRhdGlvbhI8ChBzcGFjZV9pbnZpdGF0aW9uGAIgASgLMh0ubWVtb3MuYXBpLnYxLlNwYWNlSW52aXRhdGlvbkID4EECIoQBChtMaXN0U3BhY2VJbnZpdGF0aW9uc1JlcXVlc3QSNAoGcGFyZW50GAEgASgJQiTgQQL6QR4SHG1lbW9zLmFwaS52MS9TcGFjZUludml0YXRpb24SFgoJcGFnZV9zaXplGAIgASgFQgPgQQESFwoKcGFnZV90b2tlbhgDIAEoCUID4EEBInEKHExpc3RTcGFjZUludml0YXRpb25zUmVzcG9uc2USOAoRc3BhY2VfaW52aXRhdGlvbnMYASADKAsyHS5tZW1vcy5hcGkudjEuU3BhY2VJbnZpdGF0aW9uEhcKD25leHRfcGFnZV90b2tlbhgCIAEoCSJ9Ch9MaXN0VXNlclNwYWNlSW52aXRhdGlvbnNSZXF1ZXN0EikKBnBhcmVudBgBIAEoCUIZ4EEC+kETChFtZW1vcy5hcGkudjEvVXNlchIWCglwYWdlX3NpemUYAiABKAVCA+BBARIXCgpwYWdlX3Rva2VuGAMgASgJQgPgQQEidQogTGlzdFVzZXJTcGFjZUludml0YXRpb25zUmVzcG9uc2USOAoRc3BhY2VfaW52aXRhdGlvbnMYASADKAsyHS5tZW1vcy5hcGkudjEuU3BhY2VJbnZpdGF0aW9uEhcKD25leHRfcGFnZV90b2tlbhgCIAEoCSJPChlHZXRTcGFjZUludml0YXRpb25SZXF1ZXN0EjIKBG5hbWUYASABKAlCJOBBAvpBHgocbWVtb3MuYXBpLnYxL1NwYWNlSW52aXRhdGlvbiJSChxEZWxldGVTcGFjZUludml0YXRpb25SZXF1ZXN0EjIKBG5hbWUYASABKAlCJOBBAvpBHgocbWVtb3MuYXBpLnYxL1NwYWNlSW52aXRhdGlvbiJSChxBY2NlcHRTcGFjZUludml0YXRpb25SZXF1ZXN0EjIKBG5hbWUYASABKAlCJOBBAvpBHgocbWVtb3MuYXBpLnYxL1NwYWNlSW52aXRhdGlvbiJTCh1EZWNsaW5lU3BhY2VJbnZpdGF0aW9uUmVxdWVzdBIyCgRuYW1lGAEgASgJQiTgQQL6QR4KHG1lbW9zLmFwaS52MS9TcGFjZUludml0YXRpb24ifAoXTGlzdFNwYWNlTWVtYmVyc1JlcXVlc3QSMAoGcGFyZW50GAEgASgJQiDgQQL6QRoSGG1lbW9zLmFwaS52MS9TcGFjZU1lbWJlchIWCglwYWdlX3NpemUYAiABKAVCA+BBARIXCgpwYWdlX3Rva2VuGAMgASgJQgPgQQEiZQoYTGlzdFNwYWNlTWVtYmVyc1Jlc3BvbnNlEjAKDXNwYWNlX21lbWJlcnMYASADKAsyGS5tZW1vcy5hcGkudjEuU3BhY2VNZW1iZXISFwoPbmV4dF9wYWdlX3Rva2VuGAIgASgJIkcKFUdldFNwYWNlTWVtYmVyUmVxdWVzdBIuCgRuYW1lGAEgASgJQiDgQQL6QRoKGG1lbW9zLmFwaS52MS9TcGFjZU1lbWJlciKGAQoYVXBkYXRlU3BhY2VNZW1iZXJSZXF1ZXN0EjQKDHNwYWNlX21lbWJlchgBIAEoCzIZLm1lbW9zLmFwaS52MS5TcGFjZU1lbWJlckID4EECEjQKC3VwZGF0ZV9tYXNrGAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLkZpZWxkTWFza0ID4EECIkoKGERlbGV0ZVNwYWNlTWVtYmVyUmVxdWVzdBIuCgRuYW1lGAEgASgJQiDgQQL6QRoKGG1lbW9zLmFwaS52MS9TcGFjZU1lbWJlcjKzEgoMU3BhY2VTZXJ2aWNlEmsKC0NyZWF0ZVNwYWNlEiAubWVtb3MuYXBpLnYxLkNyZWF0ZVNwYWNlUmVxdWVzdBoTLm1lbW9zLmFwaS52MS5TcGFjZSIl2kEFc3BhY2WC0+STAhc6BXNwYWNlIg4vYXBpL3YxL3NwYWNlcxJqCgpMaXN0U3BhY2VzEh8ubWVtb3MuYXBpLnYxLkxpc3RTcGFjZXNSZXF1ZXN0GiAubWVtb3MuYXBpLnYxLkxpc3RTcGFjZXNSZXNwb25zZSIZ2kEAgtPkkwIQEg4vYXBpL3YxL3NwYWNlcxJmCghHZXRTcGFjZRIdLm1lbW9zLmFwaS52MS5HZXRTcGFjZVJlcXVlc3QaEy5tZW1vcy5hcGkudjEuU3BhY2UiJtpBBG5hbWWC0+STAhkSFy9hcGkvdjEve25hbWU9c3BhY2VzLyp9EoYBCgtVcGRhdGVTcGFjZRIgLm1lbW9zLmFwaS52MS5VcGRhdGVTcGFjZVJlcXVlc3QaEy5tZW1vcy5hcGkudjEuU3BhY2UiQNpBEXNwYWNlLHVwZGF0ZV9tYXNrgtPkkwImOgVzcGFjZTIdL2FwaS92MS97c3BhY2UubmFtZT1zcGFjZXMvKn0SbwoLRGVsZXRlU3BhY2USIC5tZW1vcy5hcGkudjEuRGVsZXRlU3BhY2VSZXF1ZXN0GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5IibaQQRuYW1lgtPkkwIZKhcvYXBpL3YxL3tuYW1lPXNwYWNlcy8qfRK9AQoVQ3JlYXRlU3BhY2VJbnZpdGF0aW9uEioubWVtb3MuYXBpLnYxLkNyZWF0ZVNwYWNlSW52aXRhdGlvblJlcXVlc3QaHS5tZW1vcy5hcGkudjEuU3BhY2VJbnZpdGF0aW9uIlnaQRdwYXJlbnQsc3BhY2VfaW52aXRhdGlvboLT5JMCOToQc3BhY2VfaW52aXRhdGlvbiIlL2FwaS92MS97cGFyZW50PXNwYWNlcy8qfS9pbnZpdGF0aW9ucxKlAQoUTGlzdFNwYWNlSW52aXRhdGlvbnMSKS5tZW1vcy5hcGkudjEuTGlzdFNwYWNlSW52aXRhdGlvbnNSZXF1ZXN0GioubWVtb3MuYXBpLnYxLkxpc3RTcGFjZUludml0YXRpb25zUmVzcG9uc2UiNtpBBnBhcmVudILT5JMCJxIlL2FwaS92MS97cGFyZW50PXNwYWNlcy8qfS9pbnZpdGF0aW9ucxK1AQoYTGlzdFVzZXJTcGFjZUludml0YXRpb25zEi0ubWVtb3MuYXBpLnYxLkxpc3RVc2VyU3BhY2VJbnZpdGF0aW9uc1JlcXVlc3QaLi5tZW1vcy5hcGkudjEuTGlzdFVzZXJTcGFjZUludml0YXRpb25zUmVzcG9uc2UiOtpBBnBhcmVudILT5JMCKxIpL2FwaS92MS97cGFyZW50PXVzZXJzLyp9L3NwYWNlSW52aXRhdGlvbnMSkgEKEkdldFNwYWNlSW52aXRhdGlvbhInLm1lbW9zLmFwaS52MS5HZXRTcGFjZUludml0YXRpb25SZXF1ZXN0Gh0ubWVtb3MuYXBpLnYxLlNwYWNlSW52aXRhdGlvbiI02kEEbmFtZYLT5JMCJxIlL2FwaS92MS97bmFtZT1zcGFjZXMvKi9pbnZpdGF0aW9ucy8qfRKRAQoVRGVsZXRlU3BhY2VJbnZpdGF0aW9uEioubWVtb3MuYXBpLnYxLkRlbGV0ZVNwYWNlSW52aXRhdGlvblJlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHkiNNpBBG5hbWWC0+STAicqJS9hcGkvdjEve25hbWU9c3BhY2VzLyovaW52aXRhdGlvbnMvKn0SngEKFUFjY2VwdFNwYWNlSW52aXRhdGlvbhIqLm1lbW9zLmFwaS52MS5BY2NlcHRTcGFjZUludml0YXRpb25SZXF1ZXN0GhkubWVtb3MuYXBpLnYxLlNwYWNlTWVtYmVyIj7aQQRuYW1lgtPkkwIxOgEqIiwvYXBpL3YxL3tuYW1lPXNwYWNlcy8qL2ludml0YXRpb25zLyp9OmFjY2VwdBKeAQoWRGVjbGluZVNwYWNlSW52aXRhdGlvbhIrLm1lbW9zLmFwaS52MS5EZWNsaW5lU3BhY2VJbnZpdGF0aW9uUmVxdWVzdBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eSI/2kEEbmFtZYLT5JMCMjoBKiItL2FwaS92MS97bmFtZT1zcGFjZXMvKi9pbnZpdGF0aW9ucy8qfTpkZWNsaW5lEpUBChBMaXN0U3BhY2VNZW1iZXJzEiUubWVtb3MuYXBpLnYxLkxpc3RTcGFjZU1lbWJlcnNSZXF1ZXN0GiYubWVtb3MuYXBpLnYxLkxpc3RTcGFjZU1lbWJlcnNSZXNwb25zZSIy2kEGcGFyZW50gtPkkwIjEiEvYXBpL3YxL3twYXJlbnQ9c3BhY2VzLyp9L21lbWJlcnMSggEKDkdldFNwYWNlTWVtYmVyEiMubWVtb3MuYXBpLnYxLkdldFNwYWNlTWVtYmVyUmVxdWVzdBoZLm1lbW9zLmFwaS52MS5TcGFjZU1lbWJlciIw2kEEbmFtZYLT5JMCIxIhL2FwaS92MS97bmFtZT1zcGFjZXMvKi9tZW1iZXJzLyp9ErcBChFVcGRhdGVTcGFjZU1lbWJlchImLm1lbW9zLmFwaS52MS5VcGRhdGVTcGFjZU1lbWJlclJlcXVlc3QaGS5tZW1vcy5hcGkudjEuU3BhY2VNZW1iZXIiX9pBGHNwYWNlX21lbWJlcix1cGRhdGVfbWFza4LT5JMCPjoMc3BhY2VfbWVtYmVyMi4vYXBpL3YxL3tzcGFjZV9tZW1iZXIubmFtZT1zcGFjZXMvKi9tZW1iZXJzLyp9EoUBChFEZWxldGVTcGFjZU1lbWJlchImLm1lbW9zLmFwaS52MS5EZWxldGVTcGFjZU1lbWJlclJlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHkiMNpBBG5hbWWC0+STAiMqIS9hcGkvdjEve25hbWU9c3BhY2VzLyovbWVtYmVycy8qfUKpAQoQY29tLm1lbW9zLmFwaS52MUIRU3BhY2VTZXJ2aWNlUHJvdG9QAVowZ2l0aHViLmNvbS91c2VtZW1vcy9tZW1vcy9wcm90by9nZW4vYXBpL3YxO2FwaXYxogIDTUFYqgIMTWVtb3MuQXBpLlYxygIMTWVtb3NcQXBpXFYx4gIYTWVtb3NcQXBpXFYxXEdQQk1ldGFkYXRh6gIOTWVtb3M6OkFwaTo6VjFiBnByb3RvMw", [file_google_api_annotations, file_google_api_client, file_google_api_field_behavior, file_google_api_resource, file_google_protobuf_empty, file_google_protobuf_field_mask]);
 
 /**
  * Space is a collaboration boundary for placed memos.
@@ -115,6 +115,49 @@ export const SpaceMember_RoleSchema: GenEnum<SpaceMember_Role> = /*@__PURE__*/
   enumDesc(file_api_v1_space_service, 1, 0);
 
 /**
+ * SpaceInvitation is a pending invitation for an existing user to join a space.
+ *
+ * @generated from message memos.api.v1.SpaceInvitation
+ */
+export type SpaceInvitation = Message<"memos.api.v1.SpaceInvitation"> & {
+  /**
+   * The resource name. Format: spaces/{space}/invitations/{username}.
+   *
+   * @generated from field: string name = 1;
+   */
+  name: string;
+
+  /**
+   * Required. The invited user. Format: users/{username}.
+   *
+   * @generated from field: string invitee = 2;
+   */
+  invitee: string;
+
+  /**
+   * Required. The role the user will receive after accepting the invitation.
+   *
+   * @generated from field: memos.api.v1.SpaceMember.Role role = 3;
+   */
+  role: SpaceMember_Role;
+
+  /**
+   * Output only. The Space the user is invited to. This lets an invitee
+   * understand the invitation without granting membership-based GetSpace access.
+   *
+   * @generated from field: memos.api.v1.Space space = 4;
+   */
+  space?: Space | undefined;
+};
+
+/**
+ * Describes the message memos.api.v1.SpaceInvitation.
+ * Use `create(SpaceInvitationSchema)` to create a new message.
+ */
+export const SpaceInvitationSchema: GenMessage<SpaceInvitation> = /*@__PURE__*/
+  messageDesc(file_api_v1_space_service, 2);
+
+/**
  * @generated from message memos.api.v1.CreateSpaceRequest
  */
 export type CreateSpaceRequest = Message<"memos.api.v1.CreateSpaceRequest"> & {
@@ -138,7 +181,7 @@ export type CreateSpaceRequest = Message<"memos.api.v1.CreateSpaceRequest"> & {
  * Use `create(CreateSpaceRequestSchema)` to create a new message.
  */
 export const CreateSpaceRequestSchema: GenMessage<CreateSpaceRequest> = /*@__PURE__*/
-  messageDesc(file_api_v1_space_service, 2);
+  messageDesc(file_api_v1_space_service, 3);
 
 /**
  * @generated from message memos.api.v1.ListSpacesRequest
@@ -164,7 +207,7 @@ export type ListSpacesRequest = Message<"memos.api.v1.ListSpacesRequest"> & {
  * Use `create(ListSpacesRequestSchema)` to create a new message.
  */
 export const ListSpacesRequestSchema: GenMessage<ListSpacesRequest> = /*@__PURE__*/
-  messageDesc(file_api_v1_space_service, 3);
+  messageDesc(file_api_v1_space_service, 4);
 
 /**
  * @generated from message memos.api.v1.ListSpacesResponse
@@ -186,7 +229,7 @@ export type ListSpacesResponse = Message<"memos.api.v1.ListSpacesResponse"> & {
  * Use `create(ListSpacesResponseSchema)` to create a new message.
  */
 export const ListSpacesResponseSchema: GenMessage<ListSpacesResponse> = /*@__PURE__*/
-  messageDesc(file_api_v1_space_service, 4);
+  messageDesc(file_api_v1_space_service, 5);
 
 /**
  * @generated from message memos.api.v1.GetSpaceRequest
@@ -205,7 +248,7 @@ export type GetSpaceRequest = Message<"memos.api.v1.GetSpaceRequest"> & {
  * Use `create(GetSpaceRequestSchema)` to create a new message.
  */
 export const GetSpaceRequestSchema: GenMessage<GetSpaceRequest> = /*@__PURE__*/
-  messageDesc(file_api_v1_space_service, 5);
+  messageDesc(file_api_v1_space_service, 6);
 
 /**
  * @generated from message memos.api.v1.UpdateSpaceRequest
@@ -231,7 +274,7 @@ export type UpdateSpaceRequest = Message<"memos.api.v1.UpdateSpaceRequest"> & {
  * Use `create(UpdateSpaceRequestSchema)` to create a new message.
  */
 export const UpdateSpaceRequestSchema: GenMessage<UpdateSpaceRequest> = /*@__PURE__*/
-  messageDesc(file_api_v1_space_service, 6);
+  messageDesc(file_api_v1_space_service, 7);
 
 /**
  * @generated from message memos.api.v1.DeleteSpaceRequest
@@ -250,12 +293,12 @@ export type DeleteSpaceRequest = Message<"memos.api.v1.DeleteSpaceRequest"> & {
  * Use `create(DeleteSpaceRequestSchema)` to create a new message.
  */
 export const DeleteSpaceRequestSchema: GenMessage<DeleteSpaceRequest> = /*@__PURE__*/
-  messageDesc(file_api_v1_space_service, 7);
+  messageDesc(file_api_v1_space_service, 8);
 
 /**
- * @generated from message memos.api.v1.CreateSpaceMemberRequest
+ * @generated from message memos.api.v1.CreateSpaceInvitationRequest
  */
-export type CreateSpaceMemberRequest = Message<"memos.api.v1.CreateSpaceMemberRequest"> & {
+export type CreateSpaceInvitationRequest = Message<"memos.api.v1.CreateSpaceInvitationRequest"> & {
   /**
    * Required. The parent space. Format: spaces/{space}.
    *
@@ -264,19 +307,205 @@ export type CreateSpaceMemberRequest = Message<"memos.api.v1.CreateSpaceMemberRe
   parent: string;
 
   /**
-   * Required. The membership to create.
+   * Required. The invitation to create.
    *
-   * @generated from field: memos.api.v1.SpaceMember space_member = 2;
+   * @generated from field: memos.api.v1.SpaceInvitation space_invitation = 2;
    */
-  spaceMember?: SpaceMember | undefined;
+  spaceInvitation?: SpaceInvitation | undefined;
 };
 
 /**
- * Describes the message memos.api.v1.CreateSpaceMemberRequest.
- * Use `create(CreateSpaceMemberRequestSchema)` to create a new message.
+ * Describes the message memos.api.v1.CreateSpaceInvitationRequest.
+ * Use `create(CreateSpaceInvitationRequestSchema)` to create a new message.
  */
-export const CreateSpaceMemberRequestSchema: GenMessage<CreateSpaceMemberRequest> = /*@__PURE__*/
-  messageDesc(file_api_v1_space_service, 8);
+export const CreateSpaceInvitationRequestSchema: GenMessage<CreateSpaceInvitationRequest> = /*@__PURE__*/
+  messageDesc(file_api_v1_space_service, 9);
+
+/**
+ * @generated from message memos.api.v1.ListSpaceInvitationsRequest
+ */
+export type ListSpaceInvitationsRequest = Message<"memos.api.v1.ListSpaceInvitationsRequest"> & {
+  /**
+   * Required. The parent space. Format: spaces/{space}.
+   *
+   * @generated from field: string parent = 1;
+   */
+  parent: string;
+
+  /**
+   * Optional. The maximum number of invitations to return.
+   *
+   * @generated from field: int32 page_size = 2;
+   */
+  pageSize: number;
+
+  /**
+   * Optional. A token from a previous ListSpaceInvitations response.
+   *
+   * @generated from field: string page_token = 3;
+   */
+  pageToken: string;
+};
+
+/**
+ * Describes the message memos.api.v1.ListSpaceInvitationsRequest.
+ * Use `create(ListSpaceInvitationsRequestSchema)` to create a new message.
+ */
+export const ListSpaceInvitationsRequestSchema: GenMessage<ListSpaceInvitationsRequest> = /*@__PURE__*/
+  messageDesc(file_api_v1_space_service, 10);
+
+/**
+ * @generated from message memos.api.v1.ListSpaceInvitationsResponse
+ */
+export type ListSpaceInvitationsResponse = Message<"memos.api.v1.ListSpaceInvitationsResponse"> & {
+  /**
+   * @generated from field: repeated memos.api.v1.SpaceInvitation space_invitations = 1;
+   */
+  spaceInvitations: SpaceInvitation[];
+
+  /**
+   * @generated from field: string next_page_token = 2;
+   */
+  nextPageToken: string;
+};
+
+/**
+ * Describes the message memos.api.v1.ListSpaceInvitationsResponse.
+ * Use `create(ListSpaceInvitationsResponseSchema)` to create a new message.
+ */
+export const ListSpaceInvitationsResponseSchema: GenMessage<ListSpaceInvitationsResponse> = /*@__PURE__*/
+  messageDesc(file_api_v1_space_service, 11);
+
+/**
+ * @generated from message memos.api.v1.ListUserSpaceInvitationsRequest
+ */
+export type ListUserSpaceInvitationsRequest = Message<"memos.api.v1.ListUserSpaceInvitationsRequest"> & {
+  /**
+   * Required. The authenticated user. Format: users/{username}.
+   *
+   * @generated from field: string parent = 1;
+   */
+  parent: string;
+
+  /**
+   * Optional. The maximum number of invitations to return.
+   *
+   * @generated from field: int32 page_size = 2;
+   */
+  pageSize: number;
+
+  /**
+   * Optional. A token from a previous ListUserSpaceInvitations response.
+   *
+   * @generated from field: string page_token = 3;
+   */
+  pageToken: string;
+};
+
+/**
+ * Describes the message memos.api.v1.ListUserSpaceInvitationsRequest.
+ * Use `create(ListUserSpaceInvitationsRequestSchema)` to create a new message.
+ */
+export const ListUserSpaceInvitationsRequestSchema: GenMessage<ListUserSpaceInvitationsRequest> = /*@__PURE__*/
+  messageDesc(file_api_v1_space_service, 12);
+
+/**
+ * @generated from message memos.api.v1.ListUserSpaceInvitationsResponse
+ */
+export type ListUserSpaceInvitationsResponse = Message<"memos.api.v1.ListUserSpaceInvitationsResponse"> & {
+  /**
+   * @generated from field: repeated memos.api.v1.SpaceInvitation space_invitations = 1;
+   */
+  spaceInvitations: SpaceInvitation[];
+
+  /**
+   * @generated from field: string next_page_token = 2;
+   */
+  nextPageToken: string;
+};
+
+/**
+ * Describes the message memos.api.v1.ListUserSpaceInvitationsResponse.
+ * Use `create(ListUserSpaceInvitationsResponseSchema)` to create a new message.
+ */
+export const ListUserSpaceInvitationsResponseSchema: GenMessage<ListUserSpaceInvitationsResponse> = /*@__PURE__*/
+  messageDesc(file_api_v1_space_service, 13);
+
+/**
+ * @generated from message memos.api.v1.GetSpaceInvitationRequest
+ */
+export type GetSpaceInvitationRequest = Message<"memos.api.v1.GetSpaceInvitationRequest"> & {
+  /**
+   * Required. Format: spaces/{space}/invitations/{username}.
+   *
+   * @generated from field: string name = 1;
+   */
+  name: string;
+};
+
+/**
+ * Describes the message memos.api.v1.GetSpaceInvitationRequest.
+ * Use `create(GetSpaceInvitationRequestSchema)` to create a new message.
+ */
+export const GetSpaceInvitationRequestSchema: GenMessage<GetSpaceInvitationRequest> = /*@__PURE__*/
+  messageDesc(file_api_v1_space_service, 14);
+
+/**
+ * @generated from message memos.api.v1.DeleteSpaceInvitationRequest
+ */
+export type DeleteSpaceInvitationRequest = Message<"memos.api.v1.DeleteSpaceInvitationRequest"> & {
+  /**
+   * Required. Format: spaces/{space}/invitations/{username}.
+   *
+   * @generated from field: string name = 1;
+   */
+  name: string;
+};
+
+/**
+ * Describes the message memos.api.v1.DeleteSpaceInvitationRequest.
+ * Use `create(DeleteSpaceInvitationRequestSchema)` to create a new message.
+ */
+export const DeleteSpaceInvitationRequestSchema: GenMessage<DeleteSpaceInvitationRequest> = /*@__PURE__*/
+  messageDesc(file_api_v1_space_service, 15);
+
+/**
+ * @generated from message memos.api.v1.AcceptSpaceInvitationRequest
+ */
+export type AcceptSpaceInvitationRequest = Message<"memos.api.v1.AcceptSpaceInvitationRequest"> & {
+  /**
+   * Required. Format: spaces/{space}/invitations/{username}.
+   *
+   * @generated from field: string name = 1;
+   */
+  name: string;
+};
+
+/**
+ * Describes the message memos.api.v1.AcceptSpaceInvitationRequest.
+ * Use `create(AcceptSpaceInvitationRequestSchema)` to create a new message.
+ */
+export const AcceptSpaceInvitationRequestSchema: GenMessage<AcceptSpaceInvitationRequest> = /*@__PURE__*/
+  messageDesc(file_api_v1_space_service, 16);
+
+/**
+ * @generated from message memos.api.v1.DeclineSpaceInvitationRequest
+ */
+export type DeclineSpaceInvitationRequest = Message<"memos.api.v1.DeclineSpaceInvitationRequest"> & {
+  /**
+   * Required. Format: spaces/{space}/invitations/{username}.
+   *
+   * @generated from field: string name = 1;
+   */
+  name: string;
+};
+
+/**
+ * Describes the message memos.api.v1.DeclineSpaceInvitationRequest.
+ * Use `create(DeclineSpaceInvitationRequestSchema)` to create a new message.
+ */
+export const DeclineSpaceInvitationRequestSchema: GenMessage<DeclineSpaceInvitationRequest> = /*@__PURE__*/
+  messageDesc(file_api_v1_space_service, 17);
 
 /**
  * @generated from message memos.api.v1.ListSpaceMembersRequest
@@ -309,7 +538,7 @@ export type ListSpaceMembersRequest = Message<"memos.api.v1.ListSpaceMembersRequ
  * Use `create(ListSpaceMembersRequestSchema)` to create a new message.
  */
 export const ListSpaceMembersRequestSchema: GenMessage<ListSpaceMembersRequest> = /*@__PURE__*/
-  messageDesc(file_api_v1_space_service, 9);
+  messageDesc(file_api_v1_space_service, 18);
 
 /**
  * @generated from message memos.api.v1.ListSpaceMembersResponse
@@ -331,7 +560,7 @@ export type ListSpaceMembersResponse = Message<"memos.api.v1.ListSpaceMembersRes
  * Use `create(ListSpaceMembersResponseSchema)` to create a new message.
  */
 export const ListSpaceMembersResponseSchema: GenMessage<ListSpaceMembersResponse> = /*@__PURE__*/
-  messageDesc(file_api_v1_space_service, 10);
+  messageDesc(file_api_v1_space_service, 19);
 
 /**
  * @generated from message memos.api.v1.GetSpaceMemberRequest
@@ -350,7 +579,7 @@ export type GetSpaceMemberRequest = Message<"memos.api.v1.GetSpaceMemberRequest"
  * Use `create(GetSpaceMemberRequestSchema)` to create a new message.
  */
 export const GetSpaceMemberRequestSchema: GenMessage<GetSpaceMemberRequest> = /*@__PURE__*/
-  messageDesc(file_api_v1_space_service, 11);
+  messageDesc(file_api_v1_space_service, 20);
 
 /**
  * @generated from message memos.api.v1.UpdateSpaceMemberRequest
@@ -376,7 +605,7 @@ export type UpdateSpaceMemberRequest = Message<"memos.api.v1.UpdateSpaceMemberRe
  * Use `create(UpdateSpaceMemberRequestSchema)` to create a new message.
  */
 export const UpdateSpaceMemberRequestSchema: GenMessage<UpdateSpaceMemberRequest> = /*@__PURE__*/
-  messageDesc(file_api_v1_space_service, 12);
+  messageDesc(file_api_v1_space_service, 21);
 
 /**
  * @generated from message memos.api.v1.DeleteSpaceMemberRequest
@@ -395,7 +624,7 @@ export type DeleteSpaceMemberRequest = Message<"memos.api.v1.DeleteSpaceMemberRe
  * Use `create(DeleteSpaceMemberRequestSchema)` to create a new message.
  */
 export const DeleteSpaceMemberRequestSchema: GenMessage<DeleteSpaceMemberRequest> = /*@__PURE__*/
-  messageDesc(file_api_v1_space_service, 13);
+  messageDesc(file_api_v1_space_service, 22);
 
 /**
  * SpaceService manages collaborative spaces and their memberships.
@@ -456,14 +685,74 @@ export const SpaceService: GenService<{
     output: typeof EmptySchema;
   },
   /**
-   * CreateSpaceMember directly adds an existing active user to a space.
+   * CreateSpaceInvitation invites an existing active user to a space.
    *
-   * @generated from rpc memos.api.v1.SpaceService.CreateSpaceMember
+   * @generated from rpc memos.api.v1.SpaceService.CreateSpaceInvitation
    */
-  createSpaceMember: {
+  createSpaceInvitation: {
     methodKind: "unary";
-    input: typeof CreateSpaceMemberRequestSchema;
+    input: typeof CreateSpaceInvitationRequestSchema;
+    output: typeof SpaceInvitationSchema;
+  },
+  /**
+   * ListSpaceInvitations lists the pending invitations for a space.
+   *
+   * @generated from rpc memos.api.v1.SpaceService.ListSpaceInvitations
+   */
+  listSpaceInvitations: {
+    methodKind: "unary";
+    input: typeof ListSpaceInvitationsRequestSchema;
+    output: typeof ListSpaceInvitationsResponseSchema;
+  },
+  /**
+   * ListUserSpaceInvitations lists the authenticated user's pending space invitations.
+   *
+   * @generated from rpc memos.api.v1.SpaceService.ListUserSpaceInvitations
+   */
+  listUserSpaceInvitations: {
+    methodKind: "unary";
+    input: typeof ListUserSpaceInvitationsRequestSchema;
+    output: typeof ListUserSpaceInvitationsResponseSchema;
+  },
+  /**
+   * GetSpaceInvitation gets one pending invitation.
+   *
+   * @generated from rpc memos.api.v1.SpaceService.GetSpaceInvitation
+   */
+  getSpaceInvitation: {
+    methodKind: "unary";
+    input: typeof GetSpaceInvitationRequestSchema;
+    output: typeof SpaceInvitationSchema;
+  },
+  /**
+   * DeleteSpaceInvitation revokes a pending invitation.
+   *
+   * @generated from rpc memos.api.v1.SpaceService.DeleteSpaceInvitation
+   */
+  deleteSpaceInvitation: {
+    methodKind: "unary";
+    input: typeof DeleteSpaceInvitationRequestSchema;
+    output: typeof EmptySchema;
+  },
+  /**
+   * AcceptSpaceInvitation accepts a pending invitation and creates a membership.
+   *
+   * @generated from rpc memos.api.v1.SpaceService.AcceptSpaceInvitation
+   */
+  acceptSpaceInvitation: {
+    methodKind: "unary";
+    input: typeof AcceptSpaceInvitationRequestSchema;
     output: typeof SpaceMemberSchema;
+  },
+  /**
+   * DeclineSpaceInvitation declines a pending invitation.
+   *
+   * @generated from rpc memos.api.v1.SpaceService.DeclineSpaceInvitation
+   */
+  declineSpaceInvitation: {
+    methodKind: "unary";
+    input: typeof DeclineSpaceInvitationRequestSchema;
+    output: typeof EmptySchema;
   },
   /**
    * ListSpaceMembers lists the members of a space.

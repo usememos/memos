@@ -69,7 +69,9 @@ func mapSpaceMutationError(err error, operation string) error {
 	case errors.Is(err, store.ErrSpaceAlreadyExists):
 		return status.Error(codes.AlreadyExists, "space already exists")
 	case errors.Is(err, store.ErrSpaceMemberAlreadyExists):
-		return status.Error(codes.AlreadyExists, "space member already exists")
+		return status.Error(codes.AlreadyExists, "space membership or invitation already exists")
+	case errors.Is(err, store.ErrSpaceInvitationNotFound):
+		return status.Error(codes.NotFound, "space invitation not found")
 	case errors.Is(err, store.ErrSpaceNotFound), errors.Is(err, store.ErrSpaceMemberNotFound):
 		return status.Error(codes.NotFound, "space or membership not found")
 	case errors.Is(err, sql.ErrNoRows):
@@ -239,14 +241,15 @@ func (s *APIV1Service) DeleteSpace(ctx context.Context, request *v1pb.DeleteSpac
 	return &emptypb.Empty{}, nil
 }
 
-// CreateSpaceMember directly adds an active user to a Space.
-func (s *APIV1Service) CreateSpaceMember(ctx context.Context, request *v1pb.CreateSpaceMemberRequest) (*v1pb.SpaceMember, error) {
+// CreateSpaceInvitation creates a pending invitation without granting any
+// Space access to the invitee.
+func (s *APIV1Service) CreateSpaceInvitation(ctx context.Context, request *v1pb.CreateSpaceInvitationRequest) (*v1pb.SpaceInvitation, error) {
 	currentUser, err := s.requireCurrentSpaceUser(ctx)
 	if err != nil {
 		return nil, err
 	}
-	if request.GetSpaceMember() == nil {
-		return nil, status.Error(codes.InvalidArgument, "space member is required")
+	if request.GetSpaceInvitation() == nil {
+		return nil, status.Error(codes.InvalidArgument, "space invitation is required")
 	}
 	space, callerMembership, err := s.resolveMemberSpace(ctx, request.Parent, currentUser)
 	if err != nil {
@@ -255,38 +258,293 @@ func (s *APIV1Service) CreateSpaceMember(ctx context.Context, request *v1pb.Crea
 	if err := requireSpaceAdministrator(callerMembership); err != nil {
 		return nil, err
 	}
-	targetUsername, err := parseUsernameFromName(request.SpaceMember.User)
+	targetUsername, err := parseUsernameFromName(request.SpaceInvitation.Invitee)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid member user: %v", err)
+		return nil, status.Errorf(codes.InvalidArgument, "invalid invitation invitee: %v", err)
 	}
 	targetUser, err := s.Store.GetUser(ctx, &store.FindUser{Username: &targetUsername})
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get member user: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to get invitation invitee: %v", err)
 	}
 	if targetUser == nil {
 		return nil, status.Error(codes.NotFound, "user not found")
 	}
 	if targetUser.RowStatus != store.Normal {
-		return nil, status.Error(codes.FailedPrecondition, "only active users can be added to a space")
+		return nil, status.Error(codes.FailedPrecondition, "only active users can be invited to a space")
 	}
-	role, ok := convertSpaceMemberRoleToStore(request.SpaceMember.Role)
+	role, ok := convertSpaceMemberRoleToStore(request.SpaceInvitation.Role)
 	if !ok {
-		return nil, status.Error(codes.InvalidArgument, "space member role must be ADMIN or USER")
+		return nil, status.Error(codes.InvalidArgument, "space invitation role must be ADMIN or USER")
 	}
-	expectedName := buildSpaceMemberName(space.UID, targetUser.Username)
-	if request.SpaceMember.Name != "" && request.SpaceMember.Name != expectedName {
-		return nil, status.Error(codes.InvalidArgument, "space member name does not match parent and user")
+	expectedName := buildSpaceInvitationName(space.UID, targetUser.Username)
+	if request.SpaceInvitation.Name != "" && request.SpaceInvitation.Name != expectedName {
+		return nil, status.Error(codes.InvalidArgument, "space invitation name does not match parent and invitee")
 	}
-	created, err := s.Store.CreateSpaceMember(ctx, &store.SpaceMember{
+	created, err := s.Store.CreateSpaceInvitation(ctx, &store.SpaceInvitation{
 		SpaceID: space.ID,
 		UserID:  targetUser.ID,
 		Role:    role,
 	}, currentUser.ID)
 	if err != nil {
-		return nil, mapSpaceMutationError(err, "failed to create space member")
+		return nil, mapSpaceMutationError(err, "failed to create space invitation")
 	}
 	s.SSEHub.publishMemoChanged()
-	return convertSpaceMemberFromStore(space, targetUser, created), nil
+	return convertSpaceInvitationFromStore(space, targetUser, created), nil
+}
+
+// ListSpaceInvitations lists pending invitations after requiring an active
+// Space administrator.
+func (s *APIV1Service) ListSpaceInvitations(ctx context.Context, request *v1pb.ListSpaceInvitationsRequest) (*v1pb.ListSpaceInvitationsResponse, error) {
+	currentUser, err := s.requireCurrentSpaceUser(ctx)
+	if err != nil {
+		return nil, err
+	}
+	space, callerMembership, err := s.resolveMemberSpace(ctx, request.Parent, currentUser)
+	if err != nil {
+		return nil, err
+	}
+	if err := requireSpaceAdministrator(callerMembership); err != nil {
+		return nil, err
+	}
+	limit, offset, err := listSpacePage(request.PageSize, request.PageToken)
+	if err != nil {
+		return nil, err
+	}
+	limitPlusOne := limit + 1
+	invitations, err := s.Store.ListSpaceInvitations(ctx, &store.FindSpaceInvitation{
+		SpaceID:      &space.ID,
+		ViewerUserID: &currentUser.ID,
+		Limit:        &limitPlusOne,
+		Offset:       &offset,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to list space invitations: %v", err)
+	}
+	nextPageToken := ""
+	if len(invitations) == limitPlusOne {
+		invitations = invitations[:limit]
+		nextPageToken, err = getPageToken(limit, offset+limit)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to create next page token: %v", err)
+		}
+	}
+	response := &v1pb.ListSpaceInvitationsResponse{
+		SpaceInvitations: make([]*v1pb.SpaceInvitation, 0, len(invitations)),
+		NextPageToken:    nextPageToken,
+	}
+	if len(invitations) == 0 {
+		return response, nil
+	}
+	userIDs := make([]int32, 0, len(invitations))
+	for _, invitation := range invitations {
+		userIDs = append(userIDs, invitation.UserID)
+	}
+	users, err := s.Store.ListUsers(ctx, &store.FindUser{IDList: userIDs})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to resolve invitation invitees: %v", err)
+	}
+	usersByID := make(map[int32]*store.User, len(users))
+	for _, user := range users {
+		usersByID[user.ID] = user
+	}
+	for _, invitation := range invitations {
+		user := usersByID[invitation.UserID]
+		if user == nil || convertSpaceMemberRoleFromStore(invitation.Role) == v1pb.SpaceMember_ROLE_UNSPECIFIED {
+			continue
+		}
+		response.SpaceInvitations = append(response.SpaceInvitations, convertSpaceInvitationFromStore(space, user, invitation))
+	}
+	return response, nil
+}
+
+// ListUserSpaceInvitations lists the authenticated user's received pending
+// invitations. A user cannot enumerate another user's invitations.
+func (s *APIV1Service) ListUserSpaceInvitations(ctx context.Context, request *v1pb.ListUserSpaceInvitationsRequest) (*v1pb.ListUserSpaceInvitationsResponse, error) {
+	currentUser, err := s.requireCurrentSpaceUser(ctx)
+	if err != nil {
+		return nil, err
+	}
+	username, err := parseUsernameFromName(request.Parent)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid user parent: %v", err)
+	}
+	if username != currentUser.Username {
+		return nil, status.Error(codes.PermissionDenied, "users may only list their own space invitations")
+	}
+	limit, offset, err := listSpacePage(request.PageSize, request.PageToken)
+	if err != nil {
+		return nil, err
+	}
+	limitPlusOne := limit + 1
+	invitations, err := s.Store.ListSpaceInvitations(ctx, &store.FindSpaceInvitation{
+		UserID:       &currentUser.ID,
+		ViewerUserID: &currentUser.ID,
+		Limit:        &limitPlusOne,
+		Offset:       &offset,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to list user space invitations: %v", err)
+	}
+	nextPageToken := ""
+	if len(invitations) == limitPlusOne {
+		invitations = invitations[:limit]
+		nextPageToken, err = getPageToken(limit, offset+limit)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to create next page token: %v", err)
+		}
+	}
+	response := &v1pb.ListUserSpaceInvitationsResponse{
+		SpaceInvitations: make([]*v1pb.SpaceInvitation, 0, len(invitations)),
+		NextPageToken:    nextPageToken,
+	}
+	if len(invitations) == 0 {
+		return response, nil
+	}
+	spaceIDs := make([]int32, 0, len(invitations))
+	for _, invitation := range invitations {
+		spaceIDs = append(spaceIDs, invitation.SpaceID)
+	}
+	spaces, err := s.Store.ListSpaces(ctx, &store.FindSpace{IDList: spaceIDs})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to resolve invitation spaces: %v", err)
+	}
+	spacesByID := make(map[int32]*store.Space, len(spaces))
+	for _, space := range spaces {
+		spacesByID[space.ID] = space
+	}
+	for _, invitation := range invitations {
+		space := spacesByID[invitation.SpaceID]
+		if space == nil || convertSpaceMemberRoleFromStore(invitation.Role) == v1pb.SpaceMember_ROLE_UNSPECIFIED {
+			continue
+		}
+		response.SpaceInvitations = append(response.SpaceInvitations, convertSpaceInvitationFromStore(space, currentUser, invitation))
+	}
+	return response, nil
+}
+
+// resolveSpaceInvitationResource resolves an invitation and authorizes either
+// its invitee or an active administrator of its Space.
+func (s *APIV1Service) resolveSpaceInvitationResource(ctx context.Context, name string, currentUser *store.User) (*store.Space, *store.User, *store.SpaceMember, *store.SpaceInvitation, error) {
+	spaceUID, username, err := ExtractSpaceInvitationTokensFromName(name)
+	if err != nil {
+		return nil, nil, nil, nil, status.Errorf(codes.InvalidArgument, "invalid space invitation name: %v", err)
+	}
+	space, err := s.Store.GetSpace(ctx, &store.FindSpace{UID: &spaceUID})
+	if err != nil {
+		return nil, nil, nil, nil, status.Errorf(codes.Internal, "failed to resolve invitation space: %v", err)
+	}
+	if space == nil {
+		return nil, nil, nil, nil, status.Error(codes.NotFound, "space invitation not found")
+	}
+	targetUser, err := s.Store.GetUser(ctx, &store.FindUser{Username: &username})
+	if err != nil {
+		return nil, nil, nil, nil, status.Errorf(codes.Internal, "failed to resolve invitation invitee: %v", err)
+	}
+	if targetUser == nil {
+		return nil, nil, nil, nil, status.Error(codes.NotFound, "space invitation not found")
+	}
+	callerMembership, err := s.Store.GetSpaceMember(ctx, &store.FindSpaceMember{SpaceID: &space.ID, UserID: &currentUser.ID})
+	if err != nil {
+		return nil, nil, nil, nil, status.Errorf(codes.Internal, "failed to resolve caller space membership: %v", err)
+	}
+	isInvitee := targetUser.ID == currentUser.ID
+	isAdministrator := callerMembership != nil && callerMembership.Role == store.SpaceMemberRoleAdmin
+	if !isInvitee && !isAdministrator {
+		return nil, nil, nil, nil, status.Error(codes.NotFound, "space invitation not found")
+	}
+	invitation, err := s.Store.GetSpaceInvitation(ctx, &store.FindSpaceInvitation{
+		SpaceID:      &space.ID,
+		UserID:       &targetUser.ID,
+		ViewerUserID: &currentUser.ID,
+	})
+	if err != nil {
+		return nil, nil, nil, nil, status.Errorf(codes.Internal, "failed to get space invitation: %v", err)
+	}
+	if invitation == nil || convertSpaceMemberRoleFromStore(invitation.Role) == v1pb.SpaceMember_ROLE_UNSPECIFIED {
+		return nil, nil, nil, nil, status.Error(codes.NotFound, "space invitation not found")
+	}
+	return space, targetUser, callerMembership, invitation, nil
+}
+
+// GetSpaceInvitation gets a pending invitation for its invitee or a Space
+// administrator.
+func (s *APIV1Service) GetSpaceInvitation(ctx context.Context, request *v1pb.GetSpaceInvitationRequest) (*v1pb.SpaceInvitation, error) {
+	currentUser, err := s.requireCurrentSpaceUser(ctx)
+	if err != nil {
+		return nil, err
+	}
+	space, targetUser, _, invitation, err := s.resolveSpaceInvitationResource(ctx, request.Name, currentUser)
+	if err != nil {
+		return nil, err
+	}
+	return convertSpaceInvitationFromStore(space, targetUser, invitation), nil
+}
+
+// DeleteSpaceInvitation revokes a pending invitation. Only an active Space
+// administrator can revoke it.
+func (s *APIV1Service) DeleteSpaceInvitation(ctx context.Context, request *v1pb.DeleteSpaceInvitationRequest) (*emptypb.Empty, error) {
+	currentUser, err := s.requireCurrentSpaceUser(ctx)
+	if err != nil {
+		return nil, err
+	}
+	_, targetUser, callerMembership, invitation, err := s.resolveSpaceInvitationResource(ctx, request.Name, currentUser)
+	if err != nil {
+		return nil, err
+	}
+	if err := requireSpaceAdministrator(callerMembership); err != nil {
+		return nil, err
+	}
+	if err := s.Store.RevokeSpaceInvitation(ctx, &store.RevokeSpaceInvitation{
+		SpaceID: invitation.SpaceID,
+		UserID:  targetUser.ID,
+	}, currentUser.ID); err != nil {
+		return nil, mapSpaceMutationError(err, "failed to revoke space invitation")
+	}
+	s.SSEHub.publishMemoChanged()
+	return &emptypb.Empty{}, nil
+}
+
+// AcceptSpaceInvitation activates the invited user's membership with the role
+// selected by the administrator who created the invitation.
+func (s *APIV1Service) AcceptSpaceInvitation(ctx context.Context, request *v1pb.AcceptSpaceInvitationRequest) (*v1pb.SpaceMember, error) {
+	currentUser, err := s.requireCurrentSpaceUser(ctx)
+	if err != nil {
+		return nil, err
+	}
+	space, targetUser, _, invitation, err := s.resolveSpaceInvitationResource(ctx, request.Name, currentUser)
+	if err != nil {
+		return nil, err
+	}
+	if targetUser.ID != currentUser.ID {
+		return nil, status.Error(codes.PermissionDenied, "only the invitee may accept a space invitation")
+	}
+	member, err := s.Store.AcceptSpaceInvitation(ctx, &store.AcceptSpaceInvitation{SpaceID: invitation.SpaceID, UserID: currentUser.ID}, currentUser.ID)
+	if err != nil {
+		return nil, mapSpaceMutationError(err, "failed to accept space invitation")
+	}
+	s.SSEHub.publishMemoChanged()
+	return convertSpaceMemberFromStore(space, currentUser, member), nil
+}
+
+// DeclineSpaceInvitation deletes the authenticated invitee's pending
+// invitation without ever creating a membership.
+func (s *APIV1Service) DeclineSpaceInvitation(ctx context.Context, request *v1pb.DeclineSpaceInvitationRequest) (*emptypb.Empty, error) {
+	currentUser, err := s.requireCurrentSpaceUser(ctx)
+	if err != nil {
+		return nil, err
+	}
+	_, targetUser, _, invitation, err := s.resolveSpaceInvitationResource(ctx, request.Name, currentUser)
+	if err != nil {
+		return nil, err
+	}
+	if targetUser.ID != currentUser.ID {
+		return nil, status.Error(codes.PermissionDenied, "only the invitee may decline a space invitation")
+	}
+	if err := s.Store.DeclineSpaceInvitation(ctx, &store.DeclineSpaceInvitation{SpaceID: invitation.SpaceID, UserID: currentUser.ID}, currentUser.ID); err != nil {
+		return nil, mapSpaceMutationError(err, "failed to decline space invitation")
+	}
+	s.SSEHub.publishMemoChanged()
+	return &emptypb.Empty{}, nil
 }
 
 // ListSpaceMembers lists memberships after authorizing the caller's own

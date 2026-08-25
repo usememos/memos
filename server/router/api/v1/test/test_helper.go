@@ -104,6 +104,20 @@ func (ts *TestService) CreateRegularUser(ctx context.Context, username string) (
 	})
 }
 
+// InviteAndAcceptSpaceMember is a test fixture helper that exercises the invitation
+// lifecycle instead of bypassing invitee consent.
+func (ts *TestService) InviteAndAcceptSpaceMember(ctx context.Context, create *store.SpaceMember, actorUserID int32) (*store.SpaceMember, error) {
+	invitation, err := ts.Store.CreateSpaceInvitation(ctx, &store.SpaceInvitation{
+		SpaceID: create.SpaceID,
+		UserID:  create.UserID,
+		Role:    create.Role,
+	}, actorUserID)
+	if err != nil {
+		return nil, err
+	}
+	return ts.Store.AcceptSpaceInvitation(ctx, &store.AcceptSpaceInvitation{SpaceID: invitation.SpaceID, UserID: invitation.UserID}, invitation.UserID)
+}
+
 // CreateUserContext creates a context with the given user's ID for authentication.
 func (*TestService) CreateUserContext(ctx context.Context, userID int32) context.Context {
 	// Use the context key from the auth package

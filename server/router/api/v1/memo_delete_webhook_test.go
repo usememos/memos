@@ -32,14 +32,7 @@ func TestDeleteMemoWebhooksRespectCurrentReadAccess(t *testing.T) {
 		Space:   &v1pb.Space{Title: "Delete webhook space"},
 	})
 	require.NoError(t, err)
-	_, err = service.CreateSpaceMember(ownerCtx, &v1pb.CreateSpaceMemberRequest{
-		Parent: space.Name,
-		SpaceMember: &v1pb.SpaceMember{
-			User: BuildUserName(successor.Username),
-			Role: v1pb.SpaceMember_ADMIN,
-		},
-	})
-	require.NoError(t, err)
+	inviteAndAcceptSpaceTestUser(ctx, t, service, owner, successor, space, v1pb.SpaceMember_ADMIN)
 
 	assignedSpace := space.Name
 	hiddenMemo, err := service.CreateMemo(ownerCtx, &v1pb.CreateMemoRequest{

@@ -44,7 +44,8 @@ func readPostgresMemoParticipation(ctx context.Context, tx *sql.Tx, memoID, acto
 	if snapshot.ContextSpaceID != nil {
 		if err := tx.QueryRowContext(ctx, `SELECT
 			EXISTS(SELECT 1 FROM space WHERE id = $1),
-			EXISTS(SELECT 1 FROM space_member WHERE space_id = $1 AND user_id = $2 AND role IN ('ADMIN', 'USER'))`,
+			EXISTS(SELECT 1 FROM space_member WHERE space_id = $1 AND user_id = $2
+				AND status = 'ACTIVE' AND role IN ('ADMIN', 'USER'))`,
 			*snapshot.ContextSpaceID, actorUserID).Scan(&snapshot.ContextSpaceExists, &snapshot.ContextMemberActive); err != nil {
 			return nil, err
 		}

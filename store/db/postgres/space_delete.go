@@ -57,14 +57,15 @@ func requirePostgresSpaceDeleteAdmin(ctx context.Context, tx *sql.Tx, delete *st
 		return store.ErrSpacePermissionDenied
 	}
 	var spaceID int32
-	if err := tx.QueryRowContext(ctx, "SELECT id FROM space WHERE id = $1", delete.ID).Scan(&spaceID); err != nil {
+	// Invitation creation takes the same lock before inserting its relationship.
+	if err := tx.QueryRowContext(ctx, "SELECT id FROM space WHERE id = $1 FOR UPDATE", delete.ID).Scan(&spaceID); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return store.ErrSpaceNotFound
 		}
 		return err
 	}
 	var role store.SpaceMemberRole
-	if err := tx.QueryRowContext(ctx, "SELECT role FROM space_member WHERE space_id = $1 AND user_id = $2", delete.ID, delete.ActorUserID).Scan(&role); errors.Is(err, sql.ErrNoRows) {
+	if err := tx.QueryRowContext(ctx, "SELECT role FROM space_member WHERE space_id = $1 AND user_id = $2 AND status = 'ACTIVE'", delete.ID, delete.ActorUserID).Scan(&role); errors.Is(err, sql.ErrNoRows) {
 		return store.ErrSpacePermissionDenied
 	} else if err != nil {
 		return errors.Wrap(err, "failed to read space administrator membership")

@@ -118,7 +118,7 @@ func TestUpsertMemoReactionRevalidatesSpaceParticipation(t *testing.T) {
 
 	space, err := ts.Store.CreateSpace(ctx, &store.Space{UID: "reaction-space", Title: "Reaction Space"}, owner.ID)
 	require.NoError(t, err)
-	_, err = ts.Store.CreateSpaceMember(ctx, &store.SpaceMember{
+	_, err = ts.InviteAndAcceptSpaceMember(ctx, &store.SpaceMember{
 		SpaceID: space.ID,
 		UserID:  member.ID,
 		Role:    store.SpaceMemberRoleUser,
@@ -156,7 +156,7 @@ func TestUpsertMemoReactionRevalidatesSpaceParticipation(t *testing.T) {
 	})
 	require.Equal(t, codes.PermissionDenied, status.Code(err))
 
-	_, err = ts.Store.CreateSpaceMember(ctx, &store.SpaceMember{
+	_, err = ts.InviteAndAcceptSpaceMember(ctx, &store.SpaceMember{
 		SpaceID: space.ID,
 		UserID:  member.ID,
 		Role:    store.SpaceMemberRoleUser,
@@ -192,7 +192,7 @@ func TestAssignedMemoReactionsFollowMemoReadAccess(t *testing.T) {
 
 	space, err := ts.Store.CreateSpace(ctx, &store.Space{UID: "assigned-reaction-space", Title: "Assigned reactions"}, owner.ID)
 	require.NoError(t, err)
-	_, err = ts.Store.CreateSpaceMember(ctx, &store.SpaceMember{
+	_, err = ts.InviteAndAcceptSpaceMember(ctx, &store.SpaceMember{
 		SpaceID: space.ID,
 		UserID:  member.ID,
 		Role:    store.SpaceMemberRoleAdmin,

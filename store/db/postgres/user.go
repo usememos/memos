@@ -92,7 +92,8 @@ func validatePostgresUserArchive(ctx context.Context, tx *sql.Tx, userID int32) 
 	if err := tx.QueryRowContext(ctx, `SELECT EXISTS (
 		SELECT 1
 		FROM "user" target_user
-		JOIN space_member target ON target.user_id = target_user.id AND target.role = 'ADMIN'
+		JOIN space_member target ON target.user_id = target_user.id
+			AND target.status = 'ACTIVE' AND target.role = 'ADMIN'
 		JOIN space ON space.id = target.space_id
 		WHERE target_user.id = $1
 			AND target_user.row_status = 'NORMAL'
@@ -102,6 +103,7 @@ func validatePostgresUserArchive(ctx context.Context, tx *sql.Tx, userID int32) 
 				JOIN "user" other_user ON other_user.id = other.user_id
 				WHERE other.space_id = target.space_id
 					AND other.user_id <> target.user_id
+					AND other.status = 'ACTIVE'
 					AND other.role = 'ADMIN'
 					AND other_user.row_status = 'NORMAL'
 			)

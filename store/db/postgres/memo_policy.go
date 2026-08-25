@@ -79,7 +79,8 @@ func readPostgresMemoSpaceState(ctx context.Context, tx *sql.Tx, spaceID, actorU
 	var spaceExists, memberActive bool
 	if err := tx.QueryRowContext(ctx, `SELECT
 		EXISTS(SELECT 1 FROM space WHERE id = $1),
-		EXISTS(SELECT 1 FROM space_member WHERE space_id = $1 AND user_id = $2 AND role IN ('ADMIN', 'USER'))`,
+		EXISTS(SELECT 1 FROM space_member WHERE space_id = $1 AND user_id = $2
+			AND status = 'ACTIVE' AND role IN ('ADMIN', 'USER'))`,
 		spaceID, actorUserID).Scan(&spaceExists, &memberActive); err != nil {
 		return false, false, err
 	}

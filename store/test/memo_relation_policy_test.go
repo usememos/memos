@@ -24,7 +24,7 @@ func TestMemoRelationMutationRevalidatesRelatedMemo(t *testing.T) {
 	require.NoError(t, err)
 	space, err := ts.CreateSpace(ctx, &store.Space{UID: shortuuid.New(), Title: "Relations"}, spaceOwner.ID)
 	require.NoError(t, err)
-	_, err = ts.CreateSpaceMember(ctx, &store.SpaceMember{SpaceID: space.ID, UserID: actor.ID, Role: store.SpaceMemberRoleUser}, spaceOwner.ID)
+	_, err = createSpaceMemberForTest(ctx, ts, &store.SpaceMember{SpaceID: space.ID, UserID: actor.ID, Role: store.SpaceMemberRoleUser}, spaceOwner.ID)
 	require.NoError(t, err)
 
 	targetRoot, err := ts.CreateMemo(ctx, &store.Memo{
@@ -125,7 +125,7 @@ func TestMemoCommentCreationKeepsIndependentPlacementAndAudience(t *testing.T) {
 	commentSpace, err := ts.CreateSpace(ctx, &store.Space{UID: shortuuid.New(), Title: "Comment"}, owner.ID)
 	require.NoError(t, err)
 	for _, space := range []*store.Space{contextSpace, commentSpace} {
-		_, err = ts.CreateSpaceMember(ctx, &store.SpaceMember{SpaceID: space.ID, UserID: actor.ID, Role: store.SpaceMemberRoleUser}, owner.ID)
+		_, err = createSpaceMemberForTest(ctx, ts, &store.SpaceMember{SpaceID: space.ID, UserID: actor.ID, Role: store.SpaceMemberRoleUser}, owner.ID)
 		require.NoError(t, err)
 	}
 	contextMemo, err := ts.CreateMemo(ctx, &store.Memo{

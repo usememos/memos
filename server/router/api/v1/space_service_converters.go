@@ -13,6 +13,10 @@ func buildSpaceMemberName(spaceUID, username string) string {
 	return buildSpaceName(spaceUID) + "/" + SpaceMemberNamePrefix + username
 }
 
+func buildSpaceInvitationName(spaceUID, username string) string {
+	return buildSpaceName(spaceUID) + "/" + SpaceInvitationNamePrefix + username
+}
+
 func convertSpaceFromStore(space *store.Space) *v1pb.Space {
 	if space == nil {
 		return nil
@@ -54,5 +58,17 @@ func convertSpaceMemberFromStore(space *store.Space, user *store.User, member *s
 		Name: buildSpaceMemberName(space.UID, user.Username),
 		User: BuildUserName(user.Username),
 		Role: convertSpaceMemberRoleFromStore(member.Role),
+	}
+}
+
+func convertSpaceInvitationFromStore(space *store.Space, user *store.User, invitation *store.SpaceInvitation) *v1pb.SpaceInvitation {
+	if space == nil || user == nil || invitation == nil {
+		return nil
+	}
+	return &v1pb.SpaceInvitation{
+		Name:    buildSpaceInvitationName(space.UID, user.Username),
+		Invitee: BuildUserName(user.Username),
+		Role:    convertSpaceMemberRoleFromStore(invitation.Role),
+		Space:   convertSpaceFromStore(space),
 	}
 }

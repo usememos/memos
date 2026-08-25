@@ -19,3 +19,15 @@ _Avoid_: Memo ID, content ID
 **Memo reaction**:
 A response attached to exactly one memo. Reactions are not a generic mechanism for targeting other kinds of content.
 _Avoid_: Content reaction, generic reaction, reaction target
+
+**Space**:
+An instance-scoped collaboration boundary for accepted members and memo placement. It is not a tenant, folder, or application-wide authorization role.
+_Avoid_: Tenant, workspace, group
+
+**Space invitation**:
+A pending offer for an existing active Memos user to join a Space with a specified Space role. It grants no membership or Space access until that user accepts it.
+_Avoid_: Pending membership, direct add
+
+**Space membership**:
+An accepted relationship between an active Memos user and a Space, carrying either the `ADMIN` or `USER` Space role.
+_Avoid_: Invitation, application role
