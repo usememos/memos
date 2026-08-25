@@ -22,7 +22,7 @@ func TestAttachmentAccessScopeFiltersBeforePagination(t *testing.T) {
 	require.NoError(t, err)
 	space, err := ts.CreateSpace(ctx, &store.Space{UID: "attachment-space", Title: "Attachments"}, owner.ID)
 	require.NoError(t, err)
-	_, err = ts.CreateSpaceMember(ctx, &store.SpaceMember{SpaceID: space.ID, UserID: member.ID, Role: store.SpaceMemberRoleUser}, owner.ID)
+	_, err = createSpaceMemberForTest(ctx, ts, &store.SpaceMember{SpaceID: space.ID, UserID: member.ID, Role: store.SpaceMemberRoleUser}, owner.ID)
 	require.NoError(t, err)
 	root, err := ts.CreateMemo(ctx, &store.Memo{UID: "attachment-space-root", CreatorID: owner.ID, Content: "root", Visibility: store.SpaceAudience, SpaceID: &space.ID})
 	require.NoError(t, err)
@@ -175,7 +175,7 @@ func TestAttachmentAccessScopeSpaceAudienceHasNoMemoAuthorBypass(t *testing.T) {
 	require.NoError(t, err)
 	space, err := ts.CreateSpace(ctx, &store.Space{UID: "attachment-author-space", Title: "Author attachment access"}, author.ID)
 	require.NoError(t, err)
-	_, err = ts.CreateSpaceMember(ctx, &store.SpaceMember{SpaceID: space.ID, UserID: admin.ID, Role: store.SpaceMemberRoleAdmin}, author.ID)
+	_, err = createSpaceMemberForTest(ctx, ts, &store.SpaceMember{SpaceID: space.ID, UserID: admin.ID, Role: store.SpaceMemberRoleAdmin}, author.ID)
 	require.NoError(t, err)
 	memo, err := ts.CreateMemo(ctx, &store.Memo{
 		UID: "attachment-author-memo", CreatorID: author.ID, Content: "members", Visibility: store.SpaceAudience, SpaceID: &space.ID,
@@ -257,7 +257,7 @@ func TestAttachmentWritePolicyRevalidatesMemoSpaceMembership(t *testing.T) {
 	require.NoError(t, err)
 	space, err := ts.CreateSpace(ctx, &store.Space{UID: "attachment-write-space", Title: "Attachment Writes"}, owner.ID)
 	require.NoError(t, err)
-	_, err = ts.CreateSpaceMember(ctx, &store.SpaceMember{SpaceID: space.ID, UserID: member.ID, Role: store.SpaceMemberRoleUser}, owner.ID)
+	_, err = createSpaceMemberForTest(ctx, ts, &store.SpaceMember{SpaceID: space.ID, UserID: member.ID, Role: store.SpaceMemberRoleUser}, owner.ID)
 	require.NoError(t, err)
 
 	root, err := ts.CreateMemo(ctx, &store.Memo{
@@ -367,7 +367,7 @@ func TestAttachmentWritePolicyRevalidatesMemoSpaceMembership(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, currentBindingRename, stored.Filename)
 
-	_, err = ts.CreateSpaceMember(ctx, &store.SpaceMember{SpaceID: space.ID, UserID: member.ID, Role: store.SpaceMemberRoleUser}, owner.ID)
+	_, err = createSpaceMemberForTest(ctx, ts, &store.SpaceMember{SpaceID: space.ID, UserID: member.ID, Role: store.SpaceMemberRoleUser}, owner.ID)
 	require.NoError(t, err)
 	restoredRename := "restored-membership.txt"
 	err = ts.UpdateAttachment(ctx, &store.UpdateAttachment{

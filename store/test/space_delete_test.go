@@ -24,7 +24,7 @@ func TestDeleteSpaceDeletesOnlyDirectlyAssignedMemosAndOwnedResources(t *testing
 
 	space, err := ts.CreateSpace(ctx, &store.Space{UID: "delete-space", Title: "Delete Space"}, admin.ID)
 	require.NoError(t, err)
-	_, err = ts.CreateSpaceMember(ctx, &store.SpaceMember{SpaceID: space.ID, UserID: member.ID, Role: store.SpaceMemberRoleUser}, admin.ID)
+	_, err = createSpaceMemberForTest(ctx, ts, &store.SpaceMember{SpaceID: space.ID, UserID: member.ID, Role: store.SpaceMemberRoleUser}, admin.ID)
 	require.NoError(t, err)
 
 	assigned, err := ts.CreateMemo(ctx, &store.Memo{

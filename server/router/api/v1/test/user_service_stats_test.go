@@ -282,7 +282,7 @@ func TestUserStatsUseMemoLocalAccess(t *testing.T) {
 		Title: "Stats access",
 	}, owner.ID)
 	require.NoError(t, err)
-	_, err = ts.Store.CreateSpaceMember(ctx, &store.SpaceMember{
+	_, err = ts.InviteAndAcceptSpaceMember(ctx, &store.SpaceMember{
 		SpaceID: space.ID,
 		UserID:  member.ID,
 		Role:    store.SpaceMemberRoleUser,
@@ -379,7 +379,7 @@ func TestUserStatsSpaceFilter(t *testing.T) {
 
 	spaceA, err := ts.Store.CreateSpace(ctx, &store.Space{UID: "stats-scope-a", Title: "A"}, owner.ID)
 	require.NoError(t, err)
-	_, err = ts.Store.CreateSpaceMember(ctx, &store.SpaceMember{
+	_, err = ts.InviteAndAcceptSpaceMember(ctx, &store.SpaceMember{
 		SpaceID: spaceA.ID,
 		UserID:  member.ID,
 		Role:    store.SpaceMemberRoleUser,

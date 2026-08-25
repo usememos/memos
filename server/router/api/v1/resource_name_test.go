@@ -67,3 +67,18 @@ func TestExtractSpaceMemberTokensFromName(t *testing.T) {
 		}
 	}
 }
+
+func TestExtractSpaceInvitationTokensFromName(t *testing.T) {
+	spaceUID, username, err := ExtractSpaceInvitationTokensFromName("spaces/team-notes/invitations/alice")
+	if err != nil {
+		t.Fatalf("ExtractSpaceInvitationTokensFromName() returned error: %v", err)
+	}
+	if spaceUID != "team-notes" || username != "alice" {
+		t.Fatalf("ExtractSpaceInvitationTokensFromName() = (%q, %q)", spaceUID, username)
+	}
+	for _, name := range []string{"spaces/team-notes/invitations", "spaces//invitations/alice", "spaces/team-notes/members/alice"} {
+		if _, _, err := ExtractSpaceInvitationTokensFromName(name); err == nil {
+			t.Errorf("ExtractSpaceInvitationTokensFromName(%q) succeeded, want error", name)
+		}
+	}
+}

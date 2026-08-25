@@ -24,7 +24,7 @@ func validateMySQLReactionWritePolicy(ctx context.Context, tx *sql.Tx, reaction 
 func mysqlSpaceMemberActive(ctx context.Context, tx *sql.Tx, spaceID, userID int32) (bool, error) {
 	var role store.SpaceMemberRole
 	err := tx.QueryRowContext(ctx, `SELECT role FROM space_member
-		WHERE space_id = ? AND user_id = ? AND role IN ('ADMIN', 'USER')`, spaceID, userID).Scan(&role)
+		WHERE space_id = ? AND user_id = ? AND status = 'ACTIVE' AND role IN ('ADMIN', 'USER')`, spaceID, userID).Scan(&role)
 	if errors.Is(err, sql.ErrNoRows) {
 		return false, nil
 	}

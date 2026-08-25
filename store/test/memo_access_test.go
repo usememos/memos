@@ -104,7 +104,7 @@ func TestMemoAccessScopeSpaceAudienceHasNoAuthorBypass(t *testing.T) {
 	require.NoError(t, err)
 	space, err := ts.CreateSpace(ctx, &store.Space{UID: "access-author-space", Title: "Author access"}, author.ID)
 	require.NoError(t, err)
-	_, err = ts.CreateSpaceMember(ctx, &store.SpaceMember{SpaceID: space.ID, UserID: admin.ID, Role: store.SpaceMemberRoleAdmin}, author.ID)
+	_, err = createSpaceMemberForTest(ctx, ts, &store.SpaceMember{SpaceID: space.ID, UserID: admin.ID, Role: store.SpaceMemberRoleAdmin}, author.ID)
 	require.NoError(t, err)
 
 	membersMemo, err := ts.CreateMemo(ctx, &store.Memo{

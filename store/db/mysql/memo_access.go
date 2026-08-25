@@ -24,7 +24,7 @@ func mysqlMemoAccessPredicate(access *store.MemoAccessScope, memoAlias, memberAl
 			authenticatedClauses = append(authenticatedClauses, memoAlias+".`visibility` = 'PROTECTED'")
 		}
 		*args = append(*args, *access.UserID)
-		authenticatedClauses = append(authenticatedClauses, "("+memoAlias+".`visibility` = 'SPACE' AND EXISTS (SELECT 1 FROM `space_member` AS "+memberAlias+" WHERE "+memberAlias+".`space_id` = "+memoAlias+".`space_id` AND "+memberAlias+".`user_id` = ? AND "+memberAlias+".`role` IN ('ADMIN', 'USER')))")
+		authenticatedClauses = append(authenticatedClauses, "("+memoAlias+".`visibility` = 'SPACE' AND EXISTS (SELECT 1 FROM `space_member` AS "+memberAlias+" WHERE "+memberAlias+".`space_id` = "+memoAlias+".`space_id` AND "+memberAlias+".`user_id` = ? AND "+memberAlias+".`status` = 'ACTIVE' AND "+memberAlias+".`role` IN ('ADMIN', 'USER')))")
 
 		clauses = append(clauses, "(EXISTS (SELECT 1 FROM `user` AS `access_user` WHERE `access_user`.`id` = ? AND `access_user`.`row_status` = 'NORMAL') AND ("+strings.Join(authenticatedClauses, " OR ")+"))")
 	}

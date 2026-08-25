@@ -175,7 +175,7 @@ func createAttachmentDeleteSpace(ctx context.Context, t *testing.T, ts *store.St
 	require.NoError(t, err)
 	space, err := ts.CreateSpace(ctx, &store.Space{UID: "attachment-delete-" + suffix + "-space", Title: suffix}, owner.ID)
 	require.NoError(t, err)
-	_, err = ts.CreateSpaceMember(ctx, &store.SpaceMember{SpaceID: space.ID, UserID: actor.ID, Role: store.SpaceMemberRoleUser}, owner.ID)
+	_, err = createSpaceMemberForTest(ctx, ts, &store.SpaceMember{SpaceID: space.ID, UserID: actor.ID, Role: store.SpaceMemberRoleUser}, owner.ID)
 	require.NoError(t, err)
 	return owner, actor, space
 }

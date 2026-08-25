@@ -505,8 +505,56 @@ func (s *ConnectServiceHandler) DeleteSpace(ctx context.Context, req *connect.Re
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectServiceHandler) CreateSpaceMember(ctx context.Context, req *connect.Request[v1pb.CreateSpaceMemberRequest]) (*connect.Response[v1pb.SpaceMember], error) {
-	resp, err := s.APIV1Service.CreateSpaceMember(ctx, req.Msg)
+func (s *ConnectServiceHandler) CreateSpaceInvitation(ctx context.Context, req *connect.Request[v1pb.CreateSpaceInvitationRequest]) (*connect.Response[v1pb.SpaceInvitation], error) {
+	resp, err := s.APIV1Service.CreateSpaceInvitation(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) ListSpaceInvitations(ctx context.Context, req *connect.Request[v1pb.ListSpaceInvitationsRequest]) (*connect.Response[v1pb.ListSpaceInvitationsResponse], error) {
+	resp, err := s.APIV1Service.ListSpaceInvitations(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) ListUserSpaceInvitations(ctx context.Context, req *connect.Request[v1pb.ListUserSpaceInvitationsRequest]) (*connect.Response[v1pb.ListUserSpaceInvitationsResponse], error) {
+	resp, err := s.APIV1Service.ListUserSpaceInvitations(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) GetSpaceInvitation(ctx context.Context, req *connect.Request[v1pb.GetSpaceInvitationRequest]) (*connect.Response[v1pb.SpaceInvitation], error) {
+	resp, err := s.APIV1Service.GetSpaceInvitation(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) DeleteSpaceInvitation(ctx context.Context, req *connect.Request[v1pb.DeleteSpaceInvitationRequest]) (*connect.Response[emptypb.Empty], error) {
+	resp, err := s.APIV1Service.DeleteSpaceInvitation(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) AcceptSpaceInvitation(ctx context.Context, req *connect.Request[v1pb.AcceptSpaceInvitationRequest]) (*connect.Response[v1pb.SpaceMember], error) {
+	resp, err := s.APIV1Service.AcceptSpaceInvitation(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) DeclineSpaceInvitation(ctx context.Context, req *connect.Request[v1pb.DeclineSpaceInvitationRequest]) (*connect.Response[emptypb.Empty], error) {
+	resp, err := s.APIV1Service.DeclineSpaceInvitation(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}

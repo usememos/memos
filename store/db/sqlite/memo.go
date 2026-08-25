@@ -94,7 +94,8 @@ func validateSQLiteMemoSpaceMember(ctx context.Context, tx dbExecutor, spaceID, 
 	}
 	err := tx.QueryRowContext(ctx, `SELECT EXISTS(
 		SELECT 1 FROM space_member sm JOIN user u ON u.id = sm.user_id
-		WHERE sm.space_id = ? AND sm.user_id = ? AND sm.role IN ('ADMIN', 'USER') AND u.row_status = 'NORMAL')`, spaceID, userID).Scan(&exists)
+		WHERE sm.space_id = ? AND sm.user_id = ? AND sm.status = 'ACTIVE'
+			AND sm.role IN ('ADMIN', 'USER') AND u.row_status = 'NORMAL')`, spaceID, userID).Scan(&exists)
 	if err != nil {
 		return err
 	}

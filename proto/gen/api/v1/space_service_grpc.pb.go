@@ -20,16 +20,22 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	SpaceService_CreateSpace_FullMethodName       = "/memos.api.v1.SpaceService/CreateSpace"
-	SpaceService_ListSpaces_FullMethodName        = "/memos.api.v1.SpaceService/ListSpaces"
-	SpaceService_GetSpace_FullMethodName          = "/memos.api.v1.SpaceService/GetSpace"
-	SpaceService_UpdateSpace_FullMethodName       = "/memos.api.v1.SpaceService/UpdateSpace"
-	SpaceService_DeleteSpace_FullMethodName       = "/memos.api.v1.SpaceService/DeleteSpace"
-	SpaceService_CreateSpaceMember_FullMethodName = "/memos.api.v1.SpaceService/CreateSpaceMember"
-	SpaceService_ListSpaceMembers_FullMethodName  = "/memos.api.v1.SpaceService/ListSpaceMembers"
-	SpaceService_GetSpaceMember_FullMethodName    = "/memos.api.v1.SpaceService/GetSpaceMember"
-	SpaceService_UpdateSpaceMember_FullMethodName = "/memos.api.v1.SpaceService/UpdateSpaceMember"
-	SpaceService_DeleteSpaceMember_FullMethodName = "/memos.api.v1.SpaceService/DeleteSpaceMember"
+	SpaceService_CreateSpace_FullMethodName              = "/memos.api.v1.SpaceService/CreateSpace"
+	SpaceService_ListSpaces_FullMethodName               = "/memos.api.v1.SpaceService/ListSpaces"
+	SpaceService_GetSpace_FullMethodName                 = "/memos.api.v1.SpaceService/GetSpace"
+	SpaceService_UpdateSpace_FullMethodName              = "/memos.api.v1.SpaceService/UpdateSpace"
+	SpaceService_DeleteSpace_FullMethodName              = "/memos.api.v1.SpaceService/DeleteSpace"
+	SpaceService_CreateSpaceInvitation_FullMethodName    = "/memos.api.v1.SpaceService/CreateSpaceInvitation"
+	SpaceService_ListSpaceInvitations_FullMethodName     = "/memos.api.v1.SpaceService/ListSpaceInvitations"
+	SpaceService_ListUserSpaceInvitations_FullMethodName = "/memos.api.v1.SpaceService/ListUserSpaceInvitations"
+	SpaceService_GetSpaceInvitation_FullMethodName       = "/memos.api.v1.SpaceService/GetSpaceInvitation"
+	SpaceService_DeleteSpaceInvitation_FullMethodName    = "/memos.api.v1.SpaceService/DeleteSpaceInvitation"
+	SpaceService_AcceptSpaceInvitation_FullMethodName    = "/memos.api.v1.SpaceService/AcceptSpaceInvitation"
+	SpaceService_DeclineSpaceInvitation_FullMethodName   = "/memos.api.v1.SpaceService/DeclineSpaceInvitation"
+	SpaceService_ListSpaceMembers_FullMethodName         = "/memos.api.v1.SpaceService/ListSpaceMembers"
+	SpaceService_GetSpaceMember_FullMethodName           = "/memos.api.v1.SpaceService/GetSpaceMember"
+	SpaceService_UpdateSpaceMember_FullMethodName        = "/memos.api.v1.SpaceService/UpdateSpaceMember"
+	SpaceService_DeleteSpaceMember_FullMethodName        = "/memos.api.v1.SpaceService/DeleteSpaceMember"
 )
 
 // SpaceServiceClient is the client API for SpaceService service.
@@ -50,8 +56,20 @@ type SpaceServiceClient interface {
 	// DeleteSpace permanently deletes a space and every memo currently placed
 	// in it. It never follows memo relations to other memos.
 	DeleteSpace(ctx context.Context, in *DeleteSpaceRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// CreateSpaceMember directly adds an existing active user to a space.
-	CreateSpaceMember(ctx context.Context, in *CreateSpaceMemberRequest, opts ...grpc.CallOption) (*SpaceMember, error)
+	// CreateSpaceInvitation invites an existing active user to a space.
+	CreateSpaceInvitation(ctx context.Context, in *CreateSpaceInvitationRequest, opts ...grpc.CallOption) (*SpaceInvitation, error)
+	// ListSpaceInvitations lists the pending invitations for a space.
+	ListSpaceInvitations(ctx context.Context, in *ListSpaceInvitationsRequest, opts ...grpc.CallOption) (*ListSpaceInvitationsResponse, error)
+	// ListUserSpaceInvitations lists the authenticated user's pending space invitations.
+	ListUserSpaceInvitations(ctx context.Context, in *ListUserSpaceInvitationsRequest, opts ...grpc.CallOption) (*ListUserSpaceInvitationsResponse, error)
+	// GetSpaceInvitation gets one pending invitation.
+	GetSpaceInvitation(ctx context.Context, in *GetSpaceInvitationRequest, opts ...grpc.CallOption) (*SpaceInvitation, error)
+	// DeleteSpaceInvitation revokes a pending invitation.
+	DeleteSpaceInvitation(ctx context.Context, in *DeleteSpaceInvitationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// AcceptSpaceInvitation accepts a pending invitation and creates a membership.
+	AcceptSpaceInvitation(ctx context.Context, in *AcceptSpaceInvitationRequest, opts ...grpc.CallOption) (*SpaceMember, error)
+	// DeclineSpaceInvitation declines a pending invitation.
+	DeclineSpaceInvitation(ctx context.Context, in *DeclineSpaceInvitationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// ListSpaceMembers lists the members of a space.
 	ListSpaceMembers(ctx context.Context, in *ListSpaceMembersRequest, opts ...grpc.CallOption) (*ListSpaceMembersResponse, error)
 	// GetSpaceMember gets one membership in a space.
@@ -121,10 +139,70 @@ func (c *spaceServiceClient) DeleteSpace(ctx context.Context, in *DeleteSpaceReq
 	return out, nil
 }
 
-func (c *spaceServiceClient) CreateSpaceMember(ctx context.Context, in *CreateSpaceMemberRequest, opts ...grpc.CallOption) (*SpaceMember, error) {
+func (c *spaceServiceClient) CreateSpaceInvitation(ctx context.Context, in *CreateSpaceInvitationRequest, opts ...grpc.CallOption) (*SpaceInvitation, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SpaceInvitation)
+	err := c.cc.Invoke(ctx, SpaceService_CreateSpaceInvitation_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *spaceServiceClient) ListSpaceInvitations(ctx context.Context, in *ListSpaceInvitationsRequest, opts ...grpc.CallOption) (*ListSpaceInvitationsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListSpaceInvitationsResponse)
+	err := c.cc.Invoke(ctx, SpaceService_ListSpaceInvitations_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *spaceServiceClient) ListUserSpaceInvitations(ctx context.Context, in *ListUserSpaceInvitationsRequest, opts ...grpc.CallOption) (*ListUserSpaceInvitationsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListUserSpaceInvitationsResponse)
+	err := c.cc.Invoke(ctx, SpaceService_ListUserSpaceInvitations_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *spaceServiceClient) GetSpaceInvitation(ctx context.Context, in *GetSpaceInvitationRequest, opts ...grpc.CallOption) (*SpaceInvitation, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SpaceInvitation)
+	err := c.cc.Invoke(ctx, SpaceService_GetSpaceInvitation_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *spaceServiceClient) DeleteSpaceInvitation(ctx context.Context, in *DeleteSpaceInvitationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, SpaceService_DeleteSpaceInvitation_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *spaceServiceClient) AcceptSpaceInvitation(ctx context.Context, in *AcceptSpaceInvitationRequest, opts ...grpc.CallOption) (*SpaceMember, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(SpaceMember)
-	err := c.cc.Invoke(ctx, SpaceService_CreateSpaceMember_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, SpaceService_AcceptSpaceInvitation_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *spaceServiceClient) DeclineSpaceInvitation(ctx context.Context, in *DeclineSpaceInvitationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, SpaceService_DeclineSpaceInvitation_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -189,8 +267,20 @@ type SpaceServiceServer interface {
 	// DeleteSpace permanently deletes a space and every memo currently placed
 	// in it. It never follows memo relations to other memos.
 	DeleteSpace(context.Context, *DeleteSpaceRequest) (*emptypb.Empty, error)
-	// CreateSpaceMember directly adds an existing active user to a space.
-	CreateSpaceMember(context.Context, *CreateSpaceMemberRequest) (*SpaceMember, error)
+	// CreateSpaceInvitation invites an existing active user to a space.
+	CreateSpaceInvitation(context.Context, *CreateSpaceInvitationRequest) (*SpaceInvitation, error)
+	// ListSpaceInvitations lists the pending invitations for a space.
+	ListSpaceInvitations(context.Context, *ListSpaceInvitationsRequest) (*ListSpaceInvitationsResponse, error)
+	// ListUserSpaceInvitations lists the authenticated user's pending space invitations.
+	ListUserSpaceInvitations(context.Context, *ListUserSpaceInvitationsRequest) (*ListUserSpaceInvitationsResponse, error)
+	// GetSpaceInvitation gets one pending invitation.
+	GetSpaceInvitation(context.Context, *GetSpaceInvitationRequest) (*SpaceInvitation, error)
+	// DeleteSpaceInvitation revokes a pending invitation.
+	DeleteSpaceInvitation(context.Context, *DeleteSpaceInvitationRequest) (*emptypb.Empty, error)
+	// AcceptSpaceInvitation accepts a pending invitation and creates a membership.
+	AcceptSpaceInvitation(context.Context, *AcceptSpaceInvitationRequest) (*SpaceMember, error)
+	// DeclineSpaceInvitation declines a pending invitation.
+	DeclineSpaceInvitation(context.Context, *DeclineSpaceInvitationRequest) (*emptypb.Empty, error)
 	// ListSpaceMembers lists the members of a space.
 	ListSpaceMembers(context.Context, *ListSpaceMembersRequest) (*ListSpaceMembersResponse, error)
 	// GetSpaceMember gets one membership in a space.
@@ -225,8 +315,26 @@ func (UnimplementedSpaceServiceServer) UpdateSpace(context.Context, *UpdateSpace
 func (UnimplementedSpaceServiceServer) DeleteSpace(context.Context, *DeleteSpaceRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteSpace not implemented")
 }
-func (UnimplementedSpaceServiceServer) CreateSpaceMember(context.Context, *CreateSpaceMemberRequest) (*SpaceMember, error) {
-	return nil, status.Error(codes.Unimplemented, "method CreateSpaceMember not implemented")
+func (UnimplementedSpaceServiceServer) CreateSpaceInvitation(context.Context, *CreateSpaceInvitationRequest) (*SpaceInvitation, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateSpaceInvitation not implemented")
+}
+func (UnimplementedSpaceServiceServer) ListSpaceInvitations(context.Context, *ListSpaceInvitationsRequest) (*ListSpaceInvitationsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListSpaceInvitations not implemented")
+}
+func (UnimplementedSpaceServiceServer) ListUserSpaceInvitations(context.Context, *ListUserSpaceInvitationsRequest) (*ListUserSpaceInvitationsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListUserSpaceInvitations not implemented")
+}
+func (UnimplementedSpaceServiceServer) GetSpaceInvitation(context.Context, *GetSpaceInvitationRequest) (*SpaceInvitation, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetSpaceInvitation not implemented")
+}
+func (UnimplementedSpaceServiceServer) DeleteSpaceInvitation(context.Context, *DeleteSpaceInvitationRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteSpaceInvitation not implemented")
+}
+func (UnimplementedSpaceServiceServer) AcceptSpaceInvitation(context.Context, *AcceptSpaceInvitationRequest) (*SpaceMember, error) {
+	return nil, status.Error(codes.Unimplemented, "method AcceptSpaceInvitation not implemented")
+}
+func (UnimplementedSpaceServiceServer) DeclineSpaceInvitation(context.Context, *DeclineSpaceInvitationRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeclineSpaceInvitation not implemented")
 }
 func (UnimplementedSpaceServiceServer) ListSpaceMembers(context.Context, *ListSpaceMembersRequest) (*ListSpaceMembersResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListSpaceMembers not implemented")
@@ -351,20 +459,128 @@ func _SpaceService_DeleteSpace_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
-func _SpaceService_CreateSpaceMember_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateSpaceMemberRequest)
+func _SpaceService_CreateSpaceInvitation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateSpaceInvitationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(SpaceServiceServer).CreateSpaceMember(ctx, in)
+		return srv.(SpaceServiceServer).CreateSpaceInvitation(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: SpaceService_CreateSpaceMember_FullMethodName,
+		FullMethod: SpaceService_CreateSpaceInvitation_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SpaceServiceServer).CreateSpaceMember(ctx, req.(*CreateSpaceMemberRequest))
+		return srv.(SpaceServiceServer).CreateSpaceInvitation(ctx, req.(*CreateSpaceInvitationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SpaceService_ListSpaceInvitations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListSpaceInvitationsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SpaceServiceServer).ListSpaceInvitations(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SpaceService_ListSpaceInvitations_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SpaceServiceServer).ListSpaceInvitations(ctx, req.(*ListSpaceInvitationsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SpaceService_ListUserSpaceInvitations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListUserSpaceInvitationsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SpaceServiceServer).ListUserSpaceInvitations(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SpaceService_ListUserSpaceInvitations_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SpaceServiceServer).ListUserSpaceInvitations(ctx, req.(*ListUserSpaceInvitationsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SpaceService_GetSpaceInvitation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSpaceInvitationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SpaceServiceServer).GetSpaceInvitation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SpaceService_GetSpaceInvitation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SpaceServiceServer).GetSpaceInvitation(ctx, req.(*GetSpaceInvitationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SpaceService_DeleteSpaceInvitation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteSpaceInvitationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SpaceServiceServer).DeleteSpaceInvitation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SpaceService_DeleteSpaceInvitation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SpaceServiceServer).DeleteSpaceInvitation(ctx, req.(*DeleteSpaceInvitationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SpaceService_AcceptSpaceInvitation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AcceptSpaceInvitationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SpaceServiceServer).AcceptSpaceInvitation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SpaceService_AcceptSpaceInvitation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SpaceServiceServer).AcceptSpaceInvitation(ctx, req.(*AcceptSpaceInvitationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SpaceService_DeclineSpaceInvitation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeclineSpaceInvitationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SpaceServiceServer).DeclineSpaceInvitation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SpaceService_DeclineSpaceInvitation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SpaceServiceServer).DeclineSpaceInvitation(ctx, req.(*DeclineSpaceInvitationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -469,8 +685,32 @@ var SpaceService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _SpaceService_DeleteSpace_Handler,
 		},
 		{
-			MethodName: "CreateSpaceMember",
-			Handler:    _SpaceService_CreateSpaceMember_Handler,
+			MethodName: "CreateSpaceInvitation",
+			Handler:    _SpaceService_CreateSpaceInvitation_Handler,
+		},
+		{
+			MethodName: "ListSpaceInvitations",
+			Handler:    _SpaceService_ListSpaceInvitations_Handler,
+		},
+		{
+			MethodName: "ListUserSpaceInvitations",
+			Handler:    _SpaceService_ListUserSpaceInvitations_Handler,
+		},
+		{
+			MethodName: "GetSpaceInvitation",
+			Handler:    _SpaceService_GetSpaceInvitation_Handler,
+		},
+		{
+			MethodName: "DeleteSpaceInvitation",
+			Handler:    _SpaceService_DeleteSpaceInvitation_Handler,
+		},
+		{
+			MethodName: "AcceptSpaceInvitation",
+			Handler:    _SpaceService_AcceptSpaceInvitation_Handler,
+		},
+		{
+			MethodName: "DeclineSpaceInvitation",
+			Handler:    _SpaceService_DeclineSpaceInvitation_Handler,
 		},
 		{
 			MethodName: "ListSpaceMembers",

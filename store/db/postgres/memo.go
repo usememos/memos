@@ -86,7 +86,8 @@ func validatePostgresMemoSpaceMember(ctx context.Context, tx *sql.Tx, spaceID, u
 	err := tx.QueryRowContext(ctx, `SELECT
 		EXISTS(SELECT 1 FROM space WHERE id = $1),
 		EXISTS(SELECT 1 FROM space_member sm JOIN "user" u ON u.id = sm.user_id
-			WHERE sm.space_id = $1 AND sm.user_id = $2 AND sm.role IN ('ADMIN', 'USER') AND u.row_status = 'NORMAL')`,
+			WHERE sm.space_id = $1 AND sm.user_id = $2 AND sm.status = 'ACTIVE'
+				AND sm.role IN ('ADMIN', 'USER') AND u.row_status = 'NORMAL')`,
 		spaceID, userID).Scan(&spaceExists, &memberActive)
 	if err != nil {
 		return err

@@ -28,7 +28,7 @@ func postgresMemoAccessPredicate(access *store.MemoAccessScope, memoAlias, membe
 		}
 		memberHolder := placeholder(len(*args) + 1)
 		*args = append(*args, *access.UserID)
-		authenticatedClauses = append(authenticatedClauses, "("+memoAlias+".visibility = 'SPACE' AND EXISTS (SELECT 1 FROM space_member AS "+memberAlias+" WHERE "+memberAlias+".space_id = "+memoAlias+".space_id AND "+memberAlias+".user_id = "+memberHolder+" AND "+memberAlias+".role IN ('ADMIN', 'USER')))")
+		authenticatedClauses = append(authenticatedClauses, "("+memoAlias+".visibility = 'SPACE' AND EXISTS (SELECT 1 FROM space_member AS "+memberAlias+" WHERE "+memberAlias+".space_id = "+memoAlias+".space_id AND "+memberAlias+".user_id = "+memberHolder+" AND "+memberAlias+".status = 'ACTIVE' AND "+memberAlias+".role IN ('ADMIN', 'USER')))")
 
 		clauses = append(clauses, `(EXISTS (SELECT 1 FROM "user" AS access_user WHERE access_user.id = `+activeHolder+` AND access_user.row_status = 'NORMAL') AND (`+strings.Join(authenticatedClauses, " OR ")+`))`)
 	}

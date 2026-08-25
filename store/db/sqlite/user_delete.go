@@ -36,11 +36,14 @@ func (d *DB) DeleteUser(ctx context.Context, delete *store.DeleteUser) (*store.D
 		return nil, errors.Wrap(err, "failed to read user")
 	}
 	var membershipCount int
-	if err := tx.QueryRowContext(ctx, "SELECT COUNT(*) FROM space_member WHERE user_id = ?", delete.ID).Scan(&membershipCount); err != nil {
+	if err := tx.QueryRowContext(ctx, "SELECT COUNT(*) FROM space_member WHERE user_id = ? AND status <> 'INVITED'", delete.ID).Scan(&membershipCount); err != nil {
 		return nil, errors.Wrap(err, "failed to check user space memberships")
 	}
 	if membershipCount != 0 {
 		return nil, store.ErrUserHasSpaceMembership
+	}
+	if _, err := tx.ExecContext(ctx, "DELETE FROM space_member WHERE user_id = ? AND status = 'INVITED'", delete.ID); err != nil {
+		return nil, errors.Wrap(err, "failed to delete user space invitations")
 	}
 
 	targets, err := collectDeleteUserTargets(ctx, tx, delete.ID)

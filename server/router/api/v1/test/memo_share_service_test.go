@@ -78,7 +78,7 @@ func TestDeleteMemoShare_RevalidatesSpaceWriteAuthority(t *testing.T) {
 	ownerCtx := ts.CreateUserContext(ctx, owner.ID)
 	space, err := ts.Store.CreateSpace(ctx, &store.Space{UID: "share-space", Title: "Share Space"}, owner.ID)
 	require.NoError(t, err)
-	_, err = ts.Store.CreateSpaceMember(ctx, &store.SpaceMember{
+	_, err = ts.InviteAndAcceptSpaceMember(ctx, &store.SpaceMember{
 		SpaceID: space.ID, UserID: admin.ID, Role: store.SpaceMemberRoleAdmin,
 	}, owner.ID)
 	require.NoError(t, err)
@@ -95,7 +95,7 @@ func TestDeleteMemoShare_RevalidatesSpaceWriteAuthority(t *testing.T) {
 	require.Equal(t, codes.PermissionDenied, status.Code(err))
 	requireSharePresent(ctx, t, ts, shareToken)
 
-	_, err = ts.Store.CreateSpaceMember(ctx, &store.SpaceMember{
+	_, err = ts.InviteAndAcceptSpaceMember(ctx, &store.SpaceMember{
 		SpaceID: space.ID, UserID: owner.ID, Role: store.SpaceMemberRoleUser,
 	}, admin.ID)
 	require.NoError(t, err)

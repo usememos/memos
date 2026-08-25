@@ -105,11 +105,11 @@ func validateMySQLUserArchive(ctx context.Context, tx *sql.Tx, userID int32) err
 	if err := tx.QueryRowContext(ctx, `SELECT EXISTS(
 		SELECT 1 FROM space_member target
 		JOIN space s ON s.id = target.space_id
-		WHERE target.user_id = ? AND target.role = 'ADMIN'
+		WHERE target.user_id = ? AND target.status = 'ACTIVE' AND target.role = 'ADMIN'
 		AND NOT EXISTS (
 			SELECT 1 FROM space_member other JOIN user u ON u.id = other.user_id
 			WHERE other.space_id = target.space_id AND other.user_id <> ?
-			AND other.role = 'ADMIN' AND u.row_status = 'NORMAL'
+			AND other.status = 'ACTIVE' AND other.role = 'ADMIN' AND u.row_status = 'NORMAL'
 		))`, userID, userID).Scan(&wouldLoseAdmin); err != nil {
 		return err
 	}

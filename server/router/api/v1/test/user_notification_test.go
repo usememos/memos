@@ -139,7 +139,7 @@ func TestAssignedPublicMemoCommentNotifiesReadableRemovedAuthor(t *testing.T) {
 	commenterCtx := ts.CreateUserContext(ctx, commenter.ID)
 	space, err := ts.Store.CreateSpace(ctx, &store.Space{UID: "removed-owner-comments", Title: "Removed owner comments"}, owner.ID)
 	require.NoError(t, err)
-	_, err = ts.Store.CreateSpaceMember(ctx, &store.SpaceMember{
+	_, err = ts.InviteAndAcceptSpaceMember(ctx, &store.SpaceMember{
 		SpaceID: space.ID,
 		UserID:  commenter.ID,
 		Role:    store.SpaceMemberRoleAdmin,
@@ -171,7 +171,7 @@ func TestAssignedPublicMemoCommentNotifiesReadableRemovedAuthor(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, response.Notifications, 1)
 
-	_, err = ts.Store.CreateSpaceMember(ctx, &store.SpaceMember{
+	_, err = ts.InviteAndAcceptSpaceMember(ctx, &store.SpaceMember{
 		SpaceID: space.ID,
 		UserID:  owner.ID,
 		Role:    store.SpaceMemberRoleUser,

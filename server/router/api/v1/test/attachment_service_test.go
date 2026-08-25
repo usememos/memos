@@ -404,7 +404,7 @@ func TestLinkedAttachmentMutationsRevalidateMemoSpaceMembership(t *testing.T) {
 	memberCtx := ts.CreateUserContext(ctx, member.ID)
 	space, err := ts.Store.CreateSpace(ctx, &store.Space{UID: "attachment-lifecycle-space", Title: "Attachment Lifecycle"}, owner.ID)
 	require.NoError(t, err)
-	_, err = ts.Store.CreateSpaceMember(ctx, &store.SpaceMember{
+	_, err = ts.InviteAndAcceptSpaceMember(ctx, &store.SpaceMember{
 		SpaceID: space.ID, UserID: member.ID, Role: store.SpaceMemberRoleUser,
 	}, owner.ID)
 	require.NoError(t, err)
@@ -469,7 +469,7 @@ func TestLinkedAttachmentMutationsRevalidateMemoSpaceMembership(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, "updated-before-revoke.txt", storedUpdate.Filename)
 
-	_, err = ts.Store.CreateSpaceMember(ctx, &store.SpaceMember{
+	_, err = ts.InviteAndAcceptSpaceMember(ctx, &store.SpaceMember{
 		SpaceID: space.ID, UserID: member.ID, Role: store.SpaceMemberRoleUser,
 	}, owner.ID)
 	require.NoError(t, err)
@@ -493,7 +493,7 @@ func TestListAttachmentsSpaceFilter(t *testing.T) {
 	require.NoError(t, err)
 	spaceA, err := ts.Store.CreateSpace(ctx, &store.Space{UID: "attachment-api-scope-a", Title: "A"}, owner.ID)
 	require.NoError(t, err)
-	_, err = ts.Store.CreateSpaceMember(ctx, &store.SpaceMember{
+	_, err = ts.InviteAndAcceptSpaceMember(ctx, &store.SpaceMember{
 		SpaceID: spaceA.ID, UserID: member.ID, Role: store.SpaceMemberRoleUser,
 	}, owner.ID)
 	require.NoError(t, err)

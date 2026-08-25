@@ -64,7 +64,7 @@ func requireSQLiteSpaceDeleteAdmin(ctx context.Context, tx dbExecutor, delete *s
 		return err
 	}
 	var role store.SpaceMemberRole
-	if err := tx.QueryRowContext(ctx, "SELECT role FROM space_member WHERE space_id = ? AND user_id = ?", delete.ID, delete.ActorUserID).Scan(&role); errors.Is(err, sql.ErrNoRows) {
+	if err := tx.QueryRowContext(ctx, "SELECT role FROM space_member WHERE space_id = ? AND user_id = ? AND status = 'ACTIVE'", delete.ID, delete.ActorUserID).Scan(&role); errors.Is(err, sql.ErrNoRows) {
 		return store.ErrSpacePermissionDenied
 	} else if err != nil {
 		return errors.Wrap(err, "failed to read space administrator membership")

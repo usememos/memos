@@ -21,7 +21,7 @@ var ErrSpaceMemberNotActive = errors.New("space member user is not active")
 // ErrSpaceAlreadyExists indicates a duplicate immutable space ID.
 var ErrSpaceAlreadyExists = errors.New("space already exists")
 
-// ErrSpaceMemberAlreadyExists indicates an existing membership.
+// ErrSpaceMemberAlreadyExists indicates an existing membership or invitation.
 var ErrSpaceMemberAlreadyExists = errors.New("space member already exists")
 
 // ErrSpaceNotFound indicates a missing mutation target.
@@ -29,6 +29,24 @@ var ErrSpaceNotFound = errors.New("space not found")
 
 // ErrSpaceMemberNotFound indicates a missing membership mutation target.
 var ErrSpaceMemberNotFound = errors.New("space member not found")
+
+// ErrSpaceInvitationNotFound indicates a missing pending invitation.
+var ErrSpaceInvitationNotFound = errors.New("space invitation not found")
+
+// SpaceMemberStatus is the state of a user's relationship with a space.
+type SpaceMemberStatus string
+
+const (
+	// SpaceMemberStatusInvited represents an invitation that the user has not accepted.
+	SpaceMemberStatusInvited SpaceMemberStatus = "INVITED"
+	// SpaceMemberStatusActive represents a membership that the user has accepted.
+	SpaceMemberStatusActive SpaceMemberStatus = "ACTIVE"
+)
+
+// IsValid reports whether the status is recognized.
+func (s SpaceMemberStatus) IsValid() bool {
+	return s == SpaceMemberStatusInvited || s == SpaceMemberStatusActive
+}
 
 // SpaceMemberRole is the role of a user within a space.
 type SpaceMemberRole string
@@ -40,9 +58,8 @@ const (
 	SpaceMemberRoleUser SpaceMemberRole = "USER"
 )
 
-// IsActiveMember reports whether the role grants space membership. It is the
-// single definition of membership validity: an unknown role denies the access
-// that depends on it.
+// IsActiveMember reports whether the role can grant space membership. The
+// relationship must separately be ACTIVE before the role grants access.
 func (r SpaceMemberRole) IsActiveMember() bool {
 	return r == SpaceMemberRoleAdmin || r == SpaceMemberRoleUser
 }
@@ -60,6 +77,7 @@ type Space struct {
 // user has a membership and is applied before pagination.
 type FindSpace struct {
 	ID           *int32
+	IDList       []int32
 	UID          *string
 	MemberUserID *int32
 	Limit        *int
@@ -109,6 +127,42 @@ type UpdateSpaceMember struct {
 
 // DeleteSpaceMember identifies a membership to delete.
 type DeleteSpaceMember struct {
+	SpaceID int32
+	UserID  int32
+}
+
+// SpaceInvitation is a pending offer for an existing user to join a space.
+type SpaceInvitation struct {
+	SpaceID int32
+	UserID  int32
+	Role    SpaceMemberRole
+}
+
+// FindSpaceInvitation selects pending invitations. ViewerUserID restricts
+// results to invitations visible to that user: their own or those in a space
+// they actively administer.
+type FindSpaceInvitation struct {
+	SpaceID      *int32
+	UserID       *int32
+	ViewerUserID *int32
+	Limit        *int
+	Offset       *int
+}
+
+// AcceptSpaceInvitation identifies an invitation accepted by its invitee.
+type AcceptSpaceInvitation struct {
+	SpaceID int32
+	UserID  int32
+}
+
+// DeclineSpaceInvitation identifies an invitation declined by its invitee.
+type DeclineSpaceInvitation struct {
+	SpaceID int32
+	UserID  int32
+}
+
+// RevokeSpaceInvitation identifies an invitation revoked by a space administrator.
+type RevokeSpaceInvitation struct {
 	SpaceID int32
 	UserID  int32
 }
@@ -174,14 +228,6 @@ func (s *Store) DeleteSpace(ctx context.Context, delete *DeleteSpace) (*DeleteSp
 	return result, nil
 }
 
-// CreateSpaceMember creates a membership.
-func (s *Store) CreateSpaceMember(ctx context.Context, create *SpaceMember, actorUserID int32) (*SpaceMember, error) {
-	if !create.Role.IsActiveMember() {
-		return nil, errors.New("invalid space member role")
-	}
-	return s.driver.CreateSpaceMember(ctx, create, actorUserID)
-}
-
 // ListSpaceMembers returns memberships matching find.
 func (s *Store) ListSpaceMembers(ctx context.Context, find *FindSpaceMember) ([]*SpaceMember, error) {
 	return s.driver.ListSpaceMembers(ctx, find)
@@ -214,5 +260,70 @@ func (s *Store) UpdateSpaceMember(ctx context.Context, update *UpdateSpaceMember
 // DeleteSpaceMember deletes a membership after checking that the change keeps
 // an active ADMIN.
 func (s *Store) DeleteSpaceMember(ctx context.Context, delete *DeleteSpaceMember, actorUserID int32) error {
+	if delete == nil || delete.SpaceID <= 0 || delete.UserID <= 0 || actorUserID <= 0 {
+		return errors.New("space member deletion requires space, user, and actor")
+	}
 	return s.driver.DeleteSpaceMember(ctx, delete, actorUserID)
+}
+
+// CreateSpaceInvitation creates a pending invitation. It never creates an
+// active membership; only the invitee can do that by accepting it.
+func (s *Store) CreateSpaceInvitation(ctx context.Context, create *SpaceInvitation, actorUserID int32) (*SpaceInvitation, error) {
+	if create == nil || create.SpaceID <= 0 || create.UserID <= 0 || actorUserID <= 0 {
+		return nil, errors.New("space invitation requires space, user, and actor")
+	}
+	if !create.Role.IsActiveMember() {
+		return nil, errors.New("invalid space invitation role")
+	}
+	return s.driver.CreateSpaceInvitation(ctx, create, actorUserID)
+}
+
+// ListSpaceInvitations returns pending invitations matching find.
+func (s *Store) ListSpaceInvitations(ctx context.Context, find *FindSpaceInvitation) ([]*SpaceInvitation, error) {
+	return s.driver.ListSpaceInvitations(ctx, find)
+}
+
+// GetSpaceInvitation returns the first matching pending invitation.
+func (s *Store) GetSpaceInvitation(ctx context.Context, find *FindSpaceInvitation) (*SpaceInvitation, error) {
+	invitations, err := s.ListSpaceInvitations(ctx, find)
+	if err != nil {
+		return nil, err
+	}
+	if len(invitations) == 0 {
+		return nil, nil
+	}
+	return invitations[0], nil
+}
+
+// AcceptSpaceInvitation activates a pending invitation only when the actor is
+// the invitee.
+func (s *Store) AcceptSpaceInvitation(ctx context.Context, accept *AcceptSpaceInvitation, actorUserID int32) (*SpaceMember, error) {
+	if accept == nil || accept.SpaceID <= 0 || accept.UserID <= 0 || actorUserID <= 0 {
+		return nil, errors.New("space invitation acceptance requires space, user, and actor")
+	}
+	if accept.UserID != actorUserID {
+		return nil, ErrSpacePermissionDenied
+	}
+	return s.driver.AcceptSpaceInvitation(ctx, accept, actorUserID)
+}
+
+// DeclineSpaceInvitation deletes a pending invitation only when the actor is
+// the invitee.
+func (s *Store) DeclineSpaceInvitation(ctx context.Context, decline *DeclineSpaceInvitation, actorUserID int32) error {
+	if decline == nil || decline.SpaceID <= 0 || decline.UserID <= 0 || actorUserID <= 0 {
+		return errors.New("space invitation decline requires space, user, and actor")
+	}
+	if decline.UserID != actorUserID {
+		return ErrSpacePermissionDenied
+	}
+	return s.driver.DeclineSpaceInvitation(ctx, decline, actorUserID)
+}
+
+// RevokeSpaceInvitation deletes a pending invitation after authorizing an
+// active space administrator.
+func (s *Store) RevokeSpaceInvitation(ctx context.Context, revoke *RevokeSpaceInvitation, actorUserID int32) error {
+	if revoke == nil || revoke.SpaceID <= 0 || revoke.UserID <= 0 || actorUserID <= 0 {
+		return errors.New("space invitation revocation requires space, user, and actor")
+	}
+	return s.driver.RevokeSpaceInvitation(ctx, revoke, actorUserID)
 }

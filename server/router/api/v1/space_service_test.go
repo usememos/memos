@@ -31,6 +31,27 @@ func createSpaceTestUser(ctx context.Context, t *testing.T, service *APIV1Servic
 	return user
 }
 
+func inviteSpaceTestUser(ctx context.Context, t *testing.T, service *APIV1Service, inviter, invitee *store.User, space *v1pb.Space, role v1pb.SpaceMember_Role) *v1pb.SpaceInvitation {
+	t.Helper()
+	invitation, err := service.CreateSpaceInvitation(userCtx(ctx, inviter.ID), &v1pb.CreateSpaceInvitationRequest{
+		Parent: space.Name,
+		SpaceInvitation: &v1pb.SpaceInvitation{
+			Invitee: BuildUserName(invitee.Username),
+			Role:    role,
+		},
+	})
+	require.NoError(t, err)
+	return invitation
+}
+
+func inviteAndAcceptSpaceTestUser(ctx context.Context, t *testing.T, service *APIV1Service, inviter, invitee *store.User, space *v1pb.Space, role v1pb.SpaceMember_Role) *v1pb.SpaceMember {
+	t.Helper()
+	invitation := inviteSpaceTestUser(ctx, t, service, inviter, invitee, space, role)
+	membership, err := service.AcceptSpaceInvitation(userCtx(ctx, invitee.ID), &v1pb.AcceptSpaceInvitationRequest{Name: invitation.Name})
+	require.NoError(t, err)
+	return membership
+}
+
 func TestSpaceServiceMembershipVisibilityAndGovernance(t *testing.T) {
 	ctx := context.Background()
 	service := newIntegrationService(t)
@@ -62,20 +83,44 @@ func TestSpaceServiceMembershipVisibilityAndGovernance(t *testing.T) {
 	require.NoError(t, err)
 	require.Empty(t, adminSpaces.Spaces)
 
-	createdMember, err := service.CreateSpaceMember(userCtx(ctx, owner.ID), &v1pb.CreateSpaceMemberRequest{
-		Parent: space.Name,
-		SpaceMember: &v1pb.SpaceMember{
-			User: BuildUserName(member.Username),
-			Role: v1pb.SpaceMember_USER,
-		},
+	invitation, err := service.CreateSpaceInvitation(userCtx(ctx, owner.ID), &v1pb.CreateSpaceInvitationRequest{
+		Parent:          space.Name,
+		SpaceInvitation: &v1pb.SpaceInvitation{Invitee: BuildUserName(member.Username), Role: v1pb.SpaceMember_USER},
 	})
 	require.NoError(t, err)
-	require.Equal(t, "spaces/team-notes/members/space-member", createdMember.Name)
-	_, err = service.CreateSpaceMember(userCtx(ctx, owner.ID), &v1pb.CreateSpaceMemberRequest{
-		Parent:      space.Name,
-		SpaceMember: &v1pb.SpaceMember{User: BuildUserName(member.Username), Role: v1pb.SpaceMember_USER},
+	require.Equal(t, "spaces/team-notes/invitations/space-member", invitation.Name)
+	require.Equal(t, space, invitation.Space, "the invitation must identify the Space without granting membership access")
+
+	_, err = service.GetSpace(userCtx(ctx, member.ID), &v1pb.GetSpaceRequest{Name: space.Name})
+	require.Equal(t, codes.NotFound, status.Code(err), "a pending invitation must not grant Space access")
+	invitedUserSpaces, err := service.ListSpaces(userCtx(ctx, member.ID), &v1pb.ListSpacesRequest{})
+	require.NoError(t, err)
+	require.Empty(t, invitedUserSpaces.Spaces)
+	members, err = service.ListSpaceMembers(userCtx(ctx, owner.ID), &v1pb.ListSpaceMembersRequest{Parent: space.Name})
+	require.NoError(t, err)
+	require.Len(t, members.SpaceMembers, 1, "an invitation must not appear as an active membership")
+
+	spaceInvitations, err := service.ListSpaceInvitations(userCtx(ctx, owner.ID), &v1pb.ListSpaceInvitationsRequest{Parent: space.Name})
+	require.NoError(t, err)
+	require.Equal(t, []*v1pb.SpaceInvitation{invitation}, spaceInvitations.SpaceInvitations)
+	userInvitations, err := service.ListUserSpaceInvitations(userCtx(ctx, member.ID), &v1pb.ListUserSpaceInvitationsRequest{Parent: BuildUserName(member.Username)})
+	require.NoError(t, err)
+	require.Equal(t, []*v1pb.SpaceInvitation{invitation}, userInvitations.SpaceInvitations)
+
+	_, err = service.CreateSpaceInvitation(userCtx(ctx, owner.ID), &v1pb.CreateSpaceInvitationRequest{
+		Parent:          space.Name,
+		SpaceInvitation: &v1pb.SpaceInvitation{Invitee: BuildUserName(member.Username), Role: v1pb.SpaceMember_USER},
 	})
 	require.Equal(t, codes.AlreadyExists, status.Code(err))
+	_, err = service.AcceptSpaceInvitation(userCtx(ctx, owner.ID), &v1pb.AcceptSpaceInvitationRequest{Name: invitation.Name})
+	require.Equal(t, codes.PermissionDenied, status.Code(err), "an administrator cannot accept for the invitee")
+
+	createdMember, err := service.AcceptSpaceInvitation(userCtx(ctx, member.ID), &v1pb.AcceptSpaceInvitationRequest{Name: invitation.Name})
+	require.NoError(t, err)
+	require.Equal(t, "spaces/team-notes/members/space-member", createdMember.Name)
+	require.Equal(t, v1pb.SpaceMember_USER, createdMember.Role)
+	_, err = service.GetSpaceInvitation(userCtx(ctx, owner.ID), &v1pb.GetSpaceInvitationRequest{Name: invitation.Name})
+	require.Equal(t, codes.NotFound, status.Code(err))
 
 	_, err = service.GetSpace(userCtx(ctx, member.ID), &v1pb.GetSpaceRequest{Name: space.Name})
 	require.NoError(t, err)
@@ -90,6 +135,73 @@ func TestSpaceServiceMembershipVisibilityAndGovernance(t *testing.T) {
 		UpdateMask:  &fieldmaskpb.FieldMask{Paths: []string{"role"}},
 	})
 	require.Equal(t, codes.FailedPrecondition, status.Code(err), "the last active ADMIN cannot be demoted")
+}
+
+func TestSpaceInvitationDeclineRevokeAndSelectedRole(t *testing.T) {
+	ctx := context.Background()
+	service := newIntegrationService(t)
+	owner := createSpaceTestUser(ctx, t, service, "invitation-owner", store.RoleUser)
+	invitee := createSpaceTestUser(ctx, t, service, "invitation-invitee", store.RoleUser)
+	secondInvitee := createSpaceTestUser(ctx, t, service, "invitation-second", store.RoleUser)
+	archivedInvitee := createSpaceTestUser(ctx, t, service, "invitation-archived", store.RoleUser)
+	pendingThenArchived := createSpaceTestUser(ctx, t, service, "invitation-pending-archived", store.RoleUser)
+	space, err := service.CreateSpace(userCtx(ctx, owner.ID), &v1pb.CreateSpaceRequest{
+		SpaceId: "invitation-lifecycle",
+		Space:   &v1pb.Space{Title: "Invitation lifecycle"},
+	})
+	require.NoError(t, err)
+
+	invitation := inviteSpaceTestUser(ctx, t, service, owner, invitee, space, v1pb.SpaceMember_ADMIN)
+	got, err := service.GetSpaceInvitation(userCtx(ctx, invitee.ID), &v1pb.GetSpaceInvitationRequest{Name: invitation.Name})
+	require.NoError(t, err)
+	require.Equal(t, v1pb.SpaceMember_ADMIN, got.Role)
+	_, err = service.DeleteSpaceInvitation(userCtx(ctx, invitee.ID), &v1pb.DeleteSpaceInvitationRequest{Name: invitation.Name})
+	require.Equal(t, codes.PermissionDenied, status.Code(err), "the invitee cannot revoke an invitation")
+
+	_, err = service.DeleteSpaceInvitation(userCtx(ctx, owner.ID), &v1pb.DeleteSpaceInvitationRequest{Name: invitation.Name})
+	require.NoError(t, err)
+	_, err = service.AcceptSpaceInvitation(userCtx(ctx, invitee.ID), &v1pb.AcceptSpaceInvitationRequest{Name: invitation.Name})
+	require.Equal(t, codes.NotFound, status.Code(err), "a revoked invitation cannot be accepted")
+
+	invitation = inviteSpaceTestUser(ctx, t, service, owner, invitee, space, v1pb.SpaceMember_ADMIN)
+	_, err = service.DeclineSpaceInvitation(userCtx(ctx, invitee.ID), &v1pb.DeclineSpaceInvitationRequest{Name: invitation.Name})
+	require.NoError(t, err)
+	_, err = service.GetSpaceInvitation(userCtx(ctx, owner.ID), &v1pb.GetSpaceInvitationRequest{Name: invitation.Name})
+	require.Equal(t, codes.NotFound, status.Code(err))
+
+	invitation = inviteSpaceTestUser(ctx, t, service, owner, invitee, space, v1pb.SpaceMember_ADMIN)
+	membership, err := service.AcceptSpaceInvitation(userCtx(ctx, invitee.ID), &v1pb.AcceptSpaceInvitationRequest{Name: invitation.Name})
+	require.NoError(t, err)
+	require.Equal(t, v1pb.SpaceMember_ADMIN, membership.Role, "accept must preserve the role selected at invite time")
+
+	secondInvitation := inviteSpaceTestUser(ctx, t, service, owner, secondInvitee, space, v1pb.SpaceMember_USER)
+	listed, err := service.ListSpaceInvitations(userCtx(ctx, invitee.ID), &v1pb.ListSpaceInvitationsRequest{Parent: space.Name})
+	require.NoError(t, err, "any active Space administrator may manage invitations")
+	require.Equal(t, []*v1pb.SpaceInvitation{secondInvitation}, listed.SpaceInvitations)
+	_, err = service.AcceptSpaceInvitation(userCtx(ctx, invitee.ID), &v1pb.AcceptSpaceInvitationRequest{Name: secondInvitation.Name})
+	require.Equal(t, codes.PermissionDenied, status.Code(err), "an administrator cannot accept for another user")
+	_, err = service.DeleteSpaceInvitation(userCtx(ctx, invitee.ID), &v1pb.DeleteSpaceInvitationRequest{Name: secondInvitation.Name})
+	require.NoError(t, err)
+
+	pendingArchivedInvitation := inviteSpaceTestUser(ctx, t, service, owner, pendingThenArchived, space, v1pb.SpaceMember_USER)
+	archived := store.Archived
+	_, err = service.Store.UpdateUser(ctx, &store.UpdateUser{ID: pendingThenArchived.ID, RowStatus: &archived})
+	require.NoError(t, err, "a pending invitation is not an active membership and must not prevent archival")
+	listed, err = service.ListSpaceInvitations(userCtx(ctx, owner.ID), &v1pb.ListSpaceInvitationsRequest{Parent: space.Name})
+	require.NoError(t, err)
+	require.Equal(t, []*v1pb.SpaceInvitation{pendingArchivedInvitation}, listed.SpaceInvitations, "administrators must retain a way to revoke invitations for archived users")
+	_, err = service.AcceptSpaceInvitation(userCtx(ctx, pendingThenArchived.ID), &v1pb.AcceptSpaceInvitationRequest{Name: pendingArchivedInvitation.Name})
+	require.Equal(t, codes.Unauthenticated, status.Code(err), "an archived user cannot accept an invitation")
+	_, err = service.DeleteSpaceInvitation(userCtx(ctx, owner.ID), &v1pb.DeleteSpaceInvitationRequest{Name: pendingArchivedInvitation.Name})
+	require.NoError(t, err)
+
+	_, err = service.Store.UpdateUser(ctx, &store.UpdateUser{ID: archivedInvitee.ID, RowStatus: &archived})
+	require.NoError(t, err)
+	_, err = service.CreateSpaceInvitation(userCtx(ctx, owner.ID), &v1pb.CreateSpaceInvitationRequest{
+		Parent:          space.Name,
+		SpaceInvitation: &v1pb.SpaceInvitation{Invitee: BuildUserName(archivedInvitee.Username), Role: v1pb.SpaceMember_USER},
+	})
+	require.Equal(t, codes.FailedPrecondition, status.Code(err), "only NORMAL users can be invited")
 }
 
 func TestSpaceServiceHardDeleteLifecycle(t *testing.T) {
@@ -129,11 +241,7 @@ func TestSpaceServiceHardDeleteLifecycle(t *testing.T) {
 		Payload:     &storepb.AttachmentPayload{},
 	})
 	require.NoError(t, err)
-	_, err = service.CreateSpaceMember(userCtx(ctx, owner.ID), &v1pb.CreateSpaceMemberRequest{
-		Parent:      space.Name,
-		SpaceMember: &v1pb.SpaceMember{User: BuildUserName(target.Username), Role: v1pb.SpaceMember_USER},
-	})
-	require.NoError(t, err)
+	inviteAndAcceptSpaceTestUser(ctx, t, service, owner, target, space, v1pb.SpaceMember_USER)
 
 	_, err = service.UpdateSpace(userCtx(ctx, owner.ID), &v1pb.UpdateSpaceRequest{
 		Space:      &v1pb.Space{Name: space.Name},
@@ -167,11 +275,7 @@ func TestSpaceServiceHidesMembershipForInactiveUser(t *testing.T) {
 		Space:   &v1pb.Space{Title: "Inactive member space"},
 	})
 	require.NoError(t, err)
-	_, err = service.CreateSpaceMember(userCtx(ctx, owner.ID), &v1pb.CreateSpaceMemberRequest{
-		Parent:      space.Name,
-		SpaceMember: &v1pb.SpaceMember{User: BuildUserName(member.Username), Role: v1pb.SpaceMember_USER},
-	})
-	require.NoError(t, err)
+	inviteAndAcceptSpaceTestUser(ctx, t, service, owner, member, space, v1pb.SpaceMember_USER)
 
 	// The normal archive path rejects users with memberships. Simulate an
 	// inconsistent row to verify that membership reads still fail closed.
@@ -200,14 +304,7 @@ func TestUpdateSpaceMemberAcceptsGatewayInferredIdentityMask(t *testing.T) {
 		Space:   &v1pb.Space{Title: "Gateway Space"},
 	})
 	require.NoError(t, err)
-	createdMember, err := service.CreateSpaceMember(userCtx(ctx, owner.ID), &v1pb.CreateSpaceMemberRequest{
-		Parent: space.Name,
-		SpaceMember: &v1pb.SpaceMember{
-			User: BuildUserName(member.Username),
-			Role: v1pb.SpaceMember_USER,
-		},
-	})
-	require.NoError(t, err)
+	createdMember := inviteAndAcceptSpaceTestUser(ctx, t, service, owner, member, space, v1pb.SpaceMember_USER)
 
 	mux := runtime.NewServeMux()
 	require.NoError(t, v1pb.RegisterSpaceServiceHandlerServer(ctx, mux, service))
@@ -242,7 +339,7 @@ func TestUpdateSpaceMemberAcceptsGatewayInferredIdentityMask(t *testing.T) {
 	require.Equal(t, store.SpaceMemberRoleAdmin, storedMember.Role, "a mismatched immutable user must not update the membership")
 }
 
-func TestCreateSpaceMemberClassifiesTargetUserErrors(t *testing.T) {
+func TestCreateSpaceInvitationClassifiesTargetUserErrors(t *testing.T) {
 	ctx := context.Background()
 	service := newIntegrationService(t)
 	owner := createSpaceTestUser(ctx, t, service, "lookup-owner", store.RoleUser)
@@ -253,9 +350,9 @@ func TestCreateSpaceMemberClassifiesTargetUserErrors(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	_, err = service.CreateSpaceMember(userCtx(ctx, owner.ID), &v1pb.CreateSpaceMemberRequest{
-		Parent:      space.Name,
-		SpaceMember: &v1pb.SpaceMember{User: "invalid-user-name", Role: v1pb.SpaceMember_USER},
+	_, err = service.CreateSpaceInvitation(userCtx(ctx, owner.ID), &v1pb.CreateSpaceInvitationRequest{
+		Parent:          space.Name,
+		SpaceInvitation: &v1pb.SpaceInvitation{Invitee: "invalid-user-name", Role: v1pb.SpaceMember_USER},
 	})
 	require.Equal(t, codes.InvalidArgument, status.Code(err))
 
@@ -264,9 +361,9 @@ func TestCreateSpaceMemberClassifiesTargetUserErrors(t *testing.T) {
 	// require the target lookup failure to remain a server error.
 	_, err = service.Store.GetDriver().GetDB().ExecContext(ctx, "UPDATE user SET created_ts = ? WHERE id = ?", "not-an-integer", target.ID)
 	require.NoError(t, err)
-	_, err = service.CreateSpaceMember(userCtx(ctx, owner.ID), &v1pb.CreateSpaceMemberRequest{
-		Parent:      space.Name,
-		SpaceMember: &v1pb.SpaceMember{User: BuildUserName(target.Username), Role: v1pb.SpaceMember_USER},
+	_, err = service.CreateSpaceInvitation(userCtx(ctx, owner.ID), &v1pb.CreateSpaceInvitationRequest{
+		Parent:          space.Name,
+		SpaceInvitation: &v1pb.SpaceInvitation{Invitee: BuildUserName(target.Username), Role: v1pb.SpaceMember_USER},
 	})
 	require.Equal(t, codes.Internal, status.Code(err))
 }

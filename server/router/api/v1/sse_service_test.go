@@ -247,13 +247,13 @@ func TestSpaceMutationsPublishMemoChanged(t *testing.T) {
 	require.NoError(t, err)
 	requireMemoChanged(t, client.events)
 
-	membership, err := svc.CreateSpaceMember(ownerCtx, &v1pb.CreateSpaceMemberRequest{
-		Parent: space.Name,
-		SpaceMember: &v1pb.SpaceMember{
-			User: BuildUserName(member.Username),
-			Role: v1pb.SpaceMember_USER,
-		},
+	invitation, err := svc.CreateSpaceInvitation(ownerCtx, &v1pb.CreateSpaceInvitationRequest{
+		Parent:          space.Name,
+		SpaceInvitation: &v1pb.SpaceInvitation{Invitee: BuildUserName(member.Username), Role: v1pb.SpaceMember_USER},
 	})
+	require.NoError(t, err)
+	requireMemoChanged(t, client.events)
+	membership, err := svc.AcceptSpaceInvitation(userCtx(ctx, member.ID), &v1pb.AcceptSpaceInvitationRequest{Name: invitation.Name})
 	require.NoError(t, err)
 	requireMemoChanged(t, client.events)
 
@@ -327,22 +327,8 @@ func TestMoveSpaceAudienceMemoSSEBroadcastsWithoutAudienceCalculation(t *testing
 		Space:   &v1pb.Space{Title: "Target"},
 	})
 	require.NoError(t, err)
-	_, err = svc.CreateSpaceMember(ownerCtx, &v1pb.CreateSpaceMemberRequest{
-		Parent: source.Name,
-		SpaceMember: &v1pb.SpaceMember{
-			User: BuildUserName(sourceMember.Username),
-			Role: v1pb.SpaceMember_USER,
-		},
-	})
-	require.NoError(t, err)
-	_, err = svc.CreateSpaceMember(ownerCtx, &v1pb.CreateSpaceMemberRequest{
-		Parent: target.Name,
-		SpaceMember: &v1pb.SpaceMember{
-			User: BuildUserName(targetMember.Username),
-			Role: v1pb.SpaceMember_USER,
-		},
-	})
-	require.NoError(t, err)
+	inviteAndAcceptSpaceTestUser(ctx, t, svc, owner, sourceMember, source, v1pb.SpaceMember_USER)
+	inviteAndAcceptSpaceTestUser(ctx, t, svc, owner, targetMember, target, v1pb.SpaceMember_USER)
 
 	sourceName := source.Name
 	memo, err := svc.CreateMemo(ownerCtx, &v1pb.CreateMemoRequest{Memo: &v1pb.Memo{

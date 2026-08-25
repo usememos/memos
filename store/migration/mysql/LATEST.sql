@@ -40,6 +40,7 @@ CREATE TABLE `space` (
 CREATE TABLE `space_member` (
   `space_id` INT NOT NULL,
   `user_id` INT NOT NULL,
+  `status` VARCHAR(256) NOT NULL,
   `role` VARCHAR(256) NOT NULL CHECK (`role` IN ('ADMIN', 'USER')),
   PRIMARY KEY (`space_id`, `user_id`)
 );

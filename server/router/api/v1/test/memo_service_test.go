@@ -741,13 +741,15 @@ func TestUpdateMemoPlacementAndAudienceContract(t *testing.T) {
 		Space:   &apiv1.Space{Title: "Placement Target"},
 	})
 	require.NoError(t, err)
-	_, err = ts.Service.CreateSpaceMember(sourceAdminCtx, &apiv1.CreateSpaceMemberRequest{
+	invitation, err := ts.Service.CreateSpaceInvitation(sourceAdminCtx, &apiv1.CreateSpaceInvitationRequest{
 		Parent: source.Name,
-		SpaceMember: &apiv1.SpaceMember{
-			User: "users/" + author.Username,
-			Role: apiv1.SpaceMember_USER,
+		SpaceInvitation: &apiv1.SpaceInvitation{
+			Invitee: "users/" + author.Username,
+			Role:    apiv1.SpaceMember_USER,
 		},
 	})
+	require.NoError(t, err)
+	_, err = ts.Service.AcceptSpaceInvitation(authorCtx, &apiv1.AcceptSpaceInvitationRequest{Name: invitation.Name})
 	require.NoError(t, err)
 
 	protectedMemo, err := ts.Service.CreateMemo(authorCtx, &apiv1.CreateMemoRequest{Memo: &apiv1.Memo{
@@ -1088,7 +1090,7 @@ func TestAssignedMemoCommentListingUsesMemoLocalReadAccess(t *testing.T) {
 
 	space, err := ts.Store.CreateSpace(ctx, &store.Space{UID: "assigned-comment-space", Title: "Assigned comments"}, owner.ID)
 	require.NoError(t, err)
-	_, err = ts.Store.CreateSpaceMember(ctx, &store.SpaceMember{
+	_, err = ts.InviteAndAcceptSpaceMember(ctx, &store.SpaceMember{
 		SpaceID: space.ID,
 		UserID:  member.ID,
 		Role:    store.SpaceMemberRoleAdmin,
