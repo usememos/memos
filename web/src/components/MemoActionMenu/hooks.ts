@@ -105,13 +105,10 @@ export const useMemoActionHandlers = ({ memo, parentScope, onEdit, setDeleteDial
     }
 
     if (isInMemoDetailPage) {
-      if (parentScope === "all") {
-        clearSelectedSpace();
-      }
       navigateTo(memo.state === State.ARCHIVED ? ROUTES.HOME : ROUTES.ARCHIVED);
     }
     memoUpdatedCallback();
-  }, [memo.name, memo.state, t, isInMemoDetailPage, parentScope, clearSelectedSpace, navigateTo, memoUpdatedCallback, updateMemo]);
+  }, [memo.name, memo.state, t, isInMemoDetailPage, navigateTo, memoUpdatedCallback, updateMemo]);
 
   const handleCopyLink = useCallback(() => {
     let host = profile.instanceUrl;

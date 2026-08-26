@@ -170,7 +170,7 @@ MCP memo operations reuse the same memo policy; Space management is not exposed 
 
 ### UI shape
 
-The active Space scopes collaborative resource browsing and creation, including Home and attachment lists. Inbox and user profiles remain user-global and their routes do not inherit the active Space. Global Settings provides a Spaces section for viewing received invitations and managing joined Spaces, metadata, members, roles, and pending invitations; it is a management surface rather than another Space switcher.
+The active Space scopes collaborative resource browsing and creation, including Home, Explore, and attachment lists. Archived, Inbox, and user profiles remain user-global and their routes do not inherit the active Space. Global Settings provides a Spaces section for viewing received invitations and managing joined Spaces, metadata, members, roles, and pending invitations; it is a management surface rather than another Space switcher.
 
 ### Security invariants
 

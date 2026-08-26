@@ -51,8 +51,8 @@ describe("memo view navigation", () => {
     expect(resolveMemoDetailOrigin({ unrelated: true })).toEqual({ parentPage: "/", parentScope: "all" });
   });
 
-  it("uses an All Archived origin for a direct archived memo", () => {
-    expect(resolveMemoDetailOrigin(undefined, { memoArchived: true })).toEqual({ parentPage: "/archived", parentScope: "all" });
+  it("uses a user-level Archived origin without changing the remembered Space", () => {
+    expect(resolveMemoDetailOrigin(undefined, { memoArchived: true })).toEqual({ parentPage: "/archived", parentScope: "preserve" });
   });
 
   it("keeps an explicit origin ahead of the archived fallback", () => {

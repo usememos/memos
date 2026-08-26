@@ -1,4 +1,4 @@
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import Archived from "@/pages/Archived";
 import Explore from "@/pages/Explore";
@@ -22,10 +22,16 @@ vi.mock("@/components/MemoView", () => ({
 vi.mock("@/components/PagedMemoList", () => ({
   default: (props: Record<string, unknown>) => {
     state.listProps.push(props);
+    const renderLeading = props.renderLeading as ((options: { useGrid: boolean }) => React.ReactNode) | undefined;
     const renderer = props.renderer as
       | ((memo: { name: string; space: string }, options: { compact: boolean }) => React.ReactNode)
       | undefined;
-    return <div>{renderer?.({ name: "memos/test", space: "spaces/product" }, { compact: false })}</div>;
+    return (
+      <div>
+        {renderLeading?.({ useGrid: false })}
+        {renderer?.({ name: "memos/test", space: "spaces/product" }, { compact: false })}
+      </div>
+    );
   },
   getMemoKey: (memo: { name: string }) => memo.name,
 }));
@@ -46,7 +52,7 @@ vi.mock("@/hooks/useCurrentUser", () => ({
   default: () => ({ name: "users/test" }),
 }));
 
-describe("Space-scoped feed pages", () => {
+describe("Memo feed collection scope", () => {
   beforeEach(() => {
     state.selectedSpaceName = undefined;
     state.memoFilter = undefined;
@@ -55,7 +61,7 @@ describe("Space-scoped feed pages", () => {
     state.filterOptions = [];
   });
 
-  it("uses the All collection without a Space filter for Explore and Archived", () => {
+  it("uses the All collection without a Space filter for Explore and the user archive", () => {
     render(
       <>
         <Explore />
@@ -65,11 +71,12 @@ describe("Space-scoped feed pages", () => {
 
     expect(state.listProps).toHaveLength(2);
     expect(state.listProps[0]).toMatchObject({ contextFilter: undefined });
-    expect(state.listProps[1]).toMatchObject({ contextFilter: undefined });
+    expect(state.listProps[1]).not.toHaveProperty("contextFilter");
     expect(state.filterOptions[0]).toMatchObject({
       visibilities: [Visibility.PUBLIC, Visibility.PROTECTED, Visibility.SPACE],
     });
     expect(state.memoViewProps).toEqual([expect.objectContaining({ showSpace: true }), expect.objectContaining({ showSpace: true })]);
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Archived");
   });
 
   it("uses the selected Space filter and includes its member audience in Explore", () => {
@@ -82,5 +89,14 @@ describe("Space-scoped feed pages", () => {
       visibilities: [Visibility.PUBLIC, Visibility.PROTECTED, Visibility.SPACE],
     });
     expect(state.memoViewProps[0]).toMatchObject({ showSpace: false });
+  });
+
+  it("keeps Archived independent of a remembered Space", () => {
+    state.selectedSpaceName = "spaces/product";
+    state.memoFilter = 'space == "spaces/product"';
+    render(<Archived />);
+
+    expect(state.listProps[0]).not.toHaveProperty("contextFilter");
+    expect(state.memoViewProps[0]).toMatchObject({ showSpace: true });
   });
 });

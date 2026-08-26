@@ -284,7 +284,7 @@ describe("GlobalMemoEditorProvider", () => {
     });
   });
 
-  it.each(["/explore", "/archived", "/attachments"])("inherits the remembered Space when composing from %s", async (pathname) => {
+  it.each(["/explore", "/attachments"])("inherits the remembered Space when composing from %s", async (pathname) => {
     mocks.pathname = pathname;
     mocks.selectedSpaceName = "spaces/product";
     await openViaTrigger();
@@ -297,6 +297,7 @@ describe("GlobalMemoEditorProvider", () => {
 
   it.each([
     "/u/steven",
+    "/archived",
     "/inbox",
     "/setting",
     "/views",

@@ -80,7 +80,7 @@ describe("Memo detail mutation navigation", () => {
   it.each([
     [State.NORMAL, "/archived"],
     [State.ARCHIVED, "/"],
-  ])("switches an All-origin %s memo to the global destination", async (state, destination) => {
+  ])("switches an All-origin %s memo to the user-level destination without changing the remembered Space", async (state, destination) => {
     const { result } = renderActions(state, "all");
 
     await act(async () => {
@@ -88,7 +88,7 @@ describe("Memo detail mutation navigation", () => {
     });
 
     await waitFor(() => expect(result.current.pathname).toBe(destination));
-    expect(mocks.clearSelectedSpace).toHaveBeenCalledOnce();
+    expect(mocks.clearSelectedSpace).not.toHaveBeenCalled();
   });
 
   it("preserves an exact-Space origin when archiving", async () => {

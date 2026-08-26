@@ -31,10 +31,10 @@ describe("sidebar route content", () => {
   it.each([
     ["/", true],
     ["/explore", true],
-    ["/archived", true],
+    ["/archived", false],
     ["/attachments", true],
     ["/Explore/", true],
-    ["/ARCHIVED/", true],
+    ["/ARCHIVED/", false],
     ["/Attachments/", true],
     ["/u/steven", false],
     ["/inbox", false],
@@ -48,10 +48,17 @@ describe("sidebar route content", () => {
     expect(routeSupportsCollectionScope(path)).toBe(expected);
   });
 
-  it.each(["/", "/explore", "/archived"])("keeps search and Compose in the remembered collection on %s", (path) => {
+  it.each(["/", "/explore"])("keeps search and Compose in the remembered collection on %s", (path) => {
     expect(getRouteActionPolicy(path)).toEqual({
       searchScope: "remembered-collection",
       composePlacement: "remembered-space",
+    });
+  });
+
+  it.each(["/archived", "/ARCHIVED/"])("keeps %s in the user archive without inheriting Space placement", (path) => {
+    expect(getRouteActionPolicy(path)).toEqual({
+      searchScope: "user-collection",
+      composePlacement: "unassigned",
     });
   });
 
@@ -79,7 +86,8 @@ describe("sidebar route content", () => {
     });
   });
 
-  it.each(["/Explore/", "/ARCHIVED/"])("keeps normalized collection route %s in the remembered scope", (path) => {
+  it("keeps a normalized Explore route in the remembered scope", () => {
+    const path = "/Explore/";
     expect(getRouteActionPolicy(path)).toEqual({
       searchScope: "remembered-collection",
       composePlacement: "remembered-space",

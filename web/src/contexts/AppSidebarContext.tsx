@@ -1,7 +1,7 @@
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import type { MemoOriginScope } from "@/components/MemoView/navigation";
-import type { MemoScope } from "@/lib/memo-views";
+import type { PrimaryMemoScope } from "@/lib/memo-views";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 
 export type AttachmentSection = "all" | "media" | "audio" | "documents" | "unused";
@@ -26,8 +26,8 @@ interface AppSidebarContextValue {
   setMobileOpen: (open: boolean) => void;
   quickFindOpen: boolean;
   setQuickFindOpen: (open: boolean) => void;
-  memoScope: MemoScope;
-  setMemoScope: (scope: MemoScope) => void;
+  memoScope: PrimaryMemoScope;
+  setMemoScope: (scope: PrimaryMemoScope) => void;
 }
 
 const AppSidebarContext = createContext<AppSidebarContextValue | null>(null);
@@ -39,7 +39,7 @@ export const AppSidebarProvider = ({ children }: { children: ReactNode }) => {
   const [memoDetail, setMemoDetailState] = useState<MemoDetailSidebarDescriptor>();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [quickFindOpen, setQuickFindOpen] = useState(false);
-  const [memoScope, setMemoScope] = useState<MemoScope>("home");
+  const [memoScope, setMemoScope] = useState<PrimaryMemoScope>("home");
 
   useEffect(() => {
     setMobileOpen(false);

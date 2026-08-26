@@ -4,7 +4,7 @@ import { ROUTES } from "@/router/routes";
 
 export type SidebarRouteKind = MemoScope | "profile" | "views" | "attachments" | "inbox" | "settings" | "memo" | "empty";
 
-export type RouteSearchScope = "remembered-collection" | "profile" | "all";
+export type RouteSearchScope = "remembered-collection" | "user-collection" | "profile" | "all";
 export type RouteComposePlacement = "remembered-space" | "unassigned";
 
 export interface RouteActionPolicy {
@@ -29,7 +29,7 @@ export const getSidebarRouteKind = (path: string): SidebarRouteKind => {
 /** Routes whose collections are filtered by the remembered All / Space scope. */
 export const routeSupportsCollectionScope = (path: string): boolean => {
   const kind = getSidebarRouteKind(path);
-  return kind === "home" || kind === "explore" || kind === "archived" || kind === "attachments";
+  return kind === "home" || kind === "explore" || kind === "attachments";
 };
 
 /**
@@ -40,10 +40,17 @@ export const routeSupportsCollectionScope = (path: string): boolean => {
 export const getRouteActionPolicy = (path: string): RouteActionPolicy => {
   const kind = getSidebarRouteKind(path);
 
-  if (kind === "home" || kind === "explore" || kind === "archived") {
+  if (kind === "home" || kind === "explore") {
     return {
       searchScope: "remembered-collection",
       composePlacement: "remembered-space",
+    };
+  }
+
+  if (kind === "archived") {
+    return {
+      searchScope: "user-collection",
+      composePlacement: "unassigned",
     };
   }
 

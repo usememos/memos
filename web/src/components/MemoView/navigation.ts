@@ -40,7 +40,7 @@ export const isMemoResourcePath = (pathname: string): boolean => {
   return memoID.length > 0 && !memoID.includes("/");
 };
 
-/** Whether a page consumes the remembered All / exact-Space collection scope. */
+/** Whether returning from this collection should preserve the remembered All / Space state. */
 export const isMemoCollectionOrigin = (page: string): boolean => {
   const pathname = page.split(/[?#]/, 1)[0] || ROUTES.HOME;
   return isMemoScopeRoute(pathname) || normalizePathname(pathname) === ROUTES.ATTACHMENTS;
@@ -62,7 +62,9 @@ export const resolveMemoDetailOrigin = (
       ? value.fromScope
       : hasExplicitParent && isMemoCollectionOrigin(parentPage)
         ? "preserve"
-        : "all";
+        : options.memoArchived
+          ? "preserve"
+          : "all";
   return { parentPage, parentScope };
 };
 

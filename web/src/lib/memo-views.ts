@@ -1,6 +1,7 @@
 import { ROUTES } from "@/router/routes";
 
 export type MemoScope = "home" | "explore" | "archived";
+export type PrimaryMemoScope = Exclude<MemoScope, "archived">;
 
 export const BUILTIN_TASKS_VIEW_ID = "__built_in_tasks__";
 export const BUILTIN_TASKS_VIEW_FILTER = "has_task_list && has_incomplete_tasks";
@@ -20,9 +21,8 @@ export const isMemoScopeRoute = (pathname: string): boolean => {
   return comparablePath === ROUTES.HOME || comparablePath === ROUTES.EXPLORE || comparablePath === ROUTES.ARCHIVED;
 };
 
-export const getMemoScopePath = (scope: MemoScope): string => {
+export const getMemoScopePath = (scope: PrimaryMemoScope): string => {
   if (scope === "explore") return ROUTES.EXPLORE;
-  if (scope === "archived") return ROUTES.ARCHIVED;
   return ROUTES.HOME;
 };
 

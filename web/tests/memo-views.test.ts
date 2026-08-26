@@ -21,14 +21,13 @@ describe("memo scopes", () => {
     expect(resolveMemoScope("/settings", { fallback: "explore" })).toBe("explore");
   });
 
-  it("maps only the three collection routes to memo scopes", () => {
+  it("maps collection routes while limiting primary scope paths to Home and Explore", () => {
     expect(isMemoScopeRoute("/")).toBe(true);
     expect(isMemoScopeRoute("/explore")).toBe(true);
     expect(isMemoScopeRoute("/archived")).toBe(true);
     expect(isMemoScopeRoute("/attachments")).toBe(false);
     expect(getMemoScopePath("home")).toBe("/");
     expect(getMemoScopePath("explore")).toBe("/explore");
-    expect(getMemoScopePath("archived")).toBe("/archived");
   });
 });
 

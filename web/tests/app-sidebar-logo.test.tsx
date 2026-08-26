@@ -11,7 +11,7 @@ const authState = vi.hoisted(() => ({
   notifications: [] as Array<{ status: number }>,
 }));
 const sidebarState = vi.hoisted(() => ({
-  memoScope: "home" as "home" | "explore" | "archived",
+  memoScope: "home" as "home" | "explore",
   mobileOpen: false,
 }));
 const globalEditorState = vi.hoisted(() => ({
@@ -193,7 +193,6 @@ describe("App sidebar logo", () => {
   it.each([
     "/",
     "/explore",
-    "/archived",
     "/attachments",
     "/Explore/",
     "/Attachments/",
@@ -214,6 +213,7 @@ describe("App sidebar logo", () => {
   });
 
   it.each([
+    "/archived",
     "/inbox",
     "/u/alice",
     "/setting",
@@ -274,6 +274,20 @@ describe("App sidebar logo", () => {
 
     expect(filteredStatsHook).toHaveBeenCalledWith(expect.objectContaining({ context: "profile", filter: undefined }));
     expect(tagsSectionHook).toHaveBeenCalledWith(expect.objectContaining({ scope: "profile" }));
+  });
+
+  it("keeps Archived statistics and tag UI state independent of the remembered Space", () => {
+    spaceState.selectedSpaceName = "spaces/product";
+    spaceState.memoFilter = 'space == "spaces/product"';
+
+    render(
+      <MemoryRouter initialEntries={["/archived"]}>
+        <AppSidebar />
+      </MemoryRouter>,
+    );
+
+    expect(filteredStatsHook).toHaveBeenCalledWith(expect.objectContaining({ context: "archived", filter: undefined }));
+    expect(tagsSectionHook).toHaveBeenCalledWith(expect.objectContaining({ scope: "archived" }));
   });
 
   it("keeps Inbox compact while exposing its unread state accessibly", () => {
@@ -423,7 +437,7 @@ describe("App sidebar logo", () => {
     fireEvent.click(scopeTrigger);
     expect(await screen.findByRole("menuitem", { name: "common.home" })).toBeInTheDocument();
     expect(screen.getByRole("menuitem", { name: "common.explore" })).toBeInTheDocument();
-    expect(screen.getByRole("menuitem", { name: "common.archived" })).toBeInTheDocument();
+    expect(screen.queryByRole("menuitem", { name: "common.archived" })).not.toBeInTheDocument();
   });
 
   it("uses compact text-only actions for a saved view", async () => {
@@ -484,22 +498,34 @@ describe("App sidebar logo", () => {
     expect(screen.getByRole("heading", { name: label, level: 2 })).toBeInTheDocument();
   });
 
-  it.each([
-    ["explore", "common.explore", "/inbox"],
-    ["archived", "common.archived", "/attachments"],
-  ] as const)("keeps the %s scope available from a global destination", async (scope, label, destination) => {
-    sidebarState.memoScope = scope;
+  it("keeps the Explore scope available from a global destination", async () => {
+    sidebarState.memoScope = "explore";
     render(
-      <MemoryRouter initialEntries={[destination]}>
+      <MemoryRouter initialEntries={["/inbox"]}>
         <AppSidebar />
       </MemoryRouter>,
     );
 
-    const scopeTrigger = screen.getByRole("button", { name: label });
-    expectCollapsedNavPill(scopeTrigger, label);
+    const scopeTrigger = screen.getByRole("button", { name: "common.explore" });
+    expectCollapsedNavPill(scopeTrigger, "common.explore");
 
     fireEvent.click(scopeTrigger);
-    expectActiveNavPill(await screen.findByRole("button", { name: label, current: "page" }), label);
+    expectActiveNavPill(await screen.findByRole("button", { name: "common.explore", current: "page" }), "common.explore");
+  });
+
+  it("leaves Archived through the remembered primary feed without presenting it as a scope", async () => {
+    sidebarState.memoScope = "explore";
+    render(
+      <MemoryRouter initialEntries={["/archived"]}>
+        <AppSidebar />
+      </MemoryRouter>,
+    );
+
+    const scopeTrigger = screen.getByRole("button", { name: "common.explore" });
+    expectCollapsedNavPill(scopeTrigger, "common.explore");
+
+    fireEvent.click(scopeTrigger);
+    expectActiveNavPill(await screen.findByRole("button", { name: "common.explore", current: "page" }), "common.explore");
   });
 
   it("keeps the mobile header limited to navigation and context", () => {

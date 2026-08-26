@@ -1,4 +1,5 @@
 import {
+  ArchiveIcon,
   CheckIcon,
   ChevronsUpDownIcon,
   GlobeIcon,
@@ -9,6 +10,7 @@ import {
   SquareUserIcon,
   User2Icon,
 } from "lucide-react";
+import { matchPath, useLocation } from "react-router-dom";
 import { useAppSidebar } from "@/contexts/AppSidebarContext";
 import { useAuth } from "@/contexts/AuthContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -25,6 +27,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
@@ -39,6 +42,7 @@ interface Props {
 const UserMenu = (props: Props) => {
   const { collapsed } = props;
   const t = useTranslate();
+  const location = useLocation();
   const navigateTo = useNavigateTo();
   const { setMobileOpen } = useAppSidebar();
   const currentUser = useCurrentUser();
@@ -47,6 +51,7 @@ const UserMenu = (props: Props) => {
   const sseStatus = useSSEConnectionStatus();
   const currentLocale = getLocaleWithFallback(userGeneralSetting?.locale);
   const currentTheme = getThemeWithFallback(userGeneralSetting?.theme);
+  const archivedActive = Boolean(matchPath(Routes.ARCHIVED, location.pathname));
 
   const handleLocaleChange = async (locale: Locale) => {
     if (!currentUser) return;
@@ -154,6 +159,15 @@ const UserMenu = (props: Props) => {
           <SquareUserIcon className="size-4 text-muted-foreground" />
           {t("common.profile")}
         </DropdownMenuItem>
+        <DropdownMenuItem
+          aria-current={archivedActive ? "page" : undefined}
+          className={cn(archivedActive && "bg-accent text-accent-foreground")}
+          onClick={() => navigateFromMenu(Routes.ARCHIVED)}
+        >
+          <ArchiveIcon className="size-4 text-muted-foreground" />
+          {t("common.archived")}
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
             <GlobeIcon className="size-4 text-muted-foreground" />
@@ -186,6 +200,7 @@ const UserMenu = (props: Props) => {
           <SettingsIcon className="size-4 text-muted-foreground" />
           {t("common.settings")}
         </DropdownMenuItem>
+        <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut}>
           <LogOutIcon className="size-4 text-muted-foreground" />
           {t("common.sign-out")}

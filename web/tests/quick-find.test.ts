@@ -22,8 +22,20 @@ describe("Quick Find", () => {
     expect(buildQuickFindFilters("project", scopedFilters, false)).toEqual([{ factor: "contentSearch", value: "project" }]);
   });
 
-  it.each(["/", "/explore", "/archived"])("keeps scoped filters and stays on %s", (pathname) => {
+  it.each(["/", "/explore"])("keeps scoped filters and stays on %s", (pathname) => {
     expect(resolveQuickFindSubmission(pathname, "project", scopedFilters)).toEqual({
+      filters: [
+        { factor: "tagSearch", value: "work" },
+        { factor: "displayTime", value: "2026-08-03" },
+        { factor: "contentSearch", value: "project" },
+      ],
+      destination: undefined,
+      switchToAll: false,
+    });
+  });
+
+  it("searches Archived as a user collection without clearing the remembered Space", () => {
+    expect(resolveQuickFindSubmission("/archived", "project", scopedFilters)).toEqual({
       filters: [
         { factor: "tagSearch", value: "work" },
         { factor: "displayTime", value: "2026-08-03" },

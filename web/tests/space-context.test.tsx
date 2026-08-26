@@ -130,12 +130,7 @@ describe("SpaceProvider", () => {
     expect(sessionStorage.getItem(getSelectedSpaceStorageKey("users/alice"))).toBe(newlyCreatedSpace.name);
   });
 
-  it.each([
-    "/",
-    "/explore",
-    "/archived?filter=tagSearch%3Awork",
-    "/attachments",
-  ])("preserves the current collection route when switching to a Space from %s", (initialPath) => {
+  it.each(["/", "/explore", "/attachments"])("preserves the current collection route when switching to a Space from %s", (initialPath) => {
     const product = { name: "spaces/product", title: "Product", description: "" };
     state.query.data = [product];
     renderProvider(initialPath);
@@ -146,12 +141,7 @@ describe("SpaceProvider", () => {
     expect(screen.getByTestId("path").textContent).toBe(initialPath);
   });
 
-  it.each([
-    "/",
-    "/explore",
-    "/archived?filter=tagSearch%3Awork",
-    "/attachments",
-  ])("preserves the current collection route when switching to All from %s", (initialPath) => {
+  it.each(["/", "/explore", "/attachments"])("preserves the current collection route when switching to All from %s", (initialPath) => {
     const product = { name: "spaces/product", title: "Product", description: "" };
     state.query.data = [product];
     sessionStorage.setItem(getSelectedSpaceStorageKey("users/alice"), product.name);
@@ -165,7 +155,9 @@ describe("SpaceProvider", () => {
 
   it.each([
     ["Select first Space", "/inbox"],
+    ["Select first Space", "/archived?filter=tagSearch%3Awork"],
     ["Select Memos", "/u/alice"],
+    ["Select Memos", "/archived?filter=tagSearch%3Awork"],
   ])("falls back to Home when using %s outside a collection route", (action, initialPath) => {
     const product = { name: "spaces/product", title: "Product", description: "" };
     state.query.data = [product];

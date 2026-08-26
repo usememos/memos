@@ -55,7 +55,7 @@ import {
   getMemoScopePath,
   getMemoViewId,
   isMemoScopeRoute,
-  type MemoScope,
+  type PrimaryMemoScope,
   resolveMemoScope,
 } from "@/lib/memo-views";
 import { cn } from "@/lib/utils";
@@ -257,8 +257,9 @@ const CollectionSidebarContent = ({ context }: { context: MemoStatsContext }) =>
     enabled: context === "profile" && !!profileMatch?.params.username,
   });
   const statsUserName = context === "home" ? currentUser?.name : context === "profile" ? profileUser?.name : undefined;
-  // Profile remains instance-level, so its calendar must stay aligned with the unscoped profile feed.
-  const statsFilter = context === "profile" ? undefined : memoFilter;
+  // User-level collections stay aligned with their unscoped feeds even when a Space is remembered.
+  const isUserLevelCollection = context === "profile" || context === "archived";
+  const statsFilter = isUserLevelCollection ? undefined : memoFilter;
   const { statistics, tags } = useFilteredMemoStats({
     context,
     userName: statsUserName,
@@ -272,8 +273,9 @@ const CollectionSidebarContent = ({ context }: { context: MemoStatsContext }) =>
   // clicks must land somewhere that renders the filtered feed.
   const onCollectionRoute = isMemoScopeRoute(location.pathname) || !!profileMatch;
   const filterTarget = onCollectionRoute ? undefined : context === "explore" ? ROUTES.EXPLORE : ROUTES.HOME;
-  const tagStateScope =
-    context === "profile" ? (statsUserName ?? context) : `${statsUserName ?? context}${selectedSpaceName ? `:${selectedSpaceName}` : ""}`;
+  const tagStateScope = isUserLevelCollection
+    ? (statsUserName ?? context)
+    : `${statsUserName ?? context}${selectedSpaceName ? `:${selectedSpaceName}` : ""}`;
 
   return (
     <div className={SIDEBAR_SECTION_STACK_CLASSES}>
@@ -484,24 +486,25 @@ const GlobalNavigation = () => {
     memoArchived: memoDetail?.memo.state === State.ARCHIVED,
     fallback: memoScope,
   });
-  const routeOwnsScope = isMemoScopeRoute(location.pathname) || routeKind === "profile" || routeKind === "memo";
-  const scopeRouteActive = isMemoScopeRoute(location.pathname);
+  const primaryScope: PrimaryMemoScope = resolvedScope === "archived" ? memoScope : resolvedScope;
+  const routeOwnsPrimaryScope =
+    resolvedScope !== "archived" && (routeKind === "home" || routeKind === "explore" || routeKind === "profile" || routeKind === "memo");
+  const scopeRouteActive = routeKind === "home" || routeKind === "explore";
 
   useEffect(() => {
-    if (routeOwnsScope && resolvedScope !== memoScope) {
-      setMemoScope(resolvedScope);
+    if (routeOwnsPrimaryScope && primaryScope !== memoScope) {
+      setMemoScope(primaryScope);
     }
-  }, [memoScope, resolvedScope, routeOwnsScope, setMemoScope]);
+  }, [memoScope, primaryScope, routeOwnsPrimaryScope, setMemoScope]);
 
-  const scopeItems: Array<{ id: MemoScope; label: string; icon: LucideIcon }> = [
+  const scopeItems: Array<{ id: PrimaryMemoScope; label: string; icon: LucideIcon }> = [
     { id: "home", label: t("common.home"), icon: HouseIcon },
     { id: "explore", label: t("common.explore"), icon: EarthIcon },
-    { id: "archived", label: t("common.archived"), icon: ArchiveIcon },
   ];
-  const activeScopeItem = scopeItems.find((item) => item.id === resolvedScope) ?? scopeItems[0];
+  const activeScopeItem = scopeItems.find((item) => item.id === primaryScope) ?? scopeItems[0];
   const ActiveScopeIcon = activeScopeItem.icon;
 
-  const navigateToScope = (scope: MemoScope) => {
+  const navigateToScope = (scope: PrimaryMemoScope) => {
     const filterQuery = stringifyFilters(filters);
     setMemoScope(scope);
     navigate({ pathname: getMemoScopePath(scope), search: filterQuery ? `?filter=${filterQuery}` : "" });
@@ -568,7 +571,7 @@ const GlobalNavigation = () => {
               // menu and navigate to the scope instead.
               if (open && !scopeRouteActive) {
                 eventDetails.cancel();
-                navigateToScope(resolvedScope);
+                navigateToScope(primaryScope);
               }
             }}
           >
