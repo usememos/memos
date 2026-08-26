@@ -15,9 +15,14 @@ devServerCommand: "go run ./cmd/memos --port 8081"
 devServerUrl: "http://localhost:8081"
 devServerHmr: false
 createdAt: "2026-08-26T10:19:24-04:00"
-status: "validated_reviewer"
+status: "validated"
 origin: "internal"
 userVerifiedAt: null
+workRecord:
+  status: "generated"
+  recordId: "74ebcec3-e915-4e05-a656-951a72901eeb"
+  path: "docs/work-records/2026-08-26-served-raw-memo-markdown-from-memo-urls.md"
+  lastAttemptAt: "2026-08-26T16:33:40.728Z"
 routingIntent: "PLANNED_CHANGE"
 sessionName: "issue 6229 implementation"
 targetBranch: "main"
