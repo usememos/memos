@@ -21,6 +21,8 @@ func TestSpaceStoreMembershipGuards(t *testing.T) {
 
 	space, err := ts.CreateSpace(ctx, &store.Space{UID: "space-store", Title: "Store Space"}, owner.ID)
 	require.NoError(t, err)
+	require.Equal(t, store.SpaceMemberRoleAdmin, space.CurrentUserRole)
+	require.Equal(t, int32(1), space.MemberCount)
 
 	ownerMembership, err := ts.GetSpaceMember(ctx, &store.FindSpaceMember{SpaceID: &space.ID, UserID: &owner.ID, ViewerUserID: &owner.ID})
 	require.NoError(t, err)
@@ -29,6 +31,24 @@ func TestSpaceStoreMembershipGuards(t *testing.T) {
 	created, err := createSpaceMemberForTest(ctx, ts, &store.SpaceMember{SpaceID: space.ID, UserID: member.ID, Role: store.SpaceMemberRoleUser}, owner.ID)
 	require.NoError(t, err)
 	require.Equal(t, member.ID, created.UserID)
+	ownerSpaces, err := ts.ListSpaces(ctx, &store.FindSpace{MemberUserID: &owner.ID})
+	require.NoError(t, err)
+	require.Len(t, ownerSpaces, 1)
+	require.Equal(t, store.SpaceMemberRoleAdmin, ownerSpaces[0].CurrentUserRole)
+	require.Equal(t, int32(2), ownerSpaces[0].MemberCount)
+	memberSpace, err := ts.GetSpace(ctx, &store.FindSpace{UID: &space.UID, MemberUserID: &member.ID})
+	require.NoError(t, err)
+	require.Equal(t, store.SpaceMemberRoleUser, memberSpace.CurrentUserRole)
+	require.Equal(t, int32(2), memberSpace.MemberCount)
+	unscopedSpace, err := ts.GetSpace(ctx, &store.FindSpace{UID: &space.UID})
+	require.NoError(t, err)
+	require.Empty(t, unscopedSpace.CurrentUserRole)
+	require.Zero(t, unscopedSpace.MemberCount)
+	updatedTitle := "Updated Store Space"
+	updatedSpace, err := ts.UpdateSpace(ctx, &store.UpdateSpace{ID: space.ID, Title: &updatedTitle}, owner.ID)
+	require.NoError(t, err)
+	require.Equal(t, store.SpaceMemberRoleAdmin, updatedSpace.CurrentUserRole)
+	require.Equal(t, int32(2), updatedSpace.MemberCount)
 	_, err = createSpaceMemberForTest(ctx, ts, &store.SpaceMember{SpaceID: space.ID, UserID: member.ID, Role: store.SpaceMemberRoleUser}, owner.ID)
 	require.ErrorIs(t, err, store.ErrSpaceMemberAlreadyExists)
 

@@ -18,7 +18,15 @@ vi.mock("@/components/MemosLogo", () => ({
 }));
 
 vi.mock("@/components/CreateSpaceDialog", () => ({
-  default: ({ open }: { open: boolean }) => (open ? <div role="dialog">Create Space dialog</div> : null),
+  default: ({ open, onCreated }: { open: boolean; onCreated?: (space: (typeof spaceState.spaces)[number]) => void }) =>
+    open ? (
+      <div role="dialog">
+        Create Space dialog
+        <button type="button" onClick={() => onCreated?.(spaceState.spaces[0])}>
+          Complete create
+        </button>
+      </div>
+    ) : null,
 }));
 
 vi.mock("@/contexts/SpaceContext", () => ({
@@ -86,5 +94,7 @@ describe("SpaceSwitcher", () => {
     fireEvent.click(screen.getByRole("button", { name: "space.switch: common.memos" }));
     fireEvent.click(await screen.findByRole("menuitem", { name: "space.create" }));
     expect(screen.getByRole("dialog", { name: "" })).toHaveTextContent("Create Space dialog");
+    fireEvent.click(screen.getByRole("button", { name: "Complete create" }));
+    expect(spaceState.selectSpace).toHaveBeenCalledWith(spaceState.spaces[0]);
   });
 });

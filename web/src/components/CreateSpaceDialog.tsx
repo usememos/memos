@@ -5,21 +5,22 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useSpaceContext } from "@/contexts/SpaceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useCreateSpace } from "@/hooks/useSpaceQueries";
 import { handleError } from "@/lib/error";
+import type { Space } from "@/types/proto/api/v1/space_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onCreated?: (space: Space) => void;
+  note?: string;
 }
 
-function CreateSpaceDialog({ open, onOpenChange }: Props) {
+function CreateSpaceDialog({ open, onOpenChange, onCreated, note }: Props) {
   const t = useTranslate();
   const currentUserName = useCurrentUser()?.name ?? "";
-  const { selectSpace } = useSpaceContext();
   const createSpace = useCreateSpace(currentUserName);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -38,17 +39,20 @@ function CreateSpaceDialog({ open, onOpenChange }: Props) {
       return;
     }
 
+    let space: Space;
     try {
-      const space = await createSpace.mutateAsync({
+      space = await createSpace.mutateAsync({
         title: trimmedTitle,
         description: description.trim() || undefined,
       });
-      selectSpace(space);
-      toast.success(t("space.create-success"));
-      onOpenChange(false);
     } catch (error) {
       handleError(error, toast.error, { context: "Create space" });
+      return;
     }
+
+    toast.success(t("space.create-success"));
+    onOpenChange(false);
+    onCreated?.(space);
   };
 
   const handleOpenChange = (nextOpen: boolean) => {
@@ -87,7 +91,7 @@ function CreateSpaceDialog({ open, onOpenChange }: Props) {
               className="min-h-20 resize-none"
             />
           </div>
-          <p className="text-xs text-muted-foreground">{t("space.creator-admin-note")}</p>
+          <p className="text-xs text-muted-foreground">{note ?? t("space.creator-admin-note")}</p>
           <DialogFooter>
             <Button type="button" variant="ghost" disabled={createSpace.isPending} onClick={() => onOpenChange(false)}>
               {t("common.cancel")}

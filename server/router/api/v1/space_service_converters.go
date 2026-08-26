@@ -18,6 +18,16 @@ func buildSpaceInvitationName(spaceUID, username string) string {
 }
 
 func convertSpaceFromStore(space *store.Space) *v1pb.Space {
+	converted := convertSpaceMetadataFromStore(space)
+	if converted == nil {
+		return nil
+	}
+	converted.CurrentUserRole = convertSpaceMemberRoleFromStore(space.CurrentUserRole)
+	converted.MemberCount = space.MemberCount
+	return converted
+}
+
+func convertSpaceMetadataFromStore(space *store.Space) *v1pb.Space {
 	if space == nil {
 		return nil
 	}
@@ -69,6 +79,6 @@ func convertSpaceInvitationFromStore(space *store.Space, user *store.User, invit
 		Name:    buildSpaceInvitationName(space.UID, user.Username),
 		Invitee: BuildUserName(user.Username),
 		Role:    convertSpaceMemberRoleFromStore(invitation.Role),
-		Space:   convertSpaceFromStore(space),
+		Space:   convertSpaceMetadataFromStore(space),
 	}
 }

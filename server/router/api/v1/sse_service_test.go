@@ -57,6 +57,11 @@ func requireMemoChanged(t *testing.T, ch <-chan []byte) {
 	require.Equal(t, memoChangedSSEFrame, string(mustReceive(t, ch, time.Second)))
 }
 
+func requireSpaceChanged(t *testing.T, ch <-chan []byte) {
+	t.Helper()
+	require.Equal(t, spaceChangedSSEFrame, string(mustReceive(t, ch, time.Second)))
+}
+
 func requireNoMemoChanged(t *testing.T, ch <-chan []byte) {
 	t.Helper()
 	select {
@@ -223,7 +228,7 @@ func TestDeleteAttachmentPublishesBeforeStorageCleanupFailure(t *testing.T) {
 	require.Nil(t, storedAttachment, "the database deletion must remain committed")
 }
 
-func TestSpaceMutationsPublishMemoChanged(t *testing.T) {
+func TestSpaceMutationsPublishSpaceChanged(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
 	owner := createSpaceTestUser(ctx, t, svc, "sse-space-owner", store.RoleAdmin)
@@ -237,7 +242,7 @@ func TestSpaceMutationsPublishMemoChanged(t *testing.T) {
 		Space:   &v1pb.Space{Title: "SSE Space"},
 	})
 	require.NoError(t, err)
-	requireMemoChanged(t, client.events)
+	requireSpaceChanged(t, client.events)
 
 	space.Title = "Renamed SSE Space"
 	_, err = svc.UpdateSpace(ownerCtx, &v1pb.UpdateSpaceRequest{
@@ -245,17 +250,17 @@ func TestSpaceMutationsPublishMemoChanged(t *testing.T) {
 		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"title"}},
 	})
 	require.NoError(t, err)
-	requireMemoChanged(t, client.events)
+	requireSpaceChanged(t, client.events)
 
 	invitation, err := svc.CreateSpaceInvitation(ownerCtx, &v1pb.CreateSpaceInvitationRequest{
 		Parent:          space.Name,
 		SpaceInvitation: &v1pb.SpaceInvitation{Invitee: BuildUserName(member.Username), Role: v1pb.SpaceMember_USER},
 	})
 	require.NoError(t, err)
-	requireMemoChanged(t, client.events)
+	requireSpaceChanged(t, client.events)
 	membership, err := svc.AcceptSpaceInvitation(userCtx(ctx, member.ID), &v1pb.AcceptSpaceInvitationRequest{Name: invitation.Name})
 	require.NoError(t, err)
-	requireMemoChanged(t, client.events)
+	requireSpaceChanged(t, client.events)
 
 	membership.Role = v1pb.SpaceMember_ADMIN
 	_, err = svc.UpdateSpaceMember(ownerCtx, &v1pb.UpdateSpaceMemberRequest{
@@ -263,15 +268,15 @@ func TestSpaceMutationsPublishMemoChanged(t *testing.T) {
 		UpdateMask:  &fieldmaskpb.FieldMask{Paths: []string{"role"}},
 	})
 	require.NoError(t, err)
-	requireMemoChanged(t, client.events)
+	requireSpaceChanged(t, client.events)
 
 	_, err = svc.DeleteSpaceMember(ownerCtx, &v1pb.DeleteSpaceMemberRequest{Name: membership.Name})
 	require.NoError(t, err)
-	requireMemoChanged(t, client.events)
+	requireSpaceChanged(t, client.events)
 
 	_, err = svc.DeleteSpace(ownerCtx, &v1pb.DeleteSpaceRequest{Name: space.Name})
 	require.NoError(t, err)
-	requireMemoChanged(t, client.events)
+	requireSpaceChanged(t, client.events)
 }
 
 func TestUpdateMemoSSEBroadcastsToAllSubscribers(t *testing.T) {

@@ -35,7 +35,7 @@ Every memo remains an author-owned, independent resource. Placement, audience, a
 - Space archival or restoration.
 - Guests, email or external-user invitations, open enrollment, federation, or public Space discovery.
 - A generated default Space.
-- UI/UX design or a redesign of global surfaces.
+- Re-scoping user-global surfaces such as Inbox and user profiles around a Space.
 
 ## Research
 
@@ -52,7 +52,7 @@ The research supports four choices:
 - Make Space one first-class resource with explicit membership and roles, gated by invitee acceptance.
 - Keep placement, audience, authorship, and distribution independent.
 - Represent Unassigned as a real absence of placement.
-- Eventually make Spaces visible in normal browsing and creation flows, while deferring UI/UX here.
+- Make Spaces visible in normal browsing, creation, and management flows while keeping user-global surfaces independent of the current Space.
 
 Sources: [Discourse category permissions](https://meta.discourse.org/t/understanding-groups-and-category-permissions/87678), [Discourse post ownership](https://meta.discourse.org/t/changing-ownership-of-posts/276672), [Notion Teamspaces](https://www.notion.com/help/intro-to-teamspaces), [Notion sharing and permissions](https://www.notion.com/help/sharing-and-permissions), [Mastodon post visibility](https://docs.joinmastodon.org/user/posting/), and [Mastodon Lists](https://docs.joinmastodon.org/entities/List/).
 
@@ -158,6 +158,8 @@ A dedicated Space service provides create, list, get, update, and hard-delete op
 
 Listing Spaces returns only Spaces in which the caller has active membership; no application-wide Space listing or archive API is added. An authenticated non-member, including a pending invitee, receives `NotFound` for Space metadata, members, and feed requests.
 
+Space responses returned through membership-authorized operations include the authenticated user's membership role and the accepted-member count as output-only projections. Metadata-only Space summaries, such as the summary carried by an invitation, use the default role and count values.
+
 Memo responses gain an optional Space resource name, and `Visibility` adds `SPACE = 4` without renumbering existing values. The domain-to-v1 mapping is Author to `PRIVATE`, Instance to `PROTECTED`, Public to `PUBLIC`, and Space to `SPACE`. `VISIBILITY_UNSPECIFIED` remains an input sentinel: create treats it as `PRIVATE`, an explicit visibility update rejects it, and responses never return it. Visibility values are named domains and must not be compared numerically. The global default memo visibility setting continues to accept only `PRIVATE`, `PROTECTED`, and `PUBLIC`, because it cannot identify a Space.
 
 Memo listing gains explicit all-readable, Unassigned, and Space scopes. Space scope requires active membership. Existing global and Space feeds exclude comments by default, and Space identity is not added to the CEL filter schema.
@@ -165,6 +167,10 @@ Memo listing gains explicit all-readable, Unassigned, and Space scopes. Space sc
 Placement and audience use the existing memo update mechanism so the memo author can change them atomically. The Space API does not add an operation for an `ADMIN` to move, withdraw, or otherwise mutate an individual memo.
 
 MCP memo operations reuse the same memo policy; Space management is not exposed through MCP in the initial version.
+
+### UI shape
+
+The active Space scopes collaborative resource browsing and creation, including Home and attachment lists. Inbox and user profiles remain user-global and their routes do not inherit the active Space. Global Settings provides a Spaces section for viewing received invitations and managing joined Spaces, metadata, members, roles, and pending invitations; it is a management surface rather than another Space switcher.
 
 ### Security invariants
 
@@ -181,7 +187,7 @@ OR SPACE + active membership in memo.space_id
 
 CEL filters may only narrow this predicate. Space membership is checked per request or through immediately invalidated cache state. Write paths validate membership and placement as part of their ordinary operation. Missing or unreadable notification subjects and relation endpoints fail closed without leaking partial metadata. Broader serialization between concurrent membership, placement, and memo mutations remains deferred.
 
-Live refresh is an authenticated, subject-free cache-invalidation channel. Successful memo, reaction, Space, invitation, and membership mutations broadcast only `{"type":"memo.changed"}` to connected clients. The event carries no resource name, audience, actor, invitation, or membership data; clients invalidate memo-backed caches and refetch through ordinary authorization. SSE does not materialize recipient sets or perform memo-level authorization.
+Live refresh is an authenticated, subject-free cache-invalidation channel. Successful memo and reaction mutations broadcast `{"type":"memo.changed"}`; successful Space, invitation, and membership mutations broadcast `{"type":"space.changed"}`. Neither event carries a resource name, audience, actor, invitation, or membership data. Clients invalidate the corresponding Space- and memo-backed caches and refetch through ordinary authorization. SSE does not materialize recipient sets or perform memo-level authorization.
 
 Notifications are authorized when presented. Email and user webhook payloads are authorized before entering the existing asynchronous queue; the initial version does not cancel a prepared delivery when access changes while it is queued. A comment webhook requires both the comment and its context memo to be readable by the webhook owner when the event is prepared. A deleted-memo webhook is built only from an author-readable pre-delete snapshot.
 
@@ -206,7 +212,5 @@ Files for `PRIVATE`, `PROTECTED`, and `SPACE` memos use `private, no-store`; pub
 | Rename v1 `visibility` to `audience`, or expose both fields | Rejected; the domain term is Audience, while one legacy v1 field remains the compatibility representation. |
 
 ## Deferred design
-
-UI/UX is explicitly out of scope, including navigation, editor controls, membership screens, warnings, and confirmation flows.
 
 Email and external-user invitations, invitation expiration, inviter attribution, invitation history, open enrollment, account erasure beyond the membership guard, notification delivery and retention policy, application-admin moderation and recovery, audit history, soft deletion, restoration, retryable external-object cleanup, delivery-time cancellation of queued email/webhooks, broader concurrent-mutation hardening, and asynchronous deletion of very large Spaces remain deferred. Later work must preserve invitee consent, independent memo authorization, non-propagating relations, and explicit Space aggregate deletion unless this design is revisited.

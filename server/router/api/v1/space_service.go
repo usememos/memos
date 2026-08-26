@@ -106,7 +106,7 @@ func (s *APIV1Service) CreateSpace(ctx context.Context, request *v1pb.CreateSpac
 	if err != nil {
 		return nil, mapSpaceMutationError(err, "failed to create space")
 	}
-	s.SSEHub.publishMemoChanged()
+	s.SSEHub.publishSpaceChanged()
 	return convertSpaceFromStore(created), nil
 }
 
@@ -212,7 +212,7 @@ func (s *APIV1Service) UpdateSpace(ctx context.Context, request *v1pb.UpdateSpac
 	if updated == nil {
 		return nil, status.Error(codes.NotFound, "space not found")
 	}
-	s.SSEHub.publishMemoChanged()
+	s.SSEHub.publishSpaceChanged()
 	return convertSpaceFromStore(updated), nil
 }
 
@@ -234,7 +234,7 @@ func (s *APIV1Service) DeleteSpace(ctx context.Context, request *v1pb.DeleteSpac
 	if err != nil {
 		return nil, mapSpaceMutationError(err, "failed to delete space")
 	}
-	s.SSEHub.publishMemoChanged()
+	s.SSEHub.publishSpaceChanged()
 	if err := s.cleanupDeletedAttachmentStorage(ctx, deleteResult.Attachments); err != nil {
 		return nil, status.Errorf(codes.Internal, "space was deleted but attachment storage cleanup failed: %v", err)
 	}
@@ -288,7 +288,7 @@ func (s *APIV1Service) CreateSpaceInvitation(ctx context.Context, request *v1pb.
 	if err != nil {
 		return nil, mapSpaceMutationError(err, "failed to create space invitation")
 	}
-	s.SSEHub.publishMemoChanged()
+	s.SSEHub.publishSpaceChanged()
 	return convertSpaceInvitationFromStore(space, targetUser, created), nil
 }
 
@@ -500,7 +500,7 @@ func (s *APIV1Service) DeleteSpaceInvitation(ctx context.Context, request *v1pb.
 	}, currentUser.ID); err != nil {
 		return nil, mapSpaceMutationError(err, "failed to revoke space invitation")
 	}
-	s.SSEHub.publishMemoChanged()
+	s.SSEHub.publishSpaceChanged()
 	return &emptypb.Empty{}, nil
 }
 
@@ -522,7 +522,7 @@ func (s *APIV1Service) AcceptSpaceInvitation(ctx context.Context, request *v1pb.
 	if err != nil {
 		return nil, mapSpaceMutationError(err, "failed to accept space invitation")
 	}
-	s.SSEHub.publishMemoChanged()
+	s.SSEHub.publishSpaceChanged()
 	return convertSpaceMemberFromStore(space, currentUser, member), nil
 }
 
@@ -543,7 +543,7 @@ func (s *APIV1Service) DeclineSpaceInvitation(ctx context.Context, request *v1pb
 	if err := s.Store.DeclineSpaceInvitation(ctx, &store.DeclineSpaceInvitation{SpaceID: invitation.SpaceID, UserID: currentUser.ID}, currentUser.ID); err != nil {
 		return nil, mapSpaceMutationError(err, "failed to decline space invitation")
 	}
-	s.SSEHub.publishMemoChanged()
+	s.SSEHub.publishSpaceChanged()
 	return &emptypb.Empty{}, nil
 }
 
@@ -712,7 +712,7 @@ func (s *APIV1Service) UpdateSpaceMember(ctx context.Context, request *v1pb.Upda
 	if updated == nil {
 		return nil, status.Error(codes.NotFound, "space member not found")
 	}
-	s.SSEHub.publishMemoChanged()
+	s.SSEHub.publishSpaceChanged()
 	return convertSpaceMemberFromStore(space, targetUser, updated), nil
 }
 
@@ -738,6 +738,6 @@ func (s *APIV1Service) DeleteSpaceMember(ctx context.Context, request *v1pb.Dele
 	}, currentUser.ID); err != nil {
 		return nil, mapSpaceMutationError(err, "failed to delete space member")
 	}
-	s.SSEHub.publishMemoChanged()
+	s.SSEHub.publishSpaceChanged()
 	return &emptypb.Empty{}, nil
 }

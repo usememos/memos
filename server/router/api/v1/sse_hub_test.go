@@ -83,6 +83,22 @@ func TestSSEHubPublishMemoChangedBroadcastsToSubscribers(t *testing.T) {
 	}
 }
 
+func TestSSEHubPublishSpaceChangedBroadcastsDistinctFrame(t *testing.T) {
+	hub := NewSSEHub()
+	first := hub.Subscribe()
+	defer hub.Unsubscribe(first)
+	second := hub.Subscribe()
+	defer hub.Unsubscribe(second)
+
+	hub.publishSpaceChanged()
+
+	for _, client := range []*SSEClient{first, second} {
+		frame := string(mustReceive(t, client.events, time.Second))
+		assert.Equal(t, spaceChangedSSEFrame, frame)
+		assert.NotEqual(t, memoChangedSSEFrame, frame)
+	}
+}
+
 func TestSSEHubSlowClientIsDisconnected(t *testing.T) {
 	hub := NewSSEHub()
 	slow := hub.Subscribe()

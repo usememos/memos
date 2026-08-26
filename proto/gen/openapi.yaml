@@ -4376,6 +4376,24 @@ components:
                 description:
                     type: string
                     description: Optional. A description of the space.
+                currentUserRole:
+                    readOnly: true
+                    enum:
+                        - ROLE_UNSPECIFIED
+                        - ADMIN
+                        - USER
+                    type: string
+                    description: |-
+                        Output only. The authenticated user's membership role in this space.
+                         ROLE_UNSPECIFIED when this Space is exposed as metadata-only.
+                    format: enum
+                memberCount:
+                    readOnly: true
+                    type: integer
+                    description: |-
+                        Output only. The number of accepted members in this space. Pending
+                         invitations are excluded. Zero when this Space is exposed as metadata-only.
+                    format: int32
             description: Space is a collaboration boundary for placed memos.
         SpaceInvitation:
             required:

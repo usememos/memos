@@ -2,6 +2,7 @@ import { CheckIcon, ChevronsUpDownIcon, LoaderCircleIcon, type LucideIcon, PlusI
 import { type ReactNode, useState } from "react";
 import CreateSpaceDialog from "@/components/CreateSpaceDialog";
 import MemosLogo from "@/components/MemosLogo";
+import SpaceMark from "@/components/SpaceMark";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,31 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useSpaceContext } from "@/contexts/SpaceContext";
 import { cn } from "@/lib/utils";
-import type { Space } from "@/types/proto/api/v1/space_service_pb";
 import { useTranslate } from "@/utils/i18n";
-
-// Mirrors MemosLogo's compact scale so the brand and a Space read as peers in the menu.
-const MARK_SCALE = {
-  md: "size-7 rounded-[7px] text-[13px]",
-  sm: "size-5 rounded-[5px] text-[11px]",
-} as const;
-
-const SpaceMark = ({ space, size = "md" }: { space?: Space; size?: "sm" | "md" }) => {
-  const label = space?.title.trim() || "S";
-  const initial = Array.from(label)[0]?.toLocaleUpperCase() ?? "S";
-
-  return (
-    <span
-      aria-hidden
-      className={cn(
-        "flex shrink-0 items-center justify-center bg-sidebar-accent font-semibold text-sidebar-accent-foreground",
-        MARK_SCALE[size],
-      )}
-    >
-      {initial}
-    </span>
-  );
-};
 
 // Icons in action and status rows sit in a glyph-width slot so every label in the menu
 // starts on the same text rail as the context rows.
@@ -128,7 +105,7 @@ function SpaceSwitcher({ className }: { className?: string }) {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <CreateSpaceDialog open={createOpen} onOpenChange={setCreateOpen} />
+      <CreateSpaceDialog open={createOpen} onOpenChange={setCreateOpen} onCreated={selectSpace} />
     </>
   );
 }
