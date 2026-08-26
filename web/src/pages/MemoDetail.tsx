@@ -5,6 +5,7 @@ import { Link, Navigate, useLocation, useParams } from "react-router-dom";
 import MemoCommentSection from "@/components/MemoCommentSection";
 import { MentionResolutionProvider } from "@/components/MemoContent/MentionResolutionContext";
 import MemoView from "@/components/MemoView";
+import { createMemoNavigationState, type MemoOriginScope, resolveMemoDetailOrigin } from "@/components/MemoView/navigation";
 import { useAppSidebar } from "@/contexts/AppSidebarContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
@@ -13,25 +14,28 @@ import { useInfiniteMemoComments, useMemo } from "@/hooks/useMemoQueries";
 import { useSharedMemo, withShareAttachmentLinks } from "@/hooks/useMemoShareQueries";
 import { memoNamePrefix } from "@/lib/resource-names";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
+import { State } from "@/types/proto/api/v1/common_pb";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { findMemoAnchorTarget } from "@/utils/markdown-manipulation";
 
 const MemoSidebarRegistration = ({
   memo,
   from,
+  fromScope,
   readonly,
   onShareImageOpen,
 }: {
   memo: Memo;
-  from?: string;
+  from: string;
+  fromScope: MemoOriginScope;
   readonly: boolean;
   onShareImageOpen: () => void;
 }) => {
   const { setMemoDetail } = useAppSidebar();
 
   useEffect(() => {
-    setMemoDetail({ memo, from, readonly, onShareImageOpen });
-  }, [from, memo, onShareImageOpen, readonly, setMemoDetail]);
+    setMemoDetail({ memo, from, fromScope, readonly, onShareImageOpen });
+  }, [from, fromScope, memo, onShareImageOpen, readonly, setMemoDetail]);
 
   useEffect(() => () => setMemoDetail(undefined), [setMemoDetail]);
 
@@ -45,7 +49,6 @@ const MemoDetail = () => {
   const params = useParams();
   const location = useLocation();
   const { state: locationState, hash } = location;
-  const parentPage = typeof locationState?.from === "string" ? locationState.from : undefined;
   const handleShareImageOpen = useCallback(() => setShareImageDialogOpen(true), []);
 
   // Detect share mode from the route parameter.
@@ -64,6 +67,7 @@ const MemoDetail = () => {
   const memo = isShareMode ? memoFromShare : memoFromDirect;
   const error = isShareMode ? shareError : directError;
   const isLoading = isShareMode ? shareLoading : directLoading;
+  const { parentPage, parentScope } = resolveMemoDetailOrigin(locationState, { memoArchived: memo?.state === State.ARCHIVED });
   const memoName = memo?.name ?? memoNameFromParams;
   const displayMemo = useReactMemo(() => {
     if (!memo) return undefined;
@@ -121,7 +125,13 @@ const MemoDetail = () => {
   return (
     <section className="@container flex min-h-full w-full flex-col items-center pb-8 pt-3 md:pt-6">
       <MentionResolutionProvider contents={mentionResolutionContents} userNames={userResolutionNames}>
-        <MemoSidebarRegistration memo={displayMemo} from={parentPage} readonly={isShareMode} onShareImageOpen={handleShareImageOpen} />
+        <MemoSidebarRegistration
+          memo={displayMemo}
+          from={parentPage}
+          fromScope={parentScope}
+          readonly={isShareMode}
+          onShareImageOpen={handleShareImageOpen}
+        />
         <div className="w-full max-w-2xl px-4 sm:px-6">
           <div className="w-full">
             {!isShareMode && parentMemo && (
@@ -129,7 +139,7 @@ const MemoDetail = () => {
                 <Link
                   className="px-3 py-1 border border-border rounded-lg max-w-xs w-auto text-sm flex flex-row justify-start items-center flex-nowrap text-muted-foreground hover:shadow hover:opacity-80"
                   to={`/${parentMemo.name}`}
-                  state={locationState}
+                  state={createMemoNavigationState(parentPage, parentScope)}
                   viewTransition
                 >
                   <ArrowUpLeftFromCircleIcon className="w-4 h-auto shrink-0 opacity-60 mr-2" />
@@ -142,10 +152,12 @@ const MemoDetail = () => {
               memo={displayMemo}
               compact={false}
               parentPage={parentPage}
+              parentScope={parentScope}
               shareImageDialogOpen={shareImageDialogOpen}
               showCreator
               showVisibility
               showPinned
+              showSpace
               onShareImageDialogOpenChange={setShareImageDialogOpen}
             />
             {!isShareMode && (
@@ -153,6 +165,7 @@ const MemoDetail = () => {
                 memo={displayMemo}
                 comments={comments}
                 parentPage={parentPage}
+                parentScope={parentScope}
                 hasMoreComments={hasNextComments}
                 isFetchingMoreComments={isFetchingNextComments}
                 onLoadMoreComments={fetchNextComments}

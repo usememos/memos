@@ -8,7 +8,7 @@ import { Memo } from "@/types/proto/api/v1/memo_service_pb";
 
 const Archived = () => {
   const user = useCurrentUser();
-  const { memoFilter: contextFilter } = useSpaceContext();
+  const { memoFilter: contextFilter, selectedSpaceName } = useSpaceContext();
 
   const memoFilter = useMemoFilters({
     creatorName: user?.name,
@@ -24,7 +24,9 @@ const Archived = () => {
 
   return (
     <PagedMemoList
-      renderer={(memo: Memo, { compact }) => <MemoView key={getMemoKey(memo)} memo={memo} showVisibility compact={compact} />}
+      renderer={(memo: Memo, { compact }) => (
+        <MemoView key={getMemoKey(memo)} memo={memo} showVisibility showSpace={!selectedSpaceName} compact={compact} />
+      )}
       listSort={listSort}
       state={State.ARCHIVED}
       orderBy={orderBy}

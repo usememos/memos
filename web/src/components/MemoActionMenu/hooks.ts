@@ -4,6 +4,7 @@ import { useCallback } from "react";
 import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
 import { useInstance } from "@/contexts/InstanceContext";
+import { useSpaceContext } from "@/contexts/SpaceContext";
 import { memoKeys, useDeleteMemo, useUpdateMemo } from "@/hooks/useMemoQueries";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { userKeys } from "@/hooks/useUserQueries";
@@ -13,22 +14,25 @@ import { State } from "@/types/proto/api/v1/common_pb";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { checkAllTasks, uncheckAllTasks } from "@/utils/markdown-task-actions";
+import { isMemoDetailPath, type MemoOriginScope } from "../MemoView/navigation";
 
 interface UseMemoActionHandlersOptions {
   memo: Memo;
+  parentScope: MemoOriginScope;
   onEdit?: () => void;
   setDeleteDialogOpen: (open: boolean) => void;
 }
 
-export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen }: UseMemoActionHandlersOptions) => {
+export const useMemoActionHandlers = ({ memo, parentScope, onEdit, setDeleteDialogOpen }: UseMemoActionHandlersOptions) => {
   const t = useTranslate();
   const location = useLocation();
   const navigateTo = useNavigateTo();
   const queryClient = useQueryClient();
   const { profile } = useInstance();
+  const { clearSelectedSpace } = useSpaceContext();
   const { mutateAsync: updateMemo } = useUpdateMemo();
   const { mutateAsync: deleteMemo } = useDeleteMemo();
-  const isInMemoDetailPage = location.pathname.startsWith(`/${memo.name}`);
+  const isInMemoDetailPage = isMemoDetailPath(location.pathname, memo.name);
 
   const memoUpdatedCallback = useCallback(() => {
     // Invalidate user stats to trigger refetch
@@ -101,10 +105,13 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen }: Use
     }
 
     if (isInMemoDetailPage) {
+      if (parentScope === "all") {
+        clearSelectedSpace();
+      }
       navigateTo(memo.state === State.ARCHIVED ? ROUTES.HOME : ROUTES.ARCHIVED);
     }
     memoUpdatedCallback();
-  }, [memo.name, memo.state, t, isInMemoDetailPage, navigateTo, memoUpdatedCallback, updateMemo]);
+  }, [memo.name, memo.state, t, isInMemoDetailPage, parentScope, clearSelectedSpace, navigateTo, memoUpdatedCallback, updateMemo]);
 
   const handleCopyLink = useCallback(() => {
     let host = profile.instanceUrl;
@@ -144,10 +151,24 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen }: Use
       queryClient.invalidateQueries({ queryKey: memoKeys.comments(memo.parent) });
     }
     if (isInMemoDetailPage) {
+      if (parentScope === "all") {
+        clearSelectedSpace();
+      }
       navigateTo(ROUTES.HOME);
     }
     memoUpdatedCallback();
-  }, [memo.name, memo.parent, t, isInMemoDetailPage, navigateTo, memoUpdatedCallback, deleteMemo, queryClient]);
+  }, [
+    memo.name,
+    memo.parent,
+    t,
+    isInMemoDetailPage,
+    parentScope,
+    clearSelectedSpace,
+    navigateTo,
+    memoUpdatedCallback,
+    deleteMemo,
+    queryClient,
+  ]);
 
   return {
     handleTogglePinMemoBtnClick,

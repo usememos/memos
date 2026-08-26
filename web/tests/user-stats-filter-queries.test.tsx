@@ -36,7 +36,7 @@ describe("User statistics filter queries", () => {
     expect(clients.getUserStats).toHaveBeenCalledWith({ name: "users/test", filter });
   });
 
-  it("sends the no-Space filter with grouped statistics", async () => {
+  it("sends an explicit unassigned filter with grouped statistics", async () => {
     const filter = "space == null";
     const { result } = renderHook(() => useAllUserStats({ state: State.ARCHIVED, filter }), { wrapper: createWrapper() });
 

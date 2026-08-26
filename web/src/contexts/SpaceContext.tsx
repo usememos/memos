@@ -1,12 +1,14 @@
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { routeSupportsCollectionScope } from "@/components/AppSidebar/routes";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useSpaces } from "@/hooks/useSpaceQueries";
-import { buildSpaceFilter } from "@/lib/cel-filter";
+import { buildCollectionScopeFilter, type CollectionScope } from "@/lib/cel-filter";
 import { ROUTES } from "@/router/routes";
 import type { Space } from "@/types/proto/api/v1/space_service_pb";
 
 const SELECTED_SPACE_STORAGE_PREFIX = "memos-selected-space:";
+const ALL_COLLECTION_SCOPE: CollectionScope = { kind: "all" };
 
 export const getSelectedSpaceStorageKey = (userName: string) => `${SELECTED_SPACE_STORAGE_PREFIX}${userName}`;
 
@@ -35,9 +37,12 @@ interface SpaceContextValue {
   spaces: Space[];
   selectedSpace?: Space;
   selectedSpaceName?: string;
+  collectionScope: CollectionScope;
   memoFilter?: string;
   isLoadingSpaces: boolean;
   isSpacesError: boolean;
+  /** Selects All without changing the current route. */
+  clearSelectedSpace: () => void;
   selectSpace: (space: Space) => void;
   selectMemos: () => void;
 }
@@ -49,12 +54,13 @@ const SpaceContext = createContext<SpaceContextValue | null>(null);
 const NO_SPACES: Space[] = [];
 
 function UserSpaceSession({ userName, children }: { userName: string; children: ReactNode }) {
-  // Switching context lands on that context's feed, so the switcher doubles as the
-  // brand slot's way home. Held in a ref because `navigate` changes identity on every
-  // route change, which would otherwise rebuild the context value — and re-render the
-  // global composer and the editor tree it hosts — on each navigation.
+  // Keep router values in refs so switching scope does not make the context callbacks
+  // change identity whenever the user navigates.
+  const location = useLocation();
   const navigate = useNavigate();
+  const pathnameRef = useRef(location.pathname);
   const navigateRef = useRef(navigate);
+  pathnameRef.current = location.pathname;
   navigateRef.current = navigate;
 
   const [selectedSpaceName, setSelectedSpaceName] = useState(() => readSelectedSpaceName(userName));
@@ -63,6 +69,10 @@ function UserSpaceSession({ userName, children }: { userName: string; children: 
   const spaces = spacesQuery.data ?? NO_SPACES;
   const listedSelectedSpace = spaces.find((space) => space.name === selectedSpaceName);
   const selectedSpace = listedSelectedSpace ?? (optimisticSpace?.name === selectedSpaceName ? optimisticSpace : undefined);
+  const collectionScope = useMemo<CollectionScope>(
+    () => (selectedSpaceName ? { kind: "space", name: selectedSpaceName } : ALL_COLLECTION_SCOPE),
+    [selectedSpaceName],
+  );
 
   useEffect(() => {
     if (listedSelectedSpace && optimisticSpace?.name === listedSelectedSpace.name) {
@@ -79,35 +89,59 @@ function UserSpaceSession({ userName, children }: { userName: string; children: 
     setSelectedSpaceName(undefined);
   }, [selectedSpace, selectedSpaceName, spacesQuery.isSuccess, userName]);
 
+  const navigateAfterScopeChange = useCallback(() => {
+    // Scope and collection lens are independent. Preserve the active lens when
+    // switching All/Space; global and resource routes fall back to My memos.
+    if (!routeSupportsCollectionScope(pathnameRef.current)) {
+      navigateRef.current(ROUTES.HOME);
+    }
+  }, []);
+
   const selectSpace = useCallback(
     (space: Space) => {
       writeSelectedSpaceName(userName, space.name);
       setOptimisticSpace(space);
       setSelectedSpaceName(space.name);
-      navigateRef.current(ROUTES.HOME);
+      navigateAfterScopeChange();
     },
-    [userName],
+    [navigateAfterScopeChange, userName],
   );
 
-  const selectMemos = useCallback(() => {
+  const clearSelectedSpace = useCallback(() => {
     writeSelectedSpaceName(userName, undefined);
     setOptimisticSpace(undefined);
     setSelectedSpaceName(undefined);
-    navigateRef.current(ROUTES.HOME);
   }, [userName]);
+
+  const selectMemos = useCallback(() => {
+    clearSelectedSpace();
+    navigateAfterScopeChange();
+  }, [clearSelectedSpace, navigateAfterScopeChange]);
 
   const value = useMemo<SpaceContextValue>(
     () => ({
       spaces,
       selectedSpace,
       selectedSpaceName,
-      memoFilter: buildSpaceFilter(selectedSpaceName),
+      collectionScope,
+      memoFilter: buildCollectionScopeFilter(collectionScope),
       isLoadingSpaces: spacesQuery.isPending,
       isSpacesError: spacesQuery.isError,
+      clearSelectedSpace,
       selectSpace,
       selectMemos,
     }),
-    [selectMemos, selectSpace, selectedSpace, selectedSpaceName, spaces, spacesQuery.isError, spacesQuery.isPending],
+    [
+      clearSelectedSpace,
+      collectionScope,
+      selectMemos,
+      selectSpace,
+      selectedSpace,
+      selectedSpaceName,
+      spaces,
+      spacesQuery.isError,
+      spacesQuery.isPending,
+    ],
   );
 
   return <SpaceContext.Provider value={value}>{children}</SpaceContext.Provider>;
@@ -115,8 +149,10 @@ function UserSpaceSession({ userName, children }: { userName: string; children: 
 
 const anonymousValue: SpaceContextValue = {
   spaces: [],
+  collectionScope: ALL_COLLECTION_SCOPE,
   isLoadingSpaces: false,
   isSpacesError: false,
+  clearSelectedSpace: () => undefined,
   selectSpace: () => undefined,
   selectMemos: () => undefined,
 };

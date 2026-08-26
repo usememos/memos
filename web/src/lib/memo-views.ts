@@ -10,16 +10,21 @@ export const getMemoViewId = (name: string): string => {
   return parts.length === 4 ? parts[3] : name;
 };
 
-export const isMemoScopeRoute = (pathname: string): boolean =>
-  pathname === ROUTES.HOME || pathname === ROUTES.EXPLORE || pathname === ROUTES.ARCHIVED;
+const cleanPathname = (value: string): string => {
+  const pathname = value.split(/[?#]/, 1)[0] || ROUTES.HOME;
+  return pathname.length > 1 ? pathname.replace(/\/+$/, "") : pathname;
+};
+
+export const isMemoScopeRoute = (pathname: string): boolean => {
+  const comparablePath = cleanPathname(pathname).toLowerCase();
+  return comparablePath === ROUTES.HOME || comparablePath === ROUTES.EXPLORE || comparablePath === ROUTES.ARCHIVED;
+};
 
 export const getMemoScopePath = (scope: MemoScope): string => {
   if (scope === "explore") return ROUTES.EXPLORE;
   if (scope === "archived") return ROUTES.ARCHIVED;
   return ROUTES.HOME;
 };
-
-const cleanPathname = (value: string): string => value.split(/[?#]/, 1)[0] || ROUTES.HOME;
 
 interface ResolveMemoScopeOptions {
   currentUsername?: string;
@@ -30,23 +35,24 @@ interface ResolveMemoScopeOptions {
 
 export const resolveMemoScope = (pathname: string, options: ResolveMemoScopeOptions = {}): MemoScope => {
   const cleanPath = cleanPathname(pathname);
-  if (cleanPath === ROUTES.EXPLORE) return "explore";
-  if (cleanPath === ROUTES.ARCHIVED) return "archived";
-  if (cleanPath === ROUTES.HOME) return "home";
+  const comparablePath = cleanPath.toLowerCase();
+  if (comparablePath === ROUTES.EXPLORE) return "explore";
+  if (comparablePath === ROUTES.ARCHIVED) return "archived";
+  if (comparablePath === ROUTES.HOME) return "home";
 
-  const profileMatch = cleanPath.match(/^\/u\/([^/]+)$/);
+  const profileMatch = cleanPath.match(/^\/u\/([^/]+)$/i);
   if (profileMatch) {
     return options.currentUsername && decodeURIComponent(profileMatch[1]) === options.currentUsername ? "home" : "explore";
   }
 
-  if (cleanPath.startsWith("/memos/") && options.detailFrom) {
+  if (comparablePath.startsWith("/memos/") && options.detailFrom) {
     return resolveMemoScope(options.detailFrom, {
       currentUsername: options.currentUsername,
       fallback: options.fallback,
     });
   }
 
-  if (cleanPath.startsWith("/memos/") && options.memoArchived) {
+  if (comparablePath.startsWith("/memos/") && options.memoArchived) {
     return "archived";
   }
 

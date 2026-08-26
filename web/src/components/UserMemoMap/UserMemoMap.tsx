@@ -6,7 +6,9 @@ import { ArrowUpRightIcon, MapPinIcon } from "lucide-react";
 import { useEffect, useMemo } from "react";
 import { MapContainer, Marker, Popup, useMap } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-cluster";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import MemoSpaceBadge from "@/components/MemoView/components/MemoSpaceBadge";
+import { createMemoNavigationState } from "@/components/MemoView/navigation";
 import { defaultMarkerIcon, ThemedTileLayer } from "@/components/map/map-utils";
 import { useInfiniteMemos } from "@/hooks/useMemoQueries";
 import { buildMemoCreatorFilter } from "@/lib/resource-names";
@@ -48,6 +50,8 @@ const MapFitBounds = ({ memos }: { memos: Memo[] }) => {
 };
 
 const UserMemoMap = ({ creator, className }: Props) => {
+  const location = useLocation();
+  const parentPage = `${location.pathname}${location.search}`;
   const creatorFilter = useMemo(() => buildMemoCreatorFilter(creator), [creator]);
 
   const { data, isLoading } = useInfiniteMemos(
@@ -130,9 +134,12 @@ const UserMemoMap = ({ creator, className }: Props) => {
                 <div className="flex flex-col gap-2.5 p-3">
                   <div className="flex items-start justify-between gap-3">
                     <div className="space-y-1">
-                      <span className="inline-flex rounded-full border border-border/70 bg-muted/50 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
-                        Memo
-                      </span>
+                      <div className="flex flex-wrap items-center gap-1">
+                        <span className="inline-flex rounded-full border border-border/70 bg-muted/50 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+                          Memo
+                        </span>
+                        <MemoSpaceBadge spaceName={memo.space} />
+                      </div>
                       <span className="block text-[11px] font-medium text-muted-foreground">
                         {memo.createTime &&
                           timestampDate(memo.createTime).toLocaleDateString(undefined, {
@@ -144,6 +151,7 @@ const UserMemoMap = ({ creator, className }: Props) => {
                     </div>
                     <Link
                       to={`/memos/${memo.name.split("/").pop()}`}
+                      state={createMemoNavigationState(parentPage, "all")}
                       className="inline-flex items-center gap-1 rounded-full border border-border bg-background px-2.5 py-1 text-[11px] font-medium text-foreground transition-all hover:border-primary/40 hover:text-primary"
                     >
                       Open

@@ -1,13 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 import VisibilitySelector from "@/components/MemoEditor/Toolbar/VisibilitySelector";
 import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
-
-const space = vi.hoisted(() => ({ selectedSpaceName: undefined as string | undefined }));
-
-vi.mock("@/contexts/SpaceContext", () => ({
-  useSpaceContext: () => ({ selectedSpaceName: space.selectedSpaceName }),
-}));
 
 vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
 
@@ -19,19 +13,15 @@ beforeAll(() => {
   Element.prototype.releasePointerCapture = vi.fn();
 });
 
-const openMenu = async (value: Visibility, onChange = vi.fn()) => {
-  render(<VisibilitySelector value={value} onChange={onChange} />);
+const openMenu = async (value: Visibility, onChange = vi.fn(), space?: string) => {
+  render(<VisibilitySelector value={value} space={space} onChange={onChange} />);
   fireEvent.click(screen.getByRole("button"));
   await screen.findByRole("menu");
   return onChange;
 };
 
 describe("VisibilitySelector", () => {
-  beforeEach(() => {
-    space.selectedSpaceName = undefined;
-  });
-
-  it("omits the Space audience outside a Space", async () => {
+  it("omits the Space audience when the edited memo has no Space placement", async () => {
     await openMenu(Visibility.PRIVATE);
 
     expect(screen.getAllByRole("menuitem").map((item) => item.textContent)).toEqual([
@@ -41,21 +31,20 @@ describe("VisibilitySelector", () => {
     ]);
   });
 
-  it("offers the Space audience with its own description while a Space is selected", async () => {
-    space.selectedSpaceName = "spaces/product";
-    await openMenu(Visibility.PRIVATE);
+  it("offers the Space audience with its own description when the edited memo belongs to a Space", async () => {
+    await openMenu(Visibility.PRIVATE, vi.fn(), "spaces/product");
 
     const spaceItem = screen.getByRole("menuitem", { name: /memo\.visibility\.space/ });
     expect(spaceItem).toHaveTextContent("memo.visibility.space-description");
   });
 
-  it("names a Space memo's audience on the trigger even outside its Space", () => {
+  it("names the current Space audience even when placement is unavailable", () => {
     render(<VisibilitySelector value={Visibility.SPACE} onChange={vi.fn()} />);
 
     expect(screen.getByRole("button")).toHaveTextContent("memo.visibility.space");
   });
 
-  it("keeps a Space memo's own audience selectable outside its Space", async () => {
+  it("keeps the current Space audience selectable when placement is unavailable", async () => {
     await openMenu(Visibility.SPACE);
 
     expect(screen.getByRole("menuitem", { name: /memo\.visibility\.space/ })).toBeInTheDocument();

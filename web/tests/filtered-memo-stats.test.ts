@@ -145,7 +145,7 @@ describe("useFilteredMemoStats", () => {
     });
     const filter = 'space == "spaces/product"';
 
-    renderHook(() => useFilteredMemoStats({ context: "explore", filter, includeSpaceVisibility: true }), { wrapper });
+    renderHook(() => useFilteredMemoStats({ context: "explore", filter }), { wrapper });
 
     expect(useAllUserStats).toHaveBeenCalledWith(
       {
@@ -156,7 +156,26 @@ describe("useFilteredMemoStats", () => {
     );
   });
 
-  it("uses the no-Space filter for Memos statistics", () => {
+  it("includes authorized Space memos in All Explore statistics", () => {
+    mockUseView.mockReturnValue({
+      timeBasis: "create_time",
+      orderByTimeAsc: false,
+      setOrderByTimeAsc: vi.fn(),
+      setTimeBasis: vi.fn(),
+    });
+
+    renderHook(() => useFilteredMemoStats({ context: "explore" }), { wrapper });
+
+    expect(useAllUserStats).toHaveBeenCalledWith(
+      {
+        state: State.NORMAL,
+        filter: '(visibility in ["PUBLIC", "PROTECTED", "SPACE"])',
+      },
+      { enabled: true },
+    );
+  });
+
+  it("supports an explicit unassigned filter", () => {
     mockUseView.mockReturnValue({
       timeBasis: "create_time",
       orderByTimeAsc: false,

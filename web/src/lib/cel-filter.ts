@@ -3,4 +3,7 @@ export const combineCELFilters = (...filters: Array<string | undefined>): string
   return conditions.length === 0 ? undefined : conditions.map((filter) => `(${filter})`).join(" && ");
 };
 
-export const buildSpaceFilter = (spaceName?: string): string => (spaceName ? `space == ${JSON.stringify(spaceName)}` : "space == null");
+export type CollectionScope = { kind: "all" } | { kind: "space"; name: string };
+
+export const buildCollectionScopeFilter = (scope: CollectionScope): string | undefined =>
+  scope.kind === "space" ? `space == ${JSON.stringify(scope.name)}` : undefined;

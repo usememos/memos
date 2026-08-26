@@ -31,3 +31,7 @@ _Avoid_: Pending membership, direct add
 **Space membership**:
 An accepted relationship between an active Memos user and a Space, carrying either the `ADMIN` or `USER` Space role.
 _Avoid_: Invitation, application role
+
+**Memo collection scope**:
+The Space-placement dimension applied to memo and derived-resource collections. It is either `all`, which adds no Space predicate, or one exact Space. An unassigned Memo remains part of `all`; unassigned is a placement, not a collection scope.
+_Avoid_: Unassigned scope, no-Space collection

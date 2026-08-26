@@ -1,6 +1,7 @@
 import { LinkIcon, MilestoneIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import MetadataSection from "@/components/MemoMetadata/MetadataSection";
+import type { MemoOriginScope } from "@/components/MemoView/navigation";
 import { useNearViewport } from "@/hooks/useNearViewport";
 import type { MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
@@ -12,10 +13,11 @@ interface RelationListViewProps {
   relations: MemoRelation[];
   currentMemoName?: string;
   parentPage?: string;
+  parentScope?: MemoOriginScope;
   className?: string;
 }
 
-function RelationListView({ relations, currentMemoName, parentPage, className }: RelationListViewProps) {
+function RelationListView({ relations, currentMemoName, parentPage, parentScope, className }: RelationListViewProps) {
   const t = useTranslate();
   const [activeTab, setActiveTab] = useState<"referencing" | "referenced">("referencing");
   const { ref: viewportRef, isNearViewport } = useNearViewport<HTMLDivElement>();
@@ -79,7 +81,12 @@ function RelationListView({ relations, currentMemoName, parentPage, className }:
           return null;
         }
         return (
-          <RelationCard key={getRelationMemoName(relation, direction)} memo={resolvedMemos[memo.name] ?? memo} parentPage={parentPage} />
+          <RelationCard
+            key={getRelationMemoName(relation, direction)}
+            memo={resolvedMemos[memo.name] ?? memo}
+            parentPage={parentPage}
+            parentScope={parentScope}
+          />
         );
       })}
     </MetadataSection>

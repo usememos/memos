@@ -1,5 +1,6 @@
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
+import type { MemoOriginScope } from "@/components/MemoView/navigation";
 import type { MemoScope } from "@/lib/memo-views";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 
@@ -9,6 +10,7 @@ export type InboxFilter = "all" | "unread" | "archived";
 export interface MemoDetailSidebarDescriptor {
   memo: Memo;
   from?: string;
+  fromScope?: MemoOriginScope;
   readonly?: boolean;
   onShareImageOpen?: () => void;
 }

@@ -1,7 +1,6 @@
 import { CheckIcon, ChevronDownIcon } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import VisibilityIcon from "@/components/VisibilityIcon";
-import { useSpaceContext } from "@/contexts/SpaceContext";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { getAssignableVisibilityOptions, getVisibilityOption } from "@/utils/memo";
@@ -11,9 +10,8 @@ const VisibilitySelector = (props: VisibilitySelectorProps) => {
   const { value, onChange } = props;
   const compact = props.size === "compact";
   const t = useTranslate();
-  const { selectedSpaceName } = useSpaceContext();
 
-  const visibilityOptions = getAssignableVisibilityOptions({ spaceSelected: Boolean(selectedSpaceName), current: value });
+  const visibilityOptions = getAssignableVisibilityOptions({ hasSpacePlacement: Boolean(props.space), current: value });
   // Resolved from the full catalog, so the trigger names the memo's audience even
   // when that audience is not currently on offer.
   const currentOption = getVisibilityOption(value);

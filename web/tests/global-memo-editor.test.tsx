@@ -14,6 +14,12 @@ const mocks = vi.hoisted(() => ({
   setMobileOpen: vi.fn(),
   setQuickFindOpen: vi.fn(),
   selectedSpaceName: undefined as string | undefined,
+  pathname: "/",
+}));
+
+vi.mock("react-router-dom", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("react-router-dom")>()),
+  useLocation: () => ({ pathname: mocks.pathname }),
 }));
 
 vi.mock("@/components/MemoEditor/loader", () => ({
@@ -117,6 +123,7 @@ describe("GlobalMemoEditorProvider", () => {
     mocks.setMobileOpen.mockClear();
     mocks.setQuickFindOpen.mockClear();
     mocks.selectedSpaceName = undefined;
+    mocks.pathname = "/";
   });
 
   it("opens a modal focus-mode editor, closes the sidebar surfaces, and restores focus after Escape", async () => {
@@ -274,6 +281,39 @@ describe("GlobalMemoEditorProvider", () => {
     expect(mocks.editorProps).toMatchObject({
       cacheKey: "global-memo-editor:spaces/product",
       defaultSpace: "spaces/product",
+    });
+  });
+
+  it.each(["/explore", "/archived", "/attachments"])("inherits the remembered Space when composing from %s", async (pathname) => {
+    mocks.pathname = pathname;
+    mocks.selectedSpaceName = "spaces/product";
+    await openViaTrigger();
+
+    expect(mocks.editorProps).toMatchObject({
+      cacheKey: "global-memo-editor:spaces/product",
+      defaultSpace: "spaces/product",
+    });
+  });
+
+  it.each([
+    "/u/steven",
+    "/inbox",
+    "/setting",
+    "/views",
+    "/about",
+    "/memos/abc",
+    "/memos/shares/token",
+    "/403",
+    "/404",
+    "/unknown",
+  ])("creates an unassigned memo from %s even when a Space is remembered", async (pathname) => {
+    mocks.pathname = pathname;
+    mocks.selectedSpaceName = "spaces/product";
+    await openViaTrigger();
+
+    expect(mocks.editorProps).toMatchObject({
+      cacheKey: "global-memo-editor",
+      defaultSpace: undefined,
     });
   });
 });

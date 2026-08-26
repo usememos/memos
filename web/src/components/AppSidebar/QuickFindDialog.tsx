@@ -6,13 +6,12 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/compone
 import { Input } from "@/components/ui/input";
 import { useAppSidebar } from "@/contexts/AppSidebarContext";
 import { type MemoFilter, replaceFiltersByFactor, stringifyFilters, useMemoFilterContext } from "@/contexts/MemoFilterContext";
+import { useSpaceContext } from "@/contexts/SpaceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoViews } from "@/hooks/useUserQueries";
 import { BUILTIN_TASKS_VIEW_ID, getMemoViewId, isMemoScopeRoute } from "@/lib/memo-views";
-import { ROUTES } from "@/router/routes";
 import { useTranslate } from "@/utils/i18n";
-
-export const isQuickFindCollectionRoute = (pathname: string) => isMemoScopeRoute(pathname) || pathname.startsWith("/u/");
+import { getRouteActionPolicy, getSidebarRouteKind } from "./routes";
 
 export const buildQuickFindFilters = (query: string, currentFilters: MemoFilter[], preserveCurrentScope: boolean): MemoFilter[] => {
   const words = Array.from(new Set(query.trim().split(/\s+/).filter(Boolean)));
@@ -20,10 +19,32 @@ export const buildQuickFindFilters = (query: string, currentFilters: MemoFilter[
   return preserveCurrentScope ? replaceFiltersByFactor(currentFilters, "contentSearch", contentFilters) : contentFilters;
 };
 
+export interface QuickFindSubmission {
+  filters: MemoFilter[];
+  destination?: string;
+  switchToAll: boolean;
+}
+
+export const resolveQuickFindSubmission = (pathname: string, query: string, currentFilters: MemoFilter[]): QuickFindSubmission => {
+  const routePolicy = getRouteActionPolicy(pathname);
+  const filters = buildQuickFindFilters(query, currentFilters, routePolicy.searchScope !== "all");
+  const filterQuery = stringifyFilters(filters);
+  return {
+    filters,
+    destination: routePolicy.searchDestination
+      ? filterQuery
+        ? `${routePolicy.searchDestination}?filter=${filterQuery}`
+        : routePolicy.searchDestination
+      : undefined,
+    switchToAll: routePolicy.searchScope === "all",
+  };
+};
+
 const getScopeLabel = (pathname: string, t: ReturnType<typeof useTranslate>) => {
-  if (pathname === ROUTES.ARCHIVED) return t("common.archived");
-  if (pathname === ROUTES.EXPLORE) return t("common.explore");
-  if (pathname.startsWith("/u/")) return t("common.profile");
+  const routeKind = getSidebarRouteKind(pathname);
+  if (routeKind === "archived") return t("common.archived");
+  if (routeKind === "explore") return t("common.explore");
+  if (routeKind === "profile") return t("common.profile");
   return t("common.memos");
 };
 
@@ -34,13 +55,18 @@ const QuickFindDialog = () => {
   const currentUser = useCurrentUser();
   const { data: memoViews = [] } = useMemoViews(currentUser?.name);
   const { filters, setFilters, setMemoView, memoView } = useMemoFilterContext();
+  const { clearSelectedSpace, selectedSpace, selectedSpaceName } = useSpaceContext();
   const { quickFindOpen, setQuickFindOpen } = useAppSidebar();
   const [query, setQuery] = useState("");
-  const collectionRoute = isQuickFindCollectionRoute(location.pathname);
   const viewApplies = isMemoScopeRoute(location.pathname);
   const selectedMemoView = viewApplies ? memoViews.find((item) => getMemoViewId(item.name) === memoView) : undefined;
-  const scopeLabel =
+  const lensLabel =
     viewApplies && memoView === BUILTIN_TASKS_VIEW_ID ? t("common.tasks") : selectedMemoView?.title || getScopeLabel(location.pathname, t);
+  const routePolicy = getRouteActionPolicy(location.pathname);
+  const scopeLabel =
+    routePolicy.searchScope === "remembered-collection" && selectedSpaceName
+      ? `${selectedSpace?.title || t("space.current")} · ${lensLabel}`
+      : lensLabel;
 
   useEffect(() => {
     if (!quickFindOpen) return;
@@ -53,15 +79,19 @@ const QuickFindDialog = () => {
   }, [filters, quickFindOpen]);
 
   const submitQuery = () => {
-    const nextFilters = buildQuickFindFilters(query, filters, collectionRoute);
+    const submission = resolveQuickFindSubmission(location.pathname, query, filters);
 
-    if (collectionRoute) {
-      setFilters(nextFilters);
-    } else {
-      const filterQuery = stringifyFilters(nextFilters);
-      setFilters(nextFilters);
+    if (submission.switchToAll) {
+      // This is an explicit cross-Space action, so switch the collection state
+      // to All without inserting an intermediate Home history entry.
+      clearSelectedSpace();
+    }
+
+    setFilters(submission.filters);
+
+    if (submission.destination) {
       setMemoView(undefined);
-      navigate(filterQuery ? `${ROUTES.HOME}?filter=${filterQuery}` : ROUTES.HOME);
+      navigate(submission.destination);
     }
 
     setQuickFindOpen(false);

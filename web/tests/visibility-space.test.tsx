@@ -1,4 +1,5 @@
 import { render } from "@testing-library/react";
+import { UserLockIcon } from "lucide-react";
 import { describe, expect, it } from "vitest";
 import VisibilityIcon from "@/components/VisibilityIcon";
 import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
@@ -7,6 +8,7 @@ import {
   convertVisibilityToString,
   DEFAULT_VISIBILITY_OPTIONS,
   getAssignableVisibilityOptions,
+  getVisibilityOption,
   VISIBILITY_OPTIONS,
 } from "@/utils/memo";
 
@@ -28,6 +30,10 @@ describe("Space visibility presentation", () => {
     expect(new Set(rendered).size).toBe(VISIBILITY_OPTIONS.length);
   });
 
+  it("uses user-lock for the Space audience", () => {
+    expect(getVisibilityOption(Visibility.SPACE)?.icon).toBe(UserLockIcon);
+  });
+
   it("renders nothing for an unspecified audience", () => {
     const { container } = render(<VisibilityIcon visibility={Visibility.VISIBILITY_UNSPECIFIED} />);
 
@@ -36,16 +42,16 @@ describe("Space visibility presentation", () => {
 });
 
 describe("assignable visibility options", () => {
-  it("withholds the Space audience outside a Space", () => {
-    expect(values(getAssignableVisibilityOptions({ spaceSelected: false }))).toEqual([
+  it("withholds the Space audience when the memo has no Space placement", () => {
+    expect(values(getAssignableVisibilityOptions({ hasSpacePlacement: false }))).toEqual([
       Visibility.PRIVATE,
       Visibility.PROTECTED,
       Visibility.PUBLIC,
     ]);
   });
 
-  it("offers the Space audience while a Space is selected", () => {
-    expect(values(getAssignableVisibilityOptions({ spaceSelected: true }))).toEqual([
+  it("offers the Space audience when the memo is placed in a Space", () => {
+    expect(values(getAssignableVisibilityOptions({ hasSpacePlacement: true }))).toEqual([
       Visibility.PRIVATE,
       Visibility.SPACE,
       Visibility.PROTECTED,
@@ -53,8 +59,8 @@ describe("assignable visibility options", () => {
     ]);
   });
 
-  it("keeps a memo's own Space audience on offer outside its Space, so picking cannot silently downgrade it", () => {
-    expect(values(getAssignableVisibilityOptions({ spaceSelected: false, current: Visibility.SPACE }))).toContain(Visibility.SPACE);
+  it("keeps a legacy Space audience on offer when placement is unavailable, so picking cannot silently downgrade it", () => {
+    expect(values(getAssignableVisibilityOptions({ hasSpacePlacement: false, current: Visibility.SPACE }))).toContain(Visibility.SPACE);
   });
 
   it("never offers the Space audience as a persistent default", () => {

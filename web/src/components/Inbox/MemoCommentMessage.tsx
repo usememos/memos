@@ -133,9 +133,10 @@ function MemoCommentMessage({ notification }: Props) {
             </p>
           </div>
 
-          <div
+          <button
+            type="button"
             onClick={handleNavigateToMemo}
-            className="p-2 sm:p-3 rounded-lg bg-gradient-to-br from-primary/[0.06] to-primary/[0.03] hover:from-primary/[0.1] hover:to-primary/[0.06] cursor-pointer border border-primary/30 hover:border-primary/50 transition-all duration-200 group/comment shadow-sm hover:shadow"
+            className="w-full p-2 text-left sm:p-3 rounded-lg bg-gradient-to-br from-primary/[0.06] to-primary/[0.03] hover:from-primary/[0.1] hover:to-primary/[0.06] cursor-pointer border border-primary/30 hover:border-primary/50 transition-all duration-200 group/comment shadow-sm hover:shadow"
           >
             <div className="flex items-start gap-2">
               <div className="w-5 h-5 flex items-center justify-center shrink-0">
@@ -148,7 +149,7 @@ function MemoCommentMessage({ notification }: Props) {
                 </p>
               </div>
             </div>
-          </div>
+          </button>
         </div>
       </div>
     </div>

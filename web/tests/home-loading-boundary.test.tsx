@@ -54,7 +54,7 @@ vi.mock("@/contexts/NewMemoContext", () => ({
 vi.mock("@/contexts/SpaceContext", () => ({
   useSpaceContext: () => ({
     selectedSpaceName: state.selectedSpaceName,
-    memoFilter: state.selectedSpaceName ? `space == "${state.selectedSpaceName}"` : "space == null",
+    memoFilter: state.selectedSpaceName ? `space == "${state.selectedSpaceName}"` : undefined,
   }),
 }));
 
@@ -78,7 +78,8 @@ describe("<Home>", () => {
 
     expect(screen.getByTestId("memo-editor")).toBeInTheDocument();
     expect(screen.getByTestId("memo-view")).toBeInTheDocument();
-    expect(state.listProps).toMatchObject({ contextFilter: "space == null" });
+    expect(state.listProps).toMatchObject({ contextFilter: undefined });
+    expect(state.editorProps).toMatchObject({ cacheKey: "home-memo-editor", defaultSpace: undefined });
   });
 
   it("filters the feed and sets new memo placement to the selected Space", () => {

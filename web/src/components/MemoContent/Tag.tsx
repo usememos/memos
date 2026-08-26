@@ -2,6 +2,7 @@ import type { Element } from "hast";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { type MemoFilter, stringifyFilters, useMemoFilterContext } from "@/contexts/MemoFilterContext";
+import { useSpaceContext } from "@/contexts/SpaceContext";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { colorToHex } from "@/lib/color";
 import { tagStyles } from "@/lib/markdownStyles";
@@ -9,6 +10,7 @@ import { findTagMetadata } from "@/lib/tag";
 import { cn } from "@/lib/utils";
 import { Routes } from "@/router";
 import { useMemoViewContext } from "../MemoView/MemoViewContext";
+import { isMemoCollectionOrigin, isMemoResourcePath, withMemoFilter } from "../MemoView/navigation";
 
 interface TagProps extends React.HTMLAttributes<HTMLSpanElement> {
   node?: Element; // AST node from react-markdown
@@ -17,9 +19,10 @@ interface TagProps extends React.HTMLAttributes<HTMLSpanElement> {
 }
 
 export const Tag: React.FC<TagProps> = ({ "data-tag": dataTag, children, className, style, node: _node, ...props }) => {
-  const { parentPage } = useMemoViewContext();
+  const { parentPage, parentScope } = useMemoViewContext();
   const location = useLocation();
   const navigateTo = useNavigateTo();
+  const { clearSelectedSpace } = useSpaceContext();
   const { getFiltersByFactor, removeFilter, addFilter } = useMemoFilterContext();
   const { userTagsSetting } = useAuth();
 
@@ -43,12 +46,11 @@ export const Tag: React.FC<TagProps> = ({ "data-tag": dataTag, children, classNa
     e.stopPropagation();
 
     // If the tag is clicked in a memo detail page, we should navigate to the memo list page.
-    if (location.pathname.startsWith("/m")) {
-      const pathname = parentPage || Routes.HOME;
-      const searchParams = new URLSearchParams();
-
-      searchParams.set("filter", stringifyFilters([{ factor: "tagSearch", value: tag }]));
-      navigateTo(`${pathname}?${searchParams.toString()}`);
+    if (isMemoResourcePath(location.pathname)) {
+      if (parentScope === "all" && isMemoCollectionOrigin(parentPage)) {
+        clearSelectedSpace();
+      }
+      navigateTo(withMemoFilter(parentPage || Routes.HOME, stringifyFilters([{ factor: "tagSearch", value: tag }])));
       return;
     }
 

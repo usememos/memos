@@ -41,7 +41,7 @@ const Home = () => {
       <NewMemoProvider>
         <PagedMemoList
           renderer={(memo: Memo, { compact }) => (
-            <MemoView key={getMemoKey(memo)} memo={memo} showVisibility showPinned compact={compact} />
+            <MemoView key={getMemoKey(memo)} memo={memo} showVisibility showPinned showSpace={!selectedSpaceName} compact={compact} />
           )}
           listSort={listSort}
           orderBy={orderBy}

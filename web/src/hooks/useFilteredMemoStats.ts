@@ -24,7 +24,6 @@ export interface UseFilteredMemoStatsOptions {
   context?: MemoStatsContext;
   enabled?: boolean;
   filter?: string;
-  includeSpaceVisibility?: boolean;
 }
 
 const toDateString = (date: Date) => dayjs(date).format("YYYY-MM-DD");
@@ -41,7 +40,7 @@ const timestampsForBasis = (stats: UserStats, basis: MemoTimeBasis) => {
 };
 
 export const useFilteredMemoStats = (options: UseFilteredMemoStatsOptions = {}): FilteredMemoStats => {
-  const { userName, context, enabled = true, filter, includeSpaceVisibility = false } = options;
+  const { userName, context, enabled = true, filter } = options;
   const currentUser = useCurrentUser();
   const { timeBasis } = useView();
 
@@ -50,12 +49,7 @@ export const useFilteredMemoStats = (options: UseFilteredMemoStatsOptions = {}):
   // explore/archived: fetch backend grouped stats and aggregate them locally.
   // ListAllUserStats AND's the request filter with the server's auth filter, so
   // private memos are not included unless explicitly visible to the current user.
-  const exploreVisibilityFilter =
-    currentUser != null
-      ? includeSpaceVisibility
-        ? 'visibility in ["PUBLIC", "PROTECTED", "SPACE"]'
-        : 'visibility in ["PUBLIC", "PROTECTED"]'
-      : 'visibility in ["PUBLIC"]';
+  const exploreVisibilityFilter = currentUser != null ? 'visibility in ["PUBLIC", "PROTECTED", "SPACE"]' : 'visibility in ["PUBLIC"]';
   const allUserStatsRequest =
     context === "explore"
       ? { state: State.NORMAL, filter: combineCELFilters(filter, exploreVisibilityFilter) }

@@ -7,10 +7,15 @@ const FOOTNOTE_MARKDOWN = "A statement with a note.[^1]\n\n[^1]: The footnote bo
 
 const LocationProbe = () => {
   const location = useLocation();
-  return <output data-testid="location">{`${location.pathname}${location.hash}`}</output>;
+  return (
+    <>
+      <output data-testid="location">{`${location.pathname}${location.hash}`}</output>
+      <output data-testid="origin">{typeof location.state?.from === "string" ? location.state.from : ""}</output>
+    </>
+  );
 };
 
-const renderFootnote = (compact = false) =>
+const renderFootnote = (compact = false, parentPage?: string) =>
   render(
     <MemoryRouter>
       <div data-memo-content>
@@ -18,6 +23,8 @@ const renderFootnote = (compact = false) =>
           content={FOOTNOTE_MARKDOWN}
           resolvedMentionUsernames={new Set()}
           memoName="memos/abc123"
+          parentPage={parentPage}
+          parentScope={parentPage ? "preserve" : undefined}
           compact={compact}
         />
       </div>
@@ -62,11 +69,12 @@ describe("memo footnotes", () => {
   });
 
   it("navigates compact cards to the memo detail footnote", () => {
-    const { container } = renderFootnote(true);
+    const { container } = renderFootnote(true, "/archived?filter=tagSearch%3Awork");
     const reference = container.querySelector<HTMLAnchorElement>("a[data-footnote-ref]");
 
     fireEvent.click(reference!);
 
     expect(screen.getByTestId("location")).toHaveTextContent("/memos/abc123#user-content-fn-1");
+    expect(screen.getByTestId("origin")).toHaveTextContent("/archived?filter=tagSearch%3Awork");
   });
 });

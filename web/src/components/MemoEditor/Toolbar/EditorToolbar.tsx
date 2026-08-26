@@ -13,6 +13,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
   onSave,
   onCancel,
   memoName,
+  space,
   onAudioRecorderClick,
   viewToggles,
   onInsertImages,
@@ -56,7 +57,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
           viewToggles={viewToggles}
           onInsertImages={onInsertImages}
         />
-        <VisibilitySelector value={visibility} onChange={handleVisibilityChange} />
+        <VisibilitySelector value={visibility} space={space} onChange={handleVisibilityChange} />
       </div>
 
       <div className="flex flex-row justify-end items-center gap-2">

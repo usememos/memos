@@ -1,5 +1,7 @@
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import { type ComponentType, createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
+import { getRouteActionPolicy } from "@/components/AppSidebar/routes";
 import { loadMemoEditor } from "@/components/MemoEditor/loader";
 import type { MemoEditorProps } from "@/components/MemoEditor/types";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
@@ -36,10 +38,13 @@ const findVisibleFocusTarget = (selector: string): HTMLElement | null =>
 
 export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) {
   const t = useTranslate();
+  const location = useLocation();
   const currentUserName = useCurrentUser()?.name;
   const { selectedSpaceName } = useSpaceContext();
   const { isUserSettingsInitialized } = useAuth();
   const { setMobileOpen, setQuickFindOpen } = useAppSidebar();
+  const routePolicy = getRouteActionPolicy(location.pathname);
+  const composeSpace = routePolicy.composePlacement === "remembered-space" ? selectedSpaceName : undefined;
   // One snapshot taken when the composer opens: keyed by the user who opened it, so
   // signing out closes the composer in the same render and a different user signing
   // in cannot resurrect it, and pinned to the Space that was selected at that moment.
@@ -83,10 +88,10 @@ export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) 
       .then(({ default: MemoEditor }) => {
         if (openRequestVersionRef.current !== requestVersion) return;
         setEditorComponent(() => MemoEditor);
-        setOpened({ user: currentUserName, space: selectedSpaceName });
+        setOpened({ user: currentUserName, space: composeSpace });
       })
       .catch(() => undefined);
-  }, [canOpen, currentUserName, selectedSpaceName, setMobileOpen, setQuickFindOpen]);
+  }, [canOpen, composeSpace, currentUserName, setMobileOpen, setQuickFindOpen]);
 
   useEffect(() => {
     // RootLayout remains mounted when a public instance moves from Home to

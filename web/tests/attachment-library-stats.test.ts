@@ -76,7 +76,21 @@ describe("buildAttachmentLibraryStats", () => {
     expect(clients.listAttachments.mock.calls.map(([request]) => request.filter)).toEqual([filter, filter]);
   });
 
-  it("combines the current context with the unused attachment filter", async () => {
+  it("uses only the unused predicate in the All collection", async () => {
+    clients.listAttachments.mockResolvedValue({ attachments: [], nextPageToken: "" });
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const wrapper = ({ children }: PropsWithChildren) => createElement(QueryClientProvider, { client: queryClient }, children);
+    const { result } = renderHook(() => useUnusedAttachmentLibrary("en", undefined), { wrapper });
+
+    await waitFor(() => expect(result.current.isComplete).toBe(true));
+    expect(clients.listAttachments).toHaveBeenCalledWith(
+      expect.objectContaining({
+        filter: "(memo_id == null)",
+      }),
+    );
+  });
+
+  it("combines an explicit unassigned filter with the unused attachment predicate", async () => {
     clients.listAttachments.mockResolvedValue({ attachments: [], nextPageToken: "" });
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     const wrapper = ({ children }: PropsWithChildren) => createElement(QueryClientProvider, { client: queryClient }, children);

@@ -11,12 +11,10 @@ const Explore = () => {
   const { memoFilter: contextFilter, selectedSpaceName } = useSpaceContext();
 
   // Determine visibility filter based on authentication status
-  // - Logged-in users: Can see PUBLIC and PROTECTED memos, plus SPACE memos while a Space is selected
+  // - Logged-in users: Can see every audience the backend authorizes, including SPACE memos
   // - Visitors: Can only see PUBLIC memos
   // Note: The backend is responsible for filtering stats based on visibility permissions.
-  const visibilities = currentUser
-    ? [Visibility.PUBLIC, Visibility.PROTECTED, ...(selectedSpaceName ? [Visibility.SPACE] : [])]
-    : [Visibility.PUBLIC];
+  const visibilities = currentUser ? [Visibility.PUBLIC, Visibility.PROTECTED, Visibility.SPACE] : [Visibility.PUBLIC];
 
   const memoFilter = useMemoFilters({
     includeMemoViews: true,
@@ -32,7 +30,9 @@ const Explore = () => {
 
   return (
     <PagedMemoList
-      renderer={(memo: Memo, { compact }) => <MemoView key={getMemoKey(memo)} memo={memo} showCreator showVisibility compact={compact} />}
+      renderer={(memo: Memo, { compact }) => (
+        <MemoView key={getMemoKey(memo)} memo={memo} showCreator showVisibility showSpace={!selectedSpaceName} compact={compact} />
+      )}
       listSort={listSort}
       orderBy={orderBy}
       filter={memoFilter}

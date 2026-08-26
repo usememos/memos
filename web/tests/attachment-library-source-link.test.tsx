@@ -1,12 +1,17 @@
 import { create } from "@bufbuild/protobuf";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, useLocation } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
 import AttachmentMediaGrid from "@/components/AttachmentLibrary/AttachmentMediaGrid";
 import type { AttachmentLibraryMonthGroup } from "@/hooks/useAttachmentLibrary";
 import { AttachmentSchema, MediaMetadataSchema, VideoMetadataSchema } from "@/types/proto/api/v1/attachment_service_pb";
 
 vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
+
+const LocationStateProbe = () => {
+  const location = useLocation();
+  return <output data-testid="location-state">{JSON.stringify(location.state)}</output>;
+};
 
 describe("<AttachmentMediaGrid>", () => {
   it("links a media attachment to its source memo without replacing the direct file action", () => {
@@ -47,8 +52,9 @@ describe("<AttachmentMediaGrid>", () => {
     const onPreview = vi.fn();
 
     render(
-      <MemoryRouter>
+      <MemoryRouter initialEntries={["/attachments"]}>
         <AttachmentMediaGrid groups={groups} onPreview={onPreview} />
+        <LocationStateProbe />
       </MemoryRouter>,
     );
 
@@ -61,6 +67,7 @@ describe("<AttachmentMediaGrid>", () => {
 
     fireEvent.click(memoLink);
     expect(onPreview).not.toHaveBeenCalled();
+    expect(screen.getByTestId("location-state")).toHaveTextContent('{"from":"/","fromScope":"preserve"}');
   });
 
   it("keeps video duration inside the existing play badge", () => {
