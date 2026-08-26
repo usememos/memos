@@ -444,15 +444,20 @@ func scanMySQLSpaceWithSummary(row mysqlRowScanner, space *store.Space, withSumm
 	return row.Scan(&space.ID, &space.UID, &space.Title, &space.Description, &space.CurrentUserRole, &space.MemberCount)
 }
 
+func scanMySQLSpaceSummary(row mysqlRowScanner, space *store.Space) error {
+	return errors.Wrap(row.Scan(&space.CurrentUserRole, &space.MemberCount), "failed to populate MySQL space summary")
+}
+
 func populateMySQLSpaceSummary(ctx context.Context, tx *sql.Tx, space *store.Space, userID int32) error {
-	return tx.QueryRowContext(ctx, `SELECT viewer_member.role, COUNT(active_member.user_id)
+	row := tx.QueryRowContext(ctx, `SELECT viewer_member.role, COUNT(active_member.user_id)
 		FROM space_member viewer_member
 		JOIN user viewer_user ON viewer_user.id = viewer_member.user_id
 		JOIN space_member active_member ON active_member.space_id = viewer_member.space_id AND active_member.status = 'ACTIVE' AND active_member.role IN ('ADMIN', 'USER')
 		JOIN user active_user ON active_user.id = active_member.user_id AND active_user.row_status = 'NORMAL'
 		WHERE viewer_member.space_id = ? AND viewer_member.user_id = ? AND viewer_member.status = 'ACTIVE'
 			AND viewer_member.role IN ('ADMIN', 'USER') AND viewer_user.row_status = 'NORMAL'
-		GROUP BY viewer_member.role`, space.ID, userID).Scan(&space.CurrentUserRole, &space.MemberCount)
+		GROUP BY viewer_member.role`, space.ID, userID)
+	return scanMySQLSpaceSummary(row, space)
 }
 
 func getMySQLSpace(ctx context.Context, tx *sql.Tx, id int32) (*store.Space, error) {

@@ -42,9 +42,11 @@ describe("CreateSpaceDialog", () => {
     fireEvent.change(screen.getByLabelText("common.description"), { target: { value: "  Plans  " } });
     fireEvent.click(screen.getByRole("button", { name: "common.create" }));
 
-    await waitFor(() => expect(mocks.mutateAsync).toHaveBeenCalledWith({ title: "Product", description: "Plans" }));
-    expect(mocks.onCreated).toHaveBeenCalledWith({ name: "spaces/product", title: "Product", description: "Plans" });
-    expect(mocks.onOpenChange).toHaveBeenCalledWith(false);
+    await waitFor(() => {
+      expect(mocks.onCreated).toHaveBeenCalledWith({ name: "spaces/product", title: "Product", description: "Plans" });
+      expect(mocks.onOpenChange).toHaveBeenCalledWith(false);
+    });
+    expect(mocks.mutateAsync).toHaveBeenCalledWith({ title: "Product", description: "Plans" });
   });
 
   it("can create without activating the new Space", async () => {
@@ -53,9 +55,35 @@ describe("CreateSpaceDialog", () => {
     fireEvent.change(screen.getByLabelText("common.name"), { target: { value: "Product" } });
     fireEvent.click(screen.getByRole("button", { name: "common.create" }));
 
-    await waitFor(() => expect(mocks.mutateAsync).toHaveBeenCalledOnce());
+    await waitFor(() => expect(mocks.onOpenChange).toHaveBeenCalledWith(false));
+    expect(mocks.mutateAsync).toHaveBeenCalledOnce();
     expect(mocks.onCreated).not.toHaveBeenCalled();
-    expect(mocks.onOpenChange).toHaveBeenCalledWith(false);
+  });
+
+  it("waits for creation to finish before closing and reporting the Space", async () => {
+    let resolveCreate!: (space: { name: string; title: string; description: string }) => void;
+    mocks.mutateAsync.mockReturnValue(
+      new Promise((resolve) => {
+        resolveCreate = resolve;
+      }),
+    );
+    render(<CreateSpaceDialog open onOpenChange={mocks.onOpenChange} onCreated={mocks.onCreated} />);
+
+    fireEvent.change(screen.getByLabelText("common.name"), { target: { value: "Product" } });
+    fireEvent.click(screen.getByRole("button", { name: "common.create" }));
+
+    expect(mocks.mutateAsync).toHaveBeenCalledOnce();
+    expect(mocks.onOpenChange).not.toHaveBeenCalled();
+    expect(mocks.onCreated).not.toHaveBeenCalled();
+
+    await act(async () => {
+      resolveCreate({ name: "spaces/product", title: "Product", description: "" });
+    });
+
+    await waitFor(() => {
+      expect(mocks.onOpenChange).toHaveBeenCalledWith(false);
+      expect(mocks.onCreated).toHaveBeenCalledWith({ name: "spaces/product", title: "Product", description: "" });
+    });
   });
 
   it("prevents dismissal while creation is pending", async () => {

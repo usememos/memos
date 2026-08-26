@@ -128,15 +128,22 @@ func (d *DB) UpdateSpace(ctx context.Context, update *store.UpdateSpace, actorUs
 	return space, nil
 }
 
+type sqliteSpaceSummaryRowScanner interface{ Scan(...any) error }
+
+func scanSQLiteSpaceSummary(row sqliteSpaceSummaryRowScanner, space *store.Space) error {
+	return errors.Wrap(row.Scan(&space.CurrentUserRole, &space.MemberCount), "failed to populate SQLite space summary")
+}
+
 func populateSQLiteSpaceSummary(ctx context.Context, tx dbExecutor, space *store.Space, userID int32) error {
-	return tx.QueryRowContext(ctx, `SELECT viewer_member.role, COUNT(active_member.user_id)
+	row := tx.QueryRowContext(ctx, `SELECT viewer_member.role, COUNT(active_member.user_id)
 		FROM space_member viewer_member
 		JOIN user viewer_user ON viewer_user.id = viewer_member.user_id
 		JOIN space_member active_member ON active_member.space_id = viewer_member.space_id AND active_member.status = 'ACTIVE' AND active_member.role IN ('ADMIN', 'USER')
 		JOIN user active_user ON active_user.id = active_member.user_id AND active_user.row_status = 'NORMAL'
 		WHERE viewer_member.space_id = ? AND viewer_member.user_id = ? AND viewer_member.status = 'ACTIVE'
 			AND viewer_member.role IN ('ADMIN', 'USER') AND viewer_user.row_status = 'NORMAL'
-		GROUP BY viewer_member.role`, space.ID, userID).Scan(&space.CurrentUserRole, &space.MemberCount)
+		GROUP BY viewer_member.role`, space.ID, userID)
+	return scanSQLiteSpaceSummary(row, space)
 }
 
 func (d *DB) CreateSpaceInvitation(ctx context.Context, create *store.SpaceInvitation, actorUserID int32) (*store.SpaceInvitation, error) {
