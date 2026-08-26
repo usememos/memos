@@ -2,6 +2,7 @@ package v1
 
 import (
 	"context"
+	stderrors "errors"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -19,6 +20,7 @@ import (
 	"github.com/usememos/memos/store/test"
 )
 
+// TestMemoMarkdownRouteServesExactSource verifies Markdown responses return the stored source unchanged.
 func TestMemoMarkdownRouteServesExactSource(t *testing.T) {
 	ctx := context.Background()
 	service := newMemoMarkdownTestService(t)
@@ -52,6 +54,7 @@ func TestMemoMarkdownRouteServesExactSource(t *testing.T) {
 	}
 }
 
+// TestMemoMarkdownRouteServesEmptyContent verifies empty memos are valid Markdown responses.
 func TestMemoMarkdownRouteServesEmptyContent(t *testing.T) {
 	ctx := context.Background()
 	service := newMemoMarkdownTestService(t)
@@ -63,6 +66,7 @@ func TestMemoMarkdownRouteServesEmptyContent(t *testing.T) {
 	require.Empty(t, response.Body.String())
 }
 
+// TestMemoMarkdownRoutePreservesFrontendFallback verifies browser-style requests still serve the SPA.
 func TestMemoMarkdownRoutePreservesFrontendFallback(t *testing.T) {
 	ctx := context.Background()
 	service := newMemoMarkdownTestService(t)
@@ -81,6 +85,7 @@ func TestMemoMarkdownRoutePreservesFrontendFallback(t *testing.T) {
 	}
 }
 
+// TestMemoMarkdownRouteSelectedRequestsBypassFrontendFallback verifies selected Markdown requests never leak into the SPA.
 func TestMemoMarkdownRouteSelectedRequestsBypassFrontendFallback(t *testing.T) {
 	ctx := context.Background()
 	service := newMemoMarkdownTestService(t)
@@ -121,6 +126,7 @@ func TestMemoMarkdownRouteSelectedRequestsBypassFrontendFallback(t *testing.T) {
 	}
 }
 
+// TestMemoMarkdownRouteAcceptQuality verifies Accept quality values control extensionless Markdown selection.
 func TestMemoMarkdownRouteAcceptQuality(t *testing.T) {
 	ctx := context.Background()
 	service := newMemoMarkdownTestService(t)
@@ -135,6 +141,9 @@ func TestMemoMarkdownRouteAcceptQuality(t *testing.T) {
 	}{
 		{name: "with parameters", accept: "text/html, text/markdown; charset=utf-8; q=0.7", wantStatus: http.StatusOK},
 		{name: "zero quality", accept: "text/markdown;q=0,*/*", wantStatus: http.StatusNotFound},
+		{name: "quality above one", accept: "text/markdown;q=2", wantStatus: http.StatusNotFound},
+		{name: "NaN quality", accept: "text/markdown;q=NaN", wantStatus: http.StatusNotFound},
+		{name: "infinite quality", accept: "text/markdown;q=+Inf", wantStatus: http.StatusNotFound},
 		{name: "wildcard only", accept: "*/*", wantStatus: http.StatusNotFound},
 		{name: "malformed range", accept: "text/markdown;q=bogus", wantStatus: http.StatusNotFound},
 		{name: "case insensitive", accept: "TEXT/MARKDOWN", wantStatus: http.StatusOK},
@@ -149,6 +158,7 @@ func TestMemoMarkdownRouteAcceptQuality(t *testing.T) {
 	}
 }
 
+// TestMemoMarkdownRoutePermissionParity verifies Markdown reads use the same memo visibility rules as API reads.
 func TestMemoMarkdownRoutePermissionParity(t *testing.T) {
 	ctx := context.Background()
 	service := newMemoMarkdownTestService(t)
@@ -210,11 +220,49 @@ func TestMemoMarkdownRoutePermissionParity(t *testing.T) {
 	require.Equal(t, "public source", privateInstanceOwnerResponse.Body.String())
 
 	require.NoError(t, setMemoMarkdownInstanceAccess(ctx, service, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC))
-	staleCookieResponse := performMemoMarkdownRequest(e, "/memos/"+memoUID(publicMemo)+".md", "", "", "memos.refresh-token=not-a-valid-token")
+	staleCookieResponse := performMemoMarkdownRequest(e, "/memos/"+memoUID(publicMemo)+".md", "", "", auth.RefreshTokenCookieName+"=not-a-valid-token")
 	require.Equal(t, http.StatusOK, staleCookieResponse.Code)
 	require.Equal(t, "public source", staleCookieResponse.Body.String())
 }
 
+// TestMemoMarkdownRouteAuthenticationFailures verifies bad credentials and auth outages get distinct statuses.
+func TestMemoMarkdownRouteAuthenticationFailures(t *testing.T) {
+	ctx := context.Background()
+	service := newMemoMarkdownTestService(t)
+	owner := createSpaceTestUser(ctx, t, service, "markdown-auth-owner", store.RoleUser)
+	memo := createMemoForMarkdownTest(userCtx(ctx, owner.ID), t, service, "markdown-auth", "protected source", v1pb.Visibility_PROTECTED)
+	e := newMemoMarkdownEcho(service)
+
+	badCredentialResponse := performMemoMarkdownRequest(e, "/memos/"+memoUID(memo)+".md", "", bearer(auth.PersonalAccessTokenPrefix+"missing"), "")
+	require.Equal(t, http.StatusUnauthorized, badCredentialResponse.Code)
+	require.NotContains(t, badCredentialResponse.Body.String(), "protected source")
+
+	storeErr := stderrors.New("user lookup unavailable")
+	failingStore := store.New(memoMarkdownFailingAuthDriver{Driver: service.Store.GetDriver(), listUsersErr: storeErr}, service.Profile)
+	failingService := NewAPIV1Service(service.Secret, service.Profile, failingStore)
+	failingEcho := newMemoMarkdownEcho(failingService)
+	token := generateMemoMarkdownAccessToken(t, service, owner)
+	storeFailureResponse := performMemoMarkdownRequest(failingEcho, "/memos/"+memoUID(memo)+".md", "", bearer(token), "")
+	require.Equal(t, http.StatusInternalServerError, storeFailureResponse.Code)
+	require.NotContains(t, storeFailureResponse.Body.String(), storeErr.Error())
+	require.NotContains(t, storeFailureResponse.Body.String(), "protected source")
+}
+
+// memoMarkdownFailingAuthDriver injects auth lookup failures while delegating other store operations.
+type memoMarkdownFailingAuthDriver struct {
+	store.Driver
+	listUsersErr error
+}
+
+// ListUsers returns the configured failure for authentication user lookups.
+func (d memoMarkdownFailingAuthDriver) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User, error) {
+	if d.listUsersErr != nil {
+		return nil, d.listUsersErr
+	}
+	return d.Driver.ListUsers(ctx, find)
+}
+
+// TestMemoMarkdownRouteIgnoresShareToken verifies share URLs do not authorize raw Markdown reads.
 func TestMemoMarkdownRouteIgnoresShareToken(t *testing.T) {
 	ctx := context.Background()
 	service := newMemoMarkdownTestService(t)
@@ -235,11 +283,13 @@ func TestMemoMarkdownRouteIgnoresShareToken(t *testing.T) {
 	}
 }
 
+// TestMemoMarkdownRouteUnknownMemoIsNotFound verifies missing Markdown URLs return a native 404.
 func TestMemoMarkdownRouteUnknownMemoIsNotFound(t *testing.T) {
 	response := performMemoMarkdownRequest(newMemoMarkdownEcho(newMemoMarkdownTestService(t)), "/memos/missing-memo.md", "", "", "")
 	require.Equal(t, http.StatusNotFound, response.Code)
 }
 
+// newMemoMarkdownTestService creates an API service backed by an isolated public test instance.
 func newMemoMarkdownTestService(t *testing.T) *APIV1Service {
 	t.Helper()
 	ctx := context.Background()
@@ -251,12 +301,14 @@ func newMemoMarkdownTestService(t *testing.T) *APIV1Service {
 	return service
 }
 
+// newMemoMarkdownEcho registers only the Markdown route for focused HTTP tests.
 func newMemoMarkdownEcho(service *APIV1Service) *echo.Echo {
 	e := echo.New()
 	service.RegisterMemoMarkdownRoutes(e)
 	return e
 }
 
+// performMemoMarkdownRequest sends a GET request with the headers used by Markdown route tests.
 func performMemoMarkdownRequest(e *echo.Echo, target, accept, authorization, cookie string) *httptest.ResponseRecorder {
 	req := httptest.NewRequest(http.MethodGet, target, nil)
 	if accept != "" {
@@ -273,6 +325,7 @@ func performMemoMarkdownRequest(e *echo.Echo, target, accept, authorization, coo
 	return response
 }
 
+// createMemoForMarkdownTest creates a memo through the public API service contract.
 func createMemoForMarkdownTest(creatorCtx context.Context, t *testing.T, service *APIV1Service, memoID, content string, visibility v1pb.Visibility, space ...*string) *v1pb.Memo {
 	t.Helper()
 	memo := &v1pb.Memo{Content: content, Visibility: visibility}
@@ -284,10 +337,12 @@ func createMemoForMarkdownTest(creatorCtx context.Context, t *testing.T, service
 	return created
 }
 
+// memoUID extracts the route UID from an API memo resource name.
 func memoUID(memo *v1pb.Memo) string {
 	return strings.TrimPrefix(memo.Name, "memos/")
 }
 
+// setMemoMarkdownInstanceAccess changes the test instance access mode through stored settings.
 func setMemoMarkdownInstanceAccess(ctx context.Context, service *APIV1Service, mode storepb.InstanceAccessMode) error {
 	_, err := service.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
 		Key: storepb.InstanceSettingKey_ACCESS,
@@ -298,6 +353,7 @@ func setMemoMarkdownInstanceAccess(ctx context.Context, service *APIV1Service, m
 	return err
 }
 
+// generateMemoMarkdownAccessToken creates a valid bearer credential for route authorization tests.
 func generateMemoMarkdownAccessToken(t *testing.T, service *APIV1Service, user *store.User) string {
 	t.Helper()
 	token, _, err := auth.GenerateAccessTokenV2(user.ID, user.Username, string(user.Role), string(user.RowStatus), []byte(service.Secret))
@@ -305,6 +361,7 @@ func generateMemoMarkdownAccessToken(t *testing.T, service *APIV1Service, user *
 	return token
 }
 
+// bearer formats an access token as an Authorization header value.
 func bearer(token string) string {
 	if token == "" {
 		return ""
@@ -312,6 +369,7 @@ func bearer(token string) string {
 	return "Bearer " + token
 }
 
+// mustStoreMemoID resolves a memo UID to its store ID or fails the test.
 func mustStoreMemoID(ctx context.Context, t *testing.T, service *APIV1Service, uid string) int32 {
 	t.Helper()
 	memo, err := service.Store.GetMemo(ctx, &store.FindMemo{UID: &uid})
@@ -320,6 +378,7 @@ func mustStoreMemoID(ctx context.Context, t *testing.T, service *APIV1Service, u
 	return memo.ID
 }
 
+// ptr returns a pointer for store update fields.
 func ptr[T any](value T) *T {
 	return &value
 }

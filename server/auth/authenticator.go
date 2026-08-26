@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"database/sql"
 	"log/slog"
 	"strings"
 	"time"
@@ -28,6 +29,36 @@ type Authenticator struct {
 	secret string
 }
 
+var errInvalidCredential = errors.New("invalid credential")
+
+type invalidCredentialError struct {
+	reason string
+	cause  error
+}
+
+func (e *invalidCredentialError) Error() string {
+	if e.cause == nil {
+		return e.reason
+	}
+	return e.reason + ": " + e.cause.Error()
+}
+
+func (e *invalidCredentialError) Unwrap() error {
+	return e.cause
+}
+
+func (*invalidCredentialError) Is(target error) bool {
+	return target == errInvalidCredential
+}
+
+func newInvalidCredentialError(reason string, cause error) error {
+	return &invalidCredentialError{reason: reason, cause: cause}
+}
+
+func isInvalidCredentialError(err error) bool {
+	return errors.Is(err, errInvalidCredential)
+}
+
 // NewAuthenticator creates a new Authenticator instance.
 func NewAuthenticator(store *store.Store, secret string) *Authenticator {
 	return &Authenticator{
@@ -41,12 +72,12 @@ func NewAuthenticator(store *store.Store, secret string) *Authenticator {
 func (a *Authenticator) AuthenticateByAccessTokenV2(accessToken string) (*UserClaims, error) {
 	claims, err := ParseAccessTokenV2(accessToken, []byte(a.secret))
 	if err != nil {
-		return nil, errors.Wrap(err, "invalid access token")
+		return nil, newInvalidCredentialError("invalid access token", err)
 	}
 
 	userID, err := util.ConvertStringToInt32(claims.Subject)
 	if err != nil {
-		return nil, errors.Wrap(err, "invalid user ID in token")
+		return nil, newInvalidCredentialError("invalid user ID in token", err)
 	}
 
 	return &UserClaims{
@@ -61,12 +92,12 @@ func (a *Authenticator) AuthenticateByAccessTokenV2(accessToken string) (*UserCl
 func (a *Authenticator) AuthenticateByRefreshToken(ctx context.Context, refreshToken string) (*store.User, string, error) {
 	claims, err := ParseRefreshToken(refreshToken, []byte(a.secret))
 	if err != nil {
-		return nil, "", errors.Wrap(err, "invalid refresh token")
+		return nil, "", newInvalidCredentialError("invalid refresh token", err)
 	}
 
 	userID, err := util.ConvertStringToInt32(claims.Subject)
 	if err != nil {
-		return nil, "", errors.Wrap(err, "invalid user ID in token")
+		return nil, "", newInvalidCredentialError("invalid user ID in token", err)
 	}
 
 	// Check token exists in database (revocation check)
@@ -75,12 +106,12 @@ func (a *Authenticator) AuthenticateByRefreshToken(ctx context.Context, refreshT
 		return nil, "", errors.Wrap(err, "failed to get refresh token")
 	}
 	if token == nil {
-		return nil, "", errors.New("refresh token revoked")
+		return nil, "", newInvalidCredentialError("refresh token revoked", nil)
 	}
 
 	// Check token not expired
 	if token.ExpiresAt != nil && token.ExpiresAt.AsTime().Before(time.Now()) {
-		return nil, "", errors.New("refresh token expired")
+		return nil, "", newInvalidCredentialError("refresh token expired", nil)
 	}
 
 	// Get user
@@ -89,10 +120,10 @@ func (a *Authenticator) AuthenticateByRefreshToken(ctx context.Context, refreshT
 		return nil, "", errors.Wrap(err, "failed to get user")
 	}
 	if user == nil {
-		return nil, "", errors.New("user not found")
+		return nil, "", newInvalidCredentialError("user not found", nil)
 	}
 	if user.RowStatus == store.Archived {
-		return nil, "", errors.New("user is archived")
+		return nil, "", newInvalidCredentialError("user is archived", nil)
 	}
 
 	return user, claims.TokenID, nil
@@ -101,23 +132,26 @@ func (a *Authenticator) AuthenticateByRefreshToken(ctx context.Context, refreshT
 // AuthenticateByPAT validates a Personal Access Token.
 func (a *Authenticator) AuthenticateByPAT(ctx context.Context, token string) (*store.User, *storepb.PersonalAccessTokensUserSetting_PersonalAccessToken, error) {
 	if !strings.HasPrefix(token, PersonalAccessTokenPrefix) {
-		return nil, nil, errors.New("invalid PAT format")
+		return nil, nil, newInvalidCredentialError("invalid PAT format", nil)
 	}
 
 	tokenHash := HashPersonalAccessToken(token)
 	result, err := a.store.GetUserByPATHash(ctx, tokenHash)
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "invalid PAT")
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil, newInvalidCredentialError("PAT not found", err)
+		}
+		return nil, nil, errors.Wrap(err, "failed to get PAT")
 	}
 
 	// Check expiry
 	if result.PAT.ExpiresAt != nil && result.PAT.ExpiresAt.AsTime().Before(time.Now()) {
-		return nil, nil, errors.New("PAT expired")
+		return nil, nil, newInvalidCredentialError("PAT expired", nil)
 	}
 
 	// Check user status
 	if result.User.RowStatus == store.Archived {
-		return nil, nil, errors.New("user is archived")
+		return nil, nil, newInvalidCredentialError("user is archived", nil)
 	}
 
 	return result.User, result.PAT, nil
@@ -169,7 +203,14 @@ func (a *Authenticator) resolveBearer(ctx context.Context, token string) (*beare
 	}
 
 	// Personal Access Token.
-	if user, pat, err := a.AuthenticateByPAT(ctx, token); err == nil && user != nil {
+	user, pat, err := a.AuthenticateByPAT(ctx, token)
+	if err != nil {
+		if isInvalidCredentialError(err) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	if user != nil {
 		a.recordPATUsage(user.ID, pat.TokenId)
 		return &bearerAuth{user: user, pat: pat}, nil
 	}
@@ -202,6 +243,9 @@ func (a *Authenticator) AuthenticateToUser(ctx context.Context, authHeader, cook
 	if cookieHeader != "" {
 		if refreshToken := ExtractRefreshTokenFromCookie(cookieHeader); refreshToken != "" {
 			user, _, err := a.AuthenticateByRefreshToken(ctx, refreshToken)
+			if isInvalidCredentialError(err) {
+				return nil, nil
+			}
 			return user, err
 		}
 	}

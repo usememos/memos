@@ -36,6 +36,7 @@ type Server struct {
 	sseHub     *apiv1.SSEHub
 }
 
+// NewServer wires the HTTP server, native routes, and API transports for one Memos instance.
 func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store) (*Server, error) {
 	s := &Server{
 		Store:   store,
