@@ -34,10 +34,13 @@ func (s *APIV1Service) serveMemoMarkdown(c *echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get memo").Wrap(err)
 	}
 	if memo == nil {
-		return echo.NewHTTPError(http.StatusNotFound, "memo not found")
+		return serveMemoMarkdownNotFound(c)
 	}
 
 	if err := s.checkMemoMarkdownAccess(ctx, c, memo); err != nil {
+		if echo.StatusCode(err) == http.StatusNotFound {
+			return serveMemoMarkdownNotFound(c)
+		}
 		return err
 	}
 
@@ -53,6 +56,11 @@ func requestedMemoMarkdown(uidParam, acceptHeader string) (string, bool) {
 		return uid, true
 	}
 	return uidParam, acceptsMemoMarkdown(acceptHeader)
+}
+
+func serveMemoMarkdownNotFound(c *echo.Context) error {
+	c.Response().Header().Add(echo.HeaderVary, echo.HeaderAccept)
+	return c.Blob(http.StatusNotFound, "text/plain; charset=utf-8", []byte("memo not found\n"))
 }
 
 func acceptsMemoMarkdown(acceptHeader string) bool {

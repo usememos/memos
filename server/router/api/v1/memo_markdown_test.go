@@ -81,6 +81,46 @@ func TestMemoMarkdownRoutePreservesFrontendFallback(t *testing.T) {
 	}
 }
 
+func TestMemoMarkdownRouteSelectedRequestsBypassFrontendFallback(t *testing.T) {
+	ctx := context.Background()
+	service := newMemoMarkdownTestService(t)
+	owner := createSpaceTestUser(ctx, t, service, "markdown-fallback-owner", store.RoleUser)
+	outsider := createSpaceTestUser(ctx, t, service, "markdown-fallback-outsider", store.RoleUser)
+	ownerCtx := userCtx(ctx, owner.ID)
+	outsiderToken := generateMemoMarkdownAccessToken(t, service, outsider)
+	publicMemo := createMemoForMarkdownTest(ownerCtx, t, service, "markdown-fallback-public", "markdown source", v1pb.Visibility_PUBLIC)
+	archivedMemo := createMemoForMarkdownTest(ownerCtx, t, service, "markdown-fallback-archived", "hidden source", v1pb.Visibility_PRIVATE)
+	archivedUID := memoUID(archivedMemo)
+	require.NoError(t, service.Store.UpdateMemo(ctx, &store.UpdateMemo{ID: mustStoreMemoID(ctx, t, service, archivedUID), RowStatus: ptr(store.Archived)}))
+
+	e := echo.New()
+	frontend.NewFrontendService(service.Profile, service.Store).Serve(ctx, e)
+	service.RegisterMemoMarkdownRoutes(e)
+
+	for _, tc := range []struct {
+		name          string
+		path          string
+		authorization string
+		wantStatus    int
+		wantBody      string
+	}{
+		{name: "found", path: "/memos/" + memoUID(publicMemo), wantStatus: http.StatusOK, wantBody: "markdown source"},
+		{name: "missing", path: "/memos/missing-memo", wantStatus: http.StatusNotFound},
+		{name: "policy hidden", path: "/memos/" + archivedUID, authorization: bearer(outsiderToken), wantStatus: http.StatusNotFound},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			response := performMemoMarkdownRequest(e, tc.path, "text/markdown", tc.authorization, "")
+			require.Equal(t, tc.wantStatus, response.Code)
+			require.NotContains(t, response.Body.String(), "<html")
+			require.NotContains(t, response.Body.String(), "hidden source")
+			require.Contains(t, response.Header().Values(echo.HeaderVary), echo.HeaderAccept)
+			if tc.wantBody != "" {
+				require.Equal(t, tc.wantBody, response.Body.String())
+			}
+		})
+	}
+}
+
 func TestMemoMarkdownRouteAcceptQuality(t *testing.T) {
 	ctx := context.Background()
 	service := newMemoMarkdownTestService(t)
