@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/labstack/echo/v5"
+	"github.com/pkg/errors"
 
 	"github.com/usememos/memos/server/access"
 	"github.com/usememos/memos/server/auth"
@@ -110,7 +111,7 @@ func (s *APIV1Service) checkMemoMarkdownAccess(ctx context.Context, c *echo.Cont
 
 	viewer, err := s.getMemoMarkdownCurrentUser(ctx, c)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get current user").Wrap(err)
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get current user").Wrap(errors.Wrap(err, "get current user"))
 	}
 	readContext, err := facts.WithViewer(ctx, s.Store, viewer, allowAnonymous, nil)
 	if err != nil {

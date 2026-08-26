@@ -1,3 +1,3 @@
 {
-  "verification_command": "go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.13.1 && go install github.com/bufbuild/buf/cmd/buf@v1.60.0 && \"$(go env GOPATH)/bin/golangci-lint\" run --timeout=3m && go test -p 1 ./... && cd web && pnpm lint && pnpm test && pnpm build && cd ../proto && \"$(go env GOPATH)/bin/buf\" lint"
+  "verification_command": "go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.13.1 && go install github.com/bufbuild/buf/cmd/buf@v1.60.0 && \"$(go env GOPATH)/bin/golangci-lint\" run --timeout=3m && go test -p 1 ./... && cd web && pnpm lint && pnpm test && pnpm build && cd ../proto && \"$(go env GOPATH)/bin/buf\" lint && if [[ $(\"$(go env GOPATH)/bin/buf\" format -d) ]]; then echo \"❌ Proto files are not formatted. Run 'buf format -w' to fix.\"; exit 1; fi"
 }
