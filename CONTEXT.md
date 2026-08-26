@@ -1,7 +1,7 @@
 # Memos
 
-Memos is the note-taking domain centered on short-form memos and the resources attached to them. See [the domain glossary](docs/glossary.md)
-for the complete shared vocabulary.
+Memos is the product and application for author-owned short-form notes called memos. Use this term for the note-taking app, not for one note. See
+[the domain glossary](docs/glossary.md) for the complete shared vocabulary.
 
 ## Language
 

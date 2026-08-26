@@ -7,7 +7,7 @@ that use them. [Memos context](../CONTEXT.md) contains a compact subset for desi
 
 ### Memos
 
-The product and application. Use this term for the note-taking app, not for one note.
+Memos is the product and application for author-owned short-form notes called memos. Use this term for the note-taking app, not for one note.
 
 _Avoid_: Memo app
 
