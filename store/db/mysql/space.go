@@ -45,6 +45,8 @@ func (d *DB) CreateSpace(ctx context.Context, create *store.Space, creatorID int
 	if err != nil {
 		return nil, err
 	}
+	space.CurrentUserRole = store.SpaceMemberRoleAdmin
+	space.MemberCount = 1
 	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
@@ -53,6 +55,9 @@ func (d *DB) CreateSpace(ctx context.Context, create *store.Space, creatorID int
 
 func (d *DB) ListSpaces(ctx context.Context, find *store.FindSpace) ([]*store.Space, error) {
 	where, args := []string{"1 = 1"}, []any{}
+	selectFields := "space.id, space.uid, space.title, space.description"
+	joins := ""
+	groupBy := ""
 	if find.ID != nil {
 		where, args = append(where, "space.id = ?"), append(args, *find.ID)
 	}
@@ -68,10 +73,16 @@ func (d *DB) ListSpaces(ctx context.Context, find *store.FindSpace) ([]*store.Sp
 		where, args = append(where, "space.uid = ?"), append(args, *find.UID)
 	}
 	if find.MemberUserID != nil {
-		where, args = append(where, "EXISTS (SELECT 1 FROM space_member sm JOIN user u ON u.id = sm.user_id WHERE sm.space_id = space.id AND sm.user_id = ? AND sm.status = 'ACTIVE' AND sm.role IN ('ADMIN', 'USER') AND u.row_status = 'NORMAL')"), append(args, *find.MemberUserID)
+		selectFields += ", viewer_member.role, COUNT(active_member.user_id)"
+		joins = ` JOIN space_member viewer_member ON viewer_member.space_id = space.id
+			JOIN user viewer_user ON viewer_user.id = viewer_member.user_id
+			JOIN space_member active_member ON active_member.space_id = space.id AND active_member.status = 'ACTIVE' AND active_member.role IN ('ADMIN', 'USER')
+			JOIN user active_user ON active_user.id = active_member.user_id AND active_user.row_status = 'NORMAL'`
+		where = append(where, "viewer_member.user_id = ?", "viewer_member.status = 'ACTIVE'", "viewer_member.role IN ('ADMIN', 'USER')", "viewer_user.row_status = 'NORMAL'")
+		args = append(args, *find.MemberUserID)
+		groupBy = " GROUP BY space.id, space.uid, space.title, space.description, viewer_member.role"
 	}
-	query := `SELECT space.id, space.uid, space.title, space.description
-		FROM space WHERE ` + strings.Join(where, " AND ") + ` ORDER BY space.id DESC`
+	query := "SELECT " + selectFields + " FROM space" + joins + " WHERE " + strings.Join(where, " AND ") + groupBy + " ORDER BY space.id DESC"
 	query = appendMySQLLimit(query, find.Limit, find.Offset)
 	rows, err := d.db.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -81,7 +92,7 @@ func (d *DB) ListSpaces(ctx context.Context, find *store.FindSpace) ([]*store.Sp
 	spaces := []*store.Space{}
 	for rows.Next() {
 		space := &store.Space{}
-		if err := scanMySQLSpace(rows, space); err != nil {
+		if err := scanMySQLSpaceWithSummary(rows, space, find.MemberUserID != nil); err != nil {
 			return nil, err
 		}
 		spaces = append(spaces, space)
@@ -114,6 +125,9 @@ func (d *DB) UpdateSpace(ctx context.Context, update *store.UpdateSpace, actorUs
 	}
 	space, err := getMySQLSpace(ctx, tx, update.ID)
 	if err != nil {
+		return nil, err
+	}
+	if err := populateMySQLSpaceSummary(ctx, tx, space, actorUserID); err != nil {
 		return nil, err
 	}
 	if err := tx.Commit(); err != nil {
@@ -421,6 +435,24 @@ type mysqlRowScanner interface{ Scan(...any) error }
 
 func scanMySQLSpace(row mysqlRowScanner, space *store.Space) error {
 	return row.Scan(&space.ID, &space.UID, &space.Title, &space.Description)
+}
+
+func scanMySQLSpaceWithSummary(row mysqlRowScanner, space *store.Space, withSummary bool) error {
+	if !withSummary {
+		return scanMySQLSpace(row, space)
+	}
+	return row.Scan(&space.ID, &space.UID, &space.Title, &space.Description, &space.CurrentUserRole, &space.MemberCount)
+}
+
+func populateMySQLSpaceSummary(ctx context.Context, tx *sql.Tx, space *store.Space, userID int32) error {
+	return tx.QueryRowContext(ctx, `SELECT viewer_member.role, COUNT(active_member.user_id)
+		FROM space_member viewer_member
+		JOIN user viewer_user ON viewer_user.id = viewer_member.user_id
+		JOIN space_member active_member ON active_member.space_id = viewer_member.space_id AND active_member.status = 'ACTIVE' AND active_member.role IN ('ADMIN', 'USER')
+		JOIN user active_user ON active_user.id = active_member.user_id AND active_user.row_status = 'NORMAL'
+		WHERE viewer_member.space_id = ? AND viewer_member.user_id = ? AND viewer_member.status = 'ACTIVE'
+			AND viewer_member.role IN ('ADMIN', 'USER') AND viewer_user.row_status = 'NORMAL'
+		GROUP BY viewer_member.role`, space.ID, userID).Scan(&space.CurrentUserRole, &space.MemberCount)
 }
 
 func getMySQLSpace(ctx context.Context, tx *sql.Tx, id int32) (*store.Space, error) {

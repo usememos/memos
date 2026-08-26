@@ -4,6 +4,7 @@ import { getRequestToken, refreshAccessToken } from "@/connect";
 import { useAuth } from "@/contexts/AuthContext";
 import { attachmentKeys } from "@/hooks/useAttachmentQueries";
 import { memoKeys } from "@/hooks/useMemoQueries";
+import { spaceKeys } from "@/hooks/useSpaceQueries";
 import { userKeys } from "@/hooks/useUserQueries";
 
 /**
@@ -18,7 +19,8 @@ const HIDDEN_DISCONNECT_DELAY_MS = 30_000;
 const SSE_CONNECTION_LOCK_NAME = "memos-sse-connection";
 const SSE_SYNC_CHANNEL_NAME = "memos-sse-sync";
 
-const SSE_EVENT_TYPE = "memo.changed" as const;
+const MEMO_CHANGED_SSE_EVENT_TYPE = "memo.changed" as const;
+const SPACE_CHANGED_SSE_EVENT_TYPE = "space.changed" as const;
 
 // ---------------------------------------------------------------------------
 // Shared connection status store (singleton)
@@ -56,7 +58,7 @@ export function useSSEConnectionStatus(): SSEConnectionStatus {
 }
 
 interface SSEChangeEvent {
-  type: typeof SSE_EVENT_TYPE;
+  type: typeof MEMO_CHANGED_SSE_EVENT_TYPE | typeof SPACE_CHANGED_SSE_EVENT_TYPE;
 }
 
 type SSESyncMessage =
@@ -69,8 +71,8 @@ type SSESyncMessage =
 // ---------------------------------------------------------------------------
 
 /**
- * useLiveMemoRefresh connects to the server's SSE endpoint and
- * invalidates memo-backed React Query caches when a change event is received.
+ * useLiveMemoRefresh connects to the server's SSE endpoint and invalidates
+ * Space- and memo-backed React Query caches when a change event is received.
  *
  * This enables real-time updates across all open instances of the app.
  */
@@ -152,7 +154,7 @@ export function useLiveMemoRefresh() {
           if (hasConnectedOnceRef.current) {
             // Resync active collaborative views after reconnect because the server may have
             // dropped events while the client was disconnected or backpressured.
-            invalidateLiveMemoQueries(queryClient);
+            invalidateAllLiveQueries(queryClient);
           }
           hasConnectedOnceRef.current = true;
 
@@ -276,7 +278,7 @@ export function useLiveMemoRefresh() {
           }
           if (message.status === "connected") {
             if (hasConnectedOnceRef.current) {
-              invalidateLiveMemoQueries(queryClient);
+              invalidateAllLiveQueries(queryClient);
             }
             hasConnectedOnceRef.current = true;
           }
@@ -458,9 +460,18 @@ async function consumeSSEStream(body: ReadableStream<Uint8Array>, signal: AbortS
 }
 
 function handleSSEEvent(event: SSEChangeEvent, queryClient: ReturnType<typeof useQueryClient>) {
-  if (event.type !== SSE_EVENT_TYPE) {
-    return;
+  switch (event.type) {
+    case MEMO_CHANGED_SSE_EVENT_TYPE:
+      invalidateLiveMemoQueries(queryClient);
+      break;
+    case SPACE_CHANGED_SSE_EVENT_TYPE:
+      invalidateAllLiveQueries(queryClient);
+      break;
   }
+}
+
+function invalidateAllLiveQueries(queryClient: ReturnType<typeof useQueryClient>) {
+  queryClient.invalidateQueries({ queryKey: spaceKeys.all, refetchType: "active" });
   invalidateLiveMemoQueries(queryClient);
 }
 

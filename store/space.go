@@ -68,13 +68,16 @@ func (r SpaceMemberRole) IsActiveMember() bool {
 type Space struct {
 	ID int32
 
-	UID         string
-	Title       string
-	Description string
+	UID             string
+	Title           string
+	Description     string
+	CurrentUserRole SpaceMemberRole
+	MemberCount     int32
 }
 
 // FindSpace selects spaces. MemberUserID restricts results to spaces where the
-// user has a membership and is applied before pagination.
+// user has a membership, populates the viewer summary, and is applied before
+// pagination.
 type FindSpace struct {
 	ID           *int32
 	IDList       []int32

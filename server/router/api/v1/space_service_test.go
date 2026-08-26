@@ -66,6 +66,8 @@ func TestSpaceServiceMembershipVisibilityAndGovernance(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, "spaces/team-notes", space.Name)
 	require.Equal(t, "Team notes", space.Title)
+	require.Equal(t, v1pb.SpaceMember_ADMIN, space.CurrentUserRole)
+	require.Equal(t, int32(1), space.MemberCount)
 	_, err = service.CreateSpace(userCtx(ctx, owner.ID), &v1pb.CreateSpaceRequest{
 		SpaceId: "team-notes",
 		Space:   &v1pb.Space{Title: "Duplicate"},
@@ -89,7 +91,11 @@ func TestSpaceServiceMembershipVisibilityAndGovernance(t *testing.T) {
 	})
 	require.NoError(t, err)
 	require.Equal(t, "spaces/team-notes/invitations/space-member", invitation.Name)
-	require.Equal(t, space, invitation.Space, "the invitation must identify the Space without granting membership access")
+	require.Equal(t, space.Name, invitation.Space.Name, "the invitation must identify the Space without granting membership access")
+	require.Equal(t, space.Title, invitation.Space.Title)
+	require.Equal(t, space.Description, invitation.Space.Description)
+	require.Equal(t, v1pb.SpaceMember_ROLE_UNSPECIFIED, invitation.Space.CurrentUserRole)
+	require.Zero(t, invitation.Space.MemberCount)
 
 	_, err = service.GetSpace(userCtx(ctx, member.ID), &v1pb.GetSpaceRequest{Name: space.Name})
 	require.Equal(t, codes.NotFound, status.Code(err), "a pending invitation must not grant Space access")
@@ -122,8 +128,22 @@ func TestSpaceServiceMembershipVisibilityAndGovernance(t *testing.T) {
 	_, err = service.GetSpaceInvitation(userCtx(ctx, owner.ID), &v1pb.GetSpaceInvitationRequest{Name: invitation.Name})
 	require.Equal(t, codes.NotFound, status.Code(err))
 
-	_, err = service.GetSpace(userCtx(ctx, member.ID), &v1pb.GetSpaceRequest{Name: space.Name})
+	memberSpace, err := service.GetSpace(userCtx(ctx, member.ID), &v1pb.GetSpaceRequest{Name: space.Name})
 	require.NoError(t, err)
+	require.Equal(t, v1pb.SpaceMember_USER, memberSpace.CurrentUserRole)
+	require.Equal(t, int32(2), memberSpace.MemberCount)
+	memberSpaces, err := service.ListSpaces(userCtx(ctx, member.ID), &v1pb.ListSpacesRequest{})
+	require.NoError(t, err)
+	require.Len(t, memberSpaces.Spaces, 1)
+	require.Equal(t, v1pb.SpaceMember_USER, memberSpaces.Spaces[0].CurrentUserRole)
+	require.Equal(t, int32(2), memberSpaces.Spaces[0].MemberCount)
+	updatedSpace, err := service.UpdateSpace(userCtx(ctx, owner.ID), &v1pb.UpdateSpaceRequest{
+		Space:      &v1pb.Space{Name: space.Name, Title: "Updated team notes"},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"title"}},
+	})
+	require.NoError(t, err)
+	require.Equal(t, v1pb.SpaceMember_ADMIN, updatedSpace.CurrentUserRole)
+	require.Equal(t, int32(2), updatedSpace.MemberCount)
 	_, err = service.UpdateSpace(userCtx(ctx, member.ID), &v1pb.UpdateSpaceRequest{
 		Space:      &v1pb.Space{Name: space.Name, Title: "not allowed"},
 		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"title"}},

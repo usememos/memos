@@ -29,6 +29,12 @@ vi.mock("@/hooks/useMemoQueries", () => ({
   },
 }));
 
+vi.mock("@/hooks/useSpaceQueries", () => ({
+  spaceKeys: {
+    all: ["spaces"],
+  },
+}));
+
 vi.mock("@/hooks/useUserQueries", () => ({
   userKeys: {
     stats: () => ["users", "stats"],
@@ -239,6 +245,23 @@ describe("useLiveMemoRefresh", () => {
       expect(firstInvalidate).toHaveBeenCalledWith({ queryKey: ["attachments", "list"], refetchType: "active" });
       expect(secondInvalidate).toHaveBeenCalledWith({ queryKey: ["attachments", "list"], refetchType: "active" });
     });
+    expect(firstInvalidate).not.toHaveBeenCalledWith({ queryKey: ["spaces"], refetchType: "active" });
+    expect(secondInvalidate).not.toHaveBeenCalledWith({ queryKey: ["spaces"], refetchType: "active" });
+
+    firstInvalidate.mockClear();
+    secondInvalidate.mockClear();
+    act(() => {
+      streamControllers[0].enqueue(new TextEncoder().encode('data: {"type":"space.changed"}\n\n'));
+    });
+
+    await waitFor(() => {
+      for (const invalidate of [firstInvalidate, secondInvalidate]) {
+        expect(invalidate).toHaveBeenCalledWith({ queryKey: ["spaces"], refetchType: "active" });
+        expect(invalidate).toHaveBeenCalledWith({ queryKey: ["memos"], refetchType: "active" });
+        expect(invalidate).toHaveBeenCalledWith({ queryKey: ["users", "stats"], refetchType: "active" });
+        expect(invalidate).toHaveBeenCalledWith({ queryKey: ["attachments", "list"], refetchType: "active" });
+      }
+    });
 
     first.unmount();
     second.unmount();
@@ -289,13 +312,16 @@ describe("useLiveMemoRefresh", () => {
     const fetchMock = vi.fn().mockImplementation(() => new Response(new Uint8Array(), { status: 200 }));
     vi.stubGlobal("fetch", fetchMock);
 
-    const hook = renderHook(() => useLiveMemoRefresh(), { wrapper: createWrapper(createQueryClient()) });
+    const queryClient = createQueryClient();
+    const invalidate = vi.spyOn(queryClient, "invalidateQueries");
+    const hook = renderHook(() => useLiveMemoRefresh(), { wrapper: createWrapper(queryClient) });
     await flushAsyncWork();
     expect(fetchMock).toHaveBeenCalledTimes(1);
 
     await act(async () => vi.advanceTimersByTimeAsync(1000));
     await flushAsyncWork();
     expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(invalidate).toHaveBeenCalledWith({ queryKey: ["spaces"], refetchType: "active" });
 
     await act(async () => vi.advanceTimersByTimeAsync(1000));
     await flushAsyncWork();

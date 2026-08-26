@@ -149,6 +149,14 @@ message Space {
 
   // Optional. A description of the space.
   string description = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // Output only. The authenticated user's membership role in this space.
+  // ROLE_UNSPECIFIED when this Space is exposed as metadata-only.
+  SpaceMember.Role current_user_role = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Output only. The number of accepted members in this space. Pending
+  // invitations are excluded. Zero when this Space is exposed as metadata-only.
+  int32 member_count = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // SpaceMember is a user's membership and governance role in a space.
