@@ -735,7 +735,7 @@
       "account": "帳號",
       "accounts-description": "檢視每個身分識別提供者、查看目前的連結狀態，並從此帳號連接或斷開外部身分。",
       "accounts-title": "SSO 帳號",
-      "authorization-endpoint": "驗證端點（Authorization Endpoint）",
+      "authorization-endpoint": "授權端點（Authorization Endpoint）",
       "avatar-url": "頭像 URL",
       "basic-settings": "基本設定",
       "basic-settings-description": "在填寫 OAuth 詳細資料之前，設定身分識別提供者、顯示名稱及選用的識別碼規則。",
@@ -798,7 +798,7 @@
     },
     "spaces": {
       "accept": "接受",
-      "accept-success": "已接受邀請，{{space}} 現已加入「你的空間」。",
+      "accept-success": "你已接受邀請並加入 {{space}}。",
       "active-user": "有效的 Memos 使用者",
       "admin-role-description": "可以編輯此空間、邀請使用者及管理成員。",
       "already-invited": "已有待處理的邀請",
