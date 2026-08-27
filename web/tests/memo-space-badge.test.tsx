@@ -46,6 +46,16 @@ describe("MemoSpaceBadge", () => {
     expect(badge.querySelector(".lucide-astroid")).not.toBeNull();
   });
 
+  it("truncates a long title on one line while preserving its full value", () => {
+    const longTitle = "A very long product research and planning space title";
+    state.spaces = [{ name: "spaces/product", title: longTitle }];
+    render(<MemoSpaceBadge spaceName="spaces/product" />);
+
+    const badge = screen.getByTitle(`Space: ${longTitle}`);
+    expect(badge).toHaveClass("max-w-36", "sm:max-w-48");
+    expect(screen.getByText(longTitle)).toHaveClass("min-w-0", "flex-1", "truncate");
+  });
+
   it("adds the full custom UID when known Space titles match", () => {
     state.spaces = [
       { name: "spaces/product-notes", title: "Product" },
@@ -53,7 +63,10 @@ describe("MemoSpaceBadge", () => {
     ];
     render(<MemoSpaceBadge spaceName="spaces/product-notes" />);
 
-    expect(screen.getByTitle("Space: Product (product-notes)")).toHaveTextContent("Product · product-notes");
+    const badge = screen.getByTitle("Space: Product (product-notes)");
+    expect(badge).toHaveClass("max-w-52", "sm:max-w-64");
+    expect(badge).toHaveTextContent("Product · product-notes");
+    expect(badge.querySelector(".font-mono")).toHaveClass("max-w-[48%]", "shrink-0", "truncate");
   });
 
   it("shows eight UUID characters while preserving the full ID in the accessible label", () => {

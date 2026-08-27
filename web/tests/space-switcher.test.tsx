@@ -74,6 +74,24 @@ describe("SpaceSwitcher", () => {
     expect(screen.getByRole("menuitem", { name: "space.create" })).toBeInTheDocument();
   });
 
+  it("fits the popup between the sidebar padding and right edge", async () => {
+    render(
+      <aside>
+        <SpaceSwitcher />
+      </aside>,
+    );
+
+    const trigger = screen.getByRole("button", { name: "space.switch: common.memos" });
+    const sidebar = trigger.closest("aside");
+    expect(sidebar).not.toBeNull();
+    vi.spyOn(sidebar as HTMLElement, "getBoundingClientRect").mockReturnValue({ left: 0, right: 223, width: 223 } as DOMRect);
+    vi.spyOn(trigger, "getBoundingClientRect").mockReturnValue({ left: 12, right: 143, width: 131 } as DOMRect);
+
+    fireEvent.click(trigger);
+
+    expect(await screen.findByRole("menu")).toHaveStyle({ width: "211px" });
+  });
+
   it("marks exactly one context as active", async () => {
     spaceState.selectedSpaceName = "spaces/product";
     spaceState.selectedSpace = spaceState.spaces[0];
@@ -89,6 +107,23 @@ describe("SpaceSwitcher", () => {
     expect(active.className).toContain("bg-accent/60");
     expect(active.querySelector(".lucide-check")).not.toBeNull();
     expect(screen.getByRole("menuitemradio", { name: "Research" }).querySelector(".lucide-check")).toBeNull();
+  });
+
+  it("keeps long titles on a truncated rail and exposes the complete value", async () => {
+    const longTitle = "A very long product research and planning space title";
+    spaceState.spaces = [{ name: "spaces/product", title: longTitle, description: "" }];
+    spaceState.selectedSpaceName = spaceState.spaces[0].name;
+    spaceState.selectedSpace = spaceState.spaces[0];
+    render(<SpaceSwitcher />);
+
+    const trigger = screen.getByRole("button", { name: `space.switch: ${longTitle}` });
+    expect(trigger).toHaveAttribute("title", longTitle);
+    expect(within(trigger).getByText(longTitle)).toHaveClass("truncate");
+    fireEvent.click(trigger);
+
+    const row = await screen.findByRole("menuitemradio", { name: longTitle });
+    expect(row).toHaveAttribute("title", longTitle);
+    expect(within(row).getByText(longTitle)).toHaveClass("max-w-full", "truncate");
   });
 
   it("shows UIDs only for Spaces whose titles match", async () => {

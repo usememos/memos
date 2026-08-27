@@ -1,5 +1,5 @@
 import { CheckIcon, ChevronsUpDownIcon, LoaderCircleIcon, type LucideIcon, PlusIcon } from "lucide-react";
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useRef, useState } from "react";
 import CreateSpaceDialog from "@/components/CreateSpaceDialog";
 import MemosLogo from "@/components/MemosLogo";
 import SpaceMark from "@/components/SpaceMark";
@@ -40,9 +40,10 @@ const ContextItem = ({
     role="menuitemradio"
     aria-checked={selected}
     aria-label={ariaLabel}
+    title={ariaLabel}
     closeOnClick
     onClick={onSelect}
-    className={cn(selected && "bg-accent/60")}
+    className={cn("min-w-0", selected && "bg-accent/60")}
   >
     {children}
     {selected && <CheckIcon className="ms-auto size-3.5 shrink-0 text-primary" />}
@@ -54,6 +55,8 @@ function SpaceSwitcher({ className }: { className?: string }) {
   const { spaces, duplicateSpaceTitles, selectedSpace, selectedSpaceName, isLoadingSpaces, isSpacesError, selectMemos, selectSpace } =
     useSpaceContext();
   const [createOpen, setCreateOpen] = useState(false);
+  const [menuWidth, setMenuWidth] = useState<number>();
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const selectedSpaceIdentity = selectedSpace?.name || selectedSpaceName || "";
   const selectedSpaceUid = selectedSpaceIdentity ? extractSpaceUidFromName(selectedSpaceIdentity) : "";
   const showSelectedSpaceUid = selectedSpace ? duplicateSpaceTitles.has(selectedSpace.title) : Boolean(selectedSpaceName);
@@ -61,14 +64,27 @@ function SpaceSwitcher({ className }: { className?: string }) {
     ? `${selectedSpace?.title || t("space.current")}${showSelectedSpaceUid && selectedSpaceUid ? ` (${selectedSpaceUid})` : ""}`
     : t("common.memos");
 
+  const handleMenuOpenChange = (open: boolean) => {
+    if (!open) return;
+
+    const trigger = triggerRef.current;
+    const sidebar = trigger?.closest("aside");
+    if (!trigger || !sidebar) return;
+
+    const width = Math.floor(sidebar.getBoundingClientRect().right - trigger.getBoundingClientRect().left);
+    if (width > 0) setMenuWidth(width);
+  };
+
   return (
     <>
-      <DropdownMenu>
+      <DropdownMenu onOpenChange={handleMenuOpenChange}>
         <DropdownMenuTrigger
           render={
             <button
+              ref={triggerRef}
               type="button"
               aria-label={`${t("space.switch")}: ${currentContextLabel}`}
+              title={currentContextLabel}
               className={cn(
                 "group flex h-9 min-w-0 max-w-full items-center gap-1 rounded-md px-0.5 text-start focus-visible:outline-none",
                 className,
@@ -76,11 +92,11 @@ function SpaceSwitcher({ className }: { className?: string }) {
             />
           }
         >
-          <span className="flex min-w-0 flex-1 items-center">
+          <span className="flex min-w-0 flex-1 items-center overflow-hidden">
             {selectedSpaceName ? (
               <>
                 <SpaceMark />
-                <span className="ms-1.5 flex min-w-0 flex-1 flex-col justify-center">
+                <span className="ms-1.5 flex min-w-0 flex-1 flex-col justify-center overflow-hidden">
                   <span className="block truncate text-[14px] font-medium leading-4 tracking-[-0.01em] text-foreground">
                     {selectedSpace?.title || t("space.current")}
                   </span>
@@ -101,7 +117,13 @@ function SpaceSwitcher({ className }: { className?: string }) {
           </span>
           <ChevronsUpDownIcon className="size-3.5 shrink-0 text-muted-foreground/70" strokeWidth={1.8} />
         </DropdownMenuTrigger>
-        <DropdownMenuContent size="sm" align="start" sideOffset={4} className="w-[min(15rem,calc(100vw-1rem))]">
+        <DropdownMenuContent
+          size="sm"
+          align="start"
+          sideOffset={4}
+          className="w-[min(15rem,calc(100vw-1rem))] max-w-[calc(100vw-1rem)]"
+          style={menuWidth ? { width: `${menuWidth}px` } : undefined}
+        >
           <DropdownMenuGroup>
             <ContextItem selected={!selectedSpaceName} onSelect={selectMemos}>
               <span className="min-w-0 flex-1">
@@ -123,8 +145,8 @@ function SpaceSwitcher({ className }: { className?: string }) {
                       ariaLabel={showUid && uid ? `${space.title} (${uid})` : space.title}
                     >
                       <SpaceMark size="sm" />
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate font-medium">{space.title}</span>
+                      <span className="min-w-0 flex-1 overflow-hidden">
+                        <span className="block max-w-full truncate font-medium">{space.title}</span>
                         {showUid && uid ? (
                           <span
                             aria-hidden="true"
