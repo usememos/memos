@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useCreateSpaceInvitation } from "@/hooks/useSpaceQueries";
 import { useUsersByUsernames } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
+import { extractSpaceUidFromName } from "@/lib/space-display";
 import { type Space, SpaceInvitationSchema, SpaceMember_Role } from "@/types/proto/api/v1/space_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
@@ -27,6 +28,7 @@ interface Props {
 
 const InviteSpaceMemberDialog = ({ open, onOpenChange, space, viewerName, memberUserNames, pendingInviteeNames }: Props) => {
   const t = useTranslate();
+  const spaceUid = extractSpaceUidFromName(space.name);
   const createInvitation = useCreateSpaceInvitation(viewerName);
   const [query, setQuery] = useState("");
   const [lookupUsername, setLookupUsername] = useState("");
@@ -109,7 +111,12 @@ const InviteSpaceMemberDialog = ({ open, onOpenChange, space, viewerName, member
         <form className="grid gap-4" onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>{t("setting.spaces.invite-to", { space: space.title })}</DialogTitle>
-            <DialogDescription>{t("setting.spaces.invite-description")}</DialogDescription>
+            <DialogDescription>
+              {t("setting.spaces.invite-description")}
+              <span className="mt-1 block text-xs">
+                {t("space.custom-id-label")}: <span className="break-all font-mono">{spaceUid}</span>
+              </span>
+            </DialogDescription>
           </DialogHeader>
 
           <div className="grid gap-2">

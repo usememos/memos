@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import type { ReactNode } from "react";
 import { MemoryRouter, useLocation } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import SpacesSection from "@/components/Settings/SpacesSection";
@@ -53,7 +54,7 @@ vi.mock("@/contexts/SpaceContext", () => ({
 }));
 
 vi.mock("@/components/SpaceMark", () => ({
-  default: ({ space }: { space?: { title?: string } }) => <span aria-hidden>{space?.title?.slice(0, 1) ?? "S"}</span>,
+  default: () => <span aria-hidden>space-mark</span>,
 }));
 
 vi.mock("@/components/UserAvatar", () => ({
@@ -90,9 +91,20 @@ vi.mock("@/components/Settings/InviteSpaceMemberDialog", () => ({
 }));
 
 vi.mock("@/components/ConfirmDialog", () => ({
-  default: ({ open, confirmLabel, onConfirm }: { open: boolean; confirmLabel: string; onConfirm: () => void | Promise<void> }) =>
+  default: ({
+    open,
+    title,
+    confirmLabel,
+    onConfirm,
+  }: {
+    open: boolean;
+    title: ReactNode;
+    confirmLabel: string;
+    onConfirm: () => void | Promise<void>;
+  }) =>
     open ? (
       <div role="dialog">
+        <div>{title}</div>
         <button type="button" onClick={() => void onConfirm()}>
           {confirmLabel}
         </button>
@@ -101,7 +113,8 @@ vi.mock("@/components/ConfirmDialog", () => ({
 }));
 
 vi.mock("@/utils/i18n", () => ({
-  useTranslate: () => (key: string) => key,
+  useTranslate: () => (key: string, params?: Record<string, string>) =>
+    key === "setting.spaces.delete-confirm-title" && params?.space ? `${key} ${params.space}` : key,
 }));
 
 const adminSpace: Space = {
@@ -201,11 +214,45 @@ describe("SpacesSection", () => {
     expect(within(joinedSection!).getByText("Product")).toBeInTheDocument();
     expect(within(joinedSection!).queryByText("Research")).not.toBeInTheDocument();
 
-    fireEvent.click(within(invitationsSection!).getByRole("button", { name: "setting.spaces.accept" }));
+    fireEvent.click(within(invitationsSection!).getByRole("button", { name: "setting.spaces.accept Research (research)" }));
     await waitFor(() => expect(state.acceptInvitation).toHaveBeenCalledWith({ name: "spaces/research/invitations/alice" }));
 
-    fireEvent.click(within(invitationsSection!).getByRole("button", { name: "setting.spaces.decline" }));
+    fireEvent.click(within(invitationsSection!).getByRole("button", { name: "setting.spaces.decline Research (research)" }));
     await waitFor(() => expect(state.declineInvitation).toHaveBeenCalledWith({ name: "spaces/research/invitations/alice" }));
+  });
+
+  it("shows the full Space UID for every joined Space", () => {
+    const uuid = "123e4567-e89b-12d3-a456-426614174000";
+    state.spaces = [
+      { ...adminSpace, name: "spaces/product-notes" },
+      { ...adminSpace, name: `spaces/${uuid}` },
+      { ...adminSpace, name: "spaces/research-space", title: "Research" },
+    ];
+
+    renderSection();
+
+    const customIdRow = screen.getByRole("button", { name: "setting.spaces.manage-space (product-notes)" });
+    const uuidRow = screen.getByRole("button", { name: `setting.spaces.manage-space (${uuid})` });
+    expect(within(customIdRow).getByTitle("product-notes")).toHaveTextContent("product-notes");
+    expect(within(uuidRow).getByTitle(uuid)).toHaveTextContent(uuid);
+    expect(screen.getByTitle("research-space")).toHaveTextContent("research-space");
+  });
+
+  it("disambiguates matching titles across joined Spaces and invitations", () => {
+    state.spaces = [{ ...adminSpace, name: "spaces/joined-product" }];
+    state.receivedInvitations = [
+      {
+        ...receivedInvitation,
+        space: { ...receivedInvitation.space!, name: "spaces/invited-product", title: "Product" },
+      },
+    ];
+
+    renderSection();
+
+    const invitationsSection = screen.getByRole("heading", { name: "setting.spaces.invitations" }).closest("section");
+    const joinedSection = screen.getByRole("heading", { name: "setting.spaces.your-spaces" }).closest("section");
+    expect(within(invitationsSection!).getByTitle("invited-product")).toHaveTextContent("invited-product");
+    expect(within(joinedSection!).getByTitle("joined-product")).toHaveTextContent("joined-product");
   });
 
   it("shows governance controls to Space admins and cancels the exact pending invitation", async () => {
@@ -215,6 +262,7 @@ describe("SpacesSection", () => {
 
     renderSection("/setting?space=spaces%2Fproduct#spaces");
 
+    expect(screen.getByText("product", { selector: "code" })).toBeInTheDocument();
     expect(screen.getByLabelText("common.name")).not.toHaveAttribute("readonly");
     expect(screen.getByRole("button", { name: "setting.spaces.save-changes" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "setting.spaces.delete-space" })).toBeInTheDocument();
@@ -226,6 +274,21 @@ describe("SpacesSection", () => {
     fireEvent.click(screen.getByRole("button", { name: "setting.spaces.cancel-invitation" }));
     fireEvent.click(within(screen.getByRole("dialog")).getByRole("button", { name: "setting.spaces.cancel-invitation" }));
     await waitFor(() => expect(state.deleteInvitation).toHaveBeenCalledWith({ name: "spaces/product/invitations/carol" }));
+  });
+
+  it("wraps a maximum-length Space UID in the destructive confirmation", () => {
+    const uid = "a".repeat(36);
+    const space = { ...adminSpace, name: `spaces/${uid}` };
+    state.spaces = [space];
+    state.members = [{ ...adminMember, name: `spaces/${uid}/members/alice` }];
+
+    renderSection(`/setting?space=${encodeURIComponent(space.name)}#spaces`);
+    expect(screen.getByTitle(uid)).toHaveClass("break-all");
+    expect(screen.getByTitle(uid)).toHaveTextContent(uid);
+    fireEvent.click(screen.getByRole("button", { name: "setting.spaces.delete-space" }));
+
+    const title = within(screen.getByRole("dialog")).getByText(`setting.spaces.delete-confirm-title Product (${uid})`);
+    expect(title).toHaveClass("[overflow-wrap:anywhere]");
   });
 
   it("keeps ordinary Space members read-only and hides governance controls", () => {

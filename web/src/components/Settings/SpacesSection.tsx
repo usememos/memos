@@ -42,6 +42,7 @@ import {
 import { useUsersByUsernames } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
 import { extractUsernameFromName } from "@/lib/resource-names";
+import { extractSpaceUidFromName } from "@/lib/space-display";
 import { ROUTES } from "@/router/routes";
 import { type Space, type SpaceInvitation, type SpaceMember, SpaceMember_Role } from "@/types/proto/api/v1/space_service_pb";
 import type { User } from "@/types/proto/api/v1/user_service_pb";
@@ -129,7 +130,10 @@ const SpacesSection = () => {
   const handleAcceptInvitation = async (invitation: SpaceInvitation) => {
     try {
       await acceptInvitation.mutateAsync({ name: invitation.name });
-      toast.success(t("setting.spaces.accept-success", { space: invitation.space?.title ?? t("setting.spaces.label") }));
+      const spaceLabel = invitation.space
+        ? `${invitation.space.title} (${extractSpaceUidFromName(invitation.space.name)})`
+        : t("setting.spaces.label");
+      toast.success(t("setting.spaces.accept-success", { space: spaceLabel }));
     } catch (error) {
       handleError(error, toast.error, { context: "Accept space invitation" });
     }
@@ -187,39 +191,54 @@ const SpacesSection = () => {
                 </span>
               </div>
               <div className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-background">
-                {receivedInvitations.map((invitation) => (
-                  <div key={invitation.name} className="flex min-w-0 flex-col gap-3 px-3 py-3 sm:flex-row sm:items-center">
-                    <div className="flex min-w-0 flex-1 items-center gap-3">
-                      <SpaceMark space={invitation.space} size="lg" />
-                      <div className="min-w-0">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <p className="truncate text-sm font-medium">{invitation.space?.title || t("setting.spaces.untitled")}</p>
-                          <SpaceRoleBadge role={invitation.role} />
+                {receivedInvitations.map((invitation) => {
+                  const uid = invitation.space ? extractSpaceUidFromName(invitation.space.name) : "";
+                  const title = invitation.space?.title || t("setting.spaces.untitled");
+
+                  return (
+                    <div key={invitation.name} className="flex min-w-0 flex-col gap-3 px-3 py-3 sm:flex-row sm:items-center">
+                      <div className="flex min-w-0 flex-1 items-center gap-3">
+                        <SpaceMark size="lg" />
+                        <div className="min-w-0">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <p className="truncate text-sm font-medium">{title}</p>
+                            <SpaceRoleBadge role={invitation.role} />
+                          </div>
+                          {uid ? (
+                            <p className="mt-0.5 flex min-w-0 items-baseline gap-1 text-[11px] text-muted-foreground">
+                              <span className="shrink-0">{t("space.custom-id-label")}:</span>
+                              <span title={uid} className="min-w-0 break-all font-mono">
+                                {uid}
+                              </span>
+                            </p>
+                          ) : null}
+                          <p className="mt-1 truncate text-xs leading-5 text-muted-foreground">
+                            {invitation.space?.description || t("setting.spaces.invited-to-join")}
+                          </p>
                         </div>
-                        <p className="mt-1 truncate text-xs leading-5 text-muted-foreground">
-                          {invitation.space?.description || t("setting.spaces.invited-to-join")}
-                        </p>
+                      </div>
+                      <div className="flex shrink-0 items-center justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          aria-label={uid ? `${t("setting.spaces.decline")} ${title} (${uid})` : undefined}
+                          disabled={acceptInvitation.isPending || declineInvitation.isPending}
+                          onClick={() => void handleDeclineInvitation(invitation)}
+                        >
+                          {t("setting.spaces.decline")}
+                        </Button>
+                        <Button
+                          size="sm"
+                          aria-label={uid ? `${t("setting.spaces.accept")} ${title} (${uid})` : undefined}
+                          disabled={acceptInvitation.isPending || declineInvitation.isPending}
+                          onClick={() => void handleAcceptInvitation(invitation)}
+                        >
+                          {t("setting.spaces.accept")}
+                        </Button>
                       </div>
                     </div>
-                    <div className="flex shrink-0 items-center justify-end gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        disabled={acceptInvitation.isPending || declineInvitation.isPending}
-                        onClick={() => void handleDeclineInvitation(invitation)}
-                      >
-                        {t("setting.spaces.decline")}
-                      </Button>
-                      <Button
-                        size="sm"
-                        disabled={acceptInvitation.isPending || declineInvitation.isPending}
-                        onClick={() => void handleAcceptInvitation(invitation)}
-                      >
-                        {t("setting.spaces.accept")}
-                      </Button>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </section>
           ) : null}
@@ -257,32 +276,43 @@ const SpacesSection = () => {
               </div>
             ) : (
               <div className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-background">
-                {spaces.map((space) => (
-                  <button
-                    key={space.name}
-                    type="button"
-                    aria-label={t("setting.spaces.manage-space", { space: space.title })}
-                    onClick={() => handleOpenSpace(space.name)}
-                    className="group flex w-full min-w-0 items-center gap-3 px-3 py-3 text-left transition-colors hover:bg-muted/35 focus-visible:bg-muted/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/45"
-                  >
-                    <SpaceMark space={space} size="lg" />
-                    <div className="min-w-0 flex-1">
-                      <div className="flex min-w-0 flex-wrap items-center gap-2">
-                        <p className="truncate text-sm font-medium">{space.title}</p>
-                        <SpaceRoleBadge role={space.currentUserRole} />
+                {spaces.map((space) => {
+                  const uid = extractSpaceUidFromName(space.name);
+                  const manageLabel = t("setting.spaces.manage-space", { space: space.title });
+
+                  return (
+                    <button
+                      key={space.name}
+                      type="button"
+                      aria-label={uid ? `${manageLabel} (${uid})` : manageLabel}
+                      onClick={() => handleOpenSpace(space.name)}
+                      className="group flex w-full min-w-0 items-center gap-3 px-3 py-3 text-left transition-colors hover:bg-muted/35 focus-visible:bg-muted/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/45"
+                    >
+                      <SpaceMark size="lg" />
+                      <div className="min-w-0 flex-1">
+                        <div className="flex min-w-0 flex-wrap items-center gap-2">
+                          <p className="truncate text-sm font-medium">{space.title}</p>
+                          <SpaceRoleBadge role={space.currentUserRole} />
+                        </div>
+                        <p className="mt-0.5 flex min-w-0 items-baseline gap-1 text-[11px] text-muted-foreground">
+                          <span className="shrink-0">{t("space.custom-id-label")}:</span>
+                          <span title={uid} className="min-w-0 break-all font-mono">
+                            {uid}
+                          </span>
+                        </p>
+                        <p className="mt-1 truncate text-xs text-muted-foreground">
+                          {space.description || t("setting.spaces.no-description")}
+                        </p>
                       </div>
-                      <p className="mt-1 truncate text-xs text-muted-foreground">
-                        {space.description || t("setting.spaces.no-description")}
-                      </p>
-                    </div>
-                    <span className="hidden shrink-0 text-xs text-muted-foreground sm:inline">
-                      {space.memberCount === 1
-                        ? t("setting.spaces.member-count", { count: space.memberCount })
-                        : t("setting.spaces.members-count", { count: space.memberCount })}
-                    </span>
-                    <ChevronRightIcon className="size-4 shrink-0 text-muted-foreground/65 transition-transform group-hover:translate-x-0.5" />
-                  </button>
-                ))}
+                      <span className="hidden shrink-0 text-xs text-muted-foreground sm:inline">
+                        {space.memberCount === 1
+                          ? t("setting.spaces.member-count", { count: space.memberCount })
+                          : t("setting.spaces.members-count", { count: space.memberCount })}
+                      </span>
+                      <ChevronRightIcon className="size-4 shrink-0 text-muted-foreground/65 transition-transform group-hover:translate-x-0.5" />
+                    </button>
+                  );
+                })}
               </div>
             )}
           </section>
@@ -347,6 +377,8 @@ const SpaceDetail = ({ space, viewerName, onBack }: SpaceDetailProps) => {
     { value: String(SpaceMember_Role.ADMIN), label: t("setting.spaces.space-admin") },
   ];
   const detailsChanged = title.trim() !== space.title || description.trim() !== space.description;
+  const spaceUid = extractSpaceUidFromName(space.name);
+  const disambiguatedSpaceTitle = `${space.title} (${spaceUid})`;
 
   useEffect(() => {
     setTitle(space.title);
@@ -405,7 +437,7 @@ const SpaceDetail = ({ space, viewerName, onBack }: SpaceDetailProps) => {
     if (!currentMember) return;
     try {
       await deleteMember.mutateAsync({ name: currentMember.name });
-      toast.success(t("setting.spaces.leave-success", { space: space.title }));
+      toast.success(t("setting.spaces.leave-success", { space: disambiguatedSpaceTitle }));
       onBack();
     } catch (error) {
       handleError(error, toast.error, { context: "Leave space" });
@@ -416,7 +448,7 @@ const SpaceDetail = ({ space, viewerName, onBack }: SpaceDetailProps) => {
   const handleDeleteSpace = async () => {
     try {
       await deleteSpace.mutateAsync({ name: space.name });
-      toast.success(t("setting.spaces.delete-success", { space: space.title }));
+      toast.success(t("setting.spaces.delete-success", { space: disambiguatedSpaceTitle }));
       onBack();
     } catch (error) {
       handleError(error, toast.error, { context: "Delete space" });
@@ -436,12 +468,18 @@ const SpaceDetail = ({ space, viewerName, onBack }: SpaceDetailProps) => {
       </button>
 
       <header className="flex min-w-0 flex-col gap-3 border-b border-border/70 pb-4 sm:flex-row sm:items-center">
-        <SpaceMark space={space} size="xl" />
+        <SpaceMark size="xl" />
         <div className="min-w-0 flex-1">
           <div className="flex min-w-0 flex-wrap items-center gap-2">
             <h3 className="truncate text-lg font-semibold tracking-tight">{space.title}</h3>
             <SpaceRoleBadge role={currentRole} />
           </div>
+          <p className="mt-1 flex min-w-0 items-baseline gap-1 text-xs text-muted-foreground">
+            <span className="shrink-0">{t("space.custom-id-label")}:</span>
+            <span title={spaceUid} className="min-w-0 break-all font-mono">
+              {spaceUid}
+            </span>
+          </p>
           <p className="mt-1 truncate text-sm text-muted-foreground">{space.description || t("setting.spaces.no-description")}</p>
         </div>
       </header>
@@ -466,6 +504,12 @@ const SpaceDetail = ({ space, viewerName, onBack }: SpaceDetailProps) => {
               <p className="mt-1 text-xs leading-5 text-muted-foreground">{t("setting.spaces.space-details-description")}</p>
             </div>
             <div className="overflow-hidden rounded-lg border border-border bg-background">
+              <div className="grid gap-2 border-b border-border px-3 py-3 sm:grid-cols-[170px_1fr] sm:items-center">
+                <span className="text-sm font-medium">{t("space.custom-id-label")}</span>
+                <code className="min-w-0 break-all rounded-md bg-muted/35 px-3 py-2 font-mono text-xs leading-5 text-foreground/85">
+                  {spaceUid}
+                </code>
+              </div>
               <div className="grid gap-2 border-b border-border px-3 py-3 sm:grid-cols-[170px_1fr] sm:items-center">
                 <Label htmlFor="space-settings-title">{t("common.name")}</Label>
                 <Input
@@ -685,7 +729,9 @@ const SpaceDetail = ({ space, viewerName, onBack }: SpaceDetailProps) => {
       <ConfirmDialog
         open={leaveOpen}
         onOpenChange={setLeaveOpen}
-        title={t("setting.spaces.leave-confirm-title", { space: space.title })}
+        title={
+          <span className="[overflow-wrap:anywhere]">{t("setting.spaces.leave-confirm-title", { space: disambiguatedSpaceTitle })}</span>
+        }
         description={t("setting.spaces.leave-confirm-description")}
         confirmLabel={t("setting.spaces.leave")}
         cancelLabel={t("common.cancel")}
@@ -695,7 +741,9 @@ const SpaceDetail = ({ space, viewerName, onBack }: SpaceDetailProps) => {
       <ConfirmDialog
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
-        title={t("setting.spaces.delete-confirm-title", { space: space.title })}
+        title={
+          <span className="[overflow-wrap:anywhere]">{t("setting.spaces.delete-confirm-title", { space: disambiguatedSpaceTitle })}</span>
+        }
         description={t("setting.spaces.delete-confirm-description")}
         confirmLabel={t("common.delete")}
         cancelLabel={t("common.cancel")}

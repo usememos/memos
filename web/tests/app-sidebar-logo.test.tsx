@@ -39,7 +39,11 @@ vi.mock("@/components/MemoDisplaySettingMenu", () => ({
 }));
 
 vi.mock("@/components/UserMenu", () => ({
-  default: () => <div>User menu</div>,
+  default: () => (
+    <button type="button" className="w-full">
+      User menu
+    </button>
+  ),
 }));
 
 vi.mock("@/components/CreateSpaceDialog", () => ({
@@ -96,11 +100,19 @@ vi.mock("@/contexts/MemoFilterContext", () => ({
 }));
 
 vi.mock("@/contexts/SpaceContext", () => ({
-  useSpaceContext: () => ({
-    ...spaceState,
-    isLoadingSpaces: false,
-    isSpacesError: false,
-  }),
+  useSpaceContext: () => {
+    const duplicateSpaceTitles = new Set(
+      spaceState.spaces
+        .filter((space, index) => spaceState.spaces.findIndex((candidate) => candidate.title === space.title) !== index)
+        .map((space) => space.title),
+    );
+    return {
+      ...spaceState,
+      duplicateSpaceTitles,
+      isLoadingSpaces: false,
+      isSpacesError: false,
+    };
+  },
 }));
 
 vi.mock("@/hooks/useCurrentUser", () => ({
@@ -290,34 +302,27 @@ describe("App sidebar logo", () => {
     expect(tagsSectionHook).toHaveBeenCalledWith(expect.objectContaining({ scope: "archived" }));
   });
 
-  it("keeps Inbox compact while exposing its unread state accessibly", () => {
-    authState.notifications = [{ status: 1 }, { status: 1 }, { status: 2 }];
-
+  it("uses one unified signed-in footer surface", () => {
     render(
       <MemoryRouter initialEntries={["/inbox"]}>
         <AppSidebar />
       </MemoryRouter>,
     );
 
-    const inbox = screen.getByRole("link", { name: "common.inbox, 2 inbox.unread" });
-    expect(inbox).toHaveAttribute("aria-current", "page");
-    expect(inbox).not.toHaveTextContent("common.inbox");
-    expect(inbox).not.toHaveTextContent("2");
-    expect(inbox.querySelector("[data-inbox-unread-indicator]")).not.toBeNull();
-    expect(inbox.closest("footer")).not.toBeNull();
+    const footer = screen.getByRole("button", { name: "User menu" }).closest("footer");
+    expect(footer).not.toBeNull();
+    expect(footer?.childElementCount).toBe(1);
+    expect(screen.queryByRole("link", { name: /^common\.inbox/ })).not.toBeInTheDocument();
   });
 
-  it.each([
-    ["/Attachments/", "common.attachments"],
-    ["/Inbox/", "common.inbox"],
-  ])("keeps %s active after route normalization", (path, label) => {
+  it("keeps Attachments active after route normalization", () => {
     render(
-      <MemoryRouter initialEntries={[path]}>
+      <MemoryRouter initialEntries={["/Attachments/"]}>
         <AppSidebar />
       </MemoryRouter>,
     );
 
-    expect(screen.getByRole("link", { name: label })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("link", { name: "common.attachments" })).toHaveAttribute("aria-current", "page");
   });
 
   it("hides the instance-level unused attachment collection in a Space", () => {
@@ -377,7 +382,7 @@ describe("App sidebar logo", () => {
     expect(screen.queryByText("Tags")).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Memos logo" })).toHaveAttribute("href", "/");
     expect(screen.getByRole("link", { name: "common.attachments" })).toHaveAttribute("href", "/attachments");
-    expect(screen.getByRole("link", { name: "common.inbox" })).toHaveAttribute("href", "/inbox");
+    expect(screen.queryByRole("link", { name: "common.inbox" })).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "common.home" })).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "common.about" })).not.toBeInTheDocument();
     expect(screen.getByText("User menu").closest("footer")).not.toBeNull();
@@ -460,7 +465,7 @@ describe("App sidebar logo", () => {
     expect(deleteItem).toHaveAttribute("data-variant", "destructive");
   });
 
-  it("keeps collection navigation together and places Inbox in the user footer", async () => {
+  it("keeps collection navigation together and uses the unified user footer", async () => {
     render(
       <MemoryRouter initialEntries={["/attachments"]}>
         <AppSidebar />
@@ -470,9 +475,8 @@ describe("App sidebar logo", () => {
     const scopeTrigger = screen.getByRole("button", { name: "common.home" });
     expectCollapsedNavPill(scopeTrigger, "common.home");
 
-    const inbox = screen.getByRole("link", { name: "common.inbox" });
-    expect(inbox.closest("footer")).not.toBeNull();
-    expect(inbox.closest('nav[aria-label="Primary"]')).toBeNull();
+    expect(screen.getByRole("button", { name: "User menu" }).closest("footer")).not.toBeNull();
+    expect(screen.queryByRole("link", { name: "common.inbox" })).not.toBeInTheDocument();
 
     const attachments = screen.getByRole("link", { name: "common.attachments" });
     expectActiveNavPill(attachments, "common.attachments");

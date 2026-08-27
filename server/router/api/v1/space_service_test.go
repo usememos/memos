@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"uuid"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/stretchr/testify/require"
@@ -50,6 +51,27 @@ func inviteAndAcceptSpaceTestUser(ctx context.Context, t *testing.T, service *AP
 	membership, err := service.AcceptSpaceInvitation(userCtx(ctx, invitee.ID), &v1pb.AcceptSpaceInvitationRequest{Name: invitation.Name})
 	require.NoError(t, err)
 	return membership
+}
+
+func TestCreateSpaceGeneratesUUIDV4WhenSpaceUIDIsEmpty(t *testing.T) {
+	ctx := context.Background()
+	service := newIntegrationService(t)
+	owner := createSpaceTestUser(ctx, t, service, "space-id-owner", store.RoleUser)
+
+	for _, spaceUID := range []string{"", " \t\n"} {
+		space, err := service.CreateSpace(userCtx(ctx, owner.ID), &v1pb.CreateSpaceRequest{
+			SpaceId: spaceUID,
+			Space:   &v1pb.Space{Title: "Same title"},
+		})
+		require.NoError(t, err)
+
+		uid, err := ExtractSpaceUIDFromName(space.Name)
+		require.NoError(t, err)
+		parsed, err := uuid.Parse(uid)
+		require.NoError(t, err)
+		require.Equal(t, parsed.String(), uid, "generated Space UID must be a canonical lowercase UUID")
+		require.Equal(t, byte(4), parsed[6]>>4, "generated Space UID must be UUID v4")
+	}
 }
 
 func TestSpaceServiceMembershipVisibilityAndGovernance(t *testing.T) {

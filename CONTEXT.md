@@ -46,6 +46,22 @@ A share link that grants access to one exact memo through a share token. It does
 An instance-scoped collaboration boundary for accepted members and memo placement. It is not a tenant, folder, or application-wide authorization role.
 _Avoid_: Tenant, workspace, group
 
+**Space ID**:
+The stable internal identity of a Space. It is not exposed as the Space's public identifier.
+_Avoid_: Space UID, Space title
+
+**Space UID**:
+The immutable, instance-wide public identifier assigned when a Space is created. It may be user-defined or generated automatically.
+_Avoid_: Space ID, Space title, slug
+
+**Space resource name**:
+The API identity of a Space in the form `spaces/{space UID}`.
+_Avoid_: Space ID, Space title
+
+**Space title**:
+The mutable, non-unique display label of a Space.
+_Avoid_: Space UID, Space resource name
+
 **Unassigned memo**:
 A memo with no Space placement. Unassigned is an absence of placement, not a Space or collection scope.
 

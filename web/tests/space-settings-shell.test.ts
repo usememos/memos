@@ -1,3 +1,4 @@
+import { AstroidIcon } from "lucide-react";
 import { describe, expect, it } from "vitest";
 import { isSettingSectionKey, SETTINGS_SECTIONS } from "@/components/Settings/settingSections";
 import enTranslation from "@/locales/en.json";
@@ -8,6 +9,7 @@ describe("Spaces settings shell", () => {
     expect(SETTINGS_SECTIONS.find((section) => section.key === "spaces")).toMatchObject({
       scope: "basic",
       labelKey: "setting.spaces.label",
+      icon: AstroidIcon,
     });
   });
 

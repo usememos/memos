@@ -185,7 +185,9 @@ export type CreateSpaceRequest = Message<"memos.api.v1.CreateSpaceRequest"> & {
   space?: Space | undefined;
 
   /**
-   * Optional. The resource ID to use. If empty, one is generated.
+   * Optional. The space UID to use for this space.
+   * If empty, a canonical UUID v4 will be generated.
+   * Format: ^[a-zA-Z0-9]([a-zA-Z0-9-]{0,34}[a-zA-Z0-9])?$
    *
    * @generated from field: string space_id = 2;
    */

@@ -183,3 +183,12 @@ func ValidateAndGenerateUID(provided string) (string, error) {
 	}
 	return uid, nil
 }
+
+// ValidateAndGenerateSpaceUID validates a user-provided Space UID or generates a UUID v4.
+// Custom UIDs use the same format as other public-resource UIDs.
+func ValidateAndGenerateSpaceUID(provided string) (string, error) {
+	if strings.TrimSpace(provided) == "" {
+		return util.GenUUID(), nil
+	}
+	return ValidateAndGenerateUID(provided)
+}

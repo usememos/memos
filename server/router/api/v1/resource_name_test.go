@@ -3,6 +3,7 @@ package v1
 import (
 	"strings"
 	"testing"
+	"uuid"
 )
 
 func TestValidateAndGenerateUIDValidatesUserProvidedResourceIDs(t *testing.T) {
@@ -35,6 +36,37 @@ func TestValidateAndGenerateUIDValidatesUserProvidedResourceIDs(t *testing.T) {
 				t.Fatalf("ValidateAndGenerateUID(%q) = %q", test.provided, uid)
 			}
 		})
+	}
+}
+
+func TestValidateAndGenerateSpaceUID(t *testing.T) {
+	for _, provided := range []string{"", " \t\n"} {
+		generated, err := ValidateAndGenerateSpaceUID(provided)
+		if err != nil {
+			t.Fatalf("ValidateAndGenerateSpaceUID(%q) returned error: %v", provided, err)
+		}
+		parsed, err := uuid.Parse(generated)
+		if err != nil {
+			t.Fatalf("ValidateAndGenerateSpaceUID(%q) = %q, want UUID: %v", provided, generated, err)
+		}
+		if parsed.String() != generated {
+			t.Fatalf("ValidateAndGenerateSpaceUID(%q) = %q, want canonical lowercase UUID", provided, generated)
+		}
+		if parsed[6]>>4 != 4 {
+			t.Fatalf("ValidateAndGenerateSpaceUID(%q) = %q, want UUID v4", provided, generated)
+		}
+	}
+
+	custom, err := ValidateAndGenerateSpaceUID(" Team-Notes ")
+	if err != nil {
+		t.Fatalf("ValidateAndGenerateSpaceUID() returned error for valid custom UID: %v", err)
+	}
+	if custom != "Team-Notes" {
+		t.Fatalf("ValidateAndGenerateSpaceUID() = %q, want %q", custom, "Team-Notes")
+	}
+
+	if _, err := ValidateAndGenerateSpaceUID("team_notes"); err == nil {
+		t.Fatal("ValidateAndGenerateSpaceUID() succeeded for invalid custom UID, want error")
 	}
 }
 

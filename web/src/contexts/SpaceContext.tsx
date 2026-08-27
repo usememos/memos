@@ -4,6 +4,7 @@ import { routeSupportsCollectionScope } from "@/components/AppSidebar/routes";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useSpaces } from "@/hooks/useSpaceQueries";
 import { buildCollectionScopeFilter, type CollectionScope } from "@/lib/cel-filter";
+import { getDuplicateSpaceTitles } from "@/lib/space-display";
 import { ROUTES } from "@/router/routes";
 import type { Space } from "@/types/proto/api/v1/space_service_pb";
 
@@ -35,6 +36,8 @@ const writeSelectedSpaceName = (userName: string, spaceName: string | undefined)
 
 interface SpaceContextValue {
   spaces: Space[];
+  spaceByName: ReadonlyMap<string, Space>;
+  duplicateSpaceTitles: ReadonlySet<string>;
   selectedSpace?: Space;
   selectedSpaceName?: string;
   collectionScope: CollectionScope;
@@ -52,6 +55,8 @@ const SpaceContext = createContext<SpaceContextValue | null>(null);
 // Stable identity for the pre-load and error states, so the memoized context value
 // below does not rebuild — and re-render every consumer — on each provider render.
 const NO_SPACES: Space[] = [];
+const NO_SPACE_BY_NAME: ReadonlyMap<string, Space> = new Map();
+const NO_DUPLICATE_SPACE_TITLES: ReadonlySet<string> = new Set();
 
 function UserSpaceSession({ userName, children }: { userName: string; children: ReactNode }) {
   // Keep router values in refs so switching scope does not make the context callbacks
@@ -67,8 +72,13 @@ function UserSpaceSession({ userName, children }: { userName: string; children: 
   const [optimisticSpace, setOptimisticSpace] = useState<Space>();
   const spacesQuery = useSpaces(userName);
   const spaces = spacesQuery.data ?? NO_SPACES;
+  const spaceByName = useMemo(() => new Map(spaces.map((space) => [space.name, space])), [spaces]);
   const listedSelectedSpace = spaces.find((space) => space.name === selectedSpaceName);
   const selectedSpace = listedSelectedSpace ?? (optimisticSpace?.name === selectedSpaceName ? optimisticSpace : undefined);
+  const duplicateSpaceTitles = useMemo(
+    () => getDuplicateSpaceTitles(selectedSpace && !spaceByName.has(selectedSpace.name) ? [...spaces, selectedSpace] : spaces),
+    [selectedSpace, spaceByName, spaces],
+  );
   const collectionScope = useMemo<CollectionScope>(
     () => (selectedSpaceName ? { kind: "space", name: selectedSpaceName } : ALL_COLLECTION_SCOPE),
     [selectedSpaceName],
@@ -121,6 +131,8 @@ function UserSpaceSession({ userName, children }: { userName: string; children: 
   const value = useMemo<SpaceContextValue>(
     () => ({
       spaces,
+      spaceByName,
+      duplicateSpaceTitles,
       selectedSpace,
       selectedSpaceName,
       collectionScope,
@@ -134,10 +146,12 @@ function UserSpaceSession({ userName, children }: { userName: string; children: 
     [
       clearSelectedSpace,
       collectionScope,
+      duplicateSpaceTitles,
       selectMemos,
       selectSpace,
       selectedSpace,
       selectedSpaceName,
+      spaceByName,
       spaces,
       spacesQuery.isError,
       spacesQuery.isPending,
@@ -149,6 +163,8 @@ function UserSpaceSession({ userName, children }: { userName: string; children: 
 
 const anonymousValue: SpaceContextValue = {
   spaces: [],
+  spaceByName: NO_SPACE_BY_NAME,
+  duplicateSpaceTitles: NO_DUPLICATE_SPACE_TITLES,
   collectionScope: ALL_COLLECTION_SCOPE,
   isLoadingSpaces: false,
   isSpacesError: false,

@@ -120,6 +120,7 @@ describe("InviteSpaceMemberDialog", () => {
     );
 
     expect(screen.getByText("Invite an existing Memos user. They must accept before joining the space.")).toBeInTheDocument();
+    expect(screen.getByText("product")).toBeInTheDocument();
 
     fireEvent.change(screen.getByLabelText("Memos user"), { target: { value: "  @alice  " } });
     act(() => vi.advanceTimersByTime(300));
@@ -140,5 +141,22 @@ describe("InviteSpaceMemberDialog", () => {
       }),
     });
     expect(state.onOpenChange).toHaveBeenCalledWith(false);
+  });
+
+  it("wraps a maximum-length Space UID in the dialog context", () => {
+    const uid = "a".repeat(36);
+
+    render(
+      <InviteSpaceMemberDialog
+        open
+        onOpenChange={state.onOpenChange}
+        space={{ ...productSpace, name: `spaces/${uid}` }}
+        viewerName="users/steven"
+        memberUserNames={new Set(["users/steven"])}
+        pendingInviteeNames={new Set()}
+      />,
+    );
+
+    expect(screen.getByText(uid)).toHaveClass("break-all");
   });
 });

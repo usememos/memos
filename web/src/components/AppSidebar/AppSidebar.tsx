@@ -658,50 +658,6 @@ const SidebarBrand = ({ className }: { className?: string }) => {
   );
 };
 
-const InboxFooterLink = () => {
-  const t = useTranslate();
-  const location = useLocation();
-  const { setMobileOpen } = useAppSidebar();
-  const { data: notifications = [] } = useNotifications();
-  const unreadCount = notifications.filter((notification) => notification.status === UserNotification_Status.UNREAD).length;
-  const active = getSidebarRouteKind(location.pathname) === "inbox";
-  const accessibleLabel = unreadCount > 0 ? `${t("common.inbox")}, ${unreadCount} ${t("inbox.unread")}` : t("common.inbox");
-
-  return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger
-          render={
-            <Link
-              to={ROUTES.INBOX}
-              onClick={() => setMobileOpen(false)}
-              aria-label={accessibleLabel}
-              aria-current={active ? "page" : undefined}
-              className={cn(
-                "flex size-9 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-sidebar-accent/65 hover:text-foreground md:size-8",
-                SIDEBAR_ROW_FOCUS_CLASSES,
-                active && "bg-sidebar-accent text-sidebar-accent-foreground",
-              )}
-            />
-          }
-        >
-          <span className="relative flex">
-            <BellIcon className="size-4" strokeWidth={1.8} />
-            {unreadCount > 0 && (
-              <span
-                aria-hidden="true"
-                data-inbox-unread-indicator
-                className="absolute -end-0.5 -top-0.5 size-1.5 rounded-full bg-primary ring-2 ring-sidebar"
-              />
-            )}
-          </span>
-        </TooltipTrigger>
-        <TooltipContent side="top">{accessibleLabel}</TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
-  );
-};
-
 const AppSidebar = ({ className }: { className?: string }) => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
@@ -734,12 +690,7 @@ const AppSidebar = ({ className }: { className?: string }) => {
       </div>
       <footer className="shrink-0 border-t border-border/70">
         {currentUser ? (
-          <div className="flex h-10 min-w-0 items-center pe-1">
-            <div className="min-w-0 flex-1">
-              <UserMenu />
-            </div>
-            <InboxFooterLink />
-          </div>
+          <UserMenu />
         ) : (
           <Link
             to={ROUTES.AUTH}
