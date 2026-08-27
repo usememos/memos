@@ -1,33 +1,27 @@
+import { AstroidIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { Space } from "@/types/proto/api/v1/space_service_pb";
 
 const MARK_SCALE = {
-  xl: "size-11 rounded-lg text-base",
-  lg: "size-9 rounded-[7px] text-sm",
-  md: "size-7 rounded-[7px] text-[13px]",
-  sm: "size-5 rounded-[5px] text-[11px]",
+  xl: { mark: "size-11 rounded-lg", icon: "size-6" },
+  lg: { mark: "size-9 rounded-[7px]", icon: "size-5" },
+  md: { mark: "size-7 rounded-[7px]", icon: "size-4" },
+  sm: { mark: "size-5 rounded-[5px]", icon: "size-3" },
 } as const;
 
 interface Props {
-  space?: Pick<Space, "title">;
   size?: keyof typeof MARK_SCALE;
   className?: string;
 }
 
-const SpaceMark = ({ space, size = "md", className }: Props) => {
-  const label = space?.title.trim() || "S";
-  const initial = Array.from(label)[0]?.toLocaleUpperCase() ?? "S";
+const SpaceMark = ({ size = "md", className }: Props) => {
+  const scale = MARK_SCALE[size];
 
   return (
     <span
       aria-hidden
-      className={cn(
-        "flex shrink-0 items-center justify-center bg-sidebar-accent font-semibold text-sidebar-accent-foreground",
-        MARK_SCALE[size],
-        className,
-      )}
+      className={cn("flex shrink-0 items-center justify-center bg-sidebar-accent text-sidebar-accent-foreground", scale.mark, className)}
     >
-      {initial}
+      <AstroidIcon className={scale.icon} strokeWidth={1.8} />
     </span>
   );
 };

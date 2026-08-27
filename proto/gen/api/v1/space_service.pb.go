@@ -299,7 +299,9 @@ type CreateSpaceRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The space to create.
 	Space *Space `protobuf:"bytes,1,opt,name=space,proto3" json:"space,omitempty"`
-	// Optional. The resource ID to use. If empty, one is generated.
+	// Optional. The space UID to use for this space.
+	// If empty, a canonical UUID v4 will be generated.
+	// Format: ^[a-zA-Z0-9]([a-zA-Z0-9-]{0,34}[a-zA-Z0-9])?$
 	SpaceId       string `protobuf:"bytes,2,opt,name=space_id,json=spaceId,proto3" json:"space_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import SpaceSwitcher from "@/components/AppSidebar/SpaceSwitcher";
 
@@ -30,11 +30,19 @@ vi.mock("@/components/CreateSpaceDialog", () => ({
 }));
 
 vi.mock("@/contexts/SpaceContext", () => ({
-  useSpaceContext: () => ({
-    ...spaceState,
-    isLoadingSpaces: false,
-    isSpacesError: false,
-  }),
+  useSpaceContext: () => {
+    const duplicateSpaceTitles = new Set(
+      spaceState.spaces
+        .filter((space, index) => spaceState.spaces.findIndex((candidate) => candidate.title === space.title) !== index)
+        .map((space) => space.title),
+    );
+    return {
+      ...spaceState,
+      duplicateSpaceTitles,
+      isLoadingSpaces: false,
+      isSpacesError: false,
+    };
+  },
 }));
 
 vi.mock("@/utils/i18n", () => ({
@@ -43,6 +51,10 @@ vi.mock("@/utils/i18n", () => ({
 
 describe("SpaceSwitcher", () => {
   beforeEach(() => {
+    spaceState.spaces = [
+      { name: "spaces/product", title: "Product", description: "" },
+      { name: "spaces/research", title: "Research", description: "" },
+    ];
     spaceState.selectedSpace = undefined;
     spaceState.selectedSpaceName = undefined;
     spaceState.selectMemos.mockClear();
@@ -55,7 +67,9 @@ describe("SpaceSwitcher", () => {
     fireEvent.click(screen.getByRole("button", { name: "space.switch: common.memos" }));
 
     expect(await screen.findByRole("menuitemradio", { name: "Memos" })).toHaveAttribute("aria-checked", "true");
-    expect(screen.getByRole("menuitemradio", { name: "Product" })).toHaveAttribute("aria-checked", "false");
+    const productRow = screen.getByRole("menuitemradio", { name: "Product" });
+    expect(productRow).toHaveAttribute("aria-checked", "false");
+    expect(productRow.querySelector(".lucide-astroid")).not.toBeNull();
     expect(screen.getByRole("menuitemradio", { name: "Research" })).toBeInTheDocument();
     expect(screen.getByRole("menuitem", { name: "space.create" })).toBeInTheDocument();
   });
@@ -73,8 +87,32 @@ describe("SpaceSwitcher", () => {
     // The active row carries the fill; the check is its only indicator.
     const active = screen.getByRole("menuitemradio", { name: "Product" });
     expect(active.className).toContain("bg-accent/60");
-    expect(active.querySelector("svg")).not.toBeNull();
-    expect(screen.getByRole("menuitemradio", { name: "Research" }).querySelector("svg")).toBeNull();
+    expect(active.querySelector(".lucide-check")).not.toBeNull();
+    expect(screen.getByRole("menuitemradio", { name: "Research" }).querySelector(".lucide-check")).toBeNull();
+  });
+
+  it("shows UIDs only for Spaces whose titles match", async () => {
+    const uuid = "123e4567-e89b-12d3-a456-426614174000";
+    spaceState.spaces = [
+      { name: "spaces/product-notes", title: "Product", description: "" },
+      { name: `spaces/${uuid}`, title: "Product", description: "" },
+      { name: "spaces/research-space", title: "Research", description: "" },
+    ];
+    spaceState.selectedSpaceName = spaceState.spaces[0].name;
+    spaceState.selectedSpace = spaceState.spaces[0];
+    render(<SpaceSwitcher />);
+
+    const trigger = screen.getByRole("button", { name: "space.switch: Product (product-notes)" });
+    expect(within(trigger).getByTitle("product-notes")).toHaveTextContent("product-notes");
+    fireEvent.click(trigger);
+
+    const customIdRow = await screen.findByRole("menuitemradio", { name: "Product (product-notes)" });
+    const uuidRow = screen.getByRole("menuitemradio", { name: `Product (${uuid})` });
+    expect(within(customIdRow).getByTitle("product-notes")).toHaveTextContent("product-notes");
+    expect(within(uuidRow).getByTitle(uuid)).toHaveTextContent("123e4567…");
+    const researchRow = screen.getByRole("menuitemradio", { name: "Research" });
+    expect(within(researchRow).queryByTitle("research-space")).not.toBeInTheDocument();
+    expect(researchRow).not.toHaveTextContent("research-space");
   });
 
   it("switches context without navigation and opens Space creation", async () => {

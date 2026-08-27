@@ -63,6 +63,7 @@ describe("Quick Find navigation", () => {
   beforeEach(() => {
     sessionStorage.clear();
     state.currentUser = { name: "users/alice" };
+    state.spaces = [{ name: "spaces/product", title: "Product", description: "" }];
     state.filters = [];
     state.setFilters.mockClear();
     state.setMemoView.mockClear();
@@ -105,6 +106,63 @@ describe("Quick Find navigation", () => {
     });
 
     expect(screen.getByTestId("path")).toHaveTextContent("/inbox");
+  });
+
+  it("keeps a unique selected Space title compact in remembered-collection search", async () => {
+    sessionStorage.setItem(getSelectedSpaceStorageKey("users/alice"), "spaces/product");
+
+    const router = createMemoryRouter(
+      [
+        {
+          path: "*",
+          element: (
+            <SpaceProvider>
+              <AppSidebarProvider>
+                <Harness />
+              </AppSidebarProvider>
+            </SpaceProvider>
+          ),
+        },
+      ],
+      { initialEntries: ["/"] },
+    );
+    render(<RouterProvider router={router} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Open Quick Find" }));
+    const input = await screen.findByRole("textbox");
+    expect(input).toHaveAttribute("placeholder", "common.search Product · common.memos");
+    expect(input).toHaveAttribute("aria-label", "common.search Product · common.memos");
+  });
+
+  it("shows a UID for matching titles and compacts its UUID only in the placeholder", async () => {
+    const uuid = "123e4567-e89b-12d3-a456-426614174000";
+    state.spaces = [
+      { name: `spaces/${uuid}`, title: "Product", description: "" },
+      { name: "spaces/product-roadmap", title: "Product", description: "" },
+    ];
+    sessionStorage.setItem(getSelectedSpaceStorageKey("users/alice"), `spaces/${uuid}`);
+
+    const router = createMemoryRouter(
+      [
+        {
+          path: "*",
+          element: (
+            <SpaceProvider>
+              <AppSidebarProvider>
+                <Harness />
+              </AppSidebarProvider>
+            </SpaceProvider>
+          ),
+        },
+      ],
+      { initialEntries: ["/"] },
+    );
+    render(<RouterProvider router={router} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Open Quick Find" }));
+    const input = await screen.findByRole("textbox");
+    expect(input).toHaveAttribute("placeholder", "common.search Product (123e4567…) · common.memos");
+    expect(input).toHaveAttribute("aria-label", `common.search Product (${uuid}) · common.memos`);
   });
 
   it("preserves an anonymous global page in history", async () => {

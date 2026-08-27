@@ -44,6 +44,29 @@ receive no special boundary handling.
 A mention candidate whose exact username resolves to a user under the consuming operation's existing account-status and visibility policy. User-targeted
 effects apply to the resolved user ID, not to unresolved source text.
 
+## Spaces
+
+### Space
+
+An instance-scoped collaboration boundary for accepted members and memo placement. A Space is not a tenant, folder, or application-wide authorization
+role.
+
+### Space ID
+
+The stable internal identity of a Space. It is distinct from the public Space UID and the mutable Space title.
+
+### Space UID
+
+The immutable, instance-wide public identifier assigned when a Space is created. It may be user-defined or generated automatically.
+
+### Space resource name
+
+The API identity of a Space in the form `spaces/{space UID}`.
+
+### Space title
+
+The mutable, non-unique display label of a Space.
+
 ## Tags
 
 ### Tag

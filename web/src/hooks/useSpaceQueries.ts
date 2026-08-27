@@ -198,9 +198,10 @@ export function useCreateSpace(viewerName: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ title, description }: { title: string; description?: string }) =>
+    mutationFn: ({ title, description, spaceId }: { title: string; description?: string; spaceId: string }) =>
       spaceServiceClient.createSpace({
         space: create(SpaceSchema, { title, description }),
+        spaceId,
       }),
     onSuccess: (space) => {
       queryClient.setQueryData<Space[]>(spaceKeys.list(viewerName), (spaces = []) => upsertByName(spaces, space));

@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useSpaceContext } from "@/contexts/SpaceContext";
+import { extractSpaceUidFromName, formatSpaceUidForDisplay } from "@/lib/space-display";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 
@@ -24,8 +25,25 @@ const RowIcon = ({ icon: Icon, className }: { icon: LucideIcon; className?: stri
   </span>
 );
 
-const ContextItem = ({ selected, onSelect, children }: { selected: boolean; onSelect: () => void; children: ReactNode }) => (
-  <DropdownMenuItem role="menuitemradio" aria-checked={selected} closeOnClick onClick={onSelect} className={cn(selected && "bg-accent/60")}>
+const ContextItem = ({
+  selected,
+  onSelect,
+  children,
+  ariaLabel,
+}: {
+  selected: boolean;
+  onSelect: () => void;
+  children: ReactNode;
+  ariaLabel?: string;
+}) => (
+  <DropdownMenuItem
+    role="menuitemradio"
+    aria-checked={selected}
+    aria-label={ariaLabel}
+    closeOnClick
+    onClick={onSelect}
+    className={cn(selected && "bg-accent/60")}
+  >
     {children}
     {selected && <CheckIcon className="ms-auto size-3.5 shrink-0 text-primary" />}
   </DropdownMenuItem>
@@ -33,9 +51,15 @@ const ContextItem = ({ selected, onSelect, children }: { selected: boolean; onSe
 
 function SpaceSwitcher({ className }: { className?: string }) {
   const t = useTranslate();
-  const { spaces, selectedSpace, selectedSpaceName, isLoadingSpaces, isSpacesError, selectMemos, selectSpace } = useSpaceContext();
+  const { spaces, duplicateSpaceTitles, selectedSpace, selectedSpaceName, isLoadingSpaces, isSpacesError, selectMemos, selectSpace } =
+    useSpaceContext();
   const [createOpen, setCreateOpen] = useState(false);
-  const currentContextLabel = selectedSpaceName ? selectedSpace?.title || t("space.current") : t("common.memos");
+  const selectedSpaceIdentity = selectedSpace?.name || selectedSpaceName || "";
+  const selectedSpaceUid = selectedSpaceIdentity ? extractSpaceUidFromName(selectedSpaceIdentity) : "";
+  const showSelectedSpaceUid = selectedSpace ? duplicateSpaceTitles.has(selectedSpace.title) : Boolean(selectedSpaceName);
+  const currentContextLabel = selectedSpaceName
+    ? `${selectedSpace?.title || t("space.current")}${showSelectedSpaceUid && selectedSpaceUid ? ` (${selectedSpaceUid})` : ""}`
+    : t("common.memos");
 
   return (
     <>
@@ -55,9 +79,20 @@ function SpaceSwitcher({ className }: { className?: string }) {
           <span className="flex min-w-0 flex-1 items-center">
             {selectedSpaceName ? (
               <>
-                <SpaceMark space={selectedSpace} />
-                <span className="ms-1.5 min-w-0 truncate text-[14px] font-medium tracking-[-0.01em] text-foreground">
-                  {selectedSpace?.title || t("space.current")}
+                <SpaceMark />
+                <span className="ms-1.5 flex min-w-0 flex-1 flex-col justify-center">
+                  <span className="block truncate text-[14px] font-medium leading-4 tracking-[-0.01em] text-foreground">
+                    {selectedSpace?.title || t("space.current")}
+                  </span>
+                  {showSelectedSpaceUid && selectedSpaceUid ? (
+                    <span
+                      aria-hidden="true"
+                      title={selectedSpaceUid}
+                      className="block truncate font-mono text-[10px] leading-3 text-muted-foreground"
+                    >
+                      {formatSpaceUidForDisplay(selectedSpaceIdentity)}
+                    </span>
+                  ) : null}
                 </span>
               </>
             ) : (
@@ -76,12 +111,33 @@ function SpaceSwitcher({ className }: { className?: string }) {
             {spaces.length > 0 && (
               <>
                 <DropdownMenuLabel className="pb-0.5 pt-1.5 font-normal text-muted-foreground">{t("space.spaces")}</DropdownMenuLabel>
-                {spaces.map((space) => (
-                  <ContextItem key={space.name} selected={space.name === selectedSpaceName} onSelect={() => selectSpace(space)}>
-                    <SpaceMark space={space} size="sm" />
-                    <span className="min-w-0 flex-1 truncate font-medium">{space.title}</span>
-                  </ContextItem>
-                ))}
+                {spaces.map((space) => {
+                  const uid = extractSpaceUidFromName(space.name);
+                  const showUid = duplicateSpaceTitles.has(space.title);
+
+                  return (
+                    <ContextItem
+                      key={space.name}
+                      selected={space.name === selectedSpaceName}
+                      onSelect={() => selectSpace(space)}
+                      ariaLabel={showUid && uid ? `${space.title} (${uid})` : space.title}
+                    >
+                      <SpaceMark size="sm" />
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate font-medium">{space.title}</span>
+                        {showUid && uid ? (
+                          <span
+                            aria-hidden="true"
+                            title={uid}
+                            className="block truncate font-mono text-[10px] leading-3.5 text-muted-foreground"
+                          >
+                            {formatSpaceUidForDisplay(space.name)}
+                          </span>
+                        ) : null}
+                      </span>
+                    </ContextItem>
+                  );
+                })}
               </>
             )}
           </DropdownMenuGroup>

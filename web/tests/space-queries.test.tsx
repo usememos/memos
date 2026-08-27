@@ -199,10 +199,11 @@ describe("Space queries", () => {
     );
 
     await act(async () => {
-      await result.current.create.mutateAsync({ title: "Research", description: "Notes" });
+      await result.current.create.mutateAsync({ title: "Research", description: "Notes", spaceId: "research" });
     });
     expect(clients.createSpace).toHaveBeenCalledWith({
       space: expect.objectContaining({ title: "Research", description: "Notes" }),
+      spaceId: "research",
     });
     expect(queryClient.getQueryData(spaceKeys.list(VIEWER))).toEqual([originalSpace, createdSpace]);
 

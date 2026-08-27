@@ -26,8 +26,17 @@ vi.mock("@/hooks/useSpaceQueries", () => ({
 }));
 
 const Probe = () => {
-  const { clearSelectedSpace, collectionScope, memoFilter, spaces, selectedSpace, selectedSpaceName, selectMemos, selectSpace } =
-    useSpaceContext();
+  const {
+    clearSelectedSpace,
+    collectionScope,
+    duplicateSpaceTitles,
+    memoFilter,
+    spaces,
+    selectedSpace,
+    selectedSpaceName,
+    selectMemos,
+    selectSpace,
+  } = useSpaceContext();
   return (
     <div>
       <output data-testid="selected-name">{selectedSpaceName ?? "Memos"}</output>
@@ -36,6 +45,7 @@ const Probe = () => {
         {collectionScope.kind === "space" ? `${collectionScope.kind}:${collectionScope.name}` : collectionScope.kind}
       </output>
       <output data-testid="memo-filter">{memoFilter ?? "all"}</output>
+      <output data-testid="duplicate-titles">{[...duplicateSpaceTitles].join(",")}</output>
       <button type="button" onClick={selectMemos}>
         Select Memos
       </button>
@@ -128,6 +138,15 @@ describe("SpaceProvider", () => {
     expect(screen.getByTestId("selected-title")).toHaveTextContent(newlyCreatedSpace.title);
     expect(screen.getByTestId("memo-filter")).toHaveTextContent('space == "spaces/new"');
     expect(sessionStorage.getItem(getSelectedSpaceStorageKey("users/alice"))).toBe(newlyCreatedSpace.name);
+  });
+
+  it("includes an optimistic selected Space when deriving matching titles", () => {
+    state.query.data = [{ name: "spaces/existing-new", title: "New", description: "" }];
+    renderProvider();
+
+    fireEvent.click(screen.getByRole("button", { name: "Select new Space" }));
+
+    expect(screen.getByTestId("duplicate-titles")).toHaveTextContent("New");
   });
 
   it.each(["/", "/explore", "/attachments"])("preserves the current collection route when switching to a Space from %s", (initialPath) => {

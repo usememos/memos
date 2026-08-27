@@ -94,7 +94,7 @@ func (s *APIV1Service) CreateSpace(ctx context.Context, request *v1pb.CreateSpac
 	if title == "" {
 		return nil, status.Error(codes.InvalidArgument, "space title is required")
 	}
-	uid, err := ValidateAndGenerateUID(request.SpaceId)
+	uid, err := ValidateAndGenerateSpaceUID(request.SpaceId)
 	if err != nil {
 		return nil, err
 	}

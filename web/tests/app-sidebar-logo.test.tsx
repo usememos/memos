@@ -96,11 +96,19 @@ vi.mock("@/contexts/MemoFilterContext", () => ({
 }));
 
 vi.mock("@/contexts/SpaceContext", () => ({
-  useSpaceContext: () => ({
-    ...spaceState,
-    isLoadingSpaces: false,
-    isSpacesError: false,
-  }),
+  useSpaceContext: () => {
+    const duplicateSpaceTitles = new Set(
+      spaceState.spaces
+        .filter((space, index) => spaceState.spaces.findIndex((candidate) => candidate.title === space.title) !== index)
+        .map((space) => space.title),
+    );
+    return {
+      ...spaceState,
+      duplicateSpaceTitles,
+      isLoadingSpaces: false,
+      isSpacesError: false,
+    };
+  },
 }));
 
 vi.mock("@/hooks/useCurrentUser", () => ({

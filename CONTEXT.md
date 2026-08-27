@@ -24,6 +24,22 @@ _Avoid_: Content reaction, generic reaction, reaction target
 An instance-scoped collaboration boundary for accepted members and memo placement. It is not a tenant, folder, or application-wide authorization role.
 _Avoid_: Tenant, workspace, group
 
+**Space ID**:
+The stable internal identity of a Space. It is not exposed as the Space's public identifier.
+_Avoid_: Space UID, Space title
+
+**Space UID**:
+The immutable, instance-wide public identifier assigned when a Space is created. It may be user-defined or generated automatically.
+_Avoid_: Space ID, Space title, slug
+
+**Space resource name**:
+The API identity of a Space in the form `spaces/{space UID}`.
+_Avoid_: Space ID, Space title
+
+**Space title**:
+The mutable, non-unique display label of a Space.
+_Avoid_: Space UID, Space resource name
+
 **Space invitation**:
 A pending offer for an existing active Memos user to join a Space with a specified Space role. It grants no membership or Space access until that user accepts it.
 _Avoid_: Pending membership, direct add

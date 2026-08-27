@@ -10,6 +10,7 @@ import { useSpaceContext } from "@/contexts/SpaceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoViews } from "@/hooks/useUserQueries";
 import { BUILTIN_TASKS_VIEW_ID, getMemoViewId, isMemoScopeRoute } from "@/lib/memo-views";
+import { extractSpaceUidFromName, formatSpaceUidForDisplay } from "@/lib/space-display";
 import { useTranslate } from "@/utils/i18n";
 import { getRouteActionPolicy, getSidebarRouteKind } from "./routes";
 
@@ -55,7 +56,7 @@ const QuickFindDialog = () => {
   const currentUser = useCurrentUser();
   const { data: memoViews = [] } = useMemoViews(currentUser?.name);
   const { filters, setFilters, setMemoView, memoView } = useMemoFilterContext();
-  const { clearSelectedSpace, selectedSpace, selectedSpaceName } = useSpaceContext();
+  const { clearSelectedSpace, duplicateSpaceTitles, selectedSpace, selectedSpaceName } = useSpaceContext();
   const { quickFindOpen, setQuickFindOpen } = useAppSidebar();
   const [query, setQuery] = useState("");
   const viewApplies = isMemoScopeRoute(location.pathname);
@@ -63,10 +64,19 @@ const QuickFindDialog = () => {
   const lensLabel =
     viewApplies && memoView === BUILTIN_TASKS_VIEW_ID ? t("common.tasks") : selectedMemoView?.title || getScopeLabel(location.pathname, t);
   const routePolicy = getRouteActionPolicy(location.pathname);
+  const selectedSpaceUid = selectedSpaceName ? extractSpaceUidFromName(selectedSpaceName) : "";
+  const selectedSpaceUidDisplay = selectedSpaceName ? formatSpaceUidForDisplay(selectedSpaceName) : "";
+  const showSelectedSpaceUid = selectedSpace ? duplicateSpaceTitles.has(selectedSpace.title) : Boolean(selectedSpaceName);
+  const selectedSpaceLabel = `${selectedSpace?.title || t("space.current")}${
+    showSelectedSpaceUid && selectedSpaceUid ? ` (${selectedSpaceUid})` : ""
+  }`;
+  const compactSelectedSpaceLabel = `${selectedSpace?.title || t("space.current")}${
+    showSelectedSpaceUid && selectedSpaceUidDisplay ? ` (${selectedSpaceUidDisplay})` : ""
+  }`;
   const scopeLabel =
-    routePolicy.searchScope === "remembered-collection" && selectedSpaceName
-      ? `${selectedSpace?.title || t("space.current")} · ${lensLabel}`
-      : lensLabel;
+    routePolicy.searchScope === "remembered-collection" && selectedSpaceName ? `${selectedSpaceLabel} · ${lensLabel}` : lensLabel;
+  const compactScopeLabel =
+    routePolicy.searchScope === "remembered-collection" && selectedSpaceName ? `${compactSelectedSpaceLabel} · ${lensLabel}` : lensLabel;
 
   useEffect(() => {
     if (!quickFindOpen) return;
@@ -125,7 +135,7 @@ const QuickFindDialog = () => {
               submitQuery();
             }}
             className="h-10 border-0 bg-transparent px-0 !text-[14px] shadow-none focus-visible:ring-0"
-            placeholder={`${t("common.search")} ${scopeLabel}`}
+            placeholder={`${t("common.search")} ${compactScopeLabel}`}
             aria-label={`${t("common.search")} ${scopeLabel}`}
           />
           <Button
