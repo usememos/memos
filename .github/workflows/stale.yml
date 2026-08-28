@@ -1,0 +1,50 @@
+name: Manage Stale Issues and Pull Requests
+
+on:
+  schedule:
+    # Run daily away from the top of the hour to reduce scheduling delays.
+    - cron: "17 2 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  stale:
+    name: Mark and Close Stale Items
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Process stale issues and pull requests
+        uses: actions/stale@4391f3da665fdf50b6810c1a66712fb9ba21aa93 # v11.0.0
+        with:
+          repo-token: ${{ github.token }}
+
+          days-before-issue-stale: 30
+          days-before-issue-close: 7
+          stale-issue-label: "Stale"
+          stale-issue-message: >-
+            This issue has been automatically marked as stale because it has had no activity for 30 days.
+            It will be closed in 7 days if no further activity occurs. Comment with any relevant updates to keep it open.
+          close-issue-message: >-
+            This issue has been automatically closed because it remained inactive for 7 days after being marked stale.
+            If it is still relevant, comment with updated details so it can be reconsidered.
+
+          days-before-pr-stale: 30
+          days-before-pr-close: 7
+          stale-pr-label: "Stale"
+          stale-pr-message: >-
+            This pull request has been automatically marked as stale because it has had no activity for 30 days.
+            It will be closed in 7 days if no further activity occurs. Push a commit or leave a comment to keep it open.
+          close-pr-message: >-
+            This pull request has been automatically closed because it remained inactive for 7 days after being marked stale.
+            If you would like to continue the work, comment with an update so it can be reconsidered.
+
+          remove-stale-when-updated: true
+          operations-per-run: 100
