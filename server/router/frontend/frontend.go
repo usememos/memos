@@ -80,7 +80,7 @@ func spaFallbackMiddleware(frontendFS fs.FS) echo.MiddlewareFunc {
 }
 
 func shouldSkipFrontendStatic(requestPath string) bool {
-	if requestPath == "/robots.txt" || requestPath == "/sitemap.xml" || strings.HasSuffix(requestPath, "/rss.xml") {
+	if requestPath == "/robots.txt" || requestPath == "/sitemap.xml" {
 		return true
 	}
 	return hasPathPrefix(requestPath, "/api") ||

@@ -20,7 +20,6 @@ import (
 	"github.com/usememos/memos/server/router/fileserver"
 	"github.com/usememos/memos/server/router/frontend"
 	"github.com/usememos/memos/server/router/mcp"
-	"github.com/usememos/memos/server/router/rss"
 	"github.com/usememos/memos/store"
 )
 
@@ -66,8 +65,6 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	// Serve frontend static files.
 	frontend.NewFrontendService(profile, store).Serve(ctx, echoServer)
 
-	rootGroup := echoServer.Group("")
-
 	apiV1Service := apiv1.NewAPIV1Service(s.Secret, profile, store)
 	s.sseHub = apiV1Service.SSEHub
 
@@ -75,9 +72,6 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	// This uses native HTTP serving (http.ServeContent) instead of gRPC for video/audio files.
 	fileServerService := fileserver.NewFileServerService(s.Profile, s.Store, s.Secret)
 	fileServerService.RegisterRoutes(echoServer)
-
-	// Create and register RSS routes (needs markdown service from apiV1Service).
-	rss.NewRSSService(s.Store, apiV1Service.MarkdownService).RegisterRoutes(rootGroup)
 
 	// Register gRPC gateway as api v1 (includes SSE endpoint on CORS-enabled group).
 	if err := apiV1Service.RegisterGateway(ctx, echoServer); err != nil {

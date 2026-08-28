@@ -15,7 +15,7 @@ source of truth and reuses the API's authentication and authorization as-is.
 
 ## Integration
 
-`server.NewServer` calls `mcp.NewMCPService` after registering the API, file, RSS, and gRPC-gateway routes, passing the same Echo server:
+`server.NewServer` calls `mcp.NewMCPService` after registering the API, file, and gRPC-gateway routes, passing the same Echo server:
 
 ```go
 mcpService, err := mcp.NewMCPService(profile, echoServer)

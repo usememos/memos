@@ -2,7 +2,7 @@
 //
 // Every other server test constructs apiv1.APIV1Service directly, which skips
 // server.NewServer entirely. That leaves route registration, gRPC-gateway
-// wiring, MCP/RSS/fileserver/frontend mounting, CORS and the secret bootstrap
+// wiring, MCP/fileserver/frontend mounting, CORS and the secret bootstrap
 // covered only by the Docker release script. These tests boot the real server
 // the same way cmd/memos/main.go does so a wiring regression fails in CI.
 package test
@@ -289,12 +289,6 @@ func TestStartupServesEveryRegisteredRouter(t *testing.T) {
 		require.Equal(t, http.StatusOK, resp.StatusCode, "public GET fallback should permit anonymous form posts")
 	})
 
-	t.Run("rss", func(t *testing.T) {
-		status, body := inst.do(t, http.MethodGet, "/explore/rss.xml", "", nil)
-		require.Equal(t, http.StatusOK, status, "rss route should be mounted: %s", body)
-		require.Contains(t, string(body), "<?xml")
-	})
-
 	t.Run("mcp", func(t *testing.T) {
 		// A bare POST is enough to prove the handler is mounted; the MCP
 		// protocol itself is covered by server/router/mcp tests.
@@ -453,10 +447,6 @@ func TestStartupPrivateInstanceGatewayPolicy(t *testing.T) {
 	status, _ = inst.do(t, http.MethodGet, "/api/v1/memos/startup-private-public", "", nil)
 	require.Equal(t, http.StatusUnauthorized, status,
 		"anonymous GetMemo over REST should be refused on a private instance")
-
-	status, _ = inst.do(t, http.MethodGet, "/explore/rss.xml", "", nil)
-	require.Equal(t, http.StatusNotFound, status,
-		"anonymous RSS should be unavailable on a private instance")
 }
 
 // TestStartupGatewayOmitsNullMessageFields checks the JSON the gateway actually
