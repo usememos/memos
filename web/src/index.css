@@ -31,3 +31,31 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .map-attribution-minimal .leaflet-control-attribution {
+    margin: 0 0.25rem 0.25rem 0 !important;
+    border-radius: 0.25rem;
+    background: color-mix(in oklch, var(--background) 90%, transparent);
+    color: var(--muted-foreground);
+    font-size: 10px;
+    line-height: 1rem;
+    padding: 0 0.25rem;
+  }
+
+  .map-attribution-minimal .leaflet-control-attribution a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .map-attribution-minimal .leaflet-control-attribution a:hover {
+    color: var(--foreground);
+    text-decoration: underline;
+  }
+
+  .map-attribution-minimal .leaflet-control-attribution a:focus-visible {
+    border-radius: 0.125rem;
+    outline: 2px solid var(--ring);
+    outline-offset: 1px;
+  }
+}
