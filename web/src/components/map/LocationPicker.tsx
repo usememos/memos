@@ -221,8 +221,8 @@ const LocationPicker = ({ readonly: readOnly = false, latlng, onChange = noopOnL
         zoomControl={false}
         attributionControl={false}
       >
-        <OpenStreetMapTileLayer />
         <MinimalAttributionControl />
+        <OpenStreetMapTileLayer />
         <LocationMarker position={markerPosition} readonly={readOnly} onChange={onChange} />
         <MapControls position={latlng} />
         <MapCleanup />

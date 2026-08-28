@@ -106,8 +106,8 @@ const UserMemoMap = ({ creator, className }: Props) => {
         zoomControl={false}
         attributionControl={false}
       >
-        <OpenStreetMapTileLayer />
         <MinimalAttributionControl />
+        <OpenStreetMapTileLayer />
         <MarkerClusterGroup
           chunkedLoading
           iconCreateFunction={createClusterCustomIcon}
