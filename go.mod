@@ -15,7 +15,6 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/google/cel-go v0.31.0
 	github.com/google/jsonschema-go v0.4.3
-	github.com/gorilla/feeds v1.2.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.30.0
 	github.com/johannesboyne/gofakes3 v1.2.0
 	github.com/joho/godotenv v1.5.1

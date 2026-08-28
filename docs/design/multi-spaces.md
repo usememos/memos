@@ -95,7 +95,7 @@ Distribution is derived rather than separately configured:
 - A comment or conversation query requires its context memo to be readable, then filters every replying memo by that memo's own audience.
 - A `COMMENT` or `REFERENCE` relation and its snippet are returned only when both endpoints are readable.
 - Reactions are readable whenever their memo is readable.
-- RSS, public profiles, and other public surfaces continue to use `PUBLIC`, not Space placement.
+- Public profiles and other public surfaces continue to use `PUBLIC`, not Space placement.
 
 ### Participation and governance
 

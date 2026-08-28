@@ -5,7 +5,6 @@ import (
 	"github.com/yuin/goldmark/ast"
 	east "github.com/yuin/goldmark/extension/ast"
 	"github.com/yuin/goldmark/parser"
-	"github.com/yuin/goldmark/renderer"
 	"github.com/yuin/goldmark/text"
 	"github.com/yuin/goldmark/util"
 
@@ -30,11 +29,6 @@ func (*tagExtension) Extend(m goldmark.Markdown) {
 		parser.WithASTTransformers(
 			// Run after GFM has resolved emphasis, links, tables, and other syntax.
 			util.Prioritized(&tagASTTransformer{}, 1000),
-		),
-	)
-	m.Renderer().AddOptions(
-		renderer.WithNodeRenderers(
-			util.Prioritized(&tagNodeRenderer{}, 500),
 		),
 	)
 }
@@ -137,45 +131,4 @@ func insertSplitTextBefore(parent ast.Node, before ast.Node, original *ast.Text,
 		newText.SetHardLineBreak(original.HardLineBreak())
 	}
 	parent.InsertBefore(parent, before, newText)
-}
-
-type tagNodeRenderer struct{}
-
-func (*tagNodeRenderer) RegisterFuncs(registerer renderer.NodeRendererFuncRegisterer) {
-	registerer.Register(mast.KindTag, renderTagNode)
-	registerer.Register(mast.KindInlineMath, renderMathNode)
-	registerer.Register(mast.KindBlockMath, renderMathNode)
-}
-
-func renderTagNode(writer util.BufWriter, _ []byte, node ast.Node, entering bool) (ast.WalkStatus, error) {
-	if !entering {
-		return ast.WalkContinue, nil
-	}
-	tagNode, ok := node.(*mast.TagNode)
-	if !ok {
-		return ast.WalkContinue, nil
-	}
-	spelling := tagNode.Source
-	if len(spelling) == 0 {
-		spelling = append([]byte{'#'}, tagNode.Tag...)
-	}
-	_, _ = writer.Write(util.EscapeHTML(spelling))
-	return ast.WalkContinue, nil
-}
-
-func renderMathNode(writer util.BufWriter, _ []byte, node ast.Node, entering bool) (ast.WalkStatus, error) {
-	if !entering {
-		return ast.WalkContinue, nil
-	}
-	var source []byte
-	switch mathNode := node.(type) {
-	case *mast.InlineMathNode:
-		source = mathNode.Source
-	case *mast.BlockMathNode:
-		source = mathNode.Source
-	default:
-		return ast.WalkContinue, nil
-	}
-	_, _ = writer.Write(util.EscapeHTML(source))
-	return ast.WalkContinue, nil
 }
