@@ -1,5 +1,4 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
-import dayjs from "dayjs";
 import { countBy } from "lodash-es";
 import { useMemo } from "react";
 import { type MemoTimeBasis, useView } from "@/contexts/ViewContext";
@@ -26,7 +25,12 @@ export interface UseFilteredMemoStatsOptions {
   filter?: string;
 }
 
-const toDateString = (date: Date) => dayjs(date).format("YYYY-MM-DD");
+const toDateString = (date: Date) => {
+  const year = date.getUTCFullYear();
+  const month = `${date.getUTCMonth() + 1}`.padStart(2, "0");
+  const day = `${date.getUTCDate()}`.padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
 
 const timestampsForBasis = (stats: UserStats, basis: MemoTimeBasis) => {
   const createdArray = stats.memoCreatedTimestamps ?? [];

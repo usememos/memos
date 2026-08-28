@@ -36,6 +36,7 @@ type Server struct {
 	sseHub     *apiv1.SSEHub
 }
 
+// NewServer wires the HTTP server, native routes, and API transports for one Memos instance.
 func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store) (*Server, error) {
 	s := &Server{
 		Store:   store,
@@ -78,6 +79,8 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 
 	// Create and register RSS routes (needs markdown service from apiV1Service).
 	rss.NewRSSService(s.Store, apiV1Service.MarkdownService).RegisterRoutes(rootGroup)
+
+	apiV1Service.RegisterMemoMarkdownRoutes(echoServer)
 
 	// Register gRPC gateway as api v1 (includes SSE endpoint on CORS-enabled group).
 	if err := apiV1Service.RegisterGateway(ctx, echoServer); err != nil {

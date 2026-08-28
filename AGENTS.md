@@ -34,8 +34,9 @@ go test -v -race ./server/...      # Server tests with race detector
 go test -v -race ./internal/...    # Internal package tests with race detector
 go test -v -run TestFoo ./pkg/...  # Run matching Go tests
 go mod tidy -go=1.27.0             # Match CI tidy check
-golangci-lint run                  # Go lint, config: .golangci.yaml
-golangci-lint run --fix            # Auto-fix lint, including goimports
+go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.13.1
+"$(go env GOPATH)/bin/golangci-lint" run       # Go lint, config: .golangci.yaml
+"$(go env GOPATH)/bin/golangci-lint" run --fix # Auto-fix lint, including goimports
 
 # Frontend
 cd web && pnpm install             # Install dependencies

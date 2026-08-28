@@ -2,9 +2,8 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
 	"strings"
-
-	"github.com/pkg/errors"
 
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
@@ -133,5 +132,5 @@ func (d *DB) GetUserByPATHash(ctx context.Context, tokenHash string) (*store.PAT
 		return nil, err
 	}
 
-	return nil, errors.New("PAT not found")
+	return nil, sql.ErrNoRows
 }
