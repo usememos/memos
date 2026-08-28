@@ -2,6 +2,12 @@
 
 # Memos
 
+<p>
+  <a href="README.md"><strong>English</strong></a> ·
+  <a href="README.ru.md">Русский</a>
+</p>
+
+
 <img align="right" height="96px" src="https://raw.githubusercontent.com/usememos/.github/refs/heads/main/assets/logo-rounded.png" alt="Memos" />
 
 Memos is an open-source, self-hosted note-taking app built for quick capture. It is Markdown-native, lightweight, and keeps your data under your control.
