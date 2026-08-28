@@ -9,7 +9,7 @@ import MarkerClusterGroup from "react-leaflet-cluster";
 import { Link, useLocation } from "react-router-dom";
 import MemoSpaceBadge from "@/components/MemoView/components/MemoSpaceBadge";
 import { createMemoNavigationState } from "@/components/MemoView/navigation";
-import { defaultMarkerIcon, ThemedTileLayer } from "@/components/map/map-utils";
+import { defaultMarkerIcon, MinimalAttributionControl, OpenStreetMapTileLayer } from "@/components/map/map-utils";
 import { useInfiniteMemos } from "@/hooks/useMemoQueries";
 import { buildMemoCreatorFilter } from "@/lib/resource-names";
 import { cn } from "@/lib/utils";
@@ -43,7 +43,7 @@ const MapFitBounds = ({ memos }: { memos: Memo[] }) => {
     if (validMemos.length === 0) return;
 
     const bounds = L.latLngBounds(validMemos.map((memo) => [memo.location!.latitude, memo.location!.longitude]));
-    map.fitBounds(bounds, { padding: [50, 50] });
+    map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
   }, [memos, map]);
 
   return null;
@@ -101,12 +101,13 @@ const UserMemoMap = ({ creator, className }: Props) => {
       <MapContainer
         center={defaultCenter}
         zoom={2}
-        className="h-full w-full z-0 !bg-muted"
+        className="map-attribution-minimal h-full w-full z-0 !bg-muted"
         scrollWheelZoom
         zoomControl={false}
         attributionControl={false}
       >
-        <ThemedTileLayer />
+        <MinimalAttributionControl />
+        <OpenStreetMapTileLayer />
         <MarkerClusterGroup
           chunkedLoading
           iconCreateFunction={createClusterCustomIcon}
@@ -115,7 +116,12 @@ const UserMemoMap = ({ creator, className }: Props) => {
           showCoverageOnHover={false}
         >
           {memosWithLocation.map((memo) => (
-            <Marker key={memo.name} position={[memo.location!.latitude, memo.location!.longitude]} icon={defaultMarkerIcon}>
+            <Marker
+              key={memo.name}
+              position={[memo.location!.latitude, memo.location!.longitude]}
+              icon={defaultMarkerIcon}
+              title={memo.snippet || "Memo location"}
+            >
               <Popup
                 closeButton={false}
                 className={cn(
