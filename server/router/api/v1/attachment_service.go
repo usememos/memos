@@ -8,6 +8,7 @@ import (
 	"mime"
 	"net/http"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"google.golang.org/grpc/codes"
@@ -43,6 +44,33 @@ var exifCapableImageTypes = map[string]bool{
 	"image/heif": true,
 }
 
+// extensionMimeTypeFallbacks maps image extensions that Go's builtin MIME
+// table does not cover. HEIC/HEIF files are the common case: browsers report
+// an empty MIME type for them, Go's builtin table omits the extension, and
+// http.DetectContentType cannot sniff the ISO BMFF container, so without
+// this fallback these uploads are stored as "application/octet-stream" on
+// minimal runtimes that ship no system MIME database (e.g. the Alpine image).
+var extensionMimeTypeFallbacks = map[string]string{
+	".heic": "image/heic",
+	".heif": "image/heif",
+}
+
+// detectAttachmentMimeType resolves the MIME type for an uploaded file that
+// arrived without a client-supplied type. It prefers the filename extension
+// (including the curated fallback above, which keeps the result identical on
+// machines with and without a system MIME database), then sniffs the content
+// as a last resort.
+func detectAttachmentMimeType(filename string, content []byte) string {
+	ext := strings.ToLower(filepath.Ext(filename))
+	if mimeType, ok := extensionMimeTypeFallbacks[ext]; ok {
+		return mimeType
+	}
+	if mimeType := mime.TypeByExtension(ext); mimeType != "" {
+		return mimeType
+	}
+	return http.DetectContentType(content)
+}
+
 func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.CreateAttachmentRequest) (*v1pb.Attachment, error) {
 	user, err := s.fetchCurrentUser(ctx)
 	if err != nil {
@@ -64,11 +92,7 @@ func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.Creat
 	}
 	normalizedMimeType := request.Attachment.Type
 	if normalizedMimeType == "" {
-		ext := filepath.Ext(request.Attachment.Filename)
-		mimeType := mime.TypeByExtension(ext)
-		if mimeType == "" {
-			mimeType = http.DetectContentType(request.Attachment.Content)
-		}
+		mimeType := detectAttachmentMimeType(request.Attachment.Filename, request.Attachment.Content)
 		if normalizedType, ok := normalizeMimeType(mimeType); ok {
 			normalizedMimeType = normalizedType
 		}
