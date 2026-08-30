@@ -81,12 +81,16 @@ export function buildEditorExtensions({
     markdown({ extensions: memoMarkdownExtensions }),
     ...memoEditorTheme,
     EditorView.lineWrapping,
-    // CodeMirror defaults to autocorrect="off" because it is primarily a code
-    // editor. Memos is a prose editor, and leaving that default in place also
-    // routes Windows TSF input (including the Win+. emoji picker) through
-    // Chrome's autocorrect-suppression path, which has dropped committed text.
-    // Restore the browser default used by the textarea editor before v0.30.
-    EditorView.contentAttributes.of({ autocorrect: "on" }),
+    // CodeMirror disables native text assistance because it is primarily a code
+    // editor. Memos is a prose editor, so restore the browser behavior used by
+    // the textarea editor before v0.30. Autocorrect also keeps Windows TSF input
+    // out of Chrome's autocorrect-suppression path, which has dropped committed
+    // text from the emoji picker.
+    EditorView.contentAttributes.of({
+      autocorrect: "on",
+      autocapitalize: "on",
+      spellcheck: "true",
+    }),
     placeholderCompartment.of(cmPlaceholder(placeholder)),
     EditorView.domEventHandlers({
       paste: (event, view) => {
