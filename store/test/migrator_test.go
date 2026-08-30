@@ -187,6 +187,14 @@ func TestMigrationMultiSpacesPreservesMemosAndRelations(t *testing.T) {
 		_, err = db.ExecContext(ctx, insertMemo, memo.id, memo.uid, memo.uid, memo.visibility, memo.rowStatus, memo.pinned, memo.payload)
 		require.NoError(t, err)
 	}
+	_, err = db.ExecContext(ctx, insertMemo, 100, "deleted-high-memo", "deleted", store.Private, store.Normal, false, `{}`)
+	require.NoError(t, err)
+	_, err = db.ExecContext(ctx, "DELETE FROM memo WHERE id = 100")
+	require.NoError(t, err)
+	if driver == "postgres" {
+		_, err = db.ExecContext(ctx, "SELECT setval(pg_get_serial_sequence('memo', 'id'), 100, true)")
+		require.NoError(t, err)
+	}
 	for _, relation := range []struct {
 		memoID, relatedMemoID int32
 		typeName              store.MemoRelationType
@@ -255,6 +263,23 @@ func TestMigrationMultiSpacesPreservesMemosAndRelations(t *testing.T) {
 		{memoID: 2, relatedMemoID: 1, typeName: store.MemoRelationComment},
 		{memoID: 3, relatedMemoID: 2, typeName: store.MemoRelationComment},
 	}, relations)
+
+	insertNextMemo := "INSERT INTO memo (uid, creator_id, content, visibility, payload) VALUES (?, ?, ?, ?, ?)"
+	if driver == "postgres" {
+		var nextID int64
+		err = ts.GetDriver().GetDB().QueryRowContext(ctx,
+			"INSERT INTO memo (uid, creator_id, content, visibility, payload) VALUES ($1, $2, $3, $4, $5) RETURNING id",
+			"after-migration", 0, "after", store.Private, `{}`,
+		).Scan(&nextID)
+		require.NoError(t, err)
+		require.Equal(t, int64(101), nextID)
+	} else {
+		result, err := ts.GetDriver().GetDB().ExecContext(ctx, insertNextMemo, "after-migration", 0, "after", store.Private, `{}`)
+		require.NoError(t, err)
+		nextID, err := result.LastInsertId()
+		require.NoError(t, err)
+		require.Equal(t, int64(101), nextID)
+	}
 
 	requireQueryError(ctx, t, ts.GetDriver().GetDB(), "SELECT parent_memo_id, root_memo_id FROM memo LIMIT 0", "memo-local schema must not add canonical-root columns")
 	requireQueryError(ctx, t, ts.GetDriver().GetDB(), "SELECT row_status FROM space LIMIT 0", "Space has no archived state")
@@ -660,6 +685,10 @@ func TestMigrationReactionMemoID(t *testing.T) {
 	require.NoError(t, err)
 	_, err = db.ExecContext(ctx, insertReaction, 101, 7, "memos/missing-target", "orphan")
 	require.NoError(t, err)
+	if driver == "postgres" {
+		_, err = db.ExecContext(ctx, "SELECT setval(pg_get_serial_sequence('reaction', 'id'), 101, true)")
+		require.NoError(t, err)
+	}
 	require.NoError(t, db.Close())
 
 	ts := NewTestingStoreWithDSN(ctx, t, driver, dsn)
@@ -682,6 +711,19 @@ func TestMigrationReactionMemoID(t *testing.T) {
 	err = ts.GetDriver().GetDB().QueryRowContext(ctx, "SELECT COUNT(*) FROM reaction").Scan(&reactionCount)
 	require.NoError(t, err)
 	require.Equal(t, 1, reactionCount, "orphaned reactions must be discarded")
+
+	insertNextReaction := "INSERT INTO reaction (creator_id, memo_id, reaction_type) VALUES (?, ?, ?)"
+	findNextReaction := "SELECT id FROM reaction WHERE creator_id = ? AND memo_id = ? AND reaction_type = ?"
+	if driver == "postgres" {
+		insertNextReaction = "INSERT INTO reaction (creator_id, memo_id, reaction_type) VALUES ($1, $2, $3)"
+		findNextReaction = "SELECT id FROM reaction WHERE creator_id = $1 AND memo_id = $2 AND reaction_type = $3"
+	}
+	_, err = ts.GetDriver().GetDB().ExecContext(ctx, insertNextReaction, 8, 42, "after-migration")
+	require.NoError(t, err)
+	var nextReactionID int32
+	err = ts.GetDriver().GetDB().QueryRowContext(ctx, findNextReaction, 8, 42, "after-migration").Scan(&nextReactionID)
+	require.NoError(t, err)
+	require.Equal(t, int32(102), nextReactionID)
 }
 
 // TestMigrationLegacyS3AttachmentMinIO verifies the storage upgrade path for an
@@ -798,7 +840,7 @@ func TestMigrationMemoViewSetting(t *testing.T) {
 	_, err = db.ExecContext(ctx, legacySchemaFixture(driver))
 	require.NoError(t, err)
 
-	basicSettingBytes, err := protojson.Marshal(&storepb.InstanceBasicSetting{SchemaVersion: "0.30.2"})
+	basicSettingBytes, err := protojson.Marshal(&storepb.InstanceBasicSetting{SchemaVersion: "0.30.1"})
 	require.NoError(t, err)
 	insertBasicSetting := "INSERT INTO system_setting (name, value, description) VALUES ('BASIC', ?, '')"
 	if driver == "postgres" {
@@ -829,6 +871,9 @@ func TestMigrationMemoViewSetting(t *testing.T) {
 		// Already has a MEMO_VIEWS row, must not trip UNIQUE(user_id, key).
 		{3, "SHORTCUTS", `{"shortcuts":[{"id":"old","title":"old","filter":"tag in [\"old\"]"}]}`},
 		{3, "MEMO_VIEWS", `{"memoViews":[{"id":"new","title":"new","filter":"tag in [\"new\"]"}]}`},
+		{4, "SHORTCUTS", `"scalar"`},
+		{5, "SHORTCUTS", `[]`},
+		{6, "SHORTCUTS", `null`},
 	}
 	for _, row := range settingRows {
 		_, err = db.ExecContext(ctx, insertSetting, row.userID, row.key, row.value)
@@ -861,6 +906,12 @@ func TestMigrationMemoViewSetting(t *testing.T) {
 	err = ts.GetDriver().GetDB().QueryRowContext(ctx, findCorruptSetting, 2, "SHORTCUTS").Scan(&corruptValue)
 	require.NoError(t, err)
 	require.Equal(t, `{oops}`, corruptValue)
+	for userID, rawValue := range map[int]string{4: `"scalar"`, 5: `[]`, 6: `null`} {
+		var value string
+		err = ts.GetDriver().GetDB().QueryRowContext(ctx, findCorruptSetting, userID, "SHORTCUTS").Scan(&value)
+		require.NoError(t, err)
+		require.Equal(t, rawValue, value)
+	}
 
 	// The pre-existing MEMO_VIEWS row wins; the legacy row is left behind untouched.
 	conflictUserID := int32(3)
@@ -950,7 +1001,9 @@ func TestMigrationCopiesInstanceTagsToUserSettings(t *testing.T) {
 	require.NotContains(t, existing.GetTags().GetTags(), "bug")
 }
 
-func TestCaseSensitiveUsernameMigration(t *testing.T) {
+// TestMigrationCaseSensitiveUsername is named to match the smoke workflow's
+// -run 'TestMigration|...' filter so its per-driver assertions run on every driver.
+func TestMigrationCaseSensitiveUsername(t *testing.T) {
 	ctx := context.Background()
 	driver := getDriverFromEnv()
 	var dsn string
@@ -987,6 +1040,23 @@ func TestCaseSensitiveUsernameMigration(t *testing.T) {
 	}
 	_, err = db.ExecContext(ctx, insertUser)
 	require.NoError(t, err)
+	insertHighUser := "INSERT INTO user (id, username, role, password_hash, avatar_url) VALUES (100, 'deleted-high-user', 'USER', 'legacy-hash', '')"
+	deleteHighUser := "DELETE FROM user WHERE id = 100"
+	if driver == "mysql" {
+		insertHighUser = "INSERT INTO `user` (id, username, role, password_hash, avatar_url) VALUES (100, 'deleted-high-user', 'USER', 'legacy-hash', '')"
+		deleteHighUser = "DELETE FROM `user` WHERE id = 100"
+	} else if driver == "postgres" {
+		insertHighUser = `INSERT INTO "user" (id, username, role, password_hash, avatar_url) VALUES (100, 'deleted-high-user', 'USER', 'legacy-hash', '')`
+		deleteHighUser = `DELETE FROM "user" WHERE id = 100`
+	}
+	_, err = db.ExecContext(ctx, insertHighUser)
+	require.NoError(t, err)
+	_, err = db.ExecContext(ctx, deleteHighUser)
+	require.NoError(t, err)
+	if driver == "postgres" {
+		_, err = db.ExecContext(ctx, `SELECT setval(pg_get_serial_sequence('"user"', 'id'), 100, true)`)
+		require.NoError(t, err)
+	}
 	require.NoError(t, db.Close())
 
 	ts := NewTestingStoreWithDSN(ctx, t, driver, dsn)
@@ -995,6 +1065,7 @@ func TestCaseSensitiveUsernameMigration(t *testing.T) {
 
 	lower, err := createTestingUserWithRole(ctx, ts, "alice", store.RoleUser)
 	require.NoError(t, err)
+	require.Equal(t, int32(101), lower.ID)
 
 	upperUsername := "Alice"
 	upper, err := ts.GetUser(ctx, &store.FindUser{Username: &upperUsername})

@@ -1,24 +1,18 @@
 -- Replaces the memo resource name stored in reaction.content_id with the
--- memo's stable internal ID. The inner join intentionally drops orphaned
--- reactions whose resource name no longer resolves to an existing memo.
-CREATE TABLE `reaction_new` (
-  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `creator_id` INT NOT NULL,
-  `memo_id` INT NOT NULL,
-  `reaction_type` VARCHAR(256) NOT NULL,
-  UNIQUE(`creator_id`, `memo_id`, `reaction_type`)
-);
+-- memo's stable internal ID. Rows that cannot be resolved are intentionally
+-- deleted before memo_id is made non-nullable. Altering the table in place
+-- preserves its AUTO_INCREMENT high-water mark.
+ALTER TABLE `reaction`
+  ADD COLUMN `memo_id` INT DEFAULT NULL AFTER `creator_id`;
 
-INSERT INTO `reaction_new` (`id`, `created_ts`, `creator_id`, `memo_id`, `reaction_type`)
-SELECT
-  `reaction`.`id`,
-  `reaction`.`created_ts`,
-  `reaction`.`creator_id`,
-  `memo`.`id`,
-  `reaction`.`reaction_type`
-FROM `reaction`
-JOIN `memo` ON `reaction`.`content_id` = CONCAT('memos/', `memo`.`uid`);
+UPDATE `reaction`
+JOIN `memo` ON `reaction`.`content_id` = CONCAT('memos/', `memo`.`uid`)
+SET `reaction`.`memo_id` = `memo`.`id`;
 
-DROP TABLE `reaction`;
-RENAME TABLE `reaction_new` TO `reaction`;
+DELETE FROM `reaction` WHERE `memo_id` IS NULL;
+
+ALTER TABLE `reaction`
+  DROP INDEX `creator_id`,
+  DROP COLUMN `content_id`,
+  MODIFY COLUMN `memo_id` INT NOT NULL,
+  ADD UNIQUE (`creator_id`, `memo_id`, `reaction_type`);

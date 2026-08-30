@@ -37,6 +37,18 @@ SELECT
   visibility, pinned, payload, NULL
 FROM memo;
 
+-- Preserve the largest ID ever issued, including IDs belonging to deleted
+-- memos that were not copied into the rebuilt table.
+INSERT INTO sqlite_sequence (name, seq)
+SELECT 'memo_new', seq
+FROM sqlite_sequence
+WHERE name = 'memo'
+  AND NOT EXISTS (SELECT 1 FROM sqlite_sequence WHERE name = 'memo_new');
+
+UPDATE sqlite_sequence
+SET seq = MAX(seq, (SELECT seq FROM sqlite_sequence WHERE name = 'memo'))
+WHERE name = 'memo_new';
+
 DROP TABLE memo;
 ALTER TABLE memo_new RENAME TO memo;
 

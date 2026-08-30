@@ -37,7 +37,7 @@ const (
 	// cannot change what CI verifies. Bump this when a new stable ships.
 	// scripts/release_smoke_test.sh detects the previous release from Git tags
 	// instead, so the black-box tier still follows "stable" automatically.
-	StableMemosVersion = "0.29.1"
+	StableMemosVersion = "0.30.0"
 
 	mysqlNetworkAlias    = "memos-mysql"
 	postgresNetworkAlias = "memos-postgres"
@@ -104,7 +104,7 @@ func GetMySQLDSN(t *testing.T) string {
 		}
 
 		container, err := mysql.Run(ctx,
-			"mysql:8",
+			"mysql:8.4",
 			mysql.WithDatabase("init_db"),
 			mysql.WithUsername("root"),
 			mysql.WithPassword(testPassword),
