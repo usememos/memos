@@ -34,6 +34,7 @@ const renderMenu = (onInsertImages = vi.fn(), isSaving = false, hosted = false) 
         isSaving={isSaving}
         onLocationChange={vi.fn()}
         onInsertImages={onInsertImages}
+        onInsertPoll={vi.fn()}
         onAudioRecorderClick={vi.fn()}
         viewToggles={hosted ? undefined : viewToggles}
       />
@@ -54,6 +55,7 @@ describe("InsertMenu", () => {
       "editor.audio-recorder.trigger",
       "editor.insert-menu.link-memo",
       "editor.insert-menu.add-location",
+      "editor.insert-menu.create-poll",
       "editor.focus-mode",
       "editor.formatting-toolbar",
     ]);
@@ -103,7 +105,13 @@ describe("InsertMenu", () => {
 
     render(
       <EditorProvider initialEditorState={state}>
-        <EditorToolbar onSave={vi.fn()} onAudioRecorderClick={vi.fn()} viewToggles={viewToggles} onInsertImages={vi.fn()} />
+        <EditorToolbar
+          onSave={vi.fn()}
+          onAudioRecorderClick={vi.fn()}
+          viewToggles={viewToggles}
+          onInsertImages={vi.fn()}
+          onInsertPoll={vi.fn()}
+        />
       </EditorProvider>,
     );
 

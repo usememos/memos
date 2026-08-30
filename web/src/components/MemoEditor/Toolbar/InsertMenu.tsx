@@ -10,6 +10,7 @@ import {
   PaperclipIcon,
   PlusIcon,
   TypeIcon,
+  VoteIcon,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LinkMemoDialog, LocationDialog } from "@/components/MemoMetadata";
@@ -30,6 +31,7 @@ import { useFileUpload, useLinkMemo, useLocation } from "../hooks";
 import { useEditorContext, useEditorSelector } from "../state";
 import type { InsertMenuProps } from "../types";
 import type { LocalFile } from "../types/attachment";
+import { CreatePollDialog } from "./CreatePollDialog";
 
 const InsertMenu = (props: InsertMenuProps) => {
   const t = useTranslate();
@@ -39,6 +41,7 @@ const InsertMenu = (props: InsertMenuProps) => {
 
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [locationDialogOpen, setLocationDialogOpen] = useState(false);
+  const [pollDialogOpen, setPollDialogOpen] = useState(false);
   const inlineImageInputRef = useRef<HTMLInputElement>(null);
 
   const { fileInputRef, selectingFlag, handleFileInputChange, handleUploadClick } = useFileUpload((newFiles: LocalFile[]) => {
@@ -91,6 +94,17 @@ const InsertMenu = (props: InsertMenuProps) => {
   const handleOpenLinkDialog = useCallback(() => {
     setLinkDialogOpen(true);
   }, []);
+
+  const handleOpenPollDialog = useCallback(() => {
+    setPollDialogOpen(true);
+  }, []);
+
+  const handlePollConfirm = useCallback(
+    (markdown: string) => {
+      props.onInsertPoll(markdown);
+    },
+    [props],
+  );
 
   const handleLocationClick = useCallback(() => {
     setLocationDialogOpen(true);
@@ -147,6 +161,7 @@ const InsertMenu = (props: InsertMenuProps) => {
     { key: "audio", label: t("editor.audio-recorder.trigger"), icon: MicIcon, onClick: props.onAudioRecorderClick },
     { key: "link", label: t("editor.insert-menu.link-memo"), icon: LinkIcon, onClick: handleOpenLinkDialog },
     { key: "location", label: t("editor.insert-menu.add-location"), icon: MapPinIcon, onClick: handleLocationClick },
+    { key: "poll", label: t("editor.insert-menu.create-poll"), icon: VoteIcon, onClick: handleOpenPollDialog },
   ];
 
   return (
@@ -223,6 +238,8 @@ const InsertMenu = (props: InsertMenuProps) => {
         onCancel={handleLocationCancel}
         onConfirm={handleLocationConfirm}
       />
+
+      <CreatePollDialog open={pollDialogOpen} onOpenChange={setPollDialogOpen} onConfirm={handlePollConfirm} />
     </>
   );
 };

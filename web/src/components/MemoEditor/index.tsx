@@ -139,6 +139,15 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
     editor.scrollToCursor();
   }, []);
 
+  const handleInsertPoll = useCallback((markdown: string) => {
+    const editor = editorRef.current;
+    if (!editor) {
+      return;
+    }
+    editor.insertMarkdown(markdown);
+    editor.scrollToCursor();
+  }, []);
+
   const handleTranscribeRecordedAudio = useCallback(
     async (localFile: LocalFile) => {
       if (!canTranscribe) {
@@ -369,6 +378,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
             onAudioRecorderClick={handleAudioRecorderClick}
             viewToggles={viewToggles}
             onInsertImages={handleInsertImages}
+            onInsertPoll={handleInsertPoll}
           />
         </div>
       </div>
