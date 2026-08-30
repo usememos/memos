@@ -20,5 +20,16 @@ SELECT
 FROM reaction
 JOIN memo ON reaction.content_id = 'memos/' || memo.uid;
 
+-- Keep IDs issued for deleted or orphaned reactions from being reused.
+INSERT INTO sqlite_sequence (name, seq)
+SELECT 'reaction_new', seq
+FROM sqlite_sequence
+WHERE name = 'reaction'
+  AND NOT EXISTS (SELECT 1 FROM sqlite_sequence WHERE name = 'reaction_new');
+
+UPDATE sqlite_sequence
+SET seq = MAX(seq, (SELECT seq FROM sqlite_sequence WHERE name = 'reaction'))
+WHERE name = 'reaction_new';
+
 DROP TABLE reaction;
 ALTER TABLE reaction_new RENAME TO reaction;

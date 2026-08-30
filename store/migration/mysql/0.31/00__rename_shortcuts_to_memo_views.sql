@@ -18,7 +18,10 @@ SET
     ELSE value
   END
 WHERE `key` = 'SHORTCUTS'
-  AND JSON_VALID(value)
+  AND CASE
+    WHEN JSON_VALID(value) THEN JSON_TYPE(value) = 'OBJECT'
+    ELSE FALSE
+  END
   AND user_id NOT IN (
     SELECT user_id FROM (
       SELECT user_id FROM user_setting WHERE `key` = 'MEMO_VIEWS'
