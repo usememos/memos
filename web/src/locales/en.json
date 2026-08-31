@@ -231,6 +231,19 @@
     "views": "Views",
     "yourself": "Yourself"
   },
+  "bookmarks": {
+    "import": "Import",
+    "import-title": "Import bookmarks",
+    "import-description": "Import a Raindrop.io CSV export. Each row becomes a link memo with its folder and tags.",
+    "import-choose-file": "Choose CSV file",
+    "import-no-rows": "No bookmarkable rows found in this file.",
+    "import-read-failed": "Could not read the file.",
+    "import-preview-count": "${count} bookmarks found. Existing links are skipped automatically.",
+    "import-start": "Import",
+    "import-progress": "${created} created, ${skipped} skipped, ${failed} failed of ${total}",
+    "import-done": "Import finished.",
+    "import-cancel": "Stop"
+  },
   "locale-picker": {
     "no-language-feedback": "Language not found? Submit feedback"
   },

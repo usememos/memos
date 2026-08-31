@@ -1,5 +1,7 @@
-import { BookmarkIcon, PlusIcon } from "lucide-react";
+import { BookmarkIcon, ImportIcon, PlusIcon } from "lucide-react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import BookmarksImportDialog from "@/components/BookmarksImport/BookmarksImportDialog";
 import MemoView from "@/components/MemoView";
 import PagedMemoList, { getMemoKey } from "@/components/PagedMemoList";
 import { useSpaceContext } from "@/contexts/SpaceContext";
@@ -16,6 +18,7 @@ const Bookmarks = () => {
   const user = useCurrentUser();
   const t = useTranslate();
   const { memoFilter: spaceFilter } = useSpaceContext();
+  const [importOpen, setImportOpen] = useState(false);
 
   const memoFilter = useMemoFilters({
     creatorName: user?.name,
@@ -29,29 +32,40 @@ const Bookmarks = () => {
   });
 
   return (
-    <PagedMemoList
-      renderer={(memo: Memo, { compact, variant }) => (
-        <MemoView key={getMemoKey(memo)} memo={memo} showVisibility showSpace compact={compact} variant={variant} />
-      )}
-      listSort={listSort}
-      state={State.NORMAL}
-      orderBy={orderBy}
-      filter={memoFilter}
-      contextFilter={combineCELFilters("has_link", spaceFilter)}
-      renderLeading={({ useGrid }) => (
-        <header className={cn("flex items-center gap-2 px-1", !useGrid && "mb-4")}>
-          <BookmarkIcon className="size-5 text-muted-foreground" strokeWidth={1.8} />
-          <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("common.bookmarks")}</h1>
-          <Link
-            to={ROUTES.BOOKMARK}
-            className="ml-auto flex items-center gap-1 rounded-md px-2 py-1 text-[13px] text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground"
-          >
-            <PlusIcon className="size-3.5" strokeWidth={1.8} />
-            {t("common.save-link")}
-          </Link>
-        </header>
-      )}
-    />
+    <>
+      <PagedMemoList
+        renderer={(memo: Memo, { compact, variant }) => (
+          <MemoView key={getMemoKey(memo)} memo={memo} showVisibility showSpace compact={compact} variant={variant} />
+        )}
+        listSort={listSort}
+        state={State.NORMAL}
+        orderBy={orderBy}
+        filter={memoFilter}
+        contextFilter={combineCELFilters("has_link", spaceFilter)}
+        renderLeading={({ useGrid }) => (
+          <header className={cn("flex items-center gap-2 px-1", !useGrid && "mb-4")}>
+            <BookmarkIcon className="size-5 text-muted-foreground" strokeWidth={1.8} />
+            <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("common.bookmarks")}</h1>
+            <Link
+              to={ROUTES.BOOKMARK}
+              className="ml-auto flex items-center gap-1 rounded-md px-2 py-1 text-[13px] text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground"
+            >
+              <PlusIcon className="size-3.5" strokeWidth={1.8} />
+              {t("common.save-link")}
+            </Link>
+            <button
+              type="button"
+              className="flex items-center gap-1 rounded-md px-2 py-1 text-[13px] text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground"
+              onClick={() => setImportOpen(true)}
+            >
+              <ImportIcon className="size-3.5" strokeWidth={1.8} />
+              {t("bookmarks.import")}
+            </button>
+          </header>
+        )}
+      />
+      <BookmarksImportDialog open={importOpen} onOpenChange={setImportOpen} />
+    </>
   );
 };
 

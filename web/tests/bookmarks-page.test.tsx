@@ -15,6 +15,7 @@ vi.mock("@/components/PagedMemoList", () => ({
   },
 }));
 vi.mock("@/components/MemoView", () => ({ default: () => <div /> }));
+vi.mock("@/components/BookmarksImport/BookmarksImportDialog", () => ({ default: () => <div /> }));
 vi.mock("@/hooks", () => ({
   useMemoFilters: () => "creator_filter",
   useMemoSorting: () => ({ listSort: undefined, orderBy: undefined }),
