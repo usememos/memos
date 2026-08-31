@@ -2,9 +2,12 @@ import { ChevronRightIcon, HashIcon } from "lucide-react";
 import { useEffect, useMemo } from "react";
 import {
   SIDEBAR_ROW_BOX_CLASSES,
-  SIDEBAR_ROW_COUNT_CLASSES,
-  SIDEBAR_ROW_FOCUS_CLASSES,
+  SIDEBAR_ROW_COUNT_RAIL_CLASSES,
   SIDEBAR_ROW_ICON_CLASSES,
+  SIDEBAR_ROW_LABEL_CLASSES,
+  SIDEBAR_ROW_SLOT_BUTTON_CLASSES,
+  SIDEBAR_ROW_SLOT_CLASSES,
+  SidebarRowIconSlot,
   sidebarRowStateClasses,
 } from "@/components/AppSidebar/SidebarRow";
 import { useLocalStorage, useOverflowTitle } from "@/hooks";
@@ -36,6 +39,13 @@ interface TagTreeExpansion {
 }
 
 const EMPTY_EXPANSION: TagTreeExpansion = { expanded: [] };
+
+// A structural row toggles like any other, so it hovers like one too — just quieter at rest.
+const STRUCTURAL_ROW_CLASSES = cn(sidebarRowStateClasses(false), "font-medium text-muted-foreground/65");
+
+/** One announcement for a tag row in either layout, so tree and flat mode never drift apart. */
+export const tagRowAriaLabel = (t: ReturnType<typeof useTranslate>, tag: string, amount: number) =>
+  `#${tag}, ${t("setting.tags.used-count", { count: amount })}`;
 
 export const buildTagTree = (tagAmounts: [tag: string, amount: number][]) => {
   const root: TagTreeNode = {
@@ -77,12 +87,14 @@ const parentPathsOf = (tag: string): string[] => {
   return segments.slice(0, -1).map((_, index) => segments.slice(0, index + 1).join("/"));
 };
 
-const TagMark = () => <HashIcon aria-hidden="true" className={SIDEBAR_ROW_ICON_CLASSES} strokeWidth={1.8} />;
+const TagMark = ({ className }: { className?: string }) => (
+  <HashIcon aria-hidden="true" className={cn(SIDEBAR_ROW_ICON_CLASSES, className)} strokeWidth={1.8} />
+);
 
-const Chevron = ({ open }: { open: boolean }) => (
+const Chevron = ({ open, className }: { open: boolean; className?: string }) => (
   <ChevronRightIcon
     aria-hidden="true"
-    className={cn("size-3.5 shrink-0 text-muted-foreground/70 transition-transform", open ? "rotate-90" : "rtl:rotate-180")}
+    className={cn("size-3.5 shrink-0 text-muted-foreground/70 transition-transform", open ? "rotate-90" : "rtl:rotate-180", className)}
     strokeWidth={1.8}
   />
 );
@@ -104,6 +116,7 @@ const TagItem = ({ tag, depth, activeTag, expanded, onTagClick, onToggle }: TagI
   const hasSubTags = tag.subTags.length > 0;
   const open = hasSubTags && expanded.has(tag.text);
   const { ref: labelRef, title } = useOverflowTitle<HTMLSpanElement>(isTag ? `#${tag.text}` : tag.text);
+  const tagLabel = tag.amount !== undefined ? tagRowAriaLabel(t, tag.text, tag.amount) : undefined;
 
   return (
     <div className="w-full min-w-0">
@@ -114,57 +127,61 @@ const TagItem = ({ tag, depth, activeTag, expanded, onTagClick, onToggle }: TagI
         aria-expanded={hasSubTags ? open : undefined}
         className={cn(
           SIDEBAR_ROW_BOX_CLASSES,
-          isTag ? sidebarRowStateClasses(isActive) : "font-medium text-muted-foreground/65",
+          isTag ? sidebarRowStateClasses(isActive) : STRUCTURAL_ROW_CLASSES,
           isAncestorOfActiveTag && !isActive && "text-foreground/75",
         )}
         // Overrides the start half of the box's `px-2`, leaving the trailing 8px intact.
         // Same 12px step the memo outline indents by.
         style={{ paddingInlineStart: 8 + depth * INDENT_STEP }}
       >
-        {isTag ? (
-          <button
-            type="button"
-            aria-pressed={isActive || undefined}
-            title={title}
-            className={cn("flex h-full min-w-0 flex-1 items-center gap-2 text-left", SIDEBAR_ROW_FOCUS_CLASSES)}
-            onClick={() => onTagClick(tag.text)}
-          >
-            <TagMark />
-            <span ref={labelRef} className="min-w-0 flex-1 truncate">
-              {tag.key}
-            </span>
-            <span className={SIDEBAR_ROW_COUNT_CLASSES}>{tag.amount}</span>
-          </button>
-        ) : (
-          // A structural segment only exists to reach its children, so the whole row is the
-          // disclosure — one control, rather than a row and a chevron doing the same thing.
-          // Aligns with the tag rows below it: past the 15px mark plus the row's 8px gap.
-          <button
-            type="button"
-            aria-label={`${open ? t("common.collapse") : t("common.expand")} ${tag.text}`}
-            aria-expanded={open}
-            className={cn("flex h-full min-w-0 flex-1 items-center gap-2 text-left", SIDEBAR_ROW_FOCUS_CLASSES)}
-            onClick={() => onToggle(tag.text)}
-          >
-            <span ref={labelRef} className="min-w-0 flex-1 truncate ps-[23px]" title={title}>
-              {tag.key}
-            </span>
-            <Chevron open={open} />
-          </button>
-        )}
         {isTag && hasSubTags && (
-          // A tag row's label filters, so its disclosure needs a control of its own.
+          // At rest the slot holds the row's # mark like any other tag; pointing at the row
+          // (or tabbing into it) swaps in the chevron, so branches only look different while
+          // the disclosure is actually reachable.
           <button
             type="button"
             aria-label={`${open ? t("common.collapse") : t("common.expand")} #${tag.text}`}
             aria-expanded={open}
-            className={cn(
-              "-mr-1 flex size-6 shrink-0 items-center justify-center rounded text-muted-foreground/70 hover:bg-background/70 hover:text-foreground",
-              SIDEBAR_ROW_FOCUS_CLASSES,
-            )}
+            className={SIDEBAR_ROW_SLOT_BUTTON_CLASSES}
             onClick={() => onToggle(tag.text)}
           >
-            <Chevron open={open} />
+            <TagMark className="group-hover:hidden group-has-[:focus-visible]:hidden" />
+            <Chevron open={open} className="hidden group-hover:block group-has-[:focus-visible]:block" />
+          </button>
+        )}
+        {isTag ? (
+          <button
+            type="button"
+            aria-label={tagLabel}
+            aria-pressed={isActive || undefined}
+            title={title}
+            className={SIDEBAR_ROW_LABEL_CLASSES}
+            onClick={() => onTagClick(tag.text)}
+          >
+            {!hasSubTags && <SidebarRowIconSlot icon={HashIcon} />}
+            <span ref={labelRef} className="min-w-0 flex-1 truncate">
+              {tag.key}
+            </span>
+            <span className={SIDEBAR_ROW_COUNT_RAIL_CLASSES}>{tag.amount}</span>
+          </button>
+        ) : (
+          // A structural segment only exists to reach its children, so the whole row is the
+          // disclosure — one control, rather than a row and a chevron doing the same thing.
+          <button
+            type="button"
+            aria-label={`${open ? t("common.collapse") : t("common.expand")} ${tag.text}`}
+            aria-expanded={open}
+            className={SIDEBAR_ROW_LABEL_CLASSES}
+            onClick={() => onToggle(tag.text)}
+          >
+            <span className={SIDEBAR_ROW_SLOT_CLASSES} aria-hidden="true">
+              <Chevron open={open} />
+            </span>
+            <span ref={labelRef} className="min-w-0 flex-1 truncate" title={title}>
+              {tag.key}
+            </span>
+            {/* Empty count rail keeps structural labels truncating at the same edge as tag labels. */}
+            <span aria-hidden="true" className={SIDEBAR_ROW_COUNT_RAIL_CLASSES} />
           </button>
         )}
       </div>

@@ -1,5 +1,4 @@
 import { useDirection } from "@base-ui/react/direction-provider";
-import { useQueryClient } from "@tanstack/react-query";
 import {
   ArchiveIcon,
   ArrowRightIcon,
@@ -16,20 +15,15 @@ import {
   type LucideIcon,
   MapIcon,
   MenuIcon,
-  MoreHorizontalIcon,
   PaperclipIcon,
-  PlusIcon,
   SearchIcon,
   SquarePenIcon,
   Trash2Icon,
   UserRoundIcon,
 } from "lucide-react";
-import { type ReactNode, useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import { type ReactNode, useEffect } from "react";
 import { Link, matchPath, useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import ConfirmDialog from "@/components/ConfirmDialog";
 import { MemoDetailSidebar } from "@/components/MemoDetailSidebar";
-import MemoDisplaySettingMenu from "@/components/MemoDisplaySettingMenu";
 import { DEFAULT_SETTING_SECTION, SETTINGS_SECTIONS } from "@/components/Settings/settingSections";
 import StatisticsView from "@/components/StatisticsView";
 import UserMenu from "@/components/UserMenu";
@@ -37,7 +31,6 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { memoViewServiceClient } from "@/connect";
 import { type AttachmentSection, type InboxFilter, useAppSidebar } from "@/contexts/AppSidebarContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useGlobalMemoEditor } from "@/contexts/GlobalMemoEditorContext";
@@ -48,32 +41,20 @@ import { useAttachmentLibraryStats } from "@/hooks/useAttachmentLibrary";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { type MemoStatsContext, useFilteredMemoStats } from "@/hooks/useFilteredMemoStats";
 import useMediaQuery from "@/hooks/useMediaQuery";
-import { useMemoViews, useNotifications, userKeys, useUser } from "@/hooks/useUserQueries";
-import { handleError } from "@/lib/error";
-import {
-  BUILTIN_TASKS_VIEW_ID,
-  getMemoScopePath,
-  getMemoViewId,
-  isMemoScopeRoute,
-  type PrimaryMemoScope,
-  resolveMemoScope,
-} from "@/lib/memo-views";
+import { useNotifications, useUser } from "@/hooks/useUserQueries";
+import { getMemoScopePath, isMemoScopeRoute, type PrimaryMemoScope, resolveMemoScope } from "@/lib/memo-views";
 import { cn } from "@/lib/utils";
 import { ROUTES } from "@/router/routes";
 import { State } from "@/types/proto/api/v1/common_pb";
-import type { MemoView } from "@/types/proto/api/v1/memo_view_service_pb";
 import { User_Role, UserNotification_Status } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import MemosLogo from "../MemosLogo";
 import { getSidebarRouteKind, routeSupportsCollectionScope } from "./routes";
-import SidebarRow, { SIDEBAR_ROW_CLASSES, SIDEBAR_ROW_FOCUS_CLASSES, SIDEBAR_ROW_ICON_CLASSES, sidebarRowStateClasses } from "./SidebarRow";
-import SidebarSection, {
-  SIDEBAR_SECTION_ACTION_BUTTON_CLASSES,
-  SIDEBAR_SECTION_ACTION_ICON_CLASSES,
-  SIDEBAR_SECTION_STACK_CLASSES,
-} from "./SidebarSection";
+import SidebarRow, { SIDEBAR_ROW_CLASSES, SIDEBAR_ROW_FOCUS_CLASSES, SidebarRowIconSlot, sidebarRowStateClasses } from "./SidebarRow";
+import SidebarSection, { SIDEBAR_SECTION_STACK_CLASSES } from "./SidebarSection";
 import SpaceSwitcher from "./SpaceSwitcher";
 import TagsSection from "./TagsSection";
+import ViewsSection from "./ViewsSection";
 
 const SIDEBAR_HORIZONTAL_PADDING = "px-3";
 const SIDEBAR_HEADER_ACTION_CLASSES = "size-7 shrink-0 rounded-md text-muted-foreground hover:text-foreground";
@@ -100,125 +81,6 @@ const NewMemoAction = ({ onClick }: { onClick: () => void }) => {
       </TooltipTrigger>
       <TooltipContent side="bottom">{label}</TooltipContent>
     </Tooltip>
-  );
-};
-
-const ViewsSection = ({ manageActive = false }: { manageActive?: boolean }) => {
-  const t = useTranslate();
-  const navigate = useNavigate();
-  const currentUser = useCurrentUser();
-  const queryClient = useQueryClient();
-  const { data: memoViews = [] } = useMemoViews(currentUser?.name);
-  const { memoView: selectedMemoView, setMemoView } = useMemoFilterContext();
-  const { setMobileOpen } = useAppSidebar();
-  const [deleteTarget, setDeleteTarget] = useState<MemoView>();
-  const location = useLocation();
-
-  const handleView = (viewId: string) => {
-    setMemoView(selectedMemoView === viewId ? undefined : viewId);
-    if (!isMemoScopeRoute(location.pathname)) navigate(ROUTES.HOME);
-    setMobileOpen(false);
-  };
-
-  const handleCreate = () => {
-    navigate(ROUTES.VIEWS, { state: { openCreate: true } });
-    setMobileOpen(false);
-  };
-
-  const handleDelete = async () => {
-    if (!deleteTarget) return;
-    try {
-      await memoViewServiceClient.deleteMemoView({ name: deleteTarget.name });
-      await queryClient.invalidateQueries({ queryKey: userKeys.memoViews(currentUser?.name) });
-      if (selectedMemoView === getMemoViewId(deleteTarget.name)) setMemoView(undefined);
-      toast.success(t("setting.memo-view.delete-success", { title: deleteTarget.title }));
-    } catch (error: unknown) {
-      handleError(error, toast.error, { context: "Delete memo view" });
-    } finally {
-      setDeleteTarget(undefined);
-    }
-  };
-
-  return (
-    <SidebarSection
-      label={t("common.views")}
-      action={
-        !manageActive && (
-          <div className="flex items-center gap-0.5">
-            <MemoDisplaySettingMenu />
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              className={SIDEBAR_SECTION_ACTION_BUTTON_CLASSES}
-              onClick={handleCreate}
-              aria-label={t("common.create")}
-            >
-              <PlusIcon className={SIDEBAR_SECTION_ACTION_ICON_CLASSES} strokeWidth={1.8} />
-            </Button>
-          </div>
-        )
-      }
-    >
-      <SidebarRow
-        active={!manageActive && selectedMemoView === BUILTIN_TASKS_VIEW_ID}
-        label={t("common.tasks")}
-        onClick={() => handleView(BUILTIN_TASKS_VIEW_ID)}
-      />
-      {memoViews.map((memoView) => {
-        const id = getMemoViewId(memoView.name);
-        const active = !manageActive && selectedMemoView === id;
-        return (
-          <div key={memoView.name} className={cn(SIDEBAR_ROW_CLASSES, "group/view", sidebarRowStateClasses(active))}>
-            <button
-              type="button"
-              onClick={() => handleView(id)}
-              aria-pressed={active || undefined}
-              className="flex h-full min-w-0 flex-1 items-center gap-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
-            >
-              <span className="min-w-0 flex-1 truncate">{memoView.title}</span>
-            </button>
-            <DropdownMenu>
-              <DropdownMenuTrigger
-                nativeButton={false}
-                render={
-                  <span
-                    role="button"
-                    tabIndex={0}
-                    aria-label={`${t("common.edit")} ${memoView.title}`}
-                    className="-mr-1 flex size-6 shrink-0 items-center justify-center rounded text-muted-foreground transition-opacity hover:bg-background/70 md:opacity-0 md:group-hover/view:opacity-100 md:focus-visible:opacity-100 data-popup-open:opacity-100"
-                  />
-                }
-              >
-                <MoreHorizontalIcon className="size-3.5" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" sideOffset={2} size="sm">
-                <DropdownMenuItem
-                  onClick={() => {
-                    navigate(ROUTES.VIEWS, { state: { memoView } });
-                    setMobileOpen(false);
-                  }}
-                >
-                  {t("common.edit")}
-                </DropdownMenuItem>
-                <DropdownMenuItem variant="destructive" onClick={() => setDeleteTarget(memoView)}>
-                  {t("common.delete")}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        );
-      })}
-      {manageActive && <SidebarRow active icon={MoreHorizontalIcon} label={t("common.manage")} />}
-      <ConfirmDialog
-        open={!!deleteTarget}
-        onOpenChange={(open) => !open && setDeleteTarget(undefined)}
-        title={t("setting.memo-view.delete-confirm", { title: deleteTarget?.title ?? "" })}
-        confirmLabel={t("common.delete")}
-        cancelLabel={t("common.cancel")}
-        onConfirm={handleDelete}
-        confirmVariant="destructive"
-      />
-    </SidebarSection>
   );
 };
 
@@ -389,7 +251,7 @@ const SettingsSidebarContent = () => {
         onClick={() => setMobileOpen(false)}
         className={cn(SIDEBAR_ROW_CLASSES, sidebarRowStateClasses(currentSection === section.key))}
       >
-        <section.icon className={SIDEBAR_ROW_ICON_CLASSES} strokeWidth={1.8} />
+        <SidebarRowIconSlot icon={section.icon} />
         <span className="truncate">{t(section.labelKey)}</span>
       </Link>
     ));

@@ -1,7 +1,11 @@
 import { render, screen } from "@testing-library/react";
 import { HashIcon } from "lucide-react";
 import { describe, expect, it, vi } from "vitest";
-import SidebarRow, { SIDEBAR_ROW_BOX_CLASSES } from "@/components/AppSidebar/SidebarRow";
+import SidebarRow, {
+  SIDEBAR_ROW_BOX_CLASSES,
+  SIDEBAR_ROW_COUNT_RAIL_CLASSES,
+  SIDEBAR_ROW_SLOT_CLASSES,
+} from "@/components/AppSidebar/SidebarRow";
 import SidebarSection, { SIDEBAR_SECTION_CONTENT_CLASSES } from "@/components/AppSidebar/SidebarSection";
 import TagTree from "@/components/TagTree";
 
@@ -27,9 +31,14 @@ describe("sidebar row grammar", () => {
   });
 
   it("gives a nav row the shared row box", () => {
-    render(<SidebarRow icon={HashIcon} label="Tasks" />);
+    render(<SidebarRow icon={HashIcon} label="Tasks" count={3} />);
 
-    expect(screen.getByRole("button", { name: "Tasks" })).toHaveClass(...boxClasses);
+    const row = screen.getByRole("button", { name: "Tasks3" });
+    expect(row).toHaveClass(...boxClasses);
+    // Icon in the shared slot and count in the shared rail, so every list — nav rows,
+    // views, tags in both modes — keeps its icons and digits on the same vertical lines.
+    expect(row.firstElementChild).toHaveClass(...SIDEBAR_ROW_SLOT_CLASSES.split(" "));
+    expect(screen.getByText("3")).toHaveClass(...SIDEBAR_ROW_COUNT_RAIL_CLASSES.split(" "));
   });
 
   it("gives tag tree rows the same box as a nav row", () => {

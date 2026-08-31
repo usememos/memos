@@ -17,7 +17,35 @@ export const SIDEBAR_ROW_FOCUS_CLASSES = "focus-visible:outline-none focus-visib
 export const SIDEBAR_ROW_CLASSES = `${SIDEBAR_ROW_BOX_CLASSES} ${SIDEBAR_ROW_FOCUS_CLASSES}`;
 
 export const SIDEBAR_ROW_ICON_CLASSES = "size-[15px] shrink-0 opacity-75";
-export const SIDEBAR_ROW_COUNT_CLASSES = "text-2xs tabular-nums text-muted-foreground/60";
+const SIDEBAR_ROW_COUNT_CLASSES = "text-2xs tabular-nums text-muted-foreground/60";
+
+/**
+ * The focusable body of a split row — rows whose box is a wrapper carrying other controls
+ * put their label layout and focus ring here. The gap must stay equal to the box's own
+ * `gap-2` or slot alignment breaks between one-control and split rows.
+ */
+export const SIDEBAR_ROW_LABEL_CLASSES = `flex h-full min-w-0 flex-1 items-center gap-2 text-start ${SIDEBAR_ROW_FOCUS_CLASSES}`;
+
+/**
+ * Fixed leading slot: icons and disclosures share one vertical line across every list and
+ * mode. The box is 24px so a disclosure gets a real hit target, but the icon inside must
+ * line up with the bare 15px icons of plain rows — the negative margins cancel the extra
+ * width on both sides so slotted rows keep the same icon and label positions.
+ */
+export const SIDEBAR_ROW_SLOT_CLASSES = "-mx-1 flex size-6 shrink-0 items-center justify-center";
+
+/** A slot that is itself a control (disclosure, row menu): same box plus the hover chip. */
+export const SIDEBAR_ROW_SLOT_BUTTON_CLASSES = `${SIDEBAR_ROW_SLOT_CLASSES} rounded hover:bg-sidebar-accent ${SIDEBAR_ROW_FOCUS_CLASSES}`;
+
+/** Trailing rail for counts, wide enough that digits align down the list. */
+export const SIDEBAR_ROW_COUNT_RAIL_CLASSES = `${SIDEBAR_ROW_COUNT_CLASSES} min-w-[3ch] shrink-0 text-end`;
+
+/** The standard icon-in-slot pairing, so every list renders its glyphs identically. */
+export const SidebarRowIconSlot = ({ icon: Icon }: { icon: LucideIcon }) => (
+  <span className={SIDEBAR_ROW_SLOT_CLASSES} aria-hidden="true">
+    <Icon className={SIDEBAR_ROW_ICON_CLASSES} strokeWidth={1.8} />
+  </span>
+);
 
 /** Idle and selected colouring for a row box, kept in one place so lists cannot drift apart. */
 export const sidebarRowStateClasses = (active?: boolean) =>
@@ -41,9 +69,9 @@ const SidebarRow = ({ active, icon: Icon, label, count, onClick, trailing }: Pro
     aria-pressed={active || undefined}
     className={cn(SIDEBAR_ROW_CLASSES, sidebarRowStateClasses(active))}
   >
-    {Icon && <Icon className={SIDEBAR_ROW_ICON_CLASSES} strokeWidth={1.8} />}
-    <span className="min-w-0 flex-1 truncate text-left">{label}</span>
-    {count != null && count > 0 && <span className={SIDEBAR_ROW_COUNT_CLASSES}>{count}</span>}
+    {Icon && <SidebarRowIconSlot icon={Icon} />}
+    <span className="min-w-0 flex-1 truncate text-start">{label}</span>
+    {count != null && count > 0 && <span className={SIDEBAR_ROW_COUNT_RAIL_CLASSES}>{count}</span>}
     {trailing}
   </button>
 );
