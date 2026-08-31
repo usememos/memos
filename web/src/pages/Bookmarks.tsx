@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { BookmarkIcon, ImportIcon, PlusIcon, RefreshCwIcon } from "lucide-react";
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import { Link } from "react-router-dom";
 import BookmarksImportDialog from "@/components/BookmarksImport/BookmarksImportDialog";
 import MemoView from "@/components/MemoView";
@@ -16,27 +16,81 @@ import { State } from "@/types/proto/api/v1/common_pb";
 import { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
+/** Shared quiet header action: 13px muted label, hairline hover wash, no chrome. */
+const HeaderAction = ({
+  icon,
+  label,
+  onClick,
+  to,
+  disabled,
+}: {
+  icon: ReactNode;
+  label: string;
+  onClick?: () => void;
+  to?: string;
+  disabled?: boolean;
+}) => {
+  const className = cn(
+    "flex items-center gap-1.5 rounded-md px-2 py-1 text-[13px] text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground",
+    "disabled:cursor-not-allowed disabled:opacity-50",
+  );
+  const content = (
+    <>
+      {icon}
+      {label}
+    </>
+  );
+  if (to) {
+    return (
+      <Link to={to} className={className}>
+        {content}
+      </Link>
+    );
+  }
+  return (
+    <button type="button" className={className} onClick={onClick} disabled={disabled}>
+      {content}
+    </button>
+  );
+};
+
+/** Hairline divider separating header action groups. */
+const HeaderDivider = () => <span aria-hidden className="mx-1 h-4 w-px shrink-0 bg-border" />;
+
+interface CoverRefreshState {
+  status: "idle" | "running" | "done" | "error";
+  updated: number;
+  failed: number;
+}
+
+const IDLE_REFRESH: CoverRefreshState = { status: "idle", updated: 0, failed: 0 };
+
 const Bookmarks = () => {
   const user = useCurrentUser();
   const t = useTranslate();
   const { memoFilter: spaceFilter } = useSpaceContext();
   const [importOpen, setImportOpen] = useState(false);
-  const [coverRefresh, setCoverRefresh] = useState(false);
+  const [coverRefresh, setCoverRefresh] = useState<CoverRefreshState>(IDLE_REFRESH);
   const queryClient = useQueryClient();
 
   const refreshCovers = async () => {
-    setCoverRefresh(true);
+    setCoverRefresh({ ...IDLE_REFRESH, status: "running" });
     try {
       // The server pages through the backlog; keep calling until it reports a short page.
+      let updated = 0;
+      let failed = 0;
       for (;;) {
         const response = await memoServiceClient.refreshMemoLinkCovers({});
+        updated += response.updatedLinks;
+        failed += response.failedLinks;
         if (response.memosExamined < 200) break;
       }
       await queryClient.invalidateQueries({ queryKey: ["memos"] });
+      setCoverRefresh({ status: "done", updated, failed });
     } catch (error) {
       console.error("link cover refresh failed", error);
+      setCoverRefresh({ ...IDLE_REFRESH, status: "error" });
     }
-    setCoverRefresh(false);
   };
 
   const memoFilter = useMemoFilters({
@@ -50,6 +104,15 @@ const Bookmarks = () => {
     state: State.NORMAL,
   });
 
+  const refreshStatus =
+    coverRefresh.status === "done"
+      ? coverRefresh.failed > 0
+        ? t("bookmarks.refresh-covers-result", { updated: coverRefresh.updated.toString(), failed: coverRefresh.failed.toString() })
+        : t("bookmarks.refresh-covers-updated", { updated: coverRefresh.updated.toString() })
+      : coverRefresh.status === "error"
+        ? t("bookmarks.refresh-covers-error")
+        : null;
+
   return (
     <>
       <PagedMemoList
@@ -62,33 +125,35 @@ const Bookmarks = () => {
         filter={memoFilter}
         contextFilter={combineCELFilters("has_link", spaceFilter)}
         renderLeading={({ useGrid }) => (
-          <header className={cn("flex items-center gap-2 px-1", !useGrid && "mb-4")}>
-            <BookmarkIcon className="size-5 text-muted-foreground" strokeWidth={1.8} />
-            <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("common.bookmarks")}</h1>
-            <Link
-              to={ROUTES.BOOKMARK}
-              className="ml-auto flex items-center gap-1 rounded-md px-2 py-1 text-[13px] text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground"
-            >
-              <PlusIcon className="size-3.5" strokeWidth={1.8} />
-              {t("common.save-link")}
-            </Link>
-            <button
-              type="button"
-              className="flex items-center gap-1 rounded-md px-2 py-1 text-[13px] text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground"
-              onClick={() => setImportOpen(true)}
-            >
-              <ImportIcon className="size-3.5" strokeWidth={1.8} />
-              {t("bookmarks.import")}
-            </button>
-            <button
-              type="button"
-              className="flex items-center gap-1 rounded-md px-2 py-1 text-[13px] text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground disabled:opacity-50"
-              onClick={() => void refreshCovers()}
-              disabled={coverRefresh}
-            >
-              <RefreshCwIcon className={cn(coverRefresh && "animate-spin", "size-3.5")} strokeWidth={1.8} />
-              {coverRefresh ? t("bookmarks.refreshing-covers") : t("bookmarks.refresh-covers")}
-            </button>
+          <header className={cn("flex flex-col gap-1.5 px-1", !useGrid && "mb-4")}>
+            <div className="flex items-center gap-2">
+              <BookmarkIcon className="size-5 text-muted-foreground" strokeWidth={1.8} />
+              <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("common.bookmarks")}</h1>
+              <div className="ml-auto flex items-center">
+                <HeaderAction
+                  to={ROUTES.BOOKMARK}
+                  icon={<PlusIcon className="size-3.5" strokeWidth={1.8} />}
+                  label={t("common.save-link")}
+                />
+                <HeaderDivider />
+                <HeaderAction
+                  icon={<ImportIcon className="size-3.5" strokeWidth={1.8} />}
+                  label={t("bookmarks.import")}
+                  onClick={() => setImportOpen(true)}
+                />
+                <HeaderAction
+                  icon={<RefreshCwIcon className={cn("size-3.5", coverRefresh.status === "running" && "animate-spin")} strokeWidth={1.8} />}
+                  label={coverRefresh.status === "running" ? t("bookmarks.refreshing-covers") : t("bookmarks.refresh-covers")}
+                  onClick={() => void refreshCovers()}
+                  disabled={coverRefresh.status === "running"}
+                />
+              </div>
+            </div>
+            {refreshStatus !== null ? (
+              <p aria-live="polite" className="self-end pr-2 font-mono text-xs text-muted-foreground">
+                {refreshStatus}
+              </p>
+            ) : null}
           </header>
         )}
       />

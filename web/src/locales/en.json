@@ -244,7 +244,10 @@
     "import-done": "Import finished.",
     "import-cancel": "Stop",
     "refresh-covers": "Update covers",
-    "refreshing-covers": "Updating covers…"
+    "refreshing-covers": "Updating covers…",
+    "refresh-covers-result": "${updated} covers updated, ${failed} still failing",
+    "refresh-covers-error": "Cover refresh failed",
+    "refresh-covers-updated": "${updated} covers updated"
   },
   "locale-picker": {
     "no-language-feedback": "Language not found? Submit feedback"
