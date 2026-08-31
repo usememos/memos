@@ -56,18 +56,29 @@ describe("editor key bindings", () => {
     ["Ctrl+Shift+X", "x", { ctrlKey: true, shiftKey: true }, "~~alpha~~"],
     ["Cmd+E", "e", { metaKey: true }, "`alpha`"],
     ["Ctrl+E", "e", { ctrlKey: true }, "`alpha`"],
-    ["Cmd+K", "j", { metaKey: true }, "[alpha]()"],
-    ["Ctrl+K", "j", { ctrlKey: true }, "[alpha]()"],
-  ])(
-    "%s applies the existing formatting command",
-    (_label, key, modifiers, expected) => {
-      const view = makeView("alpha");
-      select(view, "alpha");
-      press(view, key, modifiers);
-      expect(view.state.doc.toString()).toBe(expected);
-      view.destroy();
-    },
-  );
+    ["Cmd+J", "j", { metaKey: true }, "[alpha]()"],
+    ["Ctrl+J", "j", { ctrlKey: true }, "[alpha]()"],
+  ])("%s applies the existing formatting command", (_label, key, modifiers, expected) => {
+    const view = makeView("alpha");
+    select(view, "alpha");
+    press(view, key, modifiers);
+    expect(view.state.doc.toString()).toBe(expected);
+    view.destroy();
+  });
+
+  it.each([
+    ["Cmd+J", { metaKey: true }],
+    ["Ctrl+J", { ctrlKey: true }],
+  ])("%s leaves the selected link label ready for URL entry", (_label, modifiers) => {
+    const view = makeView("alpha");
+    select(view, "alpha");
+
+    press(view, "j", modifiers);
+
+    expect(view.state.doc.toString()).toBe("[alpha]()");
+    expect(view.state.selection.main).toMatchObject({ from: 8, to: 8 });
+    view.destroy();
+  });
 
   it.each([
     ["Cmd+Option+1", "1", { metaKey: true, altKey: true }, "# alpha"],
@@ -94,6 +105,18 @@ describe("editor key bindings", () => {
     expect(view.state.doc.toString()).toBe("  > first\n\n > second\n> third");
     press(view, "9", { ctrlKey: true, shiftKey: true });
     expect(view.state.doc.toString()).toBe("  first\n\n second\nthird");
+    view.destroy();
+  });
+
+  it.each([
+    [">text", "text"],
+    [">", ""],
+  ])("removes the quote marker from valid compact Markdown %s", (markdown, expected) => {
+    const view = makeView(markdown);
+
+    press(view, "9", { ctrlKey: true, shiftKey: true });
+
+    expect(view.state.doc.toString()).toBe(expected);
     view.destroy();
   });
 

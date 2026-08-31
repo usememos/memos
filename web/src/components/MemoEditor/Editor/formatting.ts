@@ -340,9 +340,10 @@ export function runFormattingCommand(view: EditorView, command: EditorCommandId,
     // Empty selection: the URL doubles as the label.
     const label = view.state.sliceDoc(from, to) || url;
     const insert = `[${label}](${url})`;
+    const cursor = url === "" ? from + label.length + 3 : from + insert.length;
     view.dispatch({
       changes: { from, to, insert },
-      selection: { anchor: from + insert.length },
+      selection: { anchor: cursor },
     });
   }
 }

@@ -1,29 +1,13 @@
-import {
-  defaultKeymap,
-  history,
-  historyKeymap,
-  indentWithTab,
-} from "@codemirror/commands";
+import { defaultKeymap, history, historyKeymap, indentWithTab } from "@codemirror/commands";
 import { markdown } from "@codemirror/lang-markdown";
 import { indentUnit } from "@codemirror/language";
 import { Compartment, type Extension } from "@codemirror/state";
-import {
-  placeholder as cmPlaceholder,
-  dropCursor,
-  EditorView,
-  type KeyBinding,
-  keymap,
-} from "@codemirror/view";
+import { placeholder as cmPlaceholder, dropCursor, EditorView, type KeyBinding, keymap } from "@codemirror/view";
 import { memoMarkdownExtensions } from "@/utils/memo-markdown-extension";
 import type { EditorCommandId } from "../formatting/commands";
 import { runFormattingCommand } from "./formatting";
 import { headingDecorations } from "./headingDecorations";
-import {
-  leadingWhitespace,
-  liftListItem,
-  selectedLineNumbers,
-  sinkListItem,
-} from "./listIndent";
+import { leadingWhitespace, liftListItem, selectedLineNumbers, sinkListItem } from "./listIndent";
 import { tagAutocomplete } from "./tagAutocomplete";
 import { tagMentionDecorations } from "./tagMentionDecorations";
 import { memoEditorTheme } from "./theme";
@@ -53,21 +37,22 @@ const runFormat = (command: EditorCommandId) => (view: EditorView) => {
 
 function toggleBlockquote(view: EditorView): boolean {
   const { state } = view;
-  const lines = selectedLineNumbers(view).map((number) =>
-    state.doc.line(number),
-  );
+  const lines = selectedLineNumbers(view).map((number) => state.doc.line(number));
   const nonBlank = lines.filter((line) => line.text.trim() !== "");
-  const targets =
-    lines.length === 1 || nonBlank.length === 0 ? lines : nonBlank;
-  const quoted = targets.map((line) => {
+  const targets = lines.length === 1 || nonBlank.length === 0 ? lines : nonBlank;
+  const quoteMarkerLengths = targets.map((line) => {
     const indent = leadingWhitespace(line.text);
-    return line.text.slice(indent).startsWith("> ");
+    return /^> ?/.exec(line.text.slice(indent))?.[0].length ?? 0;
   });
-  const allQuoted = quoted.every(Boolean);
-  const changes = targets.map((line) => {
+  const allQuoted = quoteMarkerLengths.every((length) => length > 0);
+  const changes = targets.map((line, index) => {
     const indent = leadingWhitespace(line.text);
     return allQuoted
-      ? { from: line.from + indent, to: line.from + indent + 2, insert: "" }
+      ? {
+          from: line.from + indent,
+          to: line.from + indent + quoteMarkerLengths[index],
+          insert: "",
+        }
       : { from: line.from + indent, to: line.from + indent, insert: "> " };
   });
   if (changes.length === 0) return true;
@@ -170,9 +155,7 @@ export function buildEditorExtensions({
       drop: (event, view) => {
         const files = Array.from(event.dataTransfer?.files ?? []);
         if (files.length === 0) return false;
-        const position =
-          view.posAtCoords({ x: event.clientX, y: event.clientY }) ??
-          view.state.selection.main.head;
+        const position = view.posAtCoords({ x: event.clientX, y: event.clientY }) ?? view.state.selection.main.head;
         onFiles(files, position);
         return true;
       },
@@ -183,14 +166,7 @@ export function buildEditorExtensions({
     // tagAutocomplete must precede the editing keymap so the completion popup's
     // Enter/Tab/arrow bindings win while it is open.
     tagAutocomplete(getTags),
-    keymap.of([
-      ...submitKeys,
-      ...formattingKeys,
-      ...editorKeys,
-      indentWithTab,
-      ...defaultKeymap,
-      ...historyKeymap,
-    ]),
+    keymap.of([...submitKeys, ...formattingKeys, ...editorKeys, indentWithTab, ...defaultKeymap, ...historyKeymap]),
     EditorView.updateListener.of((u) => {
       if (u.docChanged) onChange(u.state.doc.toString());
       // Toolbar active-state depends only on the doc and selection; skip the
