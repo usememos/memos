@@ -670,7 +670,6 @@
       "path": "Tallennuspolku",
       "path-description": "Voit käyttää samoja dynaamisia muuttujia paikallisesta tallennustilasta, kuten {filename}",
       "path-placeholder": "mukautettu/polku",
-      "presign-placeholder": "Esimerkki URL, valinnainen",
       "region": "Alue",
       "region-description": "Palveluntarjoajan vaatima alue. Joillekin yhteensopiville palveluille riittää mikä tahansa palveluntarjoajan hyväksymä aluemerkkijono.",
       "region-placeholder": "Alueen nimi",

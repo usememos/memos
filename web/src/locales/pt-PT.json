@@ -540,7 +540,6 @@
       "path": "Caminho do Armazenamento",
       "path-description": "Pode usar as mesmas variáveis dinâmicas do armazenamento local, como {filename}",
       "path-placeholder": "caminho/personalizado",
-      "presign-placeholder": "URL de pré-assinatura, opcional",
       "region": "Região",
       "region-placeholder": "Nome da Região",
       "s3-compatible-url": "URL compatível com S3",

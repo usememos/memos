@@ -257,14 +257,6 @@ func TestHTMLMetaFetcherDefaultHeadersAndDeadline(t *testing.T) {
 	require.Equal(t, fetchTimeout, newHTTPClient().Timeout)
 }
 
-func TestSiteImageSourceEscapesYouTubeVideoID(t *testing.T) {
-	pageURL, err := url.Parse("https://www.youtube.com/watch?v=video%2Fsegment%3Fvariant")
-	require.NoError(t, err)
-
-	source := siteImageSource(pageURL)
-	require.Equal(t, "https://img.youtube.com/vi/video%2Fsegment%3Fvariant/mqdefault.jpg", source.image)
-}
-
 func TestHTMLMetaFetcherResolvesAgainstFinalResponseURL(t *testing.T) {
 	fetcher := newTestFetcher(roundTripFunc(func(req *http.Request) (*http.Response, error) {
 		finalRequest := req.Clone(req.Context())

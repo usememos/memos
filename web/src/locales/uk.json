@@ -540,7 +540,6 @@
       "path": "Шлях до сховища",
       "path-description": "Ви можете використовувати ті ж динамічні змінні з локального сховища, такі як {filename}",
       "path-placeholder": "налаштований/шлях",
-      "presign-placeholder": "Пресигн URL, необов'язково",
       "region": "Регіон",
       "region-placeholder": "Назва регіону",
       "s3-compatible-url": "S3 Сумісний URL",

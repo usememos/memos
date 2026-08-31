@@ -9,6 +9,7 @@ import { useView } from "@/contexts/ViewContext";
 import { useDelayedFlag } from "@/hooks/useDelayedFlag";
 import { useInfiniteMemos } from "@/hooks/useMemoQueries";
 import { hoistMemoToFront } from "@/hooks/useMemoSorting";
+import { combineCELFilters } from "@/lib/cel-filter";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE, LOADING_INDICATOR_DELAY_MS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { State } from "@/types/proto/api/v1/common_pb";
@@ -40,6 +41,7 @@ interface Props {
   state?: State;
   orderBy?: string;
   filter?: string;
+  contextFilter?: string;
   pageSize?: number;
   showCreator?: boolean;
   enabled?: boolean;
@@ -146,7 +148,7 @@ const PagedMemoList = (props: Props) => {
     {
       state: props.state || State.NORMAL,
       orderBy: props.orderBy || "create_time desc",
-      filter: props.filter,
+      filter: combineCELFilters(props.contextFilter, props.filter),
       pageSize: props.pageSize || DEFAULT_LIST_MEMOS_PAGE_SIZE,
     },
     { enabled: props.enabled ?? true },

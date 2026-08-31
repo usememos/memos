@@ -30,6 +30,8 @@ func TestPublicMethodsArePublic(t *testing.T) {
 		"/memos.api.v1.MemoService/ListMemos",
 		"/memos.api.v1.MemoService/ListMemoComments",
 		"/memos.api.v1.MemoService/ListMemoAttachments",
+		"/memos.api.v1.MemoService/ListMemoReactions",
+		"/memos.api.v1.MemoService/ListMemoRelations",
 		"/memos.api.v1.MemoService/GetLinkMetadata",
 		"/memos.api.v1.MemoService/BatchGetLinkMetadata",
 		// Attachment Service metadata follows linked memo visibility.
@@ -60,6 +62,23 @@ func TestProtectedMethodsRequireAuth(t *testing.T) {
 		"/memos.api.v1.MemoService/CreateMemo",
 		"/memos.api.v1.MemoService/UpdateMemo",
 		"/memos.api.v1.MemoService/DeleteMemo",
+		// Space Service - every operation requires an authenticated member.
+		"/memos.api.v1.SpaceService/CreateSpace",
+		"/memos.api.v1.SpaceService/ListSpaces",
+		"/memos.api.v1.SpaceService/GetSpace",
+		"/memos.api.v1.SpaceService/UpdateSpace",
+		"/memos.api.v1.SpaceService/DeleteSpace",
+		"/memos.api.v1.SpaceService/CreateSpaceInvitation",
+		"/memos.api.v1.SpaceService/ListSpaceInvitations",
+		"/memos.api.v1.SpaceService/ListUserSpaceInvitations",
+		"/memos.api.v1.SpaceService/GetSpaceInvitation",
+		"/memos.api.v1.SpaceService/DeleteSpaceInvitation",
+		"/memos.api.v1.SpaceService/AcceptSpaceInvitation",
+		"/memos.api.v1.SpaceService/DeclineSpaceInvitation",
+		"/memos.api.v1.SpaceService/ListSpaceMembers",
+		"/memos.api.v1.SpaceService/GetSpaceMember",
+		"/memos.api.v1.SpaceService/UpdateSpaceMember",
+		"/memos.api.v1.SpaceService/DeleteSpaceMember",
 		// Attachment Service - write operations
 		"/memos.api.v1.AttachmentService/CreateAttachment",
 		"/memos.api.v1.AttachmentService/DeleteAttachment",
@@ -106,7 +125,7 @@ func TestAuthBootstrapMethodsAreSubsetOfPublic(t *testing.T) {
 }
 
 // TestAuthBootstrapClassification verifies which endpoints remain reachable by
-// anonymous callers on a private instance (no InstanceURL configured).
+// anonymous callers when the instance access mode is PRIVATE.
 func TestAuthBootstrapClassification(t *testing.T) {
 	// Reachable while private: sign-in flow, registration, instance metadata, SSO, share links.
 	bootstrap := []string{
@@ -125,12 +144,14 @@ func TestAuthBootstrapClassification(t *testing.T) {
 		})
 	}
 
-	// Public on an open instance, but gated on a private one: browsing and profiles.
+	// Public in PUBLIC mode, but gated in PRIVATE mode: browsing and profiles.
 	gatedWhilePrivate := []string{
 		"/memos.api.v1.MemoService/ListMemos",
 		"/memos.api.v1.MemoService/GetMemo",
 		"/memos.api.v1.MemoService/ListMemoComments",
 		"/memos.api.v1.MemoService/ListMemoAttachments",
+		"/memos.api.v1.MemoService/ListMemoReactions",
+		"/memos.api.v1.MemoService/ListMemoRelations",
 		"/memos.api.v1.AttachmentService/GetAttachment",
 		"/memos.api.v1.UserService/GetUser",
 		"/memos.api.v1.UserService/ListAllUserStats",

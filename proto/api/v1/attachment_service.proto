@@ -193,12 +193,19 @@ message ListAttachmentsRequest {
   // Optional. Filter to apply to the list results.
   // Example: "mime_type==\"image/png\"" or "filename.contains(\"test\")"
   // Supported operators: =, !=, <, <=, >, >=, : (contains), in
-  // Supported fields: filename, mime_type, create_time, memo
+  // Supported fields: filename, mime_type, create_time, memo_id, space.
+  // `space` only supports a non-negated `==` comparison with a Space resource
+  // name or null.
+  // `space` is the linked memo's space resource name, or null when the
+  // attachment is unlinked or its linked memo has no space.
   string filter = 3 [(google.api.field_behavior) = OPTIONAL];
 
   // Optional. The order to sort results by.
   // Example: "create_time desc" or "filename asc"
   string order_by = 4 [(google.api.field_behavior) = OPTIONAL];
+
+  reserved 5, 6;
+  reserved "space", "unassigned";
 }
 
 message ListAttachmentsResponse {

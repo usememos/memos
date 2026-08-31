@@ -670,7 +670,6 @@
       "path": "Skladovacia cesta",
       "path-description": "Môžete použiť rovnaké dynamické premenné z lokálneho úložiska, napríklad {filename}",
       "path-placeholder": "vlastná/cesta",
-      "presign-placeholder": "Predznamenanie URL, voliteľné",
       "region": "región",
       "region-description": "Región požadovaný poskytovateľom. Pre niektoré kompatibilné služby stačí akýkoľvek reťazec regiónu akceptovaný poskytovateľom.",
       "region-placeholder": "Názov regiónu",

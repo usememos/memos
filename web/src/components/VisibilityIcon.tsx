@@ -1,6 +1,6 @@
-import { Globe2Icon, LockIcon, UsersIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
+import type { Visibility } from "@/types/proto/api/v1/memo_service_pb";
+import { getVisibilityOption } from "@/utils/memo";
 
 interface Props {
   visibility: Visibility;
@@ -9,15 +9,8 @@ interface Props {
 
 const VisibilityIcon = (props: Props) => {
   const { className, visibility } = props;
+  const VIcon = getVisibilityOption(visibility)?.icon;
 
-  let VIcon = null;
-  if (visibility === Visibility.PRIVATE) {
-    VIcon = LockIcon;
-  } else if (visibility === Visibility.PROTECTED) {
-    VIcon = UsersIcon;
-  } else if (visibility === Visibility.PUBLIC) {
-    VIcon = Globe2Icon;
-  }
   if (!VIcon) {
     return null;
   }

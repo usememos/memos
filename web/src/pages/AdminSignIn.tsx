@@ -22,7 +22,7 @@ const AdminSignIn = () => {
       <PasswordSignInForm />
       <p className="mt-5 text-center text-sm">
         <Link to={ROUTES.AUTH} className="inline-flex items-center gap-1 text-primary hover:underline" viewTransition>
-          <ArrowLeftIcon className="h-3.5 w-3.5" />
+          <ArrowLeftIcon className="h-3.5 w-3.5 rtl:rotate-180" />
           {t("auth.back-to-sign-in")}
         </Link>
       </p>

@@ -141,7 +141,7 @@ func seedListMemosBenchmarkData(ctx context.Context, stores *store.Store, hostUs
 		if i%5 == 0 {
 			if _, err := stores.UpsertReaction(ctx, &store.Reaction{
 				CreatorID:    hostUser.ID,
-				ContentID:    "memos/" + memo.UID,
+				MemoID:       memo.ID,
 				ReactionType: "thumbs-up",
 			}); err != nil {
 				return "", err
@@ -161,20 +161,13 @@ func seedListMemosBenchmarkData(ctx context.Context, stores *store.Store, hostUs
 		}
 
 		if i%6 == 0 {
-			commentMemo, err := stores.CreateMemo(ctx, &store.Memo{
+			_, err := stores.CreateMemoComment(ctx, &store.Memo{
 				UID:        fmt.Sprintf("comment-%06d", i),
 				CreatorID:  hostUser.ID,
 				Content:    fmt.Sprintf("Comment for memo %06d", i),
 				Visibility: store.Private,
-			})
+			}, memo.ID, hostUser.ID)
 			if err != nil {
-				return "", err
-			}
-			if _, err := stores.UpsertMemoRelation(ctx, &store.MemoRelation{
-				MemoID:        commentMemo.ID,
-				RelatedMemoID: memo.ID,
-				Type:          store.MemoRelationComment,
-			}); err != nil {
 				return "", err
 			}
 			if commentParentName == "" {

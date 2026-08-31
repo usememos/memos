@@ -13,9 +13,9 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
   onSave,
   onCancel,
   memoName,
+  space,
   onAudioRecorderClick,
-  isFormattingToolbarVisible,
-  onToggleFormattingToolbar,
+  viewToggles,
   onInsertImages,
 }) => {
   const t = useTranslate();
@@ -40,10 +40,6 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
     dispatch(actions.setMetadata({ location: next }));
   };
 
-  const handleToggleFocusMode = () => {
-    dispatch(actions.toggleFocusMode());
-  };
-
   const handleVisibilityChange = (next: Visibility) => {
     dispatch(actions.setMetadata({ visibility: next }));
   };
@@ -56,14 +52,12 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
           isSaving={isSaving}
           location={location}
           onLocationChange={handleLocationChange}
-          onToggleFocusMode={handleToggleFocusMode}
           memoName={memoName}
           onAudioRecorderClick={onAudioRecorderClick}
-          isFormattingToolbarVisible={isFormattingToolbarVisible}
-          onToggleFormattingToolbar={onToggleFormattingToolbar}
+          viewToggles={viewToggles}
           onInsertImages={onInsertImages}
         />
-        <VisibilitySelector value={visibility} onChange={handleVisibilityChange} />
+        <VisibilitySelector value={visibility} space={space} onChange={handleVisibilityChange} />
       </div>
 
       <div className="flex flex-row justify-end items-center gap-2">

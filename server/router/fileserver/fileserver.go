@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -21,6 +22,7 @@ import (
 
 	"github.com/usememos/memos/internal/motionphoto"
 	"github.com/usememos/memos/internal/profile"
+	"github.com/usememos/memos/internal/storage"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/access"
 	"github.com/usememos/memos/server/auth"
@@ -167,9 +169,15 @@ func (s *FileServerService) serveAttachmentFile(c *echo.Context) error {
 func (s *FileServerService) serveUserAvatar(c *echo.Context) error {
 	ctx := c.Request().Context()
 
-	// On a private instance (no InstanceURL), avatars are not exposed to anonymous
-	// visitors; a valid session, access token, or PAT is required.
-	if !s.Profile.AllowAnonymous() {
+	allowAnonymous, err := s.Store.AllowsAnonymousAccess(ctx)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get instance access policy").Wrap(err)
+	}
+	cacheControl := cacheMaxAge
+	// On a private instance, avatars are not exposed to anonymous visitors; a
+	// valid session, access token, or PAT is required.
+	if !allowAnonymous {
+		cacheControl = privateAttachmentCacheControl
 		viewer, err := s.getCurrentUser(ctx, c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "failed to get current user").Wrap(err)
@@ -202,7 +210,7 @@ func (s *FileServerService) serveUserAvatar(c *echo.Context) error {
 	}
 
 	setSecurityHeaders(c)
-	c.Response().Header().Set(echo.HeaderCacheControl, cacheMaxAge)
+	c.Response().Header().Set(echo.HeaderCacheControl, cacheControl)
 
 	return c.Blob(http.StatusOK, imageType, imageData)
 }
@@ -222,11 +230,7 @@ func (s *FileServerService) serveMediaStream(c *echo.Context, attachment *store.
 		return nil
 
 	case storepb.AttachmentStorageType_S3:
-		presignURL, err := s.getS3PresignedURL(c.Request().Context(), attachment)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "failed to generate presigned URL").Wrap(err)
-		}
-		return c.Redirect(http.StatusTemporaryRedirect, presignURL)
+		return s.streamS3Object(c, attachment, contentType)
 
 	default:
 		// Database storage fallback.
@@ -264,12 +268,7 @@ func (s *FileServerService) serveStaticFile(c *echo.Context, attachment *store.A
 		http.ServeFile(c.Response(), c.Request(), s.resolveLocalPath(attachment.Reference))
 		return nil
 	case storepb.AttachmentStorageType_S3:
-		reader, err := s.getAttachmentReader(c.Request().Context(), attachment)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "failed to get attachment reader").Wrap(err)
-		}
-		defer reader.Close()
-		return c.Stream(http.StatusOK, contentType, reader)
+		return s.streamS3Object(c, attachment, contentType)
 	default:
 		return c.Blob(http.StatusOK, contentType, attachment.Blob)
 	}
@@ -312,11 +311,11 @@ func (s *FileServerService) getAttachmentReader(ctx context.Context, attachment 
 		if err != nil {
 			return nil, err
 		}
-		reader, err := driver.GetObjectStream(ctx, s3Object.Key)
+		object, err := driver.GetObjectStream(ctx, s3Object.Key, "")
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to stream from S3")
 		}
-		return reader, nil
+		return object.Body, nil
 
 	default:
 		return io.NopCloser(bytes.NewReader(attachment.Blob)), nil
@@ -332,18 +331,58 @@ func (s *FileServerService) resolveLocalPath(reference string) string {
 	return filePath
 }
 
-// getS3PresignedURL generates a presigned URL for direct S3 access.
-func (s *FileServerService) getS3PresignedURL(ctx context.Context, attachment *store.Attachment) (string, error) {
+// streamS3Object streams S3 content through the server, forwarding a supported
+// single Range so media players and document viewers can seek without a direct
+// S3 URL. Multipart ranges are ignored and served as a complete response
+// because S3 does not support multipart range responses.
+func (s *FileServerService) streamS3Object(c *echo.Context, attachment *store.Attachment, contentType string) error {
+	ctx := c.Request().Context()
 	driver, s3Object, err := s.Store.ResolveAttachmentS3Driver(ctx, attachment)
 	if err != nil {
-		return "", err
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to resolve S3 attachment driver").Wrap(err)
 	}
 
-	url, err := driver.PresignGetObject(ctx, s3Object.Key)
+	object, err := driver.GetObjectStream(ctx, s3Object.Key, singleRangeHeader(c.Request().Header))
 	if err != nil {
-		return "", errors.Wrap(err, "failed to presign URL")
+		if errors.Is(err, storage.ErrRangeNotSatisfiable) {
+			h := c.Response().Header()
+			h.Set("Accept-Ranges", "bytes")
+			var rangeErr *storage.RangeNotSatisfiableError
+			if errors.As(err, &rangeErr) && rangeErr.ContentRange != "" {
+				h.Set("Content-Range", rangeErr.ContentRange)
+			}
+			return echo.NewHTTPError(http.StatusRequestedRangeNotSatisfiable, "requested range not satisfiable")
+		}
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to stream from S3").Wrap(err)
 	}
-	return url, nil
+	defer object.Body.Close()
+
+	h := c.Response().Header()
+	h.Set("Accept-Ranges", "bytes")
+	if object.ContentLength >= 0 {
+		h.Set(echo.HeaderContentLength, strconv.FormatInt(object.ContentLength, 10))
+	}
+	status := http.StatusOK
+	if object.ContentRange != "" {
+		h.Set("Content-Range", object.ContentRange)
+		status = http.StatusPartialContent
+	}
+	return c.Stream(status, contentType, object.Body)
+}
+
+// singleRangeHeader returns a Range value only when it contains one range.
+// Ignoring unsupported Range requests is permitted by HTTP and lets the caller
+// send the complete representation instead of relaying a request S3 rejects.
+func singleRangeHeader(header http.Header) string {
+	values := header.Values("Range")
+	if len(values) != 1 || strings.Contains(values[0], ",") {
+		return ""
+	}
+	unit, ranges, ok := strings.Cut(values[0], "=")
+	if !ok || !strings.EqualFold(strings.TrimSpace(unit), "bytes") || strings.TrimSpace(ranges) == "" {
+		return ""
+	}
+	return values[0]
 }
 
 // =============================================================================
@@ -568,7 +607,7 @@ func (s *FileServerService) checkAttachmentPermission(ctx context.Context, c *ec
 		if user == nil {
 			return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusUnauthorized, "unauthorized access")
 		}
-		if user.ID != attachment.CreatorID && user.Role != store.RoleAdmin {
+		if user.ID != attachment.CreatorID {
 			return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusForbidden, "forbidden access")
 		}
 		return access.MemoReadClassPrivate, nil
@@ -582,22 +621,10 @@ func (s *FileServerService) checkAttachmentPermission(ctx context.Context, c *ec
 		return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusNotFound, "memo not found")
 	}
 
-	var parent *store.Memo
-	if memo.ParentUID != nil {
-		parent, err = s.Store.GetMemo(ctx, &store.FindMemo{UID: memo.ParentUID})
-		if err != nil {
-			return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusInternalServerError, "failed to find parent memo").Wrap(err)
-		}
-		if parent == nil {
-			return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusNotFound, "memo not found")
-		}
+	allowAnonymous, err := s.Store.AllowsAnonymousAccess(ctx)
+	if err != nil {
+		return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusInternalServerError, "failed to get instance access policy").Wrap(err)
 	}
-
-	allowAnonymous := s.Profile != nil && s.Profile.AllowAnonymous()
-	if decision := access.CheckMemoRead(memo, parent, nil, allowAnonymous, nil); decision.Allowed() {
-		return decision.Class, nil
-	}
-
 	var sharedMemoID *int32
 	if shareToken := (*c).QueryParam("share_token"); shareToken != "" {
 		ms, err := s.Store.GetMemoShare(ctx, &store.FindMemoShare{UID: &shareToken})
@@ -606,17 +633,33 @@ func (s *FileServerService) checkAttachmentPermission(ctx context.Context, c *ec
 		}
 		if ms != nil && !isMemoShareExpired(ms) {
 			sharedMemoID = &ms.MemoID
-			if decision := access.CheckMemoRead(memo, parent, nil, allowAnonymous, sharedMemoID); decision.Allowed() {
-				return decision.Class, nil
-			}
 		}
+	}
+
+	facts, err := access.ResolveMemoReadFacts(ctx, s.Store, memo)
+	if err != nil {
+		return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusInternalServerError, "failed to resolve memo access").Wrap(err)
+	}
+	// Public and exact share-token reads do not depend on browser credentials.
+	// Decide those first so an expired cookie cannot turn an otherwise valid
+	// anonymous file request into a server error.
+	anonymousContext, err := facts.WithViewer(ctx, s.Store, nil, allowAnonymous, sharedMemoID)
+	if err != nil {
+		return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusInternalServerError, "failed to resolve memo access").Wrap(err)
+	}
+	if anonymousDecision := access.CheckMemoReadContext(anonymousContext); anonymousDecision.Allowed() {
+		return anonymousDecision.Class, nil
 	}
 
 	user, err := s.getCurrentUser(ctx, c)
 	if err != nil {
 		return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusInternalServerError, "failed to get current user").Wrap(err)
 	}
-	decision := access.CheckMemoRead(memo, parent, user, allowAnonymous, sharedMemoID)
+	readContext, err := facts.WithViewer(ctx, s.Store, user, allowAnonymous, sharedMemoID)
+	if err != nil {
+		return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusInternalServerError, "failed to find space membership").Wrap(err)
+	}
+	decision := access.CheckMemoReadContext(readContext)
 	switch decision.Denial {
 	case access.MemoReadDenialNone:
 		return decision.Class, nil

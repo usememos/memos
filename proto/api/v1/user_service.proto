@@ -399,6 +399,13 @@ message GetUserStatsRequest {
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type: "memos.api.v1/User"}
   ];
+
+  // Optional. CEL expression selecting the readable non-comment memos to
+  // include. Supports the same fields as ListMemos, including `space`.
+  string filter = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  reserved 3;
+  reserved "space", "unassigned";
 }
 
 message ListAllUserStatsRequest {
@@ -408,6 +415,9 @@ message ListAllUserStatsRequest {
   // Optional. Filter to apply to memo stats.
   // Uses the same filter syntax as ListMemos.
   string filter = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  reserved 3, 4;
+  reserved "space", "unassigned";
 }
 
 message ListAllUserStatsResponse {

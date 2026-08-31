@@ -4,10 +4,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUpdateUserGeneralSetting } from "@/hooks/useUserQueries";
-import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import { UserSetting_GeneralSetting, UserSetting_GeneralSettingSchema } from "@/types/proto/api/v1/user_service_pb";
 import { loadLocale, useTranslate } from "@/utils/i18n";
-import { convertVisibilityFromString, convertVisibilityToString } from "@/utils/memo";
+import { convertVisibilityFromString, DEFAULT_VISIBILITY_OPTIONS } from "@/utils/memo";
 import { loadTheme } from "@/utils/theme";
 import LocaleSelect from "../LocaleSelect";
 import ThemeSelect from "../ThemeSelect";
@@ -36,11 +35,7 @@ const PreferencesSection = () => {
   };
 
   const visibilityOptions = useMemo(
-    () =>
-      [Visibility.PRIVATE, Visibility.PROTECTED, Visibility.PUBLIC].map((v) => {
-        const value = convertVisibilityToString(v);
-        return { value, label: t(`memo.visibility.${value.toLowerCase() as Lowercase<typeof value>}`) };
-      }),
+    () => DEFAULT_VISIBILITY_OPTIONS.map((option) => ({ value: option.name, label: t(option.labelKey) })),
     [t],
   );
 

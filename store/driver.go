@@ -24,6 +24,7 @@ type Driver interface {
 	UpdateAttachment(ctx context.Context, update *UpdateAttachment) error
 	DeleteAttachment(ctx context.Context, delete *DeleteAttachment) error
 	DeleteAttachments(ctx context.Context, deletes []*DeleteAttachment) error
+	DeleteAttachmentsWithPolicy(ctx context.Context, policy *AttachmentDeletionPolicy, attachmentIDs []int32) error
 	ApplyMemoMutation(ctx context.Context, mutation *MemoMutation) error
 
 	// Memo model related methods.
@@ -31,6 +32,21 @@ type Driver interface {
 	ListMemos(ctx context.Context, find *FindMemo) ([]*Memo, error)
 	UpdateMemo(ctx context.Context, update *UpdateMemo) error
 	DeleteMemo(ctx context.Context, delete *DeleteMemo) error
+	DeleteMemoWithPolicy(ctx context.Context, delete *DeleteMemoWithPolicy) (*DeleteMemoWithPolicyResult, error)
+
+	// Space model related methods.
+	CreateSpace(ctx context.Context, create *Space, creatorID int32) (*Space, error)
+	ListSpaces(ctx context.Context, find *FindSpace) ([]*Space, error)
+	UpdateSpace(ctx context.Context, update *UpdateSpace, actorUserID int32) (*Space, error)
+	DeleteSpace(ctx context.Context, delete *DeleteSpace) (*DeleteSpaceResult, error)
+	ListSpaceMembers(ctx context.Context, find *FindSpaceMember) ([]*SpaceMember, error)
+	UpdateSpaceMember(ctx context.Context, update *UpdateSpaceMember, actorUserID int32) (*SpaceMember, error)
+	DeleteSpaceMember(ctx context.Context, delete *DeleteSpaceMember, actorUserID int32) error
+	CreateSpaceInvitation(ctx context.Context, create *SpaceInvitation, actorUserID int32) (*SpaceInvitation, error)
+	ListSpaceInvitations(ctx context.Context, find *FindSpaceInvitation) ([]*SpaceInvitation, error)
+	AcceptSpaceInvitation(ctx context.Context, accept *AcceptSpaceInvitation, actorUserID int32) (*SpaceMember, error)
+	DeclineSpaceInvitation(ctx context.Context, decline *DeclineSpaceInvitation, actorUserID int32) error
+	RevokeSpaceInvitation(ctx context.Context, revoke *RevokeSpaceInvitation, actorUserID int32) error
 
 	// MemoRelation model related methods.
 	UpsertMemoRelation(ctx context.Context, create *MemoRelation) (*MemoRelation, error)
@@ -38,6 +54,8 @@ type Driver interface {
 	DeleteMemoRelation(ctx context.Context, delete *DeleteMemoRelation) error
 
 	// InstanceSetting model related methods.
+	// CreateInstanceSettingIfNotExists atomically creates the setting when its name is absent and reports whether it inserted the row.
+	CreateInstanceSettingIfNotExists(ctx context.Context, create *InstanceSetting) (bool, error)
 	UpsertInstanceSetting(ctx context.Context, upsert *InstanceSetting) (*InstanceSetting, error)
 	ListInstanceSettings(ctx context.Context, find *FindInstanceSetting) ([]*InstanceSetting, error)
 	DeleteInstanceSetting(ctx context.Context, delete *DeleteInstanceSetting) error

@@ -36,6 +36,10 @@ func convertInstanceSettingFromStore(setting *storepb.InstanceSetting) *v1pb.Ins
 		instanceSetting.Value = &v1pb.InstanceSetting_AiSetting{
 			AiSetting: convertInstanceAISettingFromStore(setting.GetAiSetting()),
 		}
+	case *storepb.InstanceSetting_AccessSetting:
+		instanceSetting.Value = &v1pb.InstanceSetting_AccessSetting_{
+			AccessSetting: convertInstanceAccessSettingFromStore(setting.GetAccessSetting()),
+		}
 	default:
 		// Leave Value unset for unsupported setting variants.
 	}
@@ -75,10 +79,36 @@ func convertInstanceSettingToStore(setting *v1pb.InstanceSetting) *storepb.Insta
 		instanceSetting.Value = &storepb.InstanceSetting_AiSetting{
 			AiSetting: convertInstanceAISettingToStore(setting.GetAiSetting()),
 		}
+	case storepb.InstanceSettingKey_ACCESS:
+		instanceSetting.Value = &storepb.InstanceSetting_AccessSetting{
+			AccessSetting: convertInstanceAccessSettingToStore(setting.GetAccessSetting()),
+		}
 	default:
 		// Keep the default GeneralSetting value
 	}
 	return instanceSetting
+}
+
+func convertInstanceAccessSettingFromStore(setting *storepb.InstanceAccessSetting) *v1pb.InstanceSetting_AccessSetting {
+	if setting == nil {
+		return nil
+	}
+	return &v1pb.InstanceSetting_AccessSetting{
+		AccessMode: convertInstanceAccessModeFromStore(setting.AccessMode),
+	}
+}
+
+func convertInstanceAccessSettingToStore(setting *v1pb.InstanceSetting_AccessSetting) *storepb.InstanceAccessSetting {
+	if setting == nil {
+		return nil
+	}
+	return &storepb.InstanceAccessSetting{
+		AccessMode: storepb.InstanceAccessMode(setting.AccessMode),
+	}
+}
+
+func convertInstanceAccessModeFromStore(mode storepb.InstanceAccessMode) v1pb.InstanceAccessMode {
+	return v1pb.InstanceAccessMode(mode)
 }
 
 func convertInstanceGeneralSettingFromStore(setting *storepb.InstanceGeneralSetting) *v1pb.InstanceSetting_GeneralSetting {

@@ -57,7 +57,7 @@ func TestSetMemoAttachments(t *testing.T) {
 		require.NoError(t, err)
 	})
 
-	t.Run("SetMemoAttachments success by host user", func(t *testing.T) {
+	t.Run("SetMemoAttachments host user has no ownership bypass", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -81,12 +81,12 @@ func TestSetMemoAttachments(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, memo)
 
-		// Host user can modify attachments - should succeed
+		// Application ADMIN is an instance role, not memo authorship.
 		_, err = ts.Service.SetMemoAttachments(hostCtx, &apiv1.SetMemoAttachmentsRequest{
 			Name:        memo.Name,
 			Attachments: []*apiv1.Attachment{},
 		})
-		require.NoError(t, err)
+		require.Equal(t, codes.PermissionDenied, status.Code(err))
 	})
 
 	t.Run("SetMemoAttachments permission denied for non-owner", func(t *testing.T) {
@@ -226,6 +226,74 @@ func TestSetMemoAttachments(t *testing.T) {
 		response, err := ts.Service.ListMemoAttachments(userCtx, &apiv1.ListMemoAttachmentsRequest{Name: memo.Name})
 		require.NoError(t, err)
 		require.Len(t, response.Attachments, 0)
+		for _, attachmentName := range []string{still.Name, video.Name} {
+			attachmentUID := strings.TrimPrefix(attachmentName, "attachments/")
+			stored, getErr := ts.Store.GetAttachment(ctx, &store.FindAttachment{UID: &attachmentUID})
+			require.NoError(t, getErr)
+			require.Nil(t, stored, "removed motion-media attachment row must be deleted")
+		}
+	})
+
+	t.Run("SetMemoAttachments rejection leaves an incomplete external motion group unchanged", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		user, err := ts.CreateRegularUser(ctx, "partial_motion_group_user")
+		require.NoError(t, err)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
+		still, err := ts.Service.CreateAttachment(userCtx, &apiv1.CreateAttachmentRequest{Attachment: &apiv1.Attachment{
+			Filename: "partial.heic",
+			Type:     "image/heic",
+			Content:  []byte("still"),
+			MotionMedia: &apiv1.MotionMedia{
+				Family:  apiv1.MotionMediaFamily_APPLE_LIVE_PHOTO,
+				Role:    apiv1.MotionMediaRole_STILL,
+				GroupId: "partial-motion-group",
+			},
+		}})
+		require.NoError(t, err)
+		video, err := ts.Service.CreateAttachment(userCtx, &apiv1.CreateAttachmentRequest{Attachment: &apiv1.Attachment{
+			Filename: "partial.mov",
+			Type:     "video/quicktime",
+			Content:  []byte("video"),
+			MotionMedia: &apiv1.MotionMedia{
+				Family:  apiv1.MotionMediaFamily_APPLE_LIVE_PHOTO,
+				Role:    apiv1.MotionMediaRole_VIDEO,
+				GroupId: "partial-motion-group",
+			},
+		}})
+		require.NoError(t, err)
+
+		memo, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{Memo: &apiv1.Memo{
+			Content:     "memo with one motion-group member",
+			Visibility:  apiv1.Visibility_PRIVATE,
+			Attachments: []*apiv1.Attachment{{Name: still.Name}},
+		}})
+		require.NoError(t, err)
+		memoUID := strings.TrimPrefix(memo.Name, "memos/")
+		storedMemo, err := ts.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
+		require.NoError(t, err)
+		require.NotNil(t, storedMemo)
+		initialUpdatedTs := int64(1)
+		require.NoError(t, ts.Store.UpdateMemo(ctx, &store.UpdateMemo{ID: storedMemo.ID, UpdatedTs: &initialUpdatedTs}))
+
+		_, err = ts.Service.SetMemoAttachments(userCtx, &apiv1.SetMemoAttachmentsRequest{Name: memo.Name})
+		require.Equal(t, codes.FailedPrecondition, status.Code(err))
+
+		stillUID := strings.TrimPrefix(still.Name, "attachments/")
+		storedStill, err := ts.Store.GetAttachment(ctx, &store.FindAttachment{UID: &stillUID})
+		require.NoError(t, err)
+		require.NotNil(t, storedStill)
+		require.NotNil(t, storedStill.MemoID)
+		require.Equal(t, storedMemo.ID, *storedStill.MemoID)
+		videoUID := strings.TrimPrefix(video.Name, "attachments/")
+		storedVideo, err := ts.Store.GetAttachment(ctx, &store.FindAttachment{UID: &videoUID})
+		require.NoError(t, err)
+		require.NotNil(t, storedVideo)
+		require.Nil(t, storedVideo.MemoID)
+		storedMemo, err = ts.Store.GetMemo(ctx, &store.FindMemo{ID: &storedMemo.ID})
+		require.NoError(t, err)
+		require.Equal(t, initialUpdatedTs, storedMemo.UpdatedTs)
 	})
 
 	t.Run("SetMemoAttachments denies attaching another user's attachment", func(t *testing.T) {

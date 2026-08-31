@@ -6,8 +6,10 @@ import { ArrowUpRightIcon, MapPinIcon } from "lucide-react";
 import { useEffect, useMemo } from "react";
 import { MapContainer, Marker, Popup, useMap } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-cluster";
-import { Link } from "react-router-dom";
-import { defaultMarkerIcon, ThemedTileLayer } from "@/components/map/map-utils";
+import { Link, useLocation } from "react-router-dom";
+import MemoSpaceBadge from "@/components/MemoView/components/MemoSpaceBadge";
+import { createMemoNavigationState } from "@/components/MemoView/navigation";
+import { defaultMarkerIcon, MinimalAttributionControl, OpenStreetMapTileLayer } from "@/components/map/map-utils";
 import { useInfiniteMemos } from "@/hooks/useMemoQueries";
 import { buildMemoCreatorFilter } from "@/lib/resource-names";
 import { cn } from "@/lib/utils";
@@ -41,13 +43,15 @@ const MapFitBounds = ({ memos }: { memos: Memo[] }) => {
     if (validMemos.length === 0) return;
 
     const bounds = L.latLngBounds(validMemos.map((memo) => [memo.location!.latitude, memo.location!.longitude]));
-    map.fitBounds(bounds, { padding: [50, 50] });
+    map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
   }, [memos, map]);
 
   return null;
 };
 
 const UserMemoMap = ({ creator, className }: Props) => {
+  const location = useLocation();
+  const parentPage = `${location.pathname}${location.search}`;
   const creatorFilter = useMemo(() => buildMemoCreatorFilter(creator), [creator]);
 
   const { data, isLoading } = useInfiniteMemos(
@@ -97,12 +101,13 @@ const UserMemoMap = ({ creator, className }: Props) => {
       <MapContainer
         center={defaultCenter}
         zoom={2}
-        className="h-full w-full z-0 !bg-muted"
+        className="map-attribution-minimal h-full w-full z-0 !bg-muted"
         scrollWheelZoom
         zoomControl={false}
         attributionControl={false}
       >
-        <ThemedTileLayer />
+        <MinimalAttributionControl />
+        <OpenStreetMapTileLayer />
         <MarkerClusterGroup
           chunkedLoading
           iconCreateFunction={createClusterCustomIcon}
@@ -111,7 +116,12 @@ const UserMemoMap = ({ creator, className }: Props) => {
           showCoverageOnHover={false}
         >
           {memosWithLocation.map((memo) => (
-            <Marker key={memo.name} position={[memo.location!.latitude, memo.location!.longitude]} icon={defaultMarkerIcon}>
+            <Marker
+              key={memo.name}
+              position={[memo.location!.latitude, memo.location!.longitude]}
+              icon={defaultMarkerIcon}
+              title={memo.snippet || "Memo location"}
+            >
               <Popup
                 closeButton={false}
                 className={cn(
@@ -130,9 +140,12 @@ const UserMemoMap = ({ creator, className }: Props) => {
                 <div className="flex flex-col gap-2.5 p-3">
                   <div className="flex items-start justify-between gap-3">
                     <div className="space-y-1">
-                      <span className="inline-flex rounded-full border border-border/70 bg-muted/50 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
-                        Memo
-                      </span>
+                      <div className="flex flex-wrap items-center gap-1">
+                        <span className="inline-flex rounded-full border border-border/70 bg-muted/50 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+                          Memo
+                        </span>
+                        <MemoSpaceBadge spaceName={memo.space} />
+                      </div>
                       <span className="block text-[11px] font-medium text-muted-foreground">
                         {memo.createTime &&
                           timestampDate(memo.createTime).toLocaleDateString(undefined, {
@@ -144,6 +157,7 @@ const UserMemoMap = ({ creator, className }: Props) => {
                     </div>
                     <Link
                       to={`/memos/${memo.name.split("/").pop()}`}
+                      state={createMemoNavigationState(parentPage, "all")}
                       className="inline-flex items-center gap-1 rounded-full border border-border bg-background px-2.5 py-1 text-[11px] font-medium text-foreground transition-all hover:border-primary/40 hover:text-primary"
                     >
                       Open

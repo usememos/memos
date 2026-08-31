@@ -12,6 +12,7 @@ import (
 	"github.com/labstack/echo/v5"
 	"github.com/stretchr/testify/require"
 
+	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	"github.com/usememos/memos/server/auth"
 	apiv1 "github.com/usememos/memos/server/router/api/v1"
 )
@@ -80,8 +81,8 @@ func TestSSEHandler_Authentication(t *testing.T) {
 	})
 
 	t.Run("valid token streams initial comment and event", func(t *testing.T) {
-		server := httptest.NewServer(e)
-		defer server.Close()
+		server := httptest.NewTestServer(t, e)
+		client := server.Client()
 
 		reqCtx, cancel := context.WithTimeout(ctx, time.Second)
 		defer cancel()
@@ -89,7 +90,7 @@ func TestSSEHandler_Authentication(t *testing.T) {
 		require.NoError(t, err)
 		req.Header.Set("Authorization", "Bearer "+token)
 
-		resp, err := server.Client().Do(req)
+		resp, err := client.Do(req)
 		require.NoError(t, err)
 		defer resp.Body.Close()
 		require.Equal(t, http.StatusOK, resp.StatusCode)
@@ -103,28 +104,32 @@ func TestSSEHandler_Authentication(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, "\n", line)
 
-		ts.Service.SSEHub.Broadcast(&apiv1.SSEEvent{
-			Type: apiv1.SSEEventMemoUpdated,
-			Name: "memos/streamed",
+		_, err = ts.Service.CreateMemo(ts.CreateUserContext(ctx, user.ID), &v1pb.CreateMemoRequest{
+			MemoId: "streamed",
+			Memo: &v1pb.Memo{
+				Content:    "streamed memo",
+				Visibility: v1pb.Visibility_PUBLIC,
+			},
 		})
+		require.NoError(t, err)
 
 		line, err = reader.ReadString('\n')
 		require.NoError(t, err)
-		require.Equal(t, "data: {\"type\":\"memo.updated\",\"name\":\"memos/streamed\"}\n", line)
+		require.Equal(t, "data: {\"type\":\"memo.changed\"}\n", line)
 		line, err = reader.ReadString('\n')
 		require.NoError(t, err)
 		require.Equal(t, "\n", line)
 	})
 
 	t.Run("hub close disconnects stream", func(t *testing.T) {
-		server := httptest.NewServer(e)
-		defer server.Close()
+		server := httptest.NewTestServer(t, e)
+		client := server.Client()
 
 		req, err := http.NewRequestWithContext(ctx, http.MethodGet, server.URL+"/api/v1/sse", nil)
 		require.NoError(t, err)
 		req.Header.Set("Authorization", "Bearer "+token)
 
-		resp, err := server.Client().Do(req) //nolint:bodyclose // Body is closed after verifying the SSE stream disconnects.
+		resp, err := client.Do(req) //nolint:bodyclose // Body is closed after verifying the SSE stream disconnects.
 		if err != nil {
 			t.Fatal(err)
 		}

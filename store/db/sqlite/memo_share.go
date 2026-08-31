@@ -10,6 +10,32 @@ import (
 )
 
 func (d *DB) CreateMemoShare(ctx context.Context, create *store.MemoShare) (*store.MemoShare, error) {
+	if create.Policy == nil {
+		return createSQLiteMemoShare(ctx, d.db, create)
+	}
+	tx, err := d.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = tx.Rollback() }()
+	if err := validateSQLiteMemoWritePolicy(ctx, tx, create.MemoID, create.Policy, nil); err != nil {
+		return nil, err
+	}
+	result, err := createSQLiteMemoShare(ctx, tx, create)
+	if err != nil {
+		return nil, err
+	}
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+type sqliteMemoShareCreator interface {
+	QueryRowContext(context.Context, string, ...any) *sql.Row
+}
+
+func createSQLiteMemoShare(ctx context.Context, executor sqliteMemoShareCreator, create *store.MemoShare) (*store.MemoShare, error) {
 	fields := []string{"`uid`", "`memo_id`", "`creator_id`"}
 	placeholders := []string{"?", "?", "?"}
 	args := []any{create.UID, create.MemoID, create.CreatorID}
@@ -21,7 +47,7 @@ func (d *DB) CreateMemoShare(ctx context.Context, create *store.MemoShare) (*sto
 	}
 
 	stmt := "INSERT INTO `memo_share` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholders, ", ") + ") RETURNING `id`, `created_ts`"
-	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(
+	if err := executor.QueryRowContext(ctx, stmt, args...).Scan(
 		&create.ID,
 		&create.CreatedTs,
 	); err != nil {
@@ -132,6 +158,35 @@ func (d *DB) GetMemoShare(ctx context.Context, find *store.FindMemoShare) (*stor
 }
 
 func (d *DB) DeleteMemoShare(ctx context.Context, delete *store.DeleteMemoShare) error {
+	if delete.Policy != nil {
+		tx, err := d.db.BeginTx(ctx, nil)
+		if err != nil {
+			return err
+		}
+		defer func() { _ = tx.Rollback() }()
+		if err := validateSQLiteMemoWritePolicy(ctx, tx, *delete.MemoID, delete.Policy, nil); err != nil {
+			return err
+		}
+		where, args := sqliteMemoShareDeleteWhere(delete)
+		where = append(where, "`memo_id` = ?")
+		args = append(args, *delete.MemoID)
+		result, err := tx.ExecContext(ctx, "DELETE FROM `memo_share` WHERE "+strings.Join(where, " AND "), args...)
+		if err != nil {
+			return err
+		}
+		if rows, err := result.RowsAffected(); err != nil {
+			return err
+		} else if rows != 1 {
+			return store.ErrMemoMutationConflict
+		}
+		return tx.Commit()
+	}
+	where, args := sqliteMemoShareDeleteWhere(delete)
+	_, err := d.db.ExecContext(ctx, "DELETE FROM `memo_share` WHERE "+strings.Join(where, " AND "), args...)
+	return err
+}
+
+func sqliteMemoShareDeleteWhere(delete *store.DeleteMemoShare) ([]string, []any) {
 	where, args := []string{"1 = 1"}, []any{}
 	if delete.ID != nil {
 		where, args = append(where, "`id` = ?"), append(args, *delete.ID)
@@ -139,6 +194,5 @@ func (d *DB) DeleteMemoShare(ctx context.Context, delete *store.DeleteMemoShare)
 	if delete.UID != nil {
 		where, args = append(where, "`uid` = ?"), append(args, *delete.UID)
 	}
-	_, err := d.db.ExecContext(ctx, "DELETE FROM `memo_share` WHERE "+strings.Join(where, " AND "), args...)
-	return err
+	return where, args
 }

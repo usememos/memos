@@ -540,7 +540,6 @@
       "path": "Tárhely útvonala",
       "path-description": "Használhatod ugyanazokat a dinamikus változókat a helyi tárhelyből, mint a {filename}",
       "path-placeholder": "egyedi/útvonal",
-      "presign-placeholder": "Előre aláírt URL, opcionális",
       "region": "Régió",
       "region-placeholder": "Régió neve",
       "s3-compatible-url": "S3 kompatibilis URL",

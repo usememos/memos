@@ -670,7 +670,6 @@
       "path": "Calea de stocare",
       "path-description": "Puteți utiliza aceleași variabile dinamice din stocarea locală, cum ar fi {filename}",
       "path-placeholder": "personalizat/cale",
-      "presign-placeholder": "Pre-semnează URL, opțional",
       "region": "Regiune",
       "region-description": "Regiunea cerută de furnizor. Pentru unele servicii compatibile, orice șir de regiune acceptat de furnizor este suficient.",
       "region-placeholder": "Numele regiunii",

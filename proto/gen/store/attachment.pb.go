@@ -9,7 +9,6 @@ package store
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -713,9 +712,6 @@ type AttachmentPayload_S3Object struct {
 	S3Config *StorageS3Config `protobuf:"bytes,1,opt,name=s3_config,json=s3Config,proto3" json:"s3_config,omitempty"`
 	// key is the S3 object key.
 	Key string `protobuf:"bytes,2,opt,name=key,proto3" json:"key,omitempty"`
-	// last_presigned_time is the last time the object was presigned.
-	// This is used to determine if the presigned URL is still valid.
-	LastPresignedTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=last_presigned_time,json=lastPresignedTime,proto3" json:"last_presigned_time,omitempty"`
 	// storage_id identifies the configured storage containing this object.
 	StorageId     string `protobuf:"bytes,4,opt,name=storage_id,json=storageId,proto3" json:"storage_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -766,13 +762,6 @@ func (x *AttachmentPayload_S3Object) GetKey() string {
 	return ""
 }
 
-func (x *AttachmentPayload_S3Object) GetLastPresignedTime() *timestamppb.Timestamp {
-	if x != nil {
-		return x.LastPresignedTime
-	}
-	return nil
-}
-
 func (x *AttachmentPayload_S3Object) GetStorageId() string {
 	if x != nil {
 		return x.StorageId
@@ -784,7 +773,7 @@ var File_store_attachment_proto protoreflect.FileDescriptor
 
 const file_store_attachment_proto_rawDesc = "" +
 	"\n" +
-	"\x16store/attachment.proto\x12\vmemos.store\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cstore/instance_setting.proto\"\xfc\x01\n" +
+	"\x16store/attachment.proto\x12\vmemos.store\x1a\x1cstore/instance_setting.proto\"\xfc\x01\n" +
 	"\vMotionMedia\x126\n" +
 	"\x06family\x18\x01 \x01(\x0e2\x1e.memos.store.MotionMediaFamilyR\x06family\x120\n" +
 	"\x04role\x18\x02 \x01(\x0e2\x1c.memos.store.MotionMediaRoleR\x04role\x12\x19\n" +
@@ -833,18 +822,17 @@ const file_store_attachment_proto_rawDesc = "" +
 	"\x10_altitude_meters\"T\n" +
 	"\rVideoMetadata\x12.\n" +
 	"\x10duration_seconds\x18\x01 \x01(\x01H\x00R\x0fdurationSeconds\x88\x01\x01B\x13\n" +
-	"\x11_duration_seconds\"\xab\x03\n" +
+	"\x11_duration_seconds\"\xfa\x02\n" +
 	"\x11AttachmentPayload\x12F\n" +
 	"\ts3_object\x18\x01 \x01(\v2'.memos.store.AttachmentPayload.S3ObjectH\x00R\bs3Object\x12;\n" +
 	"\fmotion_media\x18\n" +
 	" \x01(\v2\x18.memos.store.MotionMediaR\vmotionMedia\x12A\n" +
-	"\x0emedia_metadata\x18\v \x01(\v2\x1a.memos.store.MediaMetadataR\rmediaMetadata\x1a\xc2\x01\n" +
+	"\x0emedia_metadata\x18\v \x01(\v2\x1a.memos.store.MediaMetadataR\rmediaMetadata\x1a\x91\x01\n" +
 	"\bS3Object\x129\n" +
 	"\ts3_config\x18\x01 \x01(\v2\x1c.memos.store.StorageS3ConfigR\bs3Config\x12\x10\n" +
-	"\x03key\x18\x02 \x01(\tR\x03key\x12J\n" +
-	"\x13last_presigned_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\x11lastPresignedTime\x12\x1d\n" +
+	"\x03key\x18\x02 \x01(\tR\x03key\x12\x1d\n" +
 	"\n" +
-	"storage_id\x18\x04 \x01(\tR\tstorageIdB\t\n" +
+	"storage_id\x18\x04 \x01(\tR\tstorageIdJ\x04\b\x03\x10\x04R\x13last_presigned_timeB\t\n" +
 	"\apayload*a\n" +
 	"\x15AttachmentStorageType\x12'\n" +
 	"#ATTACHMENT_STORAGE_TYPE_UNSPECIFIED\x10\x00\x12\t\n" +
@@ -889,7 +877,6 @@ var file_store_attachment_proto_goTypes = []any{
 	(*AttachmentPayload)(nil),          // 9: memos.store.AttachmentPayload
 	(*AttachmentPayload_S3Object)(nil), // 10: memos.store.AttachmentPayload.S3Object
 	(*StorageS3Config)(nil),            // 11: memos.store.StorageS3Config
-	(*timestamppb.Timestamp)(nil),      // 12: google.protobuf.Timestamp
 }
 var file_store_attachment_proto_depIdxs = []int32{
 	1,  // 0: memos.store.MotionMedia.family:type_name -> memos.store.MotionMediaFamily
@@ -902,12 +889,11 @@ var file_store_attachment_proto_depIdxs = []int32{
 	3,  // 7: memos.store.AttachmentPayload.motion_media:type_name -> memos.store.MotionMedia
 	4,  // 8: memos.store.AttachmentPayload.media_metadata:type_name -> memos.store.MediaMetadata
 	11, // 9: memos.store.AttachmentPayload.S3Object.s3_config:type_name -> memos.store.StorageS3Config
-	12, // 10: memos.store.AttachmentPayload.S3Object.last_presigned_time:type_name -> google.protobuf.Timestamp
-	11, // [11:11] is the sub-list for method output_type
-	11, // [11:11] is the sub-list for method input_type
-	11, // [11:11] is the sub-list for extension type_name
-	11, // [11:11] is the sub-list for extension extendee
-	0,  // [0:11] is the sub-list for field type_name
+	10, // [10:10] is the sub-list for method output_type
+	10, // [10:10] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_store_attachment_proto_init() }

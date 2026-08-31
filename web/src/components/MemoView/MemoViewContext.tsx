@@ -7,12 +7,14 @@ import { MemoRelation_Type } from "@/types/proto/api/v1/memo_service_pb";
 import type { User } from "@/types/proto/api/v1/user_service_pb";
 import type { PreviewMediaItem } from "@/utils/media-item";
 import { RELATIVE_TIME_THRESHOLD_MS } from "./constants";
+import { isMemoDetailPath, type MemoOriginScope } from "./navigation";
 
 export interface MemoViewContextValue {
   memo: Memo;
   creator: User | undefined;
   currentUser: User | undefined;
   parentPage: string;
+  parentScope: MemoOriginScope;
   cardWidth: number;
   isArchived: boolean;
   readonly: boolean;
@@ -41,7 +43,7 @@ export const useMemoViewDerived = () => {
   const { timeBasis } = useView();
   const location = useLocation();
 
-  const isInMemoDetailPage = location.pathname.startsWith(`/${memo.name}`) || location.pathname.startsWith("/memos/shares/");
+  const isInMemoDetailPage = isMemoDetailPath(location.pathname, memo.name);
   const commentAmount = computeCommentAmount(memo);
 
   const createTime = memo.createTime ? timestampDate(memo.createTime) : undefined;

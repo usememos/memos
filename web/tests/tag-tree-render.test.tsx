@@ -1,5 +1,6 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { SIDEBAR_ROW_COUNT_RAIL_CLASSES } from "@/components/AppSidebar/SidebarRow";
 import TagTree from "@/components/TagTree";
 
 vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
@@ -74,12 +75,58 @@ describe("TagTree rendering", () => {
     expect(screen.queryByText("b")).not.toBeInTheDocument();
   });
 
+  it("puts disclosures before labels and keeps counts in a fixed trailing rail", () => {
+    const onTagClick = vi.fn();
+    render(
+      <TagTree
+        tagAmounts={[
+          ["a", 12],
+          ["a/b", 1],
+          ["getting-started", 3],
+        ]}
+        scope="home"
+        onTagClick={onTagClick}
+      />,
+    );
+
+    const branch = screen.getByText("a").closest('[role="treeitem"]') as HTMLElement;
+    const branchLabelButton = screen.getByText("a").closest("button") as HTMLButtonElement;
+    const disclosure = screen.getByLabelText("common.expand #a");
+    const branchCount = within(branch).getByText("12");
+    expect(disclosure.compareDocumentPosition(branchLabelButton) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(branchLabelButton).toHaveClass("text-start");
+    expect(branchLabelButton.querySelector("svg")).not.toBeInTheDocument();
+
+    // A branch reads as a plain tag at rest: the slot holds the # mark and only swaps in the
+    // chevron while the row is hovered or holds focus.
+    const [restMark, hoverChevron] = Array.from(disclosure.querySelectorAll("svg"));
+    expect(restMark).toHaveClass("group-hover:hidden", "group-has-[:focus-visible]:hidden");
+    expect(hoverChevron).toHaveClass("hidden", "group-hover:block", "group-has-[:focus-visible]:block");
+
+    fireEvent.click(disclosure);
+    expect(onTagClick).not.toHaveBeenCalled();
+    fireEvent.click(branchCount);
+    expect(onTagClick).toHaveBeenCalledWith("a");
+
+    const leaf = screen.getByText("getting-started").closest('[role="treeitem"]') as HTMLElement;
+    const leafCount = within(leaf).getByText("3");
+    expect(within(leaf).getAllByRole("button")).toHaveLength(1);
+    expect(screen.getByText("getting-started").closest("button")?.querySelector("svg")).toBeInTheDocument();
+
+    for (const count of [branchCount, leafCount]) {
+      expect(count).toHaveClass(...SIDEBAR_ROW_COUNT_RAIL_CLASSES.split(" "));
+    }
+  });
+
   it("gives a structural row one control that both labels and toggles it", () => {
     render(<TagTree tagAmounts={[["personal/travel/singapore", 1]]} scope="home" onTagClick={vi.fn()} />);
 
     // The row is the disclosure, so it is the only tab stop on that line.
     const personalDisclosure = screen.getByLabelText(/common\.(expand|collapse) personal$/);
     expect(personalDisclosure).toHaveAttribute("aria-expanded", "false");
+    const personalLabel = screen.getByText("personal");
+    const chevron = personalDisclosure.querySelector("svg") as SVGElement;
+    expect(chevron.compareDocumentPosition(personalLabel) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 
     fireEvent.click(personalDisclosure);
     expect(screen.getByText("travel")).toBeVisible();

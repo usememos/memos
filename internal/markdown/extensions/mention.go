@@ -4,7 +4,6 @@ import (
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/ast"
 	"github.com/yuin/goldmark/parser"
-	"github.com/yuin/goldmark/renderer"
 	"github.com/yuin/goldmark/text"
 	"github.com/yuin/goldmark/util"
 
@@ -24,11 +23,6 @@ func (*mentionExtension) Extend(m goldmark.Markdown) {
 		parser.WithASTTransformers(
 			// GFM email recognition runs at 950 and tag recognition at 1000.
 			util.Prioritized(&mentionASTTransformer{}, 1050),
-		),
-	)
-	m.Renderer().AddOptions(
-		renderer.WithNodeRenderers(
-			util.Prioritized(&mentionNodeRenderer{}, 500),
 		),
 	)
 }
@@ -79,26 +73,4 @@ func replaceMentionsInText(textNode *ast.Text, source []byte) {
 		insertSplitTextBefore(parent, textNode, textNode, text.NewSegment(cursor, segment.Stop), true)
 	}
 	parent.RemoveChild(parent, textNode)
-}
-
-type mentionNodeRenderer struct{}
-
-func (*mentionNodeRenderer) RegisterFuncs(registerer renderer.NodeRendererFuncRegisterer) {
-	registerer.Register(mast.KindMention, renderMentionNode)
-}
-
-func renderMentionNode(writer util.BufWriter, _ []byte, node ast.Node, entering bool) (ast.WalkStatus, error) {
-	if !entering {
-		return ast.WalkContinue, nil
-	}
-	mentionNode, ok := node.(*mast.MentionNode)
-	if !ok {
-		return ast.WalkContinue, nil
-	}
-	spelling := mentionNode.Source
-	if len(spelling) == 0 {
-		spelling = append([]byte{'@'}, mentionNode.Username...)
-	}
-	_, _ = writer.Write(util.EscapeHTML(spelling))
-	return ast.WalkContinue, nil
 }

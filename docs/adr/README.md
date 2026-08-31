@@ -9,6 +9,7 @@ implementation work is complete.
 | --- | --- | --- | --- |
 | [0001](0001-tag-syntax-and-recognition.md) | Tag Syntax and Recognition | Accepted | 2026-08-01 |
 | [0002](0002-username-format-and-references.md) | Username Format and References | Accepted | 2026-08-02 |
+| [0003](0003-space-uid-allocation-and-format.md) | Space UID Allocation and Format | Accepted | 2026-08-27 |
 
 ## Conventions
 

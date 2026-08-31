@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
@@ -68,7 +70,7 @@ func TestDeleteUserSelfDeleteCleansAccountDataAndAuthCookies(t *testing.T) {
 	require.Contains(t, strings.ToLower(carrier.Get("Set-Cookie")), "memos_refresh=")
 }
 
-func TestDeleteUserSelfDeleteRemovesOwnedResourcesAndMemoSubtrees(t *testing.T) {
+func TestDeleteUserSelfDeleteRemovesOnlyOwnedMemosAndResources(t *testing.T) {
 	t.Parallel()
 
 	ts := NewTestService(t)
@@ -125,7 +127,6 @@ func TestDeleteUserSelfDeleteRemovesOwnedResourcesAndMemoSubtrees(t *testing.T) 
 		},
 	})
 	require.NoError(t, err)
-
 	peerReplyToUserComment, err := ts.Service.CreateMemoComment(peerCtx, &v1pb.CreateMemoCommentRequest{
 		Name: userCommentOnForeignMemo.Name,
 		Comment: &v1pb.Memo{
@@ -146,6 +147,10 @@ func TestDeleteUserSelfDeleteRemovesOwnedResourcesAndMemoSubtrees(t *testing.T) 
 	foreignMemoStore, err := ts.Store.GetMemo(ctx, &store.FindMemo{UID: &foreignMemoUID})
 	require.NoError(t, err)
 	require.NotNil(t, foreignMemoStore)
+	peerCommentOnOwnMemoID := parseMemoIDFromNameForTest(t, ts, peerCommentOnOwnMemo.Name)
+	peerNestedCommentOnOwnMemoID := parseMemoIDFromNameForTest(t, ts, peerNestedCommentOnOwnMemo.Name)
+	userCommentOnForeignMemoID := parseMemoIDFromNameForTest(t, ts, userCommentOnForeignMemo.Name)
+	peerReplyToUserCommentID := parseMemoIDFromNameForTest(t, ts, peerReplyToUserComment.Name)
 
 	attachedAttachment, err := ts.Store.CreateAttachment(ctx, &store.Attachment{
 		UID:       "attach-owner-memo",
@@ -187,25 +192,25 @@ func TestDeleteUserSelfDeleteRemovesOwnedResourcesAndMemoSubtrees(t *testing.T) 
 
 	_, err = ts.Store.UpsertReaction(ctx, &store.Reaction{
 		CreatorID:    peer.ID,
-		ContentID:    ownMemo.Name,
+		MemoID:       ownMemoStore.ID,
 		ReactionType: "👍",
 	})
 	require.NoError(t, err)
 	_, err = ts.Store.UpsertReaction(ctx, &store.Reaction{
 		CreatorID:    peer.ID,
-		ContentID:    userCommentOnForeignMemo.Name,
+		MemoID:       userCommentOnForeignMemoID,
 		ReactionType: "🔥",
 	})
 	require.NoError(t, err)
 	_, err = ts.Store.UpsertReaction(ctx, &store.Reaction{
 		CreatorID:    user.ID,
-		ContentID:    foreignMemo.Name,
+		MemoID:       foreignMemoStore.ID,
 		ReactionType: "👋",
 	})
 	require.NoError(t, err)
 	peerReactionOnForeignMemo, err := ts.Store.UpsertReaction(ctx, &store.Reaction{
 		CreatorID:    peer.ID,
-		ContentID:    foreignMemo.Name,
+		MemoID:       foreignMemoStore.ID,
 		ReactionType: "✅",
 	})
 	require.NoError(t, err)
@@ -255,10 +260,7 @@ func TestDeleteUserSelfDeleteRemovesOwnedResourcesAndMemoSubtrees(t *testing.T) 
 
 	for _, memoName := range []string{
 		ownMemo.Name,
-		peerCommentOnOwnMemo.Name,
-		peerNestedCommentOnOwnMemo.Name,
 		userCommentOnForeignMemo.Name,
-		peerReplyToUserComment.Name,
 	} {
 		memoUID, extractErr := apiv1.ExtractMemoUIDFromName(memoName)
 		require.NoError(t, extractErr)
@@ -266,10 +268,33 @@ func TestDeleteUserSelfDeleteRemovesOwnedResourcesAndMemoSubtrees(t *testing.T) 
 		require.NoError(t, getErr)
 		require.Nil(t, memo, memoName)
 	}
+	for _, memoName := range []string{
+		peerCommentOnOwnMemo.Name,
+		peerNestedCommentOnOwnMemo.Name,
+		peerReplyToUserComment.Name,
+	} {
+		memoUID, extractErr := apiv1.ExtractMemoUIDFromName(memoName)
+		require.NoError(t, extractErr)
+		memo, getErr := ts.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
+		require.NoError(t, getErr)
+		require.NotNil(t, memo, memoName)
+	}
 
 	foreignMemoAfterDelete, err := ts.Store.GetMemo(ctx, &store.FindMemo{UID: &foreignMemoUID})
 	require.NoError(t, err)
 	require.NotNil(t, foreignMemoAfterDelete)
+	nestedRelations, err := ts.Store.ListMemoRelations(ctx, &store.FindMemoRelation{MemoID: &peerNestedCommentOnOwnMemoID})
+	require.NoError(t, err)
+	require.Len(t, nestedRelations, 1)
+	require.Equal(t, peerCommentOnOwnMemoID, nestedRelations[0].RelatedMemoID)
+	for _, memoID := range []int32{ownMemoStore.ID, userCommentOnForeignMemoID} {
+		incidentRelations, listErr := ts.Store.ListMemoRelations(ctx, &store.FindMemoRelation{MemoIDList: []int32{memoID}})
+		require.NoError(t, listErr)
+		require.Empty(t, incidentRelations)
+	}
+	contextlessReplyRelations, err := ts.Store.ListMemoRelations(ctx, &store.FindMemoRelation{MemoID: &peerReplyToUserCommentID})
+	require.NoError(t, err)
+	require.Empty(t, contextlessReplyRelations)
 
 	for _, attachmentID := range []int32{attachedAttachment.ID, unattachedAttachment.ID} {
 		attachment, getErr := ts.Store.GetAttachment(ctx, &store.FindAttachment{ID: &attachmentID})
@@ -284,15 +309,15 @@ func TestDeleteUserSelfDeleteRemovesOwnedResourcesAndMemoSubtrees(t *testing.T) 
 	_, err = os.Stat(motionCachePath)
 	require.ErrorIs(t, err, os.ErrNotExist)
 
-	ownMemoReactions, err := ts.Store.ListReactions(ctx, &store.FindReaction{ContentID: &ownMemo.Name})
+	ownMemoReactions, err := ts.Store.ListReactions(ctx, &store.FindReaction{MemoID: &ownMemoStore.ID})
 	require.NoError(t, err)
 	require.Empty(t, ownMemoReactions)
 
-	userCommentReactions, err := ts.Store.ListReactions(ctx, &store.FindReaction{ContentID: &userCommentOnForeignMemo.Name})
+	userCommentReactions, err := ts.Store.ListReactions(ctx, &store.FindReaction{MemoID: &userCommentOnForeignMemoID})
 	require.NoError(t, err)
 	require.Empty(t, userCommentReactions)
 
-	foreignMemoReactions, err := ts.Store.ListReactions(ctx, &store.FindReaction{ContentID: &foreignMemo.Name})
+	foreignMemoReactions, err := ts.Store.ListReactions(ctx, &store.FindReaction{MemoID: &foreignMemoStore.ID})
 	require.NoError(t, err)
 	require.Len(t, foreignMemoReactions, 1)
 	require.Equal(t, peerReactionOnForeignMemo.ID, foreignMemoReactions[0].ID)
@@ -323,6 +348,52 @@ func TestDeleteUserSelfDeleteRemovesOwnedResourcesAndMemoSubtrees(t *testing.T) 
 	})
 	require.NoError(t, err)
 	require.Nil(t, patSetting)
+}
+
+func TestDeleteUserSpaceMembershipGuardIgnoresForce(t *testing.T) {
+	for _, tc := range []struct {
+		name   string
+		force  bool
+		suffix string
+	}{
+		{name: "without force", suffix: "normal"},
+		{name: "with force", force: true, suffix: "force"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			ts := NewTestService(t)
+			defer ts.Cleanup()
+
+			ctx := context.Background()
+			user, err := ts.CreateRegularUser(ctx, "membership-delete-"+tc.suffix)
+			require.NoError(t, err)
+			space, err := ts.Store.CreateSpace(ctx, &store.Space{UID: "membership-delete-" + tc.suffix, Title: "Membership guard"}, user.ID)
+			require.NoError(t, err)
+			memo, err := ts.Service.CreateMemo(ts.CreateUserContext(ctx, user.ID), &v1pb.CreateMemoRequest{Memo: &v1pb.Memo{
+				Content:    "must survive failed account deletion",
+				Visibility: v1pb.Visibility_PUBLIC,
+			}})
+			require.NoError(t, err)
+
+			_, err = ts.Service.DeleteUser(ts.CreateUserContext(ctx, user.ID), &v1pb.DeleteUserRequest{
+				Name:  apiv1.BuildUserName(user.Username),
+				Force: tc.force,
+			})
+			require.Equal(t, codes.FailedPrecondition, status.Code(err))
+			require.ErrorContains(t, err, "leave all spaces")
+
+			remainingUser, err := ts.Store.GetUser(ctx, &store.FindUser{ID: &user.ID})
+			require.NoError(t, err)
+			require.NotNil(t, remainingUser)
+			membership, err := ts.Store.GetSpaceMember(ctx, &store.FindSpaceMember{SpaceID: &space.ID, UserID: &user.ID, ViewerUserID: &user.ID})
+			require.NoError(t, err)
+			require.NotNil(t, membership)
+			memoUID, err := apiv1.ExtractMemoUIDFromName(memo.Name)
+			require.NoError(t, err)
+			remainingMemo, err := ts.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
+			require.NoError(t, err)
+			require.NotNil(t, remainingMemo)
+		})
+	}
 }
 
 func TestDeleteUserRollbackPreservesAllResources(t *testing.T) {
@@ -365,7 +436,7 @@ func TestDeleteUserRollbackPreservesAllResources(t *testing.T) {
 
 	reaction, err := ts.Store.UpsertReaction(ctx, &store.Reaction{
 		CreatorID:    user.ID,
-		ContentID:    ownMemo.Name,
+		MemoID:       ownMemoStore.ID,
 		ReactionType: "💥",
 	})
 	require.NoError(t, err)
@@ -450,7 +521,7 @@ func TestDeleteUserRollbackPreservesAllResources(t *testing.T) {
 	require.NotNil(t, patSetting)
 }
 
-func TestDeleteUserReturnsErrorWhenAttachmentStorageCleanupFails(t *testing.T) {
+func TestDeleteUserReportsPostCommitAttachmentStorageCleanupFailure(t *testing.T) {
 	t.Parallel()
 
 	ts := NewTestService(t)
@@ -471,19 +542,20 @@ func TestDeleteUserReturnsErrorWhenAttachmentStorageCleanupFails(t *testing.T) {
 		Reference:   "cleanup-failure.txt",
 	})
 	require.NoError(t, err)
+	attachmentPath := filepath.Join(ts.Profile.Data, "cleanup-failure.txt")
+	require.NoError(t, os.WriteFile(attachmentPath, []byte("failure"), 0o600))
 
 	headerCtx := apiv1.WithHeaderCarrier(ctx)
-	failCtx := store.WithDeleteAttachmentStorageFailpoint(headerCtx)
-	authCtx := ts.CreateUserContext(failCtx, user.ID)
+	authCtx := ts.CreateUserContext(store.WithDeleteAttachmentStorageFailpoint(headerCtx), user.ID)
 	_, err = ts.Service.DeleteUser(authCtx, &v1pb.DeleteUserRequest{
 		Name: apiv1.BuildUserName(user.Username),
 	})
-	require.Error(t, err)
-	require.ErrorContains(t, err, "attachment storage cleanup failed")
-	require.ErrorContains(t, err, "attachment_id=")
+	require.Equal(t, codes.Internal, status.Code(err))
+	require.ErrorContains(t, err, "user was deleted but attachment storage cleanup failed")
 	require.ErrorContains(t, err, store.ErrDeleteAttachmentStorageFailpoint.Error())
 
 	deletedUser, err := ts.Store.GetUser(ctx, &store.FindUser{ID: &user.ID})
 	require.NoError(t, err)
 	require.Nil(t, deletedUser)
+	require.FileExists(t, attachmentPath, "storage cleanup failure happens after the database deletion commits")
 }

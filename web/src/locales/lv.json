@@ -670,7 +670,6 @@
       "path": "Uzglabāšanas ceļš",
       "path-description": "Varat izmantot tos pašus dinamiskos mainīgos no vietējās krātuves, piemēram, {filename}",
       "path-placeholder": "pielāgots/ceļš",
-      "presign-placeholder": "Iepriekš paraksta URL, pēc izvēles",
       "region": "Reģions",
       "region-description": "Reģions, ko pieprasa pakalpojumu sniedzējs. Dažiem saderīgiem pakalpojumiem pietiek ar jebkuru pakalpojumu sniedzēja akceptētu reģiona virkni.",
       "region-placeholder": "Reģiona nosaukums",

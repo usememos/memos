@@ -2,9 +2,9 @@ package v1
 
 import (
 	"context"
-	"errors"
 
-	"github.com/usememos/memos/internal/profile"
+	"github.com/pkg/errors"
+
 	"github.com/usememos/memos/server/auth"
 	"github.com/usememos/memos/store"
 )
@@ -25,15 +25,18 @@ var ErrUnauthenticated = errors.New("authentication required")
 // governs only authentication and anonymous access.
 type Authorizer struct {
 	authenticator *auth.Authenticator
-	profile       *profile.Profile
+	accessStore   anonymousAccessStore
 }
 
-// NewAuthorizer creates an Authorizer backed by the given store, token secret, and
-// instance profile.
-func NewAuthorizer(store *store.Store, secret string, profile *profile.Profile) *Authorizer {
+type anonymousAccessStore interface {
+	AllowsAnonymousAccess(ctx context.Context) (bool, error)
+}
+
+// NewAuthorizer creates an Authorizer backed by the given store and token secret.
+func NewAuthorizer(store *store.Store, secret string) *Authorizer {
 	return &Authorizer{
 		authenticator: auth.NewAuthenticator(store, secret),
-		profile:       profile,
+		accessStore:   store,
 	}
 }
 
@@ -50,9 +53,9 @@ func (a *Authorizer) Authenticate(ctx context.Context, authHeader string) *auth.
 // Policy:
 //   - Authenticated caller (access token or PAT): always permitted here.
 //   - Anonymous + protected method: denied.
-//   - Anonymous + public method, open instance: permitted.
-//   - Anonymous + public method, private instance (no InstanceURL): permitted only
-//     for the auth-bootstrap set.
+//   - Anonymous + auth-bootstrap method: permitted on every instance.
+//   - Anonymous + other public method: permitted only when the stored access mode
+//     is PUBLIC.
 func (a *Authorizer) CheckAccess(ctx context.Context, procedure string, result *auth.AuthResult) error {
 	if result != nil {
 		return nil
@@ -60,14 +63,15 @@ func (a *Authorizer) CheckAccess(ctx context.Context, procedure string, result *
 	if !IsPublicMethod(procedure) {
 		return ErrUnauthenticated
 	}
-	if a.profile.AllowAnonymous() || a.allowedOnPrivateInstance(ctx, procedure) {
+	if IsAuthBootstrapMethod(procedure) {
+		return nil
+	}
+	allowsAnonymous, err := a.accessStore.AllowsAnonymousAccess(ctx)
+	if err != nil {
+		return errors.Wrap(err, "failed to resolve instance access policy")
+	}
+	if allowsAnonymous {
 		return nil
 	}
 	return ErrUnauthenticated
-}
-
-// allowedOnPrivateInstance reports whether an anonymous request to a public
-// procedure is still permitted while the instance is private.
-func (*Authorizer) allowedOnPrivateInstance(_ context.Context, procedure string) bool {
-	return IsAuthBootstrapMethod(procedure)
 }

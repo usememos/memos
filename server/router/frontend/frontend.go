@@ -80,7 +80,7 @@ func spaFallbackMiddleware(frontendFS fs.FS) echo.MiddlewareFunc {
 }
 
 func shouldSkipFrontendStatic(requestPath string) bool {
-	if requestPath == "/robots.txt" || requestPath == "/sitemap.xml" || strings.HasSuffix(requestPath, "/rss.xml") {
+	if requestPath == "/robots.txt" || requestPath == "/sitemap.xml" {
 		return true
 	}
 	return hasPathPrefix(requestPath, "/api") ||
@@ -126,6 +126,9 @@ func (s *FrontendService) registerRoutes(e *echo.Echo) {
 }
 
 func (s *FrontendService) getRobotsTXT(c *echo.Context) error {
+	if err := s.requirePublicAccess(c.Request().Context()); err != nil {
+		return err
+	}
 	instanceURL, err := normalizeInstanceURL(s.Profile.InstanceURL)
 	if err != nil {
 		return err
@@ -141,17 +144,27 @@ func (s *FrontendService) getRobotsTXT(c *echo.Context) error {
 }
 
 func (s *FrontendService) getSitemapXML(c *echo.Context) error {
+	if err := s.requirePublicAccess(c.Request().Context()); err != nil {
+		return err
+	}
 	instanceURL, err := normalizeInstanceURL(s.Profile.InstanceURL)
 	if err != nil {
 		return err
 	}
 
+	normal := store.Normal
 	memos, err := s.Store.ListMemos(c.Request().Context(), &store.FindMemo{
-		VisibilityList: []store.Visibility{store.Public},
+		RowStatus:       &normal,
+		VisibilityList:  []store.Visibility{store.Public},
+		Access:          &store.MemoAccessScope{AllowPublic: true},
+		ExcludeComments: true,
 	})
 	if err != nil {
 		return errors.Wrap(err, "failed to list public memos for sitemap")
 	}
+	// The set of public memo URLs changes with audience updates. Require
+	// revalidation so a revoked URL is not retained by an intermediary cache.
+	c.Response().Header().Set(echo.HeaderCacheControl, "public, no-cache")
 
 	urls := make([]sitemapURL, 0, len(memos))
 	for _, memo := range memos {
@@ -164,6 +177,17 @@ func (s *FrontendService) getSitemapXML(c *echo.Context) error {
 		XMLNS: sitemapXMLNamespace,
 		URLs:  urls,
 	})
+}
+
+func (s *FrontendService) requirePublicAccess(ctx context.Context) error {
+	allowsAnonymous, err := s.Store.AllowsAnonymousAccess(ctx)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get instance access policy").Wrap(err)
+	}
+	if !allowsAnonymous {
+		return echo.NewHTTPError(http.StatusNotFound, "public instance discovery is unavailable")
+	}
+	return nil
 }
 
 func normalizeInstanceURL(instanceURL string) (string, error) {

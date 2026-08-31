@@ -2,10 +2,8 @@ package v1
 
 import (
 	"context"
-	"fmt"
 	"time"
 
-	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -33,22 +31,22 @@ func (s *APIV1Service) SetMemoRelations(ctx context.Context, request *v1pb.SetMe
 	if memo == nil {
 		return nil, status.Errorf(codes.NotFound, "memo not found")
 	}
-	if memo.CreatorID != user.ID && !isSuperUser(user) {
+	if memo.CreatorID != user.ID {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 	relations, err := s.prepareMemoRelations(ctx, memo, request.Relations)
 	if err != nil {
 		return nil, err
 	}
-	updatedTs := time.Now().Unix()
-	if err := s.applyMemoMutation(ctx, memo, nil, &store.UpdateMemo{ID: memo.ID, UpdatedTs: &updatedTs}, nil, &relations); err != nil {
+	updatedTsSec := time.Now().Unix()
+	if err := s.applyMemoMutation(ctx, memo, nil, &store.UpdateMemo{ID: memo.ID, UpdatedTs: &updatedTsSec}, nil, &relations); err != nil {
 		return nil, err
 	}
-	updatedMemo, parentMemo, memoMessage, err := s.buildUpdatedMemoState(ctx, memo.ID)
+	_, _, memoMessage, err := s.buildUpdatedMemoState(ctx, memo.ID)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to build updated memo state")
 	}
-	s.dispatchMemoUpdatedSideEffects(ctx, updatedMemo, parentMemo, memoMessage)
+	s.dispatchMemoUpdatedSideEffects(ctx, memoMessage)
 
 	return &emptypb.Empty{}, nil
 }
@@ -60,13 +58,18 @@ func (s *APIV1Service) prepareMemoRelations(ctx context.Context, memo *store.Mem
 		if relation == nil || relation.RelatedMemo == nil {
 			return nil, status.Errorf(codes.InvalidArgument, "related memo is required")
 		}
+		switch relation.Type {
+		case v1pb.MemoRelation_REFERENCE:
+			// REFERENCE is the only client-mutable relation type.
+		case v1pb.MemoRelation_COMMENT:
+			// COMMENT context is immutable and may only be created atomically with a
+			// new memo through CreateMemoComment.
+			return nil, status.Errorf(codes.InvalidArgument, "COMMENT relations are output only")
+		default:
+			return nil, status.Errorf(codes.InvalidArgument, "relation type must be REFERENCE")
+		}
 		// Ignore reflexive relations.
 		if buildMemoName(memo.UID) == relation.RelatedMemo.Name {
-			continue
-		}
-		// Ignore comment relations as there's no need to update a comment's relation.
-		// Inserting/Deleting a comment is handled elsewhere.
-		if relation.Type == v1pb.MemoRelation_COMMENT {
 			continue
 		}
 		relatedMemoUID, err := ExtractMemoUIDFromName(relation.RelatedMemo.Name)
@@ -79,6 +82,9 @@ func (s *APIV1Service) prepareMemoRelations(ctx context.Context, memo *store.Mem
 		}
 		if relatedMemo == nil {
 			return nil, status.Errorf(codes.NotFound, "related memo not found")
+		}
+		if err := s.checkMemoReadAccess(ctx, relatedMemo); err != nil {
+			return nil, err
 		}
 		if _, ok := seenRelatedMemoIDs[relatedMemo.ID]; ok {
 			continue
@@ -102,81 +108,47 @@ func (s *APIV1Service) ListMemoRelations(ctx context.Context, request *v1pb.List
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get memo")
 	}
-
-	currentUser, err := s.fetchCurrentUser(ctx)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get user")
+	if memo == nil {
+		return nil, status.Errorf(codes.NotFound, "memo not found")
 	}
-	var memoFilter string
-	if currentUser == nil {
-		memoFilter = `visibility == "PUBLIC"`
-	} else {
-		memoFilter = fmt.Sprintf(`creator_id == %d || visibility in ["PUBLIC", "PROTECTED"]`, currentUser.ID)
+	if err := s.checkMemoReadAccess(ctx, memo); err != nil {
+		return nil, err
 	}
-	relationList := []*v1pb.MemoRelation{}
-	tempList, err := s.Store.ListMemoRelations(ctx, &store.FindMemoRelation{
-		MemoID:     &memo.ID,
-		MemoFilter: &memoFilter,
-	})
+	relationMap, err := s.batchConvertMemoRelations(ctx, []*store.Memo{memo}, true)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list memo relations: %v", err)
 	}
-	for _, raw := range tempList {
-		relation, err := s.convertMemoRelationFromStore(ctx, raw)
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to convert memo relation")
-		}
-		relationList = append(relationList, relation)
+	relationList := relationMap[memo.ID]
+	if relationList == nil {
+		relationList = []*v1pb.MemoRelation{}
 	}
-	tempList, err = s.Store.ListMemoRelations(ctx, &store.FindMemoRelation{
-		RelatedMemoID: &memo.ID,
-		MemoFilter:    &memoFilter,
-	})
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list related memo relations: %v", err)
-	}
-	for _, raw := range tempList {
-		relation, err := s.convertMemoRelationFromStore(ctx, raw)
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to convert memo relation")
+	limit := normalizePageSize(request.PageSize)
+	offset := 0
+	if request.PageToken != "" {
+		var token v1pb.PageToken
+		if err := unmarshalPageToken(request.PageToken, &token); err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid page token: %v", err)
 		}
-		relationList = append(relationList, relation)
+		limit = normalizePageSize(token.Limit)
+		offset = max(int(token.Offset), 0)
+	}
+	end := min(offset+limit, len(relationList))
+	if offset > len(relationList) {
+		offset = len(relationList)
+	}
+	nextPageToken := ""
+	if end < len(relationList) {
+		nextPageToken, err = getPageToken(limit, end)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to create page token")
+		}
 	}
 
 	response := &v1pb.ListMemoRelationsResponse{
-		Relations: relationList,
+		Relations:     relationList[offset:end],
+		NextPageToken: nextPageToken,
 	}
 	return response, nil
-}
-
-func (s *APIV1Service) convertMemoRelationFromStore(ctx context.Context, memoRelation *store.MemoRelation) (*v1pb.MemoRelation, error) {
-	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{ID: &memoRelation.MemoID})
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get memo: %v", err)
-	}
-	memoSnippet, err := s.getMemoContentSnippet(memo.Content)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to get memo content snippet")
-	}
-	relatedMemo, err := s.Store.GetMemo(ctx, &store.FindMemo{ID: &memoRelation.RelatedMemoID})
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get related memo: %v", err)
-	}
-	relatedMemoSnippet, err := s.getMemoContentSnippet(relatedMemo.Content)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to get related memo content snippet")
-	}
-	return &v1pb.MemoRelation{
-		Memo: &v1pb.MemoRelation_Memo{
-			Name:    fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID),
-			Snippet: memoSnippet,
-		},
-		RelatedMemo: &v1pb.MemoRelation_Memo{
-			Name:    fmt.Sprintf("%s%s", MemoNamePrefix, relatedMemo.UID),
-			Snippet: relatedMemoSnippet,
-		},
-		Type: convertMemoRelationTypeFromStore(memoRelation.Type),
-	}, nil
 }
 
 func convertMemoRelationTypeFromStore(relationType store.MemoRelationType) v1pb.MemoRelation_Type {

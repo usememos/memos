@@ -22,7 +22,7 @@ const (
 type MemoReadClass int
 
 const (
-	// MemoReadClassPrivate is for owner, authenticated, or share-token reads.
+	// MemoReadClassPrivate is for author, authenticated, member, or share-token reads.
 	MemoReadClassPrivate MemoReadClass = iota
 	// MemoReadClassPublic is for resources currently readable without credentials.
 	MemoReadClassPublic
@@ -34,97 +34,85 @@ type MemoReadDecision struct {
 	Class  MemoReadClass
 }
 
+// MemoReadContext contains the fully resolved authorization context for one
+// memo. Relations never contribute authorization; callers evaluate each
+// relation endpoint independently.
+type MemoReadContext struct {
+	Memo              *store.Memo
+	Viewer            *store.User
+	AllowAnonymous    bool
+	SharedMemoID      *int32
+	CreatorValid      bool
+	SpaceValid        bool
+	ViewerSpaceMember bool
+}
+
 // Allowed reports whether the read is permitted.
 func (d MemoReadDecision) Allowed() bool {
 	return d.Denial == MemoReadDenialNone
 }
 
-// CheckMemoRead evaluates access to memo. If parent is non-nil, both the comment
-// memo and its parent must be readable. A share grants access only to the exact,
-// non-comment memo identified by sharedMemoID.
-func CheckMemoRead(memo, parent *store.Memo, viewer *store.User, allowAnonymous bool, sharedMemoID *int32) MemoReadDecision {
-	if memo == nil {
+// CheckMemoReadContext evaluates access to exactly one memo. Unknown audience,
+// invalid lifecycle state, and a missing or invalid creator fail closed. A
+// dangling placement only invalidates SPACE reads; other audiences
+// remain memo-local. A share applies only to the exact memo and never to either
+// endpoint of a relation.
+func CheckMemoReadContext(ctx MemoReadContext) MemoReadDecision {
+	memo := ctx.Memo
+	if memo == nil || !ctx.CreatorValid {
+		return MemoReadDecision{Denial: MemoReadDenialNotFound}
+	}
+	if memo.Visibility != store.Public && memo.Visibility != store.Protected && memo.Visibility != store.Private && memo.Visibility != store.SpaceAudience {
+		return MemoReadDecision{Denial: MemoReadDenialNotFound}
+	}
+	if memo.Visibility == store.SpaceAudience && (memo.SpaceID == nil || !ctx.SpaceValid) {
 		return MemoReadDecision{Denial: MemoReadDenialNotFound}
 	}
 
-	if parent == nil {
-		shareApplies := sharedMemoID != nil && memo.ParentUID == nil && memo.ID == *sharedMemoID
-		return checkMemo(memo, viewer, allowAnonymous, shareApplies)
+	viewerActive := ctx.Viewer != nil && ctx.Viewer.RowStatus == store.Normal
+	viewerIsAuthor := viewerActive && ctx.Viewer.ID == memo.CreatorID
+	if memo.RowStatus == store.Archived && !viewerIsAuthor {
+		return MemoReadDecision{Denial: MemoReadDenialNotFound}
+	}
+	if memo.RowStatus != store.Normal && memo.RowStatus != store.Archived {
+		return MemoReadDecision{Denial: MemoReadDenialNotFound}
 	}
 
-	// A token for a parent never grants access to its comments, and legacy
-	// comment shares never bypass the parent policy. A comment's visibility is
-	// derived from its parent so stale denormalized visibility values cannot
-	// leak or hide comments after the parent visibility changes.
-	commentState := checkCommentState(memo, viewer)
-	if !commentState.Allowed() {
-		return commentState
-	}
-	parentDecision := checkMemo(parent, viewer, allowAnonymous, false)
-	if !parentDecision.Allowed() {
-		return parentDecision
-	}
-	if commentState.Class == MemoReadClassPrivate {
-		return MemoReadDecision{Class: MemoReadClassPrivate}
-	}
-	return parentDecision
-}
-
-func checkCommentState(memo *store.Memo, viewer *store.User) MemoReadDecision {
-	if memo == nil {
-		return MemoReadDecision{Denial: MemoReadDenialNotFound}
-	}
-	if memo.RowStatus == store.Archived {
-		if viewer != nil && viewer.ID == memo.CreatorID {
-			return MemoReadDecision{Class: MemoReadClassPrivate}
-		}
-		return MemoReadDecision{Denial: MemoReadDenialNotFound}
-	}
-	if memo.RowStatus != store.Normal {
-		return MemoReadDecision{Denial: MemoReadDenialNotFound}
-	}
-	return MemoReadDecision{Class: MemoReadClassPublic}
-}
-
-func checkMemo(memo *store.Memo, viewer *store.User, allowAnonymous, shareApplies bool) MemoReadDecision {
-	if memo == nil {
-		return MemoReadDecision{Denial: MemoReadDenialNotFound}
-	}
-	if memo.RowStatus == store.Archived {
-		if viewer != nil && viewer.ID == memo.CreatorID {
-			return MemoReadDecision{Class: MemoReadClassPrivate}
-		}
-		return MemoReadDecision{Denial: MemoReadDenialNotFound}
-	}
-	if memo.RowStatus != store.Normal {
-		return MemoReadDecision{Denial: MemoReadDenialNotFound}
-	}
+	shareApplies := ctx.SharedMemoID != nil && memo.ID == *ctx.SharedMemoID && memo.Visibility != store.SpaceAudience
 	if shareApplies {
 		return MemoReadDecision{Class: MemoReadClassPrivate}
 	}
 
 	switch memo.Visibility {
 	case store.Public:
-		if allowAnonymous {
+		if ctx.AllowAnonymous {
 			return MemoReadDecision{Class: MemoReadClassPublic}
 		}
-		if viewer != nil {
+		if viewerActive {
 			return MemoReadDecision{Class: MemoReadClassPrivate}
 		}
 		return MemoReadDecision{Denial: MemoReadDenialUnauthenticated}
 	case store.Protected:
-		if viewer != nil {
+		if viewerActive {
 			return MemoReadDecision{Class: MemoReadClassPrivate}
 		}
 		return MemoReadDecision{Denial: MemoReadDenialUnauthenticated}
 	case store.Private:
-		if viewer == nil {
+		if !viewerActive {
 			return MemoReadDecision{Denial: MemoReadDenialUnauthenticated}
 		}
-		if viewer.ID != memo.CreatorID {
+		if !viewerIsAuthor {
 			return MemoReadDecision{Denial: MemoReadDenialPermission}
 		}
 		return MemoReadDecision{Class: MemoReadClassPrivate}
+	case store.SpaceAudience:
+		if !viewerActive {
+			return MemoReadDecision{Denial: MemoReadDenialUnauthenticated}
+		}
+		if ctx.ViewerSpaceMember {
+			return MemoReadDecision{Class: MemoReadClassPrivate}
+		}
+		return MemoReadDecision{Denial: MemoReadDenialPermission}
 	default:
 		return MemoReadDecision{Denial: MemoReadDenialNotFound}
 	}

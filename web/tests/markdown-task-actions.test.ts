@@ -19,7 +19,9 @@ describe("uncheckAllTasks", () => {
   it("unchecks every checked task while preserving source formatting", () => {
     const markdown = ["Intro", "- [x] first", "* [X] second", "  + [ ] nested", "1. [x] ordered", "Outro"].join("\n");
 
-    expect(uncheckAllTasks(markdown)).toBe(["Intro", "- [ ] first", "* [ ] second", "  + [ ] nested", "1. [ ] ordered", "Outro"].join("\n"));
+    expect(uncheckAllTasks(markdown)).toBe(
+      ["Intro", "- [ ] first", "* [ ] second", "  + [ ] nested", "1. [ ] ordered", "Outro"].join("\n"),
+    );
   });
 
   it("returns the original string when no checkbox markers need changing", () => {

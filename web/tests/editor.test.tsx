@@ -14,16 +14,7 @@ vi.mock("@/hooks/useUserQueries", () => ({
 
 describe("Editor", () => {
   it("scopes tag autocomplete stats to the current user", () => {
-    render(
-      <Editor
-        className="x"
-        initialContent=""
-        placeholder="memo"
-        onContentChange={vi.fn()}
-        onFiles={vi.fn()}
-        onSubmit={vi.fn()}
-      />,
-    );
+    render(<Editor className="x" initialContent="" placeholder="memo" onContentChange={vi.fn()} onFiles={vi.fn()} onSubmit={vi.fn()} />);
 
     expect(queries.useTagCounts).toHaveBeenCalledWith(true);
   });
@@ -114,7 +105,7 @@ describe("Editor", () => {
     expect(onChange).not.toHaveBeenCalledWith("server value");
   });
 
-  it("keeps native autocorrection enabled for Windows text services", () => {
+  it("enables native text assistance for prose input", () => {
     const props = {
       className: "x",
       initialContent: "",
@@ -125,7 +116,10 @@ describe("Editor", () => {
     };
     const { container } = render(<Editor {...props} />);
 
-    expect(container.querySelector(".cm-content")).toHaveAttribute("autocorrect", "on");
+    const content = container.querySelector(".cm-content");
+    expect(content).toHaveAttribute("autocorrect", "on");
+    expect(content).toHaveAttribute("autocapitalize", "on");
+    expect(content).toHaveAttribute("spellcheck", "true");
   });
 
   it("reconfigures the placeholder when its translation changes", () => {

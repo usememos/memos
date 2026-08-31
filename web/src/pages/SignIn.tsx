@@ -55,7 +55,7 @@ const SignIn = () => {
         >
           <Link to={ROUTES.AUTH_ADMIN} className="mt-3 inline-flex items-center gap-1 text-sm text-primary hover:underline" viewTransition>
             {t("auth.admin-sign-in")}
-            <ArrowRightIcon className="h-3.5 w-3.5" />
+            <ArrowRightIcon className="h-3.5 w-3.5 rtl:rotate-180" />
           </Link>
         </AuthEmptyState>
       )}

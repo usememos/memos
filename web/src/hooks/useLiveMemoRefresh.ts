@@ -2,7 +2,9 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useSyncExternalStore } from "react";
 import { getRequestToken, refreshAccessToken } from "@/connect";
 import { useAuth } from "@/contexts/AuthContext";
+import { attachmentKeys } from "@/hooks/useAttachmentQueries";
 import { memoKeys } from "@/hooks/useMemoQueries";
+import { spaceKeys } from "@/hooks/useSpaceQueries";
 import { userKeys } from "@/hooks/useUserQueries";
 
 /**
@@ -17,14 +19,8 @@ const HIDDEN_DISCONNECT_DELAY_MS = 30_000;
 const SSE_CONNECTION_LOCK_NAME = "memos-sse-connection";
 const SSE_SYNC_CHANNEL_NAME = "memos-sse-sync";
 
-const SSE_EVENT_TYPES = {
-  memoCreated: "memo.created",
-  memoUpdated: "memo.updated",
-  memoDeleted: "memo.deleted",
-  memoCommentCreated: "memo.comment.created",
-  reactionUpserted: "reaction.upserted",
-  reactionDeleted: "reaction.deleted",
-} as const;
+const MEMO_CHANGED_SSE_EVENT_TYPE = "memo.changed" as const;
+const SPACE_CHANGED_SSE_EVENT_TYPE = "space.changed" as const;
 
 // ---------------------------------------------------------------------------
 // Shared connection status store (singleton)
@@ -62,9 +58,7 @@ export function useSSEConnectionStatus(): SSEConnectionStatus {
 }
 
 interface SSEChangeEvent {
-  type: (typeof SSE_EVENT_TYPES)[keyof typeof SSE_EVENT_TYPES];
-  name: string;
-  parent?: string;
+  type: typeof MEMO_CHANGED_SSE_EVENT_TYPE | typeof SPACE_CHANGED_SSE_EVENT_TYPE;
 }
 
 type SSESyncMessage =
@@ -77,9 +71,8 @@ type SSESyncMessage =
 // ---------------------------------------------------------------------------
 
 /**
- * useLiveMemoRefresh connects to the server's SSE endpoint and
- * invalidates relevant React Query caches when change events
- * (memos, reactions) are received.
+ * useLiveMemoRefresh connects to the server's SSE endpoint and invalidates
+ * Space- and memo-backed React Query caches when a change event is received.
  *
  * This enables real-time updates across all open instances of the app.
  */
@@ -161,8 +154,7 @@ export function useLiveMemoRefresh() {
           if (hasConnectedOnceRef.current) {
             // Resync active collaborative views after reconnect because the server may have
             // dropped events while the client was disconnected or backpressured.
-            queryClient.invalidateQueries({ queryKey: memoKeys.all, refetchType: "active" });
-            queryClient.invalidateQueries({ queryKey: userKeys.stats(), refetchType: "active" });
+            invalidateAllLiveQueries(queryClient);
           }
           hasConnectedOnceRef.current = true;
 
@@ -286,8 +278,7 @@ export function useLiveMemoRefresh() {
           }
           if (message.status === "connected") {
             if (hasConnectedOnceRef.current) {
-              queryClient.invalidateQueries({ queryKey: memoKeys.all, refetchType: "active" });
-              queryClient.invalidateQueries({ queryKey: userKeys.stats(), refetchType: "active" });
+              invalidateAllLiveQueries(queryClient);
             }
             hasConnectedOnceRef.current = true;
           }
@@ -470,37 +461,22 @@ async function consumeSSEStream(body: ReadableStream<Uint8Array>, signal: AbortS
 
 function handleSSEEvent(event: SSEChangeEvent, queryClient: ReturnType<typeof useQueryClient>) {
   switch (event.type) {
-    case SSE_EVENT_TYPES.memoCreated:
-      queryClient.invalidateQueries({ queryKey: memoKeys.lists() });
-      queryClient.invalidateQueries({ queryKey: userKeys.stats() });
+    case MEMO_CHANGED_SSE_EVENT_TYPE:
+      invalidateLiveMemoQueries(queryClient);
       break;
-
-    case SSE_EVENT_TYPES.memoUpdated:
-      queryClient.invalidateQueries({ queryKey: memoKeys.detail(event.name) });
-      queryClient.invalidateQueries({ queryKey: memoKeys.lists() });
-      if (event.parent) {
-        queryClient.invalidateQueries({ queryKey: memoKeys.comments(event.parent) });
-      }
-      break;
-
-    case SSE_EVENT_TYPES.memoDeleted:
-      queryClient.removeQueries({ queryKey: memoKeys.detail(event.name) });
-      queryClient.invalidateQueries({ queryKey: memoKeys.lists() });
-      queryClient.invalidateQueries({ queryKey: userKeys.stats() });
-      break;
-
-    case SSE_EVENT_TYPES.memoCommentCreated:
-      queryClient.invalidateQueries({ queryKey: memoKeys.comments(event.name) });
-      queryClient.invalidateQueries({ queryKey: memoKeys.detail(event.name) });
-      break;
-
-    case SSE_EVENT_TYPES.reactionUpserted:
-    case SSE_EVENT_TYPES.reactionDeleted:
-      queryClient.invalidateQueries({ queryKey: memoKeys.detail(event.name) });
-      queryClient.invalidateQueries({ queryKey: memoKeys.lists() });
-      if (event.parent) {
-        queryClient.invalidateQueries({ queryKey: memoKeys.comments(event.parent) });
-      }
+    case SPACE_CHANGED_SSE_EVENT_TYPE:
+      invalidateAllLiveQueries(queryClient);
       break;
   }
+}
+
+function invalidateAllLiveQueries(queryClient: ReturnType<typeof useQueryClient>) {
+  queryClient.invalidateQueries({ queryKey: spaceKeys.all, refetchType: "active" });
+  invalidateLiveMemoQueries(queryClient);
+}
+
+function invalidateLiveMemoQueries(queryClient: ReturnType<typeof useQueryClient>) {
+  queryClient.invalidateQueries({ queryKey: memoKeys.all, refetchType: "active" });
+  queryClient.invalidateQueries({ queryKey: userKeys.stats(), refetchType: "active" });
+  queryClient.invalidateQueries({ queryKey: attachmentKeys.lists(), refetchType: "active" });
 }

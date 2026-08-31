@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { SIDEBAR_ROW_BOX_CLASSES, SIDEBAR_ROW_COUNT_RAIL_CLASSES, SIDEBAR_ROW_SLOT_CLASSES } from "@/components/AppSidebar/SidebarRow";
 import {
   SIDEBAR_SECTION_ACTION_ACTIVE_CLASSES,
   SIDEBAR_SECTION_ACTION_BUTTON_CLASSES,
@@ -44,5 +45,27 @@ describe("TagsSection", () => {
     expect(treeButton).toHaveClass(...SIDEBAR_SECTION_ACTION_ACTIVE_CLASSES.split(" "));
     expect(listButton).not.toHaveClass(...SIDEBAR_SECTION_ACTION_ACTIVE_CLASSES.split(" "));
     expect(listButton).toHaveClass("text-muted-foreground/65");
+  });
+
+  it("keeps flat rows on the shared row grammar with a trailing count rail", () => {
+    render(
+      <MemoryRouter>
+        <MemoFilterProvider>
+          <TagsSection tagCount={{ alpha: 2, "a/very-long-tag-path": 1 }} scope="home" />
+        </MemoFilterProvider>
+      </MemoryRouter>,
+    );
+
+    const alpha = screen.getByText("alpha");
+    const alphaButton = alpha.closest("button") as HTMLButtonElement;
+    const path = alpha.parentElement?.parentElement as HTMLSpanElement;
+    const count = screen.getByText("2");
+
+    expect(alphaButton).toHaveClass(...SIDEBAR_ROW_BOX_CLASSES.split(" "));
+    // The # sits in the same fixed slot the tree uses, so switching modes keeps it in place.
+    expect(alphaButton.firstElementChild).toHaveClass(...SIDEBAR_ROW_SLOT_CLASSES.split(" "));
+    expect(path).toHaveClass("truncate", "text-start");
+    expect(path).not.toContainElement(count);
+    expect(count).toHaveClass(...SIDEBAR_ROW_COUNT_RAIL_CLASSES.split(" "));
   });
 });

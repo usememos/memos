@@ -10,6 +10,32 @@ import (
 )
 
 func (d *DB) CreateMemoShare(ctx context.Context, create *store.MemoShare) (*store.MemoShare, error) {
+	if create.Policy == nil {
+		return createPostgresMemoShare(ctx, d.db, create)
+	}
+	tx, err := d.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = tx.Rollback() }()
+	if err := validatePostgresMemoWritePolicy(ctx, tx, create.MemoID, create.Policy, nil); err != nil {
+		return nil, err
+	}
+	result, err := createPostgresMemoShare(ctx, tx, create)
+	if err != nil {
+		return nil, err
+	}
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+type postgresMemoShareCreator interface {
+	QueryRowContext(context.Context, string, ...any) *sql.Row
+}
+
+func createPostgresMemoShare(ctx context.Context, executor postgresMemoShareCreator, create *store.MemoShare) (*store.MemoShare, error) {
 	fields := []string{"uid", "memo_id", "creator_id"}
 	args := []any{create.UID, create.MemoID, create.CreatorID}
 
@@ -19,7 +45,7 @@ func (d *DB) CreateMemoShare(ctx context.Context, create *store.MemoShare) (*sto
 	}
 
 	stmt := "INSERT INTO memo_share (" + strings.Join(fields, ", ") + ") VALUES (" + placeholders(len(args)) + ") RETURNING id, created_ts"
-	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(
+	if err := executor.QueryRowContext(ctx, stmt, args...).Scan(
 		&create.ID,
 		&create.CreatedTs,
 	); err != nil {
@@ -130,6 +156,35 @@ func (d *DB) GetMemoShare(ctx context.Context, find *store.FindMemoShare) (*stor
 }
 
 func (d *DB) DeleteMemoShare(ctx context.Context, delete *store.DeleteMemoShare) error {
+	if delete.Policy != nil {
+		tx, err := d.db.BeginTx(ctx, nil)
+		if err != nil {
+			return err
+		}
+		defer func() { _ = tx.Rollback() }()
+		if err := validatePostgresMemoWritePolicy(ctx, tx, *delete.MemoID, delete.Policy, nil); err != nil {
+			return err
+		}
+		where, args := postgresMemoShareDeleteWhere(delete)
+		where = append(where, "memo_id = "+placeholder(len(args)+1))
+		args = append(args, *delete.MemoID)
+		result, err := tx.ExecContext(ctx, "DELETE FROM memo_share WHERE "+strings.Join(where, " AND "), args...)
+		if err != nil {
+			return err
+		}
+		if rows, err := result.RowsAffected(); err != nil {
+			return err
+		} else if rows != 1 {
+			return store.ErrMemoMutationConflict
+		}
+		return tx.Commit()
+	}
+	where, args := postgresMemoShareDeleteWhere(delete)
+	_, err := d.db.ExecContext(ctx, "DELETE FROM memo_share WHERE "+strings.Join(where, " AND "), args...)
+	return err
+}
+
+func postgresMemoShareDeleteWhere(delete *store.DeleteMemoShare) ([]string, []any) {
 	where, args := []string{"1 = 1"}, []any{}
 	if delete.ID != nil {
 		where, args = append(where, "id = "+placeholder(len(args)+1)), append(args, *delete.ID)
@@ -137,6 +192,5 @@ func (d *DB) DeleteMemoShare(ctx context.Context, delete *store.DeleteMemoShare)
 	if delete.UID != nil {
 		where, args = append(where, "uid = "+placeholder(len(args)+1)), append(args, *delete.UID)
 	}
-	_, err := d.db.ExecContext(ctx, "DELETE FROM memo_share WHERE "+strings.Join(where, " AND "), args...)
-	return err
+	return where, args
 }

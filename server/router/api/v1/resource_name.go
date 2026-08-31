@@ -23,6 +23,9 @@ const (
 	InboxNamePrefix            = "inboxes/"
 	IdentityProviderNamePrefix = "identity-providers/"
 	WebhookNamePrefix          = "webhooks/"
+	SpaceNamePrefix            = "spaces/"
+	SpaceMemberNamePrefix      = "members/"
+	SpaceInvitationNamePrefix  = "invitations/"
 )
 
 // GetNameParentTokens returns the tokens from a resource name.
@@ -88,6 +91,39 @@ func ExtractMemoUIDFromName(name string) (string, error) {
 	return id, nil
 }
 
+func buildMemoName(uid string) string {
+	return MemoNamePrefix + uid
+}
+
+// ExtractSpaceUIDFromName returns the UID from a Space resource name.
+func ExtractSpaceUIDFromName(name string) (string, error) {
+	tokens, err := GetNameParentTokens(name, SpaceNamePrefix)
+	if err != nil {
+		return "", err
+	}
+	return tokens[0], nil
+}
+
+// ExtractSpaceMemberTokensFromName returns the Space UID and username from a
+// SpaceMember resource name.
+func ExtractSpaceMemberTokensFromName(name string) (string, string, error) {
+	tokens, err := GetNameParentTokens(name, SpaceNamePrefix, SpaceMemberNamePrefix)
+	if err != nil {
+		return "", "", err
+	}
+	return tokens[0], tokens[1], nil
+}
+
+// ExtractSpaceInvitationTokensFromName returns the Space UID and invitee
+// username from a SpaceInvitation resource name.
+func ExtractSpaceInvitationTokensFromName(name string) (string, string, error) {
+	tokens, err := GetNameParentTokens(name, SpaceNamePrefix, SpaceInvitationNamePrefix)
+	if err != nil {
+		return "", "", err
+	}
+	return tokens[0], tokens[1], nil
+}
+
 // ExtractAttachmentUIDFromName returns the attachment UID from a resource name.
 func ExtractAttachmentUIDFromName(name string) (string, error) {
 	tokens, err := GetNameParentTokens(name, AttachmentNamePrefix)
@@ -146,4 +182,13 @@ func ValidateAndGenerateUID(provided string) (string, error) {
 		return "", status.Errorf(codes.InvalidArgument, "invalid UID: must be 1-36 characters, contain only letters, digits, or hyphens, and start and end with a letter or digit")
 	}
 	return uid, nil
+}
+
+// ValidateAndGenerateSpaceUID validates a user-provided Space UID or generates a UUID v4.
+// Custom UIDs use the same format as other public-resource UIDs.
+func ValidateAndGenerateSpaceUID(provided string) (string, error) {
+	if strings.TrimSpace(provided) == "" {
+		return util.GenUUID(), nil
+	}
+	return ValidateAndGenerateUID(provided)
 }

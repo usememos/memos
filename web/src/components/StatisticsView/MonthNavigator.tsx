@@ -26,7 +26,7 @@ export const MonthNavigator = memo(({ visibleMonth, onMonthChange }: MonthNaviga
           aria-label={t("common.previous-month")}
           className="size-6 rounded text-muted-foreground/65 hover:bg-muted/50 hover:text-foreground/90"
         >
-          <ChevronLeftIcon className="size-4" strokeWidth={1.75} />
+          <ChevronLeftIcon className="size-4 rtl:rotate-180" strokeWidth={1.75} />
         </Button>
 
         <Button
@@ -36,7 +36,7 @@ export const MonthNavigator = memo(({ visibleMonth, onMonthChange }: MonthNaviga
           aria-label={t("common.next-month")}
           className="size-6 rounded text-muted-foreground/65 hover:bg-muted/50 hover:text-foreground/90"
         >
-          <ChevronRightIcon className="size-4" strokeWidth={1.75} />
+          <ChevronRightIcon className="size-4 rtl:rotate-180" strokeWidth={1.75} />
         </Button>
       </nav>
     </header>

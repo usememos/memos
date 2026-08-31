@@ -167,19 +167,19 @@ func TestAttachmentFilterCreateTimeComparison(t *testing.T) {
 	tc := NewAttachmentFilterTestContext(t)
 	defer tc.Close()
 
-	now := time.Now().Unix()
+	nowSec := time.Now().Unix()
 	tc.CreateAttachment(NewAttachmentBuilder(tc.CreatorID).Filename("test.png").MimeType("image/png"))
 
 	// Test: create_time < future (should match)
-	attachments := tc.ListWithFilter(`create_time < timestamp(` + formatInt64(now+3600) + `)`)
+	attachments := tc.ListWithFilter(`create_time < timestamp(` + formatInt64(nowSec+3600) + `)`)
 	require.Len(t, attachments, 1)
 
 	// Test: create_time > past (should match)
-	attachments = tc.ListWithFilter(`create_time > timestamp(` + formatInt64(now-3600) + `)`)
+	attachments = tc.ListWithFilter(`create_time > timestamp(` + formatInt64(nowSec-3600) + `)`)
 	require.Len(t, attachments, 1)
 
 	// Test: create_time > future (should not match)
-	attachments = tc.ListWithFilter(`create_time > timestamp(` + formatInt64(now+3600) + `)`)
+	attachments = tc.ListWithFilter(`create_time > timestamp(` + formatInt64(nowSec+3600) + `)`)
 	require.Len(t, attachments, 0)
 }
 

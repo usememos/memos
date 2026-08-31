@@ -10,10 +10,13 @@ import AppSidebar, {
   useSidebarWidth,
 } from "@/components/AppSidebar";
 import { AppSidebarProvider } from "@/contexts/AppSidebarContext";
+import { GlobalMemoEditorProvider } from "@/contexts/GlobalMemoEditorContext";
 import { useInstance } from "@/contexts/InstanceContext";
 import { MemoFilterProvider, useMemoFilterContext } from "@/contexts/MemoFilterContext";
+import { SpaceProvider } from "@/contexts/SpaceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useMediaQuery from "@/hooks/useMediaQuery";
+import { InstanceAccessMode } from "@/types/proto/api/v1/instance_service_pb";
 import { buildAuthRoute, shouldGatePrivateInstance } from "@/utils/auth-redirect";
 import { useTranslate } from "@/utils/i18n";
 
@@ -58,45 +61,54 @@ const RootLayoutContent = () => {
     prevPathnameRef.current = pathname;
   }, [pathname, searchParams, removeFilter]);
 
-  // Private instance (no InstanceURL configured): anonymous visitors may only reach
-  // share links; everything else redirects to the sign-in page, preserving the intended
-  // destination. Public instances keep the open Explore behavior for logged-out users.
-  if (shouldGatePrivateInstance({ isPrivateInstance: !profile.instanceUrl, isAuthenticated: !!currentUser, pathname })) {
+  // Anonymous visitors to private instances may only reach share links. Treat an
+  // unspecified mode as private so a partial or older response cannot expose content.
+  if (
+    shouldGatePrivateInstance({
+      isPrivateInstance: profile.accessMode !== InstanceAccessMode.PUBLIC,
+      isAuthenticated: !!currentUser,
+      pathname,
+    })
+  ) {
     const redirect = `${pathname}${location.search}${location.hash}`;
     return <Navigate to={buildAuthRoute({ redirect })} replace />;
   }
 
   return (
-    <AppSidebarProvider>
-      <div ref={shellRef} className="min-h-full w-full bg-background" style={{ [SIDEBAR_WIDTH_VAR]: `${sidebarWidth}px` } as CSSProperties}>
-        {md && (
-          <div className="fixed inset-y-0 left-0 z-30 w-(--app-sidebar-width) border-r border-border/70">
-            <AppSidebar />
-            <SidebarResizeHandle
-              width={sidebarWidth}
-              minWidth={minWidth}
-              maxWidth={maxWidth}
-              onWidthChange={setSidebarWidth}
-              targetRef={shellRef}
-            />
-          </div>
-        )}
-        <MobileAppSidebar />
-        <main className="flex min-h-full w-full min-w-0 flex-col items-center md:pl-(--app-sidebar-width)">
-          <MobileAppHeader />
-          {profile.demo && <DemoBanner />}
-          <Outlet />
-        </main>
-        <QuickFindDialog />
-      </div>
-    </AppSidebarProvider>
+    <div ref={shellRef} className="min-h-full w-full bg-background" style={{ [SIDEBAR_WIDTH_VAR]: `${sidebarWidth}px` } as CSSProperties}>
+      {md && (
+        <div className="fixed inset-y-0 start-0 z-30 w-(--app-sidebar-width) border-e border-border/70">
+          <AppSidebar />
+          <SidebarResizeHandle
+            width={sidebarWidth}
+            minWidth={minWidth}
+            maxWidth={maxWidth}
+            onWidthChange={setSidebarWidth}
+            targetRef={shellRef}
+          />
+        </div>
+      )}
+      <MobileAppSidebar />
+      <main className="flex min-h-full w-full min-w-0 flex-col items-center md:ps-(--app-sidebar-width)">
+        <MobileAppHeader />
+        {profile.demo && <DemoBanner />}
+        <Outlet />
+      </main>
+      <QuickFindDialog />
+    </div>
   );
 };
 
 const RootLayout = () => (
-  <MemoFilterProvider>
-    <RootLayoutContent />
-  </MemoFilterProvider>
+  <SpaceProvider>
+    <MemoFilterProvider>
+      <AppSidebarProvider>
+        <GlobalMemoEditorProvider>
+          <RootLayoutContent />
+        </GlobalMemoEditorProvider>
+      </AppSidebarProvider>
+    </MemoFilterProvider>
+  </SpaceProvider>
 );
 
 export default RootLayout;

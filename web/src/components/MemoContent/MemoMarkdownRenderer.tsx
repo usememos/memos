@@ -7,6 +7,7 @@ import { isMentionElement, isTagElement, isTaskListItemElement } from "@/types/m
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { lazyWithReload } from "@/utils/lazy";
 import { resolveManagedAttachmentImageSource } from "@/utils/managed-attachment";
+import type { MemoOriginScope } from "../MemoView/navigation";
 import { CodeBlock } from "./CodeBlock";
 import { MarkdownRenderContext, rootMarkdownRenderContext } from "./MarkdownRenderContext";
 import { Mention } from "./Mention";
@@ -23,6 +24,9 @@ export interface MemoMarkdownRendererProps {
   resolvedMentionUsernames: Set<string>;
   /** Resource name of the memo (e.g. `memos/abc123`), used to target footnote links at the detail page. */
   memoName?: string;
+  /** Collection page that opened the memo detail. */
+  parentPage?: string;
+  parentScope?: MemoOriginScope;
   /** Whether the memo is rendered as a collapsed feed card. */
   compact?: boolean;
 }
@@ -62,6 +66,8 @@ export const MemoMarkdownRendererCore = ({
   attachments = [],
   resolvedMentionUsernames,
   memoName,
+  parentPage,
+  parentScope,
   compact,
   mathRemarkPlugins = [],
   mathRehypePlugins = [],
@@ -128,7 +134,7 @@ export const MemoMarkdownRendererCore = ({
       // than opening a new tab; everything else is treated as an external link.
       if (typeof href === "string" && href.startsWith("#")) {
         return (
-          <AnchorLink href={href} memoName={memoName} compact={compact} {...props}>
+          <AnchorLink href={href} memoName={memoName} parentPage={parentPage} parentScope={parentScope} compact={compact} {...props}>
             {children}
           </AnchorLink>
         );
@@ -188,6 +194,8 @@ export const MemoMarkdownRenderer = memo(
     previous.content === next.content &&
     previous.attachments === next.attachments &&
     previous.memoName === next.memoName &&
+    previous.parentPage === next.parentPage &&
+    previous.parentScope === next.parentScope &&
     previous.compact === next.compact &&
     haveEqualResolvedMentions(previous.resolvedMentionUsernames, next.resolvedMentionUsernames),
 );

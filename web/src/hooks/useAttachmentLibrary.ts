@@ -8,6 +8,7 @@ import {
   isVideoAttachment,
 } from "@/components/MemoMetadata/Attachment/attachmentHelpers";
 import { useInfiniteAttachments } from "@/hooks/useAttachmentQueries";
+import { combineCELFilters } from "@/lib/cel-filter";
 import type { Attachment, ListAttachmentsRequest } from "@/types/proto/api/v1/attachment_service_pb";
 import { isMotionAttachment } from "@/utils/attachment";
 import { useTranslate } from "@/utils/i18n";
@@ -170,9 +171,9 @@ const groupMediaByMonth = (
     }));
 };
 
-export function useAttachmentLibrary(locale: string) {
+export function useAttachmentLibrary(locale: string, filter?: string) {
   const t = useTranslate();
-  const query = useInfiniteAttachments(ATTACHMENT_LIBRARY_REQUEST);
+  const query = useInfiniteAttachments({ ...ATTACHMENT_LIBRARY_REQUEST, filter });
 
   const attachments = useMemo(() => (query.data?.pages ?? []).flatMap((page) => page.attachments), [query.data?.pages]);
 
@@ -241,16 +242,19 @@ export function useAttachmentLibrary(locale: string) {
   };
 }
 
-export function useAttachmentLibraryStats() {
-  const query = useCompleteAttachments(COMPLETE_ATTACHMENT_LIBRARY_REQUEST);
+export function useAttachmentLibraryStats(filter?: string) {
+  const query = useCompleteAttachments({ ...COMPLETE_ATTACHMENT_LIBRARY_REQUEST, filter });
   const attachments = useMemo(() => (query.data?.pages ?? []).flatMap((page) => page.attachments), [query.data?.pages]);
   const stats = useMemo(() => buildAttachmentLibraryStats(attachments), [attachments]);
 
   return { ...query, stats };
 }
 
-export function useUnusedAttachmentLibrary(locale: string, enabled = true) {
-  const query = useCompleteAttachments(UNUSED_ATTACHMENT_LIBRARY_REQUEST, enabled);
+export function useUnusedAttachmentLibrary(locale: string, filter?: string, enabled = true) {
+  const query = useCompleteAttachments(
+    { ...UNUSED_ATTACHMENT_LIBRARY_REQUEST, filter: combineCELFilters(UNUSED_ATTACHMENT_LIBRARY_REQUEST.filter, filter) },
+    enabled,
+  );
   const attachments = useMemo(() => (query.data?.pages ?? []).flatMap((page) => page.attachments), [query.data?.pages]);
   const unusedItems = useMemo(
     () => attachments.map((attachment) => toLibraryListItem(attachment, locale)).sort((a, b) => sortByNewest(a.createdAt, b.createdAt)),

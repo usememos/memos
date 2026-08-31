@@ -61,7 +61,7 @@ func runS3AttachmentLifecycleAcrossStorageChange(t *testing.T, objectStore s3Obj
 	require.NotNil(t, storedFirst)
 	require.Equal(t, storepb.AttachmentStorageType_S3, storedFirst.StorageType)
 	require.Empty(t, storedFirst.Blob)
-	require.NotEmpty(t, storedFirst.Reference)
+	require.Empty(t, storedFirst.Reference, "S3 attachments must not store a reference URL")
 	require.Equal(t, oldStorage.Id, storedFirst.Payload.GetS3Object().GetStorageId())
 	require.Nil(t, storedFirst.Payload.GetS3Object().GetS3Config(), "new attachments must not embed S3 credentials")
 

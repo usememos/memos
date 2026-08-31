@@ -2,6 +2,7 @@ package v1
 
 import (
 	"context"
+	stderrors "errors"
 	"fmt"
 	"log/slog"
 	"regexp"
@@ -16,7 +17,6 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
-	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
 
@@ -308,10 +308,10 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
-	currentTs := time.Now().Unix()
+	currentTsSec := time.Now().Unix()
 	update := &store.UpdateUser{
 		ID:        user.ID,
-		UpdatedTs: &currentTs,
+		UpdatedTs: &currentTsSec,
 	}
 	instanceGeneralSetting, err := s.Store.GetInstanceGeneralSetting(ctx)
 	if err != nil {
@@ -386,6 +386,9 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 
 	updatedUser, err := s.Store.UpdateUser(ctx, update)
 	if err != nil {
+		if stderrors.Is(err, store.ErrLastSpaceAdmin) {
+			return nil, status.Error(codes.FailedPrecondition, "an active space must retain an active administrator")
+		}
 		return nil, status.Errorf(codes.Internal, "failed to update user: %v", err)
 	}
 
@@ -417,56 +420,21 @@ func (s *APIV1Service) DeleteUser(ctx context.Context, request *v1pb.DeleteUserR
 		ID: user.ID,
 	})
 	if err != nil {
+		if stderrors.Is(err, store.ErrUserHasSpaceMembership) {
+			return nil, status.Error(codes.FailedPrecondition, "leave all spaces before deleting this account")
+		}
 		return nil, status.Errorf(codes.Internal, "failed to delete user: %v", err)
-	}
-	attachments := deleteResult.Attachments
-	var attachmentCleanupErr error
-	failedAttachmentIDs := make([]int32, 0)
-	attachmentStorageSetting, attachmentStorageSettingErr := getDeleteUserAttachmentStorageSetting(ctx, s.Store, attachments)
-	for _, attachment := range attachments {
-		var err error
-		if attachmentStorageSettingErr != nil && store.AttachmentNeedsInstanceStorageSetting(attachment) {
-			err = attachmentStorageSettingErr
-		} else {
-			err = s.Store.DeleteAttachmentStorageWithInstanceSetting(ctx, attachment, attachmentStorageSetting)
-		}
-		if err != nil {
-			slog.Warn("failed to delete attachment storage after deleting user", "user_id", userID, "attachment_id", attachment.ID, "error", err)
-			failedAttachmentIDs = append(failedAttachmentIDs, attachment.ID)
-			if attachmentCleanupErr == nil {
-				attachmentCleanupErr = err
-			}
-		}
 	}
 	if isSelfDelete {
 		if err := s.clearAuthCookies(ctx); err != nil {
 			slog.Warn("failed to clear auth cookies after self delete", "user_id", userID, "error", err)
 		}
 	}
-	if attachmentCleanupErr != nil {
-		return nil, status.Errorf(
-			codes.Internal,
-			"user was deleted but attachment storage cleanup failed for %d attachment(s), first attachment_id=%d: %v",
-			len(failedAttachmentIDs),
-			failedAttachmentIDs[0],
-			attachmentCleanupErr,
-		)
+	if err := s.cleanupDeletedAttachmentStorage(ctx, deleteResult.Attachments); err != nil {
+		return nil, status.Errorf(codes.Internal, "user was deleted but attachment storage cleanup failed: %v", err)
 	}
 
 	return &emptypb.Empty{}, nil
-}
-
-func getDeleteUserAttachmentStorageSetting(ctx context.Context, stores *store.Store, attachments []*store.Attachment) (*storepb.InstanceStorageSetting, error) {
-	for _, attachment := range attachments {
-		if store.AttachmentNeedsInstanceStorageSetting(attachment) {
-			instanceStorageSetting, err := stores.GetInstanceStorageSetting(ctx)
-			if err != nil {
-				return nil, errors.Wrap(err, "failed to get instance storage setting")
-			}
-			return instanceStorageSetting, nil
-		}
-	}
-	return nil, nil
 }
 
 func getDefaultUserGeneralSetting() *v1pb.UserSetting_GeneralSetting {

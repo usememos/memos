@@ -5,7 +5,7 @@ import type { CalendarDayCell } from "@/components/ActivityCalendar/types";
 
 const makeDay = (overrides: Partial<CalendarDayCell> = {}): CalendarDayCell => ({
   date: "2025-05-01",
-  label: "1",
+  label: 1,
   count: 0,
   isCurrentMonth: true,
   isToday: false,

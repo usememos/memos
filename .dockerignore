@@ -1,13 +1,27 @@
-web/node_modules
-web/dist
-.git
-.github
-build/
-tmp/
-memos
+# Build and local output
+/build/
+/bin/
+/tmp/
+/memos
+/memos.exe
+coverage.out
+/.pnpm-store/
+/.worktrees/
+
+# Not used by the image build
+/web/
+/docs/
+/.github/
 *.md
-.gitignore
-.golangci.yaml
-.dockerignore
-docs/
-.DS_Store
+/.gitignore
+/.dockerignore
+/.golangci.yaml
+
+# Local metadata and secrets
+/.git/
+/.env
+/.env.*
+/.idea/
+/.vscode/
+/.claude/
+**/.DS_Store

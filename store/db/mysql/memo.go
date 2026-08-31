@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"strings"
 
@@ -14,8 +15,27 @@ import (
 )
 
 func (d *DB) CreateMemo(ctx context.Context, create *store.Memo) (*store.Memo, error) {
-	fields := []string{"`uid`", "`creator_id`", "`content`", "`visibility`", "`payload`"}
-	placeholder := []string{"?", "?", "?", "?", "?"}
+	tx, err := d.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = tx.Rollback() }()
+	if err := validateMySQLMemoCreate(ctx, tx, create); err != nil {
+		return nil, err
+	}
+	memo, err := insertMySQLMemo(ctx, tx, create)
+	if err != nil {
+		return nil, err
+	}
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+	return memo, nil
+}
+
+func insertMySQLMemo(ctx context.Context, tx *sql.Tx, create *store.Memo) (*store.Memo, error) {
+	fields := []string{"`uid`", "`creator_id`", "`content`", "`visibility`", "`payload`", "`space_id`"}
+	placeholder := []string{"?", "?", "?", "?", "?", "?"}
 	payload := "{}"
 	if create.Payload != nil {
 		payloadBytes, err := protojson.Marshal(create.Payload)
@@ -24,7 +44,7 @@ func (d *DB) CreateMemo(ctx context.Context, create *store.Memo) (*store.Memo, e
 		}
 		payload = string(payloadBytes)
 	}
-	args := []any{create.UID, create.CreatorID, create.Content, create.Visibility, payload}
+	args := []any{create.UID, create.CreatorID, create.Content, create.Visibility, payload, create.SpaceID}
 
 	// Add custom timestamps if provided
 	if create.CreatedTs != 0 {
@@ -39,7 +59,7 @@ func (d *DB) CreateMemo(ctx context.Context, create *store.Memo) (*store.Memo, e
 	}
 
 	stmt := "INSERT INTO `memo` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ")"
-	result, err := d.db.ExecContext(ctx, stmt, args...)
+	result, err := tx.ExecContext(ctx, stmt, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -49,14 +69,55 @@ func (d *DB) CreateMemo(ctx context.Context, create *store.Memo) (*store.Memo, e
 		return nil, err
 	}
 	id := int32(rawID)
-	memo, err := d.GetMemo(ctx, &store.FindMemo{ID: &id})
+	memo := &store.Memo{}
+	var payloadBytes []byte
+	err = tx.QueryRowContext(ctx, `SELECT id, uid, creator_id, UNIX_TIMESTAMP(created_ts), UNIX_TIMESTAMP(updated_ts), row_status,
+		content, visibility, pinned, payload, space_id
+		FROM memo WHERE id = ?`, id).Scan(&memo.ID, &memo.UID, &memo.CreatorID, &memo.CreatedTs, &memo.UpdatedTs, &memo.RowStatus,
+		&memo.Content, &memo.Visibility, &memo.Pinned, &payloadBytes, &memo.SpaceID)
 	if err != nil {
 		return nil, err
 	}
-	if memo == nil {
-		return nil, errors.Errorf("failed to create memo")
+	memo.Payload = &storepb.MemoPayload{}
+	if err := protojsonUnmarshaler.Unmarshal(payloadBytes, memo.Payload); err != nil {
+		return nil, errors.Wrap(err, "failed to unmarshal payload")
 	}
 	return memo, nil
+}
+
+func validateMySQLMemoCreate(ctx context.Context, tx *sql.Tx, create *store.Memo) error {
+	var actorStatus store.RowStatus
+	err := tx.QueryRowContext(ctx, "SELECT row_status FROM user WHERE id = ?", create.CreatorID).Scan(&actorStatus)
+	if errors.Is(err, sql.ErrNoRows) || (err == nil && actorStatus != store.Normal) {
+		return store.ErrMemoSpaceMembershipRequired
+	}
+	if err != nil {
+		return err
+	}
+	if create.SpaceID != nil {
+		return validateMySQLMemoSpaceMember(ctx, tx, *create.SpaceID, create.CreatorID)
+	}
+	return nil
+}
+
+func validateMySQLMemoSpaceMember(ctx context.Context, tx *sql.Tx, spaceID, userID int32) error {
+	var existingSpaceID int32
+	if err := tx.QueryRowContext(ctx, "SELECT id FROM space WHERE id = ?", spaceID).Scan(&existingSpaceID); errors.Is(err, sql.ErrNoRows) {
+		return store.ErrMemoSpaceNotWritable
+	} else if err != nil {
+		return err
+	}
+	var exists bool
+	err := tx.QueryRowContext(ctx, `SELECT EXISTS(SELECT 1 FROM space_member sm JOIN user u ON u.id = sm.user_id
+		WHERE sm.space_id = ? AND sm.user_id = ? AND sm.status = 'ACTIVE'
+			AND sm.role IN ('ADMIN', 'USER') AND u.row_status = 'NORMAL')`, spaceID, userID).Scan(&exists)
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return store.ErrMemoSpaceMembershipRequired
+	}
+	return nil
 }
 
 func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo, error) {
@@ -109,8 +170,22 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		}
 		where = append(where, fmt.Sprintf("`memo`.`visibility` in (%s)", strings.Join(placeholder, ",")))
 	}
+	if v := find.CommentContextMemoID; v != nil {
+		where, args = append(where, `EXISTS (
+			SELECT 1 FROM memo_relation AS comment_context
+			WHERE comment_context.memo_id = memo.id
+				AND comment_context.related_memo_id = ?
+				AND comment_context.type = 'COMMENT'
+		)`), append(args, *v)
+	}
+	if access := find.Access; access != nil {
+		where = append(where, mysqlMemoAccessPredicate(access, "`memo`", "`access_member`", &args))
+	}
 	if find.ExcludeComments {
-		having = append(having, "`parent_uid` IS NULL")
+		where = append(where, `NOT EXISTS (
+			SELECT 1 FROM memo_relation AS comment_relation
+			WHERE comment_relation.memo_id = memo.id AND comment_relation.type = 'COMMENT'
+		)`)
 	}
 
 	order := "DESC"
@@ -138,7 +213,12 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		"`memo`.`visibility` AS `visibility`",
 		"`memo`.`pinned` AS `pinned`",
 		"`memo`.`payload` AS `payload`",
-		"CASE WHEN `parent_memo`.`uid` IS NOT NULL THEN `parent_memo`.`uid` ELSE NULL END AS `parent_uid`",
+		"`memo`.`space_id` AS `space_id`",
+		`(SELECT parent_memo.uid
+			FROM memo_relation AS parent_relation
+			JOIN memo AS parent_memo ON parent_memo.id = parent_relation.related_memo_id
+			WHERE parent_relation.memo_id = memo.id AND parent_relation.type = 'COMMENT'
+			ORDER BY parent_memo.id LIMIT 1) AS parent_uid`,
 	}
 	if !find.ExcludeContent {
 		fields = append(fields, "`memo`.`content` AS `content`")
@@ -146,8 +226,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 
 	query := "SELECT " + strings.Join(fields, ", ") + " FROM `memo`" + " " +
 		"LEFT JOIN `user` AS `memo_creator` ON `memo`.`creator_id` = `memo_creator`.`id`" + " " +
-		"LEFT JOIN `memo_relation` ON `memo`.`id` = `memo_relation`.`memo_id` AND `memo_relation`.`type` = 'COMMENT'" + " " +
-		"LEFT JOIN `memo` AS `parent_memo` ON `memo_relation`.`related_memo_id` = `parent_memo`.`id`" + " " +
+		"LEFT JOIN `space` AS `memo_space` ON `memo`.`space_id` = `memo_space`.`id`" + " " +
 		"WHERE " + strings.Join(where, " AND ") + " " +
 		"HAVING " + strings.Join(having, " AND ") + " " +
 		"ORDER BY " + strings.Join(orderBy, ", ")
@@ -178,6 +257,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 			&memo.Visibility,
 			&memo.Pinned,
 			&payloadBytes,
+			&memo.SpaceID,
 			&memo.ParentUID,
 		}
 		if !find.ExcludeContent {
@@ -215,18 +295,40 @@ func (d *DB) GetMemo(ctx context.Context, find *store.FindMemo) (*store.Memo, er
 }
 
 func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
-	return applyMemoUpdate(ctx, d.db, update)
-}
-
-func (d *DB) DeleteMemo(ctx context.Context, delete *store.DeleteMemo) error {
-	where, args := []string{"`id` = ?"}, []any{delete.ID}
-	stmt := "DELETE FROM `memo` WHERE " + strings.Join(where, " AND ")
-	result, err := d.db.ExecContext(ctx, stmt, args...)
+	if update.Policy == nil {
+		return applyMemoUpdate(ctx, d.db, update)
+	}
+	tx, err := d.db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
 	}
-	if _, err := result.RowsAffected(); err != nil {
+	defer func() { _ = tx.Rollback() }()
+	if err := validateMySQLMemoWritePolicy(ctx, tx, update.ID, update.Policy, update); err != nil {
 		return err
+	}
+	if err := applyMemoUpdate(ctx, tx, update); err != nil {
+		return err
+	}
+	return tx.Commit()
+}
+
+func (d *DB) DeleteMemo(ctx context.Context, delete *store.DeleteMemo) error {
+	tx, err := d.db.BeginTx(ctx, nil)
+	if err != nil {
+		return errors.Wrap(err, "failed to start memo delete transaction")
+	}
+	defer func() {
+		_ = tx.Rollback()
+	}()
+
+	if _, err := tx.ExecContext(ctx, "DELETE FROM `memo` WHERE `id` = ?", delete.ID); err != nil {
+		return errors.Wrap(err, "failed to delete memo")
+	}
+	if _, err := tx.ExecContext(ctx, "DELETE FROM `reaction` WHERE `memo_id` = ?", delete.ID); err != nil {
+		return errors.Wrap(err, "failed to delete memo reactions")
+	}
+	if err := tx.Commit(); err != nil {
+		return errors.Wrap(err, "failed to commit memo delete transaction")
 	}
 	return nil
 }

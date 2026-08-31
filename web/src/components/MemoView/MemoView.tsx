@@ -14,13 +14,24 @@ import { MemoBody, MemoCommentListView, MemoHeader } from "./components";
 import { MEMO_CARD_BASE_CLASSES } from "./constants";
 import { useImagePreview } from "./hooks";
 import { computeCommentAmount, MemoViewContext } from "./MemoViewContext";
+import { isMemoDetailPath, resolveMemoOrigin } from "./navigation";
 import type { MemoViewProps } from "./types";
 
 const MemoShareImageDialog = lazyWithReload(() => import("../MemoActionMenu/MemoShareImageDialog"));
 const PreviewImageDialog = lazyWithReload(() => import("../PreviewImageDialog"));
 
 const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
-  const { memo: memoData, className, parentPage: parentPageProp, compact, showCreator, showVisibility, showPinned } = props;
+  const {
+    memo: memoData,
+    className,
+    parentPage: parentPageProp,
+    parentScope: parentScopeProp,
+    compact,
+    showCreator,
+    showVisibility,
+    showPinned,
+    showSpace,
+  } = props;
   const cardRef = useRef<HTMLDivElement>(null);
   const [showEditor, setShowEditor] = useState(false);
   const [EditorComponent, setEditorComponent] = useState<ComponentType<MemoEditorProps>>();
@@ -31,7 +42,14 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   const creator = useResolvedUser(memoData.creator, { enabled: Boolean(showCreator || props.shareImageDialogOpen) });
   const isArchived = memoData.state === State.ARCHIVED;
   const readonly = memoData.creator !== currentUser?.name && !isSuperUser(currentUser);
-  const parentPage = parentPageProp || "/";
+  const location = useLocation();
+  const { parentPage, parentScope } = resolveMemoOrigin({
+    explicitParentPage: parentPageProp,
+    explicitParentScope: parentScopeProp,
+    pathname: location.pathname,
+    search: location.search,
+    memoName: memoData.name,
+  });
 
   // Blur content when any tag has blur_content enabled in the current user's tag settings.
   const [showBlurredContent, setShowBlurredContent] = useState(false);
@@ -50,8 +68,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   }, []);
   const closeEditor = useCallback(() => setShowEditor(false), []);
 
-  const location = useLocation();
-  const isInMemoDetailPage = location.pathname.startsWith(`/${memoData.name}`) || location.pathname.startsWith("/memos/shares/");
+  const isInMemoDetailPage = isMemoDetailPath(location.pathname, memoData.name);
   const showCommentPreview = !isInMemoDetailPage && computeCommentAmount(memoData) > 0;
 
   // The card width is only needed by the share-image dialog. Keep feed cards
@@ -93,6 +110,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
       creator,
       currentUser,
       parentPage,
+      parentScope,
       cardWidth,
       isArchived,
       readonly,
@@ -107,6 +125,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
       creator,
       currentUser,
       parentPage,
+      parentScope,
       cardWidth,
       isArchived,
       readonly,
@@ -124,7 +143,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
       ref={cardRef}
       tabIndex={readonly ? -1 : 0}
     >
-      <MemoHeader showCreator={showCreator} showVisibility={showVisibility} showPinned={showPinned} />
+      <MemoHeader showCreator={showCreator} showVisibility={showVisibility} showPinned={showPinned} showSpace={showSpace} />
 
       <MemoBody compact={compact} />
 

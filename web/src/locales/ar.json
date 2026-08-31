@@ -378,7 +378,6 @@
       "path": "مسار التخزين",
       "path-description": "يمكنك استخدام نفس المتغيرات الديناميكية من التخزين المحلي، مثل {filename}",
       "path-placeholder": "مسار/مخصص",
-      "presign-placeholder": "رابط توقيع مسبق، اختياري",
       "region": "المنطقة",
       "region-placeholder": "اسم المنطقة",
       "s3-compatible-url": "رابط متوافق مع S3",

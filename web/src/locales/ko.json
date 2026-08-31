@@ -378,7 +378,6 @@
       "path": "저장소 경로",
       "path-description": "{filename} 등 로컬 저장소에서와 같은 변수를 사용할 수 있습니다",
       "path-placeholder": "custom/path",
-      "presign-placeholder": "미리 서명된 URL, 선택 사항",
       "region": "리전",
       "region-placeholder": "리전 이름",
       "s3-compatible-url": "S3과 호환되는 서비스 URL",

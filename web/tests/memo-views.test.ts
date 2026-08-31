@@ -21,14 +21,13 @@ describe("memo scopes", () => {
     expect(resolveMemoScope("/settings", { fallback: "explore" })).toBe("explore");
   });
 
-  it("maps only the three collection routes to memo scopes", () => {
+  it("maps collection routes while limiting primary scope paths to Home and Explore", () => {
     expect(isMemoScopeRoute("/")).toBe(true);
     expect(isMemoScopeRoute("/explore")).toBe(true);
     expect(isMemoScopeRoute("/archived")).toBe(true);
     expect(isMemoScopeRoute("/attachments")).toBe(false);
     expect(getMemoScopePath("home")).toBe("/");
     expect(getMemoScopePath("explore")).toBe("/explore");
-    expect(getMemoScopePath("archived")).toBe("/archived");
   });
 });
 
@@ -54,6 +53,16 @@ describe("memo views", () => {
     ).toBe(
       'creator == "users/steven" && has_task_list && has_incomplete_tasks && content.contains("plan") && tag in ["work"] && visibility in ["PUBLIC"]',
     );
+  });
+
+  it("maps the Space audience without falling back to Private", () => {
+    expect(
+      buildMemoFilter({
+        filters: [],
+        includePinned: false,
+        visibilities: [Visibility.PUBLIC, Visibility.PROTECTED, Visibility.SPACE],
+      }),
+    ).toBe('visibility in ["PUBLIC", "PROTECTED", "SPACE"]');
   });
 
   it("maps property filter factors to their CEL flags", () => {
@@ -91,9 +100,7 @@ describe("memo views", () => {
         filters: [{ factor: "displayTime", value: "2026-08-02" }],
         includePinned: false,
       }),
-    ).toBe(
-      `created_ts >= timestamp(${Math.floor(start.getTime() / 1000)}) && created_ts < timestamp(${Math.floor(end.getTime() / 1000)})`,
-    );
+    ).toBe(`created_ts >= timestamp(${Math.floor(start.getTime() / 1000)}) && created_ts < timestamp(${Math.floor(end.getTime() / 1000)})`);
   });
 
   it("ignores invalid display-time filter values", () => {

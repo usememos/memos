@@ -28,7 +28,7 @@ const AudioProgressBar = ({ filename, currentTime, duration, progressPercent, on
   <div className={`flex items-center gap-2 ${className ?? ""}`}>
     <div className="relative flex h-3.5 min-w-0 flex-1 items-center">
       <div className="absolute inset-x-0 h-1 rounded-full bg-muted/75" />
-      <div className="absolute left-0 h-1 rounded-full bg-foreground/20" style={{ width: `${Math.min(progressPercent, 100)}%` }} />
+      <div className="absolute start-0 h-1 rounded-full bg-foreground/20" style={{ width: `${Math.min(progressPercent, 100)}%` }} />
       <input
         type="range"
         min={0}

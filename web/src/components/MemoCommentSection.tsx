@@ -3,6 +3,7 @@ import { type ComponentType, useCallback, useState } from "react";
 import { loadMemoEditor } from "@/components/MemoEditor/loader";
 import type { MemoEditorProps } from "@/components/MemoEditor/types";
 import MemoView from "@/components/MemoView";
+import type { MemoOriginScope } from "@/components/MemoView/navigation";
 import { Button } from "@/components/ui/button";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { extractMemoIdFromName } from "@/lib/resource-names";
@@ -13,12 +14,21 @@ interface Props {
   memo: Memo;
   comments: Memo[];
   parentPage?: string;
+  parentScope?: MemoOriginScope;
   hasMoreComments?: boolean;
   isFetchingMoreComments?: boolean;
   onLoadMoreComments?: () => void;
 }
 
-const MemoCommentSection = ({ memo, comments, parentPage, hasMoreComments, isFetchingMoreComments, onLoadMoreComments }: Props) => {
+const MemoCommentSection = ({
+  memo,
+  comments,
+  parentPage,
+  parentScope,
+  hasMoreComments,
+  isFetchingMoreComments,
+  onLoadMoreComments,
+}: Props) => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
   const [showEditor, setShowEditor] = useState(false);
@@ -113,7 +123,7 @@ const MemoCommentSection = ({ memo, comments, parentPage, hasMoreComments, isFet
         )}
         {comments.map((comment) => (
           <div className="w-full" key={comment.name} id={extractMemoIdFromName(comment.name)}>
-            <MemoView memo={comment} parentPage={parentPage} showCreator compact />
+            <MemoView memo={comment} parentPage={parentPage} parentScope={parentScope} showCreator showSpace compact />
           </div>
         ))}
         {hasMoreComments && (

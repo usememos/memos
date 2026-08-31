@@ -34,6 +34,8 @@ var PublicMethods = map[string]struct{}{
 	"/memos.api.v1.MemoService/ListMemos":            {},
 	"/memos.api.v1.MemoService/ListMemoComments":     {},
 	"/memos.api.v1.MemoService/ListMemoAttachments":  {},
+	"/memos.api.v1.MemoService/ListMemoReactions":    {},
+	"/memos.api.v1.MemoService/ListMemoRelations":    {},
 	"/memos.api.v1.MemoService/GetLinkMetadata":      {},
 	"/memos.api.v1.MemoService/BatchGetLinkMetadata": {},
 
@@ -52,7 +54,7 @@ func IsPublicMethod(procedure string) bool {
 }
 
 // AuthBootstrapMethods is the subset of PublicMethods that stays reachable by
-// anonymous callers even when the instance is private (no InstanceURL configured).
+// anonymous callers even when the instance access mode is PRIVATE.
 //
 // It is the minimum required to render the sign-in page, authenticate, and follow
 // share links, and register when instance settings permit it. Every entry here

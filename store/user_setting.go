@@ -162,6 +162,9 @@ func (s *Store) GetUserRefreshTokens(ctx context.Context, userID int32) ([]*stor
 
 // AddUserRefreshToken adds a new refresh token for the user.
 func (s *Store) AddUserRefreshToken(ctx context.Context, userID int32, token *storepb.RefreshTokensUserSetting_RefreshToken) error {
+	s.refreshTokenMu.Lock()
+	defer s.refreshTokenMu.Unlock()
+
 	tokens, err := s.GetUserRefreshTokens(ctx, userID)
 	if err != nil {
 		return err
@@ -183,6 +186,9 @@ func (s *Store) AddUserRefreshToken(ctx context.Context, userID int32, token *st
 
 // RemoveUserRefreshToken removes a refresh token from the user.
 func (s *Store) RemoveUserRefreshToken(ctx context.Context, userID int32, tokenID string) error {
+	s.refreshTokenMu.Lock()
+	defer s.refreshTokenMu.Unlock()
+
 	existingTokens, err := s.GetUserRefreshTokens(ctx, userID)
 	if err != nil {
 		return err

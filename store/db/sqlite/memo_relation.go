@@ -139,6 +139,9 @@ func (d *DB) ListMemoRelations(ctx context.Context, find *store.FindMemoRelation
 }
 
 func (d *DB) DeleteMemoRelation(ctx context.Context, delete *store.DeleteMemoRelation) error {
+	if err := store.ValidateMemoRelationDelete(delete); err != nil {
+		return err
+	}
 	where, args := []string{"TRUE"}, []any{}
 	if delete.MemoID != nil {
 		where, args = append(where, "memo_id = ?"), append(args, *delete.MemoID)
@@ -146,9 +149,7 @@ func (d *DB) DeleteMemoRelation(ctx context.Context, delete *store.DeleteMemoRel
 	if delete.RelatedMemoID != nil {
 		where, args = append(where, "related_memo_id = ?"), append(args, *delete.RelatedMemoID)
 	}
-	if delete.Type != nil {
-		where, args = append(where, "type = ?"), append(args, *delete.Type)
-	}
+	where, args = append(where, "type = ?"), append(args, *delete.Type)
 	stmt := `
 		DELETE FROM memo_relation
 		WHERE ` + strings.Join(where, " AND ")

@@ -1,4 +1,4 @@
-import { create } from "@bufbuild/protobuf";
+import { create, type MessageInitShape } from "@bufbuild/protobuf";
 import { toBlob } from "html-to-image";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
@@ -10,14 +10,14 @@ import {
   getMemoShareRenderWidth,
 } from "@/components/MemoActionMenu/memoShareImage";
 import { buildMemoShareImagePreviewModel } from "@/components/MemoActionMenu/memoShareImagePreviewModel";
-import { type Attachment, AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
+import { AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
 import { type Memo, MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
 
 vi.mock("html-to-image", () => ({
   toBlob: vi.fn(),
 }));
 
-const buildMemo = (overrides: Partial<Memo> = {}) =>
+const buildMemo = (overrides: MessageInitShape<typeof MemoSchema> = {}) =>
   create(MemoSchema, {
     name: "memos/test",
     content: "hello",
@@ -26,7 +26,7 @@ const buildMemo = (overrides: Partial<Memo> = {}) =>
     ...overrides,
   });
 
-const buildAttachment = (overrides: Partial<Attachment>) =>
+const buildAttachment = (overrides: MessageInitShape<typeof AttachmentSchema>) =>
   create(AttachmentSchema, {
     name: "attachments/test",
     filename: "test.bin",

@@ -59,7 +59,7 @@ func TestSetMemoRelations(t *testing.T) {
 		require.NoError(t, err)
 	})
 
-	t.Run("SetMemoRelations success by host user", func(t *testing.T) {
+	t.Run("SetMemoRelations host user has no ownership bypass", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -83,12 +83,12 @@ func TestSetMemoRelations(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, memo)
 
-		// Host user can modify relations - should succeed
+		// Application ADMIN is an instance role, not memo authorship.
 		_, err = ts.Service.SetMemoRelations(hostCtx, &apiv1.SetMemoRelationsRequest{
 			Name:      memo.Name,
 			Relations: []*apiv1.MemoRelation{},
 		})
-		require.NoError(t, err)
+		require.Equal(t, codes.PermissionDenied, status.Code(err))
 	})
 
 	t.Run("SetMemoRelations permission denied for non-owner", func(t *testing.T) {
@@ -210,4 +210,46 @@ func TestUpdateMemoValidatesAllRelationsBeforeMutation(t *testing.T) {
 	require.Equal(t, "original", stored.Content)
 	require.Len(t, stored.Relations, 1)
 	require.Equal(t, target.Name, stored.Relations[0].RelatedMemo.Name)
+}
+
+func TestSetMemoRelationsRejectsNonReferenceTypes(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	user, err := ts.CreateRegularUser(ctx, "relation-type-owner")
+	require.NoError(t, err)
+	userCtx := ts.CreateUserContext(ctx, user.ID)
+	source, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{Content: "source", Visibility: apiv1.Visibility_PRIVATE},
+	})
+	require.NoError(t, err)
+	target, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{Content: "target", Visibility: apiv1.Visibility_PRIVATE},
+	})
+	require.NoError(t, err)
+
+	for _, test := range []struct {
+		name         string
+		relationType apiv1.MemoRelation_Type
+	}{
+		{name: "unspecified", relationType: apiv1.MemoRelation_TYPE_UNSPECIFIED},
+		{name: "comment", relationType: apiv1.MemoRelation_COMMENT},
+		{name: "unknown", relationType: apiv1.MemoRelation_Type(999)},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			_, err := ts.Service.SetMemoRelations(userCtx, &apiv1.SetMemoRelationsRequest{
+				Name: source.Name,
+				Relations: []*apiv1.MemoRelation{{
+					RelatedMemo: &apiv1.MemoRelation_Memo{Name: target.Name},
+					Type:        test.relationType,
+				}},
+			})
+			require.Equal(t, codes.InvalidArgument, status.Code(err))
+
+			stored, err := ts.Service.GetMemo(userCtx, &apiv1.GetMemoRequest{Name: source.Name})
+			require.NoError(t, err)
+			require.Empty(t, stored.Relations)
+		})
+	}
 }

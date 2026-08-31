@@ -28,6 +28,25 @@ CREATE TABLE `user_setting` (
   UNIQUE(`user_id`,`key`)
 );
 
+-- space
+CREATE TABLE `space` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `uid` VARCHAR(256) NOT NULL UNIQUE,
+  `title` TEXT NOT NULL,
+  `description` TEXT NOT NULL
+);
+
+-- space membership
+CREATE TABLE `space_member` (
+  `space_id` INT NOT NULL,
+  `user_id` INT NOT NULL,
+  `status` VARCHAR(256) NOT NULL,
+  `role` VARCHAR(256) NOT NULL CHECK (`role` IN ('ADMIN', 'USER')),
+  PRIMARY KEY (`space_id`, `user_id`)
+);
+
+CREATE INDEX `idx_space_member_user_id` ON `space_member`(`user_id`, `space_id`);
+
 -- memo
 CREATE TABLE `memo` (
   `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -39,8 +58,11 @@ CREATE TABLE `memo` (
   `content` TEXT NOT NULL,
   `visibility` VARCHAR(256) NOT NULL DEFAULT 'PRIVATE',
   `pinned` BOOLEAN NOT NULL DEFAULT FALSE,
-  `payload` JSON NOT NULL
+  `payload` JSON NOT NULL,
+  `space_id` INT DEFAULT NULL
 );
+
+CREATE INDEX `idx_memo_space_id` ON `memo`(`space_id`, `row_status`, `created_ts`, `id`);
 
 -- memo_relation
 CREATE TABLE `memo_relation` (
@@ -49,6 +71,9 @@ CREATE TABLE `memo_relation` (
   `type` VARCHAR(256) NOT NULL,
   UNIQUE(`memo_id`,`related_memo_id`,`type`)
 );
+
+CREATE INDEX `idx_memo_relation_related_type_memo`
+  ON `memo_relation`(`related_memo_id`, `type`, `memo_id`);
 
 -- attachment
 CREATE TABLE `attachment` (
@@ -87,14 +112,14 @@ CREATE TABLE `inbox` (
   `message` TEXT NOT NULL
 );
 
--- reaction
+-- memo reaction
 CREATE TABLE `reaction` (
   `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `creator_id` INT NOT NULL,
-  `content_id` VARCHAR(256) NOT NULL,
+  `memo_id` INT NOT NULL,
   `reaction_type` VARCHAR(256) NOT NULL,
-  UNIQUE(`creator_id`,`content_id`,`reaction_type`)  
+  UNIQUE(`creator_id`,`memo_id`,`reaction_type`)
 );
 
 -- memo_share

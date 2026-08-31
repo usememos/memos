@@ -15,6 +15,35 @@ import (
 )
 
 func (d *DB) CreateAttachment(ctx context.Context, create *store.Attachment) (*store.Attachment, error) {
+	if create.Policy == nil {
+		return insertPostgresAttachment(ctx, d.db, create)
+	}
+	if create.MemoID == nil || create.CreatorID != create.Policy.ActorUserID {
+		return nil, store.ErrMemoPermissionDenied
+	}
+	tx, err := d.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = tx.Rollback() }()
+	if err := validatePostgresMemoWritePolicy(ctx, tx, *create.MemoID, create.Policy, nil); err != nil {
+		return nil, err
+	}
+	attachment, err := insertPostgresAttachment(ctx, tx, create)
+	if err != nil {
+		return nil, err
+	}
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+	return attachment, nil
+}
+
+type postgresAttachmentQueryRower interface {
+	QueryRowContext(context.Context, string, ...any) *sql.Row
+}
+
+func insertPostgresAttachment(ctx context.Context, executor postgresAttachmentQueryRower, create *store.Attachment) (*store.Attachment, error) {
 	fields := []string{"uid", "filename", "blob", "type", "size", "creator_id", "memo_id", "storage_type", "reference", "payload"}
 	storageType := ""
 	if create.StorageType != storepb.AttachmentStorageType_ATTACHMENT_STORAGE_TYPE_UNSPECIFIED {
@@ -31,7 +60,7 @@ func (d *DB) CreateAttachment(ctx context.Context, create *store.Attachment) (*s
 	args := []any{create.UID, create.Filename, create.Blob, create.Type, create.Size, create.CreatorID, create.MemoID, storageType, create.Reference, payloadString}
 
 	stmt := "INSERT INTO attachment (" + strings.Join(fields, ", ") + ") VALUES (" + placeholders(len(args)) + ") RETURNING id, created_ts, updated_ts"
-	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(&create.ID, &create.CreatedTs, &create.UpdatedTs); err != nil {
+	if err := executor.QueryRowContext(ctx, stmt, args...).Scan(&create.ID, &create.CreatedTs, &create.UpdatedTs); err != nil {
 		return nil, err
 	}
 	return create, nil
@@ -69,10 +98,6 @@ func (d *DB) ListAttachments(ctx context.Context, find *store.FindAttachment) ([
 	if find.HasRelatedMemo {
 		where = append(where, "attachment.memo_id IS NOT NULL")
 	}
-	if v := find.StorageType; v != nil {
-		where, args = append(where, "attachment.storage_type = "+placeholder(len(args)+1)), append(args, v.String())
-	}
-
 	if len(find.Filters) > 0 {
 		engine, err := filter.DefaultAttachmentEngine()
 		if err != nil {
@@ -80,6 +105,22 @@ func (d *DB) ListAttachments(ctx context.Context, find *store.FindAttachment) ([
 		}
 		if err := filter.AppendConditions(ctx, engine, find.Filters, filter.DialectPostgres, &where, &args); err != nil {
 			return nil, errors.Wrap(err, "failed to append filter conditions")
+		}
+	}
+	if access := find.Access; access != nil {
+		scopeClauses := []string{}
+		if access.UserID != nil {
+			activeHolder := placeholder(len(args) + 1)
+			args = append(args, *access.UserID)
+			creatorHolder := placeholder(len(args) + 1)
+			args = append(args, *access.UserID)
+			scopeClauses = append(scopeClauses, `(attachment.memo_id IS NULL AND EXISTS (SELECT 1 FROM "user" AS attachment_user WHERE attachment_user.id = `+activeHolder+` AND attachment_user.row_status = 'NORMAL') AND attachment.creator_id = `+creatorHolder+`)`)
+		}
+		scopeClauses = append(scopeClauses, "(attachment.memo_id IS NOT NULL AND "+postgresMemoAccessPredicate(access, "memo", "attachment_member", &args)+")")
+		if len(scopeClauses) == 0 {
+			where = append(where, "1 = 0")
+		} else {
+			where = append(where, "("+strings.Join(scopeClauses, " OR ")+")")
 		}
 	}
 
@@ -107,6 +148,7 @@ func (d *DB) ListAttachments(ctx context.Context, find *store.FindAttachment) ([
 			%s
 		FROM attachment
 		LEFT JOIN memo ON attachment.memo_id = memo.id
+		LEFT JOIN space AS attachment_space ON memo.space_id = attachment_space.id
 		WHERE %s
 		ORDER BY attachment.updated_ts DESC
 	`, strings.Join(fields, ", "), strings.Join(where, " AND "))
@@ -171,6 +213,36 @@ func (d *DB) ListAttachments(ctx context.Context, find *store.FindAttachment) ([
 }
 
 func (d *DB) UpdateAttachment(ctx context.Context, update *store.UpdateAttachment) error {
+	if update.Policy == nil {
+		return applyPostgresAttachmentUpdate(ctx, d.db, update)
+	}
+	if update.MemoID != nil {
+		return store.ErrMemoMutationConflict
+	}
+	attachmentIDs := []int32{update.ID}
+	tx, err := d.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = tx.Rollback() }()
+	attachments, err := listPostgresAttachmentSnapshots(ctx, tx, attachmentIDs)
+	if err != nil {
+		return err
+	}
+	memoIDs, err := store.ValidateAttachmentMutationTargets(update.Policy.ActorUserID, attachmentIDs, attachments)
+	if err != nil {
+		return err
+	}
+	if err := authorizePostgresAttachmentMutation(ctx, tx, update.Policy.ActorUserID, memoIDs, nil); err != nil {
+		return err
+	}
+	if err := applyPostgresAttachmentUpdate(ctx, tx, update); err != nil {
+		return err
+	}
+	return tx.Commit()
+}
+
+func applyPostgresAttachmentUpdate(ctx context.Context, executor memoUpdateExecer, update *store.UpdateAttachment) error {
 	set, args := []string{}, []any{}
 
 	if v := update.UID; v != nil {
@@ -185,9 +257,6 @@ func (d *DB) UpdateAttachment(ctx context.Context, update *store.UpdateAttachmen
 	if v := update.MemoID; v != nil {
 		set, args = append(set, "memo_id = "+placeholder(len(args)+1)), append(args, *v)
 	}
-	if v := update.Reference; v != nil {
-		set, args = append(set, "reference = "+placeholder(len(args)+1)), append(args, *v)
-	}
 	if v := update.Payload; v != nil {
 		bytes, err := protojson.Marshal(v)
 		if err != nil {
@@ -196,9 +265,12 @@ func (d *DB) UpdateAttachment(ctx context.Context, update *store.UpdateAttachmen
 		set, args = append(set, "payload = "+placeholder(len(args)+1)), append(args, string(bytes))
 	}
 
+	if len(set) == 0 {
+		return nil
+	}
 	stmt := `UPDATE attachment SET ` + strings.Join(set, ", ") + ` WHERE id = ` + placeholder(len(args)+1)
 	args = append(args, update.ID)
-	result, err := d.db.ExecContext(ctx, stmt, args...)
+	result, err := executor.ExecContext(ctx, stmt, args...)
 	if err != nil {
 		return err
 	}
@@ -209,15 +281,7 @@ func (d *DB) UpdateAttachment(ctx context.Context, update *store.UpdateAttachmen
 }
 
 func (d *DB) DeleteAttachment(ctx context.Context, delete *store.DeleteAttachment) error {
-	stmt := `DELETE FROM attachment WHERE id = $1`
-	result, err := d.db.ExecContext(ctx, stmt, delete.ID)
-	if err != nil {
-		return err
-	}
-	if _, err := result.RowsAffected(); err != nil {
-		return err
-	}
-	return nil
+	return d.DeleteAttachments(ctx, []*store.DeleteAttachment{delete})
 }
 
 func (d *DB) DeleteAttachments(ctx context.Context, deletes []*store.DeleteAttachment) error {
@@ -234,7 +298,6 @@ func (d *DB) DeleteAttachments(ctx context.Context, deletes []*store.DeleteAttac
 			_ = tx.Rollback()
 		}
 	}()
-
 	stmt := `DELETE FROM attachment WHERE id = $1`
 	for _, delete := range deletes {
 		result, err := tx.ExecContext(ctx, stmt, delete.ID)

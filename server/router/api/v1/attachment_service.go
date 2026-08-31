@@ -8,14 +8,13 @@ import (
 	"mime"
 	"net/http"
 	"path/filepath"
+	"strings"
 	"time"
 
-	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/usememos/memos/internal/filter"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	"github.com/usememos/memos/store"
 )
@@ -45,6 +44,33 @@ var exifCapableImageTypes = map[string]bool{
 	"image/heif": true,
 }
 
+// extensionMimeTypeFallbacks maps image extensions that Go's builtin MIME
+// table does not cover. HEIC/HEIF files are the common case: browsers report
+// an empty MIME type for them, Go's builtin table omits the extension, and
+// http.DetectContentType cannot sniff the ISO BMFF container, so without
+// this fallback these uploads are stored as "application/octet-stream" on
+// minimal runtimes that ship no system MIME database (e.g. the Alpine image).
+var extensionMimeTypeFallbacks = map[string]string{
+	".heic": "image/heic",
+	".heif": "image/heif",
+}
+
+// detectAttachmentMimeType resolves the MIME type for an uploaded file that
+// arrived without a client-supplied type. It prefers the filename extension
+// (including the curated fallback above, which keeps the result identical on
+// machines with and without a system MIME database), then sniffs the content
+// as a last resort.
+func detectAttachmentMimeType(filename string, content []byte) string {
+	ext := strings.ToLower(filepath.Ext(filename))
+	if mimeType, ok := extensionMimeTypeFallbacks[ext]; ok {
+		return mimeType
+	}
+	if mimeType := mime.TypeByExtension(ext); mimeType != "" {
+		return mimeType
+	}
+	return http.DetectContentType(content)
+}
+
 func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.CreateAttachmentRequest) (*v1pb.Attachment, error) {
 	user, err := s.fetchCurrentUser(ctx)
 	if err != nil {
@@ -66,11 +92,7 @@ func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.Creat
 	}
 	normalizedMimeType := request.Attachment.Type
 	if normalizedMimeType == "" {
-		ext := filepath.Ext(request.Attachment.Filename)
-		mimeType := mime.TypeByExtension(ext)
-		if mimeType == "" {
-			mimeType = http.DetectContentType(request.Attachment.Content)
-		}
+		mimeType := detectAttachmentMimeType(request.Attachment.Filename, request.Attachment.Content)
 		if normalizedType, ok := normalizeMimeType(mimeType); ok {
 			normalizedMimeType = normalizedType
 		}
@@ -143,10 +165,11 @@ func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.Creat
 		if !canModifyMemo(user, memo) {
 			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 		}
-		if memo.CreatorID != user.ID {
-			return nil, status.Errorf(codes.PermissionDenied, "attachments linked at creation must be owned by the memo creator")
+		if err := s.requireAssignedMemoWritable(ctx, memo, user.ID); err != nil {
+			return nil, err
 		}
 		create.MemoID = &memo.ID
+		create.Policy = memoWritePolicy(user.ID, false)
 	}
 
 	if create.Payload == nil || create.Payload.MotionMedia == nil {
@@ -177,13 +200,30 @@ func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.Creat
 		}
 	}
 
-	if err := SaveAttachmentBlob(ctx, s.Profile, s.Store, create); err != nil {
+	if err := saveAttachmentBlobWithInstanceStorageSetting(ctx, s.Profile, s.Store, create, instanceStorageSetting); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to save attachment blob: %v", err)
 	}
 
 	attachment, err := s.Store.CreateAttachment(ctx, create)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to create attachment: %v", err)
+		createErr := mapMemoWriteError(err, "failed to create attachment")
+		persistedObject, cleanupErr := cleanupSavedAttachmentBlob(ctx, s.Store, create, instanceStorageSetting)
+		if cleanupErr != nil {
+			slog.Error("failed to compensate attachment storage after database create failure",
+				slog.String("attachment_uid", create.UID),
+				slog.String("storage_type", create.StorageType.String()),
+				slog.Any("error", cleanupErr),
+			)
+		} else if persistedObject {
+			slog.Warn("attachment create returned an error after its storage object was persisted in the database; skipping compensation",
+				slog.String("attachment_uid", create.UID),
+				slog.String("storage_type", create.StorageType.String()),
+			)
+		}
+		return nil, createErr
+	}
+	if create.MemoID != nil {
+		s.SSEHub.publishMemoChanged()
 	}
 
 	return convertAttachmentFromStore(attachment), nil
@@ -212,14 +252,14 @@ func (s *APIV1Service) ListAttachments(ctx context.Context, request *v1pb.ListAt
 
 	findAttachment := &store.FindAttachment{
 		CreatorID: &user.ID,
+		Access:    newMemoAccessScope(user, true),
 		Limit:     &pageSize,
 		Offset:    &offset,
 	}
-
 	// Parse filter if provided
 	if request.Filter != "" {
-		if err := s.validateAttachmentFilter(ctx, request.Filter); err != nil {
-			return nil, status.Errorf(codes.InvalidArgument, "invalid filter: %v", err)
+		if err := s.validateAttachmentFilterForUser(ctx, request.Filter, user); err != nil {
+			return nil, err
 		}
 		findAttachment.Filters = append(findAttachment.Filters, request.Filter)
 	}
@@ -286,15 +326,16 @@ func (s *APIV1Service) UpdateAttachment(ctx context.Context, request *v1pb.Updat
 	if attachment == nil {
 		return nil, status.Errorf(codes.NotFound, "attachment not found")
 	}
-	// Only the creator or admin can update the attachment.
-	if attachment.CreatorID != user.ID && !isSuperUser(user) {
+	// Only the creator can update the attachment.
+	if attachment.CreatorID != user.ID {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
-	currentTs := time.Now().Unix()
+	currentTsSec := time.Now().Unix()
 	update := &store.UpdateAttachment{
 		ID:        attachment.ID,
-		UpdatedTs: &currentTs,
+		UpdatedTs: &currentTsSec,
+		Policy:    memoWritePolicy(user.ID, false),
 	}
 	for _, field := range request.UpdateMask.Paths {
 		if field == "filename" {
@@ -306,11 +347,23 @@ func (s *APIV1Service) UpdateAttachment(ctx context.Context, request *v1pb.Updat
 	}
 
 	if err := s.Store.UpdateAttachment(ctx, update); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to update attachment: %v", err)
+		return nil, mapMemoWriteError(err, "failed to update attachment")
 	}
-	return s.GetAttachment(ctx, &v1pb.GetAttachmentRequest{
-		Name: request.Attachment.Name,
-	})
+	updatedAttachment, err := s.Store.GetAttachment(ctx, &store.FindAttachment{UID: &attachmentUID})
+	if err != nil {
+		// The update already committed, and the current memo binding is unknown.
+		// Publish conservatively so clients do not retain stale memo state.
+		s.SSEHub.publishMemoChanged()
+		return nil, status.Errorf(codes.Internal, "attachment was updated but failed to reload: %v", err)
+	}
+	if updatedAttachment == nil {
+		s.SSEHub.publishMemoChanged()
+		return nil, status.Error(codes.Internal, "attachment was updated but no longer exists")
+	}
+	if updatedAttachment.MemoID != nil {
+		s.SSEHub.publishMemoChanged()
+	}
+	return convertAttachmentFromStore(updatedAttachment), nil
 }
 
 func (s *APIV1Service) DeleteAttachment(ctx context.Context, request *v1pb.DeleteAttachmentRequest) (*emptypb.Empty, error) {
@@ -335,17 +388,9 @@ func (s *APIV1Service) DeleteAttachment(ctx context.Context, request *v1pb.Delet
 	if attachment == nil {
 		return nil, status.Errorf(codes.NotFound, "attachment not found")
 	}
-	if err := s.validateAttachmentDeletions(ctx, []*store.Attachment{attachment}); err != nil {
+	attachments := []*store.Attachment{attachment}
+	if err := s.deleteAttachmentsAtomically(ctx, user, attachments); err != nil {
 		return nil, err
-	}
-	if err := s.detachAttachmentsForDeletion(ctx, []*store.Attachment{attachment}); err != nil {
-		return nil, err
-	}
-	// Delete the attachment from the database.
-	if err := s.Store.DeleteAttachment(ctx, &store.DeleteAttachment{
-		ID: attachment.ID,
-	}); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to delete attachment: %v", err)
 	}
 	return &emptypb.Empty{}, nil
 }
@@ -387,34 +432,22 @@ func (s *APIV1Service) BatchDeleteAttachments(ctx context.Context, request *v1pb
 		if attachment == nil {
 			return nil, status.Errorf(codes.NotFound, "attachment not found")
 		}
-		if attachment.CreatorID != user.ID && !isSuperUser(user) {
+		if attachment.CreatorID != user.ID {
 			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 		}
 		attachments = append(attachments, attachment)
 	}
-	if err := s.validateAttachmentDeletions(ctx, attachments); err != nil {
+	if err := s.deleteAttachmentsAtomically(ctx, user, attachments); err != nil {
 		return nil, err
-	}
-	if err := s.detachAttachmentsForDeletion(ctx, attachments); err != nil {
-		return nil, err
-	}
-	for _, attachment := range attachments {
-		if err := s.Store.DeleteAttachment(ctx, &store.DeleteAttachment{ID: attachment.ID}); err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to delete attachment: %v", err)
-		}
 	}
 
 	return &emptypb.Empty{}, nil
 }
 
-func (s *APIV1Service) validateAttachmentDeletions(ctx context.Context, attachments []*store.Attachment) error {
-	deletingUIDs := make(map[string]struct{}, len(attachments))
-	creatorIDs := make(map[int32]struct{})
-	for _, attachment := range attachments {
-		deletingUIDs[attachment.UID] = struct{}{}
-		if motion := getAttachmentMotionMedia(attachment); motion != nil && motion.GroupId != "" {
-			creatorIDs[attachment.CreatorID] = struct{}{}
-		}
+func (s *APIV1Service) validateAttachmentDeletionPreflight(ctx context.Context, user *store.User, attachments []*store.Attachment) (map[int32]string, error) {
+	deletingUIDs, err := s.validateAttachmentMotionGroupDeletion(ctx, user, attachments)
+	if err != nil {
+		return nil, err
 	}
 
 	memos := make(map[int32]*store.Memo)
@@ -427,116 +460,110 @@ func (s *APIV1Service) validateAttachmentDeletions(ctx context.Context, attachme
 			var err error
 			memo, err = s.Store.GetMemo(ctx, &store.FindMemo{ID: attachment.MemoID})
 			if err != nil {
-				return status.Errorf(codes.Internal, "failed to get attachment memo: %v", err)
+				return nil, status.Errorf(codes.Internal, "failed to get attachment memo: %v", err)
 			}
 			if memo == nil {
-				return status.Errorf(codes.FailedPrecondition, "attachment memo no longer exists")
+				return nil, status.Errorf(codes.FailedPrecondition, "attachment memo no longer exists")
 			}
 			memos[memo.ID] = memo
 		}
-
+		if memo.CreatorID != user.ID {
+			return nil, status.Error(codes.PermissionDenied, "permission denied")
+		}
+	}
+	expectedMemoContents := make(map[int32]string, len(memos))
+	for _, memo := range memos {
+		expectedMemoContents[memo.ID] = memo.Content
 		references, err := s.extractManagedAttachmentReferences(memo.Content)
 		if err != nil {
-			return status.Errorf(codes.FailedPrecondition, "memo contains an invalid managed attachment reference: %v", err)
+			return nil, status.Errorf(codes.FailedPrecondition, "memo contains an invalid managed attachment reference: %v", err)
 		}
 		for _, reference := range references {
-			if _, ok := deletingUIDs[reference.UID]; ok {
-				return status.Errorf(codes.FailedPrecondition, "attachment %s is referenced by memo content", reference.UID)
+			if _, deleting := deletingUIDs[reference.UID]; deleting {
+				return nil, status.Errorf(codes.FailedPrecondition, "attachment %s is referenced by memo content", reference.UID)
 			}
 		}
 	}
 
-	for creatorID := range creatorIDs {
-		creatorAttachments, err := s.Store.ListAttachments(ctx, &store.FindAttachment{CreatorID: &creatorID, SkipDefaultLimit: true})
-		if err != nil {
-			return status.Errorf(codes.Internal, "failed to list motion media group: %v", err)
-		}
-		groups := make(map[string][]*store.Attachment)
-		for _, attachment := range creatorAttachments {
-			motion := getAttachmentMotionMedia(attachment)
-			if motion != nil && motion.GroupId != "" {
-				groups[motion.GroupId] = append(groups[motion.GroupId], attachment)
-			}
-		}
-		for _, attachment := range attachments {
-			if attachment.CreatorID != creatorID {
-				continue
-			}
-			motion := getAttachmentMotionMedia(attachment)
-			if motion == nil || motion.GroupId == "" || len(groups[motion.GroupId]) < 2 {
-				continue
-			}
-			for _, groupAttachment := range groups[motion.GroupId] {
-				if _, ok := deletingUIDs[groupAttachment.UID]; !ok {
-					return status.Errorf(codes.FailedPrecondition, "motion media group %s must be deleted together", motion.GroupId)
-				}
-			}
-		}
-	}
-
-	return nil
+	return expectedMemoContents, nil
 }
 
-func (s *APIV1Service) detachAttachmentsForDeletion(ctx context.Context, attachments []*store.Attachment) error {
+func (s *APIV1Service) validateAttachmentMotionGroupDeletion(
+	ctx context.Context,
+	user *store.User,
+	attachments []*store.Attachment,
+) (map[string]struct{}, error) {
+	if user == nil || len(attachments) == 0 {
+		return nil, status.Error(codes.InvalidArgument, "attachments are required")
+	}
 	deletingUIDs := make(map[string]struct{}, len(attachments))
-	attachmentsByMemoID := make(map[int32][]*store.Attachment)
+	motionGroupIDs := make(map[string]struct{})
 	for _, attachment := range attachments {
-		deletingUIDs[attachment.UID] = struct{}{}
-		if attachment.MemoID != nil {
-			attachmentsByMemoID[*attachment.MemoID] = append(attachmentsByMemoID[*attachment.MemoID], attachment)
+		if attachment == nil || attachment.ID <= 0 || attachment.UID == "" {
+			return nil, status.Error(codes.InvalidArgument, "invalid attachment")
 		}
+		if attachment.CreatorID != user.ID {
+			return nil, status.Error(codes.PermissionDenied, "permission denied")
+		}
+		deletingUIDs[attachment.UID] = struct{}{}
+		if motion := getAttachmentMotionMedia(attachment); motion != nil && motion.GroupId != "" {
+			motionGroupIDs[motion.GroupId] = struct{}{}
+		}
+	}
+	if len(motionGroupIDs) == 0 {
+		return deletingUIDs, nil
 	}
 
-	for memoID, memoAttachments := range attachmentsByMemoID {
-		memo, err := s.Store.GetMemo(ctx, &store.FindMemo{ID: &memoID})
-		if err != nil {
-			return status.Errorf(codes.Internal, "failed to recheck attachment memo: %v", err)
+	creatorAttachments, err := s.Store.ListAttachments(ctx, &store.FindAttachment{CreatorID: &user.ID, SkipDefaultLimit: true})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to list motion media group: %v", err)
+	}
+	for _, candidate := range creatorAttachments {
+		motion := getAttachmentMotionMedia(candidate)
+		if motion == nil {
+			continue
 		}
-		if memo == nil {
-			return status.Errorf(codes.FailedPrecondition, "attachment memo no longer exists")
+		if _, selectedGroup := motionGroupIDs[motion.GroupId]; !selectedGroup {
+			continue
 		}
-		references, err := s.extractManagedAttachmentReferences(memo.Content)
-		if err != nil {
-			return status.Errorf(codes.FailedPrecondition, "memo contains an invalid managed attachment reference: %v", err)
-		}
-		for _, reference := range references {
-			if _, ok := deletingUIDs[reference.UID]; ok {
-				return status.Errorf(codes.FailedPrecondition, "attachment %s is referenced by memo content", reference.UID)
-			}
-		}
-		removedIDs := make([]int32, 0, len(memoAttachments))
-		for _, attachment := range memoAttachments {
-			removedIDs = append(removedIDs, attachment.ID)
-		}
-		if err := s.Store.ApplyMemoMutation(ctx, &store.MemoMutation{
-			MemoID:               memo.ID,
-			MemoCreatorID:        memo.CreatorID,
-			ExpectedMemoContent:  memo.Content,
-			RemovedAttachmentIDs: removedIDs,
-		}); err != nil {
-			if errors.Is(err, store.ErrMemoMutationConflict) {
-				return status.Errorf(codes.FailedPrecondition, "memo state changed: %v", err)
-			}
-			return status.Errorf(codes.Internal, "failed to detach attachments: %v", err)
+		if _, deleting := deletingUIDs[candidate.UID]; !deleting {
+			return nil, status.Errorf(codes.FailedPrecondition, "motion media group %s must be deleted together", motion.GroupId)
 		}
 	}
-	return nil
+	return deletingUIDs, nil
 }
 
-func (s *APIV1Service) validateAttachmentFilter(ctx context.Context, filterStr string) error {
-	if filterStr == "" {
-		return errors.New("filter cannot be empty")
-	}
-
-	engine, err := filter.DefaultAttachmentEngine()
+func (s *APIV1Service) deleteAttachmentsAtomically(ctx context.Context, user *store.User, attachments []*store.Attachment) error {
+	expectedMemoContents, err := s.validateAttachmentDeletionPreflight(ctx, user, attachments)
 	if err != nil {
 		return err
 	}
-
-	if _, err := engine.CompileToStatement(ctx, filterStr, filter.RenderOptions{Dialect: s.filterDialect()}); err != nil {
-		return errors.Wrap(err, "failed to compile filter")
+	attachmentIDs := make([]int32, 0, len(attachments))
+	for _, attachment := range attachments {
+		attachmentIDs = append(attachmentIDs, attachment.ID)
+	}
+	if err := s.Store.DeleteAttachmentsWithPolicy(ctx, &store.AttachmentDeletionPolicy{
+		ActorUserID:          user.ID,
+		ExpectedMemoContents: expectedMemoContents,
+	}, attachmentIDs); err != nil {
+		return mapMemoWriteError(err, "failed to delete attachments")
+	}
+	if attachmentsIncludeMemo(attachments) {
+		s.SSEHub.publishMemoChanged()
+	}
+	if err := s.cleanupDeletedAttachmentStorage(ctx, attachments); err != nil {
+		return status.Errorf(codes.Internal, "attachments were deleted but storage cleanup failed: %v", err)
 	}
 	return nil
+}
+
+func attachmentsIncludeMemo(attachments []*store.Attachment) bool {
+	for _, attachment := range attachments {
+		if attachment != nil && attachment.MemoID != nil {
+			return true
+		}
+	}
+	return false
 }
 
 // checkAttachmentAccess verifies the user has permission to access the attachment.
@@ -552,7 +579,7 @@ func (s *APIV1Service) checkAttachmentAccess(ctx context.Context, attachment *st
 		if user == nil {
 			return status.Errorf(codes.Unauthenticated, "user not authenticated")
 		}
-		if attachment.CreatorID != user.ID && !isSuperUser(user) {
+		if attachment.CreatorID != user.ID {
 			return status.Errorf(codes.PermissionDenied, "permission denied")
 		}
 		return nil
@@ -567,5 +594,5 @@ func (s *APIV1Service) checkAttachmentAccess(ctx context.Context, attachment *st
 		return status.Errorf(codes.NotFound, "memo not found")
 	}
 
-	return s.checkMemoAndParentReadAccess(ctx, memo)
+	return s.checkMemoReadAccess(ctx, memo)
 }

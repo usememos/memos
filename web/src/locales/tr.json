@@ -540,7 +540,6 @@
       "path": "Depolama Yolu",
       "path-description": "Yerel depolamadaki gibi {filename} gibi aynı dinamik değişkenleri kullanabilirsiniz",
       "path-placeholder": "özel/yol",
-      "presign-placeholder": "Ön imzalı URL, isteğe bağlı",
       "region": "Bölge",
       "region-placeholder": "Bölge adı",
       "s3-compatible-url": "S3 Uyumlu URL",

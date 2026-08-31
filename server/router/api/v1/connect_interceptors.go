@@ -65,9 +65,7 @@ func (*MetadataInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc 
 		// Prevent browser caching of API responses to avoid stale data issues
 		// See: https://github.com/usememos/memos/issues/5470
 		if !isNilAnyResponse(resp) && resp.Header() != nil {
-			resp.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
-			resp.Header().Set("Pragma", "no-cache")
-			resp.Header().Set("Expires", "0")
+			setAPIResponseNoStoreHeaders(resp.Header())
 		}
 
 		return resp, err
@@ -221,13 +219,21 @@ func (in *AuthInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc {
 
 		result := in.authorizer.Authenticate(ctx, authHeader)
 		if err := in.authorizer.CheckAccess(ctx, req.Spec().Procedure, result); err != nil {
-			return nil, connect.NewError(connect.CodeUnauthenticated, err)
+			return nil, newAuthorizationConnectError(err)
 		}
 
 		ctx = auth.ApplyToContext(ctx, result)
 
 		return next(ctx, req)
 	}
+}
+
+func newAuthorizationConnectError(err error) *connect.Error {
+	if pkgerrors.Is(err, ErrUnauthenticated) {
+		return connect.NewError(connect.CodeUnauthenticated, ErrUnauthenticated)
+	}
+	slog.Error("failed to resolve API access policy", "error", err)
+	return connect.NewError(connect.CodeInternal, pkgerrors.New("failed to resolve API access policy"))
 }
 
 func (*AuthInterceptor) WrapStreamingClient(next connect.StreamingClientFunc) connect.StreamingClientFunc {

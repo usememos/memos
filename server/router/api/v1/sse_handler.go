@@ -40,7 +40,7 @@ func handleSSE(c *echo.Context, hub *SSEHub, authenticator *auth.Authenticator) 
 	if result == nil {
 		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "authentication required"})
 	}
-	userID, role := getSSEClientIdentity(result)
+	userID := getSSEClientUserID(result)
 	if userID == 0 {
 		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "authentication required"})
 	}
@@ -64,7 +64,7 @@ func handleSSE(c *echo.Context, hub *SSEHub, authenticator *auth.Authenticator) 
 	}
 
 	// Subscribe to the hub.
-	client := hub.Subscribe(userID, role)
+	client := hub.Subscribe()
 	defer hub.Unsubscribe(client)
 
 	ctx := c.Request().Context()
@@ -137,15 +137,15 @@ func resetSSETimer(timer *time.Timer) {
 	timer.Reset(sseHeartbeatInterval)
 }
 
-func getSSEClientIdentity(result *auth.AuthResult) (int32, store.Role) {
+func getSSEClientUserID(result *auth.AuthResult) int32 {
 	if result == nil {
-		return 0, store.RoleUser
+		return 0
 	}
 	if result.Claims != nil {
-		return result.Claims.UserID, store.Role(result.Claims.Role)
+		return result.Claims.UserID
 	}
 	if result.User != nil {
-		return result.User.ID, result.User.Role
+		return result.User.ID
 	}
-	return 0, store.RoleUser
+	return 0
 }

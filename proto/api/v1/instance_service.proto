@@ -57,6 +57,13 @@ service InstanceService {
   }
 }
 
+// InstanceAccessMode controls whether unauthenticated users may access instance content.
+enum InstanceAccessMode {
+  INSTANCE_ACCESS_MODE_UNSPECIFIED = 0;
+  INSTANCE_ACCESS_MODE_PRIVATE = 1;
+  INSTANCE_ACCESS_MODE_PUBLIC = 2;
+}
+
 // Instance profile message containing basic instance information.
 message InstanceProfile {
   // Version is the current version of instance.
@@ -81,6 +88,9 @@ message InstanceProfile {
   // false once any user exists, so an instance that has lost its admins is not
   // mistaken for a fresh install.
   bool needs_setup = 9;
+
+  // Access mode controls whether unauthenticated users may access instance content.
+  InstanceAccessMode access_mode = 10;
 }
 
 // Request for instance profile.
@@ -106,6 +116,7 @@ message InstanceSetting {
     TagsSetting tags_setting = 5;
     NotificationSetting notification_setting = 6;
     AISetting ai_setting = 7;
+    AccessSetting access_setting = 8;
   }
 
   // Enumeration of instance setting keys.
@@ -123,6 +134,8 @@ message InstanceSetting {
     NOTIFICATION = 5;
     // AI is the key for AI provider settings.
     AI = 6;
+    // ACCESS is the key for instance access policy settings.
+    ACCESS = 7;
   }
 
   // General instance settings configuration.
@@ -334,6 +347,11 @@ message InstanceSetting {
 
     // prompt is a default spelling/vocabulary hint passed to the provider.
     string prompt = 4;
+  }
+
+  // Access policy configuration for the instance.
+  message AccessSetting {
+    InstanceAccessMode access_mode = 1;
   }
 }
 

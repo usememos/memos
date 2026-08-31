@@ -237,6 +237,12 @@ func TestLoadDeploymentConfigurationSupportsEveryProvisionableSettingGroup(t *te
 				{Id: "primary", Title: "Primary", Type: storepb.AIProviderType_OPENAI, ApiKey: "ai-secret"},
 			}}},
 		},
+		"memos-instance-setting-access.json": {
+			Key: storepb.InstanceSettingKey_ACCESS,
+			Value: &storepb.InstanceSetting_AccessSetting{AccessSetting: &storepb.InstanceAccessSetting{
+				AccessMode: storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC,
+			}},
+		},
 	}
 	for filename, setting := range settings {
 		writeDeploymentMessage(t, filepath.Join(dir, filename), setting)
@@ -249,6 +255,9 @@ func TestLoadDeploymentConfigurationSupportsEveryProvisionableSettingGroup(t *te
 	require.NoError(t, err)
 	require.Len(t, ai.Providers, 1)
 	assert.Equal(t, "https://api.openai.com/v1", ai.Providers[0].Endpoint)
+	access, err := stores.GetInstanceAccessSetting(ctx)
+	require.NoError(t, err)
+	assert.Equal(t, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC, access.AccessMode)
 }
 
 func TestLoadDeploymentConfigurationRejectsInvalidSettingResources(t *testing.T) {
@@ -261,6 +270,8 @@ func TestLoadDeploymentConfigurationRejectsInvalidSettingResources(t *testing.T)
 		{name: "TAGS", content: `{"key":"TAGS","tagsSetting":{}}`, errorString: "cannot be deployment configured"},
 		{name: "mismatched oneof", content: `{"key":"GENERAL","storageSetting":{}}`, errorString: "generalSetting must be populated"},
 		{name: "invalid week start", content: `{"key":"GENERAL","generalSetting":{"weekStartDayOffset":-2}}`, errorString: "must be between -1 and 6"},
+		{name: "unspecified access mode", content: `{"key":"ACCESS","accessSetting":{}}`, errorString: "accessSetting.accessMode must be PRIVATE or PUBLIC"},
+		{name: "mismatched access oneof", content: `{"key":"ACCESS","generalSetting":{}}`, errorString: "accessSetting must be populated"},
 		{name: "unknown field", content: `{"key":"GENERAL","generalSetting":{},"typo":true}`, errorString: `unknown field "typo"`},
 	}
 	for _, test := range tests {

@@ -19,9 +19,8 @@ func (s *APIV1Service) buildUpdatedMemoState(ctx context.Context, memoID int32) 
 		return nil, nil, nil, errors.New("memo not found")
 	}
 
-	memoName := buildMemoName(memo.UID)
 	reactions, err := s.Store.ListReactions(ctx, &store.FindReaction{
-		ContentID: &memoName,
+		MemoID: &memo.ID,
 	})
 	if err != nil {
 		return nil, nil, nil, errors.Wrap(err, "failed to list reactions")
@@ -41,35 +40,24 @@ func (s *APIV1Service) buildUpdatedMemoState(ctx context.Context, memoID int32) 
 		return nil, nil, nil, errors.Wrap(err, "failed to convert memo")
 	}
 
-	var parentMemo *store.Memo
+	var commentContext *store.Memo
 	if memo.ParentUID != nil {
-		parentMemo, err = s.Store.GetMemo(ctx, &store.FindMemo{UID: memo.ParentUID})
+		commentContext, err = s.Store.GetMemo(ctx, &store.FindMemo{UID: memo.ParentUID})
 		if err != nil {
-			return nil, nil, nil, errors.Wrap(err, "failed to get parent memo")
+			return nil, nil, nil, errors.Wrap(err, "failed to get comment context")
 		}
-		if parentMemo == nil {
-			return nil, nil, nil, errors.New("parent memo not found")
-		}
-		memoMessage.Visibility = convertVisibilityFromStore(parentMemo.Visibility)
 	}
 
-	return memo, parentMemo, memoMessage, nil
+	return memo, commentContext, memoMessage, nil
 }
 
-func (s *APIV1Service) dispatchMemoUpdatedSideEffects(ctx context.Context, memo *store.Memo, parentMemo *store.Memo, memoMessage *v1pb.Memo) {
+func (s *APIV1Service) dispatchMemoUpdatedSideEffects(
+	ctx context.Context,
+	memoMessage *v1pb.Memo,
+) {
 	if err := s.DispatchMemoUpdatedWebhook(ctx, memoMessage); err != nil {
 		slog.Warn("Failed to dispatch memo updated webhook", slog.Any("err", err))
 	}
 
-	visibility := memo.Visibility
-	if parentMemo != nil {
-		visibility = parentMemo.Visibility
-	}
-	s.SSEHub.Broadcast(&SSEEvent{
-		Type:       SSEEventMemoUpdated,
-		Name:       memoMessage.Name,
-		Parent:     memoMessage.GetParent(),
-		Visibility: visibility,
-		CreatorID:  resolveSSECreatorID(memo, parentMemo),
-	})
+	s.SSEHub.publishMemoChanged()
 }

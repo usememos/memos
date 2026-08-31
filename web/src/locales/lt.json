@@ -670,7 +670,6 @@
       "path": "Saugojimo kelias",
       "path-description": "Galite naudoti tuos pačius dinaminius kintamuosius iš vietinės saugyklos, pvz., {filename}",
       "path-placeholder": "paprotys / kelias",
-      "presign-placeholder": "Išankstinis ženklas URL, neprivalomas",
       "region": "Regionas",
       "region-description": "Regionas, kurio reikalauja teikėjas. Kai kurioms suderinamoms paslaugoms pakanka bet kokios teikėjo priimtos regiono eilutės.",
       "region-placeholder": "Regiono pavadinimas",

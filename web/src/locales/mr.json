@@ -378,7 +378,6 @@
       "path": "स्टोरेज पथ",
       "path-description": "तुम्ही स्थानिक स्टोरेजमधून समान डायनॅमिक व्हेरिएबल्स वापरू शकता, जसे की {filename}",
       "path-placeholder": "सानुकूल/पथ",
-      "presign-placeholder": "पूर्व-स्वाक्षरी URL, पर्यायी",
       "region": "प्रदेश",
       "region-placeholder": "प्रदेशाचे नाव",
       "s3-compatible-url": "S3 सुसंगत URL",

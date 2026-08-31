@@ -62,14 +62,14 @@ func (s *APIV1Service) ListAllUserStats(ctx context.Context, request *v1pb.ListA
 		RowStatus:       &rowStatus,
 	}
 
-	currentUser, err := s.fetchCurrentUser(ctx)
+	accessScope, currentUser, err := s.resolveMemoAccessScope(ctx)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
+		return nil, status.Errorf(codes.Internal, "%v", err)
 	}
 
 	if request.Filter != "" {
-		if err := s.validateFilter(ctx, request.Filter); err != nil {
-			return nil, status.Errorf(codes.InvalidArgument, "invalid filter: %v", err)
+		if err := s.validateMemoFilterForUser(ctx, request.Filter, currentUser); err != nil {
+			return nil, err
 		}
 		memoFind.Filters = append(memoFind.Filters, request.Filter)
 	}
@@ -80,16 +80,8 @@ func (s *APIV1Service) ListAllUserStats(ctx context.Context, request *v1pb.ListA
 			return &v1pb.ListAllUserStatsResponse{}, nil
 		}
 		memoFind.CreatorID = &currentUser.ID
-	} else if currentUser == nil {
-		memoFind.VisibilityList = []store.Visibility{store.Public}
-	} else {
-		if memoFind.CreatorID == nil {
-			filter := fmt.Sprintf(`creator_id == %d || visibility in ["PUBLIC", "PROTECTED"]`, currentUser.ID)
-			memoFind.Filters = append(memoFind.Filters, filter)
-		} else if *memoFind.CreatorID != currentUser.ID {
-			memoFind.VisibilityList = []store.Visibility{store.Public, store.Protected}
-		}
 	}
+	memoFind.Access = accessScope
 
 	userMemoStatMap := make(map[int32]*v1pb.UserStats)
 	pinnedMemoUIDsByUserID := make(map[int32][]string)
@@ -198,9 +190,9 @@ func (s *APIV1Service) GetUserStats(ctx context.Context, request *v1pb.GetUserSt
 	}
 	userID := user.ID
 
-	currentUser, err := s.fetchCurrentUser(ctx)
+	accessScope, currentUser, err := s.resolveMemoAccessScope(ctx)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
+		return nil, status.Errorf(codes.Internal, "%v", err)
 	}
 
 	normalStatus := store.Normal
@@ -212,11 +204,14 @@ func (s *APIV1Service) GetUserStats(ctx context.Context, request *v1pb.GetUserSt
 		RowStatus:       &normalStatus,
 	}
 
-	if currentUser == nil {
-		memoFind.VisibilityList = []store.Visibility{store.Public}
-	} else if currentUser.ID != userID {
-		memoFind.VisibilityList = []store.Visibility{store.Public, store.Protected}
+	if request.Filter != "" {
+		if err := s.validateMemoFilterForUser(ctx, request.Filter, currentUser); err != nil {
+			return nil, err
+		}
+		memoFind.Filters = append(memoFind.Filters, request.Filter)
 	}
+
+	memoFind.Access = accessScope
 
 	createdTimestamps := []*timestamppb.Timestamp{}
 	updatedTimestamps := []*timestamppb.Timestamp{}

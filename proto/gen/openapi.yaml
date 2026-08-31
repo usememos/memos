@@ -61,7 +61,11 @@ paths:
                     Optional. Filter to apply to the list results.
                      Example: "mime_type==\"image/png\"" or "filename.contains(\"test\")"
                      Supported operators: =, !=, <, <=, >, >=, : (contains), in
-                     Supported fields: filename, mime_type, create_time, memo
+                     Supported fields: filename, mime_type, create_time, memo_id, space.
+                     `space` only supports a non-negated `==` comparison with a Space resource
+                     name or null.
+                     `space` is the linked memo's space resource name, or null when the
+                     attachment is unlinked or its linked memo has no space.
                   schema:
                     type: string
                 - name: orderBy
@@ -611,7 +615,7 @@ paths:
         get:
             tags:
                 - MemoService
-            description: ListMemos lists memos with pagination and filter.
+            description: ListMemos lists readable non-comment memos with pagination and filter.
             operationId: MemoService_ListMemos
             parameters:
                 - name: pageSize
@@ -662,7 +666,8 @@ paths:
                      Available fields:
                        content (string), creator (string, e.g. "users/1"),
                        created_ts / updated_ts (timestamp), pinned (bool),
-                       visibility (string: PRIVATE | PROTECTED | PUBLIC),
+                       visibility (string: PRIVATE | PROTECTED | PUBLIC | SPACE),
+                       space (string resource name or null when the memo has no space),
                        tags (list<string>; match with `"work" in tags`, not `tag == "work"`),
                        has_task_list / has_link / has_code / has_incomplete_tasks (bool),
                        has_location (bool; true when the memo has a location attached).
@@ -670,6 +675,7 @@ paths:
                      the create_time / update_time names used by order_by.
                      Examples:
                        pinned == true && visibility == "PUBLIC"
+                       space == "spaces/team" or space == null
                        tags.exists(t, t == "urgent")
                        content.contains("roadmap") && created_ts > now - duration("168h")
                   schema:
@@ -697,7 +703,8 @@ paths:
                 - MemoService
             description: |-
                 CreateMemo creates a memo. The request body is a Memo; set its content
-                 (Markdown) and visibility (PRIVATE | PROTECTED | PUBLIC, default PRIVATE).
+                 (Markdown) and visibility (PRIVATE | PROTECTED | PUBLIC | SPACE,
+                 default PRIVATE).
                  The memo is owned by the authenticated user; requires authentication.
             operationId: MemoService_CreateMemo
             parameters:
@@ -807,7 +814,9 @@ paths:
         delete:
             tags:
                 - MemoService
-            description: DeleteMemo deletes a memo.
+            description: |-
+                DeleteMemo deletes only the named memo and its owned resources. It removes
+                 incident relations but never deletes another memo.
             operationId: MemoService_DeleteMemo
             parameters:
                 - name: memo
@@ -981,7 +990,10 @@ paths:
         post:
             tags:
                 - MemoService
-            description: CreateMemoComment creates a comment for a memo.
+            description: |-
+                CreateMemoComment atomically creates an independent memo plus one immutable
+                 COMMENT context relation to the named memo. The new memo keeps its own
+                 placement, visibility, authorship, and lifecycle.
             operationId: MemoService_CreateMemoComment
             parameters:
                 - name: memo
@@ -1054,9 +1066,7 @@ paths:
         post:
             tags:
                 - MemoService
-            description: |-
-                UpsertMemoReaction adds or updates the authenticated user's reaction on a
-                 memo. The reaction's content_id is the memo's resource name (memos/{memo}).
+            description: UpsertMemoReaction adds or updates the authenticated user's reaction on a memo.
             operationId: MemoService_UpsertMemoReaction
             parameters:
                 - name: memo
@@ -1154,9 +1164,9 @@ paths:
             tags:
                 - MemoService
             description: |-
-                SetMemoRelations replaces the full set of relations on a memo with the
-                 provided list (not an append). Pass the complete desired set; an empty list
-                 clears all relations. Idempotent.
+                SetMemoRelations replaces the full set of mutable REFERENCE relations on a
+                 memo. COMMENT relations are immutable creation context and are rejected by
+                 this RPC. An empty list clears references without changing COMMENT.
             operationId: MemoService_SetMemoRelations
             parameters:
                 - name: memo
@@ -1289,6 +1299,502 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Memo'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/spaces:
+        get:
+            tags:
+                - SpaceService
+            description: ListSpaces lists spaces of which the authenticated caller is a member.
+            operationId: SpaceService_ListSpaces
+            parameters:
+                - name: pageSize
+                  in: query
+                  description: Optional. The maximum number of spaces to return.
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageToken
+                  in: query
+                  description: Optional. A token from a previous ListSpaces response.
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListSpacesResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - SpaceService
+            description: |-
+                CreateSpace creates a space and makes the authenticated caller its first
+                 administrator.
+            operationId: SpaceService_CreateSpace
+            parameters:
+                - name: spaceId
+                  in: query
+                  description: |-
+                    Optional. The space UID to use for this space.
+                     If empty, a canonical UUID v4 will be generated.
+                     Format: ^[a-zA-Z0-9]([a-zA-Z0-9-]{0,34}[a-zA-Z0-9])?$
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Space'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Space'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/spaces/{space}:
+        get:
+            tags:
+                - SpaceService
+            description: GetSpace gets a space of which the authenticated caller is a member.
+            operationId: SpaceService_GetSpace
+            parameters:
+                - name: space
+                  in: path
+                  description: The space id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Space'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        delete:
+            tags:
+                - SpaceService
+            description: |-
+                DeleteSpace permanently deletes a space and every memo currently placed
+                 in it. It never follows memo relations to other memos.
+            operationId: SpaceService_DeleteSpace
+            parameters:
+                - name: space
+                  in: path
+                  description: The space id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        patch:
+            tags:
+                - SpaceService
+            description: UpdateSpace updates space metadata.
+            operationId: SpaceService_UpdateSpace
+            parameters:
+                - name: space
+                  in: path
+                  description: The space id.
+                  required: true
+                  schema:
+                    type: string
+                - name: updateMask
+                  in: query
+                  description: 'Required. The fields to update: title or description.'
+                  schema:
+                    type: string
+                    format: field-mask
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Space'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Space'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/spaces/{space}/invitations:
+        get:
+            tags:
+                - SpaceService
+            description: ListSpaceInvitations lists the pending invitations for a space.
+            operationId: SpaceService_ListSpaceInvitations
+            parameters:
+                - name: space
+                  in: path
+                  description: The space id.
+                  required: true
+                  schema:
+                    type: string
+                - name: pageSize
+                  in: query
+                  description: Optional. The maximum number of invitations to return.
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageToken
+                  in: query
+                  description: Optional. A token from a previous ListSpaceInvitations response.
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListSpaceInvitationsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - SpaceService
+            description: CreateSpaceInvitation invites an existing active user to a space.
+            operationId: SpaceService_CreateSpaceInvitation
+            parameters:
+                - name: space
+                  in: path
+                  description: The space id.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SpaceInvitation'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SpaceInvitation'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/spaces/{space}/invitations/{invitation}:
+        get:
+            tags:
+                - SpaceService
+            description: GetSpaceInvitation gets one pending invitation.
+            operationId: SpaceService_GetSpaceInvitation
+            parameters:
+                - name: space
+                  in: path
+                  description: The space id.
+                  required: true
+                  schema:
+                    type: string
+                - name: invitation
+                  in: path
+                  description: The invitation id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SpaceInvitation'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        delete:
+            tags:
+                - SpaceService
+            description: DeleteSpaceInvitation revokes a pending invitation.
+            operationId: SpaceService_DeleteSpaceInvitation
+            parameters:
+                - name: space
+                  in: path
+                  description: The space id.
+                  required: true
+                  schema:
+                    type: string
+                - name: invitation
+                  in: path
+                  description: The invitation id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/spaces/{space}/invitations/{invitation}:accept:
+        post:
+            tags:
+                - SpaceService
+            description: AcceptSpaceInvitation accepts a pending invitation and creates a membership.
+            operationId: SpaceService_AcceptSpaceInvitation
+            parameters:
+                - name: space
+                  in: path
+                  description: The space id.
+                  required: true
+                  schema:
+                    type: string
+                - name: invitation
+                  in: path
+                  description: The invitation id.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/AcceptSpaceInvitationRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SpaceMember'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/spaces/{space}/invitations/{invitation}:decline:
+        post:
+            tags:
+                - SpaceService
+            description: DeclineSpaceInvitation declines a pending invitation.
+            operationId: SpaceService_DeclineSpaceInvitation
+            parameters:
+                - name: space
+                  in: path
+                  description: The space id.
+                  required: true
+                  schema:
+                    type: string
+                - name: invitation
+                  in: path
+                  description: The invitation id.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DeclineSpaceInvitationRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/spaces/{space}/members:
+        get:
+            tags:
+                - SpaceService
+            description: ListSpaceMembers lists the members of a space.
+            operationId: SpaceService_ListSpaceMembers
+            parameters:
+                - name: space
+                  in: path
+                  description: The space id.
+                  required: true
+                  schema:
+                    type: string
+                - name: pageSize
+                  in: query
+                  description: Optional. The maximum number of members to return.
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageToken
+                  in: query
+                  description: Optional. A token from a previous ListSpaceMembers response.
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListSpaceMembersResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/spaces/{space}/members/{member}:
+        get:
+            tags:
+                - SpaceService
+            description: GetSpaceMember gets one membership in a space.
+            operationId: SpaceService_GetSpaceMember
+            parameters:
+                - name: space
+                  in: path
+                  description: The space id.
+                  required: true
+                  schema:
+                    type: string
+                - name: member
+                  in: path
+                  description: The member id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SpaceMember'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        delete:
+            tags:
+                - SpaceService
+            description: |-
+                DeleteSpaceMember removes a member. A member may delete their own
+                 membership to leave the space.
+            operationId: SpaceService_DeleteSpaceMember
+            parameters:
+                - name: space
+                  in: path
+                  description: The space id.
+                  required: true
+                  schema:
+                    type: string
+                - name: member
+                  in: path
+                  description: The member id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        patch:
+            tags:
+                - SpaceService
+            description: UpdateSpaceMember changes a member's space role.
+            operationId: SpaceService_UpdateSpaceMember
+            parameters:
+                - name: space
+                  in: path
+                  description: The space id.
+                  required: true
+                  schema:
+                    type: string
+                - name: member
+                  in: path
+                  description: The member id.
+                  required: true
+                  schema:
+                    type: string
+                - name: updateMask
+                  in: query
+                  description: Required. Only role is supported.
+                  schema:
+                    type: string
+                    format: field-mask
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SpaceMember'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SpaceMember'
                 default:
                     description: Default error response
                     content:
@@ -1942,6 +2448,43 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/v1/users/{user}/spaceInvitations:
+        get:
+            tags:
+                - SpaceService
+            description: ListUserSpaceInvitations lists the authenticated user's pending space invitations.
+            operationId: SpaceService_ListUserSpaceInvitations
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+                - name: pageSize
+                  in: query
+                  description: Optional. The maximum number of invitations to return.
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageToken
+                  in: query
+                  description: Optional. A token from a previous ListUserSpaceInvitations response.
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListUserSpaceInvitationsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/users/{user}/views:
         get:
             tags:
@@ -2287,6 +2830,13 @@ paths:
                   required: true
                   schema:
                     type: string
+                - name: filter
+                  in: query
+                  description: |-
+                    Optional. CEL expression selecting the readable non-comment memos to
+                     include. Supports the same fields as ListMemos, including `space`.
+                  schema:
+                    type: string
             responses:
                 "200":
                     description: OK
@@ -2364,6 +2914,14 @@ paths:
                                 $ref: '#/components/schemas/Status'
 components:
     schemas:
+        AcceptSpaceInvitationRequest:
+            required:
+                - name
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: 'Required. Format: spaces/{space}/invitations/{username}.'
         Attachment:
             required:
                 - filename
@@ -2685,6 +3243,14 @@ components:
                     description: |-
                         The actual token value - only returned on creation.
                          This is the only time the token value will be visible.
+        DeclineSpaceInvitationRequest:
+            required:
+                - name
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: 'Required. Format: spaces/{space}/invitations/{username}.'
         FieldMapping:
             type: object
             properties:
@@ -2790,6 +3356,14 @@ components:
                          setup (creating the first admin account). Unlike a null admin, this stays
                          false once any user exists, so an instance that has lost its admins is not
                          mistaken for a fresh install.
+                accessMode:
+                    enum:
+                        - INSTANCE_ACCESS_MODE_UNSPECIFIED
+                        - INSTANCE_ACCESS_MODE_PRIVATE
+                        - INSTANCE_ACCESS_MODE_PUBLIC
+                    type: string
+                    description: Access mode controls whether unauthenticated users may access instance content.
+                    format: enum
             description: Instance profile message containing basic instance information.
         InstanceSetting:
             type: object
@@ -2811,6 +3385,8 @@ components:
                     $ref: '#/components/schemas/InstanceSetting_NotificationSetting'
                 aiSetting:
                     $ref: '#/components/schemas/InstanceSetting_AISetting'
+                accessSetting:
+                    $ref: '#/components/schemas/InstanceSetting_AccessSetting'
             description: An instance setting resource.
         InstanceSetting_AIProviderConfig:
             type: object
@@ -2856,6 +3432,17 @@ components:
                         transcription is the speech-to-text feature configuration.
                          When unset or transcription.provider_id is empty, transcription is disabled.
             description: AI provider configuration settings.
+        InstanceSetting_AccessSetting:
+            type: object
+            properties:
+                accessMode:
+                    enum:
+                        - INSTANCE_ACCESS_MODE_UNSPECIFIED
+                        - INSTANCE_ACCESS_MODE_PRIVATE
+                        - INSTANCE_ACCESS_MODE_PUBLIC
+                    type: string
+                    format: enum
+            description: Access policy configuration for the instance.
         InstanceSetting_GeneralSetting:
             type: object
             properties:
@@ -3194,6 +3781,33 @@ components:
                 nextPageToken:
                     type: string
                     description: A token for the next page of results.
+        ListSpaceInvitationsResponse:
+            type: object
+            properties:
+                spaceInvitations:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/SpaceInvitation'
+                nextPageToken:
+                    type: string
+        ListSpaceMembersResponse:
+            type: object
+            properties:
+                spaceMembers:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/SpaceMember'
+                nextPageToken:
+                    type: string
+        ListSpacesResponse:
+            type: object
+            properties:
+                spaces:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Space'
+                nextPageToken:
+                    type: string
         ListUserNotificationsResponse:
             type: object
             properties:
@@ -3217,6 +3831,15 @@ components:
                         A token that can be sent as `page_token` to retrieve the next page.
                          If this field is omitted, there are no subsequent pages.
             description: Response message for ListUserSettings method.
+        ListUserSpaceInvitationsResponse:
+            type: object
+            properties:
+                spaceInvitations:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/SpaceInvitation'
+                nextPageToken:
+                    type: string
         ListUserWebhooksResponse:
             type: object
             properties:
@@ -3331,11 +3954,13 @@ components:
                         - PRIVATE
                         - PROTECTED
                         - PUBLIC
+                        - SPACE
                     type: string
                     description: |-
                         The visibility of the memo.
-                         One of PRIVATE (creator only), PROTECTED (signed-in users), or
-                         PUBLIC (anyone). Defaults to PRIVATE on creation when unspecified.
+                         One of PRIVATE (creator only), PROTECTED (signed-in users), PUBLIC
+                         (anonymous-eligible), or SPACE (active space members). Defaults to
+                         PRIVATE on creation when unspecified.
                     format: enum
                 tags:
                     readOnly: true
@@ -3371,7 +3996,8 @@ components:
                     readOnly: true
                     type: string
                     description: |-
-                        Output only. The name of the parent memo.
+                        Output only. The readable context memo of this COMMENT relation, if any.
+                         This is omitted unless the caller may independently read both memos.
                          Format: memos/{memo}
                 snippet:
                     readOnly: true
@@ -3381,6 +4007,11 @@ components:
                     allOf:
                         - $ref: '#/components/schemas/Location'
                     description: Optional. The location of the memo.
+                space:
+                    type: string
+                    description: |-
+                        Optional. The space in which this memo is placed. Format: spaces/{space}.
+                         Every memo, including a comment, owns its placement independently.
         MemoRelation:
             required:
                 - memo
@@ -3599,7 +4230,6 @@ components:
                     format: double
         Reaction:
             required:
-                - contentId
                 - reactionType
             type: object
             properties:
@@ -3615,12 +4245,6 @@ components:
                     description: |-
                         The resource name of the creator.
                          Format: users/{user}
-                contentId:
-                    type: string
-                    description: |-
-                        The resource name of the content.
-                         For memo reactions, this should be the memo's resource name.
-                         Format: memos/{memo}
                 reactionType:
                     type: string
                     description: "Required. The type of reaction (e.g., \"\U0001F44D\", \"❤️\", \"\U0001F604\")."
@@ -3629,6 +4253,7 @@ components:
                     type: string
                     description: Output only. The creation timestamp.
                     format: date-time
+            description: Reaction is a reaction attached to a memo.
         RefreshTokenRequest:
             type: object
             properties: {}
@@ -3673,7 +4298,7 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/MemoRelation'
-                    description: Required. The relations to set for the memo.
+                    description: Required. The REFERENCE relations to set for the memo. COMMENT is invalid.
         SignInRequest:
             type: object
             properties:
@@ -3740,6 +4365,88 @@ components:
                         When the access token expires.
                          Client should call RefreshToken before this time.
                     format: date-time
+        Space:
+            required:
+                - title
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: 'The resource name of the space. Format: spaces/{space}.'
+                title:
+                    type: string
+                    description: Required. The human-readable title.
+                description:
+                    type: string
+                    description: Optional. A description of the space.
+                currentUserRole:
+                    readOnly: true
+                    enum:
+                        - ROLE_UNSPECIFIED
+                        - ADMIN
+                        - USER
+                    type: string
+                    description: |-
+                        Output only. The authenticated user's membership role in this space.
+                         ROLE_UNSPECIFIED when this Space is exposed as metadata-only.
+                    format: enum
+                memberCount:
+                    readOnly: true
+                    type: integer
+                    description: |-
+                        Output only. The number of accepted members in this space. Pending
+                         invitations are excluded. Zero when this Space is exposed as metadata-only.
+                    format: int32
+            description: Space is a collaboration boundary for placed memos.
+        SpaceInvitation:
+            required:
+                - invitee
+                - role
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: 'The resource name. Format: spaces/{space}/invitations/{username}.'
+                invitee:
+                    type: string
+                    description: 'Required. The invited user. Format: users/{username}.'
+                role:
+                    enum:
+                        - ROLE_UNSPECIFIED
+                        - ADMIN
+                        - USER
+                    type: string
+                    description: Required. The role the user will receive after accepting the invitation.
+                    format: enum
+                space:
+                    readOnly: true
+                    allOf:
+                        - $ref: '#/components/schemas/Space'
+                    description: |-
+                        Output only. The Space the user is invited to. This lets an invitee
+                         understand the invitation without granting membership-based GetSpace access.
+            description: SpaceInvitation is a pending invitation for an existing user to join a space.
+        SpaceMember:
+            required:
+                - user
+                - role
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: 'The resource name. Format: spaces/{space}/members/{username}.'
+                user:
+                    type: string
+                    description: 'Required. The member user. Format: users/{username}.'
+                role:
+                    enum:
+                        - ROLE_UNSPECIFIED
+                        - ADMIN
+                        - USER
+                    type: string
+                    description: Required. The member's role within this space.
+                    format: enum
+            description: SpaceMember is a user's membership and governance role in a space.
         Status:
             type: object
             properties:
@@ -4185,4 +4892,6 @@ tags:
     - name: InstanceService
     - name: MemoService
     - name: MemoViewService
+    - name: SpaceService
+      description: SpaceService manages collaborative spaces and their memberships.
     - name: UserService

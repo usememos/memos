@@ -6,8 +6,8 @@ import { replaceFiltersByFactor, stringifyFilters, useMemoFilterContext } from "
 import { useLocalStorage, useOverflowTitle } from "@/hooks";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
-import TagTree from "../TagTree";
-import { SIDEBAR_ROW_CLASSES, SIDEBAR_ROW_COUNT_CLASSES, SIDEBAR_ROW_ICON_CLASSES, sidebarRowStateClasses } from "./SidebarRow";
+import TagTree, { tagRowAriaLabel } from "../TagTree";
+import { SIDEBAR_ROW_CLASSES, SIDEBAR_ROW_COUNT_RAIL_CLASSES, SidebarRowIconSlot, sidebarRowStateClasses } from "./SidebarRow";
 import SidebarSection, {
   SIDEBAR_SECTION_ACTION_ACTIVE_CLASSES,
   SIDEBAR_SECTION_ACTION_BUTTON_CLASSES,
@@ -27,7 +27,7 @@ const TagPath = forwardRef<HTMLSpanElement, { tag: string }>(({ tag }, ref) => {
   const segments = tag.split("/");
 
   return (
-    <span ref={ref} className="min-w-0 flex-1 truncate text-left">
+    <span ref={ref} className="min-w-0 flex-1 truncate text-start">
       {segments.map((segment, index) => (
         <span key={`${segment}-${index}`}>
           {index > 0 && <span className="px-0.5 text-muted-foreground/40">/</span>}
@@ -43,23 +43,27 @@ interface FlatTagRowProps {
   tag: string;
   amount: number;
   active: boolean;
+  /** Computed by the parent, which already holds the translator — rows stay subscription-free. */
+  ariaLabel: string;
   onClick: () => void;
 }
 
-const FlatTagRow = ({ tag, amount, active, onClick }: FlatTagRowProps) => {
+const FlatTagRow = ({ tag, amount, active, ariaLabel, onClick }: FlatTagRowProps) => {
   const { ref, title } = useOverflowTitle<HTMLSpanElement>(`#${tag}`);
 
   return (
     <button
       type="button"
+      aria-label={ariaLabel}
       aria-pressed={active || undefined}
       title={title}
       className={cn(SIDEBAR_ROW_CLASSES, sidebarRowStateClasses(active))}
       onClick={onClick}
     >
-      <HashIcon aria-hidden="true" className={SIDEBAR_ROW_ICON_CLASSES} strokeWidth={1.8} />
+      {/* Same leading slot as the tree, so the # marks hold their line when switching modes. */}
+      <SidebarRowIconSlot icon={HashIcon} />
       <TagPath ref={ref} tag={tag} />
-      <span className={SIDEBAR_ROW_COUNT_CLASSES}>{amount}</span>
+      <span className={SIDEBAR_ROW_COUNT_RAIL_CLASSES}>{amount}</span>
     </button>
   );
 };
@@ -128,7 +132,14 @@ const TagsSection = ({ tagCount, onSelect, navigationTarget, scope }: Props) => 
       ) : (
         <>
           {tags.map(([tag, amount]) => (
-            <FlatTagRow key={tag} tag={tag} amount={amount} active={activeTags.has(tag)} onClick={() => handleTagClick(tag)} />
+            <FlatTagRow
+              key={tag}
+              tag={tag}
+              amount={amount}
+              active={activeTags.has(tag)}
+              ariaLabel={tagRowAriaLabel(t, tag, amount)}
+              onClick={() => handleTagClick(tag)}
+            />
           ))}
         </>
       )}

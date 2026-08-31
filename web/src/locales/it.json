@@ -540,7 +540,6 @@
       "path": "Percorso",
       "path-description": "Puoi usare le stesse variabili dinamiche dell'archiviazione locale, come {filename}",
       "path-placeholder": "custom/path",
-      "presign-placeholder": "URL pre-firmato, opzionale",
       "region": "Regione",
       "region-placeholder": "Nome regione",
       "s3-compatible-url": "URL compatibile S3",

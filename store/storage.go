@@ -18,6 +18,8 @@ const (
 	localStorageID    = "local"
 )
 
+type storageDriverCacheKey [sha256.Size]byte
+
 // NormalizeInstanceStorageSetting populates the named storage model from legacy
 // fields and keeps the legacy fields synchronized for older clients.
 func NormalizeInstanceStorageSetting(setting *storepb.InstanceStorageSetting) {
@@ -247,9 +249,9 @@ func ResolveStorage(
 }
 
 // ResolveStorageDriver resolves the configured storage referenced by an attachment
-// and returns its driver. legacyS3Config supports attachments written before
-// storage IDs were introduced.
-func ResolveStorageDriver(
+// and returns its driver, reusing the Store cache for named storage. legacyS3Config
+// supports attachments written before storage IDs were introduced.
+func (s *Store) ResolveStorageDriver(
 	ctx context.Context,
 	setting *storepb.InstanceStorageSetting,
 	storageID string,
@@ -259,7 +261,69 @@ func ResolveStorageDriver(
 	if err != nil {
 		return nil, err
 	}
-	return storage.NewDriver(ctx, resolvedStorage)
+	return s.StorageDriver(ctx, resolvedStorage)
+}
+
+// StorageDriver returns the driver for a resolved storage, reusing cached
+// clients so request paths do not rebuild an S3 client (config load, HTTP
+// transport) per call. ID-less legacy storages are not cached.
+func (s *Store) StorageDriver(ctx context.Context, resolvedStorage *storepb.Storage) (storage.Driver, error) {
+	if resolvedStorage.GetId() == "" {
+		return storage.NewDriver(ctx, resolvedStorage)
+	}
+	cacheKey, err := newStorageDriverCacheKey(resolvedStorage)
+	if err != nil {
+		return nil, err
+	}
+
+	s.storageDriverMu.Lock()
+	cacheGeneration := s.storageDriverGeneration
+	if driver, ok := s.storageDriverCache[cacheKey]; ok {
+		s.storageDriverMu.Unlock()
+		return driver, nil
+	}
+	s.storageDriverMu.Unlock()
+
+	driver, err := storage.NewDriver(ctx, resolvedStorage)
+	if err != nil {
+		return nil, err
+	}
+
+	s.storageDriverMu.Lock()
+	defer s.storageDriverMu.Unlock()
+	if cachedDriver, ok := s.storageDriverCache[cacheKey]; ok {
+		return cachedDriver, nil
+	}
+	// A setting change while the driver was being constructed invalidates this
+	// cache miss. The caller can still use the resolved driver for this request,
+	// but a later request must resolve and cache the current configuration.
+	if cacheGeneration != s.storageDriverGeneration {
+		return driver, nil
+	}
+	if s.storageDriverCache == nil {
+		s.storageDriverCache = map[storageDriverCacheKey]storage.Driver{}
+	}
+	s.storageDriverCache[cacheKey] = driver
+	return driver, nil
+}
+
+func newStorageDriverCacheKey(resolvedStorage *storepb.Storage) (storageDriverCacheKey, error) {
+	marshalOptions := proto.MarshalOptions{Deterministic: true}
+	data, err := marshalOptions.Marshal(resolvedStorage)
+	if err != nil {
+		return storageDriverCacheKey{}, errors.Wrap(err, "failed to fingerprint storage configuration")
+	}
+	return storageDriverCacheKey(sha256.Sum256(data)), nil
+}
+
+// resetStorageDriverCache drops cached storage drivers; call whenever the
+// STORAGE setting may have changed (credentials or transport options can
+// rotate under an unchanged storage ID).
+func (s *Store) resetStorageDriverCache() {
+	s.storageDriverMu.Lock()
+	defer s.storageDriverMu.Unlock()
+	s.storageDriverGeneration++
+	s.storageDriverCache = nil
 }
 
 // FindStorage returns the configured storage with the given stable identifier.

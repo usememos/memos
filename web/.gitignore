@@ -1,7 +1,7 @@
-node_modules
-.pnpm-store
-.DS_Store
-dist
-dist-ssr
+# Generated output
+node_modules/
+coverage/
+/src/types/proto/store/
+
+# Machine-local overrides (Vite convention: .env.local, .env.*.local, ...)
 *.local
-src/types/proto/store

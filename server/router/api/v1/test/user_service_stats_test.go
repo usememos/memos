@@ -6,6 +6,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
@@ -261,4 +263,204 @@ func TestListAllUserStats_FilterExcludesPrivateMemos(t *testing.T) {
 	require.Len(t, filteredResp.Stats, 1)
 	require.Equal(t, int32(1), filteredResp.Stats[0].TagCount["public"])
 	require.NotContains(t, filteredResp.Stats[0].TagCount, "private")
+}
+
+func TestUserStatsUseMemoLocalAccess(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	owner, err := ts.CreateRegularUser(ctx, "stats-access-owner")
+	require.NoError(t, err)
+	member, err := ts.CreateRegularUser(ctx, "stats-access-member")
+	require.NoError(t, err)
+	applicationAdmin, err := ts.CreateHostUser(ctx, "stats-access-app-admin")
+	require.NoError(t, err)
+
+	space, err := ts.Store.CreateSpace(ctx, &store.Space{
+		UID:   "stats-access-space",
+		Title: "Stats access",
+	}, owner.ID)
+	require.NoError(t, err)
+	_, err = ts.InviteAndAcceptSpaceMember(ctx, &store.SpaceMember{
+		SpaceID: space.ID,
+		UserID:  member.ID,
+		Role:    store.SpaceMemberRoleUser,
+	}, owner.ID)
+	require.NoError(t, err)
+
+	fixtures := []struct {
+		uid        string
+		visibility store.Visibility
+		spaceID    *int32
+		tag        string
+	}{
+		{uid: "stats-access-public", visibility: store.Public, tag: "public"},
+		{uid: "stats-access-protected", visibility: store.Protected, tag: "protected"},
+		{uid: "stats-access-private", visibility: store.Private, tag: "private"},
+		{uid: "stats-access-members", visibility: store.SpaceAudience, spaceID: &space.ID, tag: "space"},
+	}
+	for _, fixture := range fixtures {
+		_, err := ts.Store.CreateMemo(ctx, &store.Memo{
+			UID:        fixture.uid,
+			CreatorID:  owner.ID,
+			Content:    fixture.tag,
+			Visibility: fixture.visibility,
+			SpaceID:    fixture.spaceID,
+			Payload:    &storepb.MemoPayload{Tags: []string{fixture.tag}},
+		})
+		require.NoError(t, err)
+	}
+
+	ownerName := fmt.Sprintf("users/%s", owner.Username)
+	tests := []struct {
+		name       string
+		requestCtx context.Context
+		wantTags   []string
+		denyTags   []string
+	}{
+		{
+			name:       "owner",
+			requestCtx: ts.CreateUserContext(ctx, owner.ID),
+			wantTags:   []string{"public", "protected", "private", "space"},
+		},
+		{
+			name:       "space member",
+			requestCtx: ts.CreateUserContext(ctx, member.ID),
+			wantTags:   []string{"public", "protected", "space"},
+			denyTags:   []string{"private"},
+		},
+		{
+			name:       "nonmember application admin",
+			requestCtx: ts.CreateUserContext(ctx, applicationAdmin.ID),
+			wantTags:   []string{"public", "protected"},
+			denyTags:   []string{"private", "space"},
+		},
+		{
+			name:       "anonymous",
+			requestCtx: ctx,
+			wantTags:   []string{"public"},
+			denyTags:   []string{"protected", "private", "space"},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			response, err := ts.Service.GetUserStats(test.requestCtx, &v1pb.GetUserStatsRequest{Name: ownerName})
+			require.NoError(t, err)
+			require.Equal(t, int32(len(test.wantTags)), response.TotalMemoCount)
+			for _, tag := range test.wantTags {
+				require.Equal(t, int32(1), response.TagCount[tag], "expected tag %q to be visible", tag)
+			}
+			for _, tag := range test.denyTags {
+				require.NotContains(t, response.TagCount, tag)
+			}
+		})
+	}
+
+	memberStats, err := ts.Service.ListAllUserStats(ts.CreateUserContext(ctx, member.ID), &v1pb.ListAllUserStatsRequest{})
+	require.NoError(t, err)
+	require.Len(t, memberStats.Stats, 1)
+	require.Equal(t, int32(3), memberStats.Stats[0].TotalMemoCount)
+	require.Contains(t, memberStats.Stats[0].TagCount, "space")
+	require.NotContains(t, memberStats.Stats[0].TagCount, "private")
+}
+
+func TestUserStatsSpaceFilter(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	owner, err := ts.CreateRegularUser(ctx, "stats-scope-owner")
+	require.NoError(t, err)
+	member, err := ts.CreateRegularUser(ctx, "stats-scope-member")
+	require.NoError(t, err)
+	outsider, err := ts.CreateRegularUser(ctx, "stats-scope-outsider")
+	require.NoError(t, err)
+
+	spaceA, err := ts.Store.CreateSpace(ctx, &store.Space{UID: "stats-scope-a", Title: "A"}, owner.ID)
+	require.NoError(t, err)
+	_, err = ts.InviteAndAcceptSpaceMember(ctx, &store.SpaceMember{
+		SpaceID: spaceA.ID,
+		UserID:  member.ID,
+		Role:    store.SpaceMemberRoleUser,
+	}, owner.ID)
+	require.NoError(t, err)
+	spaceB, err := ts.Store.CreateSpace(ctx, &store.Space{UID: "stats-scope-b", Title: "B"}, owner.ID)
+	require.NoError(t, err)
+
+	spaceAName := "spaces/" + spaceA.UID
+	fixtures := []struct {
+		uid        string
+		creatorID  int32
+		visibility store.Visibility
+		spaceID    *int32
+		tag        string
+	}{
+		{uid: "stats-scope-unassigned", creatorID: owner.ID, visibility: store.Public, tag: "unassigned"},
+		{uid: "stats-scope-a-members", creatorID: owner.ID, visibility: store.SpaceAudience, spaceID: &spaceA.ID, tag: "a-members"},
+		{uid: "stats-scope-a-private", creatorID: owner.ID, visibility: store.Private, spaceID: &spaceA.ID, tag: "a-private"},
+		{uid: "stats-scope-a-member-private", creatorID: member.ID, visibility: store.Private, spaceID: &spaceA.ID, tag: "member-private"},
+		{uid: "stats-scope-b-public", creatorID: owner.ID, visibility: store.Public, spaceID: &spaceB.ID, tag: "b-public"},
+	}
+	for _, fixture := range fixtures {
+		_, err := ts.Store.CreateMemo(ctx, &store.Memo{
+			UID:        fixture.uid,
+			CreatorID:  fixture.creatorID,
+			Content:    fixture.tag,
+			Visibility: fixture.visibility,
+			SpaceID:    fixture.spaceID,
+			Payload:    &storepb.MemoPayload{Tags: []string{fixture.tag}},
+		})
+		require.NoError(t, err)
+	}
+
+	ownerName := fmt.Sprintf("users/%s", owner.Username)
+	ownerCtx := ts.CreateUserContext(ctx, owner.ID)
+	ownerSpaceStats, err := ts.Service.GetUserStats(ownerCtx, &v1pb.GetUserStatsRequest{
+		Name:   ownerName,
+		Filter: fmt.Sprintf(`space == %q`, spaceAName),
+	})
+	require.NoError(t, err)
+	require.Equal(t, int32(2), ownerSpaceStats.TotalMemoCount)
+	require.Contains(t, ownerSpaceStats.TagCount, "a-members")
+	require.Contains(t, ownerSpaceStats.TagCount, "a-private")
+	require.NotContains(t, ownerSpaceStats.TagCount, "unassigned")
+	require.NotContains(t, ownerSpaceStats.TagCount, "b-public")
+
+	ownerUnassignedStats, err := ts.Service.GetUserStats(ownerCtx, &v1pb.GetUserStatsRequest{
+		Name:   ownerName,
+		Filter: `space == null`,
+	})
+	require.NoError(t, err)
+	require.Equal(t, int32(1), ownerUnassignedStats.TotalMemoCount)
+	require.Contains(t, ownerUnassignedStats.TagCount, "unassigned")
+
+	memberSpaceStats, err := ts.Service.ListAllUserStats(ts.CreateUserContext(ctx, member.ID), &v1pb.ListAllUserStatsRequest{
+		Filter: fmt.Sprintf(`space == %q`, spaceAName),
+	})
+	require.NoError(t, err)
+	require.Len(t, memberSpaceStats.Stats, 2)
+	visibleTags := map[string]int32{}
+	for _, stats := range memberSpaceStats.Stats {
+		for tag, count := range stats.TagCount {
+			visibleTags[tag] += count
+		}
+	}
+	require.Equal(t, map[string]int32{"a-members": 1, "member-private": 1}, visibleTags)
+
+	_, err = ts.Service.ListAllUserStats(ts.CreateUserContext(ctx, outsider.ID), &v1pb.ListAllUserStatsRequest{
+		Filter: fmt.Sprintf(`space == %q`, spaceAName),
+	})
+	require.Equal(t, codes.NotFound, status.Code(err))
+
+	_, err = ts.Service.ListAllUserStats(ctx, &v1pb.ListAllUserStatsRequest{
+		Filter: fmt.Sprintf(`space == %q`, spaceAName),
+	})
+	require.Equal(t, codes.Unauthenticated, status.Code(err))
+
+	_, err = ts.Service.GetUserStats(ownerCtx, &v1pb.GetUserStatsRequest{
+		Name:   ownerName,
+		Filter: `space != null`,
+	})
+	require.Equal(t, codes.InvalidArgument, status.Code(err))
 }

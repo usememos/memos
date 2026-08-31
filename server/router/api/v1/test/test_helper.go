@@ -6,6 +6,7 @@ import (
 
 	"github.com/usememos/memos/internal/markdown"
 	"github.com/usememos/memos/internal/profile"
+	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/auth"
 	apiv1 "github.com/usememos/memos/server/router/api/v1"
 	"github.com/usememos/memos/store"
@@ -26,6 +27,14 @@ func NewTestService(t *testing.T) *TestService {
 
 	// Create a test store with SQLite
 	testStore := teststore.NewTestingStore(ctx, t)
+	if _, err := testStore.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_ACCESS,
+		Value: &storepb.InstanceSetting_AccessSetting{AccessSetting: &storepb.InstanceAccessSetting{
+			AccessMode: storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC,
+		}},
+	}); err != nil {
+		t.Fatalf("failed to configure public access for API test service: %v", err)
+	}
 
 	// Align the profile data directory with the test store so attachment files and
 	// derived caches resolve against the same location as DeleteAttachmentStorage.
@@ -61,6 +70,17 @@ func NewTestService(t *testing.T) *TestService {
 	}
 }
 
+// SetInstanceAccessMode updates the instance access policy for a test.
+func (ts *TestService) SetInstanceAccessMode(ctx context.Context, mode storepb.InstanceAccessMode) error {
+	_, err := ts.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_ACCESS,
+		Value: &storepb.InstanceSetting_AccessSetting{AccessSetting: &storepb.InstanceAccessSetting{
+			AccessMode: mode,
+		}},
+	})
+	return err
+}
+
 // Cleanup closes resources after test.
 func (ts *TestService) Cleanup() {
 	ts.Store.Close()
@@ -82,6 +102,20 @@ func (ts *TestService) CreateRegularUser(ctx context.Context, username string) (
 		Role:     store.RoleUser,
 		Email:    username + "@example.com",
 	})
+}
+
+// InviteAndAcceptSpaceMember is a test fixture helper that exercises the invitation
+// lifecycle instead of bypassing invitee consent.
+func (ts *TestService) InviteAndAcceptSpaceMember(ctx context.Context, create *store.SpaceMember, actorUserID int32) (*store.SpaceMember, error) {
+	invitation, err := ts.Store.CreateSpaceInvitation(ctx, &store.SpaceInvitation{
+		SpaceID: create.SpaceID,
+		UserID:  create.UserID,
+		Role:    create.Role,
+	}, actorUserID)
+	if err != nil {
+		return nil, err
+	}
+	return ts.Store.AcceptSpaceInvitation(ctx, &store.AcceptSpaceInvitation{SpaceID: invitation.SpaceID, UserID: invitation.UserID}, invitation.UserID)
 }
 
 // CreateUserContext creates a context with the given user's ID for authentication.

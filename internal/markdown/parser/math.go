@@ -2,6 +2,8 @@ package parser
 
 import (
 	"bytes"
+	"unicode"
+	"unicode/utf8"
 
 	gast "github.com/yuin/goldmark/ast"
 	"github.com/yuin/goldmark/parser"
@@ -25,7 +27,8 @@ func (*inlineMathParser) Trigger() []byte {
 func (*inlineMathParser) Parse(_ gast.Node, reader text.Reader, _ parser.Context) gast.Node {
 	line, _ := reader.PeekLine()
 	openingLength := dollarRunLength(line)
-	if openingLength == 0 || hasUnescapedPrecedingDollar(reader) {
+	if openingLength == 0 || hasUnescapedPrecedingDollar(reader) ||
+		(openingLength == 1 && !isValidSingleDollarOpening(line[openingLength:])) {
 		return nil
 	}
 
@@ -47,6 +50,10 @@ func (*inlineMathParser) Parse(_ gast.Node, reader text.Reader, _ parser.Context
 			}
 			closingLength := dollarRunLength(line[pos:])
 			if closingLength == openingLength {
+				if openingLength == 1 && !isValidSingleDollarClosing(line, pos) {
+					reader.SetPosition(savedLine, savedPosition)
+					return nil
+				}
 				end := pos + closingLength
 				source = append(source, line[:end]...)
 				reader.Advance(end)
@@ -58,6 +65,30 @@ func (*inlineMathParser) Parse(_ gast.Node, reader text.Reader, _ parser.Context
 		source = append(source, line...)
 		reader.AdvanceLine()
 	}
+}
+
+func isValidSingleDollarOpening(source []byte) bool {
+	if len(source) == 0 {
+		return false
+	}
+	r, _ := utf8.DecodeRune(source)
+	return !unicode.IsSpace(r)
+}
+
+func isValidSingleDollarClosing(line []byte, position int) bool {
+	if position == 0 {
+		return false
+	}
+	preceding, _ := utf8.DecodeLastRune(line[:position])
+	if unicode.IsSpace(preceding) {
+		return false
+	}
+
+	position++
+	if position >= len(line) {
+		return true
+	}
+	return line[position] < '0' || line[position] > '9'
 }
 
 // hasUnescapedPrecedingDollar prevents retrying within one dollar run while

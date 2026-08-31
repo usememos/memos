@@ -2,7 +2,7 @@
 //
 // Every other server test constructs apiv1.APIV1Service directly, which skips
 // server.NewServer entirely. That leaves route registration, gRPC-gateway
-// wiring, MCP/RSS/fileserver/frontend mounting, CORS and the secret bootstrap
+// wiring, MCP/fileserver/frontend mounting, CORS and the secret bootstrap
 // covered only by the Docker release script. These tests boot the real server
 // the same way cmd/memos/main.go does so a wiring regression fails in CI.
 package test
@@ -26,6 +26,7 @@ import (
 
 	"github.com/usememos/memos/internal/profile"
 	"github.com/usememos/memos/internal/version"
+	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server"
 	"github.com/usememos/memos/store"
 	"github.com/usememos/memos/store/db"
@@ -40,8 +41,9 @@ const (
 type instanceOptions struct {
 	// demo enables demo mode, which seeds the database during migration.
 	demo bool
-	// instanceURL is the public instance URL. An empty value makes the
-	// instance private, which restricts anonymous access to bootstrap methods.
+	// instanceURL is the canonical external instance URL. On the first boot of
+	// a database without ACCESS, it is also the legacy compatibility input used
+	// to initialize that dedicated setting exactly once.
 	instanceURL string
 	// dataDir reuses an existing data directory instead of a fresh one, which
 	// is how a restart against an already-migrated database is simulated.
@@ -96,7 +98,7 @@ func bootInstance(ctx context.Context, t *testing.T, opts instanceOptions) *inst
 
 	s, err := server.NewServer(ctx, instanceProfile, storeInstance)
 	require.NoError(t, err, "should construct server")
-	require.NoError(t, s.Start(ctx), "should start server")
+	require.NoError(t, s.Start(), "should start server")
 
 	inst := &instance{
 		server:  s,
@@ -287,12 +289,6 @@ func TestStartupServesEveryRegisteredRouter(t *testing.T) {
 		require.Equal(t, http.StatusOK, resp.StatusCode, "public GET fallback should permit anonymous form posts")
 	})
 
-	t.Run("rss", func(t *testing.T) {
-		status, body := inst.do(t, http.MethodGet, "/explore/rss.xml", "", nil)
-		require.Equal(t, http.StatusOK, status, "rss route should be mounted: %s", body)
-		require.Contains(t, string(body), "<?xml")
-	})
-
 	t.Run("mcp", func(t *testing.T) {
 		// A bare POST is enough to prove the handler is mounted; the MCP
 		// protocol itself is covered by server/router/mcp tests.
@@ -349,14 +345,15 @@ func TestStartupRestartPreservesData(t *testing.T) {
 	second.requireMemo(t, restartToken, "startup-after-restart", "written after restart")
 }
 
-// TestStartupPrivateInstance verifies an instance with no InstanceURL boots,
-// still exposes the auth bootstrap surface, and refuses anonymous callers on
-// non-bootstrap procedures.
+// TestStartupPrivateInstance verifies a private instance still exposes the auth
+// bootstrap surface and refuses anonymous callers on non-bootstrap procedures.
 func TestStartupPrivateInstance(t *testing.T) {
 	ctx := context.Background()
 	inst := bootInstance(ctx, t, instanceOptions{instanceURL: ""})
 
-	require.False(t, inst.profile.AllowAnonymous(), "an instance without InstanceURL should be private")
+	accessSetting, err := inst.server.Store.GetInstanceAccessSetting(ctx)
+	require.NoError(t, err)
+	require.Equal(t, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE, accessSetting.AccessMode)
 
 	// Bootstrap methods stay reachable so the sign-in page can render.
 	status, body := inst.do(t, http.MethodGet, "/api/v1/instance/profile", "", nil)
@@ -377,6 +374,47 @@ func TestStartupPrivateInstance(t *testing.T) {
 	token := inst.signIn(t)
 	inst.createMemo(t, token, "startup-private", "private instance sentinel")
 	inst.requireMemo(t, token, "startup-private", "private instance sentinel")
+}
+
+// TestStartupInitializesLegacyAccessOnce verifies the compatibility bridge from
+// the former instance-URL-derived policy to the database-backed ACCESS setting.
+// Later URL changes must not silently change authorization behavior.
+func TestStartupInitializesLegacyAccessOnce(t *testing.T) {
+	ctx := context.Background()
+
+	t.Run("public remains public after URL removal", func(t *testing.T) {
+		dataDir := t.TempDir()
+		first := bootInstance(ctx, t, instanceOptions{instanceURL: "https://memos.example.com", dataDir: dataDir})
+		accessSetting, err := first.server.Store.GetInstanceAccessSetting(ctx)
+		require.NoError(t, err)
+		require.Equal(t, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC, accessSetting.AccessMode)
+		first.shutdown(ctx)
+
+		second := bootInstance(ctx, t, instanceOptions{instanceURL: "", dataDir: dataDir})
+		accessSetting, err = second.server.Store.GetInstanceAccessSetting(ctx)
+		require.NoError(t, err)
+		require.Equal(t, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC, accessSetting.AccessMode)
+
+		status, body := second.do(t, http.MethodGet, "/api/v1/memos", "", nil)
+		require.Equal(t, http.StatusOK, status, "persisted PUBLIC mode should still allow anonymous access: %s", body)
+	})
+
+	t.Run("private remains private after URL addition", func(t *testing.T) {
+		dataDir := t.TempDir()
+		first := bootInstance(ctx, t, instanceOptions{instanceURL: "", dataDir: dataDir})
+		accessSetting, err := first.server.Store.GetInstanceAccessSetting(ctx)
+		require.NoError(t, err)
+		require.Equal(t, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE, accessSetting.AccessMode)
+		first.shutdown(ctx)
+
+		second := bootInstance(ctx, t, instanceOptions{instanceURL: "https://memos.example.com", dataDir: dataDir})
+		accessSetting, err = second.server.Store.GetInstanceAccessSetting(ctx)
+		require.NoError(t, err)
+		require.Equal(t, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE, accessSetting.AccessMode)
+
+		status, _ := second.do(t, http.MethodGet, "/api/v1/memos", "", nil)
+		require.Equal(t, http.StatusUnauthorized, status, "canonical URL must not reopen a persisted PRIVATE instance")
+	})
 }
 
 // TestStartupPrivateInstanceGatewayPolicy asserts the private-instance policy is
@@ -409,10 +447,6 @@ func TestStartupPrivateInstanceGatewayPolicy(t *testing.T) {
 	status, _ = inst.do(t, http.MethodGet, "/api/v1/memos/startup-private-public", "", nil)
 	require.Equal(t, http.StatusUnauthorized, status,
 		"anonymous GetMemo over REST should be refused on a private instance")
-
-	status, _ = inst.do(t, http.MethodGet, "/explore/rss.xml", "", nil)
-	require.Equal(t, http.StatusNotFound, status,
-		"anonymous RSS should be unavailable on a private instance")
 }
 
 // TestStartupGatewayOmitsNullMessageFields checks the JSON the gateway actually

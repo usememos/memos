@@ -378,7 +378,6 @@
       "path": "ที่จัดเก็บ",
       "path-description": "คุณสามารถใช้ตัวแปรไดนามิกเดียวกันจากที่จัดเก็บในตัวเครื่อง เช่น {filename}",
       "path-placeholder": "กำหนดเอง/เส้นทาง",
-      "presign-placeholder": "Pre-sign URL ไม่บังคับ",
       "region": "ภูมิภาค",
       "region-placeholder": "ชื่อภูมิภาค",
       "s3-compatible-url": "URL ที่เข้ากันได้กับ S3",

@@ -58,6 +58,22 @@ func NewTestingStoreWithDSN(_ context.Context, t *testing.T, driver, dsn string)
 	return store
 }
 
+// createSpaceMemberForTest keeps fixtures concise while exercising the same
+// invitation and acceptance flow used by production code.
+func createSpaceMemberForTest(ctx context.Context, testStore *store.Store, create *store.SpaceMember, actorUserID int32) (*store.SpaceMember, error) {
+	if _, err := testStore.CreateSpaceInvitation(ctx, &store.SpaceInvitation{
+		SpaceID: create.SpaceID,
+		UserID:  create.UserID,
+		Role:    create.Role,
+	}, actorUserID); err != nil {
+		return nil, err
+	}
+	return testStore.AcceptSpaceInvitation(ctx, &store.AcceptSpaceInvitation{
+		SpaceID: create.SpaceID,
+		UserID:  create.UserID,
+	}, create.UserID)
+}
+
 func getUnusedPort() int {
 	// Get a random unused port
 	listener, err := net.Listen("tcp", "localhost:0")

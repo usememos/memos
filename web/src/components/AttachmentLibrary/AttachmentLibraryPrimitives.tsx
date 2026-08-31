@@ -1,8 +1,10 @@
 import { ExternalLinkIcon } from "lucide-react";
 import { Link } from "react-router-dom";
+import { createMemoNavigationState } from "@/components/MemoView/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { ROUTES } from "@/router/routes";
 import { useTranslate } from "@/utils/i18n";
 
 interface AttachmentMetadataLineProps {
@@ -61,6 +63,9 @@ export const AttachmentSourceChip = ({
   return (
     <Link
       to={`/${memoName}`}
+      // Attachments is collection-scoped, but Memo filters render on Home.
+      // Carry a Home origin so direct-resource handling preserves this scope.
+      state={createMemoNavigationState(ROUTES.HOME, "preserve")}
       className="inline-flex max-w-full items-center truncate rounded-full border border-border/60 bg-muted/30 px-1.5 py-0.5 text-[11px] text-muted-foreground hover:bg-muted/50"
     >
       <span className="truncate">{t("attachment-library.labels.memo")}</span>

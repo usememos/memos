@@ -10,7 +10,7 @@ remains authoritative for that process lifetime. It is not imported into the dat
 The first supported file-backed configuration resources are:
 
 - OAuth2 identity providers.
-- Instance settings for general policy, storage, memo behavior, notifications, and AI providers.
+- Instance settings for access policy, general policy, storage, memo behavior, notifications, and AI providers.
 
 Memos scans `/etc/secrets` after database migration and demo seeding, validates every matching file, builds one immutable configuration snapshot, and
 publishes that snapshot before HTTP or background services start. Applying a changed file requires a process restart.
@@ -88,6 +88,7 @@ Recommended labels mirror the resource key for operator readability:
 | Resource | Canonical filename |
 | --- | --- |
 | Identity provider with UID `primary-sso` | `memos-idp-primary-sso.json` |
+| `ACCESS` | `memos-instance-setting-access.json` |
 | `GENERAL` | `memos-instance-setting-general.json` |
 | `STORAGE` | `memos-instance-setting-storage.json` |
 | `MEMO_RELATED` | `memos-instance-setting-memo-related.json` |
@@ -189,6 +190,21 @@ Example `/etc/secrets/memos-instance-setting-general.json`:
 }
 ```
 
+Example `/etc/secrets/memos-instance-setting-access.json`:
+
+```json
+{
+  "key": "ACCESS",
+  "accessSetting": {
+    "accessMode": "INSTANCE_ACCESS_MODE_PRIVATE"
+  }
+}
+```
+
+`ACCESS` must explicitly select `INSTANCE_ACCESS_MODE_PRIVATE` or `INSTANCE_ACCESS_MODE_PUBLIC`. The canonical external instance URL is a separate
+deployment property and does not change who may access the instance. `--instance-url` (or `MEMOS_INSTANCE_URL`) must be an absolute HTTP(S) URL without
+credentials, a query, or a fragment; Memos trims surrounding whitespace and trailing slashes during startup.
+
 Example `/etc/secrets/memos-instance-setting-notification.json`:
 
 ```json
@@ -215,6 +231,7 @@ Supported keys:
 
 | Key | Deployment use |
 | --- | --- |
+| `ACCESS` | Private or public instance access policy |
 | `GENERAL` | Registration, authentication, branding, scripts, styles, and user-profile policy |
 | `STORAGE` | Attachment storage type, limits, paths, and S3 credentials |
 | `MEMO_RELATED` | Memo limits, editing behavior, and reactions |
@@ -281,6 +298,7 @@ Startup follows this sequence:
 ```text
 Initialize or migrate database
   -> apply demo seed when enabled
+  -> initialize a missing ACCESS row from legacy instance-URL behavior
   -> read all matching deployment-configuration files
   -> decode and validate every resource
   -> validate affected cross-resource invariants
@@ -341,6 +359,9 @@ Every effective instance-setting getter checks the runtime snapshot before its d
 - The runtime snapshot must never be overwritten by a cached database value.
 - Removing a file and restarting returns the group to its stored database value.
 
+The `ACCESS` getter intentionally bypasses the general ten-minute database setting cache when no deployment file shadows it. This makes a change from
+public to private visible to every replica on its next policy check instead of leaving a stale public authorization decision in another process.
+
 The demo seed writes `MEMO_RELATED` but does not write `GENERAL`. Loading deployment configuration after seeding supplies the complete effective General
 settings without embedding deployment authentication policy in demo data.
 
@@ -354,6 +375,7 @@ At minimum, validation rejects:
 - A file-backed `GENERAL` setting that disables password authentication for regular users when the resulting effective configuration has no identity
   provider.
 - An instance-setting key whose populated `oneof` does not match the key.
+- An `ACCESS` setting whose mode is omitted or unspecified.
 - S3 storage without the required endpoint, bucket, region, or credentials.
 - Enabled email delivery without the required SMTP host, port, or sender.
 - Duplicate AI provider IDs.
@@ -414,6 +436,19 @@ an administrator attempts to create, update, or delete a deployment-managed reso
 - Fail startup on an invalid or unreadable matching file rather than publishing partial configuration.
 - Keep the immutable snapshot process-local and expose only redacted API representations.
 
+### Webhook private-network destinations
+
+Webhook delivery blocks private and reserved IP destinations by default. Deployments that intentionally send to internal services should allow only the
+required exact hostnames, IP addresses, or CIDRs with `--webhook-private-network-allowlist`; the equivalent environment variable is
+`MEMOS_WEBHOOK_PRIVATE_NETWORK_ALLOWLIST`. Multiple entries may be repeated or comma-separated, for example:
+
+```text
+--webhook-private-network-allowlist hooks.internal,10.20.0.0/16
+```
+
+The legacy `--allow-private-webhooks` flag and `MEMOS_ALLOW_PRIVATE_WEBHOOKS` environment variable remain compatible for upgrades but are deprecated.
+They disable private-network destination protection globally and should be replaced with the allowlist.
+
 ## Multiple server replicas
 
 Every replica independently loads deployment configuration at startup, as Mastodon processes independently load environment configuration. All replicas in
@@ -423,16 +458,27 @@ A rolling deployment can temporarily run old and new configuration generations a
 cache invalidation for this process-local configuration. Deployments changing authentication or storage configuration should use a rollout strategy that
 does not route traffic to replicas with different file generations, and readiness must be reported only after the new snapshot validates successfully.
 
+Crossing the version boundary that introduced `ACCESS` requires a coordinated rollout. Older replicas ignore `ACCESS` and continue using the legacy
+rule in which a nonempty instance URL permits anonymous access. Drain all older replicas before changing `ACCESS` or routing traffic to replicas whose
+policy differs from that legacy rule; do not serve traffic from old and new replicas with different effective access policies. Before rolling back,
+make the legacy instance URL rule match the intended policy—nonempty for public or empty for private—then drain the newer replicas and complete the
+rollback. Otherwise, an older replica can expose an instance whose stored `ACCESS` policy is `PRIVATE` but whose instance URL is nonempty.
+
 Because file-backed settings bypass the database setting cache, a replica cannot replace a deployment value with a stale cached database value.
 
 ## Database and migration impact
 
-This design requires no database schema changes and no migrations:
+This design requires no database schema changes:
 
 - File-backed IdPs are not inserted into `idp`.
 - File-backed settings are not inserted into `system_setting`.
 - Existing user-identity links remain database-backed and continue to reference provider UIDs.
 - Existing stored configuration remains untouched beneath runtime overrides.
+
+The first startup with ACCESS support creates one database-backed `ACCESS` setting when the row is missing. To preserve upgrade behavior, it records
+`PUBLIC` when the legacy startup profile has a nonempty canonical instance URL and `PRIVATE` otherwise. This is a one-time compatibility decision: after
+the row exists, adding, removing, or changing the instance URL never changes access policy. A deployment-provided ACCESS file may shadow that stored row
+without modifying it.
 
 ### Transition from the database-writing bootstrap
 
@@ -462,6 +508,7 @@ The implementation:
 6. Uses explicit raw database reads for snapshot planning and permitted mutation paths.
 7. Validates affected startup state and uses a narrow serializable transaction for runtime authentication mutations.
 8. Enforces deployment ownership through API mutation guards and returns `codes.FailedPrecondition` for rejected writes.
+9. Initializes and reads the dedicated ACCESS policy independently from the canonical external instance URL.
 
 ## Test strategy
 
@@ -487,6 +534,8 @@ The implementation requires tests for:
 - Mutation guards, including requests carrying field masks.
 - A stored provider shadowed by a file producing a secret-free legacy-bootstrap warning.
 - Secret redaction in errors, logs, and API responses.
+- One-time legacy ACCESS initialization and persistence across later instance-URL changes.
+- Immediate cross-replica database-backed ACCESS reads and explicit PRIVATE/PUBLIC API behavior.
 
 ## Research references
 

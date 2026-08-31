@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  GO_VERSION: "1.26.2"
+  GO_VERSION: "1.27.0"
 
 jobs:
   static-checks:
@@ -40,7 +40,7 @@ jobs:
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v9
         with:
-          version: v2.11.3
+          version: v2.13.1
           args: --timeout=3m
 
   tests:
