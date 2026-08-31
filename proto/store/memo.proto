@@ -39,5 +39,14 @@ message MemoPayload {
     string image = 4;
     // The attachment name serving the locally cached cover image, if any.
     string cover_attachment_uid = 5;
+    // Retry bookkeeping for failed metadata/cover fetches. Zero on success.
+    int32 fetch_attempts = 6;
+    // Unix seconds of the first failed attempt; retrying stops 24h after this.
+    int64 first_attempt_at = 7;
+    // Unix seconds of the most recent failed attempt; drives the backoff gate.
+    int64 last_attempt_at = 8;
+    // Display dimensions of the cached cover image, for aspect-aware tiles.
+    int32 cover_width = 9;
+    int32 cover_height = 10;
   }
 }

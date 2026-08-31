@@ -3,13 +3,16 @@ package v1
 import (
 	"context"
 	"testing"
+	"time"
 
+	"github.com/lithammer/shortuuid/v4"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
 
 	"github.com/usememos/memos/internal/httpgetter"
 	"github.com/usememos/memos/internal/markdown"
 	"github.com/usememos/memos/internal/profile"
+	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/runner/memopayload"
 	"github.com/usememos/memos/store"
 	storetest "github.com/usememos/memos/store/test"
@@ -102,12 +105,200 @@ func TestEnrichMemoLinksToleratesFailures(t *testing.T) {
 	memo := &store.Memo{CreatorID: 1, Content: "Read https://example.com/dead now"}
 	require.NoError(t, memopayload.RebuildMemoPayload(context.Background(), memo, service.MarkdownService))
 	service.EnrichMemoLinks(context.Background(), memo)
-	require.Empty(t, memo.Payload.Links, "failed fetch must not block or add entries")
+	require.Len(t, memo.Payload.Links, 1, "failed fetch must persist a placeholder entry carrying retry state")
+	placeholder := memo.Payload.Links[0]
+	require.Empty(t, placeholder.Title)
+	require.Equal(t, int32(1), placeholder.FetchAttempts)
+	require.Positive(t, placeholder.FirstAttemptAt)
+	require.Equal(t, placeholder.FirstAttemptAt, placeholder.LastAttemptAt)
 
 	memoWithNoLinks := &store.Memo{CreatorID: 1, Content: "just text"}
 	require.NoError(t, memopayload.RebuildMemoPayload(context.Background(), memoWithNoLinks, service.MarkdownService))
 	service.EnrichMemoLinks(context.Background(), memoWithNoLinks)
 	require.Empty(t, memoWithNoLinks.Payload.Links)
+}
+
+func TestBackoffDelaySchedule(t *testing.T) {
+	require.Equal(t, 5*time.Minute, backoffDelay(1))
+	require.Equal(t, 15*time.Minute, backoffDelay(2))
+	require.Equal(t, 30*time.Minute, backoffDelay(3))
+	require.Equal(t, time.Hour, backoffDelay(4))
+	require.Equal(t, 2*time.Hour, backoffDelay(5))
+	require.Equal(t, 4*time.Hour, backoffDelay(6))
+	require.Equal(t, 8*time.Hour, backoffDelay(7))
+	require.Equal(t, 8*time.Hour, backoffDelay(20))
+}
+
+func TestPrepareRetry(t *testing.T) {
+	now := time.Now()
+
+	// Legacy entry persisted before retry bookkeeping: fresh window, due now.
+	legacy := &storepb.MemoPayload_LinkMetadata{Url: "https://example.com/a"}
+	require.True(t, prepareRetry(legacy, now))
+	require.Equal(t, int32(1), legacy.FetchAttempts)
+	require.Equal(t, now.Unix(), legacy.FirstAttemptAt)
+	require.Zero(t, legacy.LastAttemptAt)
+
+	// Gated: last failure 2m ago, backoff for attempt 1 is 5m.
+	gated := &storepb.MemoPayload_LinkMetadata{Url: "https://example.com/a", FetchAttempts: 1, FirstAttemptAt: now.Add(-10 * time.Minute).Unix(), LastAttemptAt: now.Add(-2 * time.Minute).Unix()}
+	require.False(t, prepareRetry(gated, now))
+
+	// Due: last failure 6m ago.
+	due := &storepb.MemoPayload_LinkMetadata{Url: "https://example.com/a", FetchAttempts: 1, FirstAttemptAt: now.Add(-10 * time.Minute).Unix(), LastAttemptAt: now.Add(-6 * time.Minute).Unix()}
+	require.True(t, prepareRetry(due, now))
+
+	// Exhausted: first failure more than 24h ago.
+	exhausted := &storepb.MemoPayload_LinkMetadata{Url: "https://example.com/a", FetchAttempts: 8, FirstAttemptAt: now.Add(-25 * time.Hour).Unix(), LastAttemptAt: now.Add(-9 * time.Hour).Unix()}
+	require.False(t, prepareRetry(exhausted, now))
+}
+
+func TestEnrichMemoLinksRetriesMissingCover(t *testing.T) {
+	metaCount, imageCount := 0, 0
+	service := newLinkEnrichmentTestService(t, stubCountingFetcher{
+		inner: stubFetchResults{images: map[string]*httpgetter.Image{
+			"https://example.com/a.png": {Blob: []byte("fakepng"), Mediatype: "image/png"},
+		}},
+		count: &metaCount, imageCount: &imageCount,
+	})
+
+	old := time.Now().Add(-10 * time.Minute).Unix()
+	memo := &store.Memo{CreatorID: 1, Content: "[A](https://example.com/a)"}
+	require.NoError(t, memopayload.RebuildMemoPayload(context.Background(), memo, service.MarkdownService))
+	memo.Payload.Links = []*storepb.MemoPayload_LinkMetadata{{
+		Url: "https://example.com/a", Title: "Example A", Image: "https://example.com/a.png",
+		FetchAttempts: 1, FirstAttemptAt: old, LastAttemptAt: old,
+	}}
+
+	service.EnrichMemoLinks(context.Background(), memo)
+
+	require.Equal(t, 0, metaCount, "metadata present: no metadata refetch")
+	require.Equal(t, 1, imageCount, "cover retry must fetch the image")
+	entry := memo.Payload.Links[0]
+	require.NotEmpty(t, entry.CoverAttachmentUid)
+	require.Zero(t, entry.FetchAttempts)
+	require.Zero(t, entry.FirstAttemptAt)
+	require.Zero(t, entry.LastAttemptAt)
+	require.Equal(t, "Example A", entry.Title)
+}
+
+func TestEnrichMemoLinksCoverRetryFailureKeepsMetadata(t *testing.T) {
+	imageCount := 0
+	service := newLinkEnrichmentTestService(t, stubCountingFetcher{
+		inner:      stubFetchResults{},
+		imageCount: &imageCount,
+	})
+
+	old := time.Now().Add(-10 * time.Minute).Unix()
+	memo := &store.Memo{CreatorID: 1, Content: "[A](https://example.com/a)"}
+	require.NoError(t, memopayload.RebuildMemoPayload(context.Background(), memo, service.MarkdownService))
+	memo.Payload.Links = []*storepb.MemoPayload_LinkMetadata{{
+		Url: "https://example.com/a", Title: "Example A", Image: "https://example.com/a.png",
+		FetchAttempts: 1, FirstAttemptAt: old, LastAttemptAt: old,
+	}}
+
+	service.EnrichMemoLinks(context.Background(), memo)
+
+	require.Equal(t, 1, imageCount)
+	entry := memo.Payload.Links[0]
+	require.Empty(t, entry.CoverAttachmentUid)
+	require.Equal(t, int32(2), entry.FetchAttempts)
+	require.Equal(t, old, entry.FirstAttemptAt)
+	require.Equal(t, "Example A", entry.Title)
+}
+
+func TestEnrichMemoLinksLegacyEntryRetriesImmediately(t *testing.T) {
+	imageCount := 0
+	service := newLinkEnrichmentTestService(t, stubCountingFetcher{
+		inner: stubFetchResults{images: map[string]*httpgetter.Image{
+			"https://example.com/a.png": {Blob: []byte("fakepng"), Mediatype: "image/png"},
+		}},
+		imageCount: &imageCount,
+	})
+
+	memo := &store.Memo{CreatorID: 1, Content: "[A](https://example.com/a)"}
+	require.NoError(t, memopayload.RebuildMemoPayload(context.Background(), memo, service.MarkdownService))
+	// Legacy pre-bookkeeping failure: all retry fields zero.
+	memo.Payload.Links = []*storepb.MemoPayload_LinkMetadata{{
+		Url: "https://example.com/a", Title: "Example A", Image: "https://example.com/a.png",
+	}}
+
+	service.EnrichMemoLinks(context.Background(), memo)
+
+	require.Equal(t, 1, imageCount, "legacy entries get a fresh window and retry at once")
+	require.NotEmpty(t, memo.Payload.Links[0].CoverAttachmentUid)
+}
+
+func TestEnrichMemoLinksExhaustedEntryNeverRetries(t *testing.T) {
+	metaCount, imageCount := 0, 0
+	service := newLinkEnrichmentTestService(t, stubCountingFetcher{
+		inner:      stubFetchResults{},
+		count:      &metaCount,
+		imageCount: &imageCount,
+	})
+
+	memo := &store.Memo{CreatorID: 1, Content: "[A](https://example.com/a)"}
+	require.NoError(t, memopayload.RebuildMemoPayload(context.Background(), memo, service.MarkdownService))
+	memo.Payload.Links = []*storepb.MemoPayload_LinkMetadata{{
+		Url: "https://example.com/a", Title: "Example A", Image: "https://example.com/a.png",
+		FetchAttempts: 8, FirstAttemptAt: time.Now().Add(-25 * time.Hour).Unix(), LastAttemptAt: time.Now().Add(-9 * time.Hour).Unix(),
+	}}
+
+	service.EnrichMemoLinks(context.Background(), memo)
+
+	require.Equal(t, 0, metaCount+imageCount, "exhausted entries stop fetching after 24h")
+}
+
+func TestEnrichMemoLinksRecordsCoverDimensions(t *testing.T) {
+	// 1x1 transparent PNG.
+	pngBytes := []byte{0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x08, 0x06, 0x00, 0x00, 0x00, 0x1f, 0x15, 0xc4, 0x89, 0x00, 0x00, 0x00, 0x0a, 0x49, 0x44, 0x41, 0x54, 0x78, 0x9c, 0x63, 0x00, 0x01, 0x00, 0x00, 0x05, 0x00, 0x01, 0x0d, 0x0a, 0x2d, 0xb4, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82}
+	service := newLinkEnrichmentTestService(t, stubFetchResults{
+		metas: map[string]*httpgetter.HTMLMeta{
+			"https://example.com/a": {Title: "Example A", Image: "https://example.com/a.png"},
+		},
+		images: map[string]*httpgetter.Image{
+			"https://example.com/a.png": {Blob: pngBytes, Mediatype: "image/png"},
+		},
+	})
+
+	memo := &store.Memo{CreatorID: 1, Content: "[A](https://example.com/a)"}
+	require.NoError(t, memopayload.RebuildMemoPayload(context.Background(), memo, service.MarkdownService))
+	service.EnrichMemoLinks(context.Background(), memo)
+
+	entry := memo.Payload.Links[0]
+	require.Equal(t, int32(1), entry.CoverWidth)
+	require.Equal(t, int32(1), entry.CoverHeight)
+}
+
+func TestEnrichMemoLinksBackfillsLegacyCoverDimensions(t *testing.T) {
+	pngBytes := []byte{0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x08, 0x06, 0x00, 0x00, 0x00, 0x1f, 0x15, 0xc4, 0x89, 0x00, 0x00, 0x00, 0x0a, 0x49, 0x44, 0x41, 0x54, 0x78, 0x9c, 0x63, 0x00, 0x01, 0x00, 0x00, 0x05, 0x00, 0x01, 0x0d, 0x0a, 0x2d, 0xb4, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82}
+	service := newLinkEnrichmentTestService(t, stubFetchResults{})
+
+	memo := &store.Memo{CreatorID: 1, Content: "[A](https://example.com/a)"}
+	require.NoError(t, memopayload.RebuildMemoPayload(context.Background(), memo, service.MarkdownService))
+	memo.Payload.Links = []*storepb.MemoPayload_LinkMetadata{{
+		Url: "https://example.com/a", Title: "Example A", Image: "https://example.com/a.png", CoverAttachmentUid: seededCoverUID(t, service, pngBytes),
+	}}
+
+	service.EnrichMemoLinks(context.Background(), memo)
+
+	entry := memo.Payload.Links[0]
+	require.Equal(t, int32(1), entry.CoverWidth)
+	require.Equal(t, int32(1), entry.CoverHeight)
+}
+
+// seededCoverUID stores a real PNG cover attachment directly and returns its UID.
+func seededCoverUID(t *testing.T, service *APIV1Service, blob []byte) string {
+	t.Helper()
+	created, err := service.Store.CreateAttachment(context.Background(), &store.Attachment{
+		UID:       shortuuid.New(),
+		CreatorID: 1,
+		Filename:  "link-cover-seed.png",
+		Blob:      blob,
+		Type:      "image/png",
+		Size:      int64(len(blob)),
+	})
+	require.NoError(t, err)
+	return created.UID
 }
 
 func TestCoverFilenameIsDeterministic(t *testing.T) {
@@ -119,15 +310,21 @@ func TestCoverFilenameIsDeterministic(t *testing.T) {
 }
 
 type stubCountingFetcher struct {
-	inner linkMetadataFetcher
-	count *int
+	inner      linkMetadataFetcher
+	count      *int
+	imageCount *int
 }
 
 func (s stubCountingFetcher) Get(ctx context.Context, url string) (*httpgetter.HTMLMeta, error) {
-	*s.count++
+	if s.count != nil {
+		*s.count++
+	}
 	return s.inner.Get(ctx, url)
 }
 
 func (s stubCountingFetcher) GetImage(ctx context.Context, url string) (*httpgetter.Image, error) {
+	if s.imageCount != nil {
+		*s.imageCount++
+	}
 	return s.inner.GetImage(ctx, url)
 }

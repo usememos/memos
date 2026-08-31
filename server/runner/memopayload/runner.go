@@ -29,6 +29,23 @@ func NewRunner(store *store.Store, markdownService markdown.Service) *Runner {
 	}
 }
 
+// RunLoop runs RunOnce immediately, then every interval, until ctx is done.
+// ponytail: RunOnce still full-scans memos each pass — fine at self-host scale;
+// index pending link payloads if a deployment ever has 100k+ memos.
+func (r *Runner) RunLoop(ctx context.Context, interval time.Duration) {
+	r.RunOnce(ctx)
+	ticker := time.NewTicker(interval)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-ticker.C:
+			r.RunOnce(ctx)
+		}
+	}
+}
+
 // RunOnce rebuilds the payload of all memos.
 func (r *Runner) RunOnce(ctx context.Context) {
 	// Process memos in batches to avoid loading all memos into memory at once

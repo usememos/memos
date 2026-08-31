@@ -238,8 +238,17 @@ type MemoPayload_LinkMetadata struct {
 	Image string `protobuf:"bytes,4,opt,name=image,proto3" json:"image,omitempty"`
 	// The attachment name serving the locally cached cover image, if any.
 	CoverAttachmentUid string `protobuf:"bytes,5,opt,name=cover_attachment_uid,json=coverAttachmentUid,proto3" json:"cover_attachment_uid,omitempty"`
-	unknownFields      protoimpl.UnknownFields
-	sizeCache          protoimpl.SizeCache
+	// Retry bookkeeping for failed metadata/cover fetches. Zero on success.
+	FetchAttempts int32 `protobuf:"varint,6,opt,name=fetch_attempts,json=fetchAttempts,proto3" json:"fetch_attempts,omitempty"`
+	// Unix seconds of the first failed attempt; retrying stops 24h after this.
+	FirstAttemptAt int64 `protobuf:"varint,7,opt,name=first_attempt_at,json=firstAttemptAt,proto3" json:"first_attempt_at,omitempty"`
+	// Unix seconds of the most recent failed attempt; drives the backoff gate.
+	LastAttemptAt int64 `protobuf:"varint,8,opt,name=last_attempt_at,json=lastAttemptAt,proto3" json:"last_attempt_at,omitempty"`
+	// Display dimensions of the cached cover image, for aspect-aware tiles.
+	CoverWidth    int32 `protobuf:"varint,9,opt,name=cover_width,json=coverWidth,proto3" json:"cover_width,omitempty"`
+	CoverHeight   int32 `protobuf:"varint,10,opt,name=cover_height,json=coverHeight,proto3" json:"cover_height,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *MemoPayload_LinkMetadata) Reset() {
@@ -307,11 +316,46 @@ func (x *MemoPayload_LinkMetadata) GetCoverAttachmentUid() string {
 	return ""
 }
 
+func (x *MemoPayload_LinkMetadata) GetFetchAttempts() int32 {
+	if x != nil {
+		return x.FetchAttempts
+	}
+	return 0
+}
+
+func (x *MemoPayload_LinkMetadata) GetFirstAttemptAt() int64 {
+	if x != nil {
+		return x.FirstAttemptAt
+	}
+	return 0
+}
+
+func (x *MemoPayload_LinkMetadata) GetLastAttemptAt() int64 {
+	if x != nil {
+		return x.LastAttemptAt
+	}
+	return 0
+}
+
+func (x *MemoPayload_LinkMetadata) GetCoverWidth() int32 {
+	if x != nil {
+		return x.CoverWidth
+	}
+	return 0
+}
+
+func (x *MemoPayload_LinkMetadata) GetCoverHeight() int32 {
+	if x != nil {
+		return x.CoverHeight
+	}
+	return 0
+}
+
 var File_store_memo_proto protoreflect.FileDescriptor
 
 const file_store_memo_proto_rawDesc = "" +
 	"\n" +
-	"\x10store/memo.proto\x12\vmemos.store\"\x96\x05\n" +
+	"\x10store/memo.proto\x12\vmemos.store\"\xd3\x06\n" +
 	"\vMemoPayload\x12=\n" +
 	"\bproperty\x18\x01 \x01(\v2!.memos.store.MemoPayload.PropertyR\bproperty\x12=\n" +
 	"\blocation\x18\x02 \x01(\v2!.memos.store.MemoPayload.LocationR\blocation\x12\x12\n" +
@@ -326,13 +370,20 @@ const file_store_memo_proto_rawDesc = "" +
 	"\bLocation\x12 \n" +
 	"\vplaceholder\x18\x01 \x01(\tR\vplaceholder\x12\x1a\n" +
 	"\blatitude\x18\x02 \x01(\x01R\blatitude\x12\x1c\n" +
-	"\tlongitude\x18\x03 \x01(\x01R\tlongitude\x1a\xa0\x01\n" +
+	"\tlongitude\x18\x03 \x01(\x01R\tlongitude\x1a\xdd\x02\n" +
 	"\fLinkMetadata\x12\x10\n" +
 	"\x03url\x18\x01 \x01(\tR\x03url\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12 \n" +
 	"\vdescription\x18\x03 \x01(\tR\vdescription\x12\x14\n" +
 	"\x05image\x18\x04 \x01(\tR\x05image\x120\n" +
-	"\x14cover_attachment_uid\x18\x05 \x01(\tR\x12coverAttachmentUidB\x94\x01\n" +
+	"\x14cover_attachment_uid\x18\x05 \x01(\tR\x12coverAttachmentUid\x12%\n" +
+	"\x0efetch_attempts\x18\x06 \x01(\x05R\rfetchAttempts\x12(\n" +
+	"\x10first_attempt_at\x18\a \x01(\x03R\x0efirstAttemptAt\x12&\n" +
+	"\x0flast_attempt_at\x18\b \x01(\x03R\rlastAttemptAt\x12\x1f\n" +
+	"\vcover_width\x18\t \x01(\x05R\n" +
+	"coverWidth\x12!\n" +
+	"\fcover_height\x18\n" +
+	" \x01(\x05R\vcoverHeightB\x94\x01\n" +
 	"\x0fcom.memos.storeB\tMemoProtoP\x01Z)github.com/usememos/memos/proto/gen/store\xa2\x02\x03MSX\xaa\x02\vMemos.Store\xca\x02\vMemos\\Store\xe2\x02\x17Memos\\Store\\GPBMetadata\xea\x02\fMemos::Storeb\x06proto3"
 
 var (
