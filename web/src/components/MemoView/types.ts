@@ -4,6 +4,8 @@ import type { MemoOriginScope } from "./navigation";
 export interface MemoViewProps {
   memo: Memo;
   compact?: boolean;
+  /** `bento` renders a cover tile when the memo carries a cover image; otherwise a normal card. */
+  variant?: "card" | "bento";
   showCreator?: boolean;
   showVisibility?: boolean;
   showPinned?: boolean;

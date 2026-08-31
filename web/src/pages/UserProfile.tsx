@@ -86,8 +86,8 @@ const UserProfile = () => {
             <div className="mx-auto w-full max-w-2xl">
               {activeTab === "memos" ? (
                 <PagedMemoList
-                  renderer={(memo: Memo, { compact }) => (
-                    <MemoView key={getMemoKey(memo)} memo={memo} showVisibility showPinned showSpace compact={compact} />
+                  renderer={(memo: Memo, { compact, variant }) => (
+                    <MemoView key={getMemoKey(memo)} memo={memo} showVisibility showPinned showSpace compact={compact} variant={variant} />
                   )}
                   listSort={listSort}
                   orderBy={orderBy}

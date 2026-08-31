@@ -1,11 +1,11 @@
 import { useDirection } from "@base-ui/react/direction-provider";
-import { Columns2Icon, Columns3Icon, InfinityIcon, type LucideIcon, Rows3Icon, SlidersHorizontalIcon } from "lucide-react";
+import { Columns2Icon, Columns3Icon, InfinityIcon, LayoutGridIcon, type LucideIcon, Rows3Icon, SlidersHorizontalIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { SIDEBAR_SECTION_ACTION_BUTTON_CLASSES, SIDEBAR_SECTION_ACTION_ICON_CLASSES } from "@/components/AppSidebar/SidebarSection";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { MAX_COLUMNS_VALUES, type MemoMaxColumns, useView } from "@/contexts/ViewContext";
+import { LAYOUT_MODE_VALUES, MAX_COLUMNS_VALUES, type MemoLayoutMode, type MemoMaxColumns, useView } from "@/contexts/ViewContext";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
@@ -30,6 +30,13 @@ const LAYOUT_OPTIONS: Record<MemoMaxColumns, { icon: LucideIcon; key: "layout-li
   0: { icon: InfinityIcon, key: "layout-auto" },
 };
 
+// Same compile-time exhaustiveness trick for the feed modes.
+const LAYOUT_MODES: Record<MemoLayoutMode, { icon: LucideIcon; key: "layout-list" | "layout-masonry" | "layout-bento" }> = {
+  flow: { icon: Rows3Icon, key: "layout-list" },
+  masonry: { icon: Columns2Icon, key: "layout-masonry" },
+  bento: { icon: LayoutGridIcon, key: "layout-bento" },
+};
+
 const SettingRow = ({ label, description, children }: SettingRowProps) => (
   <div className="flex min-h-7 items-center justify-between gap-3">
     <div className="min-w-0">
@@ -49,15 +56,17 @@ function MemoDisplaySettingsContent() {
     compactMode,
     linkPreview,
     maxColumns,
+    layoutMode,
     setTimeBasis,
     setOrderByTimeAsc,
     setCompactMode,
     setLinkPreview,
     setMaxColumns,
+    setLayoutMode,
   } = useView();
   // Multi-column grids always render compact tiles, so the toggle is shown as on and locked
   // there; it only becomes a real choice at a single column.
-  const compactLocked = maxColumns !== 1;
+  const compactLocked = layoutMode !== "flow" && maxColumns !== 1;
 
   const timeBasisOptions = [
     { value: "create_time", label: t("common.created-at") },
@@ -70,11 +79,11 @@ function MemoDisplaySettingsContent() {
 
   return (
     <div>
-      <section className="px-3 py-2.5">
+      <section className="space-y-1 px-3 py-2.5">
         <div
           role="radiogroup"
           aria-label={t("memo.layout")}
-          className="grid grid-cols-4 gap-0.5"
+          className="grid grid-cols-3 gap-0.5"
           onKeyDown={(event) => {
             const delta =
               event.key === "ArrowRight"
@@ -92,18 +101,17 @@ function MemoDisplaySettingsContent() {
                       : 0;
             if (delta === 0) return;
             event.preventDefault();
-            const index = MAX_COLUMNS_VALUES.indexOf(maxColumns);
-            const next = MAX_COLUMNS_VALUES[(index + delta + MAX_COLUMNS_VALUES.length) % MAX_COLUMNS_VALUES.length];
-            setMaxColumns(next);
+            const index = LAYOUT_MODE_VALUES.indexOf(layoutMode);
+            const next = LAYOUT_MODE_VALUES[(index + delta + LAYOUT_MODE_VALUES.length) % LAYOUT_MODE_VALUES.length];
+            setLayoutMode(next);
             event.currentTarget.querySelector<HTMLButtonElement>(`[data-value="${next}"]`)?.focus();
           }}
         >
-          {MAX_COLUMNS_VALUES.map((value) => {
-            const { icon: Icon, key } = LAYOUT_OPTIONS[value];
-            const label = t(`memo.${key}`, { n: value });
-            const description = t(`memo.${key}-description`, { n: value });
-            const shortLabel = value > 1 ? value.toString() : label;
-            const active = maxColumns === value;
+          {LAYOUT_MODE_VALUES.map((value) => {
+            const { icon: Icon, key } = LAYOUT_MODES[value];
+            const label = t(`memo.${key}`);
+            const description = t(`memo.${key}-description`);
+            const active = layoutMode === value;
             return (
               <button
                 key={value}
@@ -114,18 +122,75 @@ function MemoDisplaySettingsContent() {
                 title={description}
                 tabIndex={active ? 0 : -1}
                 data-value={value}
-                onClick={() => setMaxColumns(value)}
+                onClick={() => setLayoutMode(value)}
                 className={cn(
                   "flex h-7 min-w-0 items-center justify-center gap-1 rounded-md px-1 text-[11px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
                   active ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
                 )}
               >
                 <Icon className="size-3.5 shrink-0" strokeWidth={1.8} />
-                <span className="truncate">{shortLabel}</span>
+                <span className="truncate">{label}</span>
               </button>
             );
           })}
         </div>
+        {layoutMode !== "flow" && (
+          <div
+            role="radiogroup"
+            aria-label={t("memo.column-count")}
+            className="grid grid-cols-4 gap-0.5"
+            onKeyDown={(event) => {
+              const delta =
+                event.key === "ArrowRight"
+                  ? direction === "rtl"
+                    ? -1
+                    : 1
+                  : event.key === "ArrowLeft"
+                    ? direction === "rtl"
+                      ? 1
+                      : -1
+                    : event.key === "ArrowDown"
+                      ? 1
+                      : event.key === "ArrowUp"
+                        ? -1
+                        : 0;
+              if (delta === 0) return;
+              event.preventDefault();
+              const index = MAX_COLUMNS_VALUES.indexOf(maxColumns);
+              const next = MAX_COLUMNS_VALUES[(index + delta + MAX_COLUMNS_VALUES.length) % MAX_COLUMNS_VALUES.length];
+              setMaxColumns(next);
+              event.currentTarget.querySelector<HTMLButtonElement>(`[data-value="${next}"]`)?.focus();
+            }}
+          >
+            {MAX_COLUMNS_VALUES.map((value) => {
+              const { icon: Icon, key } = LAYOUT_OPTIONS[value];
+              const label = t(`memo.${key}`, { n: value });
+              const description = t(`memo.${key}-description`, { n: value });
+              const shortLabel = value > 1 ? value.toString() : label;
+              const active = maxColumns === value;
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  role="radio"
+                  aria-checked={active}
+                  aria-label={label}
+                  title={description}
+                  tabIndex={active ? 0 : -1}
+                  data-value={value}
+                  onClick={() => setMaxColumns(value)}
+                  className={cn(
+                    "flex h-7 min-w-0 items-center justify-center gap-1 rounded-md px-1 text-[11px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
+                    active ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
+                  )}
+                >
+                  <Icon className="size-3.5 shrink-0" strokeWidth={1.8} />
+                  <span className="truncate">{shortLabel}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
       </section>
 
       <section className="space-y-2 border-t border-border/60 px-3 py-2.5">

@@ -4,7 +4,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import PagedMemoList from "@/components/PagedMemoList";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 
-const view = vi.hoisted(() => ({ maxColumns: 1 as 0 | 1 | 2 | 3, compactMode: false }));
+const view = vi.hoisted(() => ({
+  maxColumns: 1 as 0 | 1 | 2 | 3,
+  compactMode: false,
+  layoutMode: "masonry" as "flow" | "masonry" | "bento",
+}));
 const feed = vi.hoisted(() => ({
   memos: [] as unknown[],
   hasNextPage: false,
@@ -54,7 +58,7 @@ vi.mock("@/components/MemoFilters", () => ({
 const memo = { name: "memos/1", content: "hello", updateTime: undefined } as unknown as Memo;
 
 const renderList = (
-  renderer: (memo: Memo, options: { compact: boolean }) => React.ReactElement = () => <div />,
+  renderer: (memo: Memo, options: { compact: boolean; variant: "card" | "bento" }) => React.ReactElement = () => <div />,
   options: { leading?: React.ReactNode } = {},
 ) =>
   render(
@@ -67,6 +71,7 @@ describe("<PagedMemoList>", () => {
   beforeEach(() => {
     view.maxColumns = 1;
     view.compactMode = false;
+    view.layoutMode = "masonry";
     feed.memos = [];
     feed.hasNextPage = false;
     feed.isLoading = false;
@@ -200,14 +205,14 @@ describe("<PagedMemoList>", () => {
     it("threads compact=false at one column with compact mode off", () => {
       const renderer = vi.fn((m: Memo) => <div key={m.name} />);
       renderList(renderer);
-      expect(renderer).toHaveBeenCalledWith(expect.objectContaining({ name: "memos/1" }), { compact: false });
+      expect(renderer).toHaveBeenCalledWith(expect.objectContaining({ name: "memos/1" }), { compact: false, variant: "card" });
     });
 
     it("threads compact=true at one column with compact mode on", () => {
       view.compactMode = true;
       const renderer = vi.fn((m: Memo) => <div key={m.name} />);
       renderList(renderer);
-      expect(renderer).toHaveBeenCalledWith(expect.objectContaining({ name: "memos/1" }), { compact: true });
+      expect(renderer).toHaveBeenCalledWith(expect.objectContaining({ name: "memos/1" }), { compact: true, variant: "card" });
     });
 
     it("respects the compact setting in the narrow-width fallback even when columns are allowed", () => {
@@ -215,7 +220,7 @@ describe("<PagedMemoList>", () => {
       view.maxColumns = 0;
       const renderer = vi.fn((m: Memo) => <div key={m.name} />);
       renderList(renderer);
-      expect(renderer).toHaveBeenCalledWith(expect.objectContaining({ name: "memos/1" }), { compact: false });
+      expect(renderer).toHaveBeenCalledWith(expect.objectContaining({ name: "memos/1" }), { compact: false, variant: "card" });
     });
 
     it("forces compact once the width fits the grid", () => {
@@ -224,7 +229,21 @@ describe("<PagedMemoList>", () => {
       try {
         const renderer = vi.fn((m: Memo) => <div key={m.name} />);
         renderList(renderer);
-        expect(renderer).toHaveBeenCalledWith(expect.objectContaining({ name: "memos/1" }), { compact: true });
+        expect(renderer).toHaveBeenCalledWith(expect.objectContaining({ name: "memos/1" }), { compact: true, variant: "card" });
+      } finally {
+        widthSpy.mockRestore();
+      }
+    });
+
+    it("renders the bento grid with bento card variants in bento mode", () => {
+      view.maxColumns = 0;
+      view.layoutMode = "bento";
+      const widthSpy = vi.spyOn(Element.prototype, "clientWidth", "get").mockReturnValue(1200);
+      try {
+        const renderer = vi.fn((m: Memo) => <div key={m.name} />);
+        const { container } = renderList(renderer);
+        expect(renderer).toHaveBeenCalledWith(expect.objectContaining({ name: "memos/1" }), { compact: true, variant: "bento" });
+        expect(container.querySelector('div[style*="grid-auto-flow"]')?.getAttribute("style")).toContain("dense");
       } finally {
         widthSpy.mockRestore();
       }

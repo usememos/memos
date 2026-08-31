@@ -53,3 +53,51 @@ describe("ViewContext maxColumns setting", () => {
     expect(result.current.maxColumns).toBe(1);
   });
 });
+
+describe("ViewContext layoutMode setting", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it("defaults to the flow list", () => {
+    const { result } = renderHook(() => useView(), { wrapper });
+    expect(result.current.layoutMode).toBe("flow");
+  });
+
+  it("updates and persists the mode", () => {
+    const { result } = renderHook(() => useView(), { wrapper });
+
+    act(() => result.current.setLayoutMode("bento"));
+
+    expect(result.current.layoutMode).toBe("bento");
+    expect(persisted().layoutMode).toBe("bento");
+  });
+
+  it("migrates pre-mode settings by column count", () => {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({ maxColumns: 3 }));
+    const grid = renderHook(() => useView(), { wrapper });
+    expect(grid.result.current.layoutMode).toBe("masonry");
+    grid.unmount();
+
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({ maxColumns: 1 }));
+    const list = renderHook(() => useView(), { wrapper });
+    expect(list.result.current.layoutMode).toBe("flow");
+  });
+
+  it("restores an explicit persisted mode", () => {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({ layoutMode: "bento", maxColumns: 2 }));
+
+    const { result } = renderHook(() => useView(), { wrapper });
+
+    expect(result.current.layoutMode).toBe("bento");
+    expect(result.current.maxColumns).toBe(2);
+  });
+
+  it("falls back to flow for an invalid persisted mode", () => {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({ layoutMode: "diagonal" }));
+
+    const { result } = renderHook(() => useView(), { wrapper });
+
+    expect(result.current.layoutMode).toBe("flow");
+  });
+});

@@ -30,8 +30,16 @@ const Explore = () => {
 
   return (
     <PagedMemoList
-      renderer={(memo: Memo, { compact }) => (
-        <MemoView key={getMemoKey(memo)} memo={memo} showCreator showVisibility showSpace={!selectedSpaceName} compact={compact} />
+      renderer={(memo: Memo, { compact, variant }) => (
+        <MemoView
+          key={getMemoKey(memo)}
+          memo={memo}
+          showCreator
+          showVisibility
+          showSpace={!selectedSpaceName}
+          compact={compact}
+          variant={variant}
+        />
       )}
       listSort={listSort}
       orderBy={orderBy}

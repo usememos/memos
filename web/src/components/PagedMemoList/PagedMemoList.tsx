@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { State } from "@/types/proto/api/v1/common_pb";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
+import BentoGrid from "../BentoGrid";
 import ColumnGrid, { columnCountForWidth, GRID_GAP } from "../ColumnGrid";
 import MemoFilters from "../MemoFilters";
 import Placeholder from "../Placeholder";
@@ -36,7 +37,7 @@ const Loader = () => (
 );
 
 interface Props {
-  renderer: (memo: Memo, options: { compact: boolean }) => ReactElement;
+  renderer: (memo: Memo, options: { compact: boolean; variant: "card" | "bento" }) => ReactElement;
   listSort?: (list: Memo[]) => Memo[];
   state?: State;
   orderBy?: string;
@@ -117,10 +118,10 @@ const PagedMemoList = (props: Props) => {
   const t = useTranslate();
   const { isUserSettingsInitialized } = useAuth();
   const { filters } = useMemoFilterContext();
-  const { maxColumns, compactMode } = useView();
-  // maxColumns is a ceiling: 1 = single reading column, 0 = as many as fit. The single
-  // column renders in normal document flow; anything wider becomes the packed grid.
-  const multiColumn = maxColumns !== 1;
+  const { maxColumns, compactMode, layoutMode } = useView();
+  // layoutMode is authoritative; maxColumns is a ceiling for the grid modes. The single
+  // column renders in normal document flow; anything wider becomes a grid.
+  const multiColumn = layoutMode !== "flow" && maxColumns !== 1;
 
   // Measure the available width: when it only fits one column anyway, render the flow
   // layout rather than a degenerate one-column grid (capped tiles, composer-as-tile).
@@ -139,6 +140,8 @@ const PagedMemoList = (props: Props) => {
     return () => observer.disconnect();
   }, []);
   const useGrid = multiColumn && (fitsGridWidth ?? true);
+  const useBentoGrid = useGrid && layoutMode === "bento";
+  const cardVariant: "card" | "bento" = useBentoGrid ? "bento" : "card";
   // Grid tiles are always bounded/compact; the narrow-width fallback behaves exactly like
   // maxColumns = 1, so it respects the user's own compact setting. Centralized here so the
   // pages don't each repeat the policy.
@@ -254,12 +257,25 @@ const PagedMemoList = (props: Props) => {
     <MentionResolutionProvider contents={contents} userNames={userNames}>
       <div ref={layoutMeasureRef} className="w-full">
         <div className={cn("flex flex-col justify-start w-full mx-auto", useGrid ? "max-w-none" : "max-w-2xl")}>
-          {useGrid ? (
+          {useBentoGrid ? (
+            <>
+              <BentoGrid
+                items={displayMemoList}
+                getKey={getMemoKey}
+                renderItem={(memo) => props.renderer(memo, { compact: effectiveCompact, variant: cardVariant })}
+                leading={gridLeading}
+                priorityKey={priorityKey}
+                maxColumns={maxColumns}
+                maxColumnWidth={MAX_COLUMN_WIDTH}
+              />
+              {!isDisplayPending && footer}
+            </>
+          ) : useGrid ? (
             <>
               <ColumnGrid
                 items={displayMemoList}
                 getKey={getMemoKey}
-                renderItem={(memo) => props.renderer(memo, { compact: effectiveCompact })}
+                renderItem={(memo) => props.renderer(memo, { compact: effectiveCompact, variant: "card" })}
                 estimateHeight={estimateMemoCardHeight}
                 leading={gridLeading}
                 priorityKey={priorityKey}
@@ -273,7 +289,7 @@ const PagedMemoList = (props: Props) => {
               {leadingContent}
               <MemoFilters className="mb-2" />
               {initialLoader}
-              {displayMemoList.map((memo) => props.renderer(memo, { compact: effectiveCompact }))}
+              {displayMemoList.map((memo) => props.renderer(memo, { compact: effectiveCompact, variant: "card" }))}
               {emptyPlaceholder}
               {!isDisplayPending && footer}
             </>

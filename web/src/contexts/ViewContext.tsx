@@ -6,6 +6,10 @@ export type MemoTimeBasis = "create_time" | "update_time";
 export const MAX_COLUMNS_VALUES = [1, 2, 3, 0] as const;
 export type MemoMaxColumns = (typeof MAX_COLUMNS_VALUES)[number];
 
+/** How the feed arranges memos. `layoutMode` is authoritative; `maxColumns` only applies to the grid modes. */
+export const LAYOUT_MODE_VALUES = ["flow", "masonry", "bento"] as const;
+export type MemoLayoutMode = (typeof LAYOUT_MODE_VALUES)[number];
+
 interface ViewState {
   orderByTimeAsc: boolean;
   timeBasis?: MemoTimeBasis;
@@ -13,6 +17,7 @@ interface ViewState {
   compactMode: boolean;
   linkPreview: boolean;
   maxColumns: MemoMaxColumns;
+  layoutMode: MemoLayoutMode;
 }
 
 interface ViewContextValue {
@@ -21,18 +26,26 @@ interface ViewContextValue {
   compactMode: boolean;
   linkPreview: boolean;
   maxColumns: MemoMaxColumns;
+  layoutMode: MemoLayoutMode;
   setOrderByTimeAsc: (value: boolean) => void;
   setTimeBasis: (field: MemoTimeBasis) => void;
   setCompactMode: (value: boolean) => void;
   setLinkPreview: (value: boolean) => void;
   setMaxColumns: (value: MemoMaxColumns) => void;
+  setLayoutMode: (value: MemoLayoutMode) => void;
 }
 
 const ViewContext = createContext<ViewContextValue | null>(null);
 
 const LOCAL_STORAGE_KEY = "memos-view-setting";
 
-const DEFAULT_VIEW_STATE: ViewState = { orderByTimeAsc: false, compactMode: false, linkPreview: true, maxColumns: 1 };
+const DEFAULT_VIEW_STATE: ViewState = {
+  orderByTimeAsc: false,
+  compactMode: false,
+  linkPreview: true,
+  maxColumns: 1,
+  layoutMode: "flow",
+};
 
 export function ViewProvider({ children }: { children: ReactNode }) {
   const getInitialState = (): ViewState => {
@@ -45,12 +58,20 @@ export function ViewProvider({ children }: { children: ReactNode }) {
         const maxColumns = MAX_COLUMNS_VALUES.includes(data.maxColumns as MemoMaxColumns)
           ? (data.maxColumns as MemoMaxColumns)
           : DEFAULT_VIEW_STATE.maxColumns;
+        // Migration: settings persisted before layoutMode existed conflated the mode with
+        // the column count — 1 was the reading list, anything else was the masonry grid.
+        const layoutMode = LAYOUT_MODE_VALUES.includes(data.layoutMode as MemoLayoutMode)
+          ? (data.layoutMode as MemoLayoutMode)
+          : maxColumns === 1
+            ? "flow"
+            : "masonry";
         return {
           orderByTimeAsc: Boolean(data.orderByTimeAsc ?? DEFAULT_VIEW_STATE.orderByTimeAsc),
           timeBasis,
           compactMode: Boolean(data.compactMode ?? DEFAULT_VIEW_STATE.compactMode),
           linkPreview: Boolean(data.linkPreview ?? DEFAULT_VIEW_STATE.linkPreview),
           maxColumns,
+          layoutMode,
         };
       }
     } catch (error) {
@@ -83,6 +104,7 @@ export function ViewProvider({ children }: { children: ReactNode }) {
   const setCompactMode = (value: boolean) => updateState({ compactMode: value });
   const setLinkPreview = (value: boolean) => updateState({ linkPreview: value });
   const setMaxColumns = (value: MemoMaxColumns) => updateState({ maxColumns: value });
+  const setLayoutMode = (value: MemoLayoutMode) => updateState({ layoutMode: value });
 
   return (
     <ViewContext.Provider
@@ -92,11 +114,13 @@ export function ViewProvider({ children }: { children: ReactNode }) {
         compactMode: viewState.compactMode,
         linkPreview: viewState.linkPreview,
         maxColumns: viewState.maxColumns,
+        layoutMode: viewState.layoutMode,
         setOrderByTimeAsc,
         setTimeBasis,
         setCompactMode,
         setLinkPreview,
         setMaxColumns,
+        setLayoutMode,
       }}
     >
       {children}
