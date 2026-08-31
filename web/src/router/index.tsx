@@ -25,6 +25,7 @@ const NotFound = lazyWithReload(() => import("@/pages/NotFound"));
 const PermissionDenied = lazyWithReload(() => import("@/pages/PermissionDenied"));
 const Attachments = lazyWithReload(() => import("@/pages/Attachments"));
 const Bookmark = lazyWithReload(() => import("@/pages/Bookmark"));
+const Bookmarks = lazyWithReload(() => import("@/pages/Bookmarks"));
 const Setting = lazyWithReload(() => import("@/pages/Setting"));
 const MemoViews = lazyWithReload(() => import("@/pages/MemoViews"));
 const SignIn = lazyWithReload(() => import("@/pages/SignIn"));
@@ -108,6 +109,7 @@ export const routeConfig: RouteObject[] = [
                 children: [
                   { path: Routes.ATTACHMENTS, element: <Attachments /> },
                   { path: Routes.BOOKMARK, element: <Bookmark /> },
+                  { path: Routes.BOOKMARKS, element: <Bookmarks /> },
                   { path: Routes.INBOX, element: <Inboxes /> },
                   { path: Routes.SETTING, element: <Setting /> },
                 ],

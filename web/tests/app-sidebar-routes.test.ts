@@ -14,6 +14,8 @@ describe("sidebar route content", () => {
     ["/Views/", "views"],
     ["/attachments", "attachments"],
     ["/Attachments/", "attachments"],
+    ["/bookmarks", "bookmarks"],
+    ["/Bookmarks/", "bookmarks"],
     ["/inbox", "inbox"],
     ["/Inbox/", "inbox"],
     ["/setting", "settings"],
@@ -36,6 +38,8 @@ describe("sidebar route content", () => {
     ["/Explore/", true],
     ["/ARCHIVED/", false],
     ["/Attachments/", true],
+    ["/bookmarks", true],
+    ["/Bookmarks/", true],
     ["/u/steven", false],
     ["/inbox", false],
     ["/setting", false],
@@ -64,6 +68,14 @@ describe("sidebar route content", () => {
 
   it("keeps the remembered scope when Attachments sends search to Home", () => {
     expect(getRouteActionPolicy("/attachments")).toEqual({
+      searchScope: "remembered-collection",
+      searchDestination: "/",
+      composePlacement: "remembered-space",
+    });
+  });
+
+  it("keeps the remembered scope when Bookmarks sends search to Home", () => {
+    expect(getRouteActionPolicy("/bookmarks")).toEqual({
       searchScope: "remembered-collection",
       searchDestination: "/",
       composePlacement: "remembered-space",

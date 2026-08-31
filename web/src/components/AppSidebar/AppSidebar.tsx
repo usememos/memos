@@ -3,6 +3,7 @@ import {
   ArchiveIcon,
   ArrowRightIcon,
   BellIcon,
+  BookmarkIcon,
   BookOpenIcon,
   ChevronDownIcon,
   EarthIcon,
@@ -282,8 +283,12 @@ const MemoDetailSidebarContent = () => {
 const RouteSidebarContent = () => {
   const location = useLocation();
   const kind = getSidebarRouteKind(location.pathname);
-  if (kind === "home" || kind === "archived" || kind === "explore" || kind === "profile") {
-    return <CollectionSidebarContent context={kind} />;
+  if (kind === "home" || kind === "archived" || kind === "explore" || kind === "profile" || kind === "bookmarks") {
+    // Bookmarks reuse the home stats context: the feed is the current user's, scoped by
+    // the remembered collection. ponytail: dedicated has_link-scoped stats would widen
+    // MemoStatsContext and thread a filter through useFilteredMemoStats; add when
+    // bookmark-specific counts matter.
+    return <CollectionSidebarContent context={kind === "bookmarks" ? "home" : kind} />;
   }
   if (kind === "views") return <ViewsSection manageActive />;
   if (kind === "attachments") return <AttachmentsSidebarContent />;
@@ -382,6 +387,13 @@ const GlobalNavigation = () => {
           path: `${ROUTES.HOME}?filter=tagSearch:${encodeURIComponent("unread")}`,
           icon: BookOpenIcon,
           active: routeKind === "home" && filters.some((filter) => filter.factor === "tagSearch" && filter.value === "unread"),
+        },
+        {
+          id: "bookmarks",
+          label: t("common.bookmarks"),
+          path: ROUTES.BOOKMARKS,
+          icon: BookmarkIcon,
+          active: routeKind === "bookmarks",
         },
         {
           id: "attachments",
