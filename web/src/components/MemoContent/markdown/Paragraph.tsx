@@ -53,13 +53,14 @@ export function getSingleLinkHref(node?: Element): string | undefined {
 
 const DeferredLinkPreview = ({ children, className, href, ...props }: DeferredLinkPreviewProps) => {
   const { ref: viewportRef, isNearViewport } = useNearViewport<HTMLParagraphElement>();
+  const { linkMetadata } = useMarkdownRenderContext();
   const fallback = (
     <p ref={viewportRef} className={cn(markdownStyles.paragraph, className)} {...props}>
       {children}
     </p>
   );
 
-  return <LinkMetadataCard url={href} fallback={fallback} enabled={isNearViewport} />;
+  return <LinkMetadataCard url={href} stored={linkMetadata?.[href]} fallback={fallback} enabled={isNearViewport} />;
 };
 
 export const Paragraph = ({ children, className, node, ...props }: ParagraphProps) => {

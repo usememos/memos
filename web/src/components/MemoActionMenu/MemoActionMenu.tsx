@@ -3,6 +3,7 @@ import {
   ArchiveRestoreIcon,
   BookmarkMinusIcon,
   BookmarkPlusIcon,
+  BookOpenIcon,
   CheckCheckIcon,
   CopyIcon,
   Edit3Icon,
@@ -42,6 +43,7 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
   const isArchived = memo.state === State.ARCHIVED;
   const canMutateTasks = !readonly && !isArchived && Boolean(memo.property?.hasTaskList);
   const hasOpenTasks = Boolean(memo.property?.hasIncompleteTasks);
+  const isUnread = !readonly && !isArchived && !isComment && memo.tags.includes("unread");
 
   // Action handlers
   const {
@@ -52,6 +54,7 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
     handleCopyContent,
     handleCheckAllTaskListItemsClick,
     handleUncheckAllTaskListItemsClick,
+    handleMarkAsReadClick,
     handleDeleteMemoClick,
     confirmDeleteMemo,
   } = useMemoActionHandlers({
@@ -104,6 +107,12 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
         )}
 
         {/* Task submenu (writable task memos) */}
+        {isUnread && (
+          <DropdownMenuItem onClick={handleMarkAsReadClick}>
+            <BookOpenIcon className="w-4 h-auto" />
+            Mark as read
+          </DropdownMenuItem>
+        )}
         {canMutateTasks && (
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>

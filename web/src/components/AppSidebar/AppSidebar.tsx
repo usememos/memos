@@ -3,6 +3,7 @@ import {
   ArchiveIcon,
   ArrowRightIcon,
   BellIcon,
+  BookOpenIcon,
   ChevronDownIcon,
   EarthIcon,
   FileAudioIcon,
@@ -375,6 +376,13 @@ const GlobalNavigation = () => {
 
   const items: GlobalNavItem[] = currentUser
     ? [
+        {
+          id: "unread",
+          label: "#unread",
+          path: `${ROUTES.HOME}?filter=tagSearch:${encodeURIComponent("unread")}`,
+          icon: BookOpenIcon,
+          active: routeKind === "home" && filters.some((filter) => filter.factor === "tagSearch" && filter.value === "unread"),
+        },
         {
           id: "attachments",
           label: t("common.attachments"),

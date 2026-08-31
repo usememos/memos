@@ -2,11 +2,14 @@ import type React from "react";
 import { useEffect, useState } from "react";
 import { useLinkMetadata } from "@/hooks/useMemoQueries";
 import { cn } from "@/lib/utils";
+import type { LinkMetadata } from "@/types/proto/api/v1/memo_service_pb";
 
 interface LinkMetadataCardProps {
   url: string;
   fallback: React.ReactNode;
   enabled?: boolean;
+  /** Metadata persisted with the memo; used when the live fetch fails or has not resolved. */
+  stored?: LinkMetadata;
 }
 
 function getHostname(url: string): string {
@@ -17,21 +20,26 @@ function getHostname(url: string): string {
   }
 }
 
-const LinkMetadataCard = ({ url, fallback, enabled = true }: LinkMetadataCardProps) => {
+const LinkMetadataCard = ({ url, fallback, enabled = true, stored }: LinkMetadataCardProps) => {
   const [imageFailed, setImageFailed] = useState(false);
-  const { data: metadata, isSuccess } = useLinkMetadata(url, { enabled });
+  const { data: fetched, isSuccess } = useLinkMetadata(url, { enabled });
 
+  // Live fetch wins; persisted metadata keeps the card alive when the page
+  // is gone or the fetch fails.
+  const metadata = isSuccess && (fetched?.title.trim() || fetched?.description.trim()) ? fetched : stored;
   const title = metadata?.title.trim() ?? "";
   const description = metadata?.description.trim() ?? "";
-  const image = metadata?.image.trim() ?? "";
-  const hostname = getHostname(metadata?.url || url);
   const hasUsefulMetadata = title !== "" || description !== "";
+
+  const coverUrl = stored?.coverAttachmentUid ? `/file/attachments/${stored.coverAttachmentUid}` : "";
+  const image = coverUrl || metadata?.image.trim() || "";
+  const hostname = getHostname(metadata?.url || url);
 
   useEffect(() => {
     setImageFailed(false);
   }, [url, image]);
 
-  if (!isSuccess || !hasUsefulMetadata) {
+  if (!hasUsefulMetadata) {
     return fallback;
   }
 

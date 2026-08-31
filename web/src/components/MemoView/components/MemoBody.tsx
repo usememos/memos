@@ -61,6 +61,7 @@ const MemoBody: React.FC<MemoBodyProps> = ({ compact }) => {
             parentScope={parentScope}
             content={memo.content}
             attachments={memo.attachments}
+            linkMetadata={memo.property?.links}
             onClick={handleMemoContentClick}
             onDoubleClick={handleMemoContentDoubleClick}
             compact={Boolean(compact)}

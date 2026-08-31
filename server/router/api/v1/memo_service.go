@@ -390,6 +390,7 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 			if err := memopayload.RebuildMemoPayload(ctx, &nextMemo, s.MarkdownService); err != nil {
 				return nil, status.Errorf(codes.Internal, "failed to rebuild memo payload: %v", err)
 			}
+			s.EnrichMemoLinks(ctx, &nextMemo)
 			update.Content = &nextMemo.Content
 			update.Payload = nextMemo.Payload
 		} else if path == "pinned" {

@@ -287,6 +287,8 @@ message Memo {
     bool has_incomplete_tasks = 4;
     // The title extracted from the first H1 heading, if present.
     string title = 5;
+    // Metadata for links found in the memo content, persisted at write time.
+    repeated LinkMetadata links = 6;
   }
 }
 
@@ -671,4 +673,8 @@ message LinkMetadata {
 
   // The link image URL.
   string image = 4;
+
+  // The attachment name serving the locally cached cover image, if any.
+  // Only set on metadata persisted with a memo.
+  string cover_attachment_uid = 5;
 }

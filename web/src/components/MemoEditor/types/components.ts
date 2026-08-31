@@ -9,6 +9,8 @@ export interface MemoEditorProps {
   placeholder?: string;
   /** Existing memo to edit. When provided, the editor initializes from it without fetching. */
   memo?: Memo;
+  /** Initial content for a new memo; overrides any cached draft. Ignored in edit mode. */
+  initialContent?: string;
   parentMemoName?: string;
   /** Assigns a newly created top-level memo to this Space. Ignored for edits and comments. */
   defaultSpace?: string;

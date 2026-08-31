@@ -30,6 +30,7 @@ type ManagedAttachmentReference struct {
 type ExtractedData struct {
 	Tags                               []string
 	Mentions                           []string
+	Links                              []string
 	ImageDestinations                  []string
 	ManagedAttachmentReferences        []ManagedAttachmentReference
 	InvalidManagedAttachmentReferences []string
@@ -385,6 +386,19 @@ func (s *service) ValidateContent(content []byte) error {
 	return err
 }
 
+// appendUniqueLink records an http(s) link destination once.
+func appendUniqueLink(data *ExtractedData, destination string) {
+	if !strings.HasPrefix(destination, "http://") && !strings.HasPrefix(destination, "https://") {
+		return
+	}
+	for _, existing := range data.Links {
+		if existing == destination {
+			return
+		}
+	}
+	data.Links = append(data.Links, destination)
+}
+
 // ExtractAll extracts tags, properties, and references in a single parse for efficiency.
 func (s *service) ExtractAll(content []byte) (*ExtractedData, error) {
 	root, err := s.parse(content)
@@ -395,6 +409,7 @@ func (s *service) ExtractAll(content []byte) (*ExtractedData, error) {
 	data := &ExtractedData{
 		Tags:                        []string{},
 		Mentions:                    []string{},
+		Links:                       []string{},
 		ImageDestinations:           []string{},
 		ManagedAttachmentReferences: []ManagedAttachmentReference{},
 		Property:                    &storepb.MemoPayload_Property{},
@@ -442,7 +457,17 @@ func (s *service) ExtractAll(content []byte) (*ExtractedData, error) {
 
 		// Extract properties based on node kind
 		switch n.Kind() {
-		case gast.KindLink, gast.KindAutoLink, mast.KindGFMEmail:
+		case gast.KindLink:
+			data.Property.HasLink = true
+			if link, ok := n.(*gast.Link); ok {
+				appendUniqueLink(data, string(link.Destination))
+			}
+		case gast.KindAutoLink:
+			data.Property.HasLink = true
+			if autoLink, ok := n.(*gast.AutoLink); ok {
+				appendUniqueLink(data, string(autoLink.URL(content)))
+			}
+		case mast.KindGFMEmail:
 			data.Property.HasLink = true
 
 		case gast.KindCodeBlock, gast.KindFencedCodeBlock, gast.KindCodeSpan:

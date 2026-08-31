@@ -24,6 +24,7 @@ const (
 
 	maxHTMLMetaBytes     = 512 * 1024
 	maxOEmbedBytes       = 128 * 1024
+	maxCoverImageBytes   = 5 * 1024 * 1024
 	maxCacheEntries      = 1000
 	maxConcurrentFetches = 8
 	fetchTimeout         = 5 * time.Second
@@ -220,6 +221,42 @@ func (f *HTMLMetaFetcher) Get(ctx context.Context, urlStr string) (*HTMLMeta, er
 		}
 		return cloneHTMLMeta(meta), nil
 	}
+}
+
+// GetImage downloads an image over the fetcher's SSRF-safe client. It is
+// used to cache link cover images locally.
+func (f *HTMLMetaFetcher) GetImage(ctx context.Context, urlStr string) (*Image, error) {
+	if err := validateURL(urlStr); err != nil {
+		return nil, err
+	}
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, urlStr, nil)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to create image request")
+	}
+	setRequestHeaders(request, "image/*")
+
+	response, err := f.client.Do(request)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to fetch image")
+	}
+	defer response.Body.Close()
+	if response.StatusCode < http.StatusOK || response.StatusCode >= http.StatusMultipleChoices {
+		return nil, errors.Errorf("unexpected HTTP status: %s", response.Status)
+	}
+
+	mediaType, err := getMediatype(response)
+	if err != nil {
+		return nil, err
+	}
+	if !strings.HasPrefix(mediaType, "image/") {
+		return nil, errors.New("not an image")
+	}
+
+	bodyBytes, err := io.ReadAll(io.LimitReader(response.Body, maxCoverImageBytes))
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to read image body")
+	}
+	return &Image{Blob: bodyBytes, Mediatype: mediaType}, nil
 }
 
 func (f *HTMLMetaFetcher) fetch(ctx context.Context, urlStr string) (*HTMLMeta, error) {

@@ -22,6 +22,10 @@ func (fetch fakeLinkMetadataFetcher) Get(ctx context.Context, url string) (*http
 	return fetch(ctx, url)
 }
 
+func (fetch fakeLinkMetadataFetcher) GetImage(_ context.Context, _ string) (*httpgetter.Image, error) {
+	return nil, errors.New("image fetch not supported by fake")
+}
+
 func TestGetLinkMetadata(t *testing.T) {
 	requestContext := context.WithValue(context.Background(), linkMetadataContextKey{}, "context value")
 	service := &APIV1Service{

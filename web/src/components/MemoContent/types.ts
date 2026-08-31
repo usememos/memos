@@ -1,5 +1,6 @@
 import type React from "react";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
+import type { LinkMetadata } from "@/types/proto/api/v1/memo_service_pb";
 import type { MemoOriginScope } from "../MemoView/navigation";
 
 export interface MemoContentProps {
@@ -13,6 +14,8 @@ export interface MemoContentProps {
   parentScope?: MemoOriginScope;
   /** The card renders collapsed (ClampedSection), so footnote links navigate instead of scrolling. */
   compact?: boolean;
+  /** Link metadata persisted with the memo, rendered as link card fallbacks. */
+  linkMetadata?: LinkMetadata[];
   className?: string;
   contentClassName?: string;
   onClick?: (e: React.MouseEvent) => void;

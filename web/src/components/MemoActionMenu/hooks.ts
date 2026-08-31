@@ -132,6 +132,13 @@ export const useMemoActionHandlers = ({ memo, parentScope, onEdit, setDeleteDial
     await updateMemoContent(uncheckAllTasks(memo.content), "Uncheck memo task list items");
   }, [memo.content, updateMemoContent]);
 
+  // Removes the #unread tag left by bookmark capture.
+  // ponytail: regex tag removal; use the markdown rename service if tags ever
+  // grow syntax beyond #word.
+  const handleMarkAsReadClick = useCallback(async () => {
+    await updateMemoContent(memo.content.replace(/\s*#unread(?![\w/])/g, ""), "Mark memo as read");
+  }, [memo.content, updateMemoContent]);
+
   const handleDeleteMemoClick = useCallback(() => {
     setDeleteDialogOpen(true);
   }, [setDeleteDialogOpen]);
@@ -175,6 +182,7 @@ export const useMemoActionHandlers = ({ memo, parentScope, onEdit, setDeleteDial
     handleCopyContent,
     handleCheckAllTaskListItemsClick,
     handleUncheckAllTaskListItemsClick,
+    handleMarkAsReadClick,
     handleDeleteMemoClick,
     confirmDeleteMemo,
   };

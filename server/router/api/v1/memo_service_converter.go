@@ -63,6 +63,12 @@ func (s *APIV1Service) convertMemoFromStoreWithCreators(ctx context.Context, mem
 	if memo.Payload != nil {
 		memoMessage.Tags = memo.Payload.Tags
 		memoMessage.Property = convertMemoPropertyFromStore(memo.Payload.Property)
+		if links := convertMemoLinksFromStore(memo.Payload.Links); len(links) > 0 {
+			if memoMessage.Property == nil {
+				memoMessage.Property = &v1pb.Memo_Property{}
+			}
+			memoMessage.Property.Links = links
+		}
 		memoMessage.Location = convertLocationFromStore(memo.Payload.Location)
 	}
 
@@ -365,13 +371,31 @@ func convertMemoPropertyFromStore(property *storepb.MemoPayload_Property) *v1pb.
 	if property == nil {
 		return nil
 	}
-	return &v1pb.Memo_Property{
+	converted := &v1pb.Memo_Property{
 		HasLink:            property.HasLink,
 		HasTaskList:        property.HasTaskList,
 		HasCode:            property.HasCode,
 		HasIncompleteTasks: property.HasIncompleteTasks,
 		Title:              property.Title,
 	}
+	return converted
+}
+
+func convertMemoLinksFromStore(links []*storepb.MemoPayload_LinkMetadata) []*v1pb.LinkMetadata {
+	if len(links) == 0 {
+		return nil
+	}
+	converted := make([]*v1pb.LinkMetadata, 0, len(links))
+	for _, link := range links {
+		converted = append(converted, &v1pb.LinkMetadata{
+			Url:                link.Url,
+			Title:              link.Title,
+			Description:        link.Description,
+			Image:              link.Image,
+			CoverAttachmentUid: link.CoverAttachmentUid,
+		})
+	}
+	return converted
 }
 
 func convertLocationFromStore(location *storepb.MemoPayload_Location) *v1pb.Location {

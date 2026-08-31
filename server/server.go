@@ -14,12 +14,14 @@ import (
 	"github.com/labstack/echo/v5/middleware"
 	"github.com/pkg/errors"
 
+	"github.com/usememos/memos/internal/markdown"
 	"github.com/usememos/memos/internal/profile"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	apiv1 "github.com/usememos/memos/server/router/api/v1"
 	"github.com/usememos/memos/server/router/fileserver"
 	"github.com/usememos/memos/server/router/frontend"
 	"github.com/usememos/memos/server/router/mcp"
+	"github.com/usememos/memos/server/runner/memopayload"
 	"github.com/usememos/memos/store"
 )
 
@@ -67,6 +69,16 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 
 	apiV1Service := apiv1.NewAPIV1Service(s.Secret, profile, store)
 	s.sseHub = apiV1Service.SSEHub
+
+	// Backfill link metadata for existing memos in the background. Skips
+	// memos without links and skips writes when the payload is unchanged, so
+	// steady-state boots do no work.
+	memoPayloadRunner := memopayload.NewRunner(store, markdown.NewService(
+		markdown.WithTagExtension(),
+		markdown.WithMentionExtension(),
+	))
+	memoPayloadRunner.EnrichMemoLinks = apiV1Service.EnrichMemoLinks
+	go memoPayloadRunner.RunOnce(ctx)
 
 	// Register HTTP file server routes BEFORE gRPC-Gateway to ensure proper range request handling for Safari.
 	// This uses native HTTP serving (http.ServeContent) instead of gRPC for video/audio files.

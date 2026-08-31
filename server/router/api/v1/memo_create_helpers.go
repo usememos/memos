@@ -72,6 +72,7 @@ func (s *APIV1Service) prepareMemoCreate(ctx context.Context, user *store.User, 
 	if err := memopayload.RebuildMemoPayload(ctx, memo, s.MarkdownService); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to rebuild memo payload: %v", err)
 	}
+	s.EnrichMemoLinks(ctx, memo)
 	if input.Location != nil {
 		memo.Payload.Location = convertLocationToStore(input.Location)
 	}

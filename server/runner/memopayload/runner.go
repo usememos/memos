@@ -3,8 +3,10 @@ package memopayload
 import (
 	"context"
 	"log/slog"
+	"time"
 
 	"github.com/pkg/errors"
+	"google.golang.org/protobuf/proto"
 
 	"github.com/usememos/memos/internal/markdown"
 	storepb "github.com/usememos/memos/proto/gen/store"
@@ -14,6 +16,10 @@ import (
 type Runner struct {
 	Store           *store.Store
 	MarkdownService markdown.Service
+	// EnrichMemoLinks, when set, persists link metadata for each memo after
+	// the payload rebuild. Injected by the API v1 service to reuse its
+	// fetcher and attachment storage wiring.
+	EnrichMemoLinks func(ctx context.Context, memo *store.Memo)
 }
 
 func NewRunner(store *store.Store, markdownService markdown.Service) *Runner {
@@ -49,8 +55,19 @@ func (r *Runner) RunOnce(ctx context.Context) {
 		// Process batch
 		batchSuccessCount := 0
 		for _, memo := range memos {
+			if !memo.Payload.GetProperty().GetHasLink() {
+				continue
+			}
+			previous := proto.Clone(memo.Payload).(*storepb.MemoPayload)
 			if err := RebuildMemoPayload(ctx, memo, r.MarkdownService); err != nil {
 				slog.Error("failed to rebuild memo payload", "err", err, "memoID", memo.ID)
+				continue
+			}
+			if r.EnrichMemoLinks != nil {
+				r.EnrichMemoLinks(ctx, memo)
+			}
+			if proto.Equal(previous, memo.Payload) {
+				batchSuccessCount++
 				continue
 			}
 			if err := r.Store.UpdateMemo(ctx, &store.UpdateMemo{
@@ -65,6 +82,14 @@ func (r *Runner) RunOnce(ctx context.Context) {
 
 		processed += len(memos)
 		slog.Info("Processed memo batch", "batchSize", len(memos), "successCount", batchSuccessCount, "totalProcessed", processed)
+
+		// Rate-limit so a large backfill stays gentle on a live instance.
+		// ponytail: fixed 100ms/batch; make configurable if instances grow big.
+		select {
+		case <-ctx.Done():
+			return
+		case <-time.After(100 * time.Millisecond):
+		}
 
 		// Move to next batch
 		offset += len(memos)

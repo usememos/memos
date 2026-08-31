@@ -12,6 +12,8 @@ interface UseMemoInitOptions {
   autoFocus?: boolean;
   defaultVisibility?: Visibility;
   defaultCreateTime?: Date;
+  /** Initial content for a new memo; takes precedence over any cached draft. */
+  initialContent?: string;
 }
 
 export const useMemoInit = ({
@@ -22,6 +24,7 @@ export const useMemoInit = ({
   autoFocus,
   defaultVisibility,
   defaultCreateTime,
+  initialContent,
 }: UseMemoInitOptions) => {
   const { actions, dispatch } = useEditorContext();
   const initializedRef = useRef(false);
@@ -37,12 +40,16 @@ export const useMemoInit = ({
       cacheService.clear(key);
       dispatch(actions.initMemo(initialState));
     } else {
-      const cachedDraft = cacheService.loadDraft(key);
-      if (cachedDraft.content) {
-        dispatch(actions.setContent(cachedDraft.content));
-      }
-      if (cachedDraft.attachments.length > 0) {
-        dispatch(actions.setMetadata({ attachments: cachedDraft.attachments }));
+      if (initialContent !== undefined) {
+        dispatch(actions.setContent(initialContent));
+      } else {
+        const cachedDraft = cacheService.loadDraft(key);
+        if (cachedDraft.content) {
+          dispatch(actions.setContent(cachedDraft.content));
+        }
+        if (cachedDraft.attachments.length > 0) {
+          dispatch(actions.setMetadata({ attachments: cachedDraft.attachments }));
+        }
       }
       if (defaultVisibility !== undefined) {
         dispatch(actions.setMetadata({ visibility: defaultVisibility }));

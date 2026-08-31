@@ -3641,6 +3641,11 @@ components:
                 image:
                     type: string
                     description: The link image URL.
+                coverAttachmentUid:
+                    type: string
+                    description: |-
+                        The attachment name serving the locally cached cover image, if any.
+                         Only set on metadata persisted with a memo.
         LinkedIdentity:
             type: object
             properties:
@@ -4102,6 +4107,11 @@ components:
                 title:
                     type: string
                     description: The title extracted from the first H1 heading, if present.
+                links:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/LinkMetadata'
+                    description: Metadata for links found in the memo content, persisted at write time.
             description: Computed properties of a memo.
         MotionMedia:
             type: object

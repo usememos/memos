@@ -1,15 +1,16 @@
 import type { Element } from "hast";
-import { type ComponentProps, memo, type ReactNode, Suspense } from "react";
+import { type ComponentProps, memo, type ReactNode, Suspense, useMemo } from "react";
 import type { Components } from "react-markdown";
 import ReactMarkdown from "react-markdown";
 import { buildRehypePlugins, buildRemarkPlugins } from "@/components/MemoContent/pipeline";
 import { isMentionElement, isTagElement, isTaskListItemElement } from "@/types/markdown";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
+import type { LinkMetadata } from "@/types/proto/api/v1/memo_service_pb";
 import { lazyWithReload } from "@/utils/lazy";
 import { resolveManagedAttachmentImageSource } from "@/utils/managed-attachment";
 import type { MemoOriginScope } from "../MemoView/navigation";
 import { CodeBlock } from "./CodeBlock";
-import { MarkdownRenderContext, rootMarkdownRenderContext } from "./MarkdownRenderContext";
+import { MarkdownRenderContext, type MarkdownRenderContextValue, rootMarkdownRenderContext } from "./MarkdownRenderContext";
 import { Mention } from "./Mention";
 import { AnchorLink, Blockquote, Heading, HorizontalRule, Image, InlineCode, Link, List, ListItem, Paragraph } from "./markdown";
 import { hasMathSyntax } from "./math";
@@ -29,6 +30,8 @@ export interface MemoMarkdownRendererProps {
   parentScope?: MemoOriginScope;
   /** Whether the memo is rendered as a collapsed feed card. */
   compact?: boolean;
+  /** Link metadata persisted with the memo, rendered as link card fallbacks. */
+  linkMetadata?: LinkMetadata[];
 }
 
 type RemarkPlugins = NonNullable<ComponentProps<typeof ReactMarkdown>["remarkPlugins"]>;
@@ -69,6 +72,7 @@ export const MemoMarkdownRendererCore = ({
   parentPage,
   parentScope,
   compact,
+  linkMetadata,
   mathRemarkPlugins = [],
   mathRehypePlugins = [],
 }: MemoMarkdownRendererCoreProps) => {
@@ -157,8 +161,19 @@ export const MemoMarkdownRendererCore = ({
     td: ({ children, ...props }) => <TableCell {...props}>{children}</TableCell>,
   };
 
+  const renderContextValue = useMemo<MarkdownRenderContextValue>(() => {
+    if (!linkMetadata?.length) {
+      return rootMarkdownRenderContext;
+    }
+    const byUrl: Record<string, LinkMetadata> = {};
+    for (const entry of linkMetadata) {
+      byUrl[entry.url] = entry;
+    }
+    return { blockDepth: 0, linkMetadata: byUrl };
+  }, [linkMetadata]);
+
   return (
-    <MarkdownRenderContext.Provider value={rootMarkdownRenderContext}>
+    <MarkdownRenderContext.Provider value={renderContextValue}>
       <ReactMarkdown
         remarkPlugins={buildRemarkPlugins(mathRemarkPlugins)}
         rehypePlugins={buildRehypePlugins(mathRehypePlugins)}

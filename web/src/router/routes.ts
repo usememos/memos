@@ -11,6 +11,7 @@ export const ROUTES = {
   AUTH_SIGNUP: "/auth/signup",
   AUTH_ADMIN: "/auth/admin",
   AUTH_CALLBACK: "/auth/callback",
+  BOOKMARK: "/bookmark",
   SHARED_MEMO: "/memos/shares",
 } as const;
 

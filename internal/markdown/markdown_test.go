@@ -343,6 +343,53 @@ func TestExtractAllTitle(t *testing.T) {
 	}
 }
 
+func TestExtractAllLinks(t *testing.T) {
+	svc := NewService(WithTagExtension())
+
+	tests := []struct {
+		name    string
+		content string
+		links   []string
+	}{
+		{
+			name:    "markdown link",
+			content: "[Docs](https://example.com/docs)",
+			links:   []string{"https://example.com/docs"},
+		},
+		{
+			name:    "autolink",
+			content: "Read https://example.com/post now",
+			links:   []string{"https://example.com/post"},
+		},
+		{
+			name:    "duplicates deduped",
+			content: "[Same](https://example.com/a) and https://example.com/a again",
+			links:   []string{"https://example.com/a"},
+		},
+		{
+			name:    "mailto and relative excluded",
+			content: "[Mail](mailto:a@b.com) [Rel](/local/path)",
+			links:   []string{},
+		},
+		{
+			name:    "no links",
+			content: "Plain #tag text",
+			links:   []string{},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			data, err := svc.ExtractAll([]byte(tt.content))
+			require.NoError(t, err)
+			assert.Equal(t, tt.links, data.Links, "Links")
+			if len(tt.links) > 0 {
+				assert.True(t, data.Property.HasLink, "HasLink")
+			}
+		})
+	}
+}
+
 func TestExtractAllMentions(t *testing.T) {
 	svc := NewService(WithTagExtension(), WithMentionExtension())
 

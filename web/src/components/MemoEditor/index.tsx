@@ -43,6 +43,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   parentMemoName,
   defaultSpace,
   autoFocus,
+  initialContent,
   onFocusModeExit,
   placeholder,
   defaultCreateTime,
@@ -94,6 +95,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
     autoFocus,
     defaultVisibility,
     defaultCreateTime,
+    initialContent,
   });
   const isDraftCacheEnabled = !memo;
 

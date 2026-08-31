@@ -11,6 +11,9 @@ message MemoPayload {
 
   repeated string tags = 3;
 
+  // Metadata for links found in the memo content, persisted at write time.
+  repeated LinkMetadata links = 4;
+
   // The calculated properties from the memo content.
   message Property {
     bool has_link = 1;
@@ -25,5 +28,16 @@ message MemoPayload {
     string placeholder = 1;
     double latitude = 2;
     double longitude = 3;
+  }
+
+  // Metadata for a single link in the memo content.
+  message LinkMetadata {
+    string url = 1;
+    string title = 2;
+    string description = 3;
+    // The original og:image URL, kept as a fallback.
+    string image = 4;
+    // The attachment name serving the locally cached cover image, if any.
+    string cover_attachment_uid = 5;
   }
 }
