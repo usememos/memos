@@ -4,6 +4,7 @@ import { indentUnit } from "@codemirror/language";
 import { Compartment, type Extension } from "@codemirror/state";
 import { placeholder as cmPlaceholder, dropCursor, EditorView, type KeyBinding, keymap } from "@codemirror/view";
 import { memoMarkdownExtensions } from "@/utils/memo-markdown-extension";
+import { formattingKeymap } from "./formattingKeymap";
 import { headingDecorations } from "./headingDecorations";
 import { liftListItem, sinkListItem } from "./listIndent";
 import { tagAutocomplete } from "./tagAutocomplete";
@@ -113,7 +114,9 @@ export function buildEditorExtensions({
     // tagAutocomplete must precede the editing keymap so the completion popup's
     // Enter/Tab/arrow bindings win while it is open.
     tagAutocomplete(getTags),
-    keymap.of([...submitKeys, ...editorKeys, indentWithTab, ...defaultKeymap, ...historyKeymap]),
+    // formattingKeymap sits above defaultKeymap so Mod-b/i/e/k reach the
+    // formatting commands instead of any default binding on the same chord.
+    keymap.of([...submitKeys, ...editorKeys, ...formattingKeymap, indentWithTab, ...defaultKeymap, ...historyKeymap]),
     EditorView.updateListener.of((u) => {
       if (u.docChanged) onChange(u.state.doc.toString());
       // Toolbar active-state depends only on the doc and selection; skip the
