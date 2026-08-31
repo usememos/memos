@@ -74,40 +74,46 @@ const BentoGrid = ({ items, getKey, renderItem, leading, priorityKey, maxColumns
   }, [items, getKey, priorityKey]);
 
   return (
-    <div
-      ref={containerRef}
-      className="mx-auto w-full"
-      style={{
-        display: "grid",
-        gap: GRID_GAP,
-        gridTemplateColumns: `repeat(${layout.count}, minmax(0, 1fr))`,
-        gridAutoRows: `${layout.rowUnit}px`,
-        gridAutoFlow: "dense",
-        maxWidth: layout.gridWidth || undefined,
-      }}
-    >
-      {leading != null && <div style={{ gridColumn: "1 / -1" }}>{leading}</div>}
-      {orderedItems.map((item) => {
-        const key = getKey(item);
-        const { colSpan, rowSpan } = bentoSpan(item, {
-          columnCount: layout.count,
-          columnWidth: layout.columnWidth,
-          rowUnit: layout.rowUnit,
-        });
-        return (
-          <div
-            key={key}
-            className="flex min-h-0 min-w-0 flex-col overflow-hidden rounded-lg [&>*]:mb-0 [&>*]:flex-1"
-            style={{
-              gridColumn: `span ${Math.min(colSpan, layout.count)}`,
-              gridRow: `span ${rowSpan}`,
-            }}
-          >
-            {renderItem(item)}
-          </div>
-        );
-      })}
-    </div>
+    <>
+      {leading != null && (
+        <div className="mx-auto w-full" style={{ maxWidth: layout.gridWidth || undefined, marginBottom: GRID_GAP }}>
+          {leading}
+        </div>
+      )}
+      <div
+        ref={containerRef}
+        className="mx-auto w-full"
+        style={{
+          display: "grid",
+          gap: GRID_GAP,
+          gridTemplateColumns: `repeat(${layout.count}, minmax(0, 1fr))`,
+          gridAutoRows: `${layout.rowUnit}px`,
+          gridAutoFlow: "dense",
+          maxWidth: layout.gridWidth || undefined,
+        }}
+      >
+        {orderedItems.map((item) => {
+          const key = getKey(item);
+          const { colSpan, rowSpan } = bentoSpan(item, {
+            columnCount: layout.count,
+            columnWidth: layout.columnWidth,
+            rowUnit: layout.rowUnit,
+          });
+          return (
+            <div
+              key={key}
+              className="flex min-h-0 min-w-0 flex-col overflow-hidden rounded-lg [&>*]:mb-0 [&>*]:flex-1"
+              style={{
+                gridColumn: `span ${Math.min(colSpan, layout.count)}`,
+                gridRow: `span ${rowSpan}`,
+              }}
+            >
+              {renderItem(item)}
+            </div>
+          );
+        })}
+      </div>
+    </>
   );
 };
 

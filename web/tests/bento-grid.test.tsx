@@ -30,14 +30,17 @@ describe("<BentoGrid>", () => {
     expect(grid.querySelectorAll("[data-name]")).toHaveLength(2);
   });
 
-  it("renders the leading node as a full-width first row", () => {
+  it("renders the leading node above the grid, outside the fixed-height rows", () => {
     const { container, getByTestId } = render(
       <BentoGrid items={[buildMemo()]} getKey={getKey} renderItem={namedCard} leading={<div data-testid="composer" />} />,
     );
 
     expect(getByTestId("composer")).toBeInTheDocument();
-    const grid = container.firstElementChild as HTMLElement;
-    expect(grid.firstElementChild instanceof HTMLElement && grid.firstElementChild.style.gridColumn).toBe("1 / -1");
+    const leadingWrapper = getByTestId("composer").parentElement as HTMLElement;
+    const grid = leadingWrapper.nextElementSibling as HTMLElement;
+    expect(grid.style.display).toBe("grid");
+    expect(grid.contains(leadingWrapper)).toBe(false);
+    expect(tileOf(container, "memos/main")).toBeTruthy();
   });
 
   it("spans pinned memos across two columns", () => {
