@@ -677,4 +677,8 @@ message LinkMetadata {
   // The attachment name serving the locally cached cover image, if any.
   // Only set on metadata persisted with a memo.
   string cover_attachment_uid = 5;
+
+  // Display dimensions of the cached cover image, for aspect-aware tiles.
+  int32 cover_width = 6;
+  int32 cover_height = 7;
 }

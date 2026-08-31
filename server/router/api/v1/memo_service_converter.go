@@ -393,6 +393,8 @@ func convertMemoLinksFromStore(links []*storepb.MemoPayload_LinkMetadata) []*v1p
 			Description:        link.Description,
 			Image:              link.Image,
 			CoverAttachmentUid: link.CoverAttachmentUid,
+			CoverWidth:         link.CoverWidth,
+			CoverHeight:        link.CoverHeight,
 		})
 	}
 	return converted

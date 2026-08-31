@@ -2128,8 +2128,11 @@ type LinkMetadata struct {
 	// The attachment name serving the locally cached cover image, if any.
 	// Only set on metadata persisted with a memo.
 	CoverAttachmentUid string `protobuf:"bytes,5,opt,name=cover_attachment_uid,json=coverAttachmentUid,proto3" json:"cover_attachment_uid,omitempty"`
-	unknownFields      protoimpl.UnknownFields
-	sizeCache          protoimpl.SizeCache
+	// Display dimensions of the cached cover image, for aspect-aware tiles.
+	CoverWidth    int32 `protobuf:"varint,6,opt,name=cover_width,json=coverWidth,proto3" json:"cover_width,omitempty"`
+	CoverHeight   int32 `protobuf:"varint,7,opt,name=cover_height,json=coverHeight,proto3" json:"cover_height,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *LinkMetadata) Reset() {
@@ -2195,6 +2198,20 @@ func (x *LinkMetadata) GetCoverAttachmentUid() string {
 		return x.CoverAttachmentUid
 	}
 	return ""
+}
+
+func (x *LinkMetadata) GetCoverWidth() int32 {
+	if x != nil {
+		return x.CoverWidth
+	}
+	return 0
+}
+
+func (x *LinkMetadata) GetCoverHeight() int32 {
+	if x != nil {
+		return x.CoverHeight
+	}
+	return 0
 }
 
 // Computed properties of a memo.
@@ -2521,13 +2538,16 @@ const file_api_v1_memo_service_proto_rawDesc = "" +
 	"\x1bBatchGetLinkMetadataRequest\x12\x17\n" +
 	"\x04urls\x18\x01 \x03(\tB\x03\xe0A\x02R\x04urls\"_\n" +
 	"\x1cBatchGetLinkMetadataResponse\x12?\n" +
-	"\rlink_metadata\x18\x01 \x03(\v2\x1a.memos.api.v1.LinkMetadataR\flinkMetadata\"\xa0\x01\n" +
+	"\rlink_metadata\x18\x01 \x03(\v2\x1a.memos.api.v1.LinkMetadataR\flinkMetadata\"\xe4\x01\n" +
 	"\fLinkMetadata\x12\x10\n" +
 	"\x03url\x18\x01 \x01(\tR\x03url\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12 \n" +
 	"\vdescription\x18\x03 \x01(\tR\vdescription\x12\x14\n" +
 	"\x05image\x18\x04 \x01(\tR\x05image\x120\n" +
-	"\x14cover_attachment_uid\x18\x05 \x01(\tR\x12coverAttachmentUid*[\n" +
+	"\x14cover_attachment_uid\x18\x05 \x01(\tR\x12coverAttachmentUid\x12\x1f\n" +
+	"\vcover_width\x18\x06 \x01(\x05R\n" +
+	"coverWidth\x12!\n" +
+	"\fcover_height\x18\a \x01(\x05R\vcoverHeight*[\n" +
 	"\n" +
 	"Visibility\x12\x1a\n" +
 	"\x16VISIBILITY_UNSPECIFIED\x10\x00\x12\v\n" +

@@ -3646,6 +3646,13 @@ components:
                     description: |-
                         The attachment name serving the locally cached cover image, if any.
                          Only set on metadata persisted with a memo.
+                coverWidth:
+                    type: integer
+                    description: Display dimensions of the cached cover image, for aspect-aware tiles.
+                    format: int32
+                coverHeight:
+                    type: integer
+                    format: int32
         LinkedIdentity:
             type: object
             properties:
