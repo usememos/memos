@@ -24,7 +24,19 @@ function makeView(doc: string, onSubmit: () => void = () => {}) {
 }
 
 function press(view: EditorView, key: string, opts: KeyboardEventInit = {}) {
-  view.contentDOM.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true, cancelable: true, ...opts }));
+  view.contentDOM.dispatchEvent(
+    new KeyboardEvent("keydown", {
+      key,
+      bubbles: true,
+      cancelable: true,
+      ...opts,
+    }),
+  );
+}
+
+function select(view: EditorView, text: string) {
+  const from = view.state.doc.toString().indexOf(text);
+  view.dispatch({ selection: { anchor: from, head: from + text.length } });
 }
 
 /** Place the cursor on the given 1-based line, then press Tab/Shift-Tab. */
@@ -35,6 +47,56 @@ function tabOnLine(view: EditorView, lineNumber: number, shiftKey = false) {
 }
 
 describe("editor key bindings", () => {
+  it.each([
+    ["Cmd+B", "b", { metaKey: true }, "**alpha**"],
+    ["Ctrl+B", "b", { ctrlKey: true }, "**alpha**"],
+    ["Cmd+I", "i", { metaKey: true }, "*alpha*"],
+    ["Ctrl+I", "i", { ctrlKey: true }, "*alpha*"],
+    ["Cmd+Shift+X", "x", { metaKey: true, shiftKey: true }, "~~alpha~~"],
+    ["Ctrl+Shift+X", "x", { ctrlKey: true, shiftKey: true }, "~~alpha~~"],
+    ["Cmd+E", "e", { metaKey: true }, "`alpha`"],
+    ["Ctrl+E", "e", { ctrlKey: true }, "`alpha`"],
+    ["Cmd+K", "j", { metaKey: true }, "[alpha]()"],
+    ["Ctrl+K", "j", { ctrlKey: true }, "[alpha]()"],
+  ])(
+    "%s applies the existing formatting command",
+    (_label, key, modifiers, expected) => {
+      const view = makeView("alpha");
+      select(view, "alpha");
+      press(view, key, modifiers);
+      expect(view.state.doc.toString()).toBe(expected);
+      view.destroy();
+    },
+  );
+
+  it.each([
+    ["Cmd+Option+1", "1", { metaKey: true, altKey: true }, "# alpha"],
+    ["Ctrl+Alt+1", "1", { ctrlKey: true, altKey: true }, "# alpha"],
+    ["Cmd+Option+2", "2", { metaKey: true, altKey: true }, "## alpha"],
+    ["Ctrl+Alt+2", "2", { ctrlKey: true, altKey: true }, "## alpha"],
+    ["Cmd+Option+3", "3", { metaKey: true, altKey: true }, "### alpha"],
+    ["Ctrl+Alt+3", "3", { ctrlKey: true, altKey: true }, "### alpha"],
+    ["Cmd+Shift+7", "7", { metaKey: true, shiftKey: true }, "- alpha"],
+    ["Ctrl+Shift+8", "8", { ctrlKey: true, shiftKey: true }, "- alpha"],
+    ["Cmd+Shift+9", "9", { metaKey: true, shiftKey: true }, "> alpha"],
+    ["Ctrl+Shift+9", "9", { ctrlKey: true, shiftKey: true }, "> alpha"],
+  ])("%s applies block formatting", (_label, key, modifiers, expected) => {
+    const view = makeView("alpha");
+    press(view, key, modifiers);
+    expect(view.state.doc.toString()).toBe(expected);
+    view.destroy();
+  });
+
+  it("toggles a quote prefix on selected nonblank lines while leaving blank lines empty", () => {
+    const view = makeView("  first\n\n second\nthird");
+    select(view, "first\n\n second\nthird");
+    press(view, "9", { ctrlKey: true, shiftKey: true });
+    expect(view.state.doc.toString()).toBe("  > first\n\n > second\n> third");
+    press(view, "9", { ctrlKey: true, shiftKey: true });
+    expect(view.state.doc.toString()).toBe("  first\n\n second\nthird");
+    view.destroy();
+  });
+
   it("Cmd+Enter submits without inserting a blank line", () => {
     let submitted = 0;
     const view = makeView("hello", () => {

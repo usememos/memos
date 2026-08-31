@@ -3,7 +3,7 @@ import { EditorSelection, EditorState } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import { GFM } from "@lezer/markdown";
 import { describe, expect, it } from "vitest";
-import { createFormattingController } from "@/components/MemoEditor/Editor/formatting";
+import { createFormattingController, runFormattingCommand } from "@/components/MemoEditor/Editor/formatting";
 
 function setup(doc: string, from: number, to: number) {
   const view = new EditorView({
@@ -13,6 +13,18 @@ function setup(doc: string, from: number, to: number) {
 }
 
 describe("formatting controller", () => {
+  it("uses the same formatting dispatcher as direct command execution", () => {
+    const direct = setup("hello", 0, 5);
+    const controller = setup("hello", 0, 5);
+
+    runFormattingCommand(direct.view, "bold");
+    controller.f.run("bold");
+
+    expect(direct.view.state.doc.toString()).toBe(controller.view.state.doc.toString());
+    direct.view.destroy();
+    controller.view.destroy();
+  });
+
   it("wraps selection in bold and reports active", () => {
     const { view, f } = setup("hello world", 0, 5);
     f.run("bold");

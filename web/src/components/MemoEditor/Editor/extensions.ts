@@ -1,11 +1,29 @@
-import { defaultKeymap, history, historyKeymap, indentWithTab } from "@codemirror/commands";
+import {
+  defaultKeymap,
+  history,
+  historyKeymap,
+  indentWithTab,
+} from "@codemirror/commands";
 import { markdown } from "@codemirror/lang-markdown";
 import { indentUnit } from "@codemirror/language";
 import { Compartment, type Extension } from "@codemirror/state";
-import { placeholder as cmPlaceholder, dropCursor, EditorView, type KeyBinding, keymap } from "@codemirror/view";
+import {
+  placeholder as cmPlaceholder,
+  dropCursor,
+  EditorView,
+  type KeyBinding,
+  keymap,
+} from "@codemirror/view";
 import { memoMarkdownExtensions } from "@/utils/memo-markdown-extension";
+import type { EditorCommandId } from "../formatting/commands";
+import { runFormattingCommand } from "./formatting";
 import { headingDecorations } from "./headingDecorations";
-import { liftListItem, sinkListItem } from "./listIndent";
+import {
+  leadingWhitespace,
+  liftListItem,
+  selectedLineNumbers,
+  sinkListItem,
+} from "./listIndent";
 import { tagAutocomplete } from "./tagAutocomplete";
 import { tagMentionDecorations } from "./tagMentionDecorations";
 import { memoEditorTheme } from "./theme";
@@ -27,6 +45,39 @@ const editorKeys: KeyBinding[] = [
   { key: "Tab", run: sinkListItem },
   { key: "Shift-Tab", run: liftListItem },
 ];
+
+const runFormat = (command: EditorCommandId) => (view: EditorView) => {
+  runFormattingCommand(view, command);
+  return true;
+};
+
+function toggleBlockquote(view: EditorView): boolean {
+  const { state } = view;
+  const lines = selectedLineNumbers(view).map((number) =>
+    state.doc.line(number),
+  );
+  const nonBlank = lines.filter((line) => line.text.trim() !== "");
+  const targets =
+    lines.length === 1 || nonBlank.length === 0 ? lines : nonBlank;
+  const quoted = targets.map((line) => {
+    const indent = leadingWhitespace(line.text);
+    return line.text.slice(indent).startsWith("> ");
+  });
+  const allQuoted = quoted.every(Boolean);
+  const changes = targets.map((line) => {
+    const indent = leadingWhitespace(line.text);
+    return allQuoted
+      ? { from: line.from + indent, to: line.from + indent + 2, insert: "" }
+      : { from: line.from + indent, to: line.from + indent, insert: "> " };
+  });
+  if (changes.length === 0) return true;
+  const changeSet = state.changes(changes);
+  view.dispatch({
+    changes: changeSet,
+    selection: state.selection.map(changeSet, 1),
+  });
+  return true;
+}
 
 export interface EditorExtensionsOptions {
   placeholder: string;
@@ -66,9 +117,26 @@ export function buildEditorExtensions({
     onSubmit();
     return true;
   };
-  const submitKeys: KeyBinding[] = [
-    { key: "Meta-Enter", run: submit },
-    { key: "Ctrl-Enter", run: submit },
+  // Helper to generate both Meta and Ctrl variants for a key binding.
+  const mod = (key: string, run: KeyBinding["run"]): KeyBinding[] => [
+    { key: `Meta-${key}`, run },
+    { key: `Ctrl-${key}`, run },
+  ];
+  const submitKeys: KeyBinding[] = mod("Enter", submit);
+  const formattingKeys: KeyBinding[] = [
+    ...mod("b", runFormat("bold")),
+    ...mod("i", runFormat("italic")),
+    ...mod("Shift-x", runFormat("strikethrough")),
+    ...mod("e", runFormat("code")),
+    ...mod("j", runFormat("link")), // override since cmd/ctrl k is taken
+    ...mod("Alt-1", runFormat("heading1")),
+    ...mod("Alt-2", runFormat("heading2")),
+    ...mod("Alt-3", runFormat("heading3")),
+    // Asymmetric: on macOS the list marker `-` is shifted-7; on Windows/Linux it's
+    // shifted-8 because `/` (unshifted-7) is already on the 8 key in the US layout.
+    { key: "Meta-Shift-7", run: runFormat("bulletList") },
+    { key: "Ctrl-Shift-8", run: runFormat("bulletList") },
+    ...mod("Shift-9", toggleBlockquote),
   ];
 
   return [
@@ -102,7 +170,9 @@ export function buildEditorExtensions({
       drop: (event, view) => {
         const files = Array.from(event.dataTransfer?.files ?? []);
         if (files.length === 0) return false;
-        const position = view.posAtCoords({ x: event.clientX, y: event.clientY }) ?? view.state.selection.main.head;
+        const position =
+          view.posAtCoords({ x: event.clientX, y: event.clientY }) ??
+          view.state.selection.main.head;
         onFiles(files, position);
         return true;
       },
@@ -113,7 +183,14 @@ export function buildEditorExtensions({
     // tagAutocomplete must precede the editing keymap so the completion popup's
     // Enter/Tab/arrow bindings win while it is open.
     tagAutocomplete(getTags),
-    keymap.of([...submitKeys, ...editorKeys, indentWithTab, ...defaultKeymap, ...historyKeymap]),
+    keymap.of([
+      ...submitKeys,
+      ...formattingKeys,
+      ...editorKeys,
+      indentWithTab,
+      ...defaultKeymap,
+      ...historyKeymap,
+    ]),
     EditorView.updateListener.of((u) => {
       if (u.docChanged) onChange(u.state.doc.toString());
       // Toolbar active-state depends only on the doc and selection; skip the
