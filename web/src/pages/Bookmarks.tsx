@@ -1,9 +1,11 @@
-import { BookmarkIcon, ImportIcon, PlusIcon } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { BookmarkIcon, ImportIcon, PlusIcon, RefreshCwIcon } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import BookmarksImportDialog from "@/components/BookmarksImport/BookmarksImportDialog";
 import MemoView from "@/components/MemoView";
 import PagedMemoList, { getMemoKey } from "@/components/PagedMemoList";
+import { memoServiceClient } from "@/connect";
 import { useSpaceContext } from "@/contexts/SpaceContext";
 import { useMemoFilters, useMemoSorting } from "@/hooks";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -19,6 +21,23 @@ const Bookmarks = () => {
   const t = useTranslate();
   const { memoFilter: spaceFilter } = useSpaceContext();
   const [importOpen, setImportOpen] = useState(false);
+  const [coverRefresh, setCoverRefresh] = useState(false);
+  const queryClient = useQueryClient();
+
+  const refreshCovers = async () => {
+    setCoverRefresh(true);
+    try {
+      // The server pages through the backlog; keep calling until it reports a short page.
+      for (;;) {
+        const response = await memoServiceClient.refreshMemoLinkCovers({});
+        if (response.memosExamined < 200) break;
+      }
+      await queryClient.invalidateQueries({ queryKey: ["memos"] });
+    } catch (error) {
+      console.error("link cover refresh failed", error);
+    }
+    setCoverRefresh(false);
+  };
 
   const memoFilter = useMemoFilters({
     creatorName: user?.name,
@@ -60,6 +79,15 @@ const Bookmarks = () => {
             >
               <ImportIcon className="size-3.5" strokeWidth={1.8} />
               {t("bookmarks.import")}
+            </button>
+            <button
+              type="button"
+              className="flex items-center gap-1 rounded-md px-2 py-1 text-[13px] text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground disabled:opacity-50"
+              onClick={() => void refreshCovers()}
+              disabled={coverRefresh}
+            >
+              <RefreshCwIcon className={cn(coverRefresh && "animate-spin", "size-3.5")} strokeWidth={1.8} />
+              {coverRefresh ? t("bookmarks.refreshing-covers") : t("bookmarks.refresh-covers")}
             </button>
           </header>
         )}

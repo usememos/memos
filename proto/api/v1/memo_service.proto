@@ -147,6 +147,14 @@ service MemoService {
       body: "*"
     };
   }
+  // RefreshMemoLinkCovers retries cover fetching for the caller's links that have no
+  // cached cover image, ignoring the usual backoff schedule.
+  rpc RefreshMemoLinkCovers(RefreshMemoLinkCoversRequest) returns (RefreshMemoLinkCoversResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/memos/-/linkCovers:refresh"
+      body: "*"
+    };
+  }
 }
 
 // Visibility controls who can read a memo.
@@ -659,6 +667,19 @@ message BatchGetLinkMetadataRequest {
 message BatchGetLinkMetadataResponse {
   // The link metadata list, in the same order as the input URLs.
   repeated LinkMetadata link_metadata = 1;
+}
+
+message RefreshMemoLinkCoversRequest {}
+
+message RefreshMemoLinkCoversResponse {
+  // Links whose cover was fetched and cached by this call.
+  int32 updated_links = 1;
+  // Links whose cover fetch failed again.
+  int32 failed_links = 2;
+  // Links examined with no cover to fetch (no image or already cached).
+  int32 skipped_links = 3;
+  // Memos examined; call again if fewer than the page size while links remain pending.
+  int32 memos_examined = 4;
 }
 
 message LinkMetadata {

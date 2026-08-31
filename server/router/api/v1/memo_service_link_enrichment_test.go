@@ -13,7 +13,9 @@ import (
 	"github.com/usememos/memos/internal/markdown"
 	"github.com/usememos/memos/internal/profile"
 	storepb "github.com/usememos/memos/proto/gen/store"
+	"github.com/usememos/memos/server/auth"
 	"github.com/usememos/memos/server/runner/memopayload"
+	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	"github.com/usememos/memos/store"
 	storetest "github.com/usememos/memos/store/test"
 )
@@ -299,6 +301,49 @@ func seededCoverUID(t *testing.T, service *APIV1Service, blob []byte) string {
 	})
 	require.NoError(t, err)
 	return created.UID
+}
+
+func TestRefreshMemoLinkCovers(t *testing.T) {
+	pngBytes := []byte{0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x08, 0x06, 0x00, 0x00, 0x00, 0x1f, 0x15, 0xc4, 0x89, 0x00, 0x00, 0x00, 0x0a, 0x49, 0x44, 0x41, 0x54, 0x78, 0x9c, 0x63, 0x00, 0x01, 0x00, 0x00, 0x05, 0x00, 0x01, 0x0d, 0x0a, 0x2d, 0xb4, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82}
+	service := newLinkEnrichmentTestService(t, stubFetchResults{
+		metas: map[string]*httpgetter.HTMLMeta{
+			"https://example.com/dead": {Title: "Dead", Image: "https://example.com/dead.png"},
+		},
+		images: map[string]*httpgetter.Image{
+			"https://example.com/a.png": {Blob: pngBytes, Mediatype: "image/png"},
+		},
+	})
+	user, err := service.Store.CreateUser(context.Background(), &store.User{Username: "cover-refresher", Role: store.RoleUser, PasswordHash: "hash"})
+	require.NoError(t, err)
+
+	memo := &store.Memo{UID: shortuuid.New(), CreatorID: user.ID, Visibility: store.Public, Content: "[A](https://example.com/a) [Dead](https://example.com/dead)"}
+	require.NoError(t, memopayload.RebuildMemoPayload(context.Background(), memo, service.MarkdownService))
+	// Two links pending covers: one will succeed, one will fail again.
+	memo.Payload.Links = []*storepb.MemoPayload_LinkMetadata{
+		{Url: "https://example.com/a", Title: "A", Image: "https://example.com/a.png", FetchAttempts: 8, FirstAttemptAt: time.Now().Add(-30 * time.Hour).Unix(), LastAttemptAt: time.Now().Add(-20 * time.Hour).Unix()},
+		{Url: "https://example.com/dead", Title: "Dead", Image: "https://example.com/dead.png"},
+	}
+	created, err := service.Store.CreateMemo(context.Background(), memo)
+	require.NoError(t, err)
+	require.NotNil(t, created)
+
+	// fetchCurrentUser needs a real user in the store with the auth context ID.
+	ctx := context.WithValue(context.Background(), auth.UserIDContextKey, user.ID)
+	// Backoff would normally block the exhausted link; refresh ignores it.
+	resp, err := service.RefreshMemoLinkCovers(ctx, &v1pb.RefreshMemoLinkCoversRequest{})
+	require.NoError(t, err)
+	require.Equal(t, int32(1), resp.UpdatedLinks)
+	require.Equal(t, int32(1), resp.FailedLinks)
+	require.Equal(t, int32(1), resp.MemosExamined)
+
+	stored, err := service.Store.GetMemo(ctx, &store.FindMemo{UID: &created.UID})
+	require.NoError(t, err)
+	aLink := stored.Payload.Links[0]
+	require.NotEmpty(t, aLink.CoverAttachmentUid)
+	require.Zero(t, aLink.FetchAttempts, "success clears retry bookkeeping")
+	deadLink := stored.Payload.Links[1]
+	require.Equal(t, int32(1), deadLink.FetchAttempts, "failure restarts the backoff window")
+	require.Positive(t, deadLink.LastAttemptAt)
 }
 
 func TestCoverFilenameIsDeterministic(t *testing.T) {

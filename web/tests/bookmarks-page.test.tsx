@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -26,9 +27,11 @@ vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
 
 const renderPage = () =>
   render(
-    <MemoryRouter>
-      <Bookmarks />
-    </MemoryRouter>,
+    <QueryClientProvider client={new QueryClient()}>
+      <MemoryRouter>
+        <Bookmarks />
+      </MemoryRouter>
+    </QueryClientProvider>,
   );
 
 describe("<Bookmarks>", () => {

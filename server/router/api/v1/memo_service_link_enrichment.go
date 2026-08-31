@@ -16,6 +16,10 @@ import (
 
 	"github.com/lithammer/shortuuid/v4"
 	_ "golang.org/x/image/webp"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
+	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
@@ -151,6 +155,71 @@ func (s *APIV1Service) EnrichMemoLinks(ctx context.Context, memo *store.Memo) {
 		enriched = append(enriched, entry)
 	}
 	memo.Payload.Links = enriched
+}
+
+// RefreshMemoLinkCovers retries cover fetching for the caller's link memos that have
+// no cached cover, ignoring the backoff schedule (a fresh zero-value window makes the
+// retry due immediately). Paged in both directions: bounded memos per call and bounded
+// links per memo so one click stays snappy — call repeatedly to work through a backlog.
+// ponytail: no continuation token; memos_examined < page size tells the client it is done.
+const refreshLinkCoversMemosPerPage = 200
+
+func (s *APIV1Service) RefreshMemoLinkCovers(ctx context.Context, _ *v1pb.RefreshMemoLinkCoversRequest) (*v1pb.RefreshMemoLinkCoversResponse, error) {
+	user, err := s.fetchCurrentUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get user")
+	}
+	if user == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
+
+	limit := refreshLinkCoversMemosPerPage
+	memos, err := s.Store.ListMemos(ctx, &store.FindMemo{
+		CreatorID: &user.ID,
+		Filters:   []string{"has_link"},
+		Limit:     &limit,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to list memos: %v", err)
+	}
+
+	response := &v1pb.RefreshMemoLinkCoversResponse{MemosExamined: int32(len(memos))}
+	now := time.Now()
+	for _, memo := range memos {
+		if memo.Payload == nil {
+			continue
+		}
+		changed := false
+		for _, entry := range memo.Payload.Links {
+			if entry.CoverAttachmentUid != "" {
+				continue
+			}
+			if entry.Image == "" {
+				// No og:image to fetch; still retry metadata in case one appears.
+				if entry.Title == "" && entry.Description == "" {
+					clearRetryState(entry)
+					s.retryLink(ctx, user.ID, entry, now)
+					changed = true
+				}
+				response.SkippedLinks++
+				continue
+			}
+			clearRetryState(entry)
+			s.retryLink(ctx, user.ID, entry, now)
+			changed = true
+			if entry.CoverAttachmentUid != "" {
+				response.UpdatedLinks++
+			} else {
+				response.FailedLinks++
+			}
+		}
+		if changed {
+			if err := s.Store.UpdateMemo(ctx, &store.UpdateMemo{ID: memo.ID, Payload: memo.Payload}); err != nil {
+				slog.Warn("failed to persist refreshed link covers", "memoID", memo.ID, "err", err)
+			}
+		}
+	}
+	return response, nil
 }
 
 // backfillCoverDimensions decodes the stored cover blob to fill missing dimensions.

@@ -463,6 +463,14 @@ func (s *ConnectServiceHandler) BatchGetLinkMetadata(ctx context.Context, req *c
 	return connect.NewResponse(resp), nil
 }
 
+func (s *ConnectServiceHandler) RefreshMemoLinkCovers(ctx context.Context, req *connect.Request[v1pb.RefreshMemoLinkCoversRequest]) (*connect.Response[v1pb.RefreshMemoLinkCoversResponse], error) {
+	resp, err := s.APIV1Service.RefreshMemoLinkCovers(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
 // SpaceService
 
 func (s *ConnectServiceHandler) CreateSpace(ctx context.Context, req *connect.Request[v1pb.CreateSpaceRequest]) (*connect.Response[v1pb.Space], error) {

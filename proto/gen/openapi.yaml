@@ -735,6 +735,33 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/v1/memos/-/linkCovers:refresh:
+        post:
+            tags:
+                - MemoService
+            description: |-
+                RefreshMemoLinkCovers retries cover fetching for the caller's links that have no
+                 cached cover image, ignoring the usual backoff schedule.
+            operationId: MemoService_RefreshMemoLinkCovers
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/RefreshMemoLinkCoversRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/RefreshMemoLinkCoversResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/memos/-/linkMetadata:
         get:
             tags:
@@ -4271,6 +4298,28 @@ components:
                     description: Output only. The creation timestamp.
                     format: date-time
             description: Reaction is a reaction attached to a memo.
+        RefreshMemoLinkCoversRequest:
+            type: object
+            properties: {}
+        RefreshMemoLinkCoversResponse:
+            type: object
+            properties:
+                updatedLinks:
+                    type: integer
+                    description: Links whose cover was fetched and cached by this call.
+                    format: int32
+                failedLinks:
+                    type: integer
+                    description: Links whose cover fetch failed again.
+                    format: int32
+                skippedLinks:
+                    type: integer
+                    description: Links examined with no cover to fetch (no image or already cached).
+                    format: int32
+                memosExamined:
+                    type: integer
+                    description: Memos examined; call again if fewer than the page size while links remain pending.
+                    format: int32
         RefreshTokenRequest:
             type: object
             properties: {}

@@ -89,6 +89,9 @@ const (
 	// MemoServiceBatchGetLinkMetadataProcedure is the fully-qualified name of the MemoService's
 	// BatchGetLinkMetadata RPC.
 	MemoServiceBatchGetLinkMetadataProcedure = "/memos.api.v1.MemoService/BatchGetLinkMetadata"
+	// MemoServiceRefreshMemoLinkCoversProcedure is the fully-qualified name of the MemoService's
+	// RefreshMemoLinkCovers RPC.
+	MemoServiceRefreshMemoLinkCoversProcedure = "/memos.api.v1.MemoService/RefreshMemoLinkCovers"
 )
 
 // MemoServiceClient is a client for the memos.api.v1.MemoService service.
@@ -144,6 +147,9 @@ type MemoServiceClient interface {
 	GetLinkMetadata(context.Context, *connect.Request[v1.GetLinkMetadataRequest]) (*connect.Response[v1.LinkMetadata], error)
 	// BatchGetLinkMetadata gets metadata for links.
 	BatchGetLinkMetadata(context.Context, *connect.Request[v1.BatchGetLinkMetadataRequest]) (*connect.Response[v1.BatchGetLinkMetadataResponse], error)
+	// RefreshMemoLinkCovers retries cover fetching for the caller's links that have no
+	// cached cover image, ignoring the usual backoff schedule.
+	RefreshMemoLinkCovers(context.Context, *connect.Request[v1.RefreshMemoLinkCoversRequest]) (*connect.Response[v1.RefreshMemoLinkCoversResponse], error)
 }
 
 // NewMemoServiceClient constructs a client for the memos.api.v1.MemoService service. By default, it
@@ -277,31 +283,38 @@ func NewMemoServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(memoServiceMethods.ByName("BatchGetLinkMetadata")),
 			connect.WithClientOptions(opts...),
 		),
+		refreshMemoLinkCovers: connect.NewClient[v1.RefreshMemoLinkCoversRequest, v1.RefreshMemoLinkCoversResponse](
+			httpClient,
+			baseURL+MemoServiceRefreshMemoLinkCoversProcedure,
+			connect.WithSchema(memoServiceMethods.ByName("RefreshMemoLinkCovers")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // memoServiceClient implements MemoServiceClient.
 type memoServiceClient struct {
-	createMemo           *connect.Client[v1.CreateMemoRequest, v1.Memo]
-	listMemos            *connect.Client[v1.ListMemosRequest, v1.ListMemosResponse]
-	getMemo              *connect.Client[v1.GetMemoRequest, v1.Memo]
-	updateMemo           *connect.Client[v1.UpdateMemoRequest, v1.Memo]
-	deleteMemo           *connect.Client[v1.DeleteMemoRequest, emptypb.Empty]
-	setMemoAttachments   *connect.Client[v1.SetMemoAttachmentsRequest, emptypb.Empty]
-	listMemoAttachments  *connect.Client[v1.ListMemoAttachmentsRequest, v1.ListMemoAttachmentsResponse]
-	setMemoRelations     *connect.Client[v1.SetMemoRelationsRequest, emptypb.Empty]
-	listMemoRelations    *connect.Client[v1.ListMemoRelationsRequest, v1.ListMemoRelationsResponse]
-	createMemoComment    *connect.Client[v1.CreateMemoCommentRequest, v1.Memo]
-	listMemoComments     *connect.Client[v1.ListMemoCommentsRequest, v1.ListMemoCommentsResponse]
-	listMemoReactions    *connect.Client[v1.ListMemoReactionsRequest, v1.ListMemoReactionsResponse]
-	upsertMemoReaction   *connect.Client[v1.UpsertMemoReactionRequest, v1.Reaction]
-	deleteMemoReaction   *connect.Client[v1.DeleteMemoReactionRequest, emptypb.Empty]
-	createMemoShare      *connect.Client[v1.CreateMemoShareRequest, v1.MemoShare]
-	listMemoShares       *connect.Client[v1.ListMemoSharesRequest, v1.ListMemoSharesResponse]
-	deleteMemoShare      *connect.Client[v1.DeleteMemoShareRequest, emptypb.Empty]
-	getSharedMemo        *connect.Client[v1.GetSharedMemoRequest, v1.Memo]
-	getLinkMetadata      *connect.Client[v1.GetLinkMetadataRequest, v1.LinkMetadata]
-	batchGetLinkMetadata *connect.Client[v1.BatchGetLinkMetadataRequest, v1.BatchGetLinkMetadataResponse]
+	createMemo            *connect.Client[v1.CreateMemoRequest, v1.Memo]
+	listMemos             *connect.Client[v1.ListMemosRequest, v1.ListMemosResponse]
+	getMemo               *connect.Client[v1.GetMemoRequest, v1.Memo]
+	updateMemo            *connect.Client[v1.UpdateMemoRequest, v1.Memo]
+	deleteMemo            *connect.Client[v1.DeleteMemoRequest, emptypb.Empty]
+	setMemoAttachments    *connect.Client[v1.SetMemoAttachmentsRequest, emptypb.Empty]
+	listMemoAttachments   *connect.Client[v1.ListMemoAttachmentsRequest, v1.ListMemoAttachmentsResponse]
+	setMemoRelations      *connect.Client[v1.SetMemoRelationsRequest, emptypb.Empty]
+	listMemoRelations     *connect.Client[v1.ListMemoRelationsRequest, v1.ListMemoRelationsResponse]
+	createMemoComment     *connect.Client[v1.CreateMemoCommentRequest, v1.Memo]
+	listMemoComments      *connect.Client[v1.ListMemoCommentsRequest, v1.ListMemoCommentsResponse]
+	listMemoReactions     *connect.Client[v1.ListMemoReactionsRequest, v1.ListMemoReactionsResponse]
+	upsertMemoReaction    *connect.Client[v1.UpsertMemoReactionRequest, v1.Reaction]
+	deleteMemoReaction    *connect.Client[v1.DeleteMemoReactionRequest, emptypb.Empty]
+	createMemoShare       *connect.Client[v1.CreateMemoShareRequest, v1.MemoShare]
+	listMemoShares        *connect.Client[v1.ListMemoSharesRequest, v1.ListMemoSharesResponse]
+	deleteMemoShare       *connect.Client[v1.DeleteMemoShareRequest, emptypb.Empty]
+	getSharedMemo         *connect.Client[v1.GetSharedMemoRequest, v1.Memo]
+	getLinkMetadata       *connect.Client[v1.GetLinkMetadataRequest, v1.LinkMetadata]
+	batchGetLinkMetadata  *connect.Client[v1.BatchGetLinkMetadataRequest, v1.BatchGetLinkMetadataResponse]
+	refreshMemoLinkCovers *connect.Client[v1.RefreshMemoLinkCoversRequest, v1.RefreshMemoLinkCoversResponse]
 }
 
 // CreateMemo calls memos.api.v1.MemoService.CreateMemo.
@@ -404,6 +417,11 @@ func (c *memoServiceClient) BatchGetLinkMetadata(ctx context.Context, req *conne
 	return c.batchGetLinkMetadata.CallUnary(ctx, req)
 }
 
+// RefreshMemoLinkCovers calls memos.api.v1.MemoService.RefreshMemoLinkCovers.
+func (c *memoServiceClient) RefreshMemoLinkCovers(ctx context.Context, req *connect.Request[v1.RefreshMemoLinkCoversRequest]) (*connect.Response[v1.RefreshMemoLinkCoversResponse], error) {
+	return c.refreshMemoLinkCovers.CallUnary(ctx, req)
+}
+
 // MemoServiceHandler is an implementation of the memos.api.v1.MemoService service.
 type MemoServiceHandler interface {
 	// CreateMemo creates a memo. The request body is a Memo; set its content
@@ -457,6 +475,9 @@ type MemoServiceHandler interface {
 	GetLinkMetadata(context.Context, *connect.Request[v1.GetLinkMetadataRequest]) (*connect.Response[v1.LinkMetadata], error)
 	// BatchGetLinkMetadata gets metadata for links.
 	BatchGetLinkMetadata(context.Context, *connect.Request[v1.BatchGetLinkMetadataRequest]) (*connect.Response[v1.BatchGetLinkMetadataResponse], error)
+	// RefreshMemoLinkCovers retries cover fetching for the caller's links that have no
+	// cached cover image, ignoring the usual backoff schedule.
+	RefreshMemoLinkCovers(context.Context, *connect.Request[v1.RefreshMemoLinkCoversRequest]) (*connect.Response[v1.RefreshMemoLinkCoversResponse], error)
 }
 
 // NewMemoServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -586,6 +607,12 @@ func NewMemoServiceHandler(svc MemoServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(memoServiceMethods.ByName("BatchGetLinkMetadata")),
 		connect.WithHandlerOptions(opts...),
 	)
+	memoServiceRefreshMemoLinkCoversHandler := connect.NewUnaryHandler(
+		MemoServiceRefreshMemoLinkCoversProcedure,
+		svc.RefreshMemoLinkCovers,
+		connect.WithSchema(memoServiceMethods.ByName("RefreshMemoLinkCovers")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/memos.api.v1.MemoService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case MemoServiceCreateMemoProcedure:
@@ -628,6 +655,8 @@ func NewMemoServiceHandler(svc MemoServiceHandler, opts ...connect.HandlerOption
 			memoServiceGetLinkMetadataHandler.ServeHTTP(w, r)
 		case MemoServiceBatchGetLinkMetadataProcedure:
 			memoServiceBatchGetLinkMetadataHandler.ServeHTTP(w, r)
+		case MemoServiceRefreshMemoLinkCoversProcedure:
+			memoServiceRefreshMemoLinkCoversHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -715,4 +744,8 @@ func (UnimplementedMemoServiceHandler) GetLinkMetadata(context.Context, *connect
 
 func (UnimplementedMemoServiceHandler) BatchGetLinkMetadata(context.Context, *connect.Request[v1.BatchGetLinkMetadataRequest]) (*connect.Response[v1.BatchGetLinkMetadataResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.MemoService.BatchGetLinkMetadata is not implemented"))
+}
+
+func (UnimplementedMemoServiceHandler) RefreshMemoLinkCovers(context.Context, *connect.Request[v1.RefreshMemoLinkCoversRequest]) (*connect.Response[v1.RefreshMemoLinkCoversResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.MemoService.RefreshMemoLinkCovers is not implemented"))
 }

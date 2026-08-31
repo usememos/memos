@@ -20,26 +20,27 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	MemoService_CreateMemo_FullMethodName           = "/memos.api.v1.MemoService/CreateMemo"
-	MemoService_ListMemos_FullMethodName            = "/memos.api.v1.MemoService/ListMemos"
-	MemoService_GetMemo_FullMethodName              = "/memos.api.v1.MemoService/GetMemo"
-	MemoService_UpdateMemo_FullMethodName           = "/memos.api.v1.MemoService/UpdateMemo"
-	MemoService_DeleteMemo_FullMethodName           = "/memos.api.v1.MemoService/DeleteMemo"
-	MemoService_SetMemoAttachments_FullMethodName   = "/memos.api.v1.MemoService/SetMemoAttachments"
-	MemoService_ListMemoAttachments_FullMethodName  = "/memos.api.v1.MemoService/ListMemoAttachments"
-	MemoService_SetMemoRelations_FullMethodName     = "/memos.api.v1.MemoService/SetMemoRelations"
-	MemoService_ListMemoRelations_FullMethodName    = "/memos.api.v1.MemoService/ListMemoRelations"
-	MemoService_CreateMemoComment_FullMethodName    = "/memos.api.v1.MemoService/CreateMemoComment"
-	MemoService_ListMemoComments_FullMethodName     = "/memos.api.v1.MemoService/ListMemoComments"
-	MemoService_ListMemoReactions_FullMethodName    = "/memos.api.v1.MemoService/ListMemoReactions"
-	MemoService_UpsertMemoReaction_FullMethodName   = "/memos.api.v1.MemoService/UpsertMemoReaction"
-	MemoService_DeleteMemoReaction_FullMethodName   = "/memos.api.v1.MemoService/DeleteMemoReaction"
-	MemoService_CreateMemoShare_FullMethodName      = "/memos.api.v1.MemoService/CreateMemoShare"
-	MemoService_ListMemoShares_FullMethodName       = "/memos.api.v1.MemoService/ListMemoShares"
-	MemoService_DeleteMemoShare_FullMethodName      = "/memos.api.v1.MemoService/DeleteMemoShare"
-	MemoService_GetSharedMemo_FullMethodName        = "/memos.api.v1.MemoService/GetSharedMemo"
-	MemoService_GetLinkMetadata_FullMethodName      = "/memos.api.v1.MemoService/GetLinkMetadata"
-	MemoService_BatchGetLinkMetadata_FullMethodName = "/memos.api.v1.MemoService/BatchGetLinkMetadata"
+	MemoService_CreateMemo_FullMethodName            = "/memos.api.v1.MemoService/CreateMemo"
+	MemoService_ListMemos_FullMethodName             = "/memos.api.v1.MemoService/ListMemos"
+	MemoService_GetMemo_FullMethodName               = "/memos.api.v1.MemoService/GetMemo"
+	MemoService_UpdateMemo_FullMethodName            = "/memos.api.v1.MemoService/UpdateMemo"
+	MemoService_DeleteMemo_FullMethodName            = "/memos.api.v1.MemoService/DeleteMemo"
+	MemoService_SetMemoAttachments_FullMethodName    = "/memos.api.v1.MemoService/SetMemoAttachments"
+	MemoService_ListMemoAttachments_FullMethodName   = "/memos.api.v1.MemoService/ListMemoAttachments"
+	MemoService_SetMemoRelations_FullMethodName      = "/memos.api.v1.MemoService/SetMemoRelations"
+	MemoService_ListMemoRelations_FullMethodName     = "/memos.api.v1.MemoService/ListMemoRelations"
+	MemoService_CreateMemoComment_FullMethodName     = "/memos.api.v1.MemoService/CreateMemoComment"
+	MemoService_ListMemoComments_FullMethodName      = "/memos.api.v1.MemoService/ListMemoComments"
+	MemoService_ListMemoReactions_FullMethodName     = "/memos.api.v1.MemoService/ListMemoReactions"
+	MemoService_UpsertMemoReaction_FullMethodName    = "/memos.api.v1.MemoService/UpsertMemoReaction"
+	MemoService_DeleteMemoReaction_FullMethodName    = "/memos.api.v1.MemoService/DeleteMemoReaction"
+	MemoService_CreateMemoShare_FullMethodName       = "/memos.api.v1.MemoService/CreateMemoShare"
+	MemoService_ListMemoShares_FullMethodName        = "/memos.api.v1.MemoService/ListMemoShares"
+	MemoService_DeleteMemoShare_FullMethodName       = "/memos.api.v1.MemoService/DeleteMemoShare"
+	MemoService_GetSharedMemo_FullMethodName         = "/memos.api.v1.MemoService/GetSharedMemo"
+	MemoService_GetLinkMetadata_FullMethodName       = "/memos.api.v1.MemoService/GetLinkMetadata"
+	MemoService_BatchGetLinkMetadata_FullMethodName  = "/memos.api.v1.MemoService/BatchGetLinkMetadata"
+	MemoService_RefreshMemoLinkCovers_FullMethodName = "/memos.api.v1.MemoService/RefreshMemoLinkCovers"
 )
 
 // MemoServiceClient is the client API for MemoService service.
@@ -97,6 +98,9 @@ type MemoServiceClient interface {
 	GetLinkMetadata(ctx context.Context, in *GetLinkMetadataRequest, opts ...grpc.CallOption) (*LinkMetadata, error)
 	// BatchGetLinkMetadata gets metadata for links.
 	BatchGetLinkMetadata(ctx context.Context, in *BatchGetLinkMetadataRequest, opts ...grpc.CallOption) (*BatchGetLinkMetadataResponse, error)
+	// RefreshMemoLinkCovers retries cover fetching for the caller's links that have no
+	// cached cover image, ignoring the usual backoff schedule.
+	RefreshMemoLinkCovers(ctx context.Context, in *RefreshMemoLinkCoversRequest, opts ...grpc.CallOption) (*RefreshMemoLinkCoversResponse, error)
 }
 
 type memoServiceClient struct {
@@ -307,6 +311,16 @@ func (c *memoServiceClient) BatchGetLinkMetadata(ctx context.Context, in *BatchG
 	return out, nil
 }
 
+func (c *memoServiceClient) RefreshMemoLinkCovers(ctx context.Context, in *RefreshMemoLinkCoversRequest, opts ...grpc.CallOption) (*RefreshMemoLinkCoversResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RefreshMemoLinkCoversResponse)
+	err := c.cc.Invoke(ctx, MemoService_RefreshMemoLinkCovers_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MemoServiceServer is the server API for MemoService service.
 // All implementations must embed UnimplementedMemoServiceServer
 // for forward compatibility.
@@ -362,6 +376,9 @@ type MemoServiceServer interface {
 	GetLinkMetadata(context.Context, *GetLinkMetadataRequest) (*LinkMetadata, error)
 	// BatchGetLinkMetadata gets metadata for links.
 	BatchGetLinkMetadata(context.Context, *BatchGetLinkMetadataRequest) (*BatchGetLinkMetadataResponse, error)
+	// RefreshMemoLinkCovers retries cover fetching for the caller's links that have no
+	// cached cover image, ignoring the usual backoff schedule.
+	RefreshMemoLinkCovers(context.Context, *RefreshMemoLinkCoversRequest) (*RefreshMemoLinkCoversResponse, error)
 	mustEmbedUnimplementedMemoServiceServer()
 }
 
@@ -431,6 +448,9 @@ func (UnimplementedMemoServiceServer) GetLinkMetadata(context.Context, *GetLinkM
 }
 func (UnimplementedMemoServiceServer) BatchGetLinkMetadata(context.Context, *BatchGetLinkMetadataRequest) (*BatchGetLinkMetadataResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method BatchGetLinkMetadata not implemented")
+}
+func (UnimplementedMemoServiceServer) RefreshMemoLinkCovers(context.Context, *RefreshMemoLinkCoversRequest) (*RefreshMemoLinkCoversResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method RefreshMemoLinkCovers not implemented")
 }
 func (UnimplementedMemoServiceServer) mustEmbedUnimplementedMemoServiceServer() {}
 func (UnimplementedMemoServiceServer) testEmbeddedByValue()                     {}
@@ -813,6 +833,24 @@ func _MemoService_BatchGetLinkMetadata_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MemoService_RefreshMemoLinkCovers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RefreshMemoLinkCoversRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemoServiceServer).RefreshMemoLinkCovers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MemoService_RefreshMemoLinkCovers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemoServiceServer).RefreshMemoLinkCovers(ctx, req.(*RefreshMemoLinkCoversRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // MemoService_ServiceDesc is the grpc.ServiceDesc for MemoService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -899,6 +937,10 @@ var MemoService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "BatchGetLinkMetadata",
 			Handler:    _MemoService_BatchGetLinkMetadata_Handler,
+		},
+		{
+			MethodName: "RefreshMemoLinkCovers",
+			Handler:    _MemoService_RefreshMemoLinkCovers_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

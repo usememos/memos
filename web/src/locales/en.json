@@ -242,7 +242,9 @@
     "import-start": "Import",
     "import-progress": "${created} created, ${skipped} skipped, ${failed} failed of ${total}",
     "import-done": "Import finished.",
-    "import-cancel": "Stop"
+    "import-cancel": "Stop",
+    "refresh-covers": "Update covers",
+    "refreshing-covers": "Updating covers…"
   },
   "locale-picker": {
     "no-language-feedback": "Language not found? Submit feedback"
