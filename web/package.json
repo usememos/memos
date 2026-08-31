@@ -58,6 +58,7 @@
     "react-leaflet": "^5.0.0",
     "react-leaflet-cluster": "^4.1.3",
     "react-markdown": "^10.1.0",
+    "react-photo-album": "^3.6.1",
     "react-router-dom": "^7.15.0",
     "rehype-katex": "^7.0.1",
     "rehype-raw": "^7.0.0",

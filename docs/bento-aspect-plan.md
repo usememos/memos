@@ -2,6 +2,11 @@
 
 Status: Implemented
 
+> Superseded in part: after user feedback that hand-rolled packing misbehaved, the grid
+> was rebuilt on react-photo-album's RowsPhotoAlbum (justified rows from aspect ratios).
+> memoVisualAspect and the server-side cover dimensions from this plan feed the album
+> unchanged; the custom span math was removed.
+
 > Deviations: MemoView needed no change — the bento tile already renders covers
 > full-bleed with object-cover, and the new spans alone drive tile shape. The backfill
 > runs inside EnrichMemoLinks (cover uid present, dims zero → header-decode the stored

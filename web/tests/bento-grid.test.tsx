@@ -1,60 +1,48 @@
 import { create, type MessageInitShape } from "@bufbuild/protobuf";
 import { render } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import BentoGrid from "@/components/BentoGrid";
 import { MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
 
-// jsdom has no layout engine (clientWidth is 0), so the grid keeps its initial layout
-// (measured from Infinity → as many columns as possible). These assert render structure,
-// not packing — same tradeoff as tests/column-grid.test.tsx.
+// jsdom has no layout engine (clientWidth is 0, which overrides the album's
+// defaultContainerWidth on the ref callback), so every test spies a real width.
+// These assert render structure, not row packing — the layout math is
+// react-photo-album's.
+let clientWidth: ReturnType<typeof vi.spyOn>;
+beforeEach(() => {
+  clientWidth = vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockReturnValue(800);
+});
+afterEach(() => {
+  clientWidth.mockRestore();
+});
 const buildMemo = (overrides: MessageInitShape<typeof MemoSchema> = {}) =>
   create(MemoSchema, { name: "memos/main", content: "hello", attachments: [], ...overrides });
 
 const getKey = (memo: { name: string }) => memo.name;
 
-const tileOf = (container: HTMLElement, name: string) =>
-  [...container.querySelectorAll<HTMLElement>("div[style*='grid-column']")].find(
-    (el) => el.style.gridColumn && el.querySelector(`[data-name="${name}"]`),
-  );
-
 const namedCard = (memo: ReturnType<typeof buildMemo>) => <div data-name={memo.name} />;
 
 describe("<BentoGrid>", () => {
-  it("renders one tile per item with dense auto-flow", () => {
+  it("renders one tile per item inside the album", () => {
     const { container } = render(
       <BentoGrid items={[buildMemo({ name: "memos/a" }), buildMemo({ name: "memos/b" })]} getKey={getKey} renderItem={namedCard} />,
     );
 
-    const grid = container.firstElementChild as HTMLElement;
-    expect(grid.style.gridAutoFlow).toBe("dense");
-    expect(grid.querySelectorAll("[data-name]")).toHaveLength(2);
+    const album = container.querySelector(".react-photo-album") as HTMLElement;
+    expect(album).toBeTruthy();
+    expect(container.querySelectorAll("[data-name]")).toHaveLength(2);
   });
 
-  it("renders the leading node above the grid, outside the fixed-height rows", () => {
-    const { container, getByTestId } = render(
+  it("renders the leading node above the album", () => {
+    const { getByTestId } = render(
       <BentoGrid items={[buildMemo()]} getKey={getKey} renderItem={namedCard} leading={<div data-testid="composer" />} />,
     );
 
     expect(getByTestId("composer")).toBeInTheDocument();
     const leadingWrapper = getByTestId("composer").parentElement as HTMLElement;
-    const grid = leadingWrapper.nextElementSibling as HTMLElement;
-    expect(grid.style.display).toBe("grid");
-    expect(grid.contains(leadingWrapper)).toBe(false);
-    expect(tileOf(container, "memos/main")).toBeTruthy();
-  });
-
-  it("spans pinned memos across two columns", () => {
-    const clientWidth = vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockReturnValue(532);
-    try {
-      const pinned = buildMemo({ name: "memos/pinned", pinned: true });
-      const plain = buildMemo({ name: "memos/plain" });
-      const { container } = render(<BentoGrid items={[plain, pinned]} getKey={getKey} renderItem={namedCard} />);
-
-      expect(tileOf(container, "memos/pinned")?.style.gridColumn).toBe("span 2");
-      expect(tileOf(container, "memos/plain")?.style.gridColumn).toBe("span 1");
-    } finally {
-      clientWidth.mockRestore();
-    }
+    const album = leadingWrapper.nextElementSibling as HTMLElement;
+    expect(album.classList.contains("react-photo-album")).toBe(true);
+    expect(album.contains(leadingWrapper)).toBe(false);
   });
 
   it("renders the priority item first", () => {
@@ -68,19 +56,6 @@ describe("<BentoGrid>", () => {
 
   it("renders nothing for an empty list", () => {
     const { container } = render(<BentoGrid items={[]} getKey={getKey} renderItem={namedCard} />);
-    expect(container.firstElementChild?.children).toHaveLength(0);
-  });
-
-  it("updates the column ceiling from the measured width", () => {
-    const clientWidth = vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockReturnValue(532);
-
-    const { container } = render(
-      <BentoGrid items={[buildMemo()]} getKey={getKey} renderItem={namedCard} maxColumns={0} maxColumnWidth={420} />,
-    );
-
-    // 532px fits 2 columns at the 260px minimum (plus 12px gap).
-    expect((container.firstElementChild as HTMLElement).style.gridTemplateColumns).toBe("repeat(2, minmax(0, 1fr))");
-
-    clientWidth.mockRestore();
+    expect(container.querySelector(".react-photo-album")?.children).toHaveLength(0);
   });
 });

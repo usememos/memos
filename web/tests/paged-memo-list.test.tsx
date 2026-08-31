@@ -243,7 +243,7 @@ describe("<PagedMemoList>", () => {
         const renderer = vi.fn((m: Memo) => <div key={m.name} />);
         const { container } = renderList(renderer);
         expect(renderer).toHaveBeenCalledWith(expect.objectContaining({ name: "memos/1" }), { compact: true, variant: "bento" });
-        expect(container.querySelector('div[style*="grid-auto-flow"]')?.getAttribute("style")).toContain("dense");
+        expect(container.querySelector(".react-photo-album")).toBeTruthy();
       } finally {
         widthSpy.mockRestore();
       }

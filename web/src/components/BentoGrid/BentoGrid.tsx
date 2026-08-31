@@ -1,118 +1,81 @@
-import { type ReactNode, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { columnCountForWidth, GRID_GAP } from "@/components/ColumnGrid";
+import { type ReactNode, useMemo } from "react";
+import { type Photo, RowsPhotoAlbum } from "react-photo-album";
+import "react-photo-album/rows.css";
+import { GRID_GAP } from "@/components/ColumnGrid";
+import { estimateMemoCardHeight } from "@/components/PagedMemoList/memoCardHeight";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
-import { BENTO_ROW_UNIT, BENTO_ROW_UNIT_SMALL, BENTO_SMALL_WIDTH, bentoSpan } from "./bentoSpan";
+import { BENTO_ROW_UNIT, BENTO_ROW_UNIT_SMALL, BENTO_SMALL_WIDTH, memoVisualAspect } from "./bentoSpan";
 
 interface BentoGridProps {
   items: Memo[];
   /** Stable identity for each item; also used as the React key. */
   getKey: (item: Memo) => string;
   renderItem: (item: Memo) => ReactNode;
-  /** Optional node packed as the first full-width row (e.g. the note composer). */
+  /** Optional node rendered above the album (e.g. the note composer). */
   leading?: ReactNode;
-  /** Key rendered as the first item tile, ahead of list order. */
+  /** Key rendered as the first tile, ahead of list order. */
   priorityKey?: string;
-  /** Upper bound on the column count; 0 or undefined means as many as fit. */
+  /** Upper bound on photos per row; 0 or undefined means as many as fit. */
   maxColumns?: number;
-  /** Cap on each column's width in px; leftover space centers the grid. */
+  /** Unused with the album layout — kept for the shared grid props shape. */
   maxColumnWidth?: number;
 }
 
-interface GridLayout {
-  count: number;
-  columnWidth: number;
-  rowUnit: number;
-  gridWidth: number;
+/** Photo model carrying its memo; width/height encode the tile shape. */
+interface BentoPhoto extends Photo {
+  memo: Memo;
 }
 
-const layoutFor = (width: number, maxColumns?: number, maxColumnWidth?: number): GridLayout => {
-  const fit = columnCountForWidth(width);
-  const count = Math.max(1, maxColumns && maxColumns > 0 ? Math.min(fit, maxColumns) : fit);
-  const columnWidth = count > 1 ? Math.floor((width - GRID_GAP * (count - 1)) / count) : width;
-  const clampedWidth = maxColumnWidth != null ? Math.min(columnWidth, maxColumnWidth) : columnWidth;
-  return {
-    count,
-    columnWidth: clampedWidth,
-    rowUnit: width < BENTO_SMALL_WIDTH ? BENTO_ROW_UNIT_SMALL : BENTO_ROW_UNIT,
-    gridWidth: clampedWidth * count + GRID_GAP * Math.max(0, count - 1),
-  };
-};
+// Text-only tiles get their shape from the card-height estimator, expressed as a
+// width/height pair around a nominal 1000px base.
+const TEXT_BASE_WIDTH = 1000;
 
 /**
- * Bento layout: a CSS grid with dense auto-flow, where tiles span columns and rows
- * deterministically from memo data (see bentoSpan). Unlike ColumnGrid's translated
- * masonry, spans live entirely in CSS — `grid-auto-flow: dense` backfills holes, so
- * visual order may differ from DOM (keyboard focus) order, exactly like masonry.
+ * Bento layout built on react-photo-album's rows layout: a justified grid where each
+ * row is solved from the tiles' aspect ratios, so media shape drives tile shape with
+ * no hand-rolled packing. Pinned memos get double width weight as heroes.
  */
-const BentoGrid = ({ items, getKey, renderItem, leading, priorityKey, maxColumns, maxColumnWidth }: BentoGridProps) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [layout, setLayout] = useState<GridLayout>(() => layoutFor(Number.POSITIVE_INFINITY, maxColumns, maxColumnWidth));
-
-  // Only the derived layout is stored, so continuous resizes re-render nothing until a
-  // column count, row unit, or clamped width bound actually flips.
-  useLayoutEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const apply = (width: number) => {
-      const next = layoutFor(width, maxColumns, maxColumnWidth);
-      setLayout((prev) =>
-        prev.count === next.count && prev.columnWidth === next.columnWidth && prev.rowUnit === next.rowUnit ? prev : next,
-      );
-    };
-    apply(el.clientWidth);
-    if (typeof ResizeObserver === "undefined") return;
-    const observer = new ResizeObserver((entries) => apply(entries[0]?.contentRect.width ?? el.clientWidth));
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [maxColumns, maxColumnWidth]);
-
-  const orderedItems = useMemo(() => {
-    if (!priorityKey) return items;
-    const priority = items.find((item) => getKey(item) === priorityKey);
-    if (!priority) return items;
-    return [priority, ...items.filter((item) => getKey(item) !== priorityKey)];
+const BentoGrid = ({ items, getKey, renderItem, leading, priorityKey, maxColumns }: BentoGridProps) => {
+  const photos = useMemo(() => {
+    const ordered = [...items];
+    if (priorityKey) {
+      const priorityIndex = ordered.findIndex((item) => getKey(item) === priorityKey);
+      if (priorityIndex > 0) {
+        const [priority] = ordered.splice(priorityIndex, 1);
+        ordered.unshift(priority);
+      }
+    }
+    return ordered.map<BentoPhoto>((memo) => {
+      const aspect = memoVisualAspect(memo);
+      // Nominal column width for the estimator fallback; the album rescales anyway.
+      const estimatedHeight = estimateMemoCardHeight(memo, { columnWidth: 360 });
+      const width = memo.pinned ? TEXT_BASE_WIDTH * 2 : TEXT_BASE_WIDTH;
+      const height = aspect ? Math.round(width / aspect) : Math.round(width * (estimatedHeight / 360));
+      return { src: "", width, height, memo, key: getKey(memo) };
+    });
   }, [items, getKey, priorityKey]);
 
   return (
     <>
       {leading != null && (
-        <div className="mx-auto w-full" style={{ maxWidth: layout.gridWidth || undefined, marginBottom: GRID_GAP }}>
+        <div className="mx-auto w-full" style={{ marginBottom: GRID_GAP }}>
           {leading}
         </div>
       )}
-      <div
-        ref={containerRef}
-        className="mx-auto w-full"
-        style={{
-          display: "grid",
-          gap: GRID_GAP,
-          gridTemplateColumns: `repeat(${layout.count}, minmax(0, 1fr))`,
-          gridAutoRows: `${layout.rowUnit}px`,
-          gridAutoFlow: "dense",
-          maxWidth: layout.gridWidth || undefined,
-        }}
-      >
-        {orderedItems.map((item) => {
-          const key = getKey(item);
-          const { colSpan, rowSpan } = bentoSpan(item, {
-            columnCount: layout.count,
-            columnWidth: layout.columnWidth,
-            rowUnit: layout.rowUnit,
-          });
-          return (
-            <div
-              key={key}
-              className="flex min-h-0 min-w-0 flex-col overflow-hidden rounded-lg [&>*]:mb-0 [&>*]:flex-1"
-              style={{
-                gridColumn: `span ${Math.min(colSpan, layout.count)}`,
-                gridRow: `span ${rowSpan}`,
-              }}
-            >
-              {renderItem(item)}
+      <RowsPhotoAlbum
+        photos={photos}
+        spacing={GRID_GAP}
+        targetRowHeight={(containerWidth) => (containerWidth < BENTO_SMALL_WIDTH ? BENTO_ROW_UNIT_SMALL : BENTO_ROW_UNIT)}
+        defaultContainerWidth={800}
+        rowConstraints={maxColumns && maxColumns > 0 ? { maxPhotos: maxColumns } : undefined}
+        render={{
+          photo: (_props, { photo, width, height }) => (
+            <div className="relative overflow-hidden rounded-lg [&>*]:absolute [&>*]:inset-0" style={{ width, height }}>
+              {renderItem(photo.memo)}
             </div>
-          );
-        })}
-      </div>
+          ),
+        }}
+      />
     </>
   );
 };
