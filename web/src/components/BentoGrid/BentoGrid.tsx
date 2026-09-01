@@ -17,8 +17,6 @@ interface BentoGridProps {
   priorityKey?: string;
   /** Upper bound on photos per row; 0 or undefined means as many as fit. */
   maxColumns?: number;
-  /** Unused with the album layout — kept for the shared grid props shape. */
-  maxColumnWidth?: number;
 }
 
 /** Photo model carrying its memo; width/height encode the tile shape. */

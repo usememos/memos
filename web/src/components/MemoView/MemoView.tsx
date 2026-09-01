@@ -1,3 +1,4 @@
+import { PinIcon } from "lucide-react";
 import { type ComponentType, memo, Suspense, useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useResolvedUser } from "@/components/MemoContent/MentionResolutionContext";
@@ -9,6 +10,7 @@ import useNavigateTo from "@/hooks/useNavigateTo";
 import { findTagMetadata } from "@/lib/tag";
 import { cn } from "@/lib/utils";
 import { State } from "@/types/proto/api/v1/common_pb";
+import { useTranslate } from "@/utils/i18n";
 import { lazyWithReload } from "@/utils/lazy";
 import { isSuperUser } from "@/utils/user";
 import { getBentoCoverUrl, getBentoTileTitle } from "./bentoCover";
@@ -40,6 +42,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   const [EditorComponent, setEditorComponent] = useState<ComponentType<MemoEditorProps>>();
   const [cardWidth, setCardWidth] = useState(0);
   const [failedBentoCover, setFailedBentoCover] = useState<string>();
+  const t = useTranslate();
 
   const currentUser = useCurrentUser();
   const { userTagsSetting } = useAuth();
@@ -155,7 +158,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
         className,
       )}
       ref={cardRef}
-      tabIndex={readonly ? -1 : 0}
+      tabIndex={variant === "bento" ? -1 : readonly ? -1 : 0}
     >
       {variant === "bento" ? (
         <>
@@ -168,7 +171,14 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
                 className="size-full object-cover"
                 onError={() => setFailedBentoCover(visibleBentoCover)}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/60 to-transparent" />
+            </div>
+          )}
+          {showPinned && memoData.pinned && (
+            <div className="absolute right-2 top-2 z-20 flex items-center gap-1 rounded-full bg-black/50 px-2 py-0.5 text-[11px] font-medium text-white backdrop-blur-sm">
+              <PinIcon className="size-3" strokeWidth={2} />
+              {t("common.pinned")}
             </div>
           )}
           {/* Cover tiles trade the full card body for a glanceable title overlay; the

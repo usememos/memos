@@ -7,13 +7,15 @@ export const BENTO_ROW_UNIT_SMALL = 220;
 /** Below this container width the smaller row target keeps tiles readable. */
 export const BENTO_SMALL_WIDTH = 640;
 
-const isVisualAttachment = (type: string) => isImage(type) || type.startsWith("video/");
-
-/** The display aspect ratio (width/height) of the memo's hero media, when known. */
+/**
+ * The display aspect ratio (width/height) of the memo's hero media, when known.
+ * Only considers image attachments (not video) because the bento tile renders a
+ * still cover image — a video-shaped tile with no cover would look wrong.
+ */
 export const memoVisualAspect = (memo: Memo): number | undefined => {
-  const attachment = (memo.attachments ?? []).find((candidate) => isVisualAttachment(getAttachmentType(candidate)));
-  const width = attachment?.mediaMetadata?.width;
-  const height = attachment?.mediaMetadata?.height;
+  const image = (memo.attachments ?? []).find((candidate) => isImage(getAttachmentType(candidate)));
+  const width = image?.mediaMetadata?.width;
+  const height = image?.mediaMetadata?.height;
   if (width && height && width > 0 && height > 0) {
     return width / height;
   }

@@ -266,7 +266,6 @@ const PagedMemoList = (props: Props) => {
                 leading={gridLeading}
                 priorityKey={priorityKey}
                 maxColumns={maxColumns}
-                maxColumnWidth={MAX_COLUMN_WIDTH}
               />
               {!isDisplayPending && footer}
             </>
