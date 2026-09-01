@@ -12,6 +12,8 @@ import (
 	"log/slog"
 	"path/filepath"
 	"strings"
+	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/lithammer/shortuuid/v4"
@@ -161,8 +163,13 @@ func (s *APIV1Service) EnrichMemoLinks(ctx context.Context, memo *store.Memo) {
 // no cached cover, ignoring the backoff schedule (a fresh zero-value window makes the
 // retry due immediately). Paged in both directions: bounded memos per call and bounded
 // links per memo so one click stays snappy — call repeatedly to work through a backlog.
+// Memos within a page are processed concurrently by a bounded worker pool, since each
+// link fetch is I/O-bound (outbound HTTP for metadata + image download).
 // ponytail: no continuation token; memos_examined < page size tells the client it is done.
-const refreshLinkCoversMemosPerPage = 200
+const (
+	refreshLinkCoversMemosPerPage = 200
+	refreshLinkCoversWorkers       = 10
+)
 
 func (s *APIV1Service) RefreshMemoLinkCovers(ctx context.Context, _ *v1pb.RefreshMemoLinkCoversRequest) (*v1pb.RefreshMemoLinkCoversResponse, error) {
 	user, err := s.fetchCurrentUser(ctx)
@@ -185,34 +192,51 @@ func (s *APIV1Service) RefreshMemoLinkCovers(ctx context.Context, _ *v1pb.Refres
 
 	response := &v1pb.RefreshMemoLinkCoversResponse{MemosExamined: int32(len(memos))}
 	now := time.Now()
+
+	var updated, failed, skipped int32
+	var wg sync.WaitGroup
+	sem := make(chan struct{}, refreshLinkCoversWorkers)
+
 	for _, memo := range memos {
 		if memo.Payload == nil {
 			continue
 		}
-		changed := false
-		for _, entry := range memo.Payload.Links {
-			if entry.CoverAttachmentUid != "" {
-				response.SkippedLinks++
-				continue
+		wg.Add(1)
+		sem <- struct{}{}
+		go func(memo *store.Memo) {
+			defer wg.Done()
+			defer func() { <-sem }()
+
+			changed := false
+			for _, entry := range memo.Payload.Links {
+				if entry.CoverAttachmentUid != "" {
+					atomic.AddInt32(&skipped, 1)
+					continue
+				}
+				clearRetryState(entry)
+				s.retryLink(ctx, user.ID, entry, now)
+				changed = true
+				switch {
+				case entry.CoverAttachmentUid != "":
+					atomic.AddInt32(&updated, 1)
+				case entry.FetchAttempts > 0:
+					atomic.AddInt32(&failed, 1)
+				default:
+					atomic.AddInt32(&skipped, 1)
+				}
 			}
-			clearRetryState(entry)
-			s.retryLink(ctx, user.ID, entry, now)
-			changed = true
-			switch {
-			case entry.CoverAttachmentUid != "":
-				response.UpdatedLinks++
-			case entry.FetchAttempts > 0:
-				response.FailedLinks++
-			default:
-				response.SkippedLinks++
+			if changed {
+				if err := s.Store.UpdateMemo(ctx, &store.UpdateMemo{ID: memo.ID, Payload: memo.Payload}); err != nil {
+					slog.Warn("failed to persist refreshed link covers", "memoID", memo.ID, "err", err)
+				}
 			}
-		}
-		if changed {
-			if err := s.Store.UpdateMemo(ctx, &store.UpdateMemo{ID: memo.ID, Payload: memo.Payload}); err != nil {
-				slog.Warn("failed to persist refreshed link covers", "memoID", memo.ID, "err", err)
-			}
-		}
+		}(memo)
 	}
+	wg.Wait()
+
+	response.UpdatedLinks = updated
+	response.FailedLinks = failed
+	response.SkippedLinks = skipped
 	return response, nil
 }
 
