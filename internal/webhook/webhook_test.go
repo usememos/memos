@@ -300,3 +300,35 @@ func TestPostWithoutSecretSetsNoSignatureHeaders(t *testing.T) {
 	require.NoError(t, err)
 	require.False(t, hasSignatureHeaders, "no signature headers should be set when no secret is configured")
 }
+
+func TestIsReservedIP(t *testing.T) {
+	tests := []struct {
+		name     string
+		ip       string
+		reserved bool
+	}{
+		{name: "loopback", ip: "127.0.0.1", reserved: true},
+		{name: "private 10", ip: "10.0.0.1", reserved: true},
+		{name: "private 172", ip: "172.16.0.1", reserved: true},
+		{name: "private 192", ip: "192.168.1.1", reserved: true},
+		{name: "link local imds", ip: "169.254.169.254", reserved: true},
+		{name: "cgnat lower bound", ip: "100.64.0.1", reserved: true},
+		{name: "cgnat alibaba metadata", ip: "100.100.100.200", reserved: true},
+		{name: "cgnat upper bound", ip: "100.127.255.255", reserved: true},
+		{name: "mapped ipv6 cgnat", ip: "::ffff:100.100.100.200", reserved: true},
+		{name: "ipv6 loopback", ip: "::1", reserved: true},
+		{name: "below cgnat", ip: "100.63.255.255", reserved: false},
+		{name: "above cgnat", ip: "100.128.0.0", reserved: false},
+		{name: "public dns", ip: "8.8.8.8", reserved: false},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			require.Equal(t, test.reserved, isReservedIP(net.ParseIP(test.ip)))
+		})
+	}
+}
+
+func TestValidateURLRejectsCGNAT(t *testing.T) {
+	resetPrivateDestinationPolicy(t)
+	require.Error(t, ValidateURL("http://100.100.100.200/hook"))
+}
