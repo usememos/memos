@@ -27,6 +27,10 @@ function press(view: EditorView, key: string, opts: KeyboardEventInit = {}) {
   view.contentDOM.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true, cancelable: true, ...opts }));
 }
 
+function mod(opts: KeyboardEventInit = {}): KeyboardEventInit {
+  return /Mac/.test(navigator.platform) ? { ...opts, metaKey: true } : { ...opts, ctrlKey: true };
+}
+
 /** Place the cursor on the given 1-based line, then press Tab/Shift-Tab. */
 function tabOnLine(view: EditorView, lineNumber: number, shiftKey = false) {
   const line = view.state.doc.line(lineNumber);
@@ -64,6 +68,49 @@ describe("editor key bindings", () => {
     view.dispatch({ selection: { anchor: 5 } });
     press(view, "Enter");
     expect(view.state.doc.toString()).toBe("hello\n");
+    view.destroy();
+  });
+
+  it.each([
+    ["bold", "b", {}, "**text**"],
+    ["italic", "i", {}, "*text*"],
+    ["strikethrough", "s", { shiftKey: true }, "~~text~~"],
+    ["inline code", "e", {}, "`text`"],
+    ["code block", "c", { altKey: true }, "```\ntext\n```"],
+    ["ordered list", "7", { shiftKey: true }, "1. text"],
+    ["bullet list", "8", { shiftKey: true }, "- text"],
+    ["task list", "9", { shiftKey: true }, "- [ ] text"],
+    ["heading 1", "1", { altKey: true }, "# text"],
+    ["heading 2", "2", { altKey: true }, "## text"],
+    ["heading 3", "3", { altKey: true }, "### text"],
+  ])("applies %s with its formatting shortcut", (_name, key, modifiers, expected) => {
+    const view = makeView("text");
+    view.dispatch({ selection: { anchor: 0, head: 4 } });
+
+    press(view, key, mod(modifiers));
+
+    expect(view.state.doc.toString()).toBe(expected);
+    view.destroy();
+  });
+
+  it("converts a heading to a paragraph with Mod-Alt-0", () => {
+    const view = makeView("## text");
+    view.dispatch({ selection: { anchor: 4 } });
+
+    press(view, "0", mod({ altKey: true }));
+
+    expect(view.state.doc.toString()).toBe("text");
+    view.destroy();
+  });
+
+  it("uses Mod-I for italic instead of CodeMirror's select-parent-syntax command", () => {
+    const view = makeView("plain");
+    view.dispatch({ selection: { anchor: 0, head: 5 } });
+
+    press(view, "i", mod());
+
+    expect(view.state.doc.toString()).toBe("*plain*");
+    expect(view.state.selection.main).toMatchObject({ from: 1, to: 6 });
     view.destroy();
   });
 
