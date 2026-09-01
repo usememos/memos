@@ -1,10 +1,10 @@
 package v1
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"net/http"
-	"strconv"
 
 	"github.com/labstack/echo/v5"
 
@@ -77,7 +77,11 @@ func handleListPollVotes(c *echo.Context, storeInstance *store.Store, authentica
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to list poll votes"})
 	}
 
-	return c.JSON(http.StatusOK, buildPollVotesResponse(votes, user))
+	response, err := buildPollVotesResponse(ctx, storeInstance, votes, user)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to resolve voters"})
+	}
+	return c.JSON(http.StatusOK, response)
 }
 
 func handleSetPollVotes(c *echo.Context, storeInstance *store.Store, authenticator *auth.Authenticator) error {
@@ -113,21 +117,66 @@ func handleSetPollVotes(c *echo.Context, storeInstance *store.Store, authenticat
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to save poll votes"})
 	}
 
-	return c.JSON(http.StatusOK, buildPollVotesResponse(votes, user))
+	response, err := buildPollVotesResponse(ctx, storeInstance, votes, user)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "failed to resolve voters"})
+	}
+	return c.JSON(http.StatusOK, response)
 }
 
-func buildPollVotesResponse(votes []*store.PollVote, currentUser *store.User) pollVotesResponse {
+// buildPollVotesResponse resolves each vote's numeric voter ID to the
+// username-based public resource name (BuildUserName), matching the "users/{username}"
+// format every other endpoint uses for User.name - not "users/{id}" - so the
+// frontend's currentUser.name comparison used to highlight the caller's own
+// selection actually matches.
+func buildPollVotesResponse(ctx context.Context, storeInstance *store.Store, votes []*store.PollVote, currentUser *store.User) (pollVotesResponse, error) {
 	response := pollVotesResponse{Votes: make([]pollVoteDTO, 0, len(votes))}
+
+	voterIDSet := make(map[int32]struct{}, len(votes))
 	for _, vote := range votes {
+		voterIDSet[vote.VoterID] = struct{}{}
+	}
+	voterIDList := make([]int32, 0, len(voterIDSet))
+	for voterID := range voterIDSet {
+		voterIDList = append(voterIDList, voterID)
+	}
+
+	usernameByID := make(map[int32]string, len(voterIDList))
+	if currentUser != nil {
+		usernameByID[currentUser.ID] = currentUser.Username
+	}
+	missingIDList := make([]int32, 0, len(voterIDList))
+	for _, voterID := range voterIDList {
+		if _, ok := usernameByID[voterID]; !ok {
+			missingIDList = append(missingIDList, voterID)
+		}
+	}
+	if len(missingIDList) > 0 {
+		voters, err := storeInstance.ListUsers(ctx, &store.FindUser{IDList: missingIDList})
+		if err != nil {
+			return response, err
+		}
+		for _, voter := range voters {
+			usernameByID[voter.ID] = voter.Username
+		}
+	}
+
+	for _, vote := range votes {
+		username, ok := usernameByID[vote.VoterID]
+		if !ok {
+			// The voter's account no longer resolves (e.g. deleted); omit the
+			// name rather than emitting an incorrect resource reference.
+			continue
+		}
 		response.Votes = append(response.Votes, pollVoteDTO{
 			OptionIndex: vote.OptionIndex,
-			Voter:       UserNamePrefix + strconv.Itoa(int(vote.VoterID)),
+			Voter:       BuildUserName(username),
 		})
 	}
 	if currentUser != nil {
-		response.CurrentVoterName = UserNamePrefix + strconv.Itoa(int(currentUser.ID))
+		response.CurrentVoterName = BuildUserName(currentUser.Username)
 	}
-	return response
+	return response, nil
 }
 
 func validatePollUID(pollUID string) (string, error) {
