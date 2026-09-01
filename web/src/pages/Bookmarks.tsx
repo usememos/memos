@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { BookmarkIcon, ImportIcon, PlusIcon, RefreshCwIcon } from "lucide-react";
+import { BookmarkIcon, CheckIcon, ImportIcon, PlusIcon, RefreshCwIcon } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { Link } from "react-router-dom";
 import BookmarksImportDialog from "@/components/BookmarksImport/BookmarksImportDialog";
@@ -140,7 +140,7 @@ const Bookmarks = () => {
         filter={memoFilter}
         contextFilter={combineCELFilters("has_link", spaceFilter)}
         renderLeading={({ useGrid }) => (
-          <header className={cn("flex flex-col gap-1.5 px-1", !useGrid && "mb-4")}>
+          <header className={cn("flex flex-col gap-2 px-1", !useGrid && "mb-4")}>
             <div className="flex items-center gap-2">
               <BookmarkIcon className="size-5 text-muted-foreground" strokeWidth={1.8} />
               <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("common.bookmarks")}</h1>
@@ -165,7 +165,8 @@ const Bookmarks = () => {
               </div>
             </div>
             {refreshStatus !== null ? (
-              <p aria-live="polite" className="self-end pr-2 font-mono text-xs text-muted-foreground">
+              <p aria-live="polite" className="flex items-center gap-1.5 pl-7 font-mono text-xs text-muted-foreground">
+                {coverRefresh.status === "done" && <CheckIcon className="size-3" strokeWidth={2} />}
                 {refreshStatus}
               </p>
             ) : null}
