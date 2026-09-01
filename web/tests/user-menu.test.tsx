@@ -88,6 +88,8 @@ describe("User menu", () => {
     );
 
     const trigger = screen.getByRole("button", { name: "Steven, common.more, 2 inbox.unread" });
+    expect(trigger).toHaveClass("h-9", "w-full", "gap-1", "rounded-md", "px-2");
+    expect(trigger.firstElementChild).toHaveClass("size-5");
     expect(trigger.querySelector(".lucide-ellipsis-vertical")).not.toBeNull();
     expect(trigger.querySelector(".lucide-chevrons-up-down")).toBeNull();
     expect(trigger.querySelector("[data-inbox-unread-indicator]")).not.toBeNull();
@@ -95,7 +97,7 @@ describe("User menu", () => {
 
     const inbox = await screen.findByRole("menuitem", { name: "common.inbox, 2 inbox.unread" });
     const menu = screen.getByRole("menu");
-    expect(menu).toHaveClass("w-[calc(var(--anchor-width)-0.75rem)]");
+    expect(menu).toHaveClass("w-[var(--anchor-width)]");
     expect(menu).not.toHaveClass("min-w-56");
     expect(inbox).toHaveAttribute("aria-current", "page");
     expect(inbox).toHaveTextContent("common.inbox");

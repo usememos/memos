@@ -4,9 +4,13 @@ import { describe, expect, it, vi } from "vitest";
 import SidebarRow, {
   SIDEBAR_ROW_BOX_CLASSES,
   SIDEBAR_ROW_COUNT_RAIL_CLASSES,
+  SIDEBAR_ROW_SLOT_BUTTON_CLASSES,
   SIDEBAR_ROW_SLOT_CLASSES,
 } from "@/components/AppSidebar/SidebarRow";
-import SidebarSection, { SIDEBAR_SECTION_CONTENT_CLASSES } from "@/components/AppSidebar/SidebarSection";
+import SidebarSection, {
+  SIDEBAR_SECTION_ACTION_BUTTON_CLASSES,
+  SIDEBAR_SECTION_CONTENT_CLASSES,
+} from "@/components/AppSidebar/SidebarSection";
 import TagTree from "@/components/TagTree";
 
 vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
@@ -35,10 +39,21 @@ describe("sidebar row grammar", () => {
 
     const row = screen.getByRole("button", { name: "Tasks3" });
     expect(row).toHaveClass(...boxClasses);
+    expect(row).toHaveClass("h-8", "w-full", "gap-1", "rounded-md", "px-2");
+    expect(row).not.toHaveClass("-mx-1");
     // Icon in the shared slot and count in the shared rail, so every list — nav rows,
     // views, tags in both modes — keeps its icons and digits on the same vertical lines.
     expect(row.firstElementChild).toHaveClass(...SIDEBAR_ROW_SLOT_CLASSES.split(" "));
+    expect(row.firstElementChild).toHaveClass("size-5");
+    expect(row.firstElementChild?.firstElementChild).toHaveClass("size-4");
     expect(screen.getByText("3")).toHaveClass(...SIDEBAR_ROW_COUNT_RAIL_CLASSES.split(" "));
+  });
+
+  it("keeps compact controls at a 24px hit target without layout margins", () => {
+    expect(SIDEBAR_ROW_SLOT_BUTTON_CLASSES).toContain("after:-inset-0.5");
+    expect(SIDEBAR_ROW_SLOT_BUTTON_CLASSES).toContain("after:content-['']");
+    expect(SIDEBAR_ROW_SLOT_BUTTON_CLASSES).not.toContain("-mx-1");
+    expect(SIDEBAR_SECTION_ACTION_BUTTON_CLASSES.split(" ")).toContain("size-6");
   });
 
   it("gives tag tree rows the same box as a nav row", () => {
@@ -56,6 +71,7 @@ describe("sidebar row grammar", () => {
     for (const item of screen.getAllByRole("treeitem")) {
       expect(item).toHaveClass(...boxClasses);
     }
+    expect(document.querySelector(".lucide-chevron-right")).toHaveClass("me-auto");
   });
 
   it("indents nested tags by the same step the memo outline uses", () => {

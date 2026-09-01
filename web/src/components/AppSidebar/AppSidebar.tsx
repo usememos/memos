@@ -54,11 +54,20 @@ import { getSidebarRouteKind, routeSupportsCollectionScope } from "./routes";
 import SidebarRow, { SIDEBAR_ROW_CLASSES, SIDEBAR_ROW_FOCUS_CLASSES, SidebarRowIconSlot, sidebarRowStateClasses } from "./SidebarRow";
 import SidebarSection, { SIDEBAR_SECTION_STACK_CLASSES } from "./SidebarSection";
 import SpaceSwitcher from "./SpaceSwitcher";
+import {
+  SIDEBAR_FOOTER_CLASSES,
+  SIDEBAR_LEADING_SLOT_CLASSES,
+  SIDEBAR_NAV_LEADING_SLOT_CLASSES,
+  SIDEBAR_RAIL_CLASSES,
+  sidebarSurfaceVariants,
+} from "./sidebar-layout";
 import TagsSection from "./TagsSection";
 import ViewsSection from "./ViewsSection";
 
-const SIDEBAR_HORIZONTAL_PADDING = "px-3";
-const SIDEBAR_HEADER_ACTION_CLASSES = "size-7 shrink-0 rounded-md text-muted-foreground hover:text-foreground";
+const SIDEBAR_HEADER_ACTION_CLASSES =
+  "size-7 shrink-0 rounded-md text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/50";
+const SIDEBAR_HEADER_PRIMARY_ACTION_CLASSES =
+  "size-7 shrink-0 text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/50";
 
 const NewMemoAction = ({ onClick }: { onClick: () => void }) => {
   const t = useTranslate();
@@ -69,9 +78,9 @@ const NewMemoAction = ({ onClick }: { onClick: () => void }) => {
       <TooltipTrigger
         render={
           <Button
-            variant="ghost"
+            variant="outline"
             size="icon-sm"
-            className={SIDEBAR_HEADER_ACTION_CLASSES}
+            className={SIDEBAR_HEADER_PRIMARY_ACTION_CLASSES}
             onClick={onClick}
             aria-label={label}
             data-new-memo-trigger
@@ -304,32 +313,25 @@ interface GlobalNavItem {
 }
 
 /**
- * Pills keep a constant px so the icon sits exactly where it does in the collapsed 30px
- * square; all width change comes from the label column, which animates 0fr -> 1fr. That
- * keeps the expand/collapse a single smooth motion with no padding jump.
+ * The compact navigator is intentionally horizontal. Its 16px glyph plus 8px padding
+ * on each side makes the collapsed control an exact 32px square. Expanding the
+ * label only opens the text track, so the artwork and surface never jump.
  */
 const navPillClasses = (active: boolean) =>
-  cn(
-    "relative flex h-[30px] min-w-0 items-center rounded-md px-[7px] transition-colors",
-    SIDEBAR_ROW_FOCUS_CLASSES,
-    sidebarRowStateClasses(active),
-  );
+  cn(sidebarSurfaceVariants({ role: "navPill" }), SIDEBAR_ROW_FOCUS_CLASSES, sidebarRowStateClasses(active));
 
 const NavPillLabel = ({ expanded, label, children }: { expanded: boolean; label: ReactNode; children?: ReactNode }) => (
   <span
     aria-hidden={!expanded || undefined}
     className={cn(
-      // The icon-label gap is padding on this element because overflow-hidden clips
-      // content but never padding — it must animate to zero with the track, or collapsed
-      // pills keep an 8px tail.
       "grid min-w-0 transition-[grid-template-columns,padding] duration-200 ease-out motion-reduce:transition-none",
-      expanded ? "grid-cols-[1fr] pl-2" : "grid-cols-[0fr] pl-0",
+      expanded ? "grid-cols-[1fr] ps-2" : "grid-cols-[0fr] ps-0",
     )}
   >
-    {/* Content is shrink-0 so the collapsing track clips it in place — a plain
-        left-to-right reveal instead of re-truncating the label on every frame. */}
-    <span className="flex min-w-0 items-center gap-2 overflow-hidden">
-      <span className="max-w-[5.5rem] shrink-0 truncate text-[12px]">{label}</span>
+    <span className="flex min-w-0 items-center gap-1.5 overflow-hidden">
+      <span data-sidebar-label className="max-w-[5.5rem] shrink-0 truncate text-[12px]">
+        {label}
+      </span>
       {children}
     </span>
   </span>
@@ -401,9 +403,9 @@ const GlobalNavigation = () => {
         },
       ];
 
-  // Keep one textual anchor in the compact navigator. A real active destination
-  // takes precedence; routes outside this navigation default to its first item
-  // without presenting that fallback as the current page.
+  // Keep exactly one textual anchor in the compact horizontal navigator. The active
+  // destination expands; routes outside this navigator fall back to its first control
+  // without incorrectly marking that fallback as the current page.
   const activeNavigatorItemId = currentUser && scopeRouteActive ? "scope" : items.find((item) => item.active)?.id;
   const expandedNavigatorItemId = activeNavigatorItemId ?? (currentUser ? "scope" : items[0]?.id);
   const scopeExpanded = expandedNavigatorItemId === "scope";
@@ -416,10 +418,7 @@ const GlobalNavigation = () => {
           <DropdownMenuItem
             key={item.id}
             aria-current={item.id === resolvedScope ? "page" : undefined}
-            className={cn(
-              "h-[30px] shrink-0 py-0 text-[13px]",
-              item.id === resolvedScope && "bg-accent font-medium text-accent-foreground",
-            )}
+            className={cn("h-8 shrink-0 py-0 text-[13px]", item.id === resolvedScope && "bg-accent font-medium text-accent-foreground")}
             onClick={() => navigateToScope(item.id)}
           >
             <Icon className="size-4" strokeWidth={1.8} />
@@ -432,12 +431,11 @@ const GlobalNavigation = () => {
 
   return (
     <TooltipProvider>
-      <nav className={cn("flex h-9 items-center gap-1", SIDEBAR_HORIZONTAL_PADDING)} aria-label="Primary">
+      <nav className={cn("flex h-9 items-center gap-1", SIDEBAR_RAIL_CLASSES)} aria-label="Primary">
         {currentUser && (
           <DropdownMenu
             onOpenChange={(open, eventDetails) => {
-              // Off the scope routes the pill is a plain navigation button: veto the
-              // menu and navigate to the scope instead.
+              // Off the scope routes this is a navigation control, not a menu trigger.
               if (open && !scopeRouteActive) {
                 eventDetails.cancel();
                 navigateToScope(primaryScope);
@@ -445,9 +443,8 @@ const GlobalNavigation = () => {
             }}
           >
             <Tooltip disabled={scopeExpanded}>
-              {/* The tooltip anchors to a wrapper span rather than the button: a disabled
-                  tooltip stamps data-trigger-disabled on its trigger element, and Base UI's
-                  shared floating logic would read that as the MENU trigger being disabled. */}
+              {/* Keep the tooltip wrapper separate: Base UI otherwise propagates its
+                  disabled state to the nested dropdown trigger. */}
               <TooltipTrigger render={<span className="flex min-w-0" />}>
                 <DropdownMenuTrigger
                   render={
@@ -459,11 +456,14 @@ const GlobalNavigation = () => {
                     />
                   }
                 >
-                  <ActiveScopeIcon className="size-4 shrink-0" strokeWidth={1.8} />
+                  <span className={SIDEBAR_NAV_LEADING_SLOT_CLASSES} aria-hidden="true">
+                    <ActiveScopeIcon className="size-4 opacity-75" strokeWidth={1.8} />
+                  </span>
                   <NavPillLabel expanded={scopeExpanded} label={activeScopeItem.label}>
                     {scopeRouteActive && (
                       <ChevronDownIcon
-                        className="-mr-0.5 size-3 shrink-0 opacity-55 transition-transform duration-200 ease-out group-data-[popup-open]/scope:rotate-180 motion-reduce:transition-none"
+                        data-sidebar-trailing
+                        className="size-3 shrink-0 opacity-55 transition-transform duration-200 ease-out group-data-[popup-open]/scope:rotate-180 motion-reduce:transition-none"
                         strokeWidth={1.8}
                       />
                     )}
@@ -491,12 +491,15 @@ const GlobalNavigation = () => {
                   />
                 }
               >
-                <Icon className="size-4 shrink-0" strokeWidth={1.8} />
+                <span className={SIDEBAR_NAV_LEADING_SLOT_CLASSES} aria-hidden="true">
+                  <Icon className="size-4 opacity-75" strokeWidth={1.8} />
+                </span>
                 <NavPillLabel expanded={expanded} label={item.label} />
                 {item.count != null && (
                   <span
+                    data-sidebar-trailing
                     className={cn(
-                      "absolute -right-0.5 -top-0.5 flex min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-semibold leading-4 text-primary-foreground transition-[opacity,scale] duration-200 ease-out motion-reduce:transition-none",
+                      "absolute -end-0.5 -top-0.5 flex min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-semibold leading-4 text-primary-foreground transition-[opacity,scale] duration-200 ease-out motion-reduce:transition-none",
                       item.count > 0 ? "scale-100 opacity-100" : "scale-50 opacity-0",
                     )}
                   >
@@ -514,17 +517,24 @@ const GlobalNavigation = () => {
 };
 
 /** The sidebar/header brand slot: collection scope on collection routes, instance brand elsewhere. */
-const SidebarBrand = ({ className }: { className?: string }) => {
+const SidebarBrand = ({ className, size = "md" }: { className?: string; size?: "md" | "header" }) => {
   const currentUser = useCurrentUser();
   const location = useLocation();
 
   if (currentUser && routeSupportsCollectionScope(location.pathname)) {
-    return <SpaceSwitcher className={className} />;
+    return <SpaceSwitcher className={className} size={size} />;
   }
 
   return (
-    <Link to={currentUser ? ROUTES.HOME : ROUTES.EXPLORE} className={cn("min-w-0 rounded-md focus-visible:outline-none", className)}>
-      <MemosLogo compact />
+    <Link
+      to={currentUser ? ROUTES.HOME : ROUTES.EXPLORE}
+      className={cn(
+        "transition-colors hover:bg-sidebar-accent/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/40",
+        sidebarSurfaceVariants({ role: size === "header" ? "headerBrand" : "mobileBrand" }),
+        className,
+      )}
+    >
+      <MemosLogo compact size={size === "header" ? "header" : "md"} />
     </Link>
   );
 };
@@ -536,8 +546,8 @@ const AppSidebar = ({ className }: { className?: string }) => {
   const { canOpen: canCompose, openEditor } = useGlobalMemoEditor();
   return (
     <aside className={cn("flex h-full w-full select-none flex-col bg-sidebar text-sidebar-foreground", className)}>
-      <div className={cn("flex h-13 shrink-0 items-center justify-between gap-2", SIDEBAR_HORIZONTAL_PADDING)}>
-        <SidebarBrand className="w-full flex-1" />
+      <div data-sidebar-header className={cn("flex h-13 shrink-0 items-center justify-between gap-2", SIDEBAR_RAIL_CLASSES)}>
+        <SidebarBrand className="min-w-0" size="header" />
         <div className="flex shrink-0 items-center gap-1">
           <Button
             variant="ghost"
@@ -556,23 +566,29 @@ const AppSidebar = ({ className }: { className?: string }) => {
       </div>
       <GlobalNavigation />
       <div className="mx-3 mt-2 border-t border-border/70" />
-      <div className={cn("min-h-0 flex-1 overflow-y-auto overflow-x-hidden pt-2 pb-3 [scrollbar-width:thin]", SIDEBAR_HORIZONTAL_PADDING)}>
+      <div className={cn("min-h-0 flex-1 overflow-y-auto overflow-x-hidden pt-2 pb-3 [scrollbar-width:thin]", SIDEBAR_RAIL_CLASSES)}>
         <RouteSidebarContent />
       </div>
-      <footer className="shrink-0 border-t border-border/70">
+      <footer className={cn("shrink-0 border-t border-border/70", SIDEBAR_FOOTER_CLASSES)}>
         {currentUser ? (
           <UserMenu />
         ) : (
           <Link
             to={ROUTES.AUTH}
             onClick={() => setMobileOpen(false)}
-            className="group flex h-10 w-full min-w-0 items-center justify-between gap-2 px-3 text-[13px] font-medium text-foreground transition-colors hover:bg-sidebar-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/50"
+            className={cn(
+              sidebarSurfaceVariants({ role: "account" }),
+              "group text-[13px] font-medium text-foreground transition-colors hover:bg-sidebar-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/50",
+            )}
           >
-            <span className="flex min-w-0 flex-1 items-center gap-2">
-              <UserRoundIcon className="size-5 shrink-0 text-muted-foreground" strokeWidth={1.8} />
-              <span className="truncate">{t("common.sign-in-to-memos")}</span>
+            <span className={SIDEBAR_LEADING_SLOT_CLASSES}>
+              <UserRoundIcon className="me-auto size-4 text-muted-foreground" strokeWidth={1.8} />
+            </span>
+            <span data-sidebar-label className="min-w-0 flex-1 truncate">
+              {t("common.sign-in-to-memos")}
             </span>
             <ArrowRightIcon
+              data-sidebar-trailing
               className="size-3.5 shrink-0 text-muted-foreground/60 transition-transform group-hover:translate-x-0.5 rtl:rotate-180 rtl:group-hover:-translate-x-0.5"
               strokeWidth={1.8}
             />
@@ -590,14 +606,14 @@ export const MobileAppHeader = () => {
       <Button
         variant="ghost"
         size="icon-sm"
-        className="size-8"
+        className="size-8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/50"
         onClick={() => setMobileOpen(true)}
         aria-label="Open navigation"
         data-mobile-navigation-trigger
       >
         <MenuIcon className="size-[18px]" />
       </Button>
-      <SidebarBrand className="max-w-[12rem]" />
+      <SidebarBrand className="max-w-[12rem]" size="md" />
     </header>
   );
 };
@@ -609,7 +625,7 @@ export const MobileAppSidebar = () => {
     <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
       <SheetContent
         side={direction === "rtl" ? "right" : "left"}
-        className="w-[min(18rem,calc(100vw-2rem))] gap-0 border-border p-0 shadow-2xl [&>button]:hidden"
+        className="w-[min(18rem,calc(100vw-2rem))] gap-0 border-border p-0 shadow-2xl [&>[data-slot=sheet-close]]:sr-only"
       >
         <SheetTitle className="sr-only">Navigation</SheetTitle>
         <AppSidebar />

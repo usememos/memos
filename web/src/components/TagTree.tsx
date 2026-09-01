@@ -94,7 +94,11 @@ const TagMark = ({ className }: { className?: string }) => (
 const Chevron = ({ open, className }: { open: boolean; className?: string }) => (
   <ChevronRightIcon
     aria-hidden="true"
-    className={cn("size-3.5 shrink-0 text-muted-foreground/70 transition-transform", open ? "rotate-90" : "rtl:rotate-180", className)}
+    className={cn(
+      "me-auto size-3.5 shrink-0 text-muted-foreground/70 transition-transform",
+      open ? "rotate-90" : "rtl:rotate-180",
+      className,
+    )}
     strokeWidth={1.8}
   />
 );

@@ -23,6 +23,7 @@ import { Routes } from "@/router";
 import { UserNotification_Status } from "@/types/proto/api/v1/user_service_pb";
 import { getLocaleWithFallback, loadLocale, useTranslate } from "@/utils/i18n";
 import { getThemeWithFallback, loadTheme, THEME_OPTIONS } from "@/utils/theme";
+import { SIDEBAR_LEADING_SLOT_CLASSES, sidebarSurfaceVariants } from "./AppSidebar/sidebar-layout";
 import { LocaleSearchList } from "./LocalePicker";
 import UserAvatar from "./UserAvatar";
 import {
@@ -128,37 +129,40 @@ const UserMenu = (props: Props) => {
         disabled={!currentUser}
         aria-label={triggerLabel}
         className={cn(
-          "flex h-10 w-full min-w-0 cursor-pointer items-center justify-between gap-2 px-3 text-left text-foreground transition-colors hover:bg-sidebar-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/50 data-popup-open:bg-sidebar-accent",
-          collapsed && "w-auto px-2",
+          sidebarSurfaceVariants({ role: "account" }),
+          "cursor-pointer text-start text-foreground transition-colors hover:bg-sidebar-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/50 data-popup-open:bg-sidebar-accent",
+          collapsed && "w-9",
         )}
       >
-        <div className="flex min-w-0 flex-1 items-center gap-2">
-          <div className="relative shrink-0">
-            {currentUser?.avatarUrl ? (
-              <UserAvatar className="size-6 rounded-md" avatarUrl={currentUser?.avatarUrl} />
-            ) : (
-              <User2Icon className="mx-auto size-5 text-muted-foreground" />
-            )}
-            {sseStatus !== "connected" && (
-              <Tooltip>
-                <TooltipTrigger
-                  render={
-                    <span
-                      className={cn(
-                        "absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full border-2 border-background",
-                        sseStatus === "connecting" ? "bg-muted-foreground animate-pulse" : "bg-destructive",
-                      )}
-                    />
-                  }
-                />
-                <TooltipContent side="right">{t(`live-update.${sseStatus}` as Parameters<typeof t>[0])}</TooltipContent>
-              </Tooltip>
-            )}
-          </div>
-          {!collapsed && <span className="min-w-0 flex-1 truncate text-left text-[13px] font-medium text-foreground">{userLabel}</span>}
+        <div className={cn(SIDEBAR_LEADING_SLOT_CLASSES, "relative")}>
+          {currentUser?.avatarUrl ? (
+            <UserAvatar className="size-5 rounded-[5px]" avatarUrl={currentUser?.avatarUrl} />
+          ) : (
+            <User2Icon className="me-auto size-4 text-muted-foreground" />
+          )}
+          {sseStatus !== "connected" && (
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <span
+                    className={cn(
+                      "absolute -bottom-0.5 -end-0.5 size-2.5 rounded-full border-2 border-background",
+                      sseStatus === "connecting" ? "bg-muted-foreground animate-pulse" : "bg-destructive",
+                    )}
+                  />
+                }
+              />
+              <TooltipContent side="right">{t(`live-update.${sseStatus}` as Parameters<typeof t>[0])}</TooltipContent>
+            </Tooltip>
+          )}
         </div>
         {!collapsed && (
-          <span className="relative flex size-5 shrink-0 items-center justify-center">
+          <span data-sidebar-label className="min-w-0 flex-1 truncate text-start text-[13px] font-medium text-foreground">
+            {userLabel}
+          </span>
+        )}
+        {!collapsed && (
+          <span data-sidebar-trailing className="relative flex size-5 shrink-0 items-center justify-center">
             <MoreVerticalIcon className="size-4 text-muted-foreground/70" strokeWidth={1.8} />
             {unreadCount > 0 && (
               <span
@@ -170,7 +174,7 @@ const UserMenu = (props: Props) => {
           </span>
         )}
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-[calc(var(--anchor-width)-0.75rem)]">
+      <DropdownMenuContent align="start" className="w-[var(--anchor-width)]">
         <DropdownMenuItem onClick={() => navigateFromMenu(`/u/${encodeURIComponent(currentUser?.username ?? "")}`)}>
           <SquareUserIcon className="size-4 text-muted-foreground" />
           {t("common.profile")}

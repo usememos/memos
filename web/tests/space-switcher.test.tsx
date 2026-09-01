@@ -74,7 +74,7 @@ describe("SpaceSwitcher", () => {
     expect(screen.getByRole("menuitem", { name: "space.create" })).toBeInTheDocument();
   });
 
-  it("fits the popup between the sidebar padding and right edge", async () => {
+  it("fits the popup symmetrically inside the sidebar rail", async () => {
     render(
       <aside>
         <SpaceSwitcher />
@@ -89,7 +89,25 @@ describe("SpaceSwitcher", () => {
 
     fireEvent.click(trigger);
 
-    expect(await screen.findByRole("menu")).toHaveStyle({ width: "211px" });
+    expect(await screen.findByRole("menu")).toHaveStyle({ width: "199px" });
+  });
+
+  it("uses the same symmetric popup rail from the opposite inline edge", async () => {
+    render(
+      <aside>
+        <SpaceSwitcher />
+      </aside>,
+    );
+
+    const trigger = screen.getByRole("button", { name: "space.switch: common.memos" });
+    const sidebar = trigger.closest("aside");
+    expect(sidebar).not.toBeNull();
+    vi.spyOn(sidebar as HTMLElement, "getBoundingClientRect").mockReturnValue({ left: 0, right: 223, width: 223 } as DOMRect);
+    vi.spyOn(trigger, "getBoundingClientRect").mockReturnValue({ left: 80, right: 211, width: 131 } as DOMRect);
+
+    fireEvent.click(trigger);
+
+    expect(await screen.findByRole("menu")).toHaveStyle({ width: "199px" });
   });
 
   it("marks exactly one context as active", async () => {
@@ -124,6 +142,38 @@ describe("SpaceSwitcher", () => {
     const row = await screen.findByRole("menuitemradio", { name: longTitle });
     expect(row).toHaveAttribute("title", longTitle);
     expect(within(row).getByText(longTitle)).toHaveClass("max-w-full", "truncate");
+  });
+
+  it("uses the compact lockup in header chrome", () => {
+    spaceState.selectedSpaceName = "spaces/product";
+    spaceState.selectedSpace = spaceState.spaces[0];
+    render(<SpaceSwitcher size="header" />);
+
+    const trigger = screen.getByRole("button", { name: "space.switch: Product" });
+    const title = within(trigger).getByText("Product");
+    const mark = trigger.querySelector(".lucide-astroid")?.parentElement;
+
+    expect(trigger).toHaveClass("h-9", "gap-1", "px-2");
+    expect(trigger).not.toHaveClass("px-1");
+    expect(title).toHaveClass("text-[14px]", "font-semibold", "leading-5");
+    expect(mark).toHaveClass("size-5", "rounded-[5px]");
+    expect(trigger.querySelector(".lucide-chevron-down")).not.toBeNull();
+    expect(trigger.querySelector(".lucide-chevrons-up-down")).toBeNull();
+  });
+
+  it("keeps duplicate identity in the header label but out of its geometry", () => {
+    spaceState.spaces = [
+      { name: "spaces/product-notes", title: "Product", description: "" },
+      { name: "spaces/product-archive", title: "Product", description: "" },
+    ];
+    spaceState.selectedSpaceName = spaceState.spaces[0].name;
+    spaceState.selectedSpace = spaceState.spaces[0];
+    render(<SpaceSwitcher size="header" />);
+
+    const trigger = screen.getByRole("button", { name: "space.switch: Product (product-notes)" });
+    expect(trigger).toHaveAttribute("title", "Product (product-notes)");
+    expect(trigger).toHaveClass("h-9", "px-2");
+    expect(within(trigger).queryByTitle("product-notes")).not.toBeInTheDocument();
   });
 
   it("shows UIDs only for Spaces whose titles match", async () => {

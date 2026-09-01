@@ -6,15 +6,16 @@ interface Props {
   className?: string;
   collapsed?: boolean;
   compact?: boolean;
-  /** Scale of the compact lockup: "md" for headers, "sm" for dense menu rows. */
-  size?: "sm" | "md";
+  /** Scale of the compact lockup: "header" for primary chrome, "md" for roomy surfaces, and "sm" for dense menu rows. */
+  size?: keyof typeof COMPACT_SCALE;
 }
 
 // Kept in step with SpaceMark in SpaceSwitcher, so the brand and a Space read as peers
 // wherever the two are listed together.
 const COMPACT_SCALE = {
-  md: { mark: "size-7 rounded-[7px]", title: "ml-1.5 text-[14px]" },
-  sm: { mark: "size-5 rounded-[5px]", title: "ml-1.5 text-ui" },
+  md: { mark: "size-7 rounded-[7px]", gap: "gap-1.5", title: "text-[14px]", weight: "font-medium" },
+  header: { mark: "size-5 rounded-[5px]", gap: "gap-1", title: "text-[14px] leading-5", weight: "font-semibold" },
+  sm: { mark: "size-5 rounded-[5px]", gap: "gap-1.5", title: "text-ui", weight: "font-medium" },
 } as const;
 
 function MemosLogo(props: Props) {
@@ -25,14 +26,20 @@ function MemosLogo(props: Props) {
   const avatarUrl = instanceGeneralSetting.customProfile?.logoUrl || "/full-logo.webp";
 
   return (
-    <div className={cn("relative w-full h-auto shrink-0", props.className)}>
+    <div className={cn("relative min-w-0 h-auto", props.className)}>
       <div
-        className={cn("w-auto flex flex-row justify-start items-center text-foreground", compact ? "px-0" : collapsed ? "px-1" : "px-3")}
+        className={cn(
+          "flex min-w-0 flex-row items-center justify-start text-foreground",
+          compact ? cn("px-0", scale.gap) : collapsed ? "px-1" : "gap-2 px-3",
+        )}
       >
         <UserAvatar className={cn("shrink-0", compact && scale.mark)} avatarUrl={avatarUrl} />
         {!collapsed && (
           <span
-            className={cn("font-medium text-foreground shrink truncate", compact ? cn(scale.title, "tracking-[-0.01em]") : "ml-2 text-lg")}
+            className={cn(
+              "shrink truncate text-foreground",
+              compact ? cn(scale.title, scale.weight, "tracking-[-0.01em]") : "text-lg font-medium",
+            )}
           >
             {title}
           </span>
