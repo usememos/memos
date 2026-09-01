@@ -346,6 +346,45 @@ func TestRefreshMemoLinkCovers(t *testing.T) {
 	require.Positive(t, deadLink.LastAttemptAt)
 }
 
+func TestRefreshMemoLinkCoversDiscoversNewImage(t *testing.T) {
+	pngBytes := []byte{0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x08, 0x06, 0x00, 0x00, 0x00, 0x1f, 0x15, 0xc4, 0x89, 0x00, 0x00, 0x00, 0x0a, 0x49, 0x44, 0x41, 0x54, 0x78, 0x9c, 0x63, 0x00, 0x01, 0x00, 0x00, 0x05, 0x00, 0x01, 0x0d, 0x0a, 0x2d, 0xb4, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82}
+	service := newLinkEnrichmentTestService(t, stubFetchResults{
+		metas: map[string]*httpgetter.HTMLMeta{
+			// Page previously had no og:image; now it does.
+			"https://example.com/late": {Title: "Late", Description: "Updated", Image: "https://example.com/late.png"},
+		},
+		images: map[string]*httpgetter.Image{
+			"https://example.com/late.png": {Blob: pngBytes, Mediatype: "image/png"},
+		},
+	})
+	user, err := service.Store.CreateUser(context.Background(), &store.User{Username: "late-cover", Role: store.RoleUser, PasswordHash: "hash"})
+	require.NoError(t, err)
+
+	memo := &store.Memo{UID: shortuuid.New(), CreatorID: user.ID, Visibility: store.Public, Content: "[Late](https://example.com/late)"}
+	require.NoError(t, memopayload.RebuildMemoPayload(context.Background(), memo, service.MarkdownService))
+	// Entry has title/description but no image — the old refresh path skipped these.
+	memo.Payload.Links = []*storepb.MemoPayload_LinkMetadata{
+		{Url: "https://example.com/late", Title: "Late", Description: "Old desc"},
+	}
+	created, err := service.Store.CreateMemo(context.Background(), memo)
+	require.NoError(t, err)
+
+	ctx := context.WithValue(context.Background(), auth.UserIDContextKey, user.ID)
+	resp, err := service.RefreshMemoLinkCovers(ctx, &v1pb.RefreshMemoLinkCoversRequest{})
+	require.NoError(t, err)
+	require.Equal(t, int32(1), resp.UpdatedLinks, "refresh should re-fetch metadata and discover the new image")
+	require.Equal(t, int32(0), resp.FailedLinks)
+	require.Equal(t, int32(0), resp.SkippedLinks)
+
+	stored, err := service.Store.GetMemo(ctx, &store.FindMemo{UID: &created.UID})
+	require.NoError(t, err)
+	entry := stored.Payload.Links[0]
+	require.NotEmpty(t, entry.CoverAttachmentUid)
+	require.Equal(t, "Late", entry.Title)
+	require.Equal(t, "Updated", entry.Description)
+	require.Zero(t, entry.FetchAttempts)
+}
+
 func TestCoverFilenameIsDeterministic(t *testing.T) {
 	first := coverFilename("https://a.com/page", "https://img.a.com/pic.jpg?v=2")
 	second := coverFilename("https://a.com/page", "https://img.a.com/pic.jpg?v=2")

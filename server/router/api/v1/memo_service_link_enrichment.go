@@ -192,25 +192,19 @@ func (s *APIV1Service) RefreshMemoLinkCovers(ctx context.Context, _ *v1pb.Refres
 		changed := false
 		for _, entry := range memo.Payload.Links {
 			if entry.CoverAttachmentUid != "" {
-				continue
-			}
-			if entry.Image == "" {
-				// No og:image to fetch; still retry metadata in case one appears.
-				if entry.Title == "" && entry.Description == "" {
-					clearRetryState(entry)
-					s.retryLink(ctx, user.ID, entry, now)
-					changed = true
-				}
 				response.SkippedLinks++
 				continue
 			}
 			clearRetryState(entry)
 			s.retryLink(ctx, user.ID, entry, now)
 			changed = true
-			if entry.CoverAttachmentUid != "" {
+			switch {
+			case entry.CoverAttachmentUid != "":
 				response.UpdatedLinks++
-			} else {
+			case entry.FetchAttempts > 0:
 				response.FailedLinks++
+			default:
+				response.SkippedLinks++
 			}
 		}
 		if changed {
@@ -233,10 +227,11 @@ func (s *APIV1Service) backfillCoverDimensions(ctx context.Context, entry *store
 	entry.CoverWidth, entry.CoverHeight = decodeImageBounds(attachment.Blob)
 }
 
-// retryLink re-attempts a pending entry in place: full fetch when the metadata
-// itself failed, cover-only when metadata is present but the image is not cached.
+// retryLink re-attempts a pending entry in place: it re-fetches metadata when the
+// entry has no image URL (a page may have added an og:image since the last fetch),
+// then caches the cover image when one is available.
 func (s *APIV1Service) retryLink(ctx context.Context, creatorID int32, entry *storepb.MemoPayload_LinkMetadata, now time.Time) {
-	if entry.Title == "" && entry.Description == "" && entry.Image == "" {
+	if entry.Image == "" {
 		meta, err := s.linkMetadataFetcher.Get(ctx, entry.Url)
 		if err != nil {
 			slog.Warn("link metadata retry failed", "url", entry.Url, "err", err)

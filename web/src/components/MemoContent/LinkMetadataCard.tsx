@@ -21,6 +21,7 @@ function getHostname(url: string): string {
 }
 
 const LinkMetadataCard = ({ url, fallback, enabled = true, stored }: LinkMetadataCardProps) => {
+  const [coverFailed, setCoverFailed] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
   const { data: fetched, isSuccess } = useLinkMetadata(url, { enabled });
 
@@ -32,12 +33,14 @@ const LinkMetadataCard = ({ url, fallback, enabled = true, stored }: LinkMetadat
   const hasUsefulMetadata = title !== "" || description !== "";
 
   const coverUrl = stored?.coverAttachmentUid ? `/file/attachments/${stored.coverAttachmentUid}` : "";
-  const image = coverUrl || metadata?.image.trim() || "";
+  const liveImage = metadata?.image.trim() || "";
+  const image = imageFailed ? "" : coverFailed ? liveImage : coverUrl || liveImage;
   const hostname = getHostname(metadata?.url || url);
 
   useEffect(() => {
+    setCoverFailed(false);
     setImageFailed(false);
-  }, [url, image]);
+  }, [url, coverUrl, liveImage]);
 
   if (!hasUsefulMetadata) {
     return fallback;
@@ -67,7 +70,13 @@ const LinkMetadataCard = ({ url, fallback, enabled = true, stored }: LinkMetadat
               className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-[1.01]"
               loading="lazy"
               decoding="async"
-              onError={() => setImageFailed(true)}
+              onError={() => {
+                if (!coverFailed && coverUrl && liveImage) {
+                  setCoverFailed(true);
+                } else {
+                  setImageFailed(true);
+                }
+              }}
             />
           </span>
         </span>
