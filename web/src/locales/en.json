@@ -606,7 +606,7 @@
       "transcription-warning-no-key": "The selected provider has no API key set. Edit the integration above to add one."
     },
     "instance": {
-      "access-description": "Control anonymous browsing, sign-up, authentication, profile editing, and calendar defaults for this instance.",
+      "access-description": "Control anonymous browsing, sign-up, authentication, and profile editing for this instance.",
       "access-title": "Access and policies",
       "allow-public-access-description": "Allow signed-out visitors to browse public memos. Shared memo links remain available when this is disabled.",
       "allow-public-access": "Allow public access",
@@ -941,7 +941,7 @@
       "additional-style-description": "Inject CSS into the web app to adjust instance-wide presentation.",
       "additional-style-placeholder": "Additional CSS code",
       "allow-user-signup": "Allow user signup",
-      "basic-description": "Configure the public identity shown by this instance.",
+      "basic-description": "Configure the public identity and calendar defaults for this instance.",
       "customize-server": {
         "description": "Description",
         "icon-url": "Icon URL",

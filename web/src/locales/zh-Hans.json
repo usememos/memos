@@ -657,7 +657,7 @@
       "additional-style-description": "向前端应用注入 CSS，用于调整实例范围内的显示效果。",
       "additional-style-placeholder": "自定义 CSS 代码",
       "allow-user-signup": "允许用户注册",
-      "basic-description": "配置该实例对外展示的身份信息。",
+      "basic-description": "配置该实例对外展示的身份信息和日历默认行为。",
       "customize-server": {
         "description": "描述",
         "icon-url": "图标链接",
@@ -722,7 +722,7 @@
       "username-note": "用于登录"
     },
     "instance": {
-      "access-description": "控制该实例的注册、登录、资料编辑和日历默认行为。",
+      "access-description": "控制该实例的公开访问、注册、登录和资料编辑。",
       "access-title": "访问和策略",
       "disallow-change-nickname-description": "阻止用户修改显示昵称。",
       "disallow-change-nickname": "禁止修改用户昵称",

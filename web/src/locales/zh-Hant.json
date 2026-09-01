@@ -611,7 +611,7 @@
       "transcription-warning-no-key": "所選服務供應商尚未設定 API 金鑰。請編輯上方的整合以新增。"
     },
     "instance": {
-      "access-description": "控制此實例的註冊、身分驗證、個人檔案編輯和日曆預設值。",
+      "access-description": "控制此實例的公開存取、註冊、身分驗證和個人檔案編輯。",
       "access-title": "存取與政策",
       "allow-public-access": "允許公開存取",
       "allow-public-access-description": "允許未登入的訪客瀏覽公開備忘錄。停用此選項後，共享的備忘錄連結仍可使用。",
@@ -946,7 +946,7 @@
       "additional-style-description": "在網頁應用程式中注入 CSS 以調整實例範圍的呈現方式。",
       "additional-style-placeholder": "自訂 CSS 代碼",
       "allow-user-signup": "允許使用者註冊",
-      "basic-description": "設定此實例顯示的公開身分資訊。",
+      "basic-description": "設定此實例顯示的公開身分資訊和日曆預設值。",
       "customize-server": {
         "description": "說明",
         "icon-url": "圖示網址",
