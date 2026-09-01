@@ -159,10 +159,13 @@ func (s *APIV1Service) EnrichMemoLinks(ctx context.Context, memo *store.Memo) {
 	memo.Payload.Links = enriched
 }
 
-// RefreshMemoLinkCovers retries cover fetching for the caller's link memos that have
-// no cached cover, ignoring the backoff schedule (a fresh zero-value window makes the
-// retry due immediately). Paged in both directions: bounded memos per call and bounded
-// links per memo so one click stays snappy — call repeatedly to work through a backlog.
+// RefreshMemoLinkCovers re-fetches metadata and cover images for all of the caller's
+// link memos, ignoring the backoff schedule (a fresh zero-value window makes the retry
+// due immediately). Entries that already have a cached cover are re-processed too: the
+// page may have a new og:image, and cacheLinkCover deduplicates by URL so unchanged
+// covers are a cheap DB lookup, not a re-download.
+// Paged in both directions: bounded memos per call and bounded links per memo so one
+// click stays snappy — call repeatedly to work through a backlog.
 // Memos within a page are processed concurrently by a bounded worker pool, since each
 // link fetch is I/O-bound (outbound HTTP for metadata + image download).
 // ponytail: no continuation token; memos_examined < page size tells the client it is done.
@@ -209,10 +212,6 @@ func (s *APIV1Service) RefreshMemoLinkCovers(ctx context.Context, _ *v1pb.Refres
 
 			changed := false
 			for _, entry := range memo.Payload.Links {
-				if entry.CoverAttachmentUid != "" {
-					atomic.AddInt32(&skipped, 1)
-					continue
-				}
 				clearRetryState(entry)
 				s.retryLink(ctx, user.ID, entry, now)
 				changed = true
