@@ -2,7 +2,7 @@ import { matchPath } from "react-router-dom";
 import { isMemoScopeRoute, type MemoScope, resolveMemoScope } from "@/lib/memo-views";
 import { ROUTES } from "@/router/routes";
 
-export type SidebarRouteKind = MemoScope | "profile" | "views" | "attachments" | "inbox" | "settings" | "memo" | "empty";
+export type SidebarRouteKind = MemoScope | "profile" | "views" | "attachments" | "inbox" | "settings" | "memo" | "common";
 
 export type RouteSearchScope = "remembered-collection" | "user-collection" | "profile" | "all";
 export type RouteComposePlacement = "remembered-space" | "unassigned";
@@ -23,7 +23,7 @@ export const getSidebarRouteKind = (path: string): SidebarRouteKind => {
   if (matchPath(ROUTES.INBOX, normalizedPath)) return "inbox";
   if (matchPath(ROUTES.SETTING, normalizedPath)) return "settings";
   if (matchPath("/memos/:uid", normalizedPath) || matchPath(`${ROUTES.SHARED_MEMO}/:token`, normalizedPath)) return "memo";
-  return "empty";
+  return "common";
 };
 
 /** Routes whose collections are filtered by the remembered All / Space scope. */

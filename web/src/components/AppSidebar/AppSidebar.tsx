@@ -49,6 +49,7 @@ import { State } from "@/types/proto/api/v1/common_pb";
 import { User_Role, UserNotification_Status } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import MemosLogo from "../MemosLogo";
+import CommonSidebarContent from "./CommonSidebarContent";
 import { getSidebarRouteKind, routeSupportsCollectionScope } from "./routes";
 import SidebarRow, { SIDEBAR_ROW_CLASSES, SIDEBAR_ROW_FOCUS_CLASSES, SidebarRowIconSlot, sidebarRowStateClasses } from "./SidebarRow";
 import SidebarSection, { SIDEBAR_SECTION_STACK_CLASSES } from "./SidebarSection";
@@ -289,6 +290,7 @@ const RouteSidebarContent = () => {
   if (kind === "inbox") return <InboxSidebarContent />;
   if (kind === "settings") return <SettingsSidebarContent />;
   if (kind === "memo") return <MemoDetailSidebarContent />;
+  if (kind === "common") return <CommonSidebarContent />;
   return null;
 };
 
@@ -299,7 +301,6 @@ interface GlobalNavItem {
   icon: LucideIcon;
   active: boolean;
   count?: number;
-  alwaysExpanded?: boolean;
 }
 
 /**
@@ -390,7 +391,6 @@ const GlobalNavigation = () => {
           path: ROUTES.EXPLORE,
           icon: EarthIcon,
           active: routeKind === "explore" || routeKind === "profile" || routeKind === "memo",
-          alwaysExpanded: true,
         },
         {
           id: "about",
@@ -400,6 +400,13 @@ const GlobalNavigation = () => {
           active: Boolean(matchPath(ROUTES.ABOUT, location.pathname)),
         },
       ];
+
+  // Keep one textual anchor in the compact navigator. A real active destination
+  // takes precedence; routes outside this navigation default to its first item
+  // without presenting that fallback as the current page.
+  const activeNavigatorItemId = currentUser && scopeRouteActive ? "scope" : items.find((item) => item.active)?.id;
+  const expandedNavigatorItemId = activeNavigatorItemId ?? (currentUser ? "scope" : items[0]?.id);
+  const scopeExpanded = expandedNavigatorItemId === "scope";
 
   const scopeMenuContent = (
     <DropdownMenuContent align="start" sideOffset={4} className="flex w-36 flex-col gap-0.5">
@@ -437,7 +444,7 @@ const GlobalNavigation = () => {
               }
             }}
           >
-            <Tooltip disabled={scopeRouteActive}>
+            <Tooltip disabled={scopeExpanded}>
               {/* The tooltip anchors to a wrapper span rather than the button: a disabled
                   tooltip stamps data-trigger-disabled on its trigger element, and Base UI's
                   shared floating logic would read that as the MENU trigger being disabled. */}
@@ -453,11 +460,13 @@ const GlobalNavigation = () => {
                   }
                 >
                   <ActiveScopeIcon className="size-4 shrink-0" strokeWidth={1.8} />
-                  <NavPillLabel expanded={scopeRouteActive} label={activeScopeItem.label}>
-                    <ChevronDownIcon
-                      className="-mr-0.5 size-3 shrink-0 opacity-55 transition-transform duration-200 ease-out group-data-[popup-open]/scope:rotate-180 motion-reduce:transition-none"
-                      strokeWidth={1.8}
-                    />
+                  <NavPillLabel expanded={scopeExpanded} label={activeScopeItem.label}>
+                    {scopeRouteActive && (
+                      <ChevronDownIcon
+                        className="-mr-0.5 size-3 shrink-0 opacity-55 transition-transform duration-200 ease-out group-data-[popup-open]/scope:rotate-180 motion-reduce:transition-none"
+                        strokeWidth={1.8}
+                      />
+                    )}
                   </NavPillLabel>
                 </DropdownMenuTrigger>
               </TooltipTrigger>
@@ -468,7 +477,7 @@ const GlobalNavigation = () => {
         )}
         {items.map((item) => {
           const Icon = item.icon;
-          const expanded = item.active || !!item.alwaysExpanded;
+          const expanded = item.id === expandedNavigatorItemId;
           return (
             <Tooltip key={item.id} disabled={expanded}>
               <TooltipTrigger

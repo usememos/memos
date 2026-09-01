@@ -22,8 +22,10 @@ describe("sidebar route content", () => {
     ["/Memos/ABC/", "memo"],
     ["/memos/shares/token", "memo"],
     ["/Memos/Shares/token/", "memo"],
-    ["/about", "empty"],
-    ["/404", "empty"],
+    ["/about", "common"],
+    ["/403", "common"],
+    ["/404", "common"],
+    ["/unknown", "common"],
   ])("maps %s to %s content", (path, kind) => {
     expect(getSidebarRouteKind(path)).toBe(kind);
   });
