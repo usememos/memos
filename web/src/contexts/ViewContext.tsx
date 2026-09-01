@@ -104,7 +104,8 @@ export function ViewProvider({ children }: { children: ReactNode }) {
   const setCompactMode = (value: boolean) => updateState({ compactMode: value });
   const setLinkPreview = (value: boolean) => updateState({ linkPreview: value });
   const setMaxColumns = (value: MemoMaxColumns) => updateState({ maxColumns: value });
-  const setLayoutMode = (value: MemoLayoutMode) => updateState({ layoutMode: value });
+  const setLayoutMode = (value: MemoLayoutMode) =>
+    updateState((prev) => ({ layoutMode: value, maxColumns: value !== "flow" && prev.maxColumns === 1 ? 0 : prev.maxColumns }));
 
   return (
     <ViewContext.Provider

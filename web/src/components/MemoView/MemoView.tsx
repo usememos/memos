@@ -39,6 +39,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   const [showEditor, setShowEditor] = useState(false);
   const [EditorComponent, setEditorComponent] = useState<ComponentType<MemoEditorProps>>();
   const [cardWidth, setCardWidth] = useState(0);
+  const [failedBentoCover, setFailedBentoCover] = useState<string>();
 
   const currentUser = useCurrentUser();
   const { userTagsSetting } = useAuth();
@@ -73,9 +74,11 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   const closeEditor = useCallback(() => setShowEditor(false), []);
 
   const isInMemoDetailPage = isMemoDetailPath(location.pathname, memoData.name);
-  const showCommentPreview = !isInMemoDetailPage && computeCommentAmount(memoData) > 0;
+  const showCommentPreview = variant !== "bento" && !isInMemoDetailPage && computeCommentAmount(memoData) > 0;
   const bentoCover = variant === "bento" ? getBentoCoverUrl(memoData) : undefined;
+  const visibleBentoCover = bentoCover === failedBentoCover ? undefined : bentoCover;
   const bentoTileTitle = variant === "bento" ? getBentoTileTitle(memoData) : "";
+  const bentoTitle = bentoTileTitle || memoData.name.split("/").pop() || memoData.name;
 
   // The card width is only needed by the share-image dialog. Keep feed cards
   // free of a permanent ResizeObserver and measure only while that dialog is open.
@@ -148,28 +151,37 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
       className={cn(
         MEMO_CARD_BASE_CLASSES,
         showCommentPreview ? "mb-0 rounded-b-none" : "mb-2",
-        bentoCover && "justify-end p-0",
+        variant === "bento" && "justify-end p-0",
         className,
       )}
       ref={cardRef}
       tabIndex={readonly ? -1 : 0}
     >
-      {variant === "bento" && bentoCover ? (
+      {variant === "bento" ? (
         <>
-          <div aria-hidden className="absolute inset-0">
-            <img src={bentoCover} alt="" loading="lazy" className="size-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
-          </div>
+          {visibleBentoCover && (
+            <div aria-hidden className="absolute inset-0">
+              <img
+                src={visibleBentoCover}
+                alt=""
+                loading="lazy"
+                className="size-full object-cover"
+                onError={() => setFailedBentoCover(visibleBentoCover)}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
+            </div>
+          )}
           {/* Cover tiles trade the full card body for a glanceable title overlay; the
               action menu and full content stay one click away on the detail page. */}
           <button
             type="button"
-            className="relative z-10 mt-auto w-full cursor-pointer p-3 pt-10 text-left"
+            className={cn("relative z-10 mt-auto w-full cursor-pointer p-3 text-left", visibleBentoCover && "pt-10")}
             onClick={() => navigateTo(`/${memoData.name}`, { state: createMemoNavigationState(parentPage, parentScope) })}
           >
-            {bentoTileTitle && <p className="line-clamp-2 text-sm font-medium text-white drop-shadow-sm">{bentoTileTitle}</p>}
-            <p className="mt-1 line-clamp-1 text-xs text-white/75">
-              {creator?.displayName ?? creator?.username} · {memoData.name.split("/").pop()}
+            <p className={cn("line-clamp-3 text-sm font-medium", visibleBentoCover && "text-white drop-shadow-sm")}>{bentoTitle}</p>
+            <p className={cn("mt-1 line-clamp-1 text-xs text-muted-foreground", visibleBentoCover && "text-white/75")}>
+              {creator && `${creator.displayName || creator.username} · `}
+              {memoData.name.split("/").pop()}
             </p>
           </button>
         </>

@@ -31,13 +31,13 @@ const HeaderAction = ({
   disabled?: boolean;
 }) => {
   const className = cn(
-    "flex items-center gap-1.5 rounded-md px-2 py-1 text-[13px] text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground",
+    "flex size-9 shrink-0 items-center justify-center gap-1.5 rounded-md text-[13px] text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground sm:h-auto sm:w-auto sm:px-2 sm:py-1",
     "disabled:cursor-not-allowed disabled:opacity-50",
   );
   const content = (
     <>
       {icon}
-      {label}
+      <span className="sr-only sm:not-sr-only">{label}</span>
     </>
   );
   if (to) {

@@ -66,7 +66,7 @@ describe("MemoDisplaySettingMenu", () => {
     expect(screen.getByText("Grid layouts always use compact cards.")).toBeInTheDocument();
   });
 
-  it("hides the column-count row in the flow list mode", () => {
+  it("activates an automatic column count when leaving the flow list mode", () => {
     render(
       <ViewProvider>
         <MemoDisplaySettingMenu />
@@ -81,6 +81,7 @@ describe("MemoDisplaySettingMenu", () => {
 
     expect(screen.getByRole("radiogroup", { name: "Columns" })).toBeInTheDocument();
     expect(screen.getByRole("radio", { name: "Bento" })).toBeChecked();
+    expect(screen.getByRole("radio", { name: "Auto" })).toBeChecked();
   });
 
   it("moves horizontally in the visual direction for RTL layouts", () => {
