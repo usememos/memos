@@ -61,9 +61,10 @@ interface CoverRefreshState {
   status: "idle" | "running" | "done" | "error";
   updated: number;
   failed: number;
+  pages: number;
 }
 
-const IDLE_REFRESH: CoverRefreshState = { status: "idle", updated: 0, failed: 0 };
+const IDLE_REFRESH: CoverRefreshState = { status: "idle", updated: 0, failed: 0, pages: 0 };
 
 const Bookmarks = () => {
   const user = useCurrentUser();
@@ -79,14 +80,17 @@ const Bookmarks = () => {
       // The server pages through the backlog; keep calling until it reports a short page.
       let updated = 0;
       let failed = 0;
+      let pages = 0;
       for (;;) {
         const response = await memoServiceClient.refreshMemoLinkCovers({});
         updated += response.updatedLinks;
         failed += response.failedLinks;
+        pages++;
+        setCoverRefresh({ status: "running", updated, failed, pages });
         if (response.memosExamined < 200) break;
       }
       await queryClient.invalidateQueries({ queryKey: ["memos"] });
-      setCoverRefresh({ status: "done", updated, failed });
+      setCoverRefresh({ status: "done", updated, failed, pages });
     } catch (error) {
       console.error("link cover refresh failed", error);
       setCoverRefresh({ ...IDLE_REFRESH, status: "error" });
@@ -105,13 +109,24 @@ const Bookmarks = () => {
   });
 
   const refreshStatus =
-    coverRefresh.status === "done"
+    coverRefresh.status === "running"
       ? coverRefresh.failed > 0
-        ? t("bookmarks.refresh-covers-result", { updated: coverRefresh.updated.toString(), failed: coverRefresh.failed.toString() })
-        : t("bookmarks.refresh-covers-updated", { updated: coverRefresh.updated.toString() })
-      : coverRefresh.status === "error"
-        ? t("bookmarks.refresh-covers-error")
-        : null;
+        ? t("bookmarks.refreshing-covers-progress", {
+            updated: coverRefresh.updated.toString(),
+            failed: coverRefresh.failed.toString(),
+            pages: coverRefresh.pages.toString(),
+          })
+        : t("bookmarks.refreshing-covers-progress-no-failed", {
+            updated: coverRefresh.updated.toString(),
+            pages: coverRefresh.pages.toString(),
+          })
+      : coverRefresh.status === "done"
+        ? coverRefresh.failed > 0
+          ? t("bookmarks.refresh-covers-result", { updated: coverRefresh.updated.toString(), failed: coverRefresh.failed.toString() })
+          : t("bookmarks.refresh-covers-updated", { updated: coverRefresh.updated.toString() })
+        : coverRefresh.status === "error"
+          ? t("bookmarks.refresh-covers-error")
+          : null;
 
   return (
     <>

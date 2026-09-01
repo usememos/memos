@@ -245,6 +245,8 @@
     "import-cancel": "Stop",
     "refresh-covers": "Update covers",
     "refreshing-covers": "Updating covers…",
+    "refreshing-covers-progress": "Updating… ${updated} updated, ${failed} failed (page ${pages})",
+    "refreshing-covers-progress-no-failed": "Updating… ${updated} covers updated (page ${pages})",
     "refresh-covers-result": "${updated} covers updated, ${failed} still failing",
     "refresh-covers-error": "Cover refresh failed",
     "refresh-covers-updated": "${updated} covers updated"
