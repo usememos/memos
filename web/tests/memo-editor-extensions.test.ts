@@ -23,6 +23,7 @@ describe("MemoEditor CodeMirror extensions", () => {
         onFiles: vi.fn(),
         onUpdate: vi.fn(),
         onSubmit: vi.fn(),
+        onToggleFocusMode: vi.fn(),
         getTags: () => [],
       }),
     });
@@ -51,6 +52,7 @@ describe("MemoEditor CodeMirror extensions", () => {
           onFiles,
           onUpdate: vi.fn(),
           onSubmit: vi.fn(),
+          onToggleFocusMode: vi.fn(),
           getTags: () => [],
         }),
       }),

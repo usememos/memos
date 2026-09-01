@@ -19,6 +19,8 @@ interface EditorProps {
   onFiles: (files: File[], position: number) => void;
   /** Invoked by the in-editor save shortcut (Cmd/Ctrl+Enter). */
   onSubmit: () => void;
+  /** Invoked by the in-editor focus-mode shortcut (Cmd/Ctrl+Shift+F). */
+  onToggleFocusMode?: () => void;
   isFocusMode?: boolean;
 }
 
@@ -32,6 +34,7 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
     onExternalContentApplied,
     onFiles,
     onSubmit,
+    onToggleFocusMode,
     isFocusMode,
   } = props;
   const hostRef = useRef<HTMLDivElement>(null);
@@ -47,6 +50,8 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
   onFilesRef.current = onFiles;
   const onSubmitRef = useRef(onSubmit);
   onSubmitRef.current = onSubmit;
+  const onToggleFocusModeRef = useRef(onToggleFocusMode);
+  onToggleFocusModeRef.current = onToggleFocusMode;
   const placeholderRef = useRef(placeholder);
   const listenersRef = useRef(new Set<() => void>());
   // A user can only author their own memos. Reuse the current-user stats query
@@ -84,6 +89,7 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
           onFiles: (files, position) => onFilesRef.current(files, position),
           onUpdate: () => listenersRef.current.forEach((l) => l()),
           onSubmit: () => onSubmitRef.current(),
+          onToggleFocusMode: () => onToggleFocusModeRef.current?.(),
           getTags: () => tagsRef.current,
         }),
       }),
