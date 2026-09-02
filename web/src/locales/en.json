@@ -336,6 +336,7 @@
   },
   "memo": {
     "archived-at": "Archived at",
+    "back-to": "Back to {{source}}",
     "click-to-hide-sensitive-content": "Click to hide sensitive content",
     "click-to-show-sensitive-content": "Click to show sensitive content",
     "code": "Code",
@@ -361,7 +362,9 @@
       "label": "Filters"
     },
     "compact-mode": "Compact mode",
+    "connections": "Connections",
     "grid-compact-hint": "Grid layouts always use compact cards.",
+    "go-to": "Go to {{source}}",
     "layout": "Layout",
     "layout-auto": "Auto",
     "layout-auto-description": "As many columns as fit the screen",
@@ -377,9 +380,11 @@
     "new-badge": "New",
     "newest-first": "Newest first",
     "oldest-first": "Oldest first",
+    "on-this-memo": "On this memo",
     "order": "Order",
     "order-by": "Order by",
     "outline": "Outline",
+    "parent-memo": "Parent memo",
     "search-placeholder": "Search memos...",
     "shown-time": "Shown time",
     "share": {

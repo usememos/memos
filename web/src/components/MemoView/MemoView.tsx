@@ -1,4 +1,15 @@
-import { type ComponentType, memo, Suspense, useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
+import {
+  type ComponentType,
+  forwardRef,
+  memo,
+  Suspense,
+  useCallback,
+  useImperativeHandle,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useLocation } from "react-router-dom";
 import { useResolvedUser } from "@/components/MemoContent/MentionResolutionContext";
 import { loadMemoEditor } from "@/components/MemoEditor/loader";
@@ -15,12 +26,12 @@ import { MEMO_CARD_BASE_CLASSES } from "./constants";
 import { useImagePreview } from "./hooks";
 import { computeCommentAmount, MemoViewContext } from "./MemoViewContext";
 import { isMemoDetailPath, resolveMemoOrigin } from "./navigation";
-import type { MemoViewProps } from "./types";
+import type { MemoViewHandle, MemoViewProps } from "./types";
 
 const MemoShareImageDialog = lazyWithReload(() => import("../MemoActionMenu/MemoShareImageDialog"));
 const PreviewImageDialog = lazyWithReload(() => import("../PreviewImageDialog"));
 
-const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
+const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
   const {
     memo: memoData,
     className,
@@ -57,16 +68,29 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   const toggleBlurVisibility = useCallback(() => setShowBlurredContent((prev) => !prev), []);
 
   const { previewState, openPreview, setPreviewOpen } = useImagePreview();
+  const editorHostRef = useRef<HTMLDivElement>(null);
+
+  const focusMountedEditor = useCallback(() => {
+    const codeMirrorContent = editorHostRef.current?.querySelector<HTMLElement>('.cm-content[contenteditable="true"]');
+    const fallbackInput = editorHostRef.current?.querySelector<HTMLElement>("textarea, input");
+    (codeMirrorContent ?? fallbackInput)?.focus();
+  }, []);
 
   const openEditor = useCallback(() => {
+    if (showEditor && EditorComponent) {
+      focusMountedEditor();
+      return;
+    }
     void loadMemoEditor()
       .then(({ default: MemoEditor }) => {
         setEditorComponent(() => MemoEditor);
         setShowEditor(true);
       })
       .catch(() => undefined);
-  }, []);
+  }, [EditorComponent, focusMountedEditor, showEditor]);
   const closeEditor = useCallback(() => setShowEditor(false), []);
+
+  useImperativeHandle(ref, () => ({ openEditor }), [openEditor]);
 
   const isInMemoDetailPage = isMemoDetailPath(location.pathname, memoData.name);
   const showCommentPreview = !isInMemoDetailPage && computeCommentAmount(memoData) > 0;
@@ -178,20 +202,24 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   return (
     <MemoViewContext.Provider value={contextValue}>
       {showEditor && EditorComponent ? (
-        <EditorComponent
-          autoFocus
-          className="mb-2"
-          cacheKey={`inline-memo-editor-${memoData.name}`}
-          memo={memoData}
-          parentMemoName={memoData.parent || undefined}
-          onConfirm={closeEditor}
-          onCancel={closeEditor}
-        />
+        <div ref={editorHostRef} className="w-full">
+          <EditorComponent
+            autoFocus
+            className="mb-2"
+            cacheKey={`inline-memo-editor-${memoData.name}`}
+            memo={memoData}
+            parentMemoName={memoData.parent || undefined}
+            onConfirm={closeEditor}
+            onCancel={closeEditor}
+          />
+        </div>
       ) : (
         memoDisplay
       )}
     </MemoViewContext.Provider>
   );
-};
+});
+
+MemoView.displayName = "MemoView";
 
 export default memo(MemoView);

@@ -74,6 +74,7 @@ export function useMemoSave({
       }
       if (parentMemoName) {
         invalidationPromises.push(queryClient.invalidateQueries({ queryKey: memoKeys.comments(parentMemoName) }));
+        invalidationPromises.push(queryClient.invalidateQueries({ queryKey: memoKeys.detail(parentMemoName) }));
       }
       await Promise.all(invalidationPromises);
 

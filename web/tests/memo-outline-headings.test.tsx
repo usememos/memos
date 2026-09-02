@@ -3,6 +3,7 @@ import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
 import { MemoMarkdownRenderer } from "@/components/MemoContent/MemoMarkdownRenderer";
 import { extractHeadings } from "@/components/MemoContent/pipeline";
+import { findMemoAnchorTarget } from "@/utils/markdown-manipulation";
 
 vi.mock("@/components/MemoContent/math", () => ({
   hasMathSyntax: vi.fn(() => false),
@@ -87,6 +88,23 @@ describe("outline slugs against rendered heading ids", () => {
     expect(reference).toHaveAttribute("aria-describedby", "footnote-label");
     expect(label).toHaveAttribute("id", "footnote-label");
     expect(container.querySelector("h1")).toHaveAttribute("id", "footnote-label-1");
+  });
+
+  it("reserves current and legacy comment-section anchors from memo headings", () => {
+    const headings = expectOutlineLandsOnRenderedHeadings(
+      '# Comments\n\n## Memo comments\n\n<h3 id="memo-comments">Explicit comment anchor</h3>',
+    );
+
+    expect(headings.map((heading) => heading.slug)).toEqual(["comments-1", "memo-comments-1", "memo-comments-2"]);
+  });
+
+  it("keeps a historical raw comment-anchor id resolvable after reserving it", () => {
+    const container = renderMemo('<h2 id="memo-comments">A custom section</h2>');
+    const heading = container.querySelector("h2");
+
+    expect(heading).toHaveAttribute("id", "memo-comments-1");
+    expect(heading).toHaveAttribute("data-original-heading-id", "memo-comments");
+    expect(findMemoAnchorTarget(container, "memos/1", "memo-comments")).toBe(heading);
   });
 
   it("returns nothing for content that cannot contain a heading", () => {

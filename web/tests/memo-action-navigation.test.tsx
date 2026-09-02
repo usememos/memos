@@ -15,7 +15,10 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock("@/hooks/useMemoQueries", () => ({
-  memoKeys: { comments: (name: string) => ["memos", name, "comments"] },
+  memoKeys: {
+    comments: (name: string) => ["memos", name, "comments"],
+    detail: (name: string) => ["memos", name, "detail"],
+  },
   useUpdateMemo: () => ({ mutateAsync: mocks.updateMemo }),
   useDeleteMemo: () => ({ mutateAsync: mocks.deleteMemo }),
 }));
@@ -40,27 +43,28 @@ vi.mock("react-hot-toast", () => ({
   default: { success: vi.fn(), error: vi.fn() },
 }));
 
-const createMemo = (state: State): Memo =>
+const createMemo = (state: State, parent = ""): Memo =>
   ({
     name: "memos/1",
     content: "memo",
     state,
-    parent: "",
+    parent,
   }) as Memo;
 
-const renderActions = (state: State, parentScope: MemoOriginScope) => {
+const renderActions = (state: State, parentScope: MemoOriginScope, parent = "") => {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  const invalidateQueries = vi.spyOn(queryClient, "invalidateQueries");
   const wrapper = ({ children }: { children: ReactNode }) => (
     <QueryClientProvider client={queryClient}>
       <MemoryRouter initialEntries={["/memos/1"]}>{children}</MemoryRouter>
     </QueryClientProvider>
   );
 
-  return renderHook(
+  const rendered = renderHook(
     () => {
       const location = useLocation();
       const handlers = useMemoActionHandlers({
-        memo: createMemo(state),
+        memo: createMemo(state, parent),
         parentScope,
         setDeleteDialogOpen: vi.fn(),
       });
@@ -68,6 +72,7 @@ const renderActions = (state: State, parentScope: MemoOriginScope) => {
     },
     { wrapper },
   );
+  return { ...rendered, invalidateQueries };
 };
 
 describe("Memo detail mutation navigation", () => {
@@ -111,5 +116,16 @@ describe("Memo detail mutation navigation", () => {
 
     await waitFor(() => expect(result.current.pathname).toBe("/"));
     expect(mocks.clearSelectedSpace).toHaveBeenCalledOnce();
+  });
+
+  it("refreshes a parent memo after deleting one of its comments", async () => {
+    const { result, invalidateQueries } = renderActions(State.NORMAL, "preserve", "memos/parent");
+
+    await act(async () => {
+      await result.current.handlers.confirmDeleteMemo();
+    });
+
+    expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: ["memos", "memos/parent", "comments"] });
+    expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: ["memos", "memos/parent", "detail"] });
   });
 });

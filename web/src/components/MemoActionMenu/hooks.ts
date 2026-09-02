@@ -146,6 +146,7 @@ export const useMemoActionHandlers = ({ memo, parentScope, onEdit, setDeleteDial
     toast.success(t("message.deleted-successfully"));
     if (memo.parent) {
       queryClient.invalidateQueries({ queryKey: memoKeys.comments(memo.parent) });
+      queryClient.invalidateQueries({ queryKey: memoKeys.detail(memo.parent) });
     }
     if (isInMemoDetailPage) {
       if (parentScope === "all") {
