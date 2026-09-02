@@ -337,6 +337,11 @@ func deleteReactionsByCreatorTx(ctx context.Context, tx *sql.Tx, userID int32) e
 	return err
 }
 
+// deletePollVotesByVoterTx removes this user's votes cast on polls embedded
+// in *other* users' memos - deletePollDataByMemoIDsTx above only cleans up
+// poll data for memos this user owns (which are being deleted alongside
+// them), so a vote cast elsewhere would otherwise survive as a poll_vote row
+// referencing a voter_id that no longer resolves to any user.
 func deletePollVotesByVoterTx(ctx context.Context, tx *sql.Tx, userID int32) error {
 	_, err := tx.ExecContext(ctx, `DELETE FROM poll_vote WHERE voter_id = `+deleteUserPlaceholder(1), userID)
 	return err
