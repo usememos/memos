@@ -106,6 +106,9 @@ func deletePostgresMemoSetTx(ctx context.Context, tx *sql.Tx, memoIDs []int32) (
 	if err := deleteReactionsByMemoIDsTx(ctx, tx, memoIDs); err != nil {
 		return nil, errors.Wrap(err, "failed to delete memo reactions")
 	}
+	if err := deletePollDataByMemoIDsTx(ctx, tx, memoIDs); err != nil {
+		return nil, errors.Wrap(err, "failed to delete memo polls")
+	}
 	if err := deleteAttachmentsByIDsTx(ctx, tx, attachmentIDsFromList(attachments)); err != nil {
 		return nil, errors.Wrap(err, "failed to delete memo attachments")
 	}

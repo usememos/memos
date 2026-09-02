@@ -114,6 +114,9 @@ func deleteUserTargetsTx(ctx context.Context, tx *sql.Tx, userID int32, targets 
 	if err := deleteReactionsByMemoIDsTx(ctx, tx, memoIDs); err != nil {
 		return err
 	}
+	if err := deletePollDataByMemoIDsTx(ctx, tx, memoIDs); err != nil {
+		return err
+	}
 	if err := deleteAttachmentsByIDsTx(ctx, tx, targets.attachmentIDs); err != nil {
 		return err
 	}
@@ -292,6 +295,24 @@ func deleteReactionsByMemoIDsTx(ctx context.Context, tx *sql.Tx, memoIDs []int32
 	for _, batch := range deleteUserBatches(memoIDs, deleteUserBatchSize) {
 		clause, args := deleteUserInClause(1, batch)
 		if _, err := tx.ExecContext(ctx, `DELETE FROM reaction WHERE memo_id IN `+clause, args...); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// deletePollDataByMemoIDsTx deletes poll votes before poll bindings, since
+// poll_vote rows are only meaningful alongside their poll binding.
+func deletePollDataByMemoIDsTx(ctx context.Context, tx *sql.Tx, memoIDs []int32) error {
+	for _, batch := range deleteUserBatches(memoIDs, deleteUserBatchSize) {
+		clause, args := deleteUserInClause(1, batch)
+		if _, err := tx.ExecContext(ctx, `DELETE FROM poll_vote WHERE memo_id IN `+clause, args...); err != nil {
+			return err
+		}
+	}
+	for _, batch := range deleteUserBatches(memoIDs, deleteUserBatchSize) {
+		clause, args := deleteUserInClause(1, batch)
+		if _, err := tx.ExecContext(ctx, `DELETE FROM poll WHERE memo_id IN `+clause, args...); err != nil {
 			return err
 		}
 	}

@@ -279,6 +279,7 @@
       "remove-option": "Remove option",
       "allow-multiple": "Allow multiple choices",
       "invalid-block": "This poll could not be displayed.",
+      "unavailable-here": "Voting is unavailable in this preview.",
       "sign-in-to-vote": "Sign in to vote.",
       "vote-failed": "Failed to save your vote. Please try again.",
       "total-votes_one": "{{count}} vote",

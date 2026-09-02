@@ -15,9 +15,11 @@ import { extractCodeContent, extractLanguage } from "./utils";
 interface CodeBlockProps extends ReactMarkdownProps {
   children?: ReactNode;
   className?: string;
+  /** The owning memo's resource name ("memos/{uid}"), threaded down to PollBlock. */
+  memoName?: string;
 }
 
-export const CodeBlock = ({ children, className, node: _node, ...props }: CodeBlockProps) => {
+export const CodeBlock = ({ children, className, memoName, node: _node, ...props }: CodeBlockProps) => {
   const codeElement = isValidElement(children) ? (children as ReactElement<{ className?: string }>) : null;
   const codeClassName = codeElement?.props.className || "";
   const codeContent = extractCodeContent(children);
@@ -36,7 +38,7 @@ export const CodeBlock = ({ children, className, node: _node, ...props }: CodeBl
 
   // If it's a poll block, render the interactive voting widget.
   if (language === POLL_LANGUAGE_TAG) {
-    return <PollBlock content={codeContent} />;
+    return <PollBlock content={codeContent} memoName={memoName} />;
   }
 
   // Keying on the inputs remounts the block when they change, so highlight state

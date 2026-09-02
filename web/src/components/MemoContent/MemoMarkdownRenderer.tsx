@@ -148,7 +148,7 @@ export const MemoMarkdownRendererCore = ({
     code: ({ children, ...props }) => <InlineCode {...props}>{children}</InlineCode>,
     iframe: TrustedIframe,
     img: ({ src, ...props }) => <Image {...props} src={resolveManagedAttachmentImageSource(src, attachments)} />,
-    pre: CodeBlock,
+    pre: (props) => <CodeBlock {...props} memoName={memoName} />,
     table: ({ children, ...props }) => <Table {...props}>{children}</Table>,
     thead: ({ children, ...props }) => <TableHead {...props}>{children}</TableHead>,
     tbody: ({ children, ...props }) => <TableBody {...props}>{children}</TableBody>,
