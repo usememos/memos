@@ -55,12 +55,22 @@ describe("CalendarCell empty-day clickability", () => {
     expect(button.querySelector('[aria-hidden="true"]')).toHaveClass("rounded-full");
   });
 
-  it("uses an inset ring for selection without changing the numeral weight", () => {
+  it("fills a selected day with the accent like a checked filter row, keeping the numeral weight", () => {
     render(<CalendarCell day={makeDay({ isSelected: true })} maxCount={5} tooltipText="May 1, 2025" onClick={() => {}} />);
 
     const button = screen.getByRole("button", { name: /selected/ });
-    expect(chipOf(button)).toHaveClass("ring-2", "ring-inset");
+    expect(chipOf(button)).toHaveClass("bg-primary", "text-primary-foreground", "font-medium");
+    expect(chipOf(button)).not.toHaveClass("ring-2", "ring-inset");
     expect(chipOf(button)).not.toHaveClass("font-semibold", "font-bold");
+  });
+
+  it("keeps the accent fill on a selected empty day under hover", () => {
+    render(<CalendarCell day={makeDay({ isSelected: true })} maxCount={5} tooltipText="May 1, 2025" onClick={() => {}} />);
+
+    const chip = chipOf(screen.getByRole("button", { name: /selected/ }));
+    // The empty-cell hover tint would replace bg-primary on hover and strand the light numeral.
+    expect(chip).not.toHaveClass("group-hover/day:bg-muted/40", "bg-transparent");
+    expect(chip).toHaveClass("bg-primary");
   });
 
   it("caps the chip so a wider container buys hit area, not calendar height", () => {

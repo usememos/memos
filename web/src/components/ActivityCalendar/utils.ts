@@ -24,7 +24,8 @@ export const getCellIntensityClass = (day: CalendarDayCell, maxCount: number): s
 };
 
 export const getCalendarCellStateClass = (day: Pick<CalendarDayCell, "isSelected">): string =>
-  day.isSelected ? "z-10 ring-2 ring-blue-500/70 ring-inset" : "";
+  // A picked day is a checked filter like a view or tag row: it takes the accent, not a ring.
+  day.isSelected ? "z-10 bg-primary font-medium text-primary-foreground" : "";
 
 export const generateMonthsForYear = (year: number): string[] => {
   return Array.from({ length: MONTHS_IN_YEAR }, (_, i) => dayjs(`${year}-01-01`).add(i, "month").format("YYYY-MM"));

@@ -7,7 +7,13 @@ import { useLocalStorage, useOverflowTitle } from "@/hooks";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import TagTree, { tagRowAriaLabel } from "../TagTree";
-import { SIDEBAR_ROW_CLASSES, SIDEBAR_ROW_COUNT_RAIL_CLASSES, SidebarRowIconSlot, sidebarRowStateClasses } from "./SidebarRow";
+import {
+  SIDEBAR_ROW_CLASSES,
+  SIDEBAR_ROW_COUNT_RAIL_CLASSES,
+  SidebarRowIconSlot,
+  sidebarRowStateAttributes,
+  sidebarRowStateClasses,
+} from "./SidebarRow";
 import SidebarSection, {
   SIDEBAR_SECTION_ACTION_ACTIVE_CLASSES,
   SIDEBAR_SECTION_ACTION_BUTTON_CLASSES,
@@ -50,6 +56,7 @@ interface FlatTagRowProps {
 
 const FlatTagRow = ({ tag, amount, active, ariaLabel, onClick }: FlatTagRowProps) => {
   const { ref, title } = useOverflowTitle<HTMLSpanElement>(`#${tag}`);
+  const state = active ? "checked" : "idle";
 
   return (
     <button
@@ -57,7 +64,8 @@ const FlatTagRow = ({ tag, amount, active, ariaLabel, onClick }: FlatTagRowProps
       aria-label={ariaLabel}
       aria-pressed={active || undefined}
       title={title}
-      className={cn(SIDEBAR_ROW_CLASSES, sidebarRowStateClasses(active))}
+      {...sidebarRowStateAttributes(state)}
+      className={cn(SIDEBAR_ROW_CLASSES, sidebarRowStateClasses(state))}
       onClick={onClick}
     >
       {/* Same leading slot as the tree, so the # marks hold their line when switching modes. */}

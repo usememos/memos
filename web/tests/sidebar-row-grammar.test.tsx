@@ -39,7 +39,7 @@ describe("sidebar row grammar", () => {
 
     const row = screen.getByRole("button", { name: "Tasks3" });
     expect(row).toHaveClass(...boxClasses);
-    expect(row).toHaveClass("h-8", "w-full", "gap-1", "rounded-md", "px-2");
+    expect(row).toHaveClass("h-7", "w-full", "gap-1", "rounded-md", "px-2");
     expect(row).not.toHaveClass("-mx-1");
     // Icon in the shared slot and count in the shared rail, so every list — nav rows,
     // views, tags in both modes — keeps its icons and digits on the same vertical lines.

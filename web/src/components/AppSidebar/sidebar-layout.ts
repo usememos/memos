@@ -20,7 +20,7 @@ export const SIDEBAR_NAV_LEADING_SLOT_CLASSES = "flex size-4 shrink-0 items-cent
 export const sidebarSurfaceVariants = cva("min-w-0 items-center", {
   variants: {
     role: {
-      row: "flex h-8 w-full gap-1 rounded-md px-2 text-ui",
+      row: "flex h-7 w-full gap-1 rounded-md px-2 text-ui",
       navPill: "relative flex h-8 rounded-md px-2",
       headerBrand: "flex h-9 max-w-full gap-1 rounded-md px-2",
       mobileBrand: "flex h-9 max-w-full gap-1.5 rounded-md px-1",

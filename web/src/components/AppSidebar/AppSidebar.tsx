@@ -108,8 +108,13 @@ const ProfileMode = () => {
 
   return (
     <SidebarSection label={t("common.profile")}>
-      <SidebarRow active={active === "memos"} icon={LayoutListIcon} label={t("common.memos")} onClick={() => setMode("memos")} />
-      <SidebarRow active={active === "map"} icon={MapIcon} label={t("common.map")} onClick={() => setMode("map")} />
+      <SidebarRow
+        state={active === "memos" ? "current" : "idle"}
+        icon={LayoutListIcon}
+        label={t("common.memos")}
+        onClick={() => setMode("memos")}
+      />
+      <SidebarRow state={active === "map" ? "current" : "idle"} icon={MapIcon} label={t("common.map")} onClick={() => setMode("map")} />
     </SidebarSection>
   );
 };
@@ -191,7 +196,7 @@ const AttachmentsSidebarContent = () => {
       {rows.map((row) => (
         <SidebarRow
           key={row.value}
-          active={attachmentSection === row.value}
+          state={attachmentSection === row.value ? "current" : "idle"}
           icon={row.icon}
           label={row.label}
           count={row.count}
@@ -229,7 +234,7 @@ const InboxSidebarContent = () => {
       {rows.map((row) => (
         <SidebarRow
           key={row.value}
-          active={inboxFilter === row.value}
+          state={inboxFilter === row.value ? "current" : "idle"}
           icon={row.icon}
           label={row.label}
           count={row.count}
@@ -258,7 +263,7 @@ const SettingsSidebarContent = () => {
         key={section.key}
         to={`${ROUTES.SETTING}#${section.key}`}
         onClick={() => setMobileOpen(false)}
-        className={cn(SIDEBAR_ROW_CLASSES, sidebarRowStateClasses(currentSection === section.key))}
+        className={cn(SIDEBAR_ROW_CLASSES, sidebarRowStateClasses(currentSection === section.key ? "current" : "idle"))}
       >
         <SidebarRowIconSlot icon={section.icon} />
         <span className="truncate">{t(section.labelKey)}</span>
@@ -324,7 +329,7 @@ interface GlobalNavItem {
  * label only opens the text track, so the artwork and surface never jump.
  */
 const navPillClasses = (active: boolean) =>
-  cn(sidebarSurfaceVariants({ role: "navPill" }), SIDEBAR_ROW_FOCUS_CLASSES, sidebarRowStateClasses(active));
+  cn(sidebarSurfaceVariants({ role: "navPill" }), SIDEBAR_ROW_FOCUS_CLASSES, sidebarRowStateClasses(active ? "current" : "idle"));
 
 const NavPillLabel = ({ expanded, label, children }: { expanded: boolean; label: ReactNode; children?: ReactNode }) => (
   <span

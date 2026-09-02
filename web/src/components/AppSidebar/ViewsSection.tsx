@@ -23,6 +23,7 @@ import SidebarRow, {
   SIDEBAR_ROW_LABEL_CLASSES,
   SIDEBAR_ROW_SLOT_BUTTON_CLASSES,
   SidebarRowIconSlot,
+  sidebarRowStateAttributes,
   sidebarRowStateClasses,
 } from "./SidebarRow";
 import SidebarSection, { SIDEBAR_SECTION_ACTION_BUTTON_CLASSES, SIDEBAR_SECTION_ACTION_ICON_CLASSES } from "./SidebarSection";
@@ -90,7 +91,7 @@ const ViewsSection = ({ manageActive = false }: { manageActive?: boolean }) => {
       }
     >
       <SidebarRow
-        active={!manageActive && selectedMemoView === BUILTIN_TASKS_VIEW_ID}
+        state={!manageActive && selectedMemoView === BUILTIN_TASKS_VIEW_ID ? "checked" : "idle"}
         icon={SquareCheckIcon}
         label={t("common.tasks")}
         onClick={() => handleView(BUILTIN_TASKS_VIEW_ID)}
@@ -98,8 +99,13 @@ const ViewsSection = ({ manageActive = false }: { manageActive?: boolean }) => {
       {memoViews.map((memoView) => {
         const id = getMemoViewId(memoView.name);
         const active = !manageActive && selectedMemoView === id;
+        const state = active ? "checked" : "idle";
         return (
-          <div key={memoView.name} className={cn(SIDEBAR_ROW_BOX_CLASSES, "group/view", sidebarRowStateClasses(active))}>
+          <div
+            key={memoView.name}
+            {...sidebarRowStateAttributes(state)}
+            className={cn(SIDEBAR_ROW_BOX_CLASSES, "group/view", sidebarRowStateClasses(state))}
+          >
             <button type="button" onClick={() => handleView(id)} aria-pressed={active || undefined} className={SIDEBAR_ROW_LABEL_CLASSES}>
               <SidebarRowIconSlot icon={ParenthesesIcon} />
               <span className="min-w-0 flex-1 truncate">{memoView.title}</span>
@@ -135,7 +141,7 @@ const ViewsSection = ({ manageActive = false }: { manageActive?: boolean }) => {
           </div>
         );
       })}
-      {manageActive && <SidebarRow active icon={MoreHorizontalIcon} label={t("common.manage")} />}
+      {manageActive && <SidebarRow state="current" icon={MoreHorizontalIcon} label={t("common.manage")} />}
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(undefined)}
