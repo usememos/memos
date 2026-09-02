@@ -123,6 +123,9 @@ func deleteUserTargetsTx(ctx context.Context, tx *sql.Tx, userID int32, targets 
 	if err := deleteReactionsByCreatorTx(ctx, tx, userID); err != nil {
 		return err
 	}
+	if err := deletePollVotesByVoterTx(ctx, tx, userID); err != nil {
+		return err
+	}
 	if err := deleteMemoSharesTx(ctx, tx, userID, memoIDs); err != nil {
 		return err
 	}
@@ -331,6 +334,11 @@ func deleteAttachmentsByIDsTx(ctx context.Context, tx *sql.Tx, attachmentIDs []i
 
 func deleteReactionsByCreatorTx(ctx context.Context, tx *sql.Tx, userID int32) error {
 	_, err := tx.ExecContext(ctx, `DELETE FROM reaction WHERE creator_id = `+deleteUserPlaceholder(1), userID)
+	return err
+}
+
+func deletePollVotesByVoterTx(ctx context.Context, tx *sql.Tx, userID int32) error {
+	_, err := tx.ExecContext(ctx, `DELETE FROM poll_vote WHERE voter_id = `+deleteUserPlaceholder(1), userID)
 	return err
 }
 
