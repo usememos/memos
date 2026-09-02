@@ -1,3 +1,5 @@
+import { parse as parseYaml } from "yaml";
+
 /** Fenced code-block language tag used to embed a poll in memo Markdown. */
 export const POLL_LANGUAGE_TAG = "poll";
 
@@ -23,7 +25,7 @@ export interface PollDefinition {
 export const parsePollDefinition = (content: string): PollDefinition | null => {
   let data: unknown;
   try {
-    data = JSON.parse(content);
+    data = parseYaml(content);
   } catch {
     return null;
   }

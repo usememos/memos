@@ -1,6 +1,7 @@
 import { PlusIcon, Trash2Icon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { stringify as stringifyYaml } from "yaml";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -58,7 +59,7 @@ export const CreatePollDialog = ({ open, onOpenChange, onConfirm }: CreatePollDi
       type: multiple ? "multiple" : "single",
       options: trimmedOptions,
     };
-    const markdown = "```" + POLL_LANGUAGE_TAG + "\n" + JSON.stringify(poll) + "\n```";
+    const markdown = "```" + POLL_LANGUAGE_TAG + "\n" + stringifyYaml(poll) + "```";
     onConfirm(markdown);
     onOpenChange(false);
   };
