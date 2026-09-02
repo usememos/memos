@@ -9,9 +9,17 @@ import { parsePollDefinition } from "./poll/types";
 
 interface PollBlockProps {
   content: string;
+  /**
+   * The owning memo's resource name ("memos/{uid}"). Poll votes are
+   * authorized server-side against this memo (see poll_handler.go), so
+   * without it there is no memo to authorize against and the poll can only
+   * render statically - e.g. inside MemoPreview's relation-embed card, or
+   * before a brand-new memo has been saved.
+   */
+  memoName?: string;
 }
 
-export const PollBlock = ({ content }: PollBlockProps) => {
+export const PollBlock = ({ content, memoName }: PollBlockProps) => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
   const poll = parsePollDefinition(content);
@@ -39,13 +47,13 @@ export const PollBlock = ({ content }: PollBlockProps) => {
   );
 
   useEffect(() => {
-    if (!poll) {
+    if (!poll || !memoName) {
       setLoading(false);
       return;
     }
     let cancelled = false;
     setLoading(true);
-    getPollVotes(poll.id)
+    getPollVotes(memoName, poll.id)
       .then((response) => {
         if (cancelled) return;
         applyVotes(response.votes, poll.options.length);
@@ -63,7 +71,7 @@ export const PollBlock = ({ content }: PollBlockProps) => {
     };
     // Only re-fetch when the poll identity/shape actually changes, not on every render.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [poll?.id, poll?.options.length]);
+  }, [memoName, poll?.id, poll?.options.length]);
 
   if (!poll) {
     return (
@@ -74,8 +82,10 @@ export const PollBlock = ({ content }: PollBlockProps) => {
   }
 
   const totalVotes = tallies.reduce((sum, count) => sum + count, 0);
+  const interactive = !!memoName;
 
   const handleToggleOption = async (index: number) => {
+    if (!memoName) return;
     if (!currentUser) {
       toast.error(t("editor.poll.sign-in-to-vote"));
       return;
@@ -106,7 +116,7 @@ export const PollBlock = ({ content }: PollBlockProps) => {
     setTallies(optimisticTallies);
 
     try {
-      const response = await setPollVotes(poll.id, Array.from(nextSelected));
+      const response = await setPollVotes(memoName, poll.id, Array.from(nextSelected));
       applyVotes(response.votes, poll.options.length);
     } catch {
       setSelected(previousSelected);
@@ -133,19 +143,22 @@ export const PollBlock = ({ content }: PollBlockProps) => {
             <button
               key={index}
               type="button"
-              disabled={loading || submitting}
+              disabled={!interactive || loading || submitting}
               onClick={() => void handleToggleOption(index)}
               className={cn(
                 "relative w-full text-left rounded-md border overflow-hidden px-2.5 py-1.5 text-sm transition-colors",
-                "hover:bg-accent disabled:cursor-default",
+                interactive && "hover:bg-accent",
+                "disabled:cursor-default",
                 isSelected ? "border-primary" : "border-border",
               )}
             >
-              <div
-                className={cn("absolute inset-y-0 left-0 bg-primary/15", isSelected && "bg-primary/25")}
-                style={{ width: `${percentage}%` }}
-                aria-hidden
-              />
+              {interactive && (
+                <div
+                  className={cn("absolute inset-y-0 left-0 bg-primary/15", isSelected && "bg-primary/25")}
+                  style={{ width: `${percentage}%` }}
+                  aria-hidden
+                />
+              )}
               <div className="relative flex items-center justify-between gap-2">
                 <span className="flex items-center gap-1.5 min-w-0">
                   <span
@@ -159,9 +172,11 @@ export const PollBlock = ({ content }: PollBlockProps) => {
                   </span>
                   <span className="truncate">{option}</span>
                 </span>
-                <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
-                  {count} · {percentage}%
-                </span>
+                {interactive && (
+                  <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
+                    {count} · {percentage}%
+                  </span>
+                )}
               </div>
             </button>
           );
@@ -169,10 +184,16 @@ export const PollBlock = ({ content }: PollBlockProps) => {
       </div>
 
       <div className="text-xs text-muted-foreground">
-        {totalVotes === 1
-          ? t("editor.poll.total-votes_one", { count: totalVotes })
-          : t("editor.poll.total-votes_other", { count: totalVotes })}
-        {poll.type === "multiple" && ` · ${t("editor.poll.allow-multiple")}`}
+        {interactive ? (
+          <>
+            {totalVotes === 1
+              ? t("editor.poll.total-votes_one", { count: totalVotes })
+              : t("editor.poll.total-votes_other", { count: totalVotes })}
+            {poll.type === "multiple" && ` · ${t("editor.poll.allow-multiple")}`}
+          </>
+        ) : (
+          t("editor.poll.unavailable-here")
+        )}
       </div>
     </div>
   );
