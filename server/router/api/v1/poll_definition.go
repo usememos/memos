@@ -96,13 +96,15 @@ func normalizePollDefinition(raw *rawPollDefinition) *pollDefinition {
 // (add, remove, reorder, relabel) or the choice mode changes this hash,
 // which EnsurePollBinding uses to detect drift and reset stale votes.
 func pollDefinitionHash(def *pollDefinition) string {
-	h := sha256.New()
-	h.Write([]byte(def.Type))
-	for _, option := range def.Options {
-		h.Write([]byte{0})
-		h.Write([]byte(option))
-	}
-	return hex.EncodeToString(h.Sum(nil))
+	payload, _ := json.Marshal(struct {
+		Type    string   `json:"type"`
+		Options []string `json:"options"`
+	}{
+		Type:    def.Type,
+		Options: def.Options,
+	})
+	hash := sha256.Sum256(payload)
+	return hex.EncodeToString(hash[:])
 }
 
 // extractFencedCodeBlocks returns the body of every fenced code block in
