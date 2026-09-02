@@ -2,9 +2,10 @@ import { Code, ConnectError } from "@connectrpc/connect";
 import { ArrowUpLeftFromCircleIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo as useReactMemo, useRef, useState } from "react";
 import { Link, Navigate, useLocation, useParams } from "react-router-dom";
-import MemoCommentSection from "@/components/MemoCommentSection";
+import MemoCommentSection, { type MemoCommentSectionHandle } from "@/components/MemoCommentSection";
 import { MentionResolutionProvider } from "@/components/MemoContent/MentionResolutionContext";
-import MemoView from "@/components/MemoView";
+import MemoView, { type MemoViewHandle } from "@/components/MemoView";
+import { computeCommentAmount } from "@/components/MemoView/MemoViewContext";
 import { createMemoNavigationState, type MemoOriginScope, resolveMemoDetailOrigin } from "@/components/MemoView/navigation";
 import { useAppSidebar } from "@/contexts/AppSidebarContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -12,7 +13,9 @@ import { useInstance } from "@/contexts/InstanceContext";
 import useMemoDetailError from "@/hooks/useMemoDetailError";
 import { useInfiniteMemoComments, useMemo } from "@/hooks/useMemoQueries";
 import { useSharedMemo, withShareAttachmentLinks } from "@/hooks/useMemoShareQueries";
+import { LEGACY_MEMO_COMMENTS_ANCHOR_ID, MEMO_COMMENTS_ANCHOR_ID } from "@/lib/memo-comments";
 import { memoNamePrefix } from "@/lib/resource-names";
+import { ROUTES } from "@/router/routes";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { State } from "@/types/proto/api/v1/common_pb";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
@@ -20,22 +23,59 @@ import { findMemoAnchorTarget } from "@/utils/markdown-manipulation";
 
 const MemoSidebarRegistration = ({
   memo,
+  parentMemo,
   from,
   fromScope,
+  hasExplicitOrigin,
+  commentCount,
   readonly,
+  onEdit,
+  onCommentsOpen,
+  onCommentCreate,
   onShareImageOpen,
 }: {
   memo: Memo;
+  parentMemo?: Memo;
   from: string;
   fromScope: MemoOriginScope;
+  hasExplicitOrigin: boolean;
+  commentCount?: number;
   readonly: boolean;
+  onEdit: () => void;
+  onCommentsOpen: () => void;
+  onCommentCreate: () => void;
   onShareImageOpen: () => void;
 }) => {
   const { setMemoDetail } = useAppSidebar();
 
   useEffect(() => {
-    setMemoDetail({ memo, from, fromScope, readonly, onShareImageOpen });
-  }, [from, fromScope, memo, onShareImageOpen, readonly, setMemoDetail]);
+    setMemoDetail({
+      memo,
+      parentMemo,
+      from,
+      fromScope,
+      hasExplicitOrigin,
+      commentCount,
+      readonly,
+      onEdit,
+      onCommentsOpen,
+      onCommentCreate,
+      onShareImageOpen,
+    });
+  }, [
+    commentCount,
+    from,
+    fromScope,
+    hasExplicitOrigin,
+    memo,
+    onCommentCreate,
+    onCommentsOpen,
+    onEdit,
+    onShareImageOpen,
+    parentMemo,
+    readonly,
+    setMemoDetail,
+  ]);
 
   useEffect(() => () => setMemoDetail(undefined), [setMemoDetail]);
 
@@ -43,13 +83,16 @@ const MemoSidebarRegistration = ({
 };
 
 const MemoDetail = () => {
-  const { isInitialized: authInitialized } = useAuth();
+  const { currentUser, isInitialized: authInitialized } = useAuth();
   const { isInitialized: instanceInitialized } = useInstance();
   const [shareImageDialogOpen, setShareImageDialogOpen] = useState(false);
   const params = useParams();
   const location = useLocation();
   const { state: locationState, hash } = location;
+  const memoViewRef = useRef<MemoViewHandle>(null);
+  const commentSectionRef = useRef<MemoCommentSectionHandle>(null);
   const handleShareImageOpen = useCallback(() => setShareImageDialogOpen(true), []);
+  const handleEdit = useCallback(() => memoViewRef.current?.openEditor(), []);
 
   // Detect share mode from the route parameter.
   const shareToken = params.token;
@@ -67,7 +110,11 @@ const MemoDetail = () => {
   const memo = isShareMode ? memoFromShare : memoFromDirect;
   const error = isShareMode ? shareError : directError;
   const isLoading = isShareMode ? shareLoading : directLoading;
-  const { parentPage, parentScope } = resolveMemoDetailOrigin(locationState, { memoArchived: memo?.state === State.ARCHIVED });
+  const hasExplicitOrigin =
+    !!locationState && typeof locationState === "object" && typeof (locationState as { from?: unknown }).from === "string";
+  const resolvedOrigin = resolveMemoDetailOrigin(locationState, { memoArchived: memo?.state === State.ARCHIVED });
+  const parentPage = !hasExplicitOrigin && !currentUser && memo?.state !== State.ARCHIVED ? ROUTES.EXPLORE : resolvedOrigin.parentPage;
+  const parentScope = resolvedOrigin.parentScope;
   const memoName = memo?.name ?? memoNameFromParams;
   const displayMemo = useReactMemo(() => {
     if (!memo) return undefined;
@@ -91,6 +138,17 @@ const MemoDetail = () => {
   } = useInfiniteMemoComments(memoName, {
     enabled: !isShareMode && !!memo,
   });
+  const commentCount = memo ? Math.max(computeCommentAmount(memo), comments.length) : 0;
+
+  const handleCommentsOpen = useCallback(() => {
+    commentSectionRef.current?.scrollIntoView();
+    window.history.replaceState(window.history.state, "", `${location.pathname}${location.search}#${MEMO_COMMENTS_ANCHOR_ID}`);
+  }, [location.pathname, location.search]);
+
+  const handleCommentCreate = useCallback(() => {
+    handleCommentsOpen();
+    void commentSectionRef.current?.openEditor();
+  }, [handleCommentsOpen]);
 
   // Scroll to the hash target once it's in the DOM. The effect re-runs as the memo loads (footnote
   // anchors) and as comments arrive (comment anchors), since the target may render in either; the
@@ -100,7 +158,17 @@ const MemoDetail = () => {
     if (!hash) return;
     const scrollKey = `${memoName}\0${hash}`;
     if (scrolledHashRef.current === scrollKey) return;
-    const el = findMemoAnchorTarget(document, memoName, decodeURIComponent(hash.slice(1)));
+    const fragment = decodeURIComponent(hash.slice(1));
+    const commentSection = commentSectionRef.current;
+    if (commentSection && (fragment === MEMO_COMMENTS_ANCHOR_ID || fragment === LEGACY_MEMO_COMMENTS_ANCHOR_ID)) {
+      scrolledHashRef.current = scrollKey;
+      commentSection.scrollIntoView();
+      return;
+    }
+
+    // A legacy #comments link on a share-token page has no comment section. Let it
+    // resolve to a historical body heading instead of turning into a dead fragment.
+    const el = findMemoAnchorTarget(document, memoName, fragment);
     if (!el) return;
     scrolledHashRef.current = scrollKey;
     el.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -127,15 +195,21 @@ const MemoDetail = () => {
       <MentionResolutionProvider contents={mentionResolutionContents} userNames={userResolutionNames}>
         <MemoSidebarRegistration
           memo={displayMemo}
+          parentMemo={parentMemo}
           from={parentPage}
           fromScope={parentScope}
+          hasExplicitOrigin={hasExplicitOrigin}
+          commentCount={isShareMode ? undefined : commentCount}
           readonly={isShareMode}
+          onEdit={handleEdit}
+          onCommentsOpen={handleCommentsOpen}
+          onCommentCreate={handleCommentCreate}
           onShareImageOpen={handleShareImageOpen}
         />
         <div className="w-full max-w-2xl px-4 sm:px-6">
           <div className="w-full">
             {!isShareMode && parentMemo && (
-              <div className="w-auto inline-block mb-2">
+              <div className="w-auto inline-block mb-2 md:hidden">
                 <Link
                   className="px-3 py-1 border border-border rounded-lg max-w-xs w-auto text-sm flex flex-row justify-start items-center flex-nowrap text-muted-foreground hover:shadow hover:opacity-80"
                   to={`/${parentMemo.name}`}
@@ -148,6 +222,7 @@ const MemoDetail = () => {
               </div>
             )}
             <MemoView
+              ref={memoViewRef}
               key={displayMemo.name}
               memo={displayMemo}
               compact={false}
@@ -162,8 +237,10 @@ const MemoDetail = () => {
             />
             {!isShareMode && (
               <MemoCommentSection
+                ref={commentSectionRef}
                 memo={displayMemo}
                 comments={comments}
+                commentCount={commentCount}
                 parentPage={parentPage}
                 parentScope={parentScope}
                 hasMoreComments={hasNextComments}

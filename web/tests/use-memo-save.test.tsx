@@ -58,4 +58,17 @@ describe("useMemoSave", () => {
     expect(discardDraft).toHaveBeenCalledOnce();
     expect(mocks.markNewMemo).toHaveBeenCalledWith("memos/new");
   });
+
+  it("refreshes the parent memo total after creating a comment", async () => {
+    mocks.memoSave.mockResolvedValue({ hasChanges: true, memoName: "memos/comment" });
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const invalidateQueries = vi.spyOn(queryClient, "invalidateQueries");
+    const wrapper = ({ children }: PropsWithChildren) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+    const { result } = renderHook(() => useMemoSave({ parentMemoName: "memos/parent", discardDraft: vi.fn() }), { wrapper });
+
+    await act(async () => result.current());
+
+    expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: ["memos", "comments", "memos/parent"] });
+    expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: ["memos", "detail", "memos/parent"] });
+  });
 });

@@ -274,15 +274,22 @@ const SettingsSidebarContent = () => {
 };
 
 const MemoDetailSidebarContent = () => {
-  const { memoDetail } = useAppSidebar();
+  const { memoDetail, closeMobileThen } = useAppSidebar();
   if (!memoDetail) return null;
+  const runAndClose = (action: (() => void) | undefined) => (action ? () => closeMobileThen(action) : undefined);
   return (
     <MemoDetailSidebar
       memo={memoDetail.memo}
+      parentMemo={memoDetail.parentMemo}
       parentPage={memoDetail.from}
       parentScope={memoDetail.fromScope}
+      hasExplicitOrigin={memoDetail.hasExplicitOrigin}
+      commentCount={memoDetail.commentCount}
       forceReadonly={memoDetail.readonly}
-      onShareImageOpen={memoDetail.onShareImageOpen}
+      onEdit={runAndClose(memoDetail.onEdit)}
+      onCommentsOpen={runAndClose(memoDetail.onCommentsOpen)}
+      onCommentCreate={runAndClose(memoDetail.onCommentCreate)}
+      onShareImageOpen={runAndClose(memoDetail.onShareImageOpen)}
       className="pb-2"
     />
   );
@@ -620,9 +627,9 @@ export const MobileAppHeader = () => {
 
 export const MobileAppSidebar = () => {
   const direction = useDirection();
-  const { mobileOpen, setMobileOpen } = useAppSidebar();
+  const { mobileOpen, setMobileOpen, completeMobileClose } = useAppSidebar();
   return (
-    <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+    <Sheet open={mobileOpen} onOpenChange={setMobileOpen} onOpenChangeComplete={completeMobileClose}>
       <SheetContent
         side={direction === "rtl" ? "right" : "left"}
         className="w-[min(18rem,calc(100vw-2rem))] gap-0 border-border p-0 shadow-2xl [&>[data-slot=sheet-close]]:sr-only"

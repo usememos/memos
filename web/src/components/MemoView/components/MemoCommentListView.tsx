@@ -4,6 +4,7 @@ import { MemoPreview } from "@/components/MemoPreview";
 import { useMemoComments } from "@/hooks/useMemoQueries";
 import { useNearViewport } from "@/hooks/useNearViewport";
 import { useUsersByNames } from "@/hooks/useUserQueries";
+import { MEMO_COMMENTS_ANCHOR_ID } from "@/lib/memo-comments";
 import { extractMemoIdFromName } from "@/lib/resource-names";
 import { useMemoViewContext, useMemoViewDerived } from "../MemoViewContext";
 import { createMemoNavigationState } from "../navigation";
@@ -30,7 +31,7 @@ const MemoCommentListView: React.FC = () => {
       <div className="flex items-center justify-between mb-1">
         <span className="text-xs text-muted-foreground">Comments{commentAmount > 1 ? ` (${commentAmount})` : ""}</span>
         <Link
-          to={`/${memo.name}#comments`}
+          to={`/${memo.name}#${MEMO_COMMENTS_ANCHOR_ID}`}
           state={createMemoNavigationState(parentPage, parentScope)}
           className="flex items-center gap-0.5 text-xs text-muted-foreground/80 hover:underline underline-offset-2 transition-colors"
         >

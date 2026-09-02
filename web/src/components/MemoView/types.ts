@@ -15,6 +15,10 @@ export interface MemoViewProps {
   onShareImageDialogOpenChange?: (open: boolean) => void;
 }
 
+export interface MemoViewHandle {
+  openEditor: () => void;
+}
+
 export interface MemoHeaderProps {
   showCreator?: boolean;
   showVisibility?: boolean;
