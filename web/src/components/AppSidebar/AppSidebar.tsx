@@ -55,7 +55,6 @@ import SidebarRow, { SIDEBAR_ROW_CLASSES, SIDEBAR_ROW_FOCUS_CLASSES, SidebarRowI
 import SidebarSection, { SIDEBAR_SECTION_STACK_CLASSES } from "./SidebarSection";
 import SpaceSwitcher from "./SpaceSwitcher";
 import {
-  SIDEBAR_FOOTER_CLASSES,
   SIDEBAR_LEADING_SLOT_CLASSES,
   SIDEBAR_NAV_LEADING_SLOT_CLASSES,
   SIDEBAR_RAIL_CLASSES,
@@ -576,7 +575,7 @@ const AppSidebar = ({ className }: { className?: string }) => {
       <div className={cn("min-h-0 flex-1 overflow-y-auto overflow-x-hidden pt-2 pb-3 [scrollbar-width:thin]", SIDEBAR_RAIL_CLASSES)}>
         <RouteSidebarContent />
       </div>
-      <footer className={cn("shrink-0 border-t border-border/70", SIDEBAR_FOOTER_CLASSES)}>
+      <footer className="shrink-0 border-t border-border/70">
         {currentUser ? (
           <UserMenu />
         ) : (

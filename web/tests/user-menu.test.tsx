@@ -79,7 +79,7 @@ describe("User menu", () => {
     expect(mocks.navigateTo).toHaveBeenCalledWith("/archived");
   });
 
-  it("uses a vertical ellipsis trigger, inset menu width, and preserves the Inbox unread state", async () => {
+  it("uses a full-bleed footer trigger, inset menu width, and preserves the Inbox unread state", async () => {
     mocks.notifications = [{ status: 1 }, { status: 1 }, { status: 2 }];
     render(
       <MemoryRouter initialEntries={["/Inbox/"]}>
@@ -88,7 +88,8 @@ describe("User menu", () => {
     );
 
     const trigger = screen.getByRole("button", { name: "Steven, common.more, 2 inbox.unread" });
-    expect(trigger).toHaveClass("h-9", "w-full", "gap-1", "rounded-md", "px-2");
+    expect(trigger).toHaveClass("h-9", "w-full", "gap-1", "px-5");
+    expect(trigger).not.toHaveClass("rounded-md");
     expect(trigger.firstElementChild).toHaveClass("size-5");
     expect(trigger.querySelector(".lucide-ellipsis-vertical")).not.toBeNull();
     expect(trigger.querySelector(".lucide-chevrons-up-down")).toBeNull();
@@ -97,7 +98,7 @@ describe("User menu", () => {
 
     const inbox = await screen.findByRole("menuitem", { name: "common.inbox, 2 inbox.unread" });
     const menu = screen.getByRole("menu");
-    expect(menu).toHaveClass("w-[var(--anchor-width)]");
+    expect(menu).toHaveClass("w-[calc(var(--anchor-width)-1.5rem)]");
     expect(menu).not.toHaveClass("min-w-56");
     expect(inbox).toHaveAttribute("aria-current", "page");
     expect(inbox).toHaveTextContent("common.inbox");
@@ -106,5 +107,19 @@ describe("User menu", () => {
     fireEvent.click(inbox);
     expect(mocks.setMobileOpen).toHaveBeenCalledWith(false);
     expect(mocks.navigateTo).toHaveBeenCalledWith("/inbox");
+  });
+
+  it("keeps the collapsed trigger on the artwork rail", () => {
+    render(
+      <MemoryRouter initialEntries={["/"]}>
+        <UserMenu collapsed />
+      </MemoryRouter>,
+    );
+
+    const trigger = screen.getByRole("button", { name: /Steven/ });
+    expect(trigger).toHaveClass("ms-3", "size-9", "rounded-md", "p-2");
+    expect(trigger).not.toHaveClass("w-full");
+    expect(trigger).not.toHaveClass("px-5");
+    expect(trigger).not.toHaveClass("rounded-none");
   });
 });

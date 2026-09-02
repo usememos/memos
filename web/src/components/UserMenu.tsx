@@ -129,9 +129,8 @@ const UserMenu = (props: Props) => {
         disabled={!currentUser}
         aria-label={triggerLabel}
         className={cn(
-          sidebarSurfaceVariants({ role: "account" }),
+          sidebarSurfaceVariants({ role: collapsed ? "accountCollapsed" : "account" }),
           "cursor-pointer text-start text-foreground transition-colors hover:bg-sidebar-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/50 data-popup-open:bg-sidebar-accent",
-          collapsed && "w-9",
         )}
       >
         <div className={cn(SIDEBAR_LEADING_SLOT_CLASSES, "relative")}>
@@ -174,7 +173,7 @@ const UserMenu = (props: Props) => {
           </span>
         )}
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-[var(--anchor-width)]">
+      <DropdownMenuContent align={collapsed ? "start" : "center"} className={cn(!collapsed && "w-[calc(var(--anchor-width)-1.5rem)]")}>
         <DropdownMenuItem onClick={() => navigateFromMenu(`/u/${encodeURIComponent(currentUser?.username ?? "")}`)}>
           <SquareUserIcon className="size-4 text-muted-foreground" />
           {t("common.profile")}

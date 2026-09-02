@@ -343,7 +343,9 @@ describe("App sidebar logo", () => {
 
     const footer = screen.getByRole("button", { name: "User menu" }).closest("footer");
     expect(footer).not.toBeNull();
-    expect(footer).toHaveClass("px-3", "py-1.5");
+    expect(footer).not.toHaveClass("px-3");
+    expect(footer).not.toHaveClass("py-1");
+    expect(footer).not.toHaveClass("py-1.5");
     expect(footer?.childElementCount).toBe(1);
     expect(screen.queryByRole("link", { name: /^common\.inbox/ })).not.toBeInTheDocument();
   });
@@ -403,7 +405,10 @@ describe("App sidebar logo", () => {
     const about = navigation.getByRole("link", { name: "common.about" });
     expect(about).toHaveAttribute("href", "/about");
     expectCollapsedNavPill(about, "common.about");
-    expect(screen.getByRole("link", { name: "common.sign-in-to-memos" }).closest("footer")).not.toBeNull();
+    const signIn = screen.getByRole("link", { name: "common.sign-in-to-memos" });
+    expect(signIn).toHaveClass("w-full", "px-5");
+    expect(signIn).not.toHaveClass("rounded-md");
+    expect(signIn.closest("footer")).not.toBeNull();
     expect(screen.queryByRole("button", { name: "editor.new-memo" })).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "common.home" })).not.toBeInTheDocument();
   });
