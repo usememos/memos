@@ -96,4 +96,30 @@ describe("useBookmarkImport", () => {
 
     expect(mocks.invalidate).toHaveBeenCalled();
   });
+
+  it("deduplicates against bare URLs, autolinks, and memo property links", async () => {
+    mocks.listMemos.mockResolvedValue({
+      memos: [
+        { content: "check out https://example.com/bare" },
+        { content: "check <https://example.com/auto>" },
+        { content: "memo without link in text", property: { links: [{ url: "https://example.com/prop" }] } },
+      ],
+      nextPageToken: "",
+    });
+    mocks.createMemo.mockResolvedValue({});
+    const { result } = renderImportHook();
+
+    await act(() =>
+      result.current.start([
+        row({ url: "https://example.com/bare" }),
+        row({ url: "https://example.com/auto" }),
+        row({ url: "https://example.com/prop" }),
+        row({ url: "https://example.com/new" }),
+      ]),
+    );
+    await waitFor(() => expect(result.current.progress.status).toBe("done"));
+
+    expect(mocks.createMemo).toHaveBeenCalledTimes(1);
+    expect(result.current.progress).toMatchObject({ total: 4, created: 1, skipped: 3, failed: 0 });
+  });
 });

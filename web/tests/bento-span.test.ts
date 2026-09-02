@@ -34,3 +34,19 @@ describe("memoVisualAspect", () => {
     expect(memoVisualAspect(memo)).toBeUndefined();
   });
 });
+
+describe("bentoCover text extraction", () => {
+  it("extracts title and snippet for multi-line text memo", async () => {
+    const { getBentoTileTitle, getBentoTileSnippet } = await import("@/components/MemoView/bentoCover");
+    const memo = buildMemo({ content: "# Project Roadmap\nFirst milestone is due on Friday.\nSecond milestone next week." });
+    expect(getBentoTileTitle(memo)).toBe("Project Roadmap");
+    expect(getBentoTileSnippet(memo)).toBe("First milestone is due on Friday. Second milestone next week.");
+  });
+
+  it("handles single-line memo with empty snippet", async () => {
+    const { getBentoTileTitle, getBentoTileSnippet } = await import("@/components/MemoView/bentoCover");
+    const memo = buildMemo({ content: "Just a quick note." });
+    expect(getBentoTileTitle(memo)).toBe("Just a quick note.");
+    expect(getBentoTileSnippet(memo)).toBe("");
+  });
+});

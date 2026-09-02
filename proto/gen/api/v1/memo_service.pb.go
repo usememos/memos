@@ -2116,7 +2116,11 @@ func (x *BatchGetLinkMetadataResponse) GetLinkMetadata() []*LinkMetadata {
 }
 
 type RefreshMemoLinkCoversRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The maximum number of link memos to examine per request. Defaults to 200.
+	PageSize int32 `protobuf:"varint,1,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	// A page token received from a previous `RefreshMemoLinkCovers` call.
+	PageToken     string `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2151,6 +2155,20 @@ func (*RefreshMemoLinkCoversRequest) Descriptor() ([]byte, []int) {
 	return file_api_v1_memo_service_proto_rawDescGZIP(), []int{32}
 }
 
+func (x *RefreshMemoLinkCoversRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *RefreshMemoLinkCoversRequest) GetPageToken() string {
+	if x != nil {
+		return x.PageToken
+	}
+	return ""
+}
+
 type RefreshMemoLinkCoversResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Links whose cover was fetched and cached by this call.
@@ -2159,8 +2177,11 @@ type RefreshMemoLinkCoversResponse struct {
 	FailedLinks int32 `protobuf:"varint,2,opt,name=failed_links,json=failedLinks,proto3" json:"failed_links,omitempty"`
 	// Links examined with no cover to fetch (no image or already cached).
 	SkippedLinks int32 `protobuf:"varint,3,opt,name=skipped_links,json=skippedLinks,proto3" json:"skipped_links,omitempty"`
-	// Memos examined; call again if fewer than the page size while links remain pending.
+	// Memos examined in this page.
 	MemosExamined int32 `protobuf:"varint,4,opt,name=memos_examined,json=memosExamined,proto3" json:"memos_examined,omitempty"`
+	// A token that can be sent as `page_token` to retrieve the next page.
+	// Empty if there are no more memos to examine.
+	NextPageToken string `protobuf:"bytes,5,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2221,6 +2242,13 @@ func (x *RefreshMemoLinkCoversResponse) GetMemosExamined() int32 {
 		return x.MemosExamined
 	}
 	return 0
+}
+
+func (x *RefreshMemoLinkCoversResponse) GetNextPageToken() string {
+	if x != nil {
+		return x.NextPageToken
+	}
+	return ""
 }
 
 type LinkMetadata struct {
@@ -2646,13 +2674,17 @@ const file_api_v1_memo_service_proto_rawDesc = "" +
 	"\x1bBatchGetLinkMetadataRequest\x12\x17\n" +
 	"\x04urls\x18\x01 \x03(\tB\x03\xe0A\x02R\x04urls\"_\n" +
 	"\x1cBatchGetLinkMetadataResponse\x12?\n" +
-	"\rlink_metadata\x18\x01 \x03(\v2\x1a.memos.api.v1.LinkMetadataR\flinkMetadata\"\x1e\n" +
-	"\x1cRefreshMemoLinkCoversRequest\"\xb3\x01\n" +
+	"\rlink_metadata\x18\x01 \x03(\v2\x1a.memos.api.v1.LinkMetadataR\flinkMetadata\"Z\n" +
+	"\x1cRefreshMemoLinkCoversRequest\x12\x1b\n" +
+	"\tpage_size\x18\x01 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"\n" +
+	"page_token\x18\x02 \x01(\tR\tpageToken\"\xdb\x01\n" +
 	"\x1dRefreshMemoLinkCoversResponse\x12#\n" +
 	"\rupdated_links\x18\x01 \x01(\x05R\fupdatedLinks\x12!\n" +
 	"\ffailed_links\x18\x02 \x01(\x05R\vfailedLinks\x12#\n" +
 	"\rskipped_links\x18\x03 \x01(\x05R\fskippedLinks\x12%\n" +
-	"\x0ememos_examined\x18\x04 \x01(\x05R\rmemosExamined\"\xe4\x01\n" +
+	"\x0ememos_examined\x18\x04 \x01(\x05R\rmemosExamined\x12&\n" +
+	"\x0fnext_page_token\x18\x05 \x01(\tR\rnextPageToken\"\xe4\x01\n" +
 	"\fLinkMetadata\x12\x10\n" +
 	"\x03url\x18\x01 \x01(\tR\x03url\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12 \n" +

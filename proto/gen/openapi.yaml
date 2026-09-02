@@ -4300,7 +4300,14 @@ components:
             description: Reaction is a reaction attached to a memo.
         RefreshMemoLinkCoversRequest:
             type: object
-            properties: {}
+            properties:
+                pageSize:
+                    type: integer
+                    description: The maximum number of link memos to examine per request. Defaults to 200.
+                    format: int32
+                pageToken:
+                    type: string
+                    description: A page token received from a previous `RefreshMemoLinkCovers` call.
         RefreshMemoLinkCoversResponse:
             type: object
             properties:
@@ -4318,8 +4325,13 @@ components:
                     format: int32
                 memosExamined:
                     type: integer
-                    description: Memos examined; call again if fewer than the page size while links remain pending.
+                    description: Memos examined in this page.
                     format: int32
+                nextPageToken:
+                    type: string
+                    description: |-
+                        A token that can be sent as `page_token` to retrieve the next page.
+                         Empty if there are no more memos to examine.
         RefreshTokenRequest:
             type: object
             properties: {}

@@ -20,6 +20,8 @@ type Runner struct {
 	// the payload rebuild. Injected by the API v1 service to reuse its
 	// fetcher and attachment storage wiring.
 	EnrichMemoLinks func(ctx context.Context, memo *store.Memo)
+	// FilterHasLink restricts payload rebuilding to memos carrying links.
+	FilterHasLink bool
 }
 
 func NewRunner(store *store.Store, markdownService markdown.Service) *Runner {
@@ -55,10 +57,14 @@ func (r *Runner) RunOnce(ctx context.Context) {
 
 	for {
 		limit := batchSize
-		memos, err := r.Store.ListMemos(ctx, &store.FindMemo{
+		find := &store.FindMemo{
 			Limit:  &limit,
 			Offset: &offset,
-		})
+		}
+		if r.FilterHasLink {
+			find.Filters = []string{"has_link"}
+		}
+		memos, err := r.Store.ListMemos(ctx, find)
 		if err != nil {
 			slog.Error("failed to list memos", "err", err)
 			return
@@ -72,7 +78,7 @@ func (r *Runner) RunOnce(ctx context.Context) {
 		// Process batch
 		batchSuccessCount := 0
 		for _, memo := range memos {
-			if !memo.Payload.GetProperty().GetHasLink() {
+			if r.FilterHasLink && !memo.Payload.GetProperty().GetHasLink() {
 				continue
 			}
 			previous := proto.Clone(memo.Payload).(*storepb.MemoPayload)

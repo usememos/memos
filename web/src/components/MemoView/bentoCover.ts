@@ -33,3 +33,13 @@ export const getBentoTileTitle = (memo: Memo): string => {
     .find((line) => line.length > 0);
   return firstLine ?? "";
 };
+
+/** Tile body snippet: subsequent lines for non-cover text cards. */
+export const getBentoTileSnippet = (memo: Memo): string => {
+  const lines = (memo.content ?? "")
+    .split("\n")
+    .map((line) => stripMarkdown(line))
+    .filter((line) => line.length > 0);
+  const remaining = lines.slice(1).join(" ");
+  return remaining.trim();
+};

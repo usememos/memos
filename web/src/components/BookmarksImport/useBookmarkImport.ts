@@ -20,8 +20,8 @@ export interface ImportProgress {
 const INITIAL_PROGRESS: ImportProgress = { status: "idle", total: 0, created: 0, skipped: 0, failed: 0 };
 const CONCURRENCY = 3;
 
-// Extracts link targets from previously imported memo content.
-const LINK_TARGET_PATTERN = /\]\((https?:\/\/[^\s)]+)\)/g;
+// Extracts link targets from previously imported memo content: markdown links, autolinks, or raw URLs.
+const LINK_TARGET_PATTERN = /(?:\]\(|<|href=")?(https?:\/\/[^\s<>)"]+)/g;
 
 async function collectExistingUrls(): Promise<Set<string>> {
   const urls = new Set<string>();
@@ -35,6 +35,11 @@ async function collectExistingUrls(): Promise<Set<string>> {
       }),
     );
     for (const memo of response.memos) {
+      for (const link of memo.property?.links ?? []) {
+        if (link.url) {
+          urls.add(link.url);
+        }
+      }
       for (const match of memo.content.matchAll(LINK_TARGET_PATTERN)) {
         urls.add(match[1]);
       }

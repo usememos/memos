@@ -10,11 +10,12 @@ const state = vi.hoisted(() => ({
   refreshCovers: vi.fn(),
 }));
 
-const refreshResponse = (memosExamined: number, updatedLinks: number, failedLinks: number) => ({
+const refreshResponse = (memosExamined: number, updatedLinks: number, failedLinks: number, nextPageToken = "") => ({
   memosExamined,
   updatedLinks,
   failedLinks,
   skippedLinks: 0,
+  nextPageToken,
 });
 
 vi.mock("@/connect", () => ({
@@ -80,6 +81,19 @@ describe("<Bookmarks>", () => {
 
     const status = await screen.findByText("bookmarks.refresh-covers-result");
     expect(status).toBeInTheDocument();
+  });
+
+  it("pages through multiple batches using nextPageToken", async () => {
+    state.refreshCovers.mockResolvedValueOnce(refreshResponse(200, 2, 0, "200")).mockResolvedValueOnce(refreshResponse(50, 1, 0, ""));
+    renderPage();
+
+    fireEvent.click(screen.getByRole("button", { name: "bookmarks.refresh-covers" }));
+
+    const status = await screen.findByText("bookmarks.refresh-covers-updated");
+    expect(status).toBeInTheDocument();
+    expect(state.refreshCovers).toHaveBeenCalledTimes(2);
+    expect(state.refreshCovers).toHaveBeenNthCalledWith(1, { pageToken: "" });
+    expect(state.refreshCovers).toHaveBeenNthCalledWith(2, { pageToken: "200" });
   });
 
   it("surfaces a cover refresh failure", async () => {

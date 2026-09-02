@@ -78,6 +78,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 		markdown.WithMentionExtension(),
 	))
 	memoPayloadRunner.EnrichMemoLinks = apiV1Service.EnrichMemoLinks
+	memoPayloadRunner.FilterHasLink = true
 	go memoPayloadRunner.RunLoop(ctx, 15*time.Minute)
 
 	// Register HTTP file server routes BEFORE gRPC-Gateway to ensure proper range request handling for Safari.

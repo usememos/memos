@@ -5,12 +5,14 @@ import (
 	"context"
 	"crypto/sha1"
 	"encoding/hex"
+	"errors"
 	"image"
 	_ "image/gif"
 	_ "image/jpeg"
 	_ "image/png"
 	"log/slog"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -20,6 +22,7 @@ import (
 	_ "golang.org/x/image/webp"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 
@@ -172,7 +175,7 @@ const (
 	refreshLinkCoversWorkers       = 10
 )
 
-func (s *APIV1Service) RefreshMemoLinkCovers(ctx context.Context, _ *v1pb.RefreshMemoLinkCoversRequest) (*v1pb.RefreshMemoLinkCoversResponse, error) {
+func (s *APIV1Service) RefreshMemoLinkCovers(ctx context.Context, req *v1pb.RefreshMemoLinkCoversRequest) (*v1pb.RefreshMemoLinkCoversResponse, error) {
 	user, err := s.fetchCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user")
@@ -181,17 +184,32 @@ func (s *APIV1Service) RefreshMemoLinkCovers(ctx context.Context, _ *v1pb.Refres
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
 
+	offset := 0
+	if req.PageToken != "" {
+		if parsed, err := strconv.Atoi(req.PageToken); err == nil && parsed >= 0 {
+			offset = parsed
+		}
+	}
+
 	limit := refreshLinkCoversMemosPerPage
+	if req.PageSize > 0 && req.PageSize <= 500 {
+		limit = int(req.PageSize)
+	}
+
 	memos, err := s.Store.ListMemos(ctx, &store.FindMemo{
 		CreatorID: &user.ID,
 		Filters:   []string{"has_link"},
 		Limit:     &limit,
+		Offset:    &offset,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list memos: %v", err)
 	}
 
 	response := &v1pb.RefreshMemoLinkCoversResponse{MemosExamined: int32(len(memos))}
+	if len(memos) == limit {
+		response.NextPageToken = strconv.Itoa(offset + limit)
+	}
 	now := time.Now()
 
 	var updated, failed, skipped int32
@@ -249,7 +267,19 @@ func (s *APIV1Service) backfillCoverDimensions(ctx context.Context, entry *store
 	if err != nil || attachment == nil {
 		return
 	}
-	entry.CoverWidth, entry.CoverHeight = decodeImageBounds(attachment.Blob)
+	if attachment.Payload != nil && attachment.Payload.GetMediaMetadata() != nil {
+		mm := attachment.Payload.GetMediaMetadata()
+		if mm.GetWidth() > 0 && mm.GetHeight() > 0 {
+			entry.CoverWidth = mm.GetWidth()
+			entry.CoverHeight = mm.GetHeight()
+			return
+		}
+	}
+	blob, err := s.GetAttachmentBlob(ctx, attachment)
+	if err != nil || len(blob) == 0 {
+		return
+	}
+	entry.CoverWidth, entry.CoverHeight = decodeImageBounds(blob)
 }
 
 // retryLink re-attempts a pending entry in place: it re-fetches metadata when the
@@ -259,6 +289,9 @@ func (s *APIV1Service) retryLink(ctx context.Context, creatorID int32, entry *st
 	if entry.Image == "" {
 		meta, err := s.linkMetadataFetcher.Get(ctx, entry.Url)
 		if err != nil {
+			if errors.Is(err, context.Canceled) || errors.Is(ctx.Err(), context.Canceled) {
+				return
+			}
 			slog.Warn("link metadata retry failed", "url", entry.Url, "err", err)
 			recordRetryFailure(entry, now)
 			return
@@ -273,6 +306,9 @@ func (s *APIV1Service) retryLink(ctx context.Context, creatorID int32, entry *st
 			entry.CoverWidth = width
 			entry.CoverHeight = height
 		} else {
+			if errors.Is(ctx.Err(), context.Canceled) {
+				return
+			}
 			recordRetryFailure(entry, now)
 			return
 		}
@@ -320,12 +356,23 @@ func (s *APIV1Service) cacheLinkCover(ctx context.Context, creatorID int32, page
 		Filename:  &filename,
 		CreatorID: &creatorID,
 		Limit:     &limit,
+		GetBlob:   true,
 	})
 	if err != nil {
 		slog.Warn("failed to look up cached link cover", "filename", filename, "err", err)
 	} else if len(found) > 0 {
-		width, height = decodeImageBounds(found[0].Blob)
-		return found[0].UID, width, height
+		existing := found[0]
+		if existing.Payload != nil && existing.Payload.GetMediaMetadata() != nil {
+			mm := existing.Payload.GetMediaMetadata()
+			if mm.GetWidth() > 0 && mm.GetHeight() > 0 {
+				return existing.UID, mm.GetWidth(), mm.GetHeight()
+			}
+		}
+		blob, err := s.GetAttachmentBlob(ctx, existing)
+		if err == nil && len(blob) > 0 {
+			width, height = decodeImageBounds(blob)
+		}
+		return existing.UID, width, height
 	}
 
 	image, err := s.linkMetadataFetcher.GetImage(ctx, imageURL)
@@ -334,6 +381,7 @@ func (s *APIV1Service) cacheLinkCover(ctx context.Context, creatorID int32, page
 		return "", 0, 0
 	}
 
+	width, height = decodeImageBounds(image.Blob)
 	create := &store.Attachment{
 		UID:       shortuuid.New(),
 		CreatorID: creatorID,
@@ -341,6 +389,12 @@ func (s *APIV1Service) cacheLinkCover(ctx context.Context, creatorID int32, page
 		Blob:      image.Blob,
 		Type:      image.Mediatype,
 		Size:      int64(len(image.Blob)),
+		Payload: &storepb.AttachmentPayload{
+			MediaMetadata: &storepb.MediaMetadata{
+				Width:  proto.Int32(width),
+				Height: proto.Int32(height),
+			},
+		},
 	}
 	if err := SaveAttachmentBlob(ctx, s.Profile, s.Store, create); err != nil {
 		slog.Warn("failed to save link cover blob", "filename", filename, "err", err)
@@ -351,7 +405,6 @@ func (s *APIV1Service) cacheLinkCover(ctx context.Context, creatorID int32, page
 		slog.Warn("failed to create link cover attachment", "filename", filename, "err", err)
 		return "", 0, 0
 	}
-	width, height = decodeImageBounds(image.Blob)
 	return created.UID, width, height
 }
 

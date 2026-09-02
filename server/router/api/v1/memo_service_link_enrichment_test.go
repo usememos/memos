@@ -2,6 +2,9 @@ package v1
 
 import (
 	"context"
+	"fmt"
+	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -411,4 +414,86 @@ func (s stubCountingFetcher) GetImage(ctx context.Context, url string) (*httpget
 		*s.imageCount++
 	}
 	return s.inner.GetImage(ctx, url)
+}
+
+func TestRefreshMemoLinkCoversPagination(t *testing.T) {
+	pngBytes := []byte{0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x08, 0x06, 0x00, 0x00, 0x00, 0x1f, 0x15, 0xc4, 0x89, 0x00, 0x00, 0x00, 0x0a, 0x49, 0x44, 0x41, 0x54, 0x78, 0x9c, 0x63, 0x00, 0x01, 0x00, 0x00, 0x05, 0x00, 0x01, 0x0d, 0x0a, 0x2d, 0xb4, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82}
+	service := newLinkEnrichmentTestService(t, stubFetchResults{
+		metas: map[string]*httpgetter.HTMLMeta{
+			"https://example.com/1": {Title: "1", Image: "https://example.com/1.png"},
+			"https://example.com/2": {Title: "2", Image: "https://example.com/2.png"},
+			"https://example.com/3": {Title: "3", Image: "https://example.com/3.png"},
+		},
+		images: map[string]*httpgetter.Image{
+			"https://example.com/1.png": {Blob: pngBytes, Mediatype: "image/png"},
+			"https://example.com/2.png": {Blob: pngBytes, Mediatype: "image/png"},
+			"https://example.com/3.png": {Blob: pngBytes, Mediatype: "image/png"},
+		},
+	})
+	user, err := service.Store.CreateUser(context.Background(), &store.User{Username: "pager", Role: store.RoleUser, PasswordHash: "hash"})
+	require.NoError(t, err)
+
+	for i := 1; i <= 3; i++ {
+		url := fmt.Sprintf("https://example.com/%d", i)
+		memo := &store.Memo{UID: shortuuid.New(), CreatorID: user.ID, Visibility: store.Public, Content: fmt.Sprintf("[%d](%s)", i, url)}
+		require.NoError(t, memopayload.RebuildMemoPayload(context.Background(), memo, service.MarkdownService))
+		memo.Payload.Links = []*storepb.MemoPayload_LinkMetadata{{Url: url, Title: fmt.Sprintf("%d", i), Image: url + ".png"}}
+		_, err := service.Store.CreateMemo(context.Background(), memo)
+		require.NoError(t, err)
+	}
+
+	ctx := context.WithValue(context.Background(), auth.UserIDContextKey, user.ID)
+	// Page 1 with pageSize 2
+	resp1, err := service.RefreshMemoLinkCovers(ctx, &v1pb.RefreshMemoLinkCoversRequest{PageSize: 2})
+	require.NoError(t, err)
+	require.Equal(t, int32(2), resp1.MemosExamined)
+	require.Equal(t, "2", resp1.NextPageToken)
+
+	// Page 2 with pageToken "2"
+	resp2, err := service.RefreshMemoLinkCovers(ctx, &v1pb.RefreshMemoLinkCoversRequest{PageSize: 2, PageToken: resp1.NextPageToken})
+	require.NoError(t, err)
+	require.Equal(t, int32(1), resp2.MemosExamined)
+	require.Empty(t, resp2.NextPageToken, "last page must have empty NextPageToken")
+}
+
+func TestBackfillCoverDimensionsWithLocalStorage(t *testing.T) {
+	pngBytes := []byte{0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x08, 0x06, 0x00, 0x00, 0x00, 0x1f, 0x15, 0xc4, 0x89, 0x00, 0x00, 0x00, 0x0a, 0x49, 0x44, 0x41, 0x54, 0x78, 0x9c, 0x63, 0x00, 0x01, 0x00, 0x00, 0x05, 0x00, 0x01, 0x0d, 0x0a, 0x2d, 0xb4, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82}
+	service := newLinkEnrichmentTestService(t, stubFetchResults{})
+
+	// Write file directly to local disk
+	localFile := filepath.Join(service.Profile.Data, "test-local.png")
+	require.NoError(t, os.WriteFile(localFile, pngBytes, 0644))
+
+	// Create attachment with StorageType LOCAL and empty Blob
+	attachment, err := service.Store.CreateAttachment(context.Background(), &store.Attachment{
+		UID:         shortuuid.New(),
+		CreatorID:   1,
+		Filename:    "test-local.png",
+		Reference:   "test-local.png",
+		StorageType: storepb.AttachmentStorageType_LOCAL,
+		Size:        int64(len(pngBytes)),
+		Type:        "image/png",
+	})
+	require.NoError(t, err)
+
+	entry := &storepb.MemoPayload_LinkMetadata{
+		Url:                "https://example.com/local",
+		CoverAttachmentUid: attachment.UID,
+	}
+	service.backfillCoverDimensions(context.Background(), entry)
+	require.Equal(t, int32(1), entry.CoverWidth)
+	require.Equal(t, int32(1), entry.CoverHeight)
+}
+
+func TestRetryLinkContextCanceledDoesNotIncrementFailure(t *testing.T) {
+	service := newLinkEnrichmentTestService(t, stubFetchResults{})
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel() // canceled context
+
+	entry := &storepb.MemoPayload_LinkMetadata{
+		Url:           "https://example.com/canceled",
+		FetchAttempts: 1,
+	}
+	service.retryLink(ctx, 1, entry, time.Now())
+	require.Equal(t, int32(1), entry.FetchAttempts, "canceled context should not increment fetch attempts")
 }

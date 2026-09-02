@@ -77,17 +77,19 @@ const Bookmarks = () => {
   const refreshCovers = async () => {
     setCoverRefresh({ ...IDLE_REFRESH, status: "running" });
     try {
-      // The server pages through the backlog; keep calling until it reports a short page.
+      // The server pages through the backlog; keep calling until nextPageToken is empty.
       let updated = 0;
       let failed = 0;
       let pages = 0;
+      let pageToken = "";
       for (;;) {
-        const response = await memoServiceClient.refreshMemoLinkCovers({});
+        const response = await memoServiceClient.refreshMemoLinkCovers({ pageToken });
         updated += response.updatedLinks;
         failed += response.failedLinks;
         pages++;
         setCoverRefresh({ status: "running", updated, failed, pages });
-        if (response.memosExamined < 200) break;
+        pageToken = response.nextPageToken;
+        if (!pageToken) break;
       }
       await queryClient.invalidateQueries({ queryKey: ["memos"] });
       setCoverRefresh({ status: "done", updated, failed, pages });
@@ -156,6 +158,7 @@ const Bookmarks = () => {
                   label={t("bookmarks.import")}
                   onClick={() => setImportOpen(true)}
                 />
+                <HeaderDivider />
                 <HeaderAction
                   icon={<RefreshCwIcon className={cn("size-3.5", coverRefresh.status === "running" && "animate-spin")} strokeWidth={1.8} />}
                   label={coverRefresh.status === "running" ? t("bookmarks.refreshing-covers") : t("bookmarks.refresh-covers")}

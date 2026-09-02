@@ -249,7 +249,18 @@
     "refreshing-covers-progress-no-failed": "Updating… {{updated}} covers updated (page {{pages}})",
     "refresh-covers-result": "{{updated}} covers updated, {{failed}} still failing",
     "refresh-covers-error": "Cover refresh failed",
-    "refresh-covers-updated": "{{updated}} covers updated"
+    "refresh-covers-updated": "{{updated}} covers updated",
+    "capture-title": "Save bookmark",
+    "capture-no-url": "Nothing to save — this page expects a url query parameter.",
+    "capture-drag-hint": "Drag this to your bookmarks bar for one-click capture:",
+    "capture-button-label": "Save to memos",
+    "capture-copy-bookmarklet": "Copy bookmarklet",
+    "capture-bookmarklet-copied": "Bookmarklet copied to clipboard",
+    "capture-go-home": "Go home",
+    "capture-saving": "Saving bookmark…",
+    "import-drop-hint": "Drag and drop CSV file here, or click to browse",
+    "import-invalid-file": "Please select a valid CSV file.",
+    "import-progress-label": "Import progress"
   },
   "locale-picker": {
     "no-language-feedback": "Language not found? Submit feedback"
@@ -380,7 +391,8 @@
       "has-link": "hasLink",
       "has-location": "hasLocation",
       "has-task-list": "hasTaskList",
-      "label": "Filters"
+      "label": "Filters",
+      "remove-filter": "Remove filter: {{name}}"
     },
     "compact-mode": "Compact mode",
     "grid-compact-hint": "Grid layouts always use compact cards.",
