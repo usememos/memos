@@ -33,7 +33,6 @@ func initSlogDefault() {
 var (
 	rootCmd = &cobra.Command{
 		Use:           "memos",
-		Short:         `An open source, lightweight note-taking service. Easily capture and share your great thoughts.`,
 		SilenceErrors: true,
 		SilenceUsage:  true,
 		RunE: func(_ *cobra.Command, _ []string) error {
@@ -163,7 +162,7 @@ func runServer() error {
 	}
 	closeStore = false
 
-	printGreetings(instanceProfile, accessSetting.AccessMode)
+	printServerInfo(instanceProfile, accessSetting.AccessMode)
 	<-signals
 	s.Shutdown(context.Background())
 	return nil
@@ -181,7 +180,7 @@ func privateWebhookAllowlist() []string {
 	return entries
 }
 
-func printGreetings(profile *profile.Profile, accessMode storepb.InstanceAccessMode) {
+func printServerInfo(profile *profile.Profile, accessMode storepb.InstanceAccessMode) {
 	fmt.Printf("Memos %s started successfully!\n", profile.Version)
 
 	if profile.Demo {
@@ -210,11 +209,6 @@ func printGreetings(profile *profile.Profile, accessMode storepb.InstanceAccessM
 		accessModeLabel = "public"
 	}
 	fmt.Printf("Access mode: %s\n", accessModeLabel)
-
-	fmt.Println()
-	fmt.Printf("Documentation: %s\n", "https://usememos.com")
-	fmt.Printf("Source code: %s\n", "https://github.com/usememos/memos")
-	fmt.Println("\nHappy note-taking!")
 }
 
 func main() {

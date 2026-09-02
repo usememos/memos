@@ -71,11 +71,10 @@ function MemoDisplaySettingsContent() {
   return (
     <div>
       <section className="px-3 py-2.5">
-        <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.09em] text-muted-foreground/65">{t("memo.layout")}</p>
         <div
           role="radiogroup"
           aria-label={t("memo.layout")}
-          className="grid grid-cols-4 gap-0.5 rounded-lg bg-muted/55 p-0.5"
+          className="grid grid-cols-4 gap-0.5"
           onKeyDown={(event) => {
             const delta =
               event.key === "ArrowRight"
@@ -117,8 +116,8 @@ function MemoDisplaySettingsContent() {
                 data-value={value}
                 onClick={() => setMaxColumns(value)}
                 className={cn(
-                  "flex h-8 min-w-0 items-center justify-center gap-1 rounded-md px-1 text-[11px] transition-[background-color,color,box-shadow] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
-                  active ? "bg-background text-foreground shadow-xs" : "text-muted-foreground hover:bg-background/60 hover:text-foreground",
+                  "flex h-7 min-w-0 items-center justify-center gap-1 rounded-md px-1 text-[11px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
+                  active ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
                 )}
               >
                 <Icon className="size-3.5 shrink-0" strokeWidth={1.8} />
@@ -130,7 +129,6 @@ function MemoDisplaySettingsContent() {
       </section>
 
       <section className="space-y-2 border-t border-border/60 px-3 py-2.5">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.09em] text-muted-foreground/65">{t("memo.order")}</p>
         <SettingRow label={t("memo.order-by")}>
           <Select
             value={timeBasis}
@@ -207,10 +205,7 @@ function MemoDisplaySettingMenu({ className }: Props) {
         </TooltipTrigger>
         <TooltipContent side="top">{t("memo.view-options")}</TooltipContent>
       </Tooltip>
-      <PopoverContent align="end" sideOffset={6} className="w-64 p-0">
-        <div className="border-b border-border/60 px-3 py-2.5">
-          <p className="text-[13px] font-medium text-foreground">{t("memo.view-options")}</p>
-        </div>
+      <PopoverContent align="end" sideOffset={6} aria-label={t("memo.view-options")} className="w-64 p-0">
         <MemoDisplaySettingsContent />
       </PopoverContent>
     </Popover>

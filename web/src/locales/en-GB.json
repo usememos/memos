@@ -392,7 +392,7 @@
       "saturday": "Saturday",
       "sunday": "Sunday",
       "week-start-day": "Week start day",
-      "access-description": "Control anonymous browsing, sign-up, authentication, profile editing, and calendar defaults for this instance.",
+      "access-description": "Control anonymous browsing, sign-up, authentication, and profile editing for this instance.",
       "access-title": "Access and policies",
       "disallow-change-nickname-description": "Prevent users from changing their display name.",
       "disallow-change-username-description": "Prevent users from changing their login username.",
@@ -613,7 +613,7 @@
       "title": "General",
       "additional-script-description": "Inject JavaScript into every web page. Use only trusted code.",
       "additional-style-description": "Inject CSS into the web app to adjust instance-wide presentation.",
-      "basic-description": "Configure the public identity shown by this instance.",
+      "basic-description": "Configure the public identity and calendar defaults for this instance.",
       "custom-code-description": "Optional instance-wide CSS and JavaScript applied to the frontend.",
       "custom-code-title": "Custom code"
     },

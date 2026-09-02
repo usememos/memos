@@ -127,7 +127,7 @@ func normalizeHostname(hostname string) (string, error) {
 		return "", errors.Errorf("hostname must contain between 1 and 253 characters")
 	}
 
-	for _, label := range strings.Split(hostname, ".") {
+	for label := range strings.SplitSeq(hostname, ".") {
 		if label == "" || len(label) > 63 {
 			return "", errors.Errorf("hostname labels must contain between 1 and 63 characters")
 		}

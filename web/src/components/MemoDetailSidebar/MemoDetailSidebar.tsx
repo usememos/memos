@@ -3,7 +3,7 @@ import { BookmarkCheckIcon, BookmarkIcon, ChevronDownIcon, ImageIcon, LinkIcon, 
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
-import SidebarRow, { SIDEBAR_ROW_CLASSES, SIDEBAR_ROW_ICON_CLASSES } from "@/components/AppSidebar/SidebarRow";
+import SidebarRow, { SIDEBAR_ROW_CLASSES, SidebarRowIconSlot } from "@/components/AppSidebar/SidebarRow";
 import SidebarSection, { SIDEBAR_SECTION_STACK_CLASSES } from "@/components/AppSidebar/SidebarSection";
 import { extractHeadings } from "@/components/MemoContent/pipeline";
 import { getRelationBuckets, getRelationMemo } from "@/components/MemoMetadata/Relation/relationHelpers";
@@ -56,8 +56,8 @@ const BacklinkRow = ({
       title={title}
       viewTransition
     >
-      <LinkIcon className={SIDEBAR_ROW_ICON_CLASSES} strokeWidth={1.8} />
-      <span ref={ref} className="min-w-0 flex-1 truncate text-left">
+      <SidebarRowIconSlot icon={LinkIcon} />
+      <span ref={ref} className="min-w-0 flex-1 truncate text-start">
         {snippet}
       </span>
     </Link>
@@ -125,8 +125,8 @@ const MemoDetailSidebar = ({ memo, parentPage, parentScope, className, onShareIm
               "text-muted-foreground hover:bg-sidebar-accent/65 hover:text-foreground data-popup-open:bg-sidebar-accent/65 data-popup-open:text-foreground",
             )}
           >
-            <Share2Icon className={SIDEBAR_ROW_ICON_CLASSES} strokeWidth={1.8} />
-            <span className="min-w-0 flex-1 truncate text-left">{t("common.share")}</span>
+            <SidebarRowIconSlot icon={Share2Icon} />
+            <span className="min-w-0 flex-1 truncate text-start">{t("common.share")}</span>
             <ChevronDownIcon className="size-3.5 shrink-0 opacity-55" strokeWidth={1.8} />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" sideOffset={4} className="w-48">

@@ -122,25 +122,28 @@ const InstanceSection = () => {
               {t("common.edit")}
             </Button>
           </SettingListItem>
+
+          <SettingListItem label={t("setting.instance.week-start-day")} description={t("setting.instance.week-start-day-description")}>
+            <Select
+              value={instanceGeneralSetting.weekStartDayOffset.toString()}
+              items={weekStartDayOptions}
+              onValueChange={(value) => {
+                updatePartialSetting({ weekStartDayOffset: parseInt(value) || 0 });
+              }}
+            >
+              <SelectTrigger className="min-w-fit">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {weekStartDayOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </SettingListItem>
         </SettingList>
-      </SettingGroup>
-
-      <SettingGroup title={t("setting.system.custom-code-title")} description={t("setting.system.custom-code-description")} showSeparator>
-        <SettingCodeEditor
-          label={t("setting.system.additional-style")}
-          description={t("setting.system.additional-style-description")}
-          placeholder={t("setting.system.additional-style-placeholder")}
-          value={instanceGeneralSetting.additionalStyle}
-          onChange={(additionalStyle) => updatePartialSetting({ additionalStyle })}
-        />
-
-        <SettingCodeEditor
-          label={t("setting.system.additional-script")}
-          description={t("setting.system.additional-script-description")}
-          placeholder={t("setting.system.additional-script-placeholder")}
-          value={instanceGeneralSetting.additionalScript}
-          onChange={(additionalScript) => updatePartialSetting({ additionalScript })}
-        />
       </SettingGroup>
 
       <SettingGroup title={t("setting.instance.access-title")} description={t("setting.instance.access-description")} showSeparator>
@@ -197,28 +200,25 @@ const InstanceSection = () => {
               onCheckedChange={(checked) => updatePartialSetting({ disallowChangeNickname: checked })}
             />
           </SettingListItem>
-
-          <SettingListItem label={t("setting.instance.week-start-day")} description={t("setting.instance.week-start-day-description")}>
-            <Select
-              value={instanceGeneralSetting.weekStartDayOffset.toString()}
-              items={weekStartDayOptions}
-              onValueChange={(value) => {
-                updatePartialSetting({ weekStartDayOffset: parseInt(value) || 0 });
-              }}
-            >
-              <SelectTrigger className="min-w-fit">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {weekStartDayOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </SettingListItem>
         </SettingList>
+      </SettingGroup>
+
+      <SettingGroup title={t("setting.system.custom-code-title")} description={t("setting.system.custom-code-description")} showSeparator>
+        <SettingCodeEditor
+          label={t("setting.system.additional-style")}
+          description={t("setting.system.additional-style-description")}
+          placeholder={t("setting.system.additional-style-placeholder")}
+          value={instanceGeneralSetting.additionalStyle}
+          onChange={(additionalStyle) => updatePartialSetting({ additionalStyle })}
+        />
+
+        <SettingCodeEditor
+          label={t("setting.system.additional-script")}
+          description={t("setting.system.additional-script-description")}
+          placeholder={t("setting.system.additional-script-placeholder")}
+          value={instanceGeneralSetting.additionalScript}
+          onChange={(additionalScript) => updatePartialSetting({ additionalScript })}
+        />
       </SettingGroup>
 
       <div className="w-full flex justify-end">
