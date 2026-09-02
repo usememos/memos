@@ -1,4 +1,4 @@
-> **Featured sponsor:** [CodeRabbit](https://coderabbit.link/usememos) — Cut code review time and bugs in half, instantly.
+> ✨ Featured sponsor: [CodeRabbit — Industry-leading AI code reviews](https://coderabbit.link/usememos).
 
 # Memos
 
@@ -28,38 +28,34 @@ Memos is an open-source, self-hosted home for short-form thinking. Daily notes, 
 
 ## Quick Start
 
-Start a private Memos instance with one Docker command:
+Run Memos with Docker:
 
 ```bash
 docker run -d \
   --name memos \
-  --restart unless-stopped \
-  -p 127.0.0.1:5230:5230 \
+  -p 5230:5230 \
   -v ~/.memos:/var/opt/memos \
   neosmemo/memos:stable
 ```
 
-Open [http://localhost:5230](http://localhost:5230) and start writing. See the [deployment guide](https://usememos.com/docs/deploy) for other installation options.
+Other install options are in the [deployment guide](https://usememos.com/docs/deploy).
 
-## Extend Memos
+## Web Clipper
 
-- **[Web Clipper](https://usememos.com/web-clipper)** — Save pages, selections, and images as source-linked Markdown. Available for [Chrome](https://chromewebstore.google.com/detail/memos-web-clipper/nebaoebnljalfegiidibihhkebeiklbl) and [Firefox](https://addons.mozilla.org/en-US/firefox/addon/memos-web-clipper/).
-- **[API and webhooks](https://usememos.com/docs/api)** — Connect scripts, bots, and custom capture flows through REST, gRPC, and [webhooks](https://usememos.com/docs/integrations/webhooks).
-
-## Get Help
-
-Read the [documentation](https://usememos.com/docs), join [Discord](https://discord.gg/tfPJa4UmAv), or ask in [GitHub Discussions](https://github.com/usememos/memos/discussions). You can also [report a bug](https://github.com/usememos/memos/issues/new?template=bug_report.yml) or [suggest a feature](https://github.com/usememos/memos/issues/new?template=feature_request.yml).
-
-Want to contribute? See the [contributing guide](https://usememos.com/docs/development/contributing).
+Save pages, selections, and images from your browser straight into Memos as source-linked Markdown. Get the [Memos Web Clipper](https://usememos.com/web-clipper) for [Chrome](https://chromewebstore.google.com/detail/memos-web-clipper/nebaoebnljalfegiidibihhkebeiklbl) or [Firefox](https://addons.mozilla.org/en-US/firefox/addon/memos-web-clipper/).
 
 ## Sponsors
 
-- [**CodeRabbit** — Cut code review time and bugs in half](https://coderabbit.link/usememos)
-- [**SSD Nodes** — Affordable VPS hosting for self-hosters](https://ssdnodes.com/?utm_source=memos&utm_medium=sponsor)
-- [**TestMu AI** — The world’s first full-stack Agentic AI Quality Engineering platform](https://www.testmuai.com/?utm_medium=sponsor&utm_source=memos)
+<p>
+  <a href="https://coderabbit.link/usememos" target="_blank" rel="noopener"><picture><source media="(prefers-color-scheme: dark)" srcset="https://victorious-bubble-f69a016683.media.strapiapp.com/White_Typemark_79b9189d19.svg" /><img src="https://victorious-bubble-f69a016683.media.strapiapp.com/Orange_Typemark_43bf516c9d.svg" alt="CodeRabbit — Cut code review time and bugs in half" height="40" align="middle" /></picture></a>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="https://ssdnodes.com/?utm_source=memos&utm_medium=sponsor" target="_blank" rel="noopener"><img src="https://raw.githubusercontent.com/usememos/.github/refs/heads/main/assets/sponsors/ssd-nodes.svg" alt="SSD Nodes — Affordable VPS hosting for self-hosters" height="72" align="middle" /></a>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="https://www.testmuai.com/?utm_medium=sponsor&utm_source=memos" target="_blank" rel="noopener"><picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/usememos/.github/refs/heads/main/assets/sponsors/testmuai/white.png" /><img src="https://raw.githubusercontent.com/usememos/.github/refs/heads/main/assets/sponsors/testmuai/black.png" alt="TestMu AI — The world’s first full-stack Agentic AI Quality Engineering platform" height="30" align="middle" /></picture></a>
+</p>
 
 Love Memos? [Sponsor the project on GitHub](https://github.com/sponsors/usememos).
 
-## License
+## Get Help
 
-Memos is licensed under the [MIT License](LICENSE).
+Read the [docs](https://usememos.com/docs), join [Discord](https://discord.gg/tfPJa4UmAv), or ask in [GitHub Discussions](https://github.com/usememos/memos/discussions). Found a bug or have an idea? [Open an issue](https://github.com/usememos/memos/issues/new/choose). To contribute, see the [contributing guide](https://usememos.com/docs/development/contributing).
