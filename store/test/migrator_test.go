@@ -328,6 +328,87 @@ func TestMigrationSpaceMemberStatusBackfillsActive(t *testing.T) {
 	require.Equal(t, store.SpaceMemberStatusActive, status)
 }
 
+// TestMigrationRepairsPollSchemaAfterInPlaceEdit covers a real upgrade
+// failure: a database that already recorded schema version 0.32.1 from this
+// driver's originally-shipped poll_vote-only migration (single table, no
+// memo_id, no poll table) before a later change added a `poll` binding table
+// and a memo_id column by editing that already-applied 0.32/00 file in
+// place. Editing an already-applied migration file has no effect on a
+// database that already recorded its version - shouldApplyMigration only
+// compares version numbers, never file content - so such a database was
+// stuck exactly at the old shape while the application code (memo deletion
+// cascade, EnsurePollBinding) assumed the new one, breaking every memo
+// delete with "column memo_id does not exist". The fix is 0.32/01, a
+// strictly later migration that actually reaches a database in this state.
+func TestMigrationRepairsPollSchemaAfterInPlaceEdit(t *testing.T) {
+	driver := getDriverFromEnv()
+	if driver == "mysql" {
+		t.Skip("MySQL's poll schema was introduced after this bug and never shipped the broken shape")
+	}
+
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	defer ts.Close()
+
+	user, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+	memo, err := ts.CreateMemo(ctx, &store.Memo{
+		UID:        "poll-schema-repair-memo",
+		CreatorID:  user.ID,
+		Content:    "pre-fix memo with a poll",
+		Visibility: store.Private,
+	})
+	require.NoError(t, err)
+
+	// Simulate the exact stuck state: a poll_vote row from before memo_id
+	// existed, the poll table absent, and schema version already at 0.32.1.
+	db := ts.GetDriver().GetDB()
+	_, err = db.ExecContext(ctx, "DROP TABLE poll")
+	require.NoError(t, err)
+	_, err = db.ExecContext(ctx, "DROP INDEX idx_poll_vote_memo_id")
+	require.NoError(t, err)
+	_, err = db.ExecContext(ctx, "ALTER TABLE poll_vote DROP COLUMN memo_id")
+	require.NoError(t, err)
+	insertOldVote := "INSERT INTO poll_vote (poll_uid, option_index, voter_id) VALUES (?, ?, ?)"
+	if driver == "postgres" {
+		insertOldVote = "INSERT INTO poll_vote (poll_uid, option_index, voter_id) VALUES ($1, $2, $3)"
+	}
+	_, err = db.ExecContext(ctx, insertOldVote, "stuck-poll-uid", 0, user.ID)
+	require.NoError(t, err)
+
+	basicSetting, err := ts.GetInstanceBasicSetting(ctx)
+	require.NoError(t, err)
+	basicSetting.SchemaVersion = "0.32.1"
+	_, err = ts.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key:   storepb.InstanceSettingKey_BASIC,
+		Value: &storepb.InstanceSetting_BasicSetting{BasicSetting: basicSetting},
+	})
+	require.NoError(t, err)
+
+	// This is the exact operation the user reported failing after upgrading:
+	// deleting a memo whose poll_vote row predates memo_id must not error.
+	require.NoError(t, ts.Migrate(ctx), "migrating from the stuck 0.32.1 poll schema must succeed")
+	require.NoError(t, ts.DeleteMemo(ctx, &store.DeleteMemo{ID: memo.ID}),
+		"deleting a memo must not fail with a missing poll_vote.memo_id column after the repair migration")
+
+	// The repaired schema is fully functional for new polls, not just
+	// structurally present.
+	memo2, err := ts.CreateMemo(ctx, &store.Memo{
+		UID:        "poll-schema-repair-memo-2",
+		CreatorID:  user.ID,
+		Content:    "post-fix memo with a poll",
+		Visibility: store.Private,
+	})
+	require.NoError(t, err)
+	poll, err := ts.EnsurePollBinding(ctx, "post-fix-poll-uid", memo2.ID, "hash-v1")
+	require.NoError(t, err)
+	require.Equal(t, memo2.ID, poll.MemoID)
+	votes, err := ts.SetPollVotes(ctx, "post-fix-poll-uid", memo2.ID, user.ID, []int32{0})
+	require.NoError(t, err)
+	require.Len(t, votes, 1)
+	require.Equal(t, memo2.ID, votes[0].MemoID)
+}
+
 // TestMigrationMultipleReRuns verifies that migration is idempotent
 // even when run multiple times in succession.
 func TestMigrationMultipleReRuns(t *testing.T) {
