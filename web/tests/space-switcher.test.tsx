@@ -64,7 +64,11 @@ describe("SpaceSwitcher", () => {
   it("lists Memos, every available Space, and the create entry", async () => {
     render(<SpaceSwitcher />);
 
-    fireEvent.click(screen.getByRole("button", { name: "space.switch: common.memos" }));
+    const trigger = screen.getByRole("button", { name: "space.switch: common.memos" });
+    expect(trigger).toHaveAttribute("aria-haspopup", "menu");
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+    fireEvent.click(trigger);
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
 
     expect(await screen.findByRole("menuitemradio", { name: "Memos" })).toHaveAttribute("aria-checked", "true");
     const productRow = screen.getByRole("menuitemradio", { name: "Product" });
@@ -157,8 +161,8 @@ describe("SpaceSwitcher", () => {
     expect(trigger).not.toHaveClass("px-1");
     expect(title).toHaveClass("text-[14px]", "font-semibold", "leading-5");
     expect(mark).toHaveClass("size-5", "rounded-[5px]");
-    expect(trigger.querySelector(".lucide-chevron-down")).not.toBeNull();
-    expect(trigger.querySelector(".lucide-chevrons-up-down")).toBeNull();
+    expect(trigger.querySelector(".lucide-chevrons-up-down")).not.toBeNull();
+    expect(trigger.querySelector(".lucide-chevron-down")).toBeNull();
   });
 
   it("keeps duplicate identity in the header label but out of its geometry", () => {

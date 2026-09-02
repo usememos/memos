@@ -5,6 +5,7 @@ import MemoHeader from "@/components/MemoView/components/MemoHeader";
 
 const state = vi.hoisted(() => ({
   creator: undefined as { username: string; displayName: string; avatarUrl: string } | undefined,
+  currentUser: undefined as { name: string } | undefined,
 }));
 
 vi.mock("@/components/RelativeTime", () => ({
@@ -12,11 +13,19 @@ vi.mock("@/components/RelativeTime", () => ({
 }));
 
 vi.mock("@/components/MemoActionMenu", () => ({
-  default: () => null,
+  default: ({ className }: { className?: string }) => (
+    <button type="button" aria-label="memo-actions" className={className}>
+      Memo actions
+    </button>
+  ),
 }));
 
 vi.mock("@/components/MemoReactionListView", () => ({
-  ReactionSelector: () => null,
+  ReactionSelector: ({ className }: { className?: string }) => (
+    <button type="button" aria-label="add-reaction" className={className}>
+      Add reaction
+    </button>
+  ),
 }));
 
 vi.mock("@/components/UserAvatar", () => ({
@@ -50,7 +59,7 @@ vi.mock("@/components/MemoView/MemoViewContext", () => ({
   useMemoViewContext: () => ({
     memo: { name: "memos/123", visibility: 1, pinned: false, space: "spaces/product" },
     creator: state.creator,
-    currentUser: undefined,
+    currentUser: state.currentUser,
     parentPage: "/explore?filter=tagSearch%3Awork",
     parentScope: "preserve",
     isArchived: false,
@@ -82,6 +91,34 @@ const LocationProbe = () => {
 describe("MemoHeader navigation", () => {
   beforeEach(() => {
     state.creator = undefined;
+    state.currentUser = undefined;
+  });
+
+  it("uses one compact interaction surface for memo header actions", () => {
+    state.currentUser = { name: "users/alice" };
+
+    render(
+      <MemoryRouter>
+        <MemoHeader />
+      </MemoryRouter>,
+    );
+
+    const reaction = screen.getByRole("button", { name: "add-reaction" });
+    const actions = screen.getByRole("button", { name: "memo-actions" });
+    const actionRail = actions.closest('[data-slot="memo-header-actions"]');
+
+    expect(actionRail).toHaveClass("items-center", "gap-1");
+    expect(reaction).toHaveClass("sm:group-focus-within:flex");
+    for (const action of [reaction, actions]) {
+      expect(action).toHaveClass(
+        "size-6",
+        "rounded-md",
+        "hover:bg-accent",
+        "hover:text-foreground",
+        "focus-visible:ring-2",
+        "data-popup-open:bg-accent",
+      );
+    }
   });
 
   it.each([false, true])("uses a keyboard-operable timestamp and preserves origin when showCreator=%s", (showCreator) => {

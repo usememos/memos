@@ -2,6 +2,7 @@ import { BookmarkIcon } from "lucide-react";
 import { useCallback, useState } from "react";
 import { Link } from "react-router-dom";
 import RelativeTime from "@/components/RelativeTime";
+import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useNewMemo } from "@/contexts/NewMemoContext";
 import useNavigateTo from "@/hooks/useNavigateTo";
@@ -20,6 +21,9 @@ import { useMemoViewContext, useMemoViewDerived } from "../MemoViewContext";
 import { createMemoNavigationState } from "../navigation";
 import type { MemoHeaderProps } from "../types";
 import MemoSpaceBadge from "./MemoSpaceBadge";
+
+const MEMO_HEADER_ACTION_CLASSES =
+  "size-6 shrink-0 rounded-md border-none bg-transparent text-muted-foreground transition-colors hover:bg-accent hover:text-foreground hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/50 data-popup-open:bg-accent data-popup-open:text-foreground";
 
 const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, showPinned, showSpace }) => {
   const t = useTranslate();
@@ -82,10 +86,14 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, sh
         )}
       </div>
 
-      <div className="flex flex-row justify-end items-center select-none shrink-0 gap-2">
+      <div data-slot="memo-header-actions" className="flex shrink-0 select-none flex-row items-center justify-end gap-1">
         {currentUser && !isArchived && (
           <ReactionSelector
-            className={cn("border-none w-auto h-auto", reactionSelectorOpen && "block!", "block sm:hidden sm:group-hover:block")}
+            className={cn(
+              MEMO_HEADER_ACTION_CLASSES,
+              reactionSelectorOpen && "sm:flex!",
+              "flex sm:hidden sm:group-hover:flex sm:group-focus-within:flex",
+            )}
             memo={memo}
             onOpenChange={setReactionSelectorOpen}
           />
@@ -93,10 +101,8 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, sh
 
         {showVisibility && memo.visibility !== Visibility.PRIVATE && (
           <Tooltip>
-            <TooltipTrigger>
-              <span className="flex justify-center items-center rounded-md hover:opacity-80">
-                <VisibilityIcon visibility={memo.visibility} />
-              </span>
+            <TooltipTrigger aria-label={visibilityOption && t(visibilityOption.labelKey)} className={MEMO_HEADER_ACTION_CLASSES}>
+              <VisibilityIcon visibility={memo.visibility} className="text-current" />
             </TooltipTrigger>
             <TooltipContent>{visibilityOption && t(visibilityOption.labelKey)}</TooltipContent>
           </Tooltip>
@@ -105,8 +111,18 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, sh
         {showPinned && memo.pinned && (
           <TooltipProvider>
             <Tooltip>
-              <TooltipTrigger render={<span className="cursor-pointer" />}>
-                <BookmarkIcon className="w-4 h-auto text-primary" onClick={unpinMemo} />
+              <TooltipTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    aria-label={t("common.unpin")}
+                    className={cn(MEMO_HEADER_ACTION_CLASSES, "text-primary hover:text-primary data-popup-open:text-primary")}
+                    onClick={unpinMemo}
+                  />
+                }
+              >
+                <BookmarkIcon className="size-4" strokeWidth={1.8} />
               </TooltipTrigger>
               <TooltipContent>
                 <p>{t("common.unpin")}</p>
@@ -115,7 +131,13 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, sh
           </TooltipProvider>
         )}
 
-        <MemoActionMenu memo={memo} parentScope={parentScope} readonly={readonly} onEdit={openEditor} />
+        <MemoActionMenu
+          memo={memo}
+          parentScope={parentScope}
+          readonly={readonly}
+          className={MEMO_HEADER_ACTION_CLASSES}
+          onEdit={openEditor}
+        />
       </div>
     </div>
   );

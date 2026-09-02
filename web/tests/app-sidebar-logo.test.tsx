@@ -222,7 +222,8 @@ describe("App sidebar logo", () => {
     expect(switcher).not.toHaveClass("px-1");
     expect(switcher.firstElementChild).not.toHaveClass("flex-1");
     expect(within(switcher).getByText("Memos logo")).toHaveAttribute("data-logo-size", "header");
-    expect(switcher.querySelector(".lucide-chevron-down")).not.toBeNull();
+    expect(switcher.querySelector(".lucide-chevrons-up-down")).not.toBeNull();
+    expect(switcher.querySelector(".lucide-chevron-down")).toBeNull();
     expect(compose).toHaveClass("size-7", "rounded-md", "border", "bg-background", "shadow-xs");
     expect(compose).not.toHaveClass("rounded-full");
 
@@ -398,7 +399,7 @@ describe("App sidebar logo", () => {
     expect(screen.getByRole("link", { name: "Memos logo" })).toHaveAttribute("href", "/explore");
     expect(screen.queryByRole("button", { name: /^space\.switch:/ })).not.toBeInTheDocument();
     const primaryNavigation = screen.getByRole("navigation", { name: "Primary" });
-    expect(primaryNavigation).toHaveClass("h-9", "items-center", "gap-1", "px-3");
+    expect(primaryNavigation).toHaveClass("h-8", "items-center", "gap-1", "px-3");
     expect(primaryNavigation).not.toHaveClass("flex-col");
     const navigation = within(primaryNavigation);
     expectActiveNavPill(navigation.getByRole("link", { name: "common.explore" }), "common.explore");
@@ -523,6 +524,7 @@ describe("App sidebar logo", () => {
     const scopeTrigger = screen.getByRole("button", { name: "common.home" });
     expectActiveNavPill(scopeTrigger, "common.home");
     expect(scopeTrigger.querySelector(".lucide-chevron-down")).toBeInTheDocument();
+    expect(scopeTrigger.querySelector(".lucide-chevrons-up-down")).not.toBeInTheDocument();
     expectCollapsedNavPill(screen.getByRole("link", { name: "common.attachments" }), "common.attachments");
     fireEvent.click(scopeTrigger);
     expect(await screen.findByRole("menuitem", { name: "common.home" })).toBeInTheDocument();

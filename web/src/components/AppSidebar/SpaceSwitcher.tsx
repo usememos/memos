@@ -1,4 +1,4 @@
-import { CheckIcon, ChevronDownIcon, LoaderCircleIcon, type LucideIcon, PlusIcon } from "lucide-react";
+import { CheckIcon, ChevronsUpDownIcon, LoaderCircleIcon, type LucideIcon, PlusIcon } from "lucide-react";
 import { type ReactNode, useRef, useState } from "react";
 import CreateSpaceDialog from "@/components/CreateSpaceDialog";
 import MemosLogo from "@/components/MemosLogo";
@@ -92,7 +92,7 @@ function SpaceSwitcher({ className, size = "md" }: { className?: string; size?: 
               aria-label={`${t("space.switch")}: ${currentContextLabel}`}
               title={currentContextLabel}
               className={cn(
-                "group text-start transition-colors hover:bg-sidebar-accent/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/40",
+                "text-start transition-colors hover:bg-sidebar-accent/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/40",
                 size === "header" ? sidebarSurfaceVariants({ role: "headerBrand" }) : sidebarSurfaceVariants({ role: "mobileBrand" }),
                 className,
               )}
@@ -127,10 +127,7 @@ function SpaceSwitcher({ className, size = "md" }: { className?: string; size?: 
               <MemosLogo compact size={brandSize} />
             )}
           </span>
-          <ChevronDownIcon
-            className="size-3.5 shrink-0 text-muted-foreground/70 transition-transform duration-150 group-data-[popup-open]:rotate-180 motion-reduce:transition-none"
-            strokeWidth={1.8}
-          />
+          <ChevronsUpDownIcon aria-hidden="true" className="size-3.5 shrink-0 text-muted-foreground/70" strokeWidth={1.8} />
         </DropdownMenuTrigger>
         <DropdownMenuContent
           size="sm"

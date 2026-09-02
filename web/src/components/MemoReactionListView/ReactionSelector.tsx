@@ -4,6 +4,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { useInstance } from "@/contexts/InstanceContext";
 import { cn } from "@/lib/utils";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
+import { useTranslate } from "@/utils/i18n";
 import { useReactionActions } from "./hooks";
 
 interface Props {
@@ -14,6 +15,7 @@ interface Props {
 
 const ReactionSelector = (props: Props) => {
   const { memo, className, onOpenChange } = props;
+  const t = useTranslate();
   const [open, setOpen] = useState(false);
   const { memoRelatedSetting } = useInstance();
 
@@ -30,17 +32,18 @@ const ReactionSelector = (props: Props) => {
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger
-        nativeButton={false}
         render={
-          <span
+          <button
+            type="button"
+            aria-label={t("setting.memo.add-reaction")}
             className={cn(
-              "h-7 w-7 flex justify-center items-center rounded-full border cursor-pointer transition-all hover:opacity-80",
+              "flex size-7 cursor-pointer items-center justify-center rounded-full border text-muted-foreground transition-all hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
               className,
             )}
           />
         }
       >
-        <SmilePlusIcon className="w-4 h-4 mx-auto text-muted-foreground" />
+        <SmilePlusIcon className="mx-auto size-4" />
       </PopoverTrigger>
       <PopoverContent align="center" className="max-w-[90vw] sm:max-w-md">
         <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-1 max-h-64 overflow-y-auto">
