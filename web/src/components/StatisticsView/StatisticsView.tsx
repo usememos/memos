@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { useState } from "react";
-import { calculateMaxCount, MonthCalendar } from "@/components/ActivityCalendar";
+import { MonthCalendar } from "@/components/ActivityCalendar";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { useDateFilterNavigation } from "@/hooks";
 import type { StatisticsData } from "@/types/statistics";
@@ -29,7 +29,6 @@ const StatisticsView = (props: Props) => {
         <MonthCalendar
           month={visibleMonthString}
           data={activityStats}
-          maxCount={calculateMaxCount(activityStats)}
           selectedDate={selectedDate}
           onClick={(date) => {
             navigateToDateFilter(date);

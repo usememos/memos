@@ -1,82 +1,67 @@
+import dayjs from "dayjs";
 import { memo, useMemo } from "react";
 import { useInstance } from "@/contexts/InstanceContext";
-import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { CalendarCell } from "./CalendarCell";
-import { useTodayDate, useWeekdayLabels } from "./hooks";
-import type { CalendarSize, MonthCalendarProps } from "./types";
-import { useCalendarMatrix } from "./useCalendar";
-import { getTooltipText } from "./utils";
+import { rotateWeekdays, useMonthDays } from "./monthDays";
+import type { MonthCalendarProps } from "./types";
+import { calculateMaxCount, getTooltipText } from "./utils";
 
-const GRID_STYLES: Record<CalendarSize, { gap: string; headerText: string }> = {
-  small: { gap: "gap-1", headerText: "text-[9px]" },
-  default: { gap: "gap-1", headerText: "text-2xs" },
+const useWeekdayLabels = (weekStartDayOffset: number) => {
+  const t = useTranslate();
+  return useMemo(
+    () =>
+      rotateWeekdays(
+        [
+          t("common.days.sun"),
+          t("common.days.mon"),
+          t("common.days.tue"),
+          t("common.days.wed"),
+          t("common.days.thu"),
+          t("common.days.fri"),
+          t("common.days.sat"),
+        ],
+        weekStartDayOffset,
+      ),
+    [t, weekStartDayOffset],
+  );
 };
 
-interface WeekdayHeaderProps {
-  weekDays: string[];
-  size: CalendarSize;
-}
-
-const WeekdayHeader = memo(({ weekDays, size }: WeekdayHeaderProps) => (
-  <div className={cn("mb-1.5 grid grid-cols-7", GRID_STYLES[size].gap, GRID_STYLES[size].headerText)} role="row">
-    {weekDays.map((label, index) => (
-      <div
-        key={index}
-        className="flex h-5 items-center justify-center font-medium uppercase tracking-[0.04em] text-muted-foreground/50"
-        role="columnheader"
-        aria-label={label}
-      >
-        {Array.from(label)[0]}
-      </div>
-    ))}
-  </div>
-));
-WeekdayHeader.displayName = "WeekdayHeader";
-
-export const MonthCalendar = memo((props: MonthCalendarProps) => {
-  const {
-    month,
-    data,
-    maxCount,
-    size = "default",
-    onClick,
-    selectedDate,
-    className,
-    disableTooltips = false,
-    timeBasis = "create_time",
-  } = props;
+export const MonthCalendar = memo(({ month, data, selectedDate, onClick, timeBasis = "create_time" }: MonthCalendarProps) => {
   const t = useTranslate();
   const { generalSetting } = useInstance();
-  const today = useTodayDate();
-  const weekDays = useWeekdayLabels();
-  const gridStyle = GRID_STYLES[size];
-
-  const { weeks, weekDays: rotatedWeekDays } = useCalendarMatrix({
+  const weekDays = useWeekdayLabels(generalSetting.weekStartDayOffset);
+  const maxCount = useMemo(() => calculateMaxCount(data), [data]);
+  const days = useMonthDays({
     month,
     data,
-    weekDays,
     weekStartDayOffset: generalSetting.weekStartDayOffset,
-    today,
-    selectedDate: selectedDate ?? "",
+    today: dayjs().format("YYYY-MM-DD"),
+    selectedDate,
   });
 
-  const flatDays = useMemo(() => weeks.flatMap((week) => week.days), [weeks]);
-
   return (
-    <div className={cn("flex flex-col", className)} role="grid" aria-label={`Calendar for ${month}`}>
-      <WeekdayHeader weekDays={rotatedWeekDays} size={size} />
+    <div className="flex flex-col" role="group" aria-label={`Calendar for ${month}`}>
+      {/* Every day button already announces its full date, so the initials are decoration. */}
+      <div className="mb-1.5 grid grid-cols-7 gap-1 text-2xs" aria-hidden="true">
+        {weekDays.map((label, index) => (
+          <div
+            key={index}
+            className="flex h-5 items-center justify-center font-medium uppercase tracking-[0.04em] text-muted-foreground/50"
+          >
+            {Array.from(label)[0]}
+          </div>
+        ))}
+      </div>
 
-      <div className={cn("grid grid-cols-7", gridStyle.gap)} role="rowgroup">
-        {flatDays.map((day) => (
+      <div className="grid grid-cols-7 gap-1">
+        {days.map((day) => (
           <CalendarCell
             key={day.date}
             day={day}
             maxCount={maxCount}
             tooltipText={getTooltipText(day.count, day.date, t, timeBasis)}
             onClick={onClick}
-            size={size}
-            disableTooltip={disableTooltips}
           />
         ))}
       </div>
