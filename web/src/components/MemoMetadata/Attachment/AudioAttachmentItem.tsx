@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { formatFileSize, getFileTypeLabel } from "@/utils/format";
 import { formatAudioTime, toggleAudioPlayback } from "./attachmentHelpers";
 
-const AUDIO_PLAYBACK_RATES = [1, 1.5, 2] as const;
+const AUDIO_PLAYBACK_RATES = [0.5, 0.75, 1, 1.5, 2] as const;
 const UNKNOWN_DURATION_LABEL = "--:--";
 
 const getDurationLabel = (duration: number): string => (duration > 0 ? formatAudioTime(duration) : UNKNOWN_DURATION_LABEL);
