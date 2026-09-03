@@ -23,15 +23,20 @@ const HeaderAction = ({
   onClick,
   to,
   disabled,
+  primary,
+  busy,
 }: {
   icon: ReactNode;
   label: string;
   onClick?: () => void;
   to?: string;
   disabled?: boolean;
+  primary?: boolean;
+  busy?: boolean;
 }) => {
   const className = cn(
-    "flex size-9 shrink-0 items-center justify-center gap-1.5 rounded-md text-[13px] text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground sm:h-auto sm:w-auto sm:px-2 sm:py-1",
+    "flex size-10 shrink-0 items-center justify-center gap-1.5 rounded-md text-[13px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:h-8 sm:w-auto sm:px-2.5",
+    primary ? "bg-primary text-primary-foreground hover:bg-primary/90" : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
     "disabled:cursor-not-allowed disabled:opacity-50",
   );
   const content = (
@@ -48,14 +53,11 @@ const HeaderAction = ({
     );
   }
   return (
-    <button type="button" className={className} onClick={onClick} disabled={disabled}>
+    <button type="button" className={className} onClick={onClick} disabled={disabled} aria-busy={busy}>
       {content}
     </button>
   );
 };
-
-/** Hairline divider separating header action groups. */
-const HeaderDivider = () => <span aria-hidden className="mx-1 h-4 w-px shrink-0 bg-border" />;
 
 interface CoverRefreshState {
   status: "idle" | "running" | "done" | "error";
@@ -94,7 +96,7 @@ const Bookmarks = () => {
       await queryClient.invalidateQueries({ queryKey: ["memos"] });
       setCoverRefresh({ status: "done", updated, failed, pages });
     } catch (error) {
-      console.error("link cover refresh failed", error);
+      console.error("link cover refresh failed", error instanceof Error ? error : new Error(String(error)));
       setCoverRefresh({ ...IDLE_REFRESH, status: "error" });
     }
   };
@@ -142,33 +144,42 @@ const Bookmarks = () => {
         filter={memoFilter}
         contextFilter={combineCELFilters("has_link", spaceFilter)}
         renderLeading={({ useGrid }) => (
-          <header className={cn("flex flex-col gap-2 px-1", !useGrid && "mb-4")}>
+          <header className={cn("flex flex-col gap-2 border-b border-border/80 px-1 pb-3", !useGrid && "mb-4")}>
             <div className="flex items-center gap-2">
               <BookmarkIcon className="size-5 text-muted-foreground" strokeWidth={1.8} />
               <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("common.bookmarks")}</h1>
-              <div className="ml-auto flex items-center">
+              <div className="ml-auto flex shrink-0 items-center gap-1">
                 <HeaderAction
                   to={ROUTES.BOOKMARK}
                   icon={<PlusIcon className="size-3.5" strokeWidth={1.8} />}
                   label={t("common.save-link")}
+                  primary
                 />
-                <HeaderDivider />
                 <HeaderAction
                   icon={<ImportIcon className="size-3.5" strokeWidth={1.8} />}
                   label={t("bookmarks.import")}
                   onClick={() => setImportOpen(true)}
                 />
-                <HeaderDivider />
                 <HeaderAction
                   icon={<RefreshCwIcon className={cn("size-3.5", coverRefresh.status === "running" && "animate-spin")} strokeWidth={1.8} />}
                   label={coverRefresh.status === "running" ? t("bookmarks.refreshing-covers") : t("bookmarks.refresh-covers")}
                   onClick={() => void refreshCovers()}
                   disabled={coverRefresh.status === "running"}
+                  busy={coverRefresh.status === "running"}
                 />
               </div>
             </div>
             {refreshStatus !== null ? (
-              <p aria-live="polite" className="flex items-center gap-1.5 pl-7 font-mono text-xs text-muted-foreground">
+              <p
+                aria-live="polite"
+                aria-atomic="true"
+                className={cn(
+                  "flex items-center gap-1.5 self-end pr-1 font-mono text-xs text-muted-foreground",
+                  coverRefresh.status === "done" && coverRefresh.failed === 0 && "text-success",
+                  coverRefresh.status === "done" && coverRefresh.failed > 0 && "text-warning",
+                  coverRefresh.status === "error" && "text-destructive",
+                )}
+              >
                 {coverRefresh.status === "done" && <CheckIcon className="size-3" strokeWidth={2} />}
                 {refreshStatus}
               </p>

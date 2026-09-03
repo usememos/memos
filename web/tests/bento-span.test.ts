@@ -49,4 +49,20 @@ describe("bentoCover text extraction", () => {
     expect(getBentoTileTitle(memo)).toBe("Just a quick note.");
     expect(getBentoTileSnippet(memo)).toBe("");
   });
+
+  it("uses the first valid link hostname as the tile source", async () => {
+    const { getBentoTileSource } = await import("@/components/MemoView/bentoCover");
+    const memo = buildMemo({
+      property: { links: [{ url: "not a url" }, { url: "https://www.example.com/reading/article" }] },
+    });
+
+    expect(getBentoTileSource(memo)).toBe("example.com");
+  });
+
+  it("omits the tile source when no valid link exists", async () => {
+    const { getBentoTileSource } = await import("@/components/MemoView/bentoCover");
+
+    expect(getBentoTileSource(buildMemo())).toBe("");
+    expect(getBentoTileSource(buildMemo({ property: { links: [{ url: "not a url" }] } }))).toBe("");
+  });
 });

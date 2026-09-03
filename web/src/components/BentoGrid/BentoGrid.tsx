@@ -68,7 +68,7 @@ const BentoGrid = ({ items, getKey, renderItem, leading, priorityKey, maxColumns
         rowConstraints={maxColumns && maxColumns > 0 ? { maxPhotos: maxColumns } : undefined}
         render={{
           photo: (_props, { photo, width, height }) => (
-            <div className="relative overflow-hidden rounded-lg [&>*]:absolute [&>*]:inset-0" style={{ width, height }}>
+            <div className="relative overflow-hidden [&>*]:absolute [&>*]:inset-0" style={{ width, height }}>
               {renderItem(photo.memo)}
             </div>
           ),

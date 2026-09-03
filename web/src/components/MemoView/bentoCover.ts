@@ -14,6 +14,20 @@ export const getBentoCoverUrl = (memo: Memo): string | undefined => {
   return image ? getAttachmentUrl(image) : undefined;
 };
 
+/** Compact, human-readable source for link tiles. */
+export const getBentoTileSource = (memo: Memo): string => {
+  for (const link of memo.property?.links ?? []) {
+    if (!URL.canParse(link.url)) {
+      continue;
+    }
+    const hostname = new URL(link.url).hostname.replace(/^www\./, "");
+    if (hostname) {
+      return hostname;
+    }
+  }
+  return "";
+};
+
 const stripMarkdown = (line: string): string =>
   line
     .replace(/!\[[^\]]*]\([^)]*\)/g, "")

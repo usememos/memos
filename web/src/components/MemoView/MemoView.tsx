@@ -13,7 +13,7 @@ import { State } from "@/types/proto/api/v1/common_pb";
 import { useTranslate } from "@/utils/i18n";
 import { lazyWithReload } from "@/utils/lazy";
 import { isSuperUser } from "@/utils/user";
-import { getBentoCoverUrl, getBentoTileSnippet, getBentoTileTitle } from "./bentoCover";
+import { getBentoCoverUrl, getBentoTileSnippet, getBentoTileSource, getBentoTileTitle } from "./bentoCover";
 import { MemoBody, MemoCommentListView, MemoHeader } from "./components";
 import { MEMO_CARD_BASE_CLASSES } from "./constants";
 import { useImagePreview } from "./hooks";
@@ -83,6 +83,9 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   const bentoTileTitle = variant === "bento" ? getBentoTileTitle(memoData) : "";
   const bentoTitle = bentoTileTitle || memoData.name.split("/").pop() || memoData.name;
   const bentoBodySnippet = variant === "bento" && !visibleBentoCover ? getBentoTileSnippet(memoData) : "";
+  const bentoSource = variant === "bento" ? getBentoTileSource(memoData) : "";
+  const bentoCreator = creator?.displayName || creator?.username || "";
+  const bentoMetadata = [bentoSource, bentoCreator].filter(Boolean).join(" · ");
 
   // The card width is only needed by the share-image dialog. Keep feed cards
   // free of a permanent ResizeObserver and measure only while that dialog is open.
@@ -155,7 +158,8 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
       className={cn(
         MEMO_CARD_BASE_CLASSES,
         showCommentPreview ? "mb-0 rounded-b-none" : "mb-2",
-        variant === "bento" && "p-0 overflow-hidden",
+        variant === "bento" &&
+          "mb-0 overflow-hidden border-border/80 p-0 transition-[border-color,background-color] hover:border-foreground/20",
         variant === "bento" && (visibleBentoCover ? "justify-end" : "justify-between"),
         className,
       )}
@@ -170,57 +174,55 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
                 src={visibleBentoCover}
                 alt=""
                 loading="lazy"
-                className="size-full object-cover"
+                className="size-full object-cover transition-opacity group-hover:opacity-95"
                 onError={() => setFailedBentoCover(visibleBentoCover)}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
-              <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/60 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
             </div>
-            {showPinned && memoData.pinned && (
-              <div className="absolute right-2 top-2 z-20 flex items-center gap-1 rounded-full bg-black/50 px-2 py-0.5 text-[11px] font-medium text-white backdrop-blur-sm">
-                <PinIcon className="size-3" strokeWidth={2} />
-                {t("common.pinned")}
-              </div>
-            )}
             {/* Cover tiles trade the full card body for a glanceable title overlay; the
                 action menu and full content stay one click away on the detail page. */}
             <button
               type="button"
-              className="relative z-10 mt-auto w-full cursor-pointer p-3 pt-10 text-left"
+              className="relative z-10 mt-auto w-full cursor-pointer p-4 pt-12 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
               onClick={() => navigateTo(`/${memoData.name}`, { state: createMemoNavigationState(parentPage, parentScope) })}
             >
-              <p className="line-clamp-3 text-sm font-medium text-white drop-shadow-sm">{bentoTitle}</p>
-              <p className="mt-1 line-clamp-1 text-xs text-white/75">
-                {creator && `${creator.displayName || creator.username} · `}
-                {memoData.name.split("/").pop()}
-              </p>
+              {(bentoSource || (showPinned && memoData.pinned)) && (
+                <div className="mb-2 flex min-w-0 items-center gap-2 text-[11px] font-medium text-white/75">
+                  {bentoSource && <span className="truncate font-mono">{bentoSource}</span>}
+                  {showPinned && memoData.pinned && (
+                    <span className="ml-auto flex shrink-0 items-center gap-1 text-white">
+                      <PinIcon className="size-3" strokeWidth={2} />
+                      {t("common.pinned")}
+                    </span>
+                  )}
+                </div>
+              )}
+              <p className="line-clamp-3 text-sm font-semibold leading-5 text-white drop-shadow-sm">{bentoTitle}</p>
+              {bentoCreator && <p className="mt-1.5 line-clamp-1 text-xs text-white/70">{bentoCreator}</p>}
             </button>
           </>
         ) : (
-          <>
-            {showPinned && memoData.pinned && (
-              <div className="absolute right-2 top-2 z-20 flex items-center gap-1 rounded-full bg-accent/80 px-2 py-0.5 text-[11px] font-medium text-foreground backdrop-blur-sm">
-                <PinIcon className="size-3" strokeWidth={2} />
-                {t("common.pinned")}
-              </div>
-            )}
-            <button
-              type="button"
-              className="relative z-10 flex h-full w-full cursor-pointer flex-col justify-between p-3.5 text-left transition-colors hover:bg-accent/20"
-              onClick={() => navigateTo(`/${memoData.name}`, { state: createMemoNavigationState(parentPage, parentScope) })}
-            >
-              <div className="min-w-0 flex-1">
-                <p className="line-clamp-2 text-sm font-semibold leading-5 text-card-foreground">{bentoTitle}</p>
-                {bentoBodySnippet && (
-                  <p className="mt-1.5 line-clamp-3 text-xs leading-relaxed text-muted-foreground">{bentoBodySnippet}</p>
+          <button
+            type="button"
+            className="relative z-10 flex h-full w-full cursor-pointer flex-col p-4 text-left transition-colors hover:bg-accent/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+            onClick={() => navigateTo(`/${memoData.name}`, { state: createMemoNavigationState(parentPage, parentScope) })}
+          >
+            {(bentoMetadata || (showPinned && memoData.pinned)) && (
+              <div className="mb-3 flex min-w-0 items-center gap-2 text-[11px] font-medium text-muted-foreground">
+                {bentoMetadata && <span className="truncate font-mono">{bentoMetadata}</span>}
+                {showPinned && memoData.pinned && (
+                  <span className="ml-auto flex shrink-0 items-center gap-1 text-foreground">
+                    <PinIcon className="size-3" strokeWidth={2} />
+                    {t("common.pinned")}
+                  </span>
                 )}
               </div>
-              <p className="mt-2 line-clamp-1 text-[11px] text-muted-foreground/80">
-                {creator && `${creator.displayName || creator.username} · `}
-                {memoData.name.split("/").pop()}
-              </p>
-            </button>
-          </>
+            )}
+            <div className="min-w-0 flex-1">
+              <p className="line-clamp-3 text-sm font-semibold leading-5 text-card-foreground">{bentoTitle}</p>
+              {bentoBodySnippet && <p className="mt-2 line-clamp-3 text-xs leading-relaxed text-muted-foreground">{bentoBodySnippet}</p>}
+            </div>
+          </button>
         )
       ) : (
         <>
