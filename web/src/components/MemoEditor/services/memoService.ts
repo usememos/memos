@@ -105,7 +105,7 @@ export const memoService = {
       });
       return { memoName: memo.name, hasChanges: true };
     }
-    
+
     // 3. Create new memo or comment
     const memoData = create(MemoSchema, {
       content: state.content + (options.withSuffix ? options.withSuffix : ""),
@@ -120,9 +120,9 @@ export const memoService = {
 
     const memo = options.parentMemoName
       ? await memoServiceClient.createMemoComment({
-        name: options.parentMemoName,
-        comment: memoData,
-      })
+          name: options.parentMemoName,
+          comment: memoData,
+        })
       : await memoServiceClient.createMemo({ memo: memoData });
 
     return { memoName: memo.name, hasChanges: true };
