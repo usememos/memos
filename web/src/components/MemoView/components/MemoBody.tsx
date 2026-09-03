@@ -17,7 +17,7 @@ import type { MemoBodyProps } from "../types";
 const BlurOverlay: React.FC<{ onClick?: () => void }> = ({ onClick }) => {
   const t = useTranslate();
   return (
-    <div className="absolute inset-0 z-10 flex items-center justify-center pt-4">
+    <div className="absolute inset-0 z-10 flex items-center justify-center">
       <Button type="button" variant="outline" size="sm" onClick={onClick}>
         <EyeIcon className="size-3.5" strokeWidth={1.8} />
         {t("memo.click-to-show-sensitive-content")}
@@ -40,7 +40,7 @@ const MemoBody: React.FC<MemoBodyProps> = ({ compact }) => {
   const { visual, audio, docs } = useMemo(() => separateAttachments(attachmentOnlyItems), [attachmentOnlyItems]);
 
   return (
-    <>
+    <div data-slot="memo-body" className="relative w-full">
       <div
         className={cn(
           "w-full flex flex-col justify-start items-start gap-2",
@@ -73,7 +73,7 @@ const MemoBody: React.FC<MemoBodyProps> = ({ compact }) => {
       </div>
 
       {blurred && !showBlurredContent && <BlurOverlay onClick={toggleBlurVisibility} />}
-    </>
+    </div>
   );
 };
 
