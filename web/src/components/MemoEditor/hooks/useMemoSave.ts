@@ -10,6 +10,7 @@ import type { Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { errorService, memoService, validationService } from "../services";
 import { useEditorContext } from "../state";
+import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 
 interface UseMemoSaveOptions {
   memoName?: string;
@@ -41,10 +42,21 @@ export function useMemoSave({
   const queryClient = useQueryClient();
   const { markNewMemo } = useNewMemo();
   const { actions, dispatch, getState } = useEditorContext();
+  const { filters } = useMemoFilterContext();
 
   return useCallback(async () => {
     const state = getState();
     const { valid, reason, detail } = validationService.canSave(state);
+    const extractTagTexts = () => {
+      var tagTexts = "";
+      filters.map((filter) => {
+        if (filter.factor === "tagSearch" && filter.value) {
+          tagTexts += " #" + filter.value;
+        }
+      });
+      return tagTexts;
+    };
+
     if (!valid) {
       toast.error(reason ? t(reason, detail ? { url: detail } : undefined) : t("editor.validation.cannot-save"));
       return;
@@ -53,7 +65,7 @@ export function useMemoSave({
     dispatch(actions.setLoading("saving", true));
 
     try {
-      const result = await memoService.save(state, { memoName, parentMemoName, space: defaultSpace });
+      const result = await memoService.save(state, { memoName, parentMemoName, space: defaultSpace, withSuffix: extractTagTexts() });
 
       if (!result.hasChanges) {
         toast.error(t("editor.no-changes-detected"));
@@ -113,6 +125,7 @@ export function useMemoSave({
     onConfirm,
     parentMemoName,
     queryClient,
+    filters,
     t,
   ]);
 }

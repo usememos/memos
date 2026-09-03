@@ -83,6 +83,7 @@ export const memoService = {
       memoName?: string;
       parentMemoName?: string;
       space?: string;
+      withSuffix?: string;
     },
   ): Promise<{ memoName: string; hasChanges: boolean }> {
     // 1. Upload local files first
@@ -104,10 +105,10 @@ export const memoService = {
       });
       return { memoName: memo.name, hasChanges: true };
     }
-
+    
     // 3. Create new memo or comment
     const memoData = create(MemoSchema, {
-      content: state.content,
+      content: state.content + (options.withSuffix ? options.withSuffix : ""),
       visibility: state.metadata.visibility,
       attachments: toAttachmentReferences(allAttachments),
       relations: state.metadata.relations,
@@ -119,9 +120,9 @@ export const memoService = {
 
     const memo = options.parentMemoName
       ? await memoServiceClient.createMemoComment({
-          name: options.parentMemoName,
-          comment: memoData,
-        })
+        name: options.parentMemoName,
+        comment: memoData,
+      })
       : await memoServiceClient.createMemo({ memo: memoData });
 
     return { memoName: memo.name, hasChanges: true };
