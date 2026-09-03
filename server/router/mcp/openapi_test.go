@@ -190,3 +190,49 @@ func TestBuildOperationRegistryUsesOKSchemaForEmptySuccessResponse(t *testing.T)
 	require.Equal(t, "object", responseSchema["type"])
 	require.Contains(t, responseSchema["properties"], "ok")
 }
+
+func TestResolveSchemaRefNormalizesNonStandardFormats(t *testing.T) {
+	spec := &openAPISpec{
+		Components: openAPIComponents{
+			Schemas: map[string]jsonSchema{
+				"Attachment": {
+					"type": "object",
+					"properties": map[string]any{
+						"state":      map[string]any{"type": "string", "format": "enum", "enum": []any{"NORMAL", "ARCHIVED"}},
+						"content":    map[string]any{"type": "string", "format": "bytes"},
+						"updateMask": map[string]any{"type": "string", "format": "field-mask"},
+						"createTime": map[string]any{"type": "string", "format": "date-time"},
+						"tags":       map[string]any{"type": "array", "items": map[string]any{"type": "string", "format": "enum"}},
+					},
+				},
+			},
+		},
+	}
+
+	schema, err := resolveSchemaRef(spec, jsonSchema{"$ref": "#/components/schemas/Attachment"})
+	require.NoError(t, err)
+	properties := schema["properties"].(map[string]any)
+
+	state := properties["state"].(map[string]any)
+	require.NotContains(t, state, "format")
+	require.Equal(t, []any{"NORMAL", "ARCHIVED"}, state["enum"])
+
+	content := properties["content"].(map[string]any)
+	require.NotContains(t, content, "format")
+	require.Equal(t, "base64", content["contentEncoding"])
+
+	require.NotContains(t, properties["updateMask"].(map[string]any), "format")
+	require.Equal(t, "date-time", properties["createTime"].(map[string]any)["format"])
+	require.NotContains(t, properties["tags"].(map[string]any)["items"].(map[string]any), "format")
+}
+
+func TestSanitizeSchemaValueDoesNotMutateInput(t *testing.T) {
+	original := jsonSchema{"type": "string", "format": "enum", "items": map[string]any{"format": "bytes"}}
+
+	sanitized := sanitizeSchemaValue(original).(map[string]any)
+	require.NotContains(t, sanitized, "format")
+	require.Equal(t, "base64", sanitized["items"].(map[string]any)["contentEncoding"])
+
+	require.Equal(t, "enum", original["format"])
+	require.Equal(t, "bytes", original["items"].(map[string]any)["format"])
+}

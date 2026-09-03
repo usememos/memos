@@ -2,6 +2,8 @@ package mcp
 
 import (
 	"encoding/json"
+	"strconv"
+	"strings"
 	"testing"
 
 	sdkmcp "github.com/modelcontextprotocol/go-sdk/mcp"
@@ -386,4 +388,57 @@ func TestBuildCuratedToolsRejectsDuplicateToolNames(t *testing.T) {
 
 	_, _, err := buildCuratedTools(registry)
 	require.ErrorContains(t, err, "duplicate MCP tool name")
+}
+
+func TestBuildCuratedToolsUseStandardSchemaFormats(t *testing.T) {
+	spec, err := loadOpenAPISpec("../../../proto/gen/openapi.yaml")
+	require.NoError(t, err)
+	registry, err := buildOperationRegistry(spec)
+	require.NoError(t, err)
+
+	tools, _, err := buildCuratedTools(registry)
+	require.NoError(t, err)
+
+	// Formats registered by JSON Schema or ajv-formats; anything else trips
+	// strict clients (see https://github.com/usememos/memos/issues/6262).
+	allowedFormats := map[string]struct{}{
+		"date-time": {},
+		"int32":     {},
+		"int64":     {},
+		"float":     {},
+		"double":    {},
+	}
+	var collectFormats func(t *testing.T, tool string, path string, value any)
+	collectFormats = func(t *testing.T, tool string, path string, value any) {
+		switch typed := value.(type) {
+		case map[string]any:
+			if format, ok := typed["format"]; ok {
+				formatName, isString := format.(string)
+				require.True(t, isString, "%s: %s has non-string format %v", tool, path, format)
+				require.Contains(t, allowedFormats, formatName, "%s: %s uses non-standard format %q", tool, path, formatName)
+			}
+			for key, item := range typed {
+				collectFormats(t, tool, path+"/"+key, item)
+			}
+		case []any:
+			for index, item := range typed {
+				collectFormats(t, tool, path+"/"+strconv.Itoa(index), item)
+			}
+		}
+	}
+
+	sawBase64Content := false
+	for _, tool := range tools {
+		for label, schema := range map[string]any{"inputSchema": tool.InputSchema, "outputSchema": tool.OutputSchema} {
+			encoded, err := json.Marshal(schema)
+			require.NoError(t, err)
+			var decoded any
+			require.NoError(t, json.Unmarshal(encoded, &decoded))
+			collectFormats(t, tool.Name, label, decoded)
+			if strings.Contains(string(encoded), `"contentEncoding":"base64"`) {
+				sawBase64Content = true
+			}
+		}
+	}
+	require.True(t, sawBase64Content, "expected attachment content to advertise contentEncoding base64")
 }

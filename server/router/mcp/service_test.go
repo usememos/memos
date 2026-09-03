@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/labstack/echo/v5"
@@ -464,6 +465,160 @@ func postMCP(t *testing.T, echoServer *echo.Echo, payload map[string]any) map[st
 	request := httptest.NewRequest(http.MethodPost, "/mcp", bytes.NewReader(data))
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("Accept", "application/json, text/event-stream")
+
+	recorder := httptest.NewRecorder()
+	echoServer.ServeHTTP(recorder, request)
+	require.Equal(t, http.StatusOK, recorder.Code, recorder.Body.String())
+
+	var response map[string]any
+	require.NoError(t, json.Unmarshal(recorder.Body.Bytes(), &response))
+	return response
+}
+
+// TestMCPStatelessProtocol2026 drives the endpoint the way a 2026-07-28 client
+// does: no initialize handshake, per-request _meta, and the standard MCP headers.
+func TestMCPStatelessProtocol2026(t *testing.T) {
+	echoServer := echo.New()
+	var forwardedAuthorization string
+	echoServer.GET("/api/v1/memos", func(c *echo.Context) error {
+		forwardedAuthorization = c.Request().Header.Get("Authorization")
+		return c.JSON(http.StatusOK, map[string]any{"memos": []any{}})
+	})
+	service, err := NewMCPService(&profile.Profile{Version: "test-version"}, echoServer)
+	require.NoError(t, err)
+	service.RegisterRoutes(echoServer)
+
+	meta := map[string]any{
+		"io.modelcontextprotocol/protocolVersion":    "2026-07-28",
+		"io.modelcontextprotocol/clientCapabilities": map[string]any{},
+		"io.modelcontextprotocol/clientInfo":         map[string]any{"name": "memos-test", "version": "1.0.0"},
+	}
+
+	discover := postMCPWithHeaders(t, echoServer, map[string]any{
+		"jsonrpc": "2.0",
+		"id":      1,
+		"method":  "server/discover",
+		"params":  map[string]any{"_meta": meta},
+	}, map[string]string{"Mcp-Method": "server/discover"})
+	discoverResult, ok := discover["result"].(map[string]any)
+	require.True(t, ok, discover)
+	require.Contains(t, discoverResult["supportedVersions"], "2026-07-28")
+	require.Equal(t, "complete", discoverResult["resultType"])
+	capabilities, ok := discoverResult["capabilities"].(map[string]any)
+	require.True(t, ok)
+	require.Equal(t, map[string]any{}, capabilities["tools"], "tools capability must not advertise listChanged")
+	require.NotContains(t, capabilities, "logging", "logging is deprecated and unused")
+	require.Positive(t, discoverResult["ttlMs"])
+
+	list := postMCPWithHeaders(t, echoServer, map[string]any{
+		"jsonrpc": "2.0",
+		"id":      2,
+		"method":  "tools/list",
+		"params":  map[string]any{"_meta": meta},
+	}, map[string]string{"Mcp-Method": "tools/list"})
+	listResult, ok := list["result"].(map[string]any)
+	require.True(t, ok, list)
+	require.Len(t, listResult["tools"], len(curatedOperationIDs))
+	require.Equal(t, float64(toolCatalogTTL.Milliseconds()), listResult["ttlMs"])
+	require.Equal(t, "public", listResult["cacheScope"])
+
+	call := postMCPWithHeaders(t, echoServer, map[string]any{
+		"jsonrpc": "2.0",
+		"id":      3,
+		"method":  "tools/call",
+		"params": map[string]any{
+			"_meta":     meta,
+			"name":      "memo_list_memos",
+			"arguments": map[string]any{},
+		},
+	}, map[string]string{
+		"Mcp-Method":    "tools/call",
+		"Mcp-Name":      "memo_list_memos",
+		"Authorization": "Bearer test-token",
+	})
+	callResult, ok := call["result"].(map[string]any)
+	require.True(t, ok, call)
+	require.Equal(t, "complete", callResult["resultType"])
+	require.Equal(t, map[string]any{"memos": []any{}}, callResult["structuredContent"])
+	require.Equal(t, "Bearer test-token", forwardedAuthorization)
+}
+
+// TestMCPStatelessRejectsSessionMethods confirms the stateless transport shape
+// required by 2026-07-28: no GET stream, no DELETE session teardown.
+func TestMCPStatelessRejectsSessionMethods(t *testing.T) {
+	echoServer := echo.New()
+	service, err := NewMCPService(&profile.Profile{Version: "test-version"}, echoServer)
+	require.NoError(t, err)
+	service.RegisterRoutes(echoServer)
+
+	for _, method := range []string{http.MethodGet, http.MethodDelete} {
+		request := httptest.NewRequest(method, "/mcp", nil)
+		request.Header.Set("Accept", "application/json, text/event-stream")
+		recorder := httptest.NewRecorder()
+		echoServer.ServeHTTP(recorder, request)
+		require.Equal(t, http.StatusMethodNotAllowed, recorder.Code, method)
+	}
+}
+
+// TestMCPRequestBodyLimitMatchesAPI guards against the SDK's 4 MiB default
+// overriding the API-wide limit, which would break attachment uploads over MCP.
+func TestMCPRequestBodyLimitMatchesAPI(t *testing.T) {
+	echoServer := echo.New()
+	var receivedBytes int
+	echoServer.POST("/api/v1/attachments", func(c *echo.Context) error {
+		body := map[string]any{}
+		require.NoError(t, json.NewDecoder(c.Request().Body).Decode(&body))
+		content, _ := body["content"].(string)
+		receivedBytes = len(content)
+		return c.JSON(http.StatusOK, map[string]any{"name": "attachments/1"})
+	})
+	service, err := NewMCPService(&profile.Profile{Version: "test-version"}, echoServer)
+	require.NoError(t, err)
+	service.RegisterRoutes(echoServer)
+
+	content := strings.Repeat("A", 8<<20)
+	response := postMCPWithHeaders(t, echoServer, map[string]any{
+		"jsonrpc": "2.0",
+		"id":      1,
+		"method":  "tools/call",
+		"params": map[string]any{
+			"name": "attachment_create_attachment",
+			"arguments": map[string]any{
+				"body": map[string]any{
+					"filename": "large.bin",
+					"type":     "application/octet-stream",
+					"content":  content,
+				},
+			},
+		},
+	}, nil)
+	require.Contains(t, response, "result", response)
+	require.Equal(t, len(content), receivedBytes)
+
+	// Declare an over-limit Content-Length instead of allocating the body.
+	request := httptest.NewRequest(http.MethodPost, "/mcp", strings.NewReader("{}"))
+	request.ContentLength = maxMCPRequestBytes + 1
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Accept", "application/json, text/event-stream")
+	recorder := httptest.NewRecorder()
+	echoServer.ServeHTTP(recorder, request)
+	require.Equal(t, http.StatusRequestEntityTooLarge, recorder.Code)
+}
+
+func postMCPWithHeaders(t *testing.T, echoServer *echo.Echo, payload map[string]any, headers map[string]string) map[string]any {
+	t.Helper()
+	data, err := json.Marshal(payload)
+	require.NoError(t, err)
+
+	request := httptest.NewRequest(http.MethodPost, "/mcp", bytes.NewReader(data))
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Accept", "application/json, text/event-stream")
+	if _, hasMeta := payload["params"].(map[string]any)["_meta"]; hasMeta {
+		request.Header.Set("Mcp-Protocol-Version", "2026-07-28")
+	}
+	for key, value := range headers {
+		request.Header.Set(key, value)
+	}
 
 	recorder := httptest.NewRecorder()
 	echoServer.ServeHTTP(recorder, request)

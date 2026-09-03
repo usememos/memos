@@ -186,7 +186,53 @@ func resolveSchemaMap(spec *openAPISpec, schema map[string]any, defs map[string]
 		}
 		resolved[key] = resolvedValue
 	}
+	normalizeSchemaFormat(resolved)
 	return resolved, nil
+}
+
+// normalizeSchemaFormat rewrites the OpenAPI-only "format" markers emitted by
+// the gnostic generator into standard JSON Schema so MCP clients can consume
+// tool schemas without warnings or strict-mode failures.
+//
+//   - "enum" duplicates the "enum" keyword and is dropped.
+//   - "bytes" becomes "contentEncoding: base64", matching the protojson wire encoding.
+//   - "field-mask" has no JSON Schema equivalent and is dropped.
+func normalizeSchemaFormat(schema map[string]any) {
+	format, ok := schema["format"].(string)
+	if !ok {
+		return
+	}
+	switch format {
+	case "enum", "field-mask":
+		delete(schema, "format")
+	case "bytes":
+		delete(schema, "format")
+		schema["contentEncoding"] = "base64"
+	}
+}
+
+// sanitizeSchemaValue deep-copies a schema value that did not pass through the
+// component resolver (such as parameter schemas) and normalizes its formats.
+func sanitizeSchemaValue(value any) any {
+	switch typed := value.(type) {
+	case jsonSchema:
+		return sanitizeSchemaValue(map[string]any(typed))
+	case map[string]any:
+		sanitized := make(map[string]any, len(typed))
+		for key, item := range typed {
+			sanitized[key] = sanitizeSchemaValue(item)
+		}
+		normalizeSchemaFormat(sanitized)
+		return sanitized
+	case []any:
+		sanitized := make([]any, 0, len(typed))
+		for _, item := range typed {
+			sanitized = append(sanitized, sanitizeSchemaValue(item))
+		}
+		return sanitized
+	default:
+		return value
+	}
 }
 
 func resolveComponentSchema(spec *openAPISpec, name string, defs map[string]any, resolving map[string]bool) (map[string]any, error) {

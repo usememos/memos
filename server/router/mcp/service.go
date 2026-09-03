@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/labstack/echo/v5"
 	"github.com/labstack/echo/v5/middleware"
@@ -17,8 +18,15 @@ import (
 )
 
 // maxMCPRequestBytes caps the /mcp request body. It tracks the API limit because
-// every tool call is forwarded in-process through the API routes.
+// every tool call is forwarded in-process through the API routes. The SDK
+// enforces its own 4 MiB default, so the value is passed to the transport as
+// well; otherwise attachment uploads over MCP fail with 413 before Echo sees them.
 const maxMCPRequestBytes int64 = apiv1.MaxAPIRequestBytes
+
+// toolCatalogTTL is the freshness hint advertised on tools/list and
+// server/discover results. The catalog is fixed at startup, so clients may cache
+// it for a long time instead of re-listing on every session.
+const toolCatalogTTL = 24 * time.Hour
 
 // MCPService serves the OpenAPI-driven MCP endpoint.
 type MCPService struct {
@@ -50,7 +58,16 @@ func NewMCPService(profile *profile.Profile, echoServer *echo.Echo) (*MCPService
 	server := sdkmcp.NewServer(&sdkmcp.Implementation{
 		Name:    "memos",
 		Version: version,
-	}, nil)
+	}, &sdkmcp.ServerOptions{
+		// The tool catalog never changes after startup, so do not advertise
+		// listChanged: new-protocol clients would otherwise hold a
+		// subscriptions/listen stream open for notifications that never come.
+		// Leaving Logging unset also drops the deprecated logging capability.
+		Capabilities: &sdkmcp.ServerCapabilities{
+			Tools: &sdkmcp.ToolCapabilities{},
+		},
+	})
+	server.AddReceivingMiddleware(catalogCacheMiddleware)
 
 	adapter := newAPIAdapter(echoServer)
 	for _, tool := range tools {
@@ -61,8 +78,11 @@ func NewMCPService(profile *profile.Profile, echoServer *echo.Echo) (*MCPService
 	streamableHandler := sdkmcp.NewStreamableHTTPHandler(func(*http.Request) *sdkmcp.Server {
 		return server
 	}, &sdkmcp.StreamableHTTPOptions{
-		Stateless:    true,
-		JSONResponse: true,
+		// Stateless is also what lets the SDK serve protocol version
+		// 2026-07-28; stateful handlers negotiate down to 2025-11-25.
+		Stateless:           true,
+		JSONResponse:        true,
+		MaxRequestBodyBytes: maxMCPRequestBytes,
 		// memos is typically served behind a reverse proxy with the app bound to a
 		// loopback address while the public Host header is a real domain. The SDK's
 		// DNS-rebinding guard treats that shape as an attack and rejects every
@@ -76,6 +96,24 @@ func NewMCPService(profile *profile.Profile, echoServer *echo.Echo) (*MCPService
 		operationsByTool: operationsByTool,
 		handler:          streamableHandler,
 	}, nil
+}
+
+// catalogCacheMiddleware stamps the static-catalog TTL onto results the SDK
+// would otherwise mark immediately stale (ttlMs: 0).
+func catalogCacheMiddleware(next sdkmcp.MethodHandler) sdkmcp.MethodHandler {
+	return func(ctx context.Context, method string, request sdkmcp.Request) (sdkmcp.Result, error) {
+		result, err := next(ctx, method, request)
+		if err != nil {
+			return result, err
+		}
+		switch typed := result.(type) {
+		case *sdkmcp.ListToolsResult:
+			typed.TTLMs = int(toolCatalogTTL.Milliseconds())
+		case *sdkmcp.DiscoverResult:
+			typed.TTLMs = int(toolCatalogTTL.Milliseconds())
+		}
+		return result, nil
+	}
 }
 
 func loadMCPServiceOpenAPISpec() (*openAPISpec, error) {

@@ -199,7 +199,7 @@ func inputSchemaForOperation(operation *openAPIOperation) jsonSchema {
 	required := []string{}
 	defs := map[string]any{}
 	for _, parameter := range operation.Parameters {
-		schema := cloneSchema(parameter.Schema)
+		schema := jsonSchema(sanitizeSchemaValue(parameter.Schema).(map[string]any))
 		if parameter.Description != "" {
 			schema["description"] = parameter.Description
 		}

@@ -42,7 +42,11 @@ fast on any inconsistency:
    IDs or duplicate tool names are construction errors.
 4. Each tool is registered with `server.AddTool(tool, newMCPToolHandler(...))`.
 5. `sdkmcp.NewStreamableHTTPHandler` wraps the server in stateless,
-   JSON-response mode (no SSE, no session tracking).
+   JSON-response mode (no SSE, no session tracking). Stateless mode is also
+   what lets the SDK serve protocol version `2026-07-28`; older clients still
+   negotiate `2025-11-25` and earlier through the legacy `initialize` handshake.
+   The transport body limit is set to the API-wide limit so attachment uploads
+   are not cut off by the SDK's 4 MiB default.
 
 ## Request flow
 
@@ -105,6 +109,14 @@ response has no JSON body, the fallback is:
 - **Endpoint:** `POST /mcp` (the SDK may also use `GET`/`DELETE` on the same
   path for the Streamable HTTP transport).
 - **Transport:** Streamable HTTP, **stateless**, JSON responses.
+- **Protocol versions:** `2026-07-28` down to `2024-11-05`. Clients on
+  `2026-07-28` skip `initialize`, call `server/discover`, carry
+  `_meta.io.modelcontextprotocol/protocolVersion` on every request, and must
+  send the `Mcp-Protocol-Version`, `Mcp-Method`, and (for `tools/call`)
+  `Mcp-Name` headers.
+- **Capabilities:** tools only, without `listChanged` — the catalog is fixed at
+  startup, so `tools/list` and `server/discover` advertise a 24-hour `ttlMs`
+  instead of change notifications.
 - **Request size:** request bodies are limited to 256 MiB before SDK dispatch.
 - **Auth:** the caller's `Authorization: Bearer <token>` header is forwarded to
   the in-process API request. Mutating tools therefore require a valid token
@@ -261,7 +273,9 @@ go test ./server/router/mcp/...
 - `catalog_test.go` — tool selection, naming, schema and annotation building.
 - `adapter_test.go` — request construction and in-process execution (`adapter.go`), plus result normalization and error shaping (`result.go`).
 - `validation_test.go` — argument validation against input schemas.
-- `service_test.go` — the origin-header check, plus the end-to-end MCP protocol
+- `service_test.go` — the origin-header check, the stateless `2026-07-28`
+  flow (`server/discover`, `tools/list`, `tools/call` with MCP headers), the
+  request body limit, plus the legacy end-to-end MCP protocol
   (`initialize`, `tools/list`, `tools/call`) confirming object-shaped
   `structuredContent`.
 
