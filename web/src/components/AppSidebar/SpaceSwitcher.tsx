@@ -65,7 +65,7 @@ function SpaceSwitcher({ className, size = "md" }: { className?: string; size?: 
     ? `${selectedSpace?.title || t("space.current")}${showSelectedSpaceUid && selectedSpaceUid ? ` (${selectedSpaceUid})` : ""}`
     : t("common.memos");
   const brandSize = size === "header" ? "header" : "md";
-  const spaceMarkSize = size === "header" ? "sm" : "md";
+  const spaceMarkSize = size === "header" ? "header" : "md";
 
   const handleMenuOpenChange = (open: boolean) => {
     if (!open) return;
@@ -99,15 +99,15 @@ function SpaceSwitcher({ className, size = "md" }: { className?: string; size?: 
             />
           }
         >
-          <span className={cn("flex min-w-0 items-center overflow-hidden", size === "header" ? "gap-1" : "gap-1.5")}>
+          <span className={cn("flex min-w-0 items-center overflow-hidden", size === "header" ? "gap-2" : "gap-1.5")}>
             {selectedSpaceName ? (
               <>
                 <SpaceMark size={spaceMarkSize} />
                 <span data-sidebar-label className="flex min-w-0 flex-1 flex-col justify-center overflow-hidden">
                   <span
                     className={cn(
-                      "block truncate text-[14px] tracking-[-0.01em] text-foreground",
-                      size === "header" ? "font-semibold leading-5" : "font-medium leading-4",
+                      "block truncate tracking-[-0.01em] text-foreground",
+                      size === "header" ? "text-[15px] font-semibold leading-5" : "text-[14px] font-medium leading-4",
                     )}
                   >
                     {selectedSpace?.title || t("space.current")}
@@ -127,7 +127,11 @@ function SpaceSwitcher({ className, size = "md" }: { className?: string; size?: 
               <MemosLogo compact size={brandSize} />
             )}
           </span>
-          <ChevronsUpDownIcon aria-hidden="true" className="size-3.5 shrink-0 text-muted-foreground/70" strokeWidth={1.8} />
+          <ChevronsUpDownIcon
+            aria-hidden="true"
+            className={cn("shrink-0 text-muted-foreground/70", size === "header" ? "size-3" : "size-3.5")}
+            strokeWidth={1.8}
+          />
         </DropdownMenuTrigger>
         <DropdownMenuContent
           size="sm"

@@ -63,8 +63,6 @@ import {
 import TagsSection from "./TagsSection";
 import ViewsSection from "./ViewsSection";
 
-const SIDEBAR_HEADER_ACTION_CLASSES =
-  "size-7 shrink-0 rounded-md text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/50";
 const SIDEBAR_HEADER_PRIMARY_ACTION_CLASSES =
   "size-7 shrink-0 text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/50";
 
@@ -324,8 +322,9 @@ interface GlobalNavItem {
 }
 
 /**
- * The compact navigator is intentionally horizontal. Its 16px glyph plus 8px padding
- * on each side makes the collapsed control an exact 32px square. Expanding the
+ * The compact navigator is intentionally horizontal. Its 16px glyph plus 6px padding
+ * on each side makes the collapsed control an exact 28px square, the same box as the
+ * header's compose control. Expanding the
  * label only opens the text track, so the artwork and surface never jump.
  */
 const navPillClasses = (active: boolean) =>
@@ -336,7 +335,7 @@ const NavPillLabel = ({ expanded, label, children }: { expanded: boolean; label:
     aria-hidden={!expanded || undefined}
     className={cn(
       "grid min-w-0 transition-[grid-template-columns,padding] duration-200 ease-out motion-reduce:transition-none",
-      expanded ? "grid-cols-[1fr] ps-2" : "grid-cols-[0fr] ps-0",
+      expanded ? "grid-cols-[1fr] ps-2.5" : "grid-cols-[0fr] ps-0",
     )}
   >
     <span className="flex min-w-0 items-center gap-1.5 overflow-hidden">
@@ -353,7 +352,7 @@ const GlobalNavigation = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const currentUser = useCurrentUser();
-  const { memoDetail, memoScope, setMemoScope, setMobileOpen } = useAppSidebar();
+  const { memoDetail, memoScope, setMemoScope, setMobileOpen, setQuickFindOpen } = useAppSidebar();
   const { filters } = useMemoFilterContext();
   const routeKind = getSidebarRouteKind(location.pathname);
   const resolvedScope = resolveMemoScope(location.pathname, {
@@ -442,7 +441,7 @@ const GlobalNavigation = () => {
 
   return (
     <TooltipProvider>
-      <nav className={cn("flex h-8 items-center gap-1", SIDEBAR_RAIL_CLASSES)} aria-label="Primary">
+      <nav className={cn("flex h-7 items-center gap-1", SIDEBAR_RAIL_CLASSES)} aria-label="Primary">
         {currentUser && (
           <DropdownMenu
             onOpenChange={(open, eventDetails) => {
@@ -522,6 +521,28 @@ const GlobalNavigation = () => {
             </Tooltip>
           );
         })}
+        {/* Search is a place to go, not a header action: it closes the navigator's row
+            so the header keeps only the brand and the bordered compose control. */}
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <button
+                type="button"
+                aria-label={t("common.search")}
+                className={cn("ms-auto", navPillClasses(false))}
+                onClick={() => {
+                  setMobileOpen(false);
+                  setQuickFindOpen(true);
+                }}
+              />
+            }
+          >
+            <span className={SIDEBAR_NAV_LEADING_SLOT_CLASSES} aria-hidden="true">
+              <SearchIcon className="size-4 opacity-75" strokeWidth={1.8} />
+            </span>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">{t("common.search")}</TooltipContent>
+        </Tooltip>
       </nav>
     </TooltipProvider>
   );
@@ -553,27 +574,13 @@ const SidebarBrand = ({ className, size = "md" }: { className?: string; size?: "
 const AppSidebar = ({ className }: { className?: string }) => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
-  const { setMobileOpen, setQuickFindOpen } = useAppSidebar();
+  const { setMobileOpen } = useAppSidebar();
   const { canOpen: canCompose, openEditor } = useGlobalMemoEditor();
   return (
     <aside className={cn("flex h-full w-full select-none flex-col bg-sidebar text-sidebar-foreground", className)}>
       <div data-sidebar-header className={cn("flex h-13 shrink-0 items-center justify-between gap-2", SIDEBAR_RAIL_CLASSES)}>
         <SidebarBrand className="min-w-0" size="header" />
-        <div className="flex shrink-0 items-center gap-1">
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            className={SIDEBAR_HEADER_ACTION_CLASSES}
-            onClick={() => {
-              setMobileOpen(false);
-              setQuickFindOpen(true);
-            }}
-            aria-label={t("common.search")}
-          >
-            <SearchIcon className="size-4" strokeWidth={1.8} />
-          </Button>
-          {canCompose && <NewMemoAction onClick={openEditor} />}
-        </div>
+        {canCompose && <NewMemoAction onClick={openEditor} />}
       </div>
       <GlobalNavigation />
       <div className="mx-3 mt-2 border-t border-border/70" />
