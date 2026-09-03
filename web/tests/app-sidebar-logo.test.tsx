@@ -14,6 +14,7 @@ const sidebarState = vi.hoisted(() => ({
   memoScope: "home" as "home" | "explore",
   mobileOpen: false,
   setMobileOpen: vi.fn(),
+  setQuickFindOpen: vi.fn(),
 }));
 const globalEditorState = vi.hoisted(() => ({
   canOpen: true,
@@ -73,7 +74,7 @@ vi.mock("@/contexts/AppSidebarContext", () => ({
     mobileOpen: sidebarState.mobileOpen,
     setMobileOpen: sidebarState.setMobileOpen,
     quickFindOpen: false,
-    setQuickFindOpen: vi.fn(),
+    setQuickFindOpen: sidebarState.setQuickFindOpen,
     memoScope: sidebarState.memoScope,
     setMemoScope: vi.fn(),
   }),
@@ -158,7 +159,7 @@ const render = (ui: Parameters<typeof testingLibraryRender>[0]) =>
   );
 
 const expectCollapsedNavPill = (pill: HTMLElement, label: string) => {
-  expect(pill).toHaveClass("h-8", "rounded-md", "px-2");
+  expect(pill).toHaveClass("h-7", "rounded-md", "px-1.5");
   expect(pill.firstElementChild).toHaveClass("size-4");
   const labelTrack = pill.querySelector('span.grid[aria-hidden="true"]');
   expect(labelTrack).toHaveClass("grid-cols-[0fr]", "ps-0");
@@ -166,10 +167,10 @@ const expectCollapsedNavPill = (pill: HTMLElement, label: string) => {
 };
 
 const expectExpandedNavPill = (pill: HTMLElement, label: string) => {
-  expect(pill).toHaveClass("h-8", "rounded-md", "px-2");
+  expect(pill).toHaveClass("h-7", "rounded-md", "px-1.5");
   expect(pill.firstElementChild).toHaveClass("size-4");
   const labelTrack = pill.querySelector("span.grid");
-  expect(labelTrack).toHaveClass("grid-cols-[1fr]", "ps-2");
+  expect(labelTrack).toHaveClass("grid-cols-[1fr]", "ps-2.5");
   expect(labelTrack).not.toHaveAttribute("aria-hidden");
   expect(pill.querySelector("[data-sidebar-label]")).toHaveTextContent(label);
 };
@@ -192,6 +193,7 @@ describe("App sidebar logo", () => {
     sidebarState.memoScope = "home";
     sidebarState.mobileOpen = false;
     sidebarState.setMobileOpen.mockClear();
+    sidebarState.setQuickFindOpen.mockClear();
     globalEditorState.canOpen = true;
     globalEditorState.openEditor.mockClear();
     spaceState.spaces = [];
@@ -215,10 +217,12 @@ describe("App sidebar logo", () => {
     const switcher = screen.getByRole("button", { name: "space.switch: common.memos" });
     const header = switcher.closest("[data-sidebar-header]");
     const compose = screen.getByRole("button", { name: "editor.new-memo" });
+    const primaryNavigation = screen.getByRole("navigation", { name: "Primary" });
+    const search = within(primaryNavigation).getByRole("button", { name: "common.search" });
 
     expect(header).toHaveClass("h-13", "px-3");
     expect(switcher).toHaveTextContent("Memos logo");
-    expect(switcher).toHaveClass("min-w-0", "h-9", "gap-1", "px-2");
+    expect(switcher).toHaveClass("min-w-0", "h-9", "gap-2", "px-2");
     expect(switcher).not.toHaveClass("px-1");
     expect(switcher.firstElementChild).not.toHaveClass("flex-1");
     expect(within(switcher).getByText("Memos logo")).toHaveAttribute("data-logo-size", "header");
@@ -226,6 +230,13 @@ describe("App sidebar logo", () => {
     expect(switcher.querySelector(".lucide-chevron-down")).toBeNull();
     expect(compose).toHaveClass("size-7", "rounded-md", "border", "bg-background", "shadow-xs");
     expect(compose).not.toHaveClass("rounded-full");
+    expect(header).not.toContainElement(search);
+    expect(search).toHaveClass("ms-auto", "h-7", "px-1.5");
+    expect(search.querySelector(".lucide-search")).toHaveClass("size-4");
+
+    fireEvent.click(search);
+    expect(sidebarState.setQuickFindOpen).toHaveBeenCalledWith(true);
+    expect(sidebarState.setMobileOpen).toHaveBeenCalledWith(false);
 
     fireEvent.click(compose);
     expect(globalEditorState.openEditor).toHaveBeenCalledOnce();
@@ -279,7 +290,7 @@ describe("App sidebar logo", () => {
 
     const brand = screen.getByRole("link", { name: "Memos logo" });
     expect(brand).toHaveAttribute("href", "/");
-    expect(brand).toHaveClass("h-9", "gap-1", "px-2");
+    expect(brand).toHaveClass("h-9", "gap-2", "px-2");
     expect(within(brand).getByText("Memos logo")).toHaveAttribute("data-logo-size", "header");
     expect(screen.queryByRole("button", { name: /^space\.switch:/ })).not.toBeInTheDocument();
   });
@@ -399,9 +410,10 @@ describe("App sidebar logo", () => {
     expect(screen.getByRole("link", { name: "Memos logo" })).toHaveAttribute("href", "/explore");
     expect(screen.queryByRole("button", { name: /^space\.switch:/ })).not.toBeInTheDocument();
     const primaryNavigation = screen.getByRole("navigation", { name: "Primary" });
-    expect(primaryNavigation).toHaveClass("h-8", "items-center", "gap-1", "px-3");
+    expect(primaryNavigation).toHaveClass("h-7", "items-center", "gap-1", "px-3");
     expect(primaryNavigation).not.toHaveClass("flex-col");
     const navigation = within(primaryNavigation);
+    expect(navigation.getByRole("button", { name: "common.search" })).toHaveClass("ms-auto", "h-7", "px-1.5");
     expectActiveNavPill(navigation.getByRole("link", { name: "common.explore" }), "common.explore");
     const about = navigation.getByRole("link", { name: "common.about" });
     expect(about).toHaveAttribute("href", "/about");

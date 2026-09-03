@@ -157,11 +157,12 @@ describe("SpaceSwitcher", () => {
     const title = within(trigger).getByText("Product");
     const mark = trigger.querySelector(".lucide-astroid")?.parentElement;
 
-    expect(trigger).toHaveClass("h-9", "gap-1", "px-2");
+    expect(trigger).toHaveClass("h-9", "gap-2", "px-2");
     expect(trigger).not.toHaveClass("px-1");
-    expect(title).toHaveClass("text-[14px]", "font-semibold", "leading-5");
-    expect(mark).toHaveClass("size-5", "rounded-[5px]");
-    expect(trigger.querySelector(".lucide-chevrons-up-down")).not.toBeNull();
+    expect(title).toHaveClass("text-[15px]", "font-semibold", "leading-5");
+    expect(mark).toHaveClass("size-6", "rounded-[6px]");
+    expect(mark?.querySelector(".lucide-astroid")).toHaveClass("size-3.5");
+    expect(trigger.querySelector(".lucide-chevrons-up-down")).toHaveClass("size-3");
     expect(trigger.querySelector(".lucide-chevron-down")).toBeNull();
   });
 
