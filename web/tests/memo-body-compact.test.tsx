@@ -116,4 +116,17 @@ describe("<MemoBody /> compact body clamp", () => {
     fireEvent.click(revealButton);
     expect(mockState.toggleBlurVisibility).toHaveBeenCalledOnce();
   });
+
+  it("scopes the sensitive-content overlay to the memo body", () => {
+    mockState.blurred = true;
+    mockState.memo = createMemo("sensitive content");
+
+    render(<MemoBody compact={false} />);
+
+    const revealButton = screen.getByRole("button", { name: "memo.click-to-show-sensitive-content" });
+    const memoBody = revealButton.closest('[data-slot="memo-body"]');
+
+    expect(memoBody).not.toBeNull();
+    expect(memoBody).toHaveClass("relative", "w-full");
+  });
 });
