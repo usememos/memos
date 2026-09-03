@@ -259,6 +259,7 @@
     "insert-menu": {
       "add-attachment": "Add attachment",
       "add-location": "Add location",
+      "create-poll": "Create poll",
       "image-upload-failed": "Some images could not be uploaded. Retry or keep the uploaded files as attachments.",
       "image-upload-stopped": "Image upload stopped {{completed}}/{{total}}",
       "insert-image": "Insert image",
@@ -268,6 +269,21 @@
       "uploading-inline-image": "Uploading to content",
       "uploading-images": "Uploading images {{completed}}/{{total}}",
       "upload-file": "Upload file"
+    },
+    "poll": {
+      "question": "Question",
+      "question-placeholder": "Ask a question...",
+      "options": "Options",
+      "option-placeholder": "Option {{index}}",
+      "add-option": "Add option",
+      "remove-option": "Remove option",
+      "allow-multiple": "Allow multiple choices",
+      "invalid-block": "This poll could not be displayed.",
+      "unavailable-here": "Voting is unavailable in this preview.",
+      "sign-in-to-vote": "Sign in to vote.",
+      "vote-failed": "Failed to save your vote. Please try again.",
+      "total-votes_one": "{{count}} vote",
+      "total-votes_other": "{{count}} votes"
     },
     "new-memo": "New memo",
     "no-changes-detected": "No changes detected",

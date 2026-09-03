@@ -148,3 +148,27 @@ CREATE TABLE `user_identity` (
 );
 
 CREATE INDEX `idx_user_identity_user_id` ON `user_identity`(`user_id`);
+
+-- poll: binds a poll UID (embedded in memo content) to its owning memo and
+-- a hash of its current definition (type + options).
+CREATE TABLE `poll` (
+  `id`              INT          NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `created_ts`      BIGINT       NOT NULL DEFAULT (UNIX_TIMESTAMP()),
+  `uid`             VARCHAR(256) NOT NULL UNIQUE,
+  `memo_id`         INT          NOT NULL,
+  `definition_hash` VARCHAR(256) NOT NULL,
+  KEY `idx_poll_memo_id` (`memo_id`)
+);
+
+-- poll_vote
+CREATE TABLE `poll_vote` (
+  `id`           INT          NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `created_ts`   BIGINT       NOT NULL DEFAULT (UNIX_TIMESTAMP()),
+  `poll_uid`     VARCHAR(256) NOT NULL,
+  `memo_id`      INT          NOT NULL,
+  `option_index` INT          NOT NULL,
+  `voter_id`     INT          NOT NULL,
+  UNIQUE(`poll_uid`, `voter_id`, `option_index`),
+  KEY `idx_poll_vote_poll_uid` (`poll_uid`),
+  KEY `idx_poll_vote_memo_id` (`memo_id`)
+);
