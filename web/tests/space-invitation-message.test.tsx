@@ -16,8 +16,8 @@ const state = vi.hoisted(() => ({
   acceptInvitation: vi.fn(),
   declineInvitation: vi.fn(),
   selectSpace: vi.fn(),
-  updateUserNotification: vi.fn(),
-  deleteUserNotification: vi.fn(),
+  archiveNotification: vi.fn(),
+  deleteNotification: vi.fn(),
   toastSuccess: vi.fn(),
   toastError: vi.fn(),
 }));
@@ -39,11 +39,9 @@ vi.mock("@/contexts/SpaceContext", () => ({
   useSpaceContext: () => ({ selectSpace: state.selectSpace }),
 }));
 
-vi.mock("@/connect", () => ({
-  userServiceClient: {
-    updateUserNotification: state.updateUserNotification,
-    deleteUserNotification: state.deleteUserNotification,
-  },
+vi.mock("@/hooks/useUserQueries", () => ({
+  useArchiveNotification: () => ({ isPending: false, mutateAsync: state.archiveNotification }),
+  useDeleteNotification: () => ({ isPending: false, mutateAsync: state.deleteNotification }),
 }));
 
 vi.mock("@/components/SpaceMark", () => ({
@@ -141,6 +139,39 @@ describe("SpaceInvitationMessage", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "inbox.space-invitation-open" }));
     expect(state.selectSpace).toHaveBeenCalledWith(space);
+  });
+
+  it("archives through the shared notification mutation and reports failures", async () => {
+    state.archiveNotification.mockResolvedValueOnce(undefined);
+    const { unmount } = render(
+      <SpaceInvitationMessage notification={createNotification({ state: UserNotification_SpaceInvitationPayload_State.PENDING })} />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "common.archive" }));
+    await waitFor(() => expect(state.archiveNotification).toHaveBeenCalledWith("users/alice/notifications/7"));
+    await waitFor(() => expect(state.toastSuccess).toHaveBeenCalledWith("message.archived-successfully"));
+    unmount();
+
+    state.archiveNotification.mockRejectedValueOnce(new Error("offline"));
+    render(<SpaceInvitationMessage notification={createNotification({ state: UserNotification_SpaceInvitationPayload_State.PENDING })} />);
+    fireEvent.click(screen.getByRole("button", { name: "common.archive" }));
+    await waitFor(() => expect(state.toastError).toHaveBeenCalled());
+  });
+
+  it("deletes an archived notification through the shared mutation", async () => {
+    state.deleteNotification.mockResolvedValueOnce("users/alice/notifications/7");
+    render(
+      <SpaceInvitationMessage
+        notification={createNotification({
+          state: UserNotification_SpaceInvitationPayload_State.ACCEPTED,
+          status: UserNotification_Status.ARCHIVED,
+        })}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "common.delete" }));
+    await waitFor(() => expect(state.deleteNotification).toHaveBeenCalledWith("users/alice/notifications/7"));
+    await waitFor(() => expect(state.toastSuccess).toHaveBeenCalledWith("message.deleted-successfully"));
   });
 
   it("falls back to the error row when the payload is missing", () => {

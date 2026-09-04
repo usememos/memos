@@ -1,15 +1,14 @@
-import { create } from "@bufbuild/protobuf";
-import { FieldMaskSchema, timestampDate } from "@bufbuild/protobuf/wkt";
+import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { CheckIcon, TrashIcon, UsersIcon, XIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import SpaceMark from "@/components/SpaceMark";
 import SpaceRoleBadge from "@/components/SpaceRoleBadge";
 import UserAvatar from "@/components/UserAvatar";
 import { Button } from "@/components/ui/button";
-import { userServiceClient } from "@/connect";
 import { useSpaceContext } from "@/contexts/SpaceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useAcceptSpaceInvitation, useDeclineSpaceInvitation } from "@/hooks/useSpaceQueries";
+import { useArchiveNotification, useDeleteNotification } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
 import { extractSpaceUidFromName } from "@/lib/space-display";
 import { cn } from "@/lib/utils";
@@ -26,6 +25,8 @@ interface Props {
 
 function SpaceInvitationMessage({ notification }: Props) {
   const t = useTranslate();
+  const archiveNotification = useArchiveNotification();
+  const deleteNotification = useDeleteNotification();
   const currentUser = useCurrentUser();
   const viewerName = currentUser?.name ?? "";
   const { selectSpace } = useSpaceContext();
@@ -36,23 +37,23 @@ function SpaceInvitationMessage({ notification }: Props) {
   const sender = notification.senderUser;
 
   const handleArchiveMessage = async (silence = false) => {
-    await userServiceClient.updateUserNotification({
-      notification: {
-        name: notification.name,
-        status: UserNotification_Status.ARCHIVED,
-      },
-      updateMask: create(FieldMaskSchema, { paths: ["status"] }),
-    });
-    if (!silence) {
-      toast.success(t("message.archived-successfully"));
+    try {
+      await archiveNotification.mutateAsync(notification.name);
+      if (!silence) {
+        toast.success(t("message.archived-successfully"));
+      }
+    } catch (error) {
+      handleError(error, toast.error, { context: "Archive notification" });
     }
   };
 
   const handleDeleteMessage = async () => {
-    await userServiceClient.deleteUserNotification({
-      name: notification.name,
-    });
-    toast.success(t("message.deleted-successfully"));
+    try {
+      await deleteNotification.mutateAsync(notification.name);
+      toast.success(t("message.deleted-successfully"));
+    } catch (error) {
+      handleError(error, toast.error, { context: "Delete notification" });
+    }
   };
 
   if (!payload || !space) {
