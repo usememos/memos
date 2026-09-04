@@ -1,24 +1,39 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
-import { CheckIcon, MessageCircleIcon, TrashIcon, XIcon } from "lucide-react";
+import { CheckIcon, TrashIcon, UsersIcon, XIcon } from "lucide-react";
 import toast from "react-hot-toast";
+import SpaceMark from "@/components/SpaceMark";
+import SpaceRoleBadge from "@/components/SpaceRoleBadge";
 import UserAvatar from "@/components/UserAvatar";
-import useNavigateTo from "@/hooks/useNavigateTo";
+import { Button } from "@/components/ui/button";
+import { useSpaceContext } from "@/contexts/SpaceContext";
+import useCurrentUser from "@/hooks/useCurrentUser";
+import { useAcceptSpaceInvitation, useDeclineSpaceInvitation } from "@/hooks/useSpaceQueries";
 import { useArchiveNotification, useDeleteNotification } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
+import { extractSpaceUidFromName } from "@/lib/space-display";
 import { cn } from "@/lib/utils";
-import { UserNotification, UserNotification_Status } from "@/types/proto/api/v1/user_service_pb";
+import {
+  UserNotification,
+  UserNotification_SpaceInvitationPayload_State,
+  UserNotification_Status,
+} from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 interface Props {
   notification: UserNotification;
 }
 
-function MemoCommentMessage({ notification }: Props) {
+function SpaceInvitationMessage({ notification }: Props) {
   const t = useTranslate();
   const archiveNotification = useArchiveNotification();
   const deleteNotification = useDeleteNotification();
-  const navigateTo = useNavigateTo();
-  const commentPayload = notification.payload?.case === "memoComment" ? notification.payload.value : undefined;
+  const currentUser = useCurrentUser();
+  const viewerName = currentUser?.name ?? "";
+  const { selectSpace } = useSpaceContext();
+  const acceptInvitation = useAcceptSpaceInvitation(viewerName);
+  const declineInvitation = useDeclineSpaceInvitation(viewerName);
+  const payload = notification.payload?.case === "spaceInvitation" ? notification.payload.value : undefined;
+  const space = payload?.space;
   const sender = notification.senderUser;
 
   const handleArchiveMessage = async (silence = false) => {
@@ -41,7 +56,7 @@ function MemoCommentMessage({ notification }: Props) {
     }
   };
 
-  if (!commentPayload) {
+  if (!payload || !space) {
     return (
       <div className="w-full px-5 py-4 border-b border-border/60 last:border-b-0 bg-destructive/[0.04] group">
         <div className="flex items-center justify-between">
@@ -64,12 +79,31 @@ function MemoCommentMessage({ notification }: Props) {
   }
 
   const isUnread = notification.status === UserNotification_Status.UNREAD;
+  const isPending = payload.state === UserNotification_SpaceInvitationPayload_State.PENDING;
+  const isBusy = acceptInvitation.isPending || declineInvitation.isPending;
+  const spaceUid = extractSpaceUidFromName(space.name);
+  const spaceLabel = `${space.title} (${spaceUid})`;
 
-  const handleNavigateToMemo = async () => {
-    navigateTo(`/${commentPayload.relatedMemo}`);
-    if (isUnread) {
-      await handleArchiveMessage(true);
+  const handleAccept = async () => {
+    try {
+      await acceptInvitation.mutateAsync({ name: payload.spaceInvitation });
+      toast.success(t("setting.spaces.accept-success", { space: spaceLabel }));
+    } catch (error) {
+      handleError(error, toast.error, { context: "Accept space invitation" });
     }
+  };
+
+  const handleDecline = async () => {
+    try {
+      await declineInvitation.mutateAsync({ name: payload.spaceInvitation });
+      toast.success(t("setting.spaces.decline-success"));
+    } catch (error) {
+      handleError(error, toast.error, { context: "Decline space invitation" });
+    }
+  };
+
+  const handleOpenSpace = () => {
+    selectSpace(space);
   };
 
   return (
@@ -90,15 +124,15 @@ function MemoCommentMessage({ notification }: Props) {
               isUnread ? "bg-primary text-primary-foreground" : "bg-muted/80 text-muted-foreground",
             )}
           >
-            <MessageCircleIcon className="w-2.5 h-2.5" strokeWidth={2.5} />
+            <UsersIcon className="w-2.5 h-2.5" strokeWidth={2.5} />
           </div>
         </div>
 
         <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-3 mb-1">
+          <div className="flex items-center justify-between gap-3 mb-3">
             <div className="flex items-center gap-1.5 flex-wrap min-w-0">
               <span className="font-semibold text-sm text-foreground/95">{sender?.displayName || sender?.username}</span>
-              <span className="text-sm text-muted-foreground/80">commented on your memo</span>
+              <span className="text-sm text-muted-foreground/80">{t("inbox.space-invitation")}</span>
               <span className="text-xs text-muted-foreground/60">
                 {notification.createTime &&
                   timestampDate(notification.createTime)?.toLocaleDateString([], { month: "short", day: "numeric" })}{" "}
@@ -128,34 +162,39 @@ function MemoCommentMessage({ notification }: Props) {
             </div>
           </div>
 
-          <div className="pl-3 border-l-2 border-muted-foreground/20 mb-3">
-            <p className="text-sm text-foreground/60 line-clamp-1 leading-relaxed">
-              <span className="text-xs text-muted-foreground/50 font-medium mr-2 uppercase tracking-wide">Original:</span>
-              {commentPayload.relatedMemoSnippet || <span className="italic text-muted-foreground/40">Empty memo</span>}
-            </p>
-          </div>
-
-          <button
-            type="button"
-            onClick={handleNavigateToMemo}
-            className="w-full p-2 text-left sm:p-3 rounded-lg bg-gradient-to-br from-primary/[0.06] to-primary/[0.03] hover:from-primary/[0.1] hover:to-primary/[0.06] cursor-pointer border border-primary/30 hover:border-primary/50 transition-all duration-200 group/comment shadow-sm hover:shadow"
-          >
-            <div className="flex items-start gap-2">
-              <div className="w-5 h-5 flex items-center justify-center shrink-0">
-                <MessageCircleIcon className="w-4 h-4 text-primary" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs text-primary/60 font-semibold mb-1 uppercase tracking-wider">Comment</p>
-                <p className="text-sm text-foreground/90 line-clamp-2">
-                  {commentPayload.memoSnippet || <span className="italic text-muted-foreground/50">Empty comment</span>}
+          <div className="flex flex-col gap-3 rounded-lg border border-border/60 bg-muted/20 p-3 sm:flex-row sm:items-center">
+            <div className="flex min-w-0 flex-1 items-center gap-3">
+              <SpaceMark size="lg" />
+              <div className="min-w-0 flex-1">
+                <div className="flex min-w-0 flex-wrap items-center gap-1.5">
+                  <span className="truncate text-sm font-medium text-foreground/95">{space.title}</span>
+                  <span className="text-xs text-muted-foreground/70">{spaceUid}</span>
+                  <SpaceRoleBadge role={payload.role} />
+                </div>
+                <p className="line-clamp-1 text-xs text-muted-foreground/80">
+                  {isPending ? space.description || t("setting.spaces.invited-to-join") : t("inbox.space-invitation-accepted")}
                 </p>
               </div>
             </div>
-          </button>
+            {isPending ? (
+              <div className="flex shrink-0 items-center gap-1.5">
+                <Button variant="outline" size="sm" disabled={isBusy} onClick={() => void handleDecline()}>
+                  {t("setting.spaces.decline")}
+                </Button>
+                <Button size="sm" disabled={isBusy} onClick={() => void handleAccept()}>
+                  {t("setting.spaces.accept")}
+                </Button>
+              </div>
+            ) : (
+              <Button variant="ghost" size="sm" onClick={handleOpenSpace}>
+                {t("inbox.space-invitation-open")}
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-export default MemoCommentMessage;
+export default SpaceInvitationMessage;

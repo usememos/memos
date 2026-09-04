@@ -3,6 +3,7 @@ syntax = "proto3";
 package memos.api.v1;
 
 import "api/v1/common.proto";
+import "api/v1/space_service.proto";
 import "google/api/annotations.proto";
 import "google/api/client.proto";
 import "google/api/field_behavior.proto";
@@ -832,6 +833,7 @@ message UserNotification {
   oneof payload {
     MemoCommentPayload memo_comment = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
     MemoMentionPayload memo_mention = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
+    SpaceInvitationPayload space_invitation = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
   }
 
   message MemoCommentPayload {
@@ -866,6 +868,29 @@ message UserNotification {
     string related_memo_snippet = 4;
   }
 
+  message SpaceInvitationPayload {
+    // The invitation resource.
+    // Format: spaces/{space}/invitations/{username}
+    string space_invitation = 1 [(google.api.resource_reference) = {type: "memos.api.v1/SpaceInvitation"}];
+
+    // The read-only Space summary carried by the invitation.
+    Space space = 2;
+
+    // The role the invitation offers.
+    SpaceMember.Role role = 3;
+
+    // The current state of the invitation for the receiver.
+    State state = 4;
+
+    enum State {
+      STATE_UNSPECIFIED = 0;
+      // The receiver has not yet accepted or declined the invitation.
+      PENDING = 1;
+      // The receiver accepted the invitation and is an active member.
+      ACCEPTED = 2;
+    }
+  }
+
   enum Status {
     STATUS_UNSPECIFIED = 0;
     UNREAD = 1;
@@ -876,6 +901,7 @@ message UserNotification {
     TYPE_UNSPECIFIED = 0;
     MEMO_COMMENT = 1;
     MEMO_MENTION = 2;
+    SPACE_INVITATION = 3;
   }
 }
 

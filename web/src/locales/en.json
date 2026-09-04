@@ -322,6 +322,9 @@
     "memo-comment": "{{user}} has a comment on your {{memo}}.",
     "no-archived": "No archived notifications",
     "no-unread": "No unread notifications",
+    "space-invitation": "invited you to join a space",
+    "space-invitation-accepted": "You joined this space.",
+    "space-invitation-open": "Open space",
     "unread": "Unread"
   },
   "live-update": {
