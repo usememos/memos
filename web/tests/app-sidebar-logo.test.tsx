@@ -196,7 +196,6 @@ describe("App sidebar logo", () => {
     sidebarState.mobileOpen = false;
     sidebarState.setMobileOpen.mockClear();
     sidebarState.setQuickFindOpen.mockClear();
-    sidebarState.clearAllFilters.mockClear();
     globalEditorState.canOpen = true;
     globalEditorState.openEditor.mockClear();
     spaceState.spaces = [];
@@ -232,6 +231,18 @@ describe("App sidebar logo", () => {
     fireEvent.click(screen.getByRole("button", { name: "space.switch: common.memos" }));
 
     expect(sidebarState.clearAllFilters).toHaveBeenCalledOnce();
+  });
+
+  it("preserves filters when the instance brand opens in a new tab", () => {
+    render(
+      <MemoryRouter initialEntries={["/about?filter=contentSearch:plan"]}>
+        <AppSidebar />
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getByRole("link", { name: "Memos logo" }), { metaKey: true });
+
+    expect(sidebarState.clearAllFilters).not.toHaveBeenCalled();
   });
 
   it("shows the context switcher and opens the global memo editor", () => {

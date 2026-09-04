@@ -21,7 +21,7 @@ import {
   Trash2Icon,
   UserRoundIcon,
 } from "lucide-react";
-import { type ReactNode, useEffect } from "react";
+import { type MouseEvent, type ReactNode, useEffect } from "react";
 import { Link, matchPath, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { MemoDetailSidebar } from "@/components/MemoDetailSidebar";
 import { DEFAULT_SETTING_SECTION, SETTINGS_SECTIONS } from "@/components/Settings/settingSections";
@@ -553,6 +553,10 @@ const SidebarBrand = ({ className, size = "md" }: { className?: string; size?: "
   const currentUser = useCurrentUser();
   const location = useLocation();
   const { clearAllFilters } = useMemoFilterContext();
+  const handleBrandClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    clearAllFilters();
+  };
 
   if (currentUser && routeSupportsCollectionScope(location.pathname)) {
     return <SpaceSwitcher className={className} size={size} onClick={clearAllFilters} />;
@@ -561,7 +565,7 @@ const SidebarBrand = ({ className, size = "md" }: { className?: string; size?: "
   return (
     <Link
       to={currentUser ? ROUTES.HOME : ROUTES.EXPLORE}
-      onClick={clearAllFilters}
+      onClick={handleBrandClick}
       className={cn(
         "transition-colors hover:bg-sidebar-accent/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/40",
         sidebarSurfaceVariants({ role: size === "header" ? "headerBrand" : "mobileBrand" }),
