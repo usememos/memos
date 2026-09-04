@@ -37,6 +37,31 @@ describe("<ColumnGrid>", () => {
     expect(grid.children[0].querySelector('[data-testid="composer"]')).not.toBeNull();
   });
 
+  it("spans the header across the packed columns and starts every column below it", () => {
+    // 532px fits two 260px columns with a 12px gap; every measured height is 100px.
+    const clientWidth = vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockReturnValue(532);
+    const offsetHeight = vi.spyOn(HTMLElement.prototype, "offsetHeight", "get").mockReturnValue(100);
+
+    const { getByTestId } = render(
+      <ColumnGrid
+        items={[item("a"), item("b")]}
+        getKey={getKey}
+        renderItem={(i) => <div data-testid={`card-${i.id}`}>{i.id}</div>}
+        header={<div data-testid="identity" />}
+      />,
+    );
+
+    const header = getByTestId("identity").parentElement as HTMLElement;
+    expect(header.style.width).toBe("532px");
+    expect(header.style.left).toBe("0px");
+    // Header height plus one grid gap: both columns begin on the same line beneath it.
+    expect(getByTestId("card-a").parentElement?.style.transform).toContain("translate3d(0px, 112px");
+    expect(getByTestId("card-b").parentElement?.style.transform).toContain("translate3d(272px, 112px");
+
+    clientWidth.mockRestore();
+    offsetHeight.mockRestore();
+  });
+
   it("renders nothing for an empty list", () => {
     const { container } = render(<ColumnGrid items={[]} getKey={getKey} renderItem={() => <div data-testid="card" />} />);
 

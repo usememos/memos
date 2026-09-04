@@ -84,7 +84,7 @@ export const routeConfig: RouteObject[] = [
                 children: [{ path: Routes.ABOUT, element: <About /> }],
               },
               { path: Routes.EXPLORE, element: <Explore /> },
-              { path: "u/:username", element: <UserProfile /> },
+              { path: Routes.USER_PROFILE, element: <UserProfile /> },
               {
                 element: <RequireAuthRoute />,
                 children: [

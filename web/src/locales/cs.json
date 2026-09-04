@@ -291,8 +291,7 @@
     "restored-successfully": "Úspěšně obnoveno",
     "succeed-copy-content": "Obsah úspěšně zkopírován.",
     "succeed-copy-link": "Odkaz byl úspěšně zkopírován.",
-    "update-succeed": "Aktualizace proběhla úspěšně",
-    "user-not-found": "Uživatel nenalezen"
+    "update-succeed": "Aktualizace proběhla úspěšně"
   },
   "reference": {
     "add-references": "Přidat odkazy",

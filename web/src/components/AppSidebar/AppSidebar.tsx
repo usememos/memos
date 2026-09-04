@@ -42,7 +42,8 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import { type MemoStatsContext, useFilteredMemoStats } from "@/hooks/useFilteredMemoStats";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { useNotifications, useUser } from "@/hooks/useUserQueries";
-import { getMemoScopePath, isMemoScopeRoute, type PrimaryMemoScope, resolveMemoScope } from "@/lib/memo-views";
+import { getMemoScopePath, getProfileUsername, type PrimaryMemoScope, resolveMemoScope } from "@/lib/memo-views";
+import { userNamePrefix } from "@/lib/resource-names";
 import { cn } from "@/lib/utils";
 import { ROUTES } from "@/router/routes";
 import { State } from "@/types/proto/api/v1/common_pb";
@@ -126,9 +127,9 @@ const CollectionSidebarContent = ({ context }: { context: MemoStatsContext }) =>
   const { mobileOpen, setMobileOpen } = useAppSidebar();
   const { isInitialized: authInitialized } = useAuth();
   const { isInitialized: instanceInitialized } = useInstance();
-  const profileMatch = matchPath("/u/:username", location.pathname);
-  const { data: profileUser } = useUser(profileMatch?.params.username ? `users/${profileMatch.params.username}` : "", {
-    enabled: context === "profile" && !!profileMatch?.params.username,
+  const profileUsername = getProfileUsername(location.pathname);
+  const { data: profileUser } = useUser(`${userNamePrefix}${profileUsername ?? ""}`, {
+    enabled: context === "profile" && profileUsername !== undefined,
   });
   const statsUserName = context === "home" ? currentUser?.name : context === "profile" ? profileUser?.name : undefined;
   // User-level collections stay aligned with their unscoped feeds even when a Space is remembered.
@@ -141,12 +142,6 @@ const CollectionSidebarContent = ({ context }: { context: MemoStatsContext }) =>
     enabled: authInitialized && instanceInitialized && (md || mobileOpen),
   });
 
-  const showViews = !!currentUser && (context === "home" || context === "archived" || context === "explore");
-
-  // Off the collection routes (the library shown as fallback content), calendar and tag
-  // clicks must land somewhere that renders the filtered feed.
-  const onCollectionRoute = isMemoScopeRoute(location.pathname) || !!profileMatch;
-  const filterTarget = onCollectionRoute ? undefined : context === "explore" ? ROUTES.EXPLORE : ROUTES.HOME;
   const tagStateScope = isUserLevelCollection
     ? (statsUserName ?? context)
     : `${statsUserName ?? context}${selectedSpaceName ? `:${selectedSpaceName}` : ""}`;
@@ -155,10 +150,11 @@ const CollectionSidebarContent = ({ context }: { context: MemoStatsContext }) =>
     <div className={SIDEBAR_SECTION_STACK_CLASSES}>
       {context === "profile" && <ProfileMode />}
       <SidebarSection ariaLabel={t("common.statistics")}>
-        <StatisticsView statisticsData={statistics} navigationTarget={filterTarget} onDateSelect={() => setMobileOpen(false)} />
+        <StatisticsView statisticsData={statistics} onDateSelect={() => setMobileOpen(false)} />
       </SidebarSection>
-      {showViews && <ViewsSection />}
-      <TagsSection tagCount={tags} navigationTarget={filterTarget} scope={tagStateScope} onSelect={() => setMobileOpen(false)} />
+      {/* Every collection route narrows the same way: views (yours, so signed-in only), days, tags. */}
+      {currentUser && <ViewsSection />}
+      <TagsSection tagCount={tags} scope={tagStateScope} onSelect={() => setMobileOpen(false)} />
     </div>
   );
 };

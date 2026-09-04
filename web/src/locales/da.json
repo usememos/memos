@@ -328,8 +328,7 @@
     "restored-successfully": "Gendannet med succes",
     "succeed-copy-content": "Indholdet blev kopieret.",
     "succeed-copy-link": "Linket blev kopieret.",
-    "update-succeed": "Opdatering lykkedes",
-    "user-not-found": "Bruger ikke fundet"
+    "update-succeed": "Opdatering lykkedes"
   },
   "reference": {
     "add-references": "Tilføj referencer",

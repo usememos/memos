@@ -328,8 +328,7 @@
     "restored-successfully": "Taastatud edukalt",
     "succeed-copy-content": "Sisu kopeerimine õnnestus.",
     "succeed-copy-link": "Link on edukalt kopeeritud.",
-    "update-succeed": "Värskendus õnnestus",
-    "user-not-found": "Kasutajat ei leitud"
+    "update-succeed": "Värskendus õnnestus"
   },
   "reference": {
     "add-references": "Lisa viited",

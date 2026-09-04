@@ -291,8 +291,7 @@
     "restored-successfully": "Återställdes framgångsrikt",
     "succeed-copy-content": "Innehåll kopierades framgångsrikt.",
     "succeed-copy-link": "Länk kopierades framgångsrikt.",
-    "update-succeed": "Uppdatering lyckades",
-    "user-not-found": "Användaren hittades inte"
+    "update-succeed": "Uppdatering lyckades"
   },
   "reference": {
     "add-references": "Lägg till referenser",

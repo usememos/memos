@@ -291,8 +291,7 @@
     "restored-successfully": "Erfolgreich wiederhergestellt",
     "succeed-copy-content": "Inhalt erfolgreich kopiert.",
     "succeed-copy-link": "Link erfolgreich kopiert",
-    "update-succeed": "Update erfolgreich",
-    "user-not-found": "Benutzer nicht gefunden"
+    "update-succeed": "Update erfolgreich"
   },
   "reference": {
     "add-references": "Referenzen hinzufügen",

@@ -291,8 +291,7 @@
     "restored-successfully": "Başarıyla geri yüklendi",
     "succeed-copy-content": "İçerik başarıyla kopyalandı.",
     "succeed-copy-link": "Bağlantı başarıyla kopyalandı.",
-    "update-succeed": "Güncelleme başarılı",
-    "user-not-found": "Kullanıcı bulunamadı"
+    "update-succeed": "Güncelleme başarılı"
   },
   "reference": {
     "add-references": "Referans ekle",

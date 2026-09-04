@@ -465,8 +465,12 @@
     "restored-successfully": "Restored successfully",
     "succeed-copy-content": "Content copied successfully.",
     "succeed-copy-link": "Link copied successfully.",
-    "update-succeed": "Update succeeded",
-    "user-not-found": "User not found"
+    "update-succeed": "Update succeeded"
+  },
+  "profile": {
+    "no-shared-memos": "@{{username}} hasn't shared any memos yet.",
+    "not-found-description": "There's no Memos user named @{{username}} on this instance.",
+    "not-found-title": "No one here"
   },
   "reference": {
     "add-references": "Add references",

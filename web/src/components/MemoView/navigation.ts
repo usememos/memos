@@ -1,4 +1,4 @@
-import { isMemoScopeRoute } from "@/lib/memo-views";
+import { getProfileUsername, isMemoScopeRoute } from "@/lib/memo-views";
 import { ROUTES } from "@/router/routes";
 
 export type MemoOriginScope = "all" | "preserve";
@@ -113,7 +113,7 @@ export const withMemoFilter = (page: string, filter: string): string => {
   const pathname = questionMark === -1 ? pathAndSearch : pathAndSearch.slice(0, questionMark);
   const search = questionMark === -1 ? "" : pathAndSearch.slice(questionMark + 1);
   const searchParams = new URLSearchParams(search);
-  if (/^\/u\//i.test(pathname) && searchParams.get("view") === "map") {
+  if (getProfileUsername(pathname) !== undefined && searchParams.get("view") === "map") {
     searchParams.delete("view");
   }
   searchParams.set("filter", filter);

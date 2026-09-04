@@ -1,8 +1,7 @@
 import { HashIcon, ListIcon, ListTreeIcon } from "lucide-react";
 import { forwardRef, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { replaceFiltersByFactor, stringifyFilters, useMemoFilterContext } from "@/contexts/MemoFilterContext";
+import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { useLocalStorage, useOverflowTitle } from "@/hooks";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
@@ -23,8 +22,6 @@ import SidebarSection, {
 interface Props {
   tagCount: Record<string, number>;
   onSelect?: () => void;
-  /** When set, tag clicks land on this route with the tag filter instead of filtering the current one. */
-  navigationTarget?: string;
   /** Whose tags these are; keeps tree expansion state from bleeding between users and views. */
   scope: string;
 }
@@ -76,10 +73,9 @@ const FlatTagRow = ({ tag, amount, active, ariaLabel, onClick }: FlatTagRowProps
   );
 };
 
-const TagsSection = ({ tagCount, onSelect, navigationTarget, scope }: Props) => {
+const TagsSection = ({ tagCount, onSelect, scope }: Props) => {
   const t = useTranslate();
-  const navigate = useNavigate();
-  const { filters, setFilters, getFiltersByFactor, addFilter, removeFilter } = useMemoFilterContext();
+  const { getFiltersByFactor, addFilter, removeFilter } = useMemoFilterContext();
   const [treeMode, setTreeMode] = useLocalStorage<boolean>("tag-view-as-tree", false);
   const activeTags = new Set(getFiltersByFactor("tagSearch").map((filter) => filter.value));
   const activeTag = activeTags.values().next().value as string | undefined;
@@ -90,13 +86,6 @@ const TagsSection = ({ tagCount, onSelect, navigationTarget, scope }: Props) => 
   }
 
   const handleTagClick = (tag: string) => {
-    if (navigationTarget) {
-      const nextFilters = replaceFiltersByFactor(filters, "tagSearch", [{ factor: "tagSearch", value: tag }]);
-      setFilters(nextFilters);
-      navigate({ pathname: navigationTarget, search: `?filter=${stringifyFilters(nextFilters)}` });
-      onSelect?.();
-      return;
-    }
     const active = activeTags.has(tag);
     if (active) {
       removeFilter((filter) => filter.factor === "tagSearch" && filter.value === tag);

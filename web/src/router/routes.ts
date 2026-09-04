@@ -7,6 +7,7 @@ export const ROUTES = {
   VIEWS: "/views",
   SETTING: "/setting",
   EXPLORE: "/explore",
+  USER_PROFILE: "/u/:username",
   AUTH: "/auth",
   AUTH_SIGNUP: "/auth/signup",
   AUTH_ADMIN: "/auth/admin",

@@ -291,8 +291,7 @@
     "restored-successfully": "Restored successfully",
     "succeed-copy-content": "Content copied successfully.",
     "succeed-copy-link": "Link copied successfully.",
-    "update-succeed": "Update succeeded",
-    "user-not-found": "User not found"
+    "update-succeed": "Update succeeded"
   },
   "reference": {
     "add-references": "Add references",

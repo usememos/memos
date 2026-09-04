@@ -21,6 +21,23 @@ export const isMemoScopeRoute = (pathname: string): boolean => {
   return comparablePath === ROUTES.HOME || comparablePath === ROUTES.EXPLORE || comparablePath === ROUTES.ARCHIVED;
 };
 
+const PROFILE_ROUTE_PATTERN = /^\/u\/([^/]+)$/i;
+
+/** The decoded username when `pathname` is a user profile (`/u/:username`), else undefined. */
+export const getProfileUsername = (pathname: string): string | undefined => {
+  const match = cleanPathname(pathname).match(PROFILE_ROUTE_PATTERN);
+  return match ? decodeURIComponent(match[1]) : undefined;
+};
+
+/**
+ * Routes that render a memo collection the sidebar can narrow: the scope routes plus a
+ * user profile. Views, calendar days and tags apply in place on all of them. This is a
+ * different question from `isMemoCollectionOrigin` (MemoView/navigation.ts), which asks
+ * whether returning to a route should keep the remembered Space.
+ */
+export const isMemoCollectionRoute = (pathname: string): boolean =>
+  isMemoScopeRoute(pathname) || getProfileUsername(pathname) !== undefined;
+
 export const getMemoScopePath = (scope: PrimaryMemoScope): string => {
   if (scope === "explore") return ROUTES.EXPLORE;
   return ROUTES.HOME;
@@ -40,9 +57,9 @@ export const resolveMemoScope = (pathname: string, options: ResolveMemoScopeOpti
   if (comparablePath === ROUTES.ARCHIVED) return "archived";
   if (comparablePath === ROUTES.HOME) return "home";
 
-  const profileMatch = cleanPath.match(/^\/u\/([^/]+)$/i);
-  if (profileMatch) {
-    return options.currentUsername && decodeURIComponent(profileMatch[1]) === options.currentUsername ? "home" : "explore";
+  const profileUsername = getProfileUsername(cleanPath);
+  if (profileUsername !== undefined) {
+    return options.currentUsername && profileUsername === options.currentUsername ? "home" : "explore";
   }
 
   if (comparablePath.startsWith("/memos/") && options.detailFrom) {

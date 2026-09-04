@@ -96,8 +96,13 @@ describe("MemoFilters", () => {
     expect(screen.getByText("Last week")).toBeInTheDocument();
   });
 
-  it("stays quiet about a view off the collection routes, where it does not apply", () => {
+  it("announces a view on a user profile, where it narrows that user's memos", () => {
     renderChips("/u/alice", BUILTIN_TASKS_VIEW_ID);
+    expect(screen.getByText("common.tasks")).toBeInTheDocument();
+  });
+
+  it("stays quiet about a view off the collection routes, where it does not apply", () => {
+    renderChips("/attachments", BUILTIN_TASKS_VIEW_ID);
     expect(screen.queryByText("common.tasks")).not.toBeInTheDocument();
   });
 

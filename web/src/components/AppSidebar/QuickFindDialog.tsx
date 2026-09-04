@@ -9,7 +9,7 @@ import { type MemoFilter, replaceFiltersByFactor, stringifyFilters, useMemoFilte
 import { useSpaceContext } from "@/contexts/SpaceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoViews } from "@/hooks/useUserQueries";
-import { BUILTIN_TASKS_VIEW_ID, getMemoViewId, isMemoScopeRoute } from "@/lib/memo-views";
+import { BUILTIN_TASKS_VIEW_ID, getMemoViewId, isMemoCollectionRoute } from "@/lib/memo-views";
 import { extractSpaceUidFromName, formatSpaceUidForDisplay } from "@/lib/space-display";
 import { useTranslate } from "@/utils/i18n";
 import { getRouteActionPolicy, getSidebarRouteKind } from "./routes";
@@ -59,7 +59,7 @@ const QuickFindDialog = () => {
   const { clearSelectedSpace, duplicateSpaceTitles, selectedSpace, selectedSpaceName } = useSpaceContext();
   const { quickFindOpen, setQuickFindOpen } = useAppSidebar();
   const [query, setQuery] = useState("");
-  const viewApplies = isMemoScopeRoute(location.pathname);
+  const viewApplies = isMemoCollectionRoute(location.pathname);
   const selectedMemoView = viewApplies ? memoViews.find((item) => getMemoViewId(item.name) === memoView) : undefined;
   const lensLabel =
     viewApplies && memoView === BUILTIN_TASKS_VIEW_ID ? t("common.tasks") : selectedMemoView?.title || getScopeLabel(location.pathname, t);

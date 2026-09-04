@@ -257,8 +257,7 @@
     "restored-successfully": "با موفقیت بازیابی شد",
     "succeed-copy-content": "محتوا با موفقیت کپی شد.",
     "succeed-copy-link": "پیوند با موفقیت کپی شد.",
-    "update-succeed": "بروزرسانی موفق بود",
-    "user-not-found": "کاربر یافت نشد"
+    "update-succeed": "بروزرسانی موفق بود"
   },
   "reference": {
     "add-references": "افزودن منابع",

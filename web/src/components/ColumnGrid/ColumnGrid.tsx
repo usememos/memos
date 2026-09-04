@@ -10,6 +10,8 @@ interface ColumnGridProps<T> {
   estimateHeight?: (item: T, context: { columnWidth: number }) => number;
   /** Optional node packed as the very first tile (e.g. the note composer). */
   leading?: ReactNode;
+  /** Optional node spanning the packed columns above them all (e.g. a page identity block). */
+  header?: ReactNode;
   /** Key that must land at the top of column one (e.g. a just-created memo), not the shortest column. */
   priorityKey?: string;
   /** Upper bound on the column count; 0 or undefined means as many as fit. */
@@ -19,6 +21,7 @@ interface ColumnGridProps<T> {
 }
 
 const LEADING_KEY = "__grid_leading__";
+const HEADER_KEY = "__grid_header__";
 
 const GRID_MIN_COLUMN_WIDTH = 260;
 export const GRID_GAP = 12;
@@ -76,6 +79,7 @@ function ColumnGrid<T>({
   renderItem,
   estimateHeight,
   leading,
+  header,
   priorityKey,
   maxColumns,
   maxColumnWidth,
@@ -105,7 +109,15 @@ function ColumnGrid<T>({
     let columnWidth = count > 1 ? Math.floor((width - GRID_GAP * (count - 1)) / count) : width;
     if (maxColumnWidth != null) columnWidth = Math.min(columnWidth, maxColumnWidth);
     // Center the packed columns in whatever width the clamp leaves over.
-    const offsetX = Math.floor((width - (columnWidth * count + GRID_GAP * (count - 1))) / 2);
+    const packedWidth = columnWidth * count + GRID_GAP * (count - 1);
+    const offsetX = Math.floor((width - packedWidth) / 2);
+
+    // The header is not a column item: it spans the packed columns and pushes them all down.
+    const headerEl = itemRefs.current.get(HEADER_KEY);
+    if (headerEl) {
+      headerEl.style.width = `${packedWidth}px`;
+      headerEl.style.left = `${offsetX}px`;
+    }
 
     // Ordered by feed position: the leading tile (composer) first, then items.
     const ordered: { key: string; el: HTMLDivElement }[] = [];
@@ -133,12 +145,17 @@ function ColumnGrid<T>({
     // Pass 2 (reads): height of every card, measured once after the width writes so the
     // browser reflows a single time. We read the inner element, not the absolutely-positioned
     // wrapper (whose block-formatting context would fold in margins).
+    const measure = (el: HTMLElement) => {
+      const child = el.firstElementChild;
+      return child instanceof HTMLElement ? child.offsetHeight : el.offsetHeight;
+    };
     const heightByKey = new Map<string, number>();
     for (const { key, el } of ordered) {
-      const child = el.firstElementChild;
-      heightByKey.set(key, child instanceof HTMLElement ? child.offsetHeight : el.offsetHeight);
+      heightByKey.set(key, measure(el));
     }
     const heightOf = (key: string) => heightByKey.get(key) ?? 0;
+    // Same pass as the cards, so the header's width write above reflows with theirs.
+    const columnStartY = headerEl ? measure(headerEl) + GRID_GAP : 0;
 
     const pinnedKeys = new Set<string>([LEADING_KEY]);
     if (priorityKey) {
@@ -154,7 +171,7 @@ function ColumnGrid<T>({
       },
     });
 
-    const columnY = new Array<number>(count).fill(0);
+    const columnY = new Array<number>(count).fill(columnStartY);
     const pos = new Map<string, { x: number; y: number }>();
     for (const { key } of ordered) {
       const col = columnOf.get(key) ?? 0;
@@ -265,6 +282,13 @@ function ColumnGrid<T>({
 
   return (
     <div ref={containerRef} className="relative w-full" style={{ height: containerHeight }}>
+      {header != null && (
+        // Spans the packed columns; positioned with left/top like the leading tile so it is
+        // never a containing block for fixed descendants either.
+        <div key={HEADER_KEY} ref={getItemRef(HEADER_KEY)} className="absolute top-0 left-0">
+          {header}
+        </div>
+      )}
       {leading != null && (
         // Positioned with left/top (see relayout), and deliberately WITHOUT
         // transform/will-change so it never establishes a containing block that would trap

@@ -365,8 +365,7 @@
     "restored-successfully": "復元しました",
     "succeed-copy-content": "コンテンツのコピーに成功しました。",
     "succeed-copy-link": "リンクのコピーに成功しました。",
-    "update-succeed": "変更は保存されました",
-    "user-not-found": "ユーザーが見つかりませんでした"
+    "update-succeed": "変更は保存されました"
   },
   "reference": {
     "add-references": "参照を追加",

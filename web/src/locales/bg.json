@@ -328,8 +328,7 @@
     "restored-successfully": "Възстановен успешно",
     "succeed-copy-content": "Съдържанието е копирано успешно.",
     "succeed-copy-link": "Връзката е копирана успешно.",
-    "update-succeed": "Актуализацията е успешна",
-    "user-not-found": "Потребителят не е намерен"
+    "update-succeed": "Актуализацията е успешна"
   },
   "reference": {
     "add-references": "Добавете препратки",

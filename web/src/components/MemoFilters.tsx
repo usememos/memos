@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { type FilterFactor, getMemoFilterKey, type MemoFilter, useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoViews } from "@/hooks/useUserQueries";
-import { BUILTIN_TASKS_VIEW_ID, getMemoViewId, isMemoScopeRoute } from "@/lib/memo-views";
+import { BUILTIN_TASKS_VIEW_ID, getMemoViewId, isMemoCollectionRoute } from "@/lib/memo-views";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 
@@ -98,7 +98,7 @@ const MemoFilters = ({ className }: { className?: string }) => {
   const currentUser = useCurrentUser();
   const { filters, memoView, removeFilter, setMemoView } = useMemoFilterContext();
   // A remembered view only narrows the collection routes; elsewhere it is dormant and must not be echoed.
-  const viewApplies = memoView !== undefined && isMemoScopeRoute(location.pathname);
+  const viewApplies = memoView !== undefined && isMemoCollectionRoute(location.pathname);
   const { data: memoViews = [] } = useMemoViews(viewApplies ? currentUser?.name : undefined);
 
   const handleRemoveFilter = (filter: MemoFilter) => {

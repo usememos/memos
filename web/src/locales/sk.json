@@ -328,8 +328,7 @@
     "restored-successfully": "Úspešne obnovené",
     "succeed-copy-content": "Obsah bol úspešne skopírovaný.",
     "succeed-copy-link": "Odkaz bol úspešne skopírovaný.",
-    "update-succeed": "Aktualizácia bola úspešná",
-    "user-not-found": "Používateľ sa nenašiel"
+    "update-succeed": "Aktualizácia bola úspešná"
   },
   "reference": {
     "add-references": "Pridajte referencie",

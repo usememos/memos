@@ -328,8 +328,7 @@
     "restored-successfully": "Veiksmīgi atjaunots",
     "succeed-copy-content": "Saturs ir veiksmīgi kopēts.",
     "succeed-copy-link": "Saite ir veiksmīgi nokopēta.",
-    "update-succeed": "Atjaunināšana izdevās",
-    "user-not-found": "Lietotājs nav atrasts"
+    "update-succeed": "Atjaunināšana izdevās"
   },
   "reference": {
     "add-references": "Pievienojiet atsauces",

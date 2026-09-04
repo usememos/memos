@@ -5,6 +5,8 @@ import {
   BUILTIN_TASKS_VIEW_ID,
   getMemoScopePath,
   getMemoViewId,
+  getProfileUsername,
+  isMemoCollectionRoute,
   isMemoScopeRoute,
   resolveMemoScope,
 } from "@/lib/memo-views";
@@ -28,6 +30,18 @@ describe("memo scopes", () => {
     expect(isMemoScopeRoute("/attachments")).toBe(false);
     expect(getMemoScopePath("home")).toBe("/");
     expect(getMemoScopePath("explore")).toBe("/explore");
+  });
+
+  it("treats user profiles as collection routes where views and filters apply in place", () => {
+    expect(isMemoCollectionRoute("/")).toBe(true);
+    expect(isMemoCollectionRoute("/archived")).toBe(true);
+    expect(isMemoCollectionRoute("/u/steven")).toBe(true);
+    expect(isMemoCollectionRoute("/u/steven/?view=map")).toBe(true);
+    expect(getProfileUsername("/u/j%C3%BAlia/")).toBe("júlia");
+    expect(getProfileUsername("/u/steven/memos")).toBeUndefined();
+    expect(isMemoScopeRoute("/u/steven")).toBe(false);
+    expect(isMemoCollectionRoute("/memos/123")).toBe(false);
+    expect(isMemoCollectionRoute("/attachments")).toBe(false);
   });
 });
 

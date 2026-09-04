@@ -310,8 +310,7 @@
     "restored-successfully": "Przywrócono pomyślnie",
     "succeed-copy-content": "Treść została pomyślnie skopiowana.",
     "succeed-copy-link": "Link skopiowany pomyślnie.",
-    "update-succeed": "Aktualizacja zakończona sukcesem",
-    "user-not-found": "Użytkownik nie został znaleziony"
+    "update-succeed": "Aktualizacja zakończona sukcesem"
   },
   "reference": {
     "add-references": "Dodaj odniesienia",

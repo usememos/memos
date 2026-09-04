@@ -1,5 +1,5 @@
 import { matchPath } from "react-router-dom";
-import { isMemoScopeRoute, type MemoScope, resolveMemoScope } from "@/lib/memo-views";
+import { getProfileUsername, isMemoScopeRoute, type MemoScope, resolveMemoScope } from "@/lib/memo-views";
 import { ROUTES } from "@/router/routes";
 
 export type SidebarRouteKind = MemoScope | "profile" | "views" | "attachments" | "inbox" | "settings" | "memo" | "common";
@@ -17,7 +17,7 @@ export interface RouteActionPolicy {
 export const getSidebarRouteKind = (path: string): SidebarRouteKind => {
   const normalizedPath = path.length > 1 ? path.replace(/\/+$/, "") : path;
   if (isMemoScopeRoute(normalizedPath)) return resolveMemoScope(normalizedPath);
-  if (matchPath("/u/:username", normalizedPath)) return "profile";
+  if (getProfileUsername(normalizedPath) !== undefined) return "profile";
   if (matchPath(ROUTES.VIEWS, normalizedPath)) return "views";
   if (matchPath(ROUTES.ATTACHMENTS, normalizedPath)) return "attachments";
   if (matchPath(ROUTES.INBOX, normalizedPath)) return "inbox";

@@ -9,15 +9,13 @@ import { MonthNavigator } from "./MonthNavigator";
 interface Props {
   statisticsData: StatisticsData;
   onDateSelect?: () => void;
-  /** When set, day clicks land on this route with the date filter instead of filtering the current one. */
-  navigationTarget?: string;
 }
 
 const StatisticsView = (props: Props) => {
   const { statisticsData } = props;
   const { activityStats, timeBasis } = statisticsData;
   const { filters } = useMemoFilterContext();
-  const navigateToDateFilter = useDateFilterNavigation(props.navigationTarget);
+  const navigateToDateFilter = useDateFilterNavigation();
   const [visibleMonthString, setVisibleMonthString] = useState(dayjs().format("YYYY-MM"));
   const selectedDate = filters.find((filter) => filter.factor === "displayTime")?.value;
 

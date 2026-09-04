@@ -459,8 +459,7 @@
     "restored-successfully": "還原成功",
     "succeed-copy-content": "內容複製到剪貼簿成功。",
     "succeed-copy-link": "複製連結到剪貼簿成功。",
-    "update-succeed": "更新成功",
-    "user-not-found": "未找到該使用者"
+    "update-succeed": "更新成功"
   },
   "reference": {
     "add-references": "引用參考資料",

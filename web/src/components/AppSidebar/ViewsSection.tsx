@@ -13,7 +13,7 @@ import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoViews, userKeys } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
-import { BUILTIN_TASKS_VIEW_ID, getMemoViewId, isMemoScopeRoute } from "@/lib/memo-views";
+import { BUILTIN_TASKS_VIEW_ID, getMemoViewId, isMemoCollectionRoute } from "@/lib/memo-views";
 import { cn } from "@/lib/utils";
 import { ROUTES } from "@/router/routes";
 import type { MemoView } from "@/types/proto/api/v1/memo_view_service_pb";
@@ -47,7 +47,7 @@ const ViewsSection = ({ manageActive = false }: { manageActive?: boolean }) => {
 
   const handleView = (viewId: string) => {
     setMemoView(selectedMemoView === viewId ? undefined : viewId);
-    if (!isMemoScopeRoute(location.pathname)) navigate(ROUTES.HOME);
+    if (!isMemoCollectionRoute(location.pathname)) navigate(ROUTES.HOME);
     setMobileOpen(false);
   };
 

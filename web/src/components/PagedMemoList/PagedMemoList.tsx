@@ -47,6 +47,10 @@ interface Props {
   enabled?: boolean;
   /** Route-owned content rendered before the list and inside column one in grid mode. */
   renderLeading?: (options: { useGrid: boolean }) => ReactNode;
+  /** Route-owned content spanning the full list width above every column (e.g. a page identity block). */
+  renderHeader?: (options: { useGrid: boolean }) => ReactNode;
+  /** Replaces the generic empty-state message when the route knows why the list is empty. */
+  emptyMessage?: string;
 }
 
 function useAutoFetchWhenNotScrollable({
@@ -195,6 +199,7 @@ const PagedMemoList = (props: Props) => {
   }, [isDisplayPending, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const leadingContent = props.renderLeading?.({ useGrid });
+  const headerContent = props.renderHeader?.({ useGrid });
 
   // A freshly created memo is hoisted to the front; pin it to the top of column one so it
   // appears right under the composer instead of dropping into a random (shortest) column.
@@ -219,7 +224,7 @@ const PagedMemoList = (props: Props) => {
 
   const emptyPlaceholder =
     !isDisplayPending && !isFetchingNextPage && !hasNextPage && displayMemoList.length === 0 ? (
-      <Placeholder variant="empty" message={t("message.no-data")} className="w-full" />
+      <Placeholder variant="empty" message={props.emptyMessage ?? t("message.no-data")} className="w-full" />
     ) : null;
   const initialLoader = isDisplayPending && showLoader ? <Loader /> : null;
 
@@ -261,6 +266,7 @@ const PagedMemoList = (props: Props) => {
                 getKey={getMemoKey}
                 renderItem={(memo) => props.renderer(memo, { compact: effectiveCompact })}
                 estimateHeight={estimateMemoCardHeight}
+                header={headerContent}
                 leading={gridLeading}
                 priorityKey={priorityKey}
                 maxColumns={maxColumns}
@@ -270,6 +276,7 @@ const PagedMemoList = (props: Props) => {
             </>
           ) : (
             <>
+              {headerContent}
               {leadingContent}
               <MemoFilters className="mb-2" />
               {initialLoader}
