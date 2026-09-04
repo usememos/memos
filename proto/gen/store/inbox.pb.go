@@ -29,6 +29,8 @@ const (
 	InboxMessage_MEMO_COMMENT InboxMessage_Type = 1
 	// Memo mention notification.
 	InboxMessage_MEMO_MENTION InboxMessage_Type = 2
+	// Space invitation notification.
+	InboxMessage_SPACE_INVITATION InboxMessage_Type = 3
 )
 
 // Enum value maps for InboxMessage_Type.
@@ -37,11 +39,13 @@ var (
 		0: "TYPE_UNSPECIFIED",
 		1: "MEMO_COMMENT",
 		2: "MEMO_MENTION",
+		3: "SPACE_INVITATION",
 	}
 	InboxMessage_Type_value = map[string]int32{
 		"TYPE_UNSPECIFIED": 0,
 		"MEMO_COMMENT":     1,
 		"MEMO_MENTION":     2,
+		"SPACE_INVITATION": 3,
 	}
 )
 
@@ -80,6 +84,7 @@ type InboxMessage struct {
 	//
 	//	*InboxMessage_MemoComment
 	//	*InboxMessage_MemoMention
+	//	*InboxMessage_SpaceInvitation
 	Payload       isInboxMessage_Payload `protobuf_oneof:"payload"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -147,6 +152,15 @@ func (x *InboxMessage) GetMemoMention() *InboxMessage_MemoMentionPayload {
 	return nil
 }
 
+func (x *InboxMessage) GetSpaceInvitation() *InboxMessage_SpaceInvitationPayload {
+	if x != nil {
+		if x, ok := x.Payload.(*InboxMessage_SpaceInvitation); ok {
+			return x.SpaceInvitation
+		}
+	}
+	return nil
+}
+
 type isInboxMessage_Payload interface {
 	isInboxMessage_Payload()
 }
@@ -159,9 +173,15 @@ type InboxMessage_MemoMention struct {
 	MemoMention *InboxMessage_MemoMentionPayload `protobuf:"bytes,3,opt,name=memo_mention,json=memoMention,proto3,oneof"`
 }
 
+type InboxMessage_SpaceInvitation struct {
+	SpaceInvitation *InboxMessage_SpaceInvitationPayload `protobuf:"bytes,4,opt,name=space_invitation,json=spaceInvitation,proto3,oneof"`
+}
+
 func (*InboxMessage_MemoComment) isInboxMessage_Payload() {}
 
 func (*InboxMessage_MemoMention) isInboxMessage_Payload() {}
+
+func (*InboxMessage_SpaceInvitation) isInboxMessage_Payload() {}
 
 type InboxMessage_MemoCommentPayload struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -267,25 +287,75 @@ func (x *InboxMessage_MemoMentionPayload) GetRelatedMemoId() int32 {
 	return 0
 }
 
+type InboxMessage_SpaceInvitationPayload struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The space the receiver was invited to join. The offered role and the
+	// invitation state are resolved from the space membership at read time.
+	SpaceId       int32 `protobuf:"varint,1,opt,name=space_id,json=spaceId,proto3" json:"space_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *InboxMessage_SpaceInvitationPayload) Reset() {
+	*x = InboxMessage_SpaceInvitationPayload{}
+	mi := &file_store_inbox_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *InboxMessage_SpaceInvitationPayload) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*InboxMessage_SpaceInvitationPayload) ProtoMessage() {}
+
+func (x *InboxMessage_SpaceInvitationPayload) ProtoReflect() protoreflect.Message {
+	mi := &file_store_inbox_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use InboxMessage_SpaceInvitationPayload.ProtoReflect.Descriptor instead.
+func (*InboxMessage_SpaceInvitationPayload) Descriptor() ([]byte, []int) {
+	return file_store_inbox_proto_rawDescGZIP(), []int{0, 2}
+}
+
+func (x *InboxMessage_SpaceInvitationPayload) GetSpaceId() int32 {
+	if x != nil {
+		return x.SpaceId
+	}
+	return 0
+}
+
 var File_store_inbox_proto protoreflect.FileDescriptor
 
 const file_store_inbox_proto_rawDesc = "" +
 	"\n" +
-	"\x11store/inbox.proto\x12\vmemos.store\"\xe3\x03\n" +
+	"\x11store/inbox.proto\x12\vmemos.store\"\x8d\x05\n" +
 	"\fInboxMessage\x122\n" +
 	"\x04type\x18\x01 \x01(\x0e2\x1e.memos.store.InboxMessage.TypeR\x04type\x12Q\n" +
 	"\fmemo_comment\x18\x02 \x01(\v2,.memos.store.InboxMessage.MemoCommentPayloadH\x00R\vmemoComment\x12Q\n" +
-	"\fmemo_mention\x18\x03 \x01(\v2,.memos.store.InboxMessage.MemoMentionPayloadH\x00R\vmemoMention\x1aU\n" +
+	"\fmemo_mention\x18\x03 \x01(\v2,.memos.store.InboxMessage.MemoMentionPayloadH\x00R\vmemoMention\x12]\n" +
+	"\x10space_invitation\x18\x04 \x01(\v20.memos.store.InboxMessage.SpaceInvitationPayloadH\x00R\x0fspaceInvitation\x1aU\n" +
 	"\x12MemoCommentPayload\x12\x17\n" +
 	"\amemo_id\x18\x01 \x01(\x05R\x06memoId\x12&\n" +
 	"\x0frelated_memo_id\x18\x02 \x01(\x05R\rrelatedMemoId\x1aU\n" +
 	"\x12MemoMentionPayload\x12\x17\n" +
 	"\amemo_id\x18\x01 \x01(\x05R\x06memoId\x12&\n" +
-	"\x0frelated_memo_id\x18\x02 \x01(\x05R\rrelatedMemoId\"@\n" +
+	"\x0frelated_memo_id\x18\x02 \x01(\x05R\rrelatedMemoId\x1a3\n" +
+	"\x16SpaceInvitationPayload\x12\x19\n" +
+	"\bspace_id\x18\x01 \x01(\x05R\aspaceId\"V\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x10\n" +
 	"\fMEMO_COMMENT\x10\x01\x12\x10\n" +
-	"\fMEMO_MENTION\x10\x02B\t\n" +
+	"\fMEMO_MENTION\x10\x02\x12\x14\n" +
+	"\x10SPACE_INVITATION\x10\x03B\t\n" +
 	"\apayloadB\x95\x01\n" +
 	"\x0fcom.memos.storeB\n" +
 	"InboxProtoP\x01Z)github.com/usememos/memos/proto/gen/store\xa2\x02\x03MSX\xaa\x02\vMemos.Store\xca\x02\vMemos\\Store\xe2\x02\x17Memos\\Store\\GPBMetadata\xea\x02\fMemos::Storeb\x06proto3"
@@ -303,22 +373,24 @@ func file_store_inbox_proto_rawDescGZIP() []byte {
 }
 
 var file_store_inbox_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_store_inbox_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_store_inbox_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_store_inbox_proto_goTypes = []any{
-	(InboxMessage_Type)(0),                  // 0: memos.store.InboxMessage.Type
-	(*InboxMessage)(nil),                    // 1: memos.store.InboxMessage
-	(*InboxMessage_MemoCommentPayload)(nil), // 2: memos.store.InboxMessage.MemoCommentPayload
-	(*InboxMessage_MemoMentionPayload)(nil), // 3: memos.store.InboxMessage.MemoMentionPayload
+	(InboxMessage_Type)(0),                      // 0: memos.store.InboxMessage.Type
+	(*InboxMessage)(nil),                        // 1: memos.store.InboxMessage
+	(*InboxMessage_MemoCommentPayload)(nil),     // 2: memos.store.InboxMessage.MemoCommentPayload
+	(*InboxMessage_MemoMentionPayload)(nil),     // 3: memos.store.InboxMessage.MemoMentionPayload
+	(*InboxMessage_SpaceInvitationPayload)(nil), // 4: memos.store.InboxMessage.SpaceInvitationPayload
 }
 var file_store_inbox_proto_depIdxs = []int32{
 	0, // 0: memos.store.InboxMessage.type:type_name -> memos.store.InboxMessage.Type
 	2, // 1: memos.store.InboxMessage.memo_comment:type_name -> memos.store.InboxMessage.MemoCommentPayload
 	3, // 2: memos.store.InboxMessage.memo_mention:type_name -> memos.store.InboxMessage.MemoMentionPayload
-	3, // [3:3] is the sub-list for method output_type
-	3, // [3:3] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	4, // 3: memos.store.InboxMessage.space_invitation:type_name -> memos.store.InboxMessage.SpaceInvitationPayload
+	4, // [4:4] is the sub-list for method output_type
+	4, // [4:4] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_store_inbox_proto_init() }
@@ -329,6 +401,7 @@ func file_store_inbox_proto_init() {
 	file_store_inbox_proto_msgTypes[0].OneofWrappers = []any{
 		(*InboxMessage_MemoComment)(nil),
 		(*InboxMessage_MemoMention)(nil),
+		(*InboxMessage_SpaceInvitation)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -336,7 +409,7 @@ func file_store_inbox_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_store_inbox_proto_rawDesc), len(file_store_inbox_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   3,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

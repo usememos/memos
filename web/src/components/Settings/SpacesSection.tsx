@@ -17,6 +17,7 @@ import CreateSpaceDialog from "@/components/CreateSpaceDialog";
 import InviteSpaceMemberDialog from "@/components/Settings/InviteSpaceMemberDialog";
 import SettingSection from "@/components/Settings/SettingSection";
 import SpaceMark from "@/components/SpaceMark";
+import SpaceRoleBadge from "@/components/SpaceRoleBadge";
 import UserAvatar from "@/components/UserAvatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -55,16 +56,6 @@ const getSpacesSettingsLocation = (spaceName?: string) => ({
   search: spaceName ? `?${new URLSearchParams({ space: spaceName }).toString()}` : "",
   hash: "#spaces",
 });
-
-const SpaceRoleBadge = ({ role }: { role: SpaceMember_Role }) => {
-  const t = useTranslate();
-  const isAdmin = role === SpaceMember_Role.ADMIN;
-  return (
-    <Badge variant={isAdmin ? "secondary" : "outline"} shape="pill" className="h-5 px-2 font-normal">
-      {isAdmin ? t("setting.spaces.space-admin") : t("setting.spaces.space-user")}
-    </Badge>
-  );
-};
 
 const MemberIdentity = ({ member, user, isCurrentUser }: { member: SpaceMember; user?: User; isCurrentUser?: boolean }) => {
   const t = useTranslate();

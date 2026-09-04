@@ -78,7 +78,7 @@ func (d *EmailDispatcher) DispatchInboxEmail(ctx context.Context, inbox *store.I
 		return errors.Wrap(err, "failed to get notification memos")
 	}
 
-	message, err := d.buildInboxEmailMessage(inbox, receiver, sender, memosByID)
+	message, err := d.buildInboxEmailMessage(ctx, inbox, receiver, sender, memosByID)
 	if err != nil {
 		return err
 	}
@@ -133,16 +133,71 @@ func SendTestEmail(setting *storepb.InstanceNotificationSetting_EmailSetting, re
 	return email.Send(EmailConfigFromInstanceSetting(setting), NewTestEmailMessage(recipientEmail, setting.GetReplyTo()))
 }
 
-func (d *EmailDispatcher) buildInboxEmailMessage(inbox *store.Inbox, receiver *store.User, sender *store.User, memosByID map[int32]*store.Memo) (*email.Message, error) {
+func (d *EmailDispatcher) buildInboxEmailMessage(ctx context.Context, inbox *store.Inbox, receiver *store.User, sender *store.User, memosByID map[int32]*store.Memo) (*email.Message, error) {
 	senderName := displayNameForEmail(sender)
 	switch inbox.Message.Type {
 	case storepb.InboxMessage_MEMO_COMMENT:
 		return d.buildMemoCommentEmailMessage(inbox.Message, receiver, senderName, memosByID)
 	case storepb.InboxMessage_MEMO_MENTION:
 		return d.buildMemoMentionEmailMessage(inbox.Message, receiver, senderName, memosByID)
+	case storepb.InboxMessage_SPACE_INVITATION:
+		return d.buildSpaceInvitationEmailMessage(ctx, inbox.Message, receiver, senderName)
 	default:
 		return nil, nil
 	}
+}
+
+// buildSpaceInvitationEmailMessage renders the invitation email only while
+// the receiver still holds the pending offer, so a revoked or already handled
+// invitation never reaches their mailbox.
+func (d *EmailDispatcher) buildSpaceInvitationEmailMessage(ctx context.Context, message *storepb.InboxMessage, receiver *store.User, senderName string) (*email.Message, error) {
+	payload := message.GetSpaceInvitation()
+	if payload == nil || payload.SpaceId <= 0 {
+		return nil, nil
+	}
+	space, err := d.store.GetSpace(ctx, &store.FindSpace{ID: &payload.SpaceId})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get invitation space")
+	}
+	if space == nil {
+		return nil, nil
+	}
+	invitation, err := d.store.GetSpaceInvitation(ctx, &store.FindSpaceInvitation{
+		SpaceID:      &space.ID,
+		UserID:       &receiver.ID,
+		ViewerUserID: &receiver.ID,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get space invitation")
+	}
+	if invitation == nil {
+		return nil, nil
+	}
+	url := d.inboxURL()
+	if url == "" {
+		return nil, nil
+	}
+
+	roleName := "a member"
+	if invitation.Role == store.SpaceMemberRoleAdmin {
+		roleName = "an administrator"
+	}
+	body := []string{
+		fmt.Sprintf("Hi %s,", displayNameForEmail(receiver)),
+		"",
+		fmt.Sprintf("%s invited you to join the Space \"%s\" as %s.", senderName, space.Title, roleName),
+		"",
+		"Review the invitation in Memos:",
+		url,
+		"",
+		"You are receiving this because an administrator of this Space invited you.",
+	}
+
+	return &email.Message{
+		To:      []string{receiver.Email},
+		Subject: fmt.Sprintf("[Memos] %s invited you to join \"%s\"", senderName, space.Title),
+		Body:    strings.Join(body, "\n"),
+	}, nil
 }
 
 func (d *EmailDispatcher) buildMemoCommentEmailMessage(message *storepb.InboxMessage, receiver *store.User, senderName string, memosByID map[int32]*store.Memo) (*email.Message, error) {
@@ -296,6 +351,14 @@ func (d *EmailDispatcher) baseURL() string {
 		return ""
 	}
 	return strings.TrimRight(strings.TrimSpace(d.profile.InstanceURL), "/")
+}
+
+func (d *EmailDispatcher) inboxURL() string {
+	baseURL := d.baseURL()
+	if baseURL == "" {
+		return ""
+	}
+	return baseURL + "/inbox"
 }
 
 func (d *EmailDispatcher) memoURL(memo *store.Memo) string {

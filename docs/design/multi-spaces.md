@@ -172,6 +172,8 @@ MCP memo operations reuse the same memo policy; Space management is not exposed 
 
 The active Space scopes collaborative resource browsing and creation, including Home, Explore, and attachment lists. Archived, Inbox, and user profiles remain user-global and their routes do not inherit the active Space. Global Settings provides a Spaces section for viewing received invitations and managing joined Spaces, metadata, members, roles, and pending invitations; it is a management surface rather than another Space switcher.
 
+Creating an invitation also delivers a `SPACE_INVITATION` inbox notification to the invitee, with the same email dispatch as memo notifications when email is enabled. The notification carries the read-only Space summary and offered role, and the invitee can accept or decline from the Inbox. Accepting archives the notification and keeps it as history while the membership is active; declining or revoking deletes it. At read time the notification fails closed: it is omitted unless the receiver still holds the pending invitation or is an active member of the Space, so a deleted Space or a revoked offer leaks no metadata.
+
 ### Security invariants
 
 Before `SPACE` can be stored, one shared, memo-local, fail-closed policy must cover point reads, lists and counts, files, reactions, relations, notifications, email, webhooks, shares, search, statistics, public feeds, and MCP. Child resources resolve the memo they directly belong to. Application `ADMIN` receives no implicit bypass.
@@ -213,4 +215,4 @@ Files for `PRIVATE`, `PROTECTED`, and `SPACE` memos use `private, no-store`; pub
 
 ## Deferred design
 
-Email and external-user invitations, invitation expiration, inviter attribution, invitation history, open enrollment, account erasure beyond the membership guard, notification delivery and retention policy, application-admin moderation and recovery, audit history, soft deletion, restoration, retryable external-object cleanup, delivery-time cancellation of queued email/webhooks, broader concurrent-mutation hardening, and asynchronous deletion of very large Spaces remain deferred. Later work must preserve invitee consent, independent memo authorization, non-propagating relations, and explicit Space aggregate deletion unless this design is revisited.
+Email and external-user invitations, invitation expiration, inviter attribution, invitation history, open enrollment, account erasure beyond the membership guard, notification retention policy and per-user notification preferences, application-admin moderation and recovery, audit history, soft deletion, restoration, retryable external-object cleanup, delivery-time cancellation of queued email/webhooks, broader concurrent-mutation hardening, and asynchronous deletion of very large Spaces remain deferred. Later work must preserve invitee consent, independent memo authorization, non-propagating relations, and explicit Space aggregate deletion unless this design is revisited.

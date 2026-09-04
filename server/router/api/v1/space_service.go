@@ -288,6 +288,7 @@ func (s *APIV1Service) CreateSpaceInvitation(ctx context.Context, request *v1pb.
 	if err != nil {
 		return nil, mapSpaceMutationError(err, "failed to create space invitation")
 	}
+	s.createSpaceInvitationNotification(ctx, space, currentUser, targetUser)
 	s.SSEHub.publishSpaceChanged()
 	return convertSpaceInvitationFromStore(space, targetUser, created), nil
 }
@@ -500,6 +501,7 @@ func (s *APIV1Service) DeleteSpaceInvitation(ctx context.Context, request *v1pb.
 	}, currentUser.ID); err != nil {
 		return nil, mapSpaceMutationError(err, "failed to revoke space invitation")
 	}
+	s.deleteSpaceInvitationNotifications(ctx, targetUser.ID, invitation.SpaceID)
 	s.SSEHub.publishSpaceChanged()
 	return &emptypb.Empty{}, nil
 }
@@ -522,6 +524,7 @@ func (s *APIV1Service) AcceptSpaceInvitation(ctx context.Context, request *v1pb.
 	if err != nil {
 		return nil, mapSpaceMutationError(err, "failed to accept space invitation")
 	}
+	s.archiveSpaceInvitationNotifications(ctx, currentUser.ID, invitation.SpaceID)
 	s.SSEHub.publishSpaceChanged()
 	return convertSpaceMemberFromStore(space, currentUser, member), nil
 }
@@ -543,6 +546,7 @@ func (s *APIV1Service) DeclineSpaceInvitation(ctx context.Context, request *v1pb
 	if err := s.Store.DeclineSpaceInvitation(ctx, &store.DeclineSpaceInvitation{SpaceID: invitation.SpaceID, UserID: currentUser.ID}, currentUser.ID); err != nil {
 		return nil, mapSpaceMutationError(err, "failed to decline space invitation")
 	}
+	s.deleteSpaceInvitationNotifications(ctx, currentUser.ID, invitation.SpaceID)
 	s.SSEHub.publishSpaceChanged()
 	return &emptypb.Empty{}, nil
 }

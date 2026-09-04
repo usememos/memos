@@ -299,6 +299,8 @@ export function useAcceptSpaceInvitation(viewerName: string) {
       // promote that summary into the member list; refresh the authoritative list.
       void queryClient.invalidateQueries({ queryKey: spaceKeys.list(viewerName), exact: true });
       invalidateMembershipSensitiveQueries(queryClient);
+      // The server resolves the matching inbox notification.
+      void queryClient.invalidateQueries({ queryKey: userKeys.notifications() });
     },
   });
 }
@@ -321,6 +323,8 @@ export function useDeclineSpaceInvitation(viewerName: string) {
           removeByName(invitations, name),
         );
       }
+      // The server removes the matching inbox notification.
+      void queryClient.invalidateQueries({ queryKey: userKeys.notifications() });
     },
   });
 }
