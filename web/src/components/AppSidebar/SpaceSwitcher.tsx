@@ -51,7 +51,7 @@ const ContextItem = ({
   </DropdownMenuItem>
 );
 
-function SpaceSwitcher({ className, size = "md" }: { className?: string; size?: "md" | "header" }) {
+function SpaceSwitcher({ className, size = "md", onClick }: { className?: string; size?: "md" | "header"; onClick?: () => void }) {
   const t = useTranslate();
   const { spaces, duplicateSpaceTitles, selectedSpace, selectedSpaceName, isLoadingSpaces, isSpacesError, selectMemos, selectSpace } =
     useSpaceContext();
@@ -91,6 +91,7 @@ function SpaceSwitcher({ className, size = "md" }: { className?: string; size?: 
               type="button"
               aria-label={`${t("space.switch")}: ${currentContextLabel}`}
               title={currentContextLabel}
+              onClick={onClick}
               className={cn(
                 "text-start transition-colors hover:bg-sidebar-accent/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/40",
                 size === "header" ? sidebarSurfaceVariants({ role: "headerBrand" }) : sidebarSurfaceVariants({ role: "mobileBrand" }),

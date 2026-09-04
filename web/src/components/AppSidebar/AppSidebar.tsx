@@ -552,14 +552,16 @@ const GlobalNavigation = () => {
 const SidebarBrand = ({ className, size = "md" }: { className?: string; size?: "md" | "header" }) => {
   const currentUser = useCurrentUser();
   const location = useLocation();
+  const { clearAllFilters } = useMemoFilterContext();
 
   if (currentUser && routeSupportsCollectionScope(location.pathname)) {
-    return <SpaceSwitcher className={className} size={size} />;
+    return <SpaceSwitcher className={className} size={size} onClick={clearAllFilters} />;
   }
 
   return (
     <Link
       to={currentUser ? ROUTES.HOME : ROUTES.EXPLORE}
+      onClick={clearAllFilters}
       className={cn(
         "transition-colors hover:bg-sidebar-accent/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/40",
         sidebarSurfaceVariants({ role: size === "header" ? "headerBrand" : "mobileBrand" }),

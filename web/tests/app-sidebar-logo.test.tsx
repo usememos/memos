@@ -15,6 +15,7 @@ const sidebarState = vi.hoisted(() => ({
   mobileOpen: false,
   setMobileOpen: vi.fn(),
   setQuickFindOpen: vi.fn(),
+  clearAllFilters: vi.fn(),
 }));
 const globalEditorState = vi.hoisted(() => ({
   canOpen: true,
@@ -98,6 +99,7 @@ vi.mock("@/contexts/MemoFilterContext", () => ({
     filters: [],
     memoView: undefined,
     setMemoView: vi.fn(),
+    clearAllFilters: sidebarState.clearAllFilters,
   }),
 }));
 
@@ -194,6 +196,7 @@ describe("App sidebar logo", () => {
     sidebarState.mobileOpen = false;
     sidebarState.setMobileOpen.mockClear();
     sidebarState.setQuickFindOpen.mockClear();
+    sidebarState.clearAllFilters.mockClear();
     globalEditorState.canOpen = true;
     globalEditorState.openEditor.mockClear();
     spaceState.spaces = [];
@@ -205,6 +208,30 @@ describe("App sidebar logo", () => {
     spaceState.selectSpace.mockClear();
     filteredStatsHook.mockClear();
     tagsSectionHook.mockClear();
+  });
+
+  it("clears filters when the instance brand is clicked", () => {
+    render(
+      <MemoryRouter initialEntries={["/about?filter=contentSearch:plan"]}>
+        <AppSidebar />
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getByRole("link", { name: "Memos logo" }));
+
+    expect(sidebarState.clearAllFilters).toHaveBeenCalledOnce();
+  });
+
+  it("clears filters when the collection brand is clicked", () => {
+    render(
+      <MemoryRouter initialEntries={["/?filter=contentSearch:plan"]}>
+        <AppSidebar />
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "space.switch: common.memos" }));
+
+    expect(sidebarState.clearAllFilters).toHaveBeenCalledOnce();
   });
 
   it("shows the context switcher and opens the global memo editor", () => {
