@@ -2,6 +2,7 @@ import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
 import { useQueryClient } from "@tanstack/react-query";
 import {
+  AstroidIcon,
   CheckCircle2Icon,
   ClipboardCheckIcon,
   Clock3Icon,
@@ -76,6 +77,18 @@ const memoViewExamples = [
     filter: 'tags.exists(t, t.startsWith("archive"))',
     description: "Match hierarchical tags by prefix.",
     icon: TagsIcon,
+  },
+  {
+    title: "Unassigned",
+    filter: "space == null",
+    description: "Memos that are not placed in any space.",
+    icon: AstroidIcon,
+  },
+  {
+    title: "In one space",
+    filter: 'space == "spaces/your-space-id"',
+    description: "Memos placed in a space. Use the space ID from its URL or settings.",
+    icon: AstroidIcon,
   },
   {
     title: "Open tasks",
@@ -164,6 +177,9 @@ const filterFields = [
   "content.matches(...)",
   "visibility",
   "pinned",
+  "space == null",
+  "space != null",
+  'space == "spaces/..."',
   "tag in [...]",
   "tags.exists(...)",
   "tags.all(...)",

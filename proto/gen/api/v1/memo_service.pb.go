@@ -556,7 +556,8 @@ type ListMemosRequest struct {
 	//	content (string), creator (string, e.g. "users/1"),
 	//	created_ts / updated_ts (timestamp), pinned (bool),
 	//	visibility (string: PRIVATE | PROTECTED | PUBLIC | SPACE),
-	//	space (string resource name or null when the memo has no space),
+	//	space (string resource name, or null when the memo has no space;
+	//	  supports == and comparisons against null, e.g. space != null),
 	//	tags (list<string>; match with `"work" in tags`, not `tag == "work"`),
 	//	has_task_list / has_link / has_code / has_incomplete_tasks (bool),
 	//	has_location (bool; true when the memo has a location attached).
