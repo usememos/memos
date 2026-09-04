@@ -45,34 +45,37 @@ const MemoBody: React.FC<MemoBodyProps> = ({ compact }) => {
   );
 
   return (
-    <div data-slot="memo-body" className="relative w-full">
-      <div
-        className={cn(
-          "w-full flex flex-col justify-start items-start gap-2",
-          blurred && !showBlurredContent && "blur-lg transition-all duration-200",
-        )}
-      >
-        {/* Compact bounds the whole body — attachments included — behind one Show more.
-            Reactions stay outside so they never hide under the fade. */}
-        <ClampedSection enabled={Boolean(compact)}>
-          <MemoContent
-            memoName={memo.name}
-            parentPage={parentPage}
-            parentScope={parentScope}
-            content={memo.content}
-            attachments={memo.attachments}
-            onClick={handleMemoContentClick}
-            onDoubleClick={handleMemoContentDoubleClick}
-            compact={Boolean(compact)}
-          />
-          <AttachmentListView attachments={attachmentOnlyItems} onImagePreview={openPreview} />
-          <RelationListView relations={referencedMemos} currentMemoName={memo.name} parentPage={parentPage} parentScope={parentScope} />
-          {memo.location && <LocationDisplayView location={memo.location} />}
-        </ClampedSection>
-        <MemoReactionListView memo={memo} reactions={memo.reactions} />
+    <div className="w-full flex flex-col justify-start items-start gap-2">
+      <div data-slot="memo-body" className="relative w-full">
+        <div
+          className={cn(
+            "w-full flex flex-col justify-start items-start gap-2",
+            blurred && !showBlurredContent && "blur-lg transition-all duration-200",
+          )}
+        >
+          {/* Compact bounds the whole body — attachments included — behind one Show more.
+              Reactions stay outside so they never hide under the fade. */}
+          <ClampedSection enabled={Boolean(compact)}>
+            <MemoContent
+              memoName={memo.name}
+              parentPage={parentPage}
+              parentScope={parentScope}
+              content={memo.content}
+              attachments={memo.attachments}
+              onClick={handleMemoContentClick}
+              onDoubleClick={handleMemoContentDoubleClick}
+              compact={Boolean(compact)}
+            />
+            <AttachmentListView attachments={attachmentOnlyItems} onImagePreview={openPreview} />
+            <RelationListView relations={referencedMemos} currentMemoName={memo.name} parentPage={parentPage} parentScope={parentScope} />
+            {memo.location && <LocationDisplayView location={memo.location} />}
+          </ClampedSection>
+        </div>
+
+        {blurred && !showBlurredContent && <BlurOverlay onClick={toggleBlurVisibility} />}
       </div>
 
-      {blurred && !showBlurredContent && <BlurOverlay onClick={toggleBlurVisibility} />}
+      <MemoReactionListView memo={memo} reactions={memo.reactions} />
     </div>
   );
 };

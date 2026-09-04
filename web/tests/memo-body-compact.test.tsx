@@ -9,11 +9,12 @@ const mockState = vi.hoisted(() => ({
     content: "",
     relations: [],
     attachments: [],
-    reactions: [],
+    reactions: [] as Array<{ reactionType: string; creator: string }>,
   },
   blurred: false,
   showBlurredContent: false,
   toggleBlurVisibility: vi.fn(),
+  reactionClick: vi.fn(),
 }));
 
 vi.mock("@/utils/i18n", () => ({
@@ -35,7 +36,12 @@ vi.mock("@/components/MemoMetadata", () => ({
 }));
 
 vi.mock("@/components/MemoReactionListView", () => ({
-  MemoReactionListView: () => null,
+  MemoReactionListView: ({ memo }: { memo: { reactions: unknown[] } }) =>
+    memo.reactions.length > 0 ? (
+      <button type="button" aria-label="memo-reaction" onClick={mockState.reactionClick}>
+        Reaction
+      </button>
+    ) : null,
 }));
 
 vi.mock("@/components/MemoView/hooks", () => ({
@@ -58,18 +64,19 @@ vi.mock("@/components/MemoView/MemoViewContext", () => ({
   }),
 }));
 
-const createMemo = (content: string) => ({
+const createMemo = (content: string, reactions: Array<{ reactionType: string; creator: string }> = []) => ({
   name: "memos/1",
   content,
   relations: [],
   attachments: [],
-  reactions: [],
+  reactions,
 });
 
 afterEach(() => {
   mockState.blurred = false;
   mockState.showBlurredContent = false;
   mockState.toggleBlurVisibility.mockReset();
+  mockState.reactionClick.mockReset();
   vi.restoreAllMocks();
 });
 
@@ -128,5 +135,21 @@ describe("<MemoBody /> compact body clamp", () => {
 
     expect(memoBody).not.toBeNull();
     expect(memoBody).toHaveClass("relative", "w-full");
+  });
+
+  it("keeps reactions interactive while sensitive content is blurred", () => {
+    mockState.blurred = true;
+    mockState.memo = createMemo("sensitive content", [{ reactionType: "👍", creator: "users/alice" }]);
+
+    render(<MemoBody compact={false} />);
+
+    const reaction = screen.getByRole("button", { name: "memo-reaction" });
+    const blurredContent = screen.getByText("sensitive content").closest(".blur-lg");
+
+    expect(blurredContent).not.toBeNull();
+    expect(blurredContent).not.toContainElement(reaction);
+
+    fireEvent.click(reaction);
+    expect(mockState.reactionClick).toHaveBeenCalledOnce();
   });
 });
