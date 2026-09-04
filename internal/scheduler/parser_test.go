@@ -125,3 +125,41 @@ func TestScheduleNextWithTimezone(t *testing.T) {
 		t.Errorf("Next(%v) = %v, expected %v", from, next, expected)
 	}
 }
+
+func TestScheduleWeekdaySevenIsSunday(t *testing.T) {
+	// Cron treats both 0 and 7 as Sunday, but time.Weekday never returns 7,
+	// so a schedule written with 7 must still fire on Sundays.
+	//
+	// Combine day-of-month 1 with weekday 7 so the day-of-month clause does not
+	// mask the weekday behavior for the (non-first-of-month) days exercised here.
+	// 2025-01-05 is a Sunday and 2025-01-06 is a Monday.
+	sunday := time.Date(2025, 1, 5, 0, 0, 0, 0, time.UTC)
+	monday := time.Date(2025, 1, 6, 0, 0, 0, 0, time.UTC)
+
+	seven, err := ParseCronExpression("0 0 1 * 7")
+	if err != nil {
+		t.Fatalf("failed to parse expression: %v", err)
+	}
+	if !seven.matches(sunday) {
+		t.Errorf("weekday 7 should match Sunday %v", sunday)
+	}
+	if seven.matches(monday) {
+		t.Errorf("weekday 7 should not match Monday %v", monday)
+	}
+
+	// Regression: weekday 0 (the canonical Sunday) keeps working.
+	zero, err := ParseCronExpression("0 0 1 * 0")
+	if err != nil {
+		t.Fatalf("failed to parse expression: %v", err)
+	}
+	if !zero.matches(sunday) {
+		t.Errorf("weekday 0 should match Sunday %v", sunday)
+	}
+
+	// End-to-end via the public Next: from a Thursday, the next fire of
+	// "0 0 1 * 7" is the upcoming Sunday (Jan 5), earlier than the next 1st.
+	from := time.Date(2025, 1, 2, 10, 0, 0, 0, time.UTC)
+	if next := seven.Next(from); !next.Equal(sunday) {
+		t.Errorf("Next(%v) = %v, expected Sunday %v", from, next, sunday)
+	}
+}
