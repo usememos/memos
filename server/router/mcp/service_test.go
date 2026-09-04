@@ -568,7 +568,8 @@ func TestMCPRequestBodyLimitMatchesAPI(t *testing.T) {
 	echoServer.POST("/api/v1/attachments", func(c *echo.Context) error {
 		body := map[string]any{}
 		require.NoError(t, json.NewDecoder(c.Request().Body).Decode(&body))
-		content, _ := body["content"].(string)
+		content, ok := body["content"].(string)
+		require.True(t, ok)
 		receivedBytes = len(content)
 		return c.JSON(http.StatusOK, map[string]any{"name": "attachments/1"})
 	})

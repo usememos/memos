@@ -208,6 +208,8 @@ func normalizeSchemaFormat(schema map[string]any) {
 	case "bytes":
 		delete(schema, "format")
 		schema["contentEncoding"] = "base64"
+	default:
+		// Standard JSON Schema formats (date-time, int64, ...) pass through.
 	}
 }
 

@@ -211,13 +211,16 @@ func TestResolveSchemaRefNormalizesNonStandardFormats(t *testing.T) {
 
 	schema, err := resolveSchemaRef(spec, jsonSchema{"$ref": "#/components/schemas/Attachment"})
 	require.NoError(t, err)
-	properties := schema["properties"].(map[string]any)
+	properties, ok := schema["properties"].(map[string]any)
+	require.True(t, ok)
 
-	state := properties["state"].(map[string]any)
+	state, ok := properties["state"].(map[string]any)
+	require.True(t, ok)
 	require.NotContains(t, state, "format")
 	require.Equal(t, []any{"NORMAL", "ARCHIVED"}, state["enum"])
 
-	content := properties["content"].(map[string]any)
+	content, ok := properties["content"].(map[string]any)
+	require.True(t, ok)
 	require.NotContains(t, content, "format")
 	require.Equal(t, "base64", content["contentEncoding"])
 
@@ -229,7 +232,8 @@ func TestResolveSchemaRefNormalizesNonStandardFormats(t *testing.T) {
 func TestSanitizeSchemaValueDoesNotMutateInput(t *testing.T) {
 	original := jsonSchema{"type": "string", "format": "enum", "items": map[string]any{"format": "bytes"}}
 
-	sanitized := sanitizeSchemaValue(original).(map[string]any)
+	sanitized, ok := sanitizeSchemaValue(original).(map[string]any)
+	require.True(t, ok)
 	require.NotContains(t, sanitized, "format")
 	require.Equal(t, "base64", sanitized["items"].(map[string]any)["contentEncoding"])
 

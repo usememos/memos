@@ -111,6 +111,8 @@ func catalogCacheMiddleware(next sdkmcp.MethodHandler) sdkmcp.MethodHandler {
 			typed.TTLMs = int(toolCatalogTTL.Milliseconds())
 		case *sdkmcp.DiscoverResult:
 			typed.TTLMs = int(toolCatalogTTL.Milliseconds())
+		default:
+			// Other results carry no catalog TTL.
 		}
 		return result, nil
 	}
