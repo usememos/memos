@@ -21,6 +21,7 @@ var reservedNetworks = []netip.Prefix{
 	netip.MustParsePrefix("10.0.0.0/8"),     // RFC-1918 class A
 	netip.MustParsePrefix("172.16.0.0/12"),  // RFC-1918 class B
 	netip.MustParsePrefix("192.168.0.0/16"), // RFC-1918 class C
+	netip.MustParsePrefix("100.64.0.0/10"),  // RFC-6598 shared address space (CGNAT / cloud metadata)
 	netip.MustParsePrefix("169.254.0.0/16"), // Link-local / cloud IMDS
 	netip.MustParsePrefix("::1/128"),        // IPv6 loopback
 	netip.MustParsePrefix("fc00::/7"),       // IPv6 unique local

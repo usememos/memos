@@ -113,7 +113,15 @@ func resolveAllowedIPs(ctx context.Context, host string) ([]net.IP, error) {
 }
 
 func isInternalIP(ip net.IP) bool {
-	return ip.IsLoopback() || ip.IsPrivate() || ip.IsLinkLocalUnicast() || ip.IsUnspecified()
+	return ip.IsLoopback() || ip.IsPrivate() || ip.IsLinkLocalUnicast() || ip.IsUnspecified() || isCarrierGradeNAT(ip)
+}
+
+// isCarrierGradeNAT reports whether ip is inside 100.64.0.0/10 (RFC 6598),
+// which net.IP.IsPrivate does not cover. That range reaches cloud instance
+// metadata (e.g. Alibaba Cloud 100.100.100.200) and CGNAT internal services.
+func isCarrierGradeNAT(ip net.IP) bool {
+	ip4 := ip.To4()
+	return ip4 != nil && ip4[0] == 100 && ip4[1]&0xc0 == 64
 }
 
 func validateURL(urlStr string) error {
