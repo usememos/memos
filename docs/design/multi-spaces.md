@@ -162,7 +162,7 @@ Space responses returned through membership-authorized operations include the au
 
 Memo responses gain an optional Space resource name, and `Visibility` adds `SPACE = 4` without renumbering existing values. The domain-to-v1 mapping is Author to `PRIVATE`, Instance to `PROTECTED`, Public to `PUBLIC`, and Space to `SPACE`. `VISIBILITY_UNSPECIFIED` remains an input sentinel: create treats it as `PRIVATE`, an explicit visibility update rejects it, and responses never return it. Visibility values are named domains and must not be compared numerically. The global default memo visibility setting continues to accept only `PRIVATE`, `PROTECTED`, and `PUBLIC`, because it cannot identify a Space.
 
-Memo listing gains explicit all-readable, Unassigned, and Space scopes. Space scope requires active membership. Existing global and Space feeds exclude comments by default, and Space identity is not added to the CEL filter schema.
+Memo listing expresses placement through the CEL filter: `space == "spaces/{space}"` selects one Space, `space == null` selects Unassigned memos, and `space != null` selects every placed memo. Membership is enforced by the read policy, which the filter can only narrow. Saved views accept the same expressions. Existing global and Space feeds exclude comments by default.
 
 Placement and audience use the existing memo update mechanism so the memo author can change them atomically. The Space API does not add an operation for an `ADMIN` to move, withdraw, or otherwise mutate an individual memo.
 
