@@ -9,13 +9,17 @@ import { useAppSidebar } from "@/contexts/AppSidebarContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSpaceContext } from "@/contexts/SpaceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import useMediaQuery from "@/hooks/useMediaQuery";
 import { spaceScopedCacheKey } from "@/lib/resource-names";
+import { ROUTES } from "@/router/routes";
 import { useTranslate } from "@/utils/i18n";
 
 interface GlobalMemoEditorContextValue {
   /** Whether the signed-in user is ready to compose; gates every visible entry point. */
   canOpen: boolean;
   openEditor: () => void;
+  /** Claims the initial desktop Home focus once, after the editor restores its draft. */
+  claimHomeAutoFocus: () => boolean;
 }
 
 const GlobalMemoEditorContext = createContext<GlobalMemoEditorContextValue | null>(null);
@@ -42,6 +46,9 @@ export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) 
   const currentUserName = useCurrentUser()?.name;
   const { selectedSpaceName } = useSpaceContext();
   const { isUserSettingsInitialized } = useAuth();
+  const desktop = useMediaQuery("md");
+  const [initialHome] = useState(() => ({ location, user: currentUserName, space: selectedSpaceName }));
+  const homeAutoFocusPending = useRef(desktop && location.pathname === ROUTES.HOME && Boolean(currentUserName));
   const { setMobileOpen, setQuickFindOpen } = useAppSidebar();
   const routePolicy = getRouteActionPolicy(location.pathname);
   const composeSpace = routePolicy.composePlacement === "remembered-space" ? selectedSpaceName : undefined;
@@ -55,6 +62,26 @@ export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) 
   const isSavingRef = useRef(false);
   const returnFocusRef = useRef<HTMLElement | null>(null);
   const openRequestVersionRef = useRef(0);
+
+  useEffect(() => {
+    if (
+      location.key !== initialHome.location.key ||
+      location.pathname !== initialHome.location.pathname ||
+      location.search !== initialHome.location.search ||
+      currentUserName !== initialHome.user ||
+      selectedSpaceName !== initialHome.space ||
+      !desktop
+    ) {
+      homeAutoFocusPending.current = false;
+    }
+  }, [location, currentUserName, selectedSpaceName, desktop, initialHome]);
+
+  const claimHomeAutoFocus = useCallback(() => {
+    const pending = homeAutoFocusPending.current;
+    homeAutoFocusPending.current = false;
+    // A user who already focused another control takes precedence over startup focus.
+    return pending && (document.activeElement === document.body || document.activeElement === null);
+  }, []);
 
   const closeEditor = useCallback(() => {
     openRequestVersionRef.current += 1;
@@ -74,6 +101,7 @@ export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) 
 
   const openEditor = useCallback(() => {
     if (!canOpen || !currentUserName) return;
+    homeAutoFocusPending.current = false;
 
     // Owned here so no caller can leave a sidebar surface open underneath.
     setMobileOpen(false);
@@ -112,7 +140,7 @@ export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) 
   }, []);
 
   const editorIsOpen = opened !== undefined && opened.user === currentUserName;
-  const value = useMemo(() => ({ canOpen, openEditor }), [canOpen, openEditor]);
+  const value = useMemo(() => ({ canOpen, openEditor, claimHomeAutoFocus }), [canOpen, openEditor, claimHomeAutoFocus]);
 
   return (
     <GlobalMemoEditorContext.Provider value={value}>

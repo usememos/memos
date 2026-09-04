@@ -15,6 +15,7 @@ const mocks = vi.hoisted(() => ({
   setQuickFindOpen: vi.fn(),
   selectedSpaceName: undefined as string | undefined,
   pathname: "/",
+  desktop: true,
 }));
 
 vi.mock("react-router-dom", async (importOriginal) => ({
@@ -40,6 +41,10 @@ vi.mock("@/contexts/SpaceContext", () => ({
 
 vi.mock("@/hooks/useCurrentUser", () => ({
   default: () => mocks.currentUser,
+}));
+
+vi.mock("@/hooks/useMediaQuery", () => ({
+  default: () => mocks.desktop,
 }));
 
 vi.mock("@/utils/i18n", () => ({
@@ -124,6 +129,57 @@ describe("GlobalMemoEditorProvider", () => {
     mocks.setQuickFindOpen.mockClear();
     mocks.selectedSpaceName = undefined;
     mocks.pathname = "/";
+    mocks.desktop = true;
+  });
+
+  it("allows Home autofocus once after settings finish loading", () => {
+    let claimFocus!: () => boolean;
+    const Probe = () => {
+      claimFocus = useGlobalMemoEditor().claimHomeAutoFocus;
+      return null;
+    };
+    mocks.isUserSettingsInitialized = false;
+    const { rerender } = renderProvider(<Probe />);
+    mocks.isUserSettingsInitialized = true;
+    rerender(
+      <GlobalMemoEditorProvider>
+        <Probe />
+      </GlobalMemoEditorProvider>,
+    );
+
+    expect(claimFocus()).toBe(true);
+    expect(claimFocus()).toBe(false);
+  });
+
+  it.each(["mobile", "other route", "navigation", "Space change", "existing focus"])("does not autofocus Home after %s", (scenario) => {
+    let claimFocus!: () => boolean;
+    const Probe = () => {
+      claimFocus = useGlobalMemoEditor().claimHomeAutoFocus;
+      return <button type="button">Another control</button>;
+    };
+    if (scenario === "mobile") mocks.desktop = false;
+    if (scenario === "other route") mocks.pathname = "/explore";
+    const { rerender } = renderProvider(<Probe />);
+
+    if (scenario === "navigation") mocks.pathname = "/inbox";
+    if (scenario === "Space change") mocks.selectedSpaceName = "spaces/product";
+    if (scenario === "existing focus") screen.getByRole("button", { name: "Another control" }).focus();
+    rerender(
+      <GlobalMemoEditorProvider>
+        <Probe />
+      </GlobalMemoEditorProvider>,
+    );
+
+    // Returning to the original route, Space, or viewport must not rearm focus.
+    mocks.pathname = "/";
+    mocks.selectedSpaceName = undefined;
+    mocks.desktop = true;
+    rerender(
+      <GlobalMemoEditorProvider>
+        <Probe />
+      </GlobalMemoEditorProvider>,
+    );
+    expect(claimFocus()).toBe(false);
   });
 
   it("opens a modal focus-mode editor, closes the sidebar surfaces, and restores focus after Escape", async () => {
