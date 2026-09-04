@@ -9,7 +9,7 @@ interface UseMemoInitOptions {
   memo?: Memo;
   cacheKey?: string;
   username: string;
-  autoFocus?: boolean;
+  autoFocus?: boolean | (() => boolean);
   defaultVisibility?: Visibility;
   defaultCreateTime?: Date;
 }
@@ -59,7 +59,7 @@ export const useMemoInit = ({
         if (cachedCursor !== undefined) {
           editorRef.current?.setCursor(cachedCursor);
         }
-        if (autoFocus) {
+        if (typeof autoFocus === "function" ? autoFocus() : autoFocus) {
           editorRef.current?.focus();
         }
       }, 100);
