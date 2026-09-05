@@ -1,8 +1,8 @@
 import { matchPath } from "react-router-dom";
-import { getProfileUsername, isMemoScopeRoute, type MemoScope, resolveMemoScope } from "@/lib/memo-views";
+import { getProfileUsername, isCalendarRoute, isMemoScopeRoute, type MemoScope, resolveMemoScope } from "@/lib/memo-views";
 import { ROUTES } from "@/router/routes";
 
-export type SidebarRouteKind = MemoScope | "profile" | "views" | "attachments" | "inbox" | "settings" | "memo" | "common";
+export type SidebarRouteKind = MemoScope | "profile" | "views" | "calendar" | "attachments" | "inbox" | "settings" | "memo" | "common";
 
 export type RouteSearchScope = "remembered-collection" | "user-collection" | "profile" | "all";
 export type RouteComposePlacement = "remembered-space" | "unassigned";
@@ -19,6 +19,7 @@ export const getSidebarRouteKind = (path: string): SidebarRouteKind => {
   if (isMemoScopeRoute(normalizedPath)) return resolveMemoScope(normalizedPath);
   if (getProfileUsername(normalizedPath) !== undefined) return "profile";
   if (matchPath(ROUTES.VIEWS, normalizedPath)) return "views";
+  if (isCalendarRoute(normalizedPath)) return "calendar";
   if (matchPath(ROUTES.ATTACHMENTS, normalizedPath)) return "attachments";
   if (matchPath(ROUTES.INBOX, normalizedPath)) return "inbox";
   if (matchPath(ROUTES.SETTING, normalizedPath)) return "settings";
@@ -29,7 +30,7 @@ export const getSidebarRouteKind = (path: string): SidebarRouteKind => {
 /** Routes whose collections are filtered by the remembered All / Space scope. */
 export const routeSupportsCollectionScope = (path: string): boolean => {
   const kind = getSidebarRouteKind(path);
-  return kind === "home" || kind === "explore" || kind === "attachments";
+  return kind === "home" || kind === "explore" || kind === "calendar" || kind === "attachments";
 };
 
 /**
@@ -54,7 +55,9 @@ export const getRouteActionPolicy = (path: string): RouteActionPolicy => {
     };
   }
 
-  if (kind === "attachments") {
+  // Calendar and attachments browse the remembered collection but are not memo lists
+  // themselves, so a search leaves for Home and Compose keeps the remembered Space.
+  if (kind === "calendar" || kind === "attachments") {
     return {
       searchScope: "remembered-collection",
       searchDestination: ROUTES.HOME,

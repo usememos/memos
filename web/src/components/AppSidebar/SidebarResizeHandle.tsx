@@ -22,11 +22,32 @@ interface Props {
   onWidthChange: (width: number) => void;
   /** Element carrying the width custom property, written to directly while dragging. */
   targetRef: RefObject<HTMLElement | null>;
+  /** The custom property the drag previews into; defaults to the sidebar's. */
+  cssVariable?: string;
+  /** What a double-click restores. */
+  defaultWidth?: number;
+  /** Which edge of the rail the handle sits on: dragging past a start edge widens the rail leftward. */
+  edge?: "start" | "end";
+  /** Accessible name; defaults to the sidebar's. */
+  label?: string;
 }
 
-const SidebarResizeHandle = ({ width, minWidth, maxWidth, onWidthChange, targetRef }: Props) => {
+const SidebarResizeHandle = ({
+  width,
+  minWidth,
+  maxWidth,
+  onWidthChange,
+  targetRef,
+  cssVariable = SIDEBAR_WIDTH_VAR,
+  defaultWidth = SIDEBAR_DEFAULT_WIDTH,
+  edge = "end",
+  label,
+}: Props) => {
   const t = useTranslate();
   const direction = useDirection();
+  // Pointer and arrow deltas grow the rail when they move toward its far side: rightward for an
+  // end-edge handle in LTR, leftward for a start-edge one; RTL mirrors both.
+  const growSign = (edge === "end" ? 1 : -1) * (direction === "rtl" ? -1 : 1);
   // `dragging` drives the band's styling; `draggingRef` is what the handlers and the unmount
   // cleanup read, so neither depends on a state update having been flushed first.
   const [dragging, setDragging] = useState(false);
@@ -45,10 +66,10 @@ const SidebarResizeHandle = ({ width, minWidth, maxWidth, onWidthChange, targetR
       if (frameRef.current != null) return;
       frameRef.current = requestAnimationFrame(() => {
         frameRef.current = null;
-        targetRef.current?.style.setProperty(SIDEBAR_WIDTH_VAR, `${pendingRef.current}px`);
+        targetRef.current?.style.setProperty(cssVariable, `${pendingRef.current}px`);
       });
     },
-    [targetRef],
+    [targetRef, cssVariable],
   );
 
   const stopPreview = useCallback(() => {
@@ -66,10 +87,10 @@ const SidebarResizeHandle = ({ width, minWidth, maxWidth, onWidthChange, targetR
     () => () => {
       stopPreview();
       if (draggingRef.current) {
-        targetRef.current?.style.setProperty(SIDEBAR_WIDTH_VAR, `${originRef.current.width}px`);
+        targetRef.current?.style.setProperty(cssVariable, `${originRef.current.width}px`);
       }
     },
-    [stopPreview, targetRef],
+    [stopPreview, targetRef, cssVariable],
   );
 
   // Hold the resize cursor for the whole gesture, so it does not flicker into a text caret
@@ -102,7 +123,7 @@ const SidebarResizeHandle = ({ width, minWidth, maxWidth, onWidthChange, targetR
     // Track the delta rather than the raw cursor x, so grabbing anywhere in the strip
     // does not snap the rail's edge to the pointer.
     const pointerDelta = event.clientX - originRef.current.x;
-    previewWidth(clamp(originRef.current.width + (direction === "rtl" ? -pointerDelta : pointerDelta)));
+    previewWidth(clamp(originRef.current.width + growSign * pointerDelta));
   };
 
   const endDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
@@ -117,7 +138,7 @@ const SidebarResizeHandle = ({ width, minWidth, maxWidth, onWidthChange, targetR
   };
 
   const handleKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
-    const horizontalStep = direction === "rtl" ? -KEYBOARD_STEP : KEYBOARD_STEP;
+    const horizontalStep = growSign * KEYBOARD_STEP;
     const next =
       event.key === "ArrowLeft"
         ? width - horizontalStep
@@ -137,7 +158,7 @@ const SidebarResizeHandle = ({ width, minWidth, maxWidth, onWidthChange, targetR
     <div
       role="separator"
       aria-orientation="vertical"
-      aria-label={t("common.resize-sidebar")}
+      aria-label={label ?? t("common.resize-sidebar")}
       aria-valuenow={width}
       aria-valuemin={minWidth}
       aria-valuemax={maxWidth}
@@ -146,9 +167,12 @@ const SidebarResizeHandle = ({ width, minWidth, maxWidth, onWidthChange, targetR
       onPointerMove={handlePointerMove}
       onPointerUp={endDrag}
       onPointerCancel={endDrag}
-      onDoubleClick={() => onWidthChange(SIDEBAR_DEFAULT_WIDTH)}
+      onDoubleClick={() => onWidthChange(defaultWidth)}
       onKeyDown={handleKeyDown}
-      className="group absolute inset-y-0 -end-1 z-10 flex w-2 cursor-col-resize touch-none justify-center focus-visible:outline-none"
+      className={cn(
+        "group absolute inset-y-0 z-10 flex w-2 cursor-col-resize touch-none justify-center focus-visible:outline-none",
+        edge === "end" ? "-end-1" : "-start-1",
+      )}
     >
       {/* A 2px band centering to whole pixels inside the 8px strip, so it covers the rail's
           border and stays crisp at 1x instead of antialiasing across a half-pixel seam. */}

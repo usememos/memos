@@ -48,6 +48,17 @@
     "sso-signup-tip": "使用以下登录方式即可创建账号。",
     "welcome-back": "欢迎回来。"
   },
+  "calendar": {
+    "close-day": "关闭当天",
+    "more-memos": "还有 {{count}} 条",
+    "new-memo-on-day": "在这一天新建备忘录",
+    "next-year": "下一年",
+    "no-memos-in-month": "{{month}} 没有备忘录",
+    "no-memos-on-day": "这一天没有备忘录",
+    "previous-year": "上一年",
+    "resize-panel": "调整当天面板宽度",
+    "select-month": "选择月份"
+  },
   "demo": {
     "banner-description": "这里的改动是临时的，可能会被重置。",
     "banner-title": "Memos 演示站",

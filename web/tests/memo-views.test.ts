@@ -38,6 +38,9 @@ describe("memo scopes", () => {
     expect(isMemoCollectionRoute("/archived")).toBe(true);
     expect(isMemoCollectionRoute("/u/steven")).toBe(true);
     expect(isMemoCollectionRoute("/u/steven/?view=map")).toBe(true);
+    expect(isMemoCollectionRoute("/calendar")).toBe(true);
+    expect(isMemoCollectionRoute("/Calendar/2026/08/02/")).toBe(true);
+    expect(isMemoCollectionRoute("/calendars")).toBe(false);
     expect(getProfileUsername("/u/j%C3%BAlia/")).toBe("júlia");
     expect(getProfileUsername("/u/steven/memos")).toBeUndefined();
     expect(isMemoScopeRoute("/u/steven")).toBe(false);
@@ -132,6 +135,22 @@ describe("memo views", () => {
       }),
     ).toBe(
       `(created_ts >= timestamp(${Math.floor(start.getTime() / 1000)}) && created_ts < timestamp(${Math.floor(end.getTime() / 1000)}))`,
+    );
+  });
+
+  it("selects on update time when that is the basis", () => {
+    const start = new Date(2026, 7, 2);
+    const end = new Date(start);
+    end.setDate(end.getDate() + 1);
+
+    expect(
+      buildMemoFilter({
+        filters: [{ factor: "displayTime", value: "2026-08-02" }],
+        includePinned: false,
+        timeBasis: "update_time",
+      }),
+    ).toBe(
+      `(updated_ts >= timestamp(${Math.floor(start.getTime() / 1000)}) && updated_ts < timestamp(${Math.floor(end.getTime() / 1000)}))`,
     );
   });
 

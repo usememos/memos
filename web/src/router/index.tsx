@@ -11,12 +11,13 @@ import {
   RequireGuestRoute,
   RequireInstanceInitializationRoute,
 } from "./guards";
-import { ROUTES } from "./routes";
+import { CALENDAR_ROUTE_PATTERN, ROUTES } from "./routes";
 
 const AdminSignIn = lazyWithReload(() => import("@/pages/AdminSignIn"));
 const About = lazyWithReload(() => import("@/pages/About"));
 const Archived = lazyWithReload(() => import("@/pages/Archived"));
 const AuthCallback = lazyWithReload(() => import("@/pages/AuthCallback"));
+const Calendar = lazyWithReload(() => import("@/pages/Calendar"));
 const Explore = lazyWithReload(() => import("@/pages/Explore"));
 const Home = lazyWithReload(() => import("@/pages/Home"));
 const Inboxes = lazyWithReload(() => import("@/pages/Inboxes"));
@@ -89,6 +90,7 @@ export const routeConfig: RouteObject[] = [
                 element: <RequireAuthRoute />,
                 children: [
                   { path: Routes.ARCHIVED, element: <Archived /> },
+                  { path: CALENDAR_ROUTE_PATTERN, element: <Calendar /> },
                   {
                     element: <RequireFullInitializationRoute />,
                     children: [{ path: Routes.VIEWS, element: <MemoViews /> }],

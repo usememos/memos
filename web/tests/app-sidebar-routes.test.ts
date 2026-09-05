@@ -12,6 +12,9 @@ describe("sidebar route content", () => {
     ["/U/Steven/", "profile"],
     ["/views", "views"],
     ["/Views/", "views"],
+    ["/calendar", "calendar"],
+    ["/calendar/2026/08", "calendar"],
+    ["/Calendar/2026/08/02/", "calendar"],
     ["/attachments", "attachments"],
     ["/Attachments/", "attachments"],
     ["/inbox", "inbox"],
@@ -34,6 +37,8 @@ describe("sidebar route content", () => {
     ["/", true],
     ["/explore", true],
     ["/archived", false],
+    ["/calendar", true],
+    ["/calendar/2026/08/02", true],
     ["/attachments", true],
     ["/Explore/", true],
     ["/ARCHIVED/", false],
@@ -64,8 +69,8 @@ describe("sidebar route content", () => {
     });
   });
 
-  it("keeps the remembered scope when Attachments sends search to Home", () => {
-    expect(getRouteActionPolicy("/attachments")).toEqual({
+  it.each(["/attachments", "/calendar/2026/08/02"])("keeps the remembered scope when %s sends search to Home", (path) => {
+    expect(getRouteActionPolicy(path)).toEqual({
       searchScope: "remembered-collection",
       searchDestination: "/",
       composePlacement: "remembered-space",

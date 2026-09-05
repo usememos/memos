@@ -53,6 +53,8 @@ interface Props {
   renderHeader?: (options: { useGrid: boolean }) => ReactNode;
   /** Replaces the generic empty-state message when the route knows why the list is empty. */
   emptyMessage?: string;
+  /** Off when the host already shows the active filter chips elsewhere. */
+  showFilters?: boolean;
 }
 
 function useAutoFetchWhenNotScrollable({
@@ -206,6 +208,7 @@ const PagedMemoList = (props: Props) => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [canPaginate, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
+  const showFilters = props.showFilters ?? true;
   const leadingContent = props.renderLeading?.({ useGrid });
   const headerContent = props.renderHeader?.({ useGrid });
 
@@ -254,12 +257,12 @@ const PagedMemoList = (props: Props) => {
   // empty state follows them. The newest memo also lands directly beneath them (priorityKey
   // above). Every vertical seam inside the stack uses GRID_GAP so y-spacing matches the
   // grid's x-spacing exactly.
-  const hasFilters = filters.length > 0 || memoView !== undefined;
+  const hasFilters = showFilters && (filters.length > 0 || memoView !== undefined);
   const gridLeading =
     leadingContent || hasFilters || initialLoader || emptyPlaceholder || initialError ? (
       <div className="flex w-full flex-col" style={{ gap: GRID_GAP }}>
         {leadingContent}
-        <MemoFilters />
+        {showFilters && <MemoFilters />}
         {initialLoader}
         {initialError}
         {emptyPlaceholder}
@@ -302,7 +305,7 @@ const PagedMemoList = (props: Props) => {
             <>
               {headerContent}
               {leadingContent}
-              <MemoFilters className="mb-2" />
+              {showFilters && <MemoFilters className="mb-2" />}
               {initialLoader}
               {initialError}
               {displayMemoList.map((memo) => props.renderer(memo, { compact: effectiveCompact }))}
