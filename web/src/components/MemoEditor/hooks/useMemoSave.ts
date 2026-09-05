@@ -11,6 +11,7 @@ import { useTranslate } from "@/utils/i18n";
 import { errorService, memoService, validationService } from "../services";
 import { useEditorContext } from "../state";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
+import { findTagMatches } from "@/utils/tag-grammar";
 
 interface UseMemoSaveOptions {
   memoName?: string;
@@ -48,18 +49,13 @@ export function useMemoSave({
     const state = getState();
     const { valid, reason, detail } = validationService.canSave(state);
     const extractTagTextsStr = () => {
-      // 1. Generate Existing tag text list from the content
-      // Based on internal/markdown/parser/tag.go
-      const regex = /#[\p{L}\p{N}\p{M}_+\-&]+(?:\/[\p{L}\p{N}\p{M}_+\-&]+)*/gu;
-      const existTagTextList: string[] = state.content.match(regex) ?? [];
-      // 2. Search and merge tags as a string appended tag texts.
+      // Search and merge tags as a string appended tag texts.
       var tagTextStr = "";
       filters.map((filter) => {
         // If filter is tag and the tag is not already in the content, append it as tagTexts string
         if (filter.factor === "tagSearch" && filter.value) {
-          const tagText = "#" + filter.value;
-          if (!existTagTextList.includes(tagText)) {
-            tagTextStr += " " + tagText;
+          if (!findTagMatches(state.content).some((match) => match.value === filter.value)) {
+            tagTextStr += " " + "#" + filter.value;
           }
         }
       });
