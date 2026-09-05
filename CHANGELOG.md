@@ -1,5 +1,30 @@
 # Changelog
 
+## [0.31.0-rc.2](https://github.com/usememos/memos/compare/v0.31.0-rc.1...v0.31.0-rc.2) (2026-09-05)
+
+
+### Features
+
+* **editor:** add Markdown formatting shortcuts ([#6258](https://github.com/usememos/memos/issues/6258)) ([673b9df](https://github.com/usememos/memos/commit/673b9df05fa341dc3518cca24bef70a1dbd64ea6))
+* **editor:** autofocus Home on initial desktop load ([#6275](https://github.com/usememos/memos/issues/6275)) ([60b8973](https://github.com/usememos/memos/commit/60b89736a2ed6509b19609d86176497bcae419a8))
+* **filter:** support space placement in saved views ([#6267](https://github.com/usememos/memos/issues/6267)) ([dfa0fda](https://github.com/usememos/memos/commit/dfa0fda76602d49dfbb68a6683ef20b068c8d45b))
+* **search:** add expression mode to Quick Find ([#6276](https://github.com/usememos/memos/issues/6276)) ([bf1f742](https://github.com/usememos/memos/commit/bf1f7423215f362c1f183a8a797715deff0b814b))
+* **sidebar:** redesign memo detail navigation ([#6261](https://github.com/usememos/memos/issues/6261)) ([d79b2e1](https://github.com/usememos/memos/commit/d79b2e1dc34e913785305d794299686d3d4dc47d))
+* **sidebar:** separate checked filters from current rows ([aba1f73](https://github.com/usememos/memos/commit/aba1f7384d44d020ce8e4d9036c7cececb3c6c13))
+* **spaces:** deliver invitations to the inbox ([#6266](https://github.com/usememos/memos/issues/6266)) ([230e3a1](https://github.com/usememos/memos/commit/230e3a1d117ef7363aceb8688a7761ad6445b6b3))
+* **web:** add 0.5x and 0.75x audio playback speeds ([b88a715](https://github.com/usememos/memos/commit/b88a71540a1a4079c8211edeac3e81b0fb4a6a13)), closes [#6263](https://github.com/usememos/memos/issues/6263)
+* **web:** add a calendar view of your memos ([#6277](https://github.com/usememos/memos/issues/6277)) ([500bb71](https://github.com/usememos/memos/commit/500bb716bcf76e5c99a6ccf00371ead7177c4eae))
+
+
+### Bug Fixes
+
+* **editor:** enable native mobile text assistance ([#6248](https://github.com/usememos/memos/issues/6248)) ([2c7cf91](https://github.com/usememos/memos/commit/2c7cf91aac7cfeeb3107132c06ca4e5cd4b934f2))
+* **i18n:** align Chinese sensitive content labels ([#6274](https://github.com/usememos/memos/issues/6274)) ([f8b55ad](https://github.com/usememos/memos/commit/f8b55ad16e1b6174b139cd0fec6a23ff845b314e))
+* **mcp:** expose standard JSON Schema formats in tool schemas ([652957c](https://github.com/usememos/memos/commit/652957c0f98b5e66fb7b369ddef9f40ee439ef69)), closes [#6262](https://github.com/usememos/memos/issues/6262)
+* **sidebar:** flatten account footer surface ([5a65350](https://github.com/usememos/memos/commit/5a65350400f0b5f6c726a1187458ca3d91f4e38e))
+* **sidebar:** unify layout rails and spacing ([191ec01](https://github.com/usememos/memos/commit/191ec01d11186db7ab4840b41d6fe008e3729909))
+* **ui:** refine compact navigation and memo actions ([ce0dd23](https://github.com/usememos/memos/commit/ce0dd23d2f40d5613fd40f284264fc21e5e4ae82))
+
 ## [0.31.0-rc.1](https://github.com/usememos/memos/compare/v0.30.0...v0.31.0-rc.1) (2026-08-30)
 
 
