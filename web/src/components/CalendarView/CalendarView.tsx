@@ -53,7 +53,7 @@ export const CalendarView = ({ month, date }: CalendarViewProps) => {
   const xl = useMediaQuery("xl");
   const panelRef = useRef<HTMLElement>(null);
   const panelWidth = useDayPanelWidth();
-  const { userTagsSetting, isInitialized: authInitialized } = useAuth();
+  const { userTagsSetting, isInitialized: authInitialized, isUserSettingsInitialized } = useAuth();
   const { isInitialized: instanceInitialized } = useInstance();
   const { memoFilter: contextFilter } = useSpaceContext();
 
@@ -77,7 +77,14 @@ export const CalendarView = ({ month, date }: CalendarViewProps) => {
   });
 
   const isRedacted = useCallback((memo: Memo) => isMemoBlurred(memo, userTagsSetting), [userTagsSetting]);
-  const { model, isLoading } = useMonthMemos({ month, filter: monthFilter, isRedacted, enabled: Boolean(user) });
+  // Snippets and thumbnails must not appear before the tag settings that decide what to blur
+  // have loaded; until then the predicate would let everything through.
+  const { model, isLoading } = useMonthMemos({
+    month,
+    filter: monthFilter,
+    isRedacted,
+    enabled: Boolean(user) && isUserSettingsInitialized,
+  });
 
   const monthLabel = useMemo(() => formatMonthLabel(month, i18n.language), [month, i18n.language]);
   const closeDay = useCallback(() => navigate({ pathname: buildCalendarPath(month), search }), [navigate, month, search]);

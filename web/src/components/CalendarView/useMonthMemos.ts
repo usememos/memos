@@ -9,9 +9,8 @@ import { State } from "@/types/proto/api/v1/common_pb";
 import { ListMemosRequestSchema, type Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { type BuildCalendarMonthModelOptions, buildCalendarMonthModel } from "./dayModel";
 
-/** A realistic personal month fits one page; paging beyond it is only a runaway guard. */
+/** A realistic personal month fits one page; the loop below still drains any that do not. */
 const MONTH_PAGE_SIZE = 500;
-const MAX_MONTH_PAGES = 10;
 const NO_MEMOS: Memo[] = [];
 
 export interface UseMonthMemosOptions extends BuildCalendarMonthModelOptions {
@@ -22,17 +21,17 @@ export interface UseMonthMemosOptions extends BuildCalendarMonthModelOptions {
   enabled?: boolean;
 }
 
+/** Every page of the month: a partial month would understate counts and drop rows. */
 const listWholeMonth = async (filter: string | undefined, orderBy: string): Promise<Memo[]> => {
   const memos: Memo[] = [];
   let pageToken = "";
-  for (let page = 0; page < MAX_MONTH_PAGES; page++) {
+  do {
     const response = await memoServiceClient.listMemos(
       create(ListMemosRequestSchema, { state: State.NORMAL, filter, orderBy, pageSize: MONTH_PAGE_SIZE, pageToken }),
     );
     memos.push(...response.memos);
     pageToken = response.nextPageToken;
-    if (!pageToken) break;
-  }
+  } while (pageToken);
   return memos;
 };
 
