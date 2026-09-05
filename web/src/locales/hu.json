@@ -133,7 +133,6 @@
     },
     "no-changes-detected": "Nincs változás",
     "save": "Mentés",
-    "saving": "Mentés...",
     "audio-recorder": {
       "attachment-label": "Hangfelvétel",
       "attachment-label-with-time": "Hangfelvétel {{time}}",

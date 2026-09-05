@@ -56,6 +56,11 @@ export const editorActions = {
     payload: timestamps,
   }),
 
+  setJustSaved: (value: boolean): EditorAction => ({
+    type: "SET_JUST_SAVED",
+    payload: value,
+  }),
+
   setRecorderBusy: (value: boolean): EditorAction => ({
     type: "SET_RECORDER_BUSY",
     payload: value,

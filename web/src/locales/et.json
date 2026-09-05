@@ -170,7 +170,6 @@
     },
     "no-changes-detected": "Muudatusi ei tuvastatud",
     "save": "Salvesta",
-    "saving": "Salvestamine...",
     "audio-recorder": {
       "attachment-label": "Helisalvestus",
       "attachment-label-with-time": "Helisalvestus {{time}}",

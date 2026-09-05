@@ -58,6 +58,8 @@ export interface EditorToolbarProps {
   onSave: () => void;
   onCancel?: () => void;
   memoName?: string;
+  /** Set when the editor composes a comment on this memo; picks the commit verb. */
+  parentMemoName?: string;
   /** The Space that owns the memo being created or edited, if any. */
   space?: string;
   onAudioRecorderClick: () => void;

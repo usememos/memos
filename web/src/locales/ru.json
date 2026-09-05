@@ -183,7 +183,6 @@
     },
     "no-changes-detected": "Изменений не обнаружено",
     "save": "Сохранить",
-    "saving": "Сохранение...",
     "audio-recorder": {
       "attachment-label": "Аудиозапись",
       "attachment-label-with-time": "Аудиозапись {{time}}",

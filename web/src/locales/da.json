@@ -170,7 +170,6 @@
     },
     "no-changes-detected": "Ingen ændringer registreret",
     "save": "Spare",
-    "saving": "Gemmer...",
     "audio-recorder": {
       "attachment-label": "Lydoptagelse",
       "attachment-label-with-time": "Lydoptagelse {{time}}",

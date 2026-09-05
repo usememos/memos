@@ -95,6 +95,15 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
         recorderBusy: action.payload,
       };
 
+    case "SET_JUST_SAVED":
+      return {
+        ...state,
+        ui: {
+          ...state.ui,
+          justSaved: action.payload,
+        },
+      };
+
     case "RESET":
       return createInitialState();
 

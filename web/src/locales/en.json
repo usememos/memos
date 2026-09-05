@@ -237,6 +237,7 @@
     "any-thoughts": "Any thoughts...",
     "exit-focus-mode": "Exit Focus Mode",
     "focus-mode": "Focus Mode",
+    "comment": "Comment",
     "formatting-toolbar": "Formatting toolbar",
     "format": {
       "heading": "Heading",
@@ -272,7 +273,7 @@
     "new-memo": "New memo",
     "no-changes-detected": "No changes detected",
     "save": "Save",
-    "saving": "Saving...",
+    "saved": "Saved",
     "validation": {
       "cannot-save": "Cannot save",
       "content-required": "Content, attachment, or file required",

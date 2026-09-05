@@ -133,7 +133,6 @@
     },
     "no-changes-detected": "Nema promjena",
     "save": "Sačuvaj",
-    "saving": "Spremanje...",
     "audio-recorder": {
       "attachment-label": "Audio snimanje",
       "attachment-label-with-time": "Audio snimak {{time}}",

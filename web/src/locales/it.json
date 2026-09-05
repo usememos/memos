@@ -133,7 +133,6 @@
     },
     "no-changes-detected": "Nessuna modifica rilevata",
     "save": "Salva",
-    "saving": "Salvataggio...",
     "audio-recorder": {
       "attachment-label": "Registrazione audio",
       "attachment-label-with-time": "Registrazione audio {{time}}",

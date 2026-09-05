@@ -11,6 +11,9 @@ import { useTranslate } from "@/utils/i18n";
 import { errorService, memoService, validationService } from "../services";
 import { useEditorContext } from "../state";
 
+/** How long a closing host shows "Saved" before it unmounts the editor. */
+const SAVED_CONFIRMATION_MS = 900;
+
 interface UseMemoSaveOptions {
   memoName?: string;
   parentMemoName?: string;
@@ -44,6 +47,9 @@ export function useMemoSave({
 
   return useCallback(async () => {
     const state = getState();
+    // A repeated shortcut during the saved confirmation is not an error worth
+    // a toast; the save already landed and the host is closing.
+    if (state.ui.justSaved) return;
     const { valid, reason, detail } = validationService.canSave(state);
     if (!valid) {
       toast.error(reason ? t(reason, detail ? { url: detail } : undefined) : t("editor.validation.cannot-save"));
@@ -64,7 +70,7 @@ export function useMemoSave({
       // Prevent the autosave unmount flush from restoring the saved draft.
       discardDraft();
 
-      const invalidationPromises = [
+      const invalidationPromises: Promise<unknown>[] = [
         queryClient.invalidateQueries({ queryKey: memoKeys.lists() }),
         queryClient.invalidateQueries({ queryKey: userKeys.stats() }),
         queryClient.invalidateQueries({ queryKey: attachmentKeys.lists() }),
@@ -75,6 +81,14 @@ export function useMemoSave({
       if (parentMemoName) {
         invalidationPromises.push(queryClient.invalidateQueries({ queryKey: memoKeys.comments(parentMemoName) }));
         invalidationPromises.push(queryClient.invalidateQueries({ queryKey: memoKeys.detail(parentMemoName) }));
+      }
+      // Hosts that close after saving (edit, comment) hold a brief "Saved"
+      // confirmation on the toolbar while the caches refresh underneath. The
+      // in-place composer clears immediately, so it shows nothing.
+      if (memoName || parentMemoName) {
+        dispatch(actions.setLoading("saving", false));
+        dispatch(actions.setJustSaved(true));
+        invalidationPromises.push(new Promise((resolve) => setTimeout(resolve, SAVED_CONFIRMATION_MS)));
       }
       await Promise.all(invalidationPromises);
 
@@ -99,6 +113,7 @@ export function useMemoSave({
       });
     } finally {
       dispatch(actions.setLoading("saving", false));
+      dispatch(actions.setJustSaved(false));
     }
   }, [
     actions,

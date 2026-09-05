@@ -170,7 +170,6 @@
     },
     "no-changes-detected": "Не са открити промени",
     "save": "Запазване",
-    "saving": "Запазва се...",
     "audio-recorder": {
       "attachment-label": "Аудио запис",
       "attachment-label-with-time": "Аудио запис {{time}}",

@@ -149,7 +149,6 @@
     },
     "no-changes-detected": "Brak wykrytych zmian",
     "save": "Zapisz",
-    "saving": "Zapisywanie...",
     "unsupported-syntax-raw-mode": "Ta notatka zawiera składnię, której edytor WYSIWYG nie może bezpiecznie edytować, więc otwarto go w trybie surowego Markdowna.",
     "wysiwyg-editor": "Edytor WYSIWYG",
     "audio-recorder": {

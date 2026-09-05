@@ -274,7 +274,6 @@
     "new-memo": "新增備忘錄",
     "no-changes-detected": "未發現變更",
     "save": "儲存",
-    "saving": "儲存中...",
     "validation": {
       "cannot-save": "無法儲存",
       "content-required": "需要填寫正文或新增附件",

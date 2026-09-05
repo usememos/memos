@@ -170,7 +170,6 @@
     },
     "no-changes-detected": "Nu au fost detectate modificări",
     "save": "Salva",
-    "saving": "Economisire...",
     "audio-recorder": {
       "attachment-label": "Înregistrare audio",
       "attachment-label-with-time": "Înregistrare audio {{time}}",

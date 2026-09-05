@@ -133,7 +133,6 @@
     },
     "no-changes-detected": "Geen wijzigingen gedetecteerd",
     "save": "Opslaan",
-    "saving": "Opslaan...",
     "audio-recorder": {
       "attachment-label": "Audio-opname",
       "attachment-label-with-time": "Audio-opname {{time}}",

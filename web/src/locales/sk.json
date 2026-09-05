@@ -170,7 +170,6 @@
     },
     "no-changes-detected": "Nezistili sa žiadne zmeny",
     "save": "Uložiť",
-    "saving": "Ukladá sa...",
     "audio-recorder": {
       "attachment-label": "Zvukový záznam",
       "attachment-label-with-time": "Záznam zvuku {{time}}",

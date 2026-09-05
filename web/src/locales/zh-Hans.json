@@ -190,7 +190,6 @@
     "new-memo": "新建备忘录",
     "no-changes-detected": "未检测到更改",
     "save": "保存",
-    "saving": "保存中...",
     "validation": {
       "cannot-save": "无法保存",
       "content-required": "需要填写正文或添加附件",

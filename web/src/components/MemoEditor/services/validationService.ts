@@ -41,8 +41,9 @@ export const validationService = {
       return { valid: false, reason: "editor.validation.finish-audio-recording" };
     }
 
-    // Cannot save while already saving
-    if (state.ui.isLoading.saving) {
+    // Cannot save while already saving, or while the saved confirmation holds
+    // the editor open for its closing host.
+    if (state.ui.isLoading.saving || state.ui.justSaved) {
       return { valid: false, reason: "editor.validation.save-in-progress" };
     }
 
