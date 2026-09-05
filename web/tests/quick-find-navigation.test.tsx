@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, createEvent, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider, useLocation } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import QuickFindDialog from "@/components/AppSidebar/QuickFindDialog";
@@ -71,7 +71,6 @@ describe("Quick Find navigation", () => {
     state.filters = [];
     state.setFilters.mockClear();
     state.setMemoView.mockClear();
-    state.removeFilter.mockClear();
   });
 
   const renderSearch = (initialEntry = "/explore") => {
@@ -139,8 +138,12 @@ describe("Quick Find navigation", () => {
     if (mode === "cel") fireEvent.click(screen.getByRole("tab", { name: "search.expression-mode" }));
     const input = await screen.findByRole("textbox");
     fireEvent.change(input, { target: { value: "pinned" } });
-    fireEvent.keyDown(input, { key: "Enter", isComposing: true });
-    fireEvent.keyDown(input, { key: "Enter", keyCode: 229 });
+    const composingEnter = createEvent.keyDown(input, { key: "Enter", isComposing: true });
+    const legacyComposingEnter = createEvent.keyDown(input, { key: "Enter", keyCode: 229 });
+    fireEvent(input, composingEnter);
+    fireEvent(input, legacyComposingEnter);
+    expect(composingEnter.defaultPrevented).toBe(false);
+    expect(legacyComposingEnter.defaultPrevented).toBe(false);
     expect(state.setFilters).not.toHaveBeenCalled();
     expect(screen.getByRole("dialog")).toBeInTheDocument();
   });

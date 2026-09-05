@@ -98,7 +98,12 @@ const FilterChip = ({ icon: Icon, label, onRemove, onEdit }: FilterChipProps) =>
     </>
   );
   return (
-    <div className="group inline-flex min-w-0 max-w-full items-center gap-1.5 h-7 px-2.5 bg-accent/50 hover:bg-accent border border-border/50 rounded-full text-sm transition-all duration-200 hover:shadow-sm">
+    <div
+      className={cn(
+        "group inline-flex min-w-0 max-w-full items-center gap-1.5 h-7 px-2.5",
+        "bg-accent/50 hover:bg-accent border border-border/50 rounded-full text-sm transition-all duration-200 hover:shadow-sm",
+      )}
+    >
       {onEdit ? (
         <button
           type="button"

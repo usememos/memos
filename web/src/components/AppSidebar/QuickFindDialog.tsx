@@ -142,9 +142,9 @@ const QuickFindDialog = () => {
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     // Shift+Enter inserts a newline in an expression; every other Enter submits.
     if (event.key !== "Enter" || (mode === "cel" && event.shiftKey)) return;
-    event.preventDefault();
     // Enter that commits an IME composition must not also submit the search.
     if (event.nativeEvent.isComposing || event.keyCode === 229) return;
+    event.preventDefault();
     submitQuery();
   };
 
