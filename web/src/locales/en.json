@@ -832,6 +832,7 @@
       "default-memo-visibility-description": "Visibility applied to newly created memos unless changed in the editor.",
       "label": "Preferences",
       "language-description": "Updates the interface language immediately and saves it to your account.",
+      "link-preview-description": "Show rich link preview cards for bare URLs in memos.",
       "memo-defaults-description": "Set the defaults used when composing new memos.",
       "memo-defaults-title": "Memo defaults",
       "save-media-metadata": "Save media metadata",
