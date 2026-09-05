@@ -6,6 +6,7 @@ export type FilterFactor =
   | "tagSearch"
   | "visibility"
   | "contentSearch"
+  | "celSearch"
   | "displayTime"
   | "pinned"
   | "property.hasLink"
@@ -40,6 +41,15 @@ export const parseFilterQuery = (query: string | null): MemoFilter[] => {
 export const stringifyFilters = (filters: MemoFilter[]): string => {
   return filters.map((filter) => `${filter.factor}:${encodeURIComponent(filter.value)}`).join(",");
 };
+
+/** The `?filter=` search string that carries these filters in a URL, or "" when there are none. */
+export const getFilterSearch = (filters: MemoFilter[]): string => {
+  const filterQuery = stringifyFilters(filters);
+  return filterQuery ? `?${new URLSearchParams({ filter: filterQuery })}` : "";
+};
+
+/** Search filters carry the user's query itself (plain words or a CEL expression), as opposed to facets. */
+export const isSearchFilter = (filter: MemoFilter): boolean => filter.factor === "contentSearch" || filter.factor === "celSearch";
 
 export const replaceFiltersByFactor = (filters: MemoFilter[], factor: FilterFactor, replacements: MemoFilter[]): MemoFilter[] => [
   ...filters.filter((filter) => filter.factor !== factor),

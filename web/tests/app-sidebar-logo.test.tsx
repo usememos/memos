@@ -1,9 +1,10 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, screen, render as testingLibraryRender, within } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, useLocation } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import AppSidebar, { MobileAppHeader, MobileAppSidebar } from "@/components/AppSidebar";
 import { SIDEBAR_SECTION_ACTION_BUTTON_CLASSES, SIDEBAR_SECTION_ACTION_ICON_CLASSES } from "@/components/AppSidebar/SidebarSection";
+import { type MemoFilter, parseFilterQuery } from "@/contexts/MemoFilterContext";
 
 const authState = vi.hoisted(() => ({
   currentUser: { name: "users/test" } as { name: string } | undefined,
@@ -30,6 +31,7 @@ const spaceState = vi.hoisted(() => ({
   selectSpace: vi.fn(),
 }));
 const filteredStatsHook = vi.hoisted(() => vi.fn());
+const filterState = vi.hoisted(() => ({ filters: [] as MemoFilter[] }));
 const tagsSectionHook = vi.hoisted(() => vi.fn());
 
 vi.mock("@/components/MemosLogo", () => ({
@@ -92,10 +94,10 @@ vi.mock("@/contexts/InstanceContext", () => ({
   useInstance: () => ({ isInitialized: true }),
 }));
 
-vi.mock("@/contexts/MemoFilterContext", () => ({
-  stringifyFilters: () => "",
+vi.mock("@/contexts/MemoFilterContext", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/contexts/MemoFilterContext")>()),
   useMemoFilterContext: () => ({
-    filters: [],
+    filters: filterState.filters,
     memoView: undefined,
     setMemoView: vi.fn(),
   }),
@@ -204,7 +206,30 @@ describe("App sidebar logo", () => {
     spaceState.selectMemos.mockClear();
     spaceState.selectSpace.mockClear();
     filteredStatsHook.mockClear();
+    filterState.filters = [];
     tagsSectionHook.mockClear();
+  });
+
+  it("preserves a CEL expression when switching sidebar scopes", async () => {
+    const expression = 'tags.exists(t, t.contains("50%, café & C++"))\n || pinned';
+    filterState.filters = [{ factor: "celSearch", value: expression }];
+    const LocationProbe = () => {
+      const location = useLocation();
+      return (
+        <output data-testid="scope-location">
+          {JSON.stringify({ path: location.pathname, filters: parseFilterQuery(new URLSearchParams(location.search).get("filter")) })}
+        </output>
+      );
+    };
+    render(
+      <MemoryRouter initialEntries={["/"]}>
+        <AppSidebar />
+        <LocationProbe />
+      </MemoryRouter>,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "common.home" }));
+    fireEvent.click(await screen.findByRole("menuitem", { name: "common.explore" }));
+    expect(screen.getByTestId("scope-location")).toHaveTextContent(JSON.stringify({ path: "/explore", filters: filterState.filters }));
   });
 
   it("shows the context switcher and opens the global memo editor", () => {

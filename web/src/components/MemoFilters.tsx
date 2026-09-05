@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useAppSidebar } from "@/contexts/AppSidebarContext";
 import { type FilterFactor, getMemoFilterKey, type MemoFilter, useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoViews } from "@/hooks/useUserQueries";
@@ -29,6 +30,8 @@ const DATE_FILTER_FORMAT = "MMM D, YYYY";
 interface FilterConfig {
   icon: LucideIcon;
   getLabel: (value: string, t: ReturnType<typeof useTranslate>) => string;
+  /** The chip shows a typed expression: monospace, wider, and clicking it reopens Quick Find to edit. */
+  editableQuery?: boolean;
 }
 
 const FILTER_CONFIGS: Record<FilterFactor, FilterConfig> = {
@@ -43,6 +46,11 @@ const FILTER_CONFIGS: Record<FilterFactor, FilterConfig> = {
   contentSearch: {
     icon: SearchIcon,
     getLabel: (value) => value,
+  },
+  celSearch: {
+    icon: SearchIcon,
+    getLabel: (value) => value,
+    editableQuery: true,
   },
   displayTime: {
     icon: CalendarIcon,
@@ -77,26 +85,53 @@ interface FilterChipProps {
   icon?: LucideIcon;
   label: string;
   onRemove: () => void;
+  /** When set, the label is a button that edits the filter; the label is also shown in full as a tooltip. */
+  onEdit?: { label: string; onClick: () => void };
 }
 
 /** One chip for anything narrowing the list, so a view, a tag and a day are announced the same way. */
-const FilterChip = ({ icon: Icon, label, onRemove }: FilterChipProps) => (
-  <div className="group inline-flex items-center gap-1.5 h-7 px-2.5 bg-accent/50 hover:bg-accent border border-border/50 rounded-full text-sm transition-all duration-200 hover:shadow-sm">
-    {Icon && <Icon className="w-3.5 h-3.5 text-muted-foreground shrink-0" />}
-    <span className="text-foreground/80 font-medium max-w-32 truncate">{label}</span>
-    <span className="ml-0.5 -mr-1">
-      <Button variant="ghost" size="icon-sm" onClick={onRemove} aria-label="Remove filter">
-        <XIcon className="w-3 h-3" />
-      </Button>
-    </span>
-  </div>
-);
+const FilterChip = ({ icon: Icon, label, onRemove, onEdit }: FilterChipProps) => {
+  const body = (
+    <>
+      {Icon && <Icon className="w-3.5 h-3.5 text-muted-foreground shrink-0" />}
+      <span className={cn("text-foreground/80 truncate", onEdit ? "font-mono text-xs max-w-64" : "font-medium max-w-32")}>{label}</span>
+    </>
+  );
+  return (
+    <div
+      className={cn(
+        "group inline-flex min-w-0 max-w-full items-center gap-1.5 h-7 px-2.5",
+        "bg-accent/50 hover:bg-accent border border-border/50 rounded-full text-sm transition-all duration-200 hover:shadow-sm",
+      )}
+    >
+      {onEdit ? (
+        <button
+          type="button"
+          onClick={onEdit.onClick}
+          title={label}
+          aria-label={onEdit.label}
+          className="flex min-w-0 items-center gap-1.5"
+        >
+          {body}
+        </button>
+      ) : (
+        body
+      )}
+      <span className="ml-0.5 -mr-1">
+        <Button variant="ghost" size="icon-sm" onClick={onRemove} aria-label="Remove filter">
+          <XIcon className="w-3 h-3" />
+        </Button>
+      </span>
+    </div>
+  );
+};
 
 const MemoFilters = ({ className }: { className?: string }) => {
   const t = useTranslate();
   const location = useLocation();
   const currentUser = useCurrentUser();
   const { filters, memoView, removeFilter, setMemoView } = useMemoFilterContext();
+  const { setQuickFindOpen } = useAppSidebar();
   // A remembered view only narrows the collection routes; elsewhere it is dormant and must not be echoed.
   const viewApplies = memoView !== undefined && isMemoCollectionRoute(location.pathname);
   const { data: memoViews = [] } = useMemoViews(viewApplies ? currentUser?.name : undefined);
@@ -133,6 +168,11 @@ const MemoFilters = ({ className }: { className?: string }) => {
           icon={FILTER_CONFIGS[filter.factor]?.icon}
           label={getFilterDisplayText(filter)}
           onRemove={() => handleRemoveFilter(filter)}
+          onEdit={
+            FILTER_CONFIGS[filter.factor]?.editableQuery
+              ? { label: t("search.edit-query"), onClick: () => setQuickFindOpen(true) }
+              : undefined
+          }
         />
       ))}
     </div>

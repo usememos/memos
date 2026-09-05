@@ -8,6 +8,7 @@ import SidebarRow, { sidebarRowStateClasses } from "@/components/AppSidebar/Side
 import { SIDEBAR_SECTION_ACTION_ACTIVE_CLASSES } from "@/components/AppSidebar/SidebarSection";
 import TagsSection from "@/components/AppSidebar/TagsSection";
 import MemoFilters from "@/components/MemoFilters";
+import { AppSidebarProvider } from "@/contexts/AppSidebarContext";
 import { MemoFilterProvider, useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { BUILTIN_TASKS_VIEW_ID } from "@/lib/memo-views";
 
@@ -74,10 +75,12 @@ const renderChips = (path: string, viewId?: string) =>
   render(
     <QueryClientProvider client={new QueryClient()}>
       <MemoryRouter initialEntries={[path]}>
-        <MemoFilterProvider>
-          {viewId && <SelectView id={viewId} />}
-          <MemoFilters />
-        </MemoFilterProvider>
+        <AppSidebarProvider>
+          <MemoFilterProvider>
+            {viewId && <SelectView id={viewId} />}
+            <MemoFilters />
+          </MemoFilterProvider>
+        </AppSidebarProvider>
       </MemoryRouter>
     </QueryClientProvider>,
   );

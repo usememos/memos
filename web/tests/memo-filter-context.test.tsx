@@ -1,15 +1,28 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { createMemoryRouter, MemoryRouter, RouterProvider, useLocation } from "react-router-dom";
 import { describe, expect, it } from "vitest";
-import { MemoFilterProvider, parseFilterQuery, useMemoFilterContext } from "@/contexts/MemoFilterContext";
+import {
+  type MemoFilter,
+  MemoFilterProvider,
+  parseFilterQuery,
+  stringifyFilters,
+  useMemoFilterContext,
+} from "@/contexts/MemoFilterContext";
 import { BUILTIN_TASKS_VIEW_ID } from "@/lib/memo-views";
+
+const expression = 'tags.exists(t, t.contains("50%, café & C++"))\n || space == null';
 
 const Harness = () => {
   const { filters, setFilters, setMemoView, memoView } = useMemoFilterContext();
+  const location = useLocation();
   return (
     <div>
       <output data-testid="filters">{JSON.stringify(filters)}</output>
       <output data-testid="memoView">{memoView}</output>
+      <output data-testid="url">{location.search}</output>
+      <button type="button" onClick={() => setFilters([{ factor: "celSearch", value: expression }])}>
+        Search CEL
+      </button>
       <button type="button" onClick={() => setFilters([{ factor: "contentSearch", value: "plan" }])}>
         Search plan
       </button>
@@ -21,6 +34,36 @@ const Harness = () => {
 };
 
 describe("MemoFilterProvider", () => {
+  it("restores CEL after URL synchronization, navigation history, and remount", async () => {
+    const routes = [
+      {
+        path: "*",
+        element: (
+          <MemoFilterProvider>
+            <Harness />
+          </MemoFilterProvider>
+        ),
+      },
+    ];
+    const router = createMemoryRouter(routes, { initialEntries: ["/inbox", "/explore"], initialIndex: 1 });
+    const rendered = render(<RouterProvider router={router} />);
+    fireEvent.click(screen.getByRole("button", { name: "Search CEL" }));
+    const expected: MemoFilter[] = [{ factor: "celSearch", value: expression }];
+    await waitFor(() => expect(parseFilterQuery(new URLSearchParams(router.state.location.search).get("filter"))).toEqual(expected));
+    const savedUrl = `/explore${router.state.location.search}`;
+    await act(async () => {
+      await router.navigate(-1);
+    });
+    await waitFor(() => expect(screen.getByTestId("filters")).toHaveTextContent("[]"));
+    await act(async () => {
+      await router.navigate(1);
+    });
+    await waitFor(() => expect(screen.getByTestId("filters")).toHaveTextContent(JSON.stringify(expected)));
+    rendered.unmount();
+    render(<RouterProvider router={createMemoryRouter(routes, { initialEntries: [savedUrl] })} />);
+    expect(screen.getByTestId("filters")).toHaveTextContent(JSON.stringify(expected));
+    expect(new URLSearchParams(router.state.location.search).get("filter")).toBe(stringifyFilters(expected));
+  });
   it("keeps encoded values containing colons intact", () => {
     expect(parseFilterQuery("contentSearch:https://example.com:8080/path")).toEqual([
       { factor: "contentSearch", value: "https://example.com:8080/path" },

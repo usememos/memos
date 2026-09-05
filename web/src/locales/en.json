@@ -519,6 +519,20 @@
     "back-to-top": "Back to Top",
     "go-to-home": "Go to Home"
   },
+  "search": {
+    "access-error": "You don’t have access to these memos.",
+    "clear-query": "Clear query",
+    "edit-query": "Edit query",
+    "expression": "Search expression",
+    "expression-mode": "Expression",
+    "invalid-expression": "Search expression couldn’t be applied",
+    "keyboard-hint": "Enter to search · Shift+Enter for a new line",
+    "load-error": "Couldn’t load memos",
+    "mode": "Search mode",
+    "retry": "Retry",
+    "syntax-help": "Search syntax",
+    "text": "Text"
+  },
   "setting": {
     "access-token": {
       "access-token-copied-to-clipboard": "Access token copied to clipboard",

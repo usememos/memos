@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { type MemoFilter, useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoViews } from "@/hooks/useUserQueries";
+import { combineCELFilters } from "@/lib/cel-filter";
 import { BUILTIN_TASKS_VIEW_FILTER, BUILTIN_TASKS_VIEW_ID, getMemoViewId } from "@/lib/memo-views";
 import { buildMemoCreatorFilter, getVisibilityName } from "@/lib/resource-names";
 import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
@@ -68,6 +69,8 @@ export const buildMemoFilter = ({
   for (const filter of filters) {
     if (filter.factor === "contentSearch") {
       conditions.push(`content.contains(${escapeFilterValue(filter.value)})`);
+    } else if (filter.factor === "celSearch") {
+      conditions.push(filter.value);
     } else if (filter.factor === "tagSearch") {
       conditions.push(`tag in [${escapeFilterValue(filter.value)}]`);
     } else if (filter.factor === "pinned") {
@@ -95,7 +98,7 @@ export const buildMemoFilter = ({
     conditions.push(`visibility in [${visibilityValues}]`);
   }
 
-  return conditions.length > 0 ? conditions.join(" && ") : undefined;
+  return combineCELFilters(...conditions);
 };
 
 export const useMemoFilters = (options: UseMemoFiltersOptions = {}): string | undefined => {
