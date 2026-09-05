@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { locales } from "@/i18n";
+import azTranslation from "@/locales/az.json";
 import enTranslation from "@/locales/en.json";
 import heTranslation from "@/locales/he.json";
 import { getLocaleSearchLabels, localeMatchesSearch, normalizeLocaleSearchText } from "@/utils/i18n";
@@ -43,6 +44,15 @@ describe("locale search helpers", () => {
     expect(heTranslation.setting).toHaveProperty("ai");
     expect(heTranslation.setting).toHaveProperty("notification");
     expect(heTranslation.auth).not.toHaveProperty("host-tip");
+  });
+
+  it("includes Azerbaijani in the supported locale list", () => {
+    expect(locales).toContain("az");
+    expect(localeMatchesSearch("az", "azerbaijani", "en")).toBe(true);
+  });
+
+  it("keeps the Azerbaijani catalog aligned with the English one", () => {
+    expect(flattenTranslationKeys(azTranslation).sort()).toEqual(flattenTranslationKeys(enTranslation).sort());
   });
 
   it("uses future-oriented wording for expiring Hebrew links and tokens", () => {
