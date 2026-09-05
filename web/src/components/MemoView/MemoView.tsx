@@ -183,7 +183,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
                 action menu and full content stay one click away on the detail page. */}
             <button
               type="button"
-              className="relative z-10 mt-auto w-full cursor-pointer p-4 pt-12 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
+              className="relative z-10 flex h-full w-full cursor-pointer flex-col justify-end p-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
               onClick={() => navigateTo(`/${memoData.name}`, { state: createMemoNavigationState(parentPage, parentScope) })}
             >
               {(bentoSource || (showPinned && memoData.pinned)) && (
