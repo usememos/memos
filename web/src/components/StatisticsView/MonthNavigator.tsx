@@ -1,16 +1,15 @@
-import dayjs from "dayjs";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
 import { SIDEBAR_ROW_BOX_CLASSES } from "@/components/AppSidebar/SidebarRow";
 import { Button } from "@/components/ui/button";
-import { addMonths } from "@/lib/calendar-utils";
+import { addMonths, formatMonthLabel } from "@/lib/calendar-utils";
 import { cn } from "@/lib/utils";
 import type { MonthNavigatorProps } from "@/types/statistics";
 
 export const MonthNavigator = memo(({ visibleMonth, onMonthChange }: MonthNavigatorProps) => {
   const { i18n, t } = useTranslation();
-  const monthLabel = dayjs(visibleMonth).toDate().toLocaleString(i18n.language, { year: "numeric", month: "long" });
+  const monthLabel = formatMonthLabel(visibleMonth, i18n.language);
   const handlePrevMonth = () => onMonthChange(addMonths(visibleMonth, -1));
   const handleNextMonth = () => onMonthChange(addMonths(visibleMonth, 1));
 

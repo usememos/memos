@@ -15,7 +15,8 @@ export interface UseMemoSortingResult {
   orderBy: string;
 }
 
-const getMemoSortTime = (memo: Memo, timeBasis: MemoTimeBasis): Date | undefined => {
+/** The timestamp a memo is ordered and bucketed by under `timeBasis`. */
+export const getMemoSortTime = (memo: Memo, timeBasis: MemoTimeBasis): Date | undefined => {
   const timestamp = timeBasis === "update_time" ? memo.updateTime : memo.createTime;
   return timestamp ? timestampDate(timestamp) : undefined;
 };

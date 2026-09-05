@@ -1,31 +1,15 @@
 import { useMemo } from "react";
 import { type MemoFilter, useMemoFilterContext } from "@/contexts/MemoFilterContext";
+import { type MemoTimeBasis, useView } from "@/contexts/ViewContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoViews } from "@/hooks/useUserQueries";
+import { buildTimestampRangeFilter, getLocalDayTimestampRange, getTimeBasisField } from "@/lib/calendar-utils";
 import { combineCELFilters } from "@/lib/cel-filter";
 import { BUILTIN_TASKS_VIEW_FILTER, BUILTIN_TASKS_VIEW_ID, getMemoViewId } from "@/lib/memo-views";
 import { buildMemoCreatorFilter, getVisibilityName } from "@/lib/resource-names";
 import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
 
 const escapeFilterValue = (value: string): string => JSON.stringify(value);
-
-const getLocalDayTimestampRange = (value: string): { startTimestamp: number; endTimestamp: number } | undefined => {
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
-  if (!match) return undefined;
-
-  const year = Number(match[1]);
-  const month = Number(match[2]);
-  const day = Number(match[3]);
-  const startDate = new Date(year, month - 1, day);
-  if (startDate.getFullYear() !== year || startDate.getMonth() !== month - 1 || startDate.getDate() !== day) return undefined;
-
-  const endDate = new Date(startDate);
-  endDate.setDate(endDate.getDate() + 1);
-  return {
-    startTimestamp: Math.floor(startDate.getTime() / 1000),
-    endTimestamp: Math.floor(endDate.getTime() / 1000),
-  };
-};
 
 export interface UseMemoFiltersOptions {
   creatorName?: string;
@@ -41,6 +25,8 @@ interface BuildMemoFilterOptions {
   includePinned: boolean;
   selectedMemoViewFilter?: string;
   visibilities?: Visibility[];
+  /** Which timestamp a `displayTime` day filter selects on; defaults to creation time. */
+  timeBasis?: MemoTimeBasis;
 }
 
 export const buildMemoFilter = ({
@@ -50,6 +36,7 @@ export const buildMemoFilter = ({
   includePinned,
   selectedMemoViewFilter,
   visibilities,
+  timeBasis = "create_time",
 }: BuildMemoFilterOptions): string | undefined => {
   const conditions: string[] = [];
 
@@ -88,7 +75,7 @@ export const buildMemoFilter = ({
     } else if (filter.factor === "displayTime") {
       const range = getLocalDayTimestampRange(filter.value);
       if (range) {
-        conditions.push(`created_ts >= timestamp(${range.startTimestamp}) && created_ts < timestamp(${range.endTimestamp})`);
+        conditions.push(buildTimestampRangeFilter(getTimeBasisField(timeBasis), range));
       }
     }
   }
@@ -107,6 +94,8 @@ export const useMemoFilters = (options: UseMemoFiltersOptions = {}): string | un
   const currentUser = useCurrentUser();
   const { data: memoViews = [] } = useMemoViews(includeMemoViews ? currentUser?.name : undefined);
   const { filters, memoView: currentMemoView } = useMemoFilterContext();
+  // The sidebar calendar buckets days by this basis, so a picked day must select on it too.
+  const { timeBasis } = useView();
 
   // Get the selected memo view if needed.
   const selectedMemoViewFilter = useMemo(() => {
@@ -123,7 +112,8 @@ export const useMemoFilters = (options: UseMemoFiltersOptions = {}): string | un
         includePinned,
         selectedMemoViewFilter,
         visibilities,
+        timeBasis,
       }),
-    [creatorName, currentMemoView, filters, includePinned, includeMemoViews, selectedMemoViewFilter, visibilities],
+    [creatorName, currentMemoView, filters, includePinned, includeMemoViews, selectedMemoViewFilter, visibilities, timeBasis],
   );
 };

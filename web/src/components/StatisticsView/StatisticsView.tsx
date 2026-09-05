@@ -1,8 +1,8 @@
-import dayjs from "dayjs";
 import { useState } from "react";
 import { MonthCalendar } from "@/components/ActivityCalendar";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { useDateFilterNavigation } from "@/hooks";
+import { getCurrentMonth } from "@/lib/calendar-utils";
 import type { StatisticsData } from "@/types/statistics";
 import { MonthNavigator } from "./MonthNavigator";
 
@@ -16,7 +16,7 @@ const StatisticsView = (props: Props) => {
   const { activityStats, timeBasis } = statisticsData;
   const { filters } = useMemoFilterContext();
   const navigateToDateFilter = useDateFilterNavigation();
-  const [visibleMonthString, setVisibleMonthString] = useState(dayjs().format("YYYY-MM"));
+  const [visibleMonthString, setVisibleMonthString] = useState(getCurrentMonth);
   const selectedDate = filters.find((filter) => filter.factor === "displayTime")?.value;
 
   return (

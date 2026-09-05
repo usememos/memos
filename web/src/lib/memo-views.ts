@@ -29,14 +29,20 @@ export const getProfileUsername = (pathname: string): string | undefined => {
   return match ? decodeURIComponent(match[1]) : undefined;
 };
 
+/** `/calendar` and any month or day beneath it. */
+export const isCalendarRoute = (pathname: string): boolean => {
+  const comparablePath = cleanPathname(pathname).toLowerCase();
+  return comparablePath === ROUTES.CALENDAR || comparablePath.startsWith(`${ROUTES.CALENDAR}/`);
+};
+
 /**
- * Routes that render a memo collection the sidebar can narrow: the scope routes plus a
- * user profile. Views, calendar days and tags apply in place on all of them. This is a
- * different question from `isMemoCollectionOrigin` (MemoView/navigation.ts), which asks
- * whether returning to a route should keep the remembered Space.
+ * Routes that render a memo collection the sidebar can narrow: the scope routes, a user
+ * profile and the calendar. Views, calendar days and tags apply in place on all of them.
+ * This is a different question from `isMemoCollectionOrigin` (MemoView/navigation.ts),
+ * which asks whether returning to a route should keep the remembered Space.
  */
 export const isMemoCollectionRoute = (pathname: string): boolean =>
-  isMemoScopeRoute(pathname) || getProfileUsername(pathname) !== undefined;
+  isMemoScopeRoute(pathname) || getProfileUsername(pathname) !== undefined || isCalendarRoute(pathname);
 
 export const getMemoScopePath = (scope: PrimaryMemoScope): string => {
   if (scope === "explore") return ROUTES.EXPLORE;

@@ -3,6 +3,7 @@ import {
   ArchiveIcon,
   ArrowRightIcon,
   BellIcon,
+  CalendarDaysIcon,
   ChevronDownIcon,
   EarthIcon,
   FileAudioIcon,
@@ -118,7 +119,8 @@ const ProfileMode = () => {
   );
 };
 
-const CollectionSidebarContent = ({ context }: { context: MemoStatsContext }) => {
+/** The calendar is its own month view, so its sidebar narrows by view and tag but skips the heatmap. */
+const CollectionSidebarContent = ({ context, showStatistics = true }: { context: MemoStatsContext; showStatistics?: boolean }) => {
   const t = useTranslate();
   const location = useLocation();
   const currentUser = useCurrentUser();
@@ -149,9 +151,11 @@ const CollectionSidebarContent = ({ context }: { context: MemoStatsContext }) =>
   return (
     <div className={SIDEBAR_SECTION_STACK_CLASSES}>
       {context === "profile" && <ProfileMode />}
-      <SidebarSection ariaLabel={t("common.statistics")}>
-        <StatisticsView statisticsData={statistics} onDateSelect={() => setMobileOpen(false)} />
-      </SidebarSection>
+      {showStatistics && (
+        <SidebarSection ariaLabel={t("common.statistics")}>
+          <StatisticsView statisticsData={statistics} onDateSelect={() => setMobileOpen(false)} />
+        </SidebarSection>
+      )}
       {/* Every collection route narrows the same way: views (yours, so signed-in only), days, tags. */}
       {currentUser && <ViewsSection />}
       <TagsSection tagCount={tags} scope={tagStateScope} onSelect={() => setMobileOpen(false)} />
@@ -300,6 +304,7 @@ const RouteSidebarContent = () => {
     return <CollectionSidebarContent context={kind} />;
   }
   if (kind === "views") return <ViewsSection manageActive />;
+  if (kind === "calendar") return <CollectionSidebarContent context="home" showStatistics={false} />;
   if (kind === "attachments") return <AttachmentsSidebarContent />;
   if (kind === "inbox") return <InboxSidebarContent />;
   if (kind === "settings") return <SettingsSidebarContent />;
@@ -383,6 +388,13 @@ const GlobalNavigation = () => {
 
   const items: GlobalNavItem[] = currentUser
     ? [
+        {
+          id: "calendar",
+          label: t("common.calendar"),
+          path: ROUTES.CALENDAR,
+          icon: CalendarDaysIcon,
+          active: routeKind === "calendar",
+        },
         {
           id: "attachments",
           label: t("common.attachments"),

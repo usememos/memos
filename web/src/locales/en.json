@@ -48,6 +48,17 @@
     "sso-signup-tip": "Sign in with a provider below to create your account.",
     "welcome-back": "Welcome back."
   },
+  "calendar": {
+    "close-day": "Close day",
+    "more-memos": "+{{count}} more",
+    "new-memo-on-day": "New memo on this day",
+    "next-year": "Next year",
+    "no-memos-in-month": "No memos in {{month}}",
+    "no-memos-on-day": "No memos on this day",
+    "previous-year": "Previous year",
+    "resize-panel": "Resize day panel",
+    "select-month": "Select month"
+  },
   "demo": {
     "banner-description": "Feel free to explore! This demo is reset periodically.",
     "banner-title": "Memos demo",

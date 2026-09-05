@@ -265,7 +265,9 @@ describe("App sidebar logo", () => {
 
     fireEvent.click(compose);
     expect(globalEditorState.openEditor).toHaveBeenCalledOnce();
-    expect(screen.queryByText("common.calendar")).not.toBeInTheDocument();
+    // The Calendar destination is a nav pill; the statistics calendar stays off this route.
+    expect(within(primaryNavigation).getByRole("link", { name: "common.calendar" })).toHaveAttribute("href", "/calendar");
+    expect(screen.queryByText("Calendar")).not.toBeInTheDocument();
   });
 
   it.each([

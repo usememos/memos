@@ -3,6 +3,7 @@ import type { RouteObject } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 import { ROUTES, routeConfig } from "@/router";
 import { RequireAuthRoute, RequireFullInitializationRoute, RequireGuestRoute, RequireInstanceInitializationRoute } from "@/router/guards";
+import { CALENDAR_ROUTE_PATTERN } from "@/router/routes";
 
 // Walk the nested route config and find the first route with the given path,
 // starting from the provided roots. Returns undefined if nothing matches.
@@ -53,7 +54,7 @@ describe("router configuration", () => {
   });
 
   it("wraps authenticated-only pages in RequireAuthRoute", () => {
-    for (const path of [ROUTES.ARCHIVED, ROUTES.VIEWS, ROUTES.ATTACHMENTS, ROUTES.INBOX, ROUTES.SETTING]) {
+    for (const path of [ROUTES.ARCHIVED, CALENDAR_ROUTE_PATTERN, ROUTES.VIEWS, ROUTES.ATTACHMENTS, ROUTES.INBOX, ROUTES.SETTING]) {
       expect(hasAncestorOfType(routeConfig, path, RequireAuthRoute)).toBe(true);
     }
   });
@@ -70,7 +71,7 @@ describe("router configuration", () => {
   });
 
   it("leaves memo feeds available for early queries", () => {
-    for (const path of [ROUTES.EXPLORE, ROUTES.ARCHIVED, "memos/:uid", "memos/shares/:token", "u/:username"]) {
+    for (const path of [ROUTES.EXPLORE, ROUTES.ARCHIVED, CALENDAR_ROUTE_PATTERN, "memos/:uid", "memos/shares/:token", "u/:username"]) {
       expect(hasAncestorOfType(routeConfig, path, RequireFullInitializationRoute)).toBe(false);
     }
   });

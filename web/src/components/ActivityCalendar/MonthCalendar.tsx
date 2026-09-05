@@ -1,13 +1,14 @@
-import dayjs from "dayjs";
 import { memo, useMemo } from "react";
 import { useInstance } from "@/contexts/InstanceContext";
+import { getToday } from "@/lib/calendar-utils";
 import { useTranslate } from "@/utils/i18n";
 import { CalendarCell } from "./CalendarCell";
 import { rotateWeekdays, useMonthDays } from "./monthDays";
 import type { MonthCalendarProps } from "./types";
 import { calculateMaxCount, getTooltipText } from "./utils";
 
-const useWeekdayLabels = (weekStartDayOffset: number) => {
+/** Localized weekday labels starting on the instance's first day of the week. */
+export const useWeekdayLabels = (weekStartDayOffset: number) => {
   const t = useTranslate();
   return useMemo(
     () =>
@@ -36,7 +37,7 @@ export const MonthCalendar = memo(({ month, data, selectedDate, onClick, timeBas
     month,
     data,
     weekStartDayOffset: generalSetting.weekStartDayOffset,
-    today: dayjs().format("YYYY-MM-DD"),
+    today: getToday(),
     selectedDate,
   });
 
