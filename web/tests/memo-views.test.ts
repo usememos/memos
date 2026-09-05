@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { buildMemoFilter } from "@/hooks/useMemoFilters";
+import { combineCELFilters } from "@/lib/cel-filter";
 import {
   BUILTIN_TASKS_VIEW_FILTER,
   BUILTIN_TASKS_VIEW_ID,
@@ -46,6 +47,21 @@ describe("memo scopes", () => {
 });
 
 describe("memo views", () => {
+  it("keeps OR expressions inside the author, Space, view, and facet constraints", () => {
+    const query = 'content.contains("plan") || pinned';
+    const filter = buildMemoFilter({
+      creatorName: "users/steven",
+      selectedMemoViewFilter: "has_link || has_code",
+      filters: [
+        { factor: "celSearch", value: query },
+        { factor: "tagSearch", value: "work" },
+      ],
+      includePinned: true,
+    });
+    expect(combineCELFilters('space == "spaces/product"', filter)).toBe(
+      '(space == "spaces/product") && ((creator == "users/steven") && (has_link || has_code) && (content.contains("plan") || pinned) && (tag in ["work"]))',
+    );
+  });
   it("uses a collision-safe built-in Tasks view", () => {
     expect(BUILTIN_TASKS_VIEW_ID).not.toBe("tasks");
     expect(BUILTIN_TASKS_VIEW_FILTER).toBe("has_task_list && has_incomplete_tasks");
@@ -65,7 +81,7 @@ describe("memo views", () => {
         visibilities: [Visibility.PUBLIC],
       }),
     ).toBe(
-      'creator == "users/steven" && has_task_list && has_incomplete_tasks && content.contains("plan") && tag in ["work"] && visibility in ["PUBLIC"]',
+      '(creator == "users/steven") && (has_task_list && has_incomplete_tasks) && (content.contains("plan")) && (tag in ["work"]) && (visibility in ["PUBLIC"])',
     );
   });
 
@@ -76,7 +92,7 @@ describe("memo views", () => {
         includePinned: false,
         visibilities: [Visibility.PUBLIC, Visibility.PROTECTED, Visibility.SPACE],
       }),
-    ).toBe('visibility in ["PUBLIC", "PROTECTED", "SPACE"]');
+    ).toBe('(visibility in ["PUBLIC", "PROTECTED", "SPACE"])');
   });
 
   it("maps property filter factors to their CEL flags", () => {
@@ -90,7 +106,7 @@ describe("memo views", () => {
         ],
         includePinned: false,
       }),
-    ).toBe("has_link && has_task_list && has_code && has_location");
+    ).toBe("(has_link) && (has_task_list) && (has_code) && (has_location)");
   });
 
   it("uses a custom memo view filter when Tasks is not selected", () => {
@@ -101,7 +117,7 @@ describe("memo views", () => {
         includePinned: false,
         selectedMemoViewFilter: 'tag in ["work"]',
       }),
-    ).toBe('tag in ["work"]');
+    ).toBe('(tag in ["work"])');
   });
 
   it("builds display-time filters from valid local calendar-day boundaries", () => {
@@ -114,7 +130,9 @@ describe("memo views", () => {
         filters: [{ factor: "displayTime", value: "2026-08-02" }],
         includePinned: false,
       }),
-    ).toBe(`created_ts >= timestamp(${Math.floor(start.getTime() / 1000)}) && created_ts < timestamp(${Math.floor(end.getTime() / 1000)})`);
+    ).toBe(
+      `(created_ts >= timestamp(${Math.floor(start.getTime() / 1000)}) && created_ts < timestamp(${Math.floor(end.getTime() / 1000)}))`,
+    );
   });
 
   it("ignores invalid display-time filter values", () => {
