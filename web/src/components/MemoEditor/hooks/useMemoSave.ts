@@ -47,14 +47,21 @@ export function useMemoSave({
   return useCallback(async () => {
     const state = getState();
     const { valid, reason, detail } = validationService.canSave(state);
-    const extractTagTexts = () => {
-      var tagTexts = "";
+    const extractTagTextsStr = () => {
+      // 1. Generate Existing tag text list from the content
+      const regex = /#[^\s#]+/g;
+      const existTagTextList: string[] = state.content.match(regex) ?? [];
+      // 2. Search and merge tags as a string appended tag texts.
+      var tagTextStr = "";
       filters.map((filter) => {
+        // If filter is tag and the tag is not already in the content, append it as tagTexts string
         if (filter.factor === "tagSearch" && filter.value) {
-          tagTexts += " #" + filter.value;
+          if (!existTagTextList.includes("#" + filter.value)) {
+            tagTextStr += " #" + filter.value;
+          }
         }
       });
-      return tagTexts;
+      return tagTextStr;
     };
 
     if (!valid) {
@@ -65,7 +72,7 @@ export function useMemoSave({
     dispatch(actions.setLoading("saving", true));
 
     try {
-      const result = await memoService.save(state, { memoName, parentMemoName, space: defaultSpace, withSuffix: extractTagTexts() });
+      const result = await memoService.save(state, { memoName, parentMemoName, space: defaultSpace, withSuffix: extractTagTextsStr() });
 
       if (!result.hasChanges) {
         toast.error(t("editor.no-changes-detected"));
