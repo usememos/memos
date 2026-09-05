@@ -11,7 +11,10 @@ import { useTranslate } from "@/utils/i18n";
 import { errorService, memoService, validationService } from "../services";
 import { useEditorContext } from "../state";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
-import { findTagMatches } from "@/utils/tag-grammar";
+import { findMarkdownTagMatches } from "../Editor/markdownTagRanges";
+import { EditorState } from "@codemirror/state";
+import { markdown } from "@codemirror/lang-markdown";
+import { memoMarkdownExtensions } from "@/utils/memo-markdown-extension";
 
 interface UseMemoSaveOptions {
   memoName?: string;
@@ -49,12 +52,14 @@ export function useMemoSave({
     const state = getState();
     const { valid, reason, detail } = validationService.canSave(state);
     const extractTagTextsStr = () => {
+      const editorState = EditorState.create({ doc: state.content, extensions: [markdown({ extensions: memoMarkdownExtensions })] });
+      const uniqueFilters = [...new Set(filters)];
       // Search and merge tags as a string appended tag texts.
       var tagTextStr = "";
-      filters.map((filter) => {
+      uniqueFilters.map((filter) => {
         // If filter is tag and the tag is not already in the content, append it as tagTexts string
         if (filter.factor === "tagSearch" && filter.value) {
-          if (!findTagMatches(state.content).some((match) => match.value === filter.value)) {
+          if (!findMarkdownTagMatches(editorState, 0, state.content.length).some((match) => match.value === filter.value)) {
             tagTextStr += " " + "#" + filter.value;
           }
         }
