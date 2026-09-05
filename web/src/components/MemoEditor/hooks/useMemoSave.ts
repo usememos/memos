@@ -10,6 +10,11 @@ import type { Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { errorService, memoService, validationService } from "../services";
 import { useEditorContext } from "../state";
+import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
+import { findMarkdownTagMatches } from "../Editor/markdownTagRanges";
+import { EditorState } from "@codemirror/state";
+import { markdown } from "@codemirror/lang-markdown";
+import { memoMarkdownExtensions } from "@/utils/memo-markdown-extension";
 
 /** How long a closing host shows "Saved" before it unmounts the editor. */
 const SAVED_CONFIRMATION_MS = 900;
@@ -44,6 +49,7 @@ export function useMemoSave({
   const queryClient = useQueryClient();
   const { markNewMemo } = useNewMemo();
   const { actions, dispatch, getState } = useEditorContext();
+  const { filters } = useMemoFilterContext();
 
   return useCallback(async () => {
     const state = getState();
@@ -51,6 +57,22 @@ export function useMemoSave({
     // a toast; the save already landed and the host is closing.
     if (state.ui.justSaved) return;
     const { valid, reason, detail } = validationService.canSave(state);
+    const extractTagTextsStr = () => {
+      const editorState = EditorState.create({ doc: state.content, extensions: [markdown({ extensions: memoMarkdownExtensions })] });
+      const uniqueFilters = [...new Set(filters)];
+      // Search and merge tags as a string appended tag texts.
+      var tagTextStr = "";
+      uniqueFilters.map((filter) => {
+        // If filter is tag and the tag is not already in the content, append it as tagTexts string
+        if (filter.factor === "tagSearch" && filter.value) {
+          if (!findMarkdownTagMatches(editorState, 0, state.content.length).some((match) => match.value === filter.value)) {
+            tagTextStr += " " + "#" + filter.value;
+          }
+        }
+      });
+      return tagTextStr;
+    };
+
     if (!valid) {
       toast.error(reason ? t(reason, detail ? { url: detail } : undefined) : t("editor.validation.cannot-save"));
       return;
@@ -59,7 +81,7 @@ export function useMemoSave({
     dispatch(actions.setLoading("saving", true));
 
     try {
-      const result = await memoService.save(state, { memoName, parentMemoName, space: defaultSpace });
+      const result = await memoService.save(state, { memoName, parentMemoName, space: defaultSpace, withSuffix: extractTagTextsStr() });
 
       if (!result.hasChanges) {
         toast.error(t("editor.no-changes-detected"));
@@ -129,6 +151,7 @@ export function useMemoSave({
     onConfirm,
     parentMemoName,
     queryClient,
+    filters,
     t,
   ]);
 }
