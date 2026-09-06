@@ -25,6 +25,8 @@ export interface MemoMarkdownRendererProps {
   resolvedMentionUsernames: Set<string>;
   /** Resource name of the memo (e.g. `memos/abc123`), used to target footnote links at the detail page. */
   memoName?: string;
+  /** Existing exact-memo share token, forwarded only to memo-scoped cover requests. */
+  shareToken?: string;
   /** Collection page that opened the memo detail. */
   parentPage?: string;
   parentScope?: MemoOriginScope;
@@ -69,6 +71,7 @@ export const MemoMarkdownRendererCore = ({
   attachments = [],
   resolvedMentionUsernames,
   memoName,
+  shareToken,
   parentPage,
   parentScope,
   compact,
@@ -162,15 +165,13 @@ export const MemoMarkdownRendererCore = ({
   };
 
   const renderContextValue = useMemo<MarkdownRenderContextValue>(() => {
-    if (!linkMetadata?.length) {
-      return rootMarkdownRenderContext;
-    }
     const byUrl: Record<string, LinkMetadata> = {};
-    for (const entry of linkMetadata) {
+    for (const entry of linkMetadata ?? []) {
       byUrl[entry.url] = entry;
     }
-    return { blockDepth: 0, linkMetadata: byUrl };
-  }, [linkMetadata]);
+    if (!memoName && !shareToken && !linkMetadata?.length) return rootMarkdownRenderContext;
+    return { blockDepth: 0, linkMetadata: linkMetadata?.length ? byUrl : undefined, memoName, shareToken };
+  }, [linkMetadata, memoName, shareToken]);
 
   return (
     <MarkdownRenderContext.Provider value={renderContextValue}>
@@ -209,8 +210,10 @@ export const MemoMarkdownRenderer = memo(
     previous.content === next.content &&
     previous.attachments === next.attachments &&
     previous.memoName === next.memoName &&
+    previous.shareToken === next.shareToken &&
     previous.parentPage === next.parentPage &&
     previous.parentScope === next.parentScope &&
     previous.compact === next.compact &&
+    previous.linkMetadata === next.linkMetadata &&
     haveEqualResolvedMentions(previous.resolvedMentionUsernames, next.resolvedMentionUsernames),
 );

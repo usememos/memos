@@ -1,13 +1,12 @@
-import { useQueryClient } from "@tanstack/react-query";
 import { BookmarkIcon, CheckIcon, ImportIcon, PlusIcon, RefreshCwIcon } from "lucide-react";
 import { type ReactNode, useState } from "react";
 import { Link } from "react-router-dom";
 import BookmarksImportDialog from "@/components/BookmarksImport/BookmarksImportDialog";
 import MemoView from "@/components/MemoView";
 import PagedMemoList, { getMemoKey } from "@/components/PagedMemoList";
-import { memoServiceClient } from "@/connect";
 import { useSpaceContext } from "@/contexts/SpaceContext";
 import { useMemoFilters, useMemoSorting } from "@/hooks";
+import { useBookmarkCoverRefresh } from "@/hooks/useBookmarkCoverRefresh";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { combineCELFilters } from "@/lib/cel-filter";
 import { cn } from "@/lib/utils";
@@ -25,6 +24,7 @@ const HeaderAction = ({
   disabled,
   primary,
   busy,
+  description,
 }: {
   icon: ReactNode;
   label: string;
@@ -33,6 +33,7 @@ const HeaderAction = ({
   disabled?: boolean;
   primary?: boolean;
   busy?: boolean;
+  description?: string;
 }) => {
   const className = cn(
     "flex size-10 shrink-0 items-center justify-center gap-1.5 rounded-md text-[13px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:h-8 sm:w-auto sm:px-2.5",
@@ -53,53 +54,18 @@ const HeaderAction = ({
     );
   }
   return (
-    <button type="button" className={className} onClick={onClick} disabled={disabled} aria-busy={busy}>
+    <button type="button" className={className} onClick={onClick} disabled={disabled} aria-busy={busy} title={description ?? label}>
       {content}
     </button>
   );
 };
-
-interface CoverRefreshState {
-  status: "idle" | "running" | "done" | "error";
-  updated: number;
-  failed: number;
-  pages: number;
-}
-
-const IDLE_REFRESH: CoverRefreshState = { status: "idle", updated: 0, failed: 0, pages: 0 };
 
 const Bookmarks = () => {
   const user = useCurrentUser();
   const t = useTranslate();
   const { memoFilter: spaceFilter } = useSpaceContext();
   const [importOpen, setImportOpen] = useState(false);
-  const [coverRefresh, setCoverRefresh] = useState<CoverRefreshState>(IDLE_REFRESH);
-  const queryClient = useQueryClient();
-
-  const refreshCovers = async () => {
-    setCoverRefresh({ ...IDLE_REFRESH, status: "running" });
-    try {
-      // The server pages through the backlog; keep calling until nextPageToken is empty.
-      let updated = 0;
-      let failed = 0;
-      let pages = 0;
-      let pageToken = "";
-      for (;;) {
-        const response = await memoServiceClient.refreshMemoLinkCovers({ pageToken });
-        updated += response.updatedLinks;
-        failed += response.failedLinks;
-        pages++;
-        setCoverRefresh({ status: "running", updated, failed, pages });
-        pageToken = response.nextPageToken;
-        if (!pageToken) break;
-      }
-      await queryClient.invalidateQueries({ queryKey: ["memos"] });
-      setCoverRefresh({ status: "done", updated, failed, pages });
-    } catch (error) {
-      console.error("link cover refresh failed", error instanceof Error ? error : new Error(String(error)));
-      setCoverRefresh({ ...IDLE_REFRESH, status: "error" });
-    }
-  };
+  const { coverRefresh, refreshCovers, cancelRefresh } = useBookmarkCoverRefresh();
 
   const memoFilter = useMemoFilters({
     creatorName: user?.name,
@@ -130,7 +96,9 @@ const Bookmarks = () => {
           : t("bookmarks.refresh-covers-updated", { updated: coverRefresh.updated.toString() })
         : coverRefresh.status === "error"
           ? t("bookmarks.refresh-covers-error")
-          : null;
+          : coverRefresh.status === "cancelled"
+            ? t("bookmarks.refresh-covers-cancelled")
+            : null;
 
   return (
     <>
@@ -166,11 +134,12 @@ const Bookmarks = () => {
                   onClick={() => void refreshCovers()}
                   disabled={coverRefresh.status === "running"}
                   busy={coverRefresh.status === "running"}
+                  description={t("bookmarks.refresh-covers-scope")}
                 />
               </div>
             </div>
             {refreshStatus !== null ? (
-              <p
+              <div
                 aria-live="polite"
                 aria-atomic="true"
                 className={cn(
@@ -182,7 +151,16 @@ const Bookmarks = () => {
               >
                 {coverRefresh.status === "done" && <CheckIcon className="size-3" strokeWidth={2} />}
                 {refreshStatus}
-              </p>
+                {coverRefresh.status === "running" && (
+                  <button
+                    type="button"
+                    onClick={cancelRefresh}
+                    className="shrink-0 rounded-md p-2 underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    {t("common.cancel")}
+                  </button>
+                )}
+              </div>
             ) : null}
           </header>
         )}

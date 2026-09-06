@@ -1,3 +1,5 @@
+import { isValidBookmarkUrl } from "@/lib/bookmark";
+
 // RFC-4180 CSV parser: quoted fields, "" escapes, embedded commas/newlines, CRLF.
 // ponytail: hand-rolled (~40 lines) instead of papaparse — AGENTS.md says ask before
 // adding dependencies, and this only needs the one format.
@@ -36,6 +38,7 @@ export function parseCsv(text: string): string[][] {
       current += char;
     }
   }
+  if (inQuotes) throw new SyntaxError("Unterminated CSV field");
   if (current !== "" || row.length > 0) {
     row.push(current);
     rows.push(row);
@@ -52,6 +55,35 @@ export interface RaindropRow {
   highlights: string;
 }
 
+type CsvWorkerResponse = { rows: RaindropRow[]; error?: never } | { rows?: never; error: string };
+
+export const parseRaindropCsvAsync = (text: string, signal: AbortSignal): Promise<RaindropRow[]> => {
+  if (signal.aborted) return Promise.reject(signal.reason);
+  if (typeof Worker === "undefined") return Promise.resolve(parseRaindropCsv(text));
+  return new Promise((resolve, reject) => {
+    const worker = new Worker(new URL("./csv.worker.ts", import.meta.url), { type: "module" });
+    const finish = () => {
+      signal.removeEventListener("abort", abort);
+      worker.terminate();
+    };
+    const abort = () => {
+      finish();
+      reject(signal.reason);
+    };
+    signal.addEventListener("abort", abort, { once: true });
+    worker.onerror = () => {
+      finish();
+      reject(new SyntaxError("CSV parsing failed"));
+    };
+    worker.onmessage = (event: MessageEvent<CsvWorkerResponse>) => {
+      finish();
+      if ("error" in event.data) reject(new SyntaxError(event.data.error));
+      else resolve(event.data.rows);
+    };
+    worker.postMessage(text);
+  });
+};
+
 const RAINDROP_COLUMNS = ["id", "title", "note", "excerpt", "url", "folder", "tags", "created", "cover", "highlights", "favorite"] as const;
 
 export function parseRaindropCsv(text: string): RaindropRow[] {
@@ -66,7 +98,7 @@ export function parseRaindropCsv(text: string): RaindropRow[] {
   const parsed: RaindropRow[] = [];
   for (const row of rows.slice(1)) {
     const url = at(row, "url").trim();
-    if (!/^https?:\/\//.test(url)) {
+    if (!isValidBookmarkUrl(url)) {
       continue;
     }
     const tags = at(row, "tags")

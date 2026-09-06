@@ -1,14 +1,14 @@
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
-import { getAttachmentType, getAttachmentUrl, isImage } from "@/utils/attachment";
+import { getAttachmentType, getAttachmentUrl, getMemoCoverUrl, isImage } from "@/utils/attachment";
 
 /**
  * Cover source for bento tiles: the locally cached link cover when the memo carries one,
  * otherwise the first image attachment.
  */
-export const getBentoCoverUrl = (memo: Memo): string | undefined => {
+export const getBentoCoverUrl = (memo: Memo, shareToken?: string): string | undefined => {
   const linkCover = (memo.property?.links ?? []).find((link) => Boolean(link.coverAttachmentUid))?.coverAttachmentUid;
   if (linkCover) {
-    return `/file/attachments/${linkCover}`;
+    return getMemoCoverUrl(memo.name, linkCover, shareToken);
   }
   const image = (memo.attachments ?? []).find((attachment) => isImage(getAttachmentType(attachment)));
   return image ? getAttachmentUrl(image) : undefined;

@@ -74,3 +74,10 @@ describe("parseRaindropCsv", () => {
     expect(parseRaindropCsv("")).toEqual([]);
   });
 });
+
+it("rejects a truncated quoted CSV instead of importing partial content", () => {
+  expect(() => parseRaindropCsv('title,url\n"unfinished,https://example.com')).toThrow();
+});
+it("rejects malformed HTTP URLs", () => {
+  expect(parseRaindropCsv("title,url\nBad,https://\nBad,https://exa mple.com")).toEqual([]);
+});

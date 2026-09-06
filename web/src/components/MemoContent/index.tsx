@@ -39,6 +39,7 @@ const MemoContent = (props: MemoContentProps) => {
           attachments={attachments}
           resolvedMentionUsernames={resolvedMentionUsernames}
           memoName={props.memoName}
+          shareToken={props.shareToken}
           parentPage={props.parentPage}
           parentScope={props.parentScope}
           compact={Boolean(props.compact)}

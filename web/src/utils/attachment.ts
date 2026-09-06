@@ -8,6 +8,14 @@ export const getAttachmentUrl = (attachment: Attachment) => {
   return `${window.location.origin}/file/${attachment.name}/${attachment.filename}`;
 };
 
+export const getMemoCoverUrl = (memoName: string | undefined, attachmentUid: string, shareToken?: string): string => {
+  if (!memoName) return `/file/attachments/${attachmentUid}`;
+  const memoUid = memoName.split("/").pop();
+  if (!memoUid) return `/file/attachments/${attachmentUid}`;
+  const url = `/file/memos/${encodeURIComponent(memoUid)}/covers/${encodeURIComponent(attachmentUid)}`;
+  return shareToken ? `${url}?${new URLSearchParams({ share_token: shareToken })}` : url;
+};
+
 // Appends a thumbnail or motion selector only to share-mode links; other external links fall back to the server-managed attachment URL.
 const withShareTokenParam = (externalLink: string | undefined, key: string): string | undefined => {
   if (!externalLink) {

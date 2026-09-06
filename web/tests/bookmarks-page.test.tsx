@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import Bookmarks from "@/pages/Bookmarks";
@@ -92,8 +92,50 @@ describe("<Bookmarks>", () => {
     const status = await screen.findByText("bookmarks.refresh-covers-updated");
     expect(status).toBeInTheDocument();
     expect(state.refreshCovers).toHaveBeenCalledTimes(2);
-    expect(state.refreshCovers).toHaveBeenNthCalledWith(1, { pageToken: "" });
-    expect(state.refreshCovers).toHaveBeenNthCalledWith(2, { pageToken: "200" });
+    expect(state.refreshCovers).toHaveBeenNthCalledWith(
+      1,
+      { pageToken: "", pageSize: 20 },
+      expect.objectContaining({ signal: expect.any(AbortSignal) }),
+    );
+    expect(state.refreshCovers).toHaveBeenNthCalledWith(
+      2,
+      { pageToken: "200", pageSize: 20 },
+      expect.objectContaining({ signal: expect.any(AbortSignal) }),
+    );
+  });
+
+  it("stops the active request when leaving bookmarks", async () => {
+    state.refreshCovers.mockReturnValue(new Promise(() => {}));
+    const view = renderPage();
+    fireEvent.click(screen.getByRole("button", { name: "bookmarks.refresh-covers" }));
+    const signal = state.refreshCovers.mock.calls[0]?.[1]?.signal;
+    view.unmount();
+    expect(signal?.aborted).toBe(true);
+  });
+
+  it("allows cancelling refresh without starting the next page", async () => {
+    let resolvePage: (value: ReturnType<typeof refreshResponse>) => void = () => undefined;
+    state.refreshCovers.mockReturnValue(
+      new Promise((resolve) => {
+        resolvePage = resolve;
+      }),
+    );
+    renderPage();
+    fireEvent.click(screen.getByRole("button", { name: "bookmarks.refresh-covers" }));
+    fireEvent.click(screen.getByRole("button", { name: "common.cancel" }));
+    await act(async () => resolvePage(refreshResponse(20, 1, 0, "20")));
+    expect(state.refreshCovers).toHaveBeenCalledTimes(1);
+    expect(await screen.findByText("bookmarks.refresh-covers-cancelled")).toBeInTheDocument();
+  });
+
+  it("invalidates covers saved before a later page fails", async () => {
+    state.refreshCovers.mockResolvedValueOnce(refreshResponse(20, 2, 0, "20")).mockRejectedValueOnce(new Error("offline"));
+    const invalidate = vi.spyOn(QueryClient.prototype, "invalidateQueries");
+    renderPage();
+    fireEvent.click(screen.getByRole("button", { name: "bookmarks.refresh-covers" }));
+    expect(await screen.findByText("bookmarks.refresh-covers-error")).toBeInTheDocument();
+    expect(invalidate).toHaveBeenCalledWith({ queryKey: ["memos"] });
+    invalidate.mockRestore();
   });
 
   it("surfaces a cover refresh failure", async () => {

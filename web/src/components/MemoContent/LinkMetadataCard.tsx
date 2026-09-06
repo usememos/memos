@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useLinkMetadata } from "@/hooks/useMemoQueries";
 import { cn } from "@/lib/utils";
 import type { LinkMetadata } from "@/types/proto/api/v1/memo_service_pb";
+import { getMemoCoverUrl } from "@/utils/attachment";
 
 interface LinkMetadataCardProps {
   url: string;
@@ -10,6 +11,8 @@ interface LinkMetadataCardProps {
   enabled?: boolean;
   /** Metadata persisted with the memo; used when the live fetch fails or has not resolved. */
   stored?: LinkMetadata;
+  memoName?: string;
+  shareToken?: string;
 }
 
 function getHostname(url: string): string {
@@ -20,7 +23,7 @@ function getHostname(url: string): string {
   }
 }
 
-const LinkMetadataCard = ({ url, fallback, enabled = true, stored }: LinkMetadataCardProps) => {
+const LinkMetadataCard = ({ url, fallback, enabled = true, stored, memoName, shareToken }: LinkMetadataCardProps) => {
   const [coverFailed, setCoverFailed] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
   const { data: fetched, isSuccess } = useLinkMetadata(url, { enabled });
@@ -32,7 +35,7 @@ const LinkMetadataCard = ({ url, fallback, enabled = true, stored }: LinkMetadat
   const description = metadata?.description.trim() ?? "";
   const hasUsefulMetadata = title !== "" || description !== "";
 
-  const coverUrl = stored?.coverAttachmentUid ? `/file/attachments/${stored.coverAttachmentUid}` : "";
+  const coverUrl = stored?.coverAttachmentUid ? getMemoCoverUrl(memoName, stored.coverAttachmentUid, shareToken) : "";
   const liveImage = metadata?.image.trim() || "";
   const image = imageFailed ? "" : coverFailed ? liveImage : coverUrl || liveImage;
   const hostname = getHostname(metadata?.url || url);

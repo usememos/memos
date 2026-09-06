@@ -234,11 +234,11 @@
   "bookmarks": {
     "import": "Import",
     "import-title": "Import bookmarks",
-    "import-description": "Import a Raindrop.io CSV export. Each row becomes a link memo with its folder and tags.",
+    "import-description": "Import a Raindrop.io CSV export. Checks saved and archived links across all your Spaces for duplicates.",
     "import-choose-file": "Choose CSV file",
     "import-no-rows": "No bookmarkable rows found in this file.",
     "import-read-failed": "Could not read the file.",
-    "import-preview-count": "{{count}} bookmarks found. Existing links are skipped automatically.",
+    "import-preview-count": "{{count}} bookmarks found. Checks your bookmarks across all Spaces before saving.",
     "import-start": "Import",
     "import-progress": "{{created}} created, {{skipped}} skipped, {{failed}} failed of {{total}}",
     "import-done": "Import finished.",
@@ -251,7 +251,7 @@
     "refresh-covers-error": "Cover refresh failed",
     "refresh-covers-updated": "{{updated}} covers updated",
     "capture-title": "Save bookmark",
-    "capture-no-url": "Nothing to save — this page expects a url query parameter.",
+    "capture-no-url": "Save a link now, or set up one-click capture for later.",
     "capture-drag-hint": "Drag this to your bookmarks bar for one-click capture:",
     "capture-button-label": "Save to memos",
     "capture-copy-bookmarklet": "Copy bookmarklet",
@@ -260,7 +260,19 @@
     "capture-saving": "Saving bookmark…",
     "import-drop-hint": "Drag and drop CSV file here, or click to browse",
     "import-invalid-file": "Please select a valid CSV file.",
-    "import-progress-label": "Import progress"
+    "import-progress-label": "Import progress",
+    "import-dedupe-failed": "Could not check existing bookmarks. No bookmarks were imported. Try again.",
+    "import-cancelled": "Import stopped. Links already saved were kept.",
+    "import-cancelling": "Stopping after current saves finish…",
+    "import-checking": "Checking saved and archived links across all your Spaces for duplicates. Keep this page open while importing.",
+    "capture-url-label": "Link URL",
+    "capture-continue": "Continue",
+    "capture-invalid-url": "Enter a valid HTTP or HTTPS URL.",
+    "capture-copy-failed": "Could not copy the bookmarklet. Try again.",
+    "capture-save-failed": "Could not save the link. Your draft is ready to retry.",
+    "refresh-covers-cancelled": "Cover refresh stopped. Completed updates were kept.",
+    "refresh-covers-scope": "Updates missing covers across all your bookmarks, including archived bookmarks.",
+    "import-file-too-large": "Split your export into CSV files smaller than 10 MiB."
   },
   "locale-picker": {
     "no-language-feedback": "Language not found? Submit feedback"

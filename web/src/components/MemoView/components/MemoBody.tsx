@@ -32,8 +32,18 @@ const BlurOverlay: React.FC<{ onClick?: () => void }> = ({ onClick }) => {
 };
 
 const MemoBody: React.FC<MemoBodyProps> = ({ compact }) => {
-  const { memo, parentPage, parentScope, showBlurredContent, blurred, readonly, openEditor, openPreview, toggleBlurVisibility } =
-    useMemoViewContext();
+  const {
+    memo,
+    parentPage,
+    parentScope,
+    shareToken,
+    showBlurredContent,
+    blurred,
+    readonly,
+    openEditor,
+    openPreview,
+    toggleBlurVisibility,
+  } = useMemoViewContext();
 
   const { handleMemoContentClick, handleMemoContentDoubleClick } = useMemoHandlers({ readonly, openEditor, openPreview });
 
@@ -57,6 +67,7 @@ const MemoBody: React.FC<MemoBodyProps> = ({ compact }) => {
         <ClampedSection enabled={Boolean(compact)}>
           <MemoContent
             memoName={memo.name}
+            shareToken={shareToken}
             parentPage={parentPage}
             parentScope={parentScope}
             content={memo.content}

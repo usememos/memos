@@ -47,6 +47,15 @@ Theme files under `web/src/themes/` own actual values. Components use semantic t
 - Save Link is the sole primary action; Import and Refresh remain quiet utilities.
 - Mobile uses icon-only controls with accessible names and 40px touch targets; labels appear from `sm` upward.
 - Refresh exposes idle, running, success, partial-failure, error, and disabled states without changing the underlying RPC behavior.
+- Running refresh offers a text Cancel action. Cancellation keeps completed work and announces its outcome in the same live region.
+
+### Link Capture and Import
+
+- Capture provides a labeled native URL field and one primary Continue action before the existing memo editor. Bookmarklet setup remains secondary.
+- Invalid URLs and failed saves preserve the draft and show explicit error text. Only HTTP and HTTPS links enter capture.
+- Import reuses the shared dialog, buttons and semantic color tokens. The file picker supports keyboard, click and drag-and-drop.
+- File preview is cleared when a replacement cannot be read. During import, the selected file is fixed and cancellation stops further creation while keeping completed bookmarks.
+- Import progress uses a named progressbar and a polite live region; error, cancellation, completion and active states are distinct.
 
 ### Bento Tile
 

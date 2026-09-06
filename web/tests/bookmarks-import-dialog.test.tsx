@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import BookmarksImportDialog from "@/components/BookmarksImport/BookmarksImportDialog";
 
@@ -8,7 +8,7 @@ const mocks = vi.hoisted(() => ({
   cancel: vi.fn(),
   reset: vi.fn(),
   progress: {
-    status: "idle" as "idle" | "deduping" | "importing" | "done",
+    status: "idle" as "idle" | "deduping" | "importing" | "done" | "error" | "cancelled" | "cancelling",
     total: 0,
     created: 0,
     skipped: 0,
@@ -114,5 +114,56 @@ describe("BookmarksImportDialog", () => {
     expect(progressbar).toHaveAttribute("aria-valuenow", "50");
     expect(progressbar).toHaveAttribute("aria-valuemin", "0");
     expect(progressbar).toHaveAttribute("aria-valuemax", "100");
+  });
+  it("clears the previous file when its replacement is invalid", async () => {
+    render(<BookmarksImportDialog open onOpenChange={mocks.onOpenChange} />);
+    const dropzone = screen.getByRole("button", { name: "bookmarks.import-choose-file" });
+    fireEvent.drop(dropzone, { dataTransfer: { files: [new File(["title,url\nA,https://example.com"], "a.csv")] } });
+    await screen.findByRole("button", { name: "bookmarks.import-start" });
+    fireEvent.drop(dropzone, { dataTransfer: { files: [new File(["bad"], "bad.pdf")] } });
+    expect(screen.queryByRole("button", { name: "bookmarks.import-start" })).not.toBeInTheDocument();
+  });
+
+  it("ignores stale file reads after another file is selected", async () => {
+    render(<BookmarksImportDialog open onOpenChange={mocks.onOpenChange} />);
+    const pending = Promise.withResolvers<string>();
+    const oldFile = new File([], "old.csv");
+    Object.defineProperty(oldFile, "text", { value: () => pending.promise });
+    const dropzone = screen.getByRole("button", { name: "bookmarks.import-choose-file" });
+    fireEvent.drop(dropzone, { dataTransfer: { files: [oldFile] } });
+    fireEvent.drop(dropzone, { dataTransfer: { files: [new File(["bad"], "bad.pdf")] } });
+    await act(async () => pending.resolve("title,url\nOld,https://example.com"));
+    expect(screen.queryByRole("button", { name: "bookmarks.import-start" })).not.toBeInTheDocument();
+  });
+
+  it("prevents file replacement while checking existing bookmarks", () => {
+    mocks.progress.status = "deduping";
+    render(<BookmarksImportDialog open onOpenChange={mocks.onOpenChange} />);
+    expect(screen.queryByRole("button", { name: "bookmarks.import-choose-file" })).not.toBeInTheDocument();
+    expect(screen.getByText("bookmarks.import-checking")).toBeInTheDocument();
+  });
+
+  it("removes the import action after completion", async () => {
+    const { rerender } = render(<BookmarksImportDialog open onOpenChange={mocks.onOpenChange} />);
+    fireEvent.drop(screen.getByRole("button", { name: "bookmarks.import-choose-file" }), {
+      dataTransfer: { files: [new File(["title,url\nA,https://example.com"], "a.csv")] },
+    });
+    await screen.findByRole("button", { name: "bookmarks.import-start" });
+    mocks.progress.status = "done";
+    rerender(<BookmarksImportDialog open onOpenChange={mocks.onOpenChange} />);
+    expect(screen.queryByRole("button", { name: "bookmarks.import-start" })).not.toBeInTheDocument();
+  });
+  it("rejects files above 10 MiB before reading and clears the previous preview", async () => {
+    render(<BookmarksImportDialog open onOpenChange={mocks.onOpenChange} />);
+    const dropzone = screen.getByRole("button", { name: "bookmarks.import-choose-file" });
+    fireEvent.drop(dropzone, { dataTransfer: { files: [new File(["title,url\nA,https://example.com"], "a.csv")] } });
+    await screen.findByRole("button", { name: "bookmarks.import-start" });
+    const file = new File([], "large.csv");
+    const read = vi.fn().mockResolvedValue("title,url\nLarge,https://example.com/large");
+    Object.defineProperties(file, { size: { value: 10 * 1024 * 1024 + 1 }, text: { value: read } });
+    fireEvent.drop(dropzone, { dataTransfer: { files: [file] } });
+    expect(read).not.toHaveBeenCalled();
+    expect(screen.getByRole("alert")).toHaveTextContent("bookmarks.import-file-too-large");
+    expect(screen.queryByRole("button", { name: "bookmarks.import-start" })).not.toBeInTheDocument();
   });
 });

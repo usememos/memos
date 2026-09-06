@@ -30,6 +30,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
     className,
     parentPage: parentPageProp,
     parentScope: parentScopeProp,
+    shareToken,
     compact,
     variant = "card",
     showCreator,
@@ -78,7 +79,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
 
   const isInMemoDetailPage = isMemoDetailPath(location.pathname, memoData.name);
   const showCommentPreview = variant !== "bento" && !isInMemoDetailPage && computeCommentAmount(memoData) > 0;
-  const bentoCover = variant === "bento" ? getBentoCoverUrl(memoData) : undefined;
+  const bentoCover = variant === "bento" ? getBentoCoverUrl(memoData, shareToken) : undefined;
   const visibleBentoCover = bentoCover === failedBentoCover ? undefined : bentoCover;
   const bentoTileTitle = variant === "bento" ? getBentoTileTitle(memoData) : "";
   const bentoTitle = bentoTileTitle || memoData.name.split("/").pop() || memoData.name;
@@ -127,6 +128,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
       currentUser,
       parentPage,
       parentScope,
+      shareToken,
       cardWidth,
       isArchived,
       readonly,
@@ -142,6 +144,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
       currentUser,
       parentPage,
       parentScope,
+      shareToken,
       cardWidth,
       isArchived,
       readonly,

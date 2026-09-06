@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
-import { getAttachmentMotionClipUrl, getAttachmentThumbnailUrl, getAttachmentUrl } from "@/utils/attachment";
+import { getAttachmentMotionClipUrl, getAttachmentThumbnailUrl, getAttachmentUrl, getMemoCoverUrl } from "@/utils/attachment";
 
 const origin = window.location.origin;
 
@@ -12,6 +12,12 @@ const baseAttachment = {
 
 // Regression tests for #6128: share-mode thumbnails/motion clips must keep the share token on externalLink.
 describe("attachment URL builders in share mode", () => {
+  it("builds memo-scoped cover URLs and carries an existing share token", () => {
+    expect(getMemoCoverUrl("memos/memo id", "cover/id", "token value")).toBe(
+      "/file/memos/memo%20id/covers/cover%2Fid?share_token=token+value",
+    );
+    expect(getMemoCoverUrl(undefined, "cover-id", "unused-token")).toBe("/file/attachments/cover-id");
+  });
   it("appends thumbnail=true to an externalLink that carries a share token", () => {
     const attachment = {
       ...baseAttachment,

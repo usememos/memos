@@ -5,6 +5,8 @@ export interface MarkdownRenderContextValue {
   blockDepth: number;
   /** Link metadata persisted with the memo, keyed by URL. */
   linkMetadata?: Record<string, LinkMetadata>;
+  memoName?: string;
+  shareToken?: string;
 }
 
 export const rootMarkdownRenderContext: MarkdownRenderContextValue = {
@@ -17,8 +19,11 @@ export const useMarkdownRenderContext = () => {
 };
 
 export const NestedMarkdownRenderContext = ({ children }: { children: React.ReactNode }) => {
-  const { blockDepth, linkMetadata } = useMarkdownRenderContext();
-  const value = useMemo<MarkdownRenderContextValue>(() => ({ blockDepth: blockDepth + 1, linkMetadata }), [blockDepth, linkMetadata]);
+  const { blockDepth, linkMetadata, memoName, shareToken } = useMarkdownRenderContext();
+  const value = useMemo<MarkdownRenderContextValue>(
+    () => ({ blockDepth: blockDepth + 1, linkMetadata, memoName, shareToken }),
+    [blockDepth, linkMetadata, memoName, shareToken],
+  );
 
   return <MarkdownRenderContext.Provider value={value}>{children}</MarkdownRenderContext.Provider>;
 };

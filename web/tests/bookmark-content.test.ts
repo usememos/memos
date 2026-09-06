@@ -19,4 +19,14 @@ describe("buildBookmarkContent", () => {
   it("returns empty content without a url", () => {
     expect(buildBookmarkContent("", "Title", ["unread"])).toBe("");
   });
+
+  it("escapes markdown syntax in captured titles and destinations", () => {
+    expect(buildBookmarkContent("https://example.com/a)b", "[title] *bold*", [])).toBe(
+      "[\\[title\\] \\*bold\\*](https://example.com/a%29b)",
+    );
+  });
+
+  it.each(["javascript:alert(1)", "data:text/html,hello", "not a URL"])("rejects unsafe URL %s", (url) => {
+    expect(buildBookmarkContent(url, "Title", [])).toBe("");
+  });
 });

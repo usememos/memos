@@ -13,6 +13,7 @@ export interface MemoViewProps {
   className?: string;
   parentPage?: string;
   parentScope?: MemoOriginScope;
+  shareToken?: string;
   shareImageDialogOpen?: boolean;
   onShareImageDialogOpenChange?: (open: boolean) => void;
 }

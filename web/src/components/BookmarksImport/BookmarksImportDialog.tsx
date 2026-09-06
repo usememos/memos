@@ -1,10 +1,10 @@
 import { UploadCloudIcon } from "lucide-react";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
-import { parseRaindropCsv, type RaindropRow } from "./csv";
+import { parseRaindropCsvAsync, type RaindropRow } from "./csv";
 import { slugifyTag } from "./slugifyTag";
 import { useBookmarkImport } from "./useBookmarkImport";
 
@@ -13,25 +13,54 @@ interface BookmarksImportDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
+// Cap exports at 10 MiB before reading or transferring them to the parser worker.
+const MAX_IMPORT_BYTES = 10 * 1024 * 1024;
+
 const BookmarksImportDialog = ({ open, onOpenChange }: BookmarksImportDialogProps) => {
   const t = useTranslate();
   const [rows, setRows] = useState<RaindropRow[]>([]);
   const [error, setError] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const dragCounterRef = useRef(0);
+  const fileRead = useRef(0);
+  const activeParse = useRef<AbortController | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
   const { progress, start, cancel, reset } = useBookmarkImport();
 
+  const busy = progress.status === "deduping" || progress.status === "importing" || progress.status === "cancelling";
+  useEffect(
+    () => () => {
+      fileRead.current++;
+      activeParse.current?.abort();
+    },
+    [],
+  );
+
   const handleFile = useCallback(
     (file: File) => {
-      if (!file.name.endsWith(".csv") && file.type !== "text/csv") {
+      if (busy) return;
+      activeParse.current?.abort();
+      const parse = new AbortController();
+      activeParse.current = parse;
+      const read = ++fileRead.current;
+      setRows([]);
+      setError("");
+      if (!file.name.toLowerCase().endsWith(".csv") && file.type !== "text/csv") {
         setError(t("bookmarks.import-invalid-file"));
+        return;
+      }
+      if (file.size > MAX_IMPORT_BYTES) {
+        setError(t("bookmarks.import-file-too-large"));
         return;
       }
       file
         .text()
         .then((text) => {
-          const parsed = parseRaindropCsv(text);
+          if (fileRead.current !== read) throw new DOMException("File replaced", "AbortError");
+          return parseRaindropCsvAsync(text, parse.signal);
+        })
+        .then((parsed) => {
+          if (fileRead.current !== read) return;
           if (parsed.length === 0) {
             setError(t("bookmarks.import-no-rows"));
             setRows([]);
@@ -40,9 +69,14 @@ const BookmarksImportDialog = ({ open, onOpenChange }: BookmarksImportDialogProp
             setRows(parsed);
           }
         })
-        .catch(() => setError(t("bookmarks.import-read-failed")));
+        .catch(() => {
+          if (fileRead.current === read) setError(t("bookmarks.import-read-failed"));
+        })
+        .finally(() => {
+          if (activeParse.current === parse) activeParse.current = null;
+        });
     },
-    [t],
+    [t, busy],
   );
 
   const handleDragEnter = (e: React.DragEvent) => {
@@ -81,7 +115,9 @@ const BookmarksImportDialog = ({ open, onOpenChange }: BookmarksImportDialogProp
   };
 
   const handleClose = (next: boolean) => {
-    cancel();
+    fileRead.current++;
+    activeParse.current?.abort();
+    activeParse.current = null;
     reset();
     setRows([]);
     setError("");
@@ -98,7 +134,6 @@ const BookmarksImportDialog = ({ open, onOpenChange }: BookmarksImportDialogProp
     }
   }
 
-  const busy = progress.status === "deduping" || progress.status === "importing";
   const donePercent = progress.total > 0 ? Math.round(((progress.created + progress.skipped + progress.failed) / progress.total) * 100) : 0;
 
   return (
@@ -109,7 +144,7 @@ const BookmarksImportDialog = ({ open, onOpenChange }: BookmarksImportDialogProp
           <DialogDescription>{t("bookmarks.import-description")}</DialogDescription>
         </DialogHeader>
 
-        {progress.status === "idle" || progress.status === "deduping" ? (
+        {progress.status === "idle" || progress.status === "error" ? (
           <div className="space-y-3">
             <input
               ref={fileInput}
@@ -153,7 +188,16 @@ const BookmarksImportDialog = ({ open, onOpenChange }: BookmarksImportDialogProp
                 <p className="text-xs text-muted-foreground">{t("bookmarks.import-drop-hint")}</p>
               </div>
             </div>
-            {error ? <p className="text-sm text-destructive">{error}</p> : null}
+            {error ? (
+              <p role="alert" className="text-sm text-destructive">
+                {error}
+              </p>
+            ) : null}
+            {progress.status === "error" ? (
+              <p role="alert" className="text-sm text-destructive">
+                {t("bookmarks.import-dedupe-failed")}
+              </p>
+            ) : null}
             {rows.length > 0 ? (
               <div className="space-y-2 text-sm text-muted-foreground">
                 <p>{t("bookmarks.import-preview-count", { count: rows.length.toString() })}</p>
@@ -172,7 +216,10 @@ const BookmarksImportDialog = ({ open, onOpenChange }: BookmarksImportDialogProp
             ) : null}
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-3" aria-live="polite">
+            {progress.status === "deduping" ? <p className="text-sm">{t("bookmarks.import-checking")}</p> : null}
+            {progress.status === "cancelling" ? <p className="text-sm">{t("bookmarks.import-cancelling")}</p> : null}
+            {progress.status === "cancelled" ? <p className="text-sm">{t("bookmarks.import-cancelled")}</p> : null}
             <div
               role="progressbar"
               aria-valuenow={donePercent}
@@ -197,21 +244,20 @@ const BookmarksImportDialog = ({ open, onOpenChange }: BookmarksImportDialogProp
 
         <DialogFooter>
           {busy ? (
-            <Button variant="outline" onClick={cancel} disabled={progress.status === "done"}>
+            <Button variant="outline" onClick={cancel} disabled={progress.status === "cancelling"}>
               {t("bookmarks.import-cancel")}
             </Button>
           ) : (
             <>
               <Button variant="ghost" onClick={() => handleClose(false)}>
-                {progress.status === "done" ? t("common.close") : t("common.cancel")}
+                {progress.status === "done" || progress.status === "cancelled" ? t("common.close") : t("common.cancel")}
               </Button>
-              {rows.length > 0 ? (
+              {rows.length > 0 && (progress.status === "idle" || progress.status === "error") ? (
                 <Button
                   onClick={() => {
                     setError("");
                     start(rows);
                   }}
-                  disabled={progress.status === "deduping"}
                 >
                   {t("bookmarks.import-start")}
                 </Button>

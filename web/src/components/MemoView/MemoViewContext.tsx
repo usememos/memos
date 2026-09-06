@@ -15,6 +15,7 @@ export interface MemoViewContextValue {
   currentUser: User | undefined;
   parentPage: string;
   parentScope: MemoOriginScope;
+  shareToken?: string;
   cardWidth: number;
   isArchived: boolean;
   readonly: boolean;
