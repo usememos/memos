@@ -25,7 +25,7 @@ import MemoSpaceBadge from "./MemoSpaceBadge";
 const MEMO_HEADER_ACTION_CLASSES =
   "size-6 shrink-0 rounded-md border-none bg-transparent text-muted-foreground transition-colors hover:bg-accent hover:text-foreground hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/50 data-popup-open:bg-accent data-popup-open:text-foreground";
 
-const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, showPinned, showSpace }) => {
+const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showCreator, showVisibility, showPinned, showSpace }) => {
   const t = useTranslate();
   const [reactionSelectorOpen, setReactionSelectorOpen] = useState(false);
 
@@ -43,6 +43,8 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, sh
 
   const timeValue = isArchived ? (
     memoDisplayTime?.toLocaleString(i18n.language)
+  ) : timeDisplay === "time" ? (
+    memoDisplayTime?.toLocaleTimeString(i18n.language, { hour: "numeric", minute: "2-digit" })
   ) : (
     <RelativeTime date={memoDisplayTime} format={relativeTimeFormat} />
   );

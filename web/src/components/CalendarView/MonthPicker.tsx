@@ -1,11 +1,11 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { CalendarLink } from "./CalendarLink";
+import { CALENDAR_CONTROL_ACTIVE_CLASSES, CALENDAR_ICON_CONTROL_CLASSES, CALENDAR_TEXT_CONTROL_CLASSES } from "./controls";
 import { buildCalendarPath, buildMonthKey, getMonthOfDate } from "./paths";
 
 export interface MonthPickerProps {
@@ -44,38 +44,30 @@ export const MonthPicker = ({ month, monthLabel, today }: MonthPickerProps) => {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
-        render={
-          <Button
-            variant="ghost"
-            size="sm"
-            aria-label={t("calendar.select-month")}
-            className="px-3 text-base font-semibold tracking-tight"
-          />
-        }
+        aria-label={t("calendar.select-month")}
+        className={cn(CALENDAR_TEXT_CONTROL_CLASSES, "text-base font-semibold tracking-tight text-foreground")}
       >
         {monthLabel}
       </PopoverTrigger>
       <PopoverContent align="start" sideOffset={6} className="w-60 p-2">
         <div className="mb-1 flex items-center">
-          <Button
-            variant="ghost"
-            size="icon-sm"
+          <button
+            type="button"
             aria-label={t("calendar.previous-year")}
-            className="size-7 text-muted-foreground/70 hover:text-foreground"
+            className={CALENDAR_ICON_CONTROL_CLASSES}
             onClick={() => setYear((value) => value - 1)}
           >
-            <ChevronLeftIcon className="size-4 rtl:rotate-180" strokeWidth={1.75} />
-          </Button>
-          <span className="flex-1 text-center text-sm font-medium tabular-nums text-foreground">{year}</span>
-          <Button
-            variant="ghost"
-            size="icon-sm"
+            <ChevronLeftIcon className="rtl:rotate-180" strokeWidth={1.75} />
+          </button>
+          <span className="flex-1 text-center text-ui font-medium tabular-nums text-foreground">{year}</span>
+          <button
+            type="button"
             aria-label={t("calendar.next-year")}
-            className="size-7 text-muted-foreground/70 hover:text-foreground"
+            className={CALENDAR_ICON_CONTROL_CLASSES}
             onClick={() => setYear((value) => value + 1)}
           >
-            <ChevronRightIcon className="size-4 rtl:rotate-180" strokeWidth={1.75} />
-          </Button>
+            <ChevronRightIcon className="rtl:rotate-180" strokeWidth={1.75} />
+          </button>
         </div>
         <div className="grid grid-cols-3 gap-0.5">
           {MONTHS.map((value) => {
@@ -88,8 +80,9 @@ export const MonthPicker = ({ month, monthLabel, today }: MonthPickerProps) => {
                 to={buildCalendarPath(key)}
                 aria-current={isShown ? "page" : undefined}
                 className={cn(
-                  "relative flex h-8 items-center justify-center rounded-md text-ui no-underline transition-colors",
-                  isShown ? "bg-accent font-medium text-accent-foreground" : "text-foreground hover:bg-accent hover:text-accent-foreground",
+                  CALENDAR_TEXT_CONTROL_CLASSES,
+                  "relative justify-center text-foreground",
+                  isShown && ["font-medium", CALENDAR_CONTROL_ACTIVE_CLASSES],
                 )}
                 onClick={() => setOpen(false)}
               >

@@ -1,9 +1,10 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
+import { useLocation, useNavigate } from "react-router-dom";
 import { addMonths } from "@/lib/calendar-utils";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { CalendarLink } from "./CalendarLink";
+import { CALENDAR_CONTROL_ACTIVE_CLASSES, CALENDAR_ICON_CONTROL_CLASSES, CALENDAR_TEXT_CONTROL_CLASSES } from "./controls";
 import { MonthPicker } from "./MonthPicker";
 import { buildCalendarPath, getMonthOfDate } from "./paths";
 
@@ -12,28 +13,28 @@ export interface CalendarHeaderProps {
   monthLabel: string;
   /** `YYYY-MM-DD` */
   today: string;
-  /** `YYYY-MM-DD` of the open day, if any. */
-  date?: string;
+  /** `YYYY-MM-DD` of the day being shown, whether the URL names it or the layout defaulted to it. */
+  activeDate?: string;
+  /** Whether the shown day can be dismissed: a panel or sheet can, the phone's inline list cannot. */
+  closable: boolean;
 }
 
 /**
- * Where "Today" goes: from another month it returns to this month; within this month it
- * toggles today's panel, so the button is also the quickest way to today's memos.
+ * Where "Today" goes: from another month it returns to this month; within this month it opens
+ * today, and where the day can be dismissed a second press closes it again. On phones a day is
+ * always shown, so Today simply keeps today selected and reads as pressed while it is.
  */
-export const getTodayPath = (month: string, date: string | undefined, today: string): string => {
+export const getTodayPath = (month: string, activeDate: string | undefined, today: string, closable: boolean): string => {
   const currentMonth = getMonthOfDate(today);
   if (month !== currentMonth) return buildCalendarPath(currentMonth);
-  return date === today ? buildCalendarPath(currentMonth) : buildCalendarPath(currentMonth, today);
+  return closable && activeDate === today ? buildCalendarPath(currentMonth) : buildCalendarPath(currentMonth, today);
 };
 
-const NAV_LINK_CLASSES = cn(
-  buttonVariants({ variant: "ghost", size: "icon-sm" }),
-  "size-7 rounded-md text-muted-foreground/70 no-underline hover:bg-muted/60 hover:text-foreground",
-);
-
-export const CalendarHeader = ({ month, monthLabel, today, date }: CalendarHeaderProps) => {
+export const CalendarHeader = ({ month, monthLabel, today, activeDate, closable }: CalendarHeaderProps) => {
   const t = useTranslate();
-  const todayOpen = date === today;
+  const navigate = useNavigate();
+  const { search } = useLocation();
+  const todayOpen = activeDate === today;
 
   return (
     // The title's text starts on the grid's text axis (border + cell padding); the month
@@ -41,23 +42,29 @@ export const CalendarHeader = ({ month, monthLabel, today, date }: CalendarHeade
     <header className="flex h-9 shrink-0 items-center ps-px">
       <MonthPicker month={month} monthLabel={monthLabel} today={today} />
       <div className="ms-auto flex items-center gap-0.5">
-        <CalendarLink to={buildCalendarPath(addMonths(month, -1))} aria-label={t("common.previous-month")} className={NAV_LINK_CLASSES}>
-          <ChevronLeftIcon className="size-4 rtl:rotate-180" strokeWidth={1.75} />
-        </CalendarLink>
-        <CalendarLink to={buildCalendarPath(addMonths(month, 1))} aria-label={t("common.next-month")} className={NAV_LINK_CLASSES}>
-          <ChevronRightIcon className="size-4 rtl:rotate-180" strokeWidth={1.75} />
+        <CalendarLink
+          to={buildCalendarPath(addMonths(month, -1))}
+          aria-label={t("common.previous-month")}
+          className={CALENDAR_ICON_CONTROL_CLASSES}
+        >
+          <ChevronLeftIcon className="rtl:rotate-180" strokeWidth={1.75} />
         </CalendarLink>
         <CalendarLink
-          to={getTodayPath(month, date, today)}
+          to={buildCalendarPath(addMonths(month, 1))}
+          aria-label={t("common.next-month")}
+          className={CALENDAR_ICON_CONTROL_CLASSES}
+        >
+          <ChevronRightIcon className="rtl:rotate-180" strokeWidth={1.75} />
+        </CalendarLink>
+        {/* Today is a toggle, so it is a button that navigates; the search keeps the filter query. */}
+        <button
+          type="button"
           aria-pressed={todayOpen}
-          className={cn(
-            buttonVariants({ variant: "outline", size: "sm" }),
-            "ms-1.5 no-underline",
-            todayOpen && "bg-accent text-accent-foreground",
-          )}
+          className={cn(CALENDAR_TEXT_CONTROL_CLASSES, "ms-1.5", todayOpen && CALENDAR_CONTROL_ACTIVE_CLASSES)}
+          onClick={() => navigate({ pathname: getTodayPath(month, activeDate, today, closable), search })}
         >
           {t("common.today")}
-        </CalendarLink>
+        </button>
       </div>
     </header>
   );

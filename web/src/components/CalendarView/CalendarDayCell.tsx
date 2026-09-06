@@ -4,6 +4,7 @@ import type { MemoTimeBasis } from "@/contexts/ViewContext";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { CalendarLink } from "./CalendarLink";
+import { CALENDAR_FOCUS_CLASSES } from "./controls";
 import type { CalendarDaySummary } from "./dayModel";
 import { buildCalendarPath, getMonthOfDate } from "./paths";
 
@@ -38,7 +39,7 @@ const CORNER_CLASSES = { ss: "rounded-ss-lg", se: "rounded-se-lg", es: "rounded-
 export const CalendarDayCell = memo(
   ({ day, summary, visibleRows, pending, timeBasis, tabIndex, isLastColumn, isLastRow, corner }: CalendarDayCellProps) => {
     const t = useTranslate();
-    const count = summary?.count ?? day.count;
+    const count = summary ? summary.memos.length : day.count;
     const entries = summary?.entries ?? [];
     // The "+N more" line takes a row of its own, so an overflowing day shows one fewer memo.
     const overflows = count > visibleRows;
@@ -58,7 +59,7 @@ export const CalendarDayCell = memo(
           !isLastColumn && "border-e",
           !isLastRow && "border-b",
           corner && CORNER_CLASSES[corner],
-          "focus-visible:outline-2 focus-visible:outline-solid focus-visible:-outline-offset-2 focus-visible:outline-ring/60",
+          CALENDAR_FOCUS_CLASSES,
           // The open day is the place you are, so it takes the fill the sidebar gives a current row.
           day.isSelected ? "bg-accent" : day.isCurrentMonth ? "bg-card hover:bg-muted/40" : "bg-muted/25 hover:bg-muted/45",
         )}

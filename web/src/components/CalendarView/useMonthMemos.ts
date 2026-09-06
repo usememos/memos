@@ -53,5 +53,5 @@ export const useMonthMemos = ({ month, filter, enabled = true, isRedacted }: Use
 
   const memos = query.data ?? NO_MEMOS;
   const model = useMemo(() => buildCalendarMonthModel(memos, timeBasis, { isRedacted }), [memos, timeBasis, isRedacted]);
-  return { model, isLoading: query.isLoading };
+  return { model, isLoading: query.isLoading, error: query.isError ? query.error : undefined, refetch: query.refetch };
 };

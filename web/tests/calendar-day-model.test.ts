@@ -24,8 +24,8 @@ describe("calendar month model", () => {
       "create_time",
     );
     expect(Object.keys(model).sort()).toEqual(["2026-08-02", "2026-08-03"]);
-    expect(model["2026-08-02"].count).toBe(2);
-    expect(model["2026-08-03"].count).toBe(1);
+    expect(model["2026-08-02"].memos).toHaveLength(2);
+    expect(model["2026-08-03"].memos).toHaveLength(1);
   });
 
   it("lists memos as rows in time order with a thumbnail when they carry an image", () => {
@@ -47,13 +47,13 @@ describe("calendar month model", () => {
     const model = buildCalendarMonthModel(
       [
         memoAt(new Date(2026, 7, 2, 8), { snippet: "  \nSecond line first\nmore" }),
-        memoAt(new Date(2026, 7, 2, 9), { content: "Raw content only" }),
+        memoAt(new Date(2026, 7, 2, 9), { snippet: "   ", content: "Raw content only" }),
         memoAt(new Date(2026, 7, 2, 10), { content: "   " }),
         memoAt(new Date(2026, 7, 2, 11), { content: "", attachments: [image("photo")] }),
       ],
       "create_time",
     );
-    expect(model["2026-08-02"].count).toBe(4);
+    expect(model["2026-08-02"].memos).toHaveLength(4);
     expect(model["2026-08-02"].entries.map((entry) => entry.text)).toEqual(["Second line first", "Raw content only", ""]);
     expect(model["2026-08-02"].entries[2].thumbnailUrl).toBeDefined();
   });
@@ -61,7 +61,7 @@ describe("calendar month model", () => {
   it("caps entries while still counting every memo", () => {
     const memos = Array.from({ length: 10 }, (_, index) => memoAt(new Date(2026, 7, 2, index + 1), { snippet: `m${index}` }));
     const model = buildCalendarMonthModel(memos, "create_time");
-    expect(model["2026-08-02"].count).toBe(10);
+    expect(model["2026-08-02"].memos).toHaveLength(10);
     expect(model["2026-08-02"].entries).toHaveLength(8);
   });
 
@@ -79,7 +79,7 @@ describe("calendar month model", () => {
       "create_time",
       { isRedacted: (memo) => memo.tags.includes("private") },
     );
-    expect(model["2026-08-02"].count).toBe(2);
+    expect(model["2026-08-02"].memos).toHaveLength(2);
     expect(model["2026-08-02"].entries.map((entry) => entry.text)).toEqual(["public"]);
   });
 });

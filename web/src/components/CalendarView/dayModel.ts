@@ -17,9 +17,9 @@ export interface CalendarDayEntry {
 }
 
 export interface CalendarDaySummary {
-  /** Every memo of the day, including ones that yield no entry. */
-  count: number;
-  /** Memos in time order, capped at MAX_DAY_ENTRIES. */
+  /** Every memo of the day in time order, including ones that yield no entry; the day panel renders these. */
+  memos: Memo[];
+  /** Grid rows in time order, capped at MAX_DAY_ENTRIES. */
   entries: CalendarDayEntry[];
 }
 
@@ -56,12 +56,12 @@ export const buildCalendarMonthModel = (
   const model: CalendarMonthModel = {};
   for (const { memo, time } of dated) {
     const date = dayjs(time).format(ISO_DATE_FORMAT);
-    const summary = (model[date] ??= { count: 0, entries: [] });
-    summary.count += 1;
+    const summary = (model[date] ??= { memos: [], entries: [] });
+    summary.memos.push(memo);
     if (isRedacted?.(memo) || summary.entries.length >= MAX_DAY_ENTRIES) continue;
 
     const image = memo.attachments.find((attachment) => isImage(attachment.type));
-    const text = firstLine(memo.snippet || memo.content);
+    const text = firstLine(memo.snippet) || firstLine(memo.content);
     if (!text && !image) continue;
     summary.entries.push({
       memoName: memo.name,

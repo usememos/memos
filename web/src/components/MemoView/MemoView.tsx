@@ -38,6 +38,7 @@ const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
     parentPage: parentPageProp,
     parentScope: parentScopeProp,
     compact,
+    timeDisplay,
     showCreator,
     showVisibility,
     showPinned,
@@ -167,7 +168,13 @@ const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
       ref={cardRef}
       tabIndex={readonly ? -1 : 0}
     >
-      <MemoHeader showCreator={showCreator} showVisibility={showVisibility} showPinned={showPinned} showSpace={showSpace} />
+      <MemoHeader
+        timeDisplay={timeDisplay}
+        showCreator={showCreator}
+        showVisibility={showVisibility}
+        showPinned={showPinned}
+        showSpace={showSpace}
+      />
 
       <MemoBody compact={compact} />
 

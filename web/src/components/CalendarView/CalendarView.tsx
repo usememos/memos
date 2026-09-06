@@ -2,6 +2,7 @@ import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState }
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import { SidebarResizeHandle } from "@/components/AppSidebar";
+import MemoListError from "@/components/PagedMemoList/MemoListError";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
@@ -22,6 +23,8 @@ import { DayPanel } from "./DayPanel";
 import { buildCalendarPath, getDefaultDate } from "./paths";
 import { DAY_PANEL_DEFAULT_WIDTH, DAY_PANEL_WIDTH_VAR, useDayPanelWidth } from "./useDayPanelWidth";
 import { useMonthMemos } from "./useMonthMemos";
+
+const NO_MEMOS: Memo[] = [];
 
 export interface CalendarViewProps {
   /** `YYYY-MM` */
@@ -79,7 +82,7 @@ export const CalendarView = ({ month, date }: CalendarViewProps) => {
   const isRedacted = useCallback((memo: Memo) => isMemoBlurred(memo, userTagsSetting), [userTagsSetting]);
   // Snippets and thumbnails must not appear before the tag settings that decide what to blur
   // have loaded; until then the predicate would let everything through.
-  const { model, isLoading } = useMonthMemos({
+  const { model, isLoading, error, refetch } = useMonthMemos({
     month,
     filter: monthFilter,
     isRedacted,
@@ -94,13 +97,12 @@ export const CalendarView = ({ month, date }: CalendarViewProps) => {
 
   // The sheet stays mounted after its day closes so it can slide out; it keeps showing the
   // last open day while it does.
+  // The sheet stays mounted across a close so its exit animation can play; it keeps showing the
+  // last open day. Set during render, so no frame ever commits the previous day's content.
   const [sheetDate, setSheetDate] = useState(date);
-  useEffect(() => {
-    if (date) setSheetDate(date);
-  }, [date]);
+  if (date && date !== sheetDate) setSheetDate(date);
+  const dayMemos = (day: string | undefined) => (day && model[day]?.memos) || NO_MEMOS;
 
-  // Escape closes the side panel unless something else consumed it first: popups and the
-  // editor both preventDefault on the Escape they handle, and text fields keep theirs.
   useEffect(() => {
     if (!date || !xl) return;
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -111,13 +113,14 @@ export const CalendarView = ({ month, date }: CalendarViewProps) => {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [date, xl, closeDay]);
 
-  const isEmptyMonth = !isLoading && Object.keys(model).length === 0;
+  // A failed month must not pass for an empty one.
+  const isEmptyMonth = !isLoading && !error && Object.keys(model).length === 0;
 
   return (
     <div className="mx-auto flex w-full max-w-7xl items-start gap-6">
       {/* From xl the section is sticky and viewport-tall so the grid can fill it beside the panel. */}
       <section className="mx-auto flex w-full min-w-0 max-w-5xl flex-1 flex-col gap-1 xl:sticky xl:top-6 xl:h-[calc(100dvh-3.5rem)]">
-        <CalendarHeader month={month} monthLabel={monthLabel} today={today} date={date} />
+        <CalendarHeader month={month} monthLabel={monthLabel} today={today} activeDate={activeDate} closable={md} />
         <CalendarGrid
           month={month}
           monthLabel={monthLabel}
@@ -128,6 +131,7 @@ export const CalendarView = ({ month, date }: CalendarViewProps) => {
           selectedDate={activeDate}
           showRows={md}
         />
+        {error && <MemoListError error={error} onRetry={refetch} />}
         {isEmptyMonth && md && (
           <p className="mt-2 shrink-0 text-center text-ui text-muted-foreground">
             {t("calendar.no-memos-in-month", { month: monthLabel })}
@@ -135,7 +139,7 @@ export const CalendarView = ({ month, date }: CalendarViewProps) => {
         )}
         {activeDate && !md && (
           <div className="mt-4">
-            <DayPanel date={activeDate} filter={memoFilter} />
+            <DayPanel date={activeDate} memos={dayMemos(activeDate)} />
           </div>
         )}
       </section>
@@ -148,7 +152,7 @@ export const CalendarView = ({ month, date }: CalendarViewProps) => {
             className="w-[28rem] max-w-[90vw] gap-0 overflow-y-auto px-6 pb-8 pt-5 sm:max-w-md [&_[data-slot=sheet-close]]:hidden"
           >
             <SheetTitle className="sr-only">{sheetDate}</SheetTitle>
-            <DayPanel date={sheetDate} filter={memoFilter} onClose={closeDay} />
+            <DayPanel date={sheetDate} memos={dayMemos(sheetDate)} onClose={closeDay} />
           </SheetContent>
         </Sheet>
       )}
@@ -173,7 +177,7 @@ export const CalendarView = ({ month, date }: CalendarViewProps) => {
             edge="start"
             label={t("calendar.resize-panel")}
           />
-          <DayPanel date={date} filter={memoFilter} onClose={closeDay} />
+          <DayPanel date={date} memos={dayMemos(date)} onClose={closeDay} />
         </aside>
       )}
     </div>
