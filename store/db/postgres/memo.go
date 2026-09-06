@@ -54,12 +54,13 @@ func insertPostgresMemo(ctx context.Context, tx *sql.Tx, create *store.Memo) err
 		args = append(args, create.UpdatedTs)
 	}
 
-	stmt := "INSERT INTO memo (" + strings.Join(fields, ", ") + ") VALUES (" + placeholders(len(args)) + ") RETURNING id, created_ts, updated_ts, row_status"
+	stmt := "INSERT INTO memo (" + strings.Join(fields, ", ") + ") VALUES (" + placeholders(len(args)) + ") RETURNING id, created_ts, updated_ts, row_status, payload"
 	if err := tx.QueryRowContext(ctx, stmt, args...).Scan(
 		&create.ID,
 		&create.CreatedTs,
 		&create.UpdatedTs,
 		&create.RowStatus,
+		&create.PayloadRaw,
 	); err != nil {
 		return err
 	}
@@ -103,6 +104,15 @@ func validatePostgresMemoSpaceMember(ctx context.Context, tx *sql.Tx, spaceID, u
 
 func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo, error) {
 	where, args := []string{"1 = 1"}, []any{}
+	if find.OrderByIDAsc != nil && (find.OrderByPinned || find.OrderByUpdatedTs || find.OrderByTimeAsc) {
+		return nil, errors.New("ID scan ordering cannot be combined with collection ordering")
+	}
+	if find.AfterID != nil {
+		where, args = append(where, "memo.id > "+placeholder(len(args)+1)), append(args, *find.AfterID)
+	}
+	if find.MaxID != nil {
+		where, args = append(where, "memo.id <= "+placeholder(len(args)+1)), append(args, *find.MaxID)
+	}
 
 	engine, err := filter.DefaultEngine()
 	if err != nil {
@@ -182,6 +192,12 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	}
 	// Add id as final tie-breaker
 	orderBy = append(orderBy, "id DESC")
+	if find.OrderByIDAsc != nil {
+		orderBy = []string{"id DESC"}
+		if *find.OrderByIDAsc {
+			orderBy = []string{"id ASC"}
+		}
+	}
 	fields := []string{
 		`memo.id AS id`,
 		`memo.uid AS uid`,
@@ -249,6 +265,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		if err := protojsonUnmarshaler.Unmarshal(payloadBytes, payload); err != nil {
 			return nil, errors.Wrap(err, "failed to unmarshal payload")
 		}
+		memo.PayloadRaw = string(payloadBytes)
 		memo.Payload = payload
 		list = append(list, &memo)
 	}

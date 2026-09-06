@@ -85,6 +85,19 @@ func TestAttachmentNeedsInstanceStorageSetting(t *testing.T) {
 	}
 }
 
+func TestAttachmentBlobReadLimitUsesStoredBytes(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	created, err := ts.CreateAttachment(ctx, &store.Attachment{
+		UID: shortuuid.New(), CreatorID: 101, Filename: "bounded.bin", Blob: []byte("0123456789"), Size: 1,
+	})
+	require.NoError(t, err)
+	limit := 6
+	attachment, err := ts.GetAttachment(ctx, &store.FindAttachment{ID: &created.ID, GetBlob: true, BlobReadLimit: &limit})
+	require.NoError(t, err)
+	require.Equal(t, []byte("012345"), attachment.Blob)
+}
+
 func TestAttachmentStore(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()

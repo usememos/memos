@@ -7,19 +7,17 @@ import (
 	"encoding/hex"
 	"errors"
 	"image"
-	_ "image/gif"
 	_ "image/jpeg"
 	_ "image/png"
 	"log/slog"
 	"path/filepath"
-	"strconv"
 	"strings"
-	"sync"
 	"sync/atomic"
 	"time"
 
 	"github.com/lithammer/shortuuid/v4"
 	_ "golang.org/x/image/webp"
+	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
@@ -38,8 +36,19 @@ const (
 	enrichTimeout       = 10 * time.Second
 	coverFilenamePrefix = "link-cover-"
 	// retryWindow caps link fetch retries at 24h after the first failure.
-	retryWindow = 24 * time.Hour
+	retryWindow       = 24 * time.Hour
+	maxCoverBlobBytes = 5 << 20
 )
+
+func fetchErrorCategory(ctx context.Context, err error) string {
+	if errors.Is(err, context.Canceled) || errors.Is(ctx.Err(), context.Canceled) {
+		return "cancelled"
+	}
+	if errors.Is(err, context.DeadlineExceeded) || errors.Is(ctx.Err(), context.DeadlineExceeded) {
+		return "timeout"
+	}
+	return "fetch_failed"
+}
 
 // retryDelays is the backoff schedule between fetch attempts; later attempts
 // keep the last (8h) delay.
@@ -84,6 +93,9 @@ func prepareRetry(entry *storepb.MemoPayload_LinkMetadata, now time.Time) bool {
 }
 
 func recordRetryFailure(entry *storepb.MemoPayload_LinkMetadata, now time.Time) {
+	if entry.FirstAttemptAt == 0 {
+		entry.FirstAttemptAt = now.Unix()
+	}
 	entry.FetchAttempts++
 	entry.LastAttemptAt = now.Unix()
 }
@@ -149,11 +161,6 @@ func (s *APIV1Service) EnrichMemoLinks(ctx context.Context, memo *store.Memo) {
 			enriched = append(enriched, entry)
 			continue
 		}
-		// Covers cached before dimension bookkeeping: backfill from the stored blob so
-		// aspect-aware tiles work for existing bookmarks without re-fetching anything.
-		if entry.CoverAttachmentUid != "" && (entry.CoverWidth == 0 || entry.CoverHeight == 0) {
-			s.backfillCoverDimensions(enrichCtx, entry)
-		}
 		if linkMetadataPending(entry) && prepareRetry(entry, now) {
 			s.retryLink(enrichCtx, memo.CreatorID, entry, now)
 		}
@@ -169,13 +176,15 @@ func (s *APIV1Service) EnrichMemoLinks(ctx context.Context, memo *store.Memo) {
 // click stays snappy — call repeatedly to work through a backlog.
 // Memos within a page are processed concurrently by a bounded worker pool, since each
 // link fetch is I/O-bound (outbound HTTP for metadata + image download).
-// ponytail: no continuation token; memos_examined < page size tells the client it is done.
 const (
 	refreshLinkCoversMemosPerPage = 200
-	refreshLinkCoversWorkers       = 10
+	refreshLinkCoversWorkers      = 10
 )
 
 func (s *APIV1Service) RefreshMemoLinkCovers(ctx context.Context, req *v1pb.RefreshMemoLinkCoversRequest) (*v1pb.RefreshMemoLinkCoversResponse, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, status.FromContextError(err).Err()
+	}
 	user, err := s.fetchCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user")
@@ -184,74 +193,91 @@ func (s *APIV1Service) RefreshMemoLinkCovers(ctx context.Context, req *v1pb.Refr
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
 
-	offset := 0
-	if req.PageToken != "" {
-		if parsed, err := strconv.Atoi(req.PageToken); err == nil && parsed >= 0 {
-			offset = parsed
-		}
-	}
-
-	limit := refreshLinkCoversMemosPerPage
-	if req.PageSize > 0 && req.PageSize <= 500 {
-		limit = int(req.PageSize)
-	}
-
-	memos, err := s.Store.ListMemos(ctx, &store.FindMemo{
-		CreatorID: &user.ID,
-		Filters:   []string{"has_link"},
-		Limit:     &limit,
-		Offset:    &offset,
-	})
+	memos, nextPageToken, err := s.refreshMemosPage(ctx, user.ID, req)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list memos: %v", err)
+		return nil, err
 	}
 
-	response := &v1pb.RefreshMemoLinkCoversResponse{MemosExamined: int32(len(memos))}
-	if len(memos) == limit {
-		response.NextPageToken = strconv.Itoa(offset + limit)
-	}
+	response := &v1pb.RefreshMemoLinkCoversResponse{MemosExamined: int32(len(memos)), NextPageToken: nextPageToken}
 	now := time.Now()
 
 	var updated, failed, skipped int32
-	var wg sync.WaitGroup
-	sem := make(chan struct{}, refreshLinkCoversWorkers)
+	group, refreshCtx := errgroup.WithContext(ctx)
+	group.SetLimit(refreshLinkCoversWorkers)
 
 	for _, memo := range memos {
 		if memo.Payload == nil {
 			continue
 		}
-		wg.Add(1)
-		sem <- struct{}{}
-		go func(memo *store.Memo) {
-			defer wg.Done()
-			defer func() { <-sem }()
-
+		if refreshCtx.Err() != nil {
+			break
+		}
+		group.Go(func() error {
 			changed := false
+			var memoUpdated, memoFailed, memoSkipped int32
 			for _, entry := range memo.Payload.Links {
+				if err := refreshCtx.Err(); err != nil {
+					return err
+				}
 				if entry.CoverAttachmentUid != "" {
-					atomic.AddInt32(&skipped, 1)
+					if s.linkCoverHealthy(refreshCtx, user.ID, entry.CoverAttachmentUid) {
+						memoSkipped++
+						continue
+					}
+					if s.repairLinkCover(refreshCtx, user.ID, entry) {
+						memoUpdated++
+					} else {
+						memoFailed++
+					}
+					changed = true
 					continue
 				}
 				clearRetryState(entry)
-				s.retryLink(ctx, user.ID, entry, now)
+				if entry.Image != "" {
+					if !s.repairLinkCover(refreshCtx, user.ID, entry) && refreshCtx.Err() == nil {
+						recordRetryFailure(entry, now)
+					}
+				} else {
+					s.retryLink(refreshCtx, user.ID, entry, now)
+				}
+				if err := refreshCtx.Err(); err != nil {
+					return err
+				}
 				changed = true
 				switch {
 				case entry.CoverAttachmentUid != "":
-					atomic.AddInt32(&updated, 1)
+					memoUpdated++
 				case entry.FetchAttempts > 0:
-					atomic.AddInt32(&failed, 1)
+					memoFailed++
 				default:
-					atomic.AddInt32(&skipped, 1)
+					memoSkipped++
 				}
 			}
 			if changed {
-				if err := s.Store.UpdateMemo(ctx, &store.UpdateMemo{ID: memo.ID, Payload: memo.Payload}); err != nil {
-					slog.Warn("failed to persist refreshed link covers", "memoID", memo.ID, "err", err)
+				if err := s.Store.UpdateMemo(refreshCtx, &store.UpdateMemo{
+					ID: memo.ID, Payload: memo.Payload, ExpectedContent: &memo.Content, ExpectedPayload: &memo.PayloadRaw,
+				}); err != nil {
+					if errors.Is(err, store.ErrMemoConcurrentUpdate) {
+						atomic.AddInt32(&skipped, int32(len(memo.Payload.Links)))
+						return nil
+					}
+					slog.Warn("failed to persist refreshed link covers", "memoID", memo.ID, "category", "persist_failed")
+					return status.Errorf(codes.Internal, "failed to persist refreshed link covers")
 				}
 			}
-		}(memo)
+			atomic.AddInt32(&updated, memoUpdated)
+			atomic.AddInt32(&failed, memoFailed)
+			atomic.AddInt32(&skipped, memoSkipped)
+			return nil
+		})
 	}
-	wg.Wait()
+	err = group.Wait()
+	if ctx.Err() != nil {
+		return nil, status.FromContextError(ctx.Err()).Err()
+	}
+	if err != nil {
+		return nil, err
+	}
 
 	response.UpdatedLinks = updated
 	response.FailedLinks = failed
@@ -289,10 +315,10 @@ func (s *APIV1Service) retryLink(ctx context.Context, creatorID int32, entry *st
 	if entry.Image == "" {
 		meta, err := s.linkMetadataFetcher.Get(ctx, entry.Url)
 		if err != nil {
-			if errors.Is(err, context.Canceled) || errors.Is(ctx.Err(), context.Canceled) {
+			if errors.Is(err, context.Canceled) || ctx.Err() != nil {
 				return
 			}
-			slog.Warn("link metadata retry failed", "url", entry.Url, "err", err)
+			slog.Warn("link metadata retry failed", "category", fetchErrorCategory(ctx, err))
 			recordRetryFailure(entry, now)
 			return
 		}
@@ -306,7 +332,7 @@ func (s *APIV1Service) retryLink(ctx context.Context, creatorID int32, entry *st
 			entry.CoverWidth = width
 			entry.CoverHeight = height
 		} else {
-			if errors.Is(ctx.Err(), context.Canceled) {
+			if ctx.Err() != nil {
 				return
 			}
 			recordRetryFailure(entry, now)
@@ -319,7 +345,7 @@ func (s *APIV1Service) retryLink(ctx context.Context, creatorID int32, entry *st
 func (s *APIV1Service) enrichLink(ctx context.Context, creatorID int32, url string, now time.Time) *storepb.MemoPayload_LinkMetadata {
 	meta, err := s.linkMetadataFetcher.Get(ctx, url)
 	if err != nil {
-		slog.Warn("failed to enrich link metadata", "url", url, "err", err)
+		slog.Warn("failed to enrich link metadata", "category", fetchErrorCategory(ctx, err))
 		return nil
 	}
 	entry := &storepb.MemoPayload_LinkMetadata{
@@ -350,17 +376,16 @@ func (s *APIV1Service) enrichLink(ctx context.Context, creatorID int32, url stri
 // ponytail: no GC for orphaned link-cover-* attachments; add a cleanup pass
 // if storage pressure ever matters.
 func (s *APIV1Service) cacheLinkCover(ctx context.Context, creatorID int32, pageURL string, imageURL string) (uid string, width int32, height int32) {
+	return s.cacheLinkCoverCandidate(ctx, creatorID, pageURL, imageURL, false)
+}
+
+func (s *APIV1Service) cacheLinkCoverCandidate(ctx context.Context, creatorID int32, pageURL string, imageURL string, repair bool) (uid string, width int32, height int32) {
 	filename := coverFilename(pageURL, imageURL)
 	limit := 1
-	found, err := s.Store.ListAttachments(ctx, &store.FindAttachment{
-		Filename:  &filename,
-		CreatorID: &creatorID,
-		Limit:     &limit,
-		GetBlob:   true,
-	})
+	found, err := s.Store.ListAttachments(ctx, &store.FindAttachment{Filename: &filename, CreatorID: &creatorID, Limit: &limit})
 	if err != nil {
-		slog.Warn("failed to look up cached link cover", "filename", filename, "err", err)
-	} else if len(found) > 0 {
+		slog.Warn("failed to look up cached link cover", "operation", "cover_lookup")
+	} else if len(found) > 0 && !repair {
 		existing := found[0]
 		if existing.Payload != nil && existing.Payload.GetMediaMetadata() != nil {
 			mm := existing.Payload.GetMediaMetadata()
@@ -368,20 +393,24 @@ func (s *APIV1Service) cacheLinkCover(ctx context.Context, creatorID int32, page
 				return existing.UID, mm.GetWidth(), mm.GetHeight()
 			}
 		}
-		blob, err := s.GetAttachmentBlob(ctx, existing)
-		if err == nil && len(blob) > 0 {
-			width, height = decodeImageBounds(blob)
-		}
 		return existing.UID, width, height
 	}
 
 	image, err := s.linkMetadataFetcher.GetImage(ctx, imageURL)
 	if err != nil {
-		slog.Warn("failed to fetch link cover image", "url", imageURL, "err", err)
+		slog.Warn("failed to fetch link cover image", "category", fetchErrorCategory(ctx, err))
 		return "", 0, 0
 	}
-
-	width, height = decodeImageBounds(image.Blob)
+	validationCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+	if err := s.coverValidationSemaphore.Acquire(validationCtx, 1); err != nil {
+		return "", 0, 0
+	}
+	width, height, err = validateLinkCover(image.Blob)
+	s.coverValidationSemaphore.Release(1)
+	if err != nil || validationCtx.Err() != nil {
+		return "", 0, 0
+	}
 	create := &store.Attachment{
 		UID:       shortuuid.New(),
 		CreatorID: creatorID,
@@ -396,16 +425,86 @@ func (s *APIV1Service) cacheLinkCover(ctx context.Context, creatorID int32, page
 			},
 		},
 	}
-	if err := SaveAttachmentBlob(ctx, s.Profile, s.Store, create); err != nil {
-		slog.Warn("failed to save link cover blob", "filename", filename, "err", err)
+	var saveErr error
+	if repair {
+		saveErr = saveLinkCoverCandidateBlob(ctx, s.Profile, s.Store, create)
+	} else {
+		saveErr = SaveAttachmentBlob(ctx, s.Profile, s.Store, create)
+	}
+	if saveErr != nil {
+		slog.Warn("failed to save link cover blob", "operation", "cover_store")
 		return "", 0, 0
 	}
 	created, err := s.Store.CreateAttachment(ctx, create)
 	if err != nil {
-		slog.Warn("failed to create link cover attachment", "filename", filename, "err", err)
+		slog.Warn("failed to create link cover attachment", "operation", "cover_create")
 		return "", 0, 0
 	}
 	return created.UID, width, height
+}
+
+func validateLinkCover(blob []byte) (int32, int32, error) {
+	if len(blob) > maxCoverBlobBytes {
+		return 0, 0, errors.New("cover exceeds byte limit")
+	}
+	config, format, err := image.DecodeConfig(bytes.NewReader(blob))
+	if err != nil {
+		return 0, 0, errors.New("invalid cover header")
+	}
+	if config.Width <= 0 || config.Height <= 0 || config.Width > 4096 || config.Height > 4096 || config.Width > 8_000_000/config.Height {
+		return 0, 0, errors.New("cover exceeds dimension limit")
+	}
+	if format != "jpeg" && format != "png" && format != "webp" {
+		return 0, 0, errors.New("unsupported cover format")
+	}
+	if animatedLinkCover(blob, format) {
+		return 0, 0, errors.New("animated cover format is unsupported")
+	}
+	decoded, _, err := image.Decode(bytes.NewReader(blob))
+	if err != nil {
+		return 0, 0, errors.New("invalid cover pixels")
+	}
+	if decoded.Bounds().Dx() != config.Width || decoded.Bounds().Dy() != config.Height {
+		return 0, 0, errors.New("cover dimensions mismatch")
+	}
+	return int32(config.Width), int32(config.Height), nil
+}
+
+func (s *APIV1Service) linkCoverHealthy(ctx context.Context, creatorID int32, uid string) bool {
+	attachment, err := s.Store.GetAttachment(ctx, &store.FindAttachment{UID: &uid, CreatorID: &creatorID})
+	if err != nil || attachment == nil {
+		return false
+	}
+	validationCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+	if err := s.coverValidationSemaphore.Acquire(validationCtx, 1); err != nil {
+		return false
+	}
+	defer s.coverValidationSemaphore.Release(1)
+	blob, err := s.readLinkCoverBlob(validationCtx, attachment)
+	if err != nil || validationCtx.Err() != nil {
+		return false
+	}
+	_, _, err = validateLinkCover(blob)
+	return err == nil && validationCtx.Err() == nil
+}
+
+func (s *APIV1Service) repairLinkCover(ctx context.Context, creatorID int32, entry *storepb.MemoPayload_LinkMetadata) bool {
+	uid, width, height := s.cacheLinkCoverCandidate(ctx, creatorID, entry.Url, entry.Image, true)
+	if uid == "" {
+		meta, err := s.linkMetadataFetcher.GetFresh(ctx, entry.Url)
+		if err != nil || meta == nil || meta.Image == "" || meta.Image == entry.Image {
+			return false
+		}
+		uid, width, height = s.cacheLinkCoverCandidate(ctx, creatorID, entry.Url, meta.Image, true)
+		if uid == "" {
+			return false
+		}
+		entry.Image = meta.Image
+	}
+	entry.CoverAttachmentUid, entry.CoverWidth, entry.CoverHeight = uid, width, height
+	clearRetryState(entry)
+	return true
 }
 
 func coverFilename(pageURL string, imageURL string) string {

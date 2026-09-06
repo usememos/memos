@@ -221,8 +221,27 @@ func applyMemoUpdate(ctx context.Context, executor memoUpdateExecer, update *sto
 		return nil
 	}
 	args = append(args, update.ID)
-	if _, err := executor.ExecContext(ctx, "UPDATE memo SET "+strings.Join(set, ", ")+" WHERE id = "+placeholder(len(args)), args...); err != nil {
+	where := "id = " + placeholder(len(args))
+	if update.ExpectedContent != nil {
+		args = append(args, *update.ExpectedContent)
+		where += " AND content = " + placeholder(len(args))
+	}
+	if update.ExpectedPayload != nil {
+		args = append(args, *update.ExpectedPayload)
+		where += " AND payload = " + placeholder(len(args)) + "::jsonb"
+	}
+	result, err := executor.ExecContext(ctx, "UPDATE memo SET "+strings.Join(set, ", ")+" WHERE "+where, args...)
+	if err != nil {
 		return errors.Wrap(err, "failed to update memo")
+	}
+	if update.ExpectedContent != nil || update.ExpectedPayload != nil {
+		count, err := result.RowsAffected()
+		if err != nil {
+			return errors.Wrap(err, "failed to check memo update")
+		}
+		if count == 0 {
+			return store.ErrMemoConcurrentUpdate
+		}
 	}
 	return nil
 }

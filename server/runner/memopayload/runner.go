@@ -94,9 +94,14 @@ func (r *Runner) RunOnce(ctx context.Context) {
 				continue
 			}
 			if err := r.Store.UpdateMemo(ctx, &store.UpdateMemo{
-				ID:      memo.ID,
-				Payload: memo.Payload,
+				ID:              memo.ID,
+				Payload:         memo.Payload,
+				ExpectedContent: &memo.Content,
+				ExpectedPayload: &memo.PayloadRaw,
 			}); err != nil {
+				if errors.Is(err, store.ErrMemoConcurrentUpdate) {
+					continue
+				}
 				slog.Error("failed to update memo", "err", err, "memoID", memo.ID)
 				continue
 			}

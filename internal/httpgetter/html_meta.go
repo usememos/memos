@@ -114,7 +114,17 @@ func resolveAllowedIPs(ctx context.Context, host string) ([]net.IP, error) {
 }
 
 func isInternalIP(ip net.IP) bool {
-	return ip.IsLoopback() || ip.IsPrivate() || ip.IsLinkLocalUnicast() || ip.IsUnspecified()
+	if !ip.IsGlobalUnicast() || ip.IsPrivate() {
+		return true
+	}
+	if ipv4 := ip.To4(); ipv4 != nil {
+		// Shared-address, benchmarking, and reserved networks are not public
+		// destinations even though net.IP classifies them as global unicast.
+		return ipv4[0] == 0 || ipv4[0] >= 240 ||
+			(ipv4[0] == 100 && ipv4[1] >= 64 && ipv4[1] <= 127) ||
+			(ipv4[0] == 198 && (ipv4[1] == 18 || ipv4[1] == 19))
+	}
+	return false
 }
 
 func validateURL(urlStr string) error {
@@ -155,10 +165,12 @@ type cacheEntry struct {
 
 // HTMLMetaFetcher fetches and caches standards-based link preview metadata.
 type HTMLMetaFetcher struct {
-	client    *http.Client
-	semaphore *semaphore.Weighted
-	group     singleflight.Group
-	now       func() time.Time
+	client         *http.Client
+	semaphore      *semaphore.Weighted
+	imageSemaphore *semaphore.Weighted
+	group          singleflight.Group
+	freshGroup     singleflight.Group
+	now            func() time.Time
 
 	cacheMu sync.Mutex
 	cache   map[string]cacheEntry
@@ -167,10 +179,41 @@ type HTMLMetaFetcher struct {
 // NewHTMLMetaFetcher creates a link preview fetcher with an SSRF-safe HTTP client.
 func NewHTMLMetaFetcher() *HTMLMetaFetcher {
 	return &HTMLMetaFetcher{
-		client:    newHTTPClient(),
-		semaphore: semaphore.NewWeighted(maxConcurrentFetches),
-		now:       time.Now,
-		cache:     make(map[string]cacheEntry),
+		client:         newHTTPClient(),
+		semaphore:      semaphore.NewWeighted(maxConcurrentFetches),
+		imageSemaphore: semaphore.NewWeighted(maxConcurrentFetches),
+		now:            time.Now,
+		cache:          make(map[string]cacheEntry),
+	}
+}
+
+// GetFresh fetches metadata without consulting or updating the normal cache.
+func (f *HTMLMetaFetcher) GetFresh(ctx context.Context, urlStr string) (*HTMLMeta, error) {
+	key, err := normalizeURL(urlStr)
+	if err != nil {
+		return nil, err
+	}
+	resultChannel := f.freshGroup.DoChan(key, func() (any, error) {
+		flightContext, cancel := context.WithTimeout(context.WithoutCancel(ctx), fetchTimeout)
+		defer cancel()
+		if err := f.semaphore.Acquire(flightContext, 1); err != nil {
+			return nil, err
+		}
+		defer f.semaphore.Release(1)
+		return f.fetch(flightContext, key)
+	})
+	select {
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	case result := <-resultChannel:
+		if result.Err != nil {
+			return nil, result.Err
+		}
+		meta, ok := result.Val.(*HTMLMeta)
+		if !ok {
+			return nil, errors.New("invalid link metadata result")
+		}
+		return cloneHTMLMeta(meta), nil
 	}
 }
 
@@ -226,6 +269,12 @@ func (f *HTMLMetaFetcher) Get(ctx context.Context, urlStr string) (*HTMLMeta, er
 // GetImage downloads an image over the fetcher's SSRF-safe client. It is
 // used to cache link cover images locally.
 func (f *HTMLMetaFetcher) GetImage(ctx context.Context, urlStr string) (*Image, error) {
+	ctx, cancel := context.WithTimeout(ctx, fetchTimeout)
+	defer cancel()
+	if err := f.imageSemaphore.Acquire(ctx, 1); err != nil {
+		return nil, err
+	}
+	defer f.imageSemaphore.Release(1)
 	if err := validateURL(urlStr); err != nil {
 		return nil, err
 	}
@@ -252,9 +301,12 @@ func (f *HTMLMetaFetcher) GetImage(ctx context.Context, urlStr string) (*Image, 
 		return nil, errors.New("not an image")
 	}
 
-	bodyBytes, err := io.ReadAll(io.LimitReader(response.Body, maxCoverImageBytes))
+	bodyBytes, err := io.ReadAll(io.LimitReader(response.Body, maxCoverImageBytes+1))
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to read image body")
+	}
+	if len(bodyBytes) > maxCoverImageBytes {
+		return nil, errors.New("image response exceeds size limit")
 	}
 	return &Image{Blob: bodyBytes, Mediatype: mediaType}, nil
 }

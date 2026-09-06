@@ -547,6 +547,9 @@ type ListMemosRequest struct {
 	// Supports comma-separated list of fields following AIP-132.
 	// Example: "pinned desc, create_time desc" or "update_time asc"
 	// Supported fields: pinned, create_time, update_time, name.
+	// Standalone "id asc" selects a stable ID scan bounded at the first page.
+	// It cannot be combined with other fields. Its page tokens are bound to
+	// the caller, state, filter and page size; content edits are not snapshotted.
 	// Note: order_by uses create_time / update_time, while the filter
 	// expression uses created_ts / updated_ts for the same timestamps.
 	OrderBy string `protobuf:"bytes,4,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`

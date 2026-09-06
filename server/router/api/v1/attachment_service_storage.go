@@ -55,12 +55,31 @@ func SaveAttachmentBlob(ctx context.Context, profile *profile.Profile, stores *s
 	return saveAttachmentBlobWithInstanceStorageSetting(ctx, profile, stores, create, instanceStorageSetting)
 }
 
+func saveLinkCoverCandidateBlob(ctx context.Context, profile *profile.Profile, stores *store.Store, create *store.Attachment) error {
+	instanceStorageSetting, err := stores.GetInstanceStorageSetting(ctx)
+	if err != nil {
+		return errors.Wrap(err, "failed to find instance storage setting")
+	}
+	return saveAttachmentBlob(ctx, profile, stores, create, instanceStorageSetting, true)
+}
+
 func saveAttachmentBlobWithInstanceStorageSetting(
 	ctx context.Context,
 	profile *profile.Profile,
 	stores *store.Store,
 	create *store.Attachment,
 	instanceStorageSetting *storepb.InstanceStorageSetting,
+) error {
+	return saveAttachmentBlob(ctx, profile, stores, create, instanceStorageSetting, false)
+}
+
+func saveAttachmentBlob(
+	ctx context.Context,
+	profile *profile.Profile,
+	stores *store.Store,
+	create *store.Attachment,
+	instanceStorageSetting *storepb.InstanceStorageSetting,
+	immutableCandidate bool,
 ) error {
 	defaultStorage := store.GetDefaultStorage(instanceStorageSetting)
 	if defaultStorage == nil {
@@ -85,7 +104,11 @@ func saveAttachmentBlobWithInstanceStorageSetting(
 		if !filepath.IsAbs(osPath) {
 			osPath = filepath.Join(profile.Data, osPath)
 		}
-		osPath = ensureUniqueLocalAttachmentPath(osPath, create.UID)
+		if immutableCandidate {
+			osPath += "." + create.UID
+		} else {
+			osPath = ensureUniqueLocalAttachmentPath(osPath, create.UID)
+		}
 		internalPath = filepath.ToSlash(osPath)
 		if !filepath.IsAbs(filepath.FromSlash(internalPath)) {
 			relativePath, err := filepath.Rel(profile.Data, osPath)
@@ -117,6 +140,9 @@ func saveAttachmentBlobWithInstanceStorageSetting(
 			filepathTemplate = filepath.Join(filepathTemplate, "{filename}")
 		}
 		filepathTemplate = replaceFilenameWithPathTemplate(filepathTemplate, create.Filename)
+		if immutableCandidate {
+			filepathTemplate += "." + create.UID
+		}
 		key, err := driver.UploadObject(ctx, filepathTemplate, create.Type, bytes.NewReader(create.Blob))
 		if err != nil {
 			return errors.Wrap(err, "failed to upload via storage driver")
@@ -241,6 +267,60 @@ func (s *APIV1Service) GetAttachmentBlob(ctx context.Context, attachment *store.
 	}
 	// For database storage, return the blob from the database.
 	return attachment.Blob, nil
+}
+
+func (s *APIV1Service) readLinkCoverBlob(ctx context.Context, attachment *store.Attachment) ([]byte, error) {
+	const readLimit = maxCoverBlobBytes + 1
+	if attachment == nil {
+		return nil, errors.New("attachment is required")
+	}
+	var reader io.ReadCloser
+	switch attachment.StorageType {
+	case storepb.AttachmentStorageType_LOCAL:
+		path := filepath.FromSlash(attachment.Reference)
+		if !filepath.IsAbs(path) {
+			path = filepath.Join(s.Profile.Data, path)
+		}
+		file, err := os.Open(path)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to open cover")
+		}
+		reader = file
+	case storepb.AttachmentStorageType_S3:
+		driver, object, err := s.Store.ResolveAttachmentS3Driver(ctx, attachment)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to resolve cover storage")
+		}
+		stream, err := driver.GetObjectStream(ctx, object.Key, "bytes=0-5242880")
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to stream cover")
+		}
+		reader = stream.Body
+	case storepb.AttachmentStorageType_EXTERNAL:
+		return nil, errors.New("external cover storage is unsupported")
+	default:
+		limit := readLimit
+		stored, err := s.Store.GetAttachment(ctx, &store.FindAttachment{UID: &attachment.UID, GetBlob: true, BlobReadLimit: &limit})
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to read database cover")
+		}
+		if stored == nil {
+			return nil, errors.New("cover attachment not found")
+		}
+		if len(stored.Blob) > maxCoverBlobBytes {
+			return nil, errors.New("cover exceeds byte limit")
+		}
+		return stored.Blob, nil
+	}
+	defer reader.Close()
+	blob, err := io.ReadAll(io.LimitReader(reader, readLimit))
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to read cover")
+	}
+	if len(blob) > maxCoverBlobBytes {
+		return nil, errors.New("cover exceeds byte limit")
+	}
+	return blob, nil
 }
 
 var fileKeyPattern = regexp.MustCompile(`\{[a-z]{1,9}\}`)

@@ -46,6 +46,7 @@ type APIV1Service struct {
 	// thumbnailSemaphore limits concurrent thumbnail generation to prevent memory exhaustion
 	thumbnailSemaphore       *semaphore.Weighted
 	imageProcessingSemaphore *semaphore.Weighted
+	coverValidationSemaphore *semaphore.Weighted
 
 	// instanceStatsCache memoizes GetInstanceStats results for instanceStatsCacheTTL.
 	instanceStatsCache instanceStatsCache
@@ -68,6 +69,7 @@ func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store
 		NotificationEmailSender:  nil,
 		thumbnailSemaphore:       semaphore.NewWeighted(3), // Limit to 3 concurrent thumbnail generations
 		imageProcessingSemaphore: semaphore.NewWeighted(2),
+		coverValidationSemaphore: semaphore.NewWeighted(2),
 	}
 	service.linkMetadataFetcher = httpgetter.NewHTMLMetaFetcher()
 	return service

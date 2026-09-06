@@ -119,35 +119,16 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 		memoFind.Filters = append(memoFind.Filters, request.Filter)
 	}
 
-	var limit, offset int
-	if request.PageToken != "" {
-		var pageToken v1pb.PageToken
-		if err := unmarshalPageToken(request.PageToken, &pageToken); err != nil {
-			return nil, status.Errorf(codes.InvalidArgument, "invalid page token: %v", err)
-		}
-		limit = normalizePageSize(pageToken.Limit)
-		offset = max(int(pageToken.Offset), 0)
-	} else {
-		limit = normalizePageSize(request.PageSize)
+	var callerID int32
+	if currentUser != nil {
+		callerID = currentUser.ID
 	}
-	limit = min(limit, MaxPageSize)
-	limitPlusOne := limit + 1
-	memoFind.Limit = &limitPlusOne
-	memoFind.Offset = &offset
-	memos, err := s.Store.ListMemos(ctx, memoFind)
+	memos, nextPageToken, err := s.listMemosPage(ctx, memoFind, request, callerID)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list memos: %v", err)
+		return nil, err
 	}
 
 	memoMessages := []*v1pb.Memo{}
-	nextPageToken := ""
-	if len(memos) == limitPlusOne {
-		memos = memos[:limit]
-		nextPageToken, err = getPageToken(limit, offset+limit)
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to get next page token, error: %v", err)
-		}
-	}
 
 	if len(memos) == 0 {
 		response := &v1pb.ListMemosResponse{

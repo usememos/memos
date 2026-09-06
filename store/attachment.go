@@ -45,6 +45,7 @@ type Attachment struct {
 
 type FindAttachment struct {
 	GetBlob        bool
+	BlobReadLimit  *int
 	ID             *int32
 	UID            *string
 	CreatorID      *int32

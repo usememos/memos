@@ -26,6 +26,9 @@ var ErrMemoPermissionDenied = errors.New("memo mutation permission denied")
 // SPACE audience transition.
 var ErrMemoShareConflict = errors.New("active memo share conflicts with audience")
 
+// ErrMemoConcurrentUpdate indicates that a conditional update used a stale memo snapshot.
+var ErrMemoConcurrentUpdate = errors.New("memo changed during update")
+
 // Visibility is the type of a visibility.
 type Visibility string
 
@@ -61,6 +64,8 @@ type Memo struct {
 	Visibility Visibility
 	Pinned     bool
 	Payload    *storepb.MemoPayload
+	// PayloadRaw retains the database snapshot for conditional payload updates.
+	PayloadRaw string
 	SpaceID    *int32
 
 	// Composed fields
@@ -87,13 +92,17 @@ type FindMemo struct {
 	Filters              []string
 
 	// Pagination
-	Limit  *int
-	Offset *int
+	Limit   *int
+	Offset  *int
+	AfterID *int32
+	MaxID   *int32
 
 	// Ordering
 	OrderByPinned    bool
 	OrderByUpdatedTs bool
 	OrderByTimeAsc   bool
+	// OrderByIDAsc selects exclusive ID ordering; nil preserves collection ordering.
+	OrderByIDAsc *bool
 }
 
 type FindMemoPayload struct {
@@ -117,6 +126,10 @@ type UpdateMemo struct {
 	Payload    *storepb.MemoPayload
 	SpaceID    *int32
 	ClearSpace bool
+	// ExpectedContent and ExpectedPayload guard background writes against author edits.
+	// ExpectedPayload must be the unmodified Memo.PayloadRaw from the original read.
+	ExpectedContent *string
+	ExpectedPayload *string
 	// Policy is set by transport-facing author mutations. Drivers revalidate it
 	// in the same transaction as the update; nil preserves trusted internal and
 	// migration callers.

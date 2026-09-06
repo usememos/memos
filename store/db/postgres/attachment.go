@@ -140,7 +140,11 @@ func (d *DB) ListAttachments(ctx context.Context, find *store.FindAttachment) ([
 		"CASE WHEN memo.uid IS NOT NULL THEN memo.uid ELSE NULL END AS memo_uid",
 	}
 	if find.GetBlob {
-		fields = append(fields, "attachment.blob AS blob")
+		if find.BlobReadLimit != nil && *find.BlobReadLimit > 0 {
+			fields = append(fields, fmt.Sprintf("substring(attachment.blob from 1 for %d) AS blob", *find.BlobReadLimit))
+		} else {
+			fields = append(fields, "attachment.blob AS blob")
+		}
 	}
 
 	query := fmt.Sprintf(`

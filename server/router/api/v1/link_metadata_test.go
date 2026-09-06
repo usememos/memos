@@ -22,6 +22,10 @@ func (fetch fakeLinkMetadataFetcher) Get(ctx context.Context, url string) (*http
 	return fetch(ctx, url)
 }
 
+func (fetch fakeLinkMetadataFetcher) GetFresh(ctx context.Context, url string) (*httpgetter.HTMLMeta, error) {
+	return fetch(ctx, url)
+}
+
 func (fetch fakeLinkMetadataFetcher) GetImage(_ context.Context, _ string) (*httpgetter.Image, error) {
 	return nil, errors.New("image fetch not supported by fake")
 }

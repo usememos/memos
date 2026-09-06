@@ -13,6 +13,7 @@ import (
 
 type linkMetadataFetcher interface {
 	Get(context.Context, string) (*httpgetter.HTMLMeta, error)
+	GetFresh(context.Context, string) (*httpgetter.HTMLMeta, error)
 	GetImage(context.Context, string) (*httpgetter.Image, error)
 }
 

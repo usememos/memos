@@ -78,6 +78,7 @@ func insertMySQLMemo(ctx context.Context, tx *sql.Tx, create *store.Memo) (*stor
 	if err != nil {
 		return nil, err
 	}
+	memo.PayloadRaw = string(payloadBytes)
 	memo.Payload = &storepb.MemoPayload{}
 	if err := protojsonUnmarshaler.Unmarshal(payloadBytes, memo.Payload); err != nil {
 		return nil, errors.Wrap(err, "failed to unmarshal payload")
@@ -122,6 +123,15 @@ func validateMySQLMemoSpaceMember(ctx context.Context, tx *sql.Tx, spaceID, user
 
 func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo, error) {
 	where, having, args := []string{"1 = 1"}, []string{"1 = 1"}, []any{}
+	if find.OrderByIDAsc != nil && (find.OrderByPinned || find.OrderByUpdatedTs || find.OrderByTimeAsc) {
+		return nil, errors.New("ID scan ordering cannot be combined with collection ordering")
+	}
+	if find.AfterID != nil {
+		where, args = append(where, "`memo`.`id` > ?"), append(args, *find.AfterID)
+	}
+	if find.MaxID != nil {
+		where, args = append(where, "`memo`.`id` <= ?"), append(args, *find.MaxID)
+	}
 
 	engine, err := filter.DefaultEngine()
 	if err != nil {
@@ -203,6 +213,12 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	}
 	// Add id as final tie-breaker
 	orderBy = append(orderBy, "`id` DESC")
+	if find.OrderByIDAsc != nil {
+		orderBy = []string{"`id` DESC"}
+		if *find.OrderByIDAsc {
+			orderBy = []string{"`id` ASC"}
+		}
+	}
 	fields := []string{
 		"`memo`.`id` AS `id`",
 		"`memo`.`uid` AS `uid`",
@@ -270,6 +286,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		if err := protojsonUnmarshaler.Unmarshal(payloadBytes, payload); err != nil {
 			return nil, errors.Wrap(err, "failed to unmarshal payload")
 		}
+		memo.PayloadRaw = string(payloadBytes)
 		memo.Payload = payload
 		list = append(list, &memo)
 	}

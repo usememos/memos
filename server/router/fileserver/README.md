@@ -10,6 +10,9 @@ GET /file/attachments/:uid[/:filename]   # attachment binary
     ?motion=true                         # embedded motion-photo video clip
     ?share_token={uid}                   # access via a memo share link
 GET /file/users/:identifier/avatar       # user avatar (by username)
+GET /file/memos/:memoUID/covers/:attachmentUID # cached bookmark cover
+    ?thumbnail=true
+    ?share_token={uid}                   # exact memo share link
 ```
 
 ## Authentication
@@ -27,6 +30,10 @@ Attachment access follows memo visibility, evaluated by `server/access.CheckMemo
 - Unlinked attachment (no memo): creator or admin only
 
 Avatars are public on instances that allow anonymous access; private instances require authentication.
+
+Bookmark covers use the referenced memo's current read policy, including accepted Space membership and exact-memo share tokens. The current memo payload must reference the cover UID, and the attachment creator must match the memo creator. This route does not grant access to the attachment's standalone URL. Removing the reference, revoking membership, or expiring the share link takes effect on the next request, including thumbnail requests.
+
+The memo-cover route always returns `Cache-Control: private, no-store`, including Local/S3 range and thumbnail responses. It reuses attachment storage delivery and response security headers.
 
 ## Serving behavior
 

@@ -1,24 +1,28 @@
 package v1
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"log/slog"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
 	"github.com/lithammer/shortuuid/v4"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
+	"golang.org/x/sync/semaphore"
 
 	"github.com/usememos/memos/internal/httpgetter"
 	"github.com/usememos/memos/internal/markdown"
 	"github.com/usememos/memos/internal/profile"
+	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/auth"
 	"github.com/usememos/memos/server/runner/memopayload"
-	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	"github.com/usememos/memos/store"
 	storetest "github.com/usememos/memos/store/test"
 )
@@ -28,10 +32,11 @@ func newLinkEnrichmentTestService(t *testing.T, fetch linkMetadataFetcher) *APIV
 	ctx := context.Background()
 	stores := storetest.NewTestingStore(ctx, t)
 	return &APIV1Service{
-		Profile:             &profile.Profile{Data: t.TempDir()},
-		Store:               stores,
-		MarkdownService:     markdown.NewService(markdown.WithTagExtension(), markdown.WithMentionExtension()),
-		linkMetadataFetcher: fetch,
+		Profile:                  &profile.Profile{Data: t.TempDir()},
+		Store:                    stores,
+		MarkdownService:          markdown.NewService(markdown.WithTagExtension(), markdown.WithMentionExtension()),
+		linkMetadataFetcher:      fetch,
+		coverValidationSemaphore: semaphore.NewWeighted(2),
 	}
 }
 
@@ -40,11 +45,17 @@ type stubFetchResults struct {
 	images map[string]*httpgetter.Image
 }
 
+var validCoverPNG = []byte{0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0x0d, 0x49, 0x48, 0x44, 0x52, 0, 0, 0, 1, 0, 0, 0, 1, 8, 6, 0, 0, 0, 0x1f, 0x15, 0xc4, 0x89, 0, 0, 0, 0x0a, 0x49, 0x44, 0x41, 0x54, 0x78, 0x9c, 0x63, 0, 1, 0, 0, 5, 0, 1, 0x0d, 0x0a, 0x2d, 0xb4, 0, 0, 0, 0, 0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82}
+
 func (s stubFetchResults) Get(_ context.Context, url string) (*httpgetter.HTMLMeta, error) {
 	if meta, ok := s.metas[url]; ok {
 		return meta, nil
 	}
 	return nil, errors.New("no metadata")
+}
+
+func (s stubFetchResults) GetFresh(ctx context.Context, url string) (*httpgetter.HTMLMeta, error) {
+	return s.Get(ctx, url)
 }
 
 func (s stubFetchResults) GetImage(_ context.Context, url string) (*httpgetter.Image, error) {
@@ -60,7 +71,7 @@ func TestEnrichMemoLinksPersistsMetadata(t *testing.T) {
 			"https://example.com/a": {Title: "Example A", Description: "Desc A", Image: "https://example.com/a.png"},
 		},
 		images: map[string]*httpgetter.Image{
-			"https://example.com/a.png": {Blob: []byte("fakepng"), Mediatype: "image/png"},
+			"https://example.com/a.png": {Blob: []byte{0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49, 0x48, 0x44, 0x52, 0, 0, 0, 1, 0, 0, 0, 1, 8, 6, 0, 0, 0, 0x1f, 0x15, 0xc4, 0x89, 0, 0, 0, 0x0a, 0x49, 0x44, 0x41, 0x54, 0x78, 0x9c, 0x63, 0, 1, 0, 0, 5, 0, 1, 0x0d, 0x0a, 0x2d, 0xb4, 0, 0, 0, 0, 0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82}, Mediatype: "image/png"},
 		},
 	})
 
@@ -123,6 +134,26 @@ func TestEnrichMemoLinksToleratesFailures(t *testing.T) {
 	require.Empty(t, memoWithNoLinks.Payload.Links)
 }
 
+func TestLinkEnrichmentFailureLogsDoNotContainSensitiveURLParts(t *testing.T) {
+	var output bytes.Buffer
+	previous := slog.Default()
+	slog.SetDefault(slog.New(slog.NewTextHandler(&output, nil)))
+	t.Cleanup(func() { slog.SetDefault(previous) })
+	sensitive := "https://sample-user:sample-pass@example.test/private-path?token=sample-secret#sample-fragment"
+	service := newLinkEnrichmentTestService(t, stubFetchResults{})
+	service.enrichLink(context.Background(), 1, sensitive, time.Now())
+	service.cacheLinkCover(context.Background(), 1, "https://example.test", sensitive)
+
+	for _, marker := range []string{"sample-user", "sample-pass", "private-path", "sample-secret", "sample-fragment"} {
+		require.NotContains(t, output.String(), marker)
+	}
+	require.Contains(t, output.String(), "fetch_failed")
+	cancelled, cancel := context.WithCancel(context.Background())
+	cancel()
+	require.Equal(t, "cancelled", fetchErrorCategory(cancelled, context.Canceled))
+	require.Equal(t, "fetch_failed", fetchErrorCategory(context.Background(), errors.New(strings.Repeat("x", 8))))
+}
+
 func TestBackoffDelaySchedule(t *testing.T) {
 	require.Equal(t, 5*time.Minute, backoffDelay(1))
 	require.Equal(t, 15*time.Minute, backoffDelay(2))
@@ -161,7 +192,7 @@ func TestEnrichMemoLinksRetriesMissingCover(t *testing.T) {
 	metaCount, imageCount := 0, 0
 	service := newLinkEnrichmentTestService(t, stubCountingFetcher{
 		inner: stubFetchResults{images: map[string]*httpgetter.Image{
-			"https://example.com/a.png": {Blob: []byte("fakepng"), Mediatype: "image/png"},
+			"https://example.com/a.png": {Blob: validCoverPNG, Mediatype: "image/png"},
 		}},
 		count: &metaCount, imageCount: &imageCount,
 	})
@@ -215,7 +246,7 @@ func TestEnrichMemoLinksLegacyEntryRetriesImmediately(t *testing.T) {
 	imageCount := 0
 	service := newLinkEnrichmentTestService(t, stubCountingFetcher{
 		inner: stubFetchResults{images: map[string]*httpgetter.Image{
-			"https://example.com/a.png": {Blob: []byte("fakepng"), Mediatype: "image/png"},
+			"https://example.com/a.png": {Blob: validCoverPNG, Mediatype: "image/png"},
 		}},
 		imageCount: &imageCount,
 	})
@@ -274,7 +305,7 @@ func TestEnrichMemoLinksRecordsCoverDimensions(t *testing.T) {
 	require.Equal(t, int32(1), entry.CoverHeight)
 }
 
-func TestEnrichMemoLinksBackfillsLegacyCoverDimensions(t *testing.T) {
+func TestEnrichMemoLinksDoesNotReadLegacyCover(t *testing.T) {
 	pngBytes := []byte{0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x08, 0x06, 0x00, 0x00, 0x00, 0x1f, 0x15, 0xc4, 0x89, 0x00, 0x00, 0x00, 0x0a, 0x49, 0x44, 0x41, 0x54, 0x78, 0x9c, 0x63, 0x00, 0x01, 0x00, 0x00, 0x05, 0x00, 0x01, 0x0d, 0x0a, 0x2d, 0xb4, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82}
 	service := newLinkEnrichmentTestService(t, stubFetchResults{})
 
@@ -287,8 +318,8 @@ func TestEnrichMemoLinksBackfillsLegacyCoverDimensions(t *testing.T) {
 	service.EnrichMemoLinks(context.Background(), memo)
 
 	entry := memo.Payload.Links[0]
-	require.Equal(t, int32(1), entry.CoverWidth)
-	require.Equal(t, int32(1), entry.CoverHeight)
+	require.Zero(t, entry.CoverWidth)
+	require.Zero(t, entry.CoverHeight)
 }
 
 // seededCoverUID stores a real PNG cover attachment directly and returns its UID.
@@ -347,6 +378,8 @@ func TestRefreshMemoLinkCovers(t *testing.T) {
 	deadLink := stored.Payload.Links[1]
 	require.Equal(t, int32(1), deadLink.FetchAttempts, "failure restarts the backoff window")
 	require.Positive(t, deadLink.LastAttemptAt)
+	require.Equal(t, deadLink.LastAttemptAt, deadLink.FirstAttemptAt, "manual failure starts a bounded retry window")
+	require.False(t, prepareRetry(deadLink, time.Unix(deadLink.LastAttemptAt, 0).Add(time.Minute)), "background retry respects manual refresh backoff")
 }
 
 func TestRefreshMemoLinkCoversDiscoversNewImage(t *testing.T) {
@@ -409,6 +442,13 @@ func (s stubCountingFetcher) Get(ctx context.Context, url string) (*httpgetter.H
 	return s.inner.Get(ctx, url)
 }
 
+func (s stubCountingFetcher) GetFresh(ctx context.Context, url string) (*httpgetter.HTMLMeta, error) {
+	if s.count != nil {
+		*s.count++
+	}
+	return s.inner.GetFresh(ctx, url)
+}
+
 func (s stubCountingFetcher) GetImage(ctx context.Context, url string) (*httpgetter.Image, error) {
 	if s.imageCount != nil {
 		*s.imageCount++
@@ -447,9 +487,9 @@ func TestRefreshMemoLinkCoversPagination(t *testing.T) {
 	resp1, err := service.RefreshMemoLinkCovers(ctx, &v1pb.RefreshMemoLinkCoversRequest{PageSize: 2})
 	require.NoError(t, err)
 	require.Equal(t, int32(2), resp1.MemosExamined)
-	require.Equal(t, "2", resp1.NextPageToken)
+	require.NotEmpty(t, resp1.NextPageToken)
 
-	// Page 2 with pageToken "2"
+	// Page 2 continues the opaque bounded-ID scan.
 	resp2, err := service.RefreshMemoLinkCovers(ctx, &v1pb.RefreshMemoLinkCoversRequest{PageSize: 2, PageToken: resp1.NextPageToken})
 	require.NoError(t, err)
 	require.Equal(t, int32(1), resp2.MemosExamined)
@@ -496,4 +536,20 @@ func TestRetryLinkContextCanceledDoesNotIncrementFailure(t *testing.T) {
 	}
 	service.retryLink(ctx, 1, entry, time.Now())
 	require.Equal(t, int32(1), entry.FetchAttempts, "canceled context should not increment fetch attempts")
+}
+
+func TestValidateLinkCoverRejectsTruncatedAndAnimatedImages(t *testing.T) {
+	valid := []byte{0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0x0d, 0x49, 0x48, 0x44, 0x52, 0, 0, 0, 1, 0, 0, 0, 1, 8, 6, 0, 0, 0, 0x1f, 0x15, 0xc4, 0x89, 0, 0, 0, 0x0a, 0x49, 0x44, 0x41, 0x54, 0x78, 0x9c, 0x63, 0, 1, 0, 0, 5, 0, 1, 0x0d, 0x0a, 0x2d, 0xb4, 0, 0, 0, 0, 0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82}
+	width, height, err := validateLinkCover(valid)
+	require.NoError(t, err)
+	require.Equal(t, int32(1), width)
+	require.Equal(t, int32(1), height)
+
+	_, _, err = validateLinkCover(valid[:40])
+	require.ErrorContains(t, err, "pixels")
+	animated := coverPNGWithChunk(t, "acTL", make([]byte, 8))
+	_, _, err = validateLinkCover(animated)
+	require.ErrorContains(t, err, "animated")
+	_, _, err = validateLinkCover(make([]byte, maxCoverBlobBytes+1))
+	require.ErrorContains(t, err, "byte limit")
 }

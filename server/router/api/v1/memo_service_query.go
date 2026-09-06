@@ -15,6 +15,11 @@ func (*APIV1Service) parseMemoOrderBy(orderBy string, memoFind *store.FindMemo) 
 
 	// Split by comma to support multiple sort fields per AIP-132.
 	fields := strings.Split(orderBy, ",")
+	if len(fields) == 1 && strings.Join(strings.Fields(fields[0]), " ") == "id asc" {
+		ascending := true
+		memoFind.OrderByIDAsc = &ascending
+		return nil
+	}
 
 	// Track if we've seen pinned field.
 	hasPinned := false

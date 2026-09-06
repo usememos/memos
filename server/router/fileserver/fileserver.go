@@ -117,6 +117,7 @@ func (s *FileServerService) RegisterRoutes(echoServer *echo.Echo) {
 	fileGroup := echoServer.Group("/file")
 	fileGroup.GET("/attachments/:uid", s.serveAttachmentFile)
 	fileGroup.GET("/attachments/:uid/:filename", s.serveAttachmentFile)
+	fileGroup.GET("/memos/:memoUID/covers/:attachmentUID", s.serveMemoCover)
 	fileGroup.GET("/users/:identifier/avatar", s.serveUserAvatar)
 }
 
@@ -620,7 +621,10 @@ func (s *FileServerService) checkAttachmentPermission(ctx context.Context, c *ec
 	if memo == nil {
 		return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusNotFound, "memo not found")
 	}
+	return s.checkMemoPermission(ctx, c, memo)
+}
 
+func (s *FileServerService) checkMemoPermission(ctx context.Context, c *echo.Context, memo *store.Memo) (access.MemoReadClass, error) {
 	allowAnonymous, err := s.Store.AllowsAnonymousAccess(ctx)
 	if err != nil {
 		return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusInternalServerError, "failed to get instance access policy").Wrap(err)
