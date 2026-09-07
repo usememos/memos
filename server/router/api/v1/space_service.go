@@ -215,7 +215,7 @@ func (s *APIV1Service) UpdateSpace(ctx context.Context, request *v1pb.UpdateSpac
 			}
 			update.Payload = &storepb.SpacePayload{}
 			if space.Payload != nil {
-				update.Payload = proto.Clone(space.Payload).(*storepb.SpacePayload)
+				update.Payload = proto.CloneOf(space.Payload)
 			}
 			update.Payload.Icon = icon
 		default:

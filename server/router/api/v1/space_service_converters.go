@@ -58,14 +58,15 @@ func convertSpaceIconToStore(icon *v1pb.Space_Icon) *storepb.SpacePayload_Icon {
 	if icon == nil {
 		return nil
 	}
-	converted := &storepb.SpacePayload_Icon{}
 	switch value := icon.Value.(type) {
 	case *v1pb.Space_Icon_Emoji:
-		converted.Value = &storepb.SpacePayload_Icon_Emoji{Emoji: value.Emoji}
+		return &storepb.SpacePayload_Icon{Value: &storepb.SpacePayload_Icon_Emoji{Emoji: value.Emoji}}
 	case *v1pb.Space_Icon_Lucide:
-		converted.Value = &storepb.SpacePayload_Icon_Lucide{Lucide: value.Lucide}
+		return &storepb.SpacePayload_Icon{Value: &storepb.SpacePayload_Icon_Lucide{Lucide: value.Lucide}}
+	default:
+		// Preserve an empty icon so validation rejects it instead of treating it as a reset.
+		return &storepb.SpacePayload_Icon{}
 	}
-	return converted
 }
 
 func convertSpaceMemberRoleFromStore(role store.SpaceMemberRole) v1pb.SpaceMember_Role {
