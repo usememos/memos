@@ -300,3 +300,36 @@ func TestPostWithoutSecretSetsNoSignatureHeaders(t *testing.T) {
 	require.NoError(t, err)
 	require.False(t, hasSignatureHeaders, "no signature headers should be set when no secret is configured")
 }
+
+// TestPostRejectsUnspecifiedAddressDestination pins that a webhook URL pointing at the
+// unspecified address is refused at dial time, bcs the kernel treats it as the local host.
+func TestPostRejectsUnspecifiedAddressDestination(t *testing.T) {
+	resetPrivateDestinationPolicy(t)
+
+	var receivedRequest atomic.Bool
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		receivedRequest.Store(true)
+		_, _ = w.Write([]byte(`{"code":0}`))
+	}))
+	defer server.Close()
+
+	_, port, err := net.SplitHostPort(strings.TrimPrefix(server.URL, "http://"))
+	require.NoError(t, err)
+
+	err = Post(&WebhookRequestPayload{
+		URL:          "http://0.0.0.0:" + port,
+		ActivityType: "memos.memo.created",
+		Creator:      "users/1",
+	})
+	require.Error(t, err)
+	require.False(t, receivedRequest.Load(), "the webhook must not reach a local service through the unspecified address")
+}
+
+// TestValidateURLRejectsUnspecifiedAddress ensures webhook URL validation also refuses
+// the unspecified address, so such URLs never even reach the dispatch path.
+func TestValidateURLRejectsUnspecifiedAddress(t *testing.T) {
+	resetPrivateDestinationPolicy(t)
+
+	require.Error(t, ValidateURL("http://0.0.0.0:8080/hook"))
+	require.Error(t, ValidateURL("http://[::]:8080/hook"))
+}

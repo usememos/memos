@@ -14,14 +14,17 @@ import (
 
 // reservedNetworks lists IP ranges blocked by default for outbound webhook requests.
 // Explicit allowlist entries or the deprecated blanket override may permit them. The
-// ranges cover loopback, RFC-1918 private, link-local (including cloud IMDS at
-// 169.254.169.254), and their IPv6 equivalents.
+// ranges cover "this network" (the kernel treats it as the local host), loopback,
+// RFC-1918 private, link-local (including cloud IMDS at 169.254.169.254), and their
+// IPv6 equivalents.
 var reservedNetworks = []netip.Prefix{
+	netip.MustParsePrefix("0.0.0.0/8"),      // "this network" (RFC 791), dials the local host
 	netip.MustParsePrefix("127.0.0.0/8"),    // IPv4 loopback
 	netip.MustParsePrefix("10.0.0.0/8"),     // RFC-1918 class A
 	netip.MustParsePrefix("172.16.0.0/12"),  // RFC-1918 class B
 	netip.MustParsePrefix("192.168.0.0/16"), // RFC-1918 class C
 	netip.MustParsePrefix("169.254.0.0/16"), // Link-local / cloud IMDS
+	netip.MustParsePrefix("::/128"),         // IPv6 unspecified address, dials the local host
 	netip.MustParsePrefix("::1/128"),        // IPv6 loopback
 	netip.MustParsePrefix("fc00::/7"),       // IPv6 unique local
 	netip.MustParsePrefix("fe80::/10"),      // IPv6 link-local
