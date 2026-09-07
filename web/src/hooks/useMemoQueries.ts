@@ -1,5 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
+import { Code, ConnectError } from "@connectrpc/connect";
 import {
   type InfiniteData,
   type QueryClient,
@@ -13,6 +14,7 @@ import { memoServiceClient } from "@/connect";
 import { attachmentKeys } from "@/hooks/useAttachmentQueries";
 import { userKeys } from "@/hooks/useUserQueries";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/lib/constants";
+import { shouldRetry } from "@/lib/query-client";
 import type { ListMemosRequest, ListMemosResponse, Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { ListMemoCommentsRequestSchema, ListMemosRequestSchema, MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
 
@@ -30,9 +32,46 @@ export const memoKeys = {
 export const memoDetailQueryOptions = (name: string) =>
   queryOptions({
     queryKey: memoKeys.detail(name),
-    queryFn: () => memoServiceClient.getMemo({ name }),
+    queryFn: async ({ client, signal }) => {
+      try {
+        return await memoServiceClient.getMemo({ name }, { signal });
+      } catch (error) {
+        if (!isMemoUnavailableError(error)) throw error;
+        // Store a content-free result, replacing any formerly readable detail.
+        // Remove copies and snippets so collection fallbacks cannot revive them.
+        discardUnavailableMemo(client, name);
+        return null;
+      }
+    },
+    retry: shouldRetry,
     staleTime: 1000 * 10,
+    // A previous denial cannot establish access on a new visit, even while fresh.
+    refetchOnMount: (query) => (query.state.data === null ? "always" : true),
   });
+
+export function isMemoUnavailableError(error: unknown): boolean {
+  return error instanceof ConnectError && (error.code === Code.PermissionDenied || error.code === Code.NotFound);
+}
+
+function discardUnavailableMemo(client: QueryClient, name: string) {
+  const stripRelations = (memo: Memo): Memo => {
+    const relations = memo.relations.filter((relation) => relation.memo?.name !== name && relation.relatedMemo?.name !== name);
+    return relations.length === memo.relations.length ? memo : { ...memo, relations };
+  };
+  const stripList = (data: ListMemosResponse): ListMemosResponse => {
+    const memos = data.memos.filter((memo) => memo.name !== name).map(stripRelations);
+    return memos.length === data.memos.length && memos.every((memo, index) => memo === data.memos[index]) ? data : { ...data, memos };
+  };
+  for (const [key, data] of client.getQueriesData<MemoCollectionQueryData | Memo | null>({ queryKey: memoKeys.all })) {
+    let next = data;
+    if (isMemoListResponse(data)) next = stripList(data);
+    else if (isInfiniteMemoListData(data)) {
+      const pages = data.pages.map(stripList);
+      if (pages.some((page, index) => page !== data.pages[index])) next = { ...data, pages };
+    } else if (key[1] === "detail" && data && "name" in data && data.name !== name) next = stripRelations(data);
+    if (next !== data) client.setQueryData(key, next);
+  }
+}
 
 type MemoPatch = Partial<Memo> & Pick<Memo, "name">;
 type MemoCollectionQueryData = ListMemosResponse | InfiniteData<ListMemosResponse>;
@@ -109,8 +148,11 @@ function findMemoInQueryData(data: unknown, name: string): Memo | undefined {
   return undefined;
 }
 
-export function findMemoInCollectionQueries(queryClient: QueryClient, name: string): Memo | undefined {
-  for (const [, data] of queryClient.getQueriesData<unknown>({ queryKey: memoKeys.all })) {
+export function findMemoInCollectionQueries(queryClient: QueryClient, name: string, freshOnly = false): Memo | undefined {
+  if (queryClient.getQueryData(memoKeys.detail(name)) === null) return undefined;
+  for (const [key, data] of queryClient.getQueriesData<unknown>({ queryKey: memoKeys.all })) {
+    const state = queryClient.getQueryState(key);
+    if (freshOnly && (!state || state.isInvalidated || state.dataUpdatedAt < Date.now() - 10_000)) continue;
     const memo = findMemoInQueryData(data, name);
     if (memo) {
       return memo;
@@ -155,10 +197,11 @@ export function useInfiniteMemos(request: Partial<ListMemosRequest> = {}, option
 }
 
 export function useMemo(name: string, options?: { enabled?: boolean }) {
-  return useQuery({
+  const query = useQuery({
     ...memoDetailQueryOptions(name),
     enabled: options?.enabled ?? true,
   });
+  return { ...query, data: query.data ?? undefined, isUnavailable: query.data === null };
 }
 
 function isHTTPURL(url: string): boolean {
@@ -217,7 +260,8 @@ export function useUpdateMemo() {
       });
       return memo;
     },
-    onMutate: async ({ update }) => {
+    onMutate: async ({ update, updateMask }) => {
+      if (updateMask.includes("space")) return { previousMemo: undefined };
       if (!update.name) {
         return { previousMemo: undefined };
       }
@@ -247,7 +291,10 @@ export function useUpdateMemo() {
         queryClient.invalidateQueries({ queryKey: memoKeys.all });
       }
     },
-    onSuccess: (updatedMemo) => {
+    onSuccess: (updatedMemo, { updateMask }) => {
+      if (updateMask.includes("space")) {
+        queryClient.invalidateQueries({ queryKey: memoKeys.all });
+      }
       // Update cache with server response
       queryClient.setQueryData(memoKeys.detail(updatedMemo.name), updatedMemo);
       patchMemoInCollectionQueries(queryClient, updatedMemo);

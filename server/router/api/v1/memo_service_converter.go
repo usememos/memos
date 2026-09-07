@@ -66,15 +66,11 @@ func (s *APIV1Service) convertMemoFromStoreWithCreators(ctx context.Context, mem
 		memoMessage.Location = convertLocationFromStore(memo.Payload.Location)
 	}
 
+	// Parent identity is part of a readable comment's context. It grants no
+	// access to the parent; clients resolve it independently and handle denial.
 	if memo.ParentUID != nil {
-		contextMemo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: memo.ParentUID})
-		if err != nil {
-			return nil, errors.Wrap(err, "failed to resolve comment context")
-		}
-		if contextMemo != nil && s.checkMemoReadAccess(ctx, contextMemo) == nil {
-			parentName := buildMemoName(*memo.ParentUID)
-			memoMessage.Parent = &parentName
-		}
+		parentName := buildMemoName(*memo.ParentUID)
+		memoMessage.Parent = &parentName
 	}
 
 	// Reactions have no independent audience and are readable whenever this

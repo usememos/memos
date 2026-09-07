@@ -157,7 +157,7 @@ func (d *DB) deleteReactionAsCreator(ctx context.Context, delete *store.DeleteRe
 	}
 	defer func() { _ = tx.Rollback() }()
 	if delete.Policy != nil {
-		if err := validateMySQLReactionWritePolicy(ctx, tx, &store.Reaction{
+		if err := validateMySQLReactionDeletePolicy(ctx, tx, &store.Reaction{
 			CreatorID: *delete.ActorUserID,
 			MemoID:    *delete.MemoID,
 			Policy:    delete.Policy,

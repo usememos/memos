@@ -25,6 +25,8 @@ vi.mock("@/hooks/useUserQueries", () => ({
   userKeys: { stats: () => ["users", "stats"] },
 }));
 
+vi.mock("@/hooks/useCurrentUser", () => ({ default: () => ({ name: "users/alice" }) }));
+
 vi.mock("@/contexts/InstanceContext", () => ({
   useInstance: () => ({ profile: { instanceUrl: "" } }),
 }));

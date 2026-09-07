@@ -349,6 +349,19 @@
     "content-syntax": "Content syntax"
   },
   "memo": {
+    "parent-loading": "Loading original memo…",
+    "parent-load-error": "Couldn’t load the original memo.",
+    "parent-unavailable": "Original memo unavailable",
+    "parent-unavailable-description": "It may have been deleted or you may no longer have access.",
+    "move": {
+      "title": "Move to Space",
+      "description": "Choose where this memo belongs and who can read it.",
+      "unassigned": "Unassigned",
+      "confirm": "Move",
+      "success": "Memo moved",
+      "space-audience": "Members of {{space}} will be able to read this memo.",
+      "history": "Existing reactions stay with this memo. Comments and linked memos keep their own access rules."
+    },
     "archived-at": "Archived at",
     "back-to": "Back to {{source}}",
     "click-to-hide-sensitive-content": "Click to hide sensitive content",

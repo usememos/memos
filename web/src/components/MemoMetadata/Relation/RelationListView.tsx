@@ -34,7 +34,7 @@ function RelationListView({ relations, currentMemoName, parentPage, className }:
     () =>
       activeRelations.flatMap((relation) => {
         const memo = getRelationMemo(relation, direction);
-        return memo?.name && !memo.snippet ? [memo.name] : [];
+        return memo?.name ? [memo.name] : [];
       }),
     [activeRelations, direction],
   );
@@ -75,7 +75,7 @@ function RelationListView({ relations, currentMemoName, parentPage, className }:
     >
       {activeRelations.map((relation) => {
         const memo = getRelationMemo(relation, direction);
-        if (!memo) {
+        if (!memo || resolvedMemos[memo.name] === null) {
           return null;
         }
         return (

@@ -349,6 +349,19 @@
     "content-syntax": "Məzmun sintaksisi"
   },
   "memo": {
+    "parent-loading": "İlkin memo yüklənir…",
+    "parent-load-error": "İlkin memonu yükləmək mümkün olmadı.",
+    "parent-unavailable": "İlkin memo əlçatan deyil",
+    "parent-unavailable-description": "Silinmiş ola bilər və ya artıq giriş icazəniz yoxdur.",
+    "move": {
+      "title": "Məkana köçür",
+      "description": "Bu memonun yerini və onu kimin oxuya biləcəyini seçin.",
+      "unassigned": "Təyin edilməyib",
+      "confirm": "Köçür",
+      "success": "Memo köçürüldü",
+      "space-audience": "{{space}} məkanının üzvləri bu memonu oxuya biləcəklər.",
+      "history": "Mövcud reaksiyalar bu memo ilə qalır. Şərhlər və əlaqəli memolar öz giriş qaydalarını saxlayır."
+    },
     "archived-at": "Arxivlənib",
     "back-to": "{{source}} bölməsinə qayıt",
     "click-to-hide-sensitive-content": "Həssas məzmunu gizlətmək üçün klikləyin",

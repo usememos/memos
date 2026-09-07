@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo as useReactMemo, useRef, useState } fro
 import { Link, Navigate, useLocation, useParams } from "react-router-dom";
 import MemoCommentSection, { type MemoCommentSectionHandle } from "@/components/MemoCommentSection";
 import { MentionResolutionProvider } from "@/components/MemoContent/MentionResolutionContext";
+import MemoParentPlaceholder, { type MemoParentStatus } from "@/components/MemoParentPlaceholder";
 import MemoView, { type MemoViewHandle } from "@/components/MemoView";
 import { computeCommentAmount } from "@/components/MemoView/MemoViewContext";
 import { createMemoNavigationState, resolveMemoDetailOrigin } from "@/components/MemoView/navigation";
@@ -24,6 +25,8 @@ import { findMemoAnchorTarget } from "@/utils/markdown-manipulation";
 const MemoSidebarRegistration = ({
   memo,
   parentMemo,
+  parentStatus,
+  onParentRetry,
   from,
   hasExplicitOrigin,
   commentCount,
@@ -35,6 +38,8 @@ const MemoSidebarRegistration = ({
 }: {
   memo: Memo;
   parentMemo?: Memo;
+  parentStatus?: MemoParentStatus;
+  onParentRetry?: () => void;
   from: string;
   hasExplicitOrigin: boolean;
   commentCount?: number;
@@ -50,6 +55,8 @@ const MemoSidebarRegistration = ({
     setMemoDetail({
       memo,
       parentMemo,
+      parentStatus,
+      onParentRetry,
       from,
       hasExplicitOrigin,
       commentCount,
@@ -69,6 +76,8 @@ const MemoSidebarRegistration = ({
     onEdit,
     onShareImageOpen,
     parentMemo,
+    parentStatus,
+    onParentRetry,
     readonly,
     setMemoDetail,
   ]);
@@ -100,6 +109,8 @@ const MemoDetail = () => {
     data: memoFromDirect,
     error: directError,
     isLoading: directLoading,
+    isUnavailable: directUnavailable,
+    fetchStatus: directFetchStatus,
   } = useMemo(memoNameFromParams, { enabled: !isShareMode && !!memoNameFromParams });
   const { data: memoFromShare, error: shareError, isLoading: shareLoading } = useSharedMemo(shareToken ?? "", { enabled: isShareMode });
 
@@ -121,9 +132,33 @@ const MemoDetail = () => {
     error: error as Error | null,
   });
 
-  const { data: parentMemo } = useMemo(memo?.parent || "", {
+  const {
+    data: fetchedParent,
+    error: parentError,
+    isUnavailable: parentUnavailable,
+    refetch: refetchParent,
+  } = useMemo(memo?.parent || "", {
     enabled: !isShareMode && !!memo?.parent,
   });
+
+  // Private parents return 401 to guests. The transport still owns session
+  // recovery; only a settled guest view treats that result as unavailable.
+  const guestParentDenied =
+    authInitialized && !currentUser && parentError instanceof ConnectError && parentError.code === Code.Unauthenticated;
+  const parentStatus: MemoParentStatus | undefined =
+    !isShareMode && memo?.parent
+      ? parentUnavailable || guestParentDenied
+        ? "unavailable"
+        : parentError
+          ? "error"
+          : !fetchedParent
+            ? "loading"
+            : undefined
+      : undefined;
+  const parentMemo = parentStatus ? undefined : fetchedParent;
+  const handleParentRetry = useCallback(() => {
+    void refetchParent();
+  }, [refetchParent]);
 
   const {
     data: comments = [],
@@ -169,6 +204,10 @@ const MemoDetail = () => {
     el.scrollIntoView({ behavior: "smooth", block: "center" });
   }, [hash, memo, memoName, comments]);
 
+  // Keep the query mounted while revalidating a cached denial. Redirecting
+  // earlier would abort the request that could confirm restored access.
+  if (!isShareMode && directUnavailable && directFetchStatus === "idle" && !directError) return <Navigate to="/404" replace />;
+
   if (isShareMode) {
     const isNotFound = error instanceof ConnectError && (error.code === Code.NotFound || error.code === Code.Unauthenticated);
     if (isNotFound || (!isLoading && !memo)) {
@@ -191,6 +230,8 @@ const MemoDetail = () => {
         <MemoSidebarRegistration
           memo={displayMemo}
           parentMemo={parentMemo}
+          parentStatus={parentStatus}
+          onParentRetry={handleParentRetry}
           from={parentPage}
           hasExplicitOrigin={hasExplicitOrigin}
           commentCount={isShareMode ? undefined : commentCount}
@@ -202,6 +243,11 @@ const MemoDetail = () => {
         />
         <div className="w-full max-w-2xl px-4 sm:px-6">
           <div className="w-full">
+            {!isShareMode && parentStatus && (
+              <div className="mb-2 md:hidden">
+                <MemoParentPlaceholder status={parentStatus} onRetry={handleParentRetry} />
+              </div>
+            )}
             {!isShareMode && parentMemo && (
               <div className="w-auto inline-block mb-2 md:hidden">
                 <Link

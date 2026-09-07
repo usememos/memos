@@ -180,6 +180,6 @@ describe("query deduplication", () => {
     });
 
     expect(clients.getMemo).toHaveBeenCalledTimes(1);
-    expect(clients.getMemo).toHaveBeenCalledWith({ name: missingMemo.name });
+    expect(clients.getMemo).toHaveBeenCalledWith({ name: missingMemo.name }, { signal: expect.any(AbortSignal) });
   });
 });

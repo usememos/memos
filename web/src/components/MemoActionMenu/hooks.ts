@@ -4,6 +4,7 @@ import { useCallback } from "react";
 import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
 import { useInstance } from "@/contexts/InstanceContext";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import { memoKeys, useDeleteMemo, useUpdateMemo } from "@/hooks/useMemoQueries";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { userKeys } from "@/hooks/useUserQueries";
@@ -25,6 +26,8 @@ interface UseMemoActionHandlersOptions {
 export const useMemoActionHandlers = ({ memo, parentPage, onEdit, setDeleteDialogOpen }: UseMemoActionHandlersOptions) => {
   const t = useTranslate();
   const location = useLocation();
+  const currentUser = useCurrentUser();
+  const canMove = memo.creator === currentUser?.name && !location.pathname.startsWith(ROUTES.SHARED_MEMO);
   const navigateTo = useNavigateTo();
   const queryClient = useQueryClient();
   const { profile } = useInstance();
@@ -153,6 +156,7 @@ export const useMemoActionHandlers = ({ memo, parentPage, onEdit, setDeleteDialo
   }, [memo.name, memo.parent, t, isInMemoDetailPage, parentPage, navigateTo, memoUpdatedCallback, deleteMemo, queryClient]);
 
   return {
+    canMove,
     handleTogglePinMemoBtnClick,
     handleEditMemoClick,
     handleToggleMemoStatusClick,

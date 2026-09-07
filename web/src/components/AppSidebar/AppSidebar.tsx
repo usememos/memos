@@ -269,6 +269,8 @@ const MemoDetailSidebarContent = () => {
     <MemoDetailSidebar
       memo={memoDetail.memo}
       parentMemo={memoDetail.parentMemo}
+      parentStatus={memoDetail.parentStatus}
+      onParentRetry={memoDetail.onParentRetry}
       parentPage={memoDetail.from}
       hasExplicitOrigin={memoDetail.hasExplicitOrigin}
       commentCount={memoDetail.commentCount}

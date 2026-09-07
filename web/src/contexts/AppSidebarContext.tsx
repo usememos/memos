@@ -1,5 +1,6 @@
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
+import type { MemoParentStatus } from "@/components/MemoParentPlaceholder";
 import type { PrimaryMemoScope } from "@/lib/memo-views";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 
@@ -9,6 +10,8 @@ export type InboxFilter = "all" | "unread" | "archived";
 export interface MemoDetailSidebarDescriptor {
   memo: Memo;
   parentMemo?: Memo;
+  parentStatus?: MemoParentStatus;
+  onParentRetry?: () => void;
   from?: string;
   hasExplicitOrigin?: boolean;
   commentCount?: number;

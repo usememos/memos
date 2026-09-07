@@ -19,6 +19,7 @@ import SidebarSection, { SIDEBAR_SECTION_STACK_CLASSES } from "@/components/AppS
 import { extractHeadings } from "@/components/MemoContent/pipeline";
 import { getRelationBuckets, getRelationMemo } from "@/components/MemoMetadata/Relation/relationHelpers";
 import { useResolvedRelationMemos } from "@/components/MemoMetadata/Relation/useResolvedRelationMemos";
+import MemoParentPlaceholder, { type MemoParentStatus } from "@/components/MemoParentPlaceholder";
 import { createMemoNavigationState } from "@/components/MemoView/navigation";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useInstance } from "@/contexts/InstanceContext";
@@ -36,6 +37,8 @@ import MemoSharePanel from "./MemoSharePanel";
 interface Props {
   memo: Memo;
   parentMemo?: Memo;
+  parentStatus?: MemoParentStatus;
+  onParentRetry?: () => void;
   parentPage?: string;
   hasExplicitOrigin?: boolean;
   commentCount?: number;
@@ -86,6 +89,8 @@ const BacklinkRow = ({
 const MemoDetailSidebar = ({
   memo,
   parentMemo,
+  parentStatus,
+  onParentRetry,
   parentPage,
   hasExplicitOrigin = false,
   commentCount,
@@ -120,7 +125,7 @@ const MemoDetailSidebar = ({
         ? []
         : referenced.flatMap((relation) => {
             const relatedMemo = getRelationMemo(relation, "referenced");
-            return relatedMemo?.name && !relatedMemo.snippet ? [relatedMemo.name] : [];
+            return relatedMemo?.name ? [relatedMemo.name] : [];
           }),
     [forceReadonly, referenced],
   );
@@ -159,7 +164,7 @@ const MemoDetailSidebar = ({
   const parentSnippet = parentMemo ? normalizeSnippet(parentMemo.snippet || parentMemo.content || parentMemo.name) : "";
   const showComments = !forceReadonly && commentCount !== undefined && commentCount > 0;
   const showOnThisMemo = headings.length > 1 || showComments;
-  const showConnections = !forceReadonly && (!!parentMemo || referenced.length > 0);
+  const showConnections = !forceReadonly && (!!parentMemo || !!parentStatus || referenced.length > 0);
 
   const handleCopyLink = () => {
     const host = (profile.instanceUrl || window.location.origin).replace(/\/+$/, "");
@@ -210,7 +215,8 @@ const MemoDetailSidebar = ({
 
       {showConnections && (
         <SidebarSection label={t("memo.connections")}>
-          {parentMemo && (
+          {parentStatus && <MemoParentPlaceholder status={parentStatus} onRetry={onParentRetry} />}
+          {!parentStatus && parentMemo && (
             <Link
               aria-label={`${t("memo.parent-memo")}: ${parentSnippet}`}
               className={cn(SIDEBAR_ROW_CLASSES, "text-muted-foreground hover:bg-sidebar-accent/65 hover:text-foreground")}
@@ -225,6 +231,7 @@ const MemoDetailSidebar = ({
           )}
           {referenced.map((relation) => {
             const relatedMemo = getRelationMemo(relation, "referenced");
+            if (relatedMemo && resolvedMemos[relatedMemo.name] === null) return null;
             return (
               <BacklinkRow
                 key={`referenced-${relatedMemo?.name}`}

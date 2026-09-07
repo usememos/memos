@@ -246,8 +246,9 @@ type Memo struct {
 	Reactions []*Reaction `protobuf:"bytes,14,rep,name=reactions,proto3" json:"reactions,omitempty"`
 	// Output only. The computed properties of the memo.
 	Property *Memo_Property `protobuf:"bytes,15,opt,name=property,proto3" json:"property,omitempty"`
-	// Output only. The readable context memo of this COMMENT relation, if any.
-	// This is omitted unless the caller may independently read both memos.
+	// Output only. The context memo of this COMMENT relation, if any.
+	// Its identity is returned even when the caller cannot read the parent.
+	// Fetch the parent independently; this field does not grant read access.
 	// Format: memos/{memo}
 	Parent *string `protobuf:"bytes,16,opt,name=parent,proto3,oneof" json:"parent,omitempty"`
 	// Output only. The snippet of the memo content. Plain text only.

@@ -1051,11 +1051,11 @@ func TestGetMemoCommentUsesMemoLocalReadAccessAndConcealsContext(t *testing.T) {
 	commentName := createdComment.Name
 	publicComment, err := ts.Service.GetMemo(ctx, &apiv1.GetMemoRequest{Name: commentName})
 	require.NoError(t, err)
-	require.Empty(t, publicComment.GetParent(), "unreadable context must not be exposed")
+	require.Equal(t, parent.Name, publicComment.GetParent(), "parent identity remains available without granting access")
 
 	otherComment, err := ts.Service.GetMemo(otherCtx, &apiv1.GetMemoRequest{Name: commentName})
 	require.NoError(t, err)
-	require.Empty(t, otherComment.GetParent(), "relation context requires both endpoints to be readable")
+	require.Equal(t, parent.Name, otherComment.GetParent(), "parent identity is independent of parent readability")
 
 	comment, err := ts.Service.GetMemo(ownerCtx, &apiv1.GetMemoRequest{Name: commentName})
 	require.NoError(t, err)

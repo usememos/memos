@@ -1,54 +1,24 @@
 import { create } from "@bufbuild/protobuf";
-import { useQueryClient } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
+import { useQueries, useQueryClient } from "@tanstack/react-query";
 import { findMemoInCollectionQueries, memoDetailQueryOptions } from "@/hooks/useMemoQueries";
-import { MemoRelation_Memo, MemoRelation_MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
+import { type MemoRelation_Memo, MemoRelation_MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
 
 export const useResolvedRelationMemos = (memoNames: string[], options?: { enabled?: boolean }) => {
-  const queryClient = useQueryClient();
-  const [resolvedMemos, setResolvedMemos] = useState<Record<string, MemoRelation_Memo>>({});
-  const enabled = options?.enabled ?? true;
-
-  const missingMemoNames = useMemo(() => {
-    return Array.from(new Set(memoNames)).filter((name) => name && !resolvedMemos[name]);
-  }, [memoNames, resolvedMemos]);
-
-  useEffect(() => {
-    if (!enabled || missingMemoNames.length === 0) {
-      return;
+  const client = useQueryClient();
+  const names = Array.from(new Set(memoNames.filter(Boolean)));
+  const queries = useQueries({
+    queries: names.map((name) => ({
+      ...memoDetailQueryOptions(name),
+      enabled: options?.enabled ?? true,
+      initialData: () => findMemoInCollectionQueries(client, name, true),
+    })),
+  });
+  const resolved: Record<string, MemoRelation_Memo | null> = {};
+  queries.forEach((query, index) => {
+    if (query.data === null) resolved[names[index]] = null;
+    else if (query.data) {
+      resolved[names[index]] = create(MemoRelation_MemoSchema, { name: query.data.name, snippet: query.data.snippet });
     }
-
-    let cancelled = false;
-
-    void (async () => {
-      try {
-        const memos = await Promise.all(
-          missingMemoNames.map(async (name) => {
-            const memo = findMemoInCollectionQueries(queryClient, name) ?? (await queryClient.fetchQuery(memoDetailQueryOptions(name)));
-            return create(MemoRelation_MemoSchema, { name: memo.name, snippet: memo.snippet });
-          }),
-        );
-
-        if (cancelled) {
-          return;
-        }
-
-        setResolvedMemos((prev) => {
-          const next = { ...prev };
-          for (const memo of memos) {
-            next[memo.name] = memo;
-          }
-          return next;
-        });
-      } catch {
-        // Keep existing relation data when snippet hydration fails.
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [enabled, missingMemoNames, queryClient]);
-
-  return resolvedMemos;
+  });
+  return resolved;
 };
