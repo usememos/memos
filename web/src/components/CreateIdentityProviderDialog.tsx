@@ -594,7 +594,7 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
                     />
                   </FormField>
 
-                  <FormField label={t("setting.sso.display-name")}>
+                  <FormField label={t("setting.sso.display-name")} description={t("setting.sso.field-mapping-display-name-description")}>
                     <Input
                       placeholder={t("setting.sso.display-name")}
                       value={oauth2FieldMapping.displayName}
@@ -604,7 +604,7 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2">
-                  <FormField label={t("common.email")}>
+                  <FormField label={t("common.email")} description={t("setting.sso.field-mapping-email-description")}>
                     <Input
                       placeholder={t("common.email")}
                       value={oauth2FieldMapping.email}
@@ -612,7 +612,7 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
                     />
                   </FormField>
 
-                  <FormField label={t("setting.sso.avatar-url")}>
+                  <FormField label={t("setting.sso.avatar-url")} description={t("setting.sso.field-mapping-avatar-description")}>
                     <Input
                       placeholder={t("setting.sso.avatar-url")}
                       value={oauth2FieldMapping.avatarUrl}
