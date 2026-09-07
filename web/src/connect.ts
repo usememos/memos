@@ -150,6 +150,26 @@ export async function getRequestToken(): Promise<string | null> {
   return token;
 }
 
+// Native uploads use the same token preflight and one-time refresh as RPCs.
+// A FormData body can be sent again without reading its files into JavaScript.
+export async function authenticatedFetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
+  const send = (token: string | null) => {
+    const headers = new Headers(init?.headers);
+    if (token) headers.set("Authorization", `Bearer ${token}`);
+    return fetchWithCredentials(input, { ...init, headers });
+  };
+  const response = await send(await getRequestToken());
+  if (response.status !== 401) return response;
+  try {
+    const retry = await send(await refreshAndGetAccessToken());
+    if (retry.status === 401) throw new ConnectError("User not authenticated", Code.Unauthenticated);
+    return retry;
+  } catch (error) {
+    redirectOnAuthFailure();
+    throw error;
+  }
+}
+
 // ============================================================================
 // Authentication Interceptor
 // ============================================================================

@@ -170,6 +170,7 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 		return err
 	}
 	gwGroup := echoServer.Group("")
+	s.registerAttachmentUploadRoute(gwGroup, authorizer)
 	// Register SSE endpoint with same CORS as rest of /api/v1.
 	RegisterSSERoutes(gwGroup, s.SSEHub, s.Store, s.Secret)
 	handler := echo.WrapHandler(http.MaxBytesHandler(gwMux, MaxAPIRequestBytes))

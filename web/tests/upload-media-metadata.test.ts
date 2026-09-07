@@ -1,17 +1,18 @@
-import { create } from "@bufbuild/protobuf";
+import { create, fromJsonString } from "@bufbuild/protobuf";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { LocalFile } from "@/components/MemoEditor/types/attachment";
-import { MediaMetadataSchema } from "@/types/proto/api/v1/attachment_service_pb";
+import { CreateAttachmentRequestSchema, MediaMetadataSchema } from "@/types/proto/api/v1/attachment_service_pb";
 
 const mocks = vi.hoisted(() => ({
-  createAttachment: vi.fn(),
+  authenticatedFetch: vi.fn(),
   extractMetadata: vi.fn(),
 }));
 
 // The ingest helper lives beside useFileUpload, whose module graph reaches
 // AuthContext and the query hooks; stub every client they name-import.
 vi.mock("@/connect", () => ({
-  attachmentServiceClient: { createAttachment: mocks.createAttachment },
+  attachmentServiceClient: {},
+  authenticatedFetch: mocks.authenticatedFetch,
   authServiceClient: {},
   userServiceClient: {},
   memoViewServiceClient: {},
@@ -56,16 +57,45 @@ describe("media metadata at file ingest", () => {
   });
 });
 
+const submittedMetadata = () => {
+  const form = mocks.authenticatedFetch.mock.calls[0][1].body as FormData;
+  return fromJsonString(CreateAttachmentRequestSchema, form.get("metadata") as string);
+};
+
 describe("uploadService media metadata", () => {
   beforeEach(() => {
-    mocks.createAttachment.mockImplementation(async ({ attachment }) => attachment);
+    mocks.authenticatedFetch.mockResolvedValue({ ok: true, text: async () => '{"name":"attachments/uploaded"}' });
+  });
+
+  it("sends the original file without reading it into a byte array", async () => {
+    const localFile = localImage();
+    const read = vi.spyOn(localFile.file, "arrayBuffer");
+    const controller = new AbortController();
+    const attachment = await uploadService.uploadFile(localFile, controller.signal);
+    const [url, init] = mocks.authenticatedFetch.mock.calls[0];
+    expect(url).toBe("/api/v1/attachments:upload");
+    expect(init.method).toBe("POST");
+    expect(init.signal).toBe(controller.signal);
+    expect(init.body.get("file")).toBe(localFile.file);
+    expect(submittedMetadata().attachment?.content).toHaveLength(0);
+    expect(read).not.toHaveBeenCalled();
+    expect(attachment.name).toBe("attachments/uploaded");
+  });
+
+  it("surfaces upload errors from the server", async () => {
+    mocks.authenticatedFetch.mockResolvedValue({
+      ok: false,
+      status: 413,
+      json: async () => ({ code: 8, message: "file size exceeds the limit" }),
+    });
+    await expect(uploadService.uploadFile(localImage())).rejects.toThrow("file size exceeds the limit");
   });
 
   it("submits no metadata for files ingested without any", async () => {
     await uploadService.uploadFiles([localImage()]);
 
-    expect(mocks.createAttachment).toHaveBeenCalledOnce();
-    expect(mocks.createAttachment.mock.calls[0][0].attachment.mediaMetadata).toBeUndefined();
+    expect(mocks.authenticatedFetch).toHaveBeenCalledOnce();
+    expect(submittedMetadata().attachment?.mediaMetadata).toBeUndefined();
   });
 
   it("submits the metadata extracted at ingest", async () => {
@@ -73,14 +103,14 @@ describe("uploadService media metadata", () => {
 
     await uploadService.uploadFiles([localImage(Promise.resolve(metadata))]);
 
-    expect(mocks.createAttachment.mock.calls[0][0].attachment.mediaMetadata).toEqual(metadata);
+    expect(submittedMetadata().attachment?.mediaMetadata).toEqual(metadata);
   });
 
   it("continues without metadata when extraction produced no usable values", async () => {
     await uploadService.uploadFiles([localImage(Promise.resolve(undefined))]);
 
-    expect(mocks.createAttachment).toHaveBeenCalledOnce();
-    expect(mocks.createAttachment.mock.calls[0][0].attachment.mediaMetadata).toBeUndefined();
+    expect(mocks.authenticatedFetch).toHaveBeenCalledOnce();
+    expect(submittedMetadata().attachment?.mediaMetadata).toBeUndefined();
   });
 
   it("submits ingest-time metadata end to end", async () => {
@@ -90,6 +120,6 @@ describe("uploadService media metadata", () => {
 
     await uploadService.uploadFiles(toLocalFiles([file], { createBlobUrl, saveMediaMetadata: true }));
 
-    expect(mocks.createAttachment.mock.calls[0][0].attachment.mediaMetadata).toEqual(metadata);
+    expect(submittedMetadata().attachment?.mediaMetadata).toEqual(metadata);
   });
 });

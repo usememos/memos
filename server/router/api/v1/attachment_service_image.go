@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"image"
+	"io"
 
 	"github.com/disintegration/imaging"
 	"github.com/pkg/errors"
@@ -77,7 +78,11 @@ func (s *APIV1Service) acquireImageProcessingSlot(ctx context.Context) (func(), 
 }
 
 func validateImagePixelCount(imageData []byte) error {
-	config, _, err := image.DecodeConfig(bytes.NewReader(imageData))
+	return validateImageReaderPixelCount(bytes.NewReader(imageData))
+}
+
+func validateImageReaderPixelCount(reader io.Reader) error {
+	config, _, err := image.DecodeConfig(reader)
 	if err != nil {
 		// Some formats supported by imaging do not expose dimensions through
 		// the standard image registry. Let the full decoder handle those.
@@ -106,33 +111,28 @@ func validateImagePixelCount(imageData []byte) error {
 //
 // Returns the cleaned image data without any EXIF metadata, or an error if processing fails.
 func stripImageExif(imageData []byte, mimeType string) ([]byte, error) {
-	if err := validateImagePixelCount(imageData); err != nil {
+	var buf bytes.Buffer
+	if err := stripImageExifTo(&buf, bytes.NewReader(imageData), mimeType); err != nil {
 		return nil, err
 	}
-
-	// Decode image with automatic EXIF orientation correction.
-	// This ensures the image displays correctly after metadata removal.
-	img, err := imaging.Decode(bytes.NewReader(imageData), imaging.AutoOrientation(true))
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to decode image")
-	}
-
-	// Re-encode the image without EXIF metadata.
-	var buf bytes.Buffer
-	var encodeErr error
-
-	if mimeType == "image/png" {
-		// Preserve PNG format for lossless encoding
-		encodeErr = imaging.Encode(&buf, img, imaging.PNG)
-	} else {
-		// For JPEG, TIFF, WebP, HEIC, HEIF - re-encode as JPEG.
-		// This ensures EXIF is stripped and provides good compression.
-		encodeErr = imaging.Encode(&buf, img, imaging.JPEG, imaging.JPEGQuality(defaultJPEGQuality))
-	}
-
-	if encodeErr != nil {
-		return nil, errors.Wrap(encodeErr, "failed to encode image")
-	}
-
 	return buf.Bytes(), nil
+}
+
+func stripImageExifTo(dst io.Writer, source io.ReadSeeker, mimeType string) error {
+	if err := validateImageReaderPixelCount(source); err != nil {
+		return err
+	}
+	if _, err := source.Seek(0, io.SeekStart); err != nil {
+		return errors.Wrap(err, "failed to rewind image")
+	}
+	img, err := imaging.Decode(source, imaging.AutoOrientation(true))
+	if err != nil {
+		return errors.Wrap(err, "failed to decode image")
+	}
+	if mimeType == "image/png" {
+		err = imaging.Encode(dst, img, imaging.PNG)
+	} else {
+		err = imaging.Encode(dst, img, imaging.JPEG, imaging.JPEGQuality(defaultJPEGQuality))
+	}
+	return errors.Wrap(err, "failed to encode image")
 }

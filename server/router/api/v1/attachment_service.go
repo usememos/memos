@@ -2,7 +2,6 @@ package v1
 
 import (
 	"context"
-	"encoding/binary"
 	"fmt"
 	"log/slog"
 	"mime"
@@ -16,13 +15,12 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
+	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
 
 const (
-	// The upload memory buffer is 32 MiB.
-	// It should be kept low, so RAM usage doesn't get out of control.
-	// This is unrelated to maximum upload size limit, which is now set through system setting.
+	// MaxUploadBufferSizeBytes is the fallback upload size limit when no limit is configured.
 	MaxUploadBufferSizeBytes = 32 << 20
 	MebiByte                 = 1024 * 1024
 
@@ -71,7 +69,7 @@ func detectAttachmentMimeType(filename string, content []byte) string {
 	return http.DetectContentType(content)
 }
 
-func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.CreateAttachmentRequest) (*v1pb.Attachment, error) {
+func (s *APIV1Service) prepareAttachment(ctx context.Context, request *v1pb.CreateAttachmentRequest) (*store.Attachment, error) {
 	user, err := s.fetchCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
@@ -135,21 +133,6 @@ func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.Creat
 		create.Payload.MediaMetadata = inputMediaMetadata
 	}
 
-	instanceStorageSetting, err := s.Store.GetInstanceStorageSetting(ctx)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get instance storage setting: %v", err)
-	}
-	size := binary.Size(request.Attachment.Content)
-	uploadSizeLimit := int(instanceStorageSetting.UploadSizeLimitMb) * MebiByte
-	if uploadSizeLimit == 0 {
-		uploadSizeLimit = MaxUploadBufferSizeBytes
-	}
-	if size > uploadSizeLimit {
-		return nil, status.Errorf(codes.InvalidArgument, "file size exceeds the limit")
-	}
-	create.Size = int64(size)
-	create.Blob = request.Attachment.Content
-
 	if request.Attachment.Memo != nil {
 		memoUID, err := ExtractMemoUIDFromName(*request.Attachment.Memo)
 		if err != nil {
@@ -172,8 +155,26 @@ func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.Creat
 		create.Policy = memoWritePolicy(user.ID, false)
 	}
 
+	return create, nil
+}
+
+func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.CreateAttachmentRequest) (*v1pb.Attachment, error) {
+	create, err := s.prepareAttachment(ctx, request)
+	if err != nil {
+		return nil, err
+	}
+	instanceStorageSetting, err := s.Store.GetInstanceStorageSetting(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get instance storage setting: %v", err)
+	}
+	if int64(len(request.Attachment.Content)) > attachmentUploadLimit(instanceStorageSetting) {
+		return nil, status.Errorf(codes.InvalidArgument, "file size exceeds the limit")
+	}
+	create.Blob = request.Attachment.Content
+	create.Size = int64(len(create.Blob))
+
 	if create.Payload == nil || create.Payload.MotionMedia == nil {
-		if detectedMotion := detectAndroidMotionMedia(create.Blob, create.Type, attachmentUID); detectedMotion != nil {
+		if detectedMotion := detectAndroidMotionMedia(create.Blob, create.Type, create.UID); detectedMotion != nil {
 			create.Payload = ensureAttachmentPayload(create.Payload)
 			create.Payload.MotionMedia = detectedMotion
 		}
@@ -204,6 +205,10 @@ func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.Creat
 		return nil, status.Errorf(codes.Internal, "failed to save attachment blob: %v", err)
 	}
 
+	return s.persistAttachment(ctx, create, instanceStorageSetting)
+}
+
+func (s *APIV1Service) persistAttachment(ctx context.Context, create *store.Attachment, instanceStorageSetting *storepb.InstanceStorageSetting) (*v1pb.Attachment, error) {
 	attachment, err := s.Store.CreateAttachment(ctx, create)
 	if err != nil {
 		createErr := mapMemoWriteError(err, "failed to create attachment")

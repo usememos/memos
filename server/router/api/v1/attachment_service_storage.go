@@ -62,6 +62,17 @@ func saveAttachmentBlobWithInstanceStorageSetting(
 	create *store.Attachment,
 	instanceStorageSetting *storepb.InstanceStorageSetting,
 ) error {
+	return saveAttachmentContent(ctx, profile, stores, create, instanceStorageSetting, bytes.NewReader(create.Blob))
+}
+
+func saveAttachmentContent(
+	ctx context.Context,
+	profile *profile.Profile,
+	stores *store.Store,
+	create *store.Attachment,
+	instanceStorageSetting *storepb.InstanceStorageSetting,
+	content io.Reader,
+) error {
 	defaultStorage := store.GetDefaultStorage(instanceStorageSetting)
 	if defaultStorage == nil {
 		return errors.New("default storage is not configured")
@@ -99,9 +110,24 @@ func saveAttachmentBlobWithInstanceStorageSetting(
 			return errors.Wrap(err, "Failed to create directory")
 		}
 
-		// Write the blob to the file.
-		if err := os.WriteFile(osPath, create.Blob, 0644); err != nil {
-			return errors.Wrap(err, "Failed to write file")
+		// Keep partial content out of the final path, including on cancellation.
+		file, err := os.CreateTemp(dir, ".memos-upload-*")
+		if err != nil {
+			return errors.Wrap(err, "failed to create attachment file")
+		}
+		defer os.Remove(file.Name())
+		defer file.Close()
+		if _, err := io.Copy(file, &attachmentContextReader{ctx: ctx, reader: content}); err != nil {
+			return errors.Wrap(err, "failed to write attachment file")
+		}
+		if err := file.Chmod(0644); err != nil {
+			return errors.Wrap(err, "failed to set attachment permissions")
+		}
+		if err := file.Close(); err != nil {
+			return errors.Wrap(err, "failed to close attachment file")
+		}
+		if err := os.Rename(file.Name(), osPath); err != nil {
+			return errors.Wrap(err, "failed to finalize attachment file")
 		}
 		create.Reference = internalPath
 		create.Blob = nil
@@ -117,7 +143,7 @@ func saveAttachmentBlobWithInstanceStorageSetting(
 			filepathTemplate = filepath.Join(filepathTemplate, "{filename}")
 		}
 		filepathTemplate = replaceFilenameWithPathTemplate(filepathTemplate, create.Filename)
-		key, err := driver.UploadObject(ctx, filepathTemplate, create.Type, bytes.NewReader(create.Blob))
+		key, err := driver.UploadObject(ctx, filepathTemplate, create.Type, content)
 		if err != nil {
 			return errors.Wrap(err, "failed to upload via storage driver")
 		}
