@@ -39,4 +39,6 @@ message OAuth2Config {
   string user_info_url = 5;
   repeated string scopes = 6;
   FieldMapping field_mapping = 7;
+  // Optional upstream claim used by identifier_filter. Empty means the mapped identifier.
+  string filter_field = 8;
 }

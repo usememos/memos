@@ -4173,6 +4173,9 @@ components:
                         type: string
                 fieldMapping:
                     $ref: '#/components/schemas/FieldMapping'
+                filterField:
+                    type: string
+                    description: Optional. Upstream claim used by identifier_filter. Empty means the mapped external ID.
         PersonalAccessToken:
             type: object
             properties:

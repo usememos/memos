@@ -159,6 +159,11 @@ func TestIdentityProvider(t *testing.T) {
 		Identifier:  testSubject,
 		DisplayName: testName,
 		Email:       testEmail,
+		Claims: map[string]string{
+			"sub":   testSubject,
+			"name":  testName,
+			"email": testEmail,
+		},
 	}
 	assert.Equal(t, wantUserInfo, userInfoResult)
 }
