@@ -968,6 +968,18 @@
     }
   },
   "space": {
+    "icon": {
+      "change": "更改空间图标",
+      "kind": "图标类型",
+      "icons": "图标",
+      "emoji": "表情",
+      "search-icons": "搜索图标…",
+      "search-emoji": "搜索或粘贴表情…",
+      "no-results": "没有匹配项",
+      "emoji-help": "选择常用表情，或粘贴你喜欢的表情。",
+      "reset": "恢复默认",
+      "use-emoji": "使用 {{emoji}}"
+    },
     "unavailable": "空间不存在或你没有访问权限。",
     "back-to-memos": "返回 Memos"
   }

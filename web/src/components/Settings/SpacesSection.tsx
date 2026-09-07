@@ -16,6 +16,7 @@ import ConfirmDialog from "@/components/ConfirmDialog";
 import CreateSpaceDialog from "@/components/CreateSpaceDialog";
 import InviteSpaceMemberDialog from "@/components/Settings/InviteSpaceMemberDialog";
 import SettingSection from "@/components/Settings/SettingSection";
+import SpaceIconPicker from "@/components/SpaceIconPicker";
 import SpaceMark from "@/components/SpaceMark";
 import SpaceRoleBadge from "@/components/SpaceRoleBadge";
 import UserAvatar from "@/components/UserAvatar";
@@ -44,6 +45,7 @@ import { useUsersByUsernames } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
 import { extractUsernameFromName } from "@/lib/resource-names";
 import { extractSpaceUidFromName } from "@/lib/space-display";
+import { spaceIconsEqual } from "@/lib/space-icons";
 import { ROUTES } from "@/router/routes";
 import { type Space, type SpaceInvitation, type SpaceMember, SpaceMember_Role } from "@/types/proto/api/v1/space_service_pb";
 import type { User } from "@/types/proto/api/v1/user_service_pb";
@@ -189,7 +191,7 @@ const SpacesSection = () => {
                   return (
                     <div key={invitation.name} className="flex min-w-0 flex-col gap-3 px-3 py-3 sm:flex-row sm:items-center">
                       <div className="flex min-w-0 flex-1 items-center gap-3">
-                        <SpaceMark size="lg" />
+                        <SpaceMark icon={invitation.space?.icon} size="lg" />
                         <div className="min-w-0">
                           <div className="flex flex-wrap items-center gap-2">
                             <p className="truncate text-sm font-medium">{title}</p>
@@ -279,7 +281,7 @@ const SpacesSection = () => {
                       onClick={() => handleOpenSpace(space.name)}
                       className="group flex w-full min-w-0 items-center gap-3 px-3 py-3 text-left transition-colors hover:bg-muted/35 focus-visible:bg-muted/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/45"
                     >
-                      <SpaceMark size="lg" />
+                      <SpaceMark icon={space.icon} size="lg" />
                       <div className="min-w-0 flex-1">
                         <div className="flex min-w-0 flex-wrap items-center gap-2">
                           <p className="truncate text-sm font-medium">{space.title}</p>
@@ -349,6 +351,7 @@ const SpaceDetail = ({ space, viewerName, onBack }: SpaceDetailProps) => {
   const [tab, setTab] = useState<DetailTab>("general");
   const [title, setTitle] = useState(space.title);
   const [description, setDescription] = useState(space.description);
+  const [icon, setIcon] = useState(space.icon);
   const [inviteOpen, setInviteOpen] = useState(false);
   const [leaveOpen, setLeaveOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -367,22 +370,24 @@ const SpaceDetail = ({ space, viewerName, onBack }: SpaceDetailProps) => {
     { value: String(SpaceMember_Role.USER), label: t("setting.spaces.space-user") },
     { value: String(SpaceMember_Role.ADMIN), label: t("setting.spaces.space-admin") },
   ];
-  const detailsChanged = title.trim() !== space.title || description.trim() !== space.description;
+  const iconChanged = !spaceIconsEqual(icon, space.icon);
+  const detailsChanged = title.trim() !== space.title || description.trim() !== space.description || iconChanged;
   const spaceUid = extractSpaceUidFromName(space.name);
   const disambiguatedSpaceTitle = `${space.title} (${spaceUid})`;
 
   useEffect(() => {
     setTitle(space.title);
     setDescription(space.description);
-  }, [space.description, space.title]);
+    setIcon(space.icon);
+  }, [space.description, space.title, space.icon]);
 
   const handleSave = async () => {
     const trimmedTitle = title.trim();
     if (!trimmedTitle || !isAdmin || updateSpace.isPending) return;
     try {
       await updateSpace.mutateAsync({
-        space: { name: space.name, title: trimmedTitle, description: description.trim() },
-        updateMask: ["title", "description"],
+        space: { name: space.name, title: trimmedTitle, description: description.trim(), ...(iconChanged ? { icon } : {}) },
+        updateMask: ["title", "description", ...(iconChanged ? ["icon"] : [])],
       });
       toast.success(t("setting.spaces.save-success"));
     } catch (error) {
@@ -459,7 +464,7 @@ const SpaceDetail = ({ space, viewerName, onBack }: SpaceDetailProps) => {
       </button>
 
       <header className="flex min-w-0 flex-col gap-3 border-b border-border/70 pb-4 sm:flex-row sm:items-center">
-        <SpaceMark size="xl" />
+        <SpaceMark icon={space.icon} size="xl" />
         <div className="min-w-0 flex-1">
           <div className="flex min-w-0 flex-wrap items-center gap-2">
             <h3 className="truncate text-lg font-semibold tracking-tight">{space.title}</h3>
@@ -503,13 +508,20 @@ const SpaceDetail = ({ space, viewerName, onBack }: SpaceDetailProps) => {
               </div>
               <div className="grid gap-2 border-b border-border px-3 py-3 sm:grid-cols-[170px_1fr] sm:items-center">
                 <Label htmlFor="space-settings-title">{t("common.name")}</Label>
-                <Input
-                  id="space-settings-title"
-                  value={title}
-                  onChange={(event) => setTitle(event.target.value)}
-                  readOnly={!isAdmin}
-                  className={!isAdmin ? "bg-muted/25" : undefined}
-                />
+                <div className="flex items-center gap-2">
+                  {isAdmin ? (
+                    <SpaceIconPicker value={icon} onChange={setIcon} disabled={updateSpace.isPending} />
+                  ) : (
+                    <SpaceMark icon={icon} size="lg" className="size-8" />
+                  )}
+                  <Input
+                    id="space-settings-title"
+                    value={title}
+                    onChange={(event) => setTitle(event.target.value)}
+                    readOnly={!isAdmin}
+                    className={!isAdmin ? "bg-muted/25" : undefined}
+                  />
+                </div>
               </div>
               <div className="grid gap-2 px-3 py-3 sm:grid-cols-[170px_1fr] sm:items-start">
                 <div>

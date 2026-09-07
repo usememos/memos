@@ -1083,6 +1083,18 @@
     }
   },
   "space": {
+    "icon": {
+      "change": "Sahə ikonunu dəyiş",
+      "kind": "İkon növü",
+      "icons": "İkonlar",
+      "emoji": "Emoji",
+      "search-icons": "İkon axtar…",
+      "search-emoji": "Emoji axtar və ya yapışdır…",
+      "no-results": "Uyğun nəticə yoxdur",
+      "emoji-help": "Emoji seçin və ya öz emojinizi yapışdırın.",
+      "reset": "Standarta qaytar",
+      "use-emoji": "{{emoji}} istifadə et"
+    },
     "unavailable": "Bu sahə mövcud deyil və ya ona giriş icazəniz yoxdur.",
     "back-to-memos": "Memos-a qayıt",
     "create": "Sahə yarat",

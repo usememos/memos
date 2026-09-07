@@ -157,6 +157,19 @@ message Space {
   // Output only. The number of accepted members in this space. Pending
   // invitations are excluded. Zero when this Space is exposed as metadata-only.
   int32 member_count = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Optional. Display icon. Omit when updating with the "icon" mask to reset
+  // to the default Space mark.
+  Icon icon = 6 [(google.api.field_behavior) = OPTIONAL];
+
+  message Icon {
+    oneof value {
+      // A Unicode emoji sequence.
+      string emoji = 1;
+      // A canonical Lucide icon name, such as "leaf".
+      string lucide = 2;
+    }
+  }
 }
 
 // SpaceMember is a user's membership and governance role in a space.

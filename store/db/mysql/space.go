@@ -8,7 +8,9 @@ import (
 
 	mysqldriver "github.com/go-sql-driver/mysql"
 	"github.com/pkg/errors"
+	"google.golang.org/protobuf/encoding/protojson"
 
+	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
 
@@ -23,9 +25,17 @@ func (d *DB) CreateSpace(ctx context.Context, create *store.Space, creatorID int
 	if err := lockMySQLActiveUser(ctx, tx, creatorID); err != nil {
 		return nil, err
 	}
-	fields := []string{"uid", "title", "description"}
-	values := []string{"?", "?", "?"}
-	args := []any{create.UID, create.Title, create.Description}
+	payload := "{}"
+	if create.Payload != nil {
+		data, err := protojson.Marshal(create.Payload)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to marshal space payload")
+		}
+		payload = string(data)
+	}
+	fields := []string{"uid", "title", "description", "payload"}
+	values := []string{"?", "?", "?", "?"}
+	args := []any{create.UID, create.Title, create.Description, payload}
 	result, err := tx.ExecContext(ctx, "INSERT INTO space ("+strings.Join(fields, ", ")+") VALUES ("+strings.Join(values, ", ")+")", args...)
 	if err != nil {
 		if isMySQLUniqueViolation(err) {
@@ -55,7 +65,7 @@ func (d *DB) CreateSpace(ctx context.Context, create *store.Space, creatorID int
 
 func (d *DB) ListSpaces(ctx context.Context, find *store.FindSpace) ([]*store.Space, error) {
 	where, args := []string{"1 = 1"}, []any{}
-	selectFields := "space.id, space.uid, space.title, space.description"
+	selectFields := "space.id, space.uid, space.title, space.description, space.payload"
 	joins := ""
 	groupBy := ""
 	if find.ID != nil {
@@ -118,6 +128,13 @@ func (d *DB) UpdateSpace(ctx context.Context, update *store.UpdateSpace, actorUs
 	}
 	if update.Description != nil {
 		sets, args = append(sets, "description = ?"), append(args, *update.Description)
+	}
+	if update.Payload != nil {
+		data, err := protojson.Marshal(update.Payload)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to marshal space payload")
+		}
+		sets, args = append(sets, "payload = ?"), append(args, string(data))
 	}
 	args = append(args, update.ID)
 	if _, err := tx.ExecContext(ctx, "UPDATE space SET "+strings.Join(sets, ", ")+" WHERE id = ?", args...); err != nil {
@@ -434,14 +451,20 @@ func (d *DB) DeleteSpaceMember(ctx context.Context, delete *store.DeleteSpaceMem
 type mysqlRowScanner interface{ Scan(...any) error }
 
 func scanMySQLSpace(row mysqlRowScanner, space *store.Space) error {
-	return row.Scan(&space.ID, &space.UID, &space.Title, &space.Description)
+	return scanMySQLSpaceWithSummary(row, space, false)
 }
 
 func scanMySQLSpaceWithSummary(row mysqlRowScanner, space *store.Space, withSummary bool) error {
-	if !withSummary {
-		return scanMySQLSpace(row, space)
+	var payloadBytes []byte
+	targets := []any{&space.ID, &space.UID, &space.Title, &space.Description, &payloadBytes}
+	if withSummary {
+		targets = append(targets, &space.CurrentUserRole, &space.MemberCount)
 	}
-	return row.Scan(&space.ID, &space.UID, &space.Title, &space.Description, &space.CurrentUserRole, &space.MemberCount)
+	if err := row.Scan(targets...); err != nil {
+		return err
+	}
+	space.Payload = &storepb.SpacePayload{}
+	return errors.Wrap(protojsonUnmarshaler.Unmarshal(payloadBytes, space.Payload), "failed to unmarshal space payload")
 }
 
 func scanMySQLSpaceSummary(row mysqlRowScanner, space *store.Space) error {
@@ -462,7 +485,7 @@ func populateMySQLSpaceSummary(ctx context.Context, tx *sql.Tx, space *store.Spa
 
 func getMySQLSpace(ctx context.Context, tx *sql.Tx, id int32) (*store.Space, error) {
 	space := &store.Space{}
-	return space, scanMySQLSpace(tx.QueryRowContext(ctx, `SELECT id, uid, title, description FROM space WHERE id = ?`, id), space)
+	return space, scanMySQLSpace(tx.QueryRowContext(ctx, `SELECT id, uid, title, description, payload FROM space WHERE id = ?`, id), space)
 }
 
 func getMySQLSpaceMember(ctx context.Context, tx *sql.Tx, spaceID, userID int32) (*store.SpaceMember, error) {

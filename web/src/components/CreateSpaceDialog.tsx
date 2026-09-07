@@ -3,6 +3,7 @@ import { ChevronDownIcon } from "lucide-react";
 import { type FormEvent, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { v4 as uuidv4 } from "uuid";
+import SpaceIconPicker from "@/components/SpaceIconPicker";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -12,7 +13,7 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import { useCreateSpace } from "@/hooks/useSpaceQueries";
 import { handleError } from "@/lib/error";
 import { cn } from "@/lib/utils";
-import type { Space } from "@/types/proto/api/v1/space_service_pb";
+import type { Space, Space_Icon } from "@/types/proto/api/v1/space_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 const SPACE_UID_PATTERN = /^[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,34}[a-zA-Z0-9])?$/;
@@ -30,6 +31,7 @@ function CreateSpaceDialog({ open, onOpenChange, onCreated, note }: Props) {
   const createSpace = useCreateSpace(currentUserName);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [icon, setIcon] = useState<Space_Icon>();
   const [spaceUid, setSpaceUid] = useState(() => uuidv4());
   const [showCustomId, setShowCustomId] = useState(false);
   const [spaceUidConflict, setSpaceUidConflict] = useState(false);
@@ -40,6 +42,7 @@ function CreateSpaceDialog({ open, onOpenChange, onCreated, note }: Props) {
     if (!open) {
       setTitle("");
       setDescription("");
+      setIcon(undefined);
       setSpaceUid(uuidv4());
       setShowCustomId(false);
       setSpaceUidConflict(false);
@@ -60,6 +63,7 @@ function CreateSpaceDialog({ open, onOpenChange, onCreated, note }: Props) {
         title: trimmedTitle,
         description: description.trim() || undefined,
         spaceId: spaceUid,
+        ...(icon ? { icon } : {}),
       });
     } catch (error) {
       if (error instanceof ConnectError && error.code === Code.AlreadyExists) {
@@ -92,14 +96,17 @@ function CreateSpaceDialog({ open, onOpenChange, onCreated, note }: Props) {
           </DialogHeader>
           <div className="grid gap-2">
             <Label htmlFor="space-title">{t("common.name")}</Label>
-            <Input
-              id="space-title"
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-              placeholder={t("space.name-placeholder")}
-              autoComplete="off"
-              autoFocus
-            />
+            <div className="flex items-center gap-2">
+              <SpaceIconPicker value={icon} onChange={setIcon} disabled={createSpace.isPending} />
+              <Input
+                id="space-title"
+                value={title}
+                onChange={(event) => setTitle(event.target.value)}
+                placeholder={t("space.name-placeholder")}
+                autoComplete="off"
+                autoFocus
+              />
+            </div>
           </div>
           <div className="grid gap-2">
             <Label htmlFor="space-description">{t("common.description")}</Label>

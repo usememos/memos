@@ -255,6 +255,40 @@ describe("SpacesSection", () => {
     expect(within(joinedSection!).getByTitle("joined-product")).toHaveTextContent("joined-product");
   });
 
+  it("saves the icon through the icon update mask", async () => {
+    state.spaces = [adminSpace];
+    state.members = [adminMember];
+    renderSection("/setting?space=spaces%2Fproduct#spaces");
+    fireEvent.click(screen.getByRole("button", { name: "space.icon.change" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Leaf" }));
+    expect(state.updateSpace).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: "setting.spaces.save-changes" }));
+    await waitFor(() =>
+      expect(state.updateSpace).toHaveBeenCalledWith({
+        space: expect.objectContaining({
+          name: adminSpace.name,
+          icon: expect.objectContaining({ value: { case: "lucide", value: "leaf" } }),
+        }),
+        updateMask: ["title", "description", "icon"],
+      }),
+    );
+  });
+
+  it("clears a saved icon with an explicit update mask", async () => {
+    state.spaces = [{ ...adminSpace, icon: { $typeName: "memos.api.v1.Space.Icon", value: { case: "emoji", value: "🌱" } } }];
+    state.members = [adminMember];
+    renderSection("/setting?space=spaces%2Fproduct#spaces");
+    fireEvent.click(screen.getByRole("button", { name: "space.icon.change" }));
+    fireEvent.click(await screen.findByRole("button", { name: "space.icon.reset" }));
+    fireEvent.click(screen.getByRole("button", { name: "setting.spaces.save-changes" }));
+    await waitFor(() =>
+      expect(state.updateSpace).toHaveBeenCalledWith({
+        space: expect.objectContaining({ name: adminSpace.name, icon: undefined }),
+        updateMask: ["title", "description", "icon"],
+      }),
+    );
+  });
+
   it("shows governance controls to Space admins and cancels the exact pending invitation", async () => {
     state.spaces = [adminSpace];
     state.members = [adminMember, ordinaryMember];
@@ -301,6 +335,7 @@ describe("SpacesSection", () => {
     renderSection("/setting?space=spaces%2Fproduct#spaces");
 
     expect(screen.getByLabelText("common.name")).toHaveAttribute("readonly");
+    expect(screen.queryByRole("button", { name: "space.icon.change" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "setting.spaces.save-changes" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "setting.spaces.delete-space" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "setting.spaces.leave-space" })).toBeInTheDocument();

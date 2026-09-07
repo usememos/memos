@@ -1083,6 +1083,18 @@
     }
   },
   "space": {
+    "icon": {
+      "change": "Change space icon",
+      "kind": "Icon type",
+      "icons": "Icons",
+      "emoji": "Emoji",
+      "search-icons": "Search icons…",
+      "search-emoji": "Search or paste emoji…",
+      "no-results": "No matches",
+      "emoji-help": "Choose a common emoji or paste your own.",
+      "reset": "Reset to default",
+      "use-emoji": "Use {{emoji}}"
+    },
     "unavailable": "This space does not exist or you don’t have access to it.",
     "back-to-memos": "Back to Memos",
     "create": "Create space",

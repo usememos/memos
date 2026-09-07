@@ -4399,6 +4399,12 @@ components:
                         Output only. The number of accepted members in this space. Pending
                          invitations are excluded. Zero when this Space is exposed as metadata-only.
                     format: int32
+                icon:
+                    allOf:
+                        - $ref: '#/components/schemas/Space_Icon'
+                    description: |-
+                        Optional. Display icon. Omit when updating with the "icon" mask to reset
+                         to the default Space mark.
             description: Space is a collaboration boundary for placed memos.
         SpaceInvitation:
             required:
@@ -4449,6 +4455,15 @@ components:
                     description: Required. The member's role within this space.
                     format: enum
             description: SpaceMember is a user's membership and governance role in a space.
+        Space_Icon:
+            type: object
+            properties:
+                emoji:
+                    type: string
+                    description: A Unicode emoji sequence.
+                lucide:
+                    type: string
+                    description: A canonical Lucide icon name, such as "leaf".
         Status:
             type: object
             properties:

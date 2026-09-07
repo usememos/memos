@@ -102,7 +102,7 @@ function SpaceSwitcher({ className, size = "md" }: { className?: string; size?: 
           <span className={cn("flex min-w-0 items-center overflow-hidden", size === "header" ? "gap-2" : "gap-1.5")}>
             {selectedSpaceName ? (
               <>
-                <SpaceMark size={spaceMarkSize} />
+                <SpaceMark icon={selectedSpace?.icon} size={spaceMarkSize} />
                 <span data-sidebar-label className="flex min-w-0 flex-1 flex-col justify-center overflow-hidden">
                   <span
                     className={cn(
@@ -160,7 +160,7 @@ function SpaceSwitcher({ className, size = "md" }: { className?: string; size?: 
                       to={getSpaceSwitchPath(location, space.name)}
                       ariaLabel={showUid && uid ? `${space.title} (${uid})` : space.title}
                     >
-                      <SpaceMark size="sm" />
+                      <SpaceMark icon={space.icon} size="sm" />
                       <span className="min-w-0 flex-1 overflow-hidden">
                         <span className="block max-w-full truncate font-medium">{space.title}</span>
                         {showUid && uid ? (

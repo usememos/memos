@@ -216,9 +216,9 @@ export function useCreateSpace(viewerName: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ title, description, spaceId }: { title: string; description?: string; spaceId: string }) =>
+    mutationFn: ({ title, description, spaceId, icon }: { title: string; description?: string; spaceId: string; icon?: Space["icon"] }) =>
       spaceServiceClient.createSpace({
-        space: create(SpaceSchema, { title, description }),
+        space: create(SpaceSchema, { title, description, icon }),
         spaceId,
       }),
     onSuccess: (space) => {
