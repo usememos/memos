@@ -288,14 +288,16 @@ func (x *FieldMapping) GetAvatarUrl() string {
 }
 
 type OAuth2Config struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	ClientId      string                 `protobuf:"bytes,1,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
-	ClientSecret  string                 `protobuf:"bytes,2,opt,name=client_secret,json=clientSecret,proto3" json:"client_secret,omitempty"`
-	AuthUrl       string                 `protobuf:"bytes,3,opt,name=auth_url,json=authUrl,proto3" json:"auth_url,omitempty"`
-	TokenUrl      string                 `protobuf:"bytes,4,opt,name=token_url,json=tokenUrl,proto3" json:"token_url,omitempty"`
-	UserInfoUrl   string                 `protobuf:"bytes,5,opt,name=user_info_url,json=userInfoUrl,proto3" json:"user_info_url,omitempty"`
-	Scopes        []string               `protobuf:"bytes,6,rep,name=scopes,proto3" json:"scopes,omitempty"`
-	FieldMapping  *FieldMapping          `protobuf:"bytes,7,opt,name=field_mapping,json=fieldMapping,proto3" json:"field_mapping,omitempty"`
+	state        protoimpl.MessageState `protogen:"open.v1"`
+	ClientId     string                 `protobuf:"bytes,1,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
+	ClientSecret string                 `protobuf:"bytes,2,opt,name=client_secret,json=clientSecret,proto3" json:"client_secret,omitempty"`
+	AuthUrl      string                 `protobuf:"bytes,3,opt,name=auth_url,json=authUrl,proto3" json:"auth_url,omitempty"`
+	TokenUrl     string                 `protobuf:"bytes,4,opt,name=token_url,json=tokenUrl,proto3" json:"token_url,omitempty"`
+	UserInfoUrl  string                 `protobuf:"bytes,5,opt,name=user_info_url,json=userInfoUrl,proto3" json:"user_info_url,omitempty"`
+	Scopes       []string               `protobuf:"bytes,6,rep,name=scopes,proto3" json:"scopes,omitempty"`
+	FieldMapping *FieldMapping          `protobuf:"bytes,7,opt,name=field_mapping,json=fieldMapping,proto3" json:"field_mapping,omitempty"`
+	// Optional. Upstream claim used by identifier_filter. Empty means the mapped external ID.
+	FilterField   string `protobuf:"bytes,8,opt,name=filter_field,json=filterField,proto3" json:"filter_field,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -377,6 +379,13 @@ func (x *OAuth2Config) GetFieldMapping() *FieldMapping {
 		return x.FieldMapping
 	}
 	return nil
+}
+
+func (x *OAuth2Config) GetFilterField() string {
+	if x != nil {
+		return x.FilterField
+	}
+	return ""
 }
 
 type ListIdentityProvidersRequest struct {
@@ -689,7 +698,7 @@ const file_api_v1_idp_service_proto_rawDesc = "" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x14\n" +
 	"\x05email\x18\x03 \x01(\tR\x05email\x12\x1d\n" +
 	"\n" +
-	"avatar_url\x18\x04 \x01(\tR\tavatarUrl\"\x85\x02\n" +
+	"avatar_url\x18\x04 \x01(\tR\tavatarUrl\"\xad\x02\n" +
 	"\fOAuth2Config\x12\x1b\n" +
 	"\tclient_id\x18\x01 \x01(\tR\bclientId\x12#\n" +
 	"\rclient_secret\x18\x02 \x01(\tR\fclientSecret\x12\x19\n" +
@@ -697,7 +706,8 @@ const file_api_v1_idp_service_proto_rawDesc = "" +
 	"\ttoken_url\x18\x04 \x01(\tR\btokenUrl\x12\"\n" +
 	"\ruser_info_url\x18\x05 \x01(\tR\vuserInfoUrl\x12\x16\n" +
 	"\x06scopes\x18\x06 \x03(\tR\x06scopes\x12?\n" +
-	"\rfield_mapping\x18\a \x01(\v2\x1a.memos.api.v1.FieldMappingR\ffieldMapping\"\x1e\n" +
+	"\rfield_mapping\x18\a \x01(\v2\x1a.memos.api.v1.FieldMappingR\ffieldMapping\x12&\n" +
+	"\ffilter_field\x18\b \x01(\tB\x03\xe0A\x01R\vfilterField\"\x1e\n" +
 	"\x1cListIdentityProvidersRequest\"n\n" +
 	"\x1dListIdentityProvidersResponse\x12M\n" +
 	"\x12identity_providers\x18\x01 \x03(\v2\x1e.memos.api.v1.IdentityProviderR\x11identityProviders\"W\n" +

@@ -170,13 +170,29 @@ func (s *APIV1Service) resolveSSOIdentity(ctx context.Context, idpName, code, re
 	}
 
 	identifierFilter := identityProvider.IdentifierFilter
+	filterField := ""
+	if oauth2Config := identityProvider.Config.GetOauth2Config(); oauth2Config != nil {
+		filterField = oauth2Config.FilterField
+	}
 	if identifierFilter != "" {
 		identifierFilterRegex, err := regexp.Compile(identifierFilter)
 		if err != nil {
 			return nil, nil, status.Errorf(codes.Internal, "failed to compile identifier filter regex, error: %v", err)
 		}
-		if !identifierFilterRegex.MatchString(userInfo.Identifier) {
-			return nil, nil, status.Errorf(codes.PermissionDenied, "identifier %s is not allowed", userInfo.Identifier)
+
+		filterValue := userInfo.Identifier
+		if filterField != "" {
+			var ok bool
+			filterValue, ok = userInfo.Claims[filterField]
+			if !ok {
+				return nil, nil, status.Errorf(codes.PermissionDenied, "identity provider did not return filter field %q", filterField)
+			}
+		}
+		if !identifierFilterRegex.MatchString(filterValue) {
+			if filterField != "" {
+				return nil, nil, status.Errorf(codes.PermissionDenied, "value %q for filter field %q is not allowed", filterValue, filterField)
+			}
+			return nil, nil, status.Errorf(codes.PermissionDenied, "identifier %s is not allowed", filterValue)
 		}
 	}
 

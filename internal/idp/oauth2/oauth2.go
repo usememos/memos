@@ -111,7 +111,12 @@ func (p *IdentityProvider) UserInfo(ctx context.Context, token string) (*idp.Ide
 	if err := json.Unmarshal(body, &claims); err != nil {
 		return nil, errors.Wrap(err, "failed to unmarshal response body")
 	}
-	userInfo := &idp.IdentityProviderUserInfo{}
+	userInfo := &idp.IdentityProviderUserInfo{Claims: make(map[string]string)}
+	for name, value := range claims {
+		if value, ok := value.(string); ok {
+			userInfo.Claims[name] = value
+		}
+	}
 	if v, ok := claims[p.config.FieldMapping.Identifier].(string); ok {
 		userInfo.Identifier = v
 	}
