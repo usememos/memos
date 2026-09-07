@@ -606,6 +606,14 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
                     />
                   </FormField>
 
+                  <FormField label={t("setting.sso.username")} description={t("setting.sso.field-mapping-username-description")}>
+                    <Input
+                      placeholder={t("setting.sso.username")}
+                      value={oauth2FieldMapping.username}
+                      onChange={(e) => setPartialFieldMapping({ username: e.target.value })}
+                    />
+                  </FormField>
+
                   <FormField label={t("setting.sso.display-name")} description={t("setting.sso.field-mapping-display-name-description")}>
                     <Input
                       placeholder={t("setting.sso.display-name")}

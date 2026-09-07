@@ -109,9 +109,10 @@ func (s *APIV1Service) createSSOUser(
 		return s.getLinkedSSOUser(ctx, provider, externUID)
 	}
 
-	// Adopt any valid external identifier. Invalid names fall back to an opaque UUID.
-	if err := validateWritableUsername(userInfo.Identifier); err == nil {
-		user, err := tryUsername(userInfo.Identifier)
+	// Adopt the mapped username when valid. Older configurations leave it empty
+	// and are populated with the identifier by the OAuth2 provider.
+	if err := validateWritableUsername(userInfo.Username); err == nil {
+		user, err := tryUsername(userInfo.Username)
 		if err != nil {
 			return nil, err
 		}

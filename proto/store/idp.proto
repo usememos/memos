@@ -29,6 +29,7 @@ message FieldMapping {
   string display_name = 2;
   string email = 3;
   string avatar_url = 4;
+  string username = 5;
 }
 
 message OAuth2Config {
