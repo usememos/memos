@@ -3263,6 +3263,8 @@ components:
                     type: string
                 avatarUrl:
                     type: string
+                username:
+                    type: string
         GeneralSetting_CustomProfile:
             type: object
             properties:

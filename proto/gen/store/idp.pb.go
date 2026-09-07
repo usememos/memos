@@ -223,6 +223,7 @@ type FieldMapping struct {
 	DisplayName   string                 `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 	Email         string                 `protobuf:"bytes,3,opt,name=email,proto3" json:"email,omitempty"`
 	AvatarUrl     string                 `protobuf:"bytes,4,opt,name=avatar_url,json=avatarUrl,proto3" json:"avatar_url,omitempty"`
+	Username      string                 `protobuf:"bytes,5,opt,name=username,proto3" json:"username,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -281,6 +282,13 @@ func (x *FieldMapping) GetEmail() string {
 func (x *FieldMapping) GetAvatarUrl() string {
 	if x != nil {
 		return x.AvatarUrl
+	}
+	return ""
+}
+
+func (x *FieldMapping) GetUsername() string {
+	if x != nil {
+		return x.Username
 	}
 	return ""
 }
@@ -395,7 +403,7 @@ const file_store_idp_proto_rawDesc = "" +
 	"\x06OAUTH2\x10\x01\"d\n" +
 	"\x16IdentityProviderConfig\x12@\n" +
 	"\roauth2_config\x18\x01 \x01(\v2\x19.memos.store.OAuth2ConfigH\x00R\foauth2ConfigB\b\n" +
-	"\x06config\"\x86\x01\n" +
+	"\x06config\"\xa2\x01\n" +
 	"\fFieldMapping\x12\x1e\n" +
 	"\n" +
 	"identifier\x18\x01 \x01(\tR\n" +
@@ -403,7 +411,8 @@ const file_store_idp_proto_rawDesc = "" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x14\n" +
 	"\x05email\x18\x03 \x01(\tR\x05email\x12\x1d\n" +
 	"\n" +
-	"avatar_url\x18\x04 \x01(\tR\tavatarUrl\"\x84\x02\n" +
+	"avatar_url\x18\x04 \x01(\tR\tavatarUrl\x12\x1a\n" +
+	"\busername\x18\x05 \x01(\tR\busername\"\x84\x02\n" +
 	"\fOAuth2Config\x12\x1b\n" +
 	"\tclient_id\x18\x01 \x01(\tR\bclientId\x12#\n" +
 	"\rclient_secret\x18\x02 \x01(\tR\fclientSecret\x12\x19\n" +

@@ -45,6 +45,9 @@ export function getFieldMappingSummary(mapping: FieldMapping | undefined, t: Tra
   }
 
   const parts = [`${t("setting.sso.mapping-identifier-short")}=${mapping.identifier}`];
+  if (mapping.username) {
+    parts.push(`${t("setting.sso.mapping-username-short")}=${mapping.username}`);
+  }
   if (mapping.displayName) {
     parts.push(`${t("setting.sso.mapping-display-name-short")}=${mapping.displayName}`);
   }
