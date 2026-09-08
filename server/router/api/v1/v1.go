@@ -25,6 +25,15 @@ import (
 // it derives its own limit from this constant to keep the two gates in lockstep.
 const MaxAPIRequestBytes = 256 << 20
 
+// requestBodyLimit returns the request body cap for a procedure. Chunked
+// uploads carry at most one chunk per call, so they get a much lower cap.
+func requestBodyLimit(procedure string) int64 {
+	if procedure == attachmentUploadProcedure {
+		return attachmentUploadRequestLimit
+	}
+	return MaxAPIRequestBytes
+}
+
 type APIV1Service struct {
 	v1pb.UnimplementedInstanceServiceServer
 	v1pb.UnimplementedAuthServiceServer
@@ -51,6 +60,7 @@ type APIV1Service struct {
 	instanceStatsCache instanceStatsCache
 
 	linkMetadataFetcher linkMetadataFetcher
+	attachmentUploads   attachmentUploads
 }
 
 // NewAPIV1Service creates an API v1 service with its shared dependencies.
@@ -132,6 +142,7 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 			if result != nil {
 				r = r.WithContext(auth.ApplyToContext(ctx, result))
 			}
+			r.Body = http.MaxBytesReader(w, r.Body, requestBodyLimit(procedure))
 
 			next(w, r, pathParams)
 		}
@@ -172,7 +183,7 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 	gwGroup := echoServer.Group("")
 	// Register SSE endpoint with same CORS as rest of /api/v1.
 	RegisterSSERoutes(gwGroup, s.SSEHub, s.Store, s.Secret)
-	handler := echo.WrapHandler(http.MaxBytesHandler(gwMux, MaxAPIRequestBytes))
+	handler := echo.WrapHandler(gwMux)
 
 	gwGroup.Any("/api/v1/*", handler)
 	gwGroup.Any("/file/*", handler)
@@ -187,10 +198,17 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 	)
 	connectMux := http.NewServeMux()
 	connectHandler := NewConnectServiceHandler(s)
-	connectHandler.RegisterConnectHandlers(connectMux, connectInterceptors, connect.WithReadMaxBytes(MaxAPIRequestBytes))
+	connectHandler.RegisterConnectHandlers(connectMux, connectInterceptors,
+		// Bound the decompressed message as well as the wire bytes below.
+		connect.WithConditionalHandlerOptions(func(spec connect.Spec) []connect.HandlerOption {
+			return []connect.HandlerOption{connect.WithReadMaxBytes(int(requestBodyLimit(spec.Procedure)))}
+		}))
 
 	connectGroup := echoServer.Group("")
-	connectGroup.Any("/memos.api.v1.*", echo.WrapHandler(http.MaxBytesHandler(connectMux, MaxAPIRequestBytes)))
+	connectGroup.Any("/memos.api.v1.*", echo.WrapHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		r.Body = http.MaxBytesReader(w, r.Body, requestBodyLimit(r.URL.Path))
+		connectMux.ServeHTTP(w, r)
+	})))
 
 	return nil
 }

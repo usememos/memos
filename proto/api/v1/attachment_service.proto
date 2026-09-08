@@ -21,6 +21,16 @@ service AttachmentService {
     };
     option (google.api.method_signature) = "attachment";
   }
+  // UploadAttachment uploads a file in bounded chunks. The first call carries
+  // the spec and returns an upload_id; later calls carry that upload_id.
+  // Uploads are bound to the authenticated user, expire after 30 minutes of
+  // inactivity, and do not survive a server restart.
+  rpc UploadAttachment(UploadAttachmentRequest) returns (UploadAttachmentResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/attachments:upload"
+      body: "*"
+    };
+  }
   // ListAttachments lists all attachments.
   rpc ListAttachments(ListAttachmentsRequest) returns (ListAttachmentsResponse) {
     option (google.api.http) = {get: "/api/v1/attachments"};
@@ -177,6 +187,61 @@ message CreateAttachmentRequest {
   // If empty, a unique ID will be generated.
   // Format: ^[a-zA-Z0-9]([a-zA-Z0-9-]{0,34}[a-zA-Z0-9])?$
   string attachment_id = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message UploadAttachmentRequest {
+  // Required. Start a new upload or continue an existing one.
+  oneof upload {
+    // Starts a new upload. The same call may also carry data and finish_write.
+    UploadAttachmentSpec spec = 1;
+
+    // Continues the upload identified by a previous response.
+    string upload_id = 2;
+  }
+
+  // Required. Zero-based byte offset at which data is written. Must equal the
+  // committed size, except when retrying the most recently accepted chunk
+  // with identical bytes and offset, which is accepted without writing again.
+  int64 write_offset = 3 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. File bytes, at most max_chunk_size long. With no data and
+  // finish_write false, the call reports progress without writing, and
+  // write_offset is ignored.
+  bytes data = 4 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Finalize the upload after writing data. The committed size must
+  // then equal total_size. Any later call for the same upload_id returns the
+  // created attachment.
+  bool finish_write = 5 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message UploadAttachmentSpec {
+  // Required. Metadata for the attachment to create. content must be empty;
+  // file bytes are sent in data.
+  Attachment attachment = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. The attachment ID to use for this attachment.
+  // If empty, a unique ID will be generated.
+  // Format: ^[a-zA-Z0-9]([a-zA-Z0-9-]{0,34}[a-zA-Z0-9])?$
+  string attachment_id = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Total size of the file in bytes before media processing.
+  // Zero represents an empty file.
+  int64 total_size = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message UploadAttachmentResponse {
+  // Opaque ID for subsequent calls. This is not a resource name.
+  string upload_id = 1;
+
+  // Number of file bytes committed so far.
+  int64 committed_size = 2;
+
+  // Set once the upload has been finalized.
+  Attachment attachment = 3;
+
+  // Maximum number of data bytes accepted in one call.
+  int32 max_chunk_size = 4;
 }
 
 message ListAttachmentsRequest {

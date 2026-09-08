@@ -595,6 +595,14 @@ func (s *ConnectServiceHandler) DeleteSpaceMember(ctx context.Context, req *conn
 
 // AttachmentService
 
+func (s *ConnectServiceHandler) UploadAttachment(ctx context.Context, req *connect.Request[v1pb.UploadAttachmentRequest]) (*connect.Response[v1pb.UploadAttachmentResponse], error) {
+	resp, err := s.APIV1Service.UploadAttachment(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
 func (s *ConnectServiceHandler) CreateAttachment(ctx context.Context, req *connect.Request[v1pb.CreateAttachmentRequest]) (*connect.Response[v1pb.Attachment], error) {
 	resp, err := s.APIV1Service.CreateAttachment(ctx, req.Msg)
 	if err != nil {

@@ -48,6 +48,7 @@ func TestPublicMethodsArePublic(t *testing.T) {
 // TestProtectedMethodsRequireAuth verifies that non-public methods are recognized as protected.
 func TestProtectedMethodsRequireAuth(t *testing.T) {
 	protectedMethods := []string{
+		"/memos.api.v1.AttachmentService/UploadAttachment",
 		// Auth Service - logout and get current user require auth
 		"/memos.api.v1.AuthService/SignOut",
 		"/memos.api.v1.AuthService/GetCurrentUser",

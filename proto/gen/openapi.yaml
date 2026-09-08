@@ -228,6 +228,35 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/v1/attachments:upload:
+        post:
+            tags:
+                - AttachmentService
+            description: |-
+                UploadAttachment uploads a file in bounded chunks. The first call carries
+                 the spec and returns an upload_id; later calls carry that upload_id.
+                 Uploads are bound to the authenticated user, expire after 30 minutes of
+                 inactivity, and do not survive a server restart.
+            operationId: AttachmentService_UploadAttachment
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UploadAttachmentRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UploadAttachmentResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/auth/me:
         get:
             tags:
@@ -4573,6 +4602,76 @@ components:
                 contentType:
                     type: string
                     description: Optional. The MIME type of the input audio.
+        UploadAttachmentRequest:
+            required:
+                - writeOffset
+            type: object
+            properties:
+                spec:
+                    allOf:
+                        - $ref: '#/components/schemas/UploadAttachmentSpec'
+                    description: Starts a new upload. The same call may also carry data and finish_write.
+                uploadId:
+                    type: string
+                    description: Continues the upload identified by a previous response.
+                writeOffset:
+                    type: string
+                    description: |-
+                        Required. Zero-based byte offset at which data is written. Must equal the
+                         committed size, except when retrying the most recently accepted chunk
+                         with identical bytes and offset, which is accepted without writing again.
+                data:
+                    type: string
+                    description: |-
+                        Optional. File bytes, at most max_chunk_size long. With no data and
+                         finish_write false, the call reports progress without writing, and
+                         write_offset is ignored.
+                    format: bytes
+                finishWrite:
+                    type: boolean
+                    description: |-
+                        Optional. Finalize the upload after writing data. The committed size must
+                         then equal total_size. Any later call for the same upload_id returns the
+                         created attachment.
+        UploadAttachmentResponse:
+            type: object
+            properties:
+                uploadId:
+                    type: string
+                    description: Opaque ID for subsequent calls. This is not a resource name.
+                committedSize:
+                    type: string
+                    description: Number of file bytes committed so far.
+                attachment:
+                    allOf:
+                        - $ref: '#/components/schemas/Attachment'
+                    description: Set once the upload has been finalized.
+                maxChunkSize:
+                    type: integer
+                    description: Maximum number of data bytes accepted in one call.
+                    format: int32
+        UploadAttachmentSpec:
+            required:
+                - attachment
+            type: object
+            properties:
+                attachment:
+                    allOf:
+                        - $ref: '#/components/schemas/Attachment'
+                    description: |-
+                        Required. Metadata for the attachment to create. content must be empty;
+                         file bytes are sent in data.
+                attachmentId:
+                    type: string
+                    description: |-
+                        Optional. The attachment ID to use for this attachment.
+                         If empty, a unique ID will be generated.
+                         Format: ^[a-zA-Z0-9]([a-zA-Z0-9-]{0,34}[a-zA-Z0-9])?$
+                totalSize:
+                    type: string
+                    description: |-
+                        Optional. Total size of the file in bytes before media processing.
+                         Zero represents an empty file.
         UpsertMemoReactionRequest:
             required:
                 - name
