@@ -19,6 +19,7 @@ import {
   HouseIcon,
   LeafIcon,
   LightbulbIcon,
+  type LucideIcon,
   MapPinIcon,
   MountainIcon,
   MusicIcon,
@@ -38,10 +39,13 @@ import {
   WrenchIcon,
   ZapIcon,
 } from "lucide-react";
-import type { Space_Icon } from "@/types/proto/api/v1/space_service_pb";
+// Shared display shape; each resource retains its own protobuf message type.
+export interface CustomIconValue {
+  value: { case: "emoji" | "lucide"; value: string } | { case: undefined; value?: undefined };
+}
 
 // Keep the catalog explicit so adding a picker does not bundle the entire icon library.
-export const SPACE_SYMBOLS = {
+export const CUSTOM_SYMBOLS = {
   astroid: AstroidIcon,
   "book-open": BookOpenIcon,
   briefcase: BriefcaseIcon,
@@ -82,7 +86,8 @@ export const SPACE_SYMBOLS = {
   zap: ZapIcon,
 };
 
-export const getSpaceSymbol = (name: string) =>
-  Object.hasOwn(SPACE_SYMBOLS, name) ? SPACE_SYMBOLS[name as keyof typeof SPACE_SYMBOLS] : AstroidIcon;
+export const getCustomSymbol = (name: string, fallback: LucideIcon = AstroidIcon) =>
+  Object.hasOwn(CUSTOM_SYMBOLS, name) ? CUSTOM_SYMBOLS[name as keyof typeof CUSTOM_SYMBOLS] : fallback;
 
-export const spaceIconsEqual = (a?: Space_Icon, b?: Space_Icon) => a?.value.case === b?.value.case && a?.value.value === b?.value.value;
+export const customIconsEqual = (a?: CustomIconValue, b?: CustomIconValue) =>
+  a?.value.case === b?.value.case && a?.value.value === b?.value.value;

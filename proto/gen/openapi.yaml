@@ -4119,7 +4119,22 @@ components:
                     description: |-
                         The CEL filter expression for the memo view, using the same grammar as the
                          ListMemos `filter` argument. Reuse it by passing this value to ListMemos.
+                icon:
+                    allOf:
+                        - $ref: '#/components/schemas/MemoView_Icon'
+                    description: |-
+                        Optional. Display icon. Omit when updating with the "icon" mask to reset
+                         to the default view icon.
             description: Saved memo view messages
+        MemoView_Icon:
+            type: object
+            properties:
+                emoji:
+                    type: string
+                    description: A Unicode emoji sequence.
+                lucide:
+                    type: string
+                    description: A canonical Lucide icon name, such as "leaf".
         Memo_Property:
             type: object
             properties:

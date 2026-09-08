@@ -42,10 +42,10 @@ import {
   useUserSpaceInvitations,
 } from "@/hooks/useSpaceQueries";
 import { useUsersByUsernames } from "@/hooks/useUserQueries";
+import { customIconsEqual } from "@/lib/custom-icons";
 import { handleError } from "@/lib/error";
 import { extractUsernameFromName } from "@/lib/resource-names";
 import { extractSpaceUidFromName } from "@/lib/space-display";
-import { spaceIconsEqual } from "@/lib/space-icons";
 import { ROUTES } from "@/router/routes";
 import { type Space, type SpaceInvitation, type SpaceMember, SpaceMember_Role } from "@/types/proto/api/v1/space_service_pb";
 import type { User } from "@/types/proto/api/v1/user_service_pb";
@@ -370,7 +370,7 @@ const SpaceDetail = ({ space, viewerName, onBack }: SpaceDetailProps) => {
     { value: String(SpaceMember_Role.USER), label: t("setting.spaces.space-user") },
     { value: String(SpaceMember_Role.ADMIN), label: t("setting.spaces.space-admin") },
   ];
-  const iconChanged = !spaceIconsEqual(icon, space.icon);
+  const iconChanged = !customIconsEqual(icon, space.icon);
   const detailsChanged = title.trim() !== space.title || description.trim() !== space.description || iconChanged;
   const spaceUid = extractSpaceUidFromName(space.name);
   const disambiguatedSpaceTitle = `${space.title} (${spaceUid})`;

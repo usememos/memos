@@ -1,10 +1,11 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { MoreHorizontalIcon, ParenthesesIcon, PlusIcon, SquareCheckIcon } from "lucide-react";
+import { MoreHorizontalIcon, PlusIcon, SquareCheckIcon } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import MemoDisplaySettingMenu from "@/components/MemoDisplaySettingMenu";
+import MemoViewIcon from "@/components/MemoViewIcon";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { userServiceClient } from "@/connect";
@@ -20,9 +21,10 @@ import type { MemoView } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import SidebarRow, {
   SIDEBAR_ROW_BOX_CLASSES,
+  SIDEBAR_ROW_ICON_CLASSES,
   SIDEBAR_ROW_LABEL_CLASSES,
   SIDEBAR_ROW_SLOT_BUTTON_CLASSES,
-  SidebarRowIconSlot,
+  SIDEBAR_ROW_SLOT_CLASSES,
   sidebarRowStateAttributes,
   sidebarRowStateClasses,
 } from "./SidebarRow";
@@ -102,7 +104,9 @@ const ViewsSection = ({ manageActive = false }: { manageActive?: boolean }) => {
             className={cn(SIDEBAR_ROW_BOX_CLASSES, "group/view", sidebarRowStateClasses(state))}
           >
             <button type="button" onClick={() => handleView(id)} aria-pressed={active || undefined} className={SIDEBAR_ROW_LABEL_CLASSES}>
-              <SidebarRowIconSlot icon={ParenthesesIcon} />
+              <span className={SIDEBAR_ROW_SLOT_CLASSES} aria-hidden="true">
+                <MemoViewIcon icon={memoView.icon} className={cn(SIDEBAR_ROW_ICON_CLASSES, "text-base")} />
+              </span>
               <span className="min-w-0 flex-1 truncate">{memoView.title}</span>
             </button>
             <DropdownMenu>

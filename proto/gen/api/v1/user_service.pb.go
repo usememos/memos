@@ -1497,7 +1497,10 @@ type MemoView struct {
 	Title string `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
 	// The CEL filter expression for the memo view, using the same grammar as the
 	// ListMemos `filter` argument. Reuse it by passing this value to ListMemos.
-	Filter        string `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
+	Filter string `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
+	// Optional. Display icon. Omit when updating with the "icon" mask to reset
+	// to the default view icon.
+	Icon          *MemoView_Icon `protobuf:"bytes,4,opt,name=icon,proto3" json:"icon,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1551,6 +1554,13 @@ func (x *MemoView) GetFilter() string {
 		return x.Filter
 	}
 	return ""
+}
+
+func (x *MemoView) GetIcon() *MemoView_Icon {
+	if x != nil {
+		return x.Icon
+	}
+	return nil
 }
 
 type ListMemoViewsRequest struct {
@@ -3658,6 +3668,90 @@ func (x *UserSetting_WebhooksSetting) GetWebhooks() []*UserWebhook {
 	return nil
 }
 
+type MemoView_Icon struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Types that are valid to be assigned to Value:
+	//
+	//	*MemoView_Icon_Emoji
+	//	*MemoView_Icon_Lucide
+	Value         isMemoView_Icon_Value `protobuf_oneof:"value"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MemoView_Icon) Reset() {
+	*x = MemoView_Icon{}
+	mi := &file_api_v1_user_service_proto_msgTypes[57]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MemoView_Icon) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MemoView_Icon) ProtoMessage() {}
+
+func (x *MemoView_Icon) ProtoReflect() protoreflect.Message {
+	mi := &file_api_v1_user_service_proto_msgTypes[57]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MemoView_Icon.ProtoReflect.Descriptor instead.
+func (*MemoView_Icon) Descriptor() ([]byte, []int) {
+	return file_api_v1_user_service_proto_rawDescGZIP(), []int{18, 0}
+}
+
+func (x *MemoView_Icon) GetValue() isMemoView_Icon_Value {
+	if x != nil {
+		return x.Value
+	}
+	return nil
+}
+
+func (x *MemoView_Icon) GetEmoji() string {
+	if x != nil {
+		if x, ok := x.Value.(*MemoView_Icon_Emoji); ok {
+			return x.Emoji
+		}
+	}
+	return ""
+}
+
+func (x *MemoView_Icon) GetLucide() string {
+	if x != nil {
+		if x, ok := x.Value.(*MemoView_Icon_Lucide); ok {
+			return x.Lucide
+		}
+	}
+	return ""
+}
+
+type isMemoView_Icon_Value interface {
+	isMemoView_Icon_Value()
+}
+
+type MemoView_Icon_Emoji struct {
+	// A Unicode emoji sequence.
+	Emoji string `protobuf:"bytes,1,opt,name=emoji,proto3,oneof"`
+}
+
+type MemoView_Icon_Lucide struct {
+	// A canonical Lucide icon name, such as "leaf".
+	Lucide string `protobuf:"bytes,2,opt,name=lucide,proto3,oneof"`
+}
+
+func (*MemoView_Icon_Emoji) isMemoView_Icon_Value() {}
+
+func (*MemoView_Icon_Lucide) isMemoView_Icon_Value() {}
+
 type UserNotification_MemoCommentPayload struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The memo name of comment.
@@ -3676,7 +3770,7 @@ type UserNotification_MemoCommentPayload struct {
 
 func (x *UserNotification_MemoCommentPayload) Reset() {
 	*x = UserNotification_MemoCommentPayload{}
-	mi := &file_api_v1_user_service_proto_msgTypes[57]
+	mi := &file_api_v1_user_service_proto_msgTypes[58]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3688,7 +3782,7 @@ func (x *UserNotification_MemoCommentPayload) String() string {
 func (*UserNotification_MemoCommentPayload) ProtoMessage() {}
 
 func (x *UserNotification_MemoCommentPayload) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_user_service_proto_msgTypes[57]
+	mi := &file_api_v1_user_service_proto_msgTypes[58]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3750,7 +3844,7 @@ type UserNotification_MemoMentionPayload struct {
 
 func (x *UserNotification_MemoMentionPayload) Reset() {
 	*x = UserNotification_MemoMentionPayload{}
-	mi := &file_api_v1_user_service_proto_msgTypes[58]
+	mi := &file_api_v1_user_service_proto_msgTypes[59]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3762,7 +3856,7 @@ func (x *UserNotification_MemoMentionPayload) String() string {
 func (*UserNotification_MemoMentionPayload) ProtoMessage() {}
 
 func (x *UserNotification_MemoMentionPayload) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_user_service_proto_msgTypes[58]
+	mi := &file_api_v1_user_service_proto_msgTypes[59]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3823,7 +3917,7 @@ type UserNotification_SpaceInvitationPayload struct {
 
 func (x *UserNotification_SpaceInvitationPayload) Reset() {
 	*x = UserNotification_SpaceInvitationPayload{}
-	mi := &file_api_v1_user_service_proto_msgTypes[59]
+	mi := &file_api_v1_user_service_proto_msgTypes[60]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3835,7 +3929,7 @@ func (x *UserNotification_SpaceInvitationPayload) String() string {
 func (*UserNotification_SpaceInvitationPayload) ProtoMessage() {}
 
 func (x *UserNotification_SpaceInvitationPayload) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_user_service_proto_msgTypes[59]
+	mi := &file_api_v1_user_service_proto_msgTypes[60]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4012,11 +4106,16 @@ const file_api_v1_user_service_proto_rawDesc = "" +
 	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"y\n" +
 	"\x18ListUserSettingsResponse\x125\n" +
 	"\bsettings\x18\x01 \x03(\v2\x19.memos.api.v1.UserSettingR\bsettings\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x9f\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x98\x02\n" +
 	"\bMemoView\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x19\n" +
 	"\x05title\x18\x02 \x01(\tB\x03\xe0A\x02R\x05title\x12\x1b\n" +
-	"\x06filter\x18\x03 \x01(\tB\x03\xe0A\x02R\x06filter:B\xeaA?\n" +
+	"\x06filter\x18\x03 \x01(\tB\x03\xe0A\x02R\x06filter\x124\n" +
+	"\x04icon\x18\x04 \x01(\v2\x1b.memos.api.v1.MemoView.IconB\x03\xe0A\x01R\x04icon\x1aA\n" +
+	"\x04Icon\x12\x16\n" +
+	"\x05emoji\x18\x01 \x01(\tH\x00R\x05emoji\x12\x18\n" +
+	"\x06lucide\x18\x02 \x01(\tH\x00R\x06lucideB\a\n" +
+	"\x05value:B\xeaA?\n" +
 	"\x15memos.api.v1/MemoView\x12\x19users/{user}/views/{view}*\x05views2\x04view\"M\n" +
 	"\x14ListMemoViewsRequest\x125\n" +
 	"\x06parent\x18\x01 \x01(\tB\x1d\xe0A\x02\xfaA\x17\x12\x15memos.api.v1/MemoViewR\x06parent\"N\n" +
@@ -4235,7 +4334,7 @@ func file_api_v1_user_service_proto_rawDescGZIP() []byte {
 }
 
 var file_api_v1_user_service_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
-var file_api_v1_user_service_proto_msgTypes = make([]protoimpl.MessageInfo, 60)
+var file_api_v1_user_service_proto_msgTypes = make([]protoimpl.MessageInfo, 61)
 var file_api_v1_user_service_proto_goTypes = []any{
 	(User_Role)(0),                                     // 0: memos.api.v1.User.Role
 	(UserSetting_Key)(0),                               // 1: memos.api.v1.UserSetting.Key
@@ -4299,140 +4398,142 @@ var file_api_v1_user_service_proto_goTypes = []any{
 	(*UserSetting_TagsSetting)(nil),                    // 59: memos.api.v1.UserSetting.TagsSetting
 	(*UserSetting_WebhooksSetting)(nil),                // 60: memos.api.v1.UserSetting.WebhooksSetting
 	nil,                                                // 61: memos.api.v1.UserSetting.TagsSetting.TagsEntry
-	(*UserNotification_MemoCommentPayload)(nil),        // 62: memos.api.v1.UserNotification.MemoCommentPayload
-	(*UserNotification_MemoMentionPayload)(nil),        // 63: memos.api.v1.UserNotification.MemoMentionPayload
-	(*UserNotification_SpaceInvitationPayload)(nil),    // 64: memos.api.v1.UserNotification.SpaceInvitationPayload
-	(State)(0),                    // 65: memos.api.v1.State
-	(*timestamppb.Timestamp)(nil), // 66: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil), // 67: google.protobuf.FieldMask
-	(*color.Color)(nil),           // 68: google.type.Color
-	(*Space)(nil),                 // 69: memos.api.v1.Space
-	(SpaceMember_Role)(0),         // 70: memos.api.v1.SpaceMember.Role
-	(*emptypb.Empty)(nil),         // 71: google.protobuf.Empty
+	(*MemoView_Icon)(nil),                              // 62: memos.api.v1.MemoView.Icon
+	(*UserNotification_MemoCommentPayload)(nil),        // 63: memos.api.v1.UserNotification.MemoCommentPayload
+	(*UserNotification_MemoMentionPayload)(nil),        // 64: memos.api.v1.UserNotification.MemoMentionPayload
+	(*UserNotification_SpaceInvitationPayload)(nil),    // 65: memos.api.v1.UserNotification.SpaceInvitationPayload
+	(State)(0),                    // 66: memos.api.v1.State
+	(*timestamppb.Timestamp)(nil), // 67: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil), // 68: google.protobuf.FieldMask
+	(*color.Color)(nil),           // 69: google.type.Color
+	(*Space)(nil),                 // 70: memos.api.v1.Space
+	(SpaceMember_Role)(0),         // 71: memos.api.v1.SpaceMember.Role
+	(*emptypb.Empty)(nil),         // 72: google.protobuf.Empty
 }
 var file_api_v1_user_service_proto_depIdxs = []int32{
 	0,  // 0: memos.api.v1.User.role:type_name -> memos.api.v1.User.Role
-	65, // 1: memos.api.v1.User.state:type_name -> memos.api.v1.State
-	66, // 2: memos.api.v1.User.create_time:type_name -> google.protobuf.Timestamp
-	66, // 3: memos.api.v1.User.update_time:type_name -> google.protobuf.Timestamp
+	66, // 1: memos.api.v1.User.state:type_name -> memos.api.v1.State
+	67, // 2: memos.api.v1.User.create_time:type_name -> google.protobuf.Timestamp
+	67, // 3: memos.api.v1.User.update_time:type_name -> google.protobuf.Timestamp
 	5,  // 4: memos.api.v1.ListUsersResponse.users:type_name -> memos.api.v1.User
 	5,  // 5: memos.api.v1.BatchGetUsersResponse.users:type_name -> memos.api.v1.User
-	67, // 6: memos.api.v1.GetUserRequest.read_mask:type_name -> google.protobuf.FieldMask
+	68, // 6: memos.api.v1.GetUserRequest.read_mask:type_name -> google.protobuf.FieldMask
 	5,  // 7: memos.api.v1.CreateUserRequest.user:type_name -> memos.api.v1.User
 	5,  // 8: memos.api.v1.UpdateUserRequest.user:type_name -> memos.api.v1.User
-	67, // 9: memos.api.v1.UpdateUserRequest.update_mask:type_name -> google.protobuf.FieldMask
+	68, // 9: memos.api.v1.UpdateUserRequest.update_mask:type_name -> google.protobuf.FieldMask
 	56, // 10: memos.api.v1.UserStats.memo_type_stats:type_name -> memos.api.v1.UserStats.MemoTypeStats
 	55, // 11: memos.api.v1.UserStats.tag_count:type_name -> memos.api.v1.UserStats.TagCountEntry
-	66, // 12: memos.api.v1.UserStats.memo_created_timestamps:type_name -> google.protobuf.Timestamp
-	66, // 13: memos.api.v1.UserStats.memo_updated_timestamps:type_name -> google.protobuf.Timestamp
-	65, // 14: memos.api.v1.ListAllUserStatsRequest.state:type_name -> memos.api.v1.State
+	67, // 12: memos.api.v1.UserStats.memo_created_timestamps:type_name -> google.protobuf.Timestamp
+	67, // 13: memos.api.v1.UserStats.memo_updated_timestamps:type_name -> google.protobuf.Timestamp
+	66, // 14: memos.api.v1.ListAllUserStatsRequest.state:type_name -> memos.api.v1.State
 	14, // 15: memos.api.v1.ListAllUserStatsResponse.stats:type_name -> memos.api.v1.UserStats
 	57, // 16: memos.api.v1.UserSetting.general_setting:type_name -> memos.api.v1.UserSetting.GeneralSetting
 	60, // 17: memos.api.v1.UserSetting.webhooks_setting:type_name -> memos.api.v1.UserSetting.WebhooksSetting
 	59, // 18: memos.api.v1.UserSetting.tags_setting:type_name -> memos.api.v1.UserSetting.TagsSetting
 	18, // 19: memos.api.v1.UpdateUserSettingRequest.setting:type_name -> memos.api.v1.UserSetting
-	67, // 20: memos.api.v1.UpdateUserSettingRequest.update_mask:type_name -> google.protobuf.FieldMask
+	68, // 20: memos.api.v1.UpdateUserSettingRequest.update_mask:type_name -> google.protobuf.FieldMask
 	18, // 21: memos.api.v1.ListUserSettingsResponse.settings:type_name -> memos.api.v1.UserSetting
-	23, // 22: memos.api.v1.ListMemoViewsResponse.memo_views:type_name -> memos.api.v1.MemoView
-	23, // 23: memos.api.v1.CreateMemoViewRequest.memo_view:type_name -> memos.api.v1.MemoView
-	23, // 24: memos.api.v1.UpdateMemoViewRequest.memo_view:type_name -> memos.api.v1.MemoView
-	67, // 25: memos.api.v1.UpdateMemoViewRequest.update_mask:type_name -> google.protobuf.FieldMask
-	30, // 26: memos.api.v1.ListLinkedIdentitiesResponse.linked_identities:type_name -> memos.api.v1.LinkedIdentity
-	66, // 27: memos.api.v1.PersonalAccessToken.created_at:type_name -> google.protobuf.Timestamp
-	66, // 28: memos.api.v1.PersonalAccessToken.expires_at:type_name -> google.protobuf.Timestamp
-	66, // 29: memos.api.v1.PersonalAccessToken.last_used_at:type_name -> google.protobuf.Timestamp
-	36, // 30: memos.api.v1.ListPersonalAccessTokensResponse.personal_access_tokens:type_name -> memos.api.v1.PersonalAccessToken
-	36, // 31: memos.api.v1.CreatePersonalAccessTokenResponse.personal_access_token:type_name -> memos.api.v1.PersonalAccessToken
-	66, // 32: memos.api.v1.UserWebhook.create_time:type_name -> google.protobuf.Timestamp
-	66, // 33: memos.api.v1.UserWebhook.update_time:type_name -> google.protobuf.Timestamp
-	42, // 34: memos.api.v1.ListUserWebhooksResponse.webhooks:type_name -> memos.api.v1.UserWebhook
-	42, // 35: memos.api.v1.CreateUserWebhookRequest.webhook:type_name -> memos.api.v1.UserWebhook
-	42, // 36: memos.api.v1.UpdateUserWebhookRequest.webhook:type_name -> memos.api.v1.UserWebhook
-	67, // 37: memos.api.v1.UpdateUserWebhookRequest.update_mask:type_name -> google.protobuf.FieldMask
-	5,  // 38: memos.api.v1.UserNotification.sender_user:type_name -> memos.api.v1.User
-	2,  // 39: memos.api.v1.UserNotification.status:type_name -> memos.api.v1.UserNotification.Status
-	66, // 40: memos.api.v1.UserNotification.create_time:type_name -> google.protobuf.Timestamp
-	3,  // 41: memos.api.v1.UserNotification.type:type_name -> memos.api.v1.UserNotification.Type
-	62, // 42: memos.api.v1.UserNotification.memo_comment:type_name -> memos.api.v1.UserNotification.MemoCommentPayload
-	63, // 43: memos.api.v1.UserNotification.memo_mention:type_name -> memos.api.v1.UserNotification.MemoMentionPayload
-	64, // 44: memos.api.v1.UserNotification.space_invitation:type_name -> memos.api.v1.UserNotification.SpaceInvitationPayload
-	50, // 45: memos.api.v1.ListUserNotificationsResponse.notifications:type_name -> memos.api.v1.UserNotification
-	50, // 46: memos.api.v1.UpdateUserNotificationRequest.notification:type_name -> memos.api.v1.UserNotification
-	67, // 47: memos.api.v1.UpdateUserNotificationRequest.update_mask:type_name -> google.protobuf.FieldMask
-	68, // 48: memos.api.v1.UserSetting.TagMetadata.background_color:type_name -> google.type.Color
-	61, // 49: memos.api.v1.UserSetting.TagsSetting.tags:type_name -> memos.api.v1.UserSetting.TagsSetting.TagsEntry
-	42, // 50: memos.api.v1.UserSetting.WebhooksSetting.webhooks:type_name -> memos.api.v1.UserWebhook
-	58, // 51: memos.api.v1.UserSetting.TagsSetting.TagsEntry.value:type_name -> memos.api.v1.UserSetting.TagMetadata
-	69, // 52: memos.api.v1.UserNotification.SpaceInvitationPayload.space:type_name -> memos.api.v1.Space
-	70, // 53: memos.api.v1.UserNotification.SpaceInvitationPayload.role:type_name -> memos.api.v1.SpaceMember.Role
-	4,  // 54: memos.api.v1.UserNotification.SpaceInvitationPayload.state:type_name -> memos.api.v1.UserNotification.SpaceInvitationPayload.State
-	6,  // 55: memos.api.v1.UserService.ListUsers:input_type -> memos.api.v1.ListUsersRequest
-	8,  // 56: memos.api.v1.UserService.BatchGetUsers:input_type -> memos.api.v1.BatchGetUsersRequest
-	10, // 57: memos.api.v1.UserService.GetUser:input_type -> memos.api.v1.GetUserRequest
-	11, // 58: memos.api.v1.UserService.CreateUser:input_type -> memos.api.v1.CreateUserRequest
-	12, // 59: memos.api.v1.UserService.UpdateUser:input_type -> memos.api.v1.UpdateUserRequest
-	13, // 60: memos.api.v1.UserService.DeleteUser:input_type -> memos.api.v1.DeleteUserRequest
-	16, // 61: memos.api.v1.UserService.ListAllUserStats:input_type -> memos.api.v1.ListAllUserStatsRequest
-	15, // 62: memos.api.v1.UserService.GetUserStats:input_type -> memos.api.v1.GetUserStatsRequest
-	19, // 63: memos.api.v1.UserService.GetUserSetting:input_type -> memos.api.v1.GetUserSettingRequest
-	20, // 64: memos.api.v1.UserService.UpdateUserSetting:input_type -> memos.api.v1.UpdateUserSettingRequest
-	21, // 65: memos.api.v1.UserService.ListUserSettings:input_type -> memos.api.v1.ListUserSettingsRequest
-	24, // 66: memos.api.v1.UserService.ListMemoViews:input_type -> memos.api.v1.ListMemoViewsRequest
-	26, // 67: memos.api.v1.UserService.GetMemoView:input_type -> memos.api.v1.GetMemoViewRequest
-	27, // 68: memos.api.v1.UserService.CreateMemoView:input_type -> memos.api.v1.CreateMemoViewRequest
-	28, // 69: memos.api.v1.UserService.UpdateMemoView:input_type -> memos.api.v1.UpdateMemoViewRequest
-	29, // 70: memos.api.v1.UserService.DeleteMemoView:input_type -> memos.api.v1.DeleteMemoViewRequest
-	31, // 71: memos.api.v1.UserService.ListLinkedIdentities:input_type -> memos.api.v1.ListLinkedIdentitiesRequest
-	33, // 72: memos.api.v1.UserService.CreateLinkedIdentity:input_type -> memos.api.v1.CreateLinkedIdentityRequest
-	34, // 73: memos.api.v1.UserService.GetLinkedIdentity:input_type -> memos.api.v1.GetLinkedIdentityRequest
-	35, // 74: memos.api.v1.UserService.DeleteLinkedIdentity:input_type -> memos.api.v1.DeleteLinkedIdentityRequest
-	37, // 75: memos.api.v1.UserService.ListPersonalAccessTokens:input_type -> memos.api.v1.ListPersonalAccessTokensRequest
-	39, // 76: memos.api.v1.UserService.CreatePersonalAccessToken:input_type -> memos.api.v1.CreatePersonalAccessTokenRequest
-	41, // 77: memos.api.v1.UserService.DeletePersonalAccessToken:input_type -> memos.api.v1.DeletePersonalAccessTokenRequest
-	43, // 78: memos.api.v1.UserService.ListUserWebhooks:input_type -> memos.api.v1.ListUserWebhooksRequest
-	45, // 79: memos.api.v1.UserService.CreateUserWebhook:input_type -> memos.api.v1.CreateUserWebhookRequest
-	46, // 80: memos.api.v1.UserService.UpdateUserWebhook:input_type -> memos.api.v1.UpdateUserWebhookRequest
-	47, // 81: memos.api.v1.UserService.DeleteUserWebhook:input_type -> memos.api.v1.DeleteUserWebhookRequest
-	48, // 82: memos.api.v1.UserService.GetUserWebhookSigningSecret:input_type -> memos.api.v1.GetUserWebhookSigningSecretRequest
-	51, // 83: memos.api.v1.UserService.ListUserNotifications:input_type -> memos.api.v1.ListUserNotificationsRequest
-	53, // 84: memos.api.v1.UserService.UpdateUserNotification:input_type -> memos.api.v1.UpdateUserNotificationRequest
-	54, // 85: memos.api.v1.UserService.DeleteUserNotification:input_type -> memos.api.v1.DeleteUserNotificationRequest
-	7,  // 86: memos.api.v1.UserService.ListUsers:output_type -> memos.api.v1.ListUsersResponse
-	9,  // 87: memos.api.v1.UserService.BatchGetUsers:output_type -> memos.api.v1.BatchGetUsersResponse
-	5,  // 88: memos.api.v1.UserService.GetUser:output_type -> memos.api.v1.User
-	5,  // 89: memos.api.v1.UserService.CreateUser:output_type -> memos.api.v1.User
-	5,  // 90: memos.api.v1.UserService.UpdateUser:output_type -> memos.api.v1.User
-	71, // 91: memos.api.v1.UserService.DeleteUser:output_type -> google.protobuf.Empty
-	17, // 92: memos.api.v1.UserService.ListAllUserStats:output_type -> memos.api.v1.ListAllUserStatsResponse
-	14, // 93: memos.api.v1.UserService.GetUserStats:output_type -> memos.api.v1.UserStats
-	18, // 94: memos.api.v1.UserService.GetUserSetting:output_type -> memos.api.v1.UserSetting
-	18, // 95: memos.api.v1.UserService.UpdateUserSetting:output_type -> memos.api.v1.UserSetting
-	22, // 96: memos.api.v1.UserService.ListUserSettings:output_type -> memos.api.v1.ListUserSettingsResponse
-	25, // 97: memos.api.v1.UserService.ListMemoViews:output_type -> memos.api.v1.ListMemoViewsResponse
-	23, // 98: memos.api.v1.UserService.GetMemoView:output_type -> memos.api.v1.MemoView
-	23, // 99: memos.api.v1.UserService.CreateMemoView:output_type -> memos.api.v1.MemoView
-	23, // 100: memos.api.v1.UserService.UpdateMemoView:output_type -> memos.api.v1.MemoView
-	71, // 101: memos.api.v1.UserService.DeleteMemoView:output_type -> google.protobuf.Empty
-	32, // 102: memos.api.v1.UserService.ListLinkedIdentities:output_type -> memos.api.v1.ListLinkedIdentitiesResponse
-	30, // 103: memos.api.v1.UserService.CreateLinkedIdentity:output_type -> memos.api.v1.LinkedIdentity
-	30, // 104: memos.api.v1.UserService.GetLinkedIdentity:output_type -> memos.api.v1.LinkedIdentity
-	71, // 105: memos.api.v1.UserService.DeleteLinkedIdentity:output_type -> google.protobuf.Empty
-	38, // 106: memos.api.v1.UserService.ListPersonalAccessTokens:output_type -> memos.api.v1.ListPersonalAccessTokensResponse
-	40, // 107: memos.api.v1.UserService.CreatePersonalAccessToken:output_type -> memos.api.v1.CreatePersonalAccessTokenResponse
-	71, // 108: memos.api.v1.UserService.DeletePersonalAccessToken:output_type -> google.protobuf.Empty
-	44, // 109: memos.api.v1.UserService.ListUserWebhooks:output_type -> memos.api.v1.ListUserWebhooksResponse
-	42, // 110: memos.api.v1.UserService.CreateUserWebhook:output_type -> memos.api.v1.UserWebhook
-	42, // 111: memos.api.v1.UserService.UpdateUserWebhook:output_type -> memos.api.v1.UserWebhook
-	71, // 112: memos.api.v1.UserService.DeleteUserWebhook:output_type -> google.protobuf.Empty
-	49, // 113: memos.api.v1.UserService.GetUserWebhookSigningSecret:output_type -> memos.api.v1.GetUserWebhookSigningSecretResponse
-	52, // 114: memos.api.v1.UserService.ListUserNotifications:output_type -> memos.api.v1.ListUserNotificationsResponse
-	50, // 115: memos.api.v1.UserService.UpdateUserNotification:output_type -> memos.api.v1.UserNotification
-	71, // 116: memos.api.v1.UserService.DeleteUserNotification:output_type -> google.protobuf.Empty
-	86, // [86:117] is the sub-list for method output_type
-	55, // [55:86] is the sub-list for method input_type
-	55, // [55:55] is the sub-list for extension type_name
-	55, // [55:55] is the sub-list for extension extendee
-	0,  // [0:55] is the sub-list for field type_name
+	62, // 22: memos.api.v1.MemoView.icon:type_name -> memos.api.v1.MemoView.Icon
+	23, // 23: memos.api.v1.ListMemoViewsResponse.memo_views:type_name -> memos.api.v1.MemoView
+	23, // 24: memos.api.v1.CreateMemoViewRequest.memo_view:type_name -> memos.api.v1.MemoView
+	23, // 25: memos.api.v1.UpdateMemoViewRequest.memo_view:type_name -> memos.api.v1.MemoView
+	68, // 26: memos.api.v1.UpdateMemoViewRequest.update_mask:type_name -> google.protobuf.FieldMask
+	30, // 27: memos.api.v1.ListLinkedIdentitiesResponse.linked_identities:type_name -> memos.api.v1.LinkedIdentity
+	67, // 28: memos.api.v1.PersonalAccessToken.created_at:type_name -> google.protobuf.Timestamp
+	67, // 29: memos.api.v1.PersonalAccessToken.expires_at:type_name -> google.protobuf.Timestamp
+	67, // 30: memos.api.v1.PersonalAccessToken.last_used_at:type_name -> google.protobuf.Timestamp
+	36, // 31: memos.api.v1.ListPersonalAccessTokensResponse.personal_access_tokens:type_name -> memos.api.v1.PersonalAccessToken
+	36, // 32: memos.api.v1.CreatePersonalAccessTokenResponse.personal_access_token:type_name -> memos.api.v1.PersonalAccessToken
+	67, // 33: memos.api.v1.UserWebhook.create_time:type_name -> google.protobuf.Timestamp
+	67, // 34: memos.api.v1.UserWebhook.update_time:type_name -> google.protobuf.Timestamp
+	42, // 35: memos.api.v1.ListUserWebhooksResponse.webhooks:type_name -> memos.api.v1.UserWebhook
+	42, // 36: memos.api.v1.CreateUserWebhookRequest.webhook:type_name -> memos.api.v1.UserWebhook
+	42, // 37: memos.api.v1.UpdateUserWebhookRequest.webhook:type_name -> memos.api.v1.UserWebhook
+	68, // 38: memos.api.v1.UpdateUserWebhookRequest.update_mask:type_name -> google.protobuf.FieldMask
+	5,  // 39: memos.api.v1.UserNotification.sender_user:type_name -> memos.api.v1.User
+	2,  // 40: memos.api.v1.UserNotification.status:type_name -> memos.api.v1.UserNotification.Status
+	67, // 41: memos.api.v1.UserNotification.create_time:type_name -> google.protobuf.Timestamp
+	3,  // 42: memos.api.v1.UserNotification.type:type_name -> memos.api.v1.UserNotification.Type
+	63, // 43: memos.api.v1.UserNotification.memo_comment:type_name -> memos.api.v1.UserNotification.MemoCommentPayload
+	64, // 44: memos.api.v1.UserNotification.memo_mention:type_name -> memos.api.v1.UserNotification.MemoMentionPayload
+	65, // 45: memos.api.v1.UserNotification.space_invitation:type_name -> memos.api.v1.UserNotification.SpaceInvitationPayload
+	50, // 46: memos.api.v1.ListUserNotificationsResponse.notifications:type_name -> memos.api.v1.UserNotification
+	50, // 47: memos.api.v1.UpdateUserNotificationRequest.notification:type_name -> memos.api.v1.UserNotification
+	68, // 48: memos.api.v1.UpdateUserNotificationRequest.update_mask:type_name -> google.protobuf.FieldMask
+	69, // 49: memos.api.v1.UserSetting.TagMetadata.background_color:type_name -> google.type.Color
+	61, // 50: memos.api.v1.UserSetting.TagsSetting.tags:type_name -> memos.api.v1.UserSetting.TagsSetting.TagsEntry
+	42, // 51: memos.api.v1.UserSetting.WebhooksSetting.webhooks:type_name -> memos.api.v1.UserWebhook
+	58, // 52: memos.api.v1.UserSetting.TagsSetting.TagsEntry.value:type_name -> memos.api.v1.UserSetting.TagMetadata
+	70, // 53: memos.api.v1.UserNotification.SpaceInvitationPayload.space:type_name -> memos.api.v1.Space
+	71, // 54: memos.api.v1.UserNotification.SpaceInvitationPayload.role:type_name -> memos.api.v1.SpaceMember.Role
+	4,  // 55: memos.api.v1.UserNotification.SpaceInvitationPayload.state:type_name -> memos.api.v1.UserNotification.SpaceInvitationPayload.State
+	6,  // 56: memos.api.v1.UserService.ListUsers:input_type -> memos.api.v1.ListUsersRequest
+	8,  // 57: memos.api.v1.UserService.BatchGetUsers:input_type -> memos.api.v1.BatchGetUsersRequest
+	10, // 58: memos.api.v1.UserService.GetUser:input_type -> memos.api.v1.GetUserRequest
+	11, // 59: memos.api.v1.UserService.CreateUser:input_type -> memos.api.v1.CreateUserRequest
+	12, // 60: memos.api.v1.UserService.UpdateUser:input_type -> memos.api.v1.UpdateUserRequest
+	13, // 61: memos.api.v1.UserService.DeleteUser:input_type -> memos.api.v1.DeleteUserRequest
+	16, // 62: memos.api.v1.UserService.ListAllUserStats:input_type -> memos.api.v1.ListAllUserStatsRequest
+	15, // 63: memos.api.v1.UserService.GetUserStats:input_type -> memos.api.v1.GetUserStatsRequest
+	19, // 64: memos.api.v1.UserService.GetUserSetting:input_type -> memos.api.v1.GetUserSettingRequest
+	20, // 65: memos.api.v1.UserService.UpdateUserSetting:input_type -> memos.api.v1.UpdateUserSettingRequest
+	21, // 66: memos.api.v1.UserService.ListUserSettings:input_type -> memos.api.v1.ListUserSettingsRequest
+	24, // 67: memos.api.v1.UserService.ListMemoViews:input_type -> memos.api.v1.ListMemoViewsRequest
+	26, // 68: memos.api.v1.UserService.GetMemoView:input_type -> memos.api.v1.GetMemoViewRequest
+	27, // 69: memos.api.v1.UserService.CreateMemoView:input_type -> memos.api.v1.CreateMemoViewRequest
+	28, // 70: memos.api.v1.UserService.UpdateMemoView:input_type -> memos.api.v1.UpdateMemoViewRequest
+	29, // 71: memos.api.v1.UserService.DeleteMemoView:input_type -> memos.api.v1.DeleteMemoViewRequest
+	31, // 72: memos.api.v1.UserService.ListLinkedIdentities:input_type -> memos.api.v1.ListLinkedIdentitiesRequest
+	33, // 73: memos.api.v1.UserService.CreateLinkedIdentity:input_type -> memos.api.v1.CreateLinkedIdentityRequest
+	34, // 74: memos.api.v1.UserService.GetLinkedIdentity:input_type -> memos.api.v1.GetLinkedIdentityRequest
+	35, // 75: memos.api.v1.UserService.DeleteLinkedIdentity:input_type -> memos.api.v1.DeleteLinkedIdentityRequest
+	37, // 76: memos.api.v1.UserService.ListPersonalAccessTokens:input_type -> memos.api.v1.ListPersonalAccessTokensRequest
+	39, // 77: memos.api.v1.UserService.CreatePersonalAccessToken:input_type -> memos.api.v1.CreatePersonalAccessTokenRequest
+	41, // 78: memos.api.v1.UserService.DeletePersonalAccessToken:input_type -> memos.api.v1.DeletePersonalAccessTokenRequest
+	43, // 79: memos.api.v1.UserService.ListUserWebhooks:input_type -> memos.api.v1.ListUserWebhooksRequest
+	45, // 80: memos.api.v1.UserService.CreateUserWebhook:input_type -> memos.api.v1.CreateUserWebhookRequest
+	46, // 81: memos.api.v1.UserService.UpdateUserWebhook:input_type -> memos.api.v1.UpdateUserWebhookRequest
+	47, // 82: memos.api.v1.UserService.DeleteUserWebhook:input_type -> memos.api.v1.DeleteUserWebhookRequest
+	48, // 83: memos.api.v1.UserService.GetUserWebhookSigningSecret:input_type -> memos.api.v1.GetUserWebhookSigningSecretRequest
+	51, // 84: memos.api.v1.UserService.ListUserNotifications:input_type -> memos.api.v1.ListUserNotificationsRequest
+	53, // 85: memos.api.v1.UserService.UpdateUserNotification:input_type -> memos.api.v1.UpdateUserNotificationRequest
+	54, // 86: memos.api.v1.UserService.DeleteUserNotification:input_type -> memos.api.v1.DeleteUserNotificationRequest
+	7,  // 87: memos.api.v1.UserService.ListUsers:output_type -> memos.api.v1.ListUsersResponse
+	9,  // 88: memos.api.v1.UserService.BatchGetUsers:output_type -> memos.api.v1.BatchGetUsersResponse
+	5,  // 89: memos.api.v1.UserService.GetUser:output_type -> memos.api.v1.User
+	5,  // 90: memos.api.v1.UserService.CreateUser:output_type -> memos.api.v1.User
+	5,  // 91: memos.api.v1.UserService.UpdateUser:output_type -> memos.api.v1.User
+	72, // 92: memos.api.v1.UserService.DeleteUser:output_type -> google.protobuf.Empty
+	17, // 93: memos.api.v1.UserService.ListAllUserStats:output_type -> memos.api.v1.ListAllUserStatsResponse
+	14, // 94: memos.api.v1.UserService.GetUserStats:output_type -> memos.api.v1.UserStats
+	18, // 95: memos.api.v1.UserService.GetUserSetting:output_type -> memos.api.v1.UserSetting
+	18, // 96: memos.api.v1.UserService.UpdateUserSetting:output_type -> memos.api.v1.UserSetting
+	22, // 97: memos.api.v1.UserService.ListUserSettings:output_type -> memos.api.v1.ListUserSettingsResponse
+	25, // 98: memos.api.v1.UserService.ListMemoViews:output_type -> memos.api.v1.ListMemoViewsResponse
+	23, // 99: memos.api.v1.UserService.GetMemoView:output_type -> memos.api.v1.MemoView
+	23, // 100: memos.api.v1.UserService.CreateMemoView:output_type -> memos.api.v1.MemoView
+	23, // 101: memos.api.v1.UserService.UpdateMemoView:output_type -> memos.api.v1.MemoView
+	72, // 102: memos.api.v1.UserService.DeleteMemoView:output_type -> google.protobuf.Empty
+	32, // 103: memos.api.v1.UserService.ListLinkedIdentities:output_type -> memos.api.v1.ListLinkedIdentitiesResponse
+	30, // 104: memos.api.v1.UserService.CreateLinkedIdentity:output_type -> memos.api.v1.LinkedIdentity
+	30, // 105: memos.api.v1.UserService.GetLinkedIdentity:output_type -> memos.api.v1.LinkedIdentity
+	72, // 106: memos.api.v1.UserService.DeleteLinkedIdentity:output_type -> google.protobuf.Empty
+	38, // 107: memos.api.v1.UserService.ListPersonalAccessTokens:output_type -> memos.api.v1.ListPersonalAccessTokensResponse
+	40, // 108: memos.api.v1.UserService.CreatePersonalAccessToken:output_type -> memos.api.v1.CreatePersonalAccessTokenResponse
+	72, // 109: memos.api.v1.UserService.DeletePersonalAccessToken:output_type -> google.protobuf.Empty
+	44, // 110: memos.api.v1.UserService.ListUserWebhooks:output_type -> memos.api.v1.ListUserWebhooksResponse
+	42, // 111: memos.api.v1.UserService.CreateUserWebhook:output_type -> memos.api.v1.UserWebhook
+	42, // 112: memos.api.v1.UserService.UpdateUserWebhook:output_type -> memos.api.v1.UserWebhook
+	72, // 113: memos.api.v1.UserService.DeleteUserWebhook:output_type -> google.protobuf.Empty
+	49, // 114: memos.api.v1.UserService.GetUserWebhookSigningSecret:output_type -> memos.api.v1.GetUserWebhookSigningSecretResponse
+	52, // 115: memos.api.v1.UserService.ListUserNotifications:output_type -> memos.api.v1.ListUserNotificationsResponse
+	50, // 116: memos.api.v1.UserService.UpdateUserNotification:output_type -> memos.api.v1.UserNotification
+	72, // 117: memos.api.v1.UserService.DeleteUserNotification:output_type -> google.protobuf.Empty
+	87, // [87:118] is the sub-list for method output_type
+	56, // [56:87] is the sub-list for method input_type
+	56, // [56:56] is the sub-list for extension type_name
+	56, // [56:56] is the sub-list for extension extendee
+	0,  // [0:56] is the sub-list for field type_name
 }
 
 func init() { file_api_v1_user_service_proto_init() }
@@ -4452,13 +4553,17 @@ func file_api_v1_user_service_proto_init() {
 		(*UserNotification_MemoMention)(nil),
 		(*UserNotification_SpaceInvitation)(nil),
 	}
+	file_api_v1_user_service_proto_msgTypes[57].OneofWrappers = []any{
+		(*MemoView_Icon_Emoji)(nil),
+		(*MemoView_Icon_Lucide)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_v1_user_service_proto_rawDesc), len(file_api_v1_user_service_proto_rawDesc)),
 			NumEnums:      5,
-			NumMessages:   60,
+			NumMessages:   61,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

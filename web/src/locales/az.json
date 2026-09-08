@@ -854,6 +854,7 @@
       "uploads-privacy-title": "Yükləmələr və məxfilik"
     },
     "memo-view": {
+      "change-icon": "Görünüş ikonunu dəyiş",
       "delete-confirm": "`{{title}}` görünüşünü silmək istədiyinizə əminsiniz?",
       "delete-success": "`{{title}}` görünüşü silindi"
     },

@@ -598,6 +598,19 @@ message MemoView {
   // The CEL filter expression for the memo view, using the same grammar as the
   // ListMemos `filter` argument. Reuse it by passing this value to ListMemos.
   string filter = 3 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. Display icon. Omit when updating with the "icon" mask to reset
+  // to the default view icon.
+  Icon icon = 4 [(google.api.field_behavior) = OPTIONAL];
+
+  message Icon {
+    oneof value {
+      // A Unicode emoji sequence.
+      string emoji = 1;
+      // A canonical Lucide icon name, such as "leaf".
+      string lucide = 2;
+    }
+  }
 }
 
 message ListMemoViewsRequest {

@@ -854,6 +854,7 @@
       "uploads-privacy-title": "Uploads & privacy"
     },
     "memo-view": {
+      "change-icon": "Change view icon",
       "delete-confirm": "Are you sure you want to delete view `{{title}}`?",
       "delete-success": "View `{{title}}` deleted successfully"
     },
