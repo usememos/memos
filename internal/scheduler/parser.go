@@ -123,7 +123,17 @@ func (s *Schedule) matches(t time.Time) bool {
 		s.minutes.matches(t.Minute()) &&
 		s.hours.matches(t.Hour()) &&
 		s.months.matches(int(t.Month())) &&
-		(s.days.matches(t.Day()) || s.weekdays.matches(int(t.Weekday())))
+		(s.days.matches(t.Day()) || s.matchesWeekday(t.Weekday()))
+}
+
+// matchesWeekday reports whether the weekday field matches wd. Cron accepts both
+// 0 and 7 as Sunday, but time.Weekday only ranges 0 (Sunday) to 6 (Saturday), so
+// a Sunday must also be checked against 7 to honor expressions written that way.
+func (s *Schedule) matchesWeekday(wd time.Weekday) bool {
+	if s.weekdays.matches(int(wd)) {
+		return true
+	}
+	return wd == time.Sunday && s.weekdays.matches(7)
 }
 
 // parseField parses a single cron field (supports *, ranges, lists, steps).
