@@ -1,7 +1,8 @@
 package email
 
 import (
-	"fmt"
+	"net"
+	"strconv"
 
 	"github.com/pkg/errors"
 )
@@ -43,5 +44,5 @@ func (c *Config) Validate() error {
 
 // GetServerAddress returns the SMTP server address in the format "host:port".
 func (c *Config) GetServerAddress() string {
-	return fmt.Sprintf("%s:%d", c.SMTPHost, c.SMTPPort)
+	return net.JoinHostPort(c.SMTPHost, strconv.Itoa(c.SMTPPort))
 }
