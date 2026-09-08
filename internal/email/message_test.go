@@ -1,8 +1,10 @@
 package email
 
 import (
+	"mime"
 	"strings"
 	"testing"
+	"unicode"
 )
 
 func TestMessageValidation(t *testing.T) {
@@ -167,6 +169,51 @@ func TestMessageFormatSanitizesHeaderValues(t *testing.T) {
 	if !strings.Contains(headers, "From: Sender X-Injected-Name: bad <sender@example.com X-Injected-From: bad>") {
 		t.Error("from header was not normalized")
 	}
+}
+
+func TestMessageFormatEncodesNonASCIIHeaderText(t *testing.T) {
+	msg := Message{
+		To:      []string{"user@example.com"},
+		Subject: "[Memos] 小明 commented on your memo",
+		Body:    "Test Body",
+	}
+
+	formatted := msg.Format("sender@example.com", "备忘录")
+	headers := strings.SplitN(formatted, "\r\n\r\n", 2)[0]
+
+	for i := 0; i < len(headers); i++ {
+		if headers[i] > unicode.MaxASCII {
+			t.Fatalf("header block must be US-ASCII, got a raw non-ASCII byte:\n%s", headers)
+		}
+	}
+
+	decoder := new(mime.WordDecoder)
+	subject, err := decoder.DecodeHeader(formattedHeaderValue(t, headers, "Subject: "))
+	if err != nil {
+		t.Fatalf("decoding Subject header: %v", err)
+	}
+	if subject != msg.Subject {
+		t.Errorf("decoded Subject = %q, want %q", subject, msg.Subject)
+	}
+
+	from, err := decoder.DecodeHeader(formattedHeaderValue(t, headers, "From: "))
+	if err != nil {
+		t.Fatalf("decoding From header: %v", err)
+	}
+	if want := "备忘录 <sender@example.com>"; from != want {
+		t.Errorf("decoded From = %q, want %q", from, want)
+	}
+}
+
+func formattedHeaderValue(t *testing.T, headers, prefix string) string {
+	t.Helper()
+	for _, line := range strings.Split(headers, "\r\n") {
+		if strings.HasPrefix(line, prefix) {
+			return strings.TrimPrefix(line, prefix)
+		}
+	}
+	t.Fatalf("header %q not found in:\n%s", prefix, headers)
+	return ""
 }
 
 func TestGetAllRecipients(t *testing.T) {
