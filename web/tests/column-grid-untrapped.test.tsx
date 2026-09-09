@@ -5,19 +5,24 @@ import ColumnGrid, { ColumnGridUntrappedProvider, GRID_GAP, useColumnGridUntrapp
 // Regression test for #6288: an inline editor's focus mode renders position:fixed
 // UI inside a grid tile. A tile positioned with a transform (or will-change:
 // transform) is the containing block for fixed descendants, so the focus-mode
-// surface gets trapped inside the card. The untrapped slot switches that one
-// tile to left/top for the duration.
+// surface gets trapped inside the card. The untrapped set switches those tiles
+// to left/top for the duration.
 
 interface Item {
   key: string;
 }
 
 const TileConsumer = ({ itemKey }: { itemKey: string }) => {
-  const { setUntrappedKey } = useColumnGridUntrapped();
+  const { setUntrappedKey, clearUntrappedKey } = useColumnGridUntrapped();
   return (
-    <button type="button" data-testid={`untrap-${itemKey}`} onClick={() => setUntrappedKey(itemKey)}>
-      untrap {itemKey}
-    </button>
+    <>
+      <button type="button" data-testid={`untrap-${itemKey}`} onClick={() => setUntrappedKey(itemKey)}>
+        untrap {itemKey}
+      </button>
+      <button type="button" data-testid={`clear-${itemKey}`} onClick={() => clearUntrappedKey(itemKey)}>
+        clear {itemKey}
+      </button>
+    </>
   );
 };
 
@@ -66,5 +71,22 @@ describe("ColumnGrid untrapped tile", () => {
     const other = tileWrapper("a");
     expect(other.style.transform).toContain("translate3d");
     expect(other.style.willChange).toBe("transform");
+  });
+
+  it("keeps every focused tile untrapped when two editors claim focus mode", () => {
+    renderGrid();
+    fireEvent.click(screen.getByTestId("untrap-a"));
+    fireEvent.click(screen.getByTestId("untrap-b"));
+
+    for (const key of ["a", "b"]) {
+      const el = tileWrapper(key);
+      expect(el.style.transform).toBe("");
+      expect(el.style.willChange).toBe("");
+    }
+
+    // Releasing one claim must not retrap the other tile.
+    fireEvent.click(screen.getByTestId("clear-a"));
+    expect(tileWrapper("a").style.transform).toContain("translate3d");
+    expect(tileWrapper("b").style.transform).toBe("");
   });
 });

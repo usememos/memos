@@ -87,7 +87,7 @@ function ColumnGrid<T>({
   maxColumnWidth,
 }: ColumnGridProps<T>) {
   const direction = useDirection();
-  const { untrappedKey } = useColumnGridUntrapped();
+  const { untrappedKeys } = useColumnGridUntrapped();
   const containerRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const refCallbacks = useRef<Map<string, (el: HTMLDivElement | null) => void>>(new Map());
@@ -197,7 +197,7 @@ function ColumnGrid<T>({
       // always opts out; a memo tile opts out while its inline editor is in focus mode. Both
       // are pinned horizontally and only shift on resize (which snaps anyway), so neither
       // loses an animation that matters.
-      if (key === LEADING_KEY || key === untrappedKey) {
+      if (key === LEADING_KEY || untrappedKeys.has(key)) {
         el.style.transition = "none";
         el.style.transform = "";
         el.style.left = `${target.x}px`;
@@ -212,7 +212,7 @@ function ColumnGrid<T>({
     }
 
     setContainerHeight(Math.max(0, ...columnY.map((h) => h - GRID_GAP)));
-  }, [items, getKey, estimateHeight, priorityKey, maxColumns, maxColumnWidth, direction, untrappedKey]);
+  }, [items, getKey, estimateHeight, priorityKey, maxColumns, maxColumnWidth, direction, untrappedKeys]);
 
   // Keep a stable reference so observer callbacks always run the latest layout.
   const relayoutRef = useRef(relayout);
@@ -306,7 +306,7 @@ function ColumnGrid<T>({
       )}
       {items.map((item) => {
         const key = getKey(item);
-        const isUntrapped = key === untrappedKey;
+        const isUntrapped = untrappedKeys.has(key);
         return (
           <div
             key={key}
