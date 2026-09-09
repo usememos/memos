@@ -22,6 +22,10 @@
   --border: oklch(0.8847 0.0069 97.3627);
   --input: oklch(0.7621 0.0156 98.3528);
   --ring: oklch(0.45 0.08 250);
+  /* Overlay - neutral scrim base behind dialogs, sheets, and focus mode.
+     Alpha comes from the utility (bg-overlay/50, bg-overlay/20), so every
+     theme dims rather than tinting with --foreground. */
+  --overlay: oklch(0 0 0);
   --sidebar: oklch(0.9663 0.008 98.8792);
   --sidebar-foreground: oklch(0.359 0.0051 106.6524);
   --sidebar-accent: oklch(0.9245 0.0138 92.9892);
@@ -67,6 +71,7 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-overlay: var(--overlay);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-accent: var(--sidebar-accent);

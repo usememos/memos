@@ -27,7 +27,7 @@ const SheetOverlay = React.forwardRef<HTMLDivElement, SheetPrimitive.Backdrop.Pr
       ref={ref}
       data-slot="sheet-overlay"
       className={cn(
-        "fixed inset-0 z-overlay bg-foreground/50 transition-opacity duration-300 data-starting-style:opacity-0 data-ending-style:opacity-0",
+        "fixed inset-0 z-overlay bg-overlay/50 transition-opacity duration-300 data-starting-style:opacity-0 data-ending-style:opacity-0",
         className,
       )}
       {...props}
