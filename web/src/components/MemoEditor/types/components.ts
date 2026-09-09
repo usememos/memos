@@ -65,6 +65,7 @@ export interface EditorToolbarProps {
   onAudioRecorderClick: () => void;
   viewToggles?: EditorViewToggles;
   onInsertImages: (files: File[]) => void;
+  onInsertPoll: (markdown: string) => void;
 }
 
 export interface EditorMetadataProps {
@@ -105,6 +106,7 @@ export interface InsertMenuProps {
   onAudioRecorderClick?: () => void;
   viewToggles?: EditorViewToggles;
   onInsertImages: (files: File[]) => void;
+  onInsertPoll: (markdown: string) => void;
 }
 
 export interface VisibilitySelectorProps {
