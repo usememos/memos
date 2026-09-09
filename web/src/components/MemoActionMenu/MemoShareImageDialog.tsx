@@ -108,22 +108,12 @@ const MemoShareImageDialog = ({ open, onOpenChange }: MemoShareImageDialogProps)
 
           <DialogFooter className="shrink-0 border-t border-border/60 px-4 py-3 sm:px-5">
             {supportsNativeShare && (
-              <Button
-                variant="ghost"
-                className="text-muted-foreground hover:bg-muted/60 hover:text-foreground"
-                onClick={handleNativeShare}
-                disabled={isRendering}
-              >
+              <Button variant="quiet" onClick={handleNativeShare} disabled={isRendering}>
                 {isRendering ? <Loader2Icon className="mr-2 h-4 w-4 animate-spin" /> : <Share2Icon className="mr-2 h-4 w-4" />}
                 {t("memo.share.image-share")}
               </Button>
             )}
-            <Button
-              variant="outline"
-              className="border-border/70 text-muted-foreground hover:bg-muted/60 hover:text-foreground"
-              onClick={handleDownload}
-              disabled={isRendering}
-            >
+            <Button variant="outline" onClick={handleDownload} disabled={isRendering}>
               {isRendering ? <Loader2Icon className="mr-2 h-4 w-4 animate-spin" /> : <DownloadIcon className="mr-2 h-4 w-4" />}
               {t("memo.share.image-download")}
             </Button>

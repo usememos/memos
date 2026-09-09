@@ -133,7 +133,6 @@
     },
     "no-changes-detected": "Nessuna modifica rilevata",
     "save": "Salva",
-    "saving": "Salvataggio...",
     "audio-recorder": {
       "attachment-label": "Registrazione audio",
       "attachment-label-with-time": "Registrazione audio {{time}}",
@@ -291,8 +290,7 @@
     "restored-successfully": "Ripristinato con successo",
     "succeed-copy-content": "Contenuto copiato con successo.",
     "succeed-copy-link": "Link copiato.",
-    "update-succeed": "Aggiornato con successo",
-    "user-not-found": "Utente non trovato"
+    "update-succeed": "Aggiornato con successo"
   },
   "reference": {
     "add-references": "Aggiungi riferimenti",

@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/usememos/memos/internal/base"
+	storepb "github.com/usememos/memos/proto/gen/store"
 )
 
 // ErrLastSpaceAdmin indicates that a membership mutation would leave an active
@@ -71,6 +72,7 @@ type Space struct {
 	UID             string
 	Title           string
 	Description     string
+	Payload         *storepb.SpacePayload
 	CurrentUserRole SpaceMemberRole
 	MemberCount     int32
 }
@@ -92,6 +94,7 @@ type UpdateSpace struct {
 	ID          int32
 	Title       *string
 	Description *string
+	Payload     *storepb.SpacePayload
 }
 
 // DeleteSpace identifies a Space to hard-delete.
@@ -181,6 +184,9 @@ func (s *Store) CreateSpace(ctx context.Context, create *Space, creatorID int32)
 	if strings.TrimSpace(create.Title) == "" {
 		return nil, errors.New("space title is required")
 	}
+	if err := ValidateSpaceIcon(create.Payload.GetIcon()); err != nil {
+		return nil, err
+	}
 	return s.driver.CreateSpace(ctx, create, creatorID)
 }
 
@@ -209,7 +215,10 @@ func (s *Store) UpdateSpace(ctx context.Context, update *UpdateSpace, actorUserI
 	if update.Title != nil && strings.TrimSpace(*update.Title) == "" {
 		return nil, errors.New("space title is required")
 	}
-	if update.Title == nil && update.Description == nil {
+	if err := ValidateSpaceIcon(update.Payload.GetIcon()); err != nil {
+		return nil, err
+	}
+	if update.Title == nil && update.Description == nil && update.Payload == nil {
 		return nil, errors.New("space update requires at least one field")
 	}
 	return s.driver.UpdateSpace(ctx, update, actorUserID)

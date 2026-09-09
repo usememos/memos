@@ -38,6 +38,7 @@ vi.mock("@/hooks/useSpaceQueries", () => ({
 vi.mock("@/hooks/useUserQueries", () => ({
   userKeys: {
     stats: () => ["users", "stats"],
+    notifications: () => ["users", "notifications"],
   },
 }));
 

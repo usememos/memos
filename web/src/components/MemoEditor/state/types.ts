@@ -23,6 +23,10 @@ export interface EditorState {
       uploading: boolean;
       loading: boolean;
     };
+    /** Save landed and the editor is about to close; the toolbar shows a brief
+     *  confirmation instead of the commit verb. Only hosts that unmount after
+     *  saving set it; the in-place composer resets immediately. */
+    justSaved: boolean;
   };
   timestamps: {
     createTime?: Date;
@@ -46,6 +50,7 @@ export type EditorAction =
   | { type: "SET_PENDING_INLINE_IMAGE_INSERTIONS"; payload: number }
   | { type: "SET_TIMESTAMPS"; payload: Partial<EditorState["timestamps"]> }
   | { type: "SET_RECORDER_BUSY"; payload: boolean }
+  | { type: "SET_JUST_SAVED"; payload: boolean }
   | { type: "RESET" };
 
 // Module-private template for createInitialState.
@@ -66,6 +71,7 @@ const defaultState: EditorState = {
       uploading: false,
       loading: false,
     },
+    justSaved: false,
   },
   timestamps: {
     createTime: undefined,

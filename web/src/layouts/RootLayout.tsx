@@ -16,6 +16,8 @@ import { MemoFilterProvider, useMemoFilterContext } from "@/contexts/MemoFilterC
 import { SpaceProvider } from "@/contexts/SpaceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useMediaQuery from "@/hooks/useMediaQuery";
+import { cn } from "@/lib/utils";
+import { ROUTES, resolveCollectionRoute } from "@/router/routes";
 import { InstanceAccessMode } from "@/types/proto/api/v1/instance_service_pb";
 import { buildAuthRoute, shouldGatePrivateInstance } from "@/utils/auth-redirect";
 import { useTranslate } from "@/utils/i18n";
@@ -26,7 +28,7 @@ const DemoBanner = () => {
   const t = useTranslate();
 
   return (
-    <div className="static w-full border-b border-border bg-muted/70 px-4 py-2 text-sm text-muted-foreground sm:px-6">
+    <div className="static w-full shrink-0 border-b border-border bg-muted/70 px-4 py-2 text-sm text-muted-foreground sm:px-6">
       <div className="mx-auto flex max-w-5xl flex-col items-start gap-1 sm:flex-row sm:items-center sm:justify-center sm:gap-2">
         <span className="font-medium text-foreground">{t("demo.banner-title")}</span>
         <span>{t("demo.banner-description")}</span>
@@ -46,6 +48,8 @@ const RootLayoutContent = () => {
   const { profile } = useInstance();
   const { removeFilter } = useMemoFilterContext();
   const { pathname } = location;
+  // The map fills the viewport and scrolls inside itself, so the document must not.
+  const fullBleed = resolveCollectionRoute(pathname).pathname.toLowerCase() === ROUTES.MAP;
   const prevPathnameRef = useRef<string | undefined>(undefined);
   const shellRef = useRef<HTMLDivElement>(null);
   const { width: sidebarWidth, minWidth, maxWidth, setWidth: setSidebarWidth } = useSidebarWidth();
@@ -75,7 +79,11 @@ const RootLayoutContent = () => {
   }
 
   return (
-    <div ref={shellRef} className="min-h-full w-full bg-background" style={{ [SIDEBAR_WIDTH_VAR]: `${sidebarWidth}px` } as CSSProperties}>
+    <div
+      ref={shellRef}
+      className={cn("w-full bg-background", fullBleed ? "h-dvh overflow-hidden" : "min-h-full")}
+      style={{ [SIDEBAR_WIDTH_VAR]: `${sidebarWidth}px` } as CSSProperties}
+    >
       {md && (
         <div className="fixed inset-y-0 start-0 z-30 w-(--app-sidebar-width) border-e border-border/70">
           <AppSidebar />
@@ -89,7 +97,9 @@ const RootLayoutContent = () => {
         </div>
       )}
       <MobileAppSidebar />
-      <main className="flex min-h-full w-full min-w-0 flex-col items-center md:ps-(--app-sidebar-width)">
+      <main
+        className={cn("flex w-full min-w-0 flex-col items-center md:ps-(--app-sidebar-width)", fullBleed ? "h-full min-h-0" : "min-h-full")}
+      >
         <MobileAppHeader />
         {profile.demo && <DemoBanner />}
         <Outlet />

@@ -5,6 +5,7 @@ import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { MapContainer, Marker, useMap, useMapEvents } from "react-leaflet";
 import { cn } from "@/lib/utils";
+import { BasemapLayer } from "./BasemapLayer";
 import { defaultMarkerIcon, MinimalAttributionControl, OpenStreetMapTileLayer } from "./map-utils";
 import type { MapPoint } from "./types";
 
@@ -204,7 +205,7 @@ const noopOnLocationChange = () => {};
 const LocationPicker = ({ readonly: readOnly = false, latlng, onChange = noopOnLocationChange, className }: LocationPickerProps) => {
   const mapCenter = useMemo(() => toLatLng(latlng ?? DEFAULT_CENTER), [latlng?.lat, latlng?.lng]);
   const markerPosition = latlng ? mapCenter : undefined;
-  const statusLabel = readOnly ? "Pinned location" : latlng ? "Selected location" : "Choose a location";
+  const statusLabel = latlng ? "Selected location" : "Choose a location";
 
   return (
     <div
@@ -222,17 +223,20 @@ const LocationPicker = ({ readonly: readOnly = false, latlng, onChange = noopOnL
         attributionControl={false}
       >
         <MinimalAttributionControl />
-        <OpenStreetMapTileLayer />
+        {/* A read-only preview is a glance, not worth a WebGL renderer and a style download. */}
+        {readOnly ? <OpenStreetMapTileLayer /> : <BasemapLayer />}
         <LocationMarker position={markerPosition} readonly={readOnly} onChange={onChange} />
         <MapControls position={latlng} />
         <MapCleanup />
       </MapContainer>
 
-      <div className="pointer-events-none absolute left-3 top-3 z-[450] flex items-center gap-2">
-        <div className="rounded-full border border-border bg-background/92 px-2.5 py-1 text-[11px] font-medium tracking-[0.02em] text-foreground/80 shadow-sm backdrop-blur-sm">
-          {statusLabel}
+      {!readOnly && (
+        <div className="pointer-events-none absolute left-3 top-3 z-[450] flex items-center gap-2">
+          <div className="rounded-full border border-border bg-background/92 px-2.5 py-1 text-[11px] font-medium tracking-[0.02em] text-foreground/80 shadow-sm backdrop-blur-sm">
+            {statusLabel}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

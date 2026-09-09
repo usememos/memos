@@ -1,11 +1,12 @@
 import { uniqBy } from "lodash-es";
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 
 export type FilterFactor =
   | "tagSearch"
   | "visibility"
   | "contentSearch"
+  | "celSearch"
   | "displayTime"
   | "pinned"
   | "property.hasLink"
@@ -41,6 +42,15 @@ export const stringifyFilters = (filters: MemoFilter[]): string => {
   return filters.map((filter) => `${filter.factor}:${encodeURIComponent(filter.value)}`).join(",");
 };
 
+/** The `?filter=` search string that carries these filters in a URL, or "" when there are none. */
+export const getFilterSearch = (filters: MemoFilter[]): string => {
+  const filterQuery = stringifyFilters(filters);
+  return filterQuery ? `?${new URLSearchParams({ filter: filterQuery })}` : "";
+};
+
+/** Search filters carry the user's query itself (plain words or a CEL expression), as opposed to facets. */
+export const isSearchFilter = (filter: MemoFilter): boolean => filter.factor === "contentSearch" || filter.factor === "celSearch";
+
 export const replaceFiltersByFactor = (filters: MemoFilter[], factor: FilterFactor, replacements: MemoFilter[]): MemoFilter[] => [
   ...filters.filter((filter) => filter.factor !== factor),
   ...replacements,
@@ -64,6 +74,8 @@ const MemoFilterContext = createContext<MemoFilterContextValue | null>(null);
 
 export function MemoFilterProvider({ children }: { children: ReactNode }) {
   const [searchParams, setSearchParams] = useSearchParams();
+  const locationStateRef = useRef(useLocation().state);
+  const skipStoreSyncRef = useRef(false);
   const lastSyncedUrlRef = useRef("");
   const lastSyncedStoreRef = useRef("");
 
@@ -77,6 +89,9 @@ export function MemoFilterProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const filterParam = searchParams.get("filter") || "";
     if (filterParam !== lastSyncedUrlRef.current) {
+      // The store still contains the previous page’s filters in this commit.
+      // Do not write them back over the destination URL before state catches up.
+      skipStoreSyncRef.current = true;
       lastSyncedUrlRef.current = filterParam;
       const newFilters = parseFilterQuery(filterParam);
       setFiltersState(newFilters);
@@ -86,6 +101,10 @@ export function MemoFilterProvider({ children }: { children: ReactNode }) {
 
   // Sync state to URL when state changes
   useEffect(() => {
+    if (skipStoreSyncRef.current) {
+      skipStoreSyncRef.current = false;
+      return;
+    }
     const storeString = stringifyFilters(filters);
     if (storeString !== lastSyncedStoreRef.current && storeString !== lastSyncedUrlRef.current) {
       lastSyncedStoreRef.current = storeString;
@@ -95,7 +114,7 @@ export function MemoFilterProvider({ children }: { children: ReactNode }) {
       } else {
         newParams.delete("filter");
       }
-      setSearchParams(newParams, { replace: true });
+      setSearchParams(newParams, { replace: true, state: locationStateRef.current });
       lastSyncedUrlRef.current = filters.length > 0 ? storeString : "";
     }
   }, [filters, searchParams, setSearchParams]);

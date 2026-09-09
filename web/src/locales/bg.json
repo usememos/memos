@@ -170,7 +170,6 @@
     },
     "no-changes-detected": "Не са открити промени",
     "save": "Запазване",
-    "saving": "Запазва се...",
     "audio-recorder": {
       "attachment-label": "Аудио запис",
       "attachment-label-with-time": "Аудио запис {{time}}",
@@ -328,8 +327,7 @@
     "restored-successfully": "Възстановен успешно",
     "succeed-copy-content": "Съдържанието е копирано успешно.",
     "succeed-copy-link": "Връзката е копирана успешно.",
-    "update-succeed": "Актуализацията е успешна",
-    "user-not-found": "Потребителят не е намерен"
+    "update-succeed": "Актуализацията е успешна"
   },
   "reference": {
     "add-references": "Добавете препратки",

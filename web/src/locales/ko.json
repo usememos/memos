@@ -125,7 +125,6 @@
     "focus-mode": "집중 모드",
     "no-changes-detected": "변경사항이 없습니다",
     "save": "저장",
-    "saving": "저장 중...",
     "insert-menu": {
       "add-location": "위치 추가",
       "link-memo": "링크 메모",
@@ -257,8 +256,7 @@
     "restored-successfully": "성공적으로 복구했습니다",
     "succeed-copy-content": "콘텐츠를 클립보드에 복사했습니다.",
     "succeed-copy-link": "링크를 클립보드에 복사했습니다.",
-    "update-succeed": "업데이트 성공",
-    "user-not-found": "회원을 찾을 수 없습니다"
+    "update-succeed": "업데이트 성공"
   },
   "reference": {
     "add-references": "참조 추가",

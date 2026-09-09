@@ -316,28 +316,33 @@ function unwrapLink(view: EditorView): boolean {
   return false;
 }
 
+/** Apply one formatting verb to a CodeMirror view. Shared by the toolbar controller and keymap. */
+export function runFormattingCommand(view: EditorView, command: EditorCommandId, ctx?: EditorCommandContext): void {
+  if (isMarkCommand(command)) return toggleMark(view, command);
+  if (command === "codeBlock") return toggleCodeBlock(view);
+  if (command === "bulletList" || command === "orderedList" || command === "taskList") {
+    return toggleListLine(view, command);
+  }
+  if (command === "heading1") return setHeading(view, 1);
+  if (command === "heading2") return setHeading(view, 2);
+  if (command === "heading3") return setHeading(view, 3);
+  if (command === "paragraph") return setHeading(view, 0);
+  if (command === "link") {
+    // Toggle: inside an existing link, unwrap it to its label.
+    if (unwrapLink(view)) return;
+    const { from, to } = view.state.selection.main;
+    const url = ctx?.url ?? "";
+    // Empty selection: the URL doubles as the label.
+    const label = view.state.sliceDoc(from, to) || url;
+    const insert = `[${label}](${url})`;
+    view.dispatch({ changes: { from, to, insert }, selection: { anchor: from + insert.length } });
+  }
+}
+
 export function createFormattingController(view: EditorView, listeners: Set<() => void>): FormattingController {
   return {
     run(command: EditorCommandId, ctx?: EditorCommandContext) {
-      if (isMarkCommand(command)) return toggleMark(view, command);
-      if (command === "codeBlock") return toggleCodeBlock(view);
-      if (command === "bulletList" || command === "orderedList" || command === "taskList") {
-        return toggleListLine(view, command);
-      }
-      if (command === "heading1") return setHeading(view, 1);
-      if (command === "heading2") return setHeading(view, 2);
-      if (command === "heading3") return setHeading(view, 3);
-      if (command === "paragraph") return setHeading(view, 0);
-      if (command === "link") {
-        // Toggle: inside an existing link, unwrap it to its label.
-        if (unwrapLink(view)) return;
-        const { from, to } = view.state.selection.main;
-        const url = ctx?.url ?? "";
-        // Empty selection: the URL doubles as the label.
-        const label = view.state.sliceDoc(from, to) || url;
-        const insert = `[${label}](${url})`;
-        view.dispatch({ changes: { from, to, insert }, selection: { anchor: from + insert.length } });
-      }
+      runFormattingCommand(view, command, ctx);
     },
     getActiveFormats(): ActiveFormatState {
       const pos = view.state.selection.main.head;

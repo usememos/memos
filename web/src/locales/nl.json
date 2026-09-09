@@ -133,7 +133,6 @@
     },
     "no-changes-detected": "Geen wijzigingen gedetecteerd",
     "save": "Opslaan",
-    "saving": "Opslaan...",
     "audio-recorder": {
       "attachment-label": "Audio-opname",
       "attachment-label-with-time": "Audio-opname {{time}}",
@@ -291,8 +290,7 @@
     "restored-successfully": "Succesvol teruggezet",
     "succeed-copy-content": "Inhoud succesvol gekopieerd.",
     "succeed-copy-link": "Link gekopieerd naar klembord.",
-    "update-succeed": "Update voltooid",
-    "user-not-found": "Gebruiker niet gevonden"
+    "update-succeed": "Update voltooid"
   },
   "reference": {
     "add-references": "Referenties toevoegen",

@@ -133,7 +133,6 @@
     },
     "no-changes-detected": "Nincs változás",
     "save": "Mentés",
-    "saving": "Mentés...",
     "audio-recorder": {
       "attachment-label": "Hangfelvétel",
       "attachment-label-with-time": "Hangfelvétel {{time}}",
@@ -291,8 +290,7 @@
     "restored-successfully": "Sikeres visszaállítás",
     "succeed-copy-content": "Tartalom sikeresen másolva.",
     "succeed-copy-link": "Hivatkozás sikeresen másolva.",
-    "update-succeed": "Sikeres frissítés",
-    "user-not-found": "Felhasználó nem található"
+    "update-succeed": "Sikeres frissítés"
   },
   "reference": {
     "add-references": "Referenciák hozzáadása",

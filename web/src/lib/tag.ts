@@ -71,3 +71,7 @@ export const isValidTagPattern = (pattern: string): boolean => {
   }
   return true;
 };
+
+/** Whether any of the memo's tags is set to blur its content for this user. */
+export const isMemoBlurred = (memo: { tags: string[] }, tagsSetting: UserSetting_TagsSetting | undefined): boolean =>
+  tagsSetting !== undefined && memo.tags.some((tag) => findTagMetadata(tag, tagsSetting)?.blurContent === true);

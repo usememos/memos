@@ -59,6 +59,26 @@ describe("CreateSpaceDialog", () => {
     expect(mocks.mutateAsync).toHaveBeenCalledWith({ title: "Product", description: "Plans", spaceId: FIRST_SPACE_UID });
   });
 
+  it("keeps the icon in the draft until creating and clears it when the dialog closes", async () => {
+    const view = render(<CreateSpaceDialog open onOpenChange={mocks.onOpenChange} />);
+    fireEvent.change(screen.getByLabelText("common.name"), { target: { value: "Garden" } });
+    fireEvent.click(screen.getByRole("button", { name: "space.icon.change" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Leaf" }));
+    expect(mocks.mutateAsync).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: "common.create" }));
+    await waitFor(() =>
+      expect(mocks.mutateAsync).toHaveBeenCalledWith(
+        expect.objectContaining({
+          icon: expect.objectContaining({ value: { case: "lucide", value: "leaf" } }),
+        }),
+      ),
+    );
+    view.rerender(<CreateSpaceDialog open={false} onOpenChange={mocks.onOpenChange} />);
+    view.rerender(<CreateSpaceDialog open onOpenChange={mocks.onOpenChange} />);
+    fireEvent.click(screen.getByRole("button", { name: "space.icon.change" }));
+    expect(await screen.findByRole("button", { name: "space.icon.reset" })).toBeDisabled();
+  });
+
   it("allows a valid custom Space UID and explains invalid values", async () => {
     render(<CreateSpaceDialog open onOpenChange={mocks.onOpenChange} />);
 

@@ -125,7 +125,6 @@
     "focus-mode": "وضع التركيز",
     "no-changes-detected": "لم يتم الكشف عن تغييرات",
     "save": "حفظ",
-    "saving": "جارِ الحفظ...",
     "insert-menu": {
       "add-location": "أضف الموقع",
       "link-memo": "مذكرة الارتباط",
@@ -257,8 +256,7 @@
     "restored-successfully": "تمت الاستعادة بنجاح",
     "succeed-copy-content": "تم نسخ المحتوى بنجاح.",
     "succeed-copy-link": "تم نسخ الرابط بنجاح.",
-    "update-succeed": "تم التحديث بنجاح",
-    "user-not-found": "المستخدم غير موجود"
+    "update-succeed": "تم التحديث بنجاح"
   },
   "reference": {
     "add-references": "إضافة مراجع",

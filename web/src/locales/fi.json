@@ -170,7 +170,6 @@
     },
     "no-changes-detected": "Muutoksia ei havaittu",
     "save": "Tallentaa",
-    "saving": "Tallennetaan...",
     "audio-recorder": {
       "attachment-label": "Äänen tallennus",
       "attachment-label-with-time": "Äänen tallennus {{time}}",
@@ -328,8 +327,7 @@
     "restored-successfully": "Palautettu onnistuneesti",
     "succeed-copy-content": "Sisällön kopiointi onnistui.",
     "succeed-copy-link": "Linkin kopioiminen onnistui.",
-    "update-succeed": "Päivitys onnistui",
-    "user-not-found": "Käyttäjää ei löydy"
+    "update-succeed": "Päivitys onnistui"
   },
   "reference": {
     "add-references": "Lisää viitteitä",

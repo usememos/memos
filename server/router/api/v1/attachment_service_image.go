@@ -4,13 +4,13 @@ import (
 	"bytes"
 	"context"
 	"image"
+	"io"
 
 	"github.com/disintegration/imaging"
 	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/usememos/memos/internal/motionphoto"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
@@ -38,25 +38,6 @@ func validateClientMotionMedia(motion *v1pb.MotionMedia, attachmentUID string) (
 	return storeMotion, nil
 }
 
-func detectAndroidMotionMedia(blob []byte, mimeType, attachmentUID string) *storepb.MotionMedia {
-	if mimeType != "image/jpeg" && mimeType != "image/jpg" {
-		return nil
-	}
-
-	detection := motionphoto.DetectJPEG(blob)
-	if detection == nil {
-		return nil
-	}
-
-	return &storepb.MotionMedia{
-		Family:                  storepb.MotionMediaFamily_ANDROID_MOTION_PHOTO,
-		Role:                    storepb.MotionMediaRole_CONTAINER,
-		GroupId:                 attachmentUID,
-		PresentationTimestampUs: detection.PresentationTimestampUs,
-		HasEmbeddedVideo:        true,
-	}
-}
-
 // shouldStripExif checks if the MIME type is an image format that may contain EXIF metadata.
 // Returns true for formats like JPEG, TIFF, WebP, HEIC, and HEIF which commonly contain
 // privacy-sensitive metadata such as GPS coordinates, camera settings, and device information.
@@ -76,8 +57,8 @@ func (s *APIV1Service) acquireImageProcessingSlot(ctx context.Context) (func(), 
 	}, nil
 }
 
-func validateImagePixelCount(imageData []byte) error {
-	config, _, err := image.DecodeConfig(bytes.NewReader(imageData))
+func validateImageReaderPixelCount(reader io.Reader) error {
+	config, _, err := image.DecodeConfig(reader)
 	if err != nil {
 		// Some formats supported by imaging do not expose dimensions through
 		// the standard image registry. Let the full decoder handle those.
@@ -97,7 +78,8 @@ func validateImagePixelCount(imageData []byte) error {
 //
 // The function preserves the correct image orientation by applying EXIF orientation tags
 // during decoding before stripping all metadata. Images are re-encoded with high quality
-// to minimize visual degradation.
+// to minimize visual degradation. The re-encoded output is returned in memory; its size
+// is bounded by maxImagePixels, which the decoder already has to hold.
 //
 // Supported formats:
 //   - JPEG/JPG: Re-encoded as JPEG with quality 95
@@ -105,34 +87,28 @@ func validateImagePixelCount(imageData []byte) error {
 //   - TIFF/WebP/HEIC/HEIF: Re-encoded as JPEG with quality 95
 //
 // Returns the cleaned image data without any EXIF metadata, or an error if processing fails.
-func stripImageExif(imageData []byte, mimeType string) ([]byte, error) {
-	if err := validateImagePixelCount(imageData); err != nil {
+func stripImageExif(source io.ReadSeeker, mimeType string) ([]byte, error) {
+	if _, err := source.Seek(0, io.SeekStart); err != nil {
+		return nil, errors.Wrap(err, "failed to rewind image")
+	}
+	if err := validateImageReaderPixelCount(source); err != nil {
 		return nil, err
 	}
-
-	// Decode image with automatic EXIF orientation correction.
-	// This ensures the image displays correctly after metadata removal.
-	img, err := imaging.Decode(bytes.NewReader(imageData), imaging.AutoOrientation(true))
+	if _, err := source.Seek(0, io.SeekStart); err != nil {
+		return nil, errors.Wrap(err, "failed to rewind image")
+	}
+	img, err := imaging.Decode(source, imaging.AutoOrientation(true))
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to decode image")
 	}
-
-	// Re-encode the image without EXIF metadata.
 	var buf bytes.Buffer
-	var encodeErr error
-
 	if mimeType == "image/png" {
-		// Preserve PNG format for lossless encoding
-		encodeErr = imaging.Encode(&buf, img, imaging.PNG)
+		err = imaging.Encode(&buf, img, imaging.PNG)
 	} else {
-		// For JPEG, TIFF, WebP, HEIC, HEIF - re-encode as JPEG.
-		// This ensures EXIF is stripped and provides good compression.
-		encodeErr = imaging.Encode(&buf, img, imaging.JPEG, imaging.JPEGQuality(defaultJPEGQuality))
+		err = imaging.Encode(&buf, img, imaging.JPEG, imaging.JPEGQuality(defaultJPEGQuality))
 	}
-
-	if encodeErr != nil {
-		return nil, errors.Wrap(encodeErr, "failed to encode image")
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to encode image")
 	}
-
 	return buf.Bytes(), nil
 }

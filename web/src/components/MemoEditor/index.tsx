@@ -42,6 +42,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   memo,
   parentMemoName,
   defaultSpace,
+  defaultLocation,
   autoFocus,
   onFocusModeExit,
   placeholder,
@@ -94,6 +95,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
     autoFocus,
     defaultVisibility,
     defaultCreateTime,
+    defaultLocation,
   });
   const isDraftCacheEnabled = !memo;
 
@@ -365,6 +367,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
             onSave={handleSave}
             onCancel={onCancel ? handleCancel : undefined}
             memoName={memoName}
+            parentMemoName={parentMemoName}
             space={editorSpace}
             onAudioRecorderClick={handleAudioRecorderClick}
             viewToggles={viewToggles}

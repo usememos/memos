@@ -34,7 +34,8 @@ CREATE TABLE space (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   uid TEXT NOT NULL UNIQUE,
   title TEXT NOT NULL,
-  description TEXT NOT NULL DEFAULT ''
+  description TEXT NOT NULL DEFAULT '',
+  payload TEXT NOT NULL DEFAULT '{}'
 );
 
 -- space membership

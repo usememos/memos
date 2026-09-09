@@ -33,7 +33,8 @@ CREATE TABLE space (
   id SERIAL PRIMARY KEY,
   uid TEXT NOT NULL UNIQUE,
   title TEXT NOT NULL,
-  description TEXT NOT NULL DEFAULT ''
+  description TEXT NOT NULL DEFAULT '',
+  payload JSONB NOT NULL DEFAULT '{}'
 );
 
 -- space membership

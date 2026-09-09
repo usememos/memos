@@ -133,7 +133,6 @@
     },
     "no-changes-detected": "Змін не виявлено",
     "save": "Зберегти",
-    "saving": "Збереження...",
     "audio-recorder": {
       "attachment-label": "Аудіозапис",
       "attachment-label-with-time": "Аудіозапис {{time}}",
@@ -291,8 +290,7 @@
     "restored-successfully": "Успішно відновлено",
     "succeed-copy-content": "Вміст успішно скопійовано.",
     "succeed-copy-link": "Посилання успішно скопійовано.",
-    "update-succeed": "Оновлення успішне",
-    "user-not-found": "Користувача не знайдено"
+    "update-succeed": "Оновлення успішне"
   },
   "reference": {
     "add-references": "Додати посилання",

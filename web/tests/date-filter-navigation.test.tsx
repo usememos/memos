@@ -20,7 +20,7 @@ const Harness = () => {
 describe("useDateFilterNavigation", () => {
   it("preserves unrelated query parameters while replacing the date filter", async () => {
     render(
-      <MemoryRouter initialEntries={["/u/steven?view=map&filter=tagSearch%3Awork"]}>
+      <MemoryRouter initialEntries={["/u/steven?sort=displayTime&filter=tagSearch%3Awork"]}>
         <MemoFilterProvider>
           <Harness />
         </MemoFilterProvider>
@@ -31,7 +31,7 @@ describe("useDateFilterNavigation", () => {
 
     await waitFor(() => {
       const params = new URLSearchParams(screen.getByTestId("search").textContent ?? "");
-      expect(params.get("view")).toBe("map");
+      expect(params.get("sort")).toBe("displayTime");
       expect(params.get("filter")).toContain("tagSearch:work");
       expect(params.get("filter")).toContain("displayTime:2026-08-02");
     });

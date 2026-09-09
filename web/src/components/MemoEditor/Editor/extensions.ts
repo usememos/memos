@@ -3,6 +3,8 @@ import { markdown } from "@codemirror/lang-markdown";
 import { indentUnit } from "@codemirror/language";
 import { Compartment, type Extension } from "@codemirror/state";
 import { placeholder as cmPlaceholder, dropCursor, EditorView, type KeyBinding, keymap } from "@codemirror/view";
+import { runFormattingCommand } from "@/components/MemoEditor/Editor/formatting";
+import type { EditorCommandId } from "@/components/MemoEditor/formatting/commands";
 import { memoMarkdownExtensions } from "@/utils/memo-markdown-extension";
 import { headingDecorations } from "./headingDecorations";
 import { liftListItem, sinkListItem } from "./listIndent";
@@ -11,8 +13,8 @@ import { tagMentionDecorations } from "./tagMentionDecorations";
 import { memoEditorTheme } from "./theme";
 import { uploadAnchorField } from "./uploadAnchors";
 
-// Key bindings layered below the autocomplete keymap so the completion popup's
-// own Tab/Escape win while it is open. On a list item, Tab/Shift-Tab nest /
+// Key bindings layered below the autocomplete keymap so its completion-specific
+// keys win while the popup is open. On a list item, Tab/Shift-Tab nest /
 // outdent it (marker-aware, CommonMark-valid); elsewhere they fall through to
 // indentWithTab's plain indent. Escape blurs the editor so keyboard users keep
 // an escape hatch out of the otherwise Tab-trapping editor.
@@ -26,6 +28,31 @@ const editorKeys: KeyBinding[] = [
   },
   { key: "Tab", run: sinkListItem },
   { key: "Shift-Tab", run: liftListItem },
+];
+
+const formattingKey = (key: string, command: EditorCommandId): KeyBinding => ({
+  key,
+  run: (view) => {
+    runFormattingCommand(view, command);
+    return true;
+  },
+});
+
+// Familiar cross-platform Markdown formatting keys. These stay separate from
+// CodeMirror's Markdown keymap, which only handles structural Enter/Backspace.
+const formattingKeys: KeyBinding[] = [
+  formattingKey("Mod-b", "bold"),
+  formattingKey("Mod-i", "italic"),
+  formattingKey("Shift-Mod-s", "strikethrough"),
+  formattingKey("Mod-e", "code"),
+  formattingKey("Mod-Alt-c", "codeBlock"),
+  formattingKey("Mod-Alt-0", "paragraph"),
+  formattingKey("Shift-Mod-7", "orderedList"),
+  formattingKey("Shift-Mod-8", "bulletList"),
+  formattingKey("Shift-Mod-9", "taskList"),
+  formattingKey("Mod-Alt-1", "heading1"),
+  formattingKey("Mod-Alt-2", "heading2"),
+  formattingKey("Mod-Alt-3", "heading3"),
 ];
 
 export interface EditorExtensionsOptions {
@@ -111,9 +138,11 @@ export function buildEditorExtensions({
     headingDecorations,
     uploadAnchorField,
     // tagAutocomplete must precede the editing keymap so the completion popup's
-    // Enter/Tab/arrow bindings win while it is open.
+    // Enter/Escape/arrow bindings win while it is open.
     tagAutocomplete(getTags),
-    keymap.of([...submitKeys, ...editorKeys, indentWithTab, ...defaultKeymap, ...historyKeymap]),
+    // Formatting keys precede defaultKeymap so the conventional Mod-I italic
+    // shortcut wins over CodeMirror's generic selectParentSyntax binding.
+    keymap.of([...submitKeys, ...editorKeys, ...formattingKeys, indentWithTab, ...defaultKeymap, ...historyKeymap]),
     EditorView.updateListener.of((u) => {
       if (u.docChanged) onChange(u.state.doc.toString());
       // Toolbar active-state depends only on the doc and selection; skip the

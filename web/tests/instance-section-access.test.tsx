@@ -58,4 +58,19 @@ describe("<InstanceSection> access setting", () => {
     expect(setting.value.value.accessMode).toBe(InstanceAccessMode.PUBLIC);
     expect(instance.fetchSetting).not.toHaveBeenCalled();
   });
+
+  it("orders general settings before access policies and custom code", () => {
+    render(<InstanceSection />);
+
+    const groupHeadings = screen.getAllByRole("heading", { level: 4 });
+    expect(groupHeadings.map((heading) => heading.textContent)).toEqual([
+      "common.basic",
+      "setting.instance.access-title",
+      "setting.system.custom-code-title",
+    ]);
+
+    const weekStartDay = screen.getByText("setting.instance.week-start-day");
+    const accessHeading = screen.getByRole("heading", { level: 4, name: "setting.instance.access-title" });
+    expect(weekStartDay.compareDocumentPosition(accessHeading) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
 });

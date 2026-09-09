@@ -8,6 +8,7 @@ import {
   SIDEBAR_ROW_SLOT_BUTTON_CLASSES,
   SIDEBAR_ROW_SLOT_CLASSES,
   SidebarRowIconSlot,
+  sidebarRowStateAttributes,
   sidebarRowStateClasses,
 } from "@/components/AppSidebar/SidebarRow";
 import { useLocalStorage, useOverflowTitle } from "@/hooks";
@@ -41,7 +42,7 @@ interface TagTreeExpansion {
 const EMPTY_EXPANSION: TagTreeExpansion = { expanded: [] };
 
 // A structural row toggles like any other, so it hovers like one too — just quieter at rest.
-const STRUCTURAL_ROW_CLASSES = cn(sidebarRowStateClasses(false), "font-medium text-muted-foreground/65");
+const STRUCTURAL_ROW_CLASSES = cn(sidebarRowStateClasses(), "font-medium text-muted-foreground/65");
 
 /** One announcement for a tag row in either layout, so tree and flat mode never drift apart. */
 export const tagRowAriaLabel = (t: ReturnType<typeof useTranslate>, tag: string, amount: number) =>
@@ -94,7 +95,11 @@ const TagMark = ({ className }: { className?: string }) => (
 const Chevron = ({ open, className }: { open: boolean; className?: string }) => (
   <ChevronRightIcon
     aria-hidden="true"
-    className={cn("size-3.5 shrink-0 text-muted-foreground/70 transition-transform", open ? "rotate-90" : "rtl:rotate-180", className)}
+    className={cn(
+      "me-auto size-3.5 shrink-0 text-muted-foreground/70 transition-transform",
+      open ? "rotate-90" : "rtl:rotate-180",
+      className,
+    )}
     strokeWidth={1.8}
   />
 );
@@ -117,6 +122,7 @@ const TagItem = ({ tag, depth, activeTag, expanded, onTagClick, onToggle }: TagI
   const open = hasSubTags && expanded.has(tag.text);
   const { ref: labelRef, title } = useOverflowTitle<HTMLSpanElement>(isTag ? `#${tag.text}` : tag.text);
   const tagLabel = tag.amount !== undefined ? tagRowAriaLabel(t, tag.text, tag.amount) : undefined;
+  const state = isActive ? "checked" : "idle";
 
   return (
     <div className="w-full min-w-0">
@@ -125,9 +131,10 @@ const TagItem = ({ tag, depth, activeTag, expanded, onTagClick, onToggle }: TagI
         aria-level={depth + 1}
         aria-selected={isActive || undefined}
         aria-expanded={hasSubTags ? open : undefined}
+        {...sidebarRowStateAttributes(state)}
         className={cn(
           SIDEBAR_ROW_BOX_CLASSES,
-          isTag ? sidebarRowStateClasses(isActive) : STRUCTURAL_ROW_CLASSES,
+          isTag ? sidebarRowStateClasses(state) : STRUCTURAL_ROW_CLASSES,
           isAncestorOfActiveTag && !isActive && "text-foreground/75",
         )}
         // Overrides the start half of the box's `px-2`, leaving the trailing 8px intact.

@@ -170,7 +170,6 @@
     },
     "no-changes-detected": "Δεν εντοπίστηκαν αλλαγές",
     "save": "Εκτός",
-    "saving": "Οικονομία...",
     "audio-recorder": {
       "attachment-label": "Ηχογράφηση",
       "attachment-label-with-time": "Εγγραφή ήχου {{time}}",
@@ -328,8 +327,7 @@
     "restored-successfully": "Έγινε επαναφορά με επιτυχία",
     "succeed-copy-content": "Το περιεχόμενο αντιγράφηκε με επιτυχία.",
     "succeed-copy-link": "Ο σύνδεσμος αντιγράφηκε με επιτυχία.",
-    "update-succeed": "Η ενημέρωση ολοκληρώθηκε με επιτυχία",
-    "user-not-found": "Ο χρήστης δεν βρέθηκε"
+    "update-succeed": "Η ενημέρωση ολοκληρώθηκε με επιτυχία"
   },
   "reference": {
     "add-references": "Προσθήκη παραπομπών",

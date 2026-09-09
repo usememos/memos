@@ -104,7 +104,7 @@
     "tags": "Tags",
     "title": "Title",
     "today": "Today",
-    "tree-mode": "Tree mode",
+    "tree-mode": "Show as tree",
     "type": "Type",
     "unpin": "Unpin",
     "update": "Update",
@@ -133,7 +133,6 @@
     },
     "no-changes-detected": "No changes detected",
     "save": "Save",
-    "saving": "Saving...",
     "audio-recorder": {
       "attachment-label": "Audio recording",
       "attachment-label-with-time": "Audio recording {{time}}",
@@ -291,8 +290,7 @@
     "restored-successfully": "Restored successfully",
     "succeed-copy-content": "Content copied successfully.",
     "succeed-copy-link": "Link copied successfully.",
-    "update-succeed": "Update succeeded",
-    "user-not-found": "User not found"
+    "update-succeed": "Update succeeded"
   },
   "reference": {
     "add-references": "Add references",
@@ -392,7 +390,7 @@
       "saturday": "Saturday",
       "sunday": "Sunday",
       "week-start-day": "Week start day",
-      "access-description": "Control anonymous browsing, sign-up, authentication, profile editing, and calendar defaults for this instance.",
+      "access-description": "Control anonymous browsing, sign-up, authentication, and profile editing for this instance.",
       "access-title": "Access and policies",
       "disallow-change-nickname-description": "Prevent users from changing their display name.",
       "disallow-change-username-description": "Prevent users from changing their login username.",
@@ -613,7 +611,7 @@
       "title": "General",
       "additional-script-description": "Inject JavaScript into every web page. Use only trusted code.",
       "additional-style-description": "Inject CSS into the web app to adjust instance-wide presentation.",
-      "basic-description": "Configure the public identity shown by this instance.",
+      "basic-description": "Configure the public identity and calendar defaults for this instance.",
       "custom-code-description": "Optional instance-wide CSS and JavaScript applied to the frontend.",
       "custom-code-title": "Custom code"
     },

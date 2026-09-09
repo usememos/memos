@@ -133,7 +133,6 @@
     },
     "no-changes-detected": "Ni zaznanih sprememb",
     "save": "Shrani",
-    "saving": "Shranjujem...",
     "audio-recorder": {
       "attachment-label": "Zvočni posnetek",
       "attachment-label-with-time": "Zvočni posnetek {{time}}",
@@ -291,8 +290,7 @@
     "restored-successfully": "Uspešno obnovljeno",
     "succeed-copy-content": "Vsebina je uspešno skopirana.",
     "succeed-copy-link": "Povezava je uspešno skopirana.",
-    "update-succeed": "Posodobitev je uspešna",
-    "user-not-found": "Ne najdem uporabnika"
+    "update-succeed": "Posodobitev je uspešna"
   },
   "reference": {
     "add-references": "Dodaj referenco",

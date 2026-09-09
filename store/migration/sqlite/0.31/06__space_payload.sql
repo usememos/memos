@@ -1,0 +1,1 @@
+ALTER TABLE space ADD COLUMN payload TEXT NOT NULL DEFAULT '{}';

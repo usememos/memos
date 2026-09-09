@@ -28,9 +28,9 @@ var curatedOperationIDs = []string{
 	"AttachmentService_CreateAttachment",
 	"AttachmentService_GetAttachment",
 	"AttachmentService_DeleteAttachment",
-	"MemoViewService_ListMemoViews",
+	"UserService_ListMemoViews",
 	// The only allowed auth/identity operation: a read-only "whoami" so agents
-	// can resolve the current user (e.g. for MemoViewService_ListMemoViews).
+	// can resolve the current user (e.g. for UserService_ListMemoViews).
 	"AuthService_GetCurrentUser",
 }
 
@@ -199,7 +199,7 @@ func inputSchemaForOperation(operation *openAPIOperation) jsonSchema {
 	required := []string{}
 	defs := map[string]any{}
 	for _, parameter := range operation.Parameters {
-		schema := cloneSchema(parameter.Schema)
+		schema := jsonSchema(sanitizeSchemaValue(parameter.Schema).(map[string]any))
 		if parameter.Description != "" {
 			schema["description"] = parameter.Description
 		}

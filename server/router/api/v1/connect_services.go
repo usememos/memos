@@ -301,6 +301,51 @@ func (s *ConnectServiceHandler) DeleteUserNotification(ctx context.Context, req 
 	return connect.NewResponse(resp), nil
 }
 
+// ListMemoViews lists the saved memo views owned by a user.
+func (s *ConnectServiceHandler) ListMemoViews(ctx context.Context, req *connect.Request[v1pb.ListMemoViewsRequest]) (*connect.Response[v1pb.ListMemoViewsResponse], error) {
+	resp, err := s.APIV1Service.ListMemoViews(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+// GetMemoView returns a saved memo view by resource name.
+func (s *ConnectServiceHandler) GetMemoView(ctx context.Context, req *connect.Request[v1pb.GetMemoViewRequest]) (*connect.Response[v1pb.MemoView], error) {
+	resp, err := s.APIV1Service.GetMemoView(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+// CreateMemoView creates a saved memo view for a user.
+func (s *ConnectServiceHandler) CreateMemoView(ctx context.Context, req *connect.Request[v1pb.CreateMemoViewRequest]) (*connect.Response[v1pb.MemoView], error) {
+	resp, err := s.APIV1Service.CreateMemoView(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+// UpdateMemoView updates the selected fields of a saved memo view.
+func (s *ConnectServiceHandler) UpdateMemoView(ctx context.Context, req *connect.Request[v1pb.UpdateMemoViewRequest]) (*connect.Response[v1pb.MemoView], error) {
+	resp, err := s.APIV1Service.UpdateMemoView(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+// DeleteMemoView deletes a saved memo view by resource name.
+func (s *ConnectServiceHandler) DeleteMemoView(ctx context.Context, req *connect.Request[v1pb.DeleteMemoViewRequest]) (*connect.Response[emptypb.Empty], error) {
+	resp, err := s.APIV1Service.DeleteMemoView(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
 // MemoService
 
 func (s *ConnectServiceHandler) CreateMemo(ctx context.Context, req *connect.Request[v1pb.CreateMemoRequest]) (*connect.Response[v1pb.Memo], error) {
@@ -595,6 +640,14 @@ func (s *ConnectServiceHandler) DeleteSpaceMember(ctx context.Context, req *conn
 
 // AttachmentService
 
+func (s *ConnectServiceHandler) UploadAttachment(ctx context.Context, req *connect.Request[v1pb.UploadAttachmentRequest]) (*connect.Response[v1pb.UploadAttachmentResponse], error) {
+	resp, err := s.APIV1Service.UploadAttachment(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
 func (s *ConnectServiceHandler) CreateAttachment(ctx context.Context, req *connect.Request[v1pb.CreateAttachmentRequest]) (*connect.Response[v1pb.Attachment], error) {
 	resp, err := s.APIV1Service.CreateAttachment(ctx, req.Msg)
 	if err != nil {
@@ -647,53 +700,6 @@ func (s *ConnectServiceHandler) BatchDeleteAttachments(ctx context.Context, req 
 
 func (s *ConnectServiceHandler) Transcribe(ctx context.Context, req *connect.Request[v1pb.TranscribeRequest]) (*connect.Response[v1pb.TranscribeResponse], error) {
 	resp, err := s.APIV1Service.Transcribe(ctx, req.Msg)
-	if err != nil {
-		return nil, convertGRPCError(err)
-	}
-	return connect.NewResponse(resp), nil
-}
-
-// MemoViewService
-
-// ListMemoViews lists the saved memo views owned by a user.
-func (s *ConnectServiceHandler) ListMemoViews(ctx context.Context, req *connect.Request[v1pb.ListMemoViewsRequest]) (*connect.Response[v1pb.ListMemoViewsResponse], error) {
-	resp, err := s.APIV1Service.ListMemoViews(ctx, req.Msg)
-	if err != nil {
-		return nil, convertGRPCError(err)
-	}
-	return connect.NewResponse(resp), nil
-}
-
-// GetMemoView returns a saved memo view by resource name.
-func (s *ConnectServiceHandler) GetMemoView(ctx context.Context, req *connect.Request[v1pb.GetMemoViewRequest]) (*connect.Response[v1pb.MemoView], error) {
-	resp, err := s.APIV1Service.GetMemoView(ctx, req.Msg)
-	if err != nil {
-		return nil, convertGRPCError(err)
-	}
-	return connect.NewResponse(resp), nil
-}
-
-// CreateMemoView creates a saved memo view for a user.
-func (s *ConnectServiceHandler) CreateMemoView(ctx context.Context, req *connect.Request[v1pb.CreateMemoViewRequest]) (*connect.Response[v1pb.MemoView], error) {
-	resp, err := s.APIV1Service.CreateMemoView(ctx, req.Msg)
-	if err != nil {
-		return nil, convertGRPCError(err)
-	}
-	return connect.NewResponse(resp), nil
-}
-
-// UpdateMemoView updates the selected fields of a saved memo view.
-func (s *ConnectServiceHandler) UpdateMemoView(ctx context.Context, req *connect.Request[v1pb.UpdateMemoViewRequest]) (*connect.Response[v1pb.MemoView], error) {
-	resp, err := s.APIV1Service.UpdateMemoView(ctx, req.Msg)
-	if err != nil {
-		return nil, convertGRPCError(err)
-	}
-	return connect.NewResponse(resp), nil
-}
-
-// DeleteMemoView deletes a saved memo view by resource name.
-func (s *ConnectServiceHandler) DeleteMemoView(ctx context.Context, req *connect.Request[v1pb.DeleteMemoViewRequest]) (*connect.Response[emptypb.Empty], error) {
-	resp, err := s.APIV1Service.DeleteMemoView(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}

@@ -30,9 +30,9 @@ type Server struct {
 	Profile *profile.Profile
 	Store   *store.Store
 
-	echoServer *echo.Echo
-	httpServer *http.Server
-	sseHub     *apiv1.SSEHub
+	echoServer   *echo.Echo
+	httpServer   *http.Server
+	apiV1Service *apiv1.APIV1Service
 }
 
 func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store) (*Server, error) {
@@ -66,7 +66,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	frontend.NewFrontendService(profile, store).Serve(ctx, echoServer)
 
 	apiV1Service := apiv1.NewAPIV1Service(s.Secret, profile, store)
-	s.sseHub = apiV1Service.SSEHub
+	s.apiV1Service = apiV1Service
 
 	// Register HTTP file server routes BEFORE gRPC-Gateway to ensure proper range request handling for Safari.
 	// This uses native HTTP serving (http.ServeContent) instead of gRPC for video/audio files.
@@ -127,6 +127,7 @@ func (s *Server) Shutdown(ctx context.Context) {
 
 	s.closeLongLivedConnections()
 	s.shutdownHTTPServer(ctx)
+	s.apiV1Service.CloseAttachmentUploads()
 
 	// Close database connection.
 	if err := s.Store.Close(); err != nil {
@@ -138,9 +139,7 @@ func (s *Server) Shutdown(ctx context.Context) {
 
 func (s *Server) closeLongLivedConnections() {
 	// Long-lived SSE requests do not finish on their own during http.Server.Shutdown.
-	if s.sseHub != nil {
-		s.sseHub.Close()
-	}
+	s.apiV1Service.SSEHub.Close()
 }
 
 func (s *Server) shutdownHTTPServer(ctx context.Context) {

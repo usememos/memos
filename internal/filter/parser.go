@@ -162,7 +162,7 @@ func buildComparisonCondition(call *exprv1.Expr_Call, pc parseContext) (Conditio
 			}
 		}
 		if def.AllowedComparisonOps != nil {
-			if _, allowed := def.AllowedComparisonOps[op]; !allowed {
+			if _, allowed := def.AllowedComparisonOps[op]; !allowed && !isNullComplement(def, op, right) {
 				return nil, errors.Errorf("operator %s not allowed for field %q", op, field.Name)
 			}
 		}
@@ -1017,4 +1017,16 @@ func buildContainsPredicate(call *exprv1.Expr_Call, iterVar string) (PredicateEx
 	}
 
 	return &ContainsPredicate{Substring: substringStr}, nil
+}
+
+// isNullComplement reports whether op is a `!= null` test on a field that
+// permits `== null`. IS NOT NULL is the exact complement of IS NULL, so it is
+// safe even where `!=` against a value is rejected because SQL null semantics
+// would silently drop rows.
+func isNullComplement(def Field, op ComparisonOperator, right ValueExpr) bool {
+	if op != CompareNeq || !def.AllowedComparisonOps[CompareEq] {
+		return false
+	}
+	lit, ok := right.(*LiteralValue)
+	return ok && lit.Value == nil
 }

@@ -1,5 +1,6 @@
 import { CheckIcon, ChevronsUpDownIcon, LoaderCircleIcon, type LucideIcon, PlusIcon } from "lucide-react";
 import { type ReactNode, useRef, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import CreateSpaceDialog from "@/components/CreateSpaceDialog";
 import MemosLogo from "@/components/MemosLogo";
 import SpaceMark from "@/components/SpaceMark";
@@ -15,7 +16,9 @@ import {
 import { useSpaceContext } from "@/contexts/SpaceContext";
 import { extractSpaceUidFromName, formatSpaceUidForDisplay } from "@/lib/space-display";
 import { cn } from "@/lib/utils";
+import { getSpaceSwitchPath } from "@/router/routes";
 import { useTranslate } from "@/utils/i18n";
+import { sidebarSurfaceVariants } from "./sidebar-layout";
 
 // Icons in action and status rows sit in a glyph-width slot so every label in the menu
 // starts on the same text rail as the context rows.
@@ -25,24 +28,21 @@ const RowIcon = ({ icon: Icon, className }: { icon: LucideIcon; className?: stri
   </span>
 );
 
-const ContextItem = ({
-  selected,
-  onSelect,
-  children,
-  ariaLabel,
-}: {
-  selected: boolean;
-  onSelect: () => void;
-  children: ReactNode;
-  ariaLabel?: string;
-}) => (
+const ContextItem = ({ selected, to, children, ariaLabel }: { selected: boolean; to: string; children: ReactNode; ariaLabel?: string }) => (
   <DropdownMenuItem
     role="menuitemradio"
     aria-checked={selected}
     aria-label={ariaLabel}
     title={ariaLabel}
     closeOnClick
-    onClick={onSelect}
+    render={
+      <Link
+        to={to}
+        onClick={(event) => {
+          if (selected && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) event.preventDefault();
+        }}
+      />
+    }
     className={cn("min-w-0", selected && "bg-accent/60")}
   >
     {children}
@@ -50,10 +50,11 @@ const ContextItem = ({
   </DropdownMenuItem>
 );
 
-function SpaceSwitcher({ className }: { className?: string }) {
+function SpaceSwitcher({ className, size = "md" }: { className?: string; size?: "md" | "header" }) {
   const t = useTranslate();
-  const { spaces, duplicateSpaceTitles, selectedSpace, selectedSpaceName, isLoadingSpaces, isSpacesError, selectMemos, selectSpace } =
-    useSpaceContext();
+  const location = useLocation();
+  const memosPath = getSpaceSwitchPath(location);
+  const { spaces, duplicateSpaceTitles, selectedSpace, selectedSpaceName, isLoadingSpaces, isSpacesError, selectSpace } = useSpaceContext();
   const [createOpen, setCreateOpen] = useState(false);
   const [menuWidth, setMenuWidth] = useState<number>();
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -63,6 +64,8 @@ function SpaceSwitcher({ className }: { className?: string }) {
   const currentContextLabel = selectedSpaceName
     ? `${selectedSpace?.title || t("space.current")}${showSelectedSpaceUid && selectedSpaceUid ? ` (${selectedSpaceUid})` : ""}`
     : t("common.memos");
+  const brandSize = size === "header" ? "header" : "md";
+  const spaceMarkSize = size === "header" ? "header" : "md";
 
   const handleMenuOpenChange = (open: boolean) => {
     if (!open) return;
@@ -71,7 +74,10 @@ function SpaceSwitcher({ className }: { className?: string }) {
     const sidebar = trigger?.closest("aside");
     if (!trigger || !sidebar) return;
 
-    const width = Math.floor(sidebar.getBoundingClientRect().right - trigger.getBoundingClientRect().left);
+    const sidebarRect = sidebar.getBoundingClientRect();
+    const triggerRect = trigger.getBoundingClientRect();
+    const inlineInset = Math.min(Math.abs(triggerRect.left - sidebarRect.left), Math.abs(sidebarRect.right - triggerRect.right));
+    const width = Math.floor(sidebarRect.width - inlineInset * 2);
     if (width > 0) setMenuWidth(width);
   };
 
@@ -86,21 +92,27 @@ function SpaceSwitcher({ className }: { className?: string }) {
               aria-label={`${t("space.switch")}: ${currentContextLabel}`}
               title={currentContextLabel}
               className={cn(
-                "group flex h-9 min-w-0 max-w-full items-center gap-1 rounded-md px-0.5 text-start focus-visible:outline-none",
+                "text-start transition-colors hover:bg-sidebar-accent/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/40",
+                size === "header" ? sidebarSurfaceVariants({ role: "headerBrand" }) : sidebarSurfaceVariants({ role: "mobileBrand" }),
                 className,
               )}
             />
           }
         >
-          <span className="flex min-w-0 flex-1 items-center overflow-hidden">
+          <span className={cn("flex min-w-0 items-center overflow-hidden", size === "header" ? "gap-2" : "gap-1.5")}>
             {selectedSpaceName ? (
               <>
-                <SpaceMark />
-                <span className="ms-1.5 flex min-w-0 flex-1 flex-col justify-center overflow-hidden">
-                  <span className="block truncate text-[14px] font-medium leading-4 tracking-[-0.01em] text-foreground">
+                <SpaceMark icon={selectedSpace?.icon} size={spaceMarkSize} />
+                <span data-sidebar-label className="flex min-w-0 flex-1 flex-col justify-center overflow-hidden">
+                  <span
+                    className={cn(
+                      "block truncate tracking-[-0.01em] text-foreground",
+                      size === "header" ? "text-[15px] font-semibold leading-5" : "text-[14px] font-medium leading-4",
+                    )}
+                  >
                     {selectedSpace?.title || t("space.current")}
                   </span>
-                  {showSelectedSpaceUid && selectedSpaceUid ? (
+                  {size !== "header" && showSelectedSpaceUid && selectedSpaceUid ? (
                     <span
                       aria-hidden="true"
                       title={selectedSpaceUid}
@@ -112,10 +124,14 @@ function SpaceSwitcher({ className }: { className?: string }) {
                 </span>
               </>
             ) : (
-              <MemosLogo compact />
+              <MemosLogo compact size={brandSize} />
             )}
           </span>
-          <ChevronsUpDownIcon className="size-3.5 shrink-0 text-muted-foreground/70" strokeWidth={1.8} />
+          <ChevronsUpDownIcon
+            aria-hidden="true"
+            className={cn("shrink-0 text-muted-foreground/70", size === "header" ? "size-3" : "size-3.5")}
+            strokeWidth={1.8}
+          />
         </DropdownMenuTrigger>
         <DropdownMenuContent
           size="sm"
@@ -125,7 +141,7 @@ function SpaceSwitcher({ className }: { className?: string }) {
           style={menuWidth ? { width: `${menuWidth}px` } : undefined}
         >
           <DropdownMenuGroup>
-            <ContextItem selected={!selectedSpaceName} onSelect={selectMemos}>
+            <ContextItem selected={!selectedSpaceName} to={memosPath}>
               <span className="min-w-0 flex-1">
                 <MemosLogo compact size="sm" />
               </span>
@@ -141,10 +157,10 @@ function SpaceSwitcher({ className }: { className?: string }) {
                     <ContextItem
                       key={space.name}
                       selected={space.name === selectedSpaceName}
-                      onSelect={() => selectSpace(space)}
+                      to={getSpaceSwitchPath(location, space.name)}
                       ariaLabel={showUid && uid ? `${space.title} (${uid})` : space.title}
                     >
-                      <SpaceMark size="sm" />
+                      <SpaceMark icon={space.icon} size="sm" />
                       <span className="min-w-0 flex-1 overflow-hidden">
                         <span className="block max-w-full truncate font-medium">{space.title}</span>
                         {showUid && uid ? (

@@ -11,7 +11,6 @@ const clients = vi.hoisted(() => ({
 }));
 
 vi.mock("@/connect", () => ({
-  memoViewServiceClient: {},
   userServiceClient: clients,
 }));
 

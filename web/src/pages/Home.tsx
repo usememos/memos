@@ -4,6 +4,7 @@ import { deriveDefaultCreateTimeFromFilters } from "@/components/MemoEditor/util
 import MemoView from "@/components/MemoView";
 import PagedMemoList, { getMemoKey } from "@/components/PagedMemoList";
 import { useAuth } from "@/contexts/AuthContext";
+import { useGlobalMemoEditor } from "@/contexts/GlobalMemoEditorContext";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { NewMemoProvider } from "@/contexts/NewMemoContext";
 import { useSpaceContext } from "@/contexts/SpaceContext";
@@ -18,6 +19,7 @@ const Home = () => {
   const user = useCurrentUser();
   const t = useTranslate();
   const { isUserSettingsInitialized } = useAuth();
+  const { claimHomeAutoFocus } = useGlobalMemoEditor();
   const { filters } = useMemoFilterContext();
   const { memoFilter: contextFilter, selectedSpaceName } = useSpaceContext();
   const defaultCreateTime = useMemo(() => deriveDefaultCreateTimeFromFilters(filters), [filters]);
@@ -53,6 +55,7 @@ const Home = () => {
             return (
               <MemoEditor
                 key={editorCacheKey}
+                autoFocus={claimHomeAutoFocus}
                 className={useGrid ? undefined : "mb-2"}
                 cacheKey={editorCacheKey}
                 placeholder={t("editor.any-thoughts")}

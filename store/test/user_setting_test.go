@@ -939,21 +939,27 @@ func TestUserMemoViewConcurrentPartialUpdates(t *testing.T) {
 		Id:     "work",
 		Title:  "Original title",
 		Filter: `tag in ["original"]`,
+		Icon:   &storepb.MemoViewsUserSetting_MemoView_Icon{Value: &storepb.MemoViewsUserSetting_MemoView_Icon_Emoji{Emoji: "🌱"}},
 	}))
 
 	updatedTitle := "Updated title"
 	updatedFilter := `tag in ["updated"]`
 	var wg sync.WaitGroup
-	errs := make([]error, 2)
+	errs := make([]error, 3)
 	start := make(chan struct{})
 
 	wg.Go(func() {
 		<-start
-		_, errs[0] = ts.UpdateUserMemoView(ctx, user.ID, "work", &updatedTitle, nil)
+		_, errs[0] = ts.UpdateUserMemoView(ctx, user.ID, "work", &updatedTitle, nil, nil)
 	})
 	wg.Go(func() {
 		<-start
-		_, errs[1] = ts.UpdateUserMemoView(ctx, user.ID, "work", nil, &updatedFilter)
+		_, errs[1] = ts.UpdateUserMemoView(ctx, user.ID, "work", nil, &updatedFilter, nil)
+	})
+	wg.Go(func() {
+		<-start
+		icon := &storepb.MemoViewsUserSetting_MemoView_Icon{Value: &storepb.MemoViewsUserSetting_MemoView_Icon_Lucide{Lucide: "leaf"}}
+		_, errs[2] = ts.UpdateUserMemoView(ctx, user.ID, "work", nil, nil, &icon)
 	})
 	close(start)
 	wg.Wait()
@@ -961,11 +967,14 @@ func TestUserMemoViewConcurrentPartialUpdates(t *testing.T) {
 		require.NoError(t, err)
 	}
 
+	_, err = ts.ListUserSettings(ctx, &store.FindUserSetting{UserID: &user.ID, Key: storepb.UserSetting_MEMO_VIEWS})
+	require.NoError(t, err)
 	memoViews, err := ts.GetUserMemoViews(ctx, user.ID)
 	require.NoError(t, err)
 	require.Len(t, memoViews, 1)
 	require.Equal(t, updatedTitle, memoViews[0].GetTitle())
 	require.Equal(t, updatedFilter, memoViews[0].GetFilter())
+	require.Equal(t, "leaf", memoViews[0].GetIcon().GetLucide())
 }
 
 func TestGetUserMemoViewsReturnsCopies(t *testing.T) {
@@ -980,17 +989,20 @@ func TestGetUserMemoViewsReturnsCopies(t *testing.T) {
 		Id:     "work",
 		Title:  "Original title",
 		Filter: `tag in ["original"]`,
+		Icon:   &storepb.MemoViewsUserSetting_MemoView_Icon{Value: &storepb.MemoViewsUserSetting_MemoView_Icon_Emoji{Emoji: "🌱"}},
 	}))
 
 	firstRead, err := ts.GetUserMemoViews(ctx, user.ID)
 	require.NoError(t, err)
 	require.Len(t, firstRead, 1)
 	firstRead[0].Title = "Mutated title"
+	firstRead[0].Icon.Value = &storepb.MemoViewsUserSetting_MemoView_Icon_Lucide{Lucide: "leaf"}
 
 	secondRead, err := ts.GetUserMemoViews(ctx, user.ID)
 	require.NoError(t, err)
 	require.Len(t, secondRead, 1)
 	require.Equal(t, "Original title", secondRead[0].GetTitle())
+	require.Equal(t, "🌱", secondRead[0].GetIcon().GetEmoji())
 }
 
 func TestUserSettingMemoViewsPartialUpdate(t *testing.T) {
