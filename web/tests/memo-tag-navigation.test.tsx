@@ -4,11 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Tag } from "@/components/MemoContent/Tag";
 
 const navigateTo = vi.hoisted(() => vi.fn());
-const clearSelectedSpace = vi.hoisted(() => vi.fn());
-const origin = vi.hoisted(() => ({
-  parentPage: "/" as string,
-  parentScope: "all" as "all" | "preserve",
-}));
+const origin = vi.hoisted(() => ({ parentPage: "/" as string }));
 
 vi.mock("@/hooks/useNavigateTo", () => ({
   default: () => navigateTo,
@@ -16,10 +12,6 @@ vi.mock("@/hooks/useNavigateTo", () => ({
 
 vi.mock("@/components/MemoView/MemoViewContext", () => ({
   useMemoViewContext: () => origin,
-}));
-
-vi.mock("@/contexts/SpaceContext", () => ({
-  useSpaceContext: () => ({ clearSelectedSpace }),
 }));
 
 vi.mock("@/contexts/MemoFilterContext", async (importOriginal) => {
@@ -41,12 +33,10 @@ vi.mock("@/contexts/AuthContext", () => ({
 describe("Memo tag navigation", () => {
   beforeEach(() => {
     navigateTo.mockClear();
-    clearSelectedSpace.mockClear();
     origin.parentPage = "/";
-    origin.parentScope = "all";
   });
 
-  it("switches to All only when a global detail tag enters a collection", () => {
+  it("navigates directly to the global collection from a global detail", () => {
     render(
       <MemoryRouter initialEntries={["/memos/parent"]}>
         <Tag data-tag="work">#work</Tag>
@@ -54,12 +44,10 @@ describe("Memo tag navigation", () => {
     );
 
     fireEvent.click(screen.getByText("#work"));
-
-    expect(clearSelectedSpace).toHaveBeenCalledOnce();
     expect(navigateTo).toHaveBeenCalledWith("/?filter=tagSearch%3Awork");
   });
 
-  it("returns a Profile-origin tag without clearing the remembered Space", () => {
+  it("returns a Profile-origin tag to that profile's memo list", () => {
     origin.parentPage = "/u/alice?view=map";
 
     render(
@@ -69,8 +57,6 @@ describe("Memo tag navigation", () => {
     );
 
     fireEvent.click(screen.getByText("#work"));
-
-    expect(clearSelectedSpace).not.toHaveBeenCalled();
     expect(navigateTo).toHaveBeenCalledWith("/u/alice?filter=tagSearch%3Awork");
   });
 });

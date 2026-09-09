@@ -1,13 +1,16 @@
-import { Code, ConnectError } from "@connectrpc/connect";
+import { Code } from "@connectrpc/connect";
 import { QueryClient } from "@tanstack/react-query";
+import { hasConnectCode } from "@/lib/error";
 
-// Don't retry requests that failed due to authentication errors.
-// The auth interceptor in connect.ts already handles token refresh and request retry.
-// If the interceptor still throws Unauthenticated, the session is truly gone and the
-// user will be redirected to /auth. A React Query retry would only fire a second
-// failed refresh attempt and a second redirect call while navigation is already in progress.
-const shouldRetry = (failureCount: number, error: unknown): boolean => {
-  if (error instanceof ConnectError && error.code === Code.Unauthenticated) return false;
+// Don't retry requests whose outcome is deterministic: a rejected request (bad filter
+// expression) or a denied one fails identically on every attempt.
+// Unauthenticated is also terminal here: the auth interceptor in connect.ts already handles
+// token refresh and request retry. If the interceptor still throws Unauthenticated, the
+// session is truly gone and the user will be redirected to /auth. A React Query retry would
+// only fire a second failed refresh attempt and a second redirect call while navigation is
+// already in progress.
+export const shouldRetry = (failureCount: number, error: unknown): boolean => {
+  if (hasConnectCode(error, Code.InvalidArgument, Code.PermissionDenied, Code.Unauthenticated)) return false;
   return failureCount < 1;
 };
 

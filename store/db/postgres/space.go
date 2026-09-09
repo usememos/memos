@@ -8,7 +8,9 @@ import (
 
 	"github.com/lib/pq"
 	"github.com/pkg/errors"
+	"google.golang.org/protobuf/encoding/protojson"
 
+	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
 
@@ -23,15 +25,28 @@ func (d *DB) CreateSpace(ctx context.Context, create *store.Space, creatorID int
 	if err := lockPostgresActiveUser(ctx, tx, creatorID); err != nil {
 		return nil, err
 	}
-	fields := []string{"uid", "title", "description"}
-	args := []any{create.UID, create.Title, create.Description}
+	payload := "{}"
+	if create.Payload != nil {
+		data, err := protojson.Marshal(create.Payload)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to marshal space payload")
+		}
+		payload = string(data)
+	}
+	fields := []string{"uid", "title", "description", "payload"}
+	args := []any{create.UID, create.Title, create.Description, payload}
 	space := &store.Space{}
-	query := "INSERT INTO space (" + strings.Join(fields, ", ") + ") VALUES (" + placeholders(len(args)) + ") RETURNING id, uid, title, description"
-	if err := tx.QueryRowContext(ctx, query, args...).Scan(&space.ID, &space.UID, &space.Title, &space.Description); err != nil {
+	var payloadBytes []byte
+	query := "INSERT INTO space (" + strings.Join(fields, ", ") + ") VALUES (" + placeholders(len(args)) + ") RETURNING id, uid, title, description, payload"
+	if err := tx.QueryRowContext(ctx, query, args...).Scan(&space.ID, &space.UID, &space.Title, &space.Description, &payloadBytes); err != nil {
 		if isPostgresUniqueViolation(err) {
 			return nil, store.ErrSpaceAlreadyExists
 		}
 		return nil, err
+	}
+	space.Payload = &storepb.SpacePayload{}
+	if err := protojsonUnmarshaler.Unmarshal(payloadBytes, space.Payload); err != nil {
+		return nil, errors.Wrap(err, "failed to unmarshal space payload")
 	}
 	if _, err := tx.ExecContext(ctx, "INSERT INTO space_member (space_id, user_id, status, role) VALUES ($1, $2, $3, $4)", space.ID, creatorID, store.SpaceMemberStatusActive, store.SpaceMemberRoleAdmin); err != nil {
 		return nil, err
@@ -46,7 +61,7 @@ func (d *DB) CreateSpace(ctx context.Context, create *store.Space, creatorID int
 
 func (d *DB) ListSpaces(ctx context.Context, find *store.FindSpace) ([]*store.Space, error) {
 	where, args := []string{"1 = 1"}, []any{}
-	selectFields := "space.id, space.uid, space.title, space.description"
+	selectFields := "space.id, space.uid, space.title, space.description, space.payload"
 	joins := ""
 	groupBy := ""
 	add := func(condition string, value any) {
@@ -75,7 +90,7 @@ func (d *DB) ListSpaces(ctx context.Context, find *store.FindSpace) ([]*store.Sp
 			JOIN "user" active_user ON active_user.id = active_member.user_id AND active_user.row_status = 'NORMAL'`
 		add("viewer_member.user_id = %s", *find.MemberUserID)
 		where = append(where, "viewer_member.status = 'ACTIVE'", "viewer_member.role IN ('ADMIN', 'USER')", "viewer_user.row_status = 'NORMAL'")
-		groupBy = " GROUP BY space.id, space.uid, space.title, space.description, viewer_member.role"
+		groupBy = " GROUP BY space.id, space.uid, space.title, space.description, space.payload, viewer_member.role"
 	}
 	query := "SELECT " + selectFields + " FROM space" + joins + " WHERE " + strings.Join(where, " AND ") + groupBy + " ORDER BY space.id DESC"
 	query = appendPostgresLimit(query, find.Limit, find.Offset)
@@ -87,12 +102,17 @@ func (d *DB) ListSpaces(ctx context.Context, find *store.FindSpace) ([]*store.Sp
 	spaces := []*store.Space{}
 	for rows.Next() {
 		space := &store.Space{}
-		scanTargets := []any{&space.ID, &space.UID, &space.Title, &space.Description}
+		var payloadBytes []byte
+		scanTargets := []any{&space.ID, &space.UID, &space.Title, &space.Description, &payloadBytes}
 		if find.MemberUserID != nil {
 			scanTargets = append(scanTargets, &space.CurrentUserRole, &space.MemberCount)
 		}
 		if err := rows.Scan(scanTargets...); err != nil {
 			return nil, err
+		}
+		space.Payload = &storepb.SpacePayload{}
+		if err := protojsonUnmarshaler.Unmarshal(payloadBytes, space.Payload); err != nil {
+			return nil, errors.Wrap(err, "failed to unmarshal space payload")
 		}
 		spaces = append(spaces, space)
 	}
@@ -122,11 +142,23 @@ func (d *DB) UpdateSpace(ctx context.Context, update *store.UpdateSpace, actorUs
 	if update.Description != nil {
 		add("description", *update.Description)
 	}
+	if update.Payload != nil {
+		data, err := protojson.Marshal(update.Payload)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to marshal space payload")
+		}
+		add("payload", string(data))
+	}
 	args = append(args, update.ID)
 	space := &store.Space{}
-	query := "UPDATE space SET " + strings.Join(sets, ", ") + " WHERE id = " + placeholder(len(args)) + " RETURNING id, uid, title, description"
-	if err := tx.QueryRowContext(ctx, query, args...).Scan(&space.ID, &space.UID, &space.Title, &space.Description); err != nil {
+	var payloadBytes []byte
+	query := "UPDATE space SET " + strings.Join(sets, ", ") + " WHERE id = " + placeholder(len(args)) + " RETURNING id, uid, title, description, payload"
+	if err := tx.QueryRowContext(ctx, query, args...).Scan(&space.ID, &space.UID, &space.Title, &space.Description, &payloadBytes); err != nil {
 		return nil, err
+	}
+	space.Payload = &storepb.SpacePayload{}
+	if err := protojsonUnmarshaler.Unmarshal(payloadBytes, space.Payload); err != nil {
+		return nil, errors.Wrap(err, "failed to unmarshal space payload")
 	}
 	if err := populatePostgresSpaceSummary(ctx, tx, space, actorUserID); err != nil {
 		return nil, err

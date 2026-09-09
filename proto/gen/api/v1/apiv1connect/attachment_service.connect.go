@@ -37,6 +37,9 @@ const (
 	// AttachmentServiceCreateAttachmentProcedure is the fully-qualified name of the AttachmentService's
 	// CreateAttachment RPC.
 	AttachmentServiceCreateAttachmentProcedure = "/memos.api.v1.AttachmentService/CreateAttachment"
+	// AttachmentServiceUploadAttachmentProcedure is the fully-qualified name of the AttachmentService's
+	// UploadAttachment RPC.
+	AttachmentServiceUploadAttachmentProcedure = "/memos.api.v1.AttachmentService/UploadAttachment"
 	// AttachmentServiceListAttachmentsProcedure is the fully-qualified name of the AttachmentService's
 	// ListAttachments RPC.
 	AttachmentServiceListAttachmentsProcedure = "/memos.api.v1.AttachmentService/ListAttachments"
@@ -58,6 +61,11 @@ const (
 type AttachmentServiceClient interface {
 	// CreateAttachment creates a new attachment.
 	CreateAttachment(context.Context, *connect.Request[v1.CreateAttachmentRequest]) (*connect.Response[v1.Attachment], error)
+	// UploadAttachment uploads a file in bounded chunks. The first call carries
+	// the spec and returns an upload_id; later calls carry that upload_id.
+	// Uploads are bound to the authenticated user, expire after 30 minutes of
+	// inactivity, and do not survive a server restart.
+	UploadAttachment(context.Context, *connect.Request[v1.UploadAttachmentRequest]) (*connect.Response[v1.UploadAttachmentResponse], error)
 	// ListAttachments lists all attachments.
 	ListAttachments(context.Context, *connect.Request[v1.ListAttachmentsRequest]) (*connect.Response[v1.ListAttachmentsResponse], error)
 	// GetAttachment returns an attachment by name.
@@ -85,6 +93,12 @@ func NewAttachmentServiceClient(httpClient connect.HTTPClient, baseURL string, o
 			httpClient,
 			baseURL+AttachmentServiceCreateAttachmentProcedure,
 			connect.WithSchema(attachmentServiceMethods.ByName("CreateAttachment")),
+			connect.WithClientOptions(opts...),
+		),
+		uploadAttachment: connect.NewClient[v1.UploadAttachmentRequest, v1.UploadAttachmentResponse](
+			httpClient,
+			baseURL+AttachmentServiceUploadAttachmentProcedure,
+			connect.WithSchema(attachmentServiceMethods.ByName("UploadAttachment")),
 			connect.WithClientOptions(opts...),
 		),
 		listAttachments: connect.NewClient[v1.ListAttachmentsRequest, v1.ListAttachmentsResponse](
@@ -123,6 +137,7 @@ func NewAttachmentServiceClient(httpClient connect.HTTPClient, baseURL string, o
 // attachmentServiceClient implements AttachmentServiceClient.
 type attachmentServiceClient struct {
 	createAttachment       *connect.Client[v1.CreateAttachmentRequest, v1.Attachment]
+	uploadAttachment       *connect.Client[v1.UploadAttachmentRequest, v1.UploadAttachmentResponse]
 	listAttachments        *connect.Client[v1.ListAttachmentsRequest, v1.ListAttachmentsResponse]
 	getAttachment          *connect.Client[v1.GetAttachmentRequest, v1.Attachment]
 	updateAttachment       *connect.Client[v1.UpdateAttachmentRequest, v1.Attachment]
@@ -133,6 +148,11 @@ type attachmentServiceClient struct {
 // CreateAttachment calls memos.api.v1.AttachmentService.CreateAttachment.
 func (c *attachmentServiceClient) CreateAttachment(ctx context.Context, req *connect.Request[v1.CreateAttachmentRequest]) (*connect.Response[v1.Attachment], error) {
 	return c.createAttachment.CallUnary(ctx, req)
+}
+
+// UploadAttachment calls memos.api.v1.AttachmentService.UploadAttachment.
+func (c *attachmentServiceClient) UploadAttachment(ctx context.Context, req *connect.Request[v1.UploadAttachmentRequest]) (*connect.Response[v1.UploadAttachmentResponse], error) {
+	return c.uploadAttachment.CallUnary(ctx, req)
 }
 
 // ListAttachments calls memos.api.v1.AttachmentService.ListAttachments.
@@ -164,6 +184,11 @@ func (c *attachmentServiceClient) BatchDeleteAttachments(ctx context.Context, re
 type AttachmentServiceHandler interface {
 	// CreateAttachment creates a new attachment.
 	CreateAttachment(context.Context, *connect.Request[v1.CreateAttachmentRequest]) (*connect.Response[v1.Attachment], error)
+	// UploadAttachment uploads a file in bounded chunks. The first call carries
+	// the spec and returns an upload_id; later calls carry that upload_id.
+	// Uploads are bound to the authenticated user, expire after 30 minutes of
+	// inactivity, and do not survive a server restart.
+	UploadAttachment(context.Context, *connect.Request[v1.UploadAttachmentRequest]) (*connect.Response[v1.UploadAttachmentResponse], error)
 	// ListAttachments lists all attachments.
 	ListAttachments(context.Context, *connect.Request[v1.ListAttachmentsRequest]) (*connect.Response[v1.ListAttachmentsResponse], error)
 	// GetAttachment returns an attachment by name.
@@ -187,6 +212,12 @@ func NewAttachmentServiceHandler(svc AttachmentServiceHandler, opts ...connect.H
 		AttachmentServiceCreateAttachmentProcedure,
 		svc.CreateAttachment,
 		connect.WithSchema(attachmentServiceMethods.ByName("CreateAttachment")),
+		connect.WithHandlerOptions(opts...),
+	)
+	attachmentServiceUploadAttachmentHandler := connect.NewUnaryHandler(
+		AttachmentServiceUploadAttachmentProcedure,
+		svc.UploadAttachment,
+		connect.WithSchema(attachmentServiceMethods.ByName("UploadAttachment")),
 		connect.WithHandlerOptions(opts...),
 	)
 	attachmentServiceListAttachmentsHandler := connect.NewUnaryHandler(
@@ -223,6 +254,8 @@ func NewAttachmentServiceHandler(svc AttachmentServiceHandler, opts ...connect.H
 		switch r.URL.Path {
 		case AttachmentServiceCreateAttachmentProcedure:
 			attachmentServiceCreateAttachmentHandler.ServeHTTP(w, r)
+		case AttachmentServiceUploadAttachmentProcedure:
+			attachmentServiceUploadAttachmentHandler.ServeHTTP(w, r)
 		case AttachmentServiceListAttachmentsProcedure:
 			attachmentServiceListAttachmentsHandler.ServeHTTP(w, r)
 		case AttachmentServiceGetAttachmentProcedure:
@@ -244,6 +277,10 @@ type UnimplementedAttachmentServiceHandler struct{}
 
 func (UnimplementedAttachmentServiceHandler) CreateAttachment(context.Context, *connect.Request[v1.CreateAttachmentRequest]) (*connect.Response[v1.Attachment], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.AttachmentService.CreateAttachment is not implemented"))
+}
+
+func (UnimplementedAttachmentServiceHandler) UploadAttachment(context.Context, *connect.Request[v1.UploadAttachmentRequest]) (*connect.Response[v1.UploadAttachmentResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.AttachmentService.UploadAttachment is not implemented"))
 }
 
 func (UnimplementedAttachmentServiceHandler) ListAttachments(context.Context, *connect.Request[v1.ListAttachmentsRequest]) (*connect.Response[v1.ListAttachmentsResponse], error) {

@@ -149,7 +149,7 @@ func TestUpsertMemoReactionRevalidatesSpaceParticipation(t *testing.T) {
 
 	require.NoError(t, ts.Store.DeleteSpaceMember(ctx, &store.DeleteSpaceMember{SpaceID: space.ID, UserID: member.ID}, owner.ID))
 	_, err = ts.Service.DeleteMemoReaction(memberCtx, &apiv1.DeleteMemoReactionRequest{Name: memberReaction.Name})
-	require.Equal(t, codes.PermissionDenied, status.Code(err))
+	require.NoError(t, err, "the creator may withdraw a reaction after leaving")
 	_, err = ts.Service.UpsertMemoReaction(memberCtx, &apiv1.UpsertMemoReactionRequest{
 		Name:     memoName,
 		Reaction: &apiv1.Reaction{ReactionType: "🔥"},
@@ -162,8 +162,7 @@ func TestUpsertMemoReactionRevalidatesSpaceParticipation(t *testing.T) {
 		Role:    store.SpaceMemberRoleUser,
 	}, owner.ID)
 	require.NoError(t, err)
-	_, err = ts.Service.DeleteMemoReaction(memberCtx, &apiv1.DeleteMemoReactionRequest{Name: memberReaction.Name})
-	require.NoError(t, err)
+
 	_, err = ts.Service.UpsertMemoReaction(memberCtx, &apiv1.UpsertMemoReactionRequest{
 		Name:     memoName,
 		Reaction: &apiv1.Reaction{ReactionType: "🔥"},

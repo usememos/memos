@@ -183,7 +183,6 @@
     },
     "no-changes-detected": "Изменений не обнаружено",
     "save": "Сохранить",
-    "saving": "Сохранение...",
     "audio-recorder": {
       "attachment-label": "Аудиозапись",
       "attachment-label-with-time": "Аудиозапись {{time}}",
@@ -385,8 +384,7 @@
     "restored-successfully": "Успешно восстановлено.",
     "succeed-copy-content": "Контент успешно скопирован.",
     "succeed-copy-link": "Ссылка скопирована в буфер обмена.",
-    "update-succeed": "Успешно обновлено",
-    "user-not-found": "Пользователь не найден"
+    "update-succeed": "Успешно обновлено"
   },
   "reference": {
     "add-references": "Добавить связь",

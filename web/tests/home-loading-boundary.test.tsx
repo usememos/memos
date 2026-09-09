@@ -43,6 +43,10 @@ vi.mock("@/contexts/AuthContext", () => ({
   useAuth: () => ({ isUserSettingsInitialized: true }),
 }));
 
+vi.mock("@/contexts/GlobalMemoEditorContext", () => ({
+  useGlobalMemoEditor: () => ({ claimHomeAutoFocus: () => true }),
+}));
+
 vi.mock("@/contexts/MemoFilterContext", () => ({
   useMemoFilterContext: () => ({ filters: [] }),
 }));
@@ -80,6 +84,7 @@ describe("<Home>", () => {
     expect(screen.getByTestId("memo-view")).toBeInTheDocument();
     expect(state.listProps).toMatchObject({ contextFilter: undefined });
     expect(state.editorProps).toMatchObject({ cacheKey: "home-memo-editor", defaultSpace: undefined });
+    expect(state.editorProps?.autoFocus).toEqual(expect.any(Function));
   });
 
   it("filters the feed and sets new memo placement to the selected Space", () => {

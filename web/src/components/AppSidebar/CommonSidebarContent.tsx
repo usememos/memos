@@ -36,7 +36,7 @@ const CommonSidebarContent = () => {
             to={ROUTES.ABOUT}
             aria-current={aboutActive ? "page" : undefined}
             onClick={() => setMobileOpen(false)}
-            className={cn(SIDEBAR_ROW_CLASSES, sidebarRowStateClasses(aboutActive))}
+            className={cn(SIDEBAR_ROW_CLASSES, sidebarRowStateClasses(aboutActive ? "current" : "idle"))}
           >
             <SidebarRowIconSlot icon={InfoIcon} />
             <span className="min-w-0 flex-1 truncate">{t("common.about")}</span>

@@ -20,25 +20,11 @@ var (
 
 const maxMetadataScanBytes = 256 * 1024
 
+// DetectJPEG detects embedded video in an in-memory JPEG.
 func DetectJPEG(blob []byte) *Detection {
-	if len(blob) < 16 || !bytes.HasPrefix(blob, []byte{0xFF, 0xD8}) {
-		return nil
-	}
-
-	text := string(blob[:min(len(blob), maxMetadataScanBytes)])
-	if !motionPhotoMarkerRegex.MatchString(text) {
-		return nil
-	}
-
-	videoStart := detectVideoStart(blob, text)
-	if videoStart < 0 || videoStart >= len(blob) {
-		return nil
-	}
-
-	return &Detection{
-		VideoStart:              videoStart,
-		PresentationTimestampUs: parsePresentationTimestampUs(text),
-	}
+	// bytes.Reader never fails within bounds, so the error is unreachable.
+	detection, _ := DetectJPEGReader(bytes.NewReader(blob), int64(len(blob)))
+	return detection
 }
 
 func ExtractVideo(blob []byte) ([]byte, *Detection) {
@@ -53,19 +39,6 @@ func ExtractVideo(blob []byte) ([]byte, *Detection) {
 	}
 
 	return videoBlob, detection
-}
-
-func detectVideoStart(blob []byte, text string) int {
-	if matches := microVideoOffsetRegex.FindStringSubmatch(text); len(matches) == 2 {
-		if offset, err := strconv.Atoi(matches[1]); err == nil && offset > 0 && offset < len(blob) {
-			start := len(blob) - offset
-			if looksLikeMP4(blob[start:]) {
-				return start
-			}
-		}
-	}
-
-	return findEmbeddedMP4Start(blob)
 }
 
 func parsePresentationTimestampUs(text string) int64 {

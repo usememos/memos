@@ -14,7 +14,9 @@ const mocks = vi.hoisted(() => ({
   setMobileOpen: vi.fn(),
   setQuickFindOpen: vi.fn(),
   selectedSpaceName: undefined as string | undefined,
+  isSpaceReady: true,
   pathname: "/",
+  desktop: true,
 }));
 
 vi.mock("react-router-dom", async (importOriginal) => ({
@@ -35,11 +37,15 @@ vi.mock("@/contexts/AuthContext", () => ({
 }));
 
 vi.mock("@/contexts/SpaceContext", () => ({
-  useSpaceContext: () => ({ selectedSpaceName: mocks.selectedSpaceName }),
+  useSpaceContext: () => ({ selectedSpaceName: mocks.selectedSpaceName, isSpaceReady: mocks.isSpaceReady }),
 }));
 
 vi.mock("@/hooks/useCurrentUser", () => ({
   default: () => mocks.currentUser,
+}));
+
+vi.mock("@/hooks/useMediaQuery", () => ({
+  default: () => mocks.desktop,
 }));
 
 vi.mock("@/utils/i18n", () => ({
@@ -123,7 +129,60 @@ describe("GlobalMemoEditorProvider", () => {
     mocks.setMobileOpen.mockClear();
     mocks.setQuickFindOpen.mockClear();
     mocks.selectedSpaceName = undefined;
+    mocks.isSpaceReady = true;
     mocks.pathname = "/";
+    mocks.desktop = true;
+  });
+
+  it("allows Home autofocus once after settings finish loading", () => {
+    let claimFocus!: () => boolean;
+    const Probe = () => {
+      claimFocus = useGlobalMemoEditor().claimHomeAutoFocus;
+      return null;
+    };
+    mocks.isUserSettingsInitialized = false;
+    const { rerender } = renderProvider(<Probe />);
+    mocks.isUserSettingsInitialized = true;
+    rerender(
+      <GlobalMemoEditorProvider>
+        <Probe />
+      </GlobalMemoEditorProvider>,
+    );
+
+    expect(claimFocus()).toBe(true);
+    expect(claimFocus()).toBe(false);
+  });
+
+  it.each(["mobile", "other route", "navigation", "Space change", "existing focus"])("does not autofocus Home after %s", (scenario) => {
+    let claimFocus!: () => boolean;
+    const Probe = () => {
+      claimFocus = useGlobalMemoEditor().claimHomeAutoFocus;
+      return <button type="button">Another control</button>;
+    };
+    if (scenario === "mobile") mocks.desktop = false;
+    if (scenario === "other route") mocks.pathname = "/explore";
+    const { rerender } = renderProvider(<Probe />);
+
+    if (scenario === "navigation") mocks.pathname = "/inbox";
+    if (scenario === "Space change") mocks.selectedSpaceName = "spaces/product";
+    if (scenario === "existing focus") screen.getByRole("button", { name: "Another control" }).focus();
+    rerender(
+      <GlobalMemoEditorProvider>
+        <Probe />
+      </GlobalMemoEditorProvider>,
+    );
+
+    // Returning to the original route, Space, or viewport must not rearm focus.
+    mocks.pathname = "/";
+    mocks.selectedSpaceName = undefined;
+    mocks.isSpaceReady = true;
+    mocks.desktop = true;
+    rerender(
+      <GlobalMemoEditorProvider>
+        <Probe />
+      </GlobalMemoEditorProvider>,
+    );
+    expect(claimFocus()).toBe(false);
   });
 
   it("opens a modal focus-mode editor, closes the sidebar surfaces, and restores focus after Escape", async () => {
@@ -268,6 +327,15 @@ describe("GlobalMemoEditorProvider", () => {
     expect(mocks.loadMemoEditor).not.toHaveBeenCalled();
   });
 
+  it("disables new memo while the route Space is unresolved or inaccessible", () => {
+    mocks.pathname = "/spaces/product";
+    mocks.selectedSpaceName = "spaces/product";
+    mocks.isSpaceReady = false;
+    renderProvider(<Trigger />);
+    fireEvent.click(screen.getByRole("button", { name: "Open editor" }));
+    expect(mocks.loadMemoEditor).not.toHaveBeenCalled();
+  });
+
   it("snapshots the selected Space when opening the composer", async () => {
     mocks.selectedSpaceName = "spaces/product";
     await openViaTrigger();
@@ -284,7 +352,11 @@ describe("GlobalMemoEditorProvider", () => {
     });
   });
 
-  it.each(["/explore", "/attachments"])("inherits the remembered Space when composing from %s", async (pathname) => {
+  it.each([
+    "/spaces/product/explore",
+    "/spaces/product/attachments",
+    "/spaces/product/calendar/2026/09",
+  ])("inherits the route Space when composing from %s", async (pathname) => {
     mocks.pathname = pathname;
     mocks.selectedSpaceName = "spaces/product";
     await openViaTrigger();
@@ -307,9 +379,9 @@ describe("GlobalMemoEditorProvider", () => {
     "/403",
     "/404",
     "/unknown",
-  ])("creates an unassigned memo from %s even when a Space is remembered", async (pathname) => {
+  ])("creates an unassigned memo from %s", async (pathname) => {
+    // The URL only carries a Space on collection pages, so the context reports none here.
     mocks.pathname = pathname;
-    mocks.selectedSpaceName = "spaces/product";
     await openViaTrigger();
 
     expect(mocks.editorProps).toMatchObject({

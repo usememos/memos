@@ -93,8 +93,8 @@ Distribution is derived rather than separately configured:
 - A Space feed first requires active membership, then returns readable memos assigned to that Space that do not have a `COMMENT` relation. Membership does not make another author's assigned `PRIVATE` memo readable.
 - Direct memo reads evaluate each memo independently, including comments.
 - A comment or conversation query requires its context memo to be readable, then filters every replying memo by that memo's own audience.
-- A `COMMENT` or `REFERENCE` relation and its snippet are returned only when both endpoints are readable.
-- Reactions are readable whenever their memo is readable.
+- A `COMMENT` or `REFERENCE` relation and its snippet are returned only when both endpoints are readable. A readable comment's `parent` field still identifies its context memo; this identity does not grant access. Clients fetch it independently and render an unavailable context on permission denial or not-found. Bearer-share responses omit this field.
+- Reactions are readable whenever their memo is readable. An active reaction creator can withdraw their own reaction even after losing memo access or Space membership.
 - Public profiles and other public surfaces continue to use `PUBLIC`, not Space placement.
 
 ### Participation and governance
@@ -162,7 +162,7 @@ Space responses returned through membership-authorized operations include the au
 
 Memo responses gain an optional Space resource name, and `Visibility` adds `SPACE = 4` without renumbering existing values. The domain-to-v1 mapping is Author to `PRIVATE`, Instance to `PROTECTED`, Public to `PUBLIC`, and Space to `SPACE`. `VISIBILITY_UNSPECIFIED` remains an input sentinel: create treats it as `PRIVATE`, an explicit visibility update rejects it, and responses never return it. Visibility values are named domains and must not be compared numerically. The global default memo visibility setting continues to accept only `PRIVATE`, `PROTECTED`, and `PUBLIC`, because it cannot identify a Space.
 
-Memo listing gains explicit all-readable, Unassigned, and Space scopes. Space scope requires active membership. Existing global and Space feeds exclude comments by default, and Space identity is not added to the CEL filter schema.
+Memo listing expresses placement through the CEL filter: `space == "spaces/{space}"` selects one Space, `space == null` selects Unassigned memos, and `space != null` selects every placed memo. Membership is enforced by the read policy, which the filter can only narrow. Saved views accept the same expressions. Existing global and Space feeds exclude comments by default.
 
 Placement and audience use the existing memo update mechanism so the memo author can change them atomically. The Space API does not add an operation for an `ADMIN` to move, withdraw, or otherwise mutate an individual memo.
 
@@ -171,6 +171,8 @@ MCP memo operations reuse the same memo policy; Space management is not exposed 
 ### UI shape
 
 The active Space scopes collaborative resource browsing and creation, including Home, Explore, and attachment lists. Archived, Inbox, and user profiles remain user-global and their routes do not inherit the active Space. Global Settings provides a Spaces section for viewing received invitations and managing joined Spaces, metadata, members, roles, and pending invitations; it is a management surface rather than another Space switcher.
+
+Creating an invitation also delivers a `SPACE_INVITATION` inbox notification to the invitee, with the same email dispatch as memo notifications when email is enabled. The notification carries the read-only Space summary and offered role, and the invitee can accept or decline from the Inbox. Accepting archives the notification and keeps it as history while the membership is active; declining or revoking deletes it. At read time the notification fails closed: it is omitted unless the receiver still holds the pending invitation or is an active member of the Space, so a deleted Space or a revoked offer leaks no metadata.
 
 ### Security invariants
 
@@ -213,4 +215,4 @@ Files for `PRIVATE`, `PROTECTED`, and `SPACE` memos use `private, no-store`; pub
 
 ## Deferred design
 
-Email and external-user invitations, invitation expiration, inviter attribution, invitation history, open enrollment, account erasure beyond the membership guard, notification delivery and retention policy, application-admin moderation and recovery, audit history, soft deletion, restoration, retryable external-object cleanup, delivery-time cancellation of queued email/webhooks, broader concurrent-mutation hardening, and asynchronous deletion of very large Spaces remain deferred. Later work must preserve invitee consent, independent memo authorization, non-propagating relations, and explicit Space aggregate deletion unless this design is revisited.
+Email and external-user invitations, invitation expiration, inviter attribution, invitation history, open enrollment, account erasure beyond the membership guard, notification retention policy and per-user notification preferences, application-admin moderation and recovery, audit history, soft deletion, restoration, retryable external-object cleanup, delivery-time cancellation of queued email/webhooks, broader concurrent-mutation hardening, and asynchronous deletion of very large Spaces remain deferred. Later work must preserve invitee consent, independent memo authorization, non-propagating relations, and explicit Space aggregate deletion unless this design is revisited.

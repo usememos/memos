@@ -40,7 +40,6 @@ const MemoContent = (props: MemoContentProps) => {
           resolvedMentionUsernames={resolvedMentionUsernames}
           memoName={props.memoName}
           parentPage={props.parentPage}
-          parentScope={props.parentScope}
           compact={Boolean(props.compact)}
         />
       </div>

@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { replaceFiltersByFactor, stringifyFilters, useMemoFilterContext } from "@/contexts/MemoFilterContext";
 
-export const useDateFilterNavigation = (targetPath?: string) => {
+export const useDateFilterNavigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { filters, setFilters } = useMemoFilterContext();
@@ -10,14 +10,12 @@ export const useDateFilterNavigation = (targetPath?: string) => {
   const navigateToDateFilter = useCallback(
     (date: string) => {
       const nextFilters = replaceFiltersByFactor(filters, "displayTime", [{ factor: "displayTime", value: date }]);
-      const filterQuery = stringifyFilters(nextFilters);
-      const basePath = targetPath ?? location.pathname;
-      const nextSearchParams = targetPath ? new URLSearchParams() : new URLSearchParams(location.search);
-      nextSearchParams.set("filter", filterQuery);
+      const nextSearchParams = new URLSearchParams(location.search);
+      nextSearchParams.set("filter", stringifyFilters(nextFilters));
       setFilters(nextFilters);
-      navigate({ pathname: basePath, search: nextSearchParams.toString() });
+      navigate({ pathname: location.pathname, search: nextSearchParams.toString() });
     },
-    [filters, location.pathname, location.search, navigate, setFilters, targetPath],
+    [filters, location.pathname, location.search, navigate, setFilters],
   );
 
   return navigateToDateFilter;

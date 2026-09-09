@@ -3,6 +3,7 @@ import {
   ArchiveIcon,
   ArrowRightIcon,
   BellIcon,
+  CalendarDaysIcon,
   ChevronDownIcon,
   EarthIcon,
   FileAudioIcon,
@@ -35,27 +36,27 @@ import { type AttachmentSection, type InboxFilter, useAppSidebar } from "@/conte
 import { useAuth } from "@/contexts/AuthContext";
 import { useGlobalMemoEditor } from "@/contexts/GlobalMemoEditorContext";
 import { useInstance } from "@/contexts/InstanceContext";
-import { stringifyFilters, useMemoFilterContext } from "@/contexts/MemoFilterContext";
+import { getFilterSearch, useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { useSpaceContext } from "@/contexts/SpaceContext";
 import { useAttachmentLibraryStats } from "@/hooks/useAttachmentLibrary";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { type MemoStatsContext, useFilteredMemoStats } from "@/hooks/useFilteredMemoStats";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { useNotifications, useUser } from "@/hooks/useUserQueries";
-import { getMemoScopePath, isMemoScopeRoute, type PrimaryMemoScope, resolveMemoScope } from "@/lib/memo-views";
+import { getMemoScopePath, getProfileUsername, type PrimaryMemoScope, resolveMemoScope } from "@/lib/memo-views";
+import { userNamePrefix } from "@/lib/resource-names";
 import { cn } from "@/lib/utils";
-import { ROUTES } from "@/router/routes";
+import { collectionPathForLocation, ROUTES } from "@/router/routes";
 import { State } from "@/types/proto/api/v1/common_pb";
 import { User_Role, UserNotification_Status } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import MemosLogo from "../MemosLogo";
 import CommonSidebarContent from "./CommonSidebarContent";
-import { getSidebarRouteKind, routeSupportsCollectionScope } from "./routes";
+import { getSidebarRouteKind } from "./routes";
 import SidebarRow, { SIDEBAR_ROW_CLASSES, SIDEBAR_ROW_FOCUS_CLASSES, SidebarRowIconSlot, sidebarRowStateClasses } from "./SidebarRow";
 import SidebarSection, { SIDEBAR_SECTION_STACK_CLASSES } from "./SidebarSection";
 import SpaceSwitcher from "./SpaceSwitcher";
 import {
-  SIDEBAR_FOOTER_CLASSES,
   SIDEBAR_LEADING_SLOT_CLASSES,
   SIDEBAR_NAV_LEADING_SLOT_CLASSES,
   SIDEBAR_RAIL_CLASSES,
@@ -64,29 +65,13 @@ import {
 import TagsSection from "./TagsSection";
 import ViewsSection from "./ViewsSection";
 
-const SIDEBAR_HEADER_ACTION_CLASSES =
-  "size-7 shrink-0 rounded-md text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/50";
-const SIDEBAR_HEADER_PRIMARY_ACTION_CLASSES =
-  "size-7 shrink-0 text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/50";
-
 const NewMemoAction = ({ onClick }: { onClick: () => void }) => {
   const t = useTranslate();
   const label = t("editor.new-memo");
 
   return (
     <Tooltip>
-      <TooltipTrigger
-        render={
-          <Button
-            variant="outline"
-            size="icon-sm"
-            className={SIDEBAR_HEADER_PRIMARY_ACTION_CLASSES}
-            onClick={onClick}
-            aria-label={label}
-            data-new-memo-trigger
-          />
-        }
-      >
+      <TooltipTrigger render={<Button variant="outline" size="icon-compact" onClick={onClick} aria-label={label} data-new-memo-trigger />}>
         <SquarePenIcon className="size-4" strokeWidth={1.8} />
       </TooltipTrigger>
       <TooltipContent side="bottom">{label}</TooltipContent>
@@ -109,13 +94,19 @@ const ProfileMode = () => {
 
   return (
     <SidebarSection label={t("common.profile")}>
-      <SidebarRow active={active === "memos"} icon={LayoutListIcon} label={t("common.memos")} onClick={() => setMode("memos")} />
-      <SidebarRow active={active === "map"} icon={MapIcon} label={t("common.map")} onClick={() => setMode("map")} />
+      <SidebarRow
+        state={active === "memos" ? "current" : "idle"}
+        icon={LayoutListIcon}
+        label={t("common.memos")}
+        onClick={() => setMode("memos")}
+      />
+      <SidebarRow state={active === "map" ? "current" : "idle"} icon={MapIcon} label={t("common.map")} onClick={() => setMode("map")} />
     </SidebarSection>
   );
 };
 
-const CollectionSidebarContent = ({ context }: { context: MemoStatsContext }) => {
+/** The calendar is its own month view, so its sidebar narrows by view and tag but skips the heatmap. */
+const CollectionSidebarContent = ({ context, showStatistics = true }: { context: MemoStatsContext; showStatistics?: boolean }) => {
   const t = useTranslate();
   const location = useLocation();
   const currentUser = useCurrentUser();
@@ -124,9 +115,9 @@ const CollectionSidebarContent = ({ context }: { context: MemoStatsContext }) =>
   const { mobileOpen, setMobileOpen } = useAppSidebar();
   const { isInitialized: authInitialized } = useAuth();
   const { isInitialized: instanceInitialized } = useInstance();
-  const profileMatch = matchPath("/u/:username", location.pathname);
-  const { data: profileUser } = useUser(profileMatch?.params.username ? `users/${profileMatch.params.username}` : "", {
-    enabled: context === "profile" && !!profileMatch?.params.username,
+  const profileUsername = getProfileUsername(location.pathname);
+  const { data: profileUser } = useUser(`${userNamePrefix}${profileUsername ?? ""}`, {
+    enabled: context === "profile" && profileUsername !== undefined,
   });
   const statsUserName = context === "home" ? currentUser?.name : context === "profile" ? profileUser?.name : undefined;
   // User-level collections stay aligned with their unscoped feeds even when a Space is remembered.
@@ -139,12 +130,6 @@ const CollectionSidebarContent = ({ context }: { context: MemoStatsContext }) =>
     enabled: authInitialized && instanceInitialized && (md || mobileOpen),
   });
 
-  const showViews = !!currentUser && (context === "home" || context === "archived" || context === "explore");
-
-  // Off the collection routes (the library shown as fallback content), calendar and tag
-  // clicks must land somewhere that renders the filtered feed.
-  const onCollectionRoute = isMemoScopeRoute(location.pathname) || !!profileMatch;
-  const filterTarget = onCollectionRoute ? undefined : context === "explore" ? ROUTES.EXPLORE : ROUTES.HOME;
   const tagStateScope = isUserLevelCollection
     ? (statsUserName ?? context)
     : `${statsUserName ?? context}${selectedSpaceName ? `:${selectedSpaceName}` : ""}`;
@@ -152,11 +137,14 @@ const CollectionSidebarContent = ({ context }: { context: MemoStatsContext }) =>
   return (
     <div className={SIDEBAR_SECTION_STACK_CLASSES}>
       {context === "profile" && <ProfileMode />}
-      <SidebarSection ariaLabel={t("common.statistics")}>
-        <StatisticsView statisticsData={statistics} navigationTarget={filterTarget} onDateSelect={() => setMobileOpen(false)} />
-      </SidebarSection>
-      {showViews && <ViewsSection />}
-      <TagsSection tagCount={tags} navigationTarget={filterTarget} scope={tagStateScope} onSelect={() => setMobileOpen(false)} />
+      {showStatistics && (
+        <SidebarSection ariaLabel={t("common.statistics")}>
+          <StatisticsView statisticsData={statistics} onDateSelect={() => setMobileOpen(false)} />
+        </SidebarSection>
+      )}
+      {/* Every collection route narrows the same way: views (yours, so signed-in only), days, tags. */}
+      {currentUser && <ViewsSection />}
+      <TagsSection tagCount={tags} scope={tagStateScope} onSelect={() => setMobileOpen(false)} />
     </div>
   );
 };
@@ -192,7 +180,7 @@ const AttachmentsSidebarContent = () => {
       {rows.map((row) => (
         <SidebarRow
           key={row.value}
-          active={attachmentSection === row.value}
+          state={attachmentSection === row.value ? "current" : "idle"}
           icon={row.icon}
           label={row.label}
           count={row.count}
@@ -230,7 +218,7 @@ const InboxSidebarContent = () => {
       {rows.map((row) => (
         <SidebarRow
           key={row.value}
-          active={inboxFilter === row.value}
+          state={inboxFilter === row.value ? "current" : "idle"}
           icon={row.icon}
           label={row.label}
           count={row.count}
@@ -259,7 +247,7 @@ const SettingsSidebarContent = () => {
         key={section.key}
         to={`${ROUTES.SETTING}#${section.key}`}
         onClick={() => setMobileOpen(false)}
-        className={cn(SIDEBAR_ROW_CLASSES, sidebarRowStateClasses(currentSection === section.key))}
+        className={cn(SIDEBAR_ROW_CLASSES, sidebarRowStateClasses(currentSection === section.key ? "current" : "idle"))}
       >
         <SidebarRowIconSlot icon={section.icon} />
         <span className="truncate">{t(section.labelKey)}</span>
@@ -274,15 +262,23 @@ const SettingsSidebarContent = () => {
 };
 
 const MemoDetailSidebarContent = () => {
-  const { memoDetail } = useAppSidebar();
+  const { memoDetail, closeMobileThen } = useAppSidebar();
   if (!memoDetail) return null;
+  const runAndClose = (action: (() => void) | undefined) => (action ? () => closeMobileThen(action) : undefined);
   return (
     <MemoDetailSidebar
       memo={memoDetail.memo}
+      parentMemo={memoDetail.parentMemo}
+      parentStatus={memoDetail.parentStatus}
+      onParentRetry={memoDetail.onParentRetry}
       parentPage={memoDetail.from}
-      parentScope={memoDetail.fromScope}
+      hasExplicitOrigin={memoDetail.hasExplicitOrigin}
+      commentCount={memoDetail.commentCount}
       forceReadonly={memoDetail.readonly}
-      onShareImageOpen={memoDetail.onShareImageOpen}
+      onEdit={runAndClose(memoDetail.onEdit)}
+      onCommentsOpen={runAndClose(memoDetail.onCommentsOpen)}
+      onCommentCreate={runAndClose(memoDetail.onCommentCreate)}
+      onShareImageOpen={runAndClose(memoDetail.onShareImageOpen)}
       className="pb-2"
     />
   );
@@ -295,6 +291,7 @@ const RouteSidebarContent = () => {
     return <CollectionSidebarContent context={kind} />;
   }
   if (kind === "views") return <ViewsSection manageActive />;
+  if (kind === "calendar") return <CollectionSidebarContent context="home" showStatistics={false} />;
   if (kind === "attachments") return <AttachmentsSidebarContent />;
   if (kind === "inbox") return <InboxSidebarContent />;
   if (kind === "settings") return <SettingsSidebarContent />;
@@ -313,19 +310,20 @@ interface GlobalNavItem {
 }
 
 /**
- * The compact navigator is intentionally horizontal. Its 16px glyph plus 8px padding
- * on each side makes the collapsed control an exact 32px square. Expanding the
+ * The compact navigator is intentionally horizontal. Its 16px glyph plus 6px padding
+ * on each side makes the collapsed control an exact 28px square, the same box as the
+ * header's compose control. Expanding the
  * label only opens the text track, so the artwork and surface never jump.
  */
 const navPillClasses = (active: boolean) =>
-  cn(sidebarSurfaceVariants({ role: "navPill" }), SIDEBAR_ROW_FOCUS_CLASSES, sidebarRowStateClasses(active));
+  cn(sidebarSurfaceVariants({ role: "navPill" }), SIDEBAR_ROW_FOCUS_CLASSES, sidebarRowStateClasses(active ? "current" : "idle"));
 
 const NavPillLabel = ({ expanded, label, children }: { expanded: boolean; label: ReactNode; children?: ReactNode }) => (
   <span
     aria-hidden={!expanded || undefined}
     className={cn(
       "grid min-w-0 transition-[grid-template-columns,padding] duration-200 ease-out motion-reduce:transition-none",
-      expanded ? "grid-cols-[1fr] ps-2" : "grid-cols-[0fr] ps-0",
+      expanded ? "grid-cols-[1fr] ps-2.5" : "grid-cols-[0fr] ps-0",
     )}
   >
     <span className="flex min-w-0 items-center gap-1.5 overflow-hidden">
@@ -342,7 +340,7 @@ const GlobalNavigation = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const currentUser = useCurrentUser();
-  const { memoDetail, memoScope, setMemoScope, setMobileOpen } = useAppSidebar();
+  const { memoDetail, memoScope, setMemoScope, setMobileOpen, setQuickFindOpen } = useAppSidebar();
   const { filters } = useMemoFilterContext();
   const routeKind = getSidebarRouteKind(location.pathname);
   const resolvedScope = resolveMemoScope(location.pathname, {
@@ -370,18 +368,24 @@ const GlobalNavigation = () => {
   const ActiveScopeIcon = activeScopeItem.icon;
 
   const navigateToScope = (scope: PrimaryMemoScope) => {
-    const filterQuery = stringifyFilters(filters);
     setMemoScope(scope);
-    navigate({ pathname: getMemoScopePath(scope), search: filterQuery ? `?filter=${filterQuery}` : "" });
+    navigate({ pathname: collectionPathForLocation(getMemoScopePath(scope), location.pathname), search: getFilterSearch(filters) });
     setMobileOpen(false);
   };
 
   const items: GlobalNavItem[] = currentUser
     ? [
         {
+          id: "calendar",
+          label: t("common.calendar"),
+          path: collectionPathForLocation(ROUTES.CALENDAR, location.pathname),
+          icon: CalendarDaysIcon,
+          active: routeKind === "calendar",
+        },
+        {
           id: "attachments",
           label: t("common.attachments"),
-          path: ROUTES.ATTACHMENTS,
+          path: collectionPathForLocation(ROUTES.ATTACHMENTS, location.pathname),
           icon: PaperclipIcon,
           active: routeKind === "attachments",
         },
@@ -431,7 +435,7 @@ const GlobalNavigation = () => {
 
   return (
     <TooltipProvider>
-      <nav className={cn("flex h-9 items-center gap-1", SIDEBAR_RAIL_CLASSES)} aria-label="Primary">
+      <nav className={cn("flex h-7 items-center gap-1", SIDEBAR_RAIL_CLASSES)} aria-label="Primary">
         {currentUser && (
           <DropdownMenu
             onOpenChange={(open, eventDetails) => {
@@ -499,7 +503,7 @@ const GlobalNavigation = () => {
                   <span
                     data-sidebar-trailing
                     className={cn(
-                      "absolute -end-0.5 -top-0.5 flex min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-semibold leading-4 text-primary-foreground transition-[opacity,scale] duration-200 ease-out motion-reduce:transition-none",
+                      "absolute -end-0.5 top-0 flex min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-semibold leading-4 text-primary-foreground transition-[opacity,scale] duration-200 ease-out motion-reduce:transition-none",
                       item.count > 0 ? "scale-100 opacity-100" : "scale-50 opacity-0",
                     )}
                   >
@@ -511,17 +515,38 @@ const GlobalNavigation = () => {
             </Tooltip>
           );
         })}
+        {/* Search is a place to go, not a header action: it closes the navigator's row
+            so the header keeps only the brand and the bordered compose control. */}
+        <Tooltip>
+          <TooltipTrigger
+            render={
+              <button
+                type="button"
+                aria-label={t("common.search")}
+                className={cn("ms-auto", navPillClasses(false))}
+                onClick={() => {
+                  setMobileOpen(false);
+                  setQuickFindOpen(true);
+                }}
+              />
+            }
+          >
+            <span className={SIDEBAR_NAV_LEADING_SLOT_CLASSES} aria-hidden="true">
+              <SearchIcon className="size-4 opacity-75" strokeWidth={1.8} />
+            </span>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">{t("common.search")}</TooltipContent>
+        </Tooltip>
       </nav>
     </TooltipProvider>
   );
 };
 
-/** The sidebar/header brand slot: collection scope on collection routes, instance brand elsewhere. */
+/** Signed-in users can navigate between Spaces from any page; global pages show Memos. */
 const SidebarBrand = ({ className, size = "md" }: { className?: string; size?: "md" | "header" }) => {
   const currentUser = useCurrentUser();
-  const location = useLocation();
 
-  if (currentUser && routeSupportsCollectionScope(location.pathname)) {
+  if (currentUser) {
     return <SpaceSwitcher className={className} size={size} />;
   }
 
@@ -542,34 +567,20 @@ const SidebarBrand = ({ className, size = "md" }: { className?: string; size?: "
 const AppSidebar = ({ className }: { className?: string }) => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
-  const { setMobileOpen, setQuickFindOpen } = useAppSidebar();
+  const { setMobileOpen } = useAppSidebar();
   const { canOpen: canCompose, openEditor } = useGlobalMemoEditor();
   return (
     <aside className={cn("flex h-full w-full select-none flex-col bg-sidebar text-sidebar-foreground", className)}>
       <div data-sidebar-header className={cn("flex h-13 shrink-0 items-center justify-between gap-2", SIDEBAR_RAIL_CLASSES)}>
         <SidebarBrand className="min-w-0" size="header" />
-        <div className="flex shrink-0 items-center gap-1">
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            className={SIDEBAR_HEADER_ACTION_CLASSES}
-            onClick={() => {
-              setMobileOpen(false);
-              setQuickFindOpen(true);
-            }}
-            aria-label={t("common.search")}
-          >
-            <SearchIcon className="size-4" strokeWidth={1.8} />
-          </Button>
-          {canCompose && <NewMemoAction onClick={openEditor} />}
-        </div>
+        {canCompose && <NewMemoAction onClick={openEditor} />}
       </div>
       <GlobalNavigation />
       <div className="mx-3 mt-2 border-t border-border/70" />
       <div className={cn("min-h-0 flex-1 overflow-y-auto overflow-x-hidden pt-2 pb-3 [scrollbar-width:thin]", SIDEBAR_RAIL_CLASSES)}>
         <RouteSidebarContent />
       </div>
-      <footer className={cn("shrink-0 border-t border-border/70", SIDEBAR_FOOTER_CLASSES)}>
+      <footer className="shrink-0 border-t border-border/70">
         {currentUser ? (
           <UserMenu />
         ) : (
@@ -603,14 +614,7 @@ export const MobileAppHeader = () => {
   const { setMobileOpen } = useAppSidebar();
   return (
     <header className="sticky top-0 z-20 flex h-12 w-full items-center justify-start gap-1 border-b border-border/70 bg-background/90 px-2 backdrop-blur-md md:hidden">
-      <Button
-        variant="ghost"
-        size="icon-sm"
-        className="size-8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/50"
-        onClick={() => setMobileOpen(true)}
-        aria-label="Open navigation"
-        data-mobile-navigation-trigger
-      >
+      <Button variant="ghost" size="icon" onClick={() => setMobileOpen(true)} aria-label="Open navigation" data-mobile-navigation-trigger>
         <MenuIcon className="size-[18px]" />
       </Button>
       <SidebarBrand className="max-w-[12rem]" size="md" />
@@ -620,9 +624,9 @@ export const MobileAppHeader = () => {
 
 export const MobileAppSidebar = () => {
   const direction = useDirection();
-  const { mobileOpen, setMobileOpen } = useAppSidebar();
+  const { mobileOpen, setMobileOpen, completeMobileClose } = useAppSidebar();
   return (
-    <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+    <Sheet open={mobileOpen} onOpenChange={setMobileOpen} onOpenChangeComplete={completeMobileClose}>
       <SheetContent
         side={direction === "rtl" ? "right" : "left"}
         className="w-[min(18rem,calc(100vw-2rem))] gap-0 border-border p-0 shadow-2xl [&>[data-slot=sheet-close]]:sr-only"

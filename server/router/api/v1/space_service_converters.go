@@ -2,6 +2,7 @@ package v1
 
 import (
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
+	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
 
@@ -35,6 +36,36 @@ func convertSpaceMetadataFromStore(space *store.Space) *v1pb.Space {
 		Name:        buildSpaceName(space.UID),
 		Title:       space.Title,
 		Description: space.Description,
+		Icon:        convertSpaceIconFromStore(space.Payload.GetIcon()),
+	}
+}
+
+func convertSpaceIconFromStore(icon *storepb.SpacePayload_Icon) *v1pb.Space_Icon {
+	if icon == nil {
+		return nil
+	}
+	switch value := icon.Value.(type) {
+	case *storepb.SpacePayload_Icon_Emoji:
+		return &v1pb.Space_Icon{Value: &v1pb.Space_Icon_Emoji{Emoji: value.Emoji}}
+	case *storepb.SpacePayload_Icon_Lucide:
+		return &v1pb.Space_Icon{Value: &v1pb.Space_Icon_Lucide{Lucide: value.Lucide}}
+	default:
+		return nil
+	}
+}
+
+func convertSpaceIconToStore(icon *v1pb.Space_Icon) *storepb.SpacePayload_Icon {
+	if icon == nil {
+		return nil
+	}
+	switch value := icon.Value.(type) {
+	case *v1pb.Space_Icon_Emoji:
+		return &storepb.SpacePayload_Icon{Value: &storepb.SpacePayload_Icon_Emoji{Emoji: value.Emoji}}
+	case *v1pb.Space_Icon_Lucide:
+		return &storepb.SpacePayload_Icon{Value: &storepb.SpacePayload_Icon_Lucide{Lucide: value.Lucide}}
+	default:
+		// Preserve an empty icon so validation rejects it instead of treating it as a reset.
+		return &storepb.SpacePayload_Icon{}
 	}
 }
 

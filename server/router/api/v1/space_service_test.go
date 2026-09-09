@@ -409,3 +409,93 @@ func TestCreateSpaceInvitationClassifiesTargetUserErrors(t *testing.T) {
 	})
 	require.Equal(t, codes.Internal, status.Code(err))
 }
+
+func listSpaceInvitationNotifications(ctx context.Context, t *testing.T, service *APIV1Service, user *store.User) []*v1pb.UserNotification {
+	t.Helper()
+	response, err := service.ListUserNotifications(userCtx(ctx, user.ID), &v1pb.ListUserNotificationsRequest{Parent: BuildUserName(user.Username)})
+	require.NoError(t, err)
+	notifications := []*v1pb.UserNotification{}
+	for _, notification := range response.Notifications {
+		if notification.Type == v1pb.UserNotification_SPACE_INVITATION {
+			notifications = append(notifications, notification)
+		}
+	}
+	return notifications
+}
+
+func TestSpaceInvitationNotificationLifecycle(t *testing.T) {
+	ctx := context.Background()
+	service := newIntegrationService(t)
+	owner := createSpaceTestUser(ctx, t, service, "notification-owner", store.RoleUser)
+	invitee := createSpaceTestUser(ctx, t, service, "notification-invitee", store.RoleUser)
+	space, err := service.CreateSpace(userCtx(ctx, owner.ID), &v1pb.CreateSpaceRequest{
+		SpaceId: "notification-lifecycle",
+		Space:   &v1pb.Space{Title: "Notification lifecycle", Description: "Inbox coverage"},
+	})
+	require.NoError(t, err)
+
+	invitation := inviteSpaceTestUser(ctx, t, service, owner, invitee, space, v1pb.SpaceMember_USER)
+	notifications := listSpaceInvitationNotifications(ctx, t, service, invitee)
+	require.Len(t, notifications, 1, "inviting a user must notify their inbox")
+	notification := notifications[0]
+	require.Equal(t, v1pb.UserNotification_UNREAD, notification.Status)
+	require.Equal(t, BuildUserName(owner.Username), notification.Sender)
+	payload := notification.GetSpaceInvitation()
+	require.NotNil(t, payload)
+	require.Equal(t, invitation.Name, payload.SpaceInvitation)
+	require.Equal(t, v1pb.UserNotification_SpaceInvitationPayload_PENDING, payload.State)
+	require.Equal(t, v1pb.SpaceMember_USER, payload.Role)
+	require.Equal(t, space.Name, payload.Space.GetName())
+	require.Equal(t, "Notification lifecycle", payload.Space.GetTitle())
+	require.Equal(t, "Inbox coverage", payload.Space.GetDescription())
+	require.Equal(t, v1pb.SpaceMember_ROLE_UNSPECIFIED, payload.Space.GetCurrentUserRole(), "an invitation carries a metadata-only Space summary")
+	require.Empty(t, listSpaceInvitationNotifications(ctx, t, service, owner), "the inviter receives no notification")
+
+	_, err = service.DeclineSpaceInvitation(userCtx(ctx, invitee.ID), &v1pb.DeclineSpaceInvitationRequest{Name: invitation.Name})
+	require.NoError(t, err)
+	require.Empty(t, listSpaceInvitationNotifications(ctx, t, service, invitee), "declining removes the notification")
+
+	invitation = inviteSpaceTestUser(ctx, t, service, owner, invitee, space, v1pb.SpaceMember_ADMIN)
+	require.Len(t, listSpaceInvitationNotifications(ctx, t, service, invitee), 1, "a later invitation notifies again")
+	_, err = service.DeleteSpaceInvitation(userCtx(ctx, owner.ID), &v1pb.DeleteSpaceInvitationRequest{Name: invitation.Name})
+	require.NoError(t, err)
+	require.Empty(t, listSpaceInvitationNotifications(ctx, t, service, invitee), "revoking removes the notification")
+
+	invitation = inviteSpaceTestUser(ctx, t, service, owner, invitee, space, v1pb.SpaceMember_ADMIN)
+	notifications = listSpaceInvitationNotifications(ctx, t, service, invitee)
+	require.Len(t, notifications, 1)
+	pending := notifications[0]
+
+	archived, err := service.UpdateUserNotification(userCtx(ctx, invitee.ID), &v1pb.UpdateUserNotificationRequest{
+		Notification: &v1pb.UserNotification{Name: pending.Name, Status: v1pb.UserNotification_ARCHIVED},
+		UpdateMask:   &fieldmaskpb.FieldMask{Paths: []string{"status"}},
+	})
+	require.NoError(t, err, "the invitee may archive a pending invitation notification without acting on it")
+	require.Equal(t, v1pb.UserNotification_SpaceInvitationPayload_PENDING, archived.GetSpaceInvitation().GetState())
+
+	_, err = service.AcceptSpaceInvitation(userCtx(ctx, invitee.ID), &v1pb.AcceptSpaceInvitationRequest{Name: invitation.Name})
+	require.NoError(t, err)
+	notifications = listSpaceInvitationNotifications(ctx, t, service, invitee)
+	require.Len(t, notifications, 1, "accepting keeps the notification as history")
+	accepted := notifications[0]
+	require.Equal(t, v1pb.UserNotification_ARCHIVED, accepted.Status, "accepting resolves the notification")
+	require.Equal(t, v1pb.UserNotification_SpaceInvitationPayload_ACCEPTED, accepted.GetSpaceInvitation().GetState())
+	require.Equal(t, v1pb.SpaceMember_ADMIN, accepted.GetSpaceInvitation().GetRole(), "the accepted state reflects the granted role")
+
+	_, err = service.DeleteSpaceMember(userCtx(ctx, invitee.ID), &v1pb.DeleteSpaceMemberRequest{Name: buildSpaceMemberName("notification-lifecycle", invitee.Username)})
+	require.NoError(t, err)
+	require.Empty(t, listSpaceInvitationNotifications(ctx, t, service, invitee), "leaving the Space hides the accepted notification")
+	_, err = service.UpdateUserNotification(userCtx(ctx, invitee.ID), &v1pb.UpdateUserNotificationRequest{
+		Notification: &v1pb.UserNotification{Name: accepted.Name, Status: v1pb.UserNotification_UNREAD},
+		UpdateMask:   &fieldmaskpb.FieldMask{Paths: []string{"status"}},
+	})
+	require.Equal(t, codes.NotFound, status.Code(err), "a hidden notification cannot be updated")
+
+	invitation = inviteSpaceTestUser(ctx, t, service, owner, invitee, space, v1pb.SpaceMember_USER)
+	_, err = service.AcceptSpaceInvitation(userCtx(ctx, invitee.ID), &v1pb.AcceptSpaceInvitationRequest{Name: invitation.Name})
+	require.NoError(t, err)
+	require.Len(t, listSpaceInvitationNotifications(ctx, t, service, invitee), 2, "re-joining reveals every accepted notification for the Space")
+	_, err = service.DeleteSpace(userCtx(ctx, owner.ID), &v1pb.DeleteSpaceRequest{Name: space.Name})
+	require.NoError(t, err)
+	require.Empty(t, listSpaceInvitationNotifications(ctx, t, service, invitee), "deleting the Space hides its notifications")
+}

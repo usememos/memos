@@ -169,7 +169,6 @@
     "formatting-toolbar": "書式ツールバー",
     "no-changes-detected": "変更はありません",
     "save": "保存",
-    "saving": "保存中...",
     "insert-menu": {
       "add-location": "場所を追加",
       "link-memo": "リンクメモ",
@@ -365,8 +364,7 @@
     "restored-successfully": "復元しました",
     "succeed-copy-content": "コンテンツのコピーに成功しました。",
     "succeed-copy-link": "リンクのコピーに成功しました。",
-    "update-succeed": "変更は保存されました",
-    "user-not-found": "ユーザーが見つかりませんでした"
+    "update-succeed": "変更は保存されました"
   },
   "reference": {
     "add-references": "参照を追加",

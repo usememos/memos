@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 
-type Breakpoint = "sm" | "md" | "lg";
+type Breakpoint = "sm" | "md" | "lg" | "xl";
 
 const BREAKPOINTS: Record<Breakpoint, number> = {
   sm: 640,
   md: 768,
   lg: 1024,
+  xl: 1280,
 };
 
 const useMediaQuery = (breakpoint: Breakpoint): boolean => {

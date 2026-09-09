@@ -125,7 +125,6 @@
     "focus-mode": "โหมดโฟกัส",
     "no-changes-detected": "ไม่มีการเปลี่ยนแปลง",
     "save": "บันทึก",
-    "saving": "กำลังบันทึก...",
     "insert-menu": {
       "add-location": "เพิ่มสถานที่",
       "link-memo": "บันทึกการเชื่อมโยง",
@@ -257,8 +256,7 @@
     "restored-successfully": "กู้คืนเรียบร้อยแล้ว",
     "succeed-copy-content": "คัดลอกเนื้อหาเรียบร้อยแล้ว",
     "succeed-copy-link": "คัดลอกลิงก์เรียบร้อยแล้ว",
-    "update-succeed": "อัปเดตเรียบร้อยแล้ว",
-    "user-not-found": "ไม่พบผู้ใช้งาน"
+    "update-succeed": "อัปเดตเรียบร้อยแล้ว"
   },
   "reference": {
     "add-references": "เพิ่มข้อมูลอ้างอิง",

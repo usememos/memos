@@ -170,7 +170,6 @@
     },
     "no-changes-detected": "Pakeitimų neaptikta",
     "save": "Išsaugoti",
-    "saving": "Išsaugoma...",
     "audio-recorder": {
       "attachment-label": "Garso įrašymas",
       "attachment-label-with-time": "Garso įrašymas {{time}}",
@@ -328,8 +327,7 @@
     "restored-successfully": "Sėkmingai atkurta",
     "succeed-copy-content": "Turinys sėkmingai nukopijuotas.",
     "succeed-copy-link": "Nuoroda sėkmingai nukopijuota.",
-    "update-succeed": "Atnaujinimas pavyko",
-    "user-not-found": "Vartotojas nerastas"
+    "update-succeed": "Atnaujinimas pavyko"
   },
   "reference": {
     "add-references": "Pridėti nuorodas",

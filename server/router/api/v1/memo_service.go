@@ -406,6 +406,9 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 		} else if path == "update_time" {
 			updatedTsSec := time.Now().Unix()
 			if request.Memo.UpdateTime != nil {
+				if !request.Memo.UpdateTime.IsValid() {
+					return nil, status.Errorf(codes.InvalidArgument, "update_time is invalid")
+				}
 				updatedTsSec = request.Memo.UpdateTime.AsTime().Unix()
 			}
 			update.UpdatedTs = &updatedTsSec

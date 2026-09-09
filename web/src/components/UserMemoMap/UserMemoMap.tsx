@@ -157,7 +157,7 @@ const UserMemoMap = ({ creator, className }: Props) => {
                     </div>
                     <Link
                       to={`/memos/${memo.name.split("/").pop()}`}
-                      state={createMemoNavigationState(parentPage, "all")}
+                      state={createMemoNavigationState(parentPage)}
                       className="inline-flex items-center gap-1 rounded-full border border-border bg-background px-2.5 py-1 text-[11px] font-medium text-foreground transition-all hover:border-primary/40 hover:text-primary"
                     >
                       Open

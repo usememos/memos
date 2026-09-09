@@ -133,7 +133,6 @@
     },
     "no-changes-detected": "Değişiklik yok",
     "save": "Kaydet",
-    "saving": "Kaydediliyor...",
     "audio-recorder": {
       "attachment-label": "Ses kaydı",
       "attachment-label-with-time": "Ses kaydı {{time}}",
@@ -291,8 +290,7 @@
     "restored-successfully": "Başarıyla geri yüklendi",
     "succeed-copy-content": "İçerik başarıyla kopyalandı.",
     "succeed-copy-link": "Bağlantı başarıyla kopyalandı.",
-    "update-succeed": "Güncelleme başarılı",
-    "user-not-found": "Kullanıcı bulunamadı"
+    "update-succeed": "Güncelleme başarılı"
   },
   "reference": {
     "add-references": "Referans ekle",

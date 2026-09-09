@@ -133,7 +133,6 @@
     },
     "no-changes-detected": "No s'han detectat canvis",
     "save": "Guarda",
-    "saving": "Guardant...",
     "audio-recorder": {
       "attachment-label": "Gravació d'àudio",
       "attachment-label-with-time": "Gravació d'àudio {{time}}",
@@ -291,8 +290,7 @@
     "restored-successfully": "Restaurat correctament",
     "succeed-copy-content": "Contingut copiat correctament.",
     "succeed-copy-link": "Enllaç copiat correctament.",
-    "update-succeed": "Actualització correcta",
-    "user-not-found": "Usuari no trobat"
+    "update-succeed": "Actualització correcta"
   },
   "reference": {
     "add-references": "Afegeix referències",

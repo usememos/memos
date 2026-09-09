@@ -125,7 +125,6 @@
     "focus-mode": "Mode Fokus",
     "no-changes-detected": "Tidak ada perubahan yang terdeteksi",
     "save": "Simpan",
-    "saving": "Menyimpan...",
     "insert-menu": {
       "add-location": "Tambahkan lokasi",
       "link-memo": "Tautan memo",
@@ -257,8 +256,7 @@
     "restored-successfully": "Berhasil dipulihkan",
     "succeed-copy-content": "Konten berhasil disalin.",
     "succeed-copy-link": "Tautan berhasil disalin.",
-    "update-succeed": "Pembaruan berhasil",
-    "user-not-found": "Pengguna tidak ditemukan"
+    "update-succeed": "Pembaruan berhasil"
   },
   "reference": {
     "add-references": "Tambah referensi",

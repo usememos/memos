@@ -49,6 +49,16 @@
     "sso-signup-tip": "使用下方提供者登入以建立帳號。",
     "welcome-back": "歡迎回來。"
   },
+  "calendar": {
+    "close-day": "關閉當天",
+    "more-memos": "還有 {{count}} 條",
+    "new-memo-on-day": "在這一天新增備忘錄",
+    "next-year": "下一年",
+    "no-memos-in-month": "{{month}} 沒有備忘錄",
+    "previous-year": "上一年",
+    "resize-panel": "調整當天面板寬度",
+    "select-month": "選擇月份"
+  },
   "demo": {
     "banner-description": "這裡的改動是暫時的，可能會被重置。",
     "banner-title": "Memos demo",
@@ -274,7 +284,6 @@
     "new-memo": "新增備忘錄",
     "no-changes-detected": "未發現變更",
     "save": "儲存",
-    "saving": "儲存中...",
     "validation": {
       "cannot-save": "無法儲存",
       "content-required": "需要填寫正文或新增附件",
@@ -338,8 +347,8 @@
   },
   "memo": {
     "archived-at": "封存於",
-    "click-to-hide-sensitive-content": "點擊隱藏 NSFW 內容",
-    "click-to-show-sensitive-content": "點擊顯示 NSFW 內容",
+    "click-to-hide-sensitive-content": "點擊隱藏敏感內容",
+    "click-to-show-sensitive-content": "點擊顯示敏感內容",
     "code": "程式碼",
     "comment": {
       "self": "評論",
@@ -459,8 +468,7 @@
     "restored-successfully": "還原成功",
     "succeed-copy-content": "內容複製到剪貼簿成功。",
     "succeed-copy-link": "複製連結到剪貼簿成功。",
-    "update-succeed": "更新成功",
-    "user-not-found": "未找到該使用者"
+    "update-succeed": "更新成功"
   },
   "reference": {
     "add-references": "引用參考資料",
@@ -661,7 +669,7 @@
       "double-click-edit-description": "允許使用者雙擊備忘錄以開啟編輯。",
       "editing-description": "控制備忘錄編輯行為和伺服器端內容限制。",
       "editing-title": "編輯",
-      "enable-blur-sensitive-content": "啟用 NSFW 內容模糊化（在下方添加 NSFW 標籤）",
+      "enable-blur-sensitive-content": "啟用敏感內容模糊化",
       "enable-memo-comments": "啟用備忘錄評論",
       "enable-memo-location": "啟用備忘錄定位",
       "label": "備忘錄",
@@ -1038,6 +1046,8 @@
     }
   },
   "space": {
+    "unavailable": "空間不存在或你沒有存取權限。",
+    "back-to-memos": "返回 Memos",
     "create": "建立空間",
     "create-description": "建立供備忘錄與成員共用的空間。",
     "create-success": "已建立空間",

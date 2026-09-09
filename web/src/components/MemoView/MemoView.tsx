@@ -1,11 +1,22 @@
-import { type ComponentType, memo, Suspense, useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
+import {
+  type ComponentType,
+  forwardRef,
+  memo,
+  Suspense,
+  useCallback,
+  useImperativeHandle,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useLocation } from "react-router-dom";
 import { useResolvedUser } from "@/components/MemoContent/MentionResolutionContext";
 import { loadMemoEditor } from "@/components/MemoEditor/loader";
 import type { MemoEditorProps } from "@/components/MemoEditor/types";
 import { useAuth } from "@/contexts/AuthContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { findTagMetadata } from "@/lib/tag";
+import { isMemoBlurred } from "@/lib/tag";
 import { cn } from "@/lib/utils";
 import { State } from "@/types/proto/api/v1/common_pb";
 import { lazyWithReload } from "@/utils/lazy";
@@ -14,19 +25,19 @@ import { MemoBody, MemoCommentListView, MemoHeader } from "./components";
 import { MEMO_CARD_BASE_CLASSES } from "./constants";
 import { useImagePreview } from "./hooks";
 import { computeCommentAmount, MemoViewContext } from "./MemoViewContext";
-import { isMemoDetailPath, resolveMemoOrigin } from "./navigation";
-import type { MemoViewProps } from "./types";
+import { isMemoDetailPath, resolveMemoParentPage } from "./navigation";
+import type { MemoViewHandle, MemoViewProps } from "./types";
 
 const MemoShareImageDialog = lazyWithReload(() => import("../MemoActionMenu/MemoShareImageDialog"));
 const PreviewImageDialog = lazyWithReload(() => import("../PreviewImageDialog"));
 
-const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
+const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
   const {
     memo: memoData,
     className,
     parentPage: parentPageProp,
-    parentScope: parentScopeProp,
     compact,
+    timeDisplay,
     showCreator,
     showVisibility,
     showPinned,
@@ -43,9 +54,8 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   const isArchived = memoData.state === State.ARCHIVED;
   const readonly = memoData.creator !== currentUser?.name && !isSuperUser(currentUser);
   const location = useLocation();
-  const { parentPage, parentScope } = resolveMemoOrigin({
+  const parentPage = resolveMemoParentPage({
     explicitParentPage: parentPageProp,
-    explicitParentScope: parentScopeProp,
     pathname: location.pathname,
     search: location.search,
     memoName: memoData.name,
@@ -53,20 +63,33 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
 
   // Blur content when any tag has blur_content enabled in the current user's tag settings.
   const [showBlurredContent, setShowBlurredContent] = useState(false);
-  const blurred = memoData.tags?.some((tag) => userTagsSetting && findTagMetadata(tag, userTagsSetting)?.blurContent) ?? false;
+  const blurred = isMemoBlurred(memoData, userTagsSetting);
   const toggleBlurVisibility = useCallback(() => setShowBlurredContent((prev) => !prev), []);
 
   const { previewState, openPreview, setPreviewOpen } = useImagePreview();
+  const editorHostRef = useRef<HTMLDivElement>(null);
+
+  const focusMountedEditor = useCallback(() => {
+    const codeMirrorContent = editorHostRef.current?.querySelector<HTMLElement>('.cm-content[contenteditable="true"]');
+    const fallbackInput = editorHostRef.current?.querySelector<HTMLElement>("textarea, input");
+    (codeMirrorContent ?? fallbackInput)?.focus();
+  }, []);
 
   const openEditor = useCallback(() => {
+    if (showEditor && EditorComponent) {
+      focusMountedEditor();
+      return;
+    }
     void loadMemoEditor()
       .then(({ default: MemoEditor }) => {
         setEditorComponent(() => MemoEditor);
         setShowEditor(true);
       })
       .catch(() => undefined);
-  }, []);
+  }, [EditorComponent, focusMountedEditor, showEditor]);
   const closeEditor = useCallback(() => setShowEditor(false), []);
+
+  useImperativeHandle(ref, () => ({ openEditor }), [openEditor]);
 
   const isInMemoDetailPage = isMemoDetailPath(location.pathname, memoData.name);
   const showCommentPreview = !isInMemoDetailPage && computeCommentAmount(memoData) > 0;
@@ -110,7 +133,6 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
       creator,
       currentUser,
       parentPage,
-      parentScope,
       cardWidth,
       isArchived,
       readonly,
@@ -125,7 +147,6 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
       creator,
       currentUser,
       parentPage,
-      parentScope,
       cardWidth,
       isArchived,
       readonly,
@@ -143,7 +164,13 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
       ref={cardRef}
       tabIndex={readonly ? -1 : 0}
     >
-      <MemoHeader showCreator={showCreator} showVisibility={showVisibility} showPinned={showPinned} showSpace={showSpace} />
+      <MemoHeader
+        timeDisplay={timeDisplay}
+        showCreator={showCreator}
+        showVisibility={showVisibility}
+        showPinned={showPinned}
+        showSpace={showSpace}
+      />
 
       <MemoBody compact={compact} />
 
@@ -178,20 +205,24 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   return (
     <MemoViewContext.Provider value={contextValue}>
       {showEditor && EditorComponent ? (
-        <EditorComponent
-          autoFocus
-          className="mb-2"
-          cacheKey={`inline-memo-editor-${memoData.name}`}
-          memo={memoData}
-          parentMemoName={memoData.parent || undefined}
-          onConfirm={closeEditor}
-          onCancel={closeEditor}
-        />
+        <div ref={editorHostRef} className="w-full">
+          <EditorComponent
+            autoFocus
+            className="mb-2"
+            cacheKey={`inline-memo-editor-${memoData.name}`}
+            memo={memoData}
+            parentMemoName={memoData.parent || undefined}
+            onConfirm={closeEditor}
+            onCancel={closeEditor}
+          />
+        </div>
       ) : (
         memoDisplay
       )}
     </MemoViewContext.Provider>
   );
-};
+});
+
+MemoView.displayName = "MemoView";
 
 export default memo(MemoView);

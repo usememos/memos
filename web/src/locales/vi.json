@@ -125,7 +125,6 @@
     "focus-mode": "Chế độ tập trung",
     "no-changes-detected": "Không phát hiện thay đổi",
     "save": "Lưu",
-    "saving": "Đang lưu...",
     "insert-menu": {
       "add-location": "Thêm vị trí",
       "link-memo": "Liên kết bản ghi nhớ",
@@ -257,8 +256,7 @@
     "restored-successfully": "Khôi phục thành công",
     "succeed-copy-content": "Đã sao chép nội dung thành công.",
     "succeed-copy-link": "Sao chép liên kết thành công.",
-    "update-succeed": "Cập nhật thành công",
-    "user-not-found": "Không tìm thấy người dùng"
+    "update-succeed": "Cập nhật thành công"
   },
   "reference": {
     "add-references": "Thêm tham chiếu",

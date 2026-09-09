@@ -104,7 +104,7 @@
     "tags": "Tags",
     "title": "Title",
     "today": "Today",
-    "tree-mode": "Tree mode",
+    "tree-mode": "Show as tree",
     "type": "Type",
     "unpin": "Unpin",
     "update": "Update",
@@ -133,7 +133,6 @@
     },
     "no-changes-detected": "No changes detected",
     "save": "Save",
-    "saving": "Saving...",
     "audio-recorder": {
       "attachment-label": "Audio recording",
       "attachment-label-with-time": "Audio recording {{time}}",
@@ -291,8 +290,7 @@
     "restored-successfully": "Restored successfully",
     "succeed-copy-content": "Content copied successfully.",
     "succeed-copy-link": "Link copied successfully.",
-    "update-succeed": "Update succeeded",
-    "user-not-found": "User not found"
+    "update-succeed": "Update succeeded"
   },
   "reference": {
     "add-references": "Add references",

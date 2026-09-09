@@ -125,7 +125,6 @@
     "focus-mode": "फोकस मोड",
     "no-changes-detected": "कोई बदलाव नहीं पाया गया",
     "save": "सहेजें",
-    "saving": "सहेज रहा है...",
     "insert-menu": {
       "add-location": "स्थान जोड़ें",
       "link-memo": "लिंक मेमो",
@@ -257,8 +256,7 @@
     "restored-successfully": "सफलतापूर्वक पुनर्स्थापित किया गया",
     "succeed-copy-content": "सामग्री सफलतापूर्वक कॉपी की गई।",
     "succeed-copy-link": "लिंक सफलतापूर्वक कॉपी किया गया।",
-    "update-succeed": "अपडेट सफल हुआ",
-    "user-not-found": "उपयोगकर्ता नहीं मिला"
+    "update-succeed": "अपडेट सफल हुआ"
   },
   "reference": {
     "add-references": "संदर्भ जोड़ें",
