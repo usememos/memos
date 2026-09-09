@@ -48,6 +48,16 @@
     "sso-signup-tip": "使用以下登录方式即可创建账号。",
     "welcome-back": "欢迎回来。"
   },
+  "calendar": {
+    "close-day": "关闭当天",
+    "more-memos": "还有 {{count}} 条",
+    "new-memo-on-day": "在这一天新建备忘录",
+    "next-year": "下一年",
+    "no-memos-in-month": "{{month}} 没有备忘录",
+    "previous-year": "上一年",
+    "resize-panel": "调整当天面板宽度",
+    "select-month": "选择月份"
+  },
   "demo": {
     "banner-description": "这里的改动是临时的，可能会被重置。",
     "banner-title": "Memos 演示站",
@@ -147,7 +157,7 @@
     "tasks": "任务",
     "title": "标题",
     "today": "今天",
-    "tree-mode": "树模式",
+    "tree-mode": "树形显示",
     "type": "类型",
     "unlink": "解绑",
     "unpin": "取消置顶",
@@ -190,7 +200,6 @@
     "new-memo": "新建备忘录",
     "no-changes-detected": "未检测到更改",
     "save": "保存",
-    "saving": "保存中...",
     "validation": {
       "cannot-save": "无法保存",
       "content-required": "需要填写正文或添加附件",
@@ -262,8 +271,9 @@
   },
   "memo": {
     "archived-at": "归档于",
-    "click-to-hide-sensitive-content": "点击隐藏 NSFW 内容",
-    "click-to-show-sensitive-content": "点击显示 NSFW 内容",
+    "back-to": "返回{{source}}",
+    "click-to-hide-sensitive-content": "点击隐藏敏感内容",
+    "click-to-show-sensitive-content": "点击显示敏感内容",
     "code": "代码",
     "comment": {
       "self": "评论",
@@ -286,7 +296,9 @@
       "label": "过滤器"
     },
     "compact-mode": "紧凑模式",
+    "connections": "关联",
     "grid-compact-hint": "网格布局始终使用紧凑卡片。",
+    "go-to": "前往{{source}}",
     "layout": "布局",
     "layout-auto": "自动",
     "layout-auto-description": "根据屏幕宽度显示尽可能多的列",
@@ -302,8 +314,10 @@
     "new-badge": "新",
     "newest-first": "最新优先",
     "oldest-first": "最早优先",
+    "on-this-memo": "本条备忘录",
     "order": "顺序",
     "order-by": "排序",
+    "parent-memo": "父备忘录",
     "search-placeholder": "搜索备忘录",
     "shown-time": "显示时间",
     "show-less": "显示较少",
@@ -381,8 +395,7 @@
     "restored-successfully": "恢复成功",
     "succeed-copy-content": "复制内容到剪贴板成功。",
     "succeed-copy-link": "复制链接到剪贴板成功。",
-    "update-succeed": "更新成功",
-    "user-not-found": "未找到该用户"
+    "update-succeed": "更新成功"
   },
   "reference": {
     "add-references": "添加引用",
@@ -747,7 +760,7 @@
       "double-click-edit-description": "允许用户双击备忘录进入编辑。",
       "editing-description": "控制备忘录编辑行为和服务端内容长度限制。",
       "editing-title": "编辑",
-      "enable-blur-sensitive-content": "启用 NSFW 内容模糊处理（在下方添加 NSFW 标签）",
+      "enable-blur-sensitive-content": "启用敏感内容模糊处理",
       "enable-memo-comments": "启用备忘录评论",
       "enable-memo-location": "启用备忘录定位",
       "reactions": "表态",
@@ -953,5 +966,21 @@
       "description": "这些文件从未附加到任何备忘。可在此查看或删除。",
       "title": "未关联的上传"
     }
+  },
+  "space": {
+    "icon": {
+      "change": "更改空间图标",
+      "kind": "图标类型",
+      "icons": "图标",
+      "emoji": "表情",
+      "search-icons": "搜索图标…",
+      "search-emoji": "搜索或粘贴表情…",
+      "no-results": "没有匹配项",
+      "emoji-help": "选择常用表情，或粘贴你喜欢的表情。",
+      "reset": "恢复默认",
+      "use-emoji": "使用 {{emoji}}"
+    },
+    "unavailable": "空间不存在或你没有访问权限。",
+    "back-to-memos": "返回 Memos"
   }
 }

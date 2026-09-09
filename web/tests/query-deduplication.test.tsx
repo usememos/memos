@@ -20,10 +20,8 @@ vi.mock("@/connect", () => ({
   memoServiceClient: {
     getMemo: clients.getMemo,
   },
-  memoViewServiceClient: {
-    listMemoViews: clients.listMemoViews,
-  },
   userServiceClient: {
+    listMemoViews: clients.listMemoViews,
     batchGetUsers: clients.batchGetUsers,
     getUser: clients.getUser,
   },
@@ -180,6 +178,6 @@ describe("query deduplication", () => {
     });
 
     expect(clients.getMemo).toHaveBeenCalledTimes(1);
-    expect(clients.getMemo).toHaveBeenCalledWith({ name: missingMemo.name });
+    expect(clients.getMemo).toHaveBeenCalledWith({ name: missingMemo.name }, { signal: expect.any(AbortSignal) });
   });
 });

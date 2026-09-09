@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { markdownStyles } from "@/lib/markdownStyles";
 import { cn } from "@/lib/utils";
 import { findAnchorTarget } from "@/utils/markdown-manipulation";
-import { createMemoNavigationState, type MemoOriginScope } from "../../MemoView/navigation";
+import { createMemoNavigationState } from "../../MemoView/navigation";
 import type { ReactMarkdownProps } from "./types";
 
 interface AnchorLinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement>, ReactMarkdownProps {
@@ -11,7 +11,6 @@ interface AnchorLinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement>,
   memoName?: string;
   /** Collection page that rendered the enclosing memo. */
   parentPage?: string;
-  parentScope?: MemoOriginScope;
   /** Whether the memo is rendered as a collapsed feed card. */
   compact?: boolean;
   children: React.ReactNode;
@@ -26,17 +25,7 @@ interface AnchorLinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement>,
  * below the fold, so we fall back to navigating to the memo detail page (with the hash), where
  * MemoDetail scrolls the target into view.
  */
-export const AnchorLink = ({
-  href,
-  memoName,
-  parentPage,
-  parentScope,
-  compact,
-  children,
-  className,
-  node: _node,
-  ...props
-}: AnchorLinkProps) => {
+export const AnchorLink = ({ href, memoName, parentPage, compact, children, className, node: _node, ...props }: AnchorLinkProps) => {
   const handleClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
     if (compact) return; // Let the link navigate to the detail page.
     const id = decodeURIComponent(href.slice(1));
@@ -57,7 +46,7 @@ export const AnchorLink = ({
     return (
       <Link
         to={`/${memoName}${href}`}
-        state={parentPage && parentScope ? createMemoNavigationState(parentPage, parentScope) : undefined}
+        state={parentPage ? createMemoNavigationState(parentPage) : undefined}
         onClick={handleClick}
         className={classes}
         {...props}

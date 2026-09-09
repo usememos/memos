@@ -133,7 +133,6 @@
     },
     "no-changes-detected": "Ingen endringer oppdaget",
     "save": "Lagre",
-    "saving": "Lagrer...",
     "audio-recorder": {
       "attachment-label": "Lydopptak",
       "attachment-label-with-time": "Lydopptak {{time}}",
@@ -291,8 +290,7 @@
     "restored-successfully": "Gjenoppretting vellykket",
     "succeed-copy-content": "Innhold kopiert vellykket.",
     "succeed-copy-link": "Link kopiert.",
-    "update-succeed": "Oppdatering vellykket",
-    "user-not-found": "Bruker ikke funnet"
+    "update-succeed": "Oppdatering vellykket"
   },
   "reference": {
     "add-references": "Legg til referanser",

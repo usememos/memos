@@ -125,7 +125,6 @@
     "focus-mode": "حالت تمرکز",
     "no-changes-detected": "تغییری شناسایی نشد",
     "save": "ذخیره",
-    "saving": "در حال ذخیره...",
     "insert-menu": {
       "add-location": "اضافه کردن مکان",
       "link-memo": "پیوند یادداشت",
@@ -257,8 +256,7 @@
     "restored-successfully": "با موفقیت بازیابی شد",
     "succeed-copy-content": "محتوا با موفقیت کپی شد.",
     "succeed-copy-link": "پیوند با موفقیت کپی شد.",
-    "update-succeed": "بروزرسانی موفق بود",
-    "user-not-found": "کاربر یافت نشد"
+    "update-succeed": "بروزرسانی موفق بود"
   },
   "reference": {
     "add-references": "افزودن منابع",

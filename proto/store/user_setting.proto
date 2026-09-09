@@ -118,6 +118,16 @@ message MemoViewsUserSetting {
     string id = 1;
     string title = 2;
     string filter = 3;
+    Icon icon = 4;
+
+    message Icon {
+      oneof value {
+        // A Unicode emoji sequence.
+        string emoji = 1;
+        // A canonical Lucide icon name, such as "leaf".
+        string lucide = 2;
+      }
+    }
   }
   repeated MemoView memo_views = 1;
 }

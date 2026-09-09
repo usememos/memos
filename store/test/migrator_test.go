@@ -62,11 +62,11 @@ func TestFreshInstall(t *testing.T) {
 	// The fresh schema supports memo-local Space placement without adding a
 	// canonical thread shape. COMMENT remains an ordinary relation row.
 	driver := getDriverFromEnv()
-	insertSpace := "INSERT INTO space (id, uid, title, description) VALUES (?, ?, ?, ?)"
+	insertSpace := "INSERT INTO space (id, uid, title, description, payload) VALUES (?, ?, ?, ?, '{}')"
 	insertMemo := "INSERT INTO memo (id, uid, creator_id, content, visibility, payload, space_id) VALUES (?, ?, ?, ?, ?, ?, ?)"
 	insertRelation := "INSERT INTO memo_relation (memo_id, related_memo_id, type) VALUES (?, ?, ?)"
 	if driver == "postgres" {
-		insertSpace = "INSERT INTO space (id, uid, title, description) VALUES ($1, $2, $3, $4)"
+		insertSpace = "INSERT INTO space (id, uid, title, description, payload) VALUES ($1, $2, $3, $4, '{}')"
 		insertMemo = "INSERT INTO memo (id, uid, creator_id, content, visibility, payload, space_id) VALUES ($1, $2, $3, $4, $5, $6, $7)"
 		insertRelation = "INSERT INTO memo_relation (memo_id, related_memo_id, type) VALUES ($1, $2, $3)"
 	}
@@ -306,6 +306,8 @@ func TestMigrationSpaceMemberStatusBackfillsActive(t *testing.T) {
 
 	db := ts.GetDriver().GetDB()
 	_, err = db.ExecContext(ctx, "ALTER TABLE space_member DROP COLUMN status")
+	require.NoError(t, err)
+	_, err = db.ExecContext(ctx, "ALTER TABLE space DROP COLUMN payload")
 	require.NoError(t, err)
 
 	basicSetting, err := ts.GetInstanceBasicSetting(ctx)

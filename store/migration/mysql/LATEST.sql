@@ -33,7 +33,8 @@ CREATE TABLE `space` (
   `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `uid` VARCHAR(256) NOT NULL UNIQUE,
   `title` TEXT NOT NULL,
-  `description` TEXT NOT NULL
+  `description` TEXT NOT NULL,
+  `payload` JSON NOT NULL
 );
 
 -- space membership

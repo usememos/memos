@@ -2,6 +2,7 @@ import { BookmarkIcon } from "lucide-react";
 import { useCallback, useState } from "react";
 import { Link } from "react-router-dom";
 import RelativeTime from "@/components/RelativeTime";
+import { buttonVariants } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useNewMemo } from "@/contexts/NewMemoContext";
 import useNavigateTo from "@/hooks/useNavigateTo";
@@ -21,24 +22,29 @@ import { createMemoNavigationState } from "../navigation";
 import type { MemoHeaderProps } from "../types";
 import MemoSpaceBadge from "./MemoSpaceBadge";
 
-const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, showPinned, showSpace }) => {
+/** The card's trailing actions are the kit's quiet 24px squares, whether or not they are kit buttons. */
+const MEMO_HEADER_ACTION_CLASSES = cn(buttonVariants({ variant: "quiet", size: "icon-sm" }));
+
+const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showCreator, showVisibility, showPinned, showSpace }) => {
   const t = useTranslate();
   const [reactionSelectorOpen, setReactionSelectorOpen] = useState(false);
 
-  const { memo, creator, currentUser, parentPage, parentScope, isArchived, readonly, openEditor } = useMemoViewContext();
+  const { memo, creator, currentUser, parentPage, isArchived, readonly, openEditor } = useMemoViewContext();
   const { createTime, updateTime, displayTime: memoDisplayTime, isDisplayingUpdatedTime, relativeTimeFormat } = useMemoViewDerived();
   const { newMemoName } = useNewMemo();
   const visibilityOption = getVisibilityOption(memo.visibility);
 
   const navigateTo = useNavigateTo();
   const handleGotoMemoDetailPage = useCallback(() => {
-    navigateTo(`/${memo.name}`, { state: createMemoNavigationState(parentPage, parentScope) });
-  }, [memo.name, parentPage, parentScope, navigateTo]);
+    navigateTo(`/${memo.name}`, { state: createMemoNavigationState(parentPage) });
+  }, [memo.name, parentPage, navigateTo]);
 
   const { unpinMemo } = useMemoActions(memo);
 
   const timeValue = isArchived ? (
     memoDisplayTime?.toLocaleString(i18n.language)
+  ) : timeDisplay === "time" ? (
+    memoDisplayTime?.toLocaleTimeString(i18n.language, { hour: "numeric", minute: "2-digit" })
   ) : (
     <RelativeTime date={memoDisplayTime} format={relativeTimeFormat} />
   );
@@ -82,10 +88,16 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, sh
         )}
       </div>
 
-      <div className="flex flex-row justify-end items-center select-none shrink-0 gap-2">
+      <div data-slot="memo-header-actions" className="flex shrink-0 select-none flex-row items-center justify-end gap-1">
         {currentUser && !isArchived && (
           <ReactionSelector
-            className={cn("border-none w-auto h-auto", reactionSelectorOpen && "block!", "block sm:hidden sm:group-hover:block")}
+            className={cn(
+              MEMO_HEADER_ACTION_CLASSES,
+              // The chip's own round bordered look gives way to the header's quiet square.
+              "border-none hover:opacity-100",
+              reactionSelectorOpen && "sm:flex!",
+              "flex sm:hidden sm:group-hover:flex sm:group-focus-within:flex",
+            )}
             memo={memo}
             onOpenChange={setReactionSelectorOpen}
           />
@@ -93,10 +105,8 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, sh
 
         {showVisibility && memo.visibility !== Visibility.PRIVATE && (
           <Tooltip>
-            <TooltipTrigger>
-              <span className="flex justify-center items-center rounded-md hover:opacity-80">
-                <VisibilityIcon visibility={memo.visibility} />
-              </span>
+            <TooltipTrigger aria-label={visibilityOption && t(visibilityOption.labelKey)} className={MEMO_HEADER_ACTION_CLASSES}>
+              <VisibilityIcon visibility={memo.visibility} className="text-current" />
             </TooltipTrigger>
             <TooltipContent>{visibilityOption && t(visibilityOption.labelKey)}</TooltipContent>
           </Tooltip>
@@ -105,8 +115,13 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, sh
         {showPinned && memo.pinned && (
           <TooltipProvider>
             <Tooltip>
-              <TooltipTrigger render={<span className="cursor-pointer" />}>
-                <BookmarkIcon className="w-4 h-auto text-primary" onClick={unpinMemo} />
+              {/* The pinned mark keeps its primary ink; that custom look lives on the raw trigger, not a kit button. */}
+              <TooltipTrigger
+                aria-label={t("common.unpin")}
+                className={cn(MEMO_HEADER_ACTION_CLASSES, "text-primary hover:text-primary")}
+                onClick={unpinMemo}
+              >
+                <BookmarkIcon className="size-4" strokeWidth={1.8} />
               </TooltipTrigger>
               <TooltipContent>
                 <p>{t("common.unpin")}</p>
@@ -115,7 +130,7 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, sh
           </TooltipProvider>
         )}
 
-        <MemoActionMenu memo={memo} parentScope={parentScope} readonly={readonly} onEdit={openEditor} />
+        <MemoActionMenu memo={memo} parentPage={parentPage} readonly={readonly} onEdit={openEditor} />
       </div>
     </div>
   );

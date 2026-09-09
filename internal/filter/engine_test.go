@@ -96,8 +96,15 @@ func TestRenderSpaceFilters(t *testing.T) {
 			require.Empty(t, unassigned.Args, schema.Name, dialect)
 		}
 
-		_, err = engine.Compile(context.Background(), `space != null`)
-		require.ErrorContains(t, err, `operator != not allowed for field "space"`)
+		for _, dialect := range []DialectName{DialectSQLite, DialectMySQL, DialectPostgres} {
+			assigned, err := engine.CompileToStatement(context.Background(), `space != null`, RenderOptions{Dialect: dialect})
+			require.NoError(t, err, schema.Name, dialect)
+			require.Contains(t, assigned.SQL, "IS NOT NULL", schema.Name, dialect)
+			require.Empty(t, assigned.Args, schema.Name, dialect)
+		}
+
+		_, err = engine.Compile(context.Background(), `space != "spaces/team"`)
+		require.ErrorContains(t, err, `operator != not allowed for field "space"`, "NULL != value would silently drop unassigned memos")
 	}
 }
 

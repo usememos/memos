@@ -170,7 +170,6 @@
     },
     "no-changes-detected": "Nu au fost detectate modificări",
     "save": "Salva",
-    "saving": "Economisire...",
     "audio-recorder": {
       "attachment-label": "Înregistrare audio",
       "attachment-label-with-time": "Înregistrare audio {{time}}",
@@ -328,8 +327,7 @@
     "restored-successfully": "Restaurat cu succes",
     "succeed-copy-content": "Conținutul a fost copiat cu succes.",
     "succeed-copy-link": "Linkul a fost copiat cu succes.",
-    "update-succeed": "Actualizarea a reușit",
-    "user-not-found": "Utilizatorul nu a fost găsit"
+    "update-succeed": "Actualizarea a reușit"
   },
   "reference": {
     "add-references": "Adăugați referințe",

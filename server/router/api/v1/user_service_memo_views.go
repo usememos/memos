@@ -51,6 +51,7 @@ func convertMemoViewFromStore(username string, memoView *storepb.MemoViewsUserSe
 		Name:   constructMemoViewName(username, memoView.GetId()),
 		Title:  memoView.GetTitle(),
 		Filter: memoView.GetFilter(),
+		Icon:   convertMemoViewIconFromStore(memoView.GetIcon()),
 	}
 }
 
@@ -138,12 +139,16 @@ func (s *APIV1Service) CreateMemoView(ctx context.Context, request *v1pb.CreateM
 		Id:     util.GenUUID(),
 		Title:  request.GetMemoView().GetTitle(),
 		Filter: request.GetMemoView().GetFilter(),
+		Icon:   convertMemoViewIconToStore(request.GetMemoView().GetIcon()),
 	}
 	if newMemoView.Title == "" {
 		return nil, status.Errorf(codes.InvalidArgument, "title is required")
 	}
 	if err := s.validateFilter(ctx, newMemoView.Filter); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid filter: %v", err)
+	}
+	if err := store.ValidateMemoViewIcon(newMemoView.Icon); err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid icon: %v", err)
 	}
 	if request.ValidateOnly {
 		return convertMemoViewFromStore(user.Username, newMemoView), nil
@@ -170,6 +175,7 @@ func (s *APIV1Service) UpdateMemoView(ctx context.Context, request *v1pb.UpdateM
 	}
 
 	var title, filterValue *string
+	var icon **storepb.MemoViewsUserSetting_MemoView_Icon
 	for _, field := range request.UpdateMask.Paths {
 		switch field {
 		case "title":
@@ -184,12 +190,18 @@ func (s *APIV1Service) UpdateMemoView(ctx context.Context, request *v1pb.UpdateM
 			}
 			value := request.GetMemoView().GetFilter()
 			filterValue = &value
+		case "icon":
+			value := convertMemoViewIconToStore(request.GetMemoView().GetIcon())
+			if err := store.ValidateMemoViewIcon(value); err != nil {
+				return nil, status.Errorf(codes.InvalidArgument, "invalid icon: %v", err)
+			}
+			icon = &value
 		default:
 			return nil, status.Errorf(codes.InvalidArgument, "unsupported update mask path: %s", field)
 		}
 	}
 
-	updatedMemoView, err := s.Store.UpdateUserMemoView(ctx, user.ID, memoViewID, title, filterValue)
+	updatedMemoView, err := s.Store.UpdateUserMemoView(ctx, user.ID, memoViewID, title, filterValue, icon)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to update memo view: %v", err)
 	}

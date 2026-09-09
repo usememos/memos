@@ -24,7 +24,6 @@ const renderFootnote = (compact = false, parentPage?: string) =>
           resolvedMentionUsernames={new Set()}
           memoName="memos/abc123"
           parentPage={parentPage}
-          parentScope={parentPage ? "preserve" : undefined}
           compact={compact}
         />
       </div>

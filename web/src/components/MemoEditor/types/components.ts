@@ -12,7 +12,8 @@ export interface MemoEditorProps {
   parentMemoName?: string;
   /** Assigns a newly created top-level memo to this Space. Ignored for edits and comments. */
   defaultSpace?: string;
-  autoFocus?: boolean;
+  /** A callback can decide whether focus is still appropriate after draft restoration. */
+  autoFocus?: boolean | (() => boolean);
   /**
    * Marks the instance as *hosted*: a host (the global composer dialog) presents
    * the editor in the focus-mode layout and owns that frame. The editor mounts
@@ -57,6 +58,8 @@ export interface EditorToolbarProps {
   onSave: () => void;
   onCancel?: () => void;
   memoName?: string;
+  /** Set when the editor composes a comment on this memo; picks the commit verb. */
+  parentMemoName?: string;
   /** The Space that owns the memo being created or edited, if any. */
   space?: string;
   onAudioRecorderClick: () => void;

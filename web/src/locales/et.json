@@ -170,7 +170,6 @@
     },
     "no-changes-detected": "Muudatusi ei tuvastatud",
     "save": "Salvesta",
-    "saving": "Salvestamine...",
     "audio-recorder": {
       "attachment-label": "Helisalvestus",
       "attachment-label-with-time": "Helisalvestus {{time}}",
@@ -328,8 +327,7 @@
     "restored-successfully": "Taastatud edukalt",
     "succeed-copy-content": "Sisu kopeerimine õnnestus.",
     "succeed-copy-link": "Link on edukalt kopeeritud.",
-    "update-succeed": "Värskendus õnnestus",
-    "user-not-found": "Kasutajat ei leitud"
+    "update-succeed": "Värskendus õnnestus"
   },
   "reference": {
     "add-references": "Lisa viited",

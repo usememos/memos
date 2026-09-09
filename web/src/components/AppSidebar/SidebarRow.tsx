@@ -18,8 +18,8 @@ export const SIDEBAR_ROW_FOCUS_CLASSES =
 
 export const SIDEBAR_ROW_CLASSES = `${SIDEBAR_ROW_BOX_CLASSES} ${SIDEBAR_ROW_FOCUS_CLASSES}`;
 
-export const SIDEBAR_ROW_ICON_CLASSES = "me-auto size-4 shrink-0 opacity-75";
-const SIDEBAR_ROW_COUNT_CLASSES = "text-2xs tabular-nums text-muted-foreground/60";
+export const SIDEBAR_ROW_ICON_CLASSES = "me-auto size-4 shrink-0 opacity-75 group-data-checked:text-primary group-data-checked:opacity-100";
+const SIDEBAR_ROW_COUNT_CLASSES = "text-2xs tabular-nums text-muted-foreground/60 group-data-checked:text-primary";
 
 /**
  * The focusable body of a split row — rows whose box is a wrapper carrying other controls
@@ -48,14 +48,32 @@ export const SidebarRowIconSlot = ({ icon: Icon }: { icon: LucideIcon }) => (
   </span>
 );
 
-/** Idle and selected colouring for a row box, kept in one place so lists cannot drift apart. */
-export const sidebarRowStateClasses = (active?: boolean) =>
-  active
-    ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground"
-    : "text-muted-foreground hover:bg-sidebar-accent/65 hover:text-foreground";
+/**
+ * One selected look per meaning, kept together so lists cannot drift apart.
+ * `current` is the place you are (nav pills, settings sections, list scopes) and fills the
+ * row. `checked` is a filter that is on (a view, a tag) and must never read as a page: no
+ * surface, foreground text, an accent mark on the rail edge, accent icon and count.
+ */
+export type SidebarRowState = "idle" | "current" | "checked";
+
+const SIDEBAR_ROW_HOVER_CLASSES = "hover:bg-sidebar-accent/65 hover:text-foreground";
+
+export const sidebarRowStateClasses = (state: SidebarRowState = "idle") => {
+  if (state === "current") return "bg-sidebar-accent font-medium text-sidebar-accent-foreground";
+  if (state === "checked") {
+    // The mark hangs in the rail's 12px inset so the label stays on its rail.
+    return `relative font-medium text-foreground ${SIDEBAR_ROW_HOVER_CLASSES} before:absolute before:inset-y-1.5 before:-start-3 before:w-0.5 before:rounded-e-full before:bg-primary before:content-['']`;
+  }
+  return `text-muted-foreground ${SIDEBAR_ROW_HOVER_CLASSES}`;
+};
+
+/** Goes on the row box so the icon slot and count rail inside it can take the checked colour. */
+export const sidebarRowStateAttributes = (state: SidebarRowState) => ({
+  "data-checked": state === "checked" ? "" : undefined,
+});
 
 interface Props {
-  active?: boolean;
+  state?: SidebarRowState;
   icon?: LucideIcon;
   label: ReactNode;
   count?: number;
@@ -63,12 +81,13 @@ interface Props {
   trailing?: ReactNode;
 }
 
-const SidebarRow = ({ active, icon: Icon, label, count, onClick, trailing }: Props) => (
+const SidebarRow = ({ state = "idle", icon: Icon, label, count, onClick, trailing }: Props) => (
   <button
     type="button"
     onClick={onClick}
-    aria-pressed={active || undefined}
-    className={cn(SIDEBAR_ROW_CLASSES, sidebarRowStateClasses(active))}
+    aria-pressed={state !== "idle" || undefined}
+    {...sidebarRowStateAttributes(state)}
+    className={cn(SIDEBAR_ROW_CLASSES, sidebarRowStateClasses(state))}
   >
     {Icon && <SidebarRowIconSlot icon={Icon} />}
     <span data-sidebar-label className="min-w-0 flex-1 truncate text-start">

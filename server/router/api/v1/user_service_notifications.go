@@ -58,10 +58,14 @@ func (s *APIV1Service) ListUserNotifications(ctx context.Context, request *v1pb.
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list notification memos: %v", err)
 	}
+	spaceContext, err := s.loadSpaceInvitationNotificationContext(ctx, currentUser, inboxes)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to list notification spaces: %v", err)
+	}
 
 	notifications := []*v1pb.UserNotification{}
 	for _, inbox := range inboxes {
-		notification, err := s.convertInboxToUserNotificationWithUsersAndMemos(ctx, inbox, currentUser, usersByID, memosByID)
+		notification, err := s.convertInboxToUserNotificationWithUsersAndMemos(ctx, inbox, currentUser, usersByID, memosByID, spaceContext)
 		if err != nil {
 			if status.Code(err) == codes.NotFound {
 				slog.Warn("Skipping notification with missing user",
@@ -125,7 +129,11 @@ func (s *APIV1Service) UpdateUserNotification(ctx context.Context, request *v1pb
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list notification memos: %v", err)
 	}
-	accessible, err := s.canAccessNotificationMemos(ctx, currentUser, inbox, memosByID)
+	spaceContext, err := s.loadSpaceInvitationNotificationContext(ctx, currentUser, []*store.Inbox{inbox})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to list notification spaces: %v", err)
+	}
+	accessible, err := s.canAccessNotification(ctx, currentUser, inbox, memosByID, spaceContext)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to authorize notification: %v", err)
 	}
@@ -227,7 +235,11 @@ func (s *APIV1Service) convertInboxToUserNotification(ctx context.Context, inbox
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list notification memos: %v", err)
 	}
-	return s.convertInboxToUserNotificationWithUsersAndMemos(ctx, inbox, viewer, usersByID, memosByID)
+	spaceContext, err := s.loadSpaceInvitationNotificationContext(ctx, viewer, []*store.Inbox{inbox})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to list notification spaces: %v", err)
+	}
+	return s.convertInboxToUserNotificationWithUsersAndMemos(ctx, inbox, viewer, usersByID, memosByID, spaceContext)
 }
 
 func collectInboxMemoIDs(inboxes []*store.Inbox) []int32 {
@@ -264,8 +276,8 @@ func collectInboxMemoIDs(inboxes []*store.Inbox) []int32 {
 	return memoIDs
 }
 
-func (s *APIV1Service) convertInboxToUserNotificationWithUsersAndMemos(ctx context.Context, inbox *store.Inbox, viewer *store.User, usersByID map[int32]*store.User, memosByID map[int32]*store.Memo) (*v1pb.UserNotification, error) {
-	accessible, err := s.canAccessNotificationMemos(ctx, viewer, inbox, memosByID)
+func (s *APIV1Service) convertInboxToUserNotificationWithUsersAndMemos(ctx context.Context, inbox *store.Inbox, viewer *store.User, usersByID map[int32]*store.User, memosByID map[int32]*store.Memo, spaceContext *spaceInvitationNotificationContext) (*v1pb.UserNotification, error) {
+	accessible, err := s.canAccessNotification(ctx, viewer, inbox, memosByID, spaceContext)
 	if err != nil {
 		return nil, err
 	}
@@ -323,6 +335,18 @@ func (s *APIV1Service) convertInboxToUserNotificationWithUsersAndMemos(ctx conte
 					MemoMention: payload,
 				}
 			}
+		case storepb.InboxMessage_SPACE_INVITATION:
+			payload := convertSpaceInvitationNotificationPayload(inbox, viewer, spaceContext)
+			if payload == nil {
+				// The access check already required a pending or accepted
+				// invitation; a missing payload means the space disappeared
+				// in between. Fail closed.
+				return nil, nil
+			}
+			notification.Type = v1pb.UserNotification_SPACE_INVITATION
+			notification.Payload = &v1pb.UserNotification_SpaceInvitation{
+				SpaceInvitation: payload,
+			}
 		default:
 			notification.Type = v1pb.UserNotification_TYPE_UNSPECIFIED
 		}
@@ -331,7 +355,11 @@ func (s *APIV1Service) convertInboxToUserNotificationWithUsersAndMemos(ctx conte
 	return notification, nil
 }
 
-func (s *APIV1Service) canAccessNotificationMemos(ctx context.Context, viewer *store.User, inbox *store.Inbox, memosByID map[int32]*store.Memo) (bool, error) {
+// canAccessNotification reports whether the viewer may still read every
+// subject the notification refers to. Memo notifications require read access
+// to each memo; a space invitation requires the viewer to hold the pending
+// offer or to have accepted it.
+func (s *APIV1Service) canAccessNotification(ctx context.Context, viewer *store.User, inbox *store.Inbox, memosByID map[int32]*store.Memo, spaceContext *spaceInvitationNotificationContext) (bool, error) {
 	if viewer == nil || viewer.RowStatus != store.Normal {
 		return false, nil
 	}
@@ -377,6 +405,9 @@ func (s *APIV1Service) canAccessNotificationMemos(ctx context.Context, viewer *s
 			return canReadMemo, err
 		}
 		return check(payload.RelatedMemoId)
+	case storepb.InboxMessage_SPACE_INVITATION:
+		space, _, state := spaceContext.resolve(inbox.Message.GetSpaceInvitation().GetSpaceId())
+		return space != nil && state != v1pb.UserNotification_SpaceInvitationPayload_STATE_UNSPECIFIED, nil
 	default:
 		return true, nil
 	}

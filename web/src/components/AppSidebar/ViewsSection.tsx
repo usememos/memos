@@ -1,31 +1,34 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { MoreHorizontalIcon, ParenthesesIcon, PlusIcon, SquareCheckIcon } from "lucide-react";
+import { MoreHorizontalIcon, PlusIcon, SquareCheckIcon } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import MemoDisplaySettingMenu from "@/components/MemoDisplaySettingMenu";
+import MemoViewIcon from "@/components/MemoViewIcon";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { memoViewServiceClient } from "@/connect";
+import { userServiceClient } from "@/connect";
 import { useAppSidebar } from "@/contexts/AppSidebarContext";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoViews, userKeys } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
-import { BUILTIN_TASKS_VIEW_ID, getMemoViewId, isMemoScopeRoute } from "@/lib/memo-views";
+import { BUILTIN_TASKS_VIEW_ID, getMemoViewId, isMemoCollectionRoute } from "@/lib/memo-views";
 import { cn } from "@/lib/utils";
-import { ROUTES } from "@/router/routes";
-import type { MemoView } from "@/types/proto/api/v1/memo_view_service_pb";
+import { collectionPathForLocation, ROUTES } from "@/router/routes";
+import type { MemoView } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import SidebarRow, {
   SIDEBAR_ROW_BOX_CLASSES,
+  SIDEBAR_ROW_ICON_CLASSES,
   SIDEBAR_ROW_LABEL_CLASSES,
   SIDEBAR_ROW_SLOT_BUTTON_CLASSES,
-  SidebarRowIconSlot,
+  SIDEBAR_ROW_SLOT_CLASSES,
+  sidebarRowStateAttributes,
   sidebarRowStateClasses,
 } from "./SidebarRow";
-import SidebarSection, { SIDEBAR_SECTION_ACTION_BUTTON_CLASSES, SIDEBAR_SECTION_ACTION_ICON_CLASSES } from "./SidebarSection";
+import SidebarSection, { SIDEBAR_SECTION_ACTION_ICON_CLASSES } from "./SidebarSection";
 
 /** The row's ⋯ menu: a trailing slot control that stays hidden until the row is engaged. */
 const VIEW_MENU_TRIGGER_CLASSES = cn(
@@ -46,7 +49,8 @@ const ViewsSection = ({ manageActive = false }: { manageActive?: boolean }) => {
 
   const handleView = (viewId: string) => {
     setMemoView(selectedMemoView === viewId ? undefined : viewId);
-    if (!isMemoScopeRoute(location.pathname)) navigate(ROUTES.HOME);
+    if (!isMemoCollectionRoute(location.pathname))
+      navigate({ pathname: collectionPathForLocation(ROUTES.HOME, location.pathname), search: location.search });
     setMobileOpen(false);
   };
 
@@ -58,7 +62,7 @@ const ViewsSection = ({ manageActive = false }: { manageActive?: boolean }) => {
   const handleDelete = async () => {
     if (!deleteTarget) return;
     try {
-      await memoViewServiceClient.deleteMemoView({ name: deleteTarget.name });
+      await userServiceClient.deleteMemoView({ name: deleteTarget.name });
       await queryClient.invalidateQueries({ queryKey: userKeys.memoViews(currentUser?.name) });
       if (selectedMemoView === getMemoViewId(deleteTarget.name)) setMemoView(undefined);
       toast.success(t("setting.memo-view.delete-success", { title: deleteTarget.title }));
@@ -76,13 +80,7 @@ const ViewsSection = ({ manageActive = false }: { manageActive?: boolean }) => {
         !manageActive && (
           <div className="flex items-center gap-0.5">
             <MemoDisplaySettingMenu />
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              className={SIDEBAR_SECTION_ACTION_BUTTON_CLASSES}
-              onClick={handleCreate}
-              aria-label={t("common.create")}
-            >
+            <Button variant="quiet" size="icon-sm" onClick={handleCreate} aria-label={t("common.create")}>
               <PlusIcon className={SIDEBAR_SECTION_ACTION_ICON_CLASSES} strokeWidth={1.8} />
             </Button>
           </div>
@@ -90,7 +88,7 @@ const ViewsSection = ({ manageActive = false }: { manageActive?: boolean }) => {
       }
     >
       <SidebarRow
-        active={!manageActive && selectedMemoView === BUILTIN_TASKS_VIEW_ID}
+        state={!manageActive && selectedMemoView === BUILTIN_TASKS_VIEW_ID ? "checked" : "idle"}
         icon={SquareCheckIcon}
         label={t("common.tasks")}
         onClick={() => handleView(BUILTIN_TASKS_VIEW_ID)}
@@ -98,10 +96,17 @@ const ViewsSection = ({ manageActive = false }: { manageActive?: boolean }) => {
       {memoViews.map((memoView) => {
         const id = getMemoViewId(memoView.name);
         const active = !manageActive && selectedMemoView === id;
+        const state = active ? "checked" : "idle";
         return (
-          <div key={memoView.name} className={cn(SIDEBAR_ROW_BOX_CLASSES, "group/view", sidebarRowStateClasses(active))}>
+          <div
+            key={memoView.name}
+            {...sidebarRowStateAttributes(state)}
+            className={cn(SIDEBAR_ROW_BOX_CLASSES, "group/view", sidebarRowStateClasses(state))}
+          >
             <button type="button" onClick={() => handleView(id)} aria-pressed={active || undefined} className={SIDEBAR_ROW_LABEL_CLASSES}>
-              <SidebarRowIconSlot icon={ParenthesesIcon} />
+              <span className={SIDEBAR_ROW_SLOT_CLASSES} aria-hidden="true">
+                <MemoViewIcon icon={memoView.icon} className={cn(SIDEBAR_ROW_ICON_CLASSES, "text-base")} />
+              </span>
               <span className="min-w-0 flex-1 truncate">{memoView.title}</span>
             </button>
             <DropdownMenu>
@@ -135,7 +140,7 @@ const ViewsSection = ({ manageActive = false }: { manageActive?: boolean }) => {
           </div>
         );
       })}
-      {manageActive && <SidebarRow active icon={MoreHorizontalIcon} label={t("common.manage")} />}
+      {manageActive && <SidebarRow state="current" icon={MoreHorizontalIcon} label={t("common.manage")} />}
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(undefined)}

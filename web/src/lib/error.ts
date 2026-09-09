@@ -1,4 +1,8 @@
-import { ConnectError } from "@connectrpc/connect";
+import { type Code, ConnectError } from "@connectrpc/connect";
+
+export function hasConnectCode(error: unknown, ...codes: Code[]): error is ConnectError {
+  return error instanceof ConnectError && codes.includes(error.code);
+}
 
 export function getErrorMessage(error: unknown, fallback = "Unknown error"): string {
   if (error instanceof ConnectError) {
