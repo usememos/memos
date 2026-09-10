@@ -329,6 +329,7 @@
     "preference": {
       "default-memo-sort-option": "وقت عرض المذكرة",
       "default-memo-visibility": "رؤية المذكرة الافتراضية",
+      "link-preview-description": "عرض بطاقات روابط غنية للروابط الموجودة في المذكرات.",
       "theme": "السمة",
       "label": "التفضيلات"
     },
