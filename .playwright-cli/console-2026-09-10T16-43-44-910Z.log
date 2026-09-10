@@ -1,0 +1,52 @@
+[     123ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3001/node_modules/.vite/deps/react-dom_client.js?v=adcc9984:14337
+[     172ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3001/memos.api.v1.AuthService/RefreshToken:0
+[   15323ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ https://pan.baidu.com/favicon.ico:0
+[   15323ms] [ERROR] Failed to load resource: net::ERR_CONTENT_DECODING_FAILED @ https://pan.baidu.com/favicon.ico:0
+[   15616ms] [ERROR] Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin @ https://pixabay.com/favicon.ico:0
+[   15632ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_RESET @ https://www.wikipedia.org/favicon.ico:0
+[   15905ms] [ERROR] Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin @ https://openai.com/favicon.ico:0
+[   15953ms] [ERROR] Failed to load resource: net::ERR_CERT_COMMON_NAME_INVALID @ https://ai.gede.asia/favicon.ico:0
+[   16040ms] [ERROR] Failed to load resource: net::ERR_CERT_COMMON_NAME_INVALID @ https://agent.gede.asia/favicon.ico:0
+[   29793ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:19798/favicon.ico:0
+[   29834ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://111.229.177.191:8002/favicon.ico:0
+[   29889ms] [ERROR] Failed to load resource: net::ERR_NAME_NOT_RESOLVED @ http://www.agimon.cn/favicon.ico:0
+[   29932ms] [ERROR] Failed to load resource: net::ERR_CERT_COMMON_NAME_INVALID @ https://gede.asia/favicon.ico:0
+[   30038ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ https://www.dyttcn.com/favicon.ico:0
+[   30098ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://topic.expreview.com/favicon.ico:0
+[   30098ms] [ERROR] Failed to load resource: net::ERR_CONTENT_DECODING_FAILED @ https://topic.expreview.com/favicon.ico:0
+[   30162ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_CLOSED @ https://gzy2965753496.fnos.net/favicon.ico:0
+[   30514ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ https://www.btjiaweb.com/favicon.ico:0
+[   30818ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://bt7274.cc/favicon.ico:0
+[   30894ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://4kbt.org/favicon.ico:0
+[   31034ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ https://www.4khdr.cn/favicon.ico:0
+[   32851ms] [ERROR] Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR @ https://www.hdchina.net/favicon.ico:0
+[   53166ms] [ERROR] Failed to load resource: net::ERR_TIMED_OUT @ https://bygcloud.com/favicon.ico:0
+[   79338ms] [ERROR] Failed to load resource: net::ERR_TIMED_OUT @ https://www.dg6.me/favicon.ico:0
+[   91088ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://console.x.ai/favicon.ico:0
+[   91291ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://b.ai/favicon.ico:0
+[   91532ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ http://192.168.2.8:12121/favicon.ico:0
+[   92022ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://search.hlbox.top/favicon.ico:0
+[   92365ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ http://111.228.7.39:24506/favicon.ico:0
+[   92389ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://xn--citycity-g49l.xunmengzhifan.eu.org/favicon.ico:0
+[   92498ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ http://47.101.209.17:3000/favicon.ico:0
+[  104790ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ http://192.168.2.26:7681/favicon.ico:0
+[  104793ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ http://192.168.2.26:9091/favicon.ico:0
+[  104793ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ http://192.168.2.152:5000/favicon.ico:0
+[  104793ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ http://192.168.2.21:8000/favicon.ico:0
+[  104793ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ http://192.168.2.152:5666/favicon.ico:0
+[  104896ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://www.wankevr.com/favicon.ico:0
+[  105149ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://www.mchose.com.cn:9999/favicon.ico:0
+[  105214ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://hanime1.me/favicon.ico:0
+[  105222ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://chatgpt.com/favicon.ico:0
+[  157158ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ https://pan.baidu.com/favicon.ico:0
+[  157158ms] [ERROR] Failed to load resource: net::ERR_CONTENT_DECODING_FAILED @ https://pan.baidu.com/favicon.ico:0
+[  157594ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_RESET @ https://www.wikipedia.org/favicon.ico:0
+[  165338ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://www.youtube.com/favicon.ico:0
+[  166010ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://aistudio.google.com/favicon.ico:0
+[  186161ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3001/node_modules/.vite/deps/react-dom_client.js?v=adcc9984:14337
+[  186388ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ https://pan.baidu.com/favicon.ico:0
+[  186388ms] [ERROR] Failed to load resource: net::ERR_CONTENT_DECODING_FAILED @ https://pan.baidu.com/favicon.ico:0
+[  186918ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_RESET @ https://www.wikipedia.org/favicon.ico:0
+[  220523ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ https://pan.baidu.com/favicon.ico:0
+[  220523ms] [ERROR] Failed to load resource: net::ERR_CONTENT_DECODING_FAILED @ https://pan.baidu.com/favicon.ico:0
+[  220743ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_RESET @ https://www.wikipedia.org/favicon.ico:0

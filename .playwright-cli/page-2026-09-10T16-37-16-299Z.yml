@@ -1,0 +1,1596 @@
+- generic [ref=e2]:
+  - generic [ref=e128]:
+    - complementary [ref=e130]:
+      - navigation "Primary" [ref=e131]:
+        - link "Memos" [ref=e132] [cursor=pointer]:
+          - /url: /
+        - link "Memos" [ref=e136] [cursor=pointer]:
+          - /url: /
+        - link "Explore" [ref=e139] [cursor=pointer]:
+          - /url: /explore
+        - link "Attachments" [ref=e145] [cursor=pointer]:
+          - /url: /attachments
+        - link "Inbox" [ref=e148] [cursor=pointer]:
+          - /url: /inbox
+        - link "Navigation" [ref=e152] [cursor=pointer]:
+          - /url: /navigation
+        - button "admin, More" [ref=e157] [cursor=pointer]
+    - main [ref=e162]:
+      - generic [ref=e164]:
+        - generic [ref=e165]:
+          - search [ref=e166]:
+            - group "搜索引擎" [ref=e167]:
+              - button "Google" [pressed] [ref=e168]: G
+              - button "Bing" [ref=e169]: B
+              - button "百度" [ref=e170]: 百
+            - textbox "Search cards or the web…" [ref=e171]
+          - button "Collapse all" [ref=e172]
+          - button "Add group" [ref=e176]
+          - button "Import bookmarks" [ref=e178]
+          - button "Clipboard" [ref=e182]
+        - generic [ref=e186]:
+          - generic [ref=e187]:
+            - generic [ref=e188]:
+              - button "常用 2 Collapse" [expanded] [ref=e189]:
+                - generic [ref=e199]: 常用
+                - generic [ref=e200]: "2"
+                - generic [ref=e201]: Collapse
+              - button "Open all links in this group" [ref=e202]
+              - button "Add card" [ref=e203]
+              - button "Rename group" [ref=e204]
+              - button "Delete group" [ref=e205]
+            - generic [ref=e206]:
+              - generic [ref=e207]:
+                - link "Memos usememos.com" [ref=e208] [cursor=pointer]:
+                  - /url: https://usememos.com
+                  - generic [ref=e209]: Memos
+                  - generic [ref=e216]: usememos.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e217]:
+                - link "GitHub github.com" [ref=e218] [cursor=pointer]:
+                  - /url: https://github.com
+                  - generic [ref=e219]: GitHub
+                  - generic [ref=e226]: github.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+          - generic [ref=e227]:
+            - generic [ref=e228]:
+              - button "开发 1 Collapse" [expanded] [ref=e229]:
+                - generic [ref=e239]: 开发
+                - generic [ref=e240]: "1"
+                - generic [ref=e241]: Collapse
+              - button "Open all links in this group" [ref=e242]
+              - button "Add card" [ref=e243]
+              - button "Rename group" [ref=e244]
+              - button "Delete group" [ref=e245]
+            - generic [ref=e247]:
+              - link "MDN developer.mozilla.org" [ref=e248] [cursor=pointer]:
+                - /url: https://developer.mozilla.org
+                - generic [ref=e249]: MDN
+                - generic [ref=e256]: developer.mozilla.org
+              - generic:
+                - button "Edit card"
+                - button "Delete card"
+          - generic [ref=e257]:
+            - generic [ref=e258]:
+              - button "娱乐 0 Collapse" [expanded] [ref=e259]:
+                - generic [ref=e269]: 娱乐
+                - generic [ref=e270]: "0"
+                - generic [ref=e271]: Collapse
+              - button "Open all links in this group" [disabled]
+              - button "Add card" [ref=e272]
+              - button "Rename group" [ref=e273]
+              - button "Delete group" [ref=e274]
+            - paragraph [ref=e275]: This group has no cards yet.
+          - generic [ref=e276]:
+            - generic [ref=e277]:
+              - button "工具 2 Collapse" [expanded] [ref=e278]:
+                - generic [ref=e288]: 工具
+                - generic [ref=e289]: "2"
+                - generic [ref=e290]: Collapse
+              - button "Open all links in this group" [ref=e291]
+              - button "Add card" [ref=e292]
+              - button "Rename group" [ref=e293]
+              - button "Delete group" [ref=e294]
+            - generic [ref=e295]:
+              - generic [ref=e296]:
+                - link "Figma figma.com" [ref=e297] [cursor=pointer]:
+                  - /url: https://www.figma.com
+                  - generic [ref=e298]: Figma
+                  - generic [ref=e305]: figma.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e306]:
+                - link "Linear linear.app" [ref=e307] [cursor=pointer]:
+                  - /url: https://linear.app
+                  - generic [ref=e308]: Linear
+                  - generic [ref=e315]: linear.app
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+          - generic [ref=e316]:
+            - generic [ref=e317]:
+              - button "学习 / 前端 1 Collapse" [expanded] [ref=e318]:
+                - generic [ref=e328]: 学习 / 前端
+                - generic [ref=e329]: "1"
+                - generic [ref=e330]: Collapse
+              - button "Open all links in this group" [ref=e331]
+              - button "Add card" [ref=e332]
+              - button "Rename group" [ref=e333]
+              - button "Delete group" [ref=e334]
+            - generic [ref=e336]:
+              - link "React react.dev" [ref=e337] [cursor=pointer]:
+                - /url: https://react.dev
+                - generic [ref=e338]: React
+                - generic [ref=e345]: react.dev
+              - generic:
+                - button "Edit card"
+                - button "Delete card"
+          - generic [ref=e346]:
+            - generic [ref=e347]:
+              - button "书签导入 13 Collapse" [expanded] [ref=e348]:
+                - generic [ref=e358]: 书签导入
+                - generic [ref=e359]: "13"
+                - generic [ref=e360]: Collapse
+              - button "Open all links in this group" [ref=e361]
+              - button "Add card" [ref=e362]
+              - button "Rename group" [ref=e363]
+              - button "Delete group" [ref=e364]
+            - generic [ref=e365]:
+              - generic [ref=e366]:
+                - link "Hacker News news.ycombinator.com" [ref=e367] [cursor=pointer]:
+                  - /url: https://news.ycombinator.com
+                  - generic [ref=e368]: Hacker News
+                  - generic [ref=e375]: news.ycombinator.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e376]:
+                - link "Wikipedia wikipedia.org" [ref=e377] [cursor=pointer]:
+                  - /url: https://www.wikipedia.org
+                  - generic [ref=e378]: Wikipedia
+                  - generic [ref=e385]: wikipedia.org
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e386]:
+                - 'link "GitHub: Let’s build from here · GitHub github.com" [ref=e387] [cursor=pointer]':
+                  - /url: https://github.com/
+                  - generic [ref=e388]: "GitHub: Let’s build from here · GitHub"
+                  - generic [ref=e395]: github.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e396]:
+                - link "百度网盘-全部文件 pan.baidu.com" [ref=e397] [cursor=pointer]:
+                  - /url: https://pan.baidu.com/disk/home?_at_=1612330297530#/all?path=%2F&vmode=list
+                  - generic [ref=e398]: 百度网盘-全部文件
+                  - generic [ref=e405]: pan.baidu.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e406]:
+                - link "哔哩哔哩 (゜-゜)つロ 干杯~-bilibili bilibili.com" [ref=e407] [cursor=pointer]:
+                  - /url: https://www.bilibili.com/
+                  - generic [ref=e408]: 哔哩哔哩 (゜-゜)つロ 干杯~-bilibili
+                  - generic [ref=e415]: bilibili.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e416]:
+                - link "笔记 i.mi.com" [ref=e417] [cursor=pointer]:
+                  - /url: https://i.mi.com/note/h5#/
+                  - generic [ref=e418]: 笔记
+                  - generic [ref=e425]: i.mi.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e426]:
+                - link "豆包 - 你的 AI 朋友 doubao.com" [ref=e427] [cursor=pointer]:
+                  - /url: https://www.doubao.com/chat/
+                  - generic [ref=e428]: 豆包 - 你的 AI 朋友
+                  - generic [ref=e435]: doubao.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e436]:
+                - link "工作台 - Gitee.com gitee.com" [ref=e437] [cursor=pointer]:
+                  - /url: https://gitee.com/
+                  - generic [ref=e438]: 工作台 - Gitee.com
+                  - generic [ref=e445]: gitee.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e446]:
+                - link "Cursor Agent - Turn your ideas into code cursor.com" [ref=e447] [cursor=pointer]:
+                  - /url: https://cursor.com/agents
+                  - generic [ref=e448]: Cursor Agent - Turn your ideas into code
+                  - generic [ref=e455]: cursor.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e456]:
+                - link "- 雄安人才 xatalent.cn" [ref=e457] [cursor=pointer]:
+                  - /url: https://xatalent.cn/
+                  - generic [ref=e458]: "- 雄安人才"
+                  - generic [ref=e465]: xatalent.cn
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e466]:
+                - link "抖音-记录美好生活 douyin.com" [ref=e467] [cursor=pointer]:
+                  - /url: https://www.douyin.com/
+                  - generic [ref=e468]: 抖音-记录美好生活
+                  - generic [ref=e475]: douyin.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e476]:
+                - link "DeepSeek 开放平台 platform.deepseek.com" [ref=e477] [cursor=pointer]:
+                  - /url: https://platform.deepseek.com/usage
+                  - generic [ref=e478]: DeepSeek 开放平台
+                  - generic [ref=e485]: platform.deepseek.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e486]:
+                - link "YouTube youtube.com" [ref=e487] [cursor=pointer]:
+                  - /url: https://www.youtube.com/
+                  - generic [ref=e488]: YouTube
+                  - generic [ref=e495]: youtube.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+          - generic [ref=e496]:
+            - generic [ref=e497]:
+              - button "AI / 毕业设计学习工具 5 Collapse" [expanded] [ref=e498]:
+                - generic [ref=e508]: AI / 毕业设计学习工具
+                - generic [ref=e509]: "5"
+                - generic [ref=e510]: Collapse
+              - button "Open all links in this group" [ref=e511]
+              - button "Add card" [ref=e512]
+              - button "Rename group" [ref=e513]
+              - button "Delete group" [ref=e514]
+            - generic [ref=e515]:
+              - generic [ref=e516]:
+                - link "吸血鬼幸存者Vampire Survivors g8hh.github.io" [ref=e517] [cursor=pointer]:
+                  - /url: https://g8hh.github.io/vampire-survivors/
+                  - generic [ref=e518]: 吸血鬼幸存者Vampire Survivors
+                  - generic [ref=e525]: g8hh.github.io
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e526]:
+                - link "Piskel - 免费在线精灵编辑器 piskelapp.com" [ref=e527] [cursor=pointer]:
+                  - /url: https://www.piskelapp.com/
+                  - generic [ref=e528]: Piskel - 免费在线精灵编辑器
+                  - generic [ref=e535]: piskelapp.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e536]:
+                - link "MrTMI-0315/dash-survivor：一款类似《吸血鬼幸存者》的网页游戏，使用 Phaser 引擎开发，并运用了 AI 辅助的氛围编码技术。 github.com" [ref=e537] [cursor=pointer]:
+                  - /url: https://github.com/MrTMI-0315/dash-survivor
+                  - generic [ref=e538]: MrTMI-0315/dash-survivor：一款类似《吸血鬼幸存者》的网页游戏，使用 Phaser 引擎开发，并运用了 AI 辅助的氛围编码技术。
+                  - generic [ref=e545]: github.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e546]:
+                - link "LibreSprite 1.2-dev libresprite.github.io" [ref=e547] [cursor=pointer]:
+                  - /url: https://libresprite.github.io/online/
+                  - generic [ref=e548]: LibreSprite 1.2-dev
+                  - generic [ref=e555]: libresprite.github.io
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e556]:
+                - link "Free Homing_Missile Sound Effects Download - Pixabay pixabay.com" [ref=e557] [cursor=pointer]:
+                  - /url: https://pixabay.com/zh/sound-effects/search/homing_missile/
+                  - generic [ref=e558]: Free Homing_Missile Sound Effects Download - Pixabay
+                  - generic [ref=e565]: pixabay.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+          - generic [ref=e566]:
+            - generic [ref=e567]:
+              - button "AI / 图片编辑 2 Collapse" [expanded] [ref=e568]:
+                - generic [ref=e578]: AI / 图片编辑
+                - generic [ref=e579]: "2"
+                - generic [ref=e580]: Collapse
+              - button "Open all links in this group" [ref=e581]
+              - button "Add card" [ref=e582]
+              - button "Rename group" [ref=e583]
+              - button "Delete group" [ref=e584]
+            - generic [ref=e585]:
+              - generic [ref=e586]:
+                - link "免费、快速地旋转图片！ iloveimg.com" [ref=e587] [cursor=pointer]:
+                  - /url: https://www.iloveimg.com/zh-cn/rotate-image
+                  - generic [ref=e588]: 免费、快速地旋转图片！
+                  - generic [ref=e595]: iloveimg.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e596]:
+                - link "在线旋转图片工具|在线翻转照片|调整照片方向|生成镜像图片 - 改图宝 gaitubao.com" [ref=e597] [cursor=pointer]:
+                  - /url: https://www.gaitubao.com/xuanzhuan
+                  - generic [ref=e598]: 在线旋转图片工具|在线翻转照片|调整照片方向|生成镜像图片 - 改图宝
+                  - generic [ref=e605]: gaitubao.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+          - generic [ref=e606]:
+            - generic [ref=e607]:
+              - button "AI 23 Collapse" [expanded] [ref=e608]:
+                - generic [ref=e618]: AI
+                - generic [ref=e619]: "23"
+                - generic [ref=e620]: Collapse
+              - button "Open all links in this group" [ref=e621]
+              - button "Add card" [ref=e622]
+              - button "Rename group" [ref=e623]
+              - button "Delete group" [ref=e624]
+            - generic [ref=e625]:
+              - generic [ref=e626]:
+                - link "OpenAI openai.com" [ref=e627] [cursor=pointer]:
+                  - /url: https://openai.com/
+                  - generic [ref=e628]: OpenAI
+                  - generic [ref=e635]: openai.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e636]:
+                - link "Viggle AI viggle.ai" [ref=e637] [cursor=pointer]:
+                  - /url: https://viggle.ai/home
+                  - generic [ref=e638]: Viggle AI
+                  - generic [ref=e645]: viggle.ai
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e646]:
+                - link "Pricing | Trae - Collaborate with Intelligence trae.ai" [ref=e647] [cursor=pointer]:
+                  - /url: https://www.trae.ai/pricing
+                  - generic [ref=e648]: Pricing | Trae - Collaborate with Intelligence
+                  - generic [ref=e655]: trae.ai
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e656]:
+                - link "Cursor - The AI Code Editor cursor.com" [ref=e657] [cursor=pointer]:
+                  - /url: https://www.cursor.com/cn
+                  - generic [ref=e658]: Cursor - The AI Code Editor
+                  - generic [ref=e665]: cursor.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e666]:
+                - link "通义笔记库_AI个人知识管理利器_通义-通义千问 tongyi.com" [ref=e667] [cursor=pointer]:
+                  - /url: https://www.tongyi.com/knowledge/pc/noteDetail/fXgHlqMMZkuni5v0
+                  - generic [ref=e668]: 通义笔记库_AI个人知识管理利器_通义-通义千问
+                  - generic [ref=e675]: tongyi.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e676]:
+                - link "扣子 coze.cn" [ref=e677] [cursor=pointer]:
+                  - /url: https://www.coze.cn/auth/callback?code=ZJLLN2FMNMYTOGQWNS0ZODBJLWEYNJUTZMQ5ZGYXMDRHYTY2&state=%7B%22platform%22%3A%22eps_cloud_identity%22%2C%22navigatePath%22%3A%22%2Fspace-preview%3Flogin_from%3Dspace_landing%26msclkid%3D273946481b1c1869958d2e06c00f5697%26open%3D1%26utm_campaign%3D486503918%26utm_content%3Dhome%26utm_id%3D0%26utm_medium%3Dsem%26utm_source%3Dbing%26utm_source_platform%3Dpc%26utm_term%3Dcoze_bing_sem_dm_cpc_pc_hy_rmbot_tyai_gj_1_czkj%22%2C%22type%22%3A%22login%22%7D&response_type=code
+                  - generic [ref=e678]: 扣子
+                  - generic [ref=e685]: coze.cn
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e686]:
+                - link "AMiner - AI赋能科技情报挖掘-学术搜索-论文检索-论文专利-文献追踪-学者画像 aminer.cn" [ref=e687] [cursor=pointer]:
+                  - /url: https://www.aminer.cn/
+                  - generic [ref=e688]: AMiner - AI赋能科技情报挖掘-学术搜索-论文检索-论文专利-文献追踪-学者画像
+                  - generic [ref=e695]: aminer.cn
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e696]:
+                - link "Google AI Studio aistudio.google.com" [ref=e697] [cursor=pointer]:
+                  - /url: https://aistudio.google.com/apps
+                  - generic [ref=e698]: Google AI Studio
+                  - generic [ref=e705]: aistudio.google.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e706]:
+                - link "Code | SpaceXAI Console console.x.ai" [ref=e707] [cursor=pointer]:
+                  - /url: https://console.x.ai/team/de4325dc-a720-4742-b1cc-12f1fdb075cb/build
+                  - generic [ref=e708]: Code | SpaceXAI Console
+                  - generic [ref=e715]: console.x.ai
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e716]:
+                - link "MiniMax minimaxi.com" [ref=e717] [cursor=pointer]:
+                  - /url: https://www.minimaxi.com/
+                  - generic [ref=e718]: MiniMax
+                  - generic [ref=e725]: minimaxi.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e726]:
+                - link "opencode opencode.ai" [ref=e727] [cursor=pointer]:
+                  - /url: https://opencode.ai/workspace/wrk_01M077QC9V8ZSP3SVENM9JTAK6/go
+                  - generic [ref=e728]: opencode
+                  - generic [ref=e735]: opencode.ai
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e736]:
+                - link "基元律动 AI API Platform tokenrhythm.studio" [ref=e737] [cursor=pointer]:
+                  - /url: https://tokenrhythm.studio/account/keys
+                  - generic [ref=e738]: 基元律动 AI API Platform
+                  - generic [ref=e745]: tokenrhythm.studio
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e746]:
+                - link "Hermes Agent - Dashboard ai.gede.asia" [ref=e747] [cursor=pointer]:
+                  - /url: https://ai.gede.asia/channels?profile=teacher
+                  - generic [ref=e748]: Hermes Agent - Dashboard
+                  - generic [ref=e755]: ai.gede.asia
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e756]:
+                - link "Teacher agent.gede.asia" [ref=e757] [cursor=pointer]:
+                  - /url: https://agent.gede.asia/
+                  - generic [ref=e758]: Teacher
+                  - generic [ref=e765]: agent.gede.asia
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e766]:
+                - link "基元律动 AI API Platform tokenrhythm.studio" [ref=e767] [cursor=pointer]:
+                  - /url: https://tokenrhythm.studio/account
+                  - generic [ref=e768]: 基元律动 AI API Platform
+                  - generic [ref=e775]: tokenrhythm.studio
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e776]:
+                - link "⁣⁢‬⁢ ‌⁤⁣⁢ ‬‬⁡‍⁢⁣⁤ ⁢‬⁣⁢‌⁢‬⁣⁢ ⁡⁡⁡‬⁤‌⁢⁤⁤⁢⁢AI 模型网关 — 完整使用 SOP - 飞书云文档 pv284bk9no6.feishu.cn" [ref=e777] [cursor=pointer]:
+                  - /url: https://pv284bk9no6.feishu.cn/wiki/HCOuwXuZGibDUGkWLlpcQuiLnDf
+                  - generic [ref=e778]: ⁣⁢‬⁢ ‌⁤⁣⁢ ‬‬⁡‍⁢⁣⁤ ⁢‬⁣⁢‌⁢‬⁣⁢ ⁡⁡⁡‬⁤‌⁢⁤⁤⁢⁢AI 模型网关 — 完整使用 SOP - 飞书云文档
+                  - generic [ref=e785]: pv284bk9no6.feishu.cn
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e786]:
+                - link "SenseNova · LLM API 服务平台 platform.sensenova.cn" [ref=e787] [cursor=pointer]:
+                  - /url: https://platform.sensenova.cn/console
+                  - generic [ref=e788]: SenseNova · LLM API 服务平台
+                  - generic [ref=e795]: platform.sensenova.cn
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e796]:
+                - link "BAI b.ai" [ref=e797] [cursor=pointer]:
+                  - /url: https://b.ai/
+                  - generic [ref=e798]: BAI
+                  - generic [ref=e805]: b.ai
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e806]:
+                - link "API Keys | Dashboard | xKiro xkiro.com" [ref=e807] [cursor=pointer]:
+                  - /url: https://xkiro.com/dashboard/api/keys
+                  - generic [ref=e808]: API Keys | Dashboard | xKiro
+                  - generic [ref=e815]: xkiro.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e816]:
+                - link "AnyAPI — One API for 400+ AI Models | AnyAPI.ai anyapi.ai" [ref=e817] [cursor=pointer]:
+                  - /url: https://anyapi.ai/
+                  - generic [ref=e818]: AnyAPI — One API for 400+ AI Models | AnyAPI.ai
+                  - generic [ref=e825]: anyapi.ai
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e826]:
+                - link "仪表盘 - USA-零 usa0.top" [ref=e827] [cursor=pointer]:
+                  - /url: https://usa0.top/dashboard
+                  - generic [ref=e828]: 仪表盘 - USA-零
+                  - generic [ref=e835]: usa0.top
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e836]:
+                - link "JOJO Code jojocode.com" [ref=e837] [cursor=pointer]:
+                  - /url: https://jojocode.com/
+                  - generic [ref=e838]: JOJO Code
+                  - generic [ref=e845]: jojocode.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e846]:
+                - link "仪表盘 - Max JOJO Code max2.jojocode.com" [ref=e847] [cursor=pointer]:
+                  - /url: https://max2.jojocode.com/dashboard
+                  - generic [ref=e848]: 仪表盘 - Max JOJO Code
+                  - generic [ref=e855]: max2.jojocode.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+          - generic [ref=e856]:
+            - generic [ref=e857]:
+              - button "电子书 9 Collapse" [expanded] [ref=e858]:
+                - generic [ref=e868]: 电子书
+                - generic [ref=e869]: "9"
+                - generic [ref=e870]: Collapse
+              - button "Open all links in this group" [ref=e871]
+              - button "Add card" [ref=e872]
+              - button "Rename group" [ref=e873]
+              - button "Delete group" [ref=e874]
+            - generic [ref=e875]:
+              - generic [ref=e876]:
+                - link "WiFi 传书 192.168.2.8" [ref=e877] [cursor=pointer]:
+                  - /url: http://192.168.2.8:12121/
+                  - generic [ref=e878]: WiFi 传书
+                  - generic [ref=e885]: 192.168.2.8
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e886]:
+                - link "欢乐盒子电子书搜索引擎 - 非常好用的免费电子书搜索引擎 search.hlbox.top" [ref=e887] [cursor=pointer]:
+                  - /url: https://search.hlbox.top/
+                  - generic [ref=e888]: 欢乐盒子电子书搜索引擎 - 非常好用的免费电子书搜索引擎
+                  - generic [ref=e895]: search.hlbox.top
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e896]:
+                - link "欢乐图书馆|收录最优质的电子书网站的导航网站 | 最好的zlibrary电子书网址导航网站 thinkdoc.vip." [ref=e897] [cursor=pointer]:
+                  - /url: https://www.thinkdoc.vip./
+                  - generic [ref=e898]: 欢乐图书馆|收录最优质的电子书网站的导航网站 | 最好的zlibrary电子书网址导航网站
+                  - generic [ref=e905]: thinkdoc.vip.
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e906]:
+                - link "微信读书-正版书籍小说免费阅读 weread.qq.com" [ref=e907] [cursor=pointer]:
+                  - /url: https://weread.qq.com/#login
+                  - generic [ref=e908]: 微信读书-正版书籍小说免费阅读
+                  - generic [ref=e915]: weread.qq.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e916]:
+                - link "Z-Library – 世界上最大的电子图书馆。自由访问知识和文化。 xn--citycity-g49l.xunmengzhifan.eu.org" [ref=e917] [cursor=pointer]:
+                  - /url: https://xn--citycity-g49l.xunmengzhifan.eu.org/?ref=www.tboxn.com&ts=1652
+                  - generic [ref=e918]: Z-Library – 世界上最大的电子图书馆。自由访问知识和文化。
+                  - generic [ref=e925]: xn--citycity-g49l.xunmengzhifan.eu.org
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e926]:
+                - link "Zlibrary可用正常访问网址(2024.08.28更新) - 知乎 zhuanlan.zhihu.com" [ref=e927] [cursor=pointer]:
+                  - /url: https://zhuanlan.zhihu.com/p/714816097
+                  - generic [ref=e928]: Zlibrary可用正常访问网址(2024.08.28更新) - 知乎
+                  - generic [ref=e935]: zhuanlan.zhihu.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e936]:
+                - link "【闲聊】公路车装宽胎真的能更快吗？ bilibili.com" [ref=e937] [cursor=pointer]:
+                  - /url: https://www.bilibili.com/video/BV1msiZYBEVE
+                  - generic [ref=e938]: 【闲聊】公路车装宽胎真的能更快吗？
+                  - generic [ref=e945]: bilibili.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e946]:
+                - link "首页 - 知乎 zhihu.com" [ref=e947] [cursor=pointer]:
+                  - /url: https://www.zhihu.com/
+                  - generic [ref=e948]: 首页 - 知乎
+                  - generic [ref=e955]: zhihu.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e956]:
+                - link "Godot-4-Tower-Defense-Template/README.md at master · ape1121/Godot-4-Tower-Defense-Template github.com" [ref=e957] [cursor=pointer]:
+                  - /url: https://github.com/ape1121/Godot-4-Tower-Defense-Template/blob/master/README.md
+                  - generic [ref=e958]: Godot-4-Tower-Defense-Template/README.md at master · ape1121/Godot-4-Tower-Defense-Template
+                  - generic [ref=e965]: github.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+          - generic [ref=e966]:
+            - generic [ref=e967]:
+              - button "云服务器 22 Collapse" [expanded] [ref=e968]:
+                - generic [ref=e978]: 云服务器
+                - generic [ref=e979]: "22"
+                - generic [ref=e980]: Collapse
+              - button "Open all links in this group" [ref=e981]
+              - button "Add card" [ref=e982]
+              - button "Rename group" [ref=e983]
+              - button "Delete group" [ref=e984]
+            - generic [ref=e985]:
+              - generic [ref=e986]:
+                - link "京东云控制台 lavm-console.jdcloud.com" [ref=e987] [cursor=pointer]:
+                  - /url: https://lavm-console.jdcloud.com/lavm/list
+                  - generic [ref=e988]: 京东云控制台
+                  - generic [ref=e995]: lavm-console.jdcloud.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e996]:
+                - link "1Panel京东云 111.228.7.39" [ref=e997] [cursor=pointer]:
+                  - /url: http://111.228.7.39:24506/websites/runtimes/node
+                  - generic [ref=e998]: 1Panel京东云
+                  - generic [ref=e1005]: 111.228.7.39
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1006]:
+                - link "歌德游戏中心 47.101.209.17" [ref=e1007] [cursor=pointer]:
+                  - /url: http://47.101.209.17:3000/
+                  - generic [ref=e1008]: 歌德游戏中心
+                  - generic [ref=e1015]: 47.101.209.17
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1016]:
+                - link "音效素材_免费下载 音效库 - 爱给网 aigei.com" [ref=e1017] [cursor=pointer]:
+                  - /url: https://www.aigei.com/sound/class/?wd=%E9%9F%B3%E6%95%88&msclkid=3bd102602dae13e7ab696b433c6e3cf0
+                  - generic [ref=e1018]: 音效素材_免费下载 音效库 - 爱给网
+                  - generic [ref=e1025]: aigei.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1026]:
+                - link "CN2 GIA三网直连高防云服务器购买_大陆优化_快速部署新实例_VMRack vmrack.net" [ref=e1027] [cursor=pointer]:
+                  - /url: https://www.vmrack.net/zh-CN/deploy-new-instance/vps-hosting
+                  - generic [ref=e1028]: CN2 GIA三网直连高防云服务器购买_大陆优化_快速部署新实例_VMRack
+                  - generic [ref=e1035]: vmrack.net
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1036]:
+                - link "VPS-US-KVM - ByteVirt LLC bytevirt.com" [ref=e1037] [cursor=pointer]:
+                  - /url: https://bytevirt.com/store/vps-us-kvm
+                  - generic [ref=e1038]: VPS-US-KVM - ByteVirt LLC
+                  - generic [ref=e1045]: bytevirt.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1046]:
+                - link "ColoCrossing便宜国外VPS推荐：年付$10起，高流量1Gbps带宽，美国洛杉矶/加拿大多伦多节点可选-国外VPS测评 gwvpsceping.com" [ref=e1047] [cursor=pointer]:
+                  - /url: https://www.gwvpsceping.com/12211.html
+                  - generic [ref=e1048]: ColoCrossing便宜国外VPS推荐：年付$10起，高流量1Gbps带宽，美国洛杉矶/加拿大多伦多节点可选-国外VPS测评
+                  - generic [ref=e1055]: gwvpsceping.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1056]:
+                - link "Shopping Cart - ColoCrossing Cloud cloud.colocrossing.com" [ref=e1057] [cursor=pointer]:
+                  - /url: https://cloud.colocrossing.com/cart.php?a=confproduct&i=1
+                  - generic [ref=e1058]: Shopping Cart - ColoCrossing Cloud
+                  - generic [ref=e1065]: cloud.colocrossing.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1066]:
+                - 'link "029danio/jichangfree: 提供日常免费备用节点！防失联节点！建议收藏本网页 github.com" [ref=e1067] [cursor=pointer]':
+                  - /url: https://github.com/029danio/jichangfree
+                  - generic [ref=e1068]: "029danio/jichangfree: 提供日常免费备用节点！防失联节点！建议收藏本网页"
+                  - generic [ref=e1075]: github.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1076]:
+                - link "完成注册 - 白月光 bygcloud.com" [ref=e1077] [cursor=pointer]:
+                  - /url: https://bygcloud.com/register?invite_code=9tspqSJz
+                  - generic [ref=e1078]: 完成注册 - 白月光
+                  - generic [ref=e1085]: bygcloud.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1086]:
+                - link "CN2 GIA高速优化线路VPS d.m123.org" [ref=e1087] [cursor=pointer]:
+                  - /url: https://d.m123.org/
+                  - generic [ref=e1088]: CN2 GIA高速优化线路VPS
+                  - generic [ref=e1095]: d.m123.org
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1096]:
+                - link "狗狗加速 dg6.me" [ref=e1097] [cursor=pointer]:
+                  - /url: https://www.dg6.me/
+                  - generic [ref=e1098]: 狗狗加速
+                  - generic [ref=e1105]: dg6.me
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1106]:
+                - link "仪表盘 - 流量光机场 llg01.com" [ref=e1107] [cursor=pointer]:
+                  - /url: https://llg01.com/#/dashboard
+                  - generic [ref=e1108]: 仪表盘 - 流量光机场
+                  - generic [ref=e1115]: llg01.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1116]:
+                - link "我的免费域名管理 - DNSHE.COM my.dnshe.com" [ref=e1117] [cursor=pointer]:
+                  - /url: https://my.dnshe.com/index.php?m=domain_hub
+                  - generic [ref=e1118]: 我的免费域名管理 - DNSHE.COM
+                  - generic [ref=e1125]: my.dnshe.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1126]:
+                - link "edgetunnel 设置页面 - 管理后台 gede666.ccwu.cc" [ref=e1127] [cursor=pointer]:
+                  - /url: https://gede666.ccwu.cc/admin
+                  - generic [ref=e1128]: edgetunnel 设置页面 - 管理后台
+                  - generic [ref=e1135]: gede666.ccwu.cc
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1136]:
+                - link "2026 最强 Cloudflare 免费节点！永久可用+免费域名｜10分钟搭建｜解锁 ChatGPT / Gemini ！ - 零度博客 freedidi.com" [ref=e1137] [cursor=pointer]:
+                  - /url: https://www.freedidi.com/23618.html
+                  - generic [ref=e1138]: 2026 最强 Cloudflare 免费节点！永久可用+免费域名｜10分钟搭建｜解锁 ChatGPT / Gemini ！ - 零度博客
+                  - generic [ref=e1145]: freedidi.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1146]:
+                - link "🚀 Edgetunnel2.0 全新版本，🎯 就是这么简单！✨ 就是这么方便！ | CMLiussss Blog blog.cmliussss.com" [ref=e1147] [cursor=pointer]:
+                  - /url: https://blog.cmliussss.com/p/edt2/
+                  - generic [ref=e1148]: 🚀 Edgetunnel2.0 全新版本，🎯 就是这么简单！✨ 就是这么方便！ | CMLiussss Blog
+                  - generic [ref=e1155]: blog.cmliussss.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1156]:
+                - link "腾讯云 OrcaTerm orcaterm.cloud.tencent.com" [ref=e1157] [cursor=pointer]:
+                  - /url: https://orcaterm.cloud.tencent.com/terminal?type=lighthouse&instanceId=lhins-ndqs270s&region=ap-shanghai&from=lh_console_login_btn
+                  - generic [ref=e1158]: 腾讯云 OrcaTerm
+                  - generic [ref=e1165]: orcaterm.cloud.tencent.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1166]:
+                - link "Music Tag Web 111.229.177.191" [ref=e1167] [cursor=pointer]:
+                  - /url: http://111.229.177.191:8002/
+                  - generic [ref=e1168]: Music Tag Web
+                  - generic [ref=e1175]: 111.229.177.191
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1176]:
+                - link "Navidrome gede.asia" [ref=e1177] [cursor=pointer]:
+                  - /url: "https://gede.asia/app/#/album/recentlyAdded?sort=recently_added&order=DESC&filter={}"
+                  - generic [ref=e1178]: Navidrome
+                  - generic [ref=e1185]: gede.asia
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1186]:
+                - link "music-dl - 聚合搜索与解析 dl.gede.asia" [ref=e1187] [cursor=pointer]:
+                  - /url: http://dl.gede.asia/music/
+                  - generic [ref=e1188]: music-dl - 聚合搜索与解析
+                  - generic [ref=e1195]: dl.gede.asia
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1196]:
+                - link "服务器 - 轻量云 - 控制台 console.cloud.tencent.com" [ref=e1197] [cursor=pointer]:
+                  - /url: https://console.cloud.tencent.com/lighthouse/instance/detail?searchParams=rid%3D4&rid=4&id=lhins-ndqs270s
+                  - generic [ref=e1198]: 服务器 - 轻量云 - 控制台
+                  - generic [ref=e1205]: console.cloud.tencent.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+          - generic [ref=e1206]:
+            - generic [ref=e1207]:
+              - button "图标 7 Collapse" [expanded] [ref=e1208]:
+                - generic [ref=e1218]: 图标
+                - generic [ref=e1219]: "7"
+                - generic [ref=e1220]: Collapse
+              - button "Open all links in this group" [ref=e1221]
+              - button "Add card" [ref=e1222]
+              - button "Rename group" [ref=e1223]
+              - button "Delete group" [ref=e1224]
+            - generic [ref=e1225]:
+              - generic [ref=e1226]:
+                - link "wikiHow：你可以信赖的万事指南 zh.wikihow.com" [ref=e1227] [cursor=pointer]:
+                  - /url: https://zh.wikihow.com/%E9%A6%96%E9%A1%B5
+                  - generic [ref=e1228]: wikiHow：你可以信赖的万事指南
+                  - generic [ref=e1235]: zh.wikihow.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1236]:
+                - link "hotkeycheatsheet.com hotkeycheatsheet.com" [ref=e1237] [cursor=pointer]:
+                  - /url: https://hotkeycheatsheet.com/zh
+                  - generic [ref=e1238]: hotkeycheatsheet.com
+                  - generic [ref=e1245]: hotkeycheatsheet.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1246]:
+                - link "麦田艺术 - 收尽世界名画，无水印高清油画免费下载 nbfox.com" [ref=e1247] [cursor=pointer]:
+                  - /url: https://www.nbfox.com/
+                  - generic [ref=e1248]: 麦田艺术 - 收尽世界名画，无水印高清油画免费下载
+                  - generic [ref=e1255]: nbfox.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1256]:
+                - link "在线制作ico图标 | 在线ico图标转换工具 方便制作favicon.ico - 比特虫 - Bitbug.net bitbug.net" [ref=e1257] [cursor=pointer]:
+                  - /url: https://www.bitbug.net/
+                  - generic [ref=e1258]: 在线制作ico图标 | 在线ico图标转换工具 方便制作favicon.ico - 比特虫 - Bitbug.net
+                  - generic [ref=e1265]: bitbug.net
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1266]:
+                - link "iconfont-阿里巴巴矢量图标库 iconfont.cn" [ref=e1267] [cursor=pointer]:
+                  - /url: https://www.iconfont.cn/
+                  - generic [ref=e1268]: iconfont-阿里巴巴矢量图标库
+                  - generic [ref=e1275]: iconfont.cn
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1276]:
+                - link "奇迹秀 - 因设计·而美丽 qijishow.com" [ref=e1277] [cursor=pointer]:
+                  - /url: https://www.qijishow.com/
+                  - generic [ref=e1278]: 奇迹秀 - 因设计·而美丽
+                  - generic [ref=e1285]: qijishow.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1286]:
+                - link "按钮 Button - Ant Design ant.design" [ref=e1287] [cursor=pointer]:
+                  - /url: https://ant.design/components/button-cn
+                  - generic [ref=e1288]: 按钮 Button - Ant Design
+                  - generic [ref=e1295]: ant.design
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+          - generic [ref=e1296]:
+            - generic [ref=e1297]:
+              - button "apple 12 Collapse" [expanded] [ref=e1298]:
+                - generic [ref=e1308]: apple
+                - generic [ref=e1309]: "12"
+                - generic [ref=e1310]: Collapse
+              - button "Open all links in this group" [ref=e1311]
+              - button "Add card" [ref=e1312]
+              - button "Rename group" [ref=e1313]
+              - button "Delete group" [ref=e1314]
+            - generic [ref=e1315]:
+              - generic [ref=e1316]:
+                - link "Install Swift - macOS | Swift.org swift.org" [ref=e1317] [cursor=pointer]:
+                  - /url: https://www.swift.org/install/macos/
+                  - generic [ref=e1318]: Install Swift - macOS | Swift.org
+                  - generic [ref=e1325]: swift.org
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1326]:
+                - link "Develop in Swift Tutorials | Apple Developer Documentation developer.apple.com" [ref=e1327] [cursor=pointer]:
+                  - /url: https://developer.apple.com/tutorials/develop-in-swift/
+                  - generic [ref=e1328]: Develop in Swift Tutorials | Apple Developer Documentation
+                  - generic [ref=e1335]: developer.apple.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1336]:
+                - link "Swift Coding Club - 学习编程 - Apple Developer developer.apple.com" [ref=e1337] [cursor=pointer]:
+                  - /url: https://developer.apple.com/cn/learn/swift-coding-club/
+                  - generic [ref=e1338]: Swift Coding Club - 学习编程 - Apple Developer
+                  - generic [ref=e1345]: developer.apple.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1346]:
+                - link "Swift Playground - Apple Developer developer.apple.com" [ref=e1347] [cursor=pointer]:
+                  - /url: https://developer.apple.com/cn/swift-playground/
+                  - generic [ref=e1348]: Swift Playground - Apple Developer
+                  - generic [ref=e1355]: developer.apple.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1356]:
+                - link "About Swift | Documentation docs.swift.org" [ref=e1357] [cursor=pointer]:
+                  - /url: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/aboutswift/
+                  - generic [ref=e1358]: About Swift | Documentation
+                  - generic [ref=e1365]: docs.swift.org
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1366]:
+                - link "LM Studio - Local AI on your computer lmstudio.ai" [ref=e1367] [cursor=pointer]:
+                  - /url: https://lmstudio.ai/
+                  - generic [ref=e1368]: LM Studio - Local AI on your computer
+                  - generic [ref=e1375]: lmstudio.ai
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1376]:
+                - link "桌面与安卓主题 | Resprite resprite.fengeon.com" [ref=e1377] [cursor=pointer]:
+                  - /url: https://resprite.fengeon.com/zh/docs/resources/desktop-android-themes
+                  - generic [ref=e1378]: 桌面与安卓主题 | Resprite
+                  - generic [ref=e1385]: resprite.fengeon.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1386]:
+                - link "bing.com/ck/a?!&&p=4ed95e98e5bf4eac5230108d35fcdad0b84bd094441de3c208dcd994e1ea921eJmltdHM9MTc4NjkyNDgwMA&ptn=3&ver=2&hsh=4&fclid=3d9970a2-405c-659c-2d54-6723411f64a3&u=a1aHR0cHM6Ly9kZXZlbG9wZXIuYXBwb bing.com" [ref=e1387] [cursor=pointer]:
+                  - /url: https://www.bing.com/search?q=Apple+developer&PC=U316&FORM=CHROMN
+                  - generic [ref=e1388]: bing.com/ck/a?!&&p=4ed95e98e5bf4eac5230108d35fcdad0b84bd094441de3c208dcd994e1ea921eJmltdHM9MTc4NjkyNDgwMA&ptn=3&ver=2&hsh=4&fclid=3d9970a2-405c-659c-2d54-6723411f64a3&u=a1aHR0cHM6Ly9kZXZlbG9wZXIuYXBwb
+                  - generic [ref=e1395]: bing.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1396]:
+                - link "Apple 开发者 (简体中文) developer.apple.com" [ref=e1397] [cursor=pointer]:
+                  - /url: https://developer.apple.com/cn/
+                  - generic [ref=e1398]: Apple 开发者 (简体中文)
+                  - generic [ref=e1405]: developer.apple.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1406]:
+                - link "Swift Programming Language swift.org" [ref=e1407] [cursor=pointer]:
+                  - /url: https://www.swift.org/
+                  - generic [ref=e1408]: Swift Programming Language
+                  - generic [ref=e1415]: swift.org
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1416]:
+                - link "Apple Design Resources - Apple Developer developer.apple.com" [ref=e1417] [cursor=pointer]:
+                  - /url: https://developer.apple.com/design/resources/
+                  - generic [ref=e1418]: Apple Design Resources - Apple Developer
+                  - generic [ref=e1425]: developer.apple.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1426]:
+                - link "OpenMAIC open.maic.chat" [ref=e1427] [cursor=pointer]:
+                  - /url: https://open.maic.chat/
+                  - generic [ref=e1428]: OpenMAIC
+                  - generic [ref=e1435]: open.maic.chat
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+          - generic [ref=e1436]:
+            - generic [ref=e1437]:
+              - button "杂 22 Collapse" [expanded] [ref=e1438]:
+                - generic [ref=e1448]: 杂
+                - generic [ref=e1449]: "22"
+                - generic [ref=e1450]: Collapse
+              - button "Open all links in this group" [ref=e1451]
+              - button "Add card" [ref=e1452]
+              - button "Rename group" [ref=e1453]
+              - button "Delete group" [ref=e1454]
+            - generic [ref=e1455]:
+              - generic [ref=e1456]:
+                - link "MCHOSE HUB Beta mchose.com.cn" [ref=e1457] [cursor=pointer]:
+                  - /url: https://www.mchose.com.cn:9999/#/mouse
+                  - generic [ref=e1458]: MCHOSE HUB Beta
+                  - generic [ref=e1465]: mchose.com.cn
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1466]:
+                - link "在线打字练习模式_在线打字测速模式-整篇文章练习_长时间练习 dz.wubidz.cn" [ref=e1467] [cursor=pointer]:
+                  - /url: https://dz.wubidz.cn/dzlx.php
+                  - generic [ref=e1468]: 在线打字练习模式_在线打字测速模式-整篇文章练习_长时间练习
+                  - generic [ref=e1475]: dz.wubidz.cn
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1476]:
+                - link "一刻相册：百度网盘出品，无限空间云相册 photo.baidu.com" [ref=e1477] [cursor=pointer]:
+                  - /url: https://photo.baidu.com/photo/web/home?from=wphead
+                  - generic [ref=e1478]: 一刻相册：百度网盘出品，无限空间云相册
+                  - generic [ref=e1485]: photo.baidu.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1486]:
+                - link "下次一定 - 专门为白嫖怪开发的宝藏网站 丨 下次一定 iiice.cn" [ref=e1487] [cursor=pointer]:
+                  - /url: https://www.iiice.cn/#/
+                  - generic [ref=e1488]: 下次一定 - 专门为白嫖怪开发的宝藏网站 丨 下次一定
+                  - generic [ref=e1495]: iiice.cn
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1496]:
+                - link "当快软件园 - 发现好应用、好游戏，做有态度的应用市场 downkuai.com" [ref=e1497] [cursor=pointer]:
+                  - /url: https://www.downkuai.com/
+                  - generic [ref=e1498]: 当快软件园 - 发现好应用、好游戏，做有态度的应用市场
+                  - generic [ref=e1505]: downkuai.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1506]:
+                - link "宝库 192.168.2.26" [ref=e1507] [cursor=pointer]:
+                  - /url: http://192.168.2.26:7681/
+                  - generic [ref=e1508]: 宝库
+                  - generic [ref=e1515]: 192.168.2.26
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1516]:
+                - link "磁力狗 - 懂你的搜索 clg40.icu" [ref=e1517] [cursor=pointer]:
+                  - /url: https://clg40.icu/
+                  - generic [ref=e1518]: 磁力狗 - 懂你的搜索
+                  - generic [ref=e1525]: clg40.icu
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1526]:
+                - link "topic.expreview.com topic.expreview.com" [ref=e1527] [cursor=pointer]:
+                  - /url: https://topic.expreview.com/CPU/
+                  - generic [ref=e1528]: topic.expreview.com
+                  - generic [ref=e1535]: topic.expreview.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1536]:
+                - link "Monkeytype | A minimalistic, customizable typing test monkeytype.com" [ref=e1537] [cursor=pointer]:
+                  - /url: https://monkeytype.com/
+                  - generic [ref=e1538]: Monkeytype | A minimalistic, customizable typing test
+                  - generic [ref=e1545]: monkeytype.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1546]:
+                - 'link "Versions: Chinese (Simplified) Language Pack / 中文语言包 - IntelliJ IDEs Plugin | Marketplace plugins.jetbrains.com" [ref=e1547] [cursor=pointer]':
+                  - /url: https://plugins.jetbrains.com/plugin/13710-chinese-simplified-language-pack----/versions
+                  - generic [ref=e1548]: "Versions: Chinese (Simplified) Language Pack / 中文语言包 - IntelliJ IDEs Plugin | Marketplace"
+                  - generic [ref=e1555]: plugins.jetbrains.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1556]:
+                - link "夸克网盘 pan.quark.cn" [ref=e1557] [cursor=pointer]:
+                  - /url: https://pan.quark.cn/list#/list/all
+                  - generic [ref=e1558]: 夸克网盘
+                  - generic [ref=e1565]: pan.quark.cn
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1566]:
+                - link "中兴智能路由器 192.168.2.1" [ref=e1567] [cursor=pointer]:
+                  - /url: http://192.168.2.1/
+                  - generic [ref=e1568]: 中兴智能路由器
+                  - generic [ref=e1575]: 192.168.2.1
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1576]:
+                - link "富士 FUJIFILM X-A3 XA3 使用说明书 操作手册 上手指南 操作详解 bjfqy.com" [ref=e1577] [cursor=pointer]:
+                  - /url: https://www.bjfqy.com/download/fujifilmx/341.html
+                  - generic [ref=e1578]: 富士 FUJIFILM X-A3 XA3 使用说明书 操作手册 上手指南 操作详解
+                  - generic [ref=e1585]: bjfqy.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1586]:
+                - link "Tbox导航 | 只收录优质在线工具的导航网站 tboxn.com" [ref=e1587] [cursor=pointer]:
+                  - /url: https://www.tboxn.com/
+                  - generic [ref=e1588]: Tbox导航 | 只收录优质在线工具的导航网站
+                  - generic [ref=e1595]: tboxn.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1596]:
+                - link "iFixit：免费修理手册 zh.ifixit.com" [ref=e1597] [cursor=pointer]:
+                  - /url: https://zh.ifixit.com/
+                  - generic [ref=e1598]: iFixit：免费修理手册
+                  - generic [ref=e1605]: zh.ifixit.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1606]:
+                - link "动画热推 dk99m.com" [ref=e1607] [cursor=pointer]:
+                  - /url: https://www.dk99m.com/more?title=%E5%8A%A8%E7%94%BB%E7%83%AD%E6%8E%A8&classs=%5B29%5D&videoLables=%5B%5D&orderType=3&payType=%5B1%2C3%2C4%5D&moreOrderType=%5B%7B%22label%22%3A%22%E7%BB%BC%E5%90%88%E6%8E%92%E5%BA%8F%22%2C%22value%22%3A7%7D%2C%7B%22label%22%3A%22%E5%8F%91%E5%B8%83%E6%97%B6%E9%97%B4%22%2C%22value%22%3A1%7D%2C%7B%22label%22%3A%22%E6%92%AD%E6%94%BE%E7%83%AD%E5%BA%A6%22%2C%22value%22%3A2%7D%2C%7B%22label%22%3A%22%E7%82%B9%E8%B5%9E%E6%95%B0%E9%87%8F%22%2C%22value%22%3A5%7D%5D&type=rowGroup&list=%5B%5D&tagIds=%5B%5D&id=22950254
+                  - generic [ref=e1608]: 动画热推
+                  - generic [ref=e1615]: dk99m.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1616]:
+                - link "BT联盟 wu.btlms.top" [ref=e1617] [cursor=pointer]:
+                  - /url: https://wu.btlms.top/
+                  - generic [ref=e1618]: BT联盟
+                  - generic [ref=e1625]: wu.btlms.top
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1626]:
+                - link "Flash 保存计划 flash.homes" [ref=e1627] [cursor=pointer]:
+                  - /url: https://flash.homes/
+                  - generic [ref=e1628]: Flash 保存计划
+                  - generic [ref=e1635]: flash.homes
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1636]:
+                - link "[顶置]Switch近期爆火游戏 汇总贴-Switch520 gamer520.com" [ref=e1637] [cursor=pointer]:
+                  - /url: https://www.gamer520.com/25089.html
+                  - generic [ref=e1638]: "[顶置]Switch近期爆火游戏 汇总贴-Switch520"
+                  - generic [ref=e1645]: gamer520.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1646]:
+                - link "帮助中心-[ROM集合]免费下载，OLDMAN老男人网差不多20TB多点的资源，集中！ agimon.cn" [ref=e1647] [cursor=pointer]:
+                  - /url: http://www.agimon.cn/help/?id=20
+                  - generic [ref=e1648]: 帮助中心-[ROM集合]免费下载，OLDMAN老男人网差不多20TB多点的资源，集中！
+                  - generic [ref=e1655]: agimon.cn
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1656]:
+                - link "老男人游戏网 | OldmanTVG.net oldmantvg.net" [ref=e1657] [cursor=pointer]:
+                  - /url: https://www.oldmantvg.net/
+                  - generic [ref=e1658]: 老男人游戏网 | OldmanTVG.net
+                  - generic [ref=e1665]: oldmantvg.net
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1666]:
+                - link "搜索 - 快捷键网 kjjw.cc" [ref=e1667] [cursor=pointer]:
+                  - /url: http://www.kjjw.cc/?s=ilovebee
+                  - generic [ref=e1668]: 搜索 - 快捷键网
+                  - generic [ref=e1675]: kjjw.cc
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+          - generic [ref=e1676]:
+            - generic [ref=e1677]:
+              - button "nas / VR 21 Collapse" [expanded] [ref=e1678]:
+                - generic [ref=e1688]: nas / VR
+                - generic [ref=e1689]: "21"
+                - generic [ref=e1690]: Collapse
+              - button "Open all links in this group" [ref=e1691]
+              - button "Add card" [ref=e1692]
+              - button "Rename group" [ref=e1693]
+              - button "Delete group" [ref=e1694]
+            - generic [ref=e1695]:
+              - generic [ref=e1696]:
+                - link "Release ALVR v20.14.1 · alvr-org/ALVR github.com" [ref=e1697] [cursor=pointer]:
+                  - /url: https://github.com/alvr-org/ALVR/releases/tag/v20.14.1
+                  - generic [ref=e1698]: Release ALVR v20.14.1 · alvr-org/ALVR
+                  - generic [ref=e1705]: github.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1706]:
+                - link "教程/软件-玩客VR wankevr.com" [ref=e1707] [cursor=pointer]:
+                  - /url: https://www.wankevr.com/guide
+                  - generic [ref=e1708]: 教程/软件-玩客VR
+                  - generic [ref=e1715]: wankevr.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1716]:
+                - link "369VR - 专业破解VR游戏，汉化VR游戏源头网站，每日更新！ 369vr.com" [ref=e1717] [cursor=pointer]:
+                  - /url: https://www.369vr.com/
+                  - generic [ref=e1718]: 369VR - 专业破解VR游戏，汉化VR游戏源头网站，每日更新！
+                  - generic [ref=e1725]: 369vr.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1726]:
+                - link "吴签磁力 - 最懂你的磁力链接搜索引擎 wuqiansv.top" [ref=e1727] [cursor=pointer]:
+                  - /url: https://wuqiansv.top/
+                  - generic [ref=e1728]: 吴签磁力 - 最懂你的磁力链接搜索引擎
+                  - generic [ref=e1735]: wuqiansv.top
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1736]:
+                - link "3D电影下载-左右格式电影下载,3d电影片源,3d片源,3d蓝光,3d原盘iso,3d电影BT 3dbt.com" [ref=e1737] [cursor=pointer]:
+                  - /url: https://3dbt.com/
+                  - generic [ref=e1738]: 3D电影下载-左右格式电影下载,3d电影片源,3d片源,3d蓝光,3d原盘iso,3d电影BT
+                  - generic [ref=e1745]: 3dbt.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1746]:
+                - link "Steam Link下载 - VR52网 vr52.com" [ref=e1747] [cursor=pointer]:
+                  - /url: https://www.vr52.com/appstore/ak7u62b
+                  - generic [ref=e1748]: Steam Link下载 - VR52网
+                  - generic [ref=e1755]: vr52.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1756]:
+                - link "Hanime1.me - H動漫/裏番/線上看 hanime1.me" [ref=e1757] [cursor=pointer]:
+                  - /url: https://hanime1.me/
+                  - generic [ref=e1758]: Hanime1.me - H動漫/裏番/線上看
+                  - generic [ref=e1765]: hanime1.me
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1766]:
+                - link "fanza video.dmm.co.jp" [ref=e1767] [cursor=pointer]:
+                  - /url: https://video.dmm.co.jp/vr/
+                  - generic [ref=e1768]: fanza
+                  - generic [ref=e1775]: video.dmm.co.jp
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1776]:
+                - link "Ruffle Player ruffle.rs" [ref=e1777] [cursor=pointer]:
+                  - /url: https://ruffle.rs/demo/
+                  - generic [ref=e1778]: Ruffle Player
+                  - generic [ref=e1785]: ruffle.rs
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1786]:
+                - 'link "科幻电影《复仇者联盟2：奥创纪元》 Avengers: Age of Ultron (2015) | 4K高清下载 | 蓝光原盘下载 | BT下载 - 4KBT 4kbt.org" [ref=e1787] [cursor=pointer]':
+                  - /url: https://4kbt.org/53898.html
+                  - generic [ref=e1788]: "科幻电影《复仇者联盟2：奥创纪元》 Avengers: Age of Ultron (2015) | 4K高清下载 | 蓝光原盘下载 | BT下载 - 4KBT"
+                  - generic [ref=e1795]: 4kbt.org
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1796]:
+                - link "影视墙 - 观影gying最新官网2026，最新电影、电视剧、综艺及动漫网盘百度夸克资源丰富,更新快。 ggying.com" [ref=e1797] [cursor=pointer]:
+                  - /url: https://ggying.com/m/film/wall-1-1
+                  - generic [ref=e1798]: 影视墙 - 观影gying最新官网2026，最新电影、电视剧、综艺及动漫网盘百度夸克资源丰富,更新快。
+                  - generic [ref=e1805]: ggying.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1806]:
+                - link "仪表盘 localhost" [ref=e1807] [cursor=pointer]:
+                  - /url: http://localhost:19798/
+                  - generic [ref=e1808]: 仪表盘
+                  - generic [ref=e1815]: localhost
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1816]:
+                - link "3D电影下载-左右格式电影下载,3d电影片源,3d片源,3d蓝光,3d原盘iso,3d电影BT 3dbt.com" [ref=e1817] [cursor=pointer]:
+                  - /url: http://3dbt.com/
+                  - generic [ref=e1818]: 3D电影下载-左右格式电影下载,3d电影片源,3d片源,3d蓝光,3d原盘iso,3d电影BT
+                  - generic [ref=e1825]: 3dbt.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1826]:
+                - link "SkrBT - 专业的种子搜索、磁力链接搜索引擎 skrbtso.top" [ref=e1827] [cursor=pointer]:
+                  - /url: https://skrbtso.top/
+                  - generic [ref=e1828]: SkrBT - 专业的种子搜索、磁力链接搜索引擎
+                  - generic [ref=e1835]: skrbtso.top
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1836]:
+                - link "十大3d电影片源网站 什么网站可以看3D电影 免费3d电影下载网站→榜中榜 bang.cn" [ref=e1837] [cursor=pointer]:
+                  - /url: https://www.bang.cn/top10/120148.html
+                  - generic [ref=e1838]: 十大3d电影片源网站 什么网站可以看3D电影 免费3d电影下载网站→榜中榜
+                  - generic [ref=e1845]: bang.cn
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1846]:
+                - link "6v电影_免费电影_高清电影__最新电视剧下载（旧版66影视） 6v520.cc" [ref=e1847] [cursor=pointer]:
+                  - /url: https://www.6v520.cc/
+                  - generic [ref=e1848]: 6v电影_免费电影_高清电影__最新电视剧下载（旧版66影视）
+                  - generic [ref=e1855]: 6v520.cc
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1856]:
+                - link "电影列表 bt7274.cc" [ref=e1857] [cursor=pointer]:
+                  - /url: https://bt7274.cc/movies
+                  - generic [ref=e1858]: 电影列表
+                  - generic [ref=e1865]: bt7274.cc
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1866]:
+                - link "ChatGPT chatgpt.com" [ref=e1867] [cursor=pointer]:
+                  - /url: https://chatgpt.com/
+                  - generic [ref=e1868]: ChatGPT
+                  - generic [ref=e1875]: chatgpt.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1876]:
+                - link "SeedHub | 影视&动漫分享 seedhub.cc" [ref=e1877] [cursor=pointer]:
+                  - /url: https://www.seedhub.cc/
+                  - generic [ref=e1878]: SeedHub | 影视&动漫分享
+                  - generic [ref=e1885]: seedhub.cc
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1886]:
+                - link "SeedHub | 影视&动漫分享 sidhub.cc" [ref=e1887] [cursor=pointer]:
+                  - /url: https://sidhub.cc/
+                  - generic [ref=e1888]: SeedHub | 影视&动漫分享
+                  - generic [ref=e1895]: sidhub.cc
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1896]:
+                - link "流量光 llG New - 比好更好 比快更快 llg01.com" [ref=e1897] [cursor=pointer]:
+                  - /url: https://www.llg01.com/dashboard
+                  - generic [ref=e1898]: 流量光 llG New - 比好更好 比快更快
+                  - generic [ref=e1905]: llg01.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+          - generic [ref=e1906]:
+            - generic [ref=e1907]:
+              - button "nas / mac 10 Collapse" [expanded] [ref=e1908]:
+                - generic [ref=e1918]: nas / mac
+                - generic [ref=e1919]: "10"
+                - generic [ref=e1920]: Collapse
+              - button "Open all links in this group" [ref=e1921]
+              - button "Add card" [ref=e1922]
+              - button "Rename group" [ref=e1923]
+              - button "Delete group" [ref=e1924]
+            - generic [ref=e1925]:
+              - generic [ref=e1926]:
+                - link "MACMJ - Mac破解软件分享中心 macmj.com" [ref=e1927] [cursor=pointer]:
+                  - /url: https://www.macmj.com/
+                  - generic [ref=e1928]: MACMJ - Mac破解软件分享中心
+                  - generic [ref=e1935]: macmj.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1936]:
+                - link "精品MAC应用分享 xclient.info" [ref=e1937] [cursor=pointer]:
+                  - /url: https://xclient.info/
+                  - generic [ref=e1938]: 精品MAC应用分享
+                  - generic [ref=e1945]: xclient.info
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1946]:
+                - link "异次元软件世界 - 软件改变生活！ iplaysoft.com" [ref=e1947] [cursor=pointer]:
+                  - /url: https://www.iplaysoft.com/
+                  - generic [ref=e1948]: 异次元软件世界 - 软件改变生活！
+                  - generic [ref=e1955]: iplaysoft.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1956]:
+                - link "苹果系统之家 - mac软件,macOS镜像,macOS教程,黑苹果教程软件分享 macoshome.com" [ref=e1957] [cursor=pointer]:
+                  - /url: https://macoshome.com/
+                  - generic [ref=e1958]: 苹果系统之家 - mac软件,macOS镜像,macOS教程,黑苹果教程软件分享
+                  - generic [ref=e1965]: macoshome.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1966]:
+                - link "马可菠萝 - 分享你喜欢的MAC应用 macbl.com" [ref=e1967] [cursor=pointer]:
+                  - /url: https://www.macbl.com/
+                  - generic [ref=e1968]: 马可菠萝 - 分享你喜欢的MAC应用
+                  - generic [ref=e1975]: macbl.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1976]:
+                - link "黑苹果动力-黑苹果系统下载,黑苹果安装教程,黑苹果EFI引导下载,完美黑苹果配置 mfpud.com" [ref=e1977] [cursor=pointer]:
+                  - /url: https://www.mfpud.com/
+                  - generic [ref=e1978]: 黑苹果动力-黑苹果系统下载,黑苹果安装教程,黑苹果EFI引导下载,完美黑苹果配置
+                  - generic [ref=e1985]: mfpud.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1986]:
+                - link "MacOS系统安装NodeJS以及配置全局安装路径MacOS系统安装NodeJS以及配置全局安装路径 1.首先，打开No - 掘金 juejin.cn" [ref=e1987] [cursor=pointer]:
+                  - /url: https://juejin.cn/post/7277828214246883347
+                  - generic [ref=e1988]: MacOS系统安装NodeJS以及配置全局安装路径MacOS系统安装NodeJS以及配置全局安装路径 1.首先，打开No - 掘金
+                  - generic [ref=e1995]: juejin.cn
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e1996]:
+                - link "intellij idea2025下载-IntelliJ IDEA 2025 for Mac(Java语言开发集成环境)- MacV macv.com" [ref=e1997] [cursor=pointer]:
+                  - /url: https://www.macv.com/mac/5885.html
+                  - generic [ref=e1998]: intellij idea2025下载-IntelliJ IDEA 2025 for Mac(Java语言开发集成环境)- MacV
+                  - generic [ref=e2005]: macv.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e2006]:
+                - link "BetterDisplay Pro 3.2.1 破解版 - 最强显示器亮度/分辨率管理工具-Mac78 mac78.com" [ref=e2007] [cursor=pointer]:
+                  - /url: https://www.mac78.com/4829.html
+                  - generic [ref=e2008]: BetterDisplay Pro 3.2.1 破解版 - 最强显示器亮度/分辨率管理工具-Mac78
+                  - generic [ref=e2015]: mac78.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e2016]:
+                - link "腾讯柠檬精选——收录免费、正版、好用的Mac应用及产品 lemon.qq.com" [ref=e2017] [cursor=pointer]:
+                  - /url: https://lemon.qq.com/lab/
+                  - generic [ref=e2018]: 腾讯柠檬精选——收录免费、正版、好用的Mac应用及产品
+                  - generic [ref=e2025]: lemon.qq.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+          - generic [ref=e2026]:
+            - generic [ref=e2027]:
+              - button "nas 16 Collapse" [expanded] [ref=e2028]:
+                - generic [ref=e2038]: nas
+                - generic [ref=e2039]: "16"
+                - generic [ref=e2040]: Collapse
+              - button "Open all links in this group" [ref=e2041]
+              - button "Add card" [ref=e2042]
+              - button "Rename group" [ref=e2043]
+              - button "Delete group" [ref=e2044]
+            - generic [ref=e2045]:
+              - generic [ref=e2046]:
+                - link "GZY001 - 飞牛私有云fnOS 192.168.2.152" [ref=e2047] [cursor=pointer]:
+                  - /url: http://192.168.2.152:5666/
+                  - generic [ref=e2048]: GZY001 - 飞牛私有云fnOS
+                  - generic [ref=e2055]: 192.168.2.152
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e2056]:
+                - link "飞牛私有云fnOS 192.168.2.21" [ref=e2057] [cursor=pointer]:
+                  - /url: http://192.168.2.21:8000/system
+                  - generic [ref=e2058]: 飞牛私有云fnOS
+                  - generic [ref=e2065]: 192.168.2.21
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e2066]:
+                - link "Rufus - Create bootable USB drives the easy way rufus.ie" [ref=e2067] [cursor=pointer]:
+                  - /url: http://rufus.ie/en/#google_vignette
+                  - generic [ref=e2068]: Rufus - Create bootable USB drives the easy way
+                  - generic [ref=e2075]: rufus.ie
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e2076]:
+                - link "手把手教你安装TrueNas(基础篇)_NAS存储_什么值得买 post.smzdm.com" [ref=e2077] [cursor=pointer]:
+                  - /url: https://post.smzdm.com/p/a6d8m6vg/
+                  - generic [ref=e2078]: 手把手教你安装TrueNas(基础篇)_NAS存储_什么值得买
+                  - generic [ref=e2085]: post.smzdm.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e2086]:
+                - link "贡正阳的服务器 192.168.2.152" [ref=e2087] [cursor=pointer]:
+                  - /url: http://192.168.2.152:5000/
+                  - generic [ref=e2088]: 贡正阳的服务器
+                  - generic [ref=e2095]: 192.168.2.152
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e2096]:
+                - link "Synology Web Assistant finds.synology.com" [ref=e2097] [cursor=pointer]:
+                  - /url: https://finds.synology.com/
+                  - generic [ref=e2098]: Synology Web Assistant
+                  - generic [ref=e2105]: finds.synology.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e2106]:
+                - link "↓0 B/s ↑0 B/s - TrguiNG 192.168.2.26" [ref=e2107] [cursor=pointer]:
+                  - /url: http://192.168.2.26:9091/transmission/web/
+                  - generic [ref=e2108]: ↓0 B/s ↑0 B/s - TrguiNG
+                  - generic [ref=e2115]: 192.168.2.26
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e2116]:
+                - link "我的 API 设置 — The Movie Database (TMDB) themoviedb.org" [ref=e2117] [cursor=pointer]:
+                  - /url: https://www.themoviedb.org/settings/api
+                  - generic [ref=e2118]: 我的 API 设置 — The Movie Database (TMDB)
+                  - generic [ref=e2125]: themoviedb.org
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e2126]:
+                - link "4K电影美剧下载 - HDR杜比视界资源 - 4KHDR世界 - 4KHDR.CN 4khdr.cn" [ref=e2127] [cursor=pointer]:
+                  - /url: https://www.4khdr.cn/?ref=sbkk
+                  - generic [ref=e2128]: 4K电影美剧下载 - HDR杜比视界资源 - 4KHDR世界 - 4KHDR.CN
+                  - generic [ref=e2135]: 4khdr.cn
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e2136]:
+                - link "中国高清网 | 高清电影网|720P|1080P|蓝光原盘|磁力链迅雷下载高清的电影天堂 - Powered by Discuz! hdchina.net" [ref=e2137] [cursor=pointer]:
+                  - /url: https://www.hdchina.net/
+                  - generic [ref=e2138]: 中国高清网 | 高清电影网|720P|1080P|蓝光原盘|磁力链迅雷下载高清的电影天堂 - Powered by Discuz!
+                  - generic [ref=e2145]: hdchina.net
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e2146]:
+                - link "SkrBT - 专业的种子搜索、磁力链接搜索引擎 skrbtyu.top" [ref=e2147] [cursor=pointer]:
+                  - /url: https://skrbtyu.top/
+                  - generic [ref=e2148]: SkrBT - 专业的种子搜索、磁力链接搜索引擎
+                  - generic [ref=e2155]: skrbtyu.top
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e2156]:
+                - link "电影天堂_迅雷电影下载_电影天堂网 dyttcn.com" [ref=e2157] [cursor=pointer]:
+                  - /url: https://www.dyttcn.com/
+                  - generic [ref=e2158]: 电影天堂_迅雷电影下载_电影天堂网
+                  - generic [ref=e2165]: dyttcn.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e2166]:
+                - link "最新电影列表页(第5页) - BT之家 btjiaweb.com" [ref=e2167] [cursor=pointer]:
+                  - /url: https://www.btjiaweb.com/movie/0-0-0-0-1-5
+                  - generic [ref=e2168]: 最新电影列表页(第5页) - BT之家
+                  - generic [ref=e2175]: btjiaweb.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e2176]:
+                - link "80s手机电影mp4下载 - 提供最新手机电影3gp mp4下载 mp4cool.com" [ref=e2177] [cursor=pointer]:
+                  - /url: https://www.mp4cool.com/
+                  - generic [ref=e2178]: 80s手机电影mp4下载 - 提供最新手机电影3gp mp4下载
+                  - generic [ref=e2185]: mp4cool.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e2186]:
+                - link "FN Connect 远程访问 - 飞牛私有云 fnOS fnos.net" [ref=e2187] [cursor=pointer]:
+                  - /url: https://fnos.net/
+                  - generic [ref=e2188]: FN Connect 远程访问 - 飞牛私有云 fnOS
+                  - generic [ref=e2195]: fnos.net
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e2196]:
+                - link "GZY001 - 飞牛私有云fnOS gzy2965753496.fnos.net" [ref=e2197] [cursor=pointer]:
+                  - /url: https://gzy2965753496.fnos.net/
+                  - generic [ref=e2198]: GZY001 - 飞牛私有云fnOS
+                  - generic [ref=e2205]: gzy2965753496.fnos.net
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+          - generic [ref=e2206]:
+            - generic [ref=e2207]:
+              - button "项目 3 Collapse" [expanded] [ref=e2208]:
+                - generic [ref=e2218]: 项目
+                - generic [ref=e2219]: "3"
+                - generic [ref=e2220]: Collapse
+              - button "Open all links in this group" [ref=e2221]
+              - button "Add card" [ref=e2222]
+              - button "Rename group" [ref=e2223]
+              - button "Delete group" [ref=e2224]
+            - generic [ref=e2225]:
+              - generic [ref=e2226]:
+                - link "Architecture | usememos/memos | DeepWiki deepwiki.com" [ref=e2227] [cursor=pointer]:
+                  - /url: https://deepwiki.com/usememos/memos/2-architecture
+                  - generic [ref=e2228]: Architecture | usememos/memos | DeepWiki
+                  - generic [ref=e2235]: deepwiki.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e2236]:
+                - link "腾讯云企业网盘 pan.tencent.com" [ref=e2237] [cursor=pointer]:
+                  - /url: https://pan.tencent.com/web/desktop/userManagement
+                  - generic [ref=e2238]: 腾讯云企业网盘
+                  - generic [ref=e2245]: pan.tencent.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e2246]:
+                - link "cloud.tencent.com cloud.tencent.com" [ref=e2247] [cursor=pointer]:
+                  - /url: https://cloud.tencent.com/developer/article/2625144
+                  - generic [ref=e2248]: cloud.tencent.com
+                  - generic [ref=e2255]: cloud.tencent.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+  - button "Open Tanstack query devtools" [ref=e79] [cursor=pointer]
