@@ -10,12 +10,13 @@ import {
   LinkIcon,
   type LucideIcon,
   MapPinIcon,
-  ParenthesesIcon,
   SearchIcon,
   SquareCheckIcon,
   XIcon,
 } from "lucide-react";
+import type { ReactNode } from "react";
 import { useLocation } from "react-router-dom";
+import MemoViewIcon from "@/components/MemoViewIcon";
 import { Button } from "@/components/ui/button";
 import { useAppSidebar } from "@/contexts/AppSidebarContext";
 import { type FilterFactor, getMemoFilterKey, type MemoFilter, useMemoFilterContext } from "@/contexts/MemoFilterContext";
@@ -83,6 +84,7 @@ const FILTER_CONFIGS: Record<FilterFactor, FilterConfig> = {
 
 interface FilterChipProps {
   icon?: LucideIcon;
+  customIcon?: ReactNode;
   label: string;
   onRemove: () => void;
   /** When set, the label is a button that edits the filter; the label is also shown in full as a tooltip. */
@@ -90,10 +92,10 @@ interface FilterChipProps {
 }
 
 /** One chip for anything narrowing the list, so a view, a tag and a day are announced the same way. */
-const FilterChip = ({ icon: Icon, label, onRemove, onEdit }: FilterChipProps) => {
+const FilterChip = ({ icon: Icon, customIcon, label, onRemove, onEdit }: FilterChipProps) => {
   const body = (
     <>
-      {Icon && <Icon className="w-3.5 h-3.5 text-muted-foreground shrink-0" />}
+      {customIcon ?? (Icon && <Icon className="w-3.5 h-3.5 text-muted-foreground shrink-0" />)}
       <span className={cn("text-foreground/80 truncate", onEdit ? "font-mono text-xs max-w-64" : "font-medium max-w-32")}>{label}</span>
     </>
   );
@@ -151,8 +153,13 @@ const MemoFilters = ({ className }: { className?: string }) => {
   const viewChip = (() => {
     if (!viewApplies) return null;
     if (memoView === BUILTIN_TASKS_VIEW_ID) return { icon: SquareCheckIcon, label: t("common.tasks") };
-    const title = memoViews.find((item) => getMemoViewId(item.name) === memoView)?.title;
-    return title ? { icon: ParenthesesIcon, label: title } : null;
+    const view = memoViews.find((item) => getMemoViewId(item.name) === memoView);
+    return view?.title
+      ? {
+          customIcon: <MemoViewIcon icon={view.icon} className="size-3.5 text-sm text-muted-foreground" />,
+          label: view.title,
+        }
+      : null;
   })();
 
   if (filters.length === 0 && !viewChip) {
@@ -161,7 +168,9 @@ const MemoFilters = ({ className }: { className?: string }) => {
 
   return (
     <div className={cn("w-full flex flex-row justify-start items-center flex-wrap gap-2", className)}>
-      {viewChip && <FilterChip icon={viewChip.icon} label={viewChip.label} onRemove={() => setMemoView(undefined)} />}
+      {viewChip && (
+        <FilterChip icon={viewChip.icon} customIcon={viewChip.customIcon} label={viewChip.label} onRemove={() => setMemoView(undefined)} />
+      )}
       {filters.map((filter) => (
         <FilterChip
           key={getMemoFilterKey(filter)}

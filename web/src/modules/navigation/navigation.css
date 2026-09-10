@@ -1,0 +1,110 @@
+/**
+ * Navigation page styles, scoped to `.nav-page`.
+ *
+ * Uses only upstream theme tokens (--card, --border, --foreground,
+ * --muted-foreground, --accent) so every installed theme keeps working.
+ */
+.nav-page-card {
+  border: 1px solid var(--border);
+  background: var(--card);
+  transition:
+    border-color 120ms ease,
+    box-shadow 120ms ease,
+    transform 120ms ease;
+}
+
+.nav-page-card:hover {
+  border-color: color-mix(in oklab, var(--border) 40%, var(--foreground) 12%);
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 6%);
+  transform: translateY(-1px);
+}
+
+/* Roving keyboard focus: the arrow keys move a highlight independent of the
+   browser's own :focus-visible, which programmatic .focus() does not reliably
+   trigger. */
+.nav-page-card[data-active="true"] {
+  border-color: color-mix(in oklab, var(--border) 30%, var(--foreground) 25%);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--foreground) 10%, transparent);
+}
+
+/* Drag-and-drop drop hints are stripes on the edge the card would land. */
+.nav-page [data-dragging="true"] {
+  opacity: 0.5;
+}
+
+.nav-page-card[data-drop-before="true"] {
+  box-shadow: inset 0 3px 0 0 var(--foreground);
+}
+
+.nav-page-card[data-drop-after="true"] {
+  box-shadow: inset 0 -3px 0 0 var(--foreground);
+}
+
+.nav-page button[data-drop-before="true"] {
+  box-shadow: inset 3px 0 0 0 var(--foreground);
+}
+
+.nav-page button[data-drop-after="true"] {
+  box-shadow: inset -3px 0 0 0 var(--foreground);
+}
+
+.nav-page-empty {
+  border: 1px dashed var(--border);
+}
+
+/* Group tag chip — same language as secondary outline buttons. */
+.nav-page-group {
+  border: 1px solid var(--border);
+  background: var(--card);
+  transition:
+    border-color 120ms ease,
+    background 120ms ease;
+}
+
+.nav-page-group:hover {
+  background: var(--accent);
+}
+
+.nav-page-count {
+  background: color-mix(in oklab, var(--foreground) 8%, transparent);
+  color: var(--muted-foreground);
+}
+
+/* Spotlight-style search bar (Apple 聚焦搜索): soft elevated pill + circular actions. */
+.nav-spotlight-input {
+  border-color: var(--border);
+  background: color-mix(in oklab, var(--card) 70%, var(--background) 30%);
+  box-shadow:
+    0 1px 2px 0 rgb(0 0 0 / 4%),
+    inset 0 0 0 1px color-mix(in oklab, var(--border) 55%, transparent);
+  transition:
+    box-shadow 140ms ease,
+    border-color 140ms ease;
+}
+
+.nav-spotlight-input::placeholder {
+  color: color-mix(in oklab, var(--muted-foreground) 75%, transparent);
+  font-size: 0.95rem;
+}
+
+.nav-spotlight-input:focus-visible {
+  border-color: color-mix(in oklab, var(--border) 40%, var(--foreground) 20%);
+  box-shadow:
+    0 1px 2px 0 rgb(0 0 0 / 4%),
+    inset 0 0 0 1px color-mix(in oklab, var(--border) 40%, transparent),
+    0 0 0 3px color-mix(in oklab, var(--foreground) 8%, transparent);
+}
+
+.nav-spotlight-action {
+  border: 1px solid var(--border);
+  background: color-mix(in oklab, var(--card) 70%, var(--background) 30%);
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 4%);
+}
+
+/* Hover/focus edit affordances sit outside the card anchor so the whole card
+   remains a single link hit-target. */
+.nav-page-card-shell:focus-within .nav-page-card-actions,
+.nav-page-card-shell:hover .nav-page-card-actions {
+  opacity: 1;
+  pointer-events: auto;
+}

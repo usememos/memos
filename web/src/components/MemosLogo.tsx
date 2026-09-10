@@ -16,6 +16,8 @@ const COMPACT_SCALE = {
   md: { mark: "size-7 rounded-[7px]", gap: "gap-1.5", title: "text-[14px]", weight: "font-medium" },
   header: { mark: "size-6 rounded-[6px]", gap: "gap-2", title: "text-[15px] leading-5", weight: "font-semibold" },
   sm: { mark: "size-5 rounded-[5px]", gap: "gap-1.5", title: "text-ui", weight: "font-medium" },
+  /** Mark-only brand for the icon rail — large enough to read as the app identity. */
+  rail: { mark: "size-10 rounded-[10px]", gap: "gap-0", title: "text-[14px]", weight: "font-medium" },
 } as const;
 
 function MemosLogo(props: Props) {

@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
+import { FOCUS_VISIBLE_OUTLINE_CLASSES } from "@/components/ui/focus";
 import { cn } from "@/lib/utils";
 import { SIDEBAR_LEADING_SLOT_CLASSES, sidebarSurfaceVariants } from "./sidebar-layout";
 
@@ -13,8 +14,7 @@ import { SIDEBAR_LEADING_SLOT_CLASSES, sidebarSurfaceVariants } from "./sidebar-
 export const SIDEBAR_ROW_BOX_CLASSES = `${sidebarSurfaceVariants({ role: "row" })} group transition-colors`;
 
 /** Goes on whichever element in a row actually takes focus. */
-export const SIDEBAR_ROW_FOCUS_CLASSES =
-  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/50";
+export const SIDEBAR_ROW_FOCUS_CLASSES = FOCUS_VISIBLE_OUTLINE_CLASSES;
 
 export const SIDEBAR_ROW_CLASSES = `${SIDEBAR_ROW_BOX_CLASSES} ${SIDEBAR_ROW_FOCUS_CLASSES}`;
 

@@ -42,7 +42,6 @@ func (s *ConnectServiceHandler) RegisterConnectHandlers(mux *http.ServeMux, opts
 		wrap(apiv1connect.NewSpaceServiceHandler(s, opts...)),
 		wrap(apiv1connect.NewAttachmentServiceHandler(s, opts...)),
 		wrap(apiv1connect.NewAIServiceHandler(s, opts...)),
-		wrap(apiv1connect.NewMemoViewServiceHandler(s, opts...)),
 		wrap(apiv1connect.NewIdentityProviderServiceHandler(s, opts...)),
 	}
 

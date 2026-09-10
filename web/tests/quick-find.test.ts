@@ -22,7 +22,6 @@ describe("Quick Find", () => {
       ...scopedFilters.filter((filter) => filter.factor !== "contentSearch"),
       { factor: "celSearch", value: expression },
     ]);
-    expect(submission.switchToAll).toBe(false);
   });
 
   it("replaces both kinds of search without dropping facets", () => {
@@ -66,11 +65,10 @@ describe("Quick Find", () => {
         { factor: "contentSearch", value: "project" },
       ],
       destination: undefined,
-      switchToAll: false,
     });
   });
 
-  it("searches Archived as a user collection without clearing the remembered Space", () => {
+  it("searches Archived as a user collection", () => {
     expect(resolveQuickFindSubmission("/archived", "project", scopedFilters, "text")).toEqual({
       filters: [
         { factor: "tagSearch", value: "work" },
@@ -78,11 +76,10 @@ describe("Quick Find", () => {
         { factor: "contentSearch", value: "project" },
       ],
       destination: undefined,
-      switchToAll: false,
     });
   });
 
-  it("keeps the remembered collection filters when searching from Attachments", () => {
+  it("keeps the collection filters when searching from Attachments", () => {
     expect(resolveQuickFindSubmission("/attachments", "project", scopedFilters, "text")).toEqual({
       filters: [
         { factor: "tagSearch", value: "work" },
@@ -90,11 +87,10 @@ describe("Quick Find", () => {
         { factor: "contentSearch", value: "project" },
       ],
       destination: "/?filter=tagSearch%3Awork%2CdisplayTime%3A2026-08-03%2CcontentSearch%3Aproject",
-      switchToAll: false,
     });
   });
 
-  it("keeps the remembered collection on a normalized Attachments route", () => {
+  it("keeps the collection on a normalized Attachments route", () => {
     expect(resolveQuickFindSubmission("/Attachments/", "project", scopedFilters, "text")).toEqual({
       filters: [
         { factor: "tagSearch", value: "work" },
@@ -102,7 +98,6 @@ describe("Quick Find", () => {
         { factor: "contentSearch", value: "project" },
       ],
       destination: "/?filter=tagSearch%3Awork%2CdisplayTime%3A2026-08-03%2CcontentSearch%3Aproject",
-      switchToAll: false,
     });
   });
 
@@ -114,7 +109,6 @@ describe("Quick Find", () => {
         { factor: "contentSearch", value: "project" },
       ],
       destination: "/u/steven?filter=tagSearch%3Awork%2CdisplayTime%3A2026-08-03%2CcontentSearch%3Aproject",
-      switchToAll: false,
     });
   });
 
@@ -130,7 +124,6 @@ describe("Quick Find", () => {
     expect(resolveQuickFindSubmission(pathname, "project", scopedFilters, "text")).toEqual({
       filters: [{ factor: "contentSearch", value: "project" }],
       destination: "/?filter=contentSearch%3Aproject",
-      switchToAll: true,
     });
   });
 

@@ -16,7 +16,6 @@ import {
 
 const copyToClipboard = vi.hoisted(() => vi.fn());
 const currentUserState = vi.hoisted(() => ({ value: { name: "users/alice" } as { name: string } | undefined }));
-const clearSelectedSpace = vi.hoisted(() => vi.fn());
 
 vi.mock("copy-to-clipboard", () => ({ default: copyToClipboard }));
 vi.mock("react-hot-toast", () => ({ default: { success: vi.fn() } }));
@@ -26,7 +25,6 @@ vi.mock("@/components/MemoDetailSidebar/MemoOutline", () => ({
 vi.mock("@/components/MemoDetailSidebar/MemoSharePanel", () => ({ default: () => <div data-testid="share-panel" /> }));
 vi.mock("@/components/MemoMetadata/Relation/useResolvedRelationMemos", () => ({ useResolvedRelationMemos: () => ({}) }));
 vi.mock("@/contexts/InstanceContext", () => ({ useInstance: () => ({ profile: { instanceUrl: "https://memos.example/" } }) }));
-vi.mock("@/contexts/SpaceContext", () => ({ useSpaceContext: () => ({ clearSelectedSpace }) }));
 vi.mock("@/hooks/useCurrentUser", () => ({ default: () => currentUserState.value }));
 vi.mock("@/utils/i18n", () => ({
   useTranslate: () => (key: string, values?: { source?: string }) => (values?.source ? `${key}:${values.source}` : key),
@@ -45,8 +43,14 @@ const createIncomingReference = (memoName: string, sourceName = "memos/incoming"
 describe("MemoDetailSidebar", () => {
   beforeEach(() => {
     copyToClipboard.mockReset();
-    clearSelectedSpace.mockReset();
     currentUserState.value = { name: "users/alice" };
+  });
+
+  it("returns to the scoped map with its filters, viewport, and selection", () => {
+    const parentPage = "/spaces/travel/map?filter=tagSearch%3Atravel&lat=35&lng=135&zoom=12&memo=memos%2Fdetail";
+    renderSidebar(<MemoDetailSidebar memo={create(MemoSchema, { name: "memos/detail" })} parentPage={parentPage} hasExplicitOrigin />);
+
+    expect(screen.getByRole("link", { name: "memo.back-to:common.map" })).toHaveAttribute("href", parentPage);
   });
 
   it("organizes source, in-page navigation, connections, and frequent actions without repeating metadata", async () => {
@@ -86,7 +90,6 @@ describe("MemoDetailSidebar", () => {
         memo={memo}
         parentMemo={parentMemo}
         parentPage="/explore?filter=tagSearch%3Awork"
-        parentScope="preserve"
         hasExplicitOrigin
         commentCount={3}
         onEdit={onEdit}
@@ -147,16 +150,13 @@ describe("MemoDetailSidebar", () => {
       relations: [createIncomingReference("memos/public")],
     });
 
-    renderSidebar(
-      <MemoDetailSidebar memo={memo} parentPage="/explore" parentScope="all" commentCount={1} onEdit={vi.fn()} onCommentCreate={vi.fn()} />,
-    );
+    renderSidebar(<MemoDetailSidebar memo={memo} parentPage="/explore" commentCount={1} onEdit={vi.fn()} onCommentCreate={vi.fn()} />);
 
     expect(screen.queryByRole("button", { name: "common.edit" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "memo.comment.write-a-comment" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "common.referenced-by: Incoming backlink" })).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("link", { name: "memo.go-to:common.explore" }));
-    expect(clearSelectedSpace).toHaveBeenCalledOnce();
+    expect(screen.getByRole("link", { name: "memo.go-to:common.explore" })).toHaveAttribute("href", "/explore");
   });
 
   it("keeps a simple memo useful without rendering empty navigation or connections", () => {
@@ -167,9 +167,7 @@ describe("MemoDetailSidebar", () => {
       content: "Body",
     });
 
-    renderSidebar(
-      <MemoDetailSidebar memo={memo} parentPage="/" parentScope="all" commentCount={0} onEdit={vi.fn()} onCommentCreate={vi.fn()} />,
-    );
+    renderSidebar(<MemoDetailSidebar memo={memo} parentPage="/" commentCount={0} onEdit={vi.fn()} onCommentCreate={vi.fn()} />);
 
     expect(screen.getByRole("link", { name: "memo.go-to:common.home" })).toHaveAttribute("href", "/");
     expect(screen.queryByText("memo.on-this-memo")).not.toBeInTheDocument();
@@ -191,7 +189,7 @@ describe("MemoDetailSidebar", () => {
       content: "Body",
     });
 
-    renderSidebar(<MemoDetailSidebar memo={memo} parentPage="/" parentScope="all" commentCount={0} />);
+    renderSidebar(<MemoDetailSidebar memo={memo} parentPage="/" commentCount={0} />);
     fireEvent.click(screen.getByRole("button", { name: "common.share" }));
 
     expect(await screen.findByRole("menuitem", { name: "memo.copy-link" })).toBeInTheDocument();
@@ -206,16 +204,7 @@ describe("MemoDetailSidebar", () => {
       content: "Archived body",
     });
 
-    renderSidebar(
-      <MemoDetailSidebar
-        memo={memo}
-        parentPage="/archived"
-        parentScope="preserve"
-        commentCount={2}
-        onEdit={vi.fn()}
-        onCommentCreate={vi.fn()}
-      />,
-    );
+    renderSidebar(<MemoDetailSidebar memo={memo} parentPage="/archived" commentCount={2} onEdit={vi.fn()} onCommentCreate={vi.fn()} />);
 
     expect(screen.getByRole("link", { name: "memo.go-to:common.archived" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /memo.comment.self/ })).toHaveTextContent("2");
@@ -241,7 +230,6 @@ describe("MemoDetailSidebar", () => {
         memo={memo}
         parentMemo={parentMemo}
         parentPage="/explore"
-        parentScope="all"
         hasExplicitOrigin
         commentCount={4}
         forceReadonly

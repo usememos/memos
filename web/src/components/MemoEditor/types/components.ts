@@ -12,6 +12,8 @@ export interface MemoEditorProps {
   parentMemoName?: string;
   /** Assigns a newly created top-level memo to this Space. Ignored for edits and comments. */
   defaultSpace?: string;
+  /** Seeds a new memo once; restored draft metadata takes precedence. */
+  defaultLocation?: Location;
   /** A callback can decide whether focus is still appropriate after draft restoration. */
   autoFocus?: boolean | (() => boolean);
   /**

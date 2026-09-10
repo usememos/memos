@@ -1,11 +1,7 @@
-import { getProfileUsername, isMemoScopeRoute } from "@/lib/memo-views";
 import { ROUTES } from "@/router/routes";
-
-export type MemoOriginScope = "all" | "preserve";
 
 export interface MemoNavigationState {
   from: string;
-  fromScope: MemoOriginScope;
 }
 
 interface ResolveMemoDetailOriginOptions {
@@ -14,7 +10,6 @@ interface ResolveMemoDetailOriginOptions {
 
 interface ResolveMemoParentPageOptions {
   explicitParentPage?: string;
-  explicitParentScope?: MemoOriginScope;
   pathname: string;
   search: string;
   memoName: string;
@@ -40,32 +35,13 @@ export const isMemoResourcePath = (pathname: string): boolean => {
   return memoID.length > 0 && !memoID.includes("/");
 };
 
-/** Whether returning from this collection should preserve the remembered All / Space state. */
-export const isMemoCollectionOrigin = (page: string): boolean => {
-  const pathname = page.split(/[?#]/, 1)[0] || ROUTES.HOME;
-  return isMemoScopeRoute(pathname) || normalizePathname(pathname) === ROUTES.ATTACHMENTS;
-};
+export const createMemoNavigationState = (from: string): MemoNavigationState => ({ from });
 
-export const createMemoNavigationState = (from: string, fromScope: MemoOriginScope): MemoNavigationState => ({ from, fromScope });
-
-/** Reads router state while remaining compatible with older `{ from }` links. */
-export const resolveMemoDetailOrigin = (
-  state: unknown,
-  options: ResolveMemoDetailOriginOptions = {},
-): { parentPage: string; parentScope: MemoOriginScope } => {
-  const value = state && typeof state === "object" ? (state as { from?: unknown; fromScope?: unknown }) : undefined;
+/** Reads the origin page out of router state; without one, a detail returns to its collection. */
+export const resolveMemoDetailOrigin = (state: unknown, options: ResolveMemoDetailOriginOptions = {}): string => {
+  const value = state && typeof state === "object" ? (state as { from?: unknown }) : undefined;
   const explicitParentPage = typeof value?.from === "string" ? value.from : undefined;
-  const hasExplicitParent = explicitParentPage !== undefined;
-  const parentPage = explicitParentPage || (options.memoArchived ? ROUTES.ARCHIVED : ROUTES.HOME);
-  const parentScope =
-    value?.fromScope === "all" || value?.fromScope === "preserve"
-      ? value.fromScope
-      : hasExplicitParent && isMemoCollectionOrigin(parentPage)
-        ? "preserve"
-        : options.memoArchived
-          ? "preserve"
-          : "all";
-  return { parentPage, parentScope };
+  return explicitParentPage || (options.memoArchived ? ROUTES.ARCHIVED : ROUTES.HOME);
 };
 
 /** Whether the current route is the canonical detail page for this memo. */
@@ -79,32 +55,11 @@ export const isMemoDetailPath = (pathname: string, memoName: string): boolean =>
  * Captures the list page that opened a memo so canonical detail routes can
  * return to the real collection lens instead of assuming Home.
  */
-export const resolveMemoOrigin = ({
-  explicitParentPage,
-  explicitParentScope,
-  pathname,
-  search,
-  memoName,
-}: ResolveMemoParentPageOptions): { parentPage: string; parentScope: MemoOriginScope } => {
-  if (explicitParentPage !== undefined) {
-    const parentPage = explicitParentPage || ROUTES.HOME;
-    return {
-      parentPage,
-      parentScope: explicitParentScope ?? (isMemoCollectionOrigin(parentPage) ? "preserve" : "all"),
-    };
-  }
-
-  if (isMemoDetailPath(pathname, memoName)) {
-    return { parentPage: ROUTES.HOME, parentScope: "all" };
-  }
-
-  return {
-    parentPage: `${pathname}${search}`,
-    parentScope: isMemoCollectionOrigin(pathname) ? "preserve" : "all",
-  };
+export const resolveMemoParentPage = ({ explicitParentPage, pathname, search, memoName }: ResolveMemoParentPageOptions): string => {
+  if (explicitParentPage !== undefined) return explicitParentPage || ROUTES.HOME;
+  if (isMemoDetailPath(pathname, memoName)) return ROUTES.HOME;
+  return `${pathname}${search}`;
 };
-
-export const resolveMemoParentPage = (options: ResolveMemoParentPageOptions): string => resolveMemoOrigin(options).parentPage;
 
 /** Replaces only the memo filter while preserving the rest of the origin query. */
 export const withMemoFilter = (page: string, filter: string): string => {
@@ -113,9 +68,6 @@ export const withMemoFilter = (page: string, filter: string): string => {
   const pathname = questionMark === -1 ? pathAndSearch : pathAndSearch.slice(0, questionMark);
   const search = questionMark === -1 ? "" : pathAndSearch.slice(questionMark + 1);
   const searchParams = new URLSearchParams(search);
-  if (getProfileUsername(pathname) !== undefined && searchParams.get("view") === "map") {
-    searchParams.delete("view");
-  }
   searchParams.set("filter", filter);
   return `${pathname || ROUTES.HOME}?${searchParams.toString()}`;
 };

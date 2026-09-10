@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { SIDEBAR_ROW_BOX_CLASSES } from "@/components/AppSidebar/SidebarRow";
 import type { HeadingItem } from "@/components/MemoContent/pipeline";
+import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { findAnchorTarget, findMemoContentRoot } from "@/utils/markdown-manipulation";
 
@@ -11,6 +11,12 @@ interface MemoOutlineProps {
 
 /** Distance from the viewport top of the "reading line" used to decide the active section. */
 const READING_LINE_OFFSET = 100;
+
+/**
+ * Each heading is a quiet row: the kit's `quiet` treatment at the sidebar's 28px row height,
+ * so the section you are reading takes the accent fill through `aria-current`.
+ */
+const OUTLINE_ROW_CLASSES = cn(buttonVariants({ variant: "quiet", size: "sm" }), "relative w-full justify-start");
 
 /** Outline navigation for memo headings (h1–h4) with active-section tracking. */
 const MemoOutline = ({ headings, memoName }: MemoOutlineProps) => {
@@ -72,12 +78,7 @@ const MemoOutline = ({ headings, memoName }: MemoOutlineProps) => {
             href={`#${heading.slug}`}
             onClick={(e) => handleClick(e, heading.slug)}
             aria-current={active ? "location" : undefined}
-            className={cn(
-              SIDEBAR_ROW_BOX_CLASSES,
-              "relative",
-              heading.level === minLevel && "font-medium",
-              active ? "text-foreground" : "text-muted-foreground/70 hover:bg-sidebar-accent/65 hover:text-foreground",
-            )}
+            className={cn(OUTLINE_ROW_CLASSES, heading.level === minLevel && "font-medium")}
             style={{ paddingInlineStart: 8 + (heading.level - minLevel) * 12 }}
           >
             <span

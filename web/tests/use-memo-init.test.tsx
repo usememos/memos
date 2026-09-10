@@ -8,16 +8,19 @@ import { EditorProvider, useEditorContext } from "@/components/MemoEditor/state"
 import type { EditorController } from "@/components/MemoEditor/types/editorController";
 import { AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
 
+import { type Location, LocationSchema } from "@/types/proto/api/v1/memo_service_pb";
+
 const editorRef = { current: null } as RefObject<EditorController | null>;
 let getEditorState: ReturnType<typeof useEditorContext>["getState"];
 
-function Probe({ autoFocus }: { autoFocus?: boolean | (() => boolean) }) {
+function Probe({ autoFocus, defaultLocation }: { autoFocus?: boolean | (() => boolean); defaultLocation?: Location }) {
   getEditorState = useEditorContext().getState;
   useMemoInit({
     editorRef,
     username: "users/steven",
     cacheKey: "restored-draft",
     autoFocus,
+    defaultLocation,
   });
   return null;
 }
@@ -62,6 +65,30 @@ describe("useMemoInit", () => {
     act(() => vi.advanceTimersByTime(100));
     expect(autoFocus).toHaveBeenCalledOnce();
     expect(focus).toHaveBeenCalledTimes(allowed ? 1 : 0);
+  });
+
+  it("seeds a new location once and honors a restored removal", () => {
+    const point = create(LocationSchema, { latitude: 35, longitude: 135, placeholder: "Cafe" });
+    const { unmount, rerender } = render(
+      <EditorProvider>
+        <Probe defaultLocation={point} />
+      </EditorProvider>,
+    );
+    expect(getEditorState().metadata.location).toEqual(point);
+    rerender(
+      <EditorProvider>
+        <Probe defaultLocation={create(LocationSchema, { latitude: 1 })} />
+      </EditorProvider>,
+    );
+    expect(getEditorState().metadata.location).toEqual(point);
+    unmount();
+    cacheService.saveNow(cacheService.key("users/steven", "restored-draft"), "Draft without a location", [], null);
+    render(
+      <EditorProvider>
+        <Probe defaultLocation={point} />
+      </EditorProvider>,
+    );
+    expect(getEditorState().metadata.location).toBeUndefined();
   });
 
   it("restores uploaded attachment bindings with a new memo draft", async () => {

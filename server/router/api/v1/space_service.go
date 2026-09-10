@@ -8,9 +8,11 @@ import (
 	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
+	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
 
@@ -98,10 +100,15 @@ func (s *APIV1Service) CreateSpace(ctx context.Context, request *v1pb.CreateSpac
 	if err != nil {
 		return nil, err
 	}
+	icon := convertSpaceIconToStore(request.Space.Icon)
+	if err := store.ValidateSpaceIcon(icon); err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
 	created, err := s.Store.CreateSpace(ctx, &store.Space{
 		UID:         uid,
 		Title:       title,
 		Description: strings.TrimSpace(request.Space.Description),
+		Payload:     &storepb.SpacePayload{Icon: icon},
 	}, currentUser.ID)
 	if err != nil {
 		return nil, mapSpaceMutationError(err, "failed to create space")
@@ -201,6 +208,16 @@ func (s *APIV1Service) UpdateSpace(ctx context.Context, request *v1pb.UpdateSpac
 		case "description":
 			description := strings.TrimSpace(request.Space.Description)
 			update.Description = &description
+		case "icon":
+			icon := convertSpaceIconToStore(request.Space.Icon)
+			if err := store.ValidateSpaceIcon(icon); err != nil {
+				return nil, status.Errorf(codes.InvalidArgument, "%v", err)
+			}
+			update.Payload = &storepb.SpacePayload{}
+			if space.Payload != nil {
+				update.Payload = proto.CloneOf(space.Payload)
+			}
+			update.Payload.Icon = icon
 		default:
 			return nil, status.Errorf(codes.InvalidArgument, "unsupported update mask path: %s", path)
 		}

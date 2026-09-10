@@ -7,14 +7,13 @@ import { MemoRelation_Type } from "@/types/proto/api/v1/memo_service_pb";
 import type { User } from "@/types/proto/api/v1/user_service_pb";
 import type { PreviewMediaItem } from "@/utils/media-item";
 import { RELATIVE_TIME_THRESHOLD_MS } from "./constants";
-import { isMemoDetailPath, type MemoOriginScope } from "./navigation";
+import { isMemoDetailPath } from "./navigation";
 
 export interface MemoViewContextValue {
   memo: Memo;
   creator: User | undefined;
   currentUser: User | undefined;
   parentPage: string;
-  parentScope: MemoOriginScope;
   cardWidth: number;
   isArchived: boolean;
   readonly: boolean;

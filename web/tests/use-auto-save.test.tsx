@@ -47,7 +47,7 @@ describe("useAutoSave (store-subscribed)", () => {
     act(() => {
       api.dispatch(api.actions.updateContent("hello world"));
     });
-    expect(saveSpy).toHaveBeenCalledWith(key, "hello world", []);
+    expect(saveSpy).toHaveBeenCalledWith(key, "hello world", [], null);
   });
 
   it("persists uploaded attachments when editor metadata changes", () => {
@@ -68,7 +68,7 @@ describe("useAutoSave (store-subscribed)", () => {
       api.dispatch(api.actions.setMetadata({ attachments: [image] }));
     });
 
-    expect(saveSpy).toHaveBeenCalledWith(key, "", [image]);
+    expect(saveSpy).toHaveBeenCalledWith(key, "", [image], null);
   });
 
   it("persists metadata changes for an attachment with the same name", () => {
@@ -98,7 +98,7 @@ describe("useAutoSave (store-subscribed)", () => {
       api.dispatch(api.actions.setMetadata({ attachments: [updated] }));
     });
 
-    expect(saveSpy).toHaveBeenCalledWith(key, "", [updated]);
+    expect(saveSpy).toHaveBeenCalledWith(key, "", [updated], null);
   });
 
   it("does not persist when disabled", () => {

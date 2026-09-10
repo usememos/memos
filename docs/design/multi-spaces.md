@@ -93,8 +93,8 @@ Distribution is derived rather than separately configured:
 - A Space feed first requires active membership, then returns readable memos assigned to that Space that do not have a `COMMENT` relation. Membership does not make another author's assigned `PRIVATE` memo readable.
 - Direct memo reads evaluate each memo independently, including comments.
 - A comment or conversation query requires its context memo to be readable, then filters every replying memo by that memo's own audience.
-- A `COMMENT` or `REFERENCE` relation and its snippet are returned only when both endpoints are readable.
-- Reactions are readable whenever their memo is readable.
+- A `COMMENT` or `REFERENCE` relation and its snippet are returned only when both endpoints are readable. A readable comment's `parent` field still identifies its context memo; this identity does not grant access. Clients fetch it independently and render an unavailable context on permission denial or not-found. Bearer-share responses omit this field.
+- Reactions are readable whenever their memo is readable. An active reaction creator can withdraw their own reaction even after losing memo access or Space membership.
 - Public profiles and other public surfaces continue to use `PUBLIC`, not Space placement.
 
 ### Participation and governance

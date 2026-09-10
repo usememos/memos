@@ -21,6 +21,18 @@ func validateSQLiteReactionWritePolicy(ctx context.Context, tx dbExecutor, react
 	return store.ValidateReactionWriteParticipation(reaction, participation)
 }
 
+func validateSQLiteReactionDeletePolicy(ctx context.Context, tx dbExecutor, reaction *store.Reaction) error {
+	policy := reaction.Policy
+	participation, err := loadSQLiteMemoParticipation(ctx, tx, reaction.MemoID, policy.ActorUserID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return store.ErrReactionMemoNotFound
+		}
+		return errors.Wrap(err, "failed to read reaction participation")
+	}
+	return store.ValidateReactionWithdrawal(reaction, participation)
+}
+
 func sqliteSpaceMemberActive(ctx context.Context, tx dbExecutor, spaceID, userID int32) (bool, error) {
 	var role store.SpaceMemberRole
 	err := tx.QueryRowContext(ctx, `SELECT role FROM space_member

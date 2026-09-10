@@ -11,13 +11,14 @@ import (
 
 // Schedule represents a parsed cron expression.
 type Schedule struct {
-	seconds  fieldMatcher // 0-59 (optional, for 6-field format)
-	minutes  fieldMatcher // 0-59
-	hours    fieldMatcher // 0-23
-	days     fieldMatcher // 1-31
-	months   fieldMatcher // 1-12
-	weekdays fieldMatcher // 0-7 (0 and 7 are Sunday)
-	hasSecs  bool
+	seconds     fieldMatcher // 0-59 (optional, for 6-field format)
+	minutes     fieldMatcher // 0-59
+	hours       fieldMatcher // 0-23
+	days        fieldMatcher // 1-31
+	months      fieldMatcher // 1-12
+	weekdays    fieldMatcher // 0-7 (0 and 7 are Sunday)
+	hasSecs     bool
+	dayWildcard bool
 }
 
 // fieldMatcher determines if a field value matches.
@@ -84,6 +85,7 @@ func ParseCronExpression(expr string) (*Schedule, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "invalid weekdays field")
 	}
+	s.dayWildcard = strings.HasPrefix(fields[offset+2], "*") || strings.HasPrefix(fields[offset+4], "*")
 
 	return s, nil
 }
@@ -119,11 +121,24 @@ func (s *Schedule) Next(from time.Time) time.Time {
 
 // matches checks if the given time matches the schedule.
 func (s *Schedule) matches(t time.Time) bool {
-	return s.seconds.matches(t.Second()) &&
-		s.minutes.matches(t.Minute()) &&
-		s.hours.matches(t.Hour()) &&
-		s.months.matches(int(t.Month())) &&
-		(s.days.matches(t.Day()) || s.weekdays.matches(int(t.Weekday())))
+	if !s.seconds.matches(t.Second()) || !s.minutes.matches(t.Minute()) ||
+		!s.hours.matches(t.Hour()) || !s.months.matches(int(t.Month())) {
+		return false
+	}
+
+	dayMatches := s.days.matches(t.Day())
+	weekdayMatches := s.weekdays.matches(int(t.Weekday()))
+	if t.Weekday() == time.Sunday {
+		weekdayMatches = weekdayMatches || s.weekdays.matches(7)
+	}
+
+	// Cron combines restricted day fields with OR, but wildcard fields (including steps) use AND.
+	calendarMatches := dayMatches || weekdayMatches
+	if s.dayWildcard {
+		calendarMatches = dayMatches && weekdayMatches
+	}
+
+	return calendarMatches
 }
 
 // parseField parses a single cron field (supports *, ranges, lists, steps).

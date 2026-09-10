@@ -10,7 +10,7 @@ import { useMemoViewContext, useMemoViewDerived } from "../MemoViewContext";
 import { createMemoNavigationState } from "../navigation";
 
 const MemoCommentListView: React.FC = () => {
-  const { memo, parentPage, parentScope } = useMemoViewContext();
+  const { memo, parentPage } = useMemoViewContext();
   const { isInMemoDetailPage, commentAmount } = useMemoViewDerived();
   const { ref: viewportRef, isNearViewport } = useNearViewport<HTMLDivElement>();
 
@@ -32,7 +32,7 @@ const MemoCommentListView: React.FC = () => {
         <span className="text-xs text-muted-foreground">Comments{commentAmount > 1 ? ` (${commentAmount})` : ""}</span>
         <Link
           to={`/${memo.name}#${MEMO_COMMENTS_ANCHOR_ID}`}
-          state={createMemoNavigationState(parentPage, parentScope)}
+          state={createMemoNavigationState(parentPage)}
           className="flex items-center gap-0.5 text-xs text-muted-foreground/80 hover:underline underline-offset-2 transition-colors"
         >
           View all
@@ -46,7 +46,7 @@ const MemoCommentListView: React.FC = () => {
           <Link
             key={comment.name}
             to={`/${memo.name}#${uid}`}
-            state={createMemoNavigationState(parentPage, parentScope)}
+            state={createMemoNavigationState(parentPage)}
             viewTransition
             className="rounded-md bg-muted/40 px-2 py-1 transition-colors hover:bg-muted/60"
           >

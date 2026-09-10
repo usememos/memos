@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import QuickFindDialog from "@/components/AppSidebar/QuickFindDialog";
 import MemoFilters from "@/components/MemoFilters";
 import { AppSidebarProvider, useAppSidebar } from "@/contexts/AppSidebarContext";
-import { getSelectedSpaceStorageKey, SpaceProvider, useSpaceContext } from "@/contexts/SpaceContext";
+import { SpaceProvider, useSpaceContext } from "@/contexts/SpaceContext";
 
 const state = vi.hoisted(() => ({
   currentUser: { name: "users/alice" } as { name: string } | undefined,
@@ -35,6 +35,12 @@ vi.mock("@/hooks/useCurrentUser", () => ({
 
 vi.mock("@/hooks/useSpaceQueries", () => ({
   useSpaces: () => ({ data: state.spaces, isSuccess: true, isPending: false, isError: false }),
+  useSpace: (_user: string, name: string) => ({
+    data: state.spaces.find((space) => space.name === name),
+    isSuccess: true,
+    error: null,
+    refetch: vi.fn(),
+  }),
 }));
 
 vi.mock("@/hooks/useUserQueries", () => ({
@@ -163,22 +169,18 @@ describe("Quick Find navigation", () => {
     expect(state.filters.filter((filter) => !predicate(filter))).toEqual([{ factor: "tagSearch", value: "work" }]);
   });
 
-  it("switches to All in one history step so Back returns directly to Inbox", async () => {
-    const storageKey = getSelectedSpaceStorageKey("users/alice");
-    sessionStorage.setItem(storageKey, "spaces/product");
-
+  it("searches from Inbox into global Home in one history step", async () => {
     const router = renderSearch("/inbox");
 
-    expect(screen.getByTestId("scope")).toHaveTextContent("spaces/product");
+    expect(screen.getByTestId("scope")).toHaveTextContent("all");
     openQuickFind();
     const input = await screen.findByRole("textbox");
     fireEvent.change(input, { target: { value: "roadmap" } });
     fireEvent.submit(input.closest("form")!);
 
     await waitFor(() => expect(screen.getByTestId("path")).toHaveTextContent("/?filter=contentSearch%3Aroadmap"));
-    expect(state.setFilters).toHaveBeenCalledWith([{ factor: "contentSearch", value: "roadmap" }]);
+    expect(state.setFilters).not.toHaveBeenCalled();
     expect(screen.getByTestId("scope")).toHaveTextContent("all");
-    expect(sessionStorage.getItem(storageKey)).toBeNull();
 
     await act(async () => {
       await router.navigate(-1);
@@ -187,10 +189,8 @@ describe("Quick Find navigation", () => {
     expect(screen.getByTestId("path")).toHaveTextContent("/inbox");
   });
 
-  it("keeps a unique selected Space title compact in remembered-collection search", async () => {
-    sessionStorage.setItem(getSelectedSpaceStorageKey("users/alice"), "spaces/product");
-
-    renderSearch("/");
+  it("keeps a unique selected Space title compact in route-collection search", async () => {
+    renderSearch("/spaces/product");
 
     openQuickFind();
     const input = await screen.findByRole("textbox");
@@ -204,9 +204,7 @@ describe("Quick Find navigation", () => {
       { name: `spaces/${uuid}`, title: "Product", description: "" },
       { name: "spaces/product-roadmap", title: "Product", description: "" },
     ];
-    sessionStorage.setItem(getSelectedSpaceStorageKey("users/alice"), `spaces/${uuid}`);
-
-    renderSearch("/");
+    renderSearch(`/spaces/${uuid}`);
 
     openQuickFind();
     const input = await screen.findByRole("textbox");

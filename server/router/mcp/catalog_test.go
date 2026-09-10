@@ -20,7 +20,10 @@ func TestCuratedOperationIDsStayMemoFocused(t *testing.T) {
 		if operationID != "AuthService_GetCurrentUser" {
 			require.NotContains(t, operationID, "AuthService_")
 		}
-		require.NotContains(t, operationID, "UserService_")
+		// Saved memo views are the only user resource exposed through MCP.
+		if operationID != "UserService_ListMemoViews" {
+			require.NotContains(t, operationID, "UserService_")
+		}
 		require.NotContains(t, operationID, "AIService_")
 		require.NotContains(t, operationID, "IdentityProviderService_")
 		require.NotContains(t, operationID, "InstanceService_")
@@ -284,8 +287,8 @@ func TestBuildToolFromOperationExposesListMemoViews(t *testing.T) {
 	registry, err := buildOperationRegistry(spec)
 	require.NoError(t, err)
 
-	tool, operation := buildToolFromOperation(registry["MemoViewService_ListMemoViews"])
-	require.Equal(t, "memo_view_list_memo_views", tool.Name)
+	tool, operation := buildToolFromOperation(registry["UserService_ListMemoViews"])
+	require.Equal(t, "user_list_memo_views", tool.Name)
 	require.Equal(t, "GET", operation.Method)
 	require.True(t, tool.Annotations.ReadOnlyHint)
 

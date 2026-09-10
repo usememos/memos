@@ -21,6 +21,40 @@ func TestS3AttachmentLifecycleAcrossStorageChange(t *testing.T) {
 	runS3AttachmentLifecycleAcrossStorageChange(t, fake)
 }
 
+func TestUploadAttachmentS3(t *testing.T) {
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+	defer ts.Service.CloseAttachmentUploads()
+	fake := fakes3.New(t, "uploads")
+	ctx := context.Background()
+	user, err := ts.CreateRegularUser(ctx, "chunk-uploader")
+	require.NoError(t, err)
+	ctx = ts.CreateUserContext(ctx, user.ID)
+	storage := fakeStorage("upload-s3", "Uploads", fake.Config("uploads"))
+	upsertS3StorageSetting(ctx, t, ts, storage.Id, storage)
+	chunk := bytes.Repeat([]byte("x"), 2<<20)
+	initial, err := ts.Service.UploadAttachment(ctx, &v1pb.UploadAttachmentRequest{Upload: &v1pb.UploadAttachmentRequest_Spec{Spec: &v1pb.UploadAttachmentSpec{
+		Attachment: &v1pb.Attachment{Filename: "large.bin", Type: "application/octet-stream"}, TotalSize: int64(3 * len(chunk)),
+	}}})
+	require.NoError(t, err)
+	var result *v1pb.UploadAttachmentResponse
+	for i := range 3 {
+		result, err = ts.Service.UploadAttachment(ctx, &v1pb.UploadAttachmentRequest{
+			Upload: &v1pb.UploadAttachmentRequest_UploadId{UploadId: initial.UploadId}, WriteOffset: int64(i * len(chunk)), Data: chunk, FinishWrite: i == 2,
+		})
+		require.NoError(t, err)
+	}
+	uid, err := apiv1.ExtractAttachmentUIDFromName(result.Attachment.Name)
+	require.NoError(t, err)
+	row, err := ts.Store.GetAttachment(ctx, &store.FindAttachment{UID: &uid})
+	require.NoError(t, err)
+	require.Empty(t, row.Blob)
+	require.Equal(t, storepb.AttachmentStorageType_S3, row.StorageType)
+	content, err := fake.GetObject("uploads", row.Payload.GetS3Object().GetKey())
+	require.NoError(t, err)
+	require.Equal(t, bytes.Repeat(chunk, 3), content)
+}
+
 func TestS3AttachmentLifecycleAcrossStorageChangeMinIO(t *testing.T) {
 	server := testminio.New(t, "attachments-old", "attachments-new")
 	runS3AttachmentLifecycleAcrossStorageChange(t, server)

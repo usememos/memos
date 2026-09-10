@@ -495,6 +495,7 @@ func (s *Store) AddUserMemoView(ctx context.Context, userID int32, memoView *sto
 }
 
 // UpdateUserMemoView applies the non-nil field updates to the memo view carrying the same ID.
+// A non-nil icon update containing nil resets the icon.
 // It returns nil when no matching memo view is found.
 func (s *Store) UpdateUserMemoView(
 	ctx context.Context,
@@ -502,6 +503,7 @@ func (s *Store) UpdateUserMemoView(
 	memoViewID string,
 	title *string,
 	filter *string,
+	icon **storepb.MemoViewsUserSetting_MemoView_Icon,
 ) (*storepb.MemoViewsUserSetting_MemoView, error) {
 	s.memoViewMu.Lock()
 	defer s.memoViewMu.Unlock()
@@ -519,16 +521,15 @@ func (s *Store) UpdateUserMemoView(
 			continue
 		}
 
-		updatedMemoView = &storepb.MemoViewsUserSetting_MemoView{
-			Id:     item.GetId(),
-			Title:  item.GetTitle(),
-			Filter: item.GetFilter(),
-		}
+		updatedMemoView = proto.CloneOf(item)
 		if title != nil {
 			updatedMemoView.Title = *title
 		}
 		if filter != nil {
 			updatedMemoView.Filter = *filter
+		}
+		if icon != nil {
+			updatedMemoView.Icon = proto.CloneOf(*icon)
 		}
 		memoViews = append(memoViews, updatedMemoView)
 	}

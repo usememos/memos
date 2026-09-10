@@ -62,6 +62,6 @@ content, all of which are stable across re-seeds.
   `"work" in tags` (or `tags.exists(t, t == "work")`), not `tag == "work"`.
 - `memo_list_memos` returns only top-level memos; comments are reached via
   `memo_list_memo_comments`.
-- The seed defines no memo views and no attachments, so `memo_view_list_memo_views`
+- The seed defines no memo views and no attachments, so `user_list_memo_views`
   and the attachment tools return empty sets against a fresh seed. Add seed rows
   before writing questions that depend on them.

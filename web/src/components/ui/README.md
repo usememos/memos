@@ -24,7 +24,7 @@ Color comes from the semantic OKLCH tokens documented in
 
 | Component | variant | size / shape | Notes |
 | --- | --- | --- | --- |
-| **Button** | default · destructive · outline · secondary · ghost · link | size: default · sm · lg · icon · **icon-sm** | `icon-sm` (`size-6`) is local — for dense/compact icon buttons. Auto-sizes unsized `svg` children to `size-4`. |
+| **Button** | default · destructive · outline · secondary · ghost · link · **quiet** | size: default · sm · lg · icon · **icon-compact** · **icon-sm** | Every variant carries the kit's ring-free keyboard focus (`FOCUS_VISIBLE_OUTLINE_CLASSES` from `ui/focus.ts`; raw controls import the same constant). `quiet` is local: 13px muted ink that darkens under a `bg-muted/60` hover wash, and the accent fill only for `aria-pressed`, `aria-current` or `data-popup-open`. Use it via `buttonVariants({ variant: "quiet" })` on raw `<button>`/`<a>` elements too (calendar controls, memo outline, card actions). `icon-compact` (`size-7`) is the 28px square matching `sm`'s height; `icon-sm` (`size-6`) is for dense icon buttons. Auto-sizes unsized `svg` children to `size-4`. |
 | **Badge** | default · secondary · destructive · outline · **warning** | shape: default · **pill** | `warning` + `shape` are local additions. `pill` = `rounded-full`. |
 | **Tabs** | — | variant: **segmented** · **underline** | Local component (not upstream shadcn). Context-based `Tabs`/`TabsList`/`TabsTrigger`, no Radix. `underline` relies on the consumer's own divider. |
 | **Dialog** | — | size: sm · default · lg · xl · 2xl · full | Local `size` variants + auto-focus prevention on open. |

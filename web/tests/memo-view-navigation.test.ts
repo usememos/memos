@@ -1,11 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
   createMemoNavigationState,
-  isMemoCollectionOrigin,
   isMemoDetailPath,
   isMemoResourcePath,
   resolveMemoDetailOrigin,
-  resolveMemoOrigin,
   resolveMemoParentPage,
   withMemoFilter,
 } from "@/components/MemoView/navigation";
@@ -32,53 +30,27 @@ describe("memo view navigation", () => {
     ).toBe("/explore?filter=contentSearch%3Aroadmap");
   });
 
-  it("marks collection cards as preserving the remembered scope", () => {
-    expect(resolveMemoOrigin({ pathname: "/explore", search: "?filter=tagSearch%3Awork", memoName: "memos/123" })).toEqual({
-      parentPage: "/explore?filter=tagSearch%3Awork",
-      parentScope: "preserve",
-    });
+  it("keeps a filtered Profile origin intact", () => {
+    expect(resolveMemoParentPage({ pathname: "/u/alice", search: "?filter=tagSearch%3Awork", memoName: "memos/123" })).toBe(
+      "/u/alice?filter=tagSearch%3Awork",
+    );
   });
 
-  it("marks Profile cards as global without losing their Profile origin", () => {
-    expect(resolveMemoOrigin({ pathname: "/u/alice", search: "?view=map", memoName: "memos/123" })).toEqual({
-      parentPage: "/u/alice?view=map",
-      parentScope: "all",
-    });
+  it("uses Home for direct and shared resource entries", () => {
+    expect(resolveMemoDetailOrigin(undefined)).toBe("/");
+    expect(resolveMemoDetailOrigin({ unrelated: true })).toBe("/");
   });
 
-  it("uses an All Home origin for direct and shared resource entries", () => {
-    expect(resolveMemoDetailOrigin(undefined)).toEqual({ parentPage: "/", parentScope: "all" });
-    expect(resolveMemoDetailOrigin({ unrelated: true })).toEqual({ parentPage: "/", parentScope: "all" });
-  });
-
-  it("uses a user-level Archived origin without changing the remembered Space", () => {
-    expect(resolveMemoDetailOrigin(undefined, { memoArchived: true })).toEqual({ parentPage: "/archived", parentScope: "preserve" });
+  it("uses the user archive for a direct entry to an archived memo", () => {
+    expect(resolveMemoDetailOrigin(undefined, { memoArchived: true })).toBe("/archived");
   });
 
   it("keeps an explicit origin ahead of the archived fallback", () => {
-    expect(resolveMemoDetailOrigin(createMemoNavigationState("/u/alice", "all"), { memoArchived: true })).toEqual({
-      parentPage: "/u/alice",
-      parentScope: "all",
-    });
+    expect(resolveMemoDetailOrigin(createMemoNavigationState("/u/alice"), { memoArchived: true })).toBe("/u/alice");
   });
 
-  it("round-trips an explicit origin policy through router state", () => {
-    const state = createMemoNavigationState("/", "preserve");
-    expect(resolveMemoDetailOrigin(state)).toEqual({ parentPage: "/", parentScope: "preserve" });
-  });
-
-  it("infers policy for legacy from-only router state", () => {
-    expect(resolveMemoDetailOrigin({ from: "/archived" })).toEqual({ parentPage: "/archived", parentScope: "preserve" });
-    expect(resolveMemoDetailOrigin({ from: "/u/alice" })).toEqual({ parentPage: "/u/alice", parentScope: "all" });
-  });
-
-  it.each([
-    "/",
-    "/explore?filter=tagSearch%3Awork",
-    "/archived",
-    "/attachments",
-  ])("recognizes %s as a remembered collection origin", (page) => {
-    expect(isMemoCollectionOrigin(page)).toBe(true);
+  it("round-trips an explicit origin through router state", () => {
+    expect(resolveMemoDetailOrigin(createMemoNavigationState("/explore?filter=tagSearch%3Awork"))).toBe("/explore?filter=tagSearch%3Awork");
   });
 
   it.each([
@@ -116,12 +88,12 @@ describe("memo view navigation", () => {
   });
 
   it("replaces the filter without dropping other origin query parameters", () => {
-    expect(withMemoFilter("/u/alice?view=memos&filter=old#section", "tagSearch:design")).toBe(
-      "/u/alice?view=memos&filter=tagSearch%3Adesign",
+    expect(withMemoFilter("/u/alice?sort=displayTime&filter=old#section", "tagSearch:design")).toBe(
+      "/u/alice?sort=displayTime&filter=tagSearch%3Adesign",
     );
   });
 
-  it("returns a Profile map origin to its memo list when applying a filter", () => {
-    expect(withMemoFilter("/u/alice?view=map", "tagSearch:design")).toBe("/u/alice?filter=tagSearch%3Adesign");
+  it("applies a filter within the originating Profile", () => {
+    expect(withMemoFilter("/u/alice", "tagSearch:design")).toBe("/u/alice?filter=tagSearch%3Adesign");
   });
 });

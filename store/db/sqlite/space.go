@@ -7,9 +7,11 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
+	"google.golang.org/protobuf/encoding/protojson"
 	msqlite "modernc.org/sqlite"
 	sqlite3 "modernc.org/sqlite/lib"
 
+	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
 
@@ -23,16 +25,29 @@ func (d *DB) CreateSpace(ctx context.Context, create *store.Space, creatorID int
 		return nil, err
 	}
 
-	fields := []string{"uid", "title", "description"}
-	values := []string{"?", "?", "?"}
-	args := []any{create.UID, create.Title, create.Description}
-	query := "INSERT INTO space (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(values, ", ") + ") RETURNING id, uid, title, description"
+	payload := "{}"
+	if create.Payload != nil {
+		data, err := protojson.Marshal(create.Payload)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to marshal space payload")
+		}
+		payload = string(data)
+	}
+	fields := []string{"uid", "title", "description", "payload"}
+	values := []string{"?", "?", "?", "?"}
+	args := []any{create.UID, create.Title, create.Description, payload}
+	query := "INSERT INTO space (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(values, ", ") + ") RETURNING id, uid, title, description, payload"
 	space := &store.Space{}
-	if err := tx.QueryRowContext(ctx, query, args...).Scan(&space.ID, &space.UID, &space.Title, &space.Description); err != nil {
+	var payloadBytes []byte
+	if err := tx.QueryRowContext(ctx, query, args...).Scan(&space.ID, &space.UID, &space.Title, &space.Description, &payloadBytes); err != nil {
 		if isSQLiteUniqueViolation(err) {
 			return nil, store.ErrSpaceAlreadyExists
 		}
 		return nil, errors.Wrap(err, "failed to create space")
+	}
+	space.Payload = &storepb.SpacePayload{}
+	if err := protojsonUnmarshaler.Unmarshal(payloadBytes, space.Payload); err != nil {
+		return nil, errors.Wrap(err, "failed to unmarshal space payload")
 	}
 	if _, err := tx.ExecContext(ctx, "INSERT INTO space_member (space_id, user_id, status, role) VALUES (?, ?, ?, ?)", space.ID, creatorID, store.SpaceMemberStatusActive, store.SpaceMemberRoleAdmin); err != nil {
 		return nil, errors.Wrap(err, "failed to create initial space admin")
@@ -47,7 +62,7 @@ func (d *DB) CreateSpace(ctx context.Context, create *store.Space, creatorID int
 
 func (d *DB) ListSpaces(ctx context.Context, find *store.FindSpace) ([]*store.Space, error) {
 	where, args := []string{"1 = 1"}, []any{}
-	selectFields := "space.id, space.uid, space.title, space.description"
+	selectFields := "space.id, space.uid, space.title, space.description, space.payload"
 	joins := ""
 	groupBy := ""
 	if find.ID != nil {
@@ -72,7 +87,7 @@ func (d *DB) ListSpaces(ctx context.Context, find *store.FindSpace) ([]*store.Sp
 			JOIN user active_user ON active_user.id = active_member.user_id AND active_user.row_status = 'NORMAL'`
 		where = append(where, "viewer_member.user_id = ?", "viewer_member.status = 'ACTIVE'", "viewer_member.role IN ('ADMIN', 'USER')", "viewer_user.row_status = 'NORMAL'")
 		args = append(args, *find.MemberUserID)
-		groupBy = " GROUP BY space.id, space.uid, space.title, space.description, viewer_member.role"
+		groupBy = " GROUP BY space.id, space.uid, space.title, space.description, space.payload, viewer_member.role"
 	}
 	query := "SELECT " + selectFields + " FROM space" + joins + " WHERE " + strings.Join(where, " AND ") + groupBy + " ORDER BY space.id DESC"
 	query = appendSQLiteLimit(query, find.Limit, find.Offset)
@@ -84,12 +99,17 @@ func (d *DB) ListSpaces(ctx context.Context, find *store.FindSpace) ([]*store.Sp
 	spaces := []*store.Space{}
 	for rows.Next() {
 		space := &store.Space{}
-		scanTargets := []any{&space.ID, &space.UID, &space.Title, &space.Description}
+		var payloadBytes []byte
+		scanTargets := []any{&space.ID, &space.UID, &space.Title, &space.Description, &payloadBytes}
 		if find.MemberUserID != nil {
 			scanTargets = append(scanTargets, &space.CurrentUserRole, &space.MemberCount)
 		}
 		if err := rows.Scan(scanTargets...); err != nil {
 			return nil, err
+		}
+		space.Payload = &storepb.SpacePayload{}
+		if err := protojsonUnmarshaler.Unmarshal(payloadBytes, space.Payload); err != nil {
+			return nil, errors.Wrap(err, "failed to unmarshal space payload")
 		}
 		spaces = append(spaces, space)
 	}
@@ -112,12 +132,24 @@ func (d *DB) UpdateSpace(ctx context.Context, update *store.UpdateSpace, actorUs
 	if update.Description != nil {
 		sets, args = append(sets, "description = ?"), append(args, *update.Description)
 	}
+	if update.Payload != nil {
+		data, err := protojson.Marshal(update.Payload)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to marshal space payload")
+		}
+		sets, args = append(sets, "payload = ?"), append(args, string(data))
+	}
 	args = append(args, update.ID)
 	query := `UPDATE space SET ` + strings.Join(sets, ", ") + ` WHERE id = ?
-		RETURNING id, uid, title, description`
+		RETURNING id, uid, title, description, payload`
 	space := &store.Space{}
-	if err := tx.QueryRowContext(ctx, query, args...).Scan(&space.ID, &space.UID, &space.Title, &space.Description); err != nil {
+	var payloadBytes []byte
+	if err := tx.QueryRowContext(ctx, query, args...).Scan(&space.ID, &space.UID, &space.Title, &space.Description, &payloadBytes); err != nil {
 		return nil, err
+	}
+	space.Payload = &storepb.SpacePayload{}
+	if err := protojsonUnmarshaler.Unmarshal(payloadBytes, space.Payload); err != nil {
+		return nil, errors.Wrap(err, "failed to unmarshal space payload")
 	}
 	if err := populateSQLiteSpaceSummary(ctx, tx, space, actorUserID); err != nil {
 		return nil, err

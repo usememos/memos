@@ -1,9 +1,10 @@
 import { isValidElement } from "react";
-import type { RouteObject } from "react-router-dom";
+import { matchRoutes, type RouteObject } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 import { ROUTES, routeConfig } from "@/router";
 import { RequireAuthRoute, RequireFullInitializationRoute, RequireGuestRoute, RequireInstanceInitializationRoute } from "@/router/guards";
-import { CALENDAR_ROUTE_PATTERN } from "@/router/routes";
+import { CALENDAR_ROUTE_PATTERN, SPACE_ROUTE_PATTERN } from "@/router/routes";
+import { SpaceRoute } from "@/router/SpaceRoute";
 
 // Walk the nested route config and find the first route with the given path,
 // starting from the provided roots. Returns undefined if nothing matches.
@@ -40,6 +41,23 @@ function hasAncestorOfType(routes: RouteObject[], path: string, guardType: unkno
 }
 
 describe("router configuration", () => {
+  it.each([
+    "/spaces/product",
+    "/spaces/product/explore",
+    "/spaces/product/calendar/2026/09",
+    "/spaces/product/attachments",
+  ])("gates %s with authentication and Space access", (path) => {
+    const types = matchRoutes(routeConfig, path)?.map(({ route }) => elementType(route));
+    expect(types).toContain(RequireAuthRoute);
+    expect(types).toContain(SpaceRoute);
+    expect(findByPath(routeConfig, SPACE_ROUTE_PATTERN)).toBeDefined();
+  });
+  it("keeps unknown Space subroutes outside collection pages", () => {
+    const matches = matchRoutes(routeConfig, "/spaces/product/unknown");
+    expect(matches?.at(-1)?.route.path).toBe("*");
+    expect(matches?.map(({ route }) => elementType(route))).not.toContain(SpaceRoute);
+  });
+
   it("keeps /auth/callback outside the guest-only guard", () => {
     // Regression guard for issue #5846 follow-up: an authenticated tab elsewhere
     // must not short-circuit the OAuth callback via RequireGuestRoute.

@@ -89,9 +89,9 @@ describe("useSidebarWidth", () => {
 
     resizeViewportTo(700);
 
-    // 40% of 700, and the stored preference is left alone so it can come back.
-    expect(result.current.width).toBe(280);
-    expect(result.current.maxWidth).toBe(280);
+    // 40% of 700 is 280, floored at the dual-column minimum; the stored preference is left alone.
+    expect(result.current.width).toBe(SIDEBAR_MIN_WIDTH);
+    expect(result.current.maxWidth).toBe(SIDEBAR_MIN_WIDTH);
     expect(localStorage.getItem(STORAGE_KEY)).toBe(String(SIDEBAR_MAX_WIDTH));
   });
 
@@ -100,7 +100,7 @@ describe("useSidebarWidth", () => {
     const { result } = renderHook(() => useSidebarWidth());
 
     resizeViewportTo(700);
-    expect(result.current.width).toBe(280);
+    expect(result.current.width).toBe(SIDEBAR_MIN_WIDTH);
 
     resizeViewportTo(WIDE_VIEWPORT);
     expect(result.current.width).toBe(SIDEBAR_MAX_WIDTH);

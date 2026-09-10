@@ -51,7 +51,6 @@ export const readQuickFindQuery = (filters: MemoFilter[]): { query: string; mode
 export interface QuickFindSubmission {
   filters: MemoFilter[];
   destination?: string;
-  switchToAll: boolean;
 }
 
 export const resolveQuickFindSubmission = (
@@ -65,7 +64,6 @@ export const resolveQuickFindSubmission = (
   return {
     filters,
     destination: routePolicy.searchDestination ? `${routePolicy.searchDestination}${getFilterSearch(filters)}` : undefined,
-    switchToAll: routePolicy.searchScope === "all",
   };
 };
 
@@ -84,7 +82,7 @@ const QuickFindDialog = () => {
   const currentUser = useCurrentUser();
   const { data: memoViews = [] } = useMemoViews(currentUser?.name);
   const { filters, setFilters, setMemoView, memoView } = useMemoFilterContext();
-  const { clearSelectedSpace, duplicateSpaceTitles, selectedSpace, selectedSpaceName } = useSpaceContext();
+  const { duplicateSpaceTitles, selectedSpace, selectedSpaceName } = useSpaceContext();
   const { quickFindOpen, setQuickFindOpen } = useAppSidebar();
   const [query, setQuery] = useState("");
   const [mode, setMode] = useState<QuickFindMode>("text");
@@ -93,7 +91,6 @@ const QuickFindDialog = () => {
   const selectedMemoView = viewApplies ? memoViews.find((item) => getMemoViewId(item.name) === memoView) : undefined;
   const lensLabel =
     viewApplies && memoView === BUILTIN_TASKS_VIEW_ID ? t("common.tasks") : selectedMemoView?.title || getScopeLabel(location.pathname, t);
-  const routePolicy = getRouteActionPolicy(location.pathname);
   const selectedSpaceUid = selectedSpaceName ? extractSpaceUidFromName(selectedSpaceName) : "";
   const selectedSpaceUidDisplay = selectedSpaceName ? formatSpaceUidForDisplay(selectedSpaceName) : "";
   const showSelectedSpaceUid = selectedSpace ? duplicateSpaceTitles.has(selectedSpace.title) : Boolean(selectedSpaceName);
@@ -103,10 +100,8 @@ const QuickFindDialog = () => {
   const compactSelectedSpaceLabel = `${selectedSpace?.title || t("space.current")}${
     showSelectedSpaceUid && selectedSpaceUidDisplay ? ` (${selectedSpaceUidDisplay})` : ""
   }`;
-  const scopeLabel =
-    routePolicy.searchScope === "remembered-collection" && selectedSpaceName ? `${selectedSpaceLabel} · ${lensLabel}` : lensLabel;
-  const compactScopeLabel =
-    routePolicy.searchScope === "remembered-collection" && selectedSpaceName ? `${compactSelectedSpaceLabel} · ${lensLabel}` : lensLabel;
+  const scopeLabel = selectedSpaceName ? `${selectedSpaceLabel} · ${lensLabel}` : lensLabel;
+  const compactScopeLabel = selectedSpaceName ? `${compactSelectedSpaceLabel} · ${lensLabel}` : lensLabel;
 
   useEffect(() => {
     if (!quickFindOpen) return;
@@ -118,17 +113,11 @@ const QuickFindDialog = () => {
   const submitQuery = () => {
     const submission = resolveQuickFindSubmission(location.pathname, query, filters, mode);
 
-    if (submission.switchToAll) {
-      // This is an explicit cross-Space action, so switch the collection state
-      // to All without inserting an intermediate Home history entry.
-      clearSelectedSpace();
-    }
-
-    setFilters(submission.filters);
-
     if (submission.destination) {
       setMemoView(undefined);
       navigate(submission.destination);
+    } else {
+      setFilters(submission.filters);
     }
 
     setQuickFindOpen(false);

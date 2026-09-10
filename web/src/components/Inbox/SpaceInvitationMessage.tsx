@@ -164,7 +164,7 @@ function SpaceInvitationMessage({ notification }: Props) {
 
           <div className="flex flex-col gap-3 rounded-lg border border-border/60 bg-muted/20 p-3 sm:flex-row sm:items-center">
             <div className="flex min-w-0 flex-1 items-center gap-3">
-              <SpaceMark size="lg" />
+              <SpaceMark icon={space.icon} size="lg" />
               <div className="min-w-0 flex-1">
                 <div className="flex min-w-0 flex-wrap items-center gap-1.5">
                   <span className="truncate text-sm font-medium text-foreground/95">{space.title}</span>

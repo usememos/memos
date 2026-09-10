@@ -11,6 +11,7 @@ import { loadTheme } from "@/utils/theme";
 import LocaleSelect from "../LocaleSelect";
 import ThemeSelect from "../ThemeSelect";
 import VisibilityIcon from "../VisibilityIcon";
+import KeyboardShortcutsDialog from "./KeyboardShortcutsDialog";
 import SettingGroup from "./SettingGroup";
 import { SettingList, SettingListItem } from "./SettingList";
 import SettingSection from "./SettingSection";
@@ -128,6 +129,18 @@ const PreferencesSection = () => {
                 ))}
               </SelectContent>
             </Select>
+          </SettingListItem>
+        </SettingList>
+      </SettingGroup>
+
+      <SettingGroup
+        title={t("setting.shortcuts.title")}
+        description={t("setting.shortcuts.description")}
+        showSeparator
+      >
+        <SettingList>
+          <SettingListItem label={t("setting.shortcuts.open")} description={t("setting.shortcuts.hint")}>
+            <KeyboardShortcutsDialog />
           </SettingListItem>
         </SettingList>
       </SettingGroup>

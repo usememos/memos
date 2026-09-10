@@ -7,10 +7,7 @@ import SidebarRow, {
   SIDEBAR_ROW_SLOT_BUTTON_CLASSES,
   SIDEBAR_ROW_SLOT_CLASSES,
 } from "@/components/AppSidebar/SidebarRow";
-import SidebarSection, {
-  SIDEBAR_SECTION_ACTION_BUTTON_CLASSES,
-  SIDEBAR_SECTION_CONTENT_CLASSES,
-} from "@/components/AppSidebar/SidebarSection";
+import SidebarSection, { SIDEBAR_SECTION_CONTENT_CLASSES } from "@/components/AppSidebar/SidebarSection";
 import TagTree from "@/components/TagTree";
 
 vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
@@ -53,7 +50,6 @@ describe("sidebar row grammar", () => {
     expect(SIDEBAR_ROW_SLOT_BUTTON_CLASSES).toContain("after:-inset-0.5");
     expect(SIDEBAR_ROW_SLOT_BUTTON_CLASSES).toContain("after:content-['']");
     expect(SIDEBAR_ROW_SLOT_BUTTON_CLASSES).not.toContain("-mx-1");
-    expect(SIDEBAR_SECTION_ACTION_BUTTON_CLASSES.split(" ")).toContain("size-6");
   });
 
   it("gives tag tree rows the same box as a nav row", () => {

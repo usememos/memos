@@ -3,7 +3,6 @@ import { type ComponentType, forwardRef, useCallback, useImperativeHandle, useRe
 import { loadMemoEditor } from "@/components/MemoEditor/loader";
 import type { MemoEditorProps } from "@/components/MemoEditor/types";
 import MemoView from "@/components/MemoView";
-import type { MemoOriginScope } from "@/components/MemoView/navigation";
 import { Button } from "@/components/ui/button";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { MEMO_COMMENTS_ANCHOR_ID } from "@/lib/memo-comments";
@@ -17,7 +16,6 @@ interface Props {
   comments: Memo[];
   commentCount?: number;
   parentPage?: string;
-  parentScope?: MemoOriginScope;
   hasMoreComments?: boolean;
   isFetchingMoreComments?: boolean;
   onLoadMoreComments?: () => void;
@@ -29,19 +27,7 @@ export interface MemoCommentSectionHandle {
 }
 
 const MemoCommentSection = forwardRef<MemoCommentSectionHandle, Props>(
-  (
-    {
-      memo,
-      comments,
-      commentCount = comments.length,
-      parentPage,
-      parentScope,
-      hasMoreComments,
-      isFetchingMoreComments,
-      onLoadMoreComments,
-    },
-    ref,
-  ) => {
+  ({ memo, comments, commentCount = comments.length, parentPage, hasMoreComments, isFetchingMoreComments, onLoadMoreComments }, ref) => {
     const t = useTranslate();
     const currentUser = useCurrentUser();
     const [showEditor, setShowEditor] = useState(false);
@@ -154,7 +140,7 @@ const MemoCommentSection = forwardRef<MemoCommentSectionHandle, Props>(
           )}
           {comments.map((comment) => (
             <div className="w-full" key={comment.name} id={extractMemoIdFromName(comment.name)}>
-              <MemoView memo={comment} parentPage={parentPage} parentScope={parentScope} showCreator showSpace compact />
+              <MemoView memo={comment} parentPage={parentPage} showCreator showSpace compact />
             </div>
           ))}
           {hasMoreComments && (

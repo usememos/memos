@@ -1046,6 +1046,8 @@
     }
   },
   "space": {
+    "unavailable": "空間不存在或你沒有存取權限。",
+    "back-to-memos": "返回 Memos",
     "create": "建立空間",
     "create-description": "建立供備忘錄與成員共用的空間。",
     "create-success": "已建立空間",

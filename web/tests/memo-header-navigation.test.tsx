@@ -12,9 +12,10 @@ vi.mock("@/components/RelativeTime", () => ({
   default: () => <>time</>,
 }));
 
+// The menu owns its trigger's look now (see memo-action-menu.test.tsx); the header only places it.
 vi.mock("@/components/MemoActionMenu", () => ({
-  default: ({ className }: { className?: string }) => (
-    <button type="button" aria-label="memo-actions" className={className}>
+  default: () => (
+    <button type="button" aria-label="memo-actions">
       Memo actions
     </button>
   ),
@@ -61,7 +62,6 @@ vi.mock("@/components/MemoView/MemoViewContext", () => ({
     creator: state.creator,
     currentUser: state.currentUser,
     parentPage: "/explore?filter=tagSearch%3Awork",
-    parentScope: "preserve",
     isArchived: false,
     readonly: false,
     openEditor: vi.fn(),
@@ -109,16 +109,19 @@ describe("MemoHeader navigation", () => {
 
     expect(actionRail).toHaveClass("items-center", "gap-1");
     expect(reaction).toHaveClass("sm:group-focus-within:flex");
-    for (const action of [reaction, actions]) {
-      expect(action).toHaveClass(
-        "size-6",
-        "rounded-md",
-        "hover:bg-accent",
-        "hover:text-foreground",
-        "focus-visible:ring-2",
-        "data-popup-open:bg-accent",
-      );
-    }
+    // The reaction chip gives up its round bordered look for the header's quiet square.
+    expect(reaction).toHaveClass(
+      "size-6",
+      "rounded-md",
+      "border-none",
+      "text-muted-foreground/70",
+      "hover:bg-muted/60",
+      "hover:text-foreground",
+      "focus-visible:outline-2",
+      "data-popup-open:bg-accent",
+    );
+    expect(reaction).not.toHaveClass("rounded-full");
+    expect(reaction.className).not.toMatch(/ring-/);
   });
 
   it.each([false, true])("uses a keyboard-operable timestamp and preserves origin when showCreator=%s", (showCreator) => {
@@ -138,9 +141,7 @@ describe("MemoHeader navigation", () => {
     expect(timestamp).toHaveFocus();
 
     fireEvent.click(timestamp);
-    expect(screen.getByTestId("location")).toHaveTextContent(
-      '/memos/123|{"from":"/explore?filter=tagSearch%3Awork","fromScope":"preserve"}',
-    );
+    expect(screen.getByTestId("location")).toHaveTextContent('/memos/123|{"from":"/explore?filter=tagSearch%3Awork"}');
   });
 
   it.each([false, true])("keeps the Space pill beside the timestamp when showCreator=%s", (showCreator) => {

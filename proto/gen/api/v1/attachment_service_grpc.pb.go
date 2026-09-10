@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	AttachmentService_CreateAttachment_FullMethodName       = "/memos.api.v1.AttachmentService/CreateAttachment"
+	AttachmentService_UploadAttachment_FullMethodName       = "/memos.api.v1.AttachmentService/UploadAttachment"
 	AttachmentService_ListAttachments_FullMethodName        = "/memos.api.v1.AttachmentService/ListAttachments"
 	AttachmentService_GetAttachment_FullMethodName          = "/memos.api.v1.AttachmentService/GetAttachment"
 	AttachmentService_UpdateAttachment_FullMethodName       = "/memos.api.v1.AttachmentService/UpdateAttachment"
@@ -34,6 +35,11 @@ const (
 type AttachmentServiceClient interface {
 	// CreateAttachment creates a new attachment.
 	CreateAttachment(ctx context.Context, in *CreateAttachmentRequest, opts ...grpc.CallOption) (*Attachment, error)
+	// UploadAttachment uploads a file in bounded chunks. The first call carries
+	// the spec and returns an upload_id; later calls carry that upload_id.
+	// Uploads are bound to the authenticated user, expire after 30 minutes of
+	// inactivity, and do not survive a server restart.
+	UploadAttachment(ctx context.Context, in *UploadAttachmentRequest, opts ...grpc.CallOption) (*UploadAttachmentResponse, error)
 	// ListAttachments lists all attachments.
 	ListAttachments(ctx context.Context, in *ListAttachmentsRequest, opts ...grpc.CallOption) (*ListAttachmentsResponse, error)
 	// GetAttachment returns an attachment by name.
@@ -58,6 +64,16 @@ func (c *attachmentServiceClient) CreateAttachment(ctx context.Context, in *Crea
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Attachment)
 	err := c.cc.Invoke(ctx, AttachmentService_CreateAttachment_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *attachmentServiceClient) UploadAttachment(ctx context.Context, in *UploadAttachmentRequest, opts ...grpc.CallOption) (*UploadAttachmentResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UploadAttachmentResponse)
+	err := c.cc.Invoke(ctx, AttachmentService_UploadAttachment_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -120,6 +136,11 @@ func (c *attachmentServiceClient) BatchDeleteAttachments(ctx context.Context, in
 type AttachmentServiceServer interface {
 	// CreateAttachment creates a new attachment.
 	CreateAttachment(context.Context, *CreateAttachmentRequest) (*Attachment, error)
+	// UploadAttachment uploads a file in bounded chunks. The first call carries
+	// the spec and returns an upload_id; later calls carry that upload_id.
+	// Uploads are bound to the authenticated user, expire after 30 minutes of
+	// inactivity, and do not survive a server restart.
+	UploadAttachment(context.Context, *UploadAttachmentRequest) (*UploadAttachmentResponse, error)
 	// ListAttachments lists all attachments.
 	ListAttachments(context.Context, *ListAttachmentsRequest) (*ListAttachmentsResponse, error)
 	// GetAttachment returns an attachment by name.
@@ -142,6 +163,9 @@ type UnimplementedAttachmentServiceServer struct{}
 
 func (UnimplementedAttachmentServiceServer) CreateAttachment(context.Context, *CreateAttachmentRequest) (*Attachment, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateAttachment not implemented")
+}
+func (UnimplementedAttachmentServiceServer) UploadAttachment(context.Context, *UploadAttachmentRequest) (*UploadAttachmentResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method UploadAttachment not implemented")
 }
 func (UnimplementedAttachmentServiceServer) ListAttachments(context.Context, *ListAttachmentsRequest) (*ListAttachmentsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListAttachments not implemented")
@@ -193,6 +217,24 @@ func _AttachmentService_CreateAttachment_Handler(srv interface{}, ctx context.Co
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AttachmentServiceServer).CreateAttachment(ctx, req.(*CreateAttachmentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AttachmentService_UploadAttachment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UploadAttachmentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AttachmentServiceServer).UploadAttachment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AttachmentService_UploadAttachment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AttachmentServiceServer).UploadAttachment(ctx, req.(*UploadAttachmentRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -297,6 +339,10 @@ var AttachmentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateAttachment",
 			Handler:    _AttachmentService_CreateAttachment_Handler,
+		},
+		{
+			MethodName: "UploadAttachment",
+			Handler:    _AttachmentService_UploadAttachment_Handler,
 		},
 		{
 			MethodName: "ListAttachments",

@@ -1,4 +1,25 @@
 {
+  "map": {
+    "resize-panel": "调整地点面板宽度",
+    "collapse": "收起面板",
+    "expand": "展开面板",
+    "selection": "选中的 Memo",
+    "loaded": "已加载 {{count}} 条",
+    "fit-all": "查看全部结果",
+    "zoom-in": "放大",
+    "zoom-out": "缩小",
+    "load-error": "未能加载全部 Memo。",
+    "tile-error": "地图加载失败，你仍可以阅读 Memo。",
+    "empty": "还没有带位置的 Memo",
+    "empty-hint": "给 Memo 添加位置后，它就会显示在这里。",
+    "no-results": "没有符合条件的 Memo",
+    "no-results-hint": "试试清除筛选条件。",
+    "clear-filters": "清除筛选",
+    "loading": "正在加载 Memo…",
+    "new-here": "在这里记录",
+    "saved-outside-filter": "已保存，这条 Memo 不在当前地图结果中。",
+    "open-memo": "打开 Memo"
+  },
   "about": {
     "api-docs": "API 文档",
     "api-docs-note": "REST 与 gRPC 参考",
@@ -514,6 +535,31 @@
       "transcription-title": "语音转写",
       "transcription-warning-no-key": "所选供应商未设置 API 密钥。请在上方编辑集成信息以添加密钥。"
     },
+    "shortcuts": {
+      "title": "键盘快捷键",
+      "description": "加快导航、搜索、编辑器等页面的操作。",
+      "open": "查看快捷键",
+      "hint": "打开主要键盘快捷键列表。",
+      "group-nav": "导航",
+      "group-search": "搜索",
+      "group-editor": "编辑器",
+      "group-misc": "其它视图",
+      "focus-search": "聚焦导航页搜索框",
+      "focus-search-slash": "聚焦搜索（导航页）",
+      "move-cards": "移动高亮卡片",
+      "open-card": "打开高亮卡片",
+      "clear-search": "清除搜索",
+      "sidebar-search": "聚焦侧栏搜索框",
+      "submit-search": "执行侧栏搜索",
+      "quick-find-enter": "执行快速查找",
+      "quick-find-newline": "表达式模式换行",
+      "editor-save": "保存当前备忘录",
+      "preview-prev": "预览中上一张 / 下一张图片",
+      "calendar-move": "移动日历日期",
+      "calendar-edges": "本周第一天 / 最后一天",
+      "calendar-close": "关闭日期面板",
+      "resize-sidebar": "调整侧栏宽度"
+    },
     "preference": {
       "appearance-description": "选择当前账号使用的界面语言和外观主题。",
       "appearance-title": "外观",
@@ -966,5 +1012,21 @@
       "description": "这些文件从未附加到任何备忘。可在此查看或删除。",
       "title": "未关联的上传"
     }
+  },
+  "space": {
+    "icon": {
+      "change": "更改空间图标",
+      "kind": "图标类型",
+      "icons": "图标",
+      "emoji": "表情",
+      "search-icons": "搜索图标…",
+      "search-emoji": "搜索或粘贴表情…",
+      "no-results": "没有匹配项",
+      "emoji-help": "选择常用表情，或粘贴你喜欢的表情。",
+      "reset": "恢复默认",
+      "use-emoji": "使用 {{emoji}}"
+    },
+    "unavailable": "空间不存在或你没有访问权限。",
+    "back-to-memos": "返回 Memos"
   }
 }

@@ -1,4 +1,25 @@
 {
+  "map": {
+    "resize-panel": "Resize location panel",
+    "collapse": "Collapse panel",
+    "expand": "Expand panel",
+    "selection": "Selected memos",
+    "loaded": "{{count}} loaded",
+    "fit-all": "Show all results",
+    "zoom-in": "Zoom in",
+    "zoom-out": "Zoom out",
+    "load-error": "Could not load all memos.",
+    "tile-error": "The map could not load. Your memos are still available.",
+    "empty": "No memos with a location yet",
+    "empty-hint": "Add a location to a memo to see it here.",
+    "no-results": "No matching memos",
+    "no-results-hint": "Try clearing your filters.",
+    "clear-filters": "Clear filters",
+    "loading": "Loading memos…",
+    "new-here": "Write here",
+    "saved-outside-filter": "Saved. This memo is outside the current map results.",
+    "open-memo": "Open memo"
+  },
   "about": {
     "api-docs": "API Docs",
     "api-docs-note": "REST and gRPC reference",
@@ -349,6 +370,19 @@
     "content-syntax": "Content syntax"
   },
   "memo": {
+    "parent-loading": "Loading original memo…",
+    "parent-load-error": "Couldn’t load the original memo.",
+    "parent-unavailable": "Original memo unavailable",
+    "parent-unavailable-description": "It may have been deleted or you may no longer have access.",
+    "move": {
+      "title": "Move to Space",
+      "description": "Choose where this memo belongs and who can read it.",
+      "unassigned": "Unassigned",
+      "confirm": "Move",
+      "success": "Memo moved",
+      "space-audience": "Members of {{space}} will be able to read this memo.",
+      "history": "Existing reactions stay with this memo. Comments and linked memos keep their own access rules."
+    },
     "archived-at": "Archived at",
     "back-to": "Back to {{source}}",
     "click-to-hide-sensitive-content": "Click to hide sensitive content",
@@ -823,6 +857,31 @@
       "use-tls": "Use STARTTLS",
       "use-tls-description": "Upgrade the SMTP connection with STARTTLS. Keep this on for Gmail with port 587."
     },
+    "shortcuts": {
+      "title": "Keyboard shortcuts",
+      "description": "Speed up Navigation, search, the editor, and other views.",
+      "open": "View shortcuts",
+      "hint": "Opens a list of the main keyboard shortcuts.",
+      "group-nav": "Navigation",
+      "group-search": "Search",
+      "group-editor": "Editor",
+      "group-misc": "Other views",
+      "focus-search": "Focus the Navigation search box",
+      "focus-search-slash": "Focus search (Navigation)",
+      "move-cards": "Move the highlighted card",
+      "open-card": "Open the highlighted card",
+      "clear-search": "Clear search",
+      "sidebar-search": "Focus the sidebar search box",
+      "submit-search": "Apply the sidebar search",
+      "quick-find-enter": "Run Quick Find search",
+      "quick-find-newline": "New line in expression mode",
+      "editor-save": "Save the current memo",
+      "preview-prev": "Previous / next image in preview",
+      "calendar-move": "Move the calendar day",
+      "calendar-edges": "First / last day of the week",
+      "calendar-close": "Close the day panel",
+      "resize-sidebar": "Resize the sidebar"
+    },
     "preference": {
       "appearance-description": "Choose how the app looks and which language it uses for your account.",
       "appearance-title": "Appearance",
@@ -841,6 +900,7 @@
       "uploads-privacy-title": "Uploads & privacy"
     },
     "memo-view": {
+      "change-icon": "Change view icon",
       "delete-confirm": "Are you sure you want to delete view `{{title}}`?",
       "delete-success": "View `{{title}}` deleted successfully"
     },
@@ -1070,6 +1130,20 @@
     }
   },
   "space": {
+    "icon": {
+      "change": "Change space icon",
+      "kind": "Icon type",
+      "icons": "Icons",
+      "emoji": "Emoji",
+      "search-icons": "Search icons…",
+      "search-emoji": "Search or paste emoji…",
+      "no-results": "No matches",
+      "emoji-help": "Choose a common emoji or paste your own.",
+      "reset": "Reset to default",
+      "use-emoji": "Use {{emoji}}"
+    },
+    "unavailable": "This space does not exist or you don’t have access to it.",
+    "back-to-memos": "Back to Memos",
     "create": "Create space",
     "create-description": "Create a shared place for memos and members.",
     "create-success": "Space created",
