@@ -18,9 +18,10 @@
  * then refresh the cache. On failure the cache is rolled back to the snapshot.
  */
 
+import { State } from "@/types/proto/api/v1/common_pb";
 import { markInitialized, readCachedConfig, readPreSaveSnapshot, writeCache, writePreSaveSnapshot } from "./cache";
 import { pruneTombstones } from "./merge";
-import { createConfigMemo, deleteConfigMemo, extractConfigFromMemo, findConfigMemo, updateConfigMemo } from "./storage";
+import { archiveConfigMemo, createConfigMemo, deleteConfigMemo, extractConfigFromMemo, findConfigMemo, updateConfigMemo } from "./storage";
 import { createSeedConfig, type NavConfig } from "./types";
 
 export type NavConfigSource = "memo" | "seed" | "cache";
@@ -48,6 +49,15 @@ export const loadOrSeedConfig = async (): Promise<NavConfigState | null> => {
     if (memo) {
       const config = extractConfigFromMemo(memo);
       if (config) {
+        // Heals legacy NORMAL config memos that used to appear in the timeline.
+        if (memo.state !== State.ARCHIVED) {
+          try {
+            await archiveConfigMemo(memo.name);
+            memo.state = State.ARCHIVED;
+          } catch {
+            // Non-fatal; the config still loads.
+          }
+        }
         writeCache(config);
         return { config, memoName: memo.name, source: "memo" };
       }
@@ -73,7 +83,14 @@ export const persistConfig = async (
   const config = pruneTombstones(nextRev(next));
   if (prev.config) writePreSaveSnapshot(prev.config);
   try {
-    const memo = prev.memoName ? await updateConfigMemo(prev.memoName, config) : await createConfigMemo(config);
+    let memoName = prev.memoName;
+    if (!memoName) {
+      // Degraded/cache path has no memoName. Look up the existing config memo first
+      // so a save while the service is back does not fork a second config memo.
+      const existing = await findConfigMemo();
+      memoName = existing?.name ?? null;
+    }
+    const memo = memoName ? await updateConfigMemo(memoName, config) : await createConfigMemo(config);
     markInitialized();
     writeCache(config);
     return { config, memoName: memo.name };

@@ -62,7 +62,7 @@ describe("NavigationPage empty and error states", () => {
     renderPage();
 
     expect(await screen.findByText("No cards yet")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Reset to defaults" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Retry" })).toBeInTheDocument();
   });
 
   it("shows a retry state when the RPC fails with no cache", async () => {

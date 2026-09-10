@@ -113,13 +113,16 @@ const openDb = (): Promise<IDBDatabase> =>
 
 export const putClipBlob = async (id: string, blob: Blob): Promise<void> => {
   const db = await openDb();
-  await new Promise<void>((resolve, reject) => {
-    const tx = db.transaction(DB_STORE, "readwrite");
-    tx.objectStore(DB_STORE).put(blob, id);
-    tx.oncomplete = () => resolve();
-    tx.onerror = () => reject(tx.error ?? new Error("indexedDB put failed"));
-  });
-  db.close();
+  try {
+    await new Promise<void>((resolve, reject) => {
+      const tx = db.transaction(DB_STORE, "readwrite");
+      tx.objectStore(DB_STORE).put(blob, id);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error ?? new Error("indexedDB put failed"));
+    });
+  } finally {
+    db.close();
+  }
 };
 
 export const getClipBlob = async (id: string): Promise<Blob | null> => {

@@ -47,18 +47,23 @@ const toMemoMessage = (content: string, memoName?: string) =>
     state: State.ARCHIVED,
   });
 
-/** Finds the newest config memo server-side; no localStorage involvement. */
+/** Collect valid config memos from one list page. */
+const pickConfigMemos = (memos: Memo[]): Memo[] => memos.filter((memo) => extractConfigPayload(memo.content) !== null);
+
+/**
+ * Finds the newest config memo. Search both ARCHIVED (the intended home) and
+ * NORMAL (legacy seeds, or creates that ignored the requested state) so a
+ * visible timeline memo is reused instead of spawning another seed.
+ */
 export const findConfigMemo = async (): Promise<Memo | null> => {
-  const response = await memoServiceClient.listMemos(
-    create(ListMemosRequestSchema, {
-      pageSize: CONFIG_MEMO_PAGE_SIZE,
-      state: State.ARCHIVED,
-      filter: `content.contains("${NAV_CONFIG_MARKER_PREFIX}")`,
-    }),
-  );
+  const filter = `content.contains("${NAV_CONFIG_MARKER_PREFIX}")`;
+  const [archived, normal] = await Promise.all([
+    memoServiceClient.listMemos(create(ListMemosRequestSchema, { pageSize: CONFIG_MEMO_PAGE_SIZE, state: State.ARCHIVED, filter })),
+    memoServiceClient.listMemos(create(ListMemosRequestSchema, { pageSize: CONFIG_MEMO_PAGE_SIZE, state: State.NORMAL, filter })),
+  ]);
+  const candidates = [...pickConfigMemos(archived.memos), ...pickConfigMemos(normal.memos)];
   let newest: Memo | null = null;
-  for (const memo of response.memos) {
-    if (!extractConfigPayload(memo.content)) continue;
+  for (const memo of candidates) {
     const ts = (memo.updateTime?.seconds ?? 0n) * 1000n + BigInt(memo.updateTime?.nanos ?? 0) / 1_000_000n;
     const newestTs = newest ? (newest.updateTime?.seconds ?? 0n) * 1000n + BigInt(newest.updateTime?.nanos ?? 0) / 1_000_000n : -1n;
     if (ts > newestTs) newest = memo;
@@ -66,8 +71,22 @@ export const findConfigMemo = async (): Promise<Memo | null> => {
   return newest;
 };
 
-export const createConfigMemo = async (config: NavConfig): Promise<Memo> =>
-  memoServiceClient.createMemo(create(CreateMemoRequestSchema, { memo: toMemoMessage(buildConfigContent(config)) }));
+/**
+ * CreateMemo always stores row status NORMAL (API ignores `state` on create),
+ * so archive in a follow-up update to keep the config out of the timeline.
+ */
+export const createConfigMemo = async (config: NavConfig): Promise<Memo> => {
+  const created = await memoServiceClient.createMemo(create(CreateMemoRequestSchema, { memo: toMemoMessage(buildConfigContent(config)) }));
+  if (created.state !== State.ARCHIVED) {
+    try {
+      await archiveConfigMemo(created.name);
+      created.state = State.ARCHIVED;
+    } catch {
+      // Still return the memo; the next load will find it as NORMAL and archive it.
+    }
+  }
+  return created;
+};
 
 /** Content-only update; the memo keeps its ARCHIVED + PRIVATE state. */
 export const updateConfigMemo = async (memoName: string, config: NavConfig): Promise<Memo> =>

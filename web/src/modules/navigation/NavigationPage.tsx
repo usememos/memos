@@ -31,6 +31,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   addClip,
@@ -117,6 +118,7 @@ const Card = ({
   onDragStartCard,
   onDragOverCard,
   onDropCard,
+  onDragEndCard,
 }: {
   card: NavCard;
   active: boolean;
@@ -131,6 +133,7 @@ const Card = ({
   onDragStartCard: (event: ReactDragEvent<HTMLAnchorElement>) => void;
   onDragOverCard: (event: ReactDragEvent<HTMLAnchorElement>) => void;
   onDropCard: (event: ReactDragEvent<HTMLAnchorElement>) => void;
+  onDragEndCard: () => void;
 }) => {
   const t = useNavStrings();
   return (
@@ -148,6 +151,7 @@ const Card = ({
         onDragStart={onDragStartCard}
         onDragOver={onDragOverCard}
         onDrop={onDropCard}
+        onDragEnd={onDragEndCard}
         data-drop-before={dropBefore ? "true" : undefined}
         data-drop-after={dropAfter ? "true" : undefined}
         className="nav-page-card flex flex-col gap-1 rounded-xl p-4 focus:outline-none"
@@ -206,15 +210,15 @@ const LoadingState = () => {
   );
 };
 
-const EmptyState = ({ onReset, isResetting }: { onReset: () => void; isResetting: boolean }) => {
+const EmptyState = ({ onRetry }: { onRetry: () => void }) => {
   const t = useNavStrings();
   return (
     <section className="border-border bg-card flex flex-col items-start gap-3 rounded-xl border p-6">
       <h2 className="text-sm font-medium text-foreground">{t.emptyTitle}</h2>
       <p className="text-sm text-muted-foreground">{t.emptyBody}</p>
-      <Button variant="outline" size="sm" disabled={isResetting} onClick={onReset}>
+      <Button variant="outline" size="sm" onClick={onRetry}>
         <RotateCcwIcon />
-        {t.reset}
+        {t.retry}
       </Button>
     </section>
   );
@@ -263,13 +267,16 @@ const CardDialog = ({
   state: CardDialogState;
   config: NavConfig;
   onClose: () => void;
-  onSubmit: (draft: CardDraft) => void;
+  onSubmit: (draft: CardDraft, groupId: string) => void;
 }) => {
   const t = useNavStrings();
   const [title, setTitle] = useState(state.initial.title);
   const [url, setUrl] = useState(state.initial.url);
   const [note, setNote] = useState(state.initial.note ?? "");
+  const [groupId, setGroupId] = useState(state.groupId);
   const [error, setError] = useState<string | null>(null);
+  const isCreate = state.mode === "create";
+  const groupOptions = config.groups.map((group) => ({ id: group.id, name: group.name }));
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
@@ -279,14 +286,14 @@ const CardDialog = ({
       setError(draftErrorMessage(problem, t));
       return;
     }
-    onSubmit(draft);
+    onSubmit(draft, groupId);
   };
 
   return (
     <Dialog open onOpenChange={(open) => (open ? undefined : onClose())}>
       <DialogContent size="sm" data-testid="nav-card-dialog">
         <DialogHeader>
-          <DialogTitle>{state.mode === "create" ? t.addCard : t.editCard}</DialogTitle>
+          <DialogTitle>{isCreate ? t.addCard : t.editCard}</DialogTitle>
         </DialogHeader>
         <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
           <div className="flex flex-col gap-1.5">
@@ -307,6 +314,23 @@ const CardDialog = ({
             <Label htmlFor="nav-card-note">{t.fieldNote}</Label>
             <Input id="nav-card-note" data-testid="nav-card-note" value={note} onChange={(e) => setNote(e.target.value)} />
           </div>
+          {isCreate && groupOptions.length > 0 ? (
+            <div className="flex flex-col gap-1.5">
+              <Label>{t.fieldGroup}</Label>
+              <Select value={groupId} items={groupOptions.map((group) => ({ value: group.id, label: group.name }))} onValueChange={setGroupId}>
+                <SelectTrigger className="w-full" data-testid="nav-card-group">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {groupOptions.map((group) => (
+                    <SelectItem key={group.id} value={group.id}>
+                      {group.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          ) : null}
           {error ? (
             <p className="text-sm text-destructive" role="alert" data-testid="nav-card-error">
               {error}
@@ -394,7 +418,7 @@ const ConfirmDialog = ({ state, onClose, onConfirm }: { state: ConfirmDialogStat
 
 const NavigationPage = () => {
   const t = useNavStrings();
-  const { state, isLoading, isError, refetch, save, reset, isResetting, isSaving } = useNavConfig();
+  const { state, isLoading, isError, refetch, save, isSaving } = useNavConfig();
 
   const [query, setQuery] = useState("");
   const [activeCardId, setActiveCardId] = useState<string | null>(null);
@@ -438,7 +462,17 @@ const NavigationPage = () => {
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== "/" || event.defaultPrevented) return;
+      if (event.defaultPrevented) return;
+      // Ctrl+Q (or Cmd+Q avoided — it quits the browser) focuses search quickly.
+      if ((event.ctrlKey || event.metaKey) && !event.altKey && event.key.toLowerCase() === "q") {
+        // Cmd+Q is reserved by the browser/OS; only Ctrl+Q (and Ctrl+Q via meta on non-mac if any).
+        if (event.metaKey && !event.ctrlKey) return;
+        event.preventDefault();
+        searchRef.current?.focus();
+        searchRef.current?.select();
+        return;
+      }
+      if (event.key !== "/") return;
       if (event.metaKey || event.ctrlKey || event.altKey) return;
       if (isEditableTarget(event.target)) return;
       event.preventDefault();
@@ -580,6 +614,8 @@ const NavigationPage = () => {
   };
 
   const [clips, setClips] = useState<NavClipItem[]>(() => readClips());
+  const clipsRef = useRef(clips);
+  clipsRef.current = clips;
   const [clipboardOpen, setClipboardOpen] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [clipPreviews, setClipPreviews] = useState<Record<string, string>>({});
@@ -603,18 +639,20 @@ const NavigationPage = () => {
   const recordBinaryClip = useCallback(
     async (blob: Blob, fileName?: string) => {
       const now = Date.now();
-      let next: NavClipItem[] = clips;
+      const current = clipsRef.current;
+      let next: NavClipItem[] = current;
       if (blob.type.startsWith("image/")) {
-        next = await addImageClip(blob, now, clips);
+        next = await addImageClip(blob, now, current);
       } else {
         const file =
           blob instanceof File ? blob : new File([blob], fileName || "clipboard", { type: blob.type || "application/octet-stream" });
-        next = await addFileClip(file, now, clips);
+        next = await addFileClip(file, now, current);
       }
+      clipsRef.current = next;
       setClips(next);
       writeClips(next);
     },
-    [clips],
+    [],
   );
 
   /**
@@ -643,7 +681,8 @@ const NavigationPage = () => {
           }
           const kinds = Object.keys(payload);
           if (kinds.length >= 2 && (payload["text/html"] || payload["text/plain"])) {
-            const next = await addRichClip(payload, Date.now(), clips);
+            const next = await addRichClip(payload, Date.now(), clipsRef.current);
+            clipsRef.current = next;
             setClips(next);
             writeClips(next);
           } else if (hasBinary) {
@@ -673,9 +712,10 @@ const NavigationPage = () => {
     } catch {
       // Permission denied or unsupported — local pastes still record.
     }
-  }, [recordTextClip, recordBinaryClip, clips]);
+  }, [recordTextClip, recordBinaryClip]);
 
   // Load object URLs for image (and rich-with-image) clips currently in the list.
+  // Revoke only URLs that left the map — never the ones still rendered.
   useEffect(() => {
     let cancelled = false;
     const load = async () => {
@@ -690,7 +730,11 @@ const NavigationPage = () => {
         const blob = await getClipBlob(key);
         if (!blob || cancelled) continue;
         const url = URL.createObjectURL(blob);
-        setClipPreviews((current) => ({ ...current, [item.id]: url }));
+        if (cancelled) {
+          URL.revokeObjectURL(url);
+          continue;
+        }
+        setClipPreviews((current) => (current[item.id] ? current : { ...current, [item.id]: url }));
       }
     };
     void load();
@@ -699,12 +743,28 @@ const NavigationPage = () => {
     };
   }, [clips, clipPreviews]);
 
+  // Drop previews for clips that were removed; revoke their object URLs.
   useEffect(() => {
-    const urls = Object.values(clipPreviews);
-    return () => {
-      for (const url of urls) URL.revokeObjectURL(url);
-    };
-  }, [clipPreviews]);
+    const liveIds = new Set(clips.map((item) => item.id));
+    setClipPreviews((current) => {
+      const next: Record<string, string> = {};
+      for (const [id, url] of Object.entries(current)) {
+        if (liveIds.has(id)) next[id] = url;
+        else URL.revokeObjectURL(url);
+      }
+      return next;
+    });
+  }, [clips]);
+
+  // Final unmount: revoke everything still held.
+  const clipPreviewsRef = useRef(clipPreviews);
+  clipPreviewsRef.current = clipPreviews;
+  useEffect(
+    () => () => {
+      for (const url of Object.values(clipPreviewsRef.current)) URL.revokeObjectURL(url);
+    },
+    [],
+  );
 
   const useClipText = (text: string) => {
     if (!state) return;
@@ -761,6 +821,11 @@ const NavigationPage = () => {
     // Mixed rich paste (HTML markup and/or images together with text).
     if (html.trim() || files.length > 0) {
       event.preventDefault();
+      // Still surface the plain text in the search box so the paste is not swallowed.
+      if (text.trim()) {
+        setQuery(text);
+        setActiveCardId(null);
+      }
       const payload: Record<string, Blob | string> = {};
       if (text) payload["text/plain"] = text;
       if (html.trim()) payload["text/html"] = html;
@@ -771,7 +836,8 @@ const NavigationPage = () => {
       const isRich = Boolean(html.trim()) && (files.length > 0 || Boolean(text.trim()));
       void (async () => {
         if (isRich || (hasImage && text.trim())) {
-          const next = await addRichClip(payload, Date.now(), clips);
+          const next = await addRichClip(payload, Date.now(), clipsRef.current);
+          clipsRef.current = next;
           setClips(next);
           writeClips(next);
           return;
@@ -798,11 +864,11 @@ const NavigationPage = () => {
     });
   };
 
-  const handleCardSubmit = (draft: CardDraft) => {
+  const handleCardSubmit = (draft: CardDraft, targetGroupId: string) => {
     if (!state || !cardDialog) return;
     const next =
       cardDialog.mode === "create"
-        ? addCard(state.config, cardDialog.groupId, createCard(draft))
+        ? addCard(state.config, targetGroupId, createCard(draft))
         : updateCard(state.config, cardDialog.cardId ?? "", draft);
     persist(next);
     setCardDialog(null);
@@ -818,7 +884,10 @@ const NavigationPage = () => {
 
   const handleNameSubmit = (name: string) => {
     if (!state || !nameDialog) return;
-    const next = nameDialog.mode === "create" ? addGroup(state.config, name) : renameGroup(state.config, nameDialog.groupId ?? "", name);
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    const next =
+      nameDialog.mode === "create" ? addGroup(state.config, trimmed) : renameGroup(state.config, nameDialog.groupId ?? "", trimmed);
     persist(next);
     setNameDialog(null);
   };
@@ -850,7 +919,7 @@ const NavigationPage = () => {
       ) : isError && !config ? (
         <DegradedState onRetry={() => void refetch()} />
       ) : !config ? (
-        <EmptyState onReset={() => void reset().catch(() => {})} isResetting={isResetting} />
+        <EmptyState onRetry={() => void refetch()} />
       ) : (
         <div className="flex flex-col gap-4">
           {isDegraded ? (
@@ -860,26 +929,15 @@ const NavigationPage = () => {
             </p>
           ) : null}
 
-          <div className="flex items-center justify-end gap-2">
-            {isSaving ? (
-              <span className="flex items-center gap-1 text-xs text-muted-foreground" data-testid="nav-saving">
-                <LoaderCircleIcon className="size-3.5 animate-spin" />
-                {t.saving}
-              </span>
-            ) : null}
-            <Button variant="outline" size="sm" data-testid="nav-add-group" onClick={openCreateGroup}>
-              <PlusIcon />
-              {t.addGroup}
-            </Button>
-            <Button variant="outline" size="sm" disabled={isResetting} onClick={() => void reset().catch(() => {})}>
-              <RotateCcwIcon />
-              {t.reset}
-            </Button>
-          </div>
-
           {/* Spotlight-style search: large pill + circular scope actions. */}
           <TooltipProvider>
             <div className="flex items-center gap-2">
+              {isSaving ? (
+                <span className="flex items-center gap-1 text-xs text-muted-foreground" data-testid="nav-saving">
+                  <LoaderCircleIcon className="size-3.5 animate-spin" />
+                  {t.saving}
+                </span>
+              ) : null}
               <div role="search" className="nav-spotlight relative min-w-0 flex-1">
                 <SearchIcon className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" strokeWidth={2} />
                 <Input
@@ -904,6 +962,22 @@ const NavigationPage = () => {
                   </button>
                 ) : null}
               </div>
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <button
+                      type="button"
+                      aria-label={t.addGroup}
+                      data-testid="nav-add-group"
+                      onClick={openCreateGroup}
+                      className="nav-spotlight-action flex size-12 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                    />
+                  }
+                >
+                  <PlusIcon className="size-5" strokeWidth={1.8} />
+                </TooltipTrigger>
+                <TooltipContent side="bottom">{t.addGroup}</TooltipContent>
+              </Tooltip>
               <Popover
                 open={clipboardOpen}
                 onOpenChange={(open) => {
@@ -1112,6 +1186,7 @@ const NavigationPage = () => {
                             onDragStartCard={handleCardDragStart(group, index)}
                             onDragOverCard={handleCardDragOver(group, index)}
                             onDropCard={handleCardDrop}
+                            onDragEndCard={endDrag}
                           />
                         ))}
                       </div>

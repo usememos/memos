@@ -115,6 +115,7 @@ describe("persistConfig", () => {
   });
 
   it("creates a memo when none exists yet", async () => {
+    state.listMemos.mockResolvedValue({ memos: [] });
     state.createMemo.mockResolvedValue(memo("memos/created", ""));
 
     const result = await persistConfig(seedConfig, { config: null, memoName: null });
@@ -123,6 +124,18 @@ describe("persistConfig", () => {
     expect(result.config.rev).toBe(2);
     expect(state.createMemo).toHaveBeenCalledTimes(1);
     expect(localStorage.getItem(NAV_STORAGE_KEYS.initialized)).toBe("1");
+  });
+
+  it("updates the newest existing memo instead of forking when memoName is missing", async () => {
+    const existing = { ...seedConfig, rev: 3 };
+    state.listMemos.mockResolvedValue({ memos: [memo("memos/existing", buildConfigContent(existing))] });
+    state.updateMemo.mockResolvedValue(memo("memos/existing", ""));
+
+    const result = await persistConfig(existing, { config: existing, memoName: null });
+
+    expect(result.memoName).toBe("memos/existing");
+    expect(state.updateMemo).toHaveBeenCalledTimes(1);
+    expect(state.createMemo).not.toHaveBeenCalled();
   });
 
   it("rolls the cache back to the snapshot when the write fails", async () => {

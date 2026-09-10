@@ -18,7 +18,6 @@ export interface NavStrings {
   degradedTitle: string;
   degradedBody: string;
   seededNote: string;
-  reset: string;
   retry: string;
   saving: string;
   saveFailed: string;
@@ -50,6 +49,7 @@ export interface NavStrings {
   fieldTitle: string;
   fieldUrl: string;
   fieldNote: string;
+  fieldGroup: string;
   fieldName: string;
   save: string;
   cancel: string;
@@ -71,11 +71,10 @@ const STRINGS: Record<"zh" | "en", NavStrings> = {
     pageSubtitle: "把常用站点收成一张可以拖拽整理的卡片墙。",
     loading: "正在加载导航配置…",
     emptyTitle: "还没有导航卡片",
-    emptyBody: "配置文件缺失，点「重置为默认」会重新写入默认卡片墙。",
+    emptyBody: "配置文件缺失，点「重试」重新加载；若仍失败，可删除归档里的配置备忘后再次打开本页。",
     degradedTitle: "离线缓存模式",
     degradedBody: "无法连接服务，当前展示本地缓存的配置，改动不会保存。",
     seededNote: "首次访问已写入默认配置（一条归档 + 私密备忘）。",
-    reset: "重置为默认",
     retry: "重试",
     saving: "保存中…",
     saveFailed: "保存失败：处于离线模式，改动未保存。",
@@ -86,7 +85,7 @@ const STRINGS: Record<"zh" | "en", NavStrings> = {
     searchEmptyTitle: "没有匹配的卡片",
     searchEmptyBody: "没有卡片匹配当前关键词，试试别的。",
     clearSearch: "清除搜索",
-    searchKeyboardHint: "/ 聚焦搜索 · ↓↑ 移动 · Enter 打开 · Esc 清除",
+    searchKeyboardHint: "/ 聚焦搜索 · Ctrl+Q 快速搜索 · ↓↑ 移动 · Enter 打开 · Esc 清除",
     clipboardAdd: "从剪贴板添加",
     clipboardEmpty: "剪贴板是空的",
     clipboardFailed: "无法读取剪贴板",
@@ -107,6 +106,7 @@ const STRINGS: Record<"zh" | "en", NavStrings> = {
     fieldTitle: "标题",
     fieldUrl: "链接",
     fieldNote: "备注",
+    fieldGroup: "分组",
     fieldName: "分组名称",
     save: "保存",
     cancel: "取消",
@@ -126,11 +126,10 @@ const STRINGS: Record<"zh" | "en", NavStrings> = {
     pageSubtitle: "Your bookmarks as a card wall you can drag into shape.",
     loading: "Loading navigation config…",
     emptyTitle: "No cards yet",
-    emptyBody: "The config memo is missing. Reset to write the default card wall back.",
+    emptyBody: "The config memo is missing. Retry to reload; if it still fails, delete the config memo in Archive and reopen this page.",
     degradedTitle: "Offline cache",
     degradedBody: "The service is unreachable; showing the locally cached config. Edits are not saved.",
     seededNote: "First visit: wrote the default config (an archived, private memo).",
-    reset: "Reset to defaults",
     retry: "Retry",
     saving: "Saving…",
     saveFailed: "Save failed: offline mode, changes were not saved.",
@@ -141,7 +140,7 @@ const STRINGS: Record<"zh" | "en", NavStrings> = {
     searchEmptyTitle: "No matching cards",
     searchEmptyBody: "No cards match the current query. Try another.",
     clearSearch: "Clear search",
-    searchKeyboardHint: "/ to focus · ↓↑ to move · Enter to open · Esc to clear",
+    searchKeyboardHint: "/ to focus · Ctrl+Q quick search · ↓↑ move · Enter open · Esc clear",
     clipboardAdd: "Add from clipboard",
     clipboardEmpty: "Clipboard is empty",
     clipboardFailed: "Could not read clipboard",
@@ -162,6 +161,7 @@ const STRINGS: Record<"zh" | "en", NavStrings> = {
     fieldTitle: "Title",
     fieldUrl: "URL",
     fieldNote: "Note",
+    fieldGroup: "Group",
     fieldName: "Group name",
     save: "Save",
     cancel: "Cancel",
