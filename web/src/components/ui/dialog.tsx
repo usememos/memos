@@ -17,7 +17,7 @@ const DialogOverlay = React.forwardRef<HTMLDivElement, DialogPrimitive.Backdrop.
     ref={ref}
     data-slot="dialog-overlay"
     className={cn(
-      "fixed inset-0 z-overlay bg-foreground/50 transition-opacity duration-200 data-starting-style:opacity-0 data-ending-style:opacity-0",
+      "fixed inset-0 z-overlay bg-overlay/50 transition-opacity duration-200 data-starting-style:opacity-0 data-ending-style:opacity-0",
       className,
     )}
     {...props}

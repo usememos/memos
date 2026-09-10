@@ -53,12 +53,14 @@ The color system supports both light and dark themes automatically through CSS c
 | `--card-foreground`    | Very dark   | Near white  | Text on card backgrounds    |
 | `--popover`            | Pure white  | Darker gray | Overlay backgrounds         |
 | `--popover-foreground` | Dark gray   | Light gray  | Text on overlay backgrounds |
+| `--overlay`            | Pure black  | Pure black  | Scrim behind modals         |
 
 **When to use:**
 
 - Page backgrounds (`--background`)
 - Content cards and panels (`--card`)
 - Tooltips, dropdowns, modals (`--popover`)
+- Modal scrims (`--overlay`, always with an alpha utility: `bg-overlay/50` for dialogs and sheets, `bg-overlay/20` for focus mode)
 
 ### ✏️ Text & Content Colors
 

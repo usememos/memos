@@ -45,6 +45,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   defaultLocation,
   autoFocus,
   onFocusModeExit,
+  onFocusModeChange,
   placeholder,
   defaultCreateTime,
   onConfirm,
@@ -59,6 +60,10 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   // typing (which changes content) does not re-render the editor shell and its
   // toolbar/metadata children.
   const isFocusMode = useEditorSelector((s) => s.ui.isFocusMode);
+  // Report focus-mode changes so a host can react; inline hosts pass nothing.
+  useEffect(() => {
+    onFocusModeChange?.(isFocusMode);
+  }, [isFocusMode, onFocusModeChange]);
   const isSaving = useEditorSelector((s) => s.ui.isLoading.saving);
   const hasTimestamp = useEditorSelector((s) => Boolean(s.timestamps.createTime));
   const { userGeneralSetting } = useAuth();

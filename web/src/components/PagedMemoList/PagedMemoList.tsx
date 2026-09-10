@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 import { State } from "@/types/proto/api/v1/common_pb";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
-import ColumnGrid, { columnCountForWidth, GRID_GAP } from "../ColumnGrid";
+import ColumnGrid, { ColumnGridUntrappedProvider, columnCountForWidth, GRID_GAP } from "../ColumnGrid";
 import MemoFilters from "../MemoFilters";
 import Placeholder from "../Placeholder";
 import MemoListError from "./MemoListError";
@@ -281,17 +281,19 @@ const PagedMemoList = (props: Props) => {
         <div className={cn("flex flex-col justify-start w-full mx-auto", useGrid ? "max-w-none" : "max-w-2xl")}>
           {useGrid ? (
             <>
-              <ColumnGrid
-                items={displayMemoList}
-                getKey={getMemoKey}
-                renderItem={(memo) => props.renderer(memo, { compact: effectiveCompact })}
-                estimateHeight={estimateMemoCardHeight}
-                header={headerContent}
-                leading={gridLeading}
-                priorityKey={priorityKey}
-                maxColumns={maxColumns}
-                maxColumnWidth={MAX_COLUMN_WIDTH}
-              />
+              <ColumnGridUntrappedProvider>
+                <ColumnGrid
+                  items={displayMemoList}
+                  getKey={getMemoKey}
+                  renderItem={(memo) => props.renderer(memo, { compact: effectiveCompact })}
+                  estimateHeight={estimateMemoCardHeight}
+                  header={headerContent}
+                  leading={gridLeading}
+                  priorityKey={priorityKey}
+                  maxColumns={maxColumns}
+                  maxColumnWidth={MAX_COLUMN_WIDTH}
+                />
+              </ColumnGridUntrappedProvider>
               {!isDisplayPending && footer}
             </>
           ) : (

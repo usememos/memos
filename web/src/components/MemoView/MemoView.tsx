@@ -4,6 +4,7 @@ import {
   memo,
   Suspense,
   useCallback,
+  useEffect,
   useImperativeHandle,
   useLayoutEffect,
   useMemo,
@@ -11,6 +12,7 @@ import {
   useState,
 } from "react";
 import { useLocation } from "react-router-dom";
+import { useColumnGridUntrapped } from "@/components/ColumnGrid/ColumnGridContext";
 import { useResolvedUser } from "@/components/MemoContent/MentionResolutionContext";
 import { loadMemoEditor } from "@/components/MemoEditor/loader";
 import type { MemoEditorProps } from "@/components/MemoEditor/types";
@@ -88,6 +90,28 @@ const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
       .catch(() => undefined);
   }, [EditorComponent, focusMountedEditor, showEditor]);
   const closeEditor = useCallback(() => setShowEditor(false), []);
+
+  // The grid keys tiles by memo name (see getMemoKey), so the focused editor
+  // identifies its own tile by name and untraps it for the duration.
+  const { setUntrappedKey, clearUntrappedKey } = useColumnGridUntrapped();
+  const handleFocusModeChange = useCallback(
+    (isFocusMode: boolean) => {
+      if (isFocusMode) {
+        setUntrappedKey(memoData.name);
+      } else {
+        clearUntrappedKey(memoData.name);
+      }
+    },
+    [memoData.name, setUntrappedKey, clearUntrappedKey],
+  );
+  // Release the slot when the editor closes or this card unmounts. Both calls
+  // are ownership-scoped, so mounting cards never clobber another card's slot.
+  useEffect(() => {
+    if (!showEditor) {
+      clearUntrappedKey(memoData.name);
+    }
+  }, [showEditor, memoData.name, clearUntrappedKey]);
+  useEffect(() => () => clearUntrappedKey(memoData.name), [memoData.name, clearUntrappedKey]);
 
   useImperativeHandle(ref, () => ({ openEditor }), [openEditor]);
 
@@ -214,6 +238,7 @@ const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
             parentMemoName={memoData.parent || undefined}
             onConfirm={closeEditor}
             onCancel={closeEditor}
+            onFocusModeChange={handleFocusModeChange}
           />
         </div>
       ) : (
