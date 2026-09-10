@@ -1,8 +1,5 @@
 {
   "map": {
-    "resize-panel": "调整地点面板宽度",
-    "collapse": "收起面板",
-    "expand": "展开面板",
     "selection": "选中的 Memo",
     "loaded": "已加载 {{count}} 条",
     "fit-all": "查看全部结果",
@@ -70,13 +67,11 @@
     "welcome-back": "欢迎回来。"
   },
   "calendar": {
-    "close-day": "关闭当天",
     "more-memos": "还有 {{count}} 条",
     "new-memo-on-day": "在这一天新建备忘录",
     "next-year": "下一年",
     "no-memos-in-month": "{{month}} 没有备忘录",
     "previous-year": "上一年",
-    "resize-panel": "调整当天面板宽度",
     "select-month": "选择月份"
   },
   "demo": {
@@ -102,6 +97,7 @@
     "clear": "清除",
     "close": "关闭",
     "collapse": "收起",
+    "collapse-panel": "收起面板",
     "confirm": "确定",
     "copy": "复制",
     "create": "创建",
@@ -123,6 +119,7 @@
     "empty-placeholder": "空",
     "email": "邮箱",
     "expand": "展开",
+    "expand-panel": "展开面板",
     "explore": "发现",
     "file": "文件",
     "filter": "过滤器",
@@ -161,6 +158,7 @@
     "remember-me": "保持登录",
     "rename": "重命名",
     "reset": "重置",
+    "resize-panel": "调整面板宽度",
     "resources": "资源库",
     "restore": "恢复",
     "role": "身份",

@@ -10,8 +10,9 @@ import { MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
 const mocks = vi.hoisted(() => ({ editor: {} as MemoEditorProps, refetch: vi.fn(), toast: vi.fn() }));
 const item = create(MemoSchema, { name: "memos/one", location: { placeholder: "Kyoto", latitude: 35, longitude: 135 } });
 vi.mock("@/components/MapView/MapCanvas", () => ({ MapCanvas: () => <div data-testid="map" />, fitMemos: vi.fn() }));
-vi.mock("@/components/MapView/MapPanel", () => ({
-  MapPanel: ({ open, busy, children }: { open: boolean; busy: boolean; children: ReactNode }) =>
+vi.mock("@/components/MemoPanel/MemoPanel", () => ({
+  MEMO_PANEL_INSET: 12,
+  MemoPanel: ({ open, busy, children }: { open: boolean; busy: boolean; children: ReactNode }) =>
     open ? (
       <div data-testid="panel" data-busy={busy}>
         {children}

@@ -1,8 +1,5 @@
 {
   "map": {
-    "resize-panel": "Resize location panel",
-    "collapse": "Collapse panel",
-    "expand": "Expand panel",
     "selection": "Selected memos",
     "loaded": "{{count}} loaded",
     "fit-all": "Show all results",
@@ -70,13 +67,11 @@
     "welcome-back": "Welcome back."
   },
   "calendar": {
-    "close-day": "Close day",
     "more-memos": "+{{count}} more",
     "new-memo-on-day": "New memo on this day",
     "next-year": "Next year",
     "no-memos-in-month": "No memos in {{month}}",
     "previous-year": "Previous year",
-    "resize-panel": "Resize day panel",
     "select-month": "Select month"
   },
   "demo": {
@@ -169,6 +164,7 @@
     "clear": "Clear",
     "close": "Close",
     "collapse": "Collapse",
+    "collapse-panel": "Collapse panel",
     "confirm": "Confirm",
     "copy": "Copy",
     "create": "Create",
@@ -190,6 +186,7 @@
     "email": "Email",
     "empty-placeholder": "Empty",
     "expand": "Expand",
+    "expand-panel": "Expand panel",
     "explore": "Explore",
     "file": "File",
     "filter": "Filter",
@@ -229,6 +226,7 @@
     "remember-me": "Remember me",
     "rename": "Rename",
     "reset": "Reset",
+    "resize-panel": "Resize panel",
     "resize-sidebar": "Resize sidebar",
     "resources": "Resources",
     "restore": "Restore",

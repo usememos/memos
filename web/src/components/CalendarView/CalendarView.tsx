@@ -1,9 +1,9 @@
-import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
-import { SidebarResizeHandle } from "@/components/AppSidebar";
+import { deriveDefaultCreateTimeFromDate } from "@/components/MemoEditor/utils/deriveDefaultCreateTime";
+import { MEMO_PANEL_INSET, MEMO_PANEL_TITLE_CLASS, MEMO_PANEL_WIDTH_CSS, MemoPanel, MemoPanelList } from "@/components/MemoPanel";
 import MemoListError from "@/components/PagedMemoList/MemoListError";
-import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
 import { useSpaceContext } from "@/contexts/SpaceContext";
@@ -11,7 +11,7 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import { useFilteredMemoStats } from "@/hooks/useFilteredMemoStats";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { useMemoFilters } from "@/hooks/useMemoFilters";
-import { formatMonthLabel, getToday } from "@/lib/calendar-utils";
+import { formatMonthLabel, getToday, parseLocalDate } from "@/lib/calendar-utils";
 import { combineCELFilters } from "@/lib/cel-filter";
 import { buildMemoCreatorFilter } from "@/lib/resource-names";
 import { isMemoBlurred } from "@/lib/tag";
@@ -20,12 +20,12 @@ import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { CalendarGrid } from "./CalendarGrid";
 import { CalendarHeader } from "./CalendarHeader";
-import { DayPanel } from "./DayPanel";
 import { buildCalendarPath, getDefaultDate } from "./paths";
-import { DAY_PANEL_DEFAULT_WIDTH, DAY_PANEL_WIDTH_VAR, useDayPanelWidth } from "./useDayPanelWidth";
 import { useMonthMemos } from "./useMonthMemos";
 
 const NO_MEMOS: Memo[] = [];
+/** Page padding plus seven legible 72px columns. */
+const RESERVED_BESIDE_PANEL = 48 + 7 * 72;
 
 export interface CalendarViewProps {
   /** `YYYY-MM` */
@@ -34,18 +34,15 @@ export interface CalendarViewProps {
   date?: string;
 }
 
-const isEditableTarget = (target: EventTarget | null): boolean =>
-  target instanceof HTMLElement && (target.isContentEditable || target.closest("input, textarea, select, [contenteditable]") !== null);
-
 /**
  * The signed-in user's memos as a month, scoped like Home to the remembered collection.
  * Month and day both live in the URL; this component only reads them and renders.
  *
- * The open day has three homes. From xl it is a resizable panel beside the grid. Between md
- * and xl the grid keeps its full width and the day slides in as a sheet from the end edge.
- * Below md the grid is compact and the day's list sits under it, the way phone calendars
- * work, so a day is always shown there: today in the current month, otherwise the first of
- * the month, until the URL names one.
+ * The open day has two homes. From md it is the floating memo panel at the end edge; at xl
+ * the grid gives way to it so every column stays legible, below xl it floats over the
+ * trailing columns. Below md the grid is compact and the day's list sits under it, the way
+ * phone calendars work, so a day is always shown there: today in the current month,
+ * otherwise the first of the month, until the URL names one.
  */
 export const CalendarView = ({ month, date }: CalendarViewProps) => {
   const t = useTranslate();
@@ -55,8 +52,6 @@ export const CalendarView = ({ month, date }: CalendarViewProps) => {
   const user = useCurrentUser();
   const md = useMediaQuery("md");
   const xl = useMediaQuery("xl");
-  const panelRef = useRef<HTMLElement>(null);
-  const panelWidth = useDayPanelWidth();
   const { userTagsSetting, isInitialized: authInitialized, isUserSettingsInitialized } = useAuth();
   const { isInitialized: instanceInitialized } = useInstance();
   const { memoFilter: contextFilter } = useSpaceContext();
@@ -98,32 +93,44 @@ export const CalendarView = ({ month, date }: CalendarViewProps) => {
 
   const today = getToday();
   const activeDate = date ?? (md ? undefined : getDefaultDate(month, today));
+  const activeMemos = (activeDate && model[activeDate]?.memos) || NO_MEMOS;
+  const dateLabel = useMemo(
+    () =>
+      activeDate
+        ? (parseLocalDate(activeDate)?.toLocaleDateString(i18n.language, { weekday: "long", month: "long", day: "numeric" }) ?? activeDate)
+        : "",
+    [activeDate, i18n.language],
+  );
+  const defaultCreateTime = useMemo(() => (activeDate ? deriveDefaultCreateTimeFromDate(activeDate) : undefined), [activeDate]);
+  const [saving, setSaving] = useState(false);
+  const panelOpen = Boolean(date) && md;
 
-  // The sheet stays mounted after its day closes so it can slide out; it keeps showing the
-  // last open day while it does.
-  // The sheet stays mounted across a close so its exit animation can play; it keeps showing the
-  // last open day. Set during render, so no frame ever commits the previous day's content.
-  const [sheetDate, setSheetDate] = useState(date);
-  if (date && date !== sheetDate) setSheetDate(date);
-  const dayMemos = (day: string | undefined) => (day && model[day]?.memos) || NO_MEMOS;
-
-  useEffect(() => {
-    if (!date || !xl) return;
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== "Escape" || event.defaultPrevented || isEditableTarget(event.target)) return;
-      closeDay();
-    };
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [date, xl, closeDay]);
+  const list = activeDate && (
+    <MemoPanelList
+      memos={activeMemos}
+      selectionKey={activeDate}
+      timeDisplay="time"
+      compose={{
+        cacheKey: `calendar-day-editor:${activeDate}`,
+        label: t("calendar.new-memo-on-day"),
+        defaults: { defaultCreateTime },
+        onSavingChange: setSaving,
+      }}
+    />
+  );
 
   // A failed month must not pass for an empty one.
   const isEmptyMonth = !isLoading && !error && Object.keys(model).length === 0;
 
   return (
-    <div className="flex w-full items-start gap-6">
-      {/* From xl the section is sticky and viewport-tall so the grid can fill it beside the panel. */}
-      <section className="flex w-full min-w-0 flex-1 flex-col gap-1 xl:sticky xl:top-6 xl:h-[calc(100dvh-3.5rem)]">
+    <>
+      {/* From xl the section is viewport-tall so the grid can fill it, and pads its end edge by
+          the open panel's width so the card floats beside the grid rather than over it. The
+          padding reads the panel's own custom property, so it follows a resize drag live. */}
+      <section
+        className="flex w-full min-w-0 flex-col gap-1 xl:h-[calc(100dvh-3.5rem)]"
+        style={{ paddingInlineEnd: xl && panelOpen ? `calc(${MEMO_PANEL_WIDTH_CSS} + ${MEMO_PANEL_INSET}px)` : undefined }}
+      >
         <CalendarHeader month={month} monthLabel={monthLabel} today={today} activeDate={activeDate} closable={md} />
         <CalendarGrid
           month={month}
@@ -142,48 +149,20 @@ export const CalendarView = ({ month, date }: CalendarViewProps) => {
           </p>
         )}
         {activeDate && !md && (
-          <div className="mt-4">
-            <DayPanel date={activeDate} memos={dayMemos(activeDate)} />
-          </div>
+          <section aria-label={dateLabel} className="mt-4 flex w-full flex-col">
+            <header className="mb-3 border-b border-border/70 pb-3">
+              <h2 className={MEMO_PANEL_TITLE_CLASS}>{dateLabel}</h2>
+            </header>
+            {list}
+          </section>
         )}
       </section>
 
-      {sheetDate && md && !xl && (
-        <Sheet open={Boolean(date)} onOpenChange={(open) => !open && closeDay()}>
-          {/* The panel keeps its own close control in every tier, so the sheet's is hidden. */}
-          <SheetContent
-            side="right"
-            className="w-[28rem] max-w-[90vw] gap-0 overflow-y-auto px-6 pb-8 pt-5 sm:max-w-md [&_[data-slot=sheet-close]]:hidden"
-          >
-            <SheetTitle className="sr-only">{sheetDate}</SheetTitle>
-            <DayPanel date={sheetDate} memos={dayMemos(sheetDate)} onClose={closeDay} />
-          </SheetContent>
-        </Sheet>
+      {md && (
+        <MemoPanel open={panelOpen} title={dateLabel} reservedWidth={RESERVED_BESIDE_PANEL} busy={saving} onClose={closeDay}>
+          {list}
+        </MemoPanel>
       )}
-
-      {date && xl && (
-        // The panel's start edge is both its separator from the grid and the resize rail, the
-        // same grammar as the app sidebar's end edge; it stretches to the row so the edge runs
-        // the full height of the grid, and further when the day's list is longer.
-        <aside
-          ref={panelRef}
-          className="relative w-[var(--calendar-day-panel-width)] shrink-0 self-stretch border-s border-border/70 ps-6"
-          style={{ [DAY_PANEL_WIDTH_VAR]: `${panelWidth.width}px` } as CSSProperties}
-        >
-          <SidebarResizeHandle
-            width={panelWidth.width}
-            minWidth={panelWidth.minWidth}
-            maxWidth={panelWidth.maxWidth}
-            onWidthChange={panelWidth.setWidth}
-            targetRef={panelRef}
-            cssVariable={DAY_PANEL_WIDTH_VAR}
-            defaultWidth={DAY_PANEL_DEFAULT_WIDTH}
-            edge="start"
-            label={t("calendar.resize-panel")}
-          />
-          <DayPanel date={date} memos={dayMemos(date)} onClose={closeDay} />
-        </aside>
-      )}
-    </div>
+    </>
   );
 };

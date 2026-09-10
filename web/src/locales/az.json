@@ -1,8 +1,5 @@
 {
   "map": {
-    "resize-panel": "Məkan panelinin enini dəyiş",
-    "collapse": "Paneli yığ",
-    "expand": "Paneli genişləndir",
     "selection": "Seçilmiş qeydlər",
     "loaded": "{{count}} qeyd yükləndi",
     "fit-all": "Bütün nəticələri göstər",
@@ -70,13 +67,11 @@
     "welcome-back": "Yenidən xoş gəlmisiniz."
   },
   "calendar": {
-    "close-day": "Günü bağla",
     "more-memos": "+{{count}} daha",
     "new-memo-on-day": "Bu gün üçün yeni qeyd",
     "next-year": "Növbəti il",
     "no-memos-in-month": "{{month}} ayında qeyd yoxdur",
     "previous-year": "Əvvəlki il",
-    "resize-panel": "Gün panelinin ölçüsünü dəyiş",
     "select-month": "Ay seç"
   },
   "demo": {
@@ -169,6 +164,7 @@
     "clear": "Təmizlə",
     "close": "Bağla",
     "collapse": "Yığ",
+    "collapse-panel": "Paneli yığ",
     "confirm": "Təsdiqlə",
     "copy": "Kopyala",
     "create": "Yarat",
@@ -190,6 +186,7 @@
     "email": "E-poçt",
     "empty-placeholder": "Boş",
     "expand": "Aç",
+    "expand-panel": "Paneli genişləndir",
     "explore": "Kəşf et",
     "file": "Fayl",
     "filter": "Süzgəc",
@@ -229,6 +226,7 @@
     "remember-me": "Məni xatırla",
     "rename": "Adını dəyiş",
     "reset": "Sıfırla",
+    "resize-panel": "Panelin ölçüsünü dəyiş",
     "resize-sidebar": "Yan panelin ölçüsünü dəyiş",
     "resources": "Resurslar",
     "restore": "Bərpa et",
