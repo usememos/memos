@@ -1,0 +1,44 @@
+- generic [ref=e2]:
+  - generic [ref=e128]:
+    - generic [ref=e129]:
+      - complementary [ref=e130]:
+        - navigation "Primary" [ref=e131]:
+          - link "Memos" [ref=e132] [cursor=pointer]:
+            - /url: /
+          - link "Memos" [ref=e136] [cursor=pointer]:
+            - /url: /
+          - link "Explore" [ref=e139] [cursor=pointer]:
+            - /url: /explore
+          - link "Attachments" [ref=e145] [cursor=pointer]:
+            - /url: /attachments
+          - link "Inbox" [ref=e148] [cursor=pointer]:
+            - /url: /inbox
+          - link "Navigation" [ref=e152] [cursor=pointer]:
+            - /url: /navigation
+          - button "admin, More" [ref=e157] [cursor=pointer]
+        - generic [ref=e162]:
+          - generic [ref=e163]:
+            - 'button "Switch space: Memos" [ref=e164]':
+              - generic [ref=e165]: Memos
+            - button "New memo" [ref=e170]
+          - search [ref=e172]:
+            - searchbox "Search" [ref=e173]
+          - generic [ref=e176]:
+            - region "About" [ref=e177]:
+              - link "About" [ref=e179] [cursor=pointer]:
+                - /url: /about
+            - generic [ref=e184]:
+              - heading "Resources" [level=2] [ref=e186]
+              - generic [ref=e187]:
+                - link "Documents" [ref=e188] [cursor=pointer]:
+                  - /url: https://usememos.com/docs
+                - link "API Docs" [ref=e197] [cursor=pointer]:
+                  - /url: https://usememos.com/docs/api
+                - link "GitHub Repo" [ref=e207] [cursor=pointer]:
+                  - /url: https://github.com/usememos/memos
+      - separator "Resize sidebar" [ref=e219]
+    - main [ref=e221]:
+      - generic [ref=e223]:
+        - paragraph [ref=e224]: The page you are looking for can't be found.
+        - paragraph [ref=e225]: "404"
+  - button "Open Tanstack query devtools" [ref=e79] [cursor=pointer]

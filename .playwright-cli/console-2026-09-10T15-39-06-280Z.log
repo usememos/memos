@@ -1,0 +1,23 @@
+[     139ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3001/node_modules/.vite/deps/react-dom_client.js?v=adcc9984:14337
+[     189ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3001/memos.api.v1.AuthService/RefreshToken:0
+[  188744ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://www.google.com/s2/favicons?domain=usememos.com&sz=64:0
+[  188745ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://www.google.com/s2/favicons?domain=developer.mozilla.org&sz=64:0
+[  188745ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://www.google.com/s2/favicons?domain=github.com&sz=64:0
+[  188997ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://www.google.com/s2/favicons?domain=figma.com&sz=64:0
+[  296668ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://www.google.com/s2/favicons?domain=linear.app&sz=64:0
+[  296669ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://www.google.com/s2/favicons?domain=react.dev&sz=64:0
+[  339047ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://www.google.com/s2/favicons?domain=news.ycombinator.com&sz=64:0
+[  339049ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://www.google.com/s2/favicons?domain=wikipedia.org&sz=64:0
+[  408060ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_RESET @ https://www.wikipedia.org/favicon.ico:0
+[  446808ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3001/node_modules/.vite/deps/react-dom_client.js?v=adcc9984:14337
+[  447521ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_RESET @ https://www.wikipedia.org/favicon.ico:0
+[  468453ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3001/node_modules/.vite/deps/react-dom_client.js?v=adcc9984:14337
+[  468991ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_RESET @ https://www.wikipedia.org/favicon.ico:0
+[  894034ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_RESET @ https://www.wikipedia.org/favicon.ico:0
+[  896648ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_RESET @ https://www.wikipedia.org/favicon.ico:0
+[  897551ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_RESET @ https://www.wikipedia.org/favicon.ico:0
+[  900375ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_RESET @ https://www.wikipedia.org/favicon.ico:0
+[  924974ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3001/src/modules/navigation/NavigationPage.tsx?t=1789055671244:0
+[  924975ms] [ERROR] [vite] Failed to reload /src/modules/navigation/NavigationPage.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://localhost:3001/@vite/client:904
+[  930898ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3001/src/modules/navigation/NavigationPage.tsx?t=1789055677176:0
+[  930898ms] [ERROR] [vite] Failed to reload /src/modules/navigation/NavigationPage.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://localhost:3001/@vite/client:904

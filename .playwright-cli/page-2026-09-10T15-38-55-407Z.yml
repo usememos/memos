@@ -1,0 +1,133 @@
+- generic [ref=e2]:
+  - generic [ref=e134]:
+    - generic [ref=e135]:
+      - complementary [ref=e136]:
+        - navigation "Primary" [ref=e137]:
+          - link "Memos" [ref=e138] [cursor=pointer]:
+            - /url: /
+          - link "Memos" [ref=e142] [cursor=pointer]:
+            - /url: /
+          - link "Explore" [ref=e145] [cursor=pointer]:
+            - /url: /explore
+          - link "Attachments" [ref=e151] [cursor=pointer]:
+            - /url: /attachments
+          - link "Inbox" [ref=e154] [cursor=pointer]:
+            - /url: /inbox
+          - link "Navigation" [ref=e158] [cursor=pointer]:
+            - /url: /navigation
+          - button "admin, More" [ref=e163] [cursor=pointer]
+        - generic [ref=e168]:
+          - generic [ref=e169]:
+            - 'button "Switch space: Memos" [ref=e170]':
+              - generic [ref=e171]: Memos
+            - button "New memo" [ref=e176]
+          - search [ref=e178]:
+            - searchbox "Search" [ref=e179]
+          - generic [ref=e182]:
+            - region "Statistics" [ref=e183]:
+              - generic [ref=e185]:
+                - generic [ref=e186]:
+                  - heading "September 2026" [level=2] [ref=e187]
+                  - navigation "Month navigation" [ref=e188]:
+                    - button "Previous month" [ref=e189]
+                    - button "Next month" [ref=e190]
+                - group "Calendar for 2026-09" [ref=e192]:
+                  - generic [aria-hidden] [ref=e193]:
+                    - generic [ref=e194]: S
+                    - generic [ref=e195]: M
+                    - generic [ref=e196]: T
+                    - generic [ref=e197]: W
+                    - generic [ref=e198]: T
+                    - generic [ref=e199]: F
+                    - generic [ref=e200]: S
+                  - generic [ref=e201]:
+                    - generic [ref=e202]: "30"
+                    - generic [ref=e204]: "31"
+                    - button "2026-09-01" [ref=e206] [cursor=pointer]:
+                      - generic [ref=e207]: "1"
+                    - button "2026-09-02" [ref=e208] [cursor=pointer]:
+                      - generic [ref=e209]: "2"
+                    - button "2026-09-03" [ref=e210] [cursor=pointer]:
+                      - generic [ref=e211]: "3"
+                    - button "2026-09-04" [ref=e212] [cursor=pointer]:
+                      - generic [ref=e213]: "4"
+                    - button "2026-09-05" [ref=e214] [cursor=pointer]:
+                      - generic [ref=e215]: "5"
+                    - button "2026-09-06" [ref=e216] [cursor=pointer]:
+                      - generic [ref=e217]: "6"
+                    - button "2026-09-07" [ref=e218] [cursor=pointer]:
+                      - generic [ref=e219]: "7"
+                    - button "2026-09-08" [ref=e220] [cursor=pointer]:
+                      - generic [ref=e221]: "8"
+                    - button "2026-09-09" [ref=e222] [cursor=pointer]:
+                      - generic [ref=e223]: "9"
+                    - button "2026-09-10" [ref=e224] [cursor=pointer]:
+                      - generic [ref=e225]: "10"
+                    - button "2026-09-11" [ref=e227] [cursor=pointer]:
+                      - generic [ref=e228]: "11"
+                    - button "2026-09-12" [ref=e229] [cursor=pointer]:
+                      - generic [ref=e230]: "12"
+                    - button "2026-09-13" [ref=e231] [cursor=pointer]:
+                      - generic [ref=e232]: "13"
+                    - button "2026-09-14" [ref=e233] [cursor=pointer]:
+                      - generic [ref=e234]: "14"
+                    - button "2026-09-15" [ref=e235] [cursor=pointer]:
+                      - generic [ref=e236]: "15"
+                    - button "2026-09-16" [ref=e237] [cursor=pointer]:
+                      - generic [ref=e238]: "16"
+                    - button "2026-09-17" [ref=e239] [cursor=pointer]:
+                      - generic [ref=e240]: "17"
+                    - button "2026-09-18" [ref=e241] [cursor=pointer]:
+                      - generic [ref=e242]: "18"
+                    - button "2026-09-19" [ref=e243] [cursor=pointer]:
+                      - generic [ref=e244]: "19"
+                    - button "2026-09-20" [ref=e245] [cursor=pointer]:
+                      - generic [ref=e246]: "20"
+                    - button "2026-09-21" [ref=e247] [cursor=pointer]:
+                      - generic [ref=e248]: "21"
+                    - button "2026-09-22" [ref=e249] [cursor=pointer]:
+                      - generic [ref=e250]: "22"
+                    - button "2026-09-23" [ref=e251] [cursor=pointer]:
+                      - generic [ref=e252]: "23"
+                    - button "2026-09-24" [ref=e253] [cursor=pointer]:
+                      - generic [ref=e254]: "24"
+                    - button "2026-09-25" [ref=e255] [cursor=pointer]:
+                      - generic [ref=e256]: "25"
+                    - button "2026-09-26" [ref=e257] [cursor=pointer]:
+                      - generic [ref=e258]: "26"
+                    - button "2026-09-27" [ref=e259] [cursor=pointer]:
+                      - generic [ref=e260]: "27"
+                    - button "2026-09-28" [ref=e261] [cursor=pointer]:
+                      - generic [ref=e262]: "28"
+                    - button "2026-09-29" [ref=e263] [cursor=pointer]:
+                      - generic [ref=e264]: "29"
+                    - button "2026-09-30" [ref=e265] [cursor=pointer]:
+                      - generic [ref=e266]: "30"
+                    - generic [ref=e267]: "1"
+                    - generic [ref=e269]: "2"
+                    - generic [ref=e271]: "3"
+            - generic [ref=e273]:
+              - generic [ref=e274]:
+                - heading "Views" [level=2] [ref=e275]
+                - generic [ref=e276]:
+                  - button "View options" [ref=e278]
+                  - button "Create" [ref=e279]
+              - button "Tasks" [ref=e281]
+      - separator "Resize sidebar" [ref=e287]
+    - main [ref=e289]:
+      - generic [ref=e294]:
+        - generic [ref=e295]:
+          - textbox [active] [ref=e301]:
+            - generic [ref=e302]:
+              - generic [aria-hidden]: Any thoughts...
+          - generic [ref=e304]:
+            - generic [ref=e305]:
+              - button "Add" [ref=e306]
+              - button "Private" [ref=e307]
+            - generic "Content, attachment, or file required" [ref=e315]:
+              - button "Save" [disabled]:
+                - text: Save
+                - generic [aria-hidden]:
+                  - generic: ⌘
+        - paragraph [ref=e318]: No data found.
+  - button "Open Tanstack query devtools" [ref=e85] [cursor=pointer]

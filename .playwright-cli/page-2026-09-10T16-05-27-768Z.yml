@@ -1,0 +1,154 @@
+- generic [ref=e2]:
+  - generic [ref=e128]:
+    - complementary [ref=e130]:
+      - navigation "Primary" [ref=e131]:
+        - link "Memos" [ref=e132] [cursor=pointer]:
+          - /url: /
+        - link "Memos" [ref=e136] [cursor=pointer]:
+          - /url: /
+        - link "Explore" [ref=e139] [cursor=pointer]:
+          - /url: /explore
+        - link "Attachments" [ref=e145] [cursor=pointer]:
+          - /url: /attachments
+        - link "Inbox" [ref=e148] [cursor=pointer]:
+          - /url: /inbox
+        - link "Navigation" [ref=e152] [cursor=pointer]:
+          - /url: /navigation
+        - button "admin, More" [ref=e157] [cursor=pointer]
+    - main [ref=e162]:
+      - generic [ref=e164]:
+        - generic [ref=e165]:
+          - search [ref=e166]:
+            - group "搜索引擎" [ref=e167]:
+              - button "Google" [pressed] [ref=e168]: G
+              - button "Bing" [ref=e169]: B
+              - button "百度" [ref=e170]: 百
+            - textbox "Search cards or the web…" [ref=e171]
+          - button "Add group" [ref=e172]
+          - button "Import bookmarks" [active] [ref=e174]
+          - button "Clipboard" [ref=e178]
+        - generic [ref=e182]:
+          - generic [ref=e183]:
+            - generic [ref=e184]:
+              - button "常用 2 Collapse" [expanded] [ref=e185]:
+                - generic [ref=e195]: 常用
+                - generic [ref=e196]: "2"
+                - generic [ref=e197]: Collapse
+              - button "Add card" [ref=e198]
+              - button "Rename group" [ref=e199]
+              - button "Delete group" [ref=e200]
+            - generic [ref=e201]:
+              - generic [ref=e202]:
+                - link "Memos usememos.com" [ref=e203] [cursor=pointer]:
+                  - /url: https://usememos.com
+                  - generic [ref=e204]: Memos
+                  - generic [ref=e211]: usememos.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e212]:
+                - link "GitHub github.com" [ref=e213] [cursor=pointer]:
+                  - /url: https://github.com
+                  - generic [ref=e214]: GitHub
+                  - generic [ref=e221]: github.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+          - generic [ref=e222]:
+            - generic [ref=e223]:
+              - button "开发 1 Collapse" [expanded] [ref=e224]:
+                - generic [ref=e234]: 开发
+                - generic [ref=e235]: "1"
+                - generic [ref=e236]: Collapse
+              - button "Add card" [ref=e237]
+              - button "Rename group" [ref=e238]
+              - button "Delete group" [ref=e239]
+            - generic [ref=e241]:
+              - link "MDN developer.mozilla.org" [ref=e242] [cursor=pointer]:
+                - /url: https://developer.mozilla.org
+                - generic [ref=e243]: MDN
+                - generic [ref=e250]: developer.mozilla.org
+              - generic:
+                - button "Edit card"
+                - button "Delete card"
+          - generic [ref=e251]:
+            - generic [ref=e252]:
+              - button "娱乐 0 Collapse" [expanded] [ref=e253]:
+                - generic [ref=e263]: 娱乐
+                - generic [ref=e264]: "0"
+                - generic [ref=e265]: Collapse
+              - button "Add card" [ref=e266]
+              - button "Rename group" [ref=e267]
+              - button "Delete group" [ref=e268]
+            - paragraph [ref=e269]: This group has no cards yet.
+          - generic [ref=e270]:
+            - generic [ref=e271]:
+              - button "工具 2 Collapse" [expanded] [ref=e272]:
+                - generic [ref=e282]: 工具
+                - generic [ref=e283]: "2"
+                - generic [ref=e284]: Collapse
+              - button "Add card" [ref=e285]
+              - button "Rename group" [ref=e286]
+              - button "Delete group" [ref=e287]
+            - generic [ref=e288]:
+              - generic [ref=e289]:
+                - link "Figma figma.com" [ref=e290] [cursor=pointer]:
+                  - /url: https://www.figma.com
+                  - generic [ref=e291]: Figma
+                  - generic [ref=e298]: figma.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e299]:
+                - link "Linear linear.app" [ref=e300] [cursor=pointer]:
+                  - /url: https://linear.app
+                  - generic [ref=e301]: Linear
+                  - generic [ref=e308]: linear.app
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+          - generic [ref=e309]:
+            - generic [ref=e310]:
+              - button "学习 / 前端 1 Collapse" [expanded] [ref=e311]:
+                - generic [ref=e321]: 学习 / 前端
+                - generic [ref=e322]: "1"
+                - generic [ref=e323]: Collapse
+              - button "Add card" [ref=e324]
+              - button "Rename group" [ref=e325]
+              - button "Delete group" [ref=e326]
+            - generic [ref=e328]:
+              - link "React react.dev" [ref=e329] [cursor=pointer]:
+                - /url: https://react.dev
+                - generic [ref=e330]: React
+                - generic [ref=e337]: react.dev
+              - generic:
+                - button "Edit card"
+                - button "Delete card"
+          - generic [ref=e338]:
+            - generic [ref=e339]:
+              - button "书签导入 2 Collapse" [expanded] [ref=e340]:
+                - generic [ref=e350]: 书签导入
+                - generic [ref=e351]: "2"
+                - generic [ref=e352]: Collapse
+              - button "Add card" [ref=e353]
+              - button "Rename group" [ref=e354]
+              - button "Delete group" [ref=e355]
+            - generic [ref=e356]:
+              - generic [ref=e357]:
+                - link "Hacker News news.ycombinator.com" [ref=e358] [cursor=pointer]:
+                  - /url: https://news.ycombinator.com
+                  - generic [ref=e359]: Hacker News
+                  - generic [ref=e366]: news.ycombinator.com
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+              - generic [ref=e367]:
+                - link "Wikipedia wikipedia.org" [ref=e368] [cursor=pointer]:
+                  - /url: https://www.wikipedia.org
+                  - generic [ref=e369]: Wikipedia
+                  - generic [ref=e376]: wikipedia.org
+                - generic:
+                  - button "Edit card"
+                  - button "Delete card"
+  - status [ref=e382]: Imported config would be ~23745 characters, over the memo content limit of 8000. Raise “Content length limit” in Instance settings, or import in batches.
+  - button "Open Tanstack query devtools" [ref=e79] [cursor=pointer]

@@ -1,0 +1,20 @@
+- generic [active] [ref=f2e1]:
+  - generic:
+    - generic:
+      - complementary [ref=f2e3]:
+        - navigation "Primary" [ref=f2e4]:
+          - link "Memos" [ref=f2e5] [cursor=pointer]:
+            - /url: /
+          - link "Memos" [ref=f2e9] [cursor=pointer]:
+            - /url: /
+          - link "Explore" [ref=f2e12] [cursor=pointer]:
+            - /url: /explore
+          - link "Attachments" [ref=f2e18] [cursor=pointer]:
+            - /url: /attachments
+          - link "Inbox" [ref=f2e21] [cursor=pointer]:
+            - /url: /inbox
+          - link "Navigation" [ref=f2e25] [cursor=pointer]:
+            - /url: /navigation
+          - button "admin, More" [ref=f2e30] [cursor=pointer]
+      - main
+    - button "Open Tanstack query devtools" [ref=f2e86] [cursor=pointer]

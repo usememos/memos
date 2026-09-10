@@ -1,0 +1,28 @@
+[     115ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3001/node_modules/.vite/deps/react-dom_client.js?v=adcc9984:14337
+[     163ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3001/memos.api.v1.AuthService/RefreshToken:0
+[   19406ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ https://pan.baidu.com/favicon.ico:0
+[   19406ms] [ERROR] Failed to load resource: net::ERR_CONTENT_DECODING_FAILED @ https://pan.baidu.com/favicon.ico:0
+[   20533ms] [ERROR] Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin @ https://openai.com/favicon.ico:0
+[   20581ms] [ERROR] Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin @ https://pixabay.com/favicon.ico:0
+[   49811ms] [ERROR] Failed to load resource: net::ERR_TIMED_OUT @ https://www.wikipedia.org/favicon.ico:0
+[   75443ms] [ERROR] Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin @ https://openai.com/favicon.ico:0
+[   75678ms] [ERROR] Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin @ https://pixabay.com/favicon.ico:0
+[   90286ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ https://pan.baidu.com/favicon.ico:0
+[   90286ms] [ERROR] Failed to load resource: net::ERR_CONTENT_DECODING_FAILED @ https://pan.baidu.com/favicon.ico:0
+[   90770ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_RESET @ https://www.wikipedia.org/favicon.ico:0
+[   94670ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://news.ycombinator.com/favicon.ico:0
+[   95869ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://console.x.ai/favicon.ico:0
+[  244788ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://www.youtube.com/favicon.ico:0
+[  245871ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://aistudio.google.com/favicon.ico:0
+[  246853ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://www.google.com/s2/favicons?domain=www.figma.com&sz=64:0
+[  246853ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://www.google.com/s2/favicons?domain=usememos.com&sz=64:0
+[  246873ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://www.google.com/s2/favicons?domain=xatalent.cn&sz=64:0
+[  246873ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://www.google.com/s2/favicons?domain=www.doubao.com&sz=64:0
+[  246873ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://www.google.com/s2/favicons?domain=pan.baidu.com&sz=64:0
+[  246873ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://www.google.com/s2/favicons?domain=platform.deepseek.com&sz=64:0
+[  472164ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://www.google.com/s2/favicons?domain=libresprite.github.io&sz=64:0
+[  472165ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://www.google.com/s2/favicons?domain=www.trae.ai&sz=64:0
+[  472176ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://www.google.com/s2/favicons?domain=www.coze.cn&sz=64:0
+[  472176ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://www.google.com/s2/favicons?domain=g8hh.github.io&sz=64:0
+[  472176ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://www.google.com/s2/favicons?domain=www.piskelapp.com&sz=64:0
+[  472176ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://www.google.com/s2/favicons?domain=pixabay.com&sz=64:0

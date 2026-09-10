@@ -1,0 +1,75 @@
+[     139ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3001/node_modules/.vite/deps/react-dom_client.js?v=adcc9984:14337
+[     188ms] [ERROR] Failed to load resource: the server responded with a status of 401 (Unauthorized) @ http://localhost:3001/memos.api.v1.AuthService/RefreshToken:0
+[   11426ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_RESET @ https://www.wikipedia.org/favicon.ico:0
+[   56663ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3001/node_modules/.vite/deps/react-dom_client.js?v=adcc9984:14337
+[   57190ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_RESET @ https://www.wikipedia.org/favicon.ico:0
+[   68729ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ https://pan.baidu.com/favicon.ico:0
+[   68729ms] [ERROR] Failed to load resource: net::ERR_CONTENT_DECODING_FAILED @ https://pan.baidu.com/favicon.ico:0
+[   71043ms] [ERROR] Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin @ https://pixabay.com/favicon.ico:0
+[   71600ms] [ERROR] Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin @ https://openai.com/favicon.ico:0
+[   86335ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://news.ycombinator.com/favicon.ico:0
+[   91933ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3001/node_modules/.vite/deps/react-dom_client.js?v=adcc9984:14337
+[   92149ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ https://pan.baidu.com/favicon.ico:0
+[   92149ms] [ERROR] Failed to load resource: net::ERR_CONTENT_DECODING_FAILED @ https://pan.baidu.com/favicon.ico:0
+[   92280ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_RESET @ https://www.wikipedia.org/favicon.ico:0
+[   92365ms] [ERROR] Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin @ https://pixabay.com/favicon.ico:0
+[   92564ms] [ERROR] Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin @ https://openai.com/favicon.ico:0
+[  132113ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://news.ycombinator.com/favicon.ico:0
+[  146953ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://console.x.ai/favicon.ico:0
+[  294242ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://www.youtube.com/favicon.ico:0
+[  296324ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://aistudio.google.com/favicon.ico:0
+[  520850ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://www.google.com/s2/favicons?domain=www.youtube.com&sz=64:0
+[  521099ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_TIMED_OUT @ https://www.google.com/s2/favicons?domain=aistudio.google.com&sz=64:0
+[ 1088016ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ https://pan.baidu.com/favicon.ico:0
+[ 1088016ms] [ERROR] Failed to load resource: net::ERR_CONTENT_DECODING_FAILED @ https://pan.baidu.com/favicon.ico:0
+[ 1088326ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_RESET @ https://www.wikipedia.org/favicon.ico:0
+[ 1088419ms] [ERROR] Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin @ https://pixabay.com/favicon.ico:0
+[ 1088870ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ https://pan.baidu.com/favicon.ico:0
+[ 1088870ms] [ERROR] Failed to load resource: net::ERR_CONTENT_DECODING_FAILED @ https://pan.baidu.com/favicon.ico:0
+[ 1088939ms] [ERROR] Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin @ https://openai.com/favicon.ico:0
+[ 1089060ms] [ERROR] Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin @ https://pixabay.com/favicon.ico:0
+[ 1089502ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_RESET @ https://www.wikipedia.org/favicon.ico:0
+[ 1089525ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ https://pan.baidu.com/favicon.ico:0
+[ 1089525ms] [ERROR] Failed to load resource: net::ERR_CONTENT_DECODING_FAILED @ https://pan.baidu.com/favicon.ico:0
+[ 1089706ms] [ERROR] Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin @ https://openai.com/favicon.ico:0
+[ 1089720ms] [ERROR] Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin @ https://pixabay.com/favicon.ico:0
+[ 1104181ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ https://pan.baidu.com/favicon.ico:0
+[ 1104181ms] [ERROR] Failed to load resource: net::ERR_CONTENT_DECODING_FAILED @ https://pan.baidu.com/favicon.ico:0
+[ 1104375ms] [ERROR] Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin @ https://pixabay.com/favicon.ico:0
+[ 1104561ms] [ERROR] Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin @ https://openai.com/favicon.ico:0
+[ 1108097ms] [ERROR] [vite] SyntaxError: The requested module '/node_modules/.vite/deps/lucide-react.js?v=d21a3635' does not provide an export named 'ListExpandIcon' @ http://localhost:3001/@vite/client:904
+[ 1108098ms] [ERROR] [vite] Failed to reload /src/modules/navigation/NavigationPage.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://localhost:3001/@vite/client:904
+[ 1113782ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3001/node_modules/.vite/deps/react-dom_client.js?v=adcc9984:14337
+[ 1113936ms] [ERROR] %o
+
+%s
+
+%s
+ SyntaxError: The requested module '/node_modules/.vite/deps/lucide-react.js?v=d21a3635' does not provide an export named 'ListExpandIcon' The above error occurred in one of your React components. React will try to recreate this component tree from scratch using the error boundary you provided, RenderErrorBoundary. @ http://localhost:3001/node_modules/.vite/deps/react-dom_client.js?v=adcc9984:5273
+[ 1113936ms] [ERROR] React Router caught the following error during render SyntaxError: The requested module '/node_modules/.vite/deps/lucide-react.js?v=d21a3635' does not provide an export named 'ListExpandIcon' @ http://localhost:3001/node_modules/.vite/deps/react-router-dom.js?v=6741c5e9:4020
+[ 1116433ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3001/node_modules/.vite/deps/react-dom_client.js?v=adcc9984:14337
+[ 1116552ms] [ERROR] %o
+
+%s
+
+%s
+ SyntaxError: The requested module '/node_modules/.vite/deps/lucide-react.js?v=d21a3635' does not provide an export named 'ListExpandIcon' The above error occurred in one of your React components. React will try to recreate this component tree from scratch using the error boundary you provided, RenderErrorBoundary. @ http://localhost:3001/node_modules/.vite/deps/react-dom_client.js?v=adcc9984:5273
+[ 1116552ms] [ERROR] React Router caught the following error during render SyntaxError: The requested module '/node_modules/.vite/deps/lucide-react.js?v=d21a3635' does not provide an export named 'ListExpandIcon' @ http://localhost:3001/node_modules/.vite/deps/react-router-dom.js?v=6741c5e9:4020
+[ 1206446ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3001/node_modules/.vite/deps/react-dom_client.js?v=adcc9984:14337
+[ 1206997ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ https://pan.baidu.com/favicon.ico:0
+[ 1206997ms] [ERROR] Failed to load resource: net::ERR_CONTENT_DECODING_FAILED @ https://pan.baidu.com/favicon.ico:0
+[ 1207070ms] [ERROR] Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin @ https://openai.com/favicon.ico:0
+[ 1207204ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_RESET @ https://www.wikipedia.org/favicon.ico:0
+[ 1209050ms] [ERROR] Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin @ https://pixabay.com/favicon.ico:0
+[ 1209621ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3001/node_modules/.vite/deps/react-dom_client.js?v=adcc9984:14337
+[ 1209835ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ https://pan.baidu.com/favicon.ico:0
+[ 1209835ms] [ERROR] Failed to load resource: net::ERR_CONTENT_DECODING_FAILED @ https://pan.baidu.com/favicon.ico:0
+[ 1210028ms] [ERROR] Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin @ https://pixabay.com/favicon.ico:0
+[ 1210326ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_RESET @ https://www.wikipedia.org/favicon.ico:0
+[ 1210515ms] [ERROR] Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin @ https://openai.com/favicon.ico:0
+[ 1220222ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3001/node_modules/.vite/deps/react-dom_client.js?v=adcc9984:14337
+[ 1220428ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ https://pan.baidu.com/favicon.ico:0
+[ 1220428ms] [ERROR] Failed to load resource: net::ERR_CONTENT_DECODING_FAILED @ https://pan.baidu.com/favicon.ico:0
+[ 1220618ms] [ERROR] Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin @ https://openai.com/favicon.ico:0
+[ 1220618ms] [ERROR] Failed to load resource: net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin @ https://pixabay.com/favicon.ico:0
+[ 1220631ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_RESET @ https://www.wikipedia.org/favicon.ico:0
