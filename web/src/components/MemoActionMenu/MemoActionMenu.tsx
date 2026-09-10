@@ -7,9 +7,11 @@ import {
   CopyIcon,
   Edit3Icon,
   FileTextIcon,
+  FolderInputIcon,
   LinkIcon,
   ListChecksIcon,
   ListRestartIcon,
+  MoreHorizontalIcon,
   MoreVerticalIcon,
   TrashIcon,
 } from "lucide-react";
@@ -25,10 +27,10 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
 import { State } from "@/types/proto/api/v1/common_pb";
 import { useTranslate } from "@/utils/i18n";
 import { useMemoActionHandlers } from "./hooks";
+import MemoMoveDialog from "./MemoMoveDialog";
 import type { MemoActionMenuProps } from "./types";
 
 const MemoActionMenu = (props: MemoActionMenuProps) => {
@@ -37,6 +39,7 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
 
   // Dialog state
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [moveDialogOpen, setMoveDialogOpen] = useState(false);
 
   // Derived state
   const isComment = Boolean(memo.parent);
@@ -46,6 +49,7 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
 
   // Action handlers
   const {
+    canMove,
     handleTogglePinMemoBtnClick,
     handleEditMemoClick,
     handleToggleMemoStatusClick,
@@ -57,26 +61,14 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
     confirmDeleteMemo,
   } = useMemoActionHandlers({
     memo,
-    parentScope: props.parentScope,
+    parentPage: props.parentPage,
     onEdit: props.onEdit,
     setDeleteDialogOpen,
   });
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger
-        render={
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            aria-label={t("common.more")}
-            className={cn(
-              "text-muted-foreground/70 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/50 data-popup-open:bg-accent data-popup-open:text-accent-foreground",
-              props.className,
-            )}
-          />
-        }
-      >
+      <DropdownMenuTrigger render={<Button variant="quiet" size="icon-sm" aria-label={t("common.more")} />}>
         <MoreVerticalIcon className="size-4" strokeWidth={1.8} />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" sideOffset={2}>
@@ -136,25 +128,38 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
           </DropdownMenuSub>
         )}
 
-        {/* Write actions (non-readonly) */}
-        {!readonly && (
-          <>
-            {/* Archive/Restore (non-comment) */}
-            {!isComment && (
-              <DropdownMenuItem onClick={handleToggleMemoStatusClick}>
-                {isArchived ? <ArchiveRestoreIcon className="w-4 h-auto" /> : <ArchiveIcon className="w-4 h-auto" />}
-                {isArchived ? t("common.restore") : t("common.archive")}
-              </DropdownMenuItem>
-            )}
+        {!readonly && !isComment && (
+          <DropdownMenuItem onClick={handleToggleMemoStatusClick}>
+            {isArchived ? <ArchiveRestoreIcon className="w-4 h-auto" /> : <ArchiveIcon className="w-4 h-auto" />}
+            {isArchived ? t("common.restore") : t("common.archive")}
+          </DropdownMenuItem>
+        )}
 
-            {/* Delete */}
-            <DropdownMenuItem onClick={handleDeleteMemoClick}>
-              <TrashIcon className="w-4 h-auto" />
-              {t("common.delete")}
-            </DropdownMenuItem>
-          </>
+        {(canMove || !readonly) && (
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>
+              <MoreHorizontalIcon className="size-4" />
+              {t("common.more")}
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent>
+              {canMove && (
+                <DropdownMenuItem onClick={() => setMoveDialogOpen(true)}>
+                  <FolderInputIcon className="size-4" />
+                  {t("memo.move.title")}
+                </DropdownMenuItem>
+              )}
+              {!readonly && (
+                <DropdownMenuItem onClick={handleDeleteMemoClick}>
+                  <TrashIcon className="size-4" />
+                  {t("common.delete")}
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
         )}
       </DropdownMenuContent>
+
+      {moveDialogOpen && <MemoMoveDialog memo={memo} onOpenChange={setMoveDialogOpen} />}
 
       {/* Delete confirmation dialog */}
       <ConfirmDialog

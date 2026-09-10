@@ -1,4 +1,25 @@
 {
+  "map": {
+    "resize-panel": "调整地点面板宽度",
+    "collapse": "收起面板",
+    "expand": "展开面板",
+    "selection": "选中的 Memo",
+    "loaded": "已加载 {{count}} 条",
+    "fit-all": "查看全部结果",
+    "zoom-in": "放大",
+    "zoom-out": "缩小",
+    "load-error": "未能加载全部 Memo。",
+    "tile-error": "地图加载失败，你仍可以阅读 Memo。",
+    "empty": "还没有带位置的 Memo",
+    "empty-hint": "给 Memo 添加位置后，它就会显示在这里。",
+    "no-results": "没有符合条件的 Memo",
+    "no-results-hint": "试试清除筛选条件。",
+    "clear-filters": "清除筛选",
+    "loading": "正在加载 Memo…",
+    "new-here": "在这里记录",
+    "saved-outside-filter": "已保存，这条 Memo 不在当前地图结果中。",
+    "open-memo": "打开 Memo"
+  },
   "about": {
     "api-docs": "API 文档",
     "api-docs-note": "REST 与 gRPC 参考",
@@ -966,5 +987,21 @@
       "description": "这些文件从未附加到任何备忘。可在此查看或删除。",
       "title": "未关联的上传"
     }
+  },
+  "space": {
+    "icon": {
+      "change": "更改空间图标",
+      "kind": "图标类型",
+      "icons": "图标",
+      "emoji": "表情",
+      "search-icons": "搜索图标…",
+      "search-emoji": "搜索或粘贴表情…",
+      "no-results": "没有匹配项",
+      "emoji-help": "选择常用表情，或粘贴你喜欢的表情。",
+      "reset": "恢复默认",
+      "use-emoji": "使用 {{emoji}}"
+    },
+    "unavailable": "空间不存在或你没有访问权限。",
+    "back-to-memos": "返回 Memos"
   }
 }

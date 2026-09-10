@@ -1,5 +1,6 @@
 import { SmilePlusIcon } from "lucide-react";
 import { useState } from "react";
+import { FOCUS_VISIBLE_OUTLINE_CLASSES } from "@/components/ui/focus";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useInstance } from "@/contexts/InstanceContext";
 import { cn } from "@/lib/utils";
@@ -37,7 +38,8 @@ const ReactionSelector = (props: Props) => {
             type="button"
             aria-label={t("setting.memo.add-reaction")}
             className={cn(
-              "flex size-7 cursor-pointer items-center justify-center rounded-full border text-muted-foreground transition-all hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
+              "flex size-7 cursor-pointer items-center justify-center rounded-full border text-muted-foreground transition-all hover:opacity-80",
+              FOCUS_VISIBLE_OUTLINE_CLASSES,
               className,
             )}
           />

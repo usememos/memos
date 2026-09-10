@@ -1,7 +1,8 @@
 import { useDirection } from "@base-ui/react/direction-provider";
 import { Columns2Icon, Columns3Icon, InfinityIcon, type LucideIcon, Rows3Icon, SlidersHorizontalIcon } from "lucide-react";
 import type { ReactNode } from "react";
-import { SIDEBAR_SECTION_ACTION_BUTTON_CLASSES, SIDEBAR_SECTION_ACTION_ICON_CLASSES } from "@/components/AppSidebar/SidebarSection";
+import { SIDEBAR_SECTION_ACTION_ICON_CLASSES } from "@/components/AppSidebar/SidebarSection";
+import { buttonVariants } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -193,12 +194,7 @@ function MemoDisplaySettingMenu({ className }: Props) {
         <TooltipTrigger render={<span className="inline-flex" />}>
           <PopoverTrigger
             aria-label={t("memo.view-options")}
-            className={cn(
-              "flex items-center justify-center",
-              SIDEBAR_SECTION_ACTION_BUTTON_CLASSES,
-              "data-popup-open:bg-sidebar-accent data-popup-open:text-foreground",
-              className,
-            )}
+            className={cn(buttonVariants({ variant: "quiet", size: "icon-sm" }), className)}
           >
             <SlidersHorizontalIcon className={SIDEBAR_SECTION_ACTION_ICON_CLASSES} strokeWidth={1.8} />
           </PopoverTrigger>

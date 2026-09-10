@@ -1,4 +1,5 @@
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { createEvent, fireEvent, screen, render as testingRender, waitFor, within } from "@testing-library/react";
+import { createMemoryRouter, MemoryRouter, RouterProvider } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import SpaceSwitcher from "@/components/AppSidebar/SpaceSwitcher";
 
@@ -9,7 +10,6 @@ const spaceState = vi.hoisted(() => ({
   ],
   selectedSpace: undefined as { name: string; title: string; description: string } | undefined,
   selectedSpaceName: undefined as string | undefined,
-  selectMemos: vi.fn(),
   selectSpace: vi.fn(),
 }));
 
@@ -49,6 +49,8 @@ vi.mock("@/utils/i18n", () => ({
   useTranslate: () => (key: string) => key,
 }));
 
+const render = (ui: React.ReactNode) => testingRender(<MemoryRouter>{ui}</MemoryRouter>);
+
 describe("SpaceSwitcher", () => {
   beforeEach(() => {
     spaceState.spaces = [
@@ -57,8 +59,27 @@ describe("SpaceSwitcher", () => {
     ];
     spaceState.selectedSpace = undefined;
     spaceState.selectedSpaceName = undefined;
-    spaceState.selectMemos.mockClear();
     spaceState.selectSpace.mockClear();
+  });
+
+  it.each([
+    "/",
+    "/setting",
+    "/memos/direct",
+  ])("does not navigate the current scope from %s and leaves modified clicks native", async (path) => {
+    const router = createMemoryRouter([{ path: "*", element: <SpaceSwitcher /> }], { initialEntries: [path] });
+    testingRender(<RouterProvider router={router} />);
+    const key = router.state.location.key;
+    fireEvent.click(screen.getByRole("button", { name: "space.switch: common.memos" }));
+    fireEvent.click(await screen.findByRole("menuitemradio", { name: "Memos" }));
+    expect(router.state.location.key).toBe(key);
+    await waitFor(() => expect(screen.queryByRole("menu")).not.toBeInTheDocument());
+    fireEvent.click(screen.getByRole("button", { name: "space.switch: common.memos" }));
+    const product = await screen.findByRole("menuitemradio", { name: "Product" });
+    const click = createEvent.click(product, { ctrlKey: true, cancelable: true });
+    fireEvent(product, click);
+    expect(click.defaultPrevented).toBe(false);
+    expect(router.state.location.pathname).toBe(path);
   });
 
   it("lists Memos, every available Space, and the create entry", async () => {
@@ -205,18 +226,18 @@ describe("SpaceSwitcher", () => {
     expect(researchRow).not.toHaveTextContent("research-space");
   });
 
-  it("switches context without navigation and opens Space creation", async () => {
+  it("links to spaces and opens Space creation", async () => {
     render(<SpaceSwitcher />);
     fireEvent.click(screen.getByRole("button", { name: "space.switch: common.memos" }));
-    fireEvent.click(await screen.findByRole("menuitemradio", { name: "Product" }));
-    expect(spaceState.selectSpace).toHaveBeenCalledWith(spaceState.spaces[0]);
+    const product = await screen.findByRole("menuitemradio", { name: "Product" });
+    expect(product).toHaveAttribute("href", "/spaces/product");
+    fireEvent.click(product);
 
     await waitFor(() => expect(screen.queryByRole("menu")).not.toBeInTheDocument());
 
     // Selecting Memos is how a signed-in user gets back to the home feed.
     fireEvent.click(screen.getByRole("button", { name: "space.switch: common.memos" }));
     fireEvent.click(await screen.findByRole("menuitemradio", { name: "Memos" }));
-    expect(spaceState.selectMemos).toHaveBeenCalledOnce();
 
     await waitFor(() => expect(screen.queryByRole("menu")).not.toBeInTheDocument());
     fireEvent.click(screen.getByRole("button", { name: "space.switch: common.memos" }));

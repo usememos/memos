@@ -1,7 +1,7 @@
 import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
 import { type QueryClient, queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { memoViewServiceClient, userServiceClient } from "@/connect";
+import { userServiceClient } from "@/connect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { buildUserSettingName, userNamePrefix } from "@/lib/resource-names";
 import { mergeTagCounts } from "@/lib/tag";
@@ -82,7 +82,7 @@ export function useMemoViews(parent?: string) {
     queryKey: userKeys.memoViews(parent),
     queryFn: async () => {
       if (!parent) return [];
-      const { memoViews } = await memoViewServiceClient.listMemoViews({ parent });
+      const { memoViews } = await userServiceClient.listMemoViews({ parent });
       return memoViews;
     },
     enabled: !!parent,

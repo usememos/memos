@@ -1,6 +1,6 @@
 import { UserRoundIcon } from "lucide-react";
-import { type ReactNode, Suspense } from "react";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import { type ReactNode } from "react";
+import { Link, useParams } from "react-router-dom";
 import MemoView from "@/components/MemoView";
 import PagedMemoList, { getMemoKey } from "@/components/PagedMemoList";
 import UserAvatar from "@/components/UserAvatar";
@@ -16,11 +16,6 @@ import { State } from "@/types/proto/api/v1/common_pb";
 import { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import type { User } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
-import { lazyWithReload } from "@/utils/lazy";
-
-type TabView = "memos" | "map";
-
-const UserMemoMap = lazyWithReload(() => import("@/components/UserMemoMap"));
 
 const PROFILE_TITLE_CLASSES = "text-xl font-semibold leading-7 tracking-[-0.01em] text-foreground";
 const PROFILE_AVATAR_SLOT_CLASSES = "mt-0.5 size-10 shrink-0 rounded-lg";
@@ -79,9 +74,7 @@ const ProfileNotFound = ({ username }: { username: string }) => {
 const UserProfile = () => {
   const t = useTranslate();
   const username = useParams().username ?? "";
-  const [searchParams] = useSearchParams();
   const currentUser = useCurrentUser();
-  const activeTab = (searchParams.get("view") === "map" ? "map" : "memos") as TabView;
 
   const { data: user, isLoading } = useUser(`${userNamePrefix}${username}`, { enabled: !!username });
   const showSkeleton = useDelayedFlag(isLoading, LOADING_INDICATOR_DELAY_MS);
@@ -97,7 +90,7 @@ const UserProfile = () => {
     state: State.NORMAL,
   });
 
-  if (user && activeTab === "memos") {
+  if (user) {
     // Visitors only see what the backend lets them see, so an empty list means nothing
     // shared rather than nothing written. The owner sees everything and gets the default.
     const isOwner = currentUser?.name === user.name;
@@ -118,18 +111,7 @@ const UserProfile = () => {
   // Everything that is not the list shares the list's single-column reading rail.
   return (
     <section className="mx-auto flex w-full max-w-2xl flex-col gap-4">
-      {isLoading ? (
-        showSkeleton && <ProfileHeaderSkeleton />
-      ) : !user ? (
-        <ProfileNotFound username={username} />
-      ) : (
-        <>
-          <ProfileHeader user={user} />
-          <Suspense fallback={<div className="h-[60dvh] rounded-xl border border-border bg-muted/30 sm:h-[500px]" />}>
-            <UserMemoMap creator={user.name} className="h-[60dvh] rounded-xl sm:h-[500px]" />
-          </Suspense>
-        </>
-      )}
+      {isLoading ? showSkeleton && <ProfileHeaderSkeleton /> : <ProfileNotFound username={username} />}
     </section>
   );
 };

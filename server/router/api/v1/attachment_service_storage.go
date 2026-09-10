@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"io"
@@ -46,21 +45,29 @@ func convertAttachmentFromStore(attachment *store.Attachment) *v1pb.Attachment {
 	return attachmentMessage
 }
 
-// SaveAttachmentBlob saves the blob of attachment based on the storage config.
-func SaveAttachmentBlob(ctx context.Context, profile *profile.Profile, stores *store.Store, create *store.Attachment) error {
-	instanceStorageSetting, err := stores.GetInstanceStorageSetting(ctx)
-	if err != nil {
-		return errors.Wrap(err, "Failed to find instance storage setting")
-	}
-	return saveAttachmentBlobWithInstanceStorageSetting(ctx, profile, stores, create, instanceStorageSetting)
+// attachmentContextReader stops a long local copy once the request context is
+// canceled; io.Copy has no context of its own, unlike the S3 client.
+type attachmentContextReader struct {
+	ctx    context.Context
+	reader io.Reader
 }
 
-func saveAttachmentBlobWithInstanceStorageSetting(
+func (r *attachmentContextReader) Read(p []byte) (int, error) {
+	if err := r.ctx.Err(); err != nil {
+		return 0, err
+	}
+	return r.reader.Read(p)
+}
+
+// saveAttachmentContent writes content to the default storage and records
+// where it went on create. Database storage keeps the bytes on create.Blob.
+func saveAttachmentContent(
 	ctx context.Context,
 	profile *profile.Profile,
 	stores *store.Store,
 	create *store.Attachment,
 	instanceStorageSetting *storepb.InstanceStorageSetting,
+	content io.Reader,
 ) error {
 	defaultStorage := store.GetDefaultStorage(instanceStorageSetting)
 	if defaultStorage == nil {
@@ -99,9 +106,24 @@ func saveAttachmentBlobWithInstanceStorageSetting(
 			return errors.Wrap(err, "Failed to create directory")
 		}
 
-		// Write the blob to the file.
-		if err := os.WriteFile(osPath, create.Blob, 0644); err != nil {
-			return errors.Wrap(err, "Failed to write file")
+		// Stage in a temp file so partial content never appears at the final path.
+		file, err := os.CreateTemp(dir, ".memos-upload-*")
+		if err != nil {
+			return errors.Wrap(err, "failed to create attachment file")
+		}
+		defer os.Remove(file.Name())
+		defer file.Close()
+		if _, err := io.Copy(file, &attachmentContextReader{ctx: ctx, reader: content}); err != nil {
+			return errors.Wrap(err, "failed to write attachment file")
+		}
+		if err := file.Chmod(0644); err != nil {
+			return errors.Wrap(err, "failed to set attachment permissions")
+		}
+		if err := file.Close(); err != nil {
+			return errors.Wrap(err, "failed to close attachment file")
+		}
+		if err := os.Rename(file.Name(), osPath); err != nil {
+			return errors.Wrap(err, "failed to finalize attachment file")
 		}
 		create.Reference = internalPath
 		create.Blob = nil
@@ -117,7 +139,7 @@ func saveAttachmentBlobWithInstanceStorageSetting(
 			filepathTemplate = filepath.Join(filepathTemplate, "{filename}")
 		}
 		filepathTemplate = replaceFilenameWithPathTemplate(filepathTemplate, create.Filename)
-		key, err := driver.UploadObject(ctx, filepathTemplate, create.Type, bytes.NewReader(create.Blob))
+		key, err := driver.UploadObject(ctx, filepathTemplate, create.Type, content)
 		if err != nil {
 			return errors.Wrap(err, "failed to upload via storage driver")
 		}
@@ -133,6 +155,12 @@ func saveAttachmentBlobWithInstanceStorageSetting(
 			},
 		}
 		create.Payload = payload
+	} else {
+		blob, err := io.ReadAll(content)
+		if err != nil {
+			return errors.Wrap(err, "failed to read attachment content")
+		}
+		create.Blob = blob
 	}
 
 	return nil

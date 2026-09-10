@@ -135,9 +135,9 @@ const UserMenu = (props: Props) => {
       >
         <div className={cn(SIDEBAR_LEADING_SLOT_CLASSES, "relative")}>
           {currentUser?.avatarUrl ? (
-            <UserAvatar className="size-5 rounded-[5px]" avatarUrl={currentUser?.avatarUrl} />
+            <UserAvatar className="size-7 rounded-[7px]" avatarUrl={currentUser?.avatarUrl} />
           ) : (
-            <User2Icon className="me-auto size-4 text-muted-foreground" />
+            <User2Icon className="me-auto size-6 text-muted-foreground" strokeWidth={2.25} />
           )}
           {sseStatus !== "connected" && (
             <Tooltip>

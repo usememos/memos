@@ -169,8 +169,9 @@ export type Memo = Message<"memos.api.v1.Memo"> & {
   property?: Memo_Property | undefined;
 
   /**
-   * Output only. The readable context memo of this COMMENT relation, if any.
-   * This is omitted unless the caller may independently read both memos.
+   * Output only. The context memo of this COMMENT relation, if any.
+   * Its identity is returned even when the caller cannot read the parent.
+   * Fetch the parent independently; this field does not grant read access.
    * Format: memos/{memo}
    *
    * @generated from field: optional string parent = 16;

@@ -8,6 +8,8 @@ import { cva } from "class-variance-authority";
  * so its glyph sits 2px inside the artwork rail and reaches the label rail with a 10px gap.
  */
 export const SIDEBAR_RAIL_CLASSES = "px-3";
+/** Fixed width of the left icon rail. Used when a route hides the contextual panel. */
+export const SIDEBAR_ICON_RAIL_WIDTH = 72;
 // Content rows reserve 20px so 16px icons and 20px marks share a stable label rail.
 export const SIDEBAR_LEADING_SLOT_CLASSES = "flex size-5 shrink-0 items-center justify-center";
 // Compact nav uses the visible 16px glyph itself as the cell, keeping 6px x/y padding.
@@ -28,7 +30,9 @@ export const sidebarSurfaceVariants = cva("min-w-0 items-center", {
       headerBrand: "flex h-9 max-w-full gap-2 rounded-md px-2",
       mobileBrand: "flex h-9 max-w-full gap-1.5 rounded-md px-1",
       account: "flex h-9 w-full gap-1 rounded-none px-5",
-      accountCollapsed: "ms-3 flex size-9 rounded-md p-2",
+      accountCollapsed: "ms-0 flex size-12 items-center justify-center rounded-xl p-2",
+      /** Icon-only control on the left rail — 48px tile so a 24px glyph reads clearly. */
+      navIcon: "relative flex size-12 items-center justify-center rounded-xl",
     },
   },
   defaultVariants: {

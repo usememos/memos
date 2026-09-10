@@ -136,7 +136,7 @@ func TestReactionWritePolicyRejectsInactiveActorAndMemo(t *testing.T) {
 	require.ErrorIs(t, err, store.ErrMemoSpaceNotWritable)
 }
 
-func TestDeleteReactionAtomicallyEnforcesCreatorAndParticipation(t *testing.T) {
+func TestDeleteReactionAtomicallyEnforcesCreatorWithoutParticipation(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	defer ts.Close()
@@ -168,14 +168,8 @@ func TestDeleteReactionAtomicallyEnforcesCreatorAndParticipation(t *testing.T) {
 	err = ts.DeleteReaction(ctx, &store.DeleteReaction{
 		ID: &reaction.ID, MemoID: &memo.ID, ActorUserID: &member.ID, Policy: reactionWritePolicy(member.ID),
 	})
-	require.ErrorIs(t, err, store.ErrMemoSpaceMembershipRequired)
-	requireReactionPresent(ctx, t, ts, reaction.ID)
+	require.NoError(t, err, "creators can withdraw reactions after leaving the Space")
 
-	_, err = createSpaceMemberForTest(ctx, ts, &store.SpaceMember{SpaceID: space.ID, UserID: member.ID, Role: store.SpaceMemberRoleUser}, owner.ID)
-	require.NoError(t, err)
-	require.NoError(t, ts.DeleteReaction(ctx, &store.DeleteReaction{
-		ID: &reaction.ID, MemoID: &memo.ID, ActorUserID: &member.ID, Policy: reactionWritePolicy(member.ID),
-	}))
 	requireReactionMissing(ctx, t, ts, reaction.ID)
 }
 

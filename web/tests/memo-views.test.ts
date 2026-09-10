@@ -37,7 +37,7 @@ describe("memo scopes", () => {
     expect(isMemoCollectionRoute("/")).toBe(true);
     expect(isMemoCollectionRoute("/archived")).toBe(true);
     expect(isMemoCollectionRoute("/u/steven")).toBe(true);
-    expect(isMemoCollectionRoute("/u/steven/?view=map")).toBe(true);
+    expect(isMemoCollectionRoute("/u/steven/?filter=tagSearch%3Awork")).toBe(true);
     expect(isMemoCollectionRoute("/calendar")).toBe(true);
     expect(isMemoCollectionRoute("/Calendar/2026/08/02/")).toBe(true);
     expect(isMemoCollectionRoute("/calendars")).toBe(false);

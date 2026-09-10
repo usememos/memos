@@ -1,10 +1,11 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { buttonVariants } from "@/components/ui/button";
 import { addMonths } from "@/lib/calendar-utils";
 import { cn } from "@/lib/utils";
+import { collectionPathForLocation } from "@/router/routes";
 import { useTranslate } from "@/utils/i18n";
 import { CalendarLink } from "./CalendarLink";
-import { CALENDAR_CONTROL_ACTIVE_CLASSES, CALENDAR_ICON_CONTROL_CLASSES, CALENDAR_TEXT_CONTROL_CLASSES } from "./controls";
 import { MonthPicker } from "./MonthPicker";
 import { buildCalendarPath, getMonthOfDate } from "./paths";
 
@@ -33,8 +34,9 @@ export const getTodayPath = (month: string, activeDate: string | undefined, toda
 export const CalendarHeader = ({ month, monthLabel, today, activeDate, closable }: CalendarHeaderProps) => {
   const t = useTranslate();
   const navigate = useNavigate();
-  const { search } = useLocation();
+  const { pathname, search } = useLocation();
   const todayOpen = activeDate === today;
+  const iconControlClassName = cn(buttonVariants({ variant: "quiet", size: "icon-compact" }));
 
   return (
     // The title's text starts on the grid's text axis (border + cell padding); the month
@@ -42,26 +44,21 @@ export const CalendarHeader = ({ month, monthLabel, today, activeDate, closable 
     <header className="flex h-9 shrink-0 items-center ps-px">
       <MonthPicker month={month} monthLabel={monthLabel} today={today} />
       <div className="ms-auto flex items-center gap-0.5">
-        <CalendarLink
-          to={buildCalendarPath(addMonths(month, -1))}
-          aria-label={t("common.previous-month")}
-          className={CALENDAR_ICON_CONTROL_CLASSES}
-        >
+        <CalendarLink to={buildCalendarPath(addMonths(month, -1))} aria-label={t("common.previous-month")} className={iconControlClassName}>
           <ChevronLeftIcon className="rtl:rotate-180" strokeWidth={1.75} />
         </CalendarLink>
-        <CalendarLink
-          to={buildCalendarPath(addMonths(month, 1))}
-          aria-label={t("common.next-month")}
-          className={CALENDAR_ICON_CONTROL_CLASSES}
-        >
+        <CalendarLink to={buildCalendarPath(addMonths(month, 1))} aria-label={t("common.next-month")} className={iconControlClassName}>
           <ChevronRightIcon className="rtl:rotate-180" strokeWidth={1.75} />
         </CalendarLink>
-        {/* Today is a toggle, so it is a button that navigates; the search keeps the filter query. */}
+        {/* Today is a toggle, so it is a button that navigates; the search keeps the filter query.
+            Its pressed state is the quiet variant's accent fill, keyed off aria-pressed. */}
         <button
           type="button"
           aria-pressed={todayOpen}
-          className={cn(CALENDAR_TEXT_CONTROL_CLASSES, "ms-1.5", todayOpen && CALENDAR_CONTROL_ACTIVE_CLASSES)}
-          onClick={() => navigate({ pathname: getTodayPath(month, activeDate, today, closable), search })}
+          className={cn(buttonVariants({ variant: "quiet", size: "sm" }), "ms-1.5")}
+          onClick={() =>
+            navigate({ pathname: collectionPathForLocation(getTodayPath(month, activeDate, today, closable), pathname), search })
+          }
         >
           {t("common.today")}
         </button>

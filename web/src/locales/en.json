@@ -1,4 +1,25 @@
 {
+  "map": {
+    "resize-panel": "Resize location panel",
+    "collapse": "Collapse panel",
+    "expand": "Expand panel",
+    "selection": "Selected memos",
+    "loaded": "{{count}} loaded",
+    "fit-all": "Show all results",
+    "zoom-in": "Zoom in",
+    "zoom-out": "Zoom out",
+    "load-error": "Could not load all memos.",
+    "tile-error": "The map could not load. Your memos are still available.",
+    "empty": "No memos with a location yet",
+    "empty-hint": "Add a location to a memo to see it here.",
+    "no-results": "No matching memos",
+    "no-results-hint": "Try clearing your filters.",
+    "clear-filters": "Clear filters",
+    "loading": "Loading memos…",
+    "new-here": "Write here",
+    "saved-outside-filter": "Saved. This memo is outside the current map results.",
+    "open-memo": "Open memo"
+  },
   "about": {
     "api-docs": "API Docs",
     "api-docs-note": "REST and gRPC reference",
@@ -349,6 +370,19 @@
     "content-syntax": "Content syntax"
   },
   "memo": {
+    "parent-loading": "Loading original memo…",
+    "parent-load-error": "Couldn’t load the original memo.",
+    "parent-unavailable": "Original memo unavailable",
+    "parent-unavailable-description": "It may have been deleted or you may no longer have access.",
+    "move": {
+      "title": "Move to Space",
+      "description": "Choose where this memo belongs and who can read it.",
+      "unassigned": "Unassigned",
+      "confirm": "Move",
+      "success": "Memo moved",
+      "space-audience": "Members of {{space}} will be able to read this memo.",
+      "history": "Existing reactions stay with this memo. Comments and linked memos keep their own access rules."
+    },
     "archived-at": "Archived at",
     "back-to": "Back to {{source}}",
     "click-to-hide-sensitive-content": "Click to hide sensitive content",
@@ -841,6 +875,7 @@
       "uploads-privacy-title": "Uploads & privacy"
     },
     "memo-view": {
+      "change-icon": "Change view icon",
       "delete-confirm": "Are you sure you want to delete view `{{title}}`?",
       "delete-success": "View `{{title}}` deleted successfully"
     },
@@ -1070,6 +1105,20 @@
     }
   },
   "space": {
+    "icon": {
+      "change": "Change space icon",
+      "kind": "Icon type",
+      "icons": "Icons",
+      "emoji": "Emoji",
+      "search-icons": "Search icons…",
+      "search-emoji": "Search or paste emoji…",
+      "no-results": "No matches",
+      "emoji-help": "Choose a common emoji or paste your own.",
+      "reset": "Reset to default",
+      "use-emoji": "Use {{emoji}}"
+    },
+    "unavailable": "This space does not exist or you don’t have access to it.",
+    "back-to-memos": "Back to Memos",
     "create": "Create space",
     "create-description": "Create a shared place for memos and members.",
     "create-success": "Space created",

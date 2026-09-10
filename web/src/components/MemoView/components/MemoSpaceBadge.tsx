@@ -1,4 +1,4 @@
-import { AstroidIcon } from "lucide-react";
+import SpaceIcon from "@/components/SpaceIcon";
 import { Badge } from "@/components/ui/badge";
 import { useSpaceContext } from "@/contexts/SpaceContext";
 import { extractSpaceUidFromName, formatSpaceUidForDisplay } from "@/lib/space-display";
@@ -34,7 +34,7 @@ const MemoSpaceBadge = ({ spaceName }: MemoSpaceBadgeProps) => {
         showUid && uid ? "max-w-52 sm:max-w-64" : "max-w-36 sm:max-w-48",
       )}
     >
-      <AstroidIcon aria-hidden="true" className="size-3 shrink-0" strokeWidth={1.8} />
+      <SpaceIcon icon={knownSpace?.icon} className="size-3 text-xs" />
       <span className="flex min-w-0 items-baseline overflow-hidden">
         <span className="min-w-0 flex-1 truncate">
           {knownTitle && <span className="sr-only">{spaceLabel}: </span>}

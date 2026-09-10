@@ -62,6 +62,20 @@ const (
 	// UserServiceListUserSettingsProcedure is the fully-qualified name of the UserService's
 	// ListUserSettings RPC.
 	UserServiceListUserSettingsProcedure = "/memos.api.v1.UserService/ListUserSettings"
+	// UserServiceListMemoViewsProcedure is the fully-qualified name of the UserService's ListMemoViews
+	// RPC.
+	UserServiceListMemoViewsProcedure = "/memos.api.v1.UserService/ListMemoViews"
+	// UserServiceGetMemoViewProcedure is the fully-qualified name of the UserService's GetMemoView RPC.
+	UserServiceGetMemoViewProcedure = "/memos.api.v1.UserService/GetMemoView"
+	// UserServiceCreateMemoViewProcedure is the fully-qualified name of the UserService's
+	// CreateMemoView RPC.
+	UserServiceCreateMemoViewProcedure = "/memos.api.v1.UserService/CreateMemoView"
+	// UserServiceUpdateMemoViewProcedure is the fully-qualified name of the UserService's
+	// UpdateMemoView RPC.
+	UserServiceUpdateMemoViewProcedure = "/memos.api.v1.UserService/UpdateMemoView"
+	// UserServiceDeleteMemoViewProcedure is the fully-qualified name of the UserService's
+	// DeleteMemoView RPC.
+	UserServiceDeleteMemoViewProcedure = "/memos.api.v1.UserService/DeleteMemoView"
 	// UserServiceListLinkedIdentitiesProcedure is the fully-qualified name of the UserService's
 	// ListLinkedIdentities RPC.
 	UserServiceListLinkedIdentitiesProcedure = "/memos.api.v1.UserService/ListLinkedIdentities"
@@ -134,6 +148,18 @@ type UserServiceClient interface {
 	UpdateUserSetting(context.Context, *connect.Request[v1.UpdateUserSettingRequest]) (*connect.Response[v1.UserSetting], error)
 	// ListUserSettings returns a list of user settings.
 	ListUserSettings(context.Context, *connect.Request[v1.ListUserSettingsRequest]) (*connect.Response[v1.ListUserSettingsResponse], error)
+	// ListMemoViews returns a user's memo views. Each view is a named, reusable
+	// CEL filter (see MemoView.filter); pass its filter string directly to the
+	// ListMemos `filter` argument.
+	ListMemoViews(context.Context, *connect.Request[v1.ListMemoViewsRequest]) (*connect.Response[v1.ListMemoViewsResponse], error)
+	// GetMemoView gets a memo view by name.
+	GetMemoView(context.Context, *connect.Request[v1.GetMemoViewRequest]) (*connect.Response[v1.MemoView], error)
+	// CreateMemoView creates a new memo view for a user.
+	CreateMemoView(context.Context, *connect.Request[v1.CreateMemoViewRequest]) (*connect.Response[v1.MemoView], error)
+	// UpdateMemoView updates a memo view for a user.
+	UpdateMemoView(context.Context, *connect.Request[v1.UpdateMemoViewRequest]) (*connect.Response[v1.MemoView], error)
+	// DeleteMemoView deletes a memo view for a user.
+	DeleteMemoView(context.Context, *connect.Request[v1.DeleteMemoViewRequest]) (*connect.Response[emptypb.Empty], error)
 	// ListLinkedIdentities returns a list of linked SSO identities for a user.
 	ListLinkedIdentities(context.Context, *connect.Request[v1.ListLinkedIdentitiesRequest]) (*connect.Response[v1.ListLinkedIdentitiesResponse], error)
 	// CreateLinkedIdentity links an SSO identity to the authenticated user.
@@ -247,6 +273,36 @@ func NewUserServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(userServiceMethods.ByName("ListUserSettings")),
 			connect.WithClientOptions(opts...),
 		),
+		listMemoViews: connect.NewClient[v1.ListMemoViewsRequest, v1.ListMemoViewsResponse](
+			httpClient,
+			baseURL+UserServiceListMemoViewsProcedure,
+			connect.WithSchema(userServiceMethods.ByName("ListMemoViews")),
+			connect.WithClientOptions(opts...),
+		),
+		getMemoView: connect.NewClient[v1.GetMemoViewRequest, v1.MemoView](
+			httpClient,
+			baseURL+UserServiceGetMemoViewProcedure,
+			connect.WithSchema(userServiceMethods.ByName("GetMemoView")),
+			connect.WithClientOptions(opts...),
+		),
+		createMemoView: connect.NewClient[v1.CreateMemoViewRequest, v1.MemoView](
+			httpClient,
+			baseURL+UserServiceCreateMemoViewProcedure,
+			connect.WithSchema(userServiceMethods.ByName("CreateMemoView")),
+			connect.WithClientOptions(opts...),
+		),
+		updateMemoView: connect.NewClient[v1.UpdateMemoViewRequest, v1.MemoView](
+			httpClient,
+			baseURL+UserServiceUpdateMemoViewProcedure,
+			connect.WithSchema(userServiceMethods.ByName("UpdateMemoView")),
+			connect.WithClientOptions(opts...),
+		),
+		deleteMemoView: connect.NewClient[v1.DeleteMemoViewRequest, emptypb.Empty](
+			httpClient,
+			baseURL+UserServiceDeleteMemoViewProcedure,
+			connect.WithSchema(userServiceMethods.ByName("DeleteMemoView")),
+			connect.WithClientOptions(opts...),
+		),
 		listLinkedIdentities: connect.NewClient[v1.ListLinkedIdentitiesRequest, v1.ListLinkedIdentitiesResponse](
 			httpClient,
 			baseURL+UserServiceListLinkedIdentitiesProcedure,
@@ -353,6 +409,11 @@ type userServiceClient struct {
 	getUserSetting              *connect.Client[v1.GetUserSettingRequest, v1.UserSetting]
 	updateUserSetting           *connect.Client[v1.UpdateUserSettingRequest, v1.UserSetting]
 	listUserSettings            *connect.Client[v1.ListUserSettingsRequest, v1.ListUserSettingsResponse]
+	listMemoViews               *connect.Client[v1.ListMemoViewsRequest, v1.ListMemoViewsResponse]
+	getMemoView                 *connect.Client[v1.GetMemoViewRequest, v1.MemoView]
+	createMemoView              *connect.Client[v1.CreateMemoViewRequest, v1.MemoView]
+	updateMemoView              *connect.Client[v1.UpdateMemoViewRequest, v1.MemoView]
+	deleteMemoView              *connect.Client[v1.DeleteMemoViewRequest, emptypb.Empty]
 	listLinkedIdentities        *connect.Client[v1.ListLinkedIdentitiesRequest, v1.ListLinkedIdentitiesResponse]
 	createLinkedIdentity        *connect.Client[v1.CreateLinkedIdentityRequest, v1.LinkedIdentity]
 	getLinkedIdentity           *connect.Client[v1.GetLinkedIdentityRequest, v1.LinkedIdentity]
@@ -423,6 +484,31 @@ func (c *userServiceClient) UpdateUserSetting(ctx context.Context, req *connect.
 // ListUserSettings calls memos.api.v1.UserService.ListUserSettings.
 func (c *userServiceClient) ListUserSettings(ctx context.Context, req *connect.Request[v1.ListUserSettingsRequest]) (*connect.Response[v1.ListUserSettingsResponse], error) {
 	return c.listUserSettings.CallUnary(ctx, req)
+}
+
+// ListMemoViews calls memos.api.v1.UserService.ListMemoViews.
+func (c *userServiceClient) ListMemoViews(ctx context.Context, req *connect.Request[v1.ListMemoViewsRequest]) (*connect.Response[v1.ListMemoViewsResponse], error) {
+	return c.listMemoViews.CallUnary(ctx, req)
+}
+
+// GetMemoView calls memos.api.v1.UserService.GetMemoView.
+func (c *userServiceClient) GetMemoView(ctx context.Context, req *connect.Request[v1.GetMemoViewRequest]) (*connect.Response[v1.MemoView], error) {
+	return c.getMemoView.CallUnary(ctx, req)
+}
+
+// CreateMemoView calls memos.api.v1.UserService.CreateMemoView.
+func (c *userServiceClient) CreateMemoView(ctx context.Context, req *connect.Request[v1.CreateMemoViewRequest]) (*connect.Response[v1.MemoView], error) {
+	return c.createMemoView.CallUnary(ctx, req)
+}
+
+// UpdateMemoView calls memos.api.v1.UserService.UpdateMemoView.
+func (c *userServiceClient) UpdateMemoView(ctx context.Context, req *connect.Request[v1.UpdateMemoViewRequest]) (*connect.Response[v1.MemoView], error) {
+	return c.updateMemoView.CallUnary(ctx, req)
+}
+
+// DeleteMemoView calls memos.api.v1.UserService.DeleteMemoView.
+func (c *userServiceClient) DeleteMemoView(ctx context.Context, req *connect.Request[v1.DeleteMemoViewRequest]) (*connect.Response[emptypb.Empty], error) {
+	return c.deleteMemoView.CallUnary(ctx, req)
 }
 
 // ListLinkedIdentities calls memos.api.v1.UserService.ListLinkedIdentities.
@@ -525,6 +611,18 @@ type UserServiceHandler interface {
 	UpdateUserSetting(context.Context, *connect.Request[v1.UpdateUserSettingRequest]) (*connect.Response[v1.UserSetting], error)
 	// ListUserSettings returns a list of user settings.
 	ListUserSettings(context.Context, *connect.Request[v1.ListUserSettingsRequest]) (*connect.Response[v1.ListUserSettingsResponse], error)
+	// ListMemoViews returns a user's memo views. Each view is a named, reusable
+	// CEL filter (see MemoView.filter); pass its filter string directly to the
+	// ListMemos `filter` argument.
+	ListMemoViews(context.Context, *connect.Request[v1.ListMemoViewsRequest]) (*connect.Response[v1.ListMemoViewsResponse], error)
+	// GetMemoView gets a memo view by name.
+	GetMemoView(context.Context, *connect.Request[v1.GetMemoViewRequest]) (*connect.Response[v1.MemoView], error)
+	// CreateMemoView creates a new memo view for a user.
+	CreateMemoView(context.Context, *connect.Request[v1.CreateMemoViewRequest]) (*connect.Response[v1.MemoView], error)
+	// UpdateMemoView updates a memo view for a user.
+	UpdateMemoView(context.Context, *connect.Request[v1.UpdateMemoViewRequest]) (*connect.Response[v1.MemoView], error)
+	// DeleteMemoView deletes a memo view for a user.
+	DeleteMemoView(context.Context, *connect.Request[v1.DeleteMemoViewRequest]) (*connect.Response[emptypb.Empty], error)
 	// ListLinkedIdentities returns a list of linked SSO identities for a user.
 	ListLinkedIdentities(context.Context, *connect.Request[v1.ListLinkedIdentitiesRequest]) (*connect.Response[v1.ListLinkedIdentitiesResponse], error)
 	// CreateLinkedIdentity links an SSO identity to the authenticated user.
@@ -632,6 +730,36 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 		UserServiceListUserSettingsProcedure,
 		svc.ListUserSettings,
 		connect.WithSchema(userServiceMethods.ByName("ListUserSettings")),
+		connect.WithHandlerOptions(opts...),
+	)
+	userServiceListMemoViewsHandler := connect.NewUnaryHandler(
+		UserServiceListMemoViewsProcedure,
+		svc.ListMemoViews,
+		connect.WithSchema(userServiceMethods.ByName("ListMemoViews")),
+		connect.WithHandlerOptions(opts...),
+	)
+	userServiceGetMemoViewHandler := connect.NewUnaryHandler(
+		UserServiceGetMemoViewProcedure,
+		svc.GetMemoView,
+		connect.WithSchema(userServiceMethods.ByName("GetMemoView")),
+		connect.WithHandlerOptions(opts...),
+	)
+	userServiceCreateMemoViewHandler := connect.NewUnaryHandler(
+		UserServiceCreateMemoViewProcedure,
+		svc.CreateMemoView,
+		connect.WithSchema(userServiceMethods.ByName("CreateMemoView")),
+		connect.WithHandlerOptions(opts...),
+	)
+	userServiceUpdateMemoViewHandler := connect.NewUnaryHandler(
+		UserServiceUpdateMemoViewProcedure,
+		svc.UpdateMemoView,
+		connect.WithSchema(userServiceMethods.ByName("UpdateMemoView")),
+		connect.WithHandlerOptions(opts...),
+	)
+	userServiceDeleteMemoViewHandler := connect.NewUnaryHandler(
+		UserServiceDeleteMemoViewProcedure,
+		svc.DeleteMemoView,
+		connect.WithSchema(userServiceMethods.ByName("DeleteMemoView")),
 		connect.WithHandlerOptions(opts...),
 	)
 	userServiceListLinkedIdentitiesHandler := connect.NewUnaryHandler(
@@ -748,6 +876,16 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 			userServiceUpdateUserSettingHandler.ServeHTTP(w, r)
 		case UserServiceListUserSettingsProcedure:
 			userServiceListUserSettingsHandler.ServeHTTP(w, r)
+		case UserServiceListMemoViewsProcedure:
+			userServiceListMemoViewsHandler.ServeHTTP(w, r)
+		case UserServiceGetMemoViewProcedure:
+			userServiceGetMemoViewHandler.ServeHTTP(w, r)
+		case UserServiceCreateMemoViewProcedure:
+			userServiceCreateMemoViewHandler.ServeHTTP(w, r)
+		case UserServiceUpdateMemoViewProcedure:
+			userServiceUpdateMemoViewHandler.ServeHTTP(w, r)
+		case UserServiceDeleteMemoViewProcedure:
+			userServiceDeleteMemoViewHandler.ServeHTTP(w, r)
 		case UserServiceListLinkedIdentitiesProcedure:
 			userServiceListLinkedIdentitiesHandler.ServeHTTP(w, r)
 		case UserServiceCreateLinkedIdentityProcedure:
@@ -829,6 +967,26 @@ func (UnimplementedUserServiceHandler) UpdateUserSetting(context.Context, *conne
 
 func (UnimplementedUserServiceHandler) ListUserSettings(context.Context, *connect.Request[v1.ListUserSettingsRequest]) (*connect.Response[v1.ListUserSettingsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.UserService.ListUserSettings is not implemented"))
+}
+
+func (UnimplementedUserServiceHandler) ListMemoViews(context.Context, *connect.Request[v1.ListMemoViewsRequest]) (*connect.Response[v1.ListMemoViewsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.UserService.ListMemoViews is not implemented"))
+}
+
+func (UnimplementedUserServiceHandler) GetMemoView(context.Context, *connect.Request[v1.GetMemoViewRequest]) (*connect.Response[v1.MemoView], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.UserService.GetMemoView is not implemented"))
+}
+
+func (UnimplementedUserServiceHandler) CreateMemoView(context.Context, *connect.Request[v1.CreateMemoViewRequest]) (*connect.Response[v1.MemoView], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.UserService.CreateMemoView is not implemented"))
+}
+
+func (UnimplementedUserServiceHandler) UpdateMemoView(context.Context, *connect.Request[v1.UpdateMemoViewRequest]) (*connect.Response[v1.MemoView], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.UserService.UpdateMemoView is not implemented"))
+}
+
+func (UnimplementedUserServiceHandler) DeleteMemoView(context.Context, *connect.Request[v1.DeleteMemoViewRequest]) (*connect.Response[emptypb.Empty], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.UserService.DeleteMemoView is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) ListLinkedIdentities(context.Context, *connect.Request[v1.ListLinkedIdentitiesRequest]) (*connect.Response[v1.ListLinkedIdentitiesResponse], error) {

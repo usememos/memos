@@ -64,6 +64,35 @@ describe("MemoFilterProvider", () => {
     expect(screen.getByTestId("filters")).toHaveTextContent(JSON.stringify(expected));
     expect(new URLSearchParams(router.state.location.search).get("filter")).toBe(stringifyFilters(expected));
   });
+  it("preserves the Space origin when navigation removes collection filters", async () => {
+    const origin = "/spaces/product?filter=tagSearch%3Awork";
+    const router = createMemoryRouter(
+      [
+        {
+          path: "*",
+          element: (
+            <MemoFilterProvider>
+              <Harness />
+            </MemoFilterProvider>
+          ),
+        },
+      ],
+      { initialEntries: [origin] },
+    );
+    render(<RouterProvider router={router} />);
+    fireEvent.click(screen.getByRole("button", { name: "Select Tasks" }));
+    const state = { from: origin };
+    await act(() => router.navigate("/memos/1", { state }));
+    await waitFor(() => expect(screen.getByTestId("filters")).toHaveTextContent("[]"));
+    expect(router.state.location.search).toBe("");
+    expect(router.state.location.state).toEqual(state);
+    await act(() => router.navigate(-1));
+    expect(router.state.location.pathname + router.state.location.search).toBe(origin);
+    expect(screen.getByTestId("filters")).toHaveTextContent('"work"');
+    await act(() => router.navigate("/spaces/research?filter=tagSearch%3Awork"));
+    expect(screen.getByTestId("memoView")).toHaveTextContent(BUILTIN_TASKS_VIEW_ID);
+  });
+
   it("keeps encoded values containing colons intact", () => {
     expect(parseFilterQuery("contentSearch:https://example.com:8080/path")).toEqual([
       { factor: "contentSearch", value: "https://example.com:8080/path" },

@@ -1,7 +1,7 @@
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import { type ComponentType, createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { getRouteActionPolicy } from "@/components/AppSidebar/routes";
+import { getSidebarRouteKind } from "@/components/AppSidebar/routes";
 import { loadMemoEditor } from "@/components/MemoEditor/loader";
 import type { MemoEditorProps } from "@/components/MemoEditor/types";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
@@ -11,7 +11,6 @@ import { useSpaceContext } from "@/contexts/SpaceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { spaceScopedCacheKey } from "@/lib/resource-names";
-import { ROUTES } from "@/router/routes";
 import { useTranslate } from "@/utils/i18n";
 
 interface GlobalMemoEditorContextValue {
@@ -44,14 +43,12 @@ export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) 
   const t = useTranslate();
   const location = useLocation();
   const currentUserName = useCurrentUser()?.name;
-  const { selectedSpaceName } = useSpaceContext();
+  const { selectedSpaceName, isSpaceReady } = useSpaceContext();
   const { isUserSettingsInitialized } = useAuth();
   const desktop = useMediaQuery("md");
   const [initialHome] = useState(() => ({ location, user: currentUserName, space: selectedSpaceName }));
-  const homeAutoFocusPending = useRef(desktop && location.pathname === ROUTES.HOME && Boolean(currentUserName));
+  const homeAutoFocusPending = useRef(desktop && getSidebarRouteKind(location.pathname) === "home" && Boolean(currentUserName));
   const { setMobileOpen, setQuickFindOpen } = useAppSidebar();
-  const routePolicy = getRouteActionPolicy(location.pathname);
-  const composeSpace = routePolicy.composePlacement === "remembered-space" ? selectedSpaceName : undefined;
   // One snapshot taken when the composer opens: keyed by the user who opened it, so
   // signing out closes the composer in the same render and a different user signing
   // in cannot resurrect it, and pinned to the Space that was selected at that moment.
@@ -97,7 +94,7 @@ export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) 
 
   // The editor reads defaults out of user settings, so composing has to wait for
   // them. Keep the rule here so every entry point uses the same gate.
-  const canOpen = Boolean(currentUserName) && isUserSettingsInitialized;
+  const canOpen = Boolean(currentUserName) && isUserSettingsInitialized && isSpaceReady;
 
   const openEditor = useCallback(() => {
     if (!canOpen || !currentUserName) return;
@@ -116,10 +113,10 @@ export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) 
       .then(({ default: MemoEditor }) => {
         if (openRequestVersionRef.current !== requestVersion) return;
         setEditorComponent(() => MemoEditor);
-        setOpened({ user: currentUserName, space: composeSpace });
+        setOpened({ user: currentUserName, space: selectedSpaceName });
       })
       .catch(() => undefined);
-  }, [canOpen, composeSpace, currentUserName, setMobileOpen, setQuickFindOpen]);
+  }, [canOpen, selectedSpaceName, currentUserName, setMobileOpen, setQuickFindOpen]);
 
   useEffect(() => {
     // RootLayout remains mounted when a public instance moves from Home to

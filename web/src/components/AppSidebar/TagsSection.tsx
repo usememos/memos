@@ -22,7 +22,7 @@ import {
   sidebarRowStateAttributes,
   sidebarRowStateClasses,
 } from "./SidebarRow";
-import SidebarSection, { SIDEBAR_SECTION_ACTION_BUTTON_CLASSES, SIDEBAR_SECTION_ACTION_ICON_CLASSES } from "./SidebarSection";
+import SidebarSection, { SIDEBAR_SECTION_ACTION_ICON_CLASSES } from "./SidebarSection";
 
 interface Props {
   tagCount: Record<string, number>;
@@ -110,16 +110,7 @@ const TagsSection = ({ tagCount, onSelect, scope }: Props) => {
             <TooltipTrigger render={<span className="inline-flex" />}>
               <DropdownMenuTrigger
                 aria-label={`${t("common.tags")}: ${t("common.more")}`}
-                render={
-                  <Button
-                    variant="ghost"
-                    size="icon-sm"
-                    className={cn(
-                      SIDEBAR_SECTION_ACTION_BUTTON_CLASSES,
-                      "data-popup-open:bg-sidebar-accent data-popup-open:text-foreground",
-                    )}
-                  />
-                }
+                render={<Button variant="quiet" size="icon-sm" />}
               >
                 <MoreHorizontalIcon className={SIDEBAR_SECTION_ACTION_ICON_CLASSES} strokeWidth={1.8} />
               </DropdownMenuTrigger>

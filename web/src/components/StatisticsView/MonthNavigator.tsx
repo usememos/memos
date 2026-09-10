@@ -18,23 +18,11 @@ export const MonthNavigator = memo(({ visibleMonth, onMonthChange }: MonthNaviga
       <h2 className="min-w-0 truncate font-medium tracking-[-0.015em] text-foreground/90 select-none">{monthLabel}</h2>
 
       <nav className="flex shrink-0 items-center gap-0.5" aria-label={t("common.month-navigation")}>
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          onClick={handlePrevMonth}
-          aria-label={t("common.previous-month")}
-          className="size-6 rounded text-muted-foreground/65 hover:bg-muted/50 hover:text-foreground/90"
-        >
+        <Button variant="quiet" size="icon-sm" onClick={handlePrevMonth} aria-label={t("common.previous-month")}>
           <ChevronLeftIcon className="size-4 rtl:rotate-180" strokeWidth={1.75} />
         </Button>
 
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          onClick={handleNextMonth}
-          aria-label={t("common.next-month")}
-          className="size-6 rounded text-muted-foreground/65 hover:bg-muted/50 hover:text-foreground/90"
-        >
+        <Button variant="quiet" size="icon-sm" onClick={handleNextMonth} aria-label={t("common.next-month")}>
           <ChevronRightIcon className="size-4 rtl:rotate-180" strokeWidth={1.75} />
         </Button>
       </nav>

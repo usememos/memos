@@ -5,7 +5,7 @@ import { type CalendarData, useMonthDays, useWeekdayLabels } from "@/components/
 import { useInstance } from "@/contexts/InstanceContext";
 import { useView } from "@/contexts/ViewContext";
 import { ISO_DATE_FORMAT } from "@/lib/calendar-utils";
-import { CalendarDayCell, CELL_NUMBER_ROW, CELL_PADDING_Y, CELL_ROW_HEIGHT, CELL_ROWS_GAP } from "./CalendarDayCell";
+import { CalendarDayCell, layoutForCellSize } from "./CalendarDayCell";
 import type { CalendarMonthModel } from "./dayModel";
 import { getDefaultDate } from "./paths";
 
@@ -23,15 +23,11 @@ export interface CalendarGridProps {
   model: CalendarMonthModel;
   pending: boolean;
   selectedDate?: string;
-  /** Whether cells have room for memo rows; below md they only show a dot. */
+  /** Below md the compact calendar shows dates and counts, with the stream beneath. */
   showRows: boolean;
 }
 
 const KEY_DELTAS: Record<string, number> = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -DAYS_IN_WEEK, ArrowDown: DAYS_IN_WEEK };
-
-/** Memo rows that fit under the day number in a cell of `cellHeight` px. */
-export const rowsForCellHeight = (cellHeight: number): number =>
-  Math.max(0, Math.floor((cellHeight - CELL_PADDING_Y - CELL_NUMBER_ROW - CELL_ROWS_GAP) / CELL_ROW_HEIGHT));
 
 const cornerOf = (index: number, total: number): "ss" | "se" | "es" | "ee" | undefined => {
   if (index === 0) return "ss";
@@ -56,13 +52,12 @@ export const CalendarGrid = ({ month, monthLabel, today, counts, model, pending,
   const focusDate = selectedDate ?? getDefaultDate(month, today);
   const rowCount = Math.ceil(days.length / DAYS_IN_WEEK);
 
-  // CSS sizes the rows (see the cells' grid-auto-rows); the cell height is only read back to
-  // learn how many memo rows fit, and re-read whenever the grid itself resizes.
-  const [visibleRows, setVisibleRows] = useState(2);
+  // Observe both dimensions so previews adapt when the day panel or viewport resizes.
+  const [cellSize, setCellSize] = useState({ width: 0, height: 0 });
   useLayoutEffect(() => {
     const el = cellsRef.current;
-    if (!el || !showRows) return;
-    const apply = () => setVisibleRows(rowsForCellHeight(el.clientHeight / rowCount));
+    if (!el) return;
+    const apply = () => setCellSize({ width: el.clientWidth / DAYS_IN_WEEK, height: el.clientHeight / rowCount });
     apply();
     if (typeof ResizeObserver === "undefined") return;
     const observer = new ResizeObserver(apply);
@@ -101,17 +96,17 @@ export const CalendarGrid = ({ month, monthLabel, today, counts, model, pending,
         ))}
       </div>
       {/* From xl the grid fills the sticky section, so the rows share its height evenly with a
-          floor that keeps a number and two memo rows per day on short windows. */}
+          floor that keeps the date, count, and a short excerpt visible on short windows. */}
       <div
         ref={cellsRef}
-        className="grid grid-cols-7 overflow-hidden rounded-lg border border-border/70 bg-card xl:min-h-0 xl:flex-1 xl:[grid-auto-rows:minmax(5.5rem,1fr)]"
+        className="grid auto-rows-fr grid-cols-7 overflow-hidden rounded-lg border border-border/70 bg-card md:[grid-auto-rows:9rem] xl:min-h-0 xl:flex-1 xl:[grid-auto-rows:minmax(5.5rem,1fr)]"
       >
         {days.map((day, index) => (
           <CalendarDayCell
             key={day.date}
             day={day}
             summary={model[day.date]}
-            visibleRows={showRows ? visibleRows : 0}
+            layout={layoutForCellSize(cellSize.width, showRows ? cellSize.height : 0)}
             pending={pending}
             timeBasis={timeBasis}
             tabIndex={day.date === focusDate ? 0 : -1}

@@ -47,7 +47,8 @@ const tabsTriggerVariants = cva(
       {
         variant: "underline",
         active: false,
-        className: "border-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground",
+        // The inactive tab is a quiet control: the same resting ink and hover wash as the button kit's `quiet` variant.
+        className: "border-transparent text-muted-foreground/70 hover:bg-muted/60 hover:text-foreground",
       },
     ],
     defaultVariants: { variant: "segmented", active: false },

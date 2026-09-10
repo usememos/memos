@@ -1,5 +1,6 @@
 import { forwardRef } from "react";
 import { Link, type LinkProps, useLocation } from "react-router-dom";
+import { collectionPathForLocation } from "@/router/routes";
 
 export interface CalendarLinkProps extends Omit<LinkProps, "to"> {
   /** Pathname only; the current search string rides along so view and tag filters survive. */
@@ -12,8 +13,8 @@ export interface CalendarLinkProps extends Omit<LinkProps, "to"> {
  * pathname change.
  */
 export const CalendarLink = forwardRef<HTMLAnchorElement, CalendarLinkProps>(({ to, ...props }, ref) => {
-  const { search } = useLocation();
-  return <Link ref={ref} to={{ pathname: to, search }} {...props} />;
+  const { pathname, search } = useLocation();
+  return <Link ref={ref} to={{ pathname: collectionPathForLocation(to, pathname), search }} {...props} />;
 });
 
 CalendarLink.displayName = "CalendarLink";

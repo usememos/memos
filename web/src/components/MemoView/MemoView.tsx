@@ -25,7 +25,7 @@ import { MemoBody, MemoCommentListView, MemoHeader } from "./components";
 import { MEMO_CARD_BASE_CLASSES } from "./constants";
 import { useImagePreview } from "./hooks";
 import { computeCommentAmount, MemoViewContext } from "./MemoViewContext";
-import { isMemoDetailPath, resolveMemoOrigin } from "./navigation";
+import { isMemoDetailPath, resolveMemoParentPage } from "./navigation";
 import type { MemoViewHandle, MemoViewProps } from "./types";
 
 const MemoShareImageDialog = lazyWithReload(() => import("../MemoActionMenu/MemoShareImageDialog"));
@@ -36,7 +36,6 @@ const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
     memo: memoData,
     className,
     parentPage: parentPageProp,
-    parentScope: parentScopeProp,
     compact,
     timeDisplay,
     showCreator,
@@ -55,9 +54,8 @@ const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
   const isArchived = memoData.state === State.ARCHIVED;
   const readonly = memoData.creator !== currentUser?.name && !isSuperUser(currentUser);
   const location = useLocation();
-  const { parentPage, parentScope } = resolveMemoOrigin({
+  const parentPage = resolveMemoParentPage({
     explicitParentPage: parentPageProp,
-    explicitParentScope: parentScopeProp,
     pathname: location.pathname,
     search: location.search,
     memoName: memoData.name,
@@ -135,7 +133,6 @@ const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
       creator,
       currentUser,
       parentPage,
-      parentScope,
       cardWidth,
       isArchived,
       readonly,
@@ -150,7 +147,6 @@ const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
       creator,
       currentUser,
       parentPage,
-      parentScope,
       cardWidth,
       isArchived,
       readonly,

@@ -5,81 +5,158 @@ import { buildCalendarMonthModel } from "@/components/CalendarView/dayModel";
 import { AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
 import { type Memo, MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
 
-const memoAt = (date: Date, overrides: MessageInitShape<typeof MemoSchema> = {}): Memo =>
+const memoAt = (hour: number, overrides: MessageInitShape<typeof MemoSchema> = {}): Memo =>
   create(MemoSchema, {
-    name: `memos/${date.getTime()}`,
-    createTime: timestampFromDate(date),
-    updateTime: timestampFromDate(new Date(date.getTime() + 60_000)),
-    content: "",
+    name: `memos/${hour}`,
+    createTime: timestampFromDate(new Date(2026, 7, 2, hour)),
+    updateTime: timestampFromDate(new Date(2026, 7, 3, hour)),
     ...overrides,
   });
-
 const image = (name: string) => create(AttachmentSchema, { name: `attachments/${name}`, filename: `${name}.jpg`, type: "image/jpeg" });
 const pdf = create(AttachmentSchema, { name: "attachments/doc", filename: "doc.pdf", type: "application/pdf" });
+const day = (memos: Memo[]) => buildCalendarMonthModel(memos, "create_time")["2026-08-02"];
 
-describe("calendar month model", () => {
-  it("groups memos by local day and counts them", () => {
-    const model = buildCalendarMonthModel(
-      [memoAt(new Date(2026, 7, 2, 9)), memoAt(new Date(2026, 7, 2, 21)), memoAt(new Date(2026, 7, 3, 1))],
-      "create_time",
-    );
-    expect(Object.keys(model).sort()).toEqual(["2026-08-02", "2026-08-03"]);
-    expect(model["2026-08-02"].memos).toHaveLength(2);
-    expect(model["2026-08-03"].memos).toHaveLength(1);
+describe("calendar day snapshots", () => {
+  it("groups by local day and keeps every memo in chronological order", () => {
+    const memos = Array.from({ length: 24 }, (_, i) => memoAt(i, { content: `memo ${i}` })).reverse();
+    const summary = day(memos);
+    expect(summary.memos).toHaveLength(24);
+    expect(summary.memos[0].name).toBe("memos/0");
+    expect(summary.excerpt?.text).toBe("memo 0");
   });
 
-  it("lists memos as rows in time order with a thumbnail when they carry an image", () => {
-    const model = buildCalendarMonthModel(
+  it("uses memo identity to choose the same sample when timestamps tie", () => {
+    const a = memoAt(9, { name: "memos/a", content: "first" });
+    const b = memoAt(9, { name: "memos/b", content: "second" });
+    expect(day([b, a]).excerpt).toEqual(day([a, b]).excerpt);
+    expect(day([b, a]).excerpt?.text).toBe("first");
+  });
+
+  it("uses full Markdown content instead of a truncated snippet, without markup or image captions", () => {
+    const summary = day([
+      memoAt(9, {
+        content: "# Morning\n\nA **quiet** walk with [a friend](https://example.com).\n\n![caption](/photo.jpg)",
+        snippet: "Morning…",
+      }),
+    ]);
+    expect(summary.excerpt?.text).toBe("Morning\nA quiet walk with a friend.");
+    expect(summary.excerpt?.isCode).toBe(false);
+  });
+
+  it("preserves readable code and checklist text without fences or active checkboxes", () => {
+    expect(day([memoAt(9, { content: "```js\nconst x = 1;\nconsole.log(x);\n```" })]).excerpt).toMatchObject({
+      text: "const x = 1;\nconsole.log(x);",
+      isCode: true,
+    });
+    expect(day([memoAt(9, { content: "- [x] Ship release\n- [ ] Write notes" })]).excerpt?.text).toBe("Ship release\nWrite notes");
+  });
+
+  it("skips empty and image-only memos when choosing text and keeps photos from distinct memos", () => {
+    const summary = day([
+      memoAt(8),
+      memoAt(9, { attachments: [image("a"), image("b")] }),
+      memoAt(10, { content: "The day's writing", attachments: [image("c")] }),
+      memoAt(11, { attachments: [image("d")] }),
+    ]);
+    expect(summary.excerpt?.text).toBe("The day's writing");
+    expect(summary.images.map((entry) => entry.memoName)).toEqual(["memos/9", "memos/10"]);
+    expect(summary.images[0].thumbnailUrl).toContain("attachments/a/a.jpg?thumbnail=true");
+    expect(summary.memos).toHaveLength(4);
+  });
+
+  it("does not duplicate an inline attachment or a repeated image", () => {
+    const photo = image("a");
+    expect(
+      day([
+        memoAt(9, { content: "![photo](/file/attachments/a/a.jpg)", attachments: [photo] }),
+        memoAt(10, { attachments: [photo] }),
+        memoAt(11, { attachments: [image("b")] }),
+      ]).images,
+    ).toHaveLength(2);
+  });
+
+  it("prefers Markdown images over attachment order and supports local SVG references", () => {
+    const svg = create(AttachmentSchema, { name: "attachments/bird", filename: "bird.svg", type: "image/svg+xml" });
+    const result = day([memoAt(9, { content: "![bird](/file/attachments/bird)", attachments: [image("a"), svg] })]);
+    expect(result.images[0].thumbnailUrl).toContain("attachments/bird/bird.svg?thumbnail=true");
+    expect(result.images).toHaveLength(1);
+  });
+
+  it("extracts external and reference-style images in content order", () => {
+    const result = day([
+      memoAt(9, {
+        content:
+          "![first][PHOTO]\n\n![second](https://example.com/second.jpg)\n\n[photo]: https://example.com/first.jpg\n[photo]: https://example.com/ignored.jpg",
+        attachments: [image("a")],
+      }),
+      memoAt(10, { content: "![next](https://example.com/next.jpg)" }),
+    ]);
+    expect(result.images.map((entry) => entry.thumbnailUrl)).toEqual(["https://example.com/first.jpg", "https://example.com/next.jpg"]);
+  });
+
+  it("deduplicates content and attachment images before filling the next day slot", () => {
+    const photo = image("a");
+    const result = day([
+      memoAt(9, { content: "![a](/file/attachments/a)", attachments: [photo] }),
+      memoAt(10, { content: "![a](/file/attachments/a/a.jpg)\n\n![b](https://example.com/b.jpg)", attachments: [photo] }),
+    ]);
+    expect(result.images).toHaveLength(2);
+    expect(result.images[1].thumbnailUrl).toBe("https://example.com/b.jpg");
+  });
+
+  it("deduplicates equivalent external URLs", () => {
+    const result = day([
+      memoAt(9, { content: "![a](https://EXAMPLE.com/a.jpg)" }),
+      memoAt(10, { content: "![a](https://example.com/a.jpg)\n\n![b](https://example.com/b.jpg)" }),
+    ]);
+    expect(result.images.map((entry) => entry.thumbnailUrl)).toEqual(["https://EXAMPLE.com/a.jpg", "https://example.com/b.jpg"]);
+  });
+
+  it("ignores code examples, raw HTML, unresolved references, and disallowed image URLs", () => {
+    const result = day([
+      memoAt(9, {
+        content: [
+          "`![code](https://example.com/code.jpg)`",
+          "```md\n![fenced](https://example.com/fenced.jpg)\n```",
+          '<img src="https://example.com/html.jpg">',
+          "![missing][undefined]",
+          "![data](data:image/png;base64,AAAA)",
+          "![insecure](http://example.com/insecure.jpg)",
+          "![script](javascript:alert)",
+          "![managed](/file/attachments/missing)",
+          "![valid](https://example.com/valid.jpg)",
+        ].join("\n\n"),
+      }),
+    ]);
+    expect(result.images.map((entry) => entry.thumbnailUrl)).toEqual(["https://example.com/valid.jpg"]);
+  });
+
+  it("does not turn an image-only memo's alt text into an excerpt", () => {
+    const result = day([memoAt(9, { content: "![caption](https://example.com/a.jpg)", snippet: "caption" })]);
+    expect(result.excerpt).toBeUndefined();
+    expect(result.images).toHaveLength(1);
+  });
+
+  it("uses a filename only when the day has no readable text", () => {
+    expect(day([memoAt(9, { attachments: [pdf] })]).excerpt?.text).toBe("doc.pdf");
+    expect(day([memoAt(9, { attachments: [pdf] }), memoAt(10, { content: "Notes" })]).excerpt?.text).toBe("Notes");
+  });
+
+  it("counts hidden memos without exposing text, filenames, or photos", () => {
+    const summary = buildCalendarMonthModel(
       [
-        memoAt(new Date(2026, 7, 2, 21), { snippet: "late", attachments: [image("late")] }),
-        memoAt(new Date(2026, 7, 2, 9), { snippet: "early", attachments: [pdf] }),
-      ],
-      "create_time",
-    );
-    const entries = model["2026-08-02"].entries;
-    expect(entries.map((entry) => entry.text)).toEqual(["early", "late"]);
-    expect(entries[0].thumbnailUrl).toBeUndefined();
-    expect(entries[1].thumbnailUrl).toContain("attachments/late/late.jpg");
-    expect(entries[1].thumbnailUrl).toContain("thumbnail=true");
-  });
-
-  it("uses first non-empty lines, keeps image-only memos, and drops blank ones", () => {
-    const model = buildCalendarMonthModel(
-      [
-        memoAt(new Date(2026, 7, 2, 8), { snippet: "  \nSecond line first\nmore" }),
-        memoAt(new Date(2026, 7, 2, 9), { snippet: "   ", content: "Raw content only" }),
-        memoAt(new Date(2026, 7, 2, 10), { content: "   " }),
-        memoAt(new Date(2026, 7, 2, 11), { content: "", attachments: [image("photo")] }),
-      ],
-      "create_time",
-    );
-    expect(model["2026-08-02"].memos).toHaveLength(4);
-    expect(model["2026-08-02"].entries.map((entry) => entry.text)).toEqual(["Second line first", "Raw content only", ""]);
-    expect(model["2026-08-02"].entries[2].thumbnailUrl).toBeDefined();
-  });
-
-  it("caps entries while still counting every memo", () => {
-    const memos = Array.from({ length: 10 }, (_, index) => memoAt(new Date(2026, 7, 2, index + 1), { snippet: `m${index}` }));
-    const model = buildCalendarMonthModel(memos, "create_time");
-    expect(model["2026-08-02"].memos).toHaveLength(10);
-    expect(model["2026-08-02"].entries).toHaveLength(8);
-  });
-
-  it("buckets by update time when that is the basis", () => {
-    const model = buildCalendarMonthModel([memoAt(new Date(2026, 7, 31, 23, 59, 30))], "update_time");
-    expect(Object.keys(model)).toEqual(["2026-09-01"]);
-  });
-
-  it("counts redacted memos without giving them a row", () => {
-    const model = buildCalendarMonthModel(
-      [
-        memoAt(new Date(2026, 7, 2, 9), { tags: ["private"], snippet: "secret", attachments: [image("secret")] }),
-        memoAt(new Date(2026, 7, 2, 10), { snippet: "public" }),
+        memoAt(9, { tags: ["private"], content: "secret ![private](https://example.com/secret.jpg)", attachments: [pdf, image("secret")] }),
+        memoAt(10, { content: "visible" }),
       ],
       "create_time",
       { isRedacted: (memo) => memo.tags.includes("private") },
-    );
-    expect(model["2026-08-02"].memos).toHaveLength(2);
-    expect(model["2026-08-02"].entries.map((entry) => entry.text)).toEqual(["public"]);
+    )["2026-08-02"];
+    expect(summary.memos).toHaveLength(2);
+    expect(summary.excerpt?.text).toBe("visible");
+    expect(summary.images).toEqual([]);
+  });
+
+  it("uses update time when selected and ignores undated memos", () => {
+    expect(Object.keys(buildCalendarMonthModel([memoAt(9), create(MemoSchema)], "update_time"))).toEqual(["2026-08-03"]);
   });
 });

@@ -182,7 +182,7 @@ const updateThemeColorMeta = (theme: ResolvedTheme): void => {
   }
 };
 
-const isDarkTheme = (theme: ResolvedTheme): boolean => {
+export const isDarkTheme = (theme: ResolvedTheme): boolean => {
   return theme.endsWith("-dark") || theme.endsWith(".dark");
 };
 

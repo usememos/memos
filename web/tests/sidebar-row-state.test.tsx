@@ -5,7 +5,6 @@ import { useEffect } from "react";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
 import SidebarRow, { sidebarRowStateClasses } from "@/components/AppSidebar/SidebarRow";
-import { SIDEBAR_SECTION_ACTION_ACTIVE_CLASSES } from "@/components/AppSidebar/SidebarSection";
 import TagsSection from "@/components/AppSidebar/TagsSection";
 import MemoFilters from "@/components/MemoFilters";
 import { AppSidebarProvider } from "@/contexts/AppSidebarContext";
@@ -58,10 +57,6 @@ describe("sidebar selected grammar", () => {
     fireEvent.click(row);
     expect(row).toHaveAttribute("data-checked");
     expect(row).not.toHaveClass("bg-sidebar-accent");
-  });
-
-  it("keeps section mode toggles surface-free", () => {
-    expect(tokens(SIDEBAR_SECTION_ACTION_ACTIVE_CLASSES)).not.toContain("bg-sidebar-accent");
   });
 });
 

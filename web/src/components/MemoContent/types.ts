@@ -1,6 +1,5 @@
 import type React from "react";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
-import type { MemoOriginScope } from "../MemoView/navigation";
 
 export interface MemoContentProps {
   content: string;
@@ -10,7 +9,6 @@ export interface MemoContentProps {
   memoName?: string;
   /** Collection page that rendered the memo, preserved when an inline link opens its detail page. */
   parentPage?: string;
-  parentScope?: MemoOriginScope;
   /** The card renders collapsed (ClampedSection), so footnote links navigate instead of scrolling. */
   compact?: boolean;
   className?: string;

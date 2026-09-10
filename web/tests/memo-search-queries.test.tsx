@@ -9,7 +9,7 @@ import { useInfiniteMemos } from "@/hooks/useMemoQueries";
 import { shouldRetry } from "@/lib/query-client";
 
 const listMemos = vi.hoisted(() => vi.fn());
-vi.mock("@/connect", () => ({ memoServiceClient: { listMemos }, userServiceClient: {}, memoViewServiceClient: {} }));
+vi.mock("@/connect", () => ({ memoServiceClient: { listMemos }, userServiceClient: {} }));
 
 const createWrapper = () => {
   const client = new QueryClient({ defaultOptions: { queries: { retry: shouldRetry, retryDelay: 0 } } });
@@ -31,7 +31,7 @@ describe("memo search requests", () => {
     const filter = buildMemoFilter({ filters: buildQuickFindFilters(expression, [], true, "cel"), includePinned: false });
     const { result } = renderHook(() => useInfiniteMemos({ filter }), { wrapper: createWrapper() });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(listMemos).toHaveBeenCalledWith(expect.objectContaining({ filter: `(${expression})` }));
+    expect(listMemos).toHaveBeenCalledWith(expect.objectContaining({ filter: `(${expression})` }), expect.anything());
     expect(result.current.data?.pages[0].memos).toEqual([]);
   });
 

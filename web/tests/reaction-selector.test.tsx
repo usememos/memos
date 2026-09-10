@@ -25,7 +25,8 @@ describe("ReactionSelector", () => {
     render(<ReactionSelector memo={memo} />);
 
     const trigger = screen.getByRole("button", { name: "setting.memo.add-reaction" });
-    expect(trigger).toHaveClass("size-7", "rounded-full", "focus-visible:ring-2");
+    expect(trigger).toHaveClass("size-7", "rounded-full", "focus-visible:outline-2");
+    expect(trigger.className).not.toMatch(/ring-/);
     expect(trigger).toHaveAttribute("aria-expanded", "false");
 
     fireEvent.click(trigger);

@@ -2,7 +2,7 @@ import { BookmarkIcon } from "lucide-react";
 import { useCallback, useState } from "react";
 import { Link } from "react-router-dom";
 import RelativeTime from "@/components/RelativeTime";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useNewMemo } from "@/contexts/NewMemoContext";
 import useNavigateTo from "@/hooks/useNavigateTo";
@@ -22,22 +22,22 @@ import { createMemoNavigationState } from "../navigation";
 import type { MemoHeaderProps } from "../types";
 import MemoSpaceBadge from "./MemoSpaceBadge";
 
-const MEMO_HEADER_ACTION_CLASSES =
-  "size-6 shrink-0 rounded-md border-none bg-transparent text-muted-foreground transition-colors hover:bg-accent hover:text-foreground hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/50 data-popup-open:bg-accent data-popup-open:text-foreground";
+/** The card's trailing actions are the kit's quiet 24px squares, whether or not they are kit buttons. */
+const MEMO_HEADER_ACTION_CLASSES = cn(buttonVariants({ variant: "quiet", size: "icon-sm" }));
 
 const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showCreator, showVisibility, showPinned, showSpace }) => {
   const t = useTranslate();
   const [reactionSelectorOpen, setReactionSelectorOpen] = useState(false);
 
-  const { memo, creator, currentUser, parentPage, parentScope, isArchived, readonly, openEditor } = useMemoViewContext();
+  const { memo, creator, currentUser, parentPage, isArchived, readonly, openEditor } = useMemoViewContext();
   const { createTime, updateTime, displayTime: memoDisplayTime, isDisplayingUpdatedTime, relativeTimeFormat } = useMemoViewDerived();
   const { newMemoName } = useNewMemo();
   const visibilityOption = getVisibilityOption(memo.visibility);
 
   const navigateTo = useNavigateTo();
   const handleGotoMemoDetailPage = useCallback(() => {
-    navigateTo(`/${memo.name}`, { state: createMemoNavigationState(parentPage, parentScope) });
-  }, [memo.name, parentPage, parentScope, navigateTo]);
+    navigateTo(`/${memo.name}`, { state: createMemoNavigationState(parentPage) });
+  }, [memo.name, parentPage, navigateTo]);
 
   const { unpinMemo } = useMemoActions(memo);
 
@@ -93,6 +93,8 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showC
           <ReactionSelector
             className={cn(
               MEMO_HEADER_ACTION_CLASSES,
+              // The chip's own round bordered look gives way to the header's quiet square.
+              "border-none hover:opacity-100",
               reactionSelectorOpen && "sm:flex!",
               "flex sm:hidden sm:group-hover:flex sm:group-focus-within:flex",
             )}
@@ -113,16 +115,11 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showC
         {showPinned && memo.pinned && (
           <TooltipProvider>
             <Tooltip>
+              {/* The pinned mark keeps its primary ink; that custom look lives on the raw trigger, not a kit button. */}
               <TooltipTrigger
-                render={
-                  <Button
-                    variant="ghost"
-                    size="icon-sm"
-                    aria-label={t("common.unpin")}
-                    className={cn(MEMO_HEADER_ACTION_CLASSES, "text-primary hover:text-primary data-popup-open:text-primary")}
-                    onClick={unpinMemo}
-                  />
-                }
+                aria-label={t("common.unpin")}
+                className={cn(MEMO_HEADER_ACTION_CLASSES, "text-primary hover:text-primary")}
+                onClick={unpinMemo}
               >
                 <BookmarkIcon className="size-4" strokeWidth={1.8} />
               </TooltipTrigger>
@@ -133,13 +130,7 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showC
           </TooltipProvider>
         )}
 
-        <MemoActionMenu
-          memo={memo}
-          parentScope={parentScope}
-          readonly={readonly}
-          className={MEMO_HEADER_ACTION_CLASSES}
-          onEdit={openEditor}
-        />
+        <MemoActionMenu memo={memo} parentPage={parentPage} readonly={readonly} onEdit={openEditor} />
       </div>
     </div>
   );

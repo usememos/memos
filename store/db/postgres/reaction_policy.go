@@ -20,3 +20,15 @@ func validatePostgresReactionWritePolicy(ctx context.Context, tx *sql.Tx, reacti
 	}
 	return store.ValidateReactionWriteParticipation(reaction, participation)
 }
+
+func validatePostgresReactionDeletePolicy(ctx context.Context, tx *sql.Tx, reaction *store.Reaction) error {
+	policy := reaction.Policy
+	participation, err := readPostgresMemoParticipation(ctx, tx, reaction.MemoID, policy.ActorUserID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return store.ErrReactionMemoNotFound
+		}
+		return errors.Wrap(err, "failed to read reaction participation")
+	}
+	return store.ValidateReactionWithdrawal(reaction, participation)
+}

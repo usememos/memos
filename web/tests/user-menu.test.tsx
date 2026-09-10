@@ -117,7 +117,7 @@ describe("User menu", () => {
     );
 
     const trigger = screen.getByRole("button", { name: /Steven/ });
-    expect(trigger).toHaveClass("ms-3", "size-9", "rounded-md", "p-2");
+    expect(trigger).toHaveClass("ms-0", "size-12", "rounded-xl", "p-2");
     expect(trigger).not.toHaveClass("w-full");
     expect(trigger).not.toHaveClass("px-5");
     expect(trigger).not.toHaveClass("rounded-none");

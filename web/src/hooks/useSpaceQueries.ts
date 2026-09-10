@@ -1,10 +1,12 @@
 import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
+import { Code, type ConnectError } from "@connectrpc/connect";
 import { type QueryClient, type QueryKey, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { spaceServiceClient } from "@/connect";
 import { attachmentKeys } from "@/hooks/useAttachmentQueries";
 import { memoKeys } from "@/hooks/useMemoQueries";
 import { userKeys } from "@/hooks/useUserQueries";
+import { hasConnectCode } from "@/lib/error";
 import {
   type Space,
   type SpaceInvitation,
@@ -90,7 +92,7 @@ const updateCachedList = <T>(queryClient: QueryClient, queryKey: QueryKey, updat
 
 const removeSpaceFromViewerCache = (queryClient: QueryClient, viewerName: string, spaceName: string) => {
   updateCachedList<Space>(queryClient, spaceKeys.list(viewerName), (spaces) => removeByName(spaces, spaceName));
-  queryClient.removeQueries({ queryKey: spaceKeys.space(viewerName, spaceName) });
+  queryClient.resetQueries({ queryKey: spaceKeys.space(viewerName, spaceName) });
 };
 
 const invalidateMembershipSensitiveQueries = (queryClient: QueryClient) => {
@@ -122,6 +124,22 @@ export function useSpaces(viewerName: string | undefined, options?: SpaceQueryOp
     // Space membership is near-static, so don't re-run that loop on each tab return.
     staleTime: SPACE_LIST_STALE_TIME,
     refetchOnWindowFocus: false,
+  });
+}
+
+/** Fetches the route Space; the switcher list seeds it so collection pages are not held behind a second round-trip. */
+export function useSpace(viewerName: string | undefined, spaceName: string | undefined) {
+  const queryClient = useQueryClient();
+  const listKey = spaceKeys.list(viewerName ?? "");
+  return useQuery<Space, ConnectError>({
+    queryKey: spaceKeys.space(viewerName ?? "", spaceName ?? ""),
+    queryFn: () => spaceServiceClient.getSpace({ name: spaceName! }),
+    enabled: queryEnabled(viewerName, spaceName),
+    initialData: () => queryClient.getQueryData<Space[]>(listKey)?.find((space) => space.name === spaceName),
+    initialDataUpdatedAt: () => queryClient.getQueryState(listKey)?.dataUpdatedAt,
+    staleTime: SPACE_LIST_STALE_TIME,
+    refetchOnWindowFocus: false,
+    retry: (count, error) => !hasConnectCode(error, Code.NotFound, Code.PermissionDenied) && count < 2,
   });
 }
 
@@ -198,12 +216,13 @@ export function useCreateSpace(viewerName: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ title, description, spaceId }: { title: string; description?: string; spaceId: string }) =>
+    mutationFn: ({ title, description, spaceId, icon }: { title: string; description?: string; spaceId: string; icon?: Space["icon"] }) =>
       spaceServiceClient.createSpace({
-        space: create(SpaceSchema, { title, description }),
+        space: create(SpaceSchema, { title, description, icon }),
         spaceId,
       }),
     onSuccess: (space) => {
+      queryClient.setQueryData(spaceKeys.space(viewerName, space.name), space);
       queryClient.setQueryData<Space[]>(spaceKeys.list(viewerName), (spaces = []) => upsertByName(spaces, space));
     },
   });
@@ -219,6 +238,7 @@ export function useUpdateSpace(viewerName: string) {
         updateMask: create(FieldMaskSchema, { paths: updateMask }),
       }),
     onSuccess: (space) => {
+      queryClient.setQueryData(spaceKeys.space(viewerName, space.name), space);
       updateCachedList<Space>(queryClient, spaceKeys.list(viewerName), (spaces) => upsertByName(spaces, space));
     },
   });
@@ -343,7 +363,8 @@ export function useUpdateSpaceMember(viewerName: string) {
       if (spaceName) {
         updateCachedList<SpaceMember>(queryClient, spaceKeys.members(viewerName, spaceName), (members) => upsertByName(members, member));
       }
-      if (member.user === viewerName) {
+      if (member.user === viewerName && spaceName) {
+        void queryClient.invalidateQueries({ queryKey: spaceKeys.space(viewerName, spaceName), exact: true });
         void queryClient.invalidateQueries({ queryKey: spaceKeys.list(viewerName), exact: true });
       }
     },

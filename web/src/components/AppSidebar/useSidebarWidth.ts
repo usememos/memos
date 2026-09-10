@@ -7,11 +7,11 @@ import { useCallback, useEffect, useState } from "react";
  */
 export const SIDEBAR_WIDTH_VAR = "--app-sidebar-width";
 
-/** 200px of content once `px-3` is removed, which keeps the month calendar's seven cells legible. */
-export const SIDEBAR_MIN_WIDTH = 224;
+/** 56px icon rail + 232px panel keeps the month calendar's seven cells legible. */
+export const SIDEBAR_MIN_WIDTH = 288;
 /** Wider than this only starves the feed: its columns need 260px each and the rail holds short labels. */
 export const SIDEBAR_MAX_WIDTH = 400;
-export const SIDEBAR_DEFAULT_WIDTH = 256;
+export const SIDEBAR_DEFAULT_WIDTH = 320;
 
 /** The rail may never take more than this share of the window. */
 const MAX_VIEWPORT_SHARE = 0.4;

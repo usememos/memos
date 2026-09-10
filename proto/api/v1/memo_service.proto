@@ -258,8 +258,9 @@ message Memo {
   // Output only. The computed properties of the memo.
   Property property = 15 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  // Output only. The readable context memo of this COMMENT relation, if any.
-  // This is omitted unless the caller may independently read both memos.
+  // Output only. The context memo of this COMMENT relation, if any.
+  // Its identity is returned even when the caller cannot read the parent.
+  // Fetch the parent independently; this field does not grant read access.
   // Format: memos/{memo}
   optional string parent = 16 [
     (google.api.field_behavior) = OUTPUT_ONLY,

@@ -14,6 +14,7 @@ const mocks = vi.hoisted(() => ({
   setMobileOpen: vi.fn(),
   setQuickFindOpen: vi.fn(),
   selectedSpaceName: undefined as string | undefined,
+  isSpaceReady: true,
   pathname: "/",
   desktop: true,
 }));
@@ -36,7 +37,7 @@ vi.mock("@/contexts/AuthContext", () => ({
 }));
 
 vi.mock("@/contexts/SpaceContext", () => ({
-  useSpaceContext: () => ({ selectedSpaceName: mocks.selectedSpaceName }),
+  useSpaceContext: () => ({ selectedSpaceName: mocks.selectedSpaceName, isSpaceReady: mocks.isSpaceReady }),
 }));
 
 vi.mock("@/hooks/useCurrentUser", () => ({
@@ -128,6 +129,7 @@ describe("GlobalMemoEditorProvider", () => {
     mocks.setMobileOpen.mockClear();
     mocks.setQuickFindOpen.mockClear();
     mocks.selectedSpaceName = undefined;
+    mocks.isSpaceReady = true;
     mocks.pathname = "/";
     mocks.desktop = true;
   });
@@ -173,6 +175,7 @@ describe("GlobalMemoEditorProvider", () => {
     // Returning to the original route, Space, or viewport must not rearm focus.
     mocks.pathname = "/";
     mocks.selectedSpaceName = undefined;
+    mocks.isSpaceReady = true;
     mocks.desktop = true;
     rerender(
       <GlobalMemoEditorProvider>
@@ -324,6 +327,15 @@ describe("GlobalMemoEditorProvider", () => {
     expect(mocks.loadMemoEditor).not.toHaveBeenCalled();
   });
 
+  it("disables new memo while the route Space is unresolved or inaccessible", () => {
+    mocks.pathname = "/spaces/product";
+    mocks.selectedSpaceName = "spaces/product";
+    mocks.isSpaceReady = false;
+    renderProvider(<Trigger />);
+    fireEvent.click(screen.getByRole("button", { name: "Open editor" }));
+    expect(mocks.loadMemoEditor).not.toHaveBeenCalled();
+  });
+
   it("snapshots the selected Space when opening the composer", async () => {
     mocks.selectedSpaceName = "spaces/product";
     await openViaTrigger();
@@ -340,7 +352,11 @@ describe("GlobalMemoEditorProvider", () => {
     });
   });
 
-  it.each(["/explore", "/attachments"])("inherits the remembered Space when composing from %s", async (pathname) => {
+  it.each([
+    "/spaces/product/explore",
+    "/spaces/product/attachments",
+    "/spaces/product/calendar/2026/09",
+  ])("inherits the route Space when composing from %s", async (pathname) => {
     mocks.pathname = pathname;
     mocks.selectedSpaceName = "spaces/product";
     await openViaTrigger();
@@ -363,9 +379,9 @@ describe("GlobalMemoEditorProvider", () => {
     "/403",
     "/404",
     "/unknown",
-  ])("creates an unassigned memo from %s even when a Space is remembered", async (pathname) => {
+  ])("creates an unassigned memo from %s", async (pathname) => {
+    // The URL only carries a Space on collection pages, so the context reports none here.
     mocks.pathname = pathname;
-    mocks.selectedSpaceName = "spaces/product";
     await openViaTrigger();
 
     expect(mocks.editorProps).toMatchObject({

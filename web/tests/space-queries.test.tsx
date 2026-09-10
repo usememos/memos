@@ -1,4 +1,5 @@
 import { create } from "@bufbuild/protobuf";
+import { Code, ConnectError } from "@connectrpc/connect";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, renderHook, waitFor } from "@testing-library/react";
 import type { ReactNode } from "react";
@@ -12,6 +13,7 @@ import {
   useDeleteSpace,
   useDeleteSpaceInvitation,
   useDeleteSpaceMember,
+  useSpace,
   useSpaceInvitations,
   useSpaceMembers,
   useSpaces,
@@ -32,6 +34,7 @@ const clients = vi.hoisted(() => ({
   listSpaceInvitations: vi.fn(),
   listSpaceMembers: vi.fn(),
   listSpaces: vi.fn(),
+  getSpace: vi.fn(),
   listUserSpaceInvitations: vi.fn(),
   updateSpace: vi.fn(),
   updateSpaceMember: vi.fn(),
@@ -63,6 +66,35 @@ describe("Space queries", () => {
     for (const client of Object.values(clients)) {
       client.mockReset();
     }
+  });
+
+  it("fetches the route Space with viewer-isolated cache entries", async () => {
+    clients.getSpace.mockResolvedValue(create(SpaceSchema, { name: SPACE_NAME, title: "Product" }));
+    const client = createQueryClient();
+    const view = renderHook(({ user }) => useSpace(user, SPACE_NAME), { initialProps: { user: VIEWER }, wrapper: createWrapper(client) });
+    await waitFor(() => expect(view.result.current.isSuccess).toBe(true));
+    expect(clients.getSpace).toHaveBeenCalledWith({ name: SPACE_NAME });
+    clients.getSpace.mockRejectedValue(new ConnectError("not found", Code.NotFound));
+    view.rerender({ user: OTHER_VIEWER });
+    expect(view.result.current.data).toBeUndefined();
+    await waitFor(() => expect(view.result.current.isError).toBe(true));
+    expect(clients.getSpace).toHaveBeenCalledTimes(2);
+  });
+
+  it("refetches an active Space after leaving and exposes the access failure", async () => {
+    const client = createQueryClient();
+    const member = create(SpaceMemberSchema, { name: `${SPACE_NAME}/members/test`, user: VIEWER });
+    client.setQueryData(spaceKeys.members(VIEWER, SPACE_NAME), [member]);
+    clients.getSpace.mockResolvedValue(create(SpaceSchema, { name: SPACE_NAME, title: "Product" }));
+    clients.deleteSpaceMember.mockResolvedValue({});
+    const view = renderHook(() => ({ space: useSpace(VIEWER, SPACE_NAME), leave: useDeleteSpaceMember(VIEWER) }), {
+      wrapper: createWrapper(client),
+    });
+    await waitFor(() => expect(view.result.current.space.isSuccess).toBe(true));
+    clients.getSpace.mockRejectedValue(new ConnectError("not found", Code.NotFound));
+    await act(() => view.result.current.leave.mutateAsync({ name: member.name }));
+    await waitFor(() => expect(view.result.current.space.isError).toBe(true));
+    expect(view.result.current.space.data).toBeUndefined();
   });
 
   it("loads every page so the switcher can show all available Spaces", async () => {
@@ -224,7 +256,7 @@ describe("Space queries", () => {
     });
     expect(clients.deleteSpace).toHaveBeenCalledWith({ name: SPACE_NAME });
     expect(queryClient.getQueryData(spaceKeys.list(VIEWER))).toEqual([createdSpace]);
-    expect(queryClient.getQueryState(spaceKeys.members(VIEWER, SPACE_NAME))).toBeUndefined();
+    expect(queryClient.getQueryData(spaceKeys.members(VIEWER, SPACE_NAME))).toBeUndefined();
   });
 
   it("synchronizes admin invitation caches after create and delete", async () => {
@@ -374,6 +406,6 @@ describe("Space queries", () => {
     });
     expect(clients.deleteSpaceMember).toHaveBeenLastCalledWith({ name: viewerMember.name });
     expect(queryClient.getQueryData(spaceKeys.list(VIEWER))).toEqual([]);
-    expect(queryClient.getQueryState(spaceKeys.members(VIEWER, SPACE_NAME))).toBeUndefined();
+    expect(queryClient.getQueryData(spaceKeys.members(VIEWER, SPACE_NAME))).toBeUndefined();
   });
 });

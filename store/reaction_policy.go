@@ -25,6 +25,16 @@ func validateReactionWritePolicy(reaction *Reaction) error {
 // ValidateReactionWriteParticipation applies the reaction actor identity and
 // memo-local participation rules to state loaded by the write transaction.
 func ValidateReactionWriteParticipation(reaction *Reaction, snapshot *MemoCommentAuthorizationSnapshot) error {
+	if err := ValidateReactionWithdrawal(reaction, snapshot); err != nil {
+		return err
+	}
+	return ValidateMemoCommentAuthorization(snapshot)
+}
+
+// ValidateReactionWithdrawal allows an active actor to withdraw their own reaction
+// without requiring continued access to or participation in the memo. The driver
+// also verifies ownership of the stored reaction in the same transaction.
+func ValidateReactionWithdrawal(reaction *Reaction, snapshot *MemoCommentAuthorizationSnapshot) error {
 	if err := validateReactionWritePolicy(reaction); err != nil {
 		return err
 	}
@@ -40,5 +50,5 @@ func ValidateReactionWriteParticipation(reaction *Reaction, snapshot *MemoCommen
 	if snapshot.ContextID != reaction.MemoID {
 		return ErrMemoMutationConflict
 	}
-	return ValidateMemoCommentAuthorization(snapshot)
+	return nil
 }

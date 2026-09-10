@@ -1,7 +1,7 @@
 import { DirectionProvider } from "@base-ui/react/direction-provider";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { SIDEBAR_SECTION_ACTION_BUTTON_CLASSES, SIDEBAR_SECTION_ACTION_ICON_CLASSES } from "@/components/AppSidebar/SidebarSection";
+import { SIDEBAR_SECTION_ACTION_ICON_CLASSES } from "@/components/AppSidebar/SidebarSection";
 import MemoDisplaySettingMenu from "@/components/MemoDisplaySettingMenu";
 import { ViewProvider } from "@/contexts/ViewContext";
 
@@ -44,7 +44,7 @@ describe("MemoDisplaySettingMenu", () => {
     );
 
     const trigger = screen.getByRole("button", { name: "View options" });
-    expect(trigger).toHaveClass(...SIDEBAR_SECTION_ACTION_BUTTON_CLASSES.split(" "));
+    expect(trigger).toHaveClass("size-6", "rounded-md", "text-muted-foreground/70", "hover:bg-muted/60", "hover:text-foreground");
     expect(trigger.querySelector("svg")).toHaveClass(SIDEBAR_SECTION_ACTION_ICON_CLASSES);
 
     fireEvent.click(trigger);
