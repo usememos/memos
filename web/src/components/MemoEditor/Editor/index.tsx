@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import type { EditorController } from "../types/editorController";
 import { createController } from "./controller";
 import "./editor.css";
-import { buildEditorExtensions, placeholderCompartment } from "./extensions";
+import { buildEditorExtensions, type EditorFileOrigin, placeholderCompartment } from "./extensions";
 import { createFormattingController } from "./formatting";
 
 interface EditorProps {
@@ -16,7 +16,7 @@ interface EditorProps {
   placeholder: string;
   onContentChange: (content: string) => void;
   onExternalContentApplied?: (content: string) => void;
-  onFiles: (files: File[], position: number) => void;
+  onFiles: (files: File[], origin: EditorFileOrigin) => void;
   /** Invoked by the in-editor save shortcut (Cmd/Ctrl+Enter). */
   onSubmit: () => void;
   isFocusMode?: boolean;
@@ -81,7 +81,7 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
           onChange: (md) => {
             if (!applyingExternalContentRef.current) onChangeRef.current(md);
           },
-          onFiles: (files, position) => onFilesRef.current(files, position),
+          onFiles: (files, origin) => onFilesRef.current(files, origin),
           onUpdate: () => listenersRef.current.forEach((l) => l()),
           onSubmit: () => onSubmitRef.current(),
           getTags: () => tagsRef.current,

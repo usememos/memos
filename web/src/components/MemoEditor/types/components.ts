@@ -1,5 +1,6 @@
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import type { Location, Memo, Visibility } from "@/types/proto/api/v1/memo_service_pb";
+import type { EditorFileOrigin } from "../Editor/extensions";
 import type { AudioRecorderStatus } from "../hooks/useAudioRecorder";
 import type { LocalFile } from "./attachment";
 
@@ -47,7 +48,7 @@ export interface EditorContentProps {
   placeholder?: string;
   /** Invoked by the in-editor save shortcut (Cmd/Ctrl+Enter). */
   onSubmit: () => void;
-  onFiles: (files: File[], position: number) => void;
+  onFiles: (files: File[], origin: EditorFileOrigin) => void;
 }
 
 /**

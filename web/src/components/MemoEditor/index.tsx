@@ -10,6 +10,7 @@ import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString } from "@/utils/memo";
 import { AudioRecorderPanel, EditorContent, EditorMetadata, FocusModeOverlay, TimestampPopover } from "./components";
 import { FOCUS_MODE_STYLES, FORMATTING_TOOLBAR_STORAGE_KEY } from "./constants";
+import type { EditorFileOrigin } from "./Editor/extensions";
 import {
   splitInlineLocalFiles,
   toLocalFiles,
@@ -254,15 +255,34 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
     void handleStartAudioRecording();
   };
 
-  /** Shared by the ＋ menu (no position) and by editor paste/drop (drop position). */
-  const handleInsertImages = useCallback(
-    (files: File[], position?: number) => {
+  /**
+   * Single ingest point for files the editor receives. Inline placement writes
+   * images into the text (at `position`, else the caret) and attaches the rest;
+   * otherwise everything joins the attachment list.
+   */
+  const handleFiles = useCallback(
+    (files: File[], placement: { inline: false } | { inline: true; position?: number }) => {
       if (getState().ui.isLoading.saving) return;
-      const { inline, attachments } = splitInlineLocalFiles(toLocalFiles(files, { createBlobUrl, saveMediaMetadata }));
+      const localFiles = toLocalFiles(files, { createBlobUrl, saveMediaMetadata });
+      const { inline, attachments } = placement.inline ? splitInlineLocalFiles(localFiles) : { inline: [], attachments: localFiles };
       attachments.forEach((file) => dispatch(actions.addLocalFile(file)));
-      inlineImageUpload.insertLocalImages(inline, position);
+      if (placement.inline) inlineImageUpload.insertLocalImages(inline, placement.position);
     },
     [actions, createBlobUrl, dispatch, getState, inlineImageUpload.insertLocalImages, saveMediaMetadata],
+  );
+
+  /** The ＋ menu's Insert image: inline at the caret. */
+  const handleInsertImages = useCallback((files: File[]) => handleFiles(files, { inline: true }), [handleFiles]);
+
+  /**
+   * A drop inlines images where they landed. A paste carries no placement
+   * gesture, so it attaches like the ＋ menu's upload; the attachment list's
+   * own Insert action is how a pasted image becomes inline.
+   */
+  const handleEditorFiles = useCallback(
+    (files: File[], origin: EditorFileOrigin) =>
+      handleFiles(files, origin.source === "drop" ? { inline: true, position: origin.position } : { inline: false }),
+    [handleFiles],
   );
 
   const handleCancelAudioRecording = () => {
@@ -346,7 +366,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
         )}
 
         {/* Editor content grows to fill available space in focus mode */}
-        <EditorContent ref={editorRef} placeholder={placeholder} onSubmit={handleSave} onFiles={handleInsertImages} />
+        <EditorContent ref={editorRef} placeholder={placeholder} onSubmit={handleSave} onFiles={handleEditorFiles} />
 
         {isAudioRecorderOpen && (audioRecorder.isBusy || isTranscribingAudio) && (
           <AudioRecorderPanel
