@@ -1,4 +1,5 @@
 import { PlayIcon } from "lucide-react";
+import BlurredMedia from "@/components/BlurredMedia";
 import MotionPhotoPreview from "@/components/MotionPhotoPreview";
 import { Badge } from "@/components/ui/badge";
 import VideoPoster from "@/components/VideoPoster";
@@ -22,38 +23,42 @@ const AttachmentMediaCard = ({ item, onPreview }: { item: AttachmentLibraryMedia
     <article className="overflow-hidden rounded-[20px] border border-border/60 bg-background/90 shadow-sm shadow-black/[0.03]">
       <div className="relative block w-full cursor-pointer text-left" onClick={onPreview}>
         <div className="relative aspect-[5/4] overflow-hidden bg-muted/40">
-          {item.kind === "video" ? (
-            <>
-              <VideoPoster
-                sourceUrl={item.sourceUrl}
-                posterUrl={item.posterUrl}
-                alt={item.filename}
-                className="h-full w-full object-cover"
-              />
-              <div className="absolute inset-0 bg-linear-to-t from-black/35 via-black/5 to-transparent" />
-              <span
-                className={cn(
-                  "absolute bottom-2.5 right-2.5 inline-flex h-8 items-center justify-center rounded-full bg-background/85 text-foreground shadow-sm backdrop-blur-sm",
-                  videoDuration === undefined ? "w-8" : "gap-1.5 px-2.5 text-[11px] font-medium tabular-nums",
-                )}
-              >
-                <PlayIcon className="h-3.5 w-3.5 fill-current" />
-                {videoDuration !== undefined && <span>{formatMediaDuration(videoDuration)}</span>}
-              </span>
-            </>
-          ) : item.kind === "motion" ? (
-            <MotionPhotoPreview
-              posterUrl={item.posterUrl}
-              motionUrl={item.previewItem.kind === "motion" ? item.previewItem.motionUrl : item.sourceUrl}
-              alt={item.filename}
-              presentationTimestampUs={item.previewItem.kind === "motion" ? item.previewItem.presentationTimestampUs : undefined}
-              containerClassName="h-full w-full"
-              mediaClassName="h-full w-full object-cover"
-              badgeClassName="left-3 top-3"
-            />
-          ) : (
-            <img src={item.posterUrl} alt={item.filename} className="h-full w-full object-cover" loading="lazy" decoding="async" />
-          )}
+          <BlurredMedia key={item.memoName} blurred={item.blurred} className="size-full" contentClassName="size-full">
+            {(concealed) =>
+              item.kind === "video" ? (
+                <>
+                  <VideoPoster
+                    sourceUrl={item.sourceUrl}
+                    posterUrl={item.posterUrl}
+                    alt={item.filename}
+                    className="h-full w-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-linear-to-t from-black/35 via-black/5 to-transparent" />
+                  <span
+                    className={cn(
+                      "absolute bottom-2.5 right-2.5 inline-flex h-8 items-center justify-center rounded-full bg-background/85 text-foreground shadow-sm backdrop-blur-sm",
+                      videoDuration === undefined ? "w-8" : "gap-1.5 px-2.5 text-[11px] font-medium tabular-nums",
+                    )}
+                  >
+                    <PlayIcon className="h-3.5 w-3.5 fill-current" />
+                    {videoDuration !== undefined && <span>{formatMediaDuration(videoDuration)}</span>}
+                  </span>
+                </>
+              ) : item.kind === "motion" && !concealed ? (
+                <MotionPhotoPreview
+                  posterUrl={item.posterUrl}
+                  motionUrl={item.previewItem.kind === "motion" ? item.previewItem.motionUrl : item.sourceUrl}
+                  alt={item.filename}
+                  presentationTimestampUs={item.previewItem.kind === "motion" ? item.previewItem.presentationTimestampUs : undefined}
+                  containerClassName="h-full w-full"
+                  mediaClassName="h-full w-full object-cover"
+                  badgeClassName="left-3 top-3"
+                />
+              ) : (
+                <img src={item.posterUrl} alt={item.filename} className="h-full w-full object-cover" loading="lazy" decoding="async" />
+              )
+            }
+          </BlurredMedia>
         </div>
       </div>
 

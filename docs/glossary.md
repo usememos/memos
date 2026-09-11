@@ -139,6 +139,13 @@ spellings remain separate only when they emit different code-point sequences.
 User configuration that selects tag values and supplies presentation or behavior metadata, such as color or content blurring. A metadata rule may match
 multiple values and does not create, own, or rename a tag.
 
+Content-blurring rules also apply to a memo's images, videos, and motion photos in the attachment library and its full-screen preview. Each preview
+can be revealed explicitly; switching to another preview does not reveal its content. A paired Live Photo is blurred if either linked memo matches a
+blur rule. Unlinked attachments do not inherit a memo's rules.
+
+While user settings or an uncached linked memo are loading, the library keeps the preview blurred. A failed memo lookup also leaves it blurred.
+Blurring is a presentation preference, not an access-control mechanism: memo visibility, file permissions, filenames, and direct file links are unchanged.
+
 ### Tag count
 
 The number of memo tag sets containing an exactly equal direct or implied tag value, not the number of textual occurrences. A memo containing only
