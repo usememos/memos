@@ -302,4 +302,27 @@ describe("<SidebarResizeHandle />", () => {
     expect(shellWidthVar()).toBe(`${SIDEBAR_DEFAULT_WIDTH}px`);
     expect(onWidthChange).not.toHaveBeenCalled();
   });
+  it("renders the grip appearance as a short pill astride a start edge, hidden until hovered", () => {
+    const targetRef = { current: document.createElement("div") };
+    render(
+      <DirectionProvider direction="ltr">
+        <SidebarResizeHandle
+          appearance="grip"
+          edge="start"
+          width={400}
+          minWidth={320}
+          maxWidth={640}
+          onWidthChange={vi.fn()}
+          targetRef={targetRef}
+          cssVariable="--memo-panel-width"
+          label="Resize panel"
+        />
+      </DirectionProvider>,
+    );
+    const handle = screen.getByRole("separator", { name: "Resize panel" });
+    expect(handle).toHaveClass("-start-1", "w-2");
+    const pill = handle.firstElementChild as HTMLElement;
+    expect(pill).toHaveClass("h-8", "w-1", "rounded-full", "opacity-0", "group-hover:opacity-100");
+    expect(pill).not.toHaveClass("h-full", "bg-transparent");
+  });
 });

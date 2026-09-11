@@ -9,18 +9,21 @@ import { formatReactionTooltip, useReactionActions } from "./hooks";
 
 /**
  * A reaction is a token attached to the memo, not a control, so it takes the pill shape
- * the space and New badges use rather than the rounded box of a button. Everything else
- * is the quiet grammar: 28px, 13px, muted ink under a light wash, and the accent fill for
- * the one that is on — your own reaction, or the add control while its picker is open.
+ * the space and New badges use rather than the rounded box of a button, and like them it
+ * has a faint resting surface: a token must read as one even where it cannot be pressed.
+ * Everything else is the quiet grammar: 28px, 13px, muted ink that darkens under a light
+ * wash, and the accent fill for the one that is on — your own reaction, or the add
+ * control while its picker is open.
  */
-export const REACTION_PILL_CLASSES = "inline-flex h-7 shrink-0 items-center gap-1.5 rounded-full px-2.5 text-ui text-muted-foreground/70";
+export const REACTION_PILL_CLASSES =
+  "inline-flex h-7 shrink-0 items-center gap-1.5 rounded-full bg-muted/40 px-2.5 text-ui text-muted-foreground/70";
 const REACTION_PILL_INTERACTIVE_CLASSES = cn(
   REACTION_PILL_CLASSES,
-  "cursor-pointer transition-colors hover:bg-muted/60 hover:text-foreground aria-pressed:bg-accent aria-pressed:text-accent-foreground data-popup-open:bg-accent data-popup-open:text-accent-foreground",
+  "cursor-pointer transition-colors hover:bg-muted/70 hover:text-foreground aria-pressed:bg-accent aria-pressed:text-accent-foreground data-popup-open:bg-accent data-popup-open:text-accent-foreground",
   FOCUS_VISIBLE_OUTLINE_CLASSES,
 );
-/** The strip's add control: a round quiet face of the pills' height, so the strip reads as one row. */
-export const REACTION_ADD_CLASSES = cn(REACTION_PILL_INTERACTIVE_CLASSES, "size-7 justify-center px-0");
+/** The strip's add control is a control, not a token: a round quiet face of the pills' height with no resting surface. */
+export const REACTION_ADD_CLASSES = cn(REACTION_PILL_INTERACTIVE_CLASSES, "size-7 justify-center bg-transparent px-0 hover:bg-muted/60");
 
 interface Props {
   memo: Memo;

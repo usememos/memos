@@ -36,6 +36,9 @@
   --warning: oklch(0.78 0.14 75);
   --warning-foreground: oklch(0.25 0.03 75);
 
+  /* Floating surfaces separate mostly by their lighter popover tone; the shadow adds depth below. */
+  --shadow-float: 0 1px 2px hsl(0 0% 0% / 0.3), 0 8px 24px -6px hsl(0 0% 0% / 0.4), 0 24px 56px -16px hsl(0 0% 0% / 0.5);
+
   /* Borders - --border for layout dividers, --input for form field borders */
   --border: oklch(0.38 0.01 255);
   --input: oklch(0.42 0.011 255);

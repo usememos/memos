@@ -43,6 +43,8 @@
   --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 4px 6px -1px hsl(0 0% 0% / 0.1);
   --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 8px 10px -1px hsl(0 0% 0% / 0.1);
   --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
+  /* A surface floating over page content: a soft contact edge plus a wide, faint ambient fall. */
+  --shadow-float: 0 1px 2px hsl(0 0% 0% / 0.05), 0 8px 24px -6px hsl(0 0% 0% / 0.1), 0 24px 56px -16px hsl(0 0% 0% / 0.14);
 }
 
 /* Tailwind v4 token mappings — compiled once at build time, shared by all themes.
@@ -99,6 +101,7 @@
   --shadow-lg: var(--shadow-lg);
   --shadow-xl: var(--shadow-xl);
   --shadow-2xl: var(--shadow-2xl);
+  --shadow-float: var(--shadow-float);
 
   /* Layering tiers — keep overlays/dropdowns/tooltips stacked consistently.
      Used by the ui/ primitives via z-overlay / z-dropdown / z-tooltip. */

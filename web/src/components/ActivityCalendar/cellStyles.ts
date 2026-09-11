@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import type { CalendarDayCell } from "./types";
+import { type ActivityLevel, getActivityLevel } from "./utils";
 
 /**
  * The square chip inside a cell carries every visual. `max-w-[30px]` caps it so a wider
@@ -18,24 +19,33 @@ const EMPTY_CHIP = "bg-transparent text-foreground/75 group-hover/day:bg-muted/4
 /** A picked day is a checked filter like a view or tag row: it takes the accent, not a ring. */
 const SELECTED_CHIP = "z-10 bg-primary font-medium text-primary-foreground";
 
-/** Activity tints, ordered from the fraction of `maxCount` a day must exceed to earn them. */
-const INTENSITY_TINTS: ReadonlyArray<readonly [threshold: number, className: string]> = [
-  [0.75, "bg-blue-400/60 text-foreground/85"],
-  [0.5, "bg-blue-400/45 text-foreground/80"],
-  [0.25, "bg-blue-400/30 text-foreground/80"],
-  [0, "bg-blue-400/18 text-foreground/75"],
-];
+/** Primary-tinted activity levels; the small chip can carry a stronger wash than a full day cell. */
+const INTENSITY_TINTS: Record<Exclude<ActivityLevel, 0>, string> = {
+  1: "bg-primary/12 text-foreground/75",
+  2: "bg-primary/22 text-foreground/80",
+  3: "bg-primary/34 text-foreground/80",
+  4: "bg-primary/48 text-foreground/85",
+};
+
+/**
+ * The same ladder for a full calendar day cell, with its hover step: lighter than the chip
+ * because excerpts and photos sit on top. Kept beside the chip's so the two cannot drift.
+ */
+export const DAY_CELL_FILLS: Record<ActivityLevel, string> = {
+  0: "bg-card hover:bg-muted/40",
+  1: "bg-primary/8 hover:bg-primary/12",
+  2: "bg-primary/16 hover:bg-primary/20",
+  3: "bg-primary/26 hover:bg-primary/30",
+  4: "bg-primary/38 hover:bg-primary/42",
+};
 
 const getFillClass = (day: CalendarDayCell, maxCount: number): string => {
   if (!day.isCurrentMonth) return OUTSIDE_MONTH_CHIP;
   // Selected owns the fill outright: layering the empty-cell hover tint on top would swap
   // the accent out on hover and leave primary-foreground text on a muted chip.
   if (day.isSelected) return SELECTED_CHIP;
-  if (day.count === 0) return EMPTY_CHIP;
-
-  const ratio = day.count / maxCount;
-  const tint = INTENSITY_TINTS.find(([threshold]) => ratio > threshold);
-  return tint?.[1] ?? EMPTY_CHIP;
+  const level = getActivityLevel(day.count, maxCount);
+  return level === 0 ? EMPTY_CHIP : INTENSITY_TINTS[level];
 };
 
 export const getChipClassName = (day: CalendarDayCell, maxCount: number, isInteractive: boolean): string =>

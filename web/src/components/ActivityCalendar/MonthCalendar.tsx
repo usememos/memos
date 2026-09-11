@@ -1,11 +1,15 @@
 import { memo, useMemo } from "react";
 import { useInstance } from "@/contexts/InstanceContext";
 import { getToday } from "@/lib/calendar-utils";
+import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { CalendarCell } from "./CalendarCell";
 import { rotateWeekdays, useMonthDays } from "./monthDays";
 import type { MonthCalendarProps } from "./types";
 import { calculateMaxCount, getTooltipText } from "./utils";
+
+/** The type of a weekday column label, shared by every month grid. */
+export const WEEKDAY_LABEL_CLASSES = "text-2xs font-medium uppercase tracking-[0.04em] text-muted-foreground/50";
 
 /** Localized weekday labels starting on the instance's first day of the week. */
 export const useWeekdayLabels = (weekStartDayOffset: number) => {
@@ -44,12 +48,9 @@ export const MonthCalendar = memo(({ month, data, selectedDate, onClick, timeBas
   return (
     <div className="flex flex-col" role="group" aria-label={`Calendar for ${month}`}>
       {/* Every day button already announces its full date, so the initials are decoration. */}
-      <div className="mb-1.5 grid grid-cols-7 gap-1 text-2xs" aria-hidden="true">
+      <div className="mb-1.5 grid grid-cols-7 gap-1" aria-hidden="true">
         {weekDays.map((label, index) => (
-          <div
-            key={index}
-            className="flex h-5 items-center justify-center font-medium uppercase tracking-[0.04em] text-muted-foreground/50"
-          >
+          <div key={index} className={cn("flex h-5 items-center justify-center", WEEKDAY_LABEL_CLASSES)}>
             {Array.from(label)[0]}
           </div>
         ))}

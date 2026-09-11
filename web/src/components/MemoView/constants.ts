@@ -9,7 +9,7 @@ export const MEMO_CARD_BASE_CLASSES =
  * 13px text with no box, darkening on hover like every quiet label.
  */
 export const MEMO_TIME_CONTROL_CLASSES = cn(
-  "min-w-0 truncate rounded-sm text-start text-ui text-muted-foreground transition-colors select-none hover:text-foreground",
+  "shrink-0 whitespace-nowrap rounded-sm text-start text-ui text-muted-foreground transition-colors select-none hover:text-foreground",
   FOCUS_VISIBLE_OUTLINE_CLASSES,
 );
 

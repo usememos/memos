@@ -95,9 +95,9 @@ const PreviewMeta = ({
   }
 
   return (
-    <div className="flex shrink-0 items-center gap-1.5 text-ui leading-none text-muted-foreground">
+    <div className="flex min-w-0 shrink-0 items-center gap-1.5 text-ui leading-none text-muted-foreground">
       {showMemoId && memoId && <span className="shrink-0 font-mono text-2xs text-muted-foreground/60">{memoId}</span>}
-      {showCreator && creatorName && <span className="truncate font-medium text-foreground">{creatorName}</span>}
+      {showCreator && creatorName && <span className="max-w-32 truncate font-medium text-foreground">{creatorName}</span>}
     </div>
   );
 };

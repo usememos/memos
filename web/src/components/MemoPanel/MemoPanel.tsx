@@ -128,16 +128,18 @@ export function MemoPanel({ open, title, subtitle, reservedWidth, busy = false, 
           aria-describedby={undefined}
           style={!desktop ? { height: `${sheetShare * 100}dvh` } : undefined}
           className={cn(
-            "fixed z-30 flex min-h-0 flex-col border border-border/70 bg-background shadow-md outline-none transition-transform duration-200",
+            // A popover surface: lighter than the page in both themes, with the float shadow
+            // rather than the tight card shadow, so a 400px card reads as lifted, not pasted on.
+            "fixed z-30 flex min-h-0 flex-col border border-border/70 bg-popover text-popover-foreground shadow-float outline-none transition-transform duration-200",
             desktop
               ? "inset-y-3 end-3 w-[var(--memo-panel-width)] rounded-xl data-starting-style:translate-x-full data-ending-style:translate-x-full"
               : "inset-x-0 bottom-0 rounded-t-2xl pb-[env(safe-area-inset-bottom)] data-starting-style:translate-y-full data-ending-style:translate-y-full",
           )}
         >
           {desktop && (
-            // The rail stops short of the corners so it reads as the straight run of the card's edge.
-            <div className="absolute inset-y-3 start-0 w-0">
+            <div className="absolute inset-y-0 start-0 w-0">
               <SidebarResizeHandle
+                appearance="grip"
                 width={width}
                 minWidth={minWidth}
                 maxWidth={maxWidth}
