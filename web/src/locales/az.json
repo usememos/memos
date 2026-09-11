@@ -614,6 +614,11 @@
       "web-clipper-title": "Memos Web Clipper ilə tokendən istifadə"
     },
     "account": {
+      "export-description": "Arxivləşdirilmiş qeydlər və şərhlər daxil olmaqla, oxuya bildiyiniz memolarınızı orijinal Markdown, metadata və əlavə edilmiş fayllarla birlikdə ZIP arxivi kimi yükləyin. Heç bir memoya bağlı olmayan fayllar və digər istifadəçilərin memoları daxil edilmir.",
+      "export-download": "ZIP yüklə",
+      "export-preparing": "İxrac hazırlanır…",
+      "export-busy": "Başqa bir ixrac davam edir. Bir az sonra yenidən cəhd edin.",
+      "export-failed": "Bütün memoları və əlavələri ixrac etmək mümkün olmadı. Yenidən cəhd edin.",
       "change-password": "Parolu dəyiş",
       "danger-area": "Təhlükəli sahə",
       "danger-area-description": "Geri qaytarıla bilməyən hesab əməliyyatları buradadır. Davam etməzdən əvvəl onları diqqətlə nəzərdən keçirin.",
