@@ -614,6 +614,11 @@
       "web-clipper-title": "Use a token with Memos Web Clipper"
     },
     "account": {
+      "export-description": "Download a ZIP of your readable memos, including archived notes and comments, with original Markdown, metadata, and attached files. Unlinked uploads and other users' memos are excluded.",
+      "export-download": "Download ZIP",
+      "export-preparing": "Preparing export…",
+      "export-busy": "Another export is in progress. Please try again shortly.",
+      "export-failed": "Could not export all memos and attachments. Please try again.",
       "change-password": "Change password",
       "danger-area": "Danger area",
       "danger-area-description": "Irreversible account actions live here. Review them carefully before continuing.",
