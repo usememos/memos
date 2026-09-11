@@ -39,7 +39,7 @@ describe("LocationDisplayView", () => {
     const trigger = screen.getByRole("button", { name: new RegExp(placeholder) });
     const visibleAddress = screen.getByText(placeholder);
     expect(trigger).toHaveAttribute("title", placeholder);
-    expect(trigger).toHaveClass("max-w-full", "min-w-0");
+    expect(trigger).toHaveClass("w-full", "min-w-0");
     expect(visibleAddress).toHaveClass("min-w-0", "truncate");
   });
 });

@@ -1,4 +1,5 @@
 import { CheckIcon, ChevronDownIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import VisibilityIcon from "@/components/VisibilityIcon";
 import { cn } from "@/lib/utils";
@@ -6,9 +7,13 @@ import { useTranslate } from "@/utils/i18n";
 import { getAssignableVisibilityOptions, getVisibilityOption } from "@/utils/memo";
 import type { VisibilitySelectorProps } from "../types";
 
+/**
+ * The visibility control is a quiet 28px chip built like the sidebar's scope pill: a
+ * 16px glyph at 75%, a 13px label and a 12px chevron at 55%. It fills only while its
+ * menu is open.
+ */
 const VisibilitySelector = (props: VisibilitySelectorProps) => {
   const { value, onChange } = props;
-  const compact = props.size === "compact";
   const t = useTranslate();
 
   const visibilityOptions = getAssignableVisibilityOptions({ hasSpacePlacement: Boolean(props.space), current: value });
@@ -18,29 +23,20 @@ const VisibilitySelector = (props: VisibilitySelectorProps) => {
 
   return (
     <DropdownMenu onOpenChange={props.onOpenChange}>
-      <DropdownMenuTrigger
-        render={
-          <button
-            className={cn(
-              "inline-flex items-center rounded-md hover:bg-accent transition-colors",
-              compact ? "px-1.5 py-[3px] text-[13px] leading-5 text-foreground/85" : "h-8 px-2 text-sm text-muted-foreground",
-            )}
-          />
-        }
-      >
-        <VisibilityIcon visibility={value} className={cn("opacity-60 mr-1.5", compact && "w-[13px]")} />
+      <DropdownMenuTrigger render={<Button variant="quiet" size="sm" />}>
+        <VisibilityIcon visibility={value} className="text-current opacity-75" />
         <span className="truncate">{currentOption ? t(currentOption.labelKey) : ""}</span>
-        <ChevronDownIcon className={cn("ml-0.5 opacity-60", compact ? "size-3.5 text-muted-foreground/70" : "w-4 h-4")} />
+        <ChevronDownIcon className="size-3 opacity-55" strokeWidth={1.8} />
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start">
+      <DropdownMenuContent align="start" size="sm">
         {visibilityOptions.map((option) => (
           <DropdownMenuItem key={option.value} onClick={() => onChange(option.value)}>
-            <VisibilityIcon visibility={option.value} />
+            <VisibilityIcon visibility={option.value} className="size-3.5" />
             <div className="flex flex-col">
               <span>{t(option.labelKey)}</span>
-              <span className="text-xs text-muted-foreground">{t(option.descriptionKey)}</span>
+              <span className="text-2xs text-muted-foreground">{t(option.descriptionKey)}</span>
             </div>
-            {value === option.value && <CheckIcon className="ml-auto w-4 h-4 text-primary" />}
+            <CheckIcon className={cn("ms-auto size-3.5 text-primary", value !== option.value && "invisible")} />
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

@@ -1,51 +1,41 @@
 import { SmilePlusIcon } from "lucide-react";
-import { useState } from "react";
-import { FOCUS_VISIBLE_OUTLINE_CLASSES } from "@/components/ui/focus";
+import { type ReactElement, useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useInstance } from "@/contexts/InstanceContext";
 import { cn } from "@/lib/utils";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { useReactionActions } from "./hooks";
+import { REACTION_ADD_CLASSES } from "./ReactionView";
 
 interface Props {
   memo: Memo;
-  className?: string;
-  onOpenChange?: (open: boolean) => void;
+  /**
+   * The element that opens the picker. Defaults to the round add control that closes a
+   * strip of reaction pills; a host with its own action grammar (the memo header) passes
+   * the control that belongs there.
+   */
+  trigger?: ReactElement;
 }
 
-const ReactionSelector = (props: Props) => {
-  const { memo, className, onOpenChange } = props;
+/** The emoji picker. It owns only the popover and the grid; the trigger is the host's. */
+const ReactionSelector = ({ memo, trigger }: Props) => {
   const t = useTranslate();
   const [open, setOpen] = useState(false);
   const { memoRelatedSetting } = useInstance();
 
-  const handleOpenChange = (newOpen: boolean) => {
-    setOpen(newOpen);
-    onOpenChange?.(newOpen);
-  };
-
   const { hasReacted, handleReactionClick } = useReactionActions({
     memo,
-    onComplete: () => handleOpenChange(false),
+    onComplete: () => setOpen(false),
   });
 
   return (
-    <Popover open={open} onOpenChange={handleOpenChange}>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
-        render={
-          <button
-            type="button"
-            aria-label={t("setting.memo.add-reaction")}
-            className={cn(
-              "flex size-7 cursor-pointer items-center justify-center rounded-full border text-muted-foreground transition-all hover:opacity-80",
-              FOCUS_VISIBLE_OUTLINE_CLASSES,
-              className,
-            )}
-          />
-        }
+        aria-label={t("setting.memo.add-reaction")}
+        render={trigger ?? <button type="button" className={REACTION_ADD_CLASSES} />}
       >
-        <SmilePlusIcon className="mx-auto size-4" />
+        <SmilePlusIcon className="size-4" strokeWidth={1.8} />
       </PopoverTrigger>
       <PopoverContent align="center" className="max-w-[90vw] sm:max-w-md">
         <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-1 max-h-64 overflow-y-auto">

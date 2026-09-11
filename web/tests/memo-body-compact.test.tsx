@@ -29,9 +29,8 @@ vi.mock("@/components/MemoContent/MemoMarkdownRenderer", () => ({
 }));
 
 vi.mock("@/components/MemoMetadata", () => ({
-  AttachmentListView: () => null,
-  LocationDisplayView: () => null,
-  RelationListView: () => null,
+  AttachmentGallery: () => null,
+  MemoMetadataRows: () => null,
 }));
 
 vi.mock("@/components/MemoReactionListView", () => ({
@@ -111,7 +110,7 @@ describe("<MemoBody /> compact body clamp", () => {
     render(<MemoBody compact={false} />);
 
     const revealButton = screen.getByRole("button", { name: "memo.click-to-show-sensitive-content" });
-    expect(revealButton).toHaveClass("cursor-pointer");
+    expect(revealButton.className).not.toMatch(/ring-/);
 
     fireEvent.click(revealButton);
     expect(mockState.toggleBlurVisibility).toHaveBeenCalledOnce();

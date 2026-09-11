@@ -1,4 +1,4 @@
 export { default as AttachmentCard } from "./AttachmentCard";
 export { default as AttachmentListEditor } from "./AttachmentListEditor";
-export { default as AttachmentListView } from "./AttachmentListView";
+export { AttachmentGallery, AttachmentRows } from "./AttachmentListView";
 export { default as AudioAttachmentItem } from "./AudioAttachmentItem";

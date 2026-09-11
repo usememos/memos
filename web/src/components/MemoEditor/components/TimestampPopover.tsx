@@ -1,4 +1,5 @@
 import { type FC, useId, useRef, useState } from "react";
+import { MEMO_TIME_CONTROL_CLASSES } from "@/components/MemoView/constants";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useTranslate } from "@/utils/i18n";
 import { useEditorContext, useEditorSelector } from "../state";
@@ -72,16 +73,7 @@ export const TimestampPopover: FC = () => {
 
   return (
     <Popover>
-      <PopoverTrigger
-        render={
-          <button
-            type="button"
-            className="w-auto text-sm text-muted-foreground text-left hover:text-foreground transition-colors cursor-pointer"
-          />
-        }
-      >
-        {formatDate(createTime)}
-      </PopoverTrigger>
+      <PopoverTrigger render={<button type="button" className={MEMO_TIME_CONTROL_CLASSES} />}>{formatDate(createTime)}</PopoverTrigger>
       <PopoverContent align="start" className="w-auto p-2 pt-1 space-y-1">
         <TimestampInput
           label={t("common.created-at")}

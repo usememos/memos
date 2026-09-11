@@ -15,7 +15,7 @@ const VisibilityIcon = (props: Props) => {
     return null;
   }
 
-  return <VIcon className={cn("w-4 h-auto text-muted-foreground", className)} />;
+  return <VIcon className={cn("size-4 text-muted-foreground", className)} strokeWidth={1.8} />;
 };
 
 export default VisibilityIcon;

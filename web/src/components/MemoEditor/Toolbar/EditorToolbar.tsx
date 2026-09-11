@@ -20,7 +20,7 @@ import VisibilitySelector from "./VisibilitySelector";
 const ShortcutChip: FC<{ busy: boolean }> = ({ busy }) => (
   <kbd
     aria-hidden
-    className="grid place-items-center rounded-[4px] bg-primary-foreground/20 px-1 py-0.5 font-sans text-[11px] leading-none font-medium pointer-coarse:hidden"
+    className="grid place-items-center rounded-[4px] bg-primary-foreground/20 px-1 py-0.5 font-sans text-2xs leading-none font-medium pointer-coarse:hidden"
   >
     <span className={cn("col-start-1 row-start-1 inline-flex items-center gap-px", busy && "invisible")}>
       {primaryModifierGlyph()}
@@ -76,20 +76,21 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
   };
 
   const commitButton = justSaved ? (
-    <Button disabled>
+    <Button size="sm" disabled>
       {t("editor.saved")}
       <CheckIcon className="size-3.5" strokeWidth={2.5} />
     </Button>
   ) : (
-    <Button onClick={onSave} disabled={isSaving || !valid}>
+    <Button size="sm" onClick={onSave} disabled={isSaving || !valid}>
       {commitLabel}
       <ShortcutChip busy={isSaving} />
     </Button>
   );
 
   return (
-    <div className="w-full flex flex-row justify-between items-center mb-2">
-      <div className="flex flex-row justify-start items-center gap-1">
+    // Every control on this rail is 28px, the same box as the sidebar's compose control and nav pills.
+    <div className="flex w-full flex-row items-center justify-between">
+      <div className="flex flex-row items-center justify-start gap-1">
         <InsertMenu
           isUploading={isUploading}
           isSaving={committing}
@@ -103,9 +104,9 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
         <VisibilitySelector value={visibility} space={space} onChange={handleVisibilityChange} />
       </div>
 
-      <div className="flex flex-row justify-end items-center gap-2">
+      <div className="flex flex-row items-center justify-end gap-1">
         {onCancel && (
-          <Button variant="ghost" onClick={onCancel} disabled={committing}>
+          <Button variant="quiet" size="sm" onClick={onCancel} disabled={committing}>
             {t("common.cancel")}
           </Button>
         )}

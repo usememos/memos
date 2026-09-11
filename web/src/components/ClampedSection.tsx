@@ -1,5 +1,6 @@
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { type ReactNode, useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 
@@ -57,14 +58,14 @@ const ClampedSection = ({ enabled, children }: ClampedSectionProps) => {
         )}
       </div>
       {clamped && (
-        <button
-          type="button"
-          className="inline-flex items-center gap-1 px-2 py-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
-          onClick={() => setExpanded((prev) => !prev)}
-        >
-          <span>{t(collapsed ? "memo.show-more" : "memo.show-less")}</span>
-          {collapsed ? <ChevronDown className="w-3 h-3" /> : <ChevronUp className="w-3 h-3" />}
-        </button>
+        <Button variant="quiet" size="sm" onClick={() => setExpanded((prev) => !prev)}>
+          {t(collapsed ? "memo.show-more" : "memo.show-less")}
+          {collapsed ? (
+            <ChevronDownIcon className="size-3.5" strokeWidth={1.8} />
+          ) : (
+            <ChevronUpIcon className="size-3.5" strokeWidth={1.8} />
+          )}
+        </Button>
       )}
     </>
   );

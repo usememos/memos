@@ -1,3 +1,4 @@
+import { FOCUS_VISIBLE_OUTLINE_CLASSES } from "@/components/ui/focus";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { cn } from "@/lib/utils";
@@ -5,6 +6,21 @@ import { State } from "@/types/proto/api/v1/common_pb";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import type { User } from "@/types/proto/api/v1/user_service_pb";
 import { formatReactionTooltip, useReactionActions } from "./hooks";
+
+/**
+ * A reaction is a token attached to the memo, not a control, so it takes the pill shape
+ * the space and New badges use rather than the rounded box of a button. Everything else
+ * is the quiet grammar: 28px, 13px, muted ink under a light wash, and the accent fill for
+ * the one that is on — your own reaction, or the add control while its picker is open.
+ */
+export const REACTION_PILL_CLASSES = "inline-flex h-7 shrink-0 items-center gap-1.5 rounded-full px-2.5 text-ui text-muted-foreground/70";
+const REACTION_PILL_INTERACTIVE_CLASSES = cn(
+  REACTION_PILL_CLASSES,
+  "cursor-pointer transition-colors hover:bg-muted/60 hover:text-foreground aria-pressed:bg-accent aria-pressed:text-accent-foreground data-popup-open:bg-accent data-popup-open:text-accent-foreground",
+  FOCUS_VISIBLE_OUTLINE_CLASSES,
+);
+/** The strip's add control: a round quiet face of the pills' height, so the strip reads as one row. */
+export const REACTION_ADD_CLASSES = cn(REACTION_PILL_INTERACTIVE_CLASSES, "size-7 justify-center px-0");
 
 interface Props {
   memo: Memo;
@@ -20,34 +36,32 @@ const ReactionView = (props: Props) => {
 
   const { handleReactionClick } = useReactionActions({ memo });
 
-  const handleClick = () => {
-    if (!currentUser || readonly) return;
-    handleReactionClick(reactionType);
-  };
-
-  const isClickable = currentUser && !readonly;
+  const isClickable = Boolean(currentUser) && !readonly;
+  const label = (
+    <>
+      <span className="text-sm leading-none">{reactionType}</span>
+      <span className="text-2xs tabular-nums text-muted-foreground/60">{users.length}</span>
+    </>
+  );
 
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger
           render={
-            <button
-              type="button"
-              className={cn(
-                "h-7 border px-2 py-0.5 rounded-full flex flex-row justify-center items-center gap-1",
-                "text-sm text-muted-foreground",
-                isClickable && "cursor-pointer",
-                !isClickable && "cursor-default",
-                hasReaction && "bg-accent border-border",
-              )}
-              onClick={handleClick}
-              disabled={!isClickable}
-            />
+            isClickable ? (
+              <button
+                type="button"
+                className={REACTION_PILL_INTERACTIVE_CLASSES}
+                aria-pressed={hasReaction}
+                onClick={() => handleReactionClick(reactionType)}
+              />
+            ) : (
+              <span className={REACTION_PILL_CLASSES} />
+            )
           }
         >
-          <span>{reactionType}</span>
-          <span className="opacity-60">{users.length}</span>
+          {label}
         </TooltipTrigger>
         <TooltipContent>
           <p>{formatReactionTooltip(users, reactionType)}</p>

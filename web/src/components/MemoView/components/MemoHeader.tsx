@@ -1,8 +1,9 @@
 import { BookmarkIcon } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { Link } from "react-router-dom";
 import RelativeTime from "@/components/RelativeTime";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { FOCUS_VISIBLE_OUTLINE_CLASSES } from "@/components/ui/focus";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useNewMemo } from "@/contexts/NewMemoContext";
 import useNavigateTo from "@/hooks/useNavigateTo";
@@ -16,6 +17,7 @@ import MemoActionMenu from "../../MemoActionMenu";
 import { ReactionSelector } from "../../MemoReactionListView";
 import UserAvatar from "../../UserAvatar";
 import VisibilityIcon from "../../VisibilityIcon";
+import { MEMO_TIME_CONTROL_CLASSES } from "../constants";
 import { useMemoActions } from "../hooks";
 import { useMemoViewContext, useMemoViewDerived } from "../MemoViewContext";
 import { createMemoNavigationState } from "../navigation";
@@ -27,7 +29,6 @@ const MEMO_HEADER_ACTION_CLASSES = cn(buttonVariants({ variant: "quiet", size: "
 
 const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showCreator, showVisibility, showPinned, showSpace }) => {
   const t = useTranslate();
-  const [reactionSelectorOpen, setReactionSelectorOpen] = useState(false);
 
   const { memo, creator, currentUser, parentPage, isArchived, readonly, openEditor } = useMemoViewContext();
   const { createTime, updateTime, displayTime: memoDisplayTime, isDisplayingUpdatedTime, relativeTimeFormat } = useMemoViewDerived();
@@ -65,24 +66,17 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showC
   const spaceMetadata = showSpace && memo.space ? <MemoSpaceBadge spaceName={memo.space} /> : null;
 
   return (
-    <div className="flex w-full items-center justify-between gap-2">
+    // A fixed 24px row, the height of its action squares, so the card's top edge never
+    // moves with what the header happens to show.
+    <div className="flex h-6 w-full items-center justify-between gap-2">
       <div className="flex min-w-0 flex-1 items-center gap-2">
-        {showCreator && creator ? (
-          <CreatorDisplay
-            creator={creator}
-            displayTime={displayTime}
-            timeTooltip={timeTooltip}
-            trailingMetadata={spaceMetadata}
-            onGotoDetail={handleGotoMemoDetailPage}
-          />
-        ) : (
-          <div data-slot="memo-header-meta" className="flex min-w-0 items-center gap-1.5">
-            <TimeDisplay displayTime={displayTime} timeTooltip={timeTooltip} onGotoDetail={handleGotoMemoDetailPage} />
-            {spaceMetadata}
-          </div>
-        )}
+        <div data-slot="memo-header-meta" className="flex min-w-0 items-center gap-1.5">
+          {showCreator && creator && <CreatorDisplay creator={creator} />}
+          <TimeDisplay displayTime={displayTime} timeTooltip={timeTooltip} onGotoDetail={handleGotoMemoDetailPage} />
+          {spaceMetadata}
+        </div>
         {memo.name === newMemoName && (
-          <span className="ml-2 shrink-0 rounded-full bg-primary/10 px-1.5 py-0.5 text-xs font-medium leading-none text-primary">
+          <span className="shrink-0 rounded-full bg-primary/10 px-1.5 py-0.5 text-2xs font-medium leading-none text-primary">
             {t("memo.new-badge")}
           </span>
         )}
@@ -90,17 +84,10 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showC
 
       <div data-slot="memo-header-actions" className="flex shrink-0 select-none flex-row items-center justify-end gap-1">
         {currentUser && !isArchived && (
-          <ReactionSelector
-            className={cn(
-              MEMO_HEADER_ACTION_CLASSES,
-              // The chip's own round bordered look gives way to the header's quiet square.
-              "border-none hover:opacity-100",
-              reactionSelectorOpen && "sm:flex!",
-              "flex sm:hidden sm:group-hover:flex sm:group-focus-within:flex",
-            )}
-            memo={memo}
-            onOpenChange={setReactionSelectorOpen}
-          />
+          // On desktop the picker's trigger shows only while the card is engaged or the picker is open.
+          <span className="flex sm:hidden sm:group-hover:flex sm:group-focus-within:flex sm:has-[[data-popup-open]]:flex">
+            <ReactionSelector memo={memo} trigger={<Button variant="quiet" size="icon-sm" />} />
+          </span>
         )}
 
         {showVisibility && memo.visibility !== Visibility.PRIVATE && (
@@ -136,41 +123,30 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showC
   );
 };
 
-interface CreatorDisplayProps {
-  creator: User;
-  displayTime: React.ReactNode;
-  timeTooltip: TimeTooltipContent;
-  trailingMetadata?: React.ReactNode;
-  onGotoDetail: () => void;
-}
-
-const CreatorDisplay: React.FC<CreatorDisplayProps> = ({ creator, displayTime, timeTooltip, trailingMetadata, onGotoDetail }) => (
-  <div className="flex min-w-0 items-center">
-    <Link className="w-auto hover:opacity-80 rounded-md transition-colors" to={`/u/${encodeURIComponent(creator.username)}`} viewTransition>
-      <UserAvatar className="mr-2 shrink-0" avatarUrl={creator.avatarUrl} />
+/**
+ * The author on one line with the time: a 20px avatar in a 20px slot, then the name in
+ * medium 13px foreground ink. It is the identity, so it carries the weight; the time after
+ * it is muted.
+ */
+const CreatorDisplay: React.FC<{ creator: User }> = ({ creator }) => (
+  <>
+    <Link
+      className={cn(
+        "flex min-w-0 items-center gap-1.5 rounded-sm text-ui font-medium text-foreground transition-colors hover:text-foreground/80",
+        FOCUS_VISIBLE_OUTLINE_CLASSES,
+      )}
+      to={`/u/${encodeURIComponent(creator.username)}`}
+      viewTransition
+    >
+      <span className="flex size-5 shrink-0 items-center justify-center">
+        <UserAvatar className="size-5 rounded-[5px]" avatarUrl={creator.avatarUrl} />
+      </span>
+      <span className="truncate">{creator.displayName || creator.username}</span>
     </Link>
-    <div className="flex min-w-0 flex-col items-start justify-center">
-      <Link
-        className="block leading-tight hover:opacity-80 rounded-md transition-colors truncate text-muted-foreground"
-        to={`/u/${encodeURIComponent(creator.username)}`}
-        viewTransition
-      >
-        {creator.displayName || creator.username}
-      </Link>
-      <div data-slot="memo-header-meta" className="flex min-w-0 items-center gap-1.5">
-        <TimeTooltip content={timeTooltip}>
-          <button
-            type="button"
-            className="w-auto -mt-0.5 border-0 bg-transparent p-0 text-xs leading-tight text-muted-foreground select-none cursor-pointer hover:opacity-80 transition-colors text-left"
-            onClick={onGotoDetail}
-          >
-            {displayTime}
-          </button>
-        </TimeTooltip>
-        {trailingMetadata}
-      </div>
-    </div>
-  </div>
+    <span aria-hidden="true" className="text-muted-foreground/40">
+      ·
+    </span>
+  </>
 );
 
 interface TimeTooltipContent {
@@ -196,11 +172,7 @@ interface TimeDisplayProps {
 
 const TimeDisplay: React.FC<TimeDisplayProps> = ({ displayTime, timeTooltip, onGotoDetail }) => (
   <TimeTooltip content={timeTooltip}>
-    <button
-      type="button"
-      className="w-auto border-0 bg-transparent p-0 text-sm leading-tight text-muted-foreground select-none cursor-pointer hover:text-foreground transition-colors text-left"
-      onClick={onGotoDetail}
-    >
+    <button type="button" className={MEMO_TIME_CONTROL_CLASSES} onClick={onGotoDetail}>
       {displayTime}
     </button>
   </TimeTooltip>

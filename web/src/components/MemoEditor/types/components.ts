@@ -122,6 +122,4 @@ export interface VisibilitySelectorProps {
   /** The memo's actual placement; independent of the ambient collection scope. */
   space?: string;
   onOpenChange?: (open: boolean) => void;
-  /** "compact" renders a 13px trigger that blends into dense surfaces like the memo detail rail. */
-  size?: "default" | "compact";
 }

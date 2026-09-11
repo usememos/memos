@@ -101,21 +101,28 @@
   }
 
   /* Tag autocomplete popover — app surface, not CodeMirror defaults. */
+  /* Sized like the kit's small dropdown: 13px rows, 28px tall, 2px inset. */
   & .cm-tooltip.cm-tooltip-autocomplete {
     background: var(--popover);
     color: var(--popover-foreground);
     border: 1px solid var(--border);
-    border-radius: 0.5rem;
-    box-shadow: var(--shadow-md);
+    border-radius: calc(var(--radius) - 4px);
+    box-shadow: var(--shadow-sm);
     overflow: hidden;
+    padding: 0.125rem;
     font-family: inherit;
-    font-size: 0.9rem;
+    font-size: 0.8125rem;
+    line-height: 1.125rem;
   }
   & .cm-tooltip-autocomplete > ul {
     font-family: inherit;
   }
   & .cm-tooltip-autocomplete > ul > li {
+    min-height: 1.75rem;
+    display: flex;
+    align-items: center;
     padding: 0.25rem 0.5rem;
+    border-radius: calc(var(--radius) - 6px);
   }
   & .cm-tooltip-autocomplete > ul > li[aria-selected] {
     background: var(--accent);

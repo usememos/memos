@@ -1,15 +1,26 @@
 import { ArrowUpRightIcon } from "lucide-react";
 import { Link } from "react-router-dom";
+import MetadataSection, { METADATA_ROW_CLASSES, METADATA_ROW_SLOT_CLASSES } from "@/components/MemoMetadata/MetadataSection";
 import { MemoPreview } from "@/components/MemoPreview";
+import { buttonVariants } from "@/components/ui/button";
 import { useMemoComments } from "@/hooks/useMemoQueries";
 import { useNearViewport } from "@/hooks/useNearViewport";
 import { useUsersByNames } from "@/hooks/useUserQueries";
 import { MEMO_COMMENTS_ANCHOR_ID } from "@/lib/memo-comments";
 import { extractMemoIdFromName } from "@/lib/resource-names";
+import { useTranslate } from "@/utils/i18n";
+import UserAvatar from "../../UserAvatar";
 import { useMemoViewContext, useMemoViewDerived } from "../MemoViewContext";
 import { createMemoNavigationState } from "../navigation";
 
+const VIEW_ALL_CLASSES = buttonVariants({ variant: "quiet", size: "sm" });
+
+/**
+ * The comment strip hangs off the card's bottom edge: a titled list of up to three
+ * comments, each a row whose avatar sits in the leading slot on the card's text edge.
+ */
 const MemoCommentListView: React.FC = () => {
+  const t = useTranslate();
   const { memo, parentPage } = useMemoViewContext();
   const { isInMemoDetailPage, commentAmount } = useMemoViewDerived();
   const { ref: viewportRef, isNearViewport } = useNearViewport<HTMLDivElement>();
@@ -27,39 +38,43 @@ const MemoCommentListView: React.FC = () => {
   }
 
   return (
-    <div ref={viewportRef} className="border border-t-0 border-border rounded-b-lg px-4 pt-2 pb-3 flex flex-col gap-1">
-      <div className="flex items-center justify-between mb-1">
-        <span className="text-xs text-muted-foreground">Comments{commentAmount > 1 ? ` (${commentAmount})` : ""}</span>
-        <Link
-          to={`/${memo.name}#${MEMO_COMMENTS_ANCHOR_ID}`}
-          state={createMemoNavigationState(parentPage)}
-          className="flex items-center gap-0.5 text-xs text-muted-foreground/80 hover:underline underline-offset-2 transition-colors"
-        >
-          View all
-          <ArrowUpRightIcon className="w-3 h-3" />
-        </Link>
-      </div>
-      {displayedComments.map((comment) => {
-        const uid = extractMemoIdFromName(comment.name);
-        const creator = commentCreators?.get(comment.creator);
-        return (
-          <Link
-            key={comment.name}
-            to={`/${memo.name}#${uid}`}
-            state={createMemoNavigationState(parentPage)}
-            viewTransition
-            className="rounded-md bg-muted/40 px-2 py-1 transition-colors hover:bg-muted/60"
-          >
-            <MemoPreview
-              content={comment.snippet || comment.content}
-              attachments={comment.attachments}
-              creator={creator}
-              showCreator
-              truncate
-            />
+    <div ref={viewportRef} className="rounded-b-lg border border-t-0 border-border/70 px-4 pb-2 pt-1.5">
+      <MetadataSection
+        title={t("memo.comment.self")}
+        count={commentAmount}
+        action={
+          <Link to={`/${memo.name}#${MEMO_COMMENTS_ANCHOR_ID}`} state={createMemoNavigationState(parentPage)} className={VIEW_ALL_CLASSES}>
+            {t("common.view-all")}
+            <ArrowUpRightIcon className="size-3" strokeWidth={1.8} />
           </Link>
-        );
-      })}
+        }
+      >
+        {displayedComments.map((comment) => {
+          const uid = extractMemoIdFromName(comment.name);
+          const creator = commentCreators?.get(comment.creator);
+          return (
+            <Link
+              key={comment.name}
+              to={`/${memo.name}#${uid}`}
+              state={createMemoNavigationState(parentPage)}
+              viewTransition
+              className={METADATA_ROW_CLASSES}
+            >
+              <span className={METADATA_ROW_SLOT_CLASSES} aria-hidden="true">
+                <UserAvatar className="size-4 rounded-[4px]" avatarUrl={creator?.avatarUrl} />
+              </span>
+              <MemoPreview
+                className="min-w-0 flex-1"
+                content={comment.snippet || comment.content}
+                attachments={comment.attachments}
+                creator={creator}
+                showCreator
+                truncate
+              />
+            </Link>
+          );
+        })}
+      </MetadataSection>
     </div>
   );
 };

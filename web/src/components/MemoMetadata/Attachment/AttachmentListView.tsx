@@ -1,7 +1,6 @@
-import { DownloadIcon, FileIcon, PaperclipIcon, PlayIcon } from "lucide-react";
+import { DownloadIcon, FileIcon, PlayIcon } from "lucide-react";
 import type { PropsWithChildren } from "react";
 import { useMemo } from "react";
-import MetadataSection from "@/components/MemoMetadata/MetadataSection";
 import MotionPhotoPreview from "@/components/MotionPhotoPreview";
 import VideoPoster from "@/components/VideoPoster";
 import { cn } from "@/lib/utils";
@@ -9,8 +8,15 @@ import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { getAttachmentUrl } from "@/utils/attachment";
 import type { AttachmentVisualItem, PreviewMediaItem } from "@/utils/media-item";
 import { buildAttachmentVisualItems } from "@/utils/media-item";
+import {
+  METADATA_ROW_CLASSES,
+  METADATA_ROW_HINT_CLASSES,
+  METADATA_ROW_TEXT_CLASSES,
+  MetadataRowDetail,
+  MetadataRowIconSlot,
+} from "../MetadataSection";
 import AudioAttachmentItem from "./AudioAttachmentItem";
-import { getAttachmentMetadata, isAudioAttachment, separateAttachments } from "./attachmentHelpers";
+import { getAttachmentMetadata } from "./attachmentHelpers";
 import {
   COLLAGE_VIDEO_PLAY_BADGE_CLASS,
   COVER_MEDIA_CLASS,
@@ -24,47 +30,7 @@ import {
 } from "./attachmentVisualClasses";
 import { resolveVisualGalleryLayout } from "./visualGalleryLayout";
 
-interface AttachmentListViewProps {
-  attachments: Attachment[];
-  onImagePreview?: (items: PreviewMediaItem[], index: number) => void;
-}
-
 type VisualItem = AttachmentVisualItem;
-
-const AttachmentMeta = ({ attachment }: { attachment: Attachment }) => {
-  const { fileTypeLabel, fileSizeLabel } = getAttachmentMetadata(attachment);
-
-  return (
-    <div className="mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-muted-foreground">
-      <span>{fileTypeLabel}</span>
-      {fileSizeLabel && (
-        <>
-          <span className="text-muted-foreground/40">•</span>
-          <span>{fileSizeLabel}</span>
-        </>
-      )}
-    </div>
-  );
-};
-
-const DocumentItem = ({ attachment }: { attachment: Attachment }) => {
-  return (
-    <div className="group flex items-center justify-between gap-3 rounded-xl border border-border/70 bg-background/65 px-3 py-2.5 transition-colors hover:bg-accent/20">
-      <div className="flex min-w-0 items-center gap-3">
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-muted/50 text-muted-foreground">
-          <FileIcon className="h-4 w-4" />
-        </div>
-        <div className="min-w-0">
-          <div className="truncate text-sm font-medium leading-tight text-foreground" title={attachment.filename}>
-            {attachment.filename}
-          </div>
-          <AttachmentMeta attachment={attachment} />
-        </div>
-      </div>
-      <DownloadIcon className="h-4 w-4 shrink-0 text-muted-foreground/60 transition-colors group-hover:text-foreground/70" />
-    </div>
-  );
-};
 
 const getMotionPreviewProps = (item: VisualItem) => ({
   motionUrl: item.previewItem.kind === "motion" ? item.previewItem.motionUrl : item.sourceUrl,
@@ -89,29 +55,28 @@ const VisualTile = ({
 };
 
 const VideoPlayBadge = ({ className, children }: PropsWithChildren<{ className?: string }>) => (
-  <span
+  <div
     className={cn(
-      "pointer-events-none absolute inline-flex items-center justify-center rounded-full bg-background/85 text-foreground shadow-sm backdrop-blur-sm",
+      "pointer-events-none absolute flex items-center justify-center rounded-full bg-background/80 text-foreground/70 shadow-sm backdrop-blur-sm",
       className,
     )}
   >
     {children}
-  </span>
+  </div>
 );
 
 const CollageVisualItem = ({
   item,
-  onPreview,
   className,
   overlayLabel,
+  onPreview,
 }: {
   item: VisualItem;
-  onPreview?: () => void;
   className?: string;
   overlayLabel?: string;
+  onPreview?: () => void;
 }) => {
   const motionPreviewProps = item.kind === "motion" ? getMotionPreviewProps(item) : undefined;
-
   return (
     <VisualTile className={cn("block h-full w-full", className)} onPreview={onPreview} overlayLabel={overlayLabel}>
       {item.kind === "video" ? (
@@ -130,8 +95,8 @@ const CollageVisualItem = ({
           alt={item.filename}
           presentationTimestampUs={motionPreviewProps.presentationTimestampUs}
           containerClassName="h-full w-full"
-          badgeClassName="left-2 top-2 px-2 py-0.5 text-[10px]"
-          mediaClassName={COVER_MEDIA_CLASS}
+          posterClassName={COVER_MEDIA_CLASS}
+          videoClassName={COVER_MEDIA_CLASS}
         />
       ) : (
         <img src={item.posterUrl} alt={item.filename} className={COVER_MEDIA_CLASS} loading="lazy" decoding="async" />
@@ -181,98 +146,80 @@ const SingleVisualItem = ({ item, onPreview }: { item: VisualItem; onPreview?: (
   );
 };
 
-const VisualGallery = ({ items, onPreview }: { items: VisualItem[]; onPreview?: (itemId: string) => void }) => {
-  const layout = resolveVisualGalleryLayout(items);
+interface AttachmentGalleryProps {
+  visual: Attachment[];
+  onImagePreview?: (items: PreviewMediaItem[], index: number) => void;
+}
+
+/** The memo's images, motion photos and videos as the bare gallery, flush with the content. */
+export const AttachmentGallery = ({ visual, onImagePreview }: AttachmentGalleryProps) => {
+  const visualItems = useMemo(() => buildAttachmentVisualItems(visual), [visual]);
+  const layout = resolveVisualGalleryLayout(visualItems);
 
   if (!layout) {
     return null;
   }
 
+  const handlePreview = (itemId: string) => {
+    const previewItems = visualItems.map((item) => item.previewItem);
+    const index = previewItems.findIndex((item) => item.id === itemId);
+    onImagePreview?.(previewItems, index >= 0 ? index : 0);
+  };
+
   if (layout.mode === "single") {
     return (
       <div className="w-full">
-        <SingleVisualItem item={layout.item} onPreview={() => onPreview?.(layout.item.id)} />
+        <SingleVisualItem item={layout.item} onPreview={() => handlePreview(layout.item.id)} />
       </div>
     );
   }
 
   return (
-    <div className={layout.containerClassName}>
+    <div className={cn("w-full", layout.containerClassName)}>
       {layout.cells.map(({ item, className, overlayLabel }) => (
         <CollageVisualItem
           key={item.id}
           item={item}
           className={className}
           overlayLabel={overlayLabel}
-          onPreview={() => onPreview?.(item.id)}
+          onPreview={() => handlePreview(item.id)}
         />
       ))}
     </div>
   );
 };
 
-const AudioList = ({ attachments, compact = false }: { attachments: Attachment[]; compact?: boolean }) => (
-  <div className={cn("gap-2", compact ? "grid grid-cols-1 sm:grid-cols-2" : "flex flex-col")}>
-    {attachments.map((attachment) => (
+/**
+ * A document is a row: file glyph in the slot, name, type and size on the detail rail.
+ * The whole row downloads; its arrow only appears over the detail rail once the row is
+ * engaged, so the rail stays on the same edge as every other row's at rest.
+ */
+const DocumentRow = ({ attachment }: { attachment: Attachment }) => {
+  const { fileTypeLabel, fileSizeLabel } = getAttachmentMetadata(attachment);
+  return (
+    <a href={getAttachmentUrl(attachment)} download title={`Download ${attachment.filename}`} className={METADATA_ROW_CLASSES}>
+      <MetadataRowIconSlot icon={FileIcon} />
+      <span className={METADATA_ROW_TEXT_CLASSES}>{attachment.filename}</span>
+      <MetadataRowDetail parts={[fileTypeLabel, fileSizeLabel]} />
+      <DownloadIcon aria-hidden="true" className={METADATA_ROW_HINT_CLASSES} strokeWidth={1.8} />
+    </a>
+  );
+};
+
+/** Audio and file attachments as metadata rows, for a host that owns the row list. */
+export const AttachmentRows = ({ audio, docs }: { audio: Attachment[]; docs: Attachment[] }) => (
+  <>
+    {audio.map((attachment) => (
       <AudioAttachmentItem
         key={attachment.name}
         filename={attachment.filename}
         sourceUrl={getAttachmentUrl(attachment)}
         mimeType={attachment.type}
         size={Number(attachment.size)}
-        compact={compact}
       />
     ))}
-  </div>
-);
-
-const DocsList = ({ attachments }: { attachments: Attachment[] }) => (
-  <div className="flex flex-col gap-2">
-    {attachments.map((attachment) => (
-      <a key={attachment.name} href={getAttachmentUrl(attachment)} download title={`Download ${attachment.filename}`}>
-        <DocumentItem attachment={attachment} />
-      </a>
+    {docs.map((attachment) => (
+      <DocumentRow key={attachment.name} attachment={attachment} />
     ))}
-  </div>
+  </>
 );
-
-const Divider = () => <div className="border-t border-border/70 opacity-80" />;
-
-const AttachmentListView = ({ attachments, onImagePreview }: AttachmentListViewProps) => {
-  const { visual, audio, docs } = useMemo(() => separateAttachments(attachments), [attachments]);
-  const visualItems = useMemo(() => buildAttachmentVisualItems(visual), [visual]);
-  const previewItems = useMemo(() => visualItems.map((item) => item.previewItem), [visualItems]);
-  const hasVisual = visualItems.length > 0;
-  const hasAudio = audio.length > 0;
-  const hasDocs = docs.length > 0;
-  const hasMedia = hasVisual || hasAudio;
-
-  if (attachments.length === 0) {
-    return null;
-  }
-
-  const handlePreview = (itemId: string) => {
-    const index = previewItems.findIndex((item) => item.id === itemId);
-    onImagePreview?.(previewItems, index >= 0 ? index : 0);
-  };
-
-  return (
-    <MetadataSection
-      icon={PaperclipIcon}
-      title="Attachments"
-      count={visualItems.length + audio.length + docs.length}
-      contentClassName="flex flex-col gap-2 p-2"
-    >
-      {hasMedia && (
-        <div className="flex flex-col gap-2">
-          {hasVisual && <VisualGallery items={visualItems} onPreview={handlePreview} />}
-          {hasAudio && <AudioList attachments={audio.filter(isAudioAttachment)} compact />}
-        </div>
-      )}
-      {hasMedia && hasDocs && <Divider />}
-      {hasDocs && <DocsList attachments={docs} />}
-    </MetadataSection>
-  );
-};
-
-export default AttachmentListView;

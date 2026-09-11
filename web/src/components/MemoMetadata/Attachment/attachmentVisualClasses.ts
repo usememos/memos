@@ -1,10 +1,15 @@
+import { FOCUS_VISIBLE_OUTLINE_CLASSES } from "@/components/ui/focus";
+import { cn } from "@/lib/utils";
+
 /**
  * Tailwind class bundles for attachment visual tiles (`VisualTile`, collage, single image/video).
  * Hover uses `group/media` on {@link MEDIA_HOVER_SURFACE_CLASS} so scale/gradient track the media surface, not the outer button chrome.
  */
 
-export const VISUAL_TILE_BUTTON_CLASS =
-  "relative block overflow-hidden rounded-xl border border-border/70 bg-muted/30 p-0 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring/50";
+export const VISUAL_TILE_BUTTON_CLASS = cn(
+  "relative block overflow-hidden rounded-md border border-border/70 bg-muted/30 p-0 text-left outline-none transition-colors",
+  FOCUS_VISIBLE_OUTLINE_CLASSES,
+);
 
 export const MEDIA_HOVER_SURFACE_CLASS = "group/media relative h-full min-h-0 w-full overflow-hidden";
 
