@@ -23,14 +23,14 @@ const ConcealedMedia = ({ className, contentClassName, children }: Props) => {
             type="button"
             variant="outline"
             size="sm"
-            className="h-auto min-h-8 whitespace-normal bg-card py-1.5 text-xs text-foreground shadow-sm"
+            className="h-auto min-h-8 max-w-full whitespace-normal bg-card py-1.5 text-xs text-foreground shadow-sm"
             onClick={(event) => {
               event.stopPropagation();
               setRevealed(true);
             }}
           >
             <EyeIcon className="size-3.5 shrink-0" />
-            {t("memo.click-to-show-sensitive-content")}
+            <span className="min-w-0 wrap-break-word">{t("memo.click-to-show-sensitive-content")}</span>
           </Button>
         </div>
       )}
