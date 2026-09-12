@@ -5,4 +5,5 @@ type IdentityProviderUserInfo struct {
 	DisplayName string
 	Email       string
 	AvatarURL   string
+	Claims      map[string]string
 }

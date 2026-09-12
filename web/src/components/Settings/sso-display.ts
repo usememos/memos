@@ -70,10 +70,15 @@ export function getOAuth2SummaryItems(provider: IdentityProvider, t: Translate):
     return [];
   }
 
-  return buildOAuth2SummaryItems(oauth2Config, provider.identifierFilter, t);
+  return buildOAuth2SummaryItems(oauth2Config, provider.identifierFilter, oauth2Config.filterField, t);
 }
 
-export function buildOAuth2SummaryItems(oauth2Config: OAuth2Config, identifierFilter: string, t: Translate): SummaryItem[] {
+export function buildOAuth2SummaryItems(
+  oauth2Config: OAuth2Config,
+  identifierFilter: string,
+  filterField: string,
+  t: Translate,
+): SummaryItem[] {
   const endpointSummaries = [oauth2Config.authUrl, oauth2Config.tokenUrl, oauth2Config.userInfoUrl].map(getEndpointSummary).filter(Boolean);
   const uniqueEndpointSummaries = [...new Set(endpointSummaries)];
 
@@ -103,8 +108,8 @@ export function buildOAuth2SummaryItems(oauth2Config: OAuth2Config, identifierFi
       ? [
           {
             key: "filter",
-            label: t("setting.sso.identifier-filter"),
-            value: getIdentifierFilterSummary(identifierFilter, t),
+            label: t("setting.sso.filter-pattern"),
+            value: `${filterField || "external_id"}=${getIdentifierFilterSummary(identifierFilter, t)}`,
             tooltip: identifierFilter,
           },
         ]

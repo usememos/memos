@@ -370,7 +370,9 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
               },
             }),
           }),
-          updateMask: create(FieldMaskSchema, { paths: ["title", "identifier_filter", "config"] }),
+          updateMask: create(FieldMaskSchema, {
+            paths: ["title", "identifier_filter", "config"],
+          }),
         });
         toast.success(t("setting.sso.sso-updated", { name: basicInfo.title }));
       }
@@ -485,18 +487,28 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
               </FormField>
             </div>
 
-            <FormField label={t("setting.sso.identifier-filter")} description={t("setting.sso.identifier-filter-description")}>
-              <Input
-                placeholder={t("setting.sso.identifier-filter")}
-                value={basicInfo.identifierFilter}
-                onChange={(e) =>
-                  setBasicInfo((current) => ({
-                    ...current,
-                    identifierFilter: e.target.value,
-                  }))
-                }
-              />
-            </FormField>
+            <div className="grid gap-4 md:grid-cols-2">
+              <FormField label={t("setting.sso.filter-pattern")} description={t("setting.sso.identifier-filter-description")}>
+                <Input
+                  placeholder={t("setting.sso.filter-pattern")}
+                  value={basicInfo.identifierFilter}
+                  onChange={(e) =>
+                    setBasicInfo((current) => ({
+                      ...current,
+                      identifierFilter: e.target.value,
+                    }))
+                  }
+                />
+              </FormField>
+
+              <FormField label={t("setting.sso.filter-field")} description={t("setting.sso.filter-field-description")}>
+                <Input
+                  placeholder={t("setting.sso.filter-field-placeholder")}
+                  value={oauth2Config.filterField}
+                  onChange={(e) => setPartialOAuth2Config({ filterField: e.target.value })}
+                />
+              </FormField>
+            </div>
           </FormSection>
 
           {type === IdentityProvider_Type.OAUTH2 ? (
