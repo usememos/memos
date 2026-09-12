@@ -45,6 +45,9 @@ export function getFieldMappingSummary(mapping: FieldMapping | undefined, t: Tra
   }
 
   const parts = [`${t("setting.sso.mapping-identifier-short")}=${mapping.identifier}`];
+  if (mapping.username) {
+    parts.push(`${t("setting.sso.mapping-username-short")}=${mapping.username}`);
+  }
   if (mapping.displayName) {
     parts.push(`${t("setting.sso.mapping-display-name-short")}=${mapping.displayName}`);
   }
@@ -70,10 +73,15 @@ export function getOAuth2SummaryItems(provider: IdentityProvider, t: Translate):
     return [];
   }
 
-  return buildOAuth2SummaryItems(oauth2Config, provider.identifierFilter, t);
+  return buildOAuth2SummaryItems(oauth2Config, provider.identifierFilter, oauth2Config.filterField, t);
 }
 
-export function buildOAuth2SummaryItems(oauth2Config: OAuth2Config, identifierFilter: string, t: Translate): SummaryItem[] {
+export function buildOAuth2SummaryItems(
+  oauth2Config: OAuth2Config,
+  identifierFilter: string,
+  filterField: string,
+  t: Translate,
+): SummaryItem[] {
   const endpointSummaries = [oauth2Config.authUrl, oauth2Config.tokenUrl, oauth2Config.userInfoUrl].map(getEndpointSummary).filter(Boolean);
   const uniqueEndpointSummaries = [...new Set(endpointSummaries)];
 
@@ -103,8 +111,8 @@ export function buildOAuth2SummaryItems(oauth2Config: OAuth2Config, identifierFi
       ? [
           {
             key: "filter",
-            label: t("setting.sso.identifier-filter"),
-            value: getIdentifierFilterSummary(identifierFilter, t),
+            label: t("setting.sso.filter-pattern"),
+            value: `${filterField || "external_id"}=${getIdentifierFilterSummary(identifierFilter, t)}`,
             tooltip: identifierFilter,
           },
         ]

@@ -209,6 +209,10 @@ func TestCreateLinkedIdentityRejectsSecondIdentityForSameProvider(t *testing.T) 
 }
 
 func createTestingOAuthIdentityProvider(ctx context.Context, t *testing.T, ts *TestService, serverURL, uid string) string {
+	return createTestingOAuthIdentityProviderWithUsername(ctx, t, ts, serverURL, uid, "")
+}
+
+func createTestingOAuthIdentityProviderWithUsername(ctx context.Context, t *testing.T, ts *TestService, serverURL, uid, username string) string {
 	t.Helper()
 
 	idp, err := ts.Store.CreateIdentityProvider(ctx, &storepb.IdentityProvider{
@@ -225,6 +229,7 @@ func createTestingOAuthIdentityProvider(ctx context.Context, t *testing.T, ts *T
 					UserInfoUrl:  serverURL + "/oauth2/userinfo",
 					FieldMapping: &storepb.FieldMapping{
 						Identifier:  "sub",
+						Username:    username,
 						DisplayName: "name",
 						Email:       "email",
 					},

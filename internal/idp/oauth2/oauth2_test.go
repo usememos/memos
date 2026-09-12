@@ -157,10 +157,64 @@ func TestIdentityProvider(t *testing.T) {
 
 	wantUserInfo := &idp.IdentityProviderUserInfo{
 		Identifier:  testSubject,
+		Username:    testSubject,
 		DisplayName: testName,
 		Email:       testEmail,
+		Claims: map[string]string{
+			"sub":   testSubject,
+			"name":  testName,
+			"email": testEmail,
+		},
 	}
 	assert.Equal(t, wantUserInfo, userInfoResult)
+}
+
+func TestIdentityProviderMapsUsernameSeparatelyFromIdentifier(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, err := io.WriteString(w, `{"sub":"stable-subject","preferred_username":"alice"}`)
+		require.NoError(t, err)
+	}))
+	defer server.Close()
+
+	provider, err := NewIdentityProvider(&storepb.OAuth2Config{
+		ClientId:     "client",
+		ClientSecret: "secret",
+		TokenUrl:     "https://example.com/token",
+		UserInfoUrl:  server.URL,
+		FieldMapping: &storepb.FieldMapping{Identifier: "sub", Username: "preferred_username"},
+	})
+	require.NoError(t, err)
+
+	userInfo, err := provider.UserInfo(context.Background(), "token")
+	require.NoError(t, err)
+	require.Equal(t, "stable-subject", userInfo.Identifier)
+	require.Equal(t, "alice", userInfo.Username)
+}
+
+func TestIdentityProviderUsesOrderedClaimFallbacks(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, err := io.WriteString(w, `{"sub":"","uid":"stable-subject","nickname":"","name":"Alice Name","email":"alice@example.com","picture":"https://example.com/alice.png"}`)
+		require.NoError(t, err)
+	}))
+	defer server.Close()
+
+	provider, err := NewIdentityProvider(&storepb.OAuth2Config{
+		ClientId:     "client",
+		ClientSecret: "secret",
+		TokenUrl:     "https://example.com/token",
+		UserInfoUrl:  server.URL,
+		FieldMapping: &storepb.FieldMapping{Identifier: "sub uid", DisplayName: "nickname name", Email: "primary_email email", AvatarUrl: "avatar picture"},
+	})
+	require.NoError(t, err)
+
+	userInfo, err := provider.UserInfo(context.Background(), "token")
+	require.NoError(t, err)
+	require.Equal(t, "stable-subject", userInfo.Identifier)
+	require.Equal(t, "Alice Name", userInfo.DisplayName)
+	require.Equal(t, "alice@example.com", userInfo.Email)
+	require.Equal(t, "https://example.com/alice.png", userInfo.AvatarURL)
 }
 
 func TestIdentityProviderExchangeTokenClientAuthentication(t *testing.T) {

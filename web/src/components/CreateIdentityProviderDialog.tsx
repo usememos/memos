@@ -237,7 +237,7 @@ function FormField({
 }: {
   label: string;
   required?: boolean;
-  description?: string;
+  description?: ReactNode;
   children: ReactNode;
 }) {
   return (
@@ -370,7 +370,9 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
               },
             }),
           }),
-          updateMask: create(FieldMaskSchema, { paths: ["title", "identifier_filter", "config"] }),
+          updateMask: create(FieldMaskSchema, {
+            paths: ["title", "identifier_filter", "config"],
+          }),
         });
         toast.success(t("setting.sso.sso-updated", { name: basicInfo.title }));
       }
@@ -485,18 +487,43 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
               </FormField>
             </div>
 
-            <FormField label={t("setting.sso.identifier-filter")} description={t("setting.sso.identifier-filter-description")}>
-              <Input
-                placeholder={t("setting.sso.identifier-filter")}
-                value={basicInfo.identifierFilter}
-                onChange={(e) =>
-                  setBasicInfo((current) => ({
-                    ...current,
-                    identifierFilter: e.target.value,
-                  }))
+            <div className="grid gap-4 md:grid-cols-2">
+              <FormField
+                label={t("setting.sso.filter-pattern")}
+                description={
+                  <>
+                    {t("setting.sso.identifier-filter-description")} {" "}
+                    <a
+                      href="https://regex101.com/?flavor=golang"
+                      target="golang_re2_tester"
+                      rel="noreferrer"
+                      className="underline underline-offset-2"
+                    >
+                      {t("setting.sso.identifier-filter-tool")}
+                    </a>
+                  </>
                 }
-              />
-            </FormField>
+              >
+                <Input
+                  placeholder={t("setting.sso.filter-pattern")}
+                  value={basicInfo.identifierFilter}
+                  onChange={(e) =>
+                    setBasicInfo((current) => ({
+                      ...current,
+                      identifierFilter: e.target.value,
+                    }))
+                  }
+                />
+              </FormField>
+
+              <FormField label={t("setting.sso.filter-field")} description={t("setting.sso.filter-field-description")}>
+                <Input
+                  placeholder={t("setting.sso.filter-field-placeholder")}
+                  value={oauth2Config.filterField}
+                  onChange={(e) => setPartialOAuth2Config({ filterField: e.target.value })}
+                />
+              </FormField>
+            </div>
           </FormSection>
 
           {type === IdentityProvider_Type.OAUTH2 ? (
@@ -579,7 +606,15 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
                     />
                   </FormField>
 
-                  <FormField label={t("setting.sso.display-name")}>
+                  <FormField label={t("setting.sso.username")} description={t("setting.sso.field-mapping-username-description")}>
+                    <Input
+                      placeholder={t("setting.sso.username")}
+                      value={oauth2FieldMapping.username}
+                      onChange={(e) => setPartialFieldMapping({ username: e.target.value })}
+                    />
+                  </FormField>
+
+                  <FormField label={t("setting.sso.display-name")} description={t("setting.sso.field-mapping-display-name-description")}>
                     <Input
                       placeholder={t("setting.sso.display-name")}
                       value={oauth2FieldMapping.displayName}
@@ -589,7 +624,7 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2">
-                  <FormField label={t("common.email")}>
+                  <FormField label={t("common.email")} description={t("setting.sso.field-mapping-email-description")}>
                     <Input
                       placeholder={t("common.email")}
                       value={oauth2FieldMapping.email}
@@ -597,7 +632,7 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
                     />
                   </FormField>
 
-                  <FormField label={t("setting.sso.avatar-url")}>
+                  <FormField label={t("setting.sso.avatar-url")} description={t("setting.sso.field-mapping-avatar-description")}>
                     <Input
                       placeholder={t("setting.sso.avatar-url")}
                       value={oauth2FieldMapping.avatarUrl}

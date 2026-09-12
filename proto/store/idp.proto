@@ -29,6 +29,7 @@ message FieldMapping {
   string display_name = 2;
   string email = 3;
   string avatar_url = 4;
+  string username = 5;
 }
 
 message OAuth2Config {
@@ -39,4 +40,6 @@ message OAuth2Config {
   string user_info_url = 5;
   repeated string scopes = 6;
   FieldMapping field_mapping = 7;
+  // Optional upstream claim used by identifier_filter. Empty means the mapped identifier.
+  string filter_field = 8;
 }

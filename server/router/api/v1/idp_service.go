@@ -195,12 +195,14 @@ func convertIdentityProviderFromStore(identityProvider *storepb.IdentityProvider
 				Oauth2Config: &v1pb.OAuth2Config{
 					ClientId: oauth2Config.ClientId,
 					// ClientSecret is write-only: never returned in responses.
-					AuthUrl:     oauth2Config.AuthUrl,
-					TokenUrl:    oauth2Config.TokenUrl,
-					UserInfoUrl: oauth2Config.UserInfoUrl,
-					Scopes:      oauth2Config.Scopes,
+					AuthUrl:               oauth2Config.AuthUrl,
+					TokenUrl:              oauth2Config.TokenUrl,
+					UserInfoUrl:           oauth2Config.UserInfoUrl,
+					Scopes:                oauth2Config.Scopes,
+					FilterField: oauth2Config.FilterField,
 					FieldMapping: &v1pb.FieldMapping{
 						Identifier:  oauth2Config.FieldMapping.Identifier,
+						Username:    oauth2Config.FieldMapping.Username,
 						DisplayName: oauth2Config.FieldMapping.DisplayName,
 						Email:       oauth2Config.FieldMapping.Email,
 						AvatarUrl:   oauth2Config.FieldMapping.AvatarUrl,
@@ -228,14 +230,16 @@ func convertIdentityProviderConfigToStore(identityProviderType v1pb.IdentityProv
 		return &storepb.IdentityProviderConfig{
 			Config: &storepb.IdentityProviderConfig_Oauth2Config{
 				Oauth2Config: &storepb.OAuth2Config{
-					ClientId:     oauth2Config.ClientId,
-					ClientSecret: oauth2Config.ClientSecret,
-					AuthUrl:      oauth2Config.AuthUrl,
-					TokenUrl:     oauth2Config.TokenUrl,
-					UserInfoUrl:  oauth2Config.UserInfoUrl,
-					Scopes:       oauth2Config.Scopes,
+					ClientId:              oauth2Config.ClientId,
+					ClientSecret:          oauth2Config.ClientSecret,
+					AuthUrl:               oauth2Config.AuthUrl,
+					TokenUrl:              oauth2Config.TokenUrl,
+					UserInfoUrl:           oauth2Config.UserInfoUrl,
+					Scopes:                oauth2Config.Scopes,
+					FilterField: oauth2Config.FilterField,
 					FieldMapping: &storepb.FieldMapping{
 						Identifier:  oauth2Config.FieldMapping.Identifier,
+						Username:    oauth2Config.FieldMapping.Username,
 						DisplayName: oauth2Config.FieldMapping.DisplayName,
 						Email:       oauth2Config.FieldMapping.Email,
 						AvatarUrl:   oauth2Config.FieldMapping.AvatarUrl,

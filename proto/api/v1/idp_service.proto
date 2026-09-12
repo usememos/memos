@@ -70,6 +70,7 @@ message IdentityProvider {
   // Optional. Filter applied to user identifiers.
   string identifier_filter = 4 [(google.api.field_behavior) = OPTIONAL];
 
+
   // Required. Configuration for the identity provider.
   IdentityProviderConfig config = 5 [(google.api.field_behavior) = REQUIRED];
 
@@ -91,6 +92,7 @@ message FieldMapping {
   string display_name = 2;
   string email = 3;
   string avatar_url = 4;
+  string username = 5;
 }
 
 message OAuth2Config {
@@ -101,6 +103,9 @@ message OAuth2Config {
   string user_info_url = 5;
   repeated string scopes = 6;
   FieldMapping field_mapping = 7;
+
+  // Optional. Upstream claim used by identifier_filter. Empty means the mapped external ID.
+  string filter_field = 8 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message ListIdentityProvidersRequest {}

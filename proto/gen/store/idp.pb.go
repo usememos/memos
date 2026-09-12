@@ -223,6 +223,7 @@ type FieldMapping struct {
 	DisplayName   string                 `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 	Email         string                 `protobuf:"bytes,3,opt,name=email,proto3" json:"email,omitempty"`
 	AvatarUrl     string                 `protobuf:"bytes,4,opt,name=avatar_url,json=avatarUrl,proto3" json:"avatar_url,omitempty"`
+	Username      string                 `protobuf:"bytes,5,opt,name=username,proto3" json:"username,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -285,15 +286,24 @@ func (x *FieldMapping) GetAvatarUrl() string {
 	return ""
 }
 
+func (x *FieldMapping) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
 type OAuth2Config struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	ClientId      string                 `protobuf:"bytes,1,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
-	ClientSecret  string                 `protobuf:"bytes,2,opt,name=client_secret,json=clientSecret,proto3" json:"client_secret,omitempty"`
-	AuthUrl       string                 `protobuf:"bytes,3,opt,name=auth_url,json=authUrl,proto3" json:"auth_url,omitempty"`
-	TokenUrl      string                 `protobuf:"bytes,4,opt,name=token_url,json=tokenUrl,proto3" json:"token_url,omitempty"`
-	UserInfoUrl   string                 `protobuf:"bytes,5,opt,name=user_info_url,json=userInfoUrl,proto3" json:"user_info_url,omitempty"`
-	Scopes        []string               `protobuf:"bytes,6,rep,name=scopes,proto3" json:"scopes,omitempty"`
-	FieldMapping  *FieldMapping          `protobuf:"bytes,7,opt,name=field_mapping,json=fieldMapping,proto3" json:"field_mapping,omitempty"`
+	state        protoimpl.MessageState `protogen:"open.v1"`
+	ClientId     string                 `protobuf:"bytes,1,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
+	ClientSecret string                 `protobuf:"bytes,2,opt,name=client_secret,json=clientSecret,proto3" json:"client_secret,omitempty"`
+	AuthUrl      string                 `protobuf:"bytes,3,opt,name=auth_url,json=authUrl,proto3" json:"auth_url,omitempty"`
+	TokenUrl     string                 `protobuf:"bytes,4,opt,name=token_url,json=tokenUrl,proto3" json:"token_url,omitempty"`
+	UserInfoUrl  string                 `protobuf:"bytes,5,opt,name=user_info_url,json=userInfoUrl,proto3" json:"user_info_url,omitempty"`
+	Scopes       []string               `protobuf:"bytes,6,rep,name=scopes,proto3" json:"scopes,omitempty"`
+	FieldMapping *FieldMapping          `protobuf:"bytes,7,opt,name=field_mapping,json=fieldMapping,proto3" json:"field_mapping,omitempty"`
+	// Optional upstream claim used by identifier_filter. Empty means the mapped identifier.
+	FilterField   string `protobuf:"bytes,8,opt,name=filter_field,json=filterField,proto3" json:"filter_field,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -377,6 +387,13 @@ func (x *OAuth2Config) GetFieldMapping() *FieldMapping {
 	return nil
 }
 
+func (x *OAuth2Config) GetFilterField() string {
+	if x != nil {
+		return x.FilterField
+	}
+	return ""
+}
+
 var File_store_idp_proto protoreflect.FileDescriptor
 
 const file_store_idp_proto_rawDesc = "" +
@@ -395,7 +412,7 @@ const file_store_idp_proto_rawDesc = "" +
 	"\x06OAUTH2\x10\x01\"d\n" +
 	"\x16IdentityProviderConfig\x12@\n" +
 	"\roauth2_config\x18\x01 \x01(\v2\x19.memos.store.OAuth2ConfigH\x00R\foauth2ConfigB\b\n" +
-	"\x06config\"\x86\x01\n" +
+	"\x06config\"\xa2\x01\n" +
 	"\fFieldMapping\x12\x1e\n" +
 	"\n" +
 	"identifier\x18\x01 \x01(\tR\n" +
@@ -403,7 +420,8 @@ const file_store_idp_proto_rawDesc = "" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x14\n" +
 	"\x05email\x18\x03 \x01(\tR\x05email\x12\x1d\n" +
 	"\n" +
-	"avatar_url\x18\x04 \x01(\tR\tavatarUrl\"\x84\x02\n" +
+	"avatar_url\x18\x04 \x01(\tR\tavatarUrl\x12\x1a\n" +
+	"\busername\x18\x05 \x01(\tR\busername\"\xa7\x02\n" +
 	"\fOAuth2Config\x12\x1b\n" +
 	"\tclient_id\x18\x01 \x01(\tR\bclientId\x12#\n" +
 	"\rclient_secret\x18\x02 \x01(\tR\fclientSecret\x12\x19\n" +
@@ -411,7 +429,8 @@ const file_store_idp_proto_rawDesc = "" +
 	"\ttoken_url\x18\x04 \x01(\tR\btokenUrl\x12\"\n" +
 	"\ruser_info_url\x18\x05 \x01(\tR\vuserInfoUrl\x12\x16\n" +
 	"\x06scopes\x18\x06 \x03(\tR\x06scopes\x12>\n" +
-	"\rfield_mapping\x18\a \x01(\v2\x19.memos.store.FieldMappingR\ffieldMappingB\x93\x01\n" +
+	"\rfield_mapping\x18\a \x01(\v2\x19.memos.store.FieldMappingR\ffieldMapping\x12!\n" +
+	"\ffilter_field\x18\b \x01(\tR\vfilterFieldB\x93\x01\n" +
 	"\x0fcom.memos.storeB\bIdpProtoP\x01Z)github.com/usememos/memos/proto/gen/store\xa2\x02\x03MSX\xaa\x02\vMemos.Store\xca\x02\vMemos\\Store\xe2\x02\x17Memos\\Store\\GPBMetadata\xea\x02\fMemos::Storeb\x06proto3"
 
 var (

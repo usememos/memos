@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/pkg/errors"
@@ -111,32 +112,40 @@ func (p *IdentityProvider) UserInfo(ctx context.Context, token string) (*idp.Ide
 	if err := json.Unmarshal(body, &claims); err != nil {
 		return nil, errors.Wrap(err, "failed to unmarshal response body")
 	}
-	userInfo := &idp.IdentityProviderUserInfo{}
-	if v, ok := claims[p.config.FieldMapping.Identifier].(string); ok {
-		userInfo.Identifier = v
+	userInfo := &idp.IdentityProviderUserInfo{Claims: make(map[string]string)}
+	for name, value := range claims {
+		if value, ok := value.(string); ok {
+			userInfo.Claims[name] = value
+		}
 	}
+	userInfo.Identifier = firstMappedClaim(claims, p.config.FieldMapping.Identifier)
 	if userInfo.Identifier == "" {
 		return nil, errors.Errorf("the field %q is not found in claims or has empty value", p.config.FieldMapping.Identifier)
 	}
 
 	// Best effort to map optional fields
-	if p.config.FieldMapping.DisplayName != "" {
-		if v, ok := claims[p.config.FieldMapping.DisplayName].(string); ok {
-			userInfo.DisplayName = v
-		}
+	userInfo.Username = firstMappedClaim(claims, p.config.FieldMapping.Username)
+	if userInfo.Username == "" {
+		userInfo.Username = userInfo.Identifier
 	}
+	userInfo.DisplayName = firstMappedClaim(claims, p.config.FieldMapping.DisplayName)
 	if userInfo.DisplayName == "" {
 		userInfo.DisplayName = userInfo.Identifier
 	}
-	if p.config.FieldMapping.Email != "" {
-		if v, ok := claims[p.config.FieldMapping.Email].(string); ok {
-			userInfo.Email = v
-		}
-	}
-	if p.config.FieldMapping.AvatarUrl != "" {
-		if v, ok := claims[p.config.FieldMapping.AvatarUrl].(string); ok {
-			userInfo.AvatarURL = v
-		}
-	}
+	userInfo.Email = firstMappedClaim(claims, p.config.FieldMapping.Email)
+	userInfo.AvatarURL = firstMappedClaim(claims, p.config.FieldMapping.AvatarUrl)
 	return userInfo, nil
+}
+
+func firstMappedClaim(claims map[string]any, mapping string) string {
+	for _, field := range strings.FieldsFunc(mapping, isClaimMappingSeparator) {
+		if value, ok := claims[field].(string); ok && value != "" {
+			return value
+		}
+	}
+	return ""
+}
+
+func isClaimMappingSeparator(r rune) bool {
+	return r == ',' || r == ' ' || r == '\t' || r == '\n'
 }
