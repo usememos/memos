@@ -36,27 +36,8 @@ func (s *Store) prepareUniqueEmailMigration(ctx context.Context, currentSchemaVe
 		return
 	}
 
-	type account struct {
-		id       int32
-		username string
-		email    string
-	}
-	rows, err := s.driver.GetDB().QueryContext(ctx, s.uniqueEmailSelectQuery())
+	accounts, err := s.loadLegacyEmailAccounts(ctx)
 	if err != nil {
-		slog.Warn("unable to inspect user emails before the unique-email migration", slog.String("error", err.Error()))
-		return
-	}
-	accounts := []account{}
-	for rows.Next() {
-		var current account
-		if err := rows.Scan(&current.id, &current.username, &current.email); err != nil {
-			_ = rows.Close()
-			slog.Warn("unable to inspect user emails before the unique-email migration", slog.String("error", err.Error()))
-			return
-		}
-		accounts = append(accounts, current)
-	}
-	if err := rows.Close(); err != nil {
 		slog.Warn("unable to inspect user emails before the unique-email migration", slog.String("error", err.Error()))
 		return
 	}
@@ -122,6 +103,37 @@ func (s *Store) prepareUniqueEmailMigration(ctx context.Context, currentSchemaVe
 			slog.Any("users", malformed),
 		)
 	}
+}
+
+// legacyEmailAccount is one pre-migration user row with a non-empty address.
+type legacyEmailAccount struct {
+	id       int32
+	username string
+	email    string
+}
+
+// loadLegacyEmailAccounts reads every user with a non-empty address, oldest
+// first. The result set is fully consumed and closed before the caller
+// writes, which matters on SQLite where an open cursor blocks a writer.
+func (s *Store) loadLegacyEmailAccounts(ctx context.Context) ([]legacyEmailAccount, error) {
+	rows, err := s.driver.GetDB().QueryContext(ctx, s.uniqueEmailSelectQuery())
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	accounts := []legacyEmailAccount{}
+	for rows.Next() {
+		var current legacyEmailAccount
+		if err := rows.Scan(&current.id, &current.username, &current.email); err != nil {
+			return nil, err
+		}
+		accounts = append(accounts, current)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return accounts, nil
 }
 
 // legacyEmailLooksLikeAddress mirrors the migration's SQL rule for values that
