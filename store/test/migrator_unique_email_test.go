@@ -13,10 +13,11 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-// TestMigrationUniqueEmail drives 0.31/07__unique_email.sql against a
-// pre-0.31 schema holding the cases the migration must resolve: mixed-case
-// duplicates, surrounding whitespace, empty values, and values that are not
-// addresses.
+// TestMigrationUniqueEmail drives 0.31/07__unique_email.sql, together with the
+// migrator's Go-side canonicalization pass, against a pre-0.31 schema holding
+// the cases the migration must resolve: mixed-case and non-ASCII duplicates,
+// surrounding whitespace, empty values, display-name forms, and values that
+// are not addresses.
 func TestMigrationUniqueEmail(t *testing.T) {
 	ctx := context.Background()
 	driver := getDriverFromEnv()
@@ -67,6 +68,10 @@ func TestMigrationUniqueEmail(t *testing.T) {
 	insertUser(4, "bob", "bob@example.com")
 	insertUser(5, "no-address", "")
 	insertUser(6, "junk", "not-an-address")
+	insertUser(7, "umlaut-upper", "Ä@EXAMPLE.COM")
+	insertUser(8, "umlaut-lower", "ä@example.com")
+	insertUser(9, "display-name", "Carol <carol@example.com>")
+	insertUser(10, "inner-space", "jo hn@example.com")
 	insertUser(100, "deleted-high-user", "gone@example.com")
 	_, err = db.ExecContext(ctx, fmt.Sprintf("DELETE FROM %s WHERE id = 100", userTable))
 	require.NoError(t, err)
@@ -93,6 +98,10 @@ func TestMigrationUniqueEmail(t *testing.T) {
 	require.Equal(t, "bob@example.com", emailOf(4))
 	require.Equal(t, "", emailOf(5))
 	require.Equal(t, "", emailOf(6), "a value without '@' is cleared")
+	require.Equal(t, "ä@example.com", emailOf(7), "non-ASCII uppercase is folded before deduplication")
+	require.Equal(t, "", emailOf(8), "the Unicode-folded duplicate is cleared")
+	require.Equal(t, "", emailOf(9), "a display-name form is cleared")
+	require.Equal(t, "", emailOf(10), "interior whitespace is cleared")
 
 	// The index is in place and case folding applies to lookups and writes.
 	lookup := "ALICE@EXAMPLE.COM"
@@ -110,6 +119,19 @@ func TestMigrationUniqueEmail(t *testing.T) {
 
 	_, err = ts.CreateUser(ctx, &store.User{Username: "alice-again", Role: store.RoleUser, Email: "Alice@example.com"})
 	require.ErrorIs(t, err, store.ErrEmailTaken)
+
+	umlautLookup := "Ä@example.com"
+	umlautHolder, err := ts.GetUser(ctx, &store.FindUser{Email: &umlautLookup})
+	require.NoError(t, err)
+	require.NotNil(t, umlautHolder)
+	require.Equal(t, int32(7), umlautHolder.ID)
+	_, err = ts.CreateUser(ctx, &store.User{Username: "umlaut-again", Role: store.RoleUser, Email: "Ä@EXAMPLE.COM"})
+	require.ErrorIs(t, err, store.ErrEmailTaken)
+
+	// The bare form of the cleared display-name value is free to claim.
+	carol, err := ts.CreateUser(ctx, &store.User{Username: "carol-bare", Role: store.RoleUser, Email: "carol@example.com"})
+	require.NoError(t, err)
+	require.Equal(t, "carol@example.com", carol.Email)
 
 	// Users without an address never conflict with one another.
 	another, err := ts.CreateUser(ctx, &store.User{Username: "post-migration-2", Role: store.RoleUser, Email: ""})

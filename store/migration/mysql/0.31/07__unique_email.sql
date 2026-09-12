@@ -8,8 +8,10 @@ ALTER TABLE `user`
 -- Canonical form: trimmed and lowercased.
 UPDATE `user` SET `email` = LOWER(TRIM(`email`));
 
--- Empty values and values without an '@' mean no address.
-UPDATE `user` SET `email` = NULL WHERE `email` = '' OR `email` NOT LIKE '%@%';
+-- Empty values, values without an '@', and values carrying display-name
+-- syntax or interior whitespace mean no address.
+UPDATE `user` SET `email` = NULL
+WHERE `email` = '' OR `email` NOT LIKE '%@%' OR `email` LIKE '%<%' OR `email` LIKE '%>%' OR `email` LIKE '% %';
 
 -- For each address held by more than one account, the oldest account keeps it.
 -- MySQL cannot read the table being updated in a subquery, so the survivors

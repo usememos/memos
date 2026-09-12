@@ -49,7 +49,7 @@ Facts verified in the code on 2026-09-12:
 An address is stored only in its canonical form, produced by one function shared by the API and the store:
 
 1. Trim surrounding whitespace.
-2. Reject if empty after trimming; empty means "no address" and is stored as `NULL`.
+2. Accept an empty value after trimming as "no address"; it is stored as `NULL` and the remaining steps do not apply.
 3. Reject if longer than 254 bytes.
 4. Parse with `net/mail.ParseAddress`. Reject if parsing fails or if the parsed address differs from the input, which excludes display-name forms such as `Alice <alice@example.com>`.
 5. Lowercase the whole string.
@@ -82,19 +82,19 @@ The change ships as `0.31/07__unique_email.sql` for each driver, plus matching `
 Data repair, the same on every driver:
 
 1. Canonicalize: `email = LOWER(TRIM(email))`.
-2. Clear values with no `@`. Full validation is not expressible in portable SQL; this removes the obvious junk. Other malformed values stay until the user next edits the field, at which point the API rejects them.
+2. Clear values with no `@`, and values containing `<`, `>`, or an interior space, which only appear in display-name forms and other junk the API would refuse. Full validation is not expressible in portable SQL; this removes the cases that would otherwise let a second account claim the bare form of a stored address. Other malformed values, such as oversized ones, stay until the user next edits the field, at which point the API rejects them.
 3. Resolve duplicates: for each canonical value held by more than one row, the row with the lowest `id` keeps it and every other row is cleared. Lowest `id` is the oldest account, which is the most likely to be the one still in use and the one an admin can identify. MySQL cannot select from the table being updated, so its statement wraps the survivor set in a derived table.
 4. Convert `''` to `NULL`.
 
 DDL and ordering per driver:
 
-- SQLite cannot alter a column's nullability. Repair runs against the old table, then the migration rebuilds `user` the way `0.31/03__multi_spaces.sql` rebuilds `memo`: create `user_new` with the final column definition, copy every row with `NULLIF(email, '')`, carry the `sqlite_sequence` entry across so ids of deleted users are never reused, drop, rename. SQLite's `LOWER` folds ASCII only, so a legacy address with non-ASCII uppercase keeps that casing until the user next edits it.
+- SQLite cannot alter a column's nullability. Repair runs against the old table, then the migration rebuilds `user` the way `0.31/03__multi_spaces.sql` rebuilds `memo`: create `user_new` with the final column definition, copy every row with `NULLIF(email, '')`, carry the `sqlite_sequence` entry across so ids of deleted users are never reused, drop, rename.
 - MySQL switches the column to `utf8mb4_bin` and nullable first, then repairs. Grouping under the server's default collation could treat accent variants as one address and clear one of them needlessly; under the binary collation the repair compares bytes, which is what the application does.
 - PostgreSQL alters the column, then repairs, all inside the migration transaction.
 
 Then the unique index is created, guarded with `IF NOT EXISTS` on SQLite and PostgreSQL and with a prepared-statement check on MySQL, so the file is a no-op on a database that already carries it. The store test suite rewinds the schema version on fresh installs to exercise individual migrations, and every later migration has to tolerate that.
 
-The migrator cannot log from SQL, and an operator whose second account silently loses its address has no way to find out. The migrator therefore gains one targeted pre-flight, not a general hook system: when the stored schema version is below this migration's version, a Go function reads every non-empty address ordered by id, applies the migration's rules in memory, and logs one warning per duplicate group naming the canonical address, the username that keeps it, and the usernames that will be cleared, plus one line listing the users whose value will be cleared as malformed. A failure to read is logged and never blocks the migration. The log is the record. Nothing else stores the cleared values. Cleared accounts can set an address again from the profile page.
+SQL `LOWER` is not a reliable canonicalizer: SQLite folds ASCII only and PostgreSQL does the same under a C locale, so `Ä@example.com` and `ä@example.com` could both survive deduplication and the index would then permit a canonical collision. The migrator therefore gains one targeted pre-flight, not a general hook system. When the stored schema version is below this migration's version, a Go function reads every non-empty address ordered by id and first rewrites any row whose stored value differs from its Unicode-lowercased, trimmed form, so the SQL that follows sees exactly the canonical values `NormalizeEmail` would produce. It then applies the migration's rules in memory and logs one warning per duplicate group naming the username that keeps the address and the usernames that will be cleared, plus one line listing the users whose value will be cleared as malformed. Addresses themselves are not logged; usernames are enough for the operator to find the accounts. A failure in either step is logged and never blocks the migration. The log is the record. Nothing else stores the cleared values. Cleared accounts can set an address again from the profile page.
 
 A fresh install gets the final schema from `LATEST.sql` and never runs the repair.
 
@@ -127,7 +127,7 @@ The web app changes in one place: the account settings form shows the `AlreadyEx
 ### Testing
 
 - Store tests on all three drivers through the existing testcontainers harness: canonical-form round trip, `NULL` mapping, duplicate insert returns `ErrEmailTaken`, concurrent inserts of the same address yield exactly one success, `FindUser.Email` with mixed case hits.
-- A migration test on all three drivers that seeds the pre-0.31 legacy schema fixture with mixed-case duplicates, surrounding whitespace, `''`, and a value without `@`, migrates, and asserts the survivor rule, the `NULL` conversion, case-folded lookup, the index, id continuity across the SQLite rebuild, and that re-running the migrator is a no-op.
+- A migration test on all three drivers that seeds the pre-0.31 legacy schema fixture with mixed-case and non-ASCII duplicates, surrounding whitespace, `''`, a display-name form, interior whitespace, and a value without `@`, migrates, and asserts the survivor rule, the `NULL` conversion, case-folded lookup, the index, id continuity across the SQLite rebuild, and that re-running the migrator is a no-op.
 - API tests: signup, admin create, update, and `validate_only` reject malformed addresses with `InvalidArgument` and duplicates with `AlreadyExists`; SSO first login with a colliding address creates the account with no address and does not link.
 - Unit tests for the canonical-form function covering display-name forms, whitespace, length, and case.
 

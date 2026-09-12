@@ -2,11 +2,15 @@
 -- Data repair runs against the old table first, then the table is rebuilt
 -- because SQLite cannot change a column's nullability in place.
 
--- Canonical form: trimmed and lowercased. SQLite's LOWER folds ASCII only.
+-- Canonical form: trimmed and lowercased. SQLite's LOWER folds ASCII only;
+-- the migrator canonicalizes with Unicode rules before this file runs, so
+-- this statement is a safety net for the ASCII case.
 UPDATE user SET email = LOWER(TRIM(email));
 
--- Values without an '@' are not addresses.
-UPDATE user SET email = '' WHERE email NOT LIKE '%@%';
+-- Values without an '@', or carrying display-name syntax or interior
+-- whitespace, are not addresses the API would accept.
+UPDATE user SET email = ''
+WHERE email NOT LIKE '%@%' OR email LIKE '%<%' OR email LIKE '%>%' OR email LIKE '% %';
 
 -- For each address held by more than one account, the oldest account keeps it.
 UPDATE user
