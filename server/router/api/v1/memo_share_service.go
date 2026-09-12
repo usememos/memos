@@ -14,6 +14,7 @@ import (
 	"github.com/lithammer/shortuuid/v4"
 	"github.com/pkg/errors"
 
+	"github.com/usememos/memos/internal/ratelimit"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	"github.com/usememos/memos/server/access"
 	"github.com/usememos/memos/store"
@@ -28,6 +29,9 @@ func (s *APIV1Service) CreateMemoShare(ctx context.Context, request *v1pb.Create
 	}
 	if user == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
+	if err := s.throttleAndCharge(ratelimit.ScopeWriteUser, userKey(user.ID), 1); err != nil {
+		return nil, err
 	}
 
 	memoUID, err := ExtractMemoUIDFromName(request.Parent)

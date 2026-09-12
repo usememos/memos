@@ -5,6 +5,9 @@ import (
 	"log/slog"
 	"net/http"
 
+	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/protojson"
+
 	"connectrpc.com/connect"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/labstack/echo/v5"
@@ -14,6 +17,7 @@ import (
 	"github.com/usememos/memos/internal/httpgetter"
 	"github.com/usememos/memos/internal/markdown"
 	"github.com/usememos/memos/internal/profile"
+	"github.com/usememos/memos/internal/ratelimit"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	"github.com/usememos/memos/server/auth"
 	"github.com/usememos/memos/server/notification"
@@ -51,6 +55,15 @@ type APIV1Service struct {
 	SSEHub                  *SSEHub
 	NotificationEmailSender notification.EmailSender
 
+	// RateLimiter bounds request rates; nil disables every limit.
+	RateLimiter ratelimit.Limiter
+	// Challenge verifies proof-of-humanity tokens on signup and password
+	// sign-in; nil means no challenge is configured.
+	Challenge ratelimit.Challenge
+	// SignupPolicy decides whether a self-service registration may proceed;
+	// nil allows every registration.
+	SignupPolicy ratelimit.SignupPolicy
+
 	// thumbnailSemaphore limits concurrent thumbnail generation to prevent memory exhaustion
 	thumbnailSemaphore       *semaphore.Weighted
 	imageProcessingSemaphore *semaphore.Weighted
@@ -75,6 +88,7 @@ func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store
 		MarkdownService:          markdownService,
 		SSEHub:                   NewSSEHub(),
 		NotificationEmailSender:  nil,
+		RateLimiter:              newProfileRateLimiter(profile),
 		thumbnailSemaphore:       semaphore.NewWeighted(3), // Limit to 3 concurrent thumbnail generations
 		imageProcessingSemaphore: semaphore.NewWeighted(2),
 	}
@@ -105,7 +119,7 @@ func newGatewayMarshaler() *runtime.HTTPBodyMarshaler {
 func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Echo) error {
 	// Shared authorizer: one source of truth for authentication and anonymous-access
 	// policy, used by both the gRPC-Gateway middleware and the Connect interceptor.
-	authorizer := NewAuthorizer(s.Store, s.Secret)
+	authorizer := NewAuthorizer(s.Store, s.Secret).WithRateLimiter(s.RateLimiter)
 
 	// grpc-gateway does not hand the matched procedure to middleware:
 	// runtime.RPCMethod is only populated by the generated handler, which runs
@@ -136,6 +150,10 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 				writeGatewayAuthorizationError(w, err)
 				return
 			}
+			if err := authorizer.Throttle(ctx, procedure, result); err != nil {
+				writeGatewayStatusError(w, err)
+				return
+			}
 
 			// Apply the identity to the context (no-op for permitted anonymous requests).
 			if result != nil {
@@ -151,6 +169,8 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 	gwMux := runtime.NewServeMux(
 		runtime.WithMarshalerOption(runtime.MIMEWildcard, newGatewayMarshaler()),
 		runtime.WithMiddlewares(gatewayAuthMiddleware),
+		runtime.WithErrorHandler(gatewayErrorHandler),
+		runtime.WithIncomingHeaderMatcher(gatewayIncomingHeaderMatcher),
 	)
 	if err := v1pb.RegisterInstanceServiceHandlerServer(ctx, gwMux, s); err != nil {
 		return err
@@ -213,6 +233,56 @@ func setAPIResponseNoStoreHeaders(header http.Header) {
 	header.Set("Cache-Control", "no-cache, no-store, must-revalidate")
 	header.Set("Pragma", "no-cache")
 	header.Set("Expires", "0")
+}
+
+// newProfileRateLimiter builds the default limiter, or nil when the profile
+// turns rate limiting off.
+func newProfileRateLimiter(profile *profile.Profile) ratelimit.Limiter {
+	if !profile.RateLimit {
+		return nil
+	}
+	return ratelimit.NewMemoryLimiter(ratelimit.DefaultPolicy())
+}
+
+// gatewayIncomingHeaderMatcher forwards the challenge token to metadata on top
+// of the gateway's default set.
+func gatewayIncomingHeaderMatcher(key string) (string, bool) {
+	if http.CanonicalHeaderKey(key) == challengeTokenHeader {
+		return challengeTokenMetadataKey, true
+	}
+	return runtime.DefaultHeaderMatcher(key)
+}
+
+// gatewayErrorHandler adds the rate-limit header fields to a refusal before
+// the default handler writes the status body.
+func gatewayErrorHandler(ctx context.Context, mux *runtime.ServeMux, marshaler runtime.Marshaler, w http.ResponseWriter, r *http.Request, err error) {
+	if st, ok := status.FromError(err); ok {
+		for key, values := range rateLimitHTTPHeaders(st) {
+			for _, value := range values {
+				w.Header().Add(key, value)
+			}
+		}
+	}
+	runtime.DefaultHTTPErrorHandler(ctx, mux, marshaler, w, r, err)
+}
+
+// writeGatewayStatusError writes a gRPC status as the gateway's JSON error body,
+// including its details and any rate-limit header fields.
+func writeGatewayStatusError(w http.ResponseWriter, err error) {
+	st := status.Convert(err)
+	for key, values := range rateLimitHTTPHeaders(st) {
+		for _, value := range values {
+			w.Header().Add(key, value)
+		}
+	}
+	body, marshalErr := protojson.Marshal(st.Proto())
+	if marshalErr != nil {
+		http.Error(w, `{"code": 13, "message": "failed to encode error"}`, http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(runtime.HTTPStatusFromCode(st.Code()))
+	_, _ = w.Write(body)
 }
 
 func writeGatewayAuthorizationError(w http.ResponseWriter, err error) {

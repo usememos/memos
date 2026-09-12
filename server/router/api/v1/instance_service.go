@@ -70,6 +70,7 @@ func (s *APIV1Service) GetInstanceProfile(ctx context.Context, _ *v1pb.GetInstan
 		Commit:      s.Profile.Commit,
 		NeedsSetup:  len(users) == 0,
 		AccessMode:  convertInstanceAccessModeFromStore(accessSetting.AccessMode),
+		Challenge:   s.challengeProfile(),
 	}
 	return instanceProfile, nil
 }
@@ -266,6 +267,18 @@ func (s *APIV1Service) UpdateInstanceSetting(ctx context.Context, request *v1pb.
 	}
 
 	return convertInstanceSettingFromStore(instanceSetting), nil
+}
+
+// challengeProfile describes the configured challenge so the web app can
+// render the matching widget, or nil when none is configured.
+func (s *APIV1Service) challengeProfile() *v1pb.InstanceProfile_Challenge {
+	if s.Challenge == nil {
+		return nil
+	}
+	return &v1pb.InstanceProfile_Challenge{
+		Provider: s.Challenge.Provider(),
+		SiteKey:  s.Challenge.SiteKey(),
+	}
 }
 
 func (s *APIV1Service) TestInstanceEmailSetting(ctx context.Context, request *v1pb.TestInstanceEmailSettingRequest) (*emptypb.Empty, error) {

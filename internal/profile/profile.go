@@ -35,6 +35,11 @@ type Profile struct {
 	Commit string
 	// InstanceURL is the canonical external URL of the Memos instance.
 	InstanceURL string
+	// RateLimit enables the request rate limiter. Off restores unbounded behavior.
+	RateLimit bool
+	// TrustedProxies lists the proxies whose forwarding headers identify the
+	// client: CIDRs, addresses, or the keywords "private" and "none".
+	TrustedProxies []string
 }
 
 func checkDataDir(dataDir string) (string, error) {

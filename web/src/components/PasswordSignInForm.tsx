@@ -3,13 +3,14 @@ import { LoaderIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { setAccessToken } from "@/auth-state";
+import ChallengeWidget, { CHALLENGE_TOKEN_HEADER } from "@/components/ChallengeWidget";
 import CredentialFields from "@/components/CredentialFields";
 import { Button } from "@/components/ui/button";
 import { authServiceClient } from "@/connect";
 import { useAuth } from "@/contexts/AuthContext";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { handleError } from "@/lib/error";
+import { ERROR_REASON_CHALLENGE_REQUIRED, handleError, hasErrorReason } from "@/lib/error";
 import { ROUTES } from "@/router/routes";
 import { useTranslate } from "@/utils/i18n";
 
@@ -24,6 +25,8 @@ function PasswordSignInForm({ redirectPath }: PasswordSignInFormProps) {
   const actionBtnLoadingState = useLoading(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [challengeToken, setChallengeToken] = useState<string | null>(null);
+  const [challengeResetKey, setChallengeResetKey] = useState(0);
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -38,12 +41,15 @@ function PasswordSignInForm({ redirectPath }: PasswordSignInFormProps) {
 
     try {
       actionBtnLoadingState.setLoading();
-      const response = await authServiceClient.signIn({
-        credentials: {
-          case: "passwordCredentials",
-          value: { username, password },
+      const response = await authServiceClient.signIn(
+        {
+          credentials: {
+            case: "passwordCredentials",
+            value: { username, password },
+          },
         },
-      });
+        challengeToken ? { headers: { [CHALLENGE_TOKEN_HEADER]: challengeToken } } : undefined,
+      );
       // Store access token from login response
       if (response.accessToken) {
         setAccessToken(response.accessToken, response.accessTokenExpiresAt ? timestampDate(response.accessTokenExpiresAt) : undefined);
@@ -51,6 +57,9 @@ function PasswordSignInForm({ redirectPath }: PasswordSignInFormProps) {
       await initialize();
       navigateTo(redirectPath || ROUTES.HOME, { replace: true });
     } catch (error: unknown) {
+      if (hasErrorReason(error, ERROR_REASON_CHALLENGE_REQUIRED)) {
+        setChallengeResetKey((key) => key + 1);
+      }
       handleError(error, toast.error, {
         fallbackMessage: "Failed to sign in.",
       });
@@ -69,6 +78,7 @@ function PasswordSignInForm({ redirectPath }: PasswordSignInFormProps) {
         onUsernameChange={setUsername}
         onPasswordChange={setPassword}
       />
+      <ChallengeWidget onToken={setChallengeToken} resetKey={challengeResetKey} />
       <Button type="submit" disabled={actionBtnLoadingState.isLoading}>
         {t("common.sign-in")}
         {actionBtnLoadingState.isLoading && <LoaderIcon className="ml-1 h-4 w-auto animate-spin opacity-60" />}

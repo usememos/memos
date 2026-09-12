@@ -6,6 +6,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/usememos/memos/internal/clientip"
+
 	"google.golang.org/grpc/metadata"
 
 	storepb "github.com/usememos/memos/proto/gen/store"
@@ -93,14 +95,15 @@ func TestParseUserAgent(t *testing.T) {
 func TestExtractClientInfo(t *testing.T) {
 	service := &APIV1Service{}
 
-	// Test with metadata containing user agent and IP
+	// The user agent comes from metadata; the address comes only from the
+	// trusted-proxy resolver, so forwarding headers in metadata are ignored.
 	md := metadata.New(map[string]string{
 		"user-agent":      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
-		"x-forwarded-for": "203.0.113.1, 198.51.100.1",
-		"x-real-ip":       "203.0.113.1",
+		"x-forwarded-for": "198.51.100.1",
+		"x-real-ip":       "198.51.100.1",
 	})
 
-	ctx := metadata.NewIncomingContext(context.Background(), md)
+	ctx := clientip.WithClientIP(metadata.NewIncomingContext(context.Background(), md), "203.0.113.1")
 
 	clientInfo := service.extractClientInfo(ctx)
 

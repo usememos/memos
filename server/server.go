@@ -14,6 +14,7 @@ import (
 	"github.com/labstack/echo/v5/middleware"
 	"github.com/pkg/errors"
 
+	"github.com/usememos/memos/internal/clientip"
 	"github.com/usememos/memos/internal/profile"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	apiv1 "github.com/usememos/memos/server/router/api/v1"
@@ -44,6 +45,13 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	echoServer := echo.New()
 	echoServer.Use(middleware.Recover())
 	echoServer.Use(newCORSMiddleware(profile))
+	// Resolve the client address once per request, before anything that keys
+	// on it: rate limits, session records, and the file server.
+	clientIPResolver, err := clientip.ParseTrustedProxies(profile.TrustedProxies)
+	if err != nil {
+		return nil, errors.Wrap(err, "invalid trusted proxies")
+	}
+	echoServer.Use(clientip.Middleware(clientIPResolver))
 	s.echoServer = echoServer
 
 	instanceBasicSetting, err := s.getOrUpsertInstanceBasicSetting(ctx)

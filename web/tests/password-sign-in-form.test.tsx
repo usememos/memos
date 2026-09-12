@@ -12,6 +12,11 @@ vi.mock("@/contexts/AuthContext", () => ({
   useAuth: () => ({ initialize: vi.fn() }),
 }));
 
+// The challenge widget reads the instance profile; no challenge is configured here.
+vi.mock("@/contexts/InstanceContext", () => ({
+  useInstance: () => ({ profile: { challenge: undefined } }),
+}));
+
 vi.mock("@/hooks/useNavigateTo", () => ({
   default: () => vi.fn(),
 }));

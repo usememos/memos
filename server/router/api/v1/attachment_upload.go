@@ -11,6 +11,7 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 
+	"github.com/usememos/memos/internal/ratelimit"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	"github.com/usememos/memos/store"
 )
@@ -30,6 +31,9 @@ func (s *APIV1Service) UploadAttachment(ctx context.Context, request *v1pb.Uploa
 	var upload *attachmentUpload
 	switch u := request.Upload.(type) {
 	case *v1pb.UploadAttachmentRequest_Spec:
+		if err := s.throttleAndCharge(ratelimit.ScopeUploadUser, userKey(user.ID), 1); err != nil {
+			return nil, err
+		}
 		id, upload, err = s.startAttachmentUpload(ctx, request, u.Spec, user.ID)
 		if err != nil {
 			return nil, err

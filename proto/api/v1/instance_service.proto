@@ -91,6 +91,17 @@ message InstanceProfile {
 
   // Access mode controls whether unauthenticated users may access instance content.
   InstanceAccessMode access_mode = 10;
+
+  // A proof-of-humanity challenge the deployment requires on signup and
+  // password sign-in. Absent when none is configured, which is the case on
+  // every self-hosted instance.
+  message Challenge {
+    // The challenge provider, which selects the widget the web app renders.
+    string provider = 1;
+    // The provider's public site key for the widget.
+    string site_key = 2;
+  }
+  Challenge challenge = 11;
 }
 
 // Request for instance profile.
