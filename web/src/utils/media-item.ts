@@ -15,6 +15,7 @@ interface PreviewMediaItemBase {
   id: string;
   filename: string;
   attachments?: Attachment[];
+  blurred?: boolean;
 }
 
 export interface ImagePreviewMediaItem extends PreviewMediaItemBase {

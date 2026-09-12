@@ -8,6 +8,7 @@ import {
   isVideoAttachment,
 } from "@/components/MemoMetadata/Attachment/attachmentHelpers";
 import { useInfiniteAttachments } from "@/hooks/useAttachmentQueries";
+import { useBlurredAttachmentItems } from "@/hooks/useBlurredAttachmentItems";
 import { combineCELFilters } from "@/lib/cel-filter";
 import type { Attachment, ListAttachmentsRequest } from "@/types/proto/api/v1/attachment_service_pb";
 import { isMotionAttachment } from "@/utils/attachment";
@@ -34,6 +35,7 @@ export interface AttachmentLibraryListItem {
 }
 
 export interface AttachmentLibraryMediaItem extends AttachmentVisualItem {
+  blurred?: boolean;
   primaryAttachment: Attachment;
   createdAt?: Date;
   createdLabel: string;
@@ -187,13 +189,15 @@ export function useAttachmentLibrary(locale: string, filter?: string) {
     [attachments],
   );
 
-  const mediaItems = useMemo(
+  const visualItems = useMemo(
     () =>
       buildAttachmentVisualItems(linkedAttachments.filter(isVisualAttachment))
         .map((item) => toLibraryMediaItem(item, locale, t("attachment-library.labels.live-photo")))
         .sort((a, b) => sortByNewest(a.createdAt, b.createdAt)),
     [linkedAttachments, locale, t],
   );
+  const blurredItemIds = useBlurredAttachmentItems(visualItems);
+  const mediaItems = visualItems.map((item) => ({ ...item, blurred: blurredItemIds.has(item.id) }));
 
   const documentItems = useMemo(
     () =>
@@ -217,7 +221,7 @@ export function useAttachmentLibrary(locale: string, filter?: string) {
     () => groupMediaByMonth(mediaItems, locale, t("attachment-library.labels.unknown-date")),
     [locale, mediaItems, t],
   );
-  const mediaPreviewItems = useMemo(() => mediaItems.map((item) => item.previewItem), [mediaItems]);
+  const mediaPreviewItems = useMemo(() => mediaItems.map((item) => ({ ...item.previewItem, blurred: item.blurred })), [mediaItems]);
 
   const stats = useMemo<AttachmentLibraryStats>(
     () => ({

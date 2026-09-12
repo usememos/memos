@@ -1,10 +1,12 @@
 import { ChevronLeft, ChevronRight, InfoIcon, RotateCcw, X, ZoomIn, ZoomOut } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
+import BlurredMedia from "@/components/BlurredMedia";
 import MediaMetadataDetails from "@/components/MediaMetadataDetails";
 import MotionPhotoPreview from "@/components/MotionPhotoPreview";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
+import VideoPoster from "@/components/VideoPoster";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
@@ -31,7 +33,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [zoomScale, setZoomScale] = useState(MIN_ZOOM);
   const [showDetails, setShowDetails] = useState(false);
-  const previewItems = useMemo(
+  const previewItems = useMemo<PreviewMediaItem[]>(
     () => items ?? imgUrls.map((url) => ({ id: url, kind: "image" as const, sourceUrl: url, posterUrl: url, filename: "Image" })),
     [imgUrls, items],
   );
@@ -189,51 +191,67 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
           }}
         >
           <div className="flex max-h-full max-w-full items-center justify-center" onClick={(event) => event.stopPropagation()}>
-            {currentItem.kind === "video" ? (
-              <video
-                key={currentItem.id}
-                src={currentItem.sourceUrl}
-                poster={currentItem.posterUrl}
-                className={cn(
-                  "max-h-[calc(100vh-8rem)] max-w-[calc(100vw-1.5rem)] rounded-md object-contain sm:max-h-[calc(100vh-7rem)] sm:max-w-[calc(100vw-8rem)]",
-                  showDetails && "lg:max-w-[calc(100vw-30rem)]",
-                )}
-                controls
-                autoPlay
-                playsInline
-              />
-            ) : currentItem.kind === "motion" ? (
-              <MotionPhotoPreview
-                key={currentItem.id}
-                posterUrl={currentItem.posterUrl}
-                motionUrl={currentItem.motionUrl}
-                alt={`Preview live photo ${safeIndex + 1} of ${itemCount}`}
-                presentationTimestampUs={currentItem.presentationTimestampUs}
-                badgeClassName="left-3 top-3 sm:left-4 sm:top-4"
-                mediaClassName={cn(
-                  "max-h-[calc(100vh-8rem)] max-w-[calc(100vw-1.5rem)] rounded-md object-contain sm:max-h-[calc(100vh-7rem)] sm:max-w-[calc(100vw-8rem)]",
-                  showDetails && "lg:max-w-[calc(100vw-30rem)]",
-                )}
-              />
-            ) : (
-              <img
-                src={currentItem.sourceUrl}
-                alt={`Preview image ${safeIndex + 1} of ${itemCount}`}
-                className={cn(
-                  "max-h-[calc(100vh-8rem)] max-w-[calc(100vw-1.5rem)] rounded-md object-contain select-none sm:max-h-[calc(100vh-7rem)] sm:max-w-[calc(100vw-8rem)]",
-                  showDetails && "lg:max-w-[calc(100vw-30rem)]",
-                )}
-                style={{
-                  transform: `translate3d(0px, 0px, 0) scale(${zoomScale})`,
-                  transition: "transform 120ms ease-out",
-                  transformOrigin: "center center",
-                }}
-                onDoubleClick={handleDoubleClick}
-                draggable={false}
-                loading="eager"
-                decoding="async"
-              />
-            )}
+            <BlurredMedia
+              key={`${currentItem.id}:${open}`}
+              blurred={currentItem.blurred}
+              className="max-h-full max-w-full"
+              contentClassName="max-h-full max-w-full"
+            >
+              {(concealed) =>
+                currentItem.kind === "video" && concealed ? (
+                  <VideoPoster
+                    sourceUrl={currentItem.sourceUrl}
+                    posterUrl={currentItem.posterUrl}
+                    alt={`Preview video ${safeIndex + 1} of ${itemCount}`}
+                    className="max-h-[calc(100vh-8rem)] max-w-[calc(100vw-1.5rem)] rounded-md object-contain sm:max-w-[calc(100vw-8rem)]"
+                  />
+                ) : currentItem.kind === "video" ? (
+                  <video
+                    key={currentItem.id}
+                    src={currentItem.sourceUrl}
+                    poster={currentItem.posterUrl}
+                    className={cn(
+                      "max-h-[calc(100vh-8rem)] max-w-[calc(100vw-1.5rem)] rounded-md object-contain sm:max-h-[calc(100vh-7rem)] sm:max-w-[calc(100vw-8rem)]",
+                      showDetails && "lg:max-w-[calc(100vw-30rem)]",
+                    )}
+                    controls
+                    autoPlay
+                    playsInline
+                  />
+                ) : currentItem.kind === "motion" && !concealed ? (
+                  <MotionPhotoPreview
+                    key={currentItem.id}
+                    posterUrl={currentItem.posterUrl}
+                    motionUrl={currentItem.motionUrl}
+                    alt={`Preview live photo ${safeIndex + 1} of ${itemCount}`}
+                    presentationTimestampUs={currentItem.presentationTimestampUs}
+                    badgeClassName="left-3 top-3 sm:left-4 sm:top-4"
+                    mediaClassName={cn(
+                      "max-h-[calc(100vh-8rem)] max-w-[calc(100vw-1.5rem)] rounded-md object-contain sm:max-h-[calc(100vh-7rem)] sm:max-w-[calc(100vw-8rem)]",
+                      showDetails && "lg:max-w-[calc(100vw-30rem)]",
+                    )}
+                  />
+                ) : (
+                  <img
+                    src={currentItem.kind === "motion" ? currentItem.posterUrl : currentItem.sourceUrl}
+                    alt={`Preview image ${safeIndex + 1} of ${itemCount}`}
+                    className={cn(
+                      "max-h-[calc(100vh-8rem)] max-w-[calc(100vw-1.5rem)] rounded-md object-contain select-none sm:max-h-[calc(100vh-7rem)] sm:max-w-[calc(100vw-8rem)]",
+                      showDetails && "lg:max-w-[calc(100vw-30rem)]",
+                    )}
+                    style={{
+                      transform: `translate3d(0px, 0px, 0) scale(${zoomScale})`,
+                      transition: "transform 120ms ease-out",
+                      transformOrigin: "center center",
+                    }}
+                    onDoubleClick={handleDoubleClick}
+                    draggable={false}
+                    loading="eager"
+                    decoding="async"
+                  />
+                )
+              }
+            </BlurredMedia>
           </div>
         </div>
 
