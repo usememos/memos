@@ -115,6 +115,19 @@ func TestDeleteUserCleansRelatedData(t *testing.T) {
 	})
 	require.NoError(t, err)
 
+	// A poll embedded in peer's memo, with both the deleted user and peer
+	// voting on it. deletePollDataByMemoIDsTx (exercised elsewhere) only
+	// cleans up poll data for memos the deleted user owns; a vote cast on
+	// someone else's memo needs the separate voter-scoped cleanup this test
+	// covers, or it survives as a poll_vote row pointing at a user that no
+	// longer exists.
+	peerPoll, err := ts.EnsurePollBinding(ctx, "delete-peer-poll", peerMemo.ID, "hash-v1")
+	require.NoError(t, err)
+	_, err = ts.SetPollVotes(ctx, peerPoll.UID, peerMemo.ID, user.ID, []int32{0})
+	require.NoError(t, err)
+	_, err = ts.SetPollVotes(ctx, peerPoll.UID, peerMemo.ID, peer.ID, []int32{1})
+	require.NoError(t, err)
+
 	_, err = ts.CreateMemoShare(ctx, &store.MemoShare{
 		UID:       "delete-owner-share",
 		MemoID:    peerMemo.ID,
@@ -221,6 +234,11 @@ func TestDeleteUserCleansRelatedData(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, keptReactions, 1)
 	require.Equal(t, peerReactionToKeep.ID, keptReactions[0].ID)
+
+	peerPollVotes, err := ts.ListPollVotes(ctx, peerPoll.UID)
+	require.NoError(t, err)
+	require.Len(t, peerPollVotes, 1, "the deleted user's vote on a memo they don't own must be removed")
+	require.Equal(t, peer.ID, peerPollVotes[0].VoterID)
 
 	deletedOwnerShares, err := ts.ListMemoShares(ctx, &store.FindMemoShare{CreatorID: &user.ID})
 	require.NoError(t, err)

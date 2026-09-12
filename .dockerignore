@@ -8,8 +8,15 @@ coverage.out
 /.pnpm-store/
 /.worktrees/
 
+# Frontend source is needed by the image build (the frontend build stage in
+# scripts/Dockerfile compiles it), but its generated/local-only output isn't.
+/web/node_modules/
+/web/dist/
+/web/coverage/
+/web/.vite/
+/web/*.local
+
 # Not used by the image build
-/web/
 /docs/
 /.github/
 *.md
