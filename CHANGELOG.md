@@ -1,5 +1,45 @@
 # Changelog
 
+## [0.31.0-rc.2](https://github.com/usememos/memos/compare/v0.31.0-rc.1...v0.31.0-rc.2) (2026-09-12)
+
+
+### Features
+
+* **attachment:** upload files in resumable chunks ([b3e6739](https://github.com/usememos/memos/commit/b3e67399b83bc32cb27dda1f0eaa448b2108e211))
+* **editor:** add Markdown formatting shortcuts ([#6258](https://github.com/usememos/memos/issues/6258)) ([673b9df](https://github.com/usememos/memos/commit/673b9df05fa341dc3518cca24bef70a1dbd64ea6))
+* **editor:** autofocus Home on initial desktop load ([#6275](https://github.com/usememos/memos/issues/6275)) ([60b8973](https://github.com/usememos/memos/commit/60b89736a2ed6509b19609d86176497bcae419a8))
+* **filter:** support space placement in saved views ([#6267](https://github.com/usememos/memos/issues/6267)) ([dfa0fda](https://github.com/usememos/memos/commit/dfa0fda76602d49dfbb68a6683ef20b068c8d45b))
+* **i18n:** add Azerbaijani language support ([#6278](https://github.com/usememos/memos/issues/6278)) ([3d97b39](https://github.com/usememos/memos/commit/3d97b39f2d492e7dd1c887594dd4ec16ff54ee3f))
+* **map:** add a map page for located memos ([bc89ec0](https://github.com/usememos/memos/commit/bc89ec00060623cff52eacbc2c3ca82038e5c924))
+* **memos:** support moving memos between spaces ([#6285](https://github.com/usememos/memos/issues/6285)) ([2d75439](https://github.com/usememos/memos/commit/2d75439ecc4267036a2798c6408ee4679c7baa0e))
+* **search:** add expression mode to Quick Find ([#6276](https://github.com/usememos/memos/issues/6276)) ([bf1f742](https://github.com/usememos/memos/commit/bf1f7423215f362c1f183a8a797715deff0b814b))
+* **sidebar:** redesign memo detail navigation ([#6261](https://github.com/usememos/memos/issues/6261)) ([d79b2e1](https://github.com/usememos/memos/commit/d79b2e1dc34e913785305d794299686d3d4dc47d))
+* **sidebar:** separate checked filters from current rows ([aba1f73](https://github.com/usememos/memos/commit/aba1f7384d44d020ce8e4d9036c7cececb3c6c13))
+* **spaces:** deliver invitations to the inbox ([#6266](https://github.com/usememos/memos/issues/6266)) ([230e3a1](https://github.com/usememos/memos/commit/230e3a1d117ef7363aceb8688a7761ad6445b6b3))
+* **spaces:** support custom icons and emoji ([#6287](https://github.com/usememos/memos/issues/6287)) ([34dbb83](https://github.com/usememos/memos/commit/34dbb839485c789bce359dfcb0a9bbe626c128ec))
+* **user:** make email an optional, canonical, instance-unique attribute ([#6314](https://github.com/usememos/memos/issues/6314)) ([751005b](https://github.com/usememos/memos/commit/751005bc190e9f68e92bfa0d850f3015bec7febc))
+* **views:** support custom icons for saved memo views ([#6305](https://github.com/usememos/memos/issues/6305)) ([51b434d](https://github.com/usememos/memos/commit/51b434d3b5839711a0003c72c747d44a84094c09))
+* **web:** add 0.5x and 0.75x audio playback speeds ([b88a715](https://github.com/usememos/memos/commit/b88a71540a1a4079c8211edeac3e81b0fb4a6a13)), closes [#6263](https://github.com/usememos/memos/issues/6263)
+* **web:** add a calendar view of your memos ([#6277](https://github.com/usememos/memos/issues/6277)) ([500bb71](https://github.com/usememos/memos/commit/500bb716bcf76e5c99a6ccf00371ead7177c4eae))
+* **web:** calendar day panel refinements ([#6280](https://github.com/usememos/memos/issues/6280)) ([ad6433c](https://github.com/usememos/memos/commit/ad6433c51a4deee53b25ddc223d77ed9612f6e56))
+* **web:** scope Spaces by URL path instead of a remembered selection ([af008b2](https://github.com/usememos/memos/commit/af008b21533bdc50fae5ad6a438347ad84bb9419))
+
+
+### Bug Fixes
+
+* **editor:** attach pasted files instead of inlining them ([8701d93](https://github.com/usememos/memos/commit/8701d93fc0a55500c3c3c27a737fb9d60dd8a82f))
+* **editor:** enable native mobile text assistance ([#6248](https://github.com/usememos/memos/issues/6248)) ([2c7cf91](https://github.com/usememos/memos/commit/2c7cf91aac7cfeeb3107132c06ca4e5cd4b934f2))
+* **editor:** preserve memo timestamp edits when closing popover ([0716eaa](https://github.com/usememos/memos/commit/0716eaac2c07b00cc4c36682ad7880a1ef072162))
+* **i18n:** align Chinese sensitive content labels ([#6274](https://github.com/usememos/memos/issues/6274)) ([f8b55ad](https://github.com/usememos/memos/commit/f8b55ad16e1b6174b139cd0fec6a23ff845b314e))
+* **mcp:** expose standard JSON Schema formats in tool schemas ([652957c](https://github.com/usememos/memos/commit/652957c0f98b5e66fb7b369ddef9f40ee439ef69)), closes [#6262](https://github.com/usememos/memos/issues/6262)
+* **scheduler:** correct cron calendar day matching ([#6306](https://github.com/usememos/memos/issues/6306)) ([3227748](https://github.com/usememos/memos/commit/3227748a3018688d1d0b5f16aab82ae8319dc1e1))
+* **sidebar:** flatten account footer surface ([5a65350](https://github.com/usememos/memos/commit/5a65350400f0b5f6c726a1187458ca3d91f4e38e))
+* **sidebar:** open the navigator label only where the row can afford it ([88f1505](https://github.com/usememos/memos/commit/88f150502c9a1ec6050ff4bdd8f439f646829ab3))
+* **sidebar:** unify layout rails and spacing ([191ec01](https://github.com/usememos/memos/commit/191ec01d11186db7ab4840b41d6fe008e3729909))
+* **ui:** refine compact navigation and memo actions ([ce0dd23](https://github.com/usememos/memos/commit/ce0dd23d2f40d5613fd40f284264fc21e5e4ae82))
+* **webhook:** block unspecified-address destinations in the SSRF guard ([#6284](https://github.com/usememos/memos/issues/6284)) ([607dc28](https://github.com/usememos/memos/commit/607dc28413c0c24439454e973065f67a94d9fd21))
+* **web:** untrap focus mode in the memo grid and use a dark scrim token for overlays ([#6310](https://github.com/usememos/memos/issues/6310)) ([98f9c21](https://github.com/usememos/memos/commit/98f9c215c4ba58cd35666e5c76ed4f6a0b73240b))
+
 ## [0.31.0-rc.1](https://github.com/usememos/memos/compare/v0.30.0...v0.31.0-rc.1) (2026-08-30)
 
 
