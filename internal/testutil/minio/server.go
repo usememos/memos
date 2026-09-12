@@ -21,7 +21,9 @@ import (
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
 
-const image = "minio/minio:RELEASE.2024-01-16T16-07-38Z"
+// image is pulled from quay.io: the minio/minio repository on Docker Hub was
+// removed, and quay.io is where MinIO publishes its official images.
+const image = "quay.io/minio/minio:RELEASE.2024-01-16T16-07-38Z"
 
 // Server is an S3-compatible MinIO container with an AWS SDK client for
 // arranging and inspecting test objects.
