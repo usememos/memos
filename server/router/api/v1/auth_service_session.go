@@ -14,6 +14,7 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	"github.com/usememos/memos/internal/clientip"
 	"github.com/usememos/memos/internal/util"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
@@ -271,7 +272,7 @@ func isActiveCurrentUser(user *store.User) bool {
 //
 // This function parses metadata from the gRPC context to extract:
 // - User Agent: Raw user agent string for detailed parsing
-// - IP Address: Client IP from X-Forwarded-For or X-Real-IP headers
+// - IP Address: Client IP as resolved through the trusted proxies
 // - Device Type: "mobile", "tablet", or "desktop" (parsed from user agent)
 // - Operating System: OS name and version (e.g., "iOS 17.1", "Windows 10/11")
 // - Browser: Browser name and version (e.g., "Chrome 120.0.0.0")
@@ -292,14 +293,10 @@ func (s *APIV1Service) extractClientInfo(ctx context.Context) *storepb.RefreshTo
 			// Parse user agent to extract device type, OS, browser info
 			s.parseUserAgent(userAgent, clientInfo)
 		}
-		if forwardedFor := md.Get("x-forwarded-for"); len(forwardedFor) > 0 {
-			ipAddress := strings.Split(forwardedFor[0], ",")[0] // Get the first IP in case of multiple
-			ipAddress = strings.TrimSpace(ipAddress)
-			clientInfo.IpAddress = ipAddress
-		} else if realIP := md.Get("x-real-ip"); len(realIP) > 0 {
-			clientInfo.IpAddress = realIP[0]
-		}
 	}
+	// The address comes from the trusted-proxy resolver, never from a header
+	// the client chose.
+	clientInfo.IpAddress = clientip.FromContext(ctx)
 
 	return clientInfo
 }

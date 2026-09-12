@@ -61,16 +61,33 @@ func wrap(path string, handler http.Handler) struct {
 	}{path, handler}
 }
 
-// convertGRPCError converts gRPC status errors to Connect errors.
-// This preserves the error code semantics between the two protocols.
+// convertGRPCError converts gRPC status errors to Connect errors, carrying
+// the status details across and, for rate-limit refusals, the HTTP header
+// fields a generic client reads.
 func convertGRPCError(err error) error {
 	if err == nil {
 		return nil
 	}
-	if st, ok := status.FromError(err); ok {
-		return connect.NewError(grpcCodeToConnectCode(st.Code()), errors.New(st.Message()))
+	st, ok := status.FromError(err)
+	if !ok {
+		return connect.NewError(connect.CodeInternal, err)
 	}
-	return connect.NewError(connect.CodeInternal, err)
+	connectErr := connect.NewError(grpcCodeToConnectCode(st.Code()), errors.New(st.Message()))
+	for _, detail := range st.Proto().GetDetails() {
+		message, unmarshalErr := detail.UnmarshalNew()
+		if unmarshalErr != nil {
+			continue
+		}
+		if connectDetail, detailErr := connect.NewErrorDetail(message); detailErr == nil {
+			connectErr.AddDetail(connectDetail)
+		}
+	}
+	for key, values := range rateLimitHTTPHeaders(st) {
+		for _, value := range values {
+			connectErr.Meta().Add(key, value)
+		}
+	}
+	return connectErr
 }
 
 // grpcCodeToConnectCode converts gRPC status codes to Connect error codes.

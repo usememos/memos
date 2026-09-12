@@ -11,9 +11,11 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/usememos/memos/internal/filter"
+	"github.com/usememos/memos/internal/ratelimit"
 	"github.com/usememos/memos/internal/util"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
+	"github.com/usememos/memos/server/auth"
 	"github.com/usememos/memos/store"
 )
 
@@ -132,6 +134,9 @@ func (s *APIV1Service) CreateMemoView(ctx context.Context, request *v1pb.CreateM
 		return nil, status.Errorf(codes.NotFound, "user not found")
 	}
 	if err := s.authorizeMemoViewAccess(ctx, user); err != nil {
+		return nil, err
+	}
+	if err := s.throttleAndCharge(ratelimit.ScopeWriteUser, userKey(auth.GetUserID(ctx)), 1); err != nil {
 		return nil, err
 	}
 

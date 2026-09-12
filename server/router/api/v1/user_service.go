@@ -16,6 +16,8 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 
+	"github.com/usememos/memos/internal/clientip"
+	"github.com/usememos/memos/internal/ratelimit"
 	"github.com/usememos/memos/internal/util"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	"github.com/usememos/memos/store"
@@ -144,6 +146,7 @@ func (s *APIV1Service) BatchGetUsers(ctx context.Context, request *v1pb.BatchGet
 	if nonEmptyUsernameCount > maxBatchGetUsers {
 		return nil, status.Errorf(codes.InvalidArgument, "too many usernames (max %d)", maxBatchGetUsers)
 	}
+	s.chargeBatch(ctx, nonEmptyUsernameCount)
 
 	if len(uniqueUsernames) == 0 {
 		return &v1pb.BatchGetUsersResponse{Users: []*v1pb.User{}}, nil
@@ -248,6 +251,30 @@ func (s *APIV1Service) CreateUser(ctx context.Context, request *v1pb.CreateUserR
 			}
 			if instanceGeneralSetting.DisallowPasswordAuth {
 				return nil, status.Errorf(codes.PermissionDenied, "password signup is not allowed")
+			}
+		}
+	}
+
+	// Self-service registration is bounded per address, may require a challenge,
+	// and may be vetoed by the deployment's signup policy. Admin creation and
+	// first-user setup are not.
+	if currentUser == nil || currentUser.Role != store.RoleAdmin {
+		clientIP := clientip.FromContext(ctx)
+		scope := ratelimit.ScopeSignupIP
+		if request.ValidateOnly {
+			scope = ratelimit.ScopeValidateIP
+		}
+		if err := s.throttleAndCharge(scope, clientIP, 1); err != nil {
+			return nil, err
+		}
+		if !request.ValidateOnly {
+			if err := s.requireChallenge(ctx, ratelimit.ScopeSignupIP); err != nil {
+				return nil, err
+			}
+			if s.SignupPolicy != nil {
+				if err := s.SignupPolicy.AllowSignup(ctx, email, clientIP); err != nil {
+					return nil, status.Error(codes.PermissionDenied, err.Error())
+				}
 			}
 		}
 	}

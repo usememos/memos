@@ -8,6 +8,8 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	"github.com/usememos/memos/internal/clientip"
+	"github.com/usememos/memos/internal/ratelimit"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	"github.com/usememos/memos/store"
 )
@@ -51,8 +53,23 @@ func (s *APIV1Service) GetCurrentUser(ctx context.Context, _ *v1pb.GetCurrentUse
 func (s *APIV1Service) SignIn(ctx context.Context, request *v1pb.SignInRequest) (*v1pb.SignInResponse, error) {
 	var existingUser *store.User
 
+	// Rate limits run before any lookup or hashing so a flood costs nothing.
+	// Only failures are counted, after the credential check below.
+	clientIP := clientip.FromContext(ctx)
+	if err := s.throttle(ratelimit.ScopeSignInIP, clientIP, 1); err != nil {
+		return nil, err
+	}
+
 	// Authentication Method 1: Password-based authentication
 	if passwordCredentials := request.GetPasswordCredentials(); passwordCredentials != nil {
+		// Keyed on the submitted name whether or not it exists, so the limit
+		// cannot be used to learn which accounts are real.
+		if err := s.throttle(ratelimit.ScopeSignInAccount, passwordCredentials.Username, 1); err != nil {
+			return nil, err
+		}
+		if err := s.requireChallenge(ctx, ratelimit.ScopeSignInIP); err != nil {
+			return nil, err
+		}
 		user, err := s.Store.GetUser(ctx, &store.FindUser{
 			Username: &passwordCredentials.Username,
 		})
@@ -60,10 +77,12 @@ func (s *APIV1Service) SignIn(ctx context.Context, request *v1pb.SignInRequest) 
 			return nil, status.Errorf(codes.Internal, "failed to get user, error: %v", err)
 		}
 		if user == nil {
+			s.recordSignInFailure(clientIP, passwordCredentials.Username)
 			return nil, status.Errorf(codes.InvalidArgument, unmatchedUsernameAndPasswordError)
 		}
 		// Compare the stored hashed password, with the hashed version of the password that was received.
 		if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(passwordCredentials.Password)); err != nil {
+			s.recordSignInFailure(clientIP, passwordCredentials.Username)
 			return nil, status.Errorf(codes.InvalidArgument, unmatchedUsernameAndPasswordError)
 		}
 		instanceGeneralSetting, err := s.Store.GetInstanceGeneralSetting(ctx)
@@ -79,6 +98,7 @@ func (s *APIV1Service) SignIn(ctx context.Context, request *v1pb.SignInRequest) 
 		// Authentication Method 2: SSO (OAuth2) authentication
 		identityProvider, userInfo, err := s.resolveSSOIdentity(ctx, ssoCredentials.IdpName, ssoCredentials.Code, ssoCredentials.RedirectUri, ssoCredentials.CodeVerifier)
 		if err != nil {
+			s.recordSignInFailure(clientIP, "")
 			return nil, err
 		}
 		user, err := s.resolveSSOUser(ctx, nil, identityProvider, userInfo)

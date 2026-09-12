@@ -8,6 +8,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	"github.com/usememos/memos/internal/httpgetter"
+	"github.com/usememos/memos/internal/ratelimit"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 )
 
@@ -17,7 +18,17 @@ type linkMetadataFetcher interface {
 
 // GetLinkMetadata gets metadata for a link.
 func (s *APIV1Service) GetLinkMetadata(ctx context.Context, request *v1pb.GetLinkMetadataRequest) (*v1pb.LinkMetadata, error) {
+	if err := s.throttleLinkMetadata(ctx, 1); err != nil {
+		return nil, err
+	}
 	return s.buildLinkMetadata(ctx, request.GetUrl())
+}
+
+// throttleLinkMetadata bounds outbound fetches per caller. Cached results
+// still cost, since the point is to bound how often a caller can ask.
+func (s *APIV1Service) throttleLinkMetadata(ctx context.Context, urls int) error {
+	_, key := callerBudget(ctx)
+	return s.throttleAndCharge(ratelimit.ScopeLinkMetadata, key, urls)
 }
 
 // BatchGetLinkMetadata gets metadata for links.
@@ -28,6 +39,10 @@ func (s *APIV1Service) BatchGetLinkMetadata(ctx context.Context, request *v1pb.B
 	if len(request.Urls) > maxBatchGetLinkMetadata {
 		return nil, status.Errorf(codes.InvalidArgument, "too many urls (max %d)", maxBatchGetLinkMetadata)
 	}
+	if err := s.throttleLinkMetadata(ctx, len(request.Urls)); err != nil {
+		return nil, err
+	}
+	s.chargeBatch(ctx, len(request.Urls))
 
 	linkMetadata := make([]*v1pb.LinkMetadata, 0, len(request.Urls))
 	for _, url := range request.Urls {

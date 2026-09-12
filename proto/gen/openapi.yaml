@@ -3394,7 +3394,22 @@ components:
                     type: string
                     description: Access mode controls whether unauthenticated users may access instance content.
                     format: enum
+                challenge:
+                    $ref: '#/components/schemas/InstanceProfile_Challenge'
             description: Instance profile message containing basic instance information.
+        InstanceProfile_Challenge:
+            type: object
+            properties:
+                provider:
+                    type: string
+                    description: The challenge provider, which selects the widget the web app renders.
+                siteKey:
+                    type: string
+                    description: The provider's public site key for the widget.
+            description: |-
+                A proof-of-humanity challenge the deployment requires on signup and
+                 password sign-in. Absent when none is configured, which is the case on
+                 every self-hosted instance.
         InstanceSetting:
             type: object
             properties:

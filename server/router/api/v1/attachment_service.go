@@ -18,6 +18,7 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/usememos/memos/internal/motionphoto"
+	"github.com/usememos/memos/internal/ratelimit"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
@@ -165,6 +166,9 @@ func (s *APIV1Service) prepareAttachment(ctx context.Context, request *v1pb.Crea
 func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.CreateAttachmentRequest) (*v1pb.Attachment, error) {
 	create, err := s.prepareAttachment(ctx, request)
 	if err != nil {
+		return nil, err
+	}
+	if err := s.throttleAndCharge(ratelimit.ScopeUploadUser, userKey(create.CreatorID), 1); err != nil {
 		return nil, err
 	}
 	instanceStorageSetting, err := s.Store.GetInstanceStorageSetting(ctx)

@@ -16,6 +16,7 @@ import (
 	audiollmgemini "github.com/usememos/memos/internal/ai/audiollm/gemini"
 	"github.com/usememos/memos/internal/ai/stt"
 	sttopenai "github.com/usememos/memos/internal/ai/stt/openai"
+	"github.com/usememos/memos/internal/ratelimit"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
@@ -52,6 +53,9 @@ func (s *APIV1Service) Transcribe(ctx context.Context, request *v1pb.TranscribeR
 	}
 	if user == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
+	if err := s.throttleAndCharge(ratelimit.ScopeTranscribeUser, userKey(user.ID), 1); err != nil {
+		return nil, err
 	}
 
 	if request.Audio == nil {

@@ -55,6 +55,9 @@ func (*MetadataInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc 
 		if cookie := header.Get("Cookie"); cookie != "" {
 			md.Set("cookie", cookie)
 		}
+		if token := header.Get(challengeTokenHeader); token != "" {
+			md.Set(challengeTokenMetadataKey, token)
+		}
 
 		// Set metadata in context so services can use metadata.FromIncomingContext()
 		ctx = metadata.NewIncomingContext(ctx, md)
@@ -220,6 +223,9 @@ func (in *AuthInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc {
 		result := in.authorizer.Authenticate(ctx, authHeader)
 		if err := in.authorizer.CheckAccess(ctx, req.Spec().Procedure, result); err != nil {
 			return nil, newAuthorizationConnectError(err)
+		}
+		if err := in.authorizer.Throttle(ctx, req.Spec().Procedure, result); err != nil {
+			return nil, convertGRPCError(err)
 		}
 
 		ctx = auth.ApplyToContext(ctx, result)
