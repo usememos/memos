@@ -17,6 +17,25 @@ import (
 	"github.com/usememos/memos/store"
 )
 
+func TestSSOSignInUsesMappedUsername(t *testing.T) {
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	ctx := context.Background()
+	mockIDP := newMockOAuthServer(t, "mapped-username-code", "mapped-username-token", map[string]any{
+		"sub":                "stable-subject",
+		"preferred_username": "alice",
+	})
+	defer mockIDP.Close()
+
+	idpName := createTestingOAuthIdentityProviderWithUsername(ctx, t, ts, mockIDP.URL, "mapped-username", "preferred_username")
+	response, err := signInWithTestingSSO(ctx, ts, idpName, "mapped-username-code")
+	require.NoError(t, err)
+	require.Equal(t, "alice", response.User.Username)
+
+	assertSingleSSOLink(ctx, t, ts, "mapped-username", "stable-subject", response.User.Username)
+}
+
 func TestSSOSignInUsesValidIdentifierAsUsername(t *testing.T) {
 	tests := []struct {
 		name       string
