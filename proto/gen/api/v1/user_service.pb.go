@@ -295,7 +295,9 @@ type User struct {
 	Role User_Role `protobuf:"varint,2,opt,name=role,proto3,enum=memos.api.v1.User_Role" json:"role,omitempty"`
 	// Required. The unique username for login.
 	Username string `protobuf:"bytes,3,opt,name=username,proto3" json:"username,omitempty"`
-	// Optional. The email address of the user.
+	// Optional. The email address of the user. Stored trimmed and lowercased;
+	// empty means no address. An address belongs to at most one user on the
+	// instance, so writes that would reuse one fail with ALREADY_EXISTS.
 	Email string `protobuf:"bytes,4,opt,name=email,proto3" json:"email,omitempty"`
 	// Optional. The display name of the user.
 	DisplayName string `protobuf:"bytes,5,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`

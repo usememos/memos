@@ -2,8 +2,8 @@ package v1
 
 import (
 	"context"
+	"log/slog"
 	"regexp"
-	"strings"
 
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
@@ -58,11 +58,48 @@ func (s *APIV1Service) resolveSSOUser(ctx context.Context, currentUser *store.Us
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to generate password hash, error: %v", err)
 	}
-	user, err = s.createSSOUser(ctx, userInfo, string(passwordHash), provider, externUID)
+	email := s.resolveSSOEmail(ctx, userInfo.Email, provider, externUID)
+	user, err = s.createSSOUser(ctx, userInfo, email, string(passwordHash), provider, externUID)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create user, error: %v", err)
 	}
 	return user, nil
+}
+
+// resolveSSOEmail decides which address a newly provisioned SSO user gets. A
+// malformed address, or one another account already holds, yields no address
+// at all: an identity provider's claim is not proof of ownership on this
+// instance, so the new account is never linked to the existing holder. The
+// database index remains the guarantee; a concurrent claim between this check
+// and the insert is handled by createSSOUser.
+func (s *APIV1Service) resolveSSOEmail(ctx context.Context, rawEmail, provider, externUID string) string {
+	email, err := util.NormalizeEmail(rawEmail)
+	if err != nil {
+		slog.Warn("ignoring malformed email from identity provider",
+			slog.String("provider", provider),
+			slog.String("externUID", externUID),
+			slog.String("error", err.Error()))
+		return ""
+	}
+	if email == "" {
+		return ""
+	}
+	holder, err := s.Store.GetUser(ctx, &store.FindUser{Email: &email})
+	if err != nil {
+		slog.Warn("unable to check identity provider email; provisioning without one",
+			slog.String("provider", provider),
+			slog.String("externUID", externUID),
+			slog.String("error", err.Error()))
+		return ""
+	}
+	if holder != nil {
+		slog.Warn("identity provider email already belongs to another account; provisioning without one",
+			slog.String("provider", provider),
+			slog.String("externUID", externUID),
+			slog.String("holder", holder.Username))
+		return ""
+	}
+	return email
 }
 
 // createSSOUser prefers the mapped external identifier as the initial local
@@ -78,35 +115,51 @@ func (s *APIV1Service) resolveSSOUser(ctx context.Context, currentUser *store.Us
 func (s *APIV1Service) createSSOUser(
 	ctx context.Context,
 	userInfo *idp.IdentityProviderUserInfo,
+	email string,
 	passwordHash string,
 	provider string,
 	externUID string,
 ) (*store.User, error) {
 	tryUsername := func(username string) (*store.User, error) {
-		user, err := s.Store.CreateUserWithIdentity(ctx, &store.User{
-			Username:     username,
-			Role:         store.RoleUser,
-			Nickname:     userInfo.DisplayName,
-			Email:        userInfo.Email,
-			AvatarURL:    userInfo.AvatarURL,
-			PasswordHash: passwordHash,
-		}, &store.UserIdentity{
-			Provider:  provider,
-			ExternUID: externUID,
-		})
+		create := func(email string) (*store.User, error) {
+			return s.Store.CreateUserWithIdentity(ctx, &store.User{
+				Username:     username,
+				Role:         store.RoleUser,
+				Nickname:     userInfo.DisplayName,
+				Email:        email,
+				AvatarURL:    userInfo.AvatarURL,
+				PasswordHash: passwordHash,
+			}, &store.UserIdentity{
+				Provider:  provider,
+				ExternUID: externUID,
+			})
+		}
+		user, err := create(email)
+		if errors.Is(err, store.ErrEmailTaken) {
+			// Another account claimed the address between the pre-check and the
+			// insert. The address is dropped, never the account.
+			slog.Warn("identity provider email was claimed concurrently; provisioning without one",
+				slog.String("provider", provider),
+				slog.String("externUID", externUID))
+			email = ""
+			user, err = create(email)
+		}
 		if err == nil {
 			return user, nil
 		}
-		if !isUniqueConstraintViolation(err) {
+		switch {
+		case errors.Is(err, store.ErrUserIdentityTaken):
+			// A concurrent first login won; reconcile to its user. Supported
+			// databases only report the competing unique-key violation after the
+			// winner commits, so its identity linkage is visible to this read.
+			return s.getLinkedSSOUser(ctx, provider, externUID)
+		case errors.Is(err, store.ErrUsernameTaken):
+			// The username is in use by another account; signal a retry with a
+			// fresh username.
+			return nil, nil
+		default:
 			return nil, err
 		}
-
-		// A unique violation is either the (provider, extern_uid) linkage (a
-		// concurrent first login won — reconcile to its user) or the username (in
-		// use by another account — signal a retry with a fresh username). Supported
-		// databases only report the competing unique-key violation after the winner
-		// commits, so its identity linkage is visible to this follow-up read.
-		return s.getLinkedSSOUser(ctx, provider, externUID)
 	}
 
 	// Adopt any valid external identifier. Invalid names fall back to an opaque UUID.
@@ -224,7 +277,7 @@ func (s *APIV1Service) bindSSOIdentityToUser(ctx context.Context, currentUser *s
 		Provider:  provider,
 		ExternUID: externUID,
 	}); err != nil {
-		if isUniqueConstraintViolation(err) {
+		if errors.Is(err, store.ErrUserIdentityTaken) {
 			winner, getErr := s.getLinkedSSOUser(ctx, provider, externUID)
 			if getErr != nil {
 				return nil, getErr
@@ -255,22 +308,6 @@ func (s *APIV1Service) bindSSOIdentityToUser(ctx context.Context, currentUser *s
 		return nil, status.Errorf(codes.Internal, "failed to create user identity, error: %v", err)
 	}
 	return currentUser, nil
-}
-
-// isUniqueConstraintViolation matches the driver-specific error messages that each
-// supported backend emits when any UNIQUE constraint rejects an insert. Callers
-// disambiguate which constraint was hit from the insertion context (e.g. inserting
-// a user_identity row can only violate UNIQUE(provider, extern_uid); inserting a
-// user row can only violate UNIQUE(username)). Matches the pattern used in
-// memo_service.go for the memo UID unique check.
-func isUniqueConstraintViolation(err error) bool {
-	if err == nil {
-		return false
-	}
-	msg := err.Error()
-	return strings.Contains(msg, "UNIQUE constraint failed") ||
-		strings.Contains(msg, "duplicate key") ||
-		strings.Contains(msg, "Duplicate entry")
 }
 
 // doSignIn performs the actual sign-in operation by creating a session and setting the cookie.

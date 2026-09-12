@@ -619,6 +619,7 @@
       "danger-area-description": "Geri qaytarıla bilməyən hesab əməliyyatları buradadır. Davam etməzdən əvvəl onları diqqətlə nəzərdən keçirin.",
       "delete-account": "Hesabı sil",
       "delete-account-description": "Bu hesabı və onunla bağlı bütün girişləri bu instansdan həmişəlik çıxarın. Bu əməliyyat geri qaytarıla bilməz.",
+      "email-in-use": "Bu e-poçt artıq başqa bir hesab tərəfindən istifadə olunur.",
       "email-note": "İstəyə bağlı",
       "export-memos": "Qeydləri ixrac et",
       "nickname-note": "Bannerdə göstərilir",

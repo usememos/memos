@@ -14,12 +14,14 @@ CREATE TABLE user (
   row_status TEXT NOT NULL CHECK (row_status IN ('NORMAL', 'ARCHIVED')) DEFAULT 'NORMAL',
   username TEXT COLLATE BINARY NOT NULL UNIQUE,
   role TEXT NOT NULL DEFAULT 'USER',
-  email TEXT NOT NULL DEFAULT '',
+  email TEXT COLLATE BINARY DEFAULT NULL,
   nickname TEXT NOT NULL DEFAULT '',
   password_hash TEXT NOT NULL,
   avatar_url TEXT NOT NULL DEFAULT '',
   description TEXT NOT NULL DEFAULT ''
 );
+
+CREATE UNIQUE INDEX idx_user_email ON user(email);
 
 -- user_setting
 CREATE TABLE user_setting (

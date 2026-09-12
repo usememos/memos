@@ -16,6 +16,7 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 
+	"github.com/usememos/memos/internal/util"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	"github.com/usememos/memos/store"
 )
@@ -195,6 +196,10 @@ func (s *APIV1Service) CreateUser(ctx context.Context, request *v1pb.CreateUserR
 	if err := validatePassword(request.User.Password); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
+	email, err := util.NormalizeEmail(request.User.Email)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
 
 	roleToAssign := store.RoleUser
 	if currentUser != nil && currentUser.Role == store.RoleAdmin {
@@ -218,12 +223,12 @@ func (s *APIV1Service) CreateUser(ctx context.Context, request *v1pb.CreateUserR
 				user, created, err := s.Store.CreateUserIfNoUsers(ctx, &store.User{
 					Username:     request.User.Username,
 					Role:         store.RoleAdmin,
-					Email:        request.User.Email,
+					Email:        email,
 					Nickname:     request.User.DisplayName,
 					PasswordHash: string(passwordHash),
 				})
 				if err != nil {
-					return nil, status.Errorf(codes.Internal, "failed to create first user: %v", err)
+					return nil, convertUserWriteError(err, "failed to create first user")
 				}
 				if created {
 					return convertUserFromStore(user, user), nil
@@ -249,10 +254,21 @@ func (s *APIV1Service) CreateUser(ctx context.Context, request *v1pb.CreateUserR
 
 	// If validate_only is true, just validate without creating
 	if request.ValidateOnly {
-		// Perform validation checks without actually creating the user
+		// Perform validation checks without actually creating the user. The
+		// unique index is the guarantee on the real write; this lookup only
+		// gives the caller the same answer ahead of time.
+		if email != "" {
+			holder, err := s.Store.GetUser(ctx, &store.FindUser{Email: &email})
+			if err != nil {
+				return nil, status.Errorf(codes.Internal, "failed to check email: %v", err)
+			}
+			if holder != nil {
+				return nil, status.Error(codes.AlreadyExists, emailTakenMessage)
+			}
+		}
 		return &v1pb.User{
 			Username:    request.User.Username,
-			Email:       request.User.Email,
+			Email:       email,
 			DisplayName: request.User.DisplayName,
 			Role:        convertUserRoleFromStore(roleToAssign),
 		}, nil
@@ -266,12 +282,12 @@ func (s *APIV1Service) CreateUser(ctx context.Context, request *v1pb.CreateUserR
 	user, err := s.Store.CreateUser(ctx, &store.User{
 		Username:     request.User.Username,
 		Role:         roleToAssign,
-		Email:        request.User.Email,
+		Email:        email,
 		Nickname:     request.User.DisplayName,
 		PasswordHash: string(passwordHash),
 	})
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to create user: %v", err)
+		return nil, convertUserWriteError(err, "failed to create user")
 	}
 
 	return convertUserFromStore(user, user), nil
@@ -333,7 +349,11 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 			}
 			update.Nickname = &request.User.DisplayName
 		case "email":
-			update.Email = &request.User.Email
+			email, err := util.NormalizeEmail(request.User.Email)
+			if err != nil {
+				return nil, status.Errorf(codes.InvalidArgument, "%v", err)
+			}
+			update.Email = &email
 		case "avatar_url":
 			// Validate avatar MIME type to prevent XSS during upload
 			if request.User.AvatarUrl != "" {
@@ -389,7 +409,7 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 		if stderrors.Is(err, store.ErrLastSpaceAdmin) {
 			return nil, status.Error(codes.FailedPrecondition, "an active space must retain an active administrator")
 		}
-		return nil, status.Errorf(codes.Internal, "failed to update user: %v", err)
+		return nil, convertUserWriteError(err, "failed to update user")
 	}
 
 	return convertUserFromStore(updatedUser, currentUser), nil
@@ -435,6 +455,21 @@ func (s *APIV1Service) DeleteUser(ctx context.Context, request *v1pb.DeleteUserR
 	}
 
 	return &emptypb.Empty{}, nil
+}
+
+const emailTakenMessage = "email is already in use"
+
+// convertUserWriteError maps the store's uniqueness sentinels onto
+// AlreadyExists and everything else onto Internal with the given context.
+func convertUserWriteError(err error, context string) error {
+	switch {
+	case stderrors.Is(err, store.ErrEmailTaken):
+		return status.Error(codes.AlreadyExists, emailTakenMessage)
+	case stderrors.Is(err, store.ErrUsernameTaken):
+		return status.Error(codes.AlreadyExists, "username is already in use")
+	default:
+		return status.Errorf(codes.Internal, "%s: %v", context, err)
+	}
 }
 
 func getDefaultUserGeneralSetting() *v1pb.UserSetting_GeneralSetting {

@@ -30,17 +30,35 @@ type DeleteUserIdentity struct {
 }
 
 // CreateUserIdentity creates a new external-identity linkage record.
-// Returns the driver error on unique-constraint violation; callers are responsible
-// for reconciling concurrent first-login races on (Provider, ExternUID).
+// A unique-constraint violation is returned as ErrUserIdentityTaken; callers
+// are responsible for reconciling concurrent first-login races on
+// (Provider, ExternUID).
 func (s *Store) CreateUserIdentity(ctx context.Context, create *UserIdentity) (*UserIdentity, error) {
-	return s.driver.CreateUserIdentity(ctx, create)
+	identity, err := s.driver.CreateUserIdentity(ctx, create)
+	if err != nil {
+		if uniqueErr := classifyUserUniqueViolation(err); uniqueErr != nil {
+			return nil, uniqueErr
+		}
+		return nil, err
+	}
+	return identity, nil
 }
 
 // CreateUserWithIdentity atomically creates a local user and its external identity
-// linkage, returning the created user.
+// linkage, returning the created user. Unique-constraint violations are returned
+// as ErrUsernameTaken, ErrEmailTaken, or ErrUserIdentityTaken so the caller can
+// tell which conflict it hit.
 func (s *Store) CreateUserWithIdentity(ctx context.Context, createUser *User, createIdentity *UserIdentity) (*User, error) {
+	email, err := normalizeUserEmail(createUser.Email)
+	if err != nil {
+		return nil, err
+	}
+	createUser.Email = email
 	user, err := s.driver.CreateUserWithIdentity(ctx, createUser, createIdentity)
 	if err != nil {
+		if uniqueErr := classifyUserUniqueViolation(err); uniqueErr != nil {
+			return nil, uniqueErr
+		}
 		return nil, err
 	}
 	s.userCache.Set(ctx, userCacheKey(user.ID), user)

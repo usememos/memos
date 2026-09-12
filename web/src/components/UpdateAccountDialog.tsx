@@ -1,3 +1,4 @@
+import { Code } from "@connectrpc/connect";
 import { isEqual } from "lodash-es";
 import { XIcon } from "lucide-react";
 import { useState } from "react";
@@ -12,7 +13,7 @@ import { useInstance } from "@/contexts/InstanceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useUpdateUser } from "@/hooks/useUserQueries";
 import { convertFileToBase64 } from "@/lib/browser";
-import { handleError } from "@/lib/error";
+import { handleError, hasConnectCode } from "@/lib/error";
 import { useTranslate } from "@/utils/i18n";
 import UserAvatar from "./UserAvatar";
 
@@ -43,6 +44,7 @@ function UpdateAccountDialog({ open, onOpenChange, onSuccess }: Props) {
     email: currentUser?.email ?? "",
     description: currentUser?.description ?? "",
   });
+  const [emailError, setEmailError] = useState<string | undefined>();
 
   const handleCloseBtnClick = () => {
     onOpenChange(false);
@@ -90,6 +92,7 @@ function UpdateAccountDialog({ open, onOpenChange, onSuccess }: Props) {
   };
 
   const handleEmailChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmailError(undefined);
     setState((state) => {
       return {
         ...state,
@@ -146,6 +149,10 @@ function UpdateAccountDialog({ open, onOpenChange, onSuccess }: Props) {
       onSuccess?.();
       onOpenChange(false);
     } catch (error: unknown) {
+      if (hasConnectCode(error, Code.AlreadyExists) && error.rawMessage.includes("email")) {
+        setEmailError(t("setting.account.email-in-use"));
+        return;
+      }
       await handleError(error, toast.error, {
         context: "Update account",
       });
@@ -205,7 +212,8 @@ function UpdateAccountDialog({ open, onOpenChange, onSuccess }: Props) {
               {t("common.email")}
               <span className="text-sm text-muted-foreground ml-1">({t("setting.account.email-note")})</span>
             </Label>
-            <Input id="email" type="email" value={state.email} onChange={handleEmailChanged} />
+            <Input id="email" type="email" value={state.email} onChange={handleEmailChanged} aria-invalid={emailError ? true : undefined} />
+            {emailError && <p className="text-sm text-destructive">{emailError}</p>}
           </div>
           <div className="grid gap-2">
             <Label htmlFor="description">{t("common.description")}</Label>
