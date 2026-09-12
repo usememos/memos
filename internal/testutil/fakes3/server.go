@@ -2,6 +2,7 @@
 package fakes3
 
 import (
+	"bytes"
 	"io"
 	"net/http/httptest"
 	"testing"
@@ -48,6 +49,13 @@ func (s *Server) Config(bucket string) *storepb.StorageS3Config {
 		Bucket:          bucket,
 		UsePathStyle:    true,
 	}
+}
+
+// PutObject writes an object directly into the in-memory store, bypassing
+// the HTTP API, for arranging state that predates the code under test.
+func (s *Server) PutObject(bucket, key, contentType string, content []byte) error {
+	_, err := s.memory.PutObject(bucket, key, map[string]string{"Content-Type": contentType}, bytes.NewReader(content), int64(len(content)), nil)
+	return err
 }
 
 // GetObject reads an object directly from the in-memory store.

@@ -2,6 +2,7 @@ package sqlite
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"strings"
 
@@ -39,7 +40,7 @@ func (d *DB) UpdateUser(ctx context.Context, update *store.UpdateUser) (*store.U
 		set, args = append(set, "username = ?"), append(args, *v)
 	}
 	if v := update.Email; v != nil {
-		set, args = append(set, "email = ?"), append(args, *v)
+		set, args = append(set, "email = ?"), append(args, nullableEmail(*v))
 	}
 	if v := update.Nickname; v != nil {
 		set, args = append(set, "nickname = ?"), append(args, *v)
@@ -65,11 +66,12 @@ func (d *DB) UpdateUser(ctx context.Context, update *store.UpdateUser) (*store.U
 		RETURNING id, username, role, email, nickname, password_hash, avatar_url, description, created_ts, updated_ts, row_status
 	`
 	user := &store.User{}
+	var email sql.NullString
 	if err := tx.QueryRowContext(ctx, query, args...).Scan(
 		&user.ID,
 		&user.Username,
 		&user.Role,
-		&user.Email,
+		&email,
 		&user.Nickname,
 		&user.PasswordHash,
 		&user.AvatarURL,
@@ -80,6 +82,7 @@ func (d *DB) UpdateUser(ctx context.Context, update *store.UpdateUser) (*store.U
 	); err != nil {
 		return nil, err
 	}
+	user.Email = email.String
 	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
@@ -206,11 +209,12 @@ func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User
 	list := make([]*store.User, 0)
 	for rows.Next() {
 		var user store.User
+		var email sql.NullString
 		if err := rows.Scan(
 			&user.ID,
 			&user.Username,
 			&user.Role,
-			&user.Email,
+			&email,
 			&user.Nickname,
 			&user.PasswordHash,
 			&user.AvatarURL,
@@ -221,6 +225,7 @@ func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User
 		); err != nil {
 			return nil, err
 		}
+		user.Email = email.String
 		list = append(list, &user)
 	}
 
@@ -229,4 +234,14 @@ func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User
 	}
 
 	return list, nil
+}
+
+// nullableEmail maps the store's "no address" value to SQL NULL. The email
+// column is nullable so the unique index ignores users without an address;
+// an empty string must never reach the table.
+func nullableEmail(email string) any {
+	if email == "" {
+		return nil
+	}
+	return email
 }

@@ -122,6 +122,7 @@ func (s *Store) Migrate(ctx context.Context) error {
 	}
 	// Apply migrations if needed.
 	if isVersionEmpty(instanceBasicSetting.SchemaVersion) || version.IsVersionGreaterThan(currentSchemaVersion, instanceBasicSetting.SchemaVersion) {
+		s.prepareUniqueEmailMigration(ctx, instanceBasicSetting.SchemaVersion, currentSchemaVersion)
 		if err := s.applyMigrations(ctx, instanceBasicSetting.SchemaVersion, currentSchemaVersion); err != nil {
 			return errors.Wrap(err, "failed to apply migrations")
 		}

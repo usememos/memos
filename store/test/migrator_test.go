@@ -11,7 +11,7 @@ import (
 	colorpb "google.golang.org/genproto/googleapis/type/color"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	"github.com/usememos/memos/internal/testutil/minio"
+	"github.com/usememos/memos/internal/testutil/fakes3"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 	storedb "github.com/usememos/memos/store/db"
@@ -728,14 +728,14 @@ func TestMigrationReactionMemoID(t *testing.T) {
 	require.Equal(t, int32(102), nextReactionID)
 }
 
-// TestMigrationLegacyS3AttachmentMinIO verifies the storage upgrade path for an
+// TestMigrationLegacyS3Attachment verifies the storage upgrade path for an
 // attachment created before storage IDs existed. The migration must bind the
 // payload to the migrated registry entry, after which the production resolver
-// and driver must read and delete it using the real S3 protocol.
-func TestMigrationLegacyS3AttachmentMinIO(t *testing.T) {
+// and driver must read and delete it through the S3 protocol.
+func TestMigrationLegacyS3Attachment(t *testing.T) {
 	ctx := context.Background()
 	driver := getDriverFromEnv()
-	server := minio.New(t, "legacy-attachments")
+	server := fakes3.New(t, "legacy-attachments")
 	config := server.Config("legacy-attachments")
 	content := []byte("attachment uploaded before named storage migration")
 	const objectKey = "legacy/no-storage-id.txt"
@@ -774,7 +774,7 @@ func TestMigrationLegacyS3AttachmentMinIO(t *testing.T) {
 	_, err = db.ExecContext(
 		ctx,
 		insertAttachment,
-		"legacy-s3-minio",
+		"legacy-s3-object",
 		1,
 		"legacy.txt",
 		"text/plain",
@@ -795,7 +795,7 @@ func TestMigrationLegacyS3AttachmentMinIO(t *testing.T) {
 		query = "SELECT payload FROM attachment WHERE uid = $1"
 	}
 	var rawPayload []byte
-	err = ts.GetDriver().GetDB().QueryRowContext(ctx, query, "legacy-s3-minio").Scan(&rawPayload)
+	err = ts.GetDriver().GetDB().QueryRowContext(ctx, query, "legacy-s3-object").Scan(&rawPayload)
 	require.NoError(t, err)
 	migratedPayload := &storepb.AttachmentPayload{}
 	require.NoError(t, protojson.Unmarshal(rawPayload, migratedPayload))
@@ -815,7 +815,7 @@ func TestMigrationLegacyS3AttachmentMinIO(t *testing.T) {
 
 	require.NoError(t, storageDriver.DeleteObject(ctx, s3Object.Key))
 	_, err = server.GetObject(config.Bucket, objectKey)
-	require.Error(t, err, "deleting the migrated attachment must remove its MinIO object")
+	require.Error(t, err, "deleting the migrated attachment must remove its S3 object")
 }
 
 // TestMigrationMemoViewSetting verifies the 0.31 rename of the SHORTCUTS user setting

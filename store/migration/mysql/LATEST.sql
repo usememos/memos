@@ -13,12 +13,14 @@ CREATE TABLE `user` (
   `row_status` VARCHAR(256) NOT NULL DEFAULT 'NORMAL',
   `username` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL UNIQUE,
   `role` VARCHAR(256) NOT NULL DEFAULT 'USER',
-  `email` VARCHAR(256) NOT NULL DEFAULT '',
+  `email` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
   `nickname` VARCHAR(256) NOT NULL DEFAULT '',
   `password_hash` VARCHAR(256) NOT NULL,
   `avatar_url` LONGTEXT NOT NULL,
   `description` VARCHAR(256) NOT NULL DEFAULT ''
 );
+
+CREATE UNIQUE INDEX `idx_user_email` ON `user` (`email`);
 
 -- user_setting
 CREATE TABLE `user_setting` (

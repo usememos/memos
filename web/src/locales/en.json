@@ -619,6 +619,7 @@
       "danger-area-description": "Irreversible account actions live here. Review them carefully before continuing.",
       "delete-account": "Delete account",
       "delete-account-description": "Permanently remove this account and all associated access from this instance. This action cannot be undone.",
+      "email-in-use": "This email is already used by another account.",
       "email-note": "Optional",
       "export-memos": "Export Memos",
       "nickname-note": "Displayed in the banner",

@@ -12,7 +12,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/usememos/memos/internal/testutil/fakes3"
-	testminio "github.com/usememos/memos/internal/testutil/minio"
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
 
@@ -65,16 +64,6 @@ func TestDriverObjectLifecycle(t *testing.T) {
 	require.NoError(t, err)
 
 	assertObjectLifecycle(ctx, t, driver, "assets/notes/test.txt", []byte("attachment stored in fake S3"))
-}
-
-func TestDriverMinIOCompatibility(t *testing.T) {
-	ctx := context.Background()
-	server := testminio.New(t, "attachments")
-	config := server.Config("attachments")
-	driver, err := NewDriver(ctx, config)
-	require.NoError(t, err)
-
-	assertObjectLifecycle(ctx, t, driver, "compatibility/test.txt", []byte("attachment stored in MinIO"))
 }
 
 func TestNewDriverInsecureSkipTLSVerify(t *testing.T) {

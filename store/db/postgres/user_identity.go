@@ -23,7 +23,7 @@ func insertUser(ctx context.Context, q rowQuerier, create *store.User) error {
 		stmt,
 		create.Username,
 		create.Role,
-		create.Email,
+		nullableEmail(create.Email),
 		create.Nickname,
 		create.PasswordHash,
 		create.AvatarURL,

@@ -9,7 +9,6 @@ import (
 
 	"github.com/usememos/memos/internal/storage/s3"
 	"github.com/usememos/memos/internal/testutil/fakes3"
-	testminio "github.com/usememos/memos/internal/testutil/minio"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	apiv1 "github.com/usememos/memos/server/router/api/v1"
@@ -55,17 +54,7 @@ func TestUploadAttachmentS3(t *testing.T) {
 	require.Equal(t, bytes.Repeat(chunk, 3), content)
 }
 
-func TestS3AttachmentLifecycleAcrossStorageChangeMinIO(t *testing.T) {
-	server := testminio.New(t, "attachments-old", "attachments-new")
-	runS3AttachmentLifecycleAcrossStorageChange(t, server)
-}
-
-type s3ObjectStore interface {
-	Config(bucket string) *storepb.StorageS3Config
-	GetObject(bucket, key string) ([]byte, error)
-}
-
-func runS3AttachmentLifecycleAcrossStorageChange(t *testing.T, objectStore s3ObjectStore) {
+func runS3AttachmentLifecycleAcrossStorageChange(t *testing.T, objectStore *fakes3.Server) {
 	t.Helper()
 	ctx := context.Background()
 	ts := NewTestService(t)

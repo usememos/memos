@@ -2,6 +2,7 @@ package test
 
 import (
 	"context"
+	"strings"
 	"testing"
 
 	"github.com/usememos/memos/internal/markdown"
@@ -91,7 +92,7 @@ func (ts *TestService) CreateHostUser(ctx context.Context, username string) (*st
 	return ts.Store.CreateUser(ctx, &store.User{
 		Username: username,
 		Role:     store.RoleAdmin,
-		Email:    username + "@example.com",
+		Email:    testEmailForUsername(username),
 	})
 }
 
@@ -100,8 +101,15 @@ func (ts *TestService) CreateRegularUser(ctx context.Context, username string) (
 	return ts.Store.CreateUser(ctx, &store.User{
 		Username: username,
 		Role:     store.RoleUser,
-		Email:    username + "@example.com",
+		Email:    testEmailForUsername(username),
 	})
+}
+
+// testEmailForUsername derives a distinct, valid address for a fixture user.
+// Legacy usernames may themselves look like addresses, so the '@' is folded
+// into the local part rather than producing an invalid two-'@' string.
+func testEmailForUsername(username string) string {
+	return strings.ReplaceAll(username, "@", "-at-") + "@example.com"
 }
 
 // InviteAndAcceptSpaceMember is a test fixture helper that exercises the invitation

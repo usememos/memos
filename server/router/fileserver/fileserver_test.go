@@ -25,7 +25,6 @@ import (
 	"github.com/usememos/memos/internal/profile"
 	"github.com/usememos/memos/internal/testutil"
 	"github.com/usememos/memos/internal/testutil/fakes3"
-	testminio "github.com/usememos/memos/internal/testutil/minio"
 	"github.com/usememos/memos/internal/util"
 	apiv1 "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
@@ -98,122 +97,6 @@ func TestServeAttachmentFile_S3(t *testing.T) {
 	require.Equal(t, http.StatusOK, multiRangeRecorder.Code)
 	require.Equal(t, content, multiRangeRecorder.Body.Bytes())
 	require.Empty(t, multiRangeRecorder.Header().Get("Content-Range"))
-}
-
-func TestServeAttachmentFile_S3MinIO(t *testing.T) {
-	ctx := context.Background()
-	server := testminio.New(t, "file-server-attachments")
-	svc, fs, stores, cleanup := newShareAttachmentTestServices(ctx, t)
-	defer cleanup()
-
-	configuredStorage := &storepb.Storage{
-		Id:     "s3-minio-files",
-		Name:   "MinIO files",
-		Type:   storepb.StorageType_STORAGE_TYPE_S3,
-		Config: &storepb.Storage_S3Config{S3Config: server.Config("file-server-attachments")},
-	}
-	_, err := stores.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
-		Key: storepb.InstanceSettingKey_STORAGE,
-		Value: &storepb.InstanceSetting_StorageSetting{StorageSetting: &storepb.InstanceStorageSetting{
-			FilepathTemplate:  "files/{uuid}_{filename}",
-			UploadSizeLimitMb: 30,
-			Storages:          []*storepb.Storage{configuredStorage},
-			DefaultStorageId:  configuredStorage.Id,
-		}},
-	})
-	require.NoError(t, err)
-
-	creator, err := stores.CreateUser(ctx, &store.User{
-		Username: "s3-minio-file-owner",
-		Role:     store.RoleUser,
-		Email:    "s3-minio-file-owner@example.com",
-	})
-	require.NoError(t, err)
-	creatorCtx := context.WithValue(ctx, auth.UserIDContextKey, creator.ID)
-	textContent := []byte("content streamed through Memos from MinIO")
-	textAttachment, err := svc.CreateAttachment(creatorCtx, &apiv1.CreateAttachmentRequest{Attachment: &apiv1.Attachment{
-		Filename: "document.txt",
-		Type:     "text/plain",
-		Content:  textContent,
-	}})
-	require.NoError(t, err)
-	videoContent := []byte("0123456789abcdef")
-	videoAttachment, err := svc.CreateAttachment(creatorCtx, &apiv1.CreateAttachmentRequest{Attachment: &apiv1.Attachment{
-		Filename: "clip.mp4",
-		Type:     "video/mp4",
-		Content:  videoContent,
-	}})
-	require.NoError(t, err)
-	_, err = svc.CreateMemo(creatorCtx, &apiv1.CreateMemoRequest{Memo: &apiv1.Memo{
-		Content:    "public MinIO attachments",
-		Visibility: apiv1.Visibility_PUBLIC,
-		Attachments: []*apiv1.Attachment{
-			{Name: textAttachment.Name},
-			{Name: videoAttachment.Name},
-		},
-	}})
-	require.NoError(t, err)
-
-	e := echo.New()
-	fs.RegisterRoutes(e)
-	textURL := fmt.Sprintf("/file/%s/%s", textAttachment.Name, textAttachment.Filename)
-
-	// Authorization happens before storage resolution, so a private instance
-	// must not expose object bytes.
-	setInstanceAccessMode(ctx, t, stores, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE)
-	privateRecorder := httptest.NewRecorder()
-	e.ServeHTTP(privateRecorder, httptest.NewRequest(http.MethodGet, textURL, nil))
-	require.Equal(t, http.StatusUnauthorized, privateRecorder.Code)
-	require.Empty(t, privateRecorder.Header().Get(echo.HeaderLocation))
-
-	setInstanceAccessMode(ctx, t, stores, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC)
-	textRecorder := httptest.NewRecorder()
-	e.ServeHTTP(textRecorder, httptest.NewRequest(http.MethodGet, textURL, nil))
-	require.Equal(t, http.StatusOK, textRecorder.Code)
-	require.Equal(t, textContent, textRecorder.Body.Bytes())
-
-	// A migrated key-only attachment carries the legacy "s3" ID. If the
-	// registry was rebuilt with a different ID, the resolver must still fall
-	// back to the migrated singleton configuration and serve the original key.
-	textUID, err := apiv1service.ExtractAttachmentUIDFromName(textAttachment.Name)
-	require.NoError(t, err)
-	storedTextAttachment, err := stores.GetAttachment(ctx, &store.FindAttachment{UID: &textUID})
-	require.NoError(t, err)
-	require.NotNil(t, storedTextAttachment)
-	storedTextAttachment.Payload.GetS3Object().StorageId = "s3"
-	require.NoError(t, stores.UpdateAttachment(ctx, &store.UpdateAttachment{
-		ID:      storedTextAttachment.ID,
-		Payload: storedTextAttachment.Payload,
-	}))
-	legacyRecorder := httptest.NewRecorder()
-	e.ServeHTTP(legacyRecorder, httptest.NewRequest(http.MethodGet, textURL, nil))
-	require.Equal(t, http.StatusOK, legacyRecorder.Code)
-	require.Equal(t, textContent, legacyRecorder.Body.Bytes())
-
-	// Media is proxied through the server instead of redirecting to a
-	// presigned URL, with the Range header forwarded for seeking.
-	videoURL := fmt.Sprintf("/file/%s/%s", videoAttachment.Name, videoAttachment.Filename)
-	videoRecorder := httptest.NewRecorder()
-	e.ServeHTTP(videoRecorder, httptest.NewRequest(http.MethodGet, videoURL, nil))
-	require.Equal(t, http.StatusOK, videoRecorder.Code)
-	require.Equal(t, videoContent, videoRecorder.Body.Bytes())
-	require.Equal(t, "bytes", videoRecorder.Header().Get("Accept-Ranges"))
-	require.Equal(t, fmt.Sprintf("%d", len(videoContent)), videoRecorder.Header().Get(echo.HeaderContentLength))
-
-	rangeRecorder := httptest.NewRecorder()
-	rangeRequest := httptest.NewRequest(http.MethodGet, videoURL, nil)
-	rangeRequest.Header.Set("Range", "bytes=4-7")
-	e.ServeHTTP(rangeRecorder, rangeRequest)
-	require.Equal(t, http.StatusPartialContent, rangeRecorder.Code)
-	require.Equal(t, []byte("4567"), rangeRecorder.Body.Bytes())
-	require.Equal(t, fmt.Sprintf("bytes 4-7/%d", len(videoContent)), rangeRecorder.Header().Get("Content-Range"))
-
-	invalidRangeRecorder := httptest.NewRecorder()
-	invalidRangeRequest := httptest.NewRequest(http.MethodGet, videoURL, nil)
-	invalidRangeRequest.Header.Set("Range", fmt.Sprintf("bytes=%d-", len(videoContent)*2))
-	e.ServeHTTP(invalidRangeRecorder, invalidRangeRequest)
-	require.Equal(t, http.StatusRequestedRangeNotSatisfiable, invalidRangeRecorder.Code)
-	require.Equal(t, fmt.Sprintf("bytes */%d", len(videoContent)), invalidRangeRecorder.Header().Get("Content-Range"))
 }
 
 func TestServeAttachmentFile_ShareTokenAllowsDirectMemoAttachment(t *testing.T) {

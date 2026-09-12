@@ -51,7 +51,9 @@ export type User = Message<"memos.api.v1.User"> & {
   username: string;
 
   /**
-   * Optional. The email address of the user.
+   * Optional. The email address of the user. Stored trimmed and lowercased;
+   * empty means no address. An address belongs to at most one user on the
+   * instance, so writes that would reuse one fail with ALREADY_EXISTS.
    *
    * @generated from field: string email = 4;
    */
