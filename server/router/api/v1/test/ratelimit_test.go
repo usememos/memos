@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"strconv"
+	"sync"
 	"testing"
 	"time"
 
@@ -109,6 +110,37 @@ func TestSignInRateLimits(t *testing.T) {
 		requireRateLimited(t, passwordSignIn(ctx, ts, "someone-else", "wrong"), ratelimit.ScopeSignInIP)
 		other := withClientIP(context.Background(), "203.0.113.11")
 		require.Equal(t, codes.InvalidArgument, status.Code(passwordSignIn(other, ts, "nobody", "wrong")))
+	})
+
+	t.Run("concurrent attempts cannot share one remaining unit", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+		ts.Service.RateLimiter = ratelimit.NewMemoryLimiter(limitedPolicy(ratelimit.ScopeSignInAccount, 2))
+		createPasswordUser(ctx, t, ts, "alice", "correct-password")
+
+		const racers = 16
+		results := make([]codes.Code, racers)
+		start := make(chan struct{})
+		var wg sync.WaitGroup
+		for i := range racers {
+			wg.Go(func() {
+				<-start
+				results[i] = status.Code(passwordSignIn(ctx, ts, "alice", "wrong"))
+			})
+		}
+		close(start)
+		wg.Wait()
+		guesses := 0
+		for _, code := range results {
+			switch code {
+			case codes.InvalidArgument:
+				guesses++
+			case codes.ResourceExhausted:
+			default:
+				t.Fatalf("unexpected code %v", code)
+			}
+		}
+		require.Equal(t, 2, guesses, "each attempt reserves its unit before the credential check")
 	})
 
 	t.Run("a nil limiter leaves sign-in unbounded", func(t *testing.T) {

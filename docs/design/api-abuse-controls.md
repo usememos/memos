@@ -83,13 +83,17 @@ The resolver runs once, in an Echo middleware ahead of every route, and stores t
 A new `internal/ratelimit` package provides a sliding-window counter:
 
 ```text
-Allowed(scope, key, cost) Decision{Allowed, Rule, Remaining, RetryAfter}
+Consume(scope, key, cost) Decision{Allowed, Rule, Remaining, RetryAfter}
+Refund(scope, key, cost)
+Allowed(scope, key, cost) Decision
 Hit(scope, key, cost)
 ```
 
-`Allowed` is a read that asks whether `cost` more units fit; `Hit` records them. Separating them lets sign-in count only failures: check before doing work, record after the failure. A token bucket cannot express "consume on failure" without a refund step, which is why the simpler counter is chosen.
+`Consume` admits and records in one critical section, so concurrent requests cannot all be admitted on the strength of the same remaining unit; it is what every-attempt-counts callers use. Sign-in counts only failures, but it still consumes up front and calls `Refund` once the credential is proven, so a burst of concurrent guesses cannot slip past the per-account limit while the first bcrypt is still running. A refused `Consume` charges nothing. `Allowed` and `Hit` remain for callers that need neither.
 
-State lives in memory, keyed by `scope + key`, with a capacity cap and eviction of expired windows first. When the cap is reached and nothing has expired, the limiter allows the request and logs a warning once per minute. Failing open is deliberate and has precedent in Google's own enforcement guidance: a limiter that fails closed under memory pressure is a self-inflicted outage, and the capacity cap only matters to an attacker who controls that many real source addresses, since forged addresses are no longer counted.
+The advertised delay is the first whole second at which a retry would be admitted, computed by inverting the estimate with the same integer truncation. It is not the window boundary, where the previous window still counts in full.
+
+State lives in memory, keyed by `scope + key`, with a capacity cap. At capacity, a new key inspects a bounded sample of entries and evicts the expired ones, so the work per request stays constant under the lock rather than scanning the whole table; a table that has been full for a while is mostly expired entries, so the sample frees room in practice. When the sample holds nothing expired, the limiter allows the request and logs a warning once per minute. Failing open is deliberate and has precedent in Google's own enforcement guidance: a limiter that fails closed under memory pressure is a self-inflicted outage, and the capacity cap only matters to an attacker who controls that many real source addresses, since forged addresses are no longer counted.
 
 A restart clears all state. That is acceptable for abuse control on one node.
 
@@ -126,7 +130,7 @@ The catch-all budgets are enforced once, in the shared authorizer, immediately a
 
 The specific scopes are enforced in the service methods, because they need request fields:
 
-- `SignIn`, before the user lookup and before bcrypt: `signin_ip` and, for password credentials, `signin_account`. On failure, `Hit` both. On success, neither.
+- `SignIn`, before the user lookup and before bcrypt: consume one unit of `signin_ip` and, for password credentials, of `signin_account`. Once the credential is proven, whether the sign-in then succeeds or is refused for an archived user or disabled password auth, refund both. A wrong password, an unknown username, or a rejected SSO exchange keeps the units.
 - `CreateUser`: `signup_ip` or `validate_ip` after the admin check and before any store call.
 - `GetLinkMetadata` and `BatchGetLinkMetadata`: `link_metadata`, costing the number of URLs, before any fetch. Cached results still cost, since the point is to bound how often a caller can ask.
 - Upload start and `CreateAttachment`: `upload_user` after authentication.

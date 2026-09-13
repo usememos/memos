@@ -186,6 +186,38 @@ func TestCapacityEvictsExpiredThenFailsOpen(t *testing.T) {
 	require.False(t, l.Allowed("test", "c", 1).Allowed)
 }
 
+func TestRefundGivesBackWhatWasConsumed(t *testing.T) {
+	c := newClock()
+	l := NewMemoryLimiter(policy(2, time.Minute), WithClock(c.Now))
+	require.True(t, l.Consume("test", "k", 1).Allowed)
+	require.True(t, l.Consume("test", "k", 1).Allowed)
+	require.False(t, l.Consume("test", "k", 1).Allowed)
+	l.Refund("test", "k", 1)
+	require.Equal(t, 1, l.Allowed("test", "k", 1).Remaining)
+	// A refund never drives the count negative, and an unknown key is a no-op.
+	l.Refund("test", "k", 5)
+	require.Equal(t, 2, l.Allowed("test", "k", 1).Remaining)
+	l.Refund("test", "never-seen", 1)
+	require.Equal(t, 2, l.Allowed("test", "never-seen", 1).Remaining)
+}
+
+func TestCapacityEvictionIsBoundedPerCall(t *testing.T) {
+	c := newClock()
+	const capacity = 4 * evictionSample
+	l := NewMemoryLimiter(policy(1, time.Minute), WithClock(c.Now), WithCapacity(capacity))
+	for i := range capacity {
+		l.Hit("test", "k"+string(rune('a'+i%26))+string(rune('a'+i/26)), 1)
+	}
+	require.Len(t, l.entries, capacity)
+	c.Advance(3 * time.Minute) // everything has expired
+
+	// Each new key at capacity inspects only a sample, so one call frees at
+	// most evictionSample entries rather than sweeping the whole table.
+	l.Hit("test", "fresh", 1)
+	require.Len(t, l.entries, capacity-evictionSample+1)
+	require.False(t, l.Allowed("test", "fresh", 1).Allowed, "the fresh key was tracked")
+}
+
 func TestDefaultPolicyCoversEveryScope(t *testing.T) {
 	p := DefaultPolicy()
 	for _, scope := range []Scope{

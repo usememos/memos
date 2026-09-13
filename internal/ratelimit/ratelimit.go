@@ -91,10 +91,13 @@ type Decision struct {
 
 // Limiter answers whether an activity may proceed and records that it did.
 // Consume does both atomically and is what every-attempt-counts callers use.
-// Allowed is a read and Hit is a write, for callers that only count some
-// outcomes, such as a failed sign-in: check before doing work, record after.
+// A caller that only counts some outcomes, such as a failed sign-in, still
+// consumes up front so concurrent attempts cannot share one remaining unit,
+// and calls Refund when the outcome turns out not to count. Allowed is a
+// read and Hit a write for callers that need neither.
 type Limiter interface {
 	Consume(scope Scope, key string, cost int) Decision
+	Refund(scope Scope, key string, cost int)
 	Allowed(scope Scope, key string, cost int) Decision
 	Hit(scope Scope, key string, cost int)
 }
@@ -181,6 +184,27 @@ func (l *MemoryLimiter) Consume(scope Scope, key string, cost int) Decision {
 	return l.decide(scope, key, cost, true)
 }
 
+// Refund gives back cost units consumed earlier in the same window. It never
+// drives the count below zero, so a refund after the window rolled is harmless.
+func (l *MemoryLimiter) Refund(scope Scope, key string, cost int) {
+	rule, ok := l.policy.Rule(scope)
+	if !ok {
+		return
+	}
+	if cost < 1 {
+		cost = 1
+	}
+	now := l.now()
+
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	current, ok := l.lookup(entryKey{scope, key}, rule, now)
+	if !ok {
+		return
+	}
+	current.current = max(current.current-cost, 0)
+}
+
 // Hit records cost units against scope and key.
 func (l *MemoryLimiter) Hit(scope Scope, key string, cost int) {
 	rule, ok := l.policy.Rule(scope)
@@ -254,14 +278,26 @@ func (l *MemoryLimiter) lookup(id entryKey, rule Rule, now time.Time) (*entry, b
 	return current, true
 }
 
-// makeRoom evicts expired entries when the cap is reached. It returns false
-// when nothing could be evicted, in which case the caller fails open. The
-// caller holds the lock.
+// evictionSample bounds the work done per call at capacity. Go map iteration
+// starts at a random bucket, so inspecting a fixed number of entries samples
+// the table; expired entries dominate a table that has been full for a
+// while, so a small sample frees room in amortized constant time instead of
+// scanning every entry under the lock.
+const evictionSample = 32
+
+// makeRoom evicts expired entries when the cap is reached, inspecting at most
+// evictionSample entries. It returns false when the sample held nothing
+// expired, in which case the caller fails open. The caller holds the lock.
 func (l *MemoryLimiter) makeRoom(now time.Time) bool {
 	if len(l.entries) < l.capacity {
 		return true
 	}
+	inspected := 0
 	for id, current := range l.entries {
+		if inspected >= evictionSample {
+			break
+		}
+		inspected++
 		rule, ok := l.policy.Rule(id.scope)
 		if !ok || now.Sub(current.windowStart) >= 2*rule.Window {
 			delete(l.entries, id)

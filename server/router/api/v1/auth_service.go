@@ -54,37 +54,38 @@ func (s *APIV1Service) SignIn(ctx context.Context, request *v1pb.SignInRequest) 
 	var existingUser *store.User
 
 	// Rate limits run before any lookup or hashing so a flood costs nothing.
-	// Only failures are counted, after the credential check below.
+	// Each attempt reserves its units up front, so concurrent attempts cannot
+	// share one remaining unit; a successful attempt gives them back below.
+	// The account key is the submitted name whether or not it exists, so the
+	// limit cannot be used to learn which accounts are real.
 	clientIP := clientip.FromContext(ctx)
-	if err := s.throttle(ratelimit.ScopeSignInIP, clientIP, 1); err != nil {
+	attempt, err := s.reserveSignIn(clientIP, request.GetPasswordCredentials().GetUsername())
+	if err != nil {
 		return nil, err
 	}
 
 	// Authentication Method 1: Password-based authentication
 	if passwordCredentials := request.GetPasswordCredentials(); passwordCredentials != nil {
-		// Keyed on the submitted name whether or not it exists, so the limit
-		// cannot be used to learn which accounts are real.
-		if err := s.throttle(ratelimit.ScopeSignInAccount, passwordCredentials.Username, 1); err != nil {
-			return nil, err
-		}
 		if err := s.requireChallenge(ctx, ratelimit.ScopeSignInIP); err != nil {
+			attempt.succeeded()
 			return nil, err
 		}
 		user, err := s.Store.GetUser(ctx, &store.FindUser{
 			Username: &passwordCredentials.Username,
 		})
 		if err != nil {
+			attempt.succeeded()
 			return nil, status.Errorf(codes.Internal, "failed to get user, error: %v", err)
 		}
 		if user == nil {
-			s.recordSignInFailure(clientIP, passwordCredentials.Username)
 			return nil, status.Errorf(codes.InvalidArgument, unmatchedUsernameAndPasswordError)
 		}
 		// Compare the stored hashed password, with the hashed version of the password that was received.
 		if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(passwordCredentials.Password)); err != nil {
-			s.recordSignInFailure(clientIP, passwordCredentials.Username)
 			return nil, status.Errorf(codes.InvalidArgument, unmatchedUsernameAndPasswordError)
 		}
+		// The password matched: from here on the attempt is not a guess.
+		attempt.succeeded()
 		instanceGeneralSetting, err := s.Store.GetInstanceGeneralSetting(ctx)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to get instance general setting, error: %v", err)
@@ -98,19 +99,25 @@ func (s *APIV1Service) SignIn(ctx context.Context, request *v1pb.SignInRequest) 
 		// Authentication Method 2: SSO (OAuth2) authentication
 		identityProvider, userInfo, err := s.resolveSSOIdentity(ctx, ssoCredentials.IdpName, ssoCredentials.Code, ssoCredentials.RedirectUri, ssoCredentials.CodeVerifier)
 		if err != nil {
-			s.recordSignInFailure(clientIP, "")
+			// A rejected exchange is a credential failure and stays counted.
 			return nil, err
 		}
 		user, err := s.resolveSSOUser(ctx, nil, identityProvider, userInfo)
 		if err != nil {
+			// The credential was valid; whatever refused provisioning is not a guess.
+			attempt.succeeded()
 			return nil, err
 		}
 		existingUser = user
 	}
 
 	if existingUser == nil {
+		// No credential was presented at all; nothing to guess against.
+		attempt.succeeded()
 		return nil, status.Errorf(codes.InvalidArgument, "invalid credentials")
 	}
+	// The credential has been proven from here on; the attempt does not count.
+	attempt.succeeded()
 	if existingUser.RowStatus == store.Archived {
 		return nil, status.Errorf(codes.PermissionDenied, "user has been archived with username %s", existingUser.Username)
 	}

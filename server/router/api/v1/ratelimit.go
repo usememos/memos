@@ -191,10 +191,50 @@ func (s *APIV1Service) requireChallenge(ctx context.Context, scope ratelimit.Sco
 	return nil
 }
 
-// recordSignInFailure counts one failed credential check against both sign-in scopes.
-func (s *APIV1Service) recordSignInFailure(clientIP, username string) {
-	s.charge(ratelimit.ScopeSignInIP, clientIP, 1)
-	if username != "" {
-		s.charge(ratelimit.ScopeSignInAccount, username, 1)
+// refund gives back units consumed for an attempt that turned out not to count.
+func (s *APIV1Service) refund(scope ratelimit.Scope, key string, cost int) {
+	if s.RateLimiter == nil || key == "" {
+		return
 	}
+	s.RateLimiter.Refund(scope, key, cost)
+}
+
+// signInAttempt reserves one unit in each sign-in scope before the credential
+// check, so concurrent attempts cannot share one remaining unit, and gives
+// the units back when the attempt succeeds. Only failures end up counted.
+type signInAttempt struct {
+	service  *APIV1Service
+	clientIP string
+	username string
+	reserved []ratelimit.Scope
+}
+
+// reserveSignIn consumes the sign-in budgets for an attempt. It returns the
+// rate-limit error when either budget is spent; a refusal charges nothing.
+func (s *APIV1Service) reserveSignIn(clientIP, username string) (*signInAttempt, error) {
+	attempt := &signInAttempt{service: s, clientIP: clientIP, username: username}
+	if err := s.throttleAndCharge(ratelimit.ScopeSignInIP, clientIP, 1); err != nil {
+		return nil, err
+	}
+	attempt.reserved = append(attempt.reserved, ratelimit.ScopeSignInIP)
+	if username != "" {
+		if err := s.throttleAndCharge(ratelimit.ScopeSignInAccount, username, 1); err != nil {
+			attempt.succeeded()
+			return nil, err
+		}
+		attempt.reserved = append(attempt.reserved, ratelimit.ScopeSignInAccount)
+	}
+	return attempt, nil
+}
+
+// succeeded refunds the reservation: a successful sign-in does not count.
+func (a *signInAttempt) succeeded() {
+	for _, scope := range a.reserved {
+		key := a.clientIP
+		if scope == ratelimit.ScopeSignInAccount {
+			key = a.username
+		}
+		a.service.refund(scope, key, 1)
+	}
+	a.reserved = nil
 }
