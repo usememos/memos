@@ -74,6 +74,8 @@ One resolver in a new `internal/clientip` package turns a request into a client 
 
 The trusted-proxy set is a profile option, `trusted-proxies`, set the same way as the other profile options. It accepts a list of CIDRs and two keywords: `private` expands to loopback, RFC 1918, link-local, and unique-local ranges; `none` trusts nothing. The default is `private`. That matches the common self-host layout, a reverse proxy on the same host or Docker network, without trusting the public internet. An operator whose proxy sits on a public address lists it explicitly.
 
+The default has a known residual risk: any peer on the private network is believed when it forwards an address. On a network where other hosts are hostile, or where the instance is reached directly through a NAT hop that presents a private peer address without rewriting headers, a client can forge `X-Forwarded-For` and obtain a fresh per-address bucket. Such an operator sets `none` or lists the real proxy. The alternative default, `none`, was rejected because it would break the common layout worse: every user behind the proxy would share one bucket, so a busy public instance behind nginx would throttle everyone together. The per-account sign-in limit does not depend on the address and holds either way.
+
 The resolver runs once, in an Echo middleware ahead of every route, and stores the result in the request context. Both transports derive their handler context from that request, so the authorizer and every handler read the address from the context and never from a header. `extractClientInfo` switches to it, so session records stop trusting forged headers as a side effect.
 
 ### Limiter

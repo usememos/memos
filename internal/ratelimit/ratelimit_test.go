@@ -1,6 +1,8 @@
 package ratelimit
 
 import (
+	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -37,8 +39,14 @@ func TestHitThenRefuse(t *testing.T) {
 	d = l.Allowed("test", "k", 1)
 	require.False(t, d.Allowed)
 	require.Equal(t, 0, d.Remaining)
-	require.Equal(t, time.Minute, d.RetryAfter)
+	// At the boundary the three hits still count in full; one second later
+	// their weighted share has dropped to two.
+	require.Equal(t, 61*time.Second, d.RetryAfter)
 	require.Equal(t, 3, d.Rule.Limit)
+	c.Advance(60 * time.Second)
+	require.False(t, l.Allowed("test", "k", 1).Allowed)
+	c.Advance(time.Second)
+	require.True(t, l.Allowed("test", "k", 1).Allowed)
 
 	// Another key is independent.
 	require.True(t, l.Allowed("test", "other", 1).Allowed)
@@ -73,14 +81,92 @@ func TestSlidingWindow(t *testing.T) {
 	require.Equal(t, 10, l.Allowed("test", "k", 1).Remaining)
 }
 
-func TestRetryAfterShrinksTowardWindowEnd(t *testing.T) {
+func TestRetryAfterIsWhenTheRequestWouldSucceed(t *testing.T) {
 	c := newClock()
 	l := NewMemoryLimiter(policy(1, time.Minute), WithClock(c.Now))
 	c.Advance(20 * time.Second)
 	l.Hit("test", "k", 1)
-	require.Equal(t, 40*time.Second, l.Allowed("test", "k", 1).RetryAfter)
-	c.Advance(39*time.Second + 500*time.Millisecond)
-	require.Equal(t, time.Second, l.Allowed("test", "k", 1).RetryAfter, "never advertises less than a second")
+
+	// The hit becomes the previous window at 10:01:00, where it still counts in
+	// full; one second later its weighted share truncates to zero.
+	d := l.Allowed("test", "k", 1)
+	require.False(t, d.Allowed)
+	require.Equal(t, 41*time.Second, d.RetryAfter)
+
+	// One second short of the advertised delay is refused; the delay itself is enough.
+	c.Advance(d.RetryAfter - time.Second)
+	require.False(t, l.Allowed("test", "k", 1).Allowed)
+	c.Advance(time.Second)
+	require.True(t, l.Allowed("test", "k", 1).Allowed)
+}
+
+func TestRetryAfterWithinTheCurrentWindow(t *testing.T) {
+	c := newClock()
+	l := NewMemoryLimiter(policy(10, time.Minute), WithClock(c.Now))
+	l.Hit("test", "k", 10)
+	c.Advance(time.Minute) // the ten hits are now the previous window
+	l.Hit("test", "k", 2)  // current 2, previous 10: estimate 12 at the boundary
+
+	// Admitted once floor(10 * (1 - t/60s)) <= 7, which first holds just after
+	// t = 12s, so the advertised delay is 13s.
+	d := l.Allowed("test", "k", 1)
+	require.False(t, d.Allowed)
+	require.Equal(t, 13*time.Second, d.RetryAfter)
+	c.Advance(12 * time.Second)
+	require.False(t, l.Allowed("test", "k", 1).Allowed)
+	c.Advance(time.Second)
+	require.True(t, l.Allowed("test", "k", 1).Allowed)
+}
+
+func TestRetryAfterNeverBelowOneSecond(t *testing.T) {
+	c := newClock()
+	l := NewMemoryLimiter(policy(60, time.Minute), WithClock(c.Now))
+	l.Hit("test", "k", 60)
+	// Exactly at the boundary the previous window still counts in full.
+	c.Advance(time.Minute)
+	d := l.Allowed("test", "k", 1)
+	require.False(t, d.Allowed)
+	require.Equal(t, time.Second, d.RetryAfter)
+	c.Advance(time.Second)
+	require.True(t, l.Allowed("test", "k", 1).Allowed)
+}
+
+func TestRetryAfterForOversizedCost(t *testing.T) {
+	c := newClock()
+	l := NewMemoryLimiter(policy(2, time.Minute), WithClock(c.Now))
+	d := l.Allowed("test", "k", 3)
+	require.False(t, d.Allowed)
+	require.Equal(t, time.Minute, d.RetryAfter)
+}
+
+func TestConsumeIsAtomicUnderConcurrency(t *testing.T) {
+	c := newClock()
+	l := NewMemoryLimiter(policy(1, time.Minute), WithClock(c.Now))
+
+	const racers = 64
+	var wg sync.WaitGroup
+	start := make(chan struct{})
+	var admitted atomic.Int32
+	for range racers {
+		wg.Go(func() {
+			<-start
+			if l.Consume("test", "k", 1).Allowed {
+				admitted.Add(1)
+			}
+		})
+	}
+	close(start)
+	wg.Wait()
+	require.Equal(t, int32(1), admitted.Load(), "exactly one concurrent consume may succeed")
+
+	// Consume records the cost it admits and refuses once spent.
+	l2 := NewMemoryLimiter(policy(2, time.Minute), WithClock(c.Now))
+	require.True(t, l2.Consume("test", "k", 1).Allowed)
+	require.Equal(t, 1, l2.Consume("test", "k", 1).Remaining)
+	require.False(t, l2.Consume("test", "k", 1).Allowed)
+	// A refused consume charges nothing.
+	require.Equal(t, 0, l2.Allowed("test", "k", 1).Remaining)
+	require.True(t, l2.Consume("unknown", "k", 1).Allowed)
 }
 
 func TestCapacityEvictsExpiredThenFailsOpen(t *testing.T) {

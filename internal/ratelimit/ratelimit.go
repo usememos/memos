@@ -6,6 +6,7 @@ package ratelimit
 import (
 	"context"
 	"log/slog"
+	"math"
 	"sync"
 	"time"
 )
@@ -89,9 +90,11 @@ type Decision struct {
 }
 
 // Limiter answers whether an activity may proceed and records that it did.
-// Allowed is a read and Hit is a write, so a caller can check before doing
-// work and record only when the work counts, such as a failed sign-in.
+// Consume does both atomically and is what every-attempt-counts callers use.
+// Allowed is a read and Hit is a write, for callers that only count some
+// outcomes, such as a failed sign-in: check before doing work, record after.
 type Limiter interface {
+	Consume(scope Scope, key string, cost int) Decision
 	Allowed(scope Scope, key string, cost int) Decision
 	Hit(scope Scope, key string, cost int)
 }
@@ -169,32 +172,13 @@ func NewMemoryLimiter(policy Policy, options ...MemoryOption) *MemoryLimiter {
 
 // Allowed reports whether cost more units fit in the window for scope and key.
 func (l *MemoryLimiter) Allowed(scope Scope, key string, cost int) Decision {
-	rule, ok := l.policy.Rule(scope)
-	if !ok {
-		return Decision{Allowed: true}
-	}
-	if cost < 1 {
-		cost = 1
-	}
-	now := l.now()
+	return l.decide(scope, key, cost, false)
+}
 
-	l.mu.Lock()
-	defer l.mu.Unlock()
-	used := 0
-	windowStart := now.Truncate(rule.Window)
-	if current, ok := l.lookup(entryKey{scope, key}, rule, now); ok {
-		used = current.estimate(rule, now)
-		windowStart = current.windowStart
-	}
-	remaining := max(rule.Limit-used, 0)
-	if used+cost <= rule.Limit {
-		return Decision{Allowed: true, Rule: rule, Remaining: remaining}
-	}
-	retryAfter := windowStart.Add(rule.Window).Sub(now)
-	if retryAfter < time.Second {
-		retryAfter = time.Second
-	}
-	return Decision{Allowed: false, Rule: rule, Remaining: remaining, RetryAfter: retryAfter}
+// Consume admits and records cost units in one step, so concurrent callers
+// cannot all be admitted on the strength of the same remaining budget.
+func (l *MemoryLimiter) Consume(scope Scope, key string, cost int) Decision {
+	return l.decide(scope, key, cost, true)
 }
 
 // Hit records cost units against scope and key.
@@ -210,7 +194,44 @@ func (l *MemoryLimiter) Hit(scope Scope, key string, cost int) {
 
 	l.mu.Lock()
 	defer l.mu.Unlock()
+	l.record(entryKey{scope, key}, rule, now, cost)
+}
+
+// decide evaluates the budget under one lock and, when charge is set,
+// records the cost in the same critical section.
+func (l *MemoryLimiter) decide(scope Scope, key string, cost int, charge bool) Decision {
+	rule, ok := l.policy.Rule(scope)
+	if !ok {
+		return Decision{Allowed: true}
+	}
+	if cost < 1 {
+		cost = 1
+	}
+	now := l.now()
+
+	l.mu.Lock()
+	defer l.mu.Unlock()
 	id := entryKey{scope, key}
+	var state entry
+	if current, ok := l.lookup(id, rule, now); ok {
+		state = *current
+	} else {
+		state = entry{windowStart: now.Truncate(rule.Window)}
+	}
+	used := state.estimate(rule, now)
+	remaining := max(rule.Limit-used, 0)
+	if used+cost <= rule.Limit {
+		if charge {
+			l.record(id, rule, now, cost)
+		}
+		return Decision{Allowed: true, Rule: rule, Remaining: remaining}
+	}
+	return Decision{Allowed: false, Rule: rule, Remaining: remaining, RetryAfter: state.retryAfter(rule, now, cost)}
+}
+
+// record adds cost to the entry for id, creating it when there is room. The
+// caller holds the lock.
+func (l *MemoryLimiter) record(id entryKey, rule Rule, now time.Time, cost int) {
 	current, ok := l.lookup(id, rule, now)
 	if !ok {
 		if !l.makeRoom(now) {
@@ -283,4 +304,52 @@ func (e *entry) estimate(rule Rule, now time.Time) int {
 		overlap = 0
 	}
 	return e.current + int(float64(e.previous)*overlap)
+}
+
+// retryAfter is the delay until a request of cost would be admitted, in whole
+// seconds and never less than one. It inverts estimate with the same integer
+// truncation: the previous window's share decays through the current window,
+// and at the boundary the current count becomes the previous one and decays
+// in turn. The result is the first whole second strictly after the instant
+// the estimate drops far enough.
+func (e *entry) retryAfter(rule Rule, now time.Time, cost int) time.Duration {
+	budget := rule.Limit - cost
+	if budget < 0 {
+		// A single request larger than the limit never fits; advertise one window.
+		return rule.Window
+	}
+	windowEnd := e.windowStart.Add(rule.Window)
+	var ready time.Time
+	switch {
+	case e.current <= budget && e.previous > 0:
+		// Admitted once floor(previous * overlap) <= budget - current, that is
+		// once overlap < (budget - current + 1) / previous.
+		ready = e.windowStart.Add(decayTime(rule.Window, e.previous, budget-e.current+1))
+	case e.current <= budget:
+		ready = now
+	default:
+		// Only the next window can admit it, once the current count, then the
+		// previous one, has decayed: overlap < (budget + 1) / current.
+		ready = windowEnd.Add(decayTime(rule.Window, e.current, budget+1))
+	}
+	wait := ready.Sub(now)
+	if wait < 0 {
+		wait = 0
+	}
+	// Floor plus one second lands strictly after the boundary even when the
+	// wait is a whole number of seconds, and is never less than one.
+	return time.Duration(math.Floor(wait.Seconds()))*time.Second + time.Second
+}
+
+// decayTime is how far into a window a count of total must decay before its
+// weighted share, total * (1 - t/window), falls below allowance. It is
+// computed in integer nanoseconds with ceiling division so the boundary is
+// never placed a rounding error too early.
+func decayTime(window time.Duration, total, allowance int) time.Duration {
+	if allowance >= total {
+		return 0
+	}
+	numerator := int64(window) * int64(total-allowance)
+	denominator := int64(total)
+	return time.Duration((numerator + denominator - 1) / denominator)
 }

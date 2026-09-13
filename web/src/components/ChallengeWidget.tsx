@@ -35,18 +35,24 @@ function loadProvider(provider: ProviderScript): Promise<WidgetApi> {
   if (existing) {
     return existing;
   }
+  const script = document.createElement("script");
   const load = new Promise<WidgetApi>((resolve, reject) => {
     const ready = () => {
       const api = (window as unknown as Record<string, WidgetApi | undefined>)[provider.global];
       if (api) resolve(api);
       else reject(new Error(`challenge provider ${provider.global} did not initialize`));
     };
-    const script = document.createElement("script");
     script.src = provider.src;
     script.async = true;
     script.onload = ready;
     script.onerror = () => reject(new Error(`failed to load challenge provider ${provider.global}`));
     document.head.appendChild(script);
+  });
+  // A transient failure must not be cached, or every later mount and reset
+  // would inherit it and sign-in would stay blocked until a page reload.
+  load.catch(() => {
+    scriptLoads.delete(provider.src);
+    script.remove();
   });
   scriptLoads.set(provider.src, load);
   return load;

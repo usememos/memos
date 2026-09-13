@@ -72,12 +72,11 @@ func (a *Authorizer) Throttle(ctx context.Context, _ string, result *auth.AuthRe
 	if key == "" {
 		return nil
 	}
-	decision := a.limiter.Allowed(scope, key, 1)
+	decision := a.limiter.Consume(scope, key, 1)
 	if !decision.Allowed {
 		slog.Info("rate limit refused request", slog.String("scope", string(scope)), slog.String("key", key))
 		return newRateLimitError(scope, decision)
 	}
-	a.limiter.Hit(scope, key, 1)
 	return nil
 }
 

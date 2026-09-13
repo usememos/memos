@@ -18,7 +18,13 @@ import (
 
 // KeywordPrivate expands to the loopback, RFC 1918, link-local, and
 // unique-local ranges, which covers a reverse proxy on the same host or on a
-// container network.
+// container network. It is the default because that is how most instances
+// are deployed, and a default of "none" would put every user behind such a
+// proxy into one shared bucket. The trade is that any peer on the private
+// network is believed when it forwards an address; an operator whose
+// instance is reached directly through a NAT hop that presents a private
+// peer address without rewriting headers should set "none" or list the
+// real proxy explicitly.
 const KeywordPrivate = "private"
 
 // KeywordNone trusts no proxy at all: the peer address is always the client.

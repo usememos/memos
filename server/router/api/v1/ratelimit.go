@@ -142,14 +142,18 @@ func (s *APIV1Service) charge(scope ratelimit.Scope, key string, cost int) {
 	s.RateLimiter.Hit(scope, key, cost)
 }
 
-// throttleAndCharge is the common check-then-count for activities where every
-// attempt counts.
+// throttleAndCharge admits and records in one atomic step, for activities
+// where every attempt counts.
 func (s *APIV1Service) throttleAndCharge(scope ratelimit.Scope, key string, cost int) error {
-	if err := s.throttle(scope, key, cost); err != nil {
-		return err
+	if s.RateLimiter == nil || key == "" {
+		return nil
 	}
-	s.charge(scope, key, cost)
-	return nil
+	decision := s.RateLimiter.Consume(scope, key, cost)
+	if decision.Allowed {
+		return nil
+	}
+	slog.Info("rate limit refused request", slog.String("scope", string(scope)), slog.String("key", key))
+	return newRateLimitError(scope, decision)
 }
 
 // chargeBatch adds the extra cost of a batch request to the caller's catch-all

@@ -25,7 +25,10 @@ func TestResolve(t *testing.T) {
 	}{
 		{name: "untrusted peer ignores forwarded header", trusted: []string{"none"}, remote: "203.0.113.5:4321", header: headers("X-Forwarded-For", "198.51.100.1"), want: "203.0.113.5"},
 		{name: "untrusted peer ignores real ip", trusted: []string{"none"}, remote: "203.0.113.5:4321", header: headers("X-Real-Ip", "198.51.100.1"), want: "203.0.113.5"},
-		{name: "private peer honours forwarded header", trusted: nil, remote: "172.18.0.2:80", header: headers("X-Forwarded-For", "198.51.100.1"), want: "198.51.100.1"},
+		{name: "default trusts a private peer's forwarded header", trusted: nil, remote: "172.18.0.2:80", header: headers("X-Forwarded-For", "198.51.100.1"), want: "198.51.100.1"},
+		{name: "explicit private keyword", trusted: []string{"private"}, remote: "192.168.1.50:80", header: headers("X-Forwarded-For", "198.51.100.1"), want: "198.51.100.1"},
+		{name: "none ignores a private peer's forwarded header", trusted: []string{"none"}, remote: "192.168.1.50:80", header: headers("X-Forwarded-For", "198.51.100.1"), want: "192.168.1.50"},
+		{name: "none ignores a loopback peer's forwarded header", trusted: []string{"none"}, remote: "127.0.0.1:80", header: headers("X-Forwarded-For", "198.51.100.1", "X-Real-Ip", "198.51.100.1"), want: "127.0.0.1"},
 		{name: "rightmost untrusted entry wins", trusted: nil, remote: "127.0.0.1:80", header: headers("X-Forwarded-For", "10.0.0.9, 198.51.100.1, 192.168.1.1"), want: "198.51.100.1"},
 		{name: "client-supplied left entries are ignored", trusted: nil, remote: "127.0.0.1:80", header: headers("X-Forwarded-For", "1.2.3.4, 198.51.100.1"), want: "198.51.100.1"},
 		{name: "multiple header values are joined", trusted: nil, remote: "127.0.0.1:80", header: headers("X-Forwarded-For", "1.2.3.4", "X-Forwarded-For", "198.51.100.1"), want: "198.51.100.1"},
