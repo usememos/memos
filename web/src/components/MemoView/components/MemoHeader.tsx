@@ -70,8 +70,7 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showC
     // moves with what the header happens to show.
     <div className="flex h-6 w-full items-center justify-between gap-2">
       <div className="flex min-w-0 flex-1 items-center gap-2">
-        {/* Width priority when the row is short: the time never truncates, the name keeps at least
-            64px and truncates, and the Space badge gives way first. */}
+        {/* The time stays visible while the creator and Space badge can shrink and truncate. */}
         <div data-slot="memo-header-meta" className="flex min-w-0 items-center gap-1.5 overflow-hidden">
           {showCreator && creator && <CreatorDisplay creator={creator} />}
           <TimeDisplay displayTime={displayTime} timeTooltip={timeTooltip} onGotoDetail={handleGotoMemoDetailPage} />
@@ -134,7 +133,7 @@ const CreatorDisplay: React.FC<{ creator: User }> = ({ creator }) => (
   <>
     <Link
       className={cn(
-        "flex min-w-16 shrink items-center gap-1.5 rounded-sm text-ui font-medium text-foreground transition-colors hover:text-foreground/80",
+        "flex min-w-0 shrink items-center gap-1.5 rounded-sm text-ui font-medium text-foreground transition-colors hover:text-foreground/80",
         FOCUS_VISIBLE_OUTLINE_CLASSES,
       )}
       to={`/u/${encodeURIComponent(creator.username)}`}
