@@ -78,7 +78,7 @@ jobs:
               ;;
             other)
               go test -v -race -coverprofile=coverage.out -covermode=atomic \
-                ./cmd/... ./internal/... ./proto/...
+                ./cmd/... ./core/... ./markdown/... ./filter/... ./provider/... ./proto/...
               ;;
           esac
         env:

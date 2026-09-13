@@ -15,7 +15,7 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 
-	"github.com/usememos/memos/internal/base"
+	"github.com/usememos/memos/internal/identifier"
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
 
@@ -159,7 +159,7 @@ func validateDeploymentIdentityProvider(provider *storepb.IdentityProvider) erro
 	if provider.Id != 0 {
 		return errors.New("id must be omitted")
 	}
-	if !base.UIDMatcher.MatchString(provider.Uid) {
+	if !identifier.UIDMatcher.MatchString(provider.Uid) {
 		return errors.New("uid is invalid")
 	}
 	if strings.TrimSpace(provider.Name) == "" {

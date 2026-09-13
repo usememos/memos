@@ -125,7 +125,7 @@ func TestPostChecksRedirectDestinationAtDialTime(t *testing.T) {
 	defer redirectSource.Close()
 
 	sourceURL := strings.Replace(redirectSource.URL, "127.0.0.1", "localhost", 1)
-	err := Post(&WebhookRequestPayload{URL: sourceURL})
+	err := Post(&Request{URL: sourceURL})
 	require.ErrorContains(t, err, "connection to reserved/private IP address is not allowed")
 	require.False(t, redirectedRequestReceived.Load())
 }
@@ -149,7 +149,7 @@ func TestPostAllowsExplicitPrivateIPPolicyAtDialTime(t *testing.T) {
 			}))
 			defer server.Close()
 
-			require.NoError(t, Post(&WebhookRequestPayload{URL: server.URL}))
+			require.NoError(t, Post(&Request{URL: server.URL}))
 		})
 	}
 }
@@ -255,10 +255,9 @@ func TestPostSignsRequest(t *testing.T) {
 			}))
 			defer server.Close()
 
-			err := Post(&WebhookRequestPayload{
+			err := Post(&Request{
 				URL:           server.URL,
-				ActivityType:  "memos.memo.created",
-				Creator:       "users/1",
+				Label:         "memos.memo.created",
 				SigningSecret: tc.secret,
 			})
 			require.NoError(t, err)
@@ -292,10 +291,9 @@ func TestPostWithoutSecretSetsNoSignatureHeaders(t *testing.T) {
 	}))
 	defer server.Close()
 
-	err := Post(&WebhookRequestPayload{
-		URL:          server.URL,
-		ActivityType: "memos.memo.created",
-		Creator:      "users/1",
+	err := Post(&Request{
+		URL:   server.URL,
+		Label: "memos.memo.created",
 	})
 	require.NoError(t, err)
 	require.False(t, hasSignatureHeaders, "no signature headers should be set when no secret is configured")
@@ -316,10 +314,9 @@ func TestPostRejectsUnspecifiedAddressDestination(t *testing.T) {
 	_, port, err := net.SplitHostPort(strings.TrimPrefix(server.URL, "http://"))
 	require.NoError(t, err)
 
-	err = Post(&WebhookRequestPayload{
-		URL:          "http://0.0.0.0:" + port,
-		ActivityType: "memos.memo.created",
-		Creator:      "users/1",
+	err = Post(&Request{
+		URL:   "http://0.0.0.0:" + port,
+		Label: "memos.memo.created",
 	})
 	require.Error(t, err)
 	require.False(t, receivedRequest.Load(), "the webhook must not reach a local service through the unspecified address")

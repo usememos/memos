@@ -17,10 +17,10 @@ import (
 	"github.com/usememos/memos/internal/clientip"
 	"github.com/usememos/memos/internal/profile"
 	storepb "github.com/usememos/memos/proto/gen/store"
-	apiv1 "github.com/usememos/memos/server/router/api/v1"
-	"github.com/usememos/memos/server/router/fileserver"
-	"github.com/usememos/memos/server/router/frontend"
-	"github.com/usememos/memos/server/router/mcp"
+	apiv1 "github.com/usememos/memos/server/api/v1"
+	"github.com/usememos/memos/server/fileserver"
+	"github.com/usememos/memos/server/frontend"
+	"github.com/usememos/memos/server/mcp"
 	"github.com/usememos/memos/store"
 )
 

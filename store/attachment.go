@@ -8,9 +8,9 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/usememos/memos/internal/base"
-	"github.com/usememos/memos/internal/storage"
+	"github.com/usememos/memos/internal/identifier"
 	storepb "github.com/usememos/memos/proto/gen/store"
+	"github.com/usememos/memos/provider/storage"
 )
 
 type Attachment struct {
@@ -112,7 +112,7 @@ func WithCreateAttachmentPostCommitFailpoint(ctx context.Context) context.Contex
 }
 
 func (s *Store) CreateAttachment(ctx context.Context, create *Attachment) (*Attachment, error) {
-	if !base.UIDMatcher.MatchString(create.UID) {
+	if !identifier.UIDMatcher.MatchString(create.UID) {
 		return nil, errors.New("invalid uid")
 	}
 	if err := validateMemoWritePolicy(create.Policy); err != nil {
@@ -175,7 +175,7 @@ func (s *Store) GetAttachment(ctx context.Context, find *FindAttachment) (*Attac
 }
 
 func (s *Store) UpdateAttachment(ctx context.Context, update *UpdateAttachment) error {
-	if update.UID != nil && !base.UIDMatcher.MatchString(*update.UID) {
+	if update.UID != nil && !identifier.UIDMatcher.MatchString(*update.UID) {
 		return errors.New("invalid uid")
 	}
 	if err := validateMemoWritePolicy(update.Policy); err != nil {

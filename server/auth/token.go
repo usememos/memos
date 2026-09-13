@@ -1,8 +1,8 @@
 // Package auth provides authentication and authorization for the Memos server.
 //
 // This package is used by:
-// - server/router/api/v1: gRPC and Connect API interceptors
-// - server/router/fileserver: HTTP file server authentication
+// - server/api/v1: gRPC and Connect API interceptors
+// - server/fileserver: HTTP file server authentication
 //
 // Authentication methods supported:
 // - JWT access tokens: Short-lived tokens (15 minutes) for API access
@@ -19,7 +19,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/pkg/errors"
 
-	"github.com/usememos/memos/internal/util"
+	"github.com/usememos/memos/internal/random"
 )
 
 const (
@@ -184,10 +184,10 @@ func GenerateRefreshToken(userID int32, tokenID string, secret []byte) (string, 
 
 // GeneratePersonalAccessToken generates a random PAT string.
 func GeneratePersonalAccessToken() string {
-	randomStr, err := util.RandomString(32)
+	randomStr, err := random.String(32)
 	if err != nil {
 		// Fallback to UUID if RandomString fails
-		return PersonalAccessTokenPrefix + util.GenUUID()
+		return PersonalAccessTokenPrefix + random.UUID()
 	}
 	return PersonalAccessTokenPrefix + randomStr
 }

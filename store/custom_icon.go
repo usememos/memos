@@ -5,7 +5,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/usememos/memos/internal/markdown/parser"
+	"github.com/usememos/memos/markdown/parser"
 )
 
 func validateEmojiIcon(emoji string) error {

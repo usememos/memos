@@ -25,7 +25,7 @@ interface ManagedImageIndex {
 }
 
 /**
- * Mirrors the server's three-way classification in `internal/markdown`: a URL is
+ * Mirrors the server's three-way classification in `markdown`: a URL is
  * either none of our business, a managed reference, or a managed reference the
  * API refuses. Collapsing the last two would leave the editor unable to warn
  * about content that cannot be saved.

@@ -15,7 +15,7 @@ const uniqueEmailSchemaVersion = "0.31.8"
 // two things the SQL file cannot do on its own.
 //
 // First, it rewrites every stored address into the canonical form used by
-// util.NormalizeEmail: trimmed and lowercased with Unicode rules. SQLite's
+// store.NormalizeEmail: trimmed and lowercased with Unicode rules. SQLite's
 // LOWER folds ASCII only, and PostgreSQL does the same under a C locale, so
 // without this pass "Ä@example.com" and "ä@example.com" could both survive
 // the migration's deduplication and the unique index would then permit a

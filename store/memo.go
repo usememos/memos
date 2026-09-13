@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"errors"
 
-	"github.com/usememos/memos/internal/base"
+	"github.com/usememos/memos/internal/identifier"
 
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
@@ -194,7 +194,7 @@ func validateMemoCreate(create *Memo) error {
 	if create == nil {
 		return errors.New("memo is required")
 	}
-	if !base.UIDMatcher.MatchString(create.UID) {
+	if !identifier.UIDMatcher.MatchString(create.UID) {
 		return errors.New("invalid uid")
 	}
 	if !isValidVisibility(create.Visibility) {
@@ -224,7 +224,7 @@ func (s *Store) GetMemo(ctx context.Context, find *FindMemo) (*Memo, error) {
 }
 
 func (s *Store) UpdateMemo(ctx context.Context, update *UpdateMemo) error {
-	if update.UID != nil && !base.UIDMatcher.MatchString(*update.UID) {
+	if update.UID != nil && !identifier.UIDMatcher.MatchString(*update.UID) {
 		return errors.New("invalid uid")
 	}
 	if update.Visibility != nil && !isValidVisibility(*update.Visibility) {

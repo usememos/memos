@@ -295,7 +295,7 @@ func TestStartupServesEveryRegisteredRouter(t *testing.T) {
 
 	t.Run("mcp", func(t *testing.T) {
 		// A bare POST is enough to prove the handler is mounted; the MCP
-		// protocol itself is covered by server/router/mcp tests.
+		// protocol itself is covered by server/mcp tests.
 		status, _ := inst.do(t, http.MethodPost, "/mcp", "", map[string]any{
 			"jsonrpc": "2.0",
 			"id":      1,

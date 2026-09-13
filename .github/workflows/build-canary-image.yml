@@ -45,7 +45,7 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: frontend-dist
-          path: server/router/frontend/dist
+          path: server/frontend/dist
           retention-days: 1
 
   build-push:
@@ -75,7 +75,7 @@ jobs:
         uses: actions/download-artifact@v7
         with:
           name: frontend-dist
-          path: server/router/frontend/dist
+          path: server/frontend/dist
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3

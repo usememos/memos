@@ -109,7 +109,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: frontend-dist
-          path: server/router/frontend/dist
+          path: server/frontend/dist
           retention-days: 1
 
   build-binaries:
@@ -147,7 +147,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: frontend-dist
-          path: server/router/frontend/dist
+          path: server/frontend/dist
 
       - name: Build binary
         env:
@@ -276,7 +276,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: frontend-dist
-          path: server/router/frontend/dist
+          path: server/frontend/dist
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3

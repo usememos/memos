@@ -3,13 +3,13 @@ package auth
 import (
 	"context"
 	"log/slog"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/usememos/memos/internal/util"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
@@ -44,7 +44,7 @@ func (a *Authenticator) AuthenticateByAccessTokenV2(accessToken string) (*UserCl
 		return nil, errors.Wrap(err, "invalid access token")
 	}
 
-	userID, err := util.ConvertStringToInt32(claims.Subject)
+	userID, err := parseInt32(claims.Subject)
 	if err != nil {
 		return nil, errors.Wrap(err, "invalid user ID in token")
 	}
@@ -64,7 +64,7 @@ func (a *Authenticator) AuthenticateByRefreshToken(ctx context.Context, refreshT
 		return nil, "", errors.Wrap(err, "invalid refresh token")
 	}
 
-	userID, err := util.ConvertStringToInt32(claims.Subject)
+	userID, err := parseInt32(claims.Subject)
 	if err != nil {
 		return nil, "", errors.Wrap(err, "invalid user ID in token")
 	}
@@ -222,4 +222,12 @@ func (a *Authenticator) Authenticate(ctx context.Context, authHeader string) *Au
 		return &AuthResult{User: bearer.user, AccessToken: token}
 	}
 	return &AuthResult{Claims: bearer.claims, AccessToken: token}
+}
+
+func parseInt32(src string) (int32, error) {
+	parsed, err := strconv.ParseInt(src, 10, 32)
+	if err != nil {
+		return 0, err
+	}
+	return int32(parsed), nil
 }

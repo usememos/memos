@@ -7,8 +7,6 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
-
-	"github.com/usememos/memos/internal/util"
 )
 
 // ErrUserHasSpaceMembership blocks account deletion until its Space lifecycle
@@ -101,7 +99,7 @@ func userCacheKey(userID int32) string {
 // The API layer validates first; this is the store's own guard so that seed
 // data, tests, and any future caller cannot bypass the canonical form.
 func normalizeUserEmail(email string) (string, error) {
-	normalized, err := util.NormalizeEmail(email)
+	normalized, err := NormalizeEmail(email)
 	if err != nil {
 		return "", errors.Wrap(err, "invalid email")
 	}

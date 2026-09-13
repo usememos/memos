@@ -2,6 +2,7 @@ version: "2"
 
 linters:
   enable:
+    - depguard
     - revive
     - govet
     - staticcheck
@@ -17,6 +18,56 @@ linters:
   disable:
     - errcheck
   settings:
+    # Import direction. Each rule names a layer by file path and lists the
+    # layers it must not import. See internal/README.md, core/README.md,
+    # provider/README.md, and the doc.go of server, store, markdown, filter.
+    depguard:
+      rules:
+        internal-has-no-app-imports:
+          files:
+            - "**/internal/**"
+            - "!**/internal/testutil/**"
+          deny:
+            - pkg: github.com/usememos/memos/store
+              desc: internal packages must not know the store; move the code to core or a root package
+            - pkg: github.com/usememos/memos/core
+              desc: internal packages must not import core
+            - pkg: github.com/usememos/memos/server
+              desc: internal packages must not import server
+            - pkg: github.com/usememos/memos/provider
+              desc: internal packages must not import provider
+            - pkg: github.com/usememos/memos/markdown
+              desc: internal packages must not import markdown
+            - pkg: github.com/usememos/memos/filter
+              desc: internal packages must not import filter
+            - pkg: github.com/usememos/memos/proto
+              desc: internal packages must not import generated protos; only internal/testutil may
+        engines-and-providers-sit-below-store:
+          files:
+            - "**/markdown/**"
+            - "**/filter/**"
+            - "**/provider/**"
+          deny:
+            - pkg: github.com/usememos/memos/store
+              desc: markdown, filter, and provider must not import store
+            - pkg: github.com/usememos/memos/core
+              desc: markdown, filter, and provider must not import core
+            - pkg: github.com/usememos/memos/server
+              desc: markdown, filter, and provider must not import server
+        store-sits-below-core:
+          files:
+            - "**/store/**"
+          deny:
+            - pkg: github.com/usememos/memos/core
+              desc: store must not import core; business rules that span store calls live in core
+            - pkg: github.com/usememos/memos/server
+              desc: store must not import server
+        core-sits-below-server:
+          files:
+            - "**/core/**"
+          deny:
+            - pkg: github.com/usememos/memos/server
+              desc: core must not import server; transports call core, not the reverse
     exhaustive:
       explicit-exhaustive-switch: false
     staticcheck:
