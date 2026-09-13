@@ -100,6 +100,8 @@ type FileServerService struct {
 
 	// thumbnailSemaphore limits concurrent thumbnail generation.
 	thumbnailSemaphore *semaphore.Weighted
+	// exportSemaphore bounds temporary disk usage to one archive at a time.
+	exportSemaphore *semaphore.Weighted
 }
 
 // NewFileServerService creates a new file server service.
@@ -109,6 +111,7 @@ func NewFileServerService(profile *profile.Profile, store *store.Store, secret s
 		Store:              store,
 		authenticator:      auth.NewAuthenticator(store, secret),
 		thumbnailSemaphore: semaphore.NewWeighted(maxConcurrentThumbnails),
+		exportSemaphore:    semaphore.NewWeighted(1),
 	}
 }
 
@@ -118,6 +121,7 @@ func (s *FileServerService) RegisterRoutes(echoServer *echo.Echo) {
 	fileGroup.GET("/attachments/:uid", s.serveAttachmentFile)
 	fileGroup.GET("/attachments/:uid/:filename", s.serveAttachmentFile)
 	fileGroup.GET("/users/:identifier/avatar", s.serveUserAvatar)
+	fileGroup.GET("/memos/export", s.serveMemoExport)
 }
 
 // =============================================================================

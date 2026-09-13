@@ -14,6 +14,7 @@ import { useTranslate } from "@/utils/i18n";
 import ChangeMemberPasswordDialog from "../ChangeMemberPasswordDialog";
 import UpdateAccountDialog from "../UpdateAccountDialog";
 import UserAvatar from "../UserAvatar";
+import ExportMemosSection from "./ExportMemosSection";
 import LinkedIdentitySection from "./LinkedIdentitySection";
 import SettingGroup from "./SettingGroup";
 import SettingSection from "./SettingSection";
@@ -68,6 +69,8 @@ const MyAccountSection = () => {
       </SettingGroup>
 
       <LinkedIdentitySection />
+
+      <ExportMemosSection />
 
       <SettingGroup showSeparator title={t("setting.account.danger-area")} description={t("setting.account.danger-area-description")}>
         <div className="flex flex-col gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4">
