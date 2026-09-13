@@ -138,7 +138,7 @@ The specific scopes are enforced in the service methods, because they need reque
 
 A refused request returns `RESOURCE_EXHAUSTED` with two details:
 
-- `google.rpc.ErrorInfo` with `reason` `RATE_LIMITED`, `domain` `memos.usememos.com`, and `metadata` carrying `scope`, `retry_after_seconds`, `limit`, `window_seconds`, and `remaining`.
+- `google.rpc.ErrorInfo` with `reason` `RATE_LIMITED`, `domain` `memos.api.v1`, and `metadata` carrying `scope`, `retry_after_seconds`, `limit`, `window_seconds`, and `remaining`.
 - `google.rpc.RetryInfo` carrying the same delay, so a client following AIP-194 knows this refusal recovers in seconds rather than hours.
 
 Connect and the gRPC gateway both map the code to HTTP 429. Both error writers also set `Retry-After` from the delay and a `RateLimit` structured header with the remaining count and the window, following the IETF draft. `RateLimit-Policy` is emitted alongside so a client can learn the rule that tripped.

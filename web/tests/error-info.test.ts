@@ -22,7 +22,7 @@ function rateLimitError(retryAfterSeconds: string): ConnectError {
   error.details.push(
     {
       type: "google.rpc.ErrorInfo",
-      value: encodeErrorInfo(ERROR_REASON_RATE_LIMITED, "memos.usememos.com", {
+      value: encodeErrorInfo(ERROR_REASON_RATE_LIMITED, "memos.api.v1", {
         scope: "signin_ip",
         retry_after_seconds: retryAfterSeconds,
       }),
@@ -37,7 +37,7 @@ describe("ErrorInfo decoding", () => {
     const info = getErrorInfo(rateLimitError("42"));
     expect(info).toEqual({
       reason: ERROR_REASON_RATE_LIMITED,
-      domain: "memos.usememos.com",
+      domain: "memos.api.v1",
       metadata: { scope: "signin_ip", retry_after_seconds: "42" },
     });
     expect(hasErrorReason(rateLimitError("42"), ERROR_REASON_RATE_LIMITED)).toBe(true);

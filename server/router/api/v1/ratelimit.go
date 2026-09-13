@@ -20,8 +20,10 @@ import (
 
 const (
 	// errorInfoDomain is the google.rpc.ErrorInfo domain for every reason this
-	// service emits. AIP-193 requires it to be globally unique.
-	errorInfoDomain = "memos.usememos.com"
+	// service emits. AIP-193 asks for a stable, globally unique namespace, not a
+	// host: this is the service name the API already uses in every resource
+	// type ("memos.api.v1/Memo"), so reasons and resources share one name.
+	errorInfoDomain = "memos.api.v1"
 	// reasonRateLimited marks a refusal that recovers on its own after the
 	// advertised delay. Metering will use QUOTA_EXCEEDED for refusals that do not.
 	reasonRateLimited = "RATE_LIMITED"
