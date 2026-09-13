@@ -122,20 +122,6 @@ func userKey(userID int32) string {
 	return strconv.Itoa(int(userID))
 }
 
-// throttle refuses the request when cost more units would exceed the rule for
-// scope and key. It records nothing; pair it with charge.
-func (s *APIV1Service) throttle(scope ratelimit.Scope, key string, cost int) error {
-	if s.RateLimiter == nil || key == "" {
-		return nil
-	}
-	decision := s.RateLimiter.Allowed(scope, key, cost)
-	if decision.Allowed {
-		return nil
-	}
-	slog.Info("rate limit refused request", slog.String("scope", string(scope)), slog.String("key", key))
-	return newRateLimitError(scope, decision)
-}
-
 // charge records cost units against scope and key.
 func (s *APIV1Service) charge(scope ratelimit.Scope, key string, cost int) {
 	if s.RateLimiter == nil || key == "" {
