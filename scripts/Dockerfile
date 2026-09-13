@@ -1,3 +1,17 @@
+FROM --platform=$BUILDPLATFORM node:24-alpine AS frontend
+WORKDIR /frontend-build
+
+# Install dependencies first (cached layer, keyed on the lockfile/patches).
+COPY web/package.json web/pnpm-lock.yaml web/pnpm-workspace.yaml ./web/
+COPY web/patches ./web/patches
+RUN corepack enable && corepack prepare pnpm@11.0.1 --activate && \
+    pnpm --dir web install --frozen-lockfile
+
+# Copy the rest of the frontend source and build it. This produces
+# server/router/frontend/dist, which the backend stage below go:embeds.
+COPY web ./web
+RUN pnpm --dir web run release
+
 FROM --platform=$BUILDPLATFORM golang:1.27.0-alpine AS backend
 WORKDIR /backend-build
 
@@ -12,8 +26,11 @@ RUN --mount=type=cache,target=/go/pkg/mod \
 # Copy source code (use .dockerignore to exclude unnecessary files)
 COPY . .
 
-# Please build frontend first, so that the static files are available.
-# Refer to `pnpm release` in package.json for the build command.
+# Overlay the frontend build output onto the checked-in placeholder
+# (server/router/frontend/dist/index.html, which just says "No embeddable
+# frontend found") so a plain `docker build` always embeds a real UI.
+COPY --from=frontend /frontend-build/server/router/frontend/dist ./server/router/frontend/dist
+
 ARG TARGETOS TARGETARCH VERSION=dev COMMIT=unknown
 RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \

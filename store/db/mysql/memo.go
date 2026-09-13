@@ -327,6 +327,12 @@ func (d *DB) DeleteMemo(ctx context.Context, delete *store.DeleteMemo) error {
 	if _, err := tx.ExecContext(ctx, "DELETE FROM `reaction` WHERE `memo_id` = ?", delete.ID); err != nil {
 		return errors.Wrap(err, "failed to delete memo reactions")
 	}
+	if _, err := tx.ExecContext(ctx, "DELETE FROM `poll_vote` WHERE `memo_id` = ?", delete.ID); err != nil {
+		return errors.Wrap(err, "failed to delete memo poll votes")
+	}
+	if _, err := tx.ExecContext(ctx, "DELETE FROM `poll` WHERE `memo_id` = ?", delete.ID); err != nil {
+		return errors.Wrap(err, "failed to delete memo polls")
+	}
 	if err := tx.Commit(); err != nil {
 		return errors.Wrap(err, "failed to commit memo delete transaction")
 	}
