@@ -98,7 +98,7 @@ The app formatting keymap sits ahead of CodeMirror's generic `defaultKeymap`: `M
 
 - `Editor/markdownTagRanges.ts` adapts the CodeMirror syntax tree into literal-source ranges, excluding links, code, math, raw HTML syntax, escapes, and entities before calling the shared scanner.
 - `Editor/tagMentionDecorations.ts` decorates the tag matches returned by that adapter; mention recognition remains separate.
-- `Editor/tagAutocomplete.ts` reuses the same adapter for the tag ending at the cursor and offers known tags from `useTagCounts`.
+- `Editor/tagAutocomplete.ts` scans the raw input at the cursor and offers known tags from `useTagCounts`, including inside code, links, and escapes. Bare `#` offers all tags except at an opening heading marker (manual completion still works there). Nested paths match by prefix, path segment, or substring, including an unfinished child after `/`.
 - `@/utils/remark-plugins/remark-tag` is the read-only renderer's Markdown AST adapter to the same scanner.
 
 ### Services

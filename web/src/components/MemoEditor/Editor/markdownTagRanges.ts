@@ -335,16 +335,3 @@ export function findMarkdownMentionMatches(state: EditorState, from: number, to:
   }
   return matches;
 }
-
-/** Return the active tag whose recognized source span ends at the cursor. */
-export function tagMatchBefore(state: EditorState, position: number): TagMatch | undefined {
-  const line = state.doc.lineAt(position);
-  const matches = findMarkdownTagMatches(state, line.from, position);
-  return matches.findLast((match) => match.to === position);
-}
-
-/** Whether an offset is in a literal-source run (used for explicit `#` completion). */
-export function isLiteralTagPosition(state: EditorState, position: number): boolean {
-  const line = state.doc.lineAt(position);
-  return literalMarkdownSourceRanges(state, line.from, position).some((range) => range.to === position);
-}
