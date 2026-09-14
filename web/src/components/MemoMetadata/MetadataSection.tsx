@@ -36,8 +36,11 @@ export const METADATA_ROW_SLOT_BUTTON_CLASSES = cn(
   FOCUS_VISIBLE_OUTLINE_CLASSES,
 );
 
-/** A row is engaged by pointer or keyboard; everything that reveals or yields keys off this pair. */
-const whenEngaged = (value: string) => `md:group-hover/row:${value} md:group-focus-within/row:${value}`;
+/*
+ * A row is engaged by pointer or keyboard; everything that reveals or yields keys off the
+ * md:group-hover/row and md:group-focus-within/row pair. The class names are spelled out in
+ * full because Tailwind only generates classes it finds literally in the source.
+ */
 
 /**
  * Trailing controls of an editable row. On desktop they overlay the row's end and stay
@@ -46,12 +49,18 @@ const whenEngaged = (value: string) => `md:group-hover/row:${value} md:group-foc
  */
 export const METADATA_ROW_CONTROLS_CLASSES = cn(
   "flex shrink-0 items-center gap-0.5 transition-opacity md:absolute md:inset-y-0 md:end-1 md:opacity-0",
-  whenEngaged("opacity-100"),
+  "md:group-hover/row:opacity-100 md:group-focus-within/row:opacity-100",
 );
 /** A glyph hinting at what engaging the row does (download, open), overlaid where the detail rail was. */
-export const METADATA_ROW_HINT_CLASSES = cn("absolute end-2 size-4 opacity-0 transition-opacity", whenEngaged("opacity-75"));
+export const METADATA_ROW_HINT_CLASSES = cn(
+  "absolute end-2 size-4 opacity-0 transition-opacity",
+  "md:group-hover/row:opacity-75 md:group-focus-within/row:opacity-75",
+);
 /** The detail rail gives way to whatever overlays it. */
-export const METADATA_ROW_DETAIL_YIELD_CLASSES = cn("transition-opacity", whenEngaged("opacity-0"));
+export const METADATA_ROW_DETAIL_YIELD_CLASSES = cn(
+  "transition-opacity",
+  "md:group-hover/row:opacity-0 md:group-focus-within/row:opacity-0",
+);
 
 /**
  * Rows carry 8px of horizontal padding for their hover wash. A list of them pulls out by
