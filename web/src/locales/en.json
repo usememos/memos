@@ -614,6 +614,8 @@
       "web-clipper-title": "Use a token with Memos Web Clipper"
     },
     "account": {
+      "attachment-storage": "Attachment storage",
+      "storage-usage-error": "Your attachment storage is unavailable.",
       "change-password": "Change password",
       "danger-area": "Danger area",
       "danger-area-description": "Irreversible account actions live here. Review them carefully before continuing.",

@@ -3,6 +3,7 @@ package test
 import (
 	"context"
 	"fmt"
+	"math"
 	"sync"
 	"testing"
 	"time"
@@ -700,4 +701,51 @@ func TestMemoMutationConcurrentUpdatesSameMemoNoSQLiteBusy(t *testing.T) {
 		}
 		require.ErrorIs(t, err, store.ErrMemoMutationConflict)
 	}
+}
+
+func TestAttachmentStorageUsage(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	creator, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+
+	size, err := ts.GetAttachmentStorageUsage(ctx, creator.ID)
+	require.NoError(t, err)
+	require.Zero(t, size)
+
+	// One row per storage type, with a total exceeding a signed 32-bit integer.
+	var expected int64
+	var first *store.Attachment
+	for i, storageType := range []storepb.AttachmentStorageType{
+		storepb.AttachmentStorageType_ATTACHMENT_STORAGE_TYPE_UNSPECIFIED,
+		storepb.AttachmentStorageType_LOCAL,
+		storepb.AttachmentStorageType_S3,
+	} {
+		attachment, err := ts.CreateAttachment(ctx, &store.Attachment{
+			UID: shortuuid.New(), CreatorID: creator.ID, Filename: "file", Size: math.MaxInt32, StorageType: storageType,
+		})
+		require.NoError(t, err)
+		expected += attachment.Size
+		if i == 0 {
+			first = attachment
+		}
+	}
+	_, err = ts.CreateAttachment(ctx, &store.Attachment{UID: shortuuid.New(), CreatorID: 102, Filename: "other", Size: 123})
+	require.NoError(t, err)
+	size, err = ts.GetAttachmentStorageUsage(ctx, creator.ID)
+	require.NoError(t, err)
+	require.Equal(t, expected, size)
+
+	memo, err := ts.CreateMemo(ctx, &store.Memo{UID: shortuuid.New(), CreatorID: creator.ID, Content: "memo", Visibility: store.Private})
+	require.NoError(t, err)
+	require.NoError(t, ts.UpdateAttachment(ctx, &store.UpdateAttachment{ID: first.ID, MemoID: &memo.ID}))
+	size, err = ts.GetAttachmentStorageUsage(ctx, creator.ID)
+	require.NoError(t, err)
+	require.Equal(t, expected, size, "binding does not change storage usage")
+
+	require.NoError(t, ts.DeleteAttachment(ctx, &store.DeleteAttachment{ID: first.ID}))
+	size, err = ts.GetAttachmentStorageUsage(ctx, creator.ID)
+	require.NoError(t, err)
+	require.Equal(t, expected-first.Size, size)
 }

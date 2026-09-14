@@ -1,8 +1,8 @@
 import { create } from "@bufbuild/protobuf";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { attachmentServiceClient } from "@/connect";
+import { userKeys } from "@/hooks/useUserQueries";
 import {
-  type Attachment,
   BatchDeleteAttachmentsRequestSchema,
   type ListAttachmentsRequest,
   ListAttachmentsRequestSchema,
@@ -48,40 +48,6 @@ export function useInfiniteAttachments(request: Partial<ListAttachmentsRequest> 
   });
 }
 
-// Hook to create/upload attachment
-export function useCreateAttachment() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (attachment: Attachment) => {
-      const result = await attachmentServiceClient.createAttachment({ attachment });
-      return result;
-    },
-    onSuccess: () => {
-      // Invalidate attachments list
-      queryClient.invalidateQueries({ queryKey: attachmentKeys.lists() });
-    },
-  });
-}
-
-// Hook to delete attachment
-export function useDeleteAttachment() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (name: string) => {
-      await attachmentServiceClient.deleteAttachment({ name });
-      return name;
-    },
-    onSuccess: (name) => {
-      // Remove from cache
-      queryClient.removeQueries({ queryKey: attachmentKeys.detail(name) });
-      // Invalidate lists
-      queryClient.invalidateQueries({ queryKey: attachmentKeys.lists() });
-    },
-  });
-}
-
 export function useBatchDeleteAttachments() {
   const queryClient = useQueryClient();
 
@@ -94,7 +60,12 @@ export function useBatchDeleteAttachments() {
       for (const name of names) {
         queryClient.removeQueries({ queryKey: attachmentKeys.detail(name) });
       }
+    },
+    // The server may have deleted rows even when it reports a storage cleanup
+    // failure, so lists and storage usage refresh regardless of outcome.
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: attachmentKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: userKeys.stats() });
     },
   });
 }

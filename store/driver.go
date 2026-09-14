@@ -21,6 +21,7 @@ type Driver interface {
 	// Attachment model related methods.
 	CreateAttachment(ctx context.Context, create *Attachment) (*Attachment, error)
 	ListAttachments(ctx context.Context, find *FindAttachment) ([]*Attachment, error)
+	GetAttachmentStorageUsage(ctx context.Context, creatorID int32) (int64, error)
 	UpdateAttachment(ctx context.Context, update *UpdateAttachment) error
 	DeleteAttachment(ctx context.Context, delete *DeleteAttachment) error
 	DeleteAttachments(ctx context.Context, deletes []*DeleteAttachment) error

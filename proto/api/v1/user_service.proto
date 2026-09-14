@@ -424,6 +424,12 @@ message UserStats {
   // Total memo count.
   int32 total_memo_count = 6;
 
+  // Total persisted attachment size in bytes, including unlinked uploads and
+  // attachments in all spaces. Excludes temporary uploads and derived files.
+  // Returned only by GetUserStats for the authenticated user's own stats,
+  // independently of the request's memo filter.
+  optional int64 attachment_storage_bytes = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
+
   // Memo type statistics.
   message MemoTypeStats {
     int32 link_count = 1;

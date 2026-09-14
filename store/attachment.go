@@ -406,3 +406,8 @@ func shouldFailCreateAttachmentPostCommit(ctx context.Context) bool {
 	failpoint, ok := ctx.Value(createAttachmentPostCommitFailpointKey{}).(bool)
 	return ok && failpoint
 }
+
+// GetAttachmentStorageUsage returns the total persisted attachment size for a creator in bytes.
+func (s *Store) GetAttachmentStorageUsage(ctx context.Context, creatorID int32) (int64, error) {
+	return s.driver.GetAttachmentStorageUsage(ctx, creatorID)
+}

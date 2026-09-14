@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { instanceKeys, useInstanceStats } from "@/hooks/useInstanceQueries";
 import { useTranslate } from "@/utils/i18n";
 import SettingGroup from "./SettingGroup";
-import { SettingList, SettingListItem, SettingPanel } from "./SettingList";
+import { SettingList, SettingPanel, StatRow } from "./SettingList";
 import SettingSection from "./SettingSection";
 
 const formatBytes = (bytes: number | bigint): string => {
@@ -31,16 +31,6 @@ const renderBytes = (value: bigint | number | undefined, unknown: string): strin
   if (n < 0) return unknown;
   return formatBytes(n);
 };
-
-const StatValue = ({ value }: { value: string }) => (
-  <span className="block min-w-0 max-w-full break-all text-right font-mono text-sm tabular-nums text-foreground">{value}</span>
-);
-
-const StatRow = ({ label, value }: { label: string; value: string }) => (
-  <SettingListItem label={label} controlClassName="w-full justify-end sm:w-auto">
-    <StatValue value={value} />
-  </SettingListItem>
-);
 
 const ResourceStatsSection = () => {
   const t = useTranslate();

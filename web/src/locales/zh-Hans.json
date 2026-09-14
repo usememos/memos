@@ -737,6 +737,8 @@
       "no-tokens-found": "未找到访问令牌"
     },
     "account": {
+      "attachment-storage": "附件占用空间",
+      "storage-usage-error": "暂时无法获取你的附件占用空间。",
       "change-password": "修改密码",
       "danger-area": "危险操作区",
       "danger-area-description": "不可逆的账号操作统一放在这里，执行前请再次确认影响。",

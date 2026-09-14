@@ -17,6 +17,7 @@ import UserAvatar from "../UserAvatar";
 import LinkedIdentitySection from "./LinkedIdentitySection";
 import SettingGroup from "./SettingGroup";
 import SettingSection from "./SettingSection";
+import UserStatsSection from "./UserStatsSection";
 
 const MyAccountSection = () => {
   const t = useTranslate();
@@ -66,6 +67,8 @@ const MyAccountSection = () => {
           </div>
         </div>
       </SettingGroup>
+
+      <UserStatsSection />
 
       <LinkedIdentitySection />
 
