@@ -7,6 +7,13 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestVersionFlagsAreAvailable(t *testing.T) {
+	require.NotEmpty(t, rootCmd.Version)
+	versionFlag := rootCmd.Flags().Lookup("version-short")
+	require.NotNil(t, versionFlag)
+	require.Equal(t, "V", versionFlag.Shorthand)
+}
+
 func TestServerFlagsAreNotInheritedBySubcommands(t *testing.T) {
 	require.Nil(t, versionCmd.InheritedFlags().Lookup("dsn"))
 	require.Nil(t, versionCmd.InheritedFlags().Lookup("instance-url"))
