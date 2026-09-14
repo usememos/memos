@@ -614,6 +614,8 @@
       "web-clipper-title": "Memos Web Clipper ilə tokendən istifadə"
     },
     "account": {
+      "attachment-storage": "Qoşmaların tutduğu yer",
+      "storage-usage-error": "Qoşmalarınızın tutduğu yer haqqında məlumat əlçatan deyil.",
       "change-password": "Parolu dəyiş",
       "danger-area": "Təhlükəli sahə",
       "danger-area-description": "Geri qaytarıla bilməyən hesab əməliyyatları buradadır. Davam etməzdən əvvəl onları diqqətlə nəzərdən keçirin.",

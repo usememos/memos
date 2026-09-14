@@ -555,6 +555,8 @@
       "web-clipper-title": "搭配 Memos 網頁剪藏器使用令牌"
     },
     "account": {
+      "attachment-storage": "附件佔用空間",
+      "storage-usage-error": "暫時無法取得你的附件佔用空間。",
       "change-password": "變更密碼",
       "danger-area": "危險區域",
       "danger-area-description": "此處為不可逆的帳號操作。請在繼續之前仔細檢閱。",

@@ -283,6 +283,14 @@ func (s *APIV1Service) GetUserStats(ctx context.Context, request *v1pb.GetUserSt
 		},
 	}
 
+	if currentUser != nil && currentUser.ID == userID {
+		size, err := s.Store.GetAttachmentStorageUsage(ctx, userID)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to get attachment storage usage: %v", err)
+		}
+		userStats.AttachmentStorageBytes = &size
+	}
+
 	return userStats, nil
 }
 

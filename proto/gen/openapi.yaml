@@ -5009,6 +5009,14 @@ components:
                     type: integer
                     description: Total memo count.
                     format: int32
+                attachmentStorageBytes:
+                    readOnly: true
+                    type: string
+                    description: |-
+                        Total persisted attachment size in bytes, including unlinked uploads and
+                         attachments in all spaces. Excludes temporary uploads and derived files.
+                         Returned only by GetUserStats for the authenticated user's own stats,
+                         independently of the request's memo filter.
             description: User statistics messages
         UserStats_MemoTypeStats:
             type: object
