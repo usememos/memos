@@ -1,5 +1,36 @@
 # Changelog
 
+## [0.31.0-rc.2](https://github.com/usememos/memos/compare/v0.31.0-rc.1...v0.31.0-rc.2) (2026-09-15)
+
+### Highlights
+
+* **Calendar:** Browse your memos by month and open a day to read or add memos for that date. ([#6277](https://github.com/usememos/memos/pull/6277)) ([#6280](https://github.com/usememos/memos/pull/6280))
+* **Map:** Explore memos with location data on a dedicated map page. ([bc89ec0](https://github.com/usememos/memos/commit/bc89ec00060623cff52eacbc2c3ca82038e5c924))
+* **Spaces:** Move memos between Spaces, receive invitations in your inbox, and personalize Spaces with icons or emoji. ([#6285](https://github.com/usememos/memos/pull/6285)) ([#6266](https://github.com/usememos/memos/pull/6266)) ([#6287](https://github.com/usememos/memos/pull/6287))
+* **Space navigation:** Space selection is now part of the URL. Switching Spaces preserves the current page and filters, and returning from a memo restores its original context. ([af008b2](https://github.com/usememos/memos/commit/af008b21533bdc50fae5ad6a438347ad84bb9419))
+* **Views and search:** Give saved Views custom icons, filter by Space or find memos outside any Space, and use expressions in Quick Find for advanced searches. ([#6305](https://github.com/usememos/memos/pull/6305)) ([#6267](https://github.com/usememos/memos/pull/6267)) ([#6276](https://github.com/usememos/memos/pull/6276))
+* **Attachments:** Upload files in smaller chunks to reduce memory use, and see your attachment storage usage in account settings. ([b3e6739](https://github.com/usememos/memos/commit/b3e67399b83bc32cb27dda1f0eaa448b2108e211)) ([#6326](https://github.com/usememos/memos/pull/6326))
+* **Writing:** Use keyboard shortcuts for Markdown formatting. On desktop, the Home editor is focused automatically on initial load. ([#6258](https://github.com/usememos/memos/pull/6258)) ([#6275](https://github.com/usememos/memos/pull/6275))
+* **Audio:** Added 0.5× and 0.75× playback speeds. ([b88a715](https://github.com/usememos/memos/commit/b88a71540a1a4079c8211edeac3e81b0fb4a6a13))
+* **Languages:** Added Azerbaijani and made Chinese sensitive-content labels consistent. ([#6278](https://github.com/usememos/memos/pull/6278)) ([#6274](https://github.com/usememos/memos/pull/6274))
+
+### Fixes and polish
+
+* **Memo navigation:** Redesigned the memo detail sidebar and made active filters easier to distinguish from the current page. ([#6261](https://github.com/usememos/memos/pull/6261)) ([aba1f73](https://github.com/usememos/memos/commit/aba1f7384d44d020ce8e4d9036c7cececb3c6c13))
+* **Sidebar:** Refined spacing, simplified the account footer, and prevented navigation labels from being truncated in narrow sidebars. ([191ec01](https://github.com/usememos/memos/commit/191ec01d11186db7ab4840b41d6fe008e3729909)) ([5a65350](https://github.com/usememos/memos/commit/5a65350400f0b5f6c726a1187458ca3d91f4e38e)) ([88f1505](https://github.com/usememos/memos/commit/88f150502c9a1ec6050ff4bdd8f439f646829ab3))
+* **Memo controls:** Refined compact navigation and memo actions, aligned author spacing, and made metadata controls appear when hovering over their row. ([ce0dd23](https://github.com/usememos/memos/commit/ce0dd23d2f40d5613fd40f284264fc21e5e4ae82)) ([2e33e7a](https://github.com/usememos/memos/commit/2e33e7a5619f04efd9f713b0f855c6c60641ef8c)) ([#6324](https://github.com/usememos/memos/pull/6324))
+* **Editor input:** Restored native mobile text assistance and made pasted files appear as attachments. Tag suggestions now work inside code, links, and escaped text, including unfinished nested tag paths. ([#6248](https://github.com/usememos/memos/pull/6248)) ([8701d93](https://github.com/usememos/memos/commit/8701d93fc0a55500c3c3c27a737fb9d60dd8a82f)) ([#6327](https://github.com/usememos/memos/pull/6327))
+* **Memo timestamps:** Preserved timestamp edits when closing the date and time popover. ([0716eaa](https://github.com/usememos/memos/commit/0716eaac2c07b00cc4c36682ad7880a1ef072162))
+* **Focus mode and blurred content:** Fixed editor focus mode being constrained by the memo grid, improved overlay dimming, and kept blurred memo headers and reactions interactive. ([#6310](https://github.com/usememos/memos/pull/6310)) ([#6269](https://github.com/usememos/memos/pull/6269))
+* **Dark mode:** Matched the installed web app’s status bar to the dark theme. ([#6320](https://github.com/usememos/memos/pull/6320))
+
+### Administration and integrations
+
+* **Account email:** Email remains optional. Addresses are now validated, trimmed, lowercased, and unique per instance. During upgrades, the oldest account keeps a duplicate address; it is cleared from other accounts, with affected usernames logged. ([#6314](https://github.com/usememos/memos/pull/6314))
+* **Abuse protection:** Added rate limits for sign-in, sign-up, remote fetches, uploads, and writes. Webhook validation now also blocks unspecified destination addresses. ([#6315](https://github.com/usememos/memos/pull/6315)) ([#6284](https://github.com/usememos/memos/pull/6284))
+* **MCP:** Corrected JSON Schema formats in tool definitions for better client compatibility. ([652957c](https://github.com/usememos/memos/commit/652957c0f98b5e66fb7b369ddef9f40ee439ef69))
+* **Scheduled jobs:** Corrected cron matching for day-of-month and day-of-week fields. ([#6306](https://github.com/usememos/memos/pull/6306))
+
 ## [0.31.0-rc.1](https://github.com/usememos/memos/compare/v0.30.0...v0.31.0-rc.1) (2026-08-30)
 
 
