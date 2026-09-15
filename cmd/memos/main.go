@@ -60,7 +60,7 @@ func init() {
 	rootCmd.Flags().Int("port", 8081, "port of server")
 	rootCmd.Flags().String("unix-sock", "", "path to the unix socket, overrides --addr and --port")
 	rootCmd.Flags().String("data", "", "data directory")
-	rootCmd.Flags().String("driver", "sqlite", "database driver")
+	rootCmd.Flags().String("driver", "sqlite", "database driver (sqlite, mysql, postgres, d1)")
 	rootCmd.Flags().String("dsn", "", "database source name (DSN)")
 	rootCmd.Flags().String("instance-url", "", "canonical external URL of the Memos instance")
 	rootCmd.Flags().Bool("allow-private-webhooks", false, "allow webhooks to access any private/reserved IP address")

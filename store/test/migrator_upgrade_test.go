@@ -153,6 +153,9 @@ func prepareUpgradeFixture(t *testing.T, driver, version string) (MemosContainer
 			Driver:  driver,
 			DSN:     containerDSN,
 		}, hostDSN
+	case "d1":
+		t.Skip("previous stable releases cannot run on D1; there is no schema to upgrade from")
+		return MemosContainerConfig{}, ""
 	default:
 		t.Fatalf("unsupported driver: %s", driver)
 		return MemosContainerConfig{}, ""

@@ -53,8 +53,8 @@ func TestSQLiteStaleRelationshipWriteCannotOutliveDeletedParent(t *testing.T) {
 
 func TestSpaceInvitationWaitsForConcurrentUserDelete(t *testing.T) {
 	driver := getDriverFromEnv()
-	if driver == "sqlite" {
-		t.Skip("SQLite serializes the competing writes and rejects stale transaction upgrades")
+	if driver == "sqlite" || driver == "d1" {
+		t.Skip("SQLite serializes the competing writes and rejects stale transaction upgrades; D1 has no row locks")
 	}
 
 	setupCtx := context.Background()
@@ -116,8 +116,8 @@ func TestSpaceInvitationWaitsForConcurrentUserDelete(t *testing.T) {
 
 func TestSpaceInvitationWaitsForConcurrentSpaceDelete(t *testing.T) {
 	driver := getDriverFromEnv()
-	if driver == "sqlite" {
-		t.Skip("SQLite serializes the competing writes and rejects stale transaction upgrades")
+	if driver == "sqlite" || driver == "d1" {
+		t.Skip("SQLite serializes the competing writes and rejects stale transaction upgrades; D1 has no row locks")
 	}
 
 	setupCtx := context.Background()

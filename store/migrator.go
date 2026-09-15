@@ -323,10 +323,21 @@ func (s *Store) seed(ctx context.Context) error {
 }
 
 // GetCurrentSchemaVersion returns the latest schema version available for the configured database driver.
+//
+// A driver introduced after the last schema change ships only LATEST.sql and
+// no versioned migration files. LATEST.sql describes the same schema on every
+// driver, so such a driver reports the highest version any driver's migration
+// directory defines and picks up future migrations from there.
 func (s *Store) GetCurrentSchemaVersion() (string, error) {
 	filePaths, err := fs.Glob(migrationFS, fmt.Sprintf("%s*/*.sql", s.getMigrationBasePath()))
 	if err != nil {
 		return "", errors.Wrap(err, "failed to read migration files")
+	}
+	if len(filePaths) == 0 {
+		filePaths, err = fs.Glob(migrationFS, "migration/*/*/*.sql")
+		if err != nil {
+			return "", errors.Wrap(err, "failed to read migration files")
+		}
 	}
 	if len(filePaths) == 0 {
 		return defaultSchemaVersion, nil

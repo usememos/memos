@@ -65,7 +65,7 @@ jobs:
         run: |
           case "${{ matrix.test-group }}" in
             store)
-              # Run store tests for all drivers (sqlite, mysql, postgres)
+              # Run store tests for all drivers (sqlite, mysql, postgres, d1)
               go test -v -coverprofile=coverage.out -covermode=atomic ./store/...
               ;;
             server)

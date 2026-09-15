@@ -21,6 +21,7 @@ import (
 func TestMigrationUniqueEmail(t *testing.T) {
 	ctx := context.Background()
 	driver := getDriverFromEnv()
+	skipWithoutLegacySchema(t, driver)
 	var dsn string
 	switch driver {
 	case "sqlite":
