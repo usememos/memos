@@ -10,6 +10,7 @@ import (
 	"github.com/usememos/memos/store"
 )
 
+// UpsertUserSetting inserts or replaces a user setting.
 func (d *DB) UpsertUserSetting(ctx context.Context, upsert *store.UserSetting) (*store.UserSetting, error) {
 	query := `INSERT INTO user_setting (user_id, key, value) VALUES (?, ?, ?)
 		ON CONFLICT(user_id, key) DO UPDATE SET value = EXCLUDED.value`
@@ -19,6 +20,7 @@ func (d *DB) UpsertUserSetting(ctx context.Context, upsert *store.UserSetting) (
 	return upsert, nil
 }
 
+// ListUserSettings returns the user settings matching find.
 func (d *DB) ListUserSettings(ctx context.Context, find *store.FindUserSetting) ([]*store.UserSetting, error) {
 	where, args := []string{"1 = 1"}, []any{}
 	if v := find.Key; v != storepb.UserSetting_KEY_UNSPECIFIED {
@@ -49,6 +51,7 @@ func (d *DB) ListUserSettings(ctx context.Context, find *store.FindUserSetting) 
 	return list, nil
 }
 
+// DeleteUserSettings removes the user settings matching delete.
 func (d *DB) DeleteUserSettings(ctx context.Context, delete *store.DeleteUserSetting) error {
 	where, args := []string{"1 = 1"}, []any{}
 	if v := delete.Key; v != storepb.UserSetting_KEY_UNSPECIFIED {

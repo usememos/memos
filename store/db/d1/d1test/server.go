@@ -214,15 +214,21 @@ func runStatement(ctx context.Context, tx *sql.Tx, stmt requestStatement, rawRow
 	for _, param := range stmt.Params {
 		args = append(args, decodeParam(param))
 	}
+	// changes() reports the last write even after a read, so the statement's
+	// own count is the total_changes() delta across its execution.
+	var before int64
+	if err := tx.QueryRowContext(ctx, "SELECT total_changes()").Scan(&before); err != nil {
+		return nil, err
+	}
 	columns, arrayRows, objectRows, err := collectRows(ctx, tx, stmt.SQL, args, rawRows)
 	if err != nil {
 		return nil, err
 	}
-
-	var changes, lastRowID int64
-	if err := tx.QueryRowContext(ctx, "SELECT changes(), last_insert_rowid()").Scan(&changes, &lastRowID); err != nil {
+	var after, lastRowID int64
+	if err := tx.QueryRowContext(ctx, "SELECT total_changes(), last_insert_rowid()").Scan(&after, &lastRowID); err != nil {
 		return nil, err
 	}
+	changes := after - before
 	var results any
 	if rawRows {
 		results = map[string]any{"columns": columns, "rows": arrayRows}

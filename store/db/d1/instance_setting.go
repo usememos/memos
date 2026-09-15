@@ -19,6 +19,7 @@ func (d *DB) CreateInstanceSettingIfNotExists(ctx context.Context, create *store
 	return result.Changes == 1, nil
 }
 
+// UpsertInstanceSetting inserts or replaces an instance setting.
 func (d *DB) UpsertInstanceSetting(ctx context.Context, upsert *store.InstanceSetting) (*store.InstanceSetting, error) {
 	if _, err := d.execOne(ctx, settingUpsertStatement, upsert.Name, upsert.Value, upsert.Description); err != nil {
 		return nil, err
@@ -30,6 +31,7 @@ func (d *DB) UpsertInstanceSetting(ctx context.Context, upsert *store.InstanceSe
 const settingUpsertStatement = `INSERT INTO system_setting (name, value, description) VALUES (?, ?, ?)
 	ON CONFLICT(name) DO UPDATE SET value = EXCLUDED.value, description = EXCLUDED.description`
 
+// ListInstanceSettings returns the instance settings matching find.
 func (d *DB) ListInstanceSettings(ctx context.Context, find *store.FindInstanceSetting) ([]*store.InstanceSetting, error) {
 	where, args := []string{"1 = 1"}, []any{}
 	if find.Name != "" {
@@ -56,6 +58,7 @@ func (d *DB) ListInstanceSettings(ctx context.Context, find *store.FindInstanceS
 	return list, nil
 }
 
+// DeleteInstanceSetting removes an instance setting.
 func (d *DB) DeleteInstanceSetting(ctx context.Context, delete *store.DeleteInstanceSetting) error {
 	_, err := d.execOne(ctx, "DELETE FROM system_setting WHERE name = ?", delete.Name)
 	return err

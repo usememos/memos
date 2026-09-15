@@ -13,6 +13,7 @@ import (
 
 const inboxColumns = "id, created_ts, sender_id, receiver_id, status, message"
 
+// CreateInbox inserts an inbox message.
 func (d *DB) CreateInbox(ctx context.Context, create *store.Inbox) (*store.Inbox, error) {
 	messageString := "{}"
 	if create.Message != nil {
@@ -33,6 +34,7 @@ func (d *DB) CreateInbox(ctx context.Context, create *store.Inbox) (*store.Inbox
 	return create, nil
 }
 
+// ListInboxes returns the inbox messages matching find.
 func (d *DB) ListInboxes(ctx context.Context, find *store.FindInbox) ([]*store.Inbox, error) {
 	where, args := []string{"1 = 1"}, []any{}
 
@@ -107,11 +109,13 @@ func inboxScan(scanner inboxScanner) (*store.Inbox, error) {
 	return inbox, nil
 }
 
+// UpdateInbox changes the status of an inbox message.
 func (d *DB) UpdateInbox(ctx context.Context, update *store.UpdateInbox) (*store.Inbox, error) {
 	query := "UPDATE inbox SET status = ? WHERE id = ? RETURNING " + inboxColumns
 	return inboxScan(d.db.QueryRowContext(ctx, query, update.Status.String(), update.ID))
 }
 
+// DeleteInbox removes an inbox message.
 func (d *DB) DeleteInbox(ctx context.Context, delete *store.DeleteInbox) error {
 	_, err := d.execOne(ctx, "DELETE FROM inbox WHERE id = ?", delete.ID)
 	return err

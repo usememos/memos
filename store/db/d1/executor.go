@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -72,6 +73,16 @@ func inClause[T any](values []T) (string, []any) {
 		args = append(args, value)
 	}
 	return "(" + placeholders(len(values)) + ")", args
+}
+
+// intList renders trusted integer ids as a literal IN list. Inlining them
+// keeps long id lists under D1's 100 bound parameter limit.
+func intList(ids []int32) string {
+	parts := make([]string, 0, len(ids))
+	for _, id := range ids {
+		parts = append(parts, strconv.FormatInt(int64(id), 10))
+	}
+	return "(" + strings.Join(parts, ", ") + ")"
 }
 
 // chunk splits values into slices of at most size elements.

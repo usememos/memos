@@ -9,17 +9,23 @@ import (
 	"github.com/usememos/memos/store"
 )
 
+// errAuthStateChanged reports that the authentication state changed between
+// validation and the write; the store retries the mutation.
+var errAuthStateChanged = errors.New("d1: authentication configuration changed during mutation")
+
 // IsRetryableAuthenticationMutationError reports whether err is a transient
-// D1 failure (rate limit, overload, or a busy database) worth retrying.
+// D1 failure (rate limit, overload, or a busy database) or a mutation that
+// lost the race against a concurrent authentication change; both are worth
+// retrying.
 func (*DB) IsRetryableAuthenticationMutationError(err error) bool {
-	return isRetryable(err)
+	return errors.Is(err, errAuthStateChanged) || isRetryable(err)
 }
 
 // ApplyAuthenticationConfigMutation validates the mutation against the
-// current authentication state and applies it as one statement. D1 has no
-// serializable transaction to hold between the reads and the write; the
-// caller retries on transient errors, and the mutation is a single statement
-// so it cannot leave partial state.
+// current authentication state and applies it. D1 has no serializable
+// transaction to hold between the reads and the write, so the batch guards
+// that the GENERAL setting and the identity provider set are exactly what was
+// validated; a concurrent change aborts the write and the store retries.
 func (d *DB) ApplyAuthenticationConfigMutation(ctx context.Context, mutation *store.AuthenticationConfigMutation) error {
 	state, err := authLoadState(ctx, d.db)
 	if err != nil {
@@ -30,19 +36,41 @@ func (d *DB) ApplyAuthenticationConfigMutation(ctx context.Context, mutation *st
 			return err
 		}
 	}
+	b := newBatch()
+	authGuardState(b, state)
 	switch {
 	case mutation.UpsertGeneralSetting != nil:
 		setting := mutation.UpsertGeneralSetting
-		_, err = d.execOne(ctx, settingUpsertStatement, setting.Name, setting.Value, setting.Description)
+		b.add(settingUpsertStatement, setting.Name, setting.Value, setting.Description)
 	case mutation.DeleteIdentityProviderID != nil:
-		_, err = d.execOne(ctx, "DELETE FROM idp WHERE id = ?", *mutation.DeleteIdentityProviderID)
+		b.add("DELETE FROM idp WHERE id = ?", *mutation.DeleteIdentityProviderID)
 	default:
 		return errors.New("authentication configuration mutation has no operation")
 	}
-	if err != nil {
-		return errors.Wrap(err, "failed to apply authentication configuration mutation")
+	if _, err := b.commit(ctx, d); err != nil {
+		return errors.Wrap(guardError(err, errAuthStateChanged), "failed to apply authentication configuration mutation")
 	}
 	return nil
+}
+
+// authGuardState asserts that the GENERAL setting and the identity provider
+// ids are unchanged since state was read.
+func authGuardState(b *batch, state *store.AuthenticationConfigState) {
+	generalCount, generalValue := 0, ""
+	if state.GeneralSetting != nil {
+		generalCount, generalValue = 1, state.GeneralSetting.Value
+	}
+	b.guard("(SELECT COUNT(*) FROM system_setting WHERE name = 'GENERAL') = ?", generalCount)
+	b.guard("COALESCE((SELECT value FROM system_setting WHERE name = 'GENERAL'), '') = ?", generalValue)
+
+	ids := make([]int32, 0, len(state.IdentityProviders))
+	for _, provider := range state.IdentityProviders {
+		ids = append(ids, provider.ID)
+	}
+	b.guard("(SELECT COUNT(*) FROM idp) = ?", len(ids))
+	if len(ids) > 0 {
+		b.guard("NOT EXISTS (SELECT 1 FROM idp WHERE id NOT IN " + intList(ids) + ")")
+	}
 }
 
 // authLoadState reads the GENERAL setting and the identity provider ids.

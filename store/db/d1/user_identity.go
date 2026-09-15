@@ -11,6 +11,7 @@ import (
 
 const userIdentityColumns = "id, user_id, provider, extern_uid, created_ts, updated_ts"
 
+// CreateUserIdentity links an external identity to a user.
 func (d *DB) CreateUserIdentity(ctx context.Context, create *store.UserIdentity) (*store.UserIdentity, error) {
 	query := "INSERT INTO user_identity (user_id, provider, extern_uid) VALUES (?, ?, ?) RETURNING id, created_ts, updated_ts"
 	if err := d.db.QueryRowContext(ctx, query, create.UserID, create.Provider, create.ExternUID).Scan(&create.ID, &create.CreatedTs, &create.UpdatedTs); err != nil {
@@ -45,6 +46,7 @@ func (d *DB) CreateUserWithIdentity(ctx context.Context, createUser *store.User,
 	return createUser, nil
 }
 
+// ListUserIdentities returns the identities matching find.
 func (d *DB) ListUserIdentities(ctx context.Context, find *store.FindUserIdentity) ([]*store.UserIdentity, error) {
 	where, args := []string{"1 = 1"}, []any{}
 	if find.ID != nil {
@@ -79,6 +81,7 @@ func (d *DB) ListUserIdentities(ctx context.Context, find *store.FindUserIdentit
 	return list, nil
 }
 
+// DeleteUserIdentities removes the identities matching delete.
 func (d *DB) DeleteUserIdentities(ctx context.Context, delete *store.DeleteUserIdentity) error {
 	where, args := []string{"1 = 1"}, []any{}
 	if delete.ID != nil {

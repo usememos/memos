@@ -82,6 +82,7 @@ func userListSettingKeys(ctx context.Context, q querier, userID int32) ([]storep
 	return keys, rows.Err()
 }
 
+// DeleteUser removes a user together with the memos, attachments, reactions, shares, inbox messages, identities, and settings they own.
 func (d *DB) DeleteUser(ctx context.Context, delete *store.DeleteUser) (*store.DeleteUserResult, error) {
 	var userID int32
 	err := d.db.QueryRowContext(ctx, "SELECT id FROM user WHERE id = ?", delete.ID).Scan(&userID)

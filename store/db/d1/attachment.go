@@ -15,6 +15,7 @@ import (
 	"github.com/usememos/memos/store"
 )
 
+// CreateAttachment inserts an attachment, checking the memo write policy when one is set.
 func (d *DB) CreateAttachment(ctx context.Context, create *store.Attachment) (*store.Attachment, error) {
 	columns, values, args, err := attachmentInsertValues(create)
 	if err != nil {
@@ -74,6 +75,7 @@ func attachmentInsertValues(create *store.Attachment) (columns []string, values 
 	return columns, values, args, nil
 }
 
+// ListAttachments returns the attachments matching find.
 func (d *DB) ListAttachments(ctx context.Context, find *store.FindAttachment) ([]*store.Attachment, error) {
 	where, args := []string{"1 = 1"}, []any{}
 
@@ -207,6 +209,7 @@ func (d *DB) ListAttachments(ctx context.Context, find *store.FindAttachment) ([
 	return list, nil
 }
 
+// UpdateAttachment applies the given attachment changes.
 func (d *DB) UpdateAttachment(ctx context.Context, update *store.UpdateAttachment) error {
 	set, args, err := attachmentUpdateSet(update)
 	if err != nil {
@@ -273,6 +276,7 @@ func attachmentUpdateSet(update *store.UpdateAttachment) ([]string, []any, error
 	return set, args, nil
 }
 
+// DeleteAttachment removes one attachment.
 func (d *DB) DeleteAttachment(ctx context.Context, delete *store.DeleteAttachment) error {
 	return d.DeleteAttachments(ctx, []*store.DeleteAttachment{delete})
 }

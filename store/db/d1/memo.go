@@ -3,7 +3,6 @@ package d1
 import (
 	"context"
 	"database/sql"
-	"strconv"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -24,6 +23,28 @@ type memoState struct {
 	visibility store.Visibility
 	spaceID    *int32
 	content    string
+}
+
+// memoInlineUIDThreshold is the uid list length above which ListMemos resolves
+// uids to ids before querying, leaving bind capacity for the other filters.
+const memoInlineUIDThreshold = 40
+
+// memoResolveUIDs maps uids to memo ids in chunks that respect the bind limit.
+// Unknown uids are dropped; -1 keeps the IN list valid when none resolve.
+func memoResolveUIDs(ctx context.Context, q querier, uids []string) ([]int32, error) {
+	ids := make([]int32, 0, len(uids))
+	for _, batch := range chunk(uids, inClauseBatchSize) {
+		clause, args := inClause(batch)
+		resolved, err := listMemoIDs(ctx, q, "SELECT id FROM memo WHERE uid IN "+clause, args...)
+		if err != nil {
+			return nil, err
+		}
+		ids = append(ids, resolved...)
+	}
+	if len(ids) == 0 {
+		ids = append(ids, -1)
+	}
+	return ids, nil
 }
 
 // loadMemoState reads the memo row; a missing memo yields sql.ErrNoRows.
@@ -54,16 +75,7 @@ func (s *memoState) contentUnchangedCondition() (string, []any) {
 		[]any{s.id, s.creatorID, s.rowStatus, s.visibility, s.spaceID, s.content}
 }
 
-// memoIntList renders trusted integer ids as a literal IN list. Inlining them
-// keeps long id lists under D1's 100 bound parameter limit.
-func memoIntList(ids []int32) string {
-	parts := make([]string, 0, len(ids))
-	for _, id := range ids {
-		parts = append(parts, strconv.FormatInt(int64(id), 10))
-	}
-	return "(" + strings.Join(parts, ", ") + ")"
-}
-
+// CreateMemo inserts a memo after validating its creator and Space placement.
 func (d *DB) CreateMemo(ctx context.Context, create *store.Memo) (*store.Memo, error) {
 	if err := memoValidateCreate(ctx, d.db, create); err != nil {
 		return nil, err
@@ -151,8 +163,9 @@ func memoLoadCreated(ctx context.Context, q querier, create *store.Memo) error {
 	return nil
 }
 
+// ListMemos returns the memos matching find.
 func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo, error) {
-	where, args, err := memoListConditions(ctx, find)
+	where, args, err := memoListConditions(ctx, d.db, find)
 	if err != nil {
 		return nil, err
 	}
@@ -205,8 +218,9 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	return list, nil
 }
 
-// memoListConditions renders the WHERE clauses for find.
-func memoListConditions(ctx context.Context, find *store.FindMemo) ([]string, []any, error) {
+// memoListConditions renders the WHERE clauses for find. q serves the uid
+// resolution a long uid list needs.
+func memoListConditions(ctx context.Context, q querier, find *store.FindMemo) ([]string, []any, error) {
 	where, args := []string{"1 = 1"}, []any{}
 
 	engine, err := filter.DefaultEngine()
@@ -220,14 +234,24 @@ func memoListConditions(ctx context.Context, find *store.FindMemo) ([]string, []
 		where, args = append(where, "memo.id = ?"), append(args, *v)
 	}
 	if len(find.IDList) > 0 {
-		where = append(where, "memo.id IN "+memoIntList(find.IDList))
+		where = append(where, "memo.id IN "+intList(find.IDList))
 	}
 	if v := find.UID; v != nil {
 		where, args = append(where, "memo.uid = ?"), append(args, *v)
 	}
 	if len(find.UIDList) > 0 {
-		clause, uidArgs := inClause(find.UIDList)
-		where, args = append(where, "memo.uid IN "+clause), append(args, uidArgs...)
+		// A long uid list would exhaust D1's bind limit together with the
+		// other filters, so it is resolved to ids first and inlined.
+		if len(find.UIDList) > memoInlineUIDThreshold {
+			ids, err := memoResolveUIDs(ctx, q, find.UIDList)
+			if err != nil {
+				return nil, nil, err
+			}
+			where = append(where, "memo.id IN "+intList(ids))
+		} else {
+			clause, uidArgs := inClause(find.UIDList)
+			where, args = append(where, "memo.uid IN "+clause), append(args, uidArgs...)
+		}
 	}
 	if v := find.CreatorID; v != nil {
 		where, args = append(where, "memo.creator_id = ?"), append(args, *v)
@@ -314,6 +338,7 @@ func memoScanRow(rows *sql.Rows, excludeContent bool) (*store.Memo, error) {
 	return memo, nil
 }
 
+// UpdateMemo applies the given memo changes, checking the write policy when one is set.
 func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
 	b := newBatch()
 	if update.Policy != nil {
@@ -409,6 +434,7 @@ func memoAddUpdate(b *batch, update *store.UpdateMemo) error {
 	return nil
 }
 
+// DeleteMemo removes a memo and its reactions.
 func (d *DB) DeleteMemo(ctx context.Context, delete *store.DeleteMemo) error {
 	b := newBatch()
 	b.add("DELETE FROM memo WHERE id = ?", delete.ID)

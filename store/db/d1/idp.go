@@ -10,6 +10,7 @@ import (
 
 const idpColumns = "id, uid, name, type, identifier_filter, config"
 
+// CreateIdentityProvider inserts an identity provider.
 func (d *DB) CreateIdentityProvider(ctx context.Context, create *store.IdentityProvider) (*store.IdentityProvider, error) {
 	stmt := "INSERT INTO idp (uid, name, type, identifier_filter, config) VALUES (?, ?, ?, ?, ?) RETURNING id"
 	if err := d.db.QueryRowContext(ctx, stmt, create.UID, create.Name, create.Type.String(), create.IdentifierFilter, create.Config).Scan(&create.ID); err != nil {
@@ -18,6 +19,7 @@ func (d *DB) CreateIdentityProvider(ctx context.Context, create *store.IdentityP
 	return create, nil
 }
 
+// ListIdentityProviders returns the identity providers matching find.
 func (d *DB) ListIdentityProviders(ctx context.Context, find *store.FindIdentityProvider) ([]*store.IdentityProvider, error) {
 	where, args := []string{"1 = 1"}, []any{}
 	if v := find.ID; v != nil {
@@ -70,6 +72,7 @@ func idpScan(scanner idpScanner) (*store.IdentityProvider, error) {
 	return &identityProvider, nil
 }
 
+// UpdateIdentityProvider applies the given identity provider changes.
 func (d *DB) UpdateIdentityProvider(ctx context.Context, update *store.UpdateIdentityProvider) (*store.IdentityProvider, error) {
 	set, args := []string{}, []any{}
 	if v := update.Name; v != nil {
@@ -91,6 +94,7 @@ func (d *DB) UpdateIdentityProvider(ctx context.Context, update *store.UpdateIde
 	return idpScan(d.db.QueryRowContext(ctx, stmt, args...))
 }
 
+// DeleteIdentityProvider removes an identity provider.
 func (d *DB) DeleteIdentityProvider(ctx context.Context, delete *store.DeleteIdentityProvider) error {
 	_, err := d.execOne(ctx, "DELETE FROM idp WHERE id = ?", delete.ID)
 	return err

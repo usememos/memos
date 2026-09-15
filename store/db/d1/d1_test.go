@@ -32,6 +32,15 @@ func TestParseDSN(t *testing.T) {
 	require.Equal(t, "secret", config.Token)
 	require.Equal(t, "http://127.0.0.1:1", config.Endpoint)
 
+	for _, endpoint := range []string{"http://127.0.0.1:8787", "http://localhost:8787", "http://[::1]:8787", "https://api.example.com/v4"} {
+		_, err = ParseDSN("d1://acct/dbid?token=secret&endpoint=" + endpoint)
+		require.NoError(t, err, endpoint)
+	}
+	for _, endpoint := range []string{"http://api.example.com", "ftp://api.example.com", "api.example.com"} {
+		_, err = ParseDSN("d1://acct/dbid?token=secret&endpoint=" + endpoint)
+		require.Error(t, err, endpoint)
+	}
+
 	_, err = ParseDSN("sqlite://x")
 	require.ErrorContains(t, err, "d1:// scheme")
 	_, err = ParseDSN("d1:///dbid?token=t")

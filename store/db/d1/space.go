@@ -126,6 +126,7 @@ func spacePopulateSummary(ctx context.Context, q querier, space *store.Space, us
 	return errors.Wrap(err, "failed to populate space summary")
 }
 
+// CreateSpace inserts a Space with its creator as the first administrator.
 func (d *DB) CreateSpace(ctx context.Context, create *store.Space, creatorID int32) (*store.Space, error) {
 	if err := requireActiveUser(ctx, d.db, creatorID, store.ErrSpaceMemberNotActive); err != nil {
 		return nil, err
@@ -159,6 +160,7 @@ func (d *DB) CreateSpace(ctx context.Context, create *store.Space, creatorID int
 	return space, nil
 }
 
+// ListSpaces returns the Spaces matching find.
 func (d *DB) ListSpaces(ctx context.Context, find *store.FindSpace) ([]*store.Space, error) {
 	where, args := []string{"1 = 1"}, []any{}
 	selectFields := "space.id, space.uid, space.title, space.description, space.payload"
@@ -210,6 +212,7 @@ func (d *DB) ListSpaces(ctx context.Context, find *store.FindSpace) ([]*store.Sp
 	return spaces, rows.Err()
 }
 
+// UpdateSpace applies the given Space changes on behalf of an administrator.
 func (d *DB) UpdateSpace(ctx context.Context, update *store.UpdateSpace, actorUserID int32) (*store.Space, error) {
 	validate := func() error { return spaceAuthorizeAdmin(ctx, d.db, update.ID, actorUserID) }
 	if err := validate(); err != nil {
@@ -244,6 +247,7 @@ func (d *DB) UpdateSpace(ctx context.Context, update *store.UpdateSpace, actorUs
 	return space, nil
 }
 
+// CreateSpaceInvitation invites a user to a Space on behalf of an administrator.
 func (d *DB) CreateSpaceInvitation(ctx context.Context, create *store.SpaceInvitation, actorUserID int32) (*store.SpaceInvitation, error) {
 	validate := func() error {
 		if err := spaceAuthorizeAdmin(ctx, d.db, create.SpaceID, actorUserID); err != nil {
@@ -270,6 +274,7 @@ func (d *DB) CreateSpaceInvitation(ctx context.Context, create *store.SpaceInvit
 	return &store.SpaceInvitation{SpaceID: create.SpaceID, UserID: create.UserID, Role: create.Role}, nil
 }
 
+// ListSpaceMembers returns the active memberships matching find.
 func (d *DB) ListSpaceMembers(ctx context.Context, find *store.FindSpaceMember) ([]*store.SpaceMember, error) {
 	where, args := []string{
 		"space_member.status = 'ACTIVE'",
@@ -304,6 +309,7 @@ func (d *DB) ListSpaceMembers(ctx context.Context, find *store.FindSpaceMember) 
 	return members, rows.Err()
 }
 
+// ListSpaceInvitations returns the pending invitations matching find.
 func (d *DB) ListSpaceInvitations(ctx context.Context, find *store.FindSpaceInvitation) ([]*store.SpaceInvitation, error) {
 	where, args := []string{
 		"space_member.status = 'INVITED'",
@@ -349,6 +355,7 @@ func (d *DB) ListSpaceInvitations(ctx context.Context, find *store.FindSpaceInvi
 	return invitations, rows.Err()
 }
 
+// AcceptSpaceInvitation turns the actor's own invitation into an active membership.
 func (d *DB) AcceptSpaceInvitation(ctx context.Context, accept *store.AcceptSpaceInvitation, actorUserID int32) (*store.SpaceMember, error) {
 	if accept.UserID != actorUserID {
 		return nil, store.ErrSpacePermissionDenied
@@ -371,6 +378,7 @@ func (d *DB) AcceptSpaceInvitation(ctx context.Context, accept *store.AcceptSpac
 	return member, nil
 }
 
+// DeclineSpaceInvitation removes the actor's own pending invitation.
 func (d *DB) DeclineSpaceInvitation(ctx context.Context, decline *store.DeclineSpaceInvitation, actorUserID int32) error {
 	if decline.UserID != actorUserID {
 		return store.ErrSpacePermissionDenied
@@ -383,6 +391,7 @@ func (d *DB) DeclineSpaceInvitation(ctx context.Context, decline *store.DeclineS
 	return spaceDeleteInvitation(ctx, d, validate, query, decline.SpaceID, decline.UserID, store.SpaceMemberStatusInvited, decline.UserID)
 }
 
+// RevokeSpaceInvitation removes a pending invitation on behalf of an administrator.
 func (d *DB) RevokeSpaceInvitation(ctx context.Context, revoke *store.RevokeSpaceInvitation, actorUserID int32) error {
 	validate := func() error { return spaceAuthorizeAdmin(ctx, d.db, revoke.SpaceID, actorUserID) }
 	if err := validate(); err != nil {
@@ -432,6 +441,7 @@ func spaceValidateMemberUpdate(ctx context.Context, q querier, update *store.Upd
 	return nil
 }
 
+// UpdateSpaceMember changes a membership on behalf of an administrator, keeping at least one active administrator.
 func (d *DB) UpdateSpaceMember(ctx context.Context, update *store.UpdateSpaceMember, actorUserID int32) (*store.SpaceMember, error) {
 	validate := func() error { return spaceValidateMemberUpdate(ctx, d.db, update, actorUserID) }
 	if err := validate(); err != nil {
@@ -440,6 +450,19 @@ func (d *DB) UpdateSpaceMember(ctx context.Context, update *store.UpdateSpaceMem
 	sets, args := []string{}, []any{}
 	if update.Role != nil {
 		sets, args = append(sets, "role = ?"), append(args, *update.Role)
+	}
+	if len(sets) == 0 {
+		// Nothing to write; report the current membership as an update would.
+		member := &store.SpaceMember{}
+		err := d.db.QueryRowContext(ctx, "SELECT space_id, user_id, role FROM space_member WHERE space_id = ? AND user_id = ? AND status = ?",
+			update.SpaceID, update.UserID, store.SpaceMemberStatusActive).Scan(&member.SpaceID, &member.UserID, &member.Role)
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, store.ErrSpaceMemberNotFound
+		}
+		if err != nil {
+			return nil, err
+		}
+		return member, nil
 	}
 	where := []string{"space_id = ?", "user_id = ?", "status = ?", spaceAdminCondition, activeUserCondition}
 	args = append(args, update.SpaceID, update.UserID, store.SpaceMemberStatusActive, update.SpaceID, actorUserID, update.UserID)
@@ -491,6 +514,7 @@ func spaceValidateMemberDelete(ctx context.Context, q querier, delete *store.Del
 	return nil
 }
 
+// DeleteSpaceMember removes a membership, keeping at least one active administrator.
 func (d *DB) DeleteSpaceMember(ctx context.Context, delete *store.DeleteSpaceMember, actorUserID int32) error {
 	validate := func() error { return spaceValidateMemberDelete(ctx, d.db, delete, actorUserID) }
 	if err := validate(); err != nil {

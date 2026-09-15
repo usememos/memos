@@ -12,6 +12,7 @@ import (
 
 const shareColumns = "id, uid, memo_id, creator_id, created_ts, expires_ts"
 
+// CreateMemoShare inserts a share grant, checking the memo write policy when one is set.
 func (d *DB) CreateMemoShare(ctx context.Context, create *store.MemoShare) (*store.MemoShare, error) {
 	columns, values, args := []string{"uid", "memo_id", "creator_id"}, []string{"?", "?", "?"}, []any{create.UID, create.MemoID, create.CreatorID}
 	if create.ExpiresTs != nil {
@@ -81,6 +82,7 @@ func shareScan(scanner shareScanner) (*store.MemoShare, error) {
 	return share, nil
 }
 
+// ListMemoShares returns the share grants matching find.
 func (d *DB) ListMemoShares(ctx context.Context, find *store.FindMemoShare) ([]*store.MemoShare, error) {
 	where, args := shareFindWhere(find)
 	rows, err := d.db.QueryContext(ctx, "SELECT "+shareColumns+" FROM memo_share WHERE "+strings.Join(where, " AND ")+" ORDER BY id ASC", args...)
@@ -103,6 +105,7 @@ func (d *DB) ListMemoShares(ctx context.Context, find *store.FindMemoShare) ([]*
 	return list, nil
 }
 
+// GetMemoShare returns the first share grant matching find, or nil.
 func (d *DB) GetMemoShare(ctx context.Context, find *store.FindMemoShare) (*store.MemoShare, error) {
 	where, args := shareFindWhere(find)
 	share, err := shareScan(d.db.QueryRowContext(ctx, "SELECT "+shareColumns+" FROM memo_share WHERE "+strings.Join(where, " AND ")+" LIMIT 1", args...))
@@ -115,6 +118,7 @@ func (d *DB) GetMemoShare(ctx context.Context, find *store.FindMemoShare) (*stor
 	return share, nil
 }
 
+// DeleteMemoShare removes share grants, requiring exactly one revoked row when a policy is set.
 func (d *DB) DeleteMemoShare(ctx context.Context, delete *store.DeleteMemoShare) error {
 	where, args := []string{"1 = 1"}, []any{}
 	if delete.ID != nil {

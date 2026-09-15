@@ -9,6 +9,7 @@ import (
 	"github.com/usememos/memos/store"
 )
 
+// DeleteMemoWithPolicy removes a memo on behalf of an actor together with its shares, reactions, attachments, and relations.
 func (d *DB) DeleteMemoWithPolicy(ctx context.Context, delete *store.DeleteMemoWithPolicy) (*store.DeleteMemoWithPolicyResult, error) {
 	if err := requireActiveUser(ctx, d.db, delete.ActorUserID, store.ErrMemoPermissionDenied); err != nil {
 		return nil, err

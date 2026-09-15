@@ -59,6 +59,7 @@ func userInsert(ctx context.Context, q querier, create *store.User) error {
 	)
 }
 
+// CreateUser inserts a user.
 func (d *DB) CreateUser(ctx context.Context, create *store.User) (*store.User, error) {
 	if err := userInsert(ctx, d.db, create); err != nil {
 		return nil, err
@@ -87,6 +88,7 @@ func userValidateArchive(ctx context.Context, q querier, userID int32) error {
 	return nil
 }
 
+// UpdateUser applies the given user changes, refusing to archive the last administrator of a Space.
 func (d *DB) UpdateUser(ctx context.Context, update *store.UpdateUser) (*store.User, error) {
 	archiving := update.RowStatus != nil && *update.RowStatus == store.Archived
 	validate := func() error {
@@ -126,6 +128,14 @@ func (d *DB) UpdateUser(ctx context.Context, update *store.UpdateUser) (*store.U
 	if v := update.Role; v != nil {
 		set, args = append(set, "role = ?"), append(args, *v)
 	}
+	if len(set) == 0 {
+		// Nothing to write; report the current row as an update would.
+		user := &store.User{}
+		if err := userScan(d.db.QueryRowContext(ctx, "SELECT "+userColumns+" FROM user WHERE id = ?", update.ID), user); err != nil {
+			return nil, err
+		}
+		return user, nil
+	}
 	where := "id = ?"
 	args = append(args, update.ID)
 	if archiving {
@@ -146,6 +156,7 @@ func (d *DB) UpdateUser(ctx context.Context, update *store.UpdateUser) (*store.U
 	return user, nil
 }
 
+// ListUsers returns the users matching find.
 func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User, error) {
 	if len(find.Filters) > 0 {
 		return nil, errors.Errorf("user filters are not supported")

@@ -9,6 +9,7 @@ import (
 	"github.com/usememos/memos/store"
 )
 
+// UpsertMemoRelation inserts or refreshes a relation between two memos.
 func (d *DB) UpsertMemoRelation(ctx context.Context, create *store.MemoRelation) (*store.MemoRelation, error) {
 	// One statement is already atomic on D1, so RETURNING can be read directly.
 	stmt := `
@@ -28,6 +29,7 @@ func (d *DB) UpsertMemoRelation(ctx context.Context, create *store.MemoRelation)
 	return memoRelation, nil
 }
 
+// ListMemoRelations returns the relations matching find.
 func (d *DB) ListMemoRelations(ctx context.Context, find *store.FindMemoRelation) ([]*store.MemoRelation, error) {
 	where, args, err := memoRelationConditions(ctx, find)
 	if err != nil {
@@ -74,14 +76,14 @@ func memoRelationConditions(ctx context.Context, find *store.FindMemoRelation) (
 		where, args = append(where, "type = ?"), append(args, *find.Type)
 	}
 	if len(find.MemoIDList) > 0 {
-		list := memoIntList(find.MemoIDList)
+		list := intList(find.MemoIDList)
 		where = append(where, fmt.Sprintf("(memo_id IN %s OR related_memo_id IN %s)", list, list))
 	}
 	if len(find.SourceMemoIDList) > 0 {
-		where = append(where, "memo_id IN "+memoIntList(find.SourceMemoIDList))
+		where = append(where, "memo_id IN "+intList(find.SourceMemoIDList))
 	}
 	if len(find.RelatedMemoIDList) > 0 {
-		where = append(where, "related_memo_id IN "+memoIntList(find.RelatedMemoIDList))
+		where = append(where, "related_memo_id IN "+intList(find.RelatedMemoIDList))
 	}
 	if find.SourceMemoRowStatus != nil {
 		where, args = append(where, "memo_id IN (SELECT id FROM memo WHERE row_status = ?)"), append(args, *find.SourceMemoRowStatus)
@@ -105,6 +107,7 @@ func memoRelationConditions(ctx context.Context, find *store.FindMemoRelation) (
 	return where, args, nil
 }
 
+// DeleteMemoRelation removes the relations matching delete.
 func (d *DB) DeleteMemoRelation(ctx context.Context, delete *store.DeleteMemoRelation) error {
 	if err := store.ValidateMemoRelationDelete(delete); err != nil {
 		return err

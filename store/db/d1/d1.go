@@ -41,10 +41,12 @@ func (d *DB) GetDB() *sql.DB {
 	return d.db
 }
 
+// Close releases the HTTP connection pool.
 func (d *DB) Close() error {
 	return d.db.Close()
 }
 
+// IsInitialized reports whether the schema has been created.
 func (d *DB) IsInitialized(ctx context.Context) (bool, error) {
 	var exists bool
 	err := d.db.QueryRowContext(ctx, "SELECT EXISTS(SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'memo')").Scan(&exists)

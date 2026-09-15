@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -68,7 +69,42 @@ func ParseDSN(dsn string) (*Config, error) {
 	if config.Endpoint == "" {
 		config.Endpoint = DefaultEndpoint
 	}
+	if err := validateEndpoint(config.Endpoint); err != nil {
+		return nil, err
+	}
 	return config, nil
+}
+
+// validateEndpoint rejects endpoints that would send the bearer token in the
+// clear. Plain HTTP is allowed only towards loopback, where the test
+// emulator listens.
+func validateEndpoint(endpoint string) error {
+	parsed, err := url.Parse(endpoint)
+	if err != nil {
+		return errors.Wrap(err, "invalid d1 endpoint")
+	}
+	if parsed.Host == "" {
+		return errors.Errorf("d1 endpoint %q has no host", endpoint)
+	}
+	switch parsed.Scheme {
+	case "https":
+		return nil
+	case "http":
+		if isLoopbackHost(parsed.Hostname()) {
+			return nil
+		}
+		return errors.Errorf("d1 endpoint %q must use https unless it points at loopback", endpoint)
+	default:
+		return errors.Errorf("d1 endpoint %q must use https", endpoint)
+	}
+}
+
+func isLoopbackHost(host string) bool {
+	if host == "localhost" {
+		return true
+	}
+	ip := net.ParseIP(host)
+	return ip != nil && ip.IsLoopback()
 }
 
 // Error is a failure reported by the D1 REST API.
