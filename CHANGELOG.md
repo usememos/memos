@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.31.0-rc.3](https://github.com/usememos/memos/compare/v0.31.0-rc.2...v0.31.0-rc.3) (2026-09-15)
+
+
+### Features
+
+* **store:** add Cloudflare D1 database driver ([#6330](https://github.com/usememos/memos/issues/6330)) ([2e3db14](https://github.com/usememos/memos/commit/2e3db14741a416419e0a466c42f3f2d7691a57fc))
+
 ## [0.31.0-rc.2](https://github.com/usememos/memos/compare/v0.31.0-rc.1...v0.31.0-rc.2) (2026-09-15)
 
 ### Highlights
