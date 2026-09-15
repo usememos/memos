@@ -96,6 +96,14 @@ func init() {
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 	viper.AutomaticEnv()
 
+	// POSIX/BSD users reach for `-V`, GNU users for `--version`, and Go/Rust
+	// users for the `version` subcommand. Register the flag before Cobra's
+	// default so the shorthand stays `-V` rather than Cobra's `-v`, and use a
+	// bare template so all three print exactly the same string.
+	rootCmd.Flags().BoolP("version", "V", false, "print the current Memos version")
+	rootCmd.Version = version.GetCurrentVersion()
+	rootCmd.SetVersionTemplate("{{.Version}}\n")
+
 	rootCmd.AddCommand(versionCmd)
 }
 
