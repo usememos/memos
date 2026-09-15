@@ -55,6 +55,7 @@ func TestSpacePayloadRoundTrip(t *testing.T) {
 
 func TestMigrationSpacePayloadBackfillsDefault(t *testing.T) {
 	ctx := context.Background()
+	skipWithoutLegacySchema(t, getDriverFromEnv())
 	ts := NewTestingStore(ctx, t)
 	defer ts.Close()
 	owner, err := createTestingHostUser(ctx, ts)

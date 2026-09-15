@@ -353,6 +353,9 @@ func TestReactionInsertedAfterMemoCleanupStartsIsRemoved(t *testing.T) {
 }
 
 func TestReactionUpsertBlocksWhileMemoDeleteIsUncommitted(t *testing.T) {
+	if getDriverFromEnv() == "d1" {
+		t.Skip("D1 has no interactive transactions, so an uncommitted delete cannot hold a lock")
+	}
 	setupContext := context.Background()
 	ts := NewTestingStore(setupContext, t)
 	t.Cleanup(func() {

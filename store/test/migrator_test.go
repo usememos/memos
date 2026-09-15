@@ -153,6 +153,7 @@ func TestMigrationWithData(t *testing.T) {
 func TestMigrationMultiSpacesPreservesMemosAndRelations(t *testing.T) {
 	ctx := context.Background()
 	driver := getDriverFromEnv()
+	skipWithoutLegacySchema(t, driver)
 	dsn := getTestingProfileForDriver(t, driver).DSN
 	db, err := sql.Open(driver, dsn)
 	require.NoError(t, err)
@@ -294,6 +295,7 @@ func TestMigrationMultiSpacesPreservesMemosAndRelations(t *testing.T) {
 
 func TestMigrationSpaceMemberStatusBackfillsActive(t *testing.T) {
 	ctx := context.Background()
+	skipWithoutLegacySchema(t, getDriverFromEnv())
 	ts := NewTestingStore(ctx, t)
 
 	owner, err := createTestingHostUser(ctx, ts)
@@ -430,6 +432,7 @@ func TestConcurrentInstanceAccessInitializationKeepsFirstInsert(t *testing.T) {
 func TestMigrationStorageSetting(t *testing.T) {
 	ctx := context.Background()
 	driver := getDriverFromEnv()
+	skipWithoutLegacySchema(t, driver)
 
 	legacyDatabase, err := protojson.Marshal(&storepb.InstanceStorageSetting{
 		StorageType: storepb.InstanceStorageSetting_DATABASE,
@@ -662,6 +665,7 @@ func assertStorageMigrationAttachments(ctx context.Context, t *testing.T, ts *st
 func TestMigrationReactionMemoID(t *testing.T) {
 	ctx := context.Background()
 	driver := getDriverFromEnv()
+	skipWithoutLegacySchema(t, driver)
 	dsn := getTestingProfileForDriver(t, driver).DSN
 
 	db, err := sql.Open(driver, dsn)
@@ -735,6 +739,7 @@ func TestMigrationReactionMemoID(t *testing.T) {
 func TestMigrationLegacyS3Attachment(t *testing.T) {
 	ctx := context.Background()
 	driver := getDriverFromEnv()
+	skipWithoutLegacySchema(t, driver)
 	server := fakes3.New(t, "legacy-attachments")
 	config := server.Config("legacy-attachments")
 	content := []byte("attachment uploaded before named storage migration")
@@ -824,6 +829,7 @@ func TestMigrationLegacyS3Attachment(t *testing.T) {
 func TestMigrationMemoViewSetting(t *testing.T) {
 	ctx := context.Background()
 	driver := getDriverFromEnv()
+	skipWithoutLegacySchema(t, driver)
 	var dsn string
 	switch driver {
 	case "sqlite":
@@ -1008,6 +1014,7 @@ func TestMigrationCopiesInstanceTagsToUserSettings(t *testing.T) {
 func TestMigrationCaseSensitiveUsername(t *testing.T) {
 	ctx := context.Background()
 	driver := getDriverFromEnv()
+	skipWithoutLegacySchema(t, driver)
 	var dsn string
 	switch driver {
 	case "sqlite":
@@ -1074,6 +1081,15 @@ func TestMigrationCaseSensitiveUsername(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEqual(t, upper.ID, lower.ID)
 	require.Equal(t, "Alice", upper.Username)
+}
+
+// skipWithoutLegacySchema skips migration tests that start from a pre-0.31
+// schema on drivers introduced after it, which have no legacy layout to migrate.
+func skipWithoutLegacySchema(t *testing.T, driver string) {
+	t.Helper()
+	if driver == "d1" {
+		t.Skip("D1 databases start at the current schema; there is no legacy schema to migrate")
+	}
 }
 
 func legacySchemaFixture(driver string) string {

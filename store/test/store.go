@@ -16,12 +16,16 @@ import (
 	"github.com/usememos/memos/internal/version"
 	"github.com/usememos/memos/store"
 	"github.com/usememos/memos/store/db"
+	"github.com/usememos/memos/store/db/d1/d1test"
 )
 
 // NewTestingStore creates a new testing store with a fresh database.
 // Each test gets its own isolated database:
 //   - SQLite: new temp file per test
 //   - MySQL/PostgreSQL: new database per test in shared container
+//   - D1: new emulated database per test (see store/db/d1/d1test), or the
+//     database named by D1_DSN when set; that database is shared, so run one
+//     test at a time against it
 func NewTestingStore(ctx context.Context, t *testing.T) *store.Store {
 	driver := getDriverFromEnv()
 	profile := getTestingProfileForDriver(t, driver)
@@ -105,6 +109,11 @@ func getTestingProfileForDriver(t *testing.T, driver string) *profile.Profile {
 		dsn = GetMySQLDSN(t)
 	case "postgres":
 		dsn = GetPostgresDSN(t)
+	case "d1":
+		dsn = os.Getenv("D1_DSN")
+		if dsn == "" {
+			dsn = d1test.New(t).DSN()
+		}
 	default:
 		t.Fatalf("unsupported driver: %s", driver)
 	}
@@ -124,4 +133,23 @@ func getDriverFromEnv() string {
 		driver = "sqlite"
 	}
 	return driver
+}
+
+// skipRegexFiltersOnD1 skips tests whose matches() patterns go beyond
+// literal text with anchors: D1 has no REGEXP operator, so the filter engine
+// only expresses those and rejects everything else at compile time.
+func skipRegexFiltersOnD1(t *testing.T) {
+	t.Helper()
+	if getDriverFromEnv() == "d1" {
+		t.Skip("only literal regular expressions are supported on Cloudflare D1")
+	}
+}
+
+// skipUnicodeFoldOnD1 skips tests that need Unicode case folding: D1 cannot
+// register custom functions, so it folds with the ASCII-only LOWER().
+func skipUnicodeFoldOnD1(t *testing.T) {
+	t.Helper()
+	if getDriverFromEnv() == "d1" {
+		t.Skip("Cloudflare D1 folds case with ASCII-only LOWER()")
+	}
 }

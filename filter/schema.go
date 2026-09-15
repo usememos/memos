@@ -14,6 +14,8 @@ const (
 	DialectSQLite   DialectName = "sqlite"
 	DialectMySQL    DialectName = "mysql"
 	DialectPostgres DialectName = "postgres"
+	// DialectD1 targets Cloudflare D1: SQLite syntax without custom functions.
+	DialectD1 DialectName = "d1"
 )
 
 // FieldType represents the logical type of a field.
@@ -105,6 +107,7 @@ func NewSchema() Schema {
 			Column: Column{Table: "memo_creator", Name: "username"},
 			Expressions: map[DialectName]string{
 				DialectSQLite:   "('users/' || %s)",
+				DialectD1:       "('users/' || %s)",
 				DialectMySQL:    "CONCAT('users/', %s)",
 				DialectPostgres: "('users/' || %s)",
 			},
@@ -135,6 +138,7 @@ func NewSchema() Schema {
 				// PostgreSQL and SQLite store created_ts as BIGINT (epoch), no conversion needed
 				DialectPostgres: "%s",
 				DialectSQLite:   "%s",
+				DialectD1:       "%s",
 			},
 		},
 		"updated_ts": {
@@ -148,6 +152,7 @@ func NewSchema() Schema {
 				// PostgreSQL and SQLite store updated_ts as BIGINT (epoch), no conversion needed
 				DialectPostgres: "%s",
 				DialectSQLite:   "%s",
+				DialectD1:       "%s",
 			},
 		},
 		"pinned": {
@@ -179,6 +184,7 @@ func NewSchema() Schema {
 			Column: Column{Table: "memo_space", Name: "uid"},
 			Expressions: map[DialectName]string{
 				DialectSQLite:   "CASE WHEN `memo`.`space_id` IS NULL THEN NULL WHEN %[1]s IS NULL THEN '' ELSE ('spaces/' || %[1]s) END",
+				DialectD1:       "CASE WHEN `memo`.`space_id` IS NULL THEN NULL WHEN %[1]s IS NULL THEN '' ELSE ('spaces/' || %[1]s) END",
 				DialectMySQL:    "CASE WHEN `memo`.`space_id` IS NULL THEN NULL WHEN %[1]s IS NULL THEN '' ELSE CONCAT('spaces/', %[1]s) END",
 				DialectPostgres: "CASE WHEN memo.space_id IS NULL THEN NULL WHEN %[1]s IS NULL THEN '' ELSE ('spaces/' || %[1]s) END",
 			},
@@ -315,6 +321,7 @@ func NewAttachmentSchema() Schema {
 				// PostgreSQL and SQLite store created_ts as BIGINT (epoch), no conversion needed
 				DialectPostgres: "%s",
 				DialectSQLite:   "%s",
+				DialectD1:       "%s",
 			},
 		},
 		"memo_id": {
@@ -335,6 +342,7 @@ func NewAttachmentSchema() Schema {
 			Column: Column{Table: "attachment_space", Name: "uid"},
 			Expressions: map[DialectName]string{
 				DialectSQLite:   "CASE WHEN `attachment`.`memo_id` IS NULL OR `memo`.`space_id` IS NULL THEN NULL WHEN %[1]s IS NULL THEN '' ELSE ('spaces/' || %[1]s) END",
+				DialectD1:       "CASE WHEN `attachment`.`memo_id` IS NULL OR `memo`.`space_id` IS NULL THEN NULL WHEN %[1]s IS NULL THEN '' ELSE ('spaces/' || %[1]s) END",
 				DialectMySQL:    "CASE WHEN `attachment`.`memo_id` IS NULL OR `memo`.`space_id` IS NULL THEN NULL WHEN %[1]s IS NULL THEN '' ELSE CONCAT('spaces/', %[1]s) END",
 				DialectPostgres: "CASE WHEN attachment.memo_id IS NULL OR memo.space_id IS NULL THEN NULL WHEN %[1]s IS NULL THEN '' ELSE ('spaces/' || %[1]s) END",
 			},

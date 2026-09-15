@@ -26,8 +26,7 @@ type Profile struct {
 	Data string
 	// DSN points to where memos stores its own data
 	DSN string
-	// Driver is the database driver
-	// sqlite, mysql
+	// Driver is the database driver: sqlite, mysql, postgres, or d1.
 	Driver string
 	// Version is the current version of server
 	Version string

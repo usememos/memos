@@ -72,6 +72,7 @@ func TestMemoFilterContentUnicode(t *testing.T) {
 
 func TestMemoFilterContentUnicodeCaseFold(t *testing.T) {
 	t.Parallel()
+	skipUnicodeFoldOnD1(t)
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -179,6 +180,7 @@ func TestMemoFilterStartsWithCombinedAndNegated(t *testing.T) {
 
 func TestMemoFilterContentMatchesAdvanced(t *testing.T) {
 	t.Parallel()
+	skipRegexFiltersOnD1(t)
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -276,6 +278,7 @@ func TestMemoFilterContentEndsWith(t *testing.T) {
 
 func TestMemoFilterContentMatches(t *testing.T) {
 	t.Parallel()
+	skipRegexFiltersOnD1(t)
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
