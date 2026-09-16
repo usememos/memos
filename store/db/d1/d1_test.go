@@ -13,10 +13,17 @@ import (
 
 var errConflict = errors.New("conflict")
 
-func newTestDB(t *testing.T) *DB {
+// accessModes lists the DSN of each access mode against the emulator; every
+// transport test runs under both.
+var accessModes = map[string]func(*d1test.Server) string{
+	"rest":   (*d1test.Server).DSN,
+	"bridge": (*d1test.Server).BridgeDSN,
+}
+
+func newTestDB(t *testing.T, dsn func(*d1test.Server) string) *DB {
 	t.Helper()
 	server := d1test.New(t)
-	driver, err := NewDB(&profile.Profile{Driver: "d1", DSN: server.DSN()})
+	driver, err := NewDB(&profile.Profile{Driver: "d1", DSN: dsn(server)})
 	require.NoError(t, err)
 	db, ok := driver.(*DB)
 	require.True(t, ok)
@@ -42,7 +49,7 @@ func TestParseDSN(t *testing.T) {
 	}
 
 	_, err = ParseDSN("sqlite://x")
-	require.ErrorContains(t, err, "d1:// scheme")
+	require.ErrorContains(t, err, "d1:// or d1-bridge:// scheme")
 	_, err = ParseDSN("d1:///dbid?token=t")
 	require.ErrorContains(t, err, "account id")
 	t.Setenv("CLOUDFLARE_API_TOKEN", "")
@@ -53,11 +60,43 @@ func TestParseDSN(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, "from-env", config.Token)
 	require.Equal(t, DefaultEndpoint, config.Endpoint)
+	require.Equal(t, AccessModeREST, config.Mode)
+}
+
+func TestParseBridgeDSN(t *testing.T) {
+	config, err := ParseDSN("d1-bridge://worker.example.com/d1?token=secret")
+	require.NoError(t, err)
+	require.Equal(t, AccessModeBridge, config.Mode)
+	require.Equal(t, "https://worker.example.com/d1", config.BridgeURL)
+	require.Equal(t, "secret", config.Token)
+
+	config, err = ParseDSN("d1-bridge://127.0.0.1:8787/bridge/?insecure=true")
+	require.NoError(t, err)
+	require.Equal(t, "http://127.0.0.1:8787/bridge", config.BridgeURL)
+	require.Empty(t, config.Token)
+
+	t.Setenv("MEMOS_D1_BRIDGE_TOKEN", "from-env")
+	config, err = ParseDSN("d1-bridge://worker.example.com")
+	require.NoError(t, err)
+	require.Equal(t, "https://worker.example.com", config.BridgeURL)
+	require.Equal(t, "from-env", config.Token)
+
+	_, err = ParseDSN("d1-bridge:///d1")
+	require.ErrorContains(t, err, "missing the host")
+	_, err = ParseDSN("d1-bridge://worker.example.com/d1?insecure=true")
+	require.ErrorContains(t, err, "must use https")
 }
 
 func TestTransportRoundTrip(t *testing.T) {
+	for mode, dsn := range accessModes {
+		t.Run(mode, func(t *testing.T) {
+			runTransportRoundTrip(t, newTestDB(t, dsn))
+		})
+	}
+}
+
+func runTransportRoundTrip(t *testing.T, db *DB) {
 	ctx := context.Background()
-	db := newTestDB(t)
 
 	initialized, err := db.IsInitialized(ctx)
 	require.NoError(t, err)
@@ -157,8 +196,15 @@ func TestTransportRoundTrip(t *testing.T) {
 }
 
 func TestNullAndTypedScans(t *testing.T) {
+	for mode, dsn := range accessModes {
+		t.Run(mode, func(t *testing.T) {
+			runNullAndTypedScans(t, newTestDB(t, dsn))
+		})
+	}
+}
+
+func runNullAndTypedScans(t *testing.T, db *DB) {
 	ctx := context.Background()
-	db := newTestDB(t)
 	_, err := db.execOne(ctx, "CREATE TABLE t (id INTEGER PRIMARY KEY, n INTEGER, f REAL, s TEXT, ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')))")
 	require.NoError(t, err)
 	var nilInt *int32

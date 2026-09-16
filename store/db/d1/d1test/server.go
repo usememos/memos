@@ -1,10 +1,11 @@
-// Package d1test runs an in-process emulation of the Cloudflare D1 REST API
-// for tests. It speaks the same JSON protocol the driver uses (the /raw and
-// /query endpoints, batch bodies, the database metadata endpoint) on top of a
-// private SQLite database, and enforces the D1 constraints that matter to the
-// driver: foreign keys are on, statements are wrapped in an implicit
-// transaction, a batch is atomic, and a statement may bind at most 100
-// parameters. It registers no custom SQL functions, exactly like D1.
+// Package d1test runs an in-process emulation of Cloudflare D1 for tests. It
+// speaks both protocols the driver uses, the Cloudflare REST API (the /raw
+// and /query endpoints, batch bodies, the database metadata endpoint) and the
+// Memos bridge protocol, on top of a private SQLite database. It enforces the
+// D1 constraints that matter to the driver: foreign keys are on, statements
+// are wrapped in an implicit transaction, a batch is atomic, and a statement
+// may bind at most 100 parameters. It registers no custom SQL functions,
+// exactly like D1.
 package d1test
 
 import (
@@ -21,12 +22,16 @@ import (
 
 	// SQLite engine behind the emulated service.
 	_ "modernc.org/sqlite"
+
+	"github.com/usememos/memos/store/db/d1/sqlsplit"
 )
 
 const (
-	accountID  = "test-account"
-	databaseID = "test-database"
-	token      = "test-token"
+	accountID   = "test-account"
+	databaseID  = "test-database"
+	token       = "test-token"
+	bridgeToken = "bridge-secret"
+	bridgePath  = "/bridge/d1"
 
 	maxBoundParameters = 100
 )
@@ -57,9 +62,14 @@ func New(t testing.TB) *Server {
 	return s
 }
 
-// DSN returns the driver DSN pointing at this server.
+// DSN returns the REST-mode driver DSN pointing at this server.
 func (s *Server) DSN() string {
 	return fmt.Sprintf("d1://%s/%s?token=%s&endpoint=%s", accountID, databaseID, token, s.http.URL)
+}
+
+// BridgeDSN returns the bridge-mode driver DSN pointing at this server.
+func (s *Server) BridgeDSN() string {
+	return fmt.Sprintf("d1-bridge://%s%s?token=%s&insecure=true", strings.TrimPrefix(s.http.URL, "http://"), bridgePath, bridgeToken)
 }
 
 // Close stops the server and discards the database.
@@ -74,10 +84,14 @@ type requestStatement struct {
 	Params []any  `json:"params"`
 }
 
-type requestBody struct {
+type restRequest struct {
 	SQL    *string            `json:"sql"`
 	Params []any              `json:"params"`
 	Batch  []requestStatement `json:"batch"`
+}
+
+type bridgeRequest struct {
+	Statements []requestStatement `json:"statements"`
 }
 
 type apiError struct {
@@ -85,7 +99,21 @@ type apiError struct {
 	Message string `json:"message"`
 }
 
+// statementResult is the outcome of one executed statement before it is
+// rendered in either protocol's shape.
+type statementResult struct {
+	columns    []string
+	arrayRows  [][]any
+	objectRows []map[string]any
+	changes    int64
+	lastRowID  int64
+}
+
 func (s *Server) handle(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path == bridgePath {
+		s.handleBridge(w, r)
+		return
+	}
 	if r.Header.Get("Authorization") != "Bearer "+token {
 		writeErrors(w, http.StatusForbidden, 10000, "Authentication error")
 		return
@@ -108,14 +136,8 @@ func (s *Server) handle(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleMetadata(w http.ResponseWriter) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	var pageCount, pageSize int64
-	if err := s.conn.QueryRowContext(context.Background(), "PRAGMA page_count").Scan(&pageCount); err != nil {
-		writeErrors(w, http.StatusInternalServerError, 7500, err.Error())
-		return
-	}
-	if err := s.conn.QueryRowContext(context.Background(), "PRAGMA page_size").Scan(&pageSize); err != nil {
+	size, err := s.databaseSize(context.Background())
+	if err != nil {
 		writeErrors(w, http.StatusInternalServerError, 7500, err.Error())
 		return
 	}
@@ -125,16 +147,28 @@ func (s *Server) handleMetadata(w http.ResponseWriter) {
 		"result": map[string]any{
 			"uuid":      databaseID,
 			"name":      "memos-test",
-			"file_size": pageCount * pageSize,
+			"file_size": size,
 		},
 	})
 }
 
+func (s *Server) databaseSize(ctx context.Context) (int64, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	var pageCount, pageSize int64
+	if err := s.conn.QueryRowContext(ctx, "PRAGMA page_count").Scan(&pageCount); err != nil {
+		return 0, err
+	}
+	if err := s.conn.QueryRowContext(ctx, "PRAGMA page_size").Scan(&pageSize); err != nil {
+		return 0, err
+	}
+	return pageCount * pageSize, nil
+}
+
+// handleQuery serves the REST /raw and /query endpoints.
 func (s *Server) handleQuery(w http.ResponseWriter, r *http.Request, rawRows bool) {
-	var body requestBody
-	decoder := json.NewDecoder(r.Body)
-	decoder.UseNumber()
-	if err := decoder.Decode(&body); err != nil {
+	var body restRequest
+	if err := decodeBody(r, &body); err != nil {
 		writeErrors(w, http.StatusBadRequest, 7400, "invalid request body: "+err.Error())
 		return
 	}
@@ -154,7 +188,7 @@ func (s *Server) handleQuery(w http.ResponseWriter, r *http.Request, rawRows boo
 	// several.
 	var stmts []requestStatement
 	for _, entry := range entries {
-		parts := splitStatements(entry.SQL)
+		parts := sqlsplit.Split(entry.SQL)
 		if len(parts) == 0 {
 			writeErrors(w, http.StatusBadRequest, 7400, "empty sql")
 			return
@@ -172,21 +206,95 @@ func (s *Server) handleQuery(w http.ResponseWriter, r *http.Request, rawRows boo
 		}
 	}
 
-	results, err := s.execute(r.Context(), stmts, rawRows)
+	results, err := s.execute(r.Context(), stmts)
 	if err != nil {
 		writeErrors(w, http.StatusBadRequest, 7500, "D1_ERROR: "+err.Error())
 		return
 	}
+	rendered := make([]map[string]any, 0, len(results))
+	for _, res := range results {
+		var rows any
+		if rawRows {
+			rows = map[string]any{"columns": res.columns, "rows": res.arrayRows}
+		} else {
+			rows = res.objectRows
+		}
+		rendered = append(rendered, map[string]any{
+			"success": true,
+			"meta": map[string]any{
+				"changed_db":  res.changes > 0,
+				"changes":     res.changes,
+				"last_row_id": res.lastRowID,
+				"duration":    0,
+			},
+			"results": rows,
+		})
+	}
 	writeJSON(w, http.StatusOK, map[string]any{
 		"success": true,
 		"errors":  []any{},
-		"result":  results,
+		"result":  rendered,
 	})
+}
+
+// handleBridge serves the Memos bridge protocol: one atomic batch per
+// request, one statement per entry, rows as arrays with a column list.
+func (s *Server) handleBridge(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		writeBridgeError(w, http.StatusMethodNotAllowed, "method not allowed")
+		return
+	}
+	if r.Header.Get("Authorization") != "Bearer "+bridgeToken {
+		writeBridgeError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+	var body bridgeRequest
+	if err := decodeBody(r, &body); err != nil {
+		writeBridgeError(w, http.StatusBadRequest, "invalid request body: "+err.Error())
+		return
+	}
+	if len(body.Statements) == 0 {
+		writeBridgeError(w, http.StatusBadRequest, "request carries no statements")
+		return
+	}
+	for _, entry := range body.Statements {
+		if len(sqlsplit.Split(entry.SQL)) != 1 {
+			writeBridgeError(w, http.StatusBadRequest, "each bridge entry must hold exactly one statement")
+			return
+		}
+		if len(entry.Params) > maxBoundParameters {
+			writeBridgeError(w, http.StatusBadRequest, fmt.Sprintf("too many bound parameters: %d", len(entry.Params)))
+			return
+		}
+	}
+	results, err := s.execute(r.Context(), body.Statements)
+	if err != nil {
+		writeBridgeError(w, http.StatusBadRequest, "D1_ERROR: "+err.Error())
+		return
+	}
+	size, err := s.databaseSize(r.Context())
+	if err != nil {
+		writeBridgeError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	rendered := make([]map[string]any, 0, len(results))
+	for _, res := range results {
+		rendered = append(rendered, map[string]any{
+			"columns": res.columns,
+			"rows":    res.arrayRows,
+			"meta": map[string]any{
+				"changes":     res.changes,
+				"last_row_id": res.lastRowID,
+				"size_after":  size,
+			},
+		})
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"results": rendered})
 }
 
 // execute runs stmts inside one transaction, mirroring D1's implicit
 // transaction per request and its atomic batches.
-func (s *Server) execute(ctx context.Context, stmts []requestStatement, rawRows bool) ([]map[string]any, error) {
+func (s *Server) execute(ctx context.Context, stmts []requestStatement) ([]*statementResult, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -194,9 +302,9 @@ func (s *Server) execute(ctx context.Context, stmts []requestStatement, rawRows 
 	if err != nil {
 		return nil, err
 	}
-	results := make([]map[string]any, 0, len(stmts))
+	results := make([]*statementResult, 0, len(stmts))
 	for _, stmt := range stmts {
-		res, err := runStatement(ctx, tx, stmt, rawRows)
+		res, err := runStatement(ctx, tx, stmt)
 		if err != nil {
 			_ = tx.Rollback()
 			return nil, err
@@ -209,7 +317,7 @@ func (s *Server) execute(ctx context.Context, stmts []requestStatement, rawRows 
 	return results, nil
 }
 
-func runStatement(ctx context.Context, tx *sql.Tx, stmt requestStatement, rawRows bool) (map[string]any, error) {
+func runStatement(ctx context.Context, tx *sql.Tx, stmt requestStatement) (*statementResult, error) {
 	args := make([]any, 0, len(stmt.Params))
 	for _, param := range stmt.Params {
 		args = append(args, decodeParam(param))
@@ -220,47 +328,31 @@ func runStatement(ctx context.Context, tx *sql.Tx, stmt requestStatement, rawRow
 	if err := tx.QueryRowContext(ctx, "SELECT total_changes()").Scan(&before); err != nil {
 		return nil, err
 	}
-	columns, arrayRows, objectRows, err := collectRows(ctx, tx, stmt.SQL, args, rawRows)
+	res, err := collectRows(ctx, tx, stmt.SQL, args)
 	if err != nil {
 		return nil, err
 	}
-	var after, lastRowID int64
-	if err := tx.QueryRowContext(ctx, "SELECT total_changes(), last_insert_rowid()").Scan(&after, &lastRowID); err != nil {
+	var after int64
+	if err := tx.QueryRowContext(ctx, "SELECT total_changes(), last_insert_rowid()").Scan(&after, &res.lastRowID); err != nil {
 		return nil, err
 	}
-	changes := after - before
-	var results any
-	if rawRows {
-		results = map[string]any{"columns": columns, "rows": arrayRows}
-	} else {
-		results = objectRows
-	}
-	return map[string]any{
-		"success": true,
-		"meta": map[string]any{
-			"changed_db":  changes > 0,
-			"changes":     changes,
-			"last_row_id": lastRowID,
-			"duration":    0,
-		},
-		"results": results,
-	}, nil
+	res.changes = after - before
+	return res, nil
 }
 
-// collectRows executes one statement and drains its result set in the
-// requested shape. Statements without a result set yield empty slices.
-func collectRows(ctx context.Context, tx *sql.Tx, query string, args []any, rawRows bool) ([]string, [][]any, []map[string]any, error) {
+// collectRows executes one statement and drains its result set in both
+// shapes. Statements without a result set yield empty slices.
+func collectRows(ctx context.Context, tx *sql.Tx, query string, args []any) (*statementResult, error) {
 	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, err
 	}
 	defer rows.Close()
 	columns, err := rows.Columns()
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, err
 	}
-	arrayRows := [][]any{}
-	objectRows := []map[string]any{}
+	res := &statementResult{columns: columns, arrayRows: [][]any{}, objectRows: []map[string]any{}}
 	for rows.Next() {
 		cells := make([]any, len(columns))
 		targets := make([]any, len(columns))
@@ -268,29 +360,30 @@ func collectRows(ctx context.Context, tx *sql.Tx, query string, args []any, rawR
 			targets[i] = &cells[i]
 		}
 		if err := rows.Scan(targets...); err != nil {
-			return nil, nil, nil, err
+			return nil, err
 		}
 		encoded := make([]any, len(columns))
+		object := make(map[string]any, len(columns))
 		for i, cell := range cells {
 			encoded[i] = encodeCell(cell)
+			object[columns[i]] = encoded[i]
 		}
-		if rawRows {
-			arrayRows = append(arrayRows, encoded)
-			continue
-		}
-		object := make(map[string]any, len(columns))
-		for i, column := range columns {
-			object[column] = encoded[i]
-		}
-		objectRows = append(objectRows, object)
+		res.arrayRows = append(res.arrayRows, encoded)
+		res.objectRows = append(res.objectRows, object)
 	}
 	if err := rows.Err(); err != nil {
-		return nil, nil, nil, err
+		return nil, err
 	}
 	if err := rows.Close(); err != nil {
-		return nil, nil, nil, err
+		return nil, err
 	}
-	return columns, arrayRows, objectRows, nil
+	return res, nil
+}
+
+func decodeBody(r *http.Request, target any) error {
+	decoder := json.NewDecoder(r.Body)
+	decoder.UseNumber()
+	return decoder.Decode(target)
 }
 
 // decodeParam maps a JSON parameter onto a SQLite bind value.
@@ -331,79 +424,16 @@ func encodeCell(cell any) any {
 	}
 }
 
-// splitStatements divides SQL text at top-level semicolons, honoring string
-// literals, quoted identifiers, and comments.
-func splitStatements(text string) []string {
-	var statements []string
-	var current strings.Builder
-	flush := func() {
-		stmt := strings.TrimSpace(current.String())
-		current.Reset()
-		if stmt != "" && !isCommentOnly(stmt) {
-			statements = append(statements, stmt)
-		}
-	}
-	for i := 0; i < len(text); i++ {
-		c := text[i]
-		switch {
-		case c == '-' && i+1 < len(text) && text[i+1] == '-':
-			end := strings.IndexByte(text[i:], '\n')
-			if end < 0 {
-				i = len(text)
-			} else {
-				i += end
-			}
-		case c == '/' && i+1 < len(text) && text[i+1] == '*':
-			end := strings.Index(text[i+2:], "*/")
-			if end < 0 {
-				i = len(text)
-			} else {
-				i += end + 3
-			}
-		case c == '\'' || c == '"' || c == '`':
-			end := closingQuote(text, i, c)
-			current.WriteString(text[i : end+1])
-			i = end
-		case c == ';':
-			flush()
-		default:
-			current.WriteByte(c)
-		}
-	}
-	flush()
-	return statements
-}
-
-func closingQuote(text string, start int, quote byte) int {
-	for i := start + 1; i < len(text); i++ {
-		if text[i] != quote {
-			continue
-		}
-		if i+1 < len(text) && text[i+1] == quote {
-			i++
-			continue
-		}
-		return i
-	}
-	return len(text) - 1
-}
-
-func isCommentOnly(stmt string) bool {
-	for _, line := range strings.Split(stmt, "\n") {
-		line = strings.TrimSpace(line)
-		if line != "" && !strings.HasPrefix(line, "--") {
-			return false
-		}
-	}
-	return true
-}
-
 func writeErrors(w http.ResponseWriter, status, code int, message string) {
 	writeJSON(w, status, map[string]any{
 		"success": false,
 		"errors":  []apiError{{Code: code, Message: message}},
 		"result":  nil,
 	})
+}
+
+func writeBridgeError(w http.ResponseWriter, status int, message string) {
+	writeJSON(w, status, map[string]any{"error": apiError{Message: message}})
 }
 
 func writeJSON(w http.ResponseWriter, status int, body any) {

@@ -11,16 +11,19 @@ Related: [Multi-Spaces Design](multi-spaces.md)
 ## Summary
 
 Memos gains a fourth database engine, Cloudflare D1, selected with
-`--driver d1`. D1 runs SQLite, but it is reached over Cloudflare's REST API
-rather than a local file or socket, it exposes no interactive transactions,
-and it accepts no custom SQL functions. Those three facts make it a different
+`--driver d1`. D1 runs SQLite, but it is reached over HTTP rather than a
+local file or socket, either through Cloudflare's REST API or through a
+bridge Worker the deployment provides, it exposes no interactive
+transactions, and it accepts no custom SQL functions. Those three facts make it a different
 engine from the SQLite driver rather than a variant of it, so it lives in its
 own package, `store/db/d1`, with its own migration directory, its own filter
 dialect, and its own test harness, exactly like MySQL and PostgreSQL.
 
 ## Goals
 
-- Run an unmodified Memos binary against a D1 database from any host.
+- Run an unmodified Memos binary against a D1 database from any host, with
+  a Cloudflare API token or with access the deployment already holds through
+  a Worker binding.
 - Keep every store invariant the other drivers enforce: no partial writes,
   no stale-read overwrites, the same error values for the same conditions.
 - Share no Go code with the SQLite driver so either can change freely.
@@ -40,26 +43,131 @@ dialect, and its own test harness, exactly like MySQL and PostgreSQL.
 
 ## Configuration
 
+Two access modes exist. Either one leaves the driver's behaviour, the schema,
+and the data untouched; switching is a DSN change.
+
+**REST mode** talks to the Cloudflare REST API with an API token that has the
+D1 Edit permission:
+
 ```
 --driver d1 --dsn 'd1://<account_id>/<database_id>?token=<api_token>'
 ```
 
 The token may instead come from `CLOUDFLARE_API_TOKEN` so it stays out of
 process listings. An `endpoint` query parameter overrides the API base URL and
-exists for the test emulator. The token needs the D1 Edit permission.
+exists for the test emulator.
+
+**Bridge mode** talks to a Worker the deployment provides. The Worker holds the
+D1 binding and implements the bridge protocol below, so Memos needs no
+Cloudflare API token:
+
+```
+--driver d1 --dsn 'd1-bridge://<worker-host>/<path>?token=<bridge-secret>'
+```
+
+The host and path name the Worker endpoint, reached over HTTPS. The token is
+optional; when present it is sent as a bearer credential for the Worker to
+check, and it may come from `MEMOS_D1_BRIDGE_TOKEN` instead. `insecure=true`
+selects plain HTTP and is accepted only towards loopback.
 
 ## Transport
 
-The driver holds one HTTP client for the database. Reads and single writes
-go to the `/raw` endpoint, which returns rows as arrays with a column list.
-Bound parameters travel as JSON numbers, strings, and nulls; booleans become
-integers. Binary values cannot travel in JSON, so blob columns are written
-with `unhex(?)` bound to hex text and read back through `hex(blob)`.
+The driver holds one HTTP transport for the database, selected by the access
+mode. The driver methods see only its four operations: run one statement, run
+a batch atomically, run a parameter-free script, and report the database size.
 
-A thin `database/sql` adapter wraps the same client so `Driver.GetDB()` keeps
-working for the migrator and for tests. Its transactions buffer writes and
-send them as one atomic request on commit. A read after a buffered write is
-refused, because the write is not visible until the batch runs.
+In REST mode reads and single writes go to the `/raw` endpoint, which returns
+rows as arrays with a column list, batches use the documented `batch` body,
+and scripts are sent as one semicolon-separated text. In bridge mode every
+operation is one bridge request; scripts are split into statements locally
+because a bridge entry carries exactly one statement.
+
+Bound parameters travel as JSON numbers, strings, and nulls in both modes;
+booleans become integers. Binary values cannot travel in JSON, so blob columns
+are written with `unhex(?)` bound to hex text and read back through `hex(blob)`.
+
+A thin `database/sql` adapter wraps the same transport so `Driver.GetDB()`
+keeps working for the migrator and for tests. Its transactions buffer writes
+and send them as one atomic request on commit. A read after a buffered write
+is refused, because the write is not visible until the batch runs.
+
+## Bridge protocol
+
+Memos owns this protocol; the deployment repository owns the Worker that
+implements it, its D1 binding, and its Wrangler configuration. The protocol
+is one endpoint.
+
+**Request.** `POST <bridge-url>` with `Content-Type: application/json` and,
+when a secret is configured, `Authorization: Bearer <secret>`. The body is:
+
+```json
+{"statements": [{"sql": "INSERT INTO memo (uid) VALUES (?)", "params": ["m1"]},
+                {"sql": "SELECT id, uid FROM memo WHERE uid = ?", "params": ["m1"]}]}
+```
+
+- `statements` holds one or more entries, each exactly one SQL statement.
+  `params` is optional and binds positionally; values are JSON strings,
+  numbers, or `null`. Memos never sends more than 100 parameters per entry.
+- The Worker must run the entries in order as one transaction, which is what
+  the binding's `batch()` provides: if any statement fails, none commits.
+
+**Response.** `200 OK` with one result per statement, in order:
+
+```json
+{"results": [
+  {"columns": [], "rows": [], "meta": {"changes": 1, "last_row_id": 7, "size_after": 8192}},
+  {"columns": ["id", "uid"], "rows": [[7, "m1"]], "meta": {"changes": 0, "last_row_id": 7, "size_after": 8192}}
+]}
+```
+
+- `columns` lists the result columns in order and `rows` holds one array per
+  row in that order. A statement without a result set returns both empty.
+  Cell values are JSON numbers, strings, or `null`; a blob is an array of byte
+  values, though Memos reads blobs through `hex()` and never relies on it.
+- `meta.changes` is the number of rows the statement modified,
+  `meta.last_row_id` the last inserted rowid, and `meta.size_after` the
+  database size in bytes after the batch committed. Memos reports the size
+  through `size_after`, so a Worker that omits it makes the size unavailable
+  rather than wrong.
+
+**Errors.** Any failure is a non-200 status with a body of
+`{"error": {"message": "<text>"}}`. The message must carry the D1 error text
+verbatim, for example `D1_ERROR: UNIQUE constraint failed: space.uid`: the
+driver recognises constraint failures and guard aborts by that text. A
+missing or wrong bearer secret should answer `401`.
+
+Memos never issues a query whose result has two columns of the same name, so
+a Worker may build `columns` from the keys of the first row object that
+`batch()` returns and `rows` from each row's values in that order.
+
+A Worker that meets the contract is a few lines:
+
+```js
+export default {
+  async fetch(request, env) {
+    if (request.method !== "POST") return error(405, "method not allowed");
+    if (env.BRIDGE_SECRET && request.headers.get("Authorization") !== `Bearer ${env.BRIDGE_SECRET}`) {
+      return error(401, "unauthorized");
+    }
+    const { statements } = await request.json();
+    const prepared = statements.map((s) => env.DB.prepare(s.sql).bind(...(s.params ?? [])));
+    try {
+      const results = (await env.DB.batch(prepared)).map(({ results, meta }) => {
+        const columns = results.length ? Object.keys(results[0]) : [];
+        return {
+          columns,
+          rows: results.map((row) => columns.map((c) => row[c])),
+          meta: { changes: meta.changes, last_row_id: meta.last_row_id, size_after: meta.size_after },
+        };
+      });
+      return Response.json({ results });
+    } catch (err) {
+      return error(400, err.message);
+    }
+  },
+};
+const error = (status, message) => Response.json({ error: { message } }, { status });
+```
 
 ## Atomicity without transactions
 
@@ -105,9 +213,11 @@ patterns with optional anchors.
 
 ## Testing
 
-`store/db/d1/d1test` emulates the D1 REST API in-process on a private SQLite
-database: the same endpoints, request bodies, response shapes, implicit
-transaction per request, atomic batches, foreign-key enforcement, and the
-100-parameter limit, with no custom functions registered. `DRIVER=d1` runs
-the whole store suite against it. Setting `D1_DSN` points the suite at a real
+`store/db/d1/d1test` emulates D1 in-process on a private SQLite database and
+speaks both protocols: the REST API endpoints and the bridge endpoint, with
+the same implicit transaction per request, atomic batches, foreign-key
+enforcement, and 100-parameter limit, and no custom functions registered.
+`DRIVER=d1` runs the whole store suite against it over REST, and
+`D1_ACCESS=bridge` runs it over the bridge protocol; the all-drivers loop
+runs both. Setting `D1_DSN` points the suite at a real
 database for spot checks.
