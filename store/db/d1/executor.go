@@ -50,12 +50,12 @@ func (b *batch) guard(condition string, args ...any) {
 
 // commit executes the batch atomically and returns one result per statement.
 func (b *batch) commit(ctx context.Context, d *DB) ([]*result, error) {
-	return d.client.batch(ctx, b.stmts)
+	return d.transport.batch(ctx, b.stmts)
 }
 
 // execOne runs a single write outside any batch.
 func (d *DB) execOne(ctx context.Context, sql string, args ...any) (*result, error) {
-	return d.client.exec(ctx, statement{SQL: sql, Args: args})
+	return d.transport.exec(ctx, statement{SQL: sql, Args: args})
 }
 
 // placeholders returns n comma separated ? markers.

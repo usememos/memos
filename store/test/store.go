@@ -23,9 +23,10 @@ import (
 // Each test gets its own isolated database:
 //   - SQLite: new temp file per test
 //   - MySQL/PostgreSQL: new database per test in shared container
-//   - D1: new emulated database per test (see store/db/d1/d1test), or the
-//     database named by D1_DSN when set; that database is shared, so run one
-//     test at a time against it
+//   - D1: new emulated database per test (see store/db/d1/d1test), reached
+//     over the REST protocol or, with D1_ACCESS=bridge, the bridge protocol;
+//     or the database named by D1_DSN when set. That database is shared, so
+//     run one test at a time against it
 func NewTestingStore(ctx context.Context, t *testing.T) *store.Store {
 	driver := getDriverFromEnv()
 	profile := getTestingProfileForDriver(t, driver)
@@ -112,7 +113,12 @@ func getTestingProfileForDriver(t *testing.T, driver string) *profile.Profile {
 	case "d1":
 		dsn = os.Getenv("D1_DSN")
 		if dsn == "" {
-			dsn = d1test.New(t).DSN()
+			server := d1test.New(t)
+			if os.Getenv("D1_ACCESS") == "bridge" {
+				dsn = server.BridgeDSN()
+			} else {
+				dsn = server.DSN()
+			}
 		}
 	default:
 		t.Fatalf("unsupported driver: %s", driver)

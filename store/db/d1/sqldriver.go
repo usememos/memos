@@ -10,7 +10,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-// The types below adapt the REST client to database/sql so that the migrator
+// The types below adapt the transport to database/sql so that the migrator
 // and tests can use GetDB(). D1 has no interactive transactions: a Tx buffers
 // its writes and commits them as one atomic batch, and refuses reads once a
 // write has been buffered because the write is not yet visible.
@@ -24,19 +24,19 @@ func (sqlDriver) Open(string) (driver.Conn, error) {
 }
 
 type connector struct {
-	client *client
+	transport transport
 }
 
 func (c *connector) Connect(context.Context) (driver.Conn, error) {
-	return &conn{client: c.client}, nil
+	return &conn{transport: c.transport}, nil
 }
 
 func (*connector) Driver() driver.Driver {
 	return sqlDriver{}
 }
 
-func openSQLDB(c *client) *sql.DB {
-	db := sql.OpenDB(&connector{client: c})
+func openSQLDB(t transport) *sql.DB {
+	db := sql.OpenDB(&connector{transport: t})
 	// Every connection is a stateless HTTP session; keep the pool small so
 	// concurrent callers do not fan out into the REST rate limit.
 	db.SetMaxOpenConns(8)
@@ -44,8 +44,8 @@ func openSQLDB(c *client) *sql.DB {
 }
 
 type conn struct {
-	client *client
-	tx     *tx
+	transport transport
+	tx        *tx
 }
 
 func (c *conn) Prepare(query string) (driver.Stmt, error) {
@@ -69,7 +69,7 @@ func (c *conn) BeginTx(context.Context, driver.TxOptions) (driver.Tx, error) {
 }
 
 func (c *conn) Ping(ctx context.Context) error {
-	_, err := c.client.exec(ctx, statement{SQL: "SELECT 1"})
+	_, err := c.transport.exec(ctx, statement{SQL: "SELECT 1"})
 	return err
 }
 
@@ -79,7 +79,7 @@ func (c *conn) ExecContext(ctx context.Context, query string, args []driver.Name
 		c.tx.pending = append(c.tx.pending, stmt)
 		return deferredResult{}, nil
 	}
-	res, err := c.client.exec(ctx, stmt)
+	res, err := c.transport.exec(ctx, stmt)
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +90,7 @@ func (c *conn) QueryContext(ctx context.Context, query string, args []driver.Nam
 	if c.tx != nil && len(c.tx.pending) > 0 {
 		return nil, errUnsupportedQueryInTx
 	}
-	res, err := c.client.exec(ctx, statement{SQL: query, Args: namedValues(args)})
+	res, err := c.transport.exec(ctx, statement{SQL: query, Args: namedValues(args)})
 	if err != nil {
 		return nil, err
 	}
@@ -165,9 +165,9 @@ func (t *tx) Commit() error {
 		for _, stmt := range t.pending {
 			sqls = append(sqls, strings.TrimSpace(stmt.SQL))
 		}
-		return t.conn.client.script(ctx, strings.Join(sqls, "\n;\n"))
+		return t.conn.transport.script(ctx, strings.Join(sqls, "\n;\n"))
 	}
-	_, err := t.conn.client.batch(ctx, t.pending)
+	_, err := t.conn.transport.batch(ctx, t.pending)
 	return err
 }
 

@@ -3,6 +3,9 @@ package d1
 import (
 	"context"
 	"errors"
+	"net/http"
+	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -13,10 +16,17 @@ import (
 
 var errConflict = errors.New("conflict")
 
-func newTestDB(t *testing.T) *DB {
+// accessModes lists the DSN of each access mode against the emulator; every
+// transport test runs under both.
+var accessModes = map[string]func(*d1test.Server) string{
+	"rest":   (*d1test.Server).DSN,
+	"bridge": (*d1test.Server).BridgeDSN,
+}
+
+func newTestDB(t *testing.T, dsn func(*d1test.Server) string) *DB {
 	t.Helper()
 	server := d1test.New(t)
-	driver, err := NewDB(&profile.Profile{Driver: "d1", DSN: server.DSN()})
+	driver, err := NewDB(&profile.Profile{Driver: "d1", DSN: dsn(server)})
 	require.NoError(t, err)
 	db, ok := driver.(*DB)
 	require.True(t, ok)
@@ -42,7 +52,7 @@ func TestParseDSN(t *testing.T) {
 	}
 
 	_, err = ParseDSN("sqlite://x")
-	require.ErrorContains(t, err, "d1:// scheme")
+	require.ErrorContains(t, err, "d1:// or d1-bridge:// scheme")
 	_, err = ParseDSN("d1:///dbid?token=t")
 	require.ErrorContains(t, err, "account id")
 	t.Setenv("CLOUDFLARE_API_TOKEN", "")
@@ -53,11 +63,54 @@ func TestParseDSN(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, "from-env", config.Token)
 	require.Equal(t, DefaultEndpoint, config.Endpoint)
+	require.Equal(t, AccessModeREST, config.Mode)
+}
+
+func TestParseBridgeDSN(t *testing.T) {
+	t.Setenv("MEMOS_D1_BRIDGE_TOKEN", "")
+
+	// A public bridge is HTTPS and needs a shared secret.
+	config, err := ParseDSN("d1-bridge://worker.example.com/d1?token=secret")
+	require.NoError(t, err)
+	require.Equal(t, AccessModeBridge, config.Mode)
+	require.False(t, config.Private)
+	require.Equal(t, "https://worker.example.com/d1", config.BridgeURL)
+	require.Equal(t, "secret", config.Token)
+	_, err = ParseDSN("d1-bridge://worker.example.com/d1")
+	require.ErrorContains(t, err, "requires a shared secret")
+
+	// A platform-private bridge is plain HTTP and needs no secret: the
+	// Cloudflare Containers outbound handler and the loopback emulator.
+	config, err = ParseDSN("d1-bridge://d1.internal/d1?private=true")
+	require.NoError(t, err)
+	require.True(t, config.Private)
+	require.Equal(t, "http://d1.internal/d1", config.BridgeURL)
+	require.Empty(t, config.Token)
+	config, err = ParseDSN("d1-bridge://127.0.0.1:8787/bridge/?private=true&token=t")
+	require.NoError(t, err)
+	require.Equal(t, "http://127.0.0.1:8787/bridge", config.BridgeURL)
+	require.Equal(t, "t", config.Token)
+
+	t.Setenv("MEMOS_D1_BRIDGE_TOKEN", "from-env")
+	config, err = ParseDSN("d1-bridge://worker.example.com")
+	require.NoError(t, err)
+	require.Equal(t, "https://worker.example.com", config.BridgeURL)
+	require.Equal(t, "from-env", config.Token)
+
+	_, err = ParseDSN("d1-bridge:///d1")
+	require.ErrorContains(t, err, "missing the host")
 }
 
 func TestTransportRoundTrip(t *testing.T) {
+	for mode, dsn := range accessModes {
+		t.Run(mode, func(t *testing.T) {
+			runTransportRoundTrip(t, newTestDB(t, dsn))
+		})
+	}
+}
+
+func runTransportRoundTrip(t *testing.T, db *DB) {
 	ctx := context.Background()
-	db := newTestDB(t)
 
 	initialized, err := db.IsInitialized(ctx)
 	require.NoError(t, err)
@@ -66,9 +119,11 @@ func TestTransportRoundTrip(t *testing.T) {
 	// Multi-statement script through the sql adapter transaction, as the migrator does.
 	tx, err := db.GetDB().Begin()
 	require.NoError(t, err)
+	// One statement per paragraph, as the D1 scripts are laid out.
 	_, err = tx.ExecContext(ctx, `
 		-- schema
 		CREATE TABLE d1_guard (ok INTEGER NOT NULL CONSTRAINT d1_guard_ok CHECK (ok = 1));
+
 		CREATE TABLE memo (id INTEGER PRIMARY KEY AUTOINCREMENT, uid TEXT NOT NULL UNIQUE, content TEXT NOT NULL DEFAULT 'a;b', blob BLOB);
 	`)
 	require.NoError(t, err)
@@ -157,8 +212,15 @@ func TestTransportRoundTrip(t *testing.T) {
 }
 
 func TestNullAndTypedScans(t *testing.T) {
+	for mode, dsn := range accessModes {
+		t.Run(mode, func(t *testing.T) {
+			runNullAndTypedScans(t, newTestDB(t, dsn))
+		})
+	}
+}
+
+func runNullAndTypedScans(t *testing.T, db *DB) {
 	ctx := context.Background()
-	db := newTestDB(t)
 	_, err := db.execOne(ctx, "CREATE TABLE t (id INTEGER PRIMARY KEY, n INTEGER, f REAL, s TEXT, ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')))")
 	require.NoError(t, err)
 	var nilInt *int32
@@ -173,4 +235,25 @@ func TestNullAndTypedScans(t *testing.T) {
 	require.Equal(t, 1.5, f)
 	require.Equal(t, "x", s)
 	require.Greater(t, ts, int64(0))
+}
+
+func TestRedirectsAreNotFollowed(t *testing.T) {
+	redirected := false
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/moved" {
+			redirected = true
+			return
+		}
+		http.Redirect(w, r, "/moved", http.StatusTemporaryRedirect)
+	}))
+	t.Cleanup(server.Close)
+
+	driver, err := NewDB(&profile.Profile{Driver: "d1", DSN: "d1-bridge://" + strings.TrimPrefix(server.URL, "http://") + "/bridge?private=true&token=t"})
+	require.NoError(t, err)
+	_, err = driver.GetDB().ExecContext(context.Background(), "SELECT 1")
+	require.Error(t, err)
+	var d1Err *Error
+	require.ErrorAs(t, err, &d1Err)
+	require.Equal(t, http.StatusTemporaryRedirect, d1Err.Status)
+	require.False(t, redirected, "the redirect target must not receive the credential")
 }
