@@ -34,7 +34,15 @@ type transport interface {
 
 // newTransport selects the transport for the configured access mode.
 func newTransport(config *Config) (transport, error) {
-	httpClient := &http.Client{Timeout: 60 * time.Second}
+	httpClient := &http.Client{
+		Timeout: 60 * time.Second,
+		// Neither endpoint redirects, and following one could carry the
+		// bearer credential onto a plaintext hop, so redirects surface as
+		// errors instead.
+		CheckRedirect: func(*http.Request, []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
+	}
 	switch config.Mode {
 	case AccessModeREST:
 		return &restTransport{httpClient: httpClient, config: config}, nil

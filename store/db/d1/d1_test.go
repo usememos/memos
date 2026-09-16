@@ -3,6 +3,9 @@ package d1
 import (
 	"context"
 	"errors"
+	"net/http"
+	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -230,4 +233,25 @@ func runNullAndTypedScans(t *testing.T, db *DB) {
 	require.Equal(t, 1.5, f)
 	require.Equal(t, "x", s)
 	require.Greater(t, ts, int64(0))
+}
+
+func TestRedirectsAreNotFollowed(t *testing.T) {
+	redirected := false
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/moved" {
+			redirected = true
+			return
+		}
+		http.Redirect(w, r, "/moved", http.StatusTemporaryRedirect)
+	}))
+	t.Cleanup(server.Close)
+
+	driver, err := NewDB(&profile.Profile{Driver: "d1", DSN: "d1-bridge://" + strings.TrimPrefix(server.URL, "http://") + "/bridge?private=true&token=t"})
+	require.NoError(t, err)
+	_, err = driver.GetDB().ExecContext(context.Background(), "SELECT 1")
+	require.Error(t, err)
+	var d1Err *Error
+	require.ErrorAs(t, err, &d1Err)
+	require.Equal(t, http.StatusTemporaryRedirect, d1Err.Status)
+	require.False(t, redirected, "the redirect target must not receive the credential")
 }
