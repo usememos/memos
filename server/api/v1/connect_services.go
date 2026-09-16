@@ -696,6 +696,65 @@ func (s *ConnectServiceHandler) BatchDeleteAttachments(ctx context.Context, req 
 	return connect.NewResponse(resp), nil
 }
 
+// HabitService
+
+func (s *ConnectServiceHandler) CreateHabit(ctx context.Context, req *connect.Request[v1pb.CreateHabitRequest]) (*connect.Response[v1pb.Habit], error) {
+	resp, err := s.APIV1Service.CreateHabit(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+func (s *ConnectServiceHandler) ListHabits(ctx context.Context, req *connect.Request[v1pb.ListHabitsRequest]) (*connect.Response[v1pb.ListHabitsResponse], error) {
+	resp, err := s.APIV1Service.ListHabits(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+func (s *ConnectServiceHandler) GetHabit(ctx context.Context, req *connect.Request[v1pb.GetHabitRequest]) (*connect.Response[v1pb.Habit], error) {
+	resp, err := s.APIV1Service.GetHabit(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+func (s *ConnectServiceHandler) UpdateHabit(ctx context.Context, req *connect.Request[v1pb.UpdateHabitRequest]) (*connect.Response[v1pb.Habit], error) {
+	resp, err := s.APIV1Service.UpdateHabit(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+func (s *ConnectServiceHandler) DeleteHabit(ctx context.Context, req *connect.Request[v1pb.DeleteHabitRequest]) (*connect.Response[emptypb.Empty], error) {
+	resp, err := s.APIV1Service.DeleteHabit(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+func (s *ConnectServiceHandler) UpsertHabitLog(ctx context.Context, req *connect.Request[v1pb.UpsertHabitLogRequest]) (*connect.Response[v1pb.HabitLog], error) {
+	resp, err := s.APIV1Service.UpsertHabitLog(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+func (s *ConnectServiceHandler) DeleteHabitLog(ctx context.Context, req *connect.Request[v1pb.DeleteHabitLogRequest]) (*connect.Response[emptypb.Empty], error) {
+	resp, err := s.APIV1Service.DeleteHabitLog(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+func (s *ConnectServiceHandler) GetHabitSummary(ctx context.Context, req *connect.Request[v1pb.GetHabitSummaryRequest]) (*connect.Response[v1pb.HabitSummary], error) {
+	resp, err := s.APIV1Service.GetHabitSummary(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
 // AIService
 
 func (s *ConnectServiceHandler) Transcribe(ctx context.Context, req *connect.Request[v1pb.TranscribeRequest]) (*connect.Response[v1pb.TranscribeResponse], error) {

@@ -8,6 +8,7 @@ import {
   EarthIcon,
   FileAudioIcon,
   FileTextIcon,
+  FlameIcon,
   HouseIcon,
   ImageIcon,
   InfoIcon,
@@ -379,6 +380,13 @@ const GlobalNavigation = () => {
 
   const items: GlobalNavItem[] = currentUser
     ? [
+        {
+          id: "habits",
+          label: "Habits",
+          path: ROUTES.HABITS,
+          icon: FlameIcon,
+          active: routeKind === "habits",
+        },
         {
           id: "calendar",
           label: t("common.calendar"),

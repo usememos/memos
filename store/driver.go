@@ -35,6 +35,15 @@ type Driver interface {
 	DeleteMemo(ctx context.Context, delete *DeleteMemo) error
 	DeleteMemoWithPolicy(ctx context.Context, delete *DeleteMemoWithPolicy) (*DeleteMemoWithPolicyResult, error)
 
+	// Habit model related methods.
+	CreateHabit(ctx context.Context, create *Habit) (*Habit, error)
+	ListHabits(ctx context.Context, find *FindHabit) ([]*Habit, error)
+	UpdateHabit(ctx context.Context, update *UpdateHabit) (*Habit, error)
+	DeleteHabit(ctx context.Context, delete *DeleteHabit) error
+	UpsertHabitLog(ctx context.Context, upsert *HabitLog) (*HabitLog, error)
+	ListHabitLogs(ctx context.Context, find *FindHabitLog) ([]*HabitLog, error)
+	DeleteHabitLog(ctx context.Context, delete *DeleteHabitLog) error
+
 	// Space model related methods.
 	CreateSpace(ctx context.Context, create *Space, creatorID int32) (*Space, error)
 	ListSpaces(ctx context.Context, find *FindSpace) ([]*Space, error)

@@ -27,6 +27,7 @@ const (
 	SpaceNamePrefix            = "spaces/"
 	SpaceMemberNamePrefix      = "members/"
 	SpaceInvitationNamePrefix  = "invitations/"
+	HabitNamePrefix            = "habits/"
 )
 
 // GetNameParentTokens returns the tokens from a resource name.
@@ -99,6 +100,15 @@ func buildMemoName(uid string) string {
 // ExtractSpaceUIDFromName returns the UID from a Space resource name.
 func ExtractSpaceUIDFromName(name string) (string, error) {
 	tokens, err := GetNameParentTokens(name, SpaceNamePrefix)
+	if err != nil {
+		return "", err
+	}
+	return tokens[0], nil
+}
+
+// ExtractHabitUIDFromName returns the UID from a Habit resource name.
+func ExtractHabitUIDFromName(name string) (string, error) {
+	tokens, err := GetNameParentTokens(name, HabitNamePrefix)
 	if err != nil {
 		return "", err
 	}

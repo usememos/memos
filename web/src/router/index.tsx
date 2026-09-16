@@ -22,6 +22,7 @@ const MemoMap = lazyWithReload(() => import("@/pages/Map"));
 const Calendar = lazyWithReload(() => import("@/pages/Calendar"));
 const Explore = lazyWithReload(() => import("@/pages/Explore"));
 const Home = lazyWithReload(() => import("@/pages/Home"));
+const Habits = lazyWithReload(() => import("@/pages/Habits"));
 const Inboxes = lazyWithReload(() => import("@/pages/Inboxes"));
 const MemoDetail = lazyWithReload(() => import("@/pages/MemoDetail"));
 const NotFound = lazyWithReload(() => import("@/pages/NotFound"));
@@ -95,7 +96,10 @@ export const routeConfig: RouteObject[] = [
                   { path: CALENDAR_ROUTE_PATTERN, element: <Calendar /> },
                   {
                     element: <RequireFullInitializationRoute />,
-                    children: [{ path: Routes.VIEWS, element: <MemoViews /> }],
+                    children: [
+                      { path: Routes.VIEWS, element: <MemoViews /> },
+                      { path: Routes.HABITS, element: <Habits /> },
+                    ],
                   },
                 ],
               },
