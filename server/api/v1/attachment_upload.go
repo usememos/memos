@@ -2,7 +2,6 @@ package v1
 
 import (
 	"context"
-	"crypto/sha256"
 	"io"
 	"os"
 	"time"
@@ -16,6 +15,25 @@ import (
 	"github.com/usememos/memos/store"
 )
 
+const (
+	attachmentUploadMetadataLimit = 64 << 10
+	attachmentUploadTempPrefix    = ".memos-rpc-upload-"
+	attachmentUploadProcedure     = "/memos.api.v1.AttachmentService/UploadAttachment"
+)
+
+// attachmentUploadState is what an attachment upload carries besides its
+// bytes. Only Attachment is an API resource.
+type attachmentUploadState struct {
+	metadata          *v1pb.Attachment
+	uid               string
+	finalizeAttempted bool
+}
+
+type (
+	attachmentUpload  = uploadSession[attachmentUploadState]
+	attachmentUploads = uploadSessions[attachmentUploadState]
+)
+
 // UploadAttachment accepts bounded unary chunks. A call carrying a spec opens
 // a new upload; a call carrying an upload ID continues one. Either kind may
 // write data and finalize.
@@ -24,7 +42,7 @@ func (s *APIV1Service) UploadAttachment(ctx context.Context, request *v1pb.Uploa
 	if err != nil {
 		return nil, err
 	}
-	if len(request.Data) > attachmentUploadChunkSize {
+	if len(request.Data) > uploadChunkSize {
 		return nil, status.Errorf(codes.ResourceExhausted, "upload chunk exceeds the limit")
 	}
 	var id string
@@ -41,14 +59,9 @@ func (s *APIV1Service) UploadAttachment(ctx context.Context, request *v1pb.Uploa
 		upload.mu.Lock()
 	case *v1pb.UploadAttachmentRequest_UploadId:
 		id = u.UploadId
-		upload, err = s.attachmentUploads.get(id, user.ID)
+		upload, err = s.attachmentUploads.resume(id, user.ID)
 		if err != nil {
 			return nil, err
-		}
-		upload.mu.Lock()
-		if !time.Now().Before(upload.expireTime) {
-			upload.mu.Unlock()
-			return nil, status.Errorf(codes.NotFound, "upload not found or expired")
 		}
 	default:
 		return nil, status.Errorf(codes.InvalidArgument, "spec or upload_id is required")
@@ -57,14 +70,14 @@ func (s *APIV1Service) UploadAttachment(ctx context.Context, request *v1pb.Uploa
 	if err := ctx.Err(); err != nil {
 		return nil, status.FromContextError(err).Err()
 	}
-	if err := upload.write(ctx, request); err != nil {
+	if err := upload.write(request.WriteOffset, request.Data, request.FinishWrite); err != nil {
 		return nil, err
 	}
 	var attachment *v1pb.Attachment
 	if upload.complete {
 		// Recheck access and existence; a completed upload must not resurrect a
 		// deleted attachment or disclose metadata after access is revoked.
-		attachment, err = s.GetAttachment(ctx, &v1pb.GetAttachmentRequest{Name: "attachments/" + upload.uid})
+		attachment, err = s.GetAttachment(ctx, &v1pb.GetAttachmentRequest{Name: "attachments/" + upload.state.uid})
 	} else if request.FinishWrite {
 		if upload.committedSize != upload.totalSize {
 			return nil, status.Errorf(codes.FailedPrecondition, "upload is incomplete")
@@ -78,9 +91,9 @@ func (s *APIV1Service) UploadAttachment(ctx context.Context, request *v1pb.Uploa
 	if err != nil {
 		return nil, err
 	}
-	upload.expireTime = time.Now().Add(attachmentUploadTTL)
+	upload.expireTime = time.Now().Add(uploadTTL)
 	return &v1pb.UploadAttachmentResponse{
-		UploadId: id, CommittedSize: upload.committedSize, Attachment: attachment, MaxChunkSize: attachmentUploadChunkSize,
+		UploadId: id, CommittedSize: upload.committedSize, Attachment: attachment, MaxChunkSize: uploadChunkSize,
 	}, nil
 }
 
@@ -122,64 +135,15 @@ func (s *APIV1Service) startAttachmentUpload(ctx context.Context, request *v1pb.
 	if err != nil {
 		return "", nil, err
 	}
-	upload := &attachmentUpload{ownerID: ownerID, metadata: metadata, uid: create.UID, totalSize: spec.TotalSize}
-	id, err := s.attachmentUploads.create(s.Profile.Data, upload)
-	if err != nil {
-		return "", nil, err
-	}
-	return id, upload, nil
-}
-
-func (u *attachmentUpload) write(ctx context.Context, request *v1pb.UploadAttachmentRequest) error {
-	if len(request.Data) == 0 {
-		if request.FinishWrite && request.WriteOffset != u.committedSize {
-			return status.Errorf(codes.OutOfRange, "write_offset must equal committed_size")
-		}
-		return nil
-	}
-	digest := sha256.Sum256(request.Data)
-	if u.committedSize > 0 && request.WriteOffset+int64(len(request.Data)) == u.committedSize && digest == u.lastDigest {
-		return nil // A lost response can be retried without appending bytes twice.
-	}
-	if u.complete {
-		return status.Errorf(codes.FailedPrecondition, "upload is already complete")
-	}
-	if request.WriteOffset != u.committedSize {
-		return status.Errorf(codes.OutOfRange, "write_offset must equal committed_size")
-	}
-	if int64(len(request.Data)) > u.totalSize-u.committedSize {
-		return status.Errorf(codes.InvalidArgument, "data exceeds total_size")
-	}
-	file, err := os.OpenFile(u.path, os.O_WRONLY, 0600)
-	if err != nil {
-		return status.Errorf(codes.Internal, "failed to open upload file: %v", err)
-	}
-	defer file.Close()
-	n, err := file.WriteAt(request.Data, u.committedSize)
-	if err == nil && n != len(request.Data) {
-		err = io.ErrShortWrite
-	}
-	if err == nil {
-		err = ctx.Err()
-	}
-	if err != nil {
-		if truncateErr := file.Truncate(u.committedSize); truncateErr != nil {
-			// The file no longer matches committedSize; revoke the upload.
-			u.expireTime = time.Time{}
-			os.Remove(u.path)
-		}
-		return status.Errorf(codes.Internal, "failed to write upload chunk: %v", err)
-	}
-	u.lastDigest = digest
-	u.committedSize += int64(n)
-	return nil
+	state := attachmentUploadState{metadata: metadata, uid: create.UID}
+	return s.attachmentUploads.create(s.Profile.Data, attachmentUploadTempPrefix, ownerID, spec.TotalSize, state)
 }
 
 func (s *APIV1Service) finishAttachmentUpload(ctx context.Context, upload *attachmentUpload) (*v1pb.Attachment, error) {
-	if upload.finalizeAttempted {
+	if upload.state.finalizeAttempted {
 		// A database operation may commit before returning an error. Resolve that
 		// outcome before saving another object under the upload's stable UID.
-		persisted, err := s.Store.GetAttachment(ctx, &store.FindAttachment{UID: &upload.uid})
+		persisted, err := s.Store.GetAttachment(ctx, &store.FindAttachment{UID: &upload.state.uid})
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to resolve previous finalization: %v", err)
 		}
@@ -187,7 +151,7 @@ func (s *APIV1Service) finishAttachmentUpload(ctx context.Context, upload *attac
 			if persisted.CreatorID != upload.ownerID {
 				return nil, status.Errorf(codes.AlreadyExists, "attachment ID already exists")
 			}
-			return s.GetAttachment(ctx, &v1pb.GetAttachmentRequest{Name: "attachments/" + upload.uid})
+			return s.GetAttachment(ctx, &v1pb.GetAttachmentRequest{Name: "attachments/" + upload.state.uid})
 		}
 	}
 	setting, err := s.Store.GetInstanceStorageSetting(ctx)
@@ -202,17 +166,17 @@ func (s *APIV1Service) finishAttachmentUpload(ctx context.Context, upload *attac
 		return nil, status.Errorf(codes.Internal, "failed to open upload file: %v", err)
 	}
 	defer file.Close()
-	metadata := proto.CloneOf(upload.metadata)
+	metadata := proto.CloneOf(upload.state.metadata)
 	metadata.Content = make([]byte, min(upload.totalSize, 512))
 	if _, err := io.ReadFull(file, metadata.Content); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to read attachment header: %v", err)
 	}
 	// Revalidate memo permissions and media metadata with the actual MIME type.
-	create, err := s.prepareAttachment(ctx, &v1pb.CreateAttachmentRequest{Attachment: metadata, AttachmentId: upload.uid})
+	create, err := s.prepareAttachment(ctx, &v1pb.CreateAttachmentRequest{Attachment: metadata, AttachmentId: upload.state.uid})
 	if err != nil {
 		return nil, err
 	}
 	create.Size = upload.totalSize
-	upload.finalizeAttempted = true
+	upload.state.finalizeAttempted = true
 	return s.processAndSaveAttachment(ctx, create, setting, file)
 }

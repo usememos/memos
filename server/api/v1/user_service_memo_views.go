@@ -57,9 +57,9 @@ func convertMemoViewFromStore(username string, memoView *storepb.MemoViewsUserSe
 	}
 }
 
-// authorizeMemoViewAccess resolves the owner of a memo view collection and asserts that
-// the caller is that owner.
-func (s *APIV1Service) authorizeMemoViewAccess(ctx context.Context, user *store.User) error {
+// requireCallerIs asserts that the caller is user. Personal resources such as
+// memo views and memo archives are never reachable by another account.
+func (s *APIV1Service) requireCallerIs(ctx context.Context, user *store.User) error {
 	currentUser, err := s.fetchCurrentUser(ctx)
 	if err != nil {
 		return status.Errorf(codes.Internal, "failed to get current user: %v", err)
@@ -82,7 +82,7 @@ func (s *APIV1Service) ListMemoViews(ctx context.Context, request *v1pb.ListMemo
 	if user == nil {
 		return nil, status.Errorf(codes.NotFound, "user not found")
 	}
-	if err := s.authorizeMemoViewAccess(ctx, user); err != nil {
+	if err := s.requireCallerIs(ctx, user); err != nil {
 		return nil, err
 	}
 
@@ -107,7 +107,7 @@ func (s *APIV1Service) GetMemoView(ctx context.Context, request *v1pb.GetMemoVie
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid memo view name: %v", err)
 	}
-	if err := s.authorizeMemoViewAccess(ctx, user); err != nil {
+	if err := s.requireCallerIs(ctx, user); err != nil {
 		return nil, err
 	}
 
@@ -133,7 +133,7 @@ func (s *APIV1Service) CreateMemoView(ctx context.Context, request *v1pb.CreateM
 	if user == nil {
 		return nil, status.Errorf(codes.NotFound, "user not found")
 	}
-	if err := s.authorizeMemoViewAccess(ctx, user); err != nil {
+	if err := s.requireCallerIs(ctx, user); err != nil {
 		return nil, err
 	}
 	if err := s.throttleAndCharge(ratelimit.ScopeWriteUser, userKey(auth.GetUserID(ctx)), 1); err != nil {
@@ -172,7 +172,7 @@ func (s *APIV1Service) UpdateMemoView(ctx context.Context, request *v1pb.UpdateM
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid memo view name: %v", err)
 	}
-	if err := s.authorizeMemoViewAccess(ctx, user); err != nil {
+	if err := s.requireCallerIs(ctx, user); err != nil {
 		return nil, err
 	}
 	if request.UpdateMask == nil || len(request.UpdateMask.Paths) == 0 {
@@ -223,7 +223,7 @@ func (s *APIV1Service) DeleteMemoView(ctx context.Context, request *v1pb.DeleteM
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid memo view name: %v", err)
 	}
-	if err := s.authorizeMemoViewAccess(ctx, user); err != nil {
+	if err := s.requireCallerIs(ctx, user); err != nil {
 		return nil, err
 	}
 

@@ -8,6 +8,7 @@ package apiv1
 
 import (
 	context "context"
+	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -28,6 +29,8 @@ const (
 	UserService_DeleteUser_FullMethodName                  = "/memos.api.v1.UserService/DeleteUser"
 	UserService_ListAllUserStats_FullMethodName            = "/memos.api.v1.UserService/ListAllUserStats"
 	UserService_GetUserStats_FullMethodName                = "/memos.api.v1.UserService/GetUserStats"
+	UserService_ExportMemos_FullMethodName                 = "/memos.api.v1.UserService/ExportMemos"
+	UserService_ImportMemos_FullMethodName                 = "/memos.api.v1.UserService/ImportMemos"
 	UserService_GetUserSetting_FullMethodName              = "/memos.api.v1.UserService/GetUserSetting"
 	UserService_UpdateUserSetting_FullMethodName           = "/memos.api.v1.UserService/UpdateUserSetting"
 	UserService_ListUserSettings_FullMethodName            = "/memos.api.v1.UserService/ListUserSettings"
@@ -74,6 +77,19 @@ type UserServiceClient interface {
 	ListAllUserStats(ctx context.Context, in *ListAllUserStatsRequest, opts ...grpc.CallOption) (*ListAllUserStatsResponse, error)
 	// GetUserStats returns statistics for a specific user.
 	GetUserStats(ctx context.Context, in *GetUserStatsRequest, opts ...grpc.CallOption) (*UserStats, error)
+	// ExportMemos writes every memo the user created, with comments, archived
+	// memos, and attachment files, as a Memo Archive (a ZIP file, see
+	// docs/design/memo-archive-format.md). Only the user may export their own
+	// memos. The body is the archive; content_type is its media type.
+	ExportMemos(ctx context.Context, in *ExportMemosRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
+	// ImportMemos uploads a Memo Archive in bounded chunks and imports it into
+	// the user's memos. The first call carries the spec and returns an
+	// upload_id; later calls carry that upload_id. A finishing call with
+	// validate_only returns the plan and keeps the archive staged; a finishing
+	// call without it imports and returns the report. Uploads are bound to the
+	// authenticated user, expire after 30 minutes of inactivity, and do not
+	// survive a server restart.
+	ImportMemos(ctx context.Context, in *ImportMemosRequest, opts ...grpc.CallOption) (*ImportMemosResponse, error)
 	// GetUserSetting returns the user setting.
 	GetUserSetting(ctx context.Context, in *GetUserSettingRequest, opts ...grpc.CallOption) (*UserSetting, error)
 	// UpdateUserSetting updates the user setting.
@@ -210,6 +226,26 @@ func (c *userServiceClient) GetUserStats(ctx context.Context, in *GetUserStatsRe
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UserStats)
 	err := c.cc.Invoke(ctx, UserService_GetUserStats_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) ExportMemos(ctx context.Context, in *ExportMemosRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(httpbody.HttpBody)
+	err := c.cc.Invoke(ctx, UserService_ExportMemos_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) ImportMemos(ctx context.Context, in *ImportMemosRequest, opts ...grpc.CallOption) (*ImportMemosResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ImportMemosResponse)
+	err := c.cc.Invoke(ctx, UserService_ImportMemos_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -467,6 +503,19 @@ type UserServiceServer interface {
 	ListAllUserStats(context.Context, *ListAllUserStatsRequest) (*ListAllUserStatsResponse, error)
 	// GetUserStats returns statistics for a specific user.
 	GetUserStats(context.Context, *GetUserStatsRequest) (*UserStats, error)
+	// ExportMemos writes every memo the user created, with comments, archived
+	// memos, and attachment files, as a Memo Archive (a ZIP file, see
+	// docs/design/memo-archive-format.md). Only the user may export their own
+	// memos. The body is the archive; content_type is its media type.
+	ExportMemos(context.Context, *ExportMemosRequest) (*httpbody.HttpBody, error)
+	// ImportMemos uploads a Memo Archive in bounded chunks and imports it into
+	// the user's memos. The first call carries the spec and returns an
+	// upload_id; later calls carry that upload_id. A finishing call with
+	// validate_only returns the plan and keeps the archive staged; a finishing
+	// call without it imports and returns the report. Uploads are bound to the
+	// authenticated user, expire after 30 minutes of inactivity, and do not
+	// survive a server restart.
+	ImportMemos(context.Context, *ImportMemosRequest) (*ImportMemosResponse, error)
 	// GetUserSetting returns the user setting.
 	GetUserSetting(context.Context, *GetUserSettingRequest) (*UserSetting, error)
 	// UpdateUserSetting updates the user setting.
@@ -552,6 +601,12 @@ func (UnimplementedUserServiceServer) ListAllUserStats(context.Context, *ListAll
 }
 func (UnimplementedUserServiceServer) GetUserStats(context.Context, *GetUserStatsRequest) (*UserStats, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetUserStats not implemented")
+}
+func (UnimplementedUserServiceServer) ExportMemos(context.Context, *ExportMemosRequest) (*httpbody.HttpBody, error) {
+	return nil, status.Error(codes.Unimplemented, "method ExportMemos not implemented")
+}
+func (UnimplementedUserServiceServer) ImportMemos(context.Context, *ImportMemosRequest) (*ImportMemosResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ImportMemos not implemented")
 }
 func (UnimplementedUserServiceServer) GetUserSetting(context.Context, *GetUserSettingRequest) (*UserSetting, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetUserSetting not implemented")
@@ -783,6 +838,42 @@ func _UserService_GetUserStats_Handler(srv interface{}, ctx context.Context, dec
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).GetUserStats(ctx, req.(*GetUserStatsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_ExportMemos_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExportMemosRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).ExportMemos(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_ExportMemos_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).ExportMemos(ctx, req.(*ExportMemosRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_ImportMemos_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ImportMemosRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).ImportMemos(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_ImportMemos_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).ImportMemos(ctx, req.(*ImportMemosRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1239,6 +1330,14 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUserStats",
 			Handler:    _UserService_GetUserStats_Handler,
+		},
+		{
+			MethodName: "ExportMemos",
+			Handler:    _UserService_ExportMemos_Handler,
+		},
+		{
+			MethodName: "ImportMemos",
+			Handler:    _UserService_ImportMemos_Handler,
 		},
 		{
 			MethodName: "GetUserSetting",

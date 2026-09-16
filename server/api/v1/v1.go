@@ -32,8 +32,8 @@ const MaxAPIRequestBytes = 256 << 20
 // requestBodyLimit returns the request body cap for a procedure. Chunked
 // uploads carry at most one chunk per call, so they get a much lower cap.
 func requestBodyLimit(procedure string) int64 {
-	if procedure == attachmentUploadProcedure {
-		return attachmentUploadRequestLimit
+	if procedure == attachmentUploadProcedure || procedure == importMemosProcedure {
+		return uploadRequestLimit
 	}
 	return MaxAPIRequestBytes
 }
@@ -73,6 +73,7 @@ type APIV1Service struct {
 
 	linkMetadataFetcher linkMetadataFetcher
 	attachmentUploads   attachmentUploads
+	memoImports         memoImports
 }
 
 // NewAPIV1Service creates an API v1 service with its shared dependencies.

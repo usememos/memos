@@ -25,7 +25,7 @@ import (
 func newUploadTestService(t *testing.T) (*APIV1Service, context.Context) {
 	t.Helper()
 	svc := newIntegrationService(t)
-	t.Cleanup(svc.CloseAttachmentUploads)
+	t.Cleanup(svc.CloseUploads)
 	user := createSpaceTestUser(context.Background(), t, svc, "uploader", store.RoleUser)
 	return svc, userCtx(context.Background(), user.ID)
 }
@@ -45,7 +45,7 @@ func startTestUpload(ctx context.Context, t *testing.T, svc *APIV1Service, size 
 	response, err := svc.UploadAttachment(ctx, &v1pb.UploadAttachmentRequest{Upload: spec})
 	require.NoError(t, err)
 	require.NotEmpty(t, response.UploadId)
-	require.EqualValues(t, attachmentUploadChunkSize, response.MaxChunkSize)
+	require.EqualValues(t, uploadChunkSize, response.MaxChunkSize)
 	require.Zero(t, response.CommittedSize)
 	require.Nil(t, response.Attachment)
 	return response.UploadId
@@ -159,7 +159,7 @@ func TestUploadAttachmentValidation(t *testing.T) {
 	require.Equal(t, codes.NotFound, status.Code(err))
 	_, err = svc.UploadAttachment(ctx, &v1pb.UploadAttachmentRequest{Upload: uploadID("unknown")})
 	require.Equal(t, codes.NotFound, status.Code(err))
-	_, err = svc.UploadAttachment(ctx, &v1pb.UploadAttachmentRequest{Upload: uploadID(id), Data: make([]byte, attachmentUploadChunkSize+1)})
+	_, err = svc.UploadAttachment(ctx, &v1pb.UploadAttachmentRequest{Upload: uploadID(id), Data: make([]byte, uploadChunkSize+1)})
 	require.Equal(t, codes.ResourceExhausted, status.Code(err))
 	_, err = svc.UploadAttachment(ctx, &v1pb.UploadAttachmentRequest{Upload: uploadID(id), Data: []byte("four")})
 	require.Equal(t, codes.InvalidArgument, status.Code(err))
@@ -248,7 +248,7 @@ func TestUploadAttachmentRechecksMemoAndSize(t *testing.T) {
 
 func TestUploadAttachmentExpiryAndLimits(t *testing.T) {
 	svc, ctx := newUploadTestService(t)
-	ids := make([]string, attachmentUploadMaxActivePerUser)
+	ids := make([]string, uploadMaxActivePerUser)
 	for i := range ids {
 		ids[i] = startTestUpload(ctx, t, svc, 0)
 	}
@@ -270,7 +270,7 @@ func TestUploadAttachmentExpiryAndLimits(t *testing.T) {
 	for _, path := range []string{orphan, recent, unrelated} {
 		require.NoError(t, os.WriteFile(path, []byte("x"), 0600))
 	}
-	old := time.Now().Add(-2 * attachmentUploadTTL)
+	old := time.Now().Add(-2 * uploadTTL)
 	require.NoError(t, os.Chtimes(orphan, old, old))
 	require.NoError(t, os.Chtimes(unrelated, old, old))
 	svc.attachmentUploads.mu.Lock()
@@ -281,7 +281,7 @@ func TestUploadAttachmentExpiryAndLimits(t *testing.T) {
 	require.NoFileExists(t, orphan)
 	require.FileExists(t, recent)
 	require.FileExists(t, unrelated)
-	svc.CloseAttachmentUploads()
+	svc.CloseUploads()
 	require.Empty(t, svc.attachmentUploads.entries)
 }
 
@@ -293,7 +293,7 @@ func TestUploadAttachmentAboveLegacyRequestLimit(t *testing.T) {
 	})
 	require.NoError(t, err)
 	id := startTestUpload(ctx, t, svc, size)
-	chunk := bytes.Repeat([]byte{0x5a}, attachmentUploadChunkSize)
+	chunk := bytes.Repeat([]byte{0x5a}, uploadChunkSize)
 	var response *v1pb.UploadAttachmentResponse
 	for offset := int64(0); offset < size; offset += int64(len(chunk)) {
 		response, err = svc.UploadAttachment(ctx, &v1pb.UploadAttachmentRequest{

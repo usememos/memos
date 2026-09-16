@@ -40,6 +40,8 @@ const (
 	ScopeTranscribeUser Scope = "transcribe_user"
 	// ScopeWriteUser counts content creation per user.
 	ScopeWriteUser Scope = "write_user"
+	// ScopeArchiveUser counts memo archive exports and imports per user.
+	ScopeArchiveUser Scope = "archive_user"
 )
 
 // Rule is the limit for one scope: at most Limit units within Window.
@@ -74,6 +76,7 @@ func DefaultPolicy() Policy {
 		ScopeUploadUser:         {Limit: 120, Window: time.Minute},
 		ScopeTranscribeUser:     {Limit: 20, Window: time.Hour},
 		ScopeWriteUser:          {Limit: 120, Window: time.Minute},
+		ScopeArchiveUser:        {Limit: 10, Window: time.Hour},
 	}
 }
 

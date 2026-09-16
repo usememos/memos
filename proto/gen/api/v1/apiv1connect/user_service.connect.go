@@ -9,6 +9,7 @@ import (
 	context "context"
 	errors "errors"
 	v1 "github.com/usememos/memos/proto/gen/api/v1"
+	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	http "net/http"
 	strings "strings"
@@ -53,6 +54,10 @@ const (
 	// UserServiceGetUserStatsProcedure is the fully-qualified name of the UserService's GetUserStats
 	// RPC.
 	UserServiceGetUserStatsProcedure = "/memos.api.v1.UserService/GetUserStats"
+	// UserServiceExportMemosProcedure is the fully-qualified name of the UserService's ExportMemos RPC.
+	UserServiceExportMemosProcedure = "/memos.api.v1.UserService/ExportMemos"
+	// UserServiceImportMemosProcedure is the fully-qualified name of the UserService's ImportMemos RPC.
+	UserServiceImportMemosProcedure = "/memos.api.v1.UserService/ImportMemos"
 	// UserServiceGetUserSettingProcedure is the fully-qualified name of the UserService's
 	// GetUserSetting RPC.
 	UserServiceGetUserSettingProcedure = "/memos.api.v1.UserService/GetUserSetting"
@@ -142,6 +147,19 @@ type UserServiceClient interface {
 	ListAllUserStats(context.Context, *connect.Request[v1.ListAllUserStatsRequest]) (*connect.Response[v1.ListAllUserStatsResponse], error)
 	// GetUserStats returns statistics for a specific user.
 	GetUserStats(context.Context, *connect.Request[v1.GetUserStatsRequest]) (*connect.Response[v1.UserStats], error)
+	// ExportMemos writes every memo the user created, with comments, archived
+	// memos, and attachment files, as a Memo Archive (a ZIP file, see
+	// docs/design/memo-archive-format.md). Only the user may export their own
+	// memos. The body is the archive; content_type is its media type.
+	ExportMemos(context.Context, *connect.Request[v1.ExportMemosRequest]) (*connect.Response[httpbody.HttpBody], error)
+	// ImportMemos uploads a Memo Archive in bounded chunks and imports it into
+	// the user's memos. The first call carries the spec and returns an
+	// upload_id; later calls carry that upload_id. A finishing call with
+	// validate_only returns the plan and keeps the archive staged; a finishing
+	// call without it imports and returns the report. Uploads are bound to the
+	// authenticated user, expire after 30 minutes of inactivity, and do not
+	// survive a server restart.
+	ImportMemos(context.Context, *connect.Request[v1.ImportMemosRequest]) (*connect.Response[v1.ImportMemosResponse], error)
 	// GetUserSetting returns the user setting.
 	GetUserSetting(context.Context, *connect.Request[v1.GetUserSettingRequest]) (*connect.Response[v1.UserSetting], error)
 	// UpdateUserSetting updates the user setting.
@@ -253,6 +271,18 @@ func NewUserServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			httpClient,
 			baseURL+UserServiceGetUserStatsProcedure,
 			connect.WithSchema(userServiceMethods.ByName("GetUserStats")),
+			connect.WithClientOptions(opts...),
+		),
+		exportMemos: connect.NewClient[v1.ExportMemosRequest, httpbody.HttpBody](
+			httpClient,
+			baseURL+UserServiceExportMemosProcedure,
+			connect.WithSchema(userServiceMethods.ByName("ExportMemos")),
+			connect.WithClientOptions(opts...),
+		),
+		importMemos: connect.NewClient[v1.ImportMemosRequest, v1.ImportMemosResponse](
+			httpClient,
+			baseURL+UserServiceImportMemosProcedure,
+			connect.WithSchema(userServiceMethods.ByName("ImportMemos")),
 			connect.WithClientOptions(opts...),
 		),
 		getUserSetting: connect.NewClient[v1.GetUserSettingRequest, v1.UserSetting](
@@ -406,6 +436,8 @@ type userServiceClient struct {
 	deleteUser                  *connect.Client[v1.DeleteUserRequest, emptypb.Empty]
 	listAllUserStats            *connect.Client[v1.ListAllUserStatsRequest, v1.ListAllUserStatsResponse]
 	getUserStats                *connect.Client[v1.GetUserStatsRequest, v1.UserStats]
+	exportMemos                 *connect.Client[v1.ExportMemosRequest, httpbody.HttpBody]
+	importMemos                 *connect.Client[v1.ImportMemosRequest, v1.ImportMemosResponse]
 	getUserSetting              *connect.Client[v1.GetUserSettingRequest, v1.UserSetting]
 	updateUserSetting           *connect.Client[v1.UpdateUserSettingRequest, v1.UserSetting]
 	listUserSettings            *connect.Client[v1.ListUserSettingsRequest, v1.ListUserSettingsResponse]
@@ -469,6 +501,16 @@ func (c *userServiceClient) ListAllUserStats(ctx context.Context, req *connect.R
 // GetUserStats calls memos.api.v1.UserService.GetUserStats.
 func (c *userServiceClient) GetUserStats(ctx context.Context, req *connect.Request[v1.GetUserStatsRequest]) (*connect.Response[v1.UserStats], error) {
 	return c.getUserStats.CallUnary(ctx, req)
+}
+
+// ExportMemos calls memos.api.v1.UserService.ExportMemos.
+func (c *userServiceClient) ExportMemos(ctx context.Context, req *connect.Request[v1.ExportMemosRequest]) (*connect.Response[httpbody.HttpBody], error) {
+	return c.exportMemos.CallUnary(ctx, req)
+}
+
+// ImportMemos calls memos.api.v1.UserService.ImportMemos.
+func (c *userServiceClient) ImportMemos(ctx context.Context, req *connect.Request[v1.ImportMemosRequest]) (*connect.Response[v1.ImportMemosResponse], error) {
+	return c.importMemos.CallUnary(ctx, req)
 }
 
 // GetUserSetting calls memos.api.v1.UserService.GetUserSetting.
@@ -605,6 +647,19 @@ type UserServiceHandler interface {
 	ListAllUserStats(context.Context, *connect.Request[v1.ListAllUserStatsRequest]) (*connect.Response[v1.ListAllUserStatsResponse], error)
 	// GetUserStats returns statistics for a specific user.
 	GetUserStats(context.Context, *connect.Request[v1.GetUserStatsRequest]) (*connect.Response[v1.UserStats], error)
+	// ExportMemos writes every memo the user created, with comments, archived
+	// memos, and attachment files, as a Memo Archive (a ZIP file, see
+	// docs/design/memo-archive-format.md). Only the user may export their own
+	// memos. The body is the archive; content_type is its media type.
+	ExportMemos(context.Context, *connect.Request[v1.ExportMemosRequest]) (*connect.Response[httpbody.HttpBody], error)
+	// ImportMemos uploads a Memo Archive in bounded chunks and imports it into
+	// the user's memos. The first call carries the spec and returns an
+	// upload_id; later calls carry that upload_id. A finishing call with
+	// validate_only returns the plan and keeps the archive staged; a finishing
+	// call without it imports and returns the report. Uploads are bound to the
+	// authenticated user, expire after 30 minutes of inactivity, and do not
+	// survive a server restart.
+	ImportMemos(context.Context, *connect.Request[v1.ImportMemosRequest]) (*connect.Response[v1.ImportMemosResponse], error)
 	// GetUserSetting returns the user setting.
 	GetUserSetting(context.Context, *connect.Request[v1.GetUserSettingRequest]) (*connect.Response[v1.UserSetting], error)
 	// UpdateUserSetting updates the user setting.
@@ -712,6 +767,18 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 		UserServiceGetUserStatsProcedure,
 		svc.GetUserStats,
 		connect.WithSchema(userServiceMethods.ByName("GetUserStats")),
+		connect.WithHandlerOptions(opts...),
+	)
+	userServiceExportMemosHandler := connect.NewUnaryHandler(
+		UserServiceExportMemosProcedure,
+		svc.ExportMemos,
+		connect.WithSchema(userServiceMethods.ByName("ExportMemos")),
+		connect.WithHandlerOptions(opts...),
+	)
+	userServiceImportMemosHandler := connect.NewUnaryHandler(
+		UserServiceImportMemosProcedure,
+		svc.ImportMemos,
+		connect.WithSchema(userServiceMethods.ByName("ImportMemos")),
 		connect.WithHandlerOptions(opts...),
 	)
 	userServiceGetUserSettingHandler := connect.NewUnaryHandler(
@@ -870,6 +937,10 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 			userServiceListAllUserStatsHandler.ServeHTTP(w, r)
 		case UserServiceGetUserStatsProcedure:
 			userServiceGetUserStatsHandler.ServeHTTP(w, r)
+		case UserServiceExportMemosProcedure:
+			userServiceExportMemosHandler.ServeHTTP(w, r)
+		case UserServiceImportMemosProcedure:
+			userServiceImportMemosHandler.ServeHTTP(w, r)
 		case UserServiceGetUserSettingProcedure:
 			userServiceGetUserSettingHandler.ServeHTTP(w, r)
 		case UserServiceUpdateUserSettingProcedure:
@@ -955,6 +1026,14 @@ func (UnimplementedUserServiceHandler) ListAllUserStats(context.Context, *connec
 
 func (UnimplementedUserServiceHandler) GetUserStats(context.Context, *connect.Request[v1.GetUserStatsRequest]) (*connect.Response[v1.UserStats], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.UserService.GetUserStats is not implemented"))
+}
+
+func (UnimplementedUserServiceHandler) ExportMemos(context.Context, *connect.Request[v1.ExportMemosRequest]) (*connect.Response[httpbody.HttpBody], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.UserService.ExportMemos is not implemented"))
+}
+
+func (UnimplementedUserServiceHandler) ImportMemos(context.Context, *connect.Request[v1.ImportMemosRequest]) (*connect.Response[v1.ImportMemosResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.UserService.ImportMemos is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) GetUserSetting(context.Context, *connect.Request[v1.GetUserSettingRequest]) (*connect.Response[v1.UserSetting], error) {

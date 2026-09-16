@@ -2847,6 +2847,34 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/v1/users/{user}:exportMemos:
+        get:
+            tags:
+                - UserService
+            description: |-
+                ExportMemos writes every memo the user created, with comments, archived
+                 memos, and attachment files, as a Memo Archive (a ZIP file, see
+                 docs/design/memo-archive-format.md). Only the user may export their own
+                 memos. The body is the archive; content_type is its media type.
+            operationId: UserService_ExportMemos
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        '*/*': {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/users/{user}:getStats:
         get:
             tags:
@@ -2874,6 +2902,45 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/UserStats'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/users/{user}:importMemos:
+        post:
+            tags:
+                - UserService
+            description: |-
+                ImportMemos uploads a Memo Archive in bounded chunks and imports it into
+                 the user's memos. The first call carries the spec and returns an
+                 upload_id; later calls carry that upload_id. A finishing call with
+                 validate_only returns the plan and keeps the archive staged; a finishing
+                 call without it imports and returns the report. Uploads are bound to the
+                 authenticated user, expire after 30 minutes of inactivity, and do not
+                 survive a server restart.
+            operationId: UserService_ImportMemos
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ImportMemosRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ImportMemosResponse'
                 default:
                     description: Default error response
                     content:
@@ -3357,6 +3424,86 @@ components:
             properties:
                 oauth2Config:
                     $ref: '#/components/schemas/OAuth2Config'
+        ImportMemosRequest:
+            required:
+                - name
+                - writeOffset
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: |-
+                        Required. The user who receives the memos. Must be the caller.
+                         Format: users/{user}
+                spec:
+                    allOf:
+                        - $ref: '#/components/schemas/ImportMemosSpec'
+                    description: Starts a new upload. The same call may also carry data and finish_write.
+                uploadId:
+                    type: string
+                    description: Continues the upload identified by a previous response.
+                writeOffset:
+                    type: string
+                    description: |-
+                        Required. Zero-based byte offset at which data is written. Must equal the
+                         committed size, except when retrying the most recently accepted chunk
+                         with identical bytes and offset, which is accepted without writing again.
+                data:
+                    type: string
+                    description: |-
+                        Optional. Archive bytes, at most max_chunk_size long. With no data and
+                         finish_write false, the call reports progress without writing, and
+                         write_offset is ignored.
+                    format: bytes
+                finishWrite:
+                    type: boolean
+                    description: |-
+                        Optional. Finish the upload after writing data. The committed size must
+                         then equal total_size. The archive is validated and, unless
+                         validate_only is set, imported. Any later call for an imported upload
+                         returns the same report.
+                validateOnly:
+                    type: boolean
+                    description: |-
+                        Optional. On a finishing call, validate the archive and return the plan
+                         without importing. The upload stays staged so a later finishing call can
+                         import it.
+                conflictPolicy:
+                    enum:
+                        - CONFLICT_POLICY_UNSPECIFIED
+                        - SKIP
+                        - REPLACE
+                        - DUPLICATE
+                    type: string
+                    description: Optional. Read on the finishing call that imports. Unspecified means SKIP.
+                    format: enum
+        ImportMemosResponse:
+            type: object
+            properties:
+                uploadId:
+                    type: string
+                    description: Opaque ID for subsequent calls. This is not a resource name.
+                committedSize:
+                    type: string
+                    description: Number of archive bytes committed so far.
+                maxChunkSize:
+                    type: integer
+                    description: Maximum number of data bytes accepted in one call.
+                    format: int32
+                plan:
+                    allOf:
+                        - $ref: '#/components/schemas/MemoImportPlan'
+                    description: What the import would do. Set by a finishing call with validate_only.
+                report:
+                    allOf:
+                        - $ref: '#/components/schemas/MemoImportReport'
+                    description: What the import did. Set by a finishing call that imported.
+        ImportMemosSpec:
+            type: object
+            properties:
+                totalSize:
+                    type: string
+                    description: Optional. Total size of the archive in bytes.
         InstanceProfile:
             type: object
             properties:
@@ -4058,6 +4205,81 @@ components:
                     description: |-
                         Optional. The space in which this memo is placed. Format: spaces/{space}.
                          Every memo, including a comment, owns its placement independently.
+        MemoImportIssue:
+            type: object
+            properties:
+                memo:
+                    type: string
+                    description: The archive memo UID the issue concerns, if any.
+                message:
+                    type: string
+            description: |-
+                MemoImportIssue is one warning or failure of an import, tied to the memo
+                 UID from the archive when there is one.
+        MemoImportPlan:
+            type: object
+            properties:
+                exportTime:
+                    type: string
+                    description: When the archive was written.
+                    format: date-time
+                exporter:
+                    type: string
+                    description: Username of the user who exported the archive.
+                generator:
+                    type: string
+                    description: The software that wrote the archive.
+                memos:
+                    type: integer
+                    description: Number of memo records in the archive.
+                    format: int32
+                attachments:
+                    type: integer
+                    description: Number of attachment files in the archive.
+                    format: int32
+                new:
+                    type: integer
+                    description: Memos whose UID nobody on the instance holds.
+                    format: int32
+                existing:
+                    type: integer
+                    description: Memos the user already holds; the conflict policy applies to them.
+                    format: int32
+                renamed:
+                    type: integer
+                    description: Memos whose UID another account holds; they are imported under fresh UIDs.
+                    format: int32
+                warnings:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/MemoImportIssue'
+                    description: Deviations the archive reader corrected while validating.
+            description: MemoImportPlan describes what importing a staged archive would do.
+        MemoImportReport:
+            type: object
+            properties:
+                created:
+                    type: integer
+                    format: int32
+                updated:
+                    type: integer
+                    format: int32
+                skipped:
+                    type: integer
+                    format: int32
+                failed:
+                    type: integer
+                    format: int32
+                warnings:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/MemoImportIssue'
+                failures:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/MemoImportIssue'
+                    description: One entry per failed memo, with the reason.
+            description: MemoImportReport is the outcome of an import.
         MemoRelation:
             required:
                 - memo

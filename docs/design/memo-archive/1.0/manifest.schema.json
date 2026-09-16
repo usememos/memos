@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://usememos.com/schemas/memo-archive/1.0/manifest.schema.json",
+  "title": "Memo Archive manifest",
+  "description": "Archive-level record stored at manifest.json in a Memo Archive. Unknown members are permitted so that later minor versions can add fields.",
+  "type": "object",
+  "required": ["format", "formatVersion", "generator", "exportTime", "scope"],
+  "properties": {
+    "format": {
+      "const": "memos-archive"
+    },
+    "formatVersion": {
+      "type": "string",
+      "pattern": "^1\\.[0-9]+$",
+      "description": "MAJOR.MINOR. Readers accept any minor version of a major they know."
+    },
+    "generator": {
+      "type": "object",
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "version": { "type": "string", "minLength": 1 }
+      }
+    },
+    "exportTime": {
+      "$ref": "#/$defs/timestamp"
+    },
+    "scope": {
+      "type": "object",
+      "required": ["kind"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "description": "USER in 1.0. INSTANCE, SPACE, and SELECTION are reserved for later minor versions."
+        },
+        "user": {
+          "type": "object",
+          "required": ["username"],
+          "properties": {
+            "username": { "$ref": "#/$defs/username" },
+            "displayName": { "type": "string" }
+          }
+        }
+      },
+      "if": {
+        "properties": { "kind": { "const": "USER" } }
+      },
+      "then": {
+        "required": ["user"]
+      }
+    },
+    "counts": {
+      "type": "object",
+      "properties": {
+        "memos": { "type": "integer", "minimum": 0 },
+        "attachments": { "type": "integer", "minimum": 0 }
+      }
+    }
+  },
+  "$defs": {
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?Z$",
+      "description": "RFC 3339 date-time in UTC with the Z designator."
+    },
+    "username": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Username as defined by ADR 0002."
+    }
+  }
+}
