@@ -3,9 +3,11 @@
 // and /query endpoints, batch bodies, the database metadata endpoint) and the
 // Memos bridge protocol, on top of a private SQLite database. It enforces the
 // D1 constraints that matter to the driver: foreign keys are on, statements
-// are wrapped in an implicit transaction, a batch is atomic, and a statement
-// may bind at most 100 parameters. It registers no custom SQL functions,
-// exactly like D1.
+// are wrapped in an implicit transaction, a batch is atomic, a statement may
+// bind at most 100 parameters, and a prepared entry (a bridge statement or a
+// parameterized REST entry) holds exactly one statement while a parameter-free
+// REST entry is a script. It registers no custom SQL functions, exactly like
+// D1.
 package d1test
 
 import (
@@ -20,10 +22,10 @@ import (
 	"testing"
 	"time"
 
+	"modernc.org/libc"
 	// SQLite engine behind the emulated service.
 	_ "modernc.org/sqlite"
-
-	"github.com/usememos/memos/store/db/d1/sqlsplit"
+	sqlite3 "modernc.org/sqlite/lib"
 )
 
 const (
@@ -183,22 +185,27 @@ func (s *Server) handleQuery(w http.ResponseWriter, r *http.Request, rawRows boo
 		return
 	}
 
-	// A parameterized entry is one statement; a parameter-free entry is a
-	// script, executed statement by statement the way D1 does.
+	// A parameterized entry is prepared and must be one statement; a
+	// parameter-free entry is a script, executed statement by statement the
+	// way D1 does.
 	var stmts []requestStatement
 	for _, entry := range entries {
 		if len(entry.Params) > maxBoundParameters {
 			writeErrors(w, http.StatusBadRequest, 7400, fmt.Sprintf("too many bound parameters: %d", len(entry.Params)))
 			return
 		}
-		if len(entry.Params) > 0 {
-			stmts = append(stmts, entry)
-			continue
-		}
-		parts := sqlsplit.Split(entry.SQL)
+		parts := splitStatements(entry.SQL)
 		if len(parts) == 0 {
 			writeErrors(w, http.StatusBadRequest, 7400, "empty sql")
 			return
+		}
+		if len(entry.Params) > 0 {
+			if len(parts) > 1 {
+				writeErrors(w, http.StatusBadRequest, 7500, errMultipleStatements)
+				return
+			}
+			stmts = append(stmts, entry)
+			continue
 		}
 		for _, part := range parts {
 			stmts = append(stmts, requestStatement{SQL: part})
@@ -259,6 +266,12 @@ func (s *Server) handleBridge(w http.ResponseWriter, r *http.Request) {
 	for _, entry := range body.Statements {
 		if len(entry.Params) > maxBoundParameters {
 			writeBridgeError(w, http.StatusBadRequest, fmt.Sprintf("too many bound parameters: %d", len(entry.Params)))
+			return
+		}
+		// Every bridge entry goes through prepare(), which takes exactly one
+		// statement.
+		if len(splitStatements(entry.SQL)) != 1 {
+			writeBridgeError(w, http.StatusBadRequest, "D1_ERROR: "+errMultipleStatements)
 			return
 		}
 	}
@@ -373,6 +386,70 @@ func collectRows(ctx context.Context, tx *sql.Tx, query string, args []any) (*st
 		return nil, err
 	}
 	return res, nil
+}
+
+// errMultipleStatements is the text D1 returns for a prepared statement that
+// holds more than one statement.
+const errMultipleStatements = "A prepared SQL statement must contain only one statement."
+
+// splitStatements divides a script into statements the way SQLite's own
+// parser would: sqlite3_complete reports where each statement ends, so
+// string literals, comments, and trigger bodies never split a statement, and
+// text that is only whitespace or comments yields nothing.
+func splitStatements(text string) []string {
+	statements := []string{}
+	start := 0
+	for i := 0; i < len(text); i++ {
+		if text[i] != ';' || !sqlComplete(text[start:i+1]) {
+			continue
+		}
+		if part := strings.TrimSpace(text[start : i+1]); !sqlBlank(part) {
+			statements = append(statements, part)
+		}
+		start = i + 1
+	}
+	if tail := strings.TrimSpace(text[start:]); !sqlBlank(tail) {
+		statements = append(statements, tail)
+	}
+	return statements
+}
+
+// sqlComplete reports whether text ends with a complete SQL statement.
+func sqlComplete(text string) bool {
+	tls := libc.NewTLS()
+	defer tls.Close()
+	cText, err := libc.CString(text)
+	if err != nil {
+		return false
+	}
+	defer libc.Xfree(tls, cText)
+	return sqlite3.Xsqlite3_complete(tls, cText) != 0
+}
+
+// sqlBlank reports whether text holds no SQL: only whitespace, comments, and
+// empty statements.
+func sqlBlank(text string) bool {
+	for {
+		text = strings.TrimLeft(text, " \t\r\n;")
+		switch {
+		case text == "":
+			return true
+		case strings.HasPrefix(text, "--"):
+			if _, rest, found := strings.Cut(text, "\n"); found {
+				text = rest
+			} else {
+				return true
+			}
+		case strings.HasPrefix(text, "/*"):
+			if _, rest, found := strings.Cut(text[2:], "*/"); found {
+				text = rest
+			} else {
+				return true
+			}
+		default:
+			return false
+		}
+	}
 }
 
 func decodeBody(r *http.Request, target any) error {

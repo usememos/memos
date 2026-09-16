@@ -63,8 +63,8 @@ func (d *DB) DeleteSpace(ctx context.Context, delete *store.DeleteSpace) (*store
 	b.guard("EXISTS (SELECT 1 FROM space_member WHERE space_id = ? AND user_id = ? AND status = 'ACTIVE' AND role = 'ADMIN')", delete.ID, delete.ActorUserID)
 	// The memo set was read outside the batch; abort when it changed so no
 	// memo or attachment is left pointing at a deleted space.
-	b.guard("(SELECT COUNT(*) FROM memo WHERE space_id = ?) = ?", delete.ID, len(memoIDs))
-	b.guard("(SELECT COUNT(*) FROM attachment WHERE memo_id IN (SELECT id FROM memo WHERE space_id = ?)) = ?", delete.ID, len(attachments))
+	b.guardIDSet("memo WHERE space_id = ?", []any{delete.ID}, memoIDs)
+	b.guardIDSet("attachment WHERE memo_id IN (SELECT id FROM memo WHERE space_id = ?)", []any{delete.ID}, attachmentIDs(attachments))
 	addMemoSetDeletes(b, memoIDs, attachmentIDs(attachments))
 	b.add("DELETE FROM space_member WHERE space_id = ?", delete.ID)
 	b.add("DELETE FROM space WHERE id = ?", delete.ID)

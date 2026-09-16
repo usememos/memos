@@ -25,19 +25,22 @@ func (d *DB) CreateMemoShare(ctx context.Context, create *store.MemoShare) (*sto
 		}
 		return create, nil
 	}
-	if err := validateMemoWritePolicy(ctx, d.db, create.MemoID, create.Policy, nil); err != nil {
+	state, err := validateMemoWritePolicy(ctx, d.db, create.MemoID, create.Policy, nil)
+	if err != nil {
 		return nil, err
 	}
-	// The validated memo and actor are re-asserted by the insert itself:
-	// selecting from the memo row and requiring the actor to still be active
-	// makes a stale validation yield no row instead of a share.
-	args = append(args, create.MemoID, create.Policy.ActorUserID)
-	stmt := "INSERT INTO memo_share (" + strings.Join(columns, ", ") + ") SELECT " + strings.Join(values, ", ") +
-		" FROM memo WHERE memo.id = ? AND " + activeUserCondition + " RETURNING id, created_ts"
-	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(&create.ID, &create.CreatedTs); err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, store.ErrMemoMutationConflict
-		}
+	// The memo's audience, lifecycle, and placement were all part of the
+	// validation, so the batch re-asserts the whole row: a memo moved to the
+	// SPACE audience meanwhile must not gain a share.
+	b := newBatch()
+	b.guard(activeUserCondition, create.Policy.ActorUserID)
+	memoGuardWritePolicy(b, state, create.Policy, nil)
+	index := b.add("INSERT INTO memo_share ("+strings.Join(columns, ", ")+") VALUES ("+strings.Join(values, ", ")+") RETURNING id, created_ts", args...)
+	results, err := b.commit(ctx, d)
+	if err != nil {
+		return nil, guardError(err, store.ErrMemoMutationConflict)
+	}
+	if err := scanResultRow(results[index], &create.ID, &create.CreatedTs); err != nil {
 		return nil, err
 	}
 	return create, nil
@@ -131,7 +134,7 @@ func (d *DB) DeleteMemoShare(ctx context.Context, delete *store.DeleteMemoShare)
 		_, err := d.execOne(ctx, "DELETE FROM memo_share WHERE "+strings.Join(where, " AND "), args...)
 		return err
 	}
-	if err := validateMemoWritePolicy(ctx, d.db, *delete.MemoID, delete.Policy, nil); err != nil {
+	if _, err := validateMemoWritePolicy(ctx, d.db, *delete.MemoID, delete.Policy, nil); err != nil {
 		return err
 	}
 	// One conditional statement: the share must still belong to the validated

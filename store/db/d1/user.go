@@ -168,12 +168,18 @@ func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User
 		where, args = append(where, "id = ?"), append(args, *v)
 	}
 	if len(find.IDList) > 0 {
-		clause, ids := inClause(find.IDList)
-		where, args = append(where, "id IN "+clause), append(args, ids...)
+		clause, ids, err := jsonList(find.IDList)
+		if err != nil {
+			return nil, err
+		}
+		where, args = append(where, "id IN "+clause), append(args, ids)
 	}
 	if len(find.UsernameList) > 0 {
-		clause, usernames := inClause(find.UsernameList)
-		where, args = append(where, "username IN "+clause), append(args, usernames...)
+		clause, usernames, err := jsonList(find.UsernameList)
+		if err != nil {
+			return nil, err
+		}
+		where, args = append(where, "username IN "+clause), append(args, usernames)
 	}
 	if v := find.RowStatus; v != nil {
 		where, args = append(where, "row_status = ?"), append(args, *v)

@@ -45,7 +45,7 @@ func (d *DB) DeleteMemoWithPolicy(ctx context.Context, delete *store.DeleteMemoW
 	// The attachments were listed before the batch and are returned for
 	// storage cleanup; abort if the bound set changed so none is orphaned in
 	// the database or missed by the caller.
-	b.guard("(SELECT COUNT(*) FROM attachment WHERE memo_id = ?) = ?", delete.MemoID, len(attachments))
+	b.guardIDSet("attachment WHERE memo_id = ?", []any{delete.MemoID}, attachmentIDs(attachments))
 	addMemoSetDeletes(b, memoIDs, attachmentIDs(attachments))
 	if _, err := b.commit(ctx, d); err != nil {
 		return nil, guardError(err, errors.Wrap(store.ErrMemoMutationConflict, "memo changed while deleting"))

@@ -3,7 +3,6 @@ package d1
 import (
 	"context"
 	"database/sql"
-	"slices"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -105,25 +104,14 @@ func (d *DB) ListReactions(ctx context.Context, find *store.FindReaction) ([]*st
 	if find.MemoID != nil {
 		where, args = append(where, "memo_id = ?"), append(args, *find.MemoID)
 	}
-	if len(find.MemoIDList) == 0 {
-		return reactionQuery(ctx, d.db, where, args)
-	}
-
-	// A memo id list can exceed D1's bind limit, so it is queried in chunks
-	// and the union re-sorted to preserve the id order of a single query.
-	list := []*store.Reaction{}
-	for _, ids := range chunk(find.MemoIDList, inClauseBatchSize) {
-		clause, memoArgs := inClause(ids)
-		chunkWhere := append(append([]string{}, where...), "memo_id IN "+clause)
-		chunkArgs := append(append([]any{}, args...), memoArgs...)
-		reactions, err := reactionQuery(ctx, d.db, chunkWhere, chunkArgs)
+	if len(find.MemoIDList) > 0 {
+		clause, memoArg, err := jsonList(find.MemoIDList)
 		if err != nil {
 			return nil, err
 		}
-		list = append(list, reactions...)
+		where, args = append(where, "memo_id IN "+clause), append(args, memoArg)
 	}
-	slices.SortFunc(list, func(a, b *store.Reaction) int { return int(a.ID) - int(b.ID) })
-	return list, nil
+	return reactionQuery(ctx, d.db, where, args)
 }
 
 // reactionQuery lists the reactions matching where, ordered by id.

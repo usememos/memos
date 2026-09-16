@@ -31,19 +31,23 @@ func (d *DB) CreateAttachment(ctx context.Context, create *store.Attachment) (*s
 	if create.MemoID == nil || create.CreatorID != create.Policy.ActorUserID {
 		return nil, store.ErrMemoPermissionDenied
 	}
-	if err := validateMemoWritePolicy(ctx, d.db, *create.MemoID, create.Policy, nil); err != nil {
+	state, err := validateMemoWritePolicy(ctx, d.db, *create.MemoID, create.Policy, nil)
+	if err != nil {
 		return nil, err
 	}
-	// Without a transaction the validated memo can vanish before the insert;
-	// selecting the values from the memo row makes the insert conditional on
-	// its continued existence, so a vanished memo yields no row instead of an
-	// orphaned attachment.
-	args = append(args, *create.MemoID)
-	stmt := "INSERT INTO attachment (" + strings.Join(columns, ", ") + ") SELECT " + strings.Join(values, ", ") + " FROM memo WHERE memo.id = ? RETURNING id, created_ts, updated_ts"
-	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(&create.ID, &create.CreatedTs, &create.UpdatedTs); err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, store.ErrMemoMutationConflict
-		}
+	// The guards re-assert the validated memo row and the actor's membership
+	// at commit time, so a memo that vanished, was archived, or moved to a
+	// Space the actor left yields a conflict instead of an orphaned or
+	// unauthorized attachment.
+	b := newBatch()
+	b.guard(activeUserCondition, create.Policy.ActorUserID)
+	memoGuardWritePolicy(b, state, create.Policy, nil)
+	index := b.add("INSERT INTO attachment ("+strings.Join(columns, ", ")+") VALUES ("+strings.Join(values, ", ")+") RETURNING id, created_ts, updated_ts", args...)
+	results, err := b.commit(ctx, d)
+	if err != nil {
+		return nil, guardError(err, store.ErrMemoMutationConflict)
+	}
+	if err := scanResultRow(results[index], &create.ID, &create.CreatedTs, &create.UpdatedTs); err != nil {
 		return nil, err
 	}
 	return create, nil
@@ -98,8 +102,11 @@ func (d *DB) ListAttachments(ctx context.Context, find *store.FindAttachment) ([
 		where, args = append(where, "attachment.memo_id = ?"), append(args, *v)
 	}
 	if len(find.MemoIDList) > 0 {
-		clause, memoArgs := inClause(find.MemoIDList)
-		where, args = append(where, "attachment.memo_id IN "+clause), append(args, memoArgs...)
+		clause, memoArg, err := jsonList(find.MemoIDList)
+		if err != nil {
+			return nil, err
+		}
+		where, args = append(where, "attachment.memo_id IN "+clause), append(args, memoArg)
 	}
 	if find.HasRelatedMemo {
 		where = append(where, "attachment.memo_id IS NOT NULL")
@@ -238,12 +245,12 @@ func (d *DB) UpdateAttachment(ctx context.Context, update *store.UpdateAttachmen
 	if err != nil {
 		return err
 	}
-	if err := authorizeAttachmentMutation(ctx, d.db, update.Policy.ActorUserID, memoIDs, nil); err != nil {
+	states, err := authorizeAttachmentMutation(ctx, d.db, update.Policy.ActorUserID, memoIDs, nil)
+	if err != nil {
 		return err
 	}
-	// The actor was validated above; the guard re-asserts it at commit time.
 	b := newBatch()
-	b.guard(activeUserCondition, update.Policy.ActorUserID)
+	guardAttachmentMutation(b, update.Policy.ActorUserID, states, attachments, nil)
 	b.add(stmt, args...)
 	if _, err := b.commit(ctx, d); err != nil {
 		return errors.Wrap(guardError(err, store.ErrMemoPermissionDenied), "failed to update attachment")

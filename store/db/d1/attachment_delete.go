@@ -9,10 +9,10 @@ import (
 )
 
 // DeleteAttachmentsWithPolicy authorizes the actor against every linked memo
-// and then deletes the rows in one atomic batch. Each delete is preceded by a
-// guard on the row's existence so a row that vanished after the validation
-// reads aborts the whole batch as a conflict, mirroring the per-row
-// RowsAffected check a transaction would perform.
+// and then deletes the rows in one atomic batch. The batch re-asserts the
+// memo states and bindings the authorization read, including the memo
+// content the caller expects, so a row or memo that changed after the
+// validation reads aborts the whole batch as a conflict.
 func (d *DB) DeleteAttachmentsWithPolicy(ctx context.Context, policy *store.AttachmentDeletionPolicy, attachmentIDs []int32) error {
 	if policy == nil || policy.ActorUserID <= 0 {
 		return store.ErrMemoPermissionDenied
@@ -28,15 +28,15 @@ func (d *DB) DeleteAttachmentsWithPolicy(ctx context.Context, policy *store.Atta
 	if err := store.ValidateAttachmentDeletionMemoSnapshots(memoIDs, policy.ExpectedMemoContents); err != nil {
 		return err
 	}
-	if err := authorizeAttachmentMutation(ctx, d.db, policy.ActorUserID, memoIDs, policy.ExpectedMemoContents); err != nil {
+	states, err := authorizeAttachmentMutation(ctx, d.db, policy.ActorUserID, memoIDs, policy.ExpectedMemoContents)
+	if err != nil {
 		return err
 	}
 
 	b := newBatch()
-	b.guard(activeUserCondition, policy.ActorUserID)
-	for _, attachmentID := range attachmentIDs {
-		b.guard("EXISTS (SELECT 1 FROM attachment WHERE id = ?)", attachmentID)
-		b.add("DELETE FROM attachment WHERE id = ?", attachmentID)
+	guardAttachmentMutation(b, policy.ActorUserID, states, attachments, policy.ExpectedMemoContents)
+	for _, attachment := range attachments {
+		b.add("DELETE FROM attachment WHERE id = ?", attachment.ID)
 	}
 	if _, err := b.commit(ctx, d); err != nil {
 		return guardError(err, store.ErrMemoMutationConflict)

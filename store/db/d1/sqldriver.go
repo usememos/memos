@@ -161,11 +161,14 @@ func (t *tx) Commit() error {
 	}
 	ctx := context.Background()
 	if parameterFree(t.pending) {
+		// Each buffered text is a script that already follows the one
+		// statement per paragraph rule, so a blank line joins them into one
+		// script that still does.
 		sqls := make([]string, 0, len(t.pending))
 		for _, stmt := range t.pending {
 			sqls = append(sqls, strings.TrimSpace(stmt.SQL))
 		}
-		return t.conn.transport.script(ctx, strings.Join(sqls, "\n;\n"))
+		return t.conn.transport.script(ctx, strings.Join(sqls, "\n\n"))
 	}
 	_, err := t.conn.transport.batch(ctx, t.pending)
 	return err

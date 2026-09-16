@@ -76,6 +76,7 @@ CREATE TABLE memo (
 );
 
 CREATE INDEX idx_memo_creator_id ON memo(creator_id);
+
 CREATE INDEX idx_memo_space_id ON memo(space_id, row_status, created_ts DESC, id DESC);
 
 -- memo_relation

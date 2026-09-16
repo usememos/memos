@@ -3,6 +3,7 @@ package d1
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -73,6 +74,68 @@ func inClause[T any](values []T) (string, []any) {
 		args = append(args, value)
 	}
 	return "(" + placeholders(len(values)) + ")", args
+}
+
+// jsonList renders a membership test whose values travel as one JSON array
+// binding, so a list of any length costs a single bound parameter and the
+// statement keeps its LIMIT and ORDER BY semantics.
+func jsonList[T any](values []T) (string, any, error) {
+	encoded, err := json.Marshal(values)
+	if err != nil {
+		return "", nil, errors.Wrap(err, "failed to encode list binding")
+	}
+	return "(SELECT value FROM json_each(?))", string(encoded), nil
+}
+
+// guardIDSet asserts that the rows selected by "FROM <from>" are still
+// exactly the ids read before the batch. The count alone would accept a row
+// deleted and another inserted in the window; ids only grow, so the highest
+// id catches the swap.
+func (b *batch) guardIDSet(from string, args []any, ids []int32) {
+	var maxID int32
+	for _, id := range ids {
+		maxID = max(maxID, id)
+	}
+	condition := "(SELECT COUNT(*) FROM " + from + ") = ? AND COALESCE((SELECT MAX(id) FROM " + from + "), 0) = ?"
+	guardArgs := append(append(append([]any{}, args...), len(ids)), append(append([]any{}, args...), maxID)...)
+	b.guard(condition, guardArgs...)
+}
+
+// scanResultRow copies the first row of a batch result into dest, for
+// statements that RETURNING generated values.
+func scanResultRow(res *result, dest ...any) error {
+	if res == nil || len(res.Rows) == 0 {
+		return errors.New("d1: statement returned no row")
+	}
+	row := res.Rows[0]
+	if len(row) != len(dest) {
+		return errors.Errorf("d1: statement returned %d columns for %d targets", len(row), len(dest))
+	}
+	for i, target := range dest {
+		switch t := target.(type) {
+		case *int32:
+			value, ok := row[i].(int64)
+			if !ok {
+				return errors.Errorf("d1: column %d is %T, not an integer", i, row[i])
+			}
+			*t = int32(value)
+		case *int64:
+			value, ok := row[i].(int64)
+			if !ok {
+				return errors.Errorf("d1: column %d is %T, not an integer", i, row[i])
+			}
+			*t = value
+		case *string:
+			value, ok := row[i].(string)
+			if !ok {
+				return errors.Errorf("d1: column %d is %T, not text", i, row[i])
+			}
+			*t = value
+		default:
+			return errors.Errorf("d1: unsupported scan target %T", target)
+		}
+	}
+	return nil
 }
 
 // intList renders trusted integer ids as a literal IN list. Inlining them

@@ -19,14 +19,16 @@ func isUniqueViolation(err error) bool {
 		strings.Contains(message, "SQLITE_CONSTRAINT_PRIMARYKEY")
 }
 
-// isRetryable reports whether err is a transient D1 failure worth retrying:
-// rate limiting, a busy or overloaded database, or a server-side error.
+// isRetryable reports whether err is a transient D1 failure worth retrying
+// right away: a busy or overloaded database, or a server-side error. A 429
+// is deliberately not retried; the Cloudflare API rate limit that produces it
+// blocks the caller for minutes, so an immediate retry only deepens the block.
 func isRetryable(err error) bool {
 	var d1Err *Error
 	if !errors.As(err, &d1Err) {
 		return false
 	}
-	if d1Err.Status == http.StatusTooManyRequests || d1Err.Status >= http.StatusInternalServerError {
+	if d1Err.Status >= http.StatusInternalServerError {
 		return true
 	}
 	message := d1Err.Message

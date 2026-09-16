@@ -79,13 +79,16 @@ func (d *DB) planMemoMutation(ctx context.Context, mutation *store.MemoMutation)
 	if plan.policy == nil && mutation.MemoUpdate != nil {
 		plan.policy = mutation.MemoUpdate.Policy
 	}
+	var validated *memoState
 	if plan.policy != nil {
-		if err := validateMemoWritePolicy(ctx, d.db, mutation.MemoID, plan.policy, mutation.MemoUpdate); err != nil {
+		state, err := validateMemoWritePolicy(ctx, d.db, mutation.MemoID, plan.policy, mutation.MemoUpdate)
+		if err != nil {
 			return nil, err
 		}
+		validated = state
 	}
 	if mutation.MemoCreate == nil {
-		if err := plan.planExistingMemo(ctx, d.db); err != nil {
+		if err := plan.planExistingMemo(ctx, d.db, validated); err != nil {
 			return nil, err
 		}
 	}
@@ -135,14 +138,20 @@ func (p *memoMutationPlan) planCreate(ctx context.Context, q querier, create *st
 }
 
 // planExistingMemo checks the memo still matches what the caller computed
-// the mutation from.
-func (p *memoMutationPlan) planExistingMemo(ctx context.Context, q querier) error {
-	state, err := loadMemoState(ctx, q, p.mutation.MemoID)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return errors.Wrap(store.ErrMemoMutationConflict, "memo no longer exists")
+// the mutation from. validated is the state the write policy was checked
+// against, when there was one; the guards are built from that same read so
+// nothing validated is re-read from a different moment.
+func (p *memoMutationPlan) planExistingMemo(ctx context.Context, q querier, validated *memoState) error {
+	state := validated
+	if state == nil {
+		loaded, err := loadMemoState(ctx, q, p.mutation.MemoID)
+		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return errors.Wrap(store.ErrMemoMutationConflict, "memo no longer exists")
+			}
+			return errors.Wrap(err, "failed to read memo")
 		}
-		return errors.Wrap(err, "failed to read memo")
+		state = loaded
 	}
 	if state.creatorID != p.mutation.MemoCreatorID || state.content != p.mutation.ExpectedMemoContent {
 		return errors.Wrap(store.ErrMemoMutationConflict, "memo changed while applying mutation")

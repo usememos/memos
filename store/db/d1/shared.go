@@ -75,27 +75,29 @@ func spaceState(ctx context.Context, q querier, spaceID, userID int32) (exists b
 }
 
 // validateMemoWritePolicy checks that the actor may write memoID under policy,
-// optionally for the pending update.
-func validateMemoWritePolicy(ctx context.Context, q querier, memoID int32, policy *store.MemoWritePolicy, update *store.UpdateMemo) error {
+// optionally for the pending update, and returns the memo state the check was
+// made against so the batch can guard on exactly that state.
+func validateMemoWritePolicy(ctx context.Context, q querier, memoID int32, policy *store.MemoWritePolicy, update *store.UpdateMemo) (*memoState, error) {
 	if err := requireActiveUser(ctx, q, policy.ActorUserID, store.ErrMemoSpaceMembershipRequired); err != nil {
-		return err
+		return nil, err
 	}
-
-	snapshot := new(store.MemoWriteSnapshot)
-	var spaceID sql.NullInt64
-	if err := q.QueryRowContext(ctx, `SELECT creator_id, row_status, space_id, visibility FROM memo WHERE id = ?`, memoID).Scan(
-		&snapshot.CreatorID, &snapshot.RowStatus, &spaceID, &snapshot.Visibility,
-	); err != nil {
+	state, err := loadMemoState(ctx, q, memoID)
+	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return store.ErrMemoMutationConflict
+			return nil, store.ErrMemoMutationConflict
 		}
-		return err
+		return nil, err
 	}
-	snapshot.SpaceID = store.NullInt32Pointer(spaceID)
+	snapshot := &store.MemoWriteSnapshot{
+		CreatorID:  state.creatorID,
+		RowStatus:  state.rowStatus,
+		SpaceID:    state.spaceID,
+		Visibility: state.visibility,
+	}
 	if snapshot.SpaceID != nil {
 		exists, member, err := spaceState(ctx, q, *snapshot.SpaceID, policy.ActorUserID)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		snapshot.SourceSpaceExists = exists
 		snapshot.SourceMemberActive = member
@@ -103,7 +105,7 @@ func validateMemoWritePolicy(ctx context.Context, q querier, memoID int32, polic
 	if update != nil && update.SpaceID != nil {
 		exists, member, err := spaceState(ctx, q, *update.SpaceID, policy.ActorUserID)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		snapshot.TargetSpaceExists = exists
 		snapshot.TargetMemberActive = member
@@ -115,10 +117,24 @@ func validateMemoWritePolicy(ctx context.Context, q querier, memoID int32, polic
 			LIMIT 1`, memoID).Scan(&shareID)
 		snapshot.HasActiveShare = err == nil
 		if err != nil && !errors.Is(err, sql.ErrNoRows) {
-			return err
+			return nil, err
 		}
 	}
-	return store.ValidateMemoWriteSnapshot(policy, update, snapshot)
+	if err := store.ValidateMemoWriteSnapshot(policy, update, snapshot); err != nil {
+		return nil, err
+	}
+	return state, nil
+}
+
+// memoGuardWritePolicy re-asserts inside the batch everything
+// validateMemoWritePolicy accepted: the memo row is unchanged, its Space
+// still exists, the actor keeps the memberships the policy needs, and no
+// active share blocks a move to the SPACE audience. The caller guards the
+// actor's own row once.
+func memoGuardWritePolicy(b *batch, state *memoState, policy *store.MemoWritePolicy, update *store.UpdateMemo) {
+	condition, args := state.unchangedCondition()
+	b.guard(condition, args...)
+	memoGuardPolicyPlacement(b, state, policy, update)
 }
 
 // loadMemoParticipation resolves the actor, Space, membership, and memo state
@@ -267,40 +283,61 @@ func listMemoSetAttachments(ctx context.Context, q querier, memoIDs []int32) ([]
 }
 
 // authorizeAttachmentMutation checks the actor may mutate attachments bound to
-// memoIDs, optionally requiring the memos' current contents to match.
-func authorizeAttachmentMutation(ctx context.Context, q querier, actorUserID int32, memoIDs []int32, expectedMemoContents map[int32]string) error {
+// memoIDs, optionally requiring the memos' current contents to match, and
+// returns the memo states the checks were made against.
+func authorizeAttachmentMutation(ctx context.Context, q querier, actorUserID int32, memoIDs []int32, expectedMemoContents map[int32]string) ([]*memoState, error) {
 	if err := requireActiveUser(ctx, q, actorUserID, store.ErrMemoPermissionDenied); err != nil {
-		return err
+		return nil, err
 	}
+	states := make([]*memoState, 0, len(memoIDs))
 	for _, memoID := range memoIDs {
-		snapshot := &store.MemoWriteSnapshot{}
-		var currentSpace sql.NullInt64
-		var content string
-		if err := q.QueryRowContext(ctx, `SELECT creator_id, row_status, space_id, visibility, content FROM memo WHERE id = ?`, memoID).Scan(
-			&snapshot.CreatorID, &snapshot.RowStatus, &currentSpace, &snapshot.Visibility, &content,
-		); err != nil {
+		state, err := loadMemoState(ctx, q, memoID)
+		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
-				return store.ErrMemoMutationConflict
+				return nil, store.ErrMemoMutationConflict
 			}
-			return errors.Wrap(err, "failed to read attachment memo")
+			return nil, errors.Wrap(err, "failed to read attachment memo")
 		}
-		snapshot.SpaceID = store.NullInt32Pointer(currentSpace)
-		if expectedMemoContents != nil && content != expectedMemoContents[memoID] {
-			return store.ErrMemoMutationConflict
+		if expectedMemoContents != nil && state.content != expectedMemoContents[memoID] {
+			return nil, store.ErrMemoMutationConflict
+		}
+		snapshot := &store.MemoWriteSnapshot{
+			CreatorID:  state.creatorID,
+			RowStatus:  state.rowStatus,
+			SpaceID:    state.spaceID,
+			Visibility: state.visibility,
 		}
 		if snapshot.SpaceID != nil {
 			exists, member, err := spaceState(ctx, q, *snapshot.SpaceID, actorUserID)
 			if err != nil {
-				return errors.Wrap(err, "failed to read attachment memo space")
+				return nil, errors.Wrap(err, "failed to read attachment memo space")
 			}
 			snapshot.SourceSpaceExists = exists
 			snapshot.SourceMemberActive = member
 		}
 		if err := store.ValidateMemoWriteSnapshot(&store.MemoWritePolicy{ActorUserID: actorUserID}, nil, snapshot); err != nil {
-			return err
+			return nil, err
+		}
+		states = append(states, state)
+	}
+	return states, nil
+}
+
+// guardAttachmentMutation re-asserts what authorizeAttachmentMutation
+// accepted for every linked memo and pins each attachment to the binding it
+// was read with. With expectedMemoContents set, the memo content the caller
+// computed the mutation from must still be current at commit time.
+func guardAttachmentMutation(b *batch, actorUserID int32, states []*memoState, attachments []*store.Attachment, expectedMemoContents map[int32]string) {
+	b.guard(activeUserCondition, actorUserID)
+	for _, state := range states {
+		memoGuardWritePolicy(b, state, &store.MemoWritePolicy{ActorUserID: actorUserID}, nil)
+		if expectedMemoContents != nil {
+			b.guard("EXISTS (SELECT 1 FROM memo WHERE id = ? AND content = ?)", state.id, expectedMemoContents[state.id])
 		}
 	}
-	return nil
+	for _, attachment := range attachments {
+		b.guard("EXISTS (SELECT 1 FROM attachment WHERE id = ? AND memo_id IS ?)", attachment.ID, attachment.MemoID)
+	}
 }
 
 // attachmentIDs extracts the ids of attachments.

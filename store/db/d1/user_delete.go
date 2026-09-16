@@ -108,8 +108,8 @@ func (d *DB) DeleteUser(ctx context.Context, delete *store.DeleteUser) (*store.D
 	b.guard("NOT EXISTS (SELECT 1 FROM space_member WHERE user_id = ? AND status <> 'INVITED')", delete.ID)
 	// The memo and attachment sets were read outside the batch; abort when
 	// they changed so nothing authored by the user survives its deletion.
-	b.guard("(SELECT COUNT(*) FROM memo WHERE creator_id = ?) = ?", delete.ID, len(targets.memoIDs))
-	b.guard("(SELECT COUNT(*) FROM attachment WHERE creator_id = ? OR memo_id IN (SELECT id FROM memo WHERE creator_id = ?)) = ?", delete.ID, delete.ID, len(targets.attachments))
+	b.guardIDSet("memo WHERE creator_id = ?", []any{delete.ID}, targets.memoIDs)
+	b.guardIDSet("attachment WHERE creator_id = ? OR memo_id IN (SELECT id FROM memo WHERE creator_id = ?)", []any{delete.ID, delete.ID}, attachmentIDs(targets.attachments))
 	b.add("DELETE FROM space_member WHERE user_id = ? AND status = 'INVITED'", delete.ID)
 	addMemoSetDeletes(b, targets.memoIDs, attachmentIDs(targets.attachments))
 	b.add("DELETE FROM reaction WHERE creator_id = ?", delete.ID)

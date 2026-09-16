@@ -5,6 +5,8 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -209,6 +211,77 @@ func runTransportRoundTrip(t *testing.T, db *DB) {
 	size, err := db.GetDatabaseSize(ctx)
 	require.NoError(t, err)
 	require.Greater(t, size, int64(0))
+}
+
+// TestSchemaScriptsFollowTheParagraphRule applies the real schema file over
+// both transports. The bridge sends one paragraph per prepared statement and
+// the emulator, like D1, refuses a prepared statement holding two, so a
+// paragraph with two statements fails here rather than on a deployment.
+func TestSchemaScriptsFollowTheParagraphRule(t *testing.T) {
+	schema, err := os.ReadFile(filepath.Join("..", "..", "migration", "d1", "LATEST.sql"))
+	require.NoError(t, err)
+	for mode, dsn := range accessModes {
+		t.Run(mode, func(t *testing.T) {
+			db := newTestDB(t, dsn)
+			ctx := context.Background()
+			tx, err := db.GetDB().Begin()
+			require.NoError(t, err)
+			_, err = tx.ExecContext(ctx, string(schema))
+			require.NoError(t, err)
+			require.NoError(t, tx.Commit())
+			initialized, err := db.IsInitialized(ctx)
+			require.NoError(t, err)
+			require.True(t, initialized)
+		})
+	}
+}
+
+// TestTransactionJoinsScriptsAtParagraphs buffers two scripts in one
+// transaction, as the migrator does when several migration files apply, and
+// checks they commit over both transports.
+func TestTransactionJoinsScriptsAtParagraphs(t *testing.T) {
+	for mode, dsn := range accessModes {
+		t.Run(mode, func(t *testing.T) {
+			db := newTestDB(t, dsn)
+			ctx := context.Background()
+			tx, err := db.GetDB().Begin()
+			require.NoError(t, err)
+			_, err = tx.ExecContext(ctx, "CREATE TABLE a (id INTEGER);\n")
+			require.NoError(t, err)
+			_, err = tx.ExecContext(ctx, "-- second file\nCREATE TABLE b (id INTEGER);\n\nCREATE INDEX b_id ON b(id);\n")
+			require.NoError(t, err)
+			require.NoError(t, tx.Commit())
+			var count int
+			require.NoError(t, db.GetDB().QueryRowContext(ctx, "SELECT COUNT(*) FROM sqlite_master WHERE name IN ('a', 'b', 'b_id')").Scan(&count))
+			require.Equal(t, 3, count)
+		})
+	}
+}
+
+// TestPreparedEntryHoldsOneStatement pins the emulator to D1's rule: a
+// bridge entry and a parameterized REST entry are prepared statements and
+// hold exactly one statement, while a parameter-free REST entry is a script.
+func TestPreparedEntryHoldsOneStatement(t *testing.T) {
+	ctx := context.Background()
+	script := "CREATE TABLE a (id INTEGER);\nCREATE TABLE b (id INTEGER);"
+
+	bridge := newTestDB(t, accessModes["bridge"])
+	_, err := bridge.execOne(ctx, script)
+	require.ErrorContains(t, err, "only one statement")
+	_, err = bridge.execOne(ctx, "CREATE TRIGGER t AFTER INSERT ON a BEGIN UPDATE a SET id = 1; UPDATE a SET id = 2; END;")
+	require.ErrorContains(t, err, "no such table", "a trigger body is one statement and reaches the database")
+
+	rest := newTestDB(t, accessModes["rest"])
+	require.NoError(t, rest.transport.script(ctx, script), "a parameter-free REST entry is a script")
+	_, err = rest.execOne(ctx, "INSERT INTO a (id) VALUES (?);\nINSERT INTO b (id) VALUES (?);", 1, 2)
+	require.ErrorContains(t, err, "only one statement")
+}
+
+func TestRateLimitIsNotRetried(t *testing.T) {
+	require.False(t, isRetryable(&Error{Status: http.StatusTooManyRequests, Message: "rate limited"}))
+	require.True(t, isRetryable(&Error{Status: http.StatusServiceUnavailable, Message: "unavailable"}))
+	require.True(t, isRetryable(&Error{Status: http.StatusBadRequest, Message: "D1_ERROR: database is locked: SQLITE_BUSY"}))
+	require.False(t, isRetryable(&Error{Status: http.StatusBadRequest, Message: "D1_ERROR: UNIQUE constraint failed: memo.uid"}))
 }
 
 func TestNullAndTypedScans(t *testing.T) {
