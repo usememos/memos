@@ -64,16 +64,29 @@ func TestParseDSN(t *testing.T) {
 }
 
 func TestParseBridgeDSN(t *testing.T) {
+	t.Setenv("MEMOS_D1_BRIDGE_TOKEN", "")
+
+	// A public bridge is HTTPS and needs a shared secret.
 	config, err := ParseDSN("d1-bridge://worker.example.com/d1?token=secret")
 	require.NoError(t, err)
 	require.Equal(t, AccessModeBridge, config.Mode)
+	require.False(t, config.Private)
 	require.Equal(t, "https://worker.example.com/d1", config.BridgeURL)
 	require.Equal(t, "secret", config.Token)
+	_, err = ParseDSN("d1-bridge://worker.example.com/d1")
+	require.ErrorContains(t, err, "requires a shared secret")
 
-	config, err = ParseDSN("d1-bridge://127.0.0.1:8787/bridge/?insecure=true")
+	// A platform-private bridge is plain HTTP and needs no secret: the
+	// Cloudflare Containers outbound handler and the loopback emulator.
+	config, err = ParseDSN("d1-bridge://d1.internal/d1?private=true")
+	require.NoError(t, err)
+	require.True(t, config.Private)
+	require.Equal(t, "http://d1.internal/d1", config.BridgeURL)
+	require.Empty(t, config.Token)
+	config, err = ParseDSN("d1-bridge://127.0.0.1:8787/bridge/?private=true&token=t")
 	require.NoError(t, err)
 	require.Equal(t, "http://127.0.0.1:8787/bridge", config.BridgeURL)
-	require.Empty(t, config.Token)
+	require.Equal(t, "t", config.Token)
 
 	t.Setenv("MEMOS_D1_BRIDGE_TOKEN", "from-env")
 	config, err = ParseDSN("d1-bridge://worker.example.com")
@@ -83,8 +96,6 @@ func TestParseBridgeDSN(t *testing.T) {
 
 	_, err = ParseDSN("d1-bridge:///d1")
 	require.ErrorContains(t, err, "missing the host")
-	_, err = ParseDSN("d1-bridge://worker.example.com/d1?insecure=true")
-	require.ErrorContains(t, err, "must use https")
 }
 
 func TestTransportRoundTrip(t *testing.T) {

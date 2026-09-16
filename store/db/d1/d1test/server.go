@@ -69,7 +69,7 @@ func (s *Server) DSN() string {
 
 // BridgeDSN returns the bridge-mode driver DSN pointing at this server.
 func (s *Server) BridgeDSN() string {
-	return fmt.Sprintf("d1-bridge://%s%s?token=%s&insecure=true", strings.TrimPrefix(s.http.URL, "http://"), bridgePath, bridgeToken)
+	return fmt.Sprintf("d1-bridge://%s%s?token=%s&private=true", strings.TrimPrefix(s.http.URL, "http://"), bridgePath, bridgeToken)
 }
 
 // Close stops the server and discards the database.

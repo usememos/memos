@@ -28,7 +28,7 @@ const (
 // DSN grammar:
 //
 //	d1://<account_id>/<database_id>?token=<api_token>[&endpoint=<base_url>]
-//	d1-bridge://<host>[:<port>][/<path>][?token=<secret>][&insecure=true]
+//	d1-bridge://<host>[:<port>][/<path>][?token=<secret>][&private=true]
 //
 // The first form selects REST access. Its token may be omitted from the DSN
 // and supplied through the CLOUDFLARE_API_TOKEN environment variable instead
@@ -36,11 +36,17 @@ const (
 //
 // The second form selects bridge access: the host and path name the Worker
 // endpoint that implements the bridge protocol (see docs/design/cloudflare-d1.md).
-// The optional token is sent as a bearer credential to that endpoint and may
-// also come from MEMOS_D1_BRIDGE_TOKEN. The endpoint is reached over HTTPS;
-// insecure=true selects plain HTTP, which is accepted only towards loopback.
+// A public bridge is reached over HTTPS and requires a shared secret, sent as
+// a bearer credential; the secret is best supplied through
+// MEMOS_D1_BRIDGE_TOKEN rather than the DSN. private=true names a bridge on
+// a platform-private path, such as the virtual host a Cloudflare Containers
+// outbound handler serves or the loopback test emulator: it is reached over
+// plain HTTP and the secret is optional.
 type Config struct {
 	Mode AccessMode
+
+	// Private marks a bridge on a platform-private path (bridge access only).
+	Private bool
 
 	// REST access.
 	AccountID  string
@@ -104,20 +110,24 @@ func parseBridgeDSN(parsed *url.URL) (*Config, error) {
 		return nil, errors.New("d1 bridge dsn is missing the host: d1-bridge://<host>[/<path>]")
 	}
 	query := parsed.Query()
-	scheme := "https"
-	if query.Get("insecure") == "true" {
-		scheme = "http"
-	}
 	config := &Config{
-		Mode:      AccessModeBridge,
-		BridgeURL: scheme + "://" + parsed.Host + strings.TrimRight(parsed.Path, "/"),
-		Token:     query.Get("token"),
+		Mode:    AccessModeBridge,
+		Private: query.Get("private") == "true",
+		Token:   query.Get("token"),
 	}
 	if config.Token == "" {
 		config.Token = os.Getenv("MEMOS_D1_BRIDGE_TOKEN")
 	}
-	if err := validateEndpoint(config.BridgeURL); err != nil {
-		return nil, err
+	path := strings.TrimRight(parsed.Path, "/")
+	if config.Private {
+		// The platform keeps the path private, so plain HTTP carries no risk
+		// and a shared secret is not needed.
+		config.BridgeURL = "http://" + parsed.Host + path
+		return config, nil
+	}
+	config.BridgeURL = "https://" + parsed.Host + path
+	if config.Token == "" {
+		return nil, errors.New("a public d1 bridge requires a shared secret: set MEMOS_D1_BRIDGE_TOKEN (or add ?token=) or mark a platform-private bridge with ?private=true")
 	}
 	return config, nil
 }

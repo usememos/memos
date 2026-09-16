@@ -59,16 +59,35 @@ exists for the test emulator.
 
 **Bridge mode** talks to a Worker the deployment provides. The Worker holds the
 D1 binding and implements the bridge protocol below, so Memos needs no
-Cloudflare API token:
+Cloudflare API token. The bridge is reached in one of two ways.
+
+*Private path.* When Memos runs as a Cloudflare Container, its Worker can
+serve the bridge on a virtual hostname through an `outboundByHost` handler.
+Cloudflare intercepts the container's plain-HTTP requests to that hostname
+and runs the handler in the Workers runtime, on the same machine, reachable
+only from the container's own egress. No credential is involved:
 
 ```
---driver d1 --dsn 'd1-bridge://<worker-host>/<path>?token=<bridge-secret>'
+--driver d1 --dsn 'd1-bridge://d1.internal/d1?private=true'
 ```
 
-The host and path name the Worker endpoint, reached over HTTPS. The token is
-optional; when present it is sent as a bearer credential for the Worker to
-check, and it may come from `MEMOS_D1_BRIDGE_TOKEN` instead. `insecure=true`
-selects plain HTTP and is accepted only towards loopback.
+`private=true` states that the platform keeps the path private; the driver
+then uses plain HTTP and requires no secret. This is the recommended
+deployment for Containers because there is nothing to provision or rotate.
+
+*Public HTTPS endpoint.* A bridge exposed on a public route must be
+protected by a shared secret. Generate one, for example with
+`openssl rand -hex 32`, and configure the same value on both sides: Memos
+reads `MEMOS_D1_BRIDGE_TOKEN` and sends it as `Authorization: Bearer`; the
+Worker reads `BRIDGE_SECRET` and checks it before executing any SQL. Keep the
+secret out of the DSN so it stays out of process listings:
+
+```
+MEMOS_D1_BRIDGE_TOKEN=<secret> memos --driver d1 --dsn 'd1-bridge://worker.example.com/d1'
+```
+
+The driver refuses a public bridge DSN without a secret. This secret is a
+random credential the operator generates, not a Cloudflare API token.
 
 ## Transport
 
@@ -140,33 +159,57 @@ Memos never issues a query whose result has two columns of the same name, so
 a Worker may build `columns` from the keys of the first row object that
 `batch()` returns and `rows` from each row's values in that order.
 
-A Worker that meets the contract is a few lines:
+A Worker that meets the contract serves the private path from the
+Container's outbound handler and, if a public route is wanted as well, checks
+the shared secret on `fetch`. A public route with no secret configured is
+refused rather than left open:
 
 ```js
+import { Container, ContainerProxy } from "@cloudflare/containers";
+export { ContainerProxy };
+
+async function runBatch(env, request) {
+  const { statements } = await request.json();
+  const prepared = statements.map((s) => env.DB.prepare(s.sql).bind(...(s.params ?? [])));
+  try {
+    const results = (await env.DB.batch(prepared)).map(({ results, meta }) => {
+      const columns = results.length ? Object.keys(results[0]) : [];
+      return {
+        columns,
+        rows: results.map((row) => columns.map((c) => row[c])),
+        meta: { changes: meta.changes, last_row_id: meta.last_row_id, size_after: meta.size_after },
+      };
+    });
+    return Response.json({ results });
+  } catch (err) {
+    return error(400, err.message);
+  }
+}
+
+const error = (status, message) => Response.json({ error: { message } }, { status });
+
+export class MemosContainer extends Container {
+  defaultPort = 5230;
+}
+
+// Private path: plain HTTP from the container to http://d1.internal/d1 lands
+// here, never on a public route, so no credential is needed.
+MemosContainer.outboundByHost = {
+  "d1.internal": (request, env) => runBatch(env, request),
+};
+
+// Public route: only for deployments that must reach the bridge from outside
+// the container. It is closed until BRIDGE_SECRET is configured.
 export default {
   async fetch(request, env) {
     if (request.method !== "POST") return error(405, "method not allowed");
-    if (env.BRIDGE_SECRET && request.headers.get("Authorization") !== `Bearer ${env.BRIDGE_SECRET}`) {
+    if (!env.BRIDGE_SECRET) return error(503, "bridge secret is not configured");
+    if (request.headers.get("Authorization") !== `Bearer ${env.BRIDGE_SECRET}`) {
       return error(401, "unauthorized");
     }
-    const { statements } = await request.json();
-    const prepared = statements.map((s) => env.DB.prepare(s.sql).bind(...(s.params ?? [])));
-    try {
-      const results = (await env.DB.batch(prepared)).map(({ results, meta }) => {
-        const columns = results.length ? Object.keys(results[0]) : [];
-        return {
-          columns,
-          rows: results.map((row) => columns.map((c) => row[c])),
-          meta: { changes: meta.changes, last_row_id: meta.last_row_id, size_after: meta.size_after },
-        };
-      });
-      return Response.json({ results });
-    } catch (err) {
-      return error(400, err.message);
-    }
+    return runBatch(env, request);
   },
 };
-const error = (status, message) => Response.json({ error: { message } }, { status });
 ```
 
 ## Atomicity without transactions
