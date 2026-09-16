@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"io"
@@ -233,13 +234,28 @@ func (s *APIV1Service) cleanupDeletedAttachmentStorage(ctx context.Context, atta
 
 // GetAttachmentBlob reads an attachment from its configured storage.
 func (s *APIV1Service) GetAttachmentBlob(ctx context.Context, attachment *store.Attachment) ([]byte, error) {
-	// For local storage, read the file from the local disk.
-	if attachment.StorageType == storepb.AttachmentStorageType_LOCAL {
+	content, err := s.openAttachmentContent(ctx, attachment)
+	if err != nil {
+		return nil, err
+	}
+	defer content.Close()
+	blob, err := io.ReadAll(content)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to read attachment content")
+	}
+	return blob, nil
+}
+
+// openAttachmentContent streams an attachment from its configured storage.
+// Database-backed attachments are re-read with their blob when the caller
+// listed them without it.
+func (s *APIV1Service) openAttachmentContent(ctx context.Context, attachment *store.Attachment) (io.ReadCloser, error) {
+	switch attachment.StorageType {
+	case storepb.AttachmentStorageType_LOCAL:
 		attachmentPath := filepath.FromSlash(attachment.Reference)
 		if !filepath.IsAbs(attachmentPath) {
 			attachmentPath = filepath.Join(s.Profile.Data, attachmentPath)
 		}
-
 		file, err := os.Open(attachmentPath)
 		if err != nil {
 			if os.IsNotExist(err) {
@@ -247,28 +263,31 @@ func (s *APIV1Service) GetAttachmentBlob(ctx context.Context, attachment *store.
 			}
 			return nil, errors.Wrap(err, "failed to open the file")
 		}
-		defer file.Close()
-		blob, err := io.ReadAll(file)
-		if err != nil {
-			return nil, errors.Wrap(err, "failed to read the file")
-		}
-		return blob, nil
-	}
-	// For S3 storage, download the file from S3.
-	if attachment.StorageType == storepb.AttachmentStorageType_S3 {
+		return file, nil
+	case storepb.AttachmentStorageType_S3:
 		driver, s3Object, err := s.Store.ResolveAttachmentS3Driver(ctx, attachment)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to resolve S3 attachment driver")
 		}
-
-		blob, err := driver.GetObject(ctx, s3Object.Key)
+		object, err := driver.GetObjectStream(ctx, s3Object.Key, "")
 		if err != nil {
-			return nil, errors.Wrap(err, "failed to get object from S3")
+			return nil, errors.Wrap(err, "failed to stream object from S3")
 		}
-		return blob, nil
+		return object.Body, nil
+	default:
+		blob := attachment.Blob
+		if blob == nil {
+			stored, err := s.Store.GetAttachment(ctx, &store.FindAttachment{ID: &attachment.ID, GetBlob: true})
+			if err != nil {
+				return nil, errors.Wrap(err, "failed to load attachment blob")
+			}
+			if stored == nil {
+				return nil, errors.New("attachment not found")
+			}
+			blob = stored.Blob
+		}
+		return io.NopCloser(bytes.NewReader(blob)), nil
 	}
-	// For database storage, return the blob from the database.
-	return attachment.Blob, nil
 }
 
 var fileKeyPattern = regexp.MustCompile(`\{[a-z]{1,9}\}`)

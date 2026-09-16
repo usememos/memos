@@ -66,7 +66,7 @@ func TestUploadAttachmentTransports(t *testing.T) {
 			require.NoError(t, protojson.Unmarshal(rec.Body.Bytes(), response))
 			require.NotNil(t, response.Attachment)
 
-			oversized, err := protojson.Marshal(&v1pb.UploadAttachmentRequest{Data: make([]byte, attachmentUploadRequestLimit)})
+			oversized, err := protojson.Marshal(&v1pb.UploadAttachmentRequest{Data: make([]byte, uploadRequestLimit)})
 			require.NoError(t, err)
 			reader := &uploadCountingReader{reader: bytes.NewReader(oversized)}
 			req := httptest.NewRequest(http.MethodPost, path, reader)
@@ -75,24 +75,24 @@ func TestUploadAttachmentTransports(t *testing.T) {
 			rec = httptest.NewRecorder()
 			e.ServeHTTP(rec, req)
 			require.GreaterOrEqual(t, rec.Code, 400)
-			require.LessOrEqual(t, reader.read, attachmentUploadRequestLimit+1, "body must be bounded before decoding")
+			require.LessOrEqual(t, reader.read, uploadRequestLimit+1, "body must be bounded before decoding")
 		})
 	}
 
 	t.Run("Connect protobuf and compressed message limit", func(t *testing.T) {
 		server := httptest.NewTestServer(t, e)
 		client := apiv1connect.NewAttachmentServiceClient(server.Client(), server.URL)
-		initial := connect.NewRequest(&v1pb.UploadAttachmentRequest{Upload: uploadSpec("binary.bin", attachmentUploadChunkSize)})
+		initial := connect.NewRequest(&v1pb.UploadAttachmentRequest{Upload: uploadSpec("binary.bin", uploadChunkSize)})
 		initial.Header().Set("Authorization", "Bearer "+token)
 		response, err := client.UploadAttachment(context.Background(), initial)
 		require.NoError(t, err)
-		last := connect.NewRequest(&v1pb.UploadAttachmentRequest{Upload: uploadID(response.Msg.UploadId), Data: make([]byte, attachmentUploadChunkSize), FinishWrite: true})
+		last := connect.NewRequest(&v1pb.UploadAttachmentRequest{Upload: uploadID(response.Msg.UploadId), Data: make([]byte, uploadChunkSize), FinishWrite: true})
 		last.Header().Set("Authorization", "Bearer "+token)
 		finished, err := client.UploadAttachment(context.Background(), last)
 		require.NoError(t, err)
-		require.EqualValues(t, attachmentUploadChunkSize, finished.Msg.Attachment.Size)
+		require.EqualValues(t, uploadChunkSize, finished.Msg.Attachment.Size)
 
-		data, err := proto.Marshal(&v1pb.UploadAttachmentRequest{Data: make([]byte, attachmentUploadRequestLimit+1)})
+		data, err := proto.Marshal(&v1pb.UploadAttachmentRequest{Data: make([]byte, uploadRequestLimit+1)})
 		require.NoError(t, err)
 		var compressed bytes.Buffer
 		writer := gzip.NewWriter(&compressed)

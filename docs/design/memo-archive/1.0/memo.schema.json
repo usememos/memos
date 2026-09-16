@@ -1,0 +1,147 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://usememos.com/schemas/memo-archive/1.0/memo.schema.json",
+  "title": "Memo Archive memo record",
+  "description": "One memo and its attachments, stored at memos/{uid}.json in a Memo Archive. Field names, enum strings, and timestamps follow the proto3 JSON mapping of the public API. Unknown members are permitted so that later minor versions can add fields.",
+  "type": "object",
+  "required": ["uid", "creator", "createTime", "updateTime", "state", "visibility", "pinned", "contentPath"],
+  "properties": {
+    "uid": { "$ref": "#/$defs/uid" },
+    "creator": { "$ref": "#/$defs/username" },
+    "createTime": { "$ref": "#/$defs/timestamp" },
+    "updateTime": { "$ref": "#/$defs/timestamp" },
+    "state": {
+      "type": "string",
+      "description": "NORMAL or ARCHIVED. Readers treat an unknown value as NORMAL and warn."
+    },
+    "visibility": {
+      "type": "string",
+      "description": "PRIVATE, PROTECTED, PUBLIC, or SPACE. Readers treat an unknown value as PRIVATE and warn."
+    },
+    "pinned": { "type": "boolean" },
+    "contentPath": {
+      "$ref": "#/$defs/entryPath",
+      "description": "Archive entry holding the memo content bytes. Readers follow this member, never a naming convention."
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "description": "Informational. Derived from content on import."
+    },
+    "location": {
+      "type": "object",
+      "properties": {
+        "placeholder": { "type": "string" },
+        "latitude": { "type": "number", "minimum": -90, "maximum": 90 },
+        "longitude": { "type": "number", "minimum": -180, "maximum": 180 }
+      }
+    },
+    "space": {
+      "type": "object",
+      "required": ["uid"],
+      "properties": {
+        "uid": { "$ref": "#/$defs/uid" },
+        "title": { "type": "string" }
+      }
+    },
+    "parent": {
+      "$ref": "#/$defs/uid",
+      "description": "UID of the memo this record comments on."
+    },
+    "relations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["type", "memo"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "REFERENCE in 1.0. Readers skip a relation with an unknown type and warn."
+          },
+          "memo": { "$ref": "#/$defs/uid" }
+        }
+      }
+    },
+    "attachments": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/attachment" }
+    },
+    "reactions": {
+      "type": "array",
+      "description": "Informational in 1.0.",
+      "items": {
+        "type": "object",
+        "required": ["reactionType", "creator"],
+        "properties": {
+          "reactionType": { "type": "string", "minLength": 1 },
+          "creator": { "$ref": "#/$defs/username" },
+          "createTime": { "$ref": "#/$defs/timestamp" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "uid": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9]([a-zA-Z0-9-]{0,34}[a-zA-Z0-9])?$",
+      "description": "Public resource UID grammar shared by memos, attachments, and Spaces."
+    },
+    "username": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Username as defined by ADR 0002."
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?Z$",
+      "description": "RFC 3339 date-time in UTC with the Z designator."
+    },
+    "entryPath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*(^|/)\\.\\.?(/|$))[^\\\\:\\u0000-\\u001f]+$",
+      "description": "Relative ZIP entry name with forward slashes, no dot or dot-dot segments, and no backslash, colon, NUL, or C0 control character."
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Lowercase hexadecimal SHA-256 digest (FIPS 180-4)."
+    },
+    "mediaType": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9!#$&^_.+-]{0,126}/[A-Za-z0-9][A-Za-z0-9!#$&^_.+-]{0,126}$",
+      "description": "IANA media type per RFC 6838, without parameters."
+    },
+    "attachment": {
+      "type": "object",
+      "required": ["uid", "filename", "type", "size", "createTime"],
+      "properties": {
+        "uid": { "$ref": "#/$defs/uid" },
+        "filename": { "type": "string", "minLength": 1 },
+        "type": { "$ref": "#/$defs/mediaType" },
+        "size": { "type": "integer", "minimum": 0 },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "path": { "$ref": "#/$defs/entryPath" },
+        "externalLink": { "type": "string", "format": "uri" },
+        "createTime": { "$ref": "#/$defs/timestamp" },
+        "mediaMetadata": { "$ref": "#/$defs/mediaMetadata" }
+      },
+      "oneOf": [
+        { "required": ["path", "sha256"], "not": { "required": ["externalLink"] } },
+        { "required": ["externalLink"], "not": { "required": ["path"] } }
+      ]
+    },
+    "mediaMetadata": {
+      "type": "object",
+      "description": "The public API MediaMetadata message in its proto3 JSON mapping. Informational.",
+      "properties": {
+        "width": { "type": "integer", "minimum": 0 },
+        "height": { "type": "integer", "minimum": 0 },
+        "photo": { "type": "object" },
+        "video": { "type": "object" }
+      },
+      "not": { "required": ["photo", "video"] }
+    }
+  }
+}

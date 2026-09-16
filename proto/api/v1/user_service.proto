@@ -7,6 +7,7 @@ import "api/v1/space_service.proto";
 import "google/api/annotations.proto";
 import "google/api/client.proto";
 import "google/api/field_behavior.proto";
+import "google/api/httpbody.proto";
 import "google/api/resource.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/field_mask.proto";
@@ -69,6 +70,29 @@ service UserService {
   rpc GetUserStats(GetUserStatsRequest) returns (UserStats) {
     option (google.api.http) = {get: "/api/v1/{name=users/*}:getStats"};
     option (google.api.method_signature) = "name";
+  }
+
+  // ExportMemos writes every memo the user created, with comments, archived
+  // memos, and attachment files, as a Memo Archive (a ZIP file, see
+  // docs/design/memo-archive-format.md). Only the user may export their own
+  // memos. The body is the archive; content_type is its media type.
+  rpc ExportMemos(ExportMemosRequest) returns (google.api.HttpBody) {
+    option (google.api.http) = {get: "/api/v1/{name=users/*}:exportMemos"};
+    option (google.api.method_signature) = "name";
+  }
+
+  // ImportMemos uploads a Memo Archive in bounded chunks and imports it into
+  // the user's memos. The first call carries the spec and returns an
+  // upload_id; later calls carry that upload_id. A finishing call with
+  // validate_only returns the plan and keeps the archive staged; a finishing
+  // call without it imports and returns the report. Uploads are bound to the
+  // authenticated user, expire after 30 minutes of inactivity, and do not
+  // survive a server restart.
+  rpc ImportMemos(ImportMemosRequest) returns (ImportMemosResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/{name=users/*}:importMemos"
+      body: "*"
+    };
   }
 
   // GetUserSetting returns the user setting.
@@ -437,6 +461,148 @@ message UserStats {
     int32 todo_count = 3;
     int32 undo_count = 4;
   }
+}
+
+message ExportMemosRequest {
+  // Required. The user whose memos are exported. Must be the caller.
+  // Format: users/{user}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/User"}
+  ];
+}
+
+message ImportMemosRequest {
+  // What the importer does with a memo whose UID the user already holds.
+  enum ConflictPolicy {
+    CONFLICT_POLICY_UNSPECIFIED = 0;
+    // Leave the existing memo untouched. This is the default.
+    SKIP = 1;
+    // Update the existing memo's content and metadata from the archive.
+    REPLACE = 2;
+    // Keep the existing memo and create the archive version under a fresh UID.
+    DUPLICATE = 3;
+  }
+
+  // Required. The user who receives the memos. Must be the caller.
+  // Format: users/{user}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/User"}
+  ];
+
+  // Required. Start a new upload or continue an existing one.
+  oneof upload {
+    // Starts a new upload. The same call may also carry data and finish_write.
+    ImportMemosSpec spec = 2;
+
+    // Continues the upload identified by a previous response.
+    string upload_id = 3;
+  }
+
+  // Required. Zero-based byte offset at which data is written. Must equal the
+  // committed size, except when retrying the most recently accepted chunk
+  // with identical bytes and offset, which is accepted without writing again.
+  int64 write_offset = 4 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. Archive bytes, at most max_chunk_size long. With no data and
+  // finish_write false, the call reports progress without writing, and
+  // write_offset is ignored.
+  bytes data = 5 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Finish the upload after writing data. The committed size must
+  // then equal total_size. The archive is validated and, unless
+  // validate_only is set, imported. Any later call for an imported upload
+  // returns the same report.
+  bool finish_write = 6 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. On a finishing call, validate the archive and return the plan
+  // without importing. The upload stays staged so a later finishing call can
+  // import it.
+  bool validate_only = 7 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Read on the finishing call that imports. Unspecified means SKIP.
+  ConflictPolicy conflict_policy = 8 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message ImportMemosSpec {
+  // Optional. Total size of the archive in bytes.
+  int64 total_size = 1 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message ImportMemosResponse {
+  // Opaque ID for subsequent calls. This is not a resource name.
+  string upload_id = 1;
+
+  // Number of archive bytes committed so far.
+  int64 committed_size = 2;
+
+  // Maximum number of data bytes accepted in one call.
+  int32 max_chunk_size = 3;
+
+  // Set once the upload has been finished.
+  oneof result {
+    // What the import would do. Set by a finishing call with validate_only.
+    MemoImportPlan plan = 4;
+
+    // What the import did. Set by a finishing call that imported.
+    MemoImportReport report = 5;
+  }
+}
+
+// MemoImportIssue is one warning or failure of an import, tied to the memo
+// UID from the archive when there is one.
+message MemoImportIssue {
+  // The archive memo UID the issue concerns, if any.
+  string memo = 1;
+
+  string message = 2;
+}
+
+// MemoImportPlan describes what importing a staged archive would do.
+message MemoImportPlan {
+  // When the archive was written.
+  google.protobuf.Timestamp export_time = 1;
+
+  // Username of the user who exported the archive.
+  string exporter = 2;
+
+  // The software that wrote the archive.
+  string generator = 3;
+
+  // Number of memo records in the archive.
+  int32 memos = 4;
+
+  // Number of attachment files in the archive.
+  int32 attachments = 5;
+
+  // Memos whose UID nobody on the instance holds.
+  int32 new = 6;
+
+  // Memos the user already holds; the conflict policy applies to them.
+  int32 existing = 7;
+
+  // Memos whose UID another account holds; they are imported under fresh UIDs.
+  int32 renamed = 8;
+
+  // Deviations the archive reader corrected while validating.
+  repeated MemoImportIssue warnings = 9;
+}
+
+// MemoImportReport is the outcome of an import.
+message MemoImportReport {
+  int32 created = 1;
+
+  int32 updated = 2;
+
+  int32 skipped = 3;
+
+  int32 failed = 4;
+
+  repeated MemoImportIssue warnings = 5;
+
+  // One entry per failed memo, with the reason.
+  repeated MemoImportIssue failures = 6;
 }
 
 message GetUserStatsRequest {

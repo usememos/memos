@@ -115,6 +115,7 @@ A `ratelimit.Policy` is a table. Each row names a scope, the kind of key it is c
 | `upload_user` | user id | upload start, `CreateAttachment` | every start | 120 per minute |
 | `transcribe_user` | user id | `Transcribe` | every call | 20 per hour |
 | `write_user` | user id | memo, comment, reaction, share, memo-view, and webhook creation | every call | 120 per minute |
+| `archive_user` | user id | `ExportMemos`, `ImportMemos` upload start | every call | 10 per hour |
 
 The two catch-all scopes are what make the table complete: a procedure nobody thought to list is still bounded. The specific scopes sit on top with tighter numbers. A request can therefore be refused by either its catch-all or its specific scope, and the first refusal wins.
 

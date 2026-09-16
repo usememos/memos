@@ -9,6 +9,7 @@ apply the same way.
 | `access/` | who may read a memo, given viewer, space membership, and share links |
 | `notification/` | building and dispatching inbox and email notifications |
 | `memopayload/` | rebuilding a memo's derived payload from its markdown |
+| `memoarchive/` | the Memo Archive container and records used for export and import |
 
 Layering: `core` may import `store`, `provider`, `markdown`, `filter`,
 `proto/gen`, and `internal`. It must not import `server` or `cmd`. New

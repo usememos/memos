@@ -23,7 +23,7 @@ func TestS3AttachmentLifecycleAcrossStorageChange(t *testing.T) {
 func TestUploadAttachmentS3(t *testing.T) {
 	ts := NewTestService(t)
 	defer ts.Cleanup()
-	defer ts.Service.CloseAttachmentUploads()
+	defer ts.Service.CloseUploads()
 	fake := fakes3.New(t, "uploads")
 	ctx := context.Background()
 	user, err := ts.CreateRegularUser(ctx, "chunk-uploader")

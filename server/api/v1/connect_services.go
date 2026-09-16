@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"connectrpc.com/connect"
+	"google.golang.org/genproto/googleapis/api/httpbody"
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
@@ -151,6 +152,22 @@ func (s *ConnectServiceHandler) ListAllUserStats(ctx context.Context, req *conne
 
 func (s *ConnectServiceHandler) GetUserStats(ctx context.Context, req *connect.Request[v1pb.GetUserStatsRequest]) (*connect.Response[v1pb.UserStats], error) {
 	resp, err := s.APIV1Service.GetUserStats(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) ExportMemos(ctx context.Context, req *connect.Request[v1pb.ExportMemosRequest]) (*connect.Response[httpbody.HttpBody], error) {
+	resp, err := s.APIV1Service.ExportMemos(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) ImportMemos(ctx context.Context, req *connect.Request[v1pb.ImportMemosRequest]) (*connect.Response[v1pb.ImportMemosResponse], error) {
+	resp, err := s.APIV1Service.ImportMemos(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}

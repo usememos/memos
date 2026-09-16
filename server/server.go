@@ -135,7 +135,7 @@ func (s *Server) Shutdown(ctx context.Context) {
 
 	s.closeLongLivedConnections()
 	s.shutdownHTTPServer(ctx)
-	s.apiV1Service.CloseAttachmentUploads()
+	s.apiV1Service.CloseUploads()
 
 	// Close database connection.
 	if err := s.Store.Close(); err != nil {
