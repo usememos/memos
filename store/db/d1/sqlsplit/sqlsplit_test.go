@@ -6,46 +6,19 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestSplit(t *testing.T) {
-	statements := Split(`
-		-- leading comment; with a semicolon
-		CREATE TABLE t (name TEXT DEFAULT 'a;b', "quoted;col" TEXT);
-		/* block; comment */
-		INSERT INTO t (name) VALUES ('it''s; fine');
-
-		SELECT 1
-	`)
+func TestSplitOneStatementPerParagraph(t *testing.T) {
+	statements := Split("-- header comment\n\n-- user\nCREATE TABLE user (\n  id INTEGER PRIMARY KEY,\n  name TEXT DEFAULT 'a;b'\n);\n\n\nCREATE INDEX idx ON user(name);\r\n\r\nSELECT 1\n")
 	require.Equal(t, []string{
-		`CREATE TABLE t (name TEXT DEFAULT 'a;b', "quoted;col" TEXT)`,
-		`INSERT INTO t (name) VALUES ('it''s; fine')`,
-		`SELECT 1`,
+		"-- user\nCREATE TABLE user (\n  id INTEGER PRIMARY KEY,\n  name TEXT DEFAULT 'a;b'\n);",
+		"CREATE INDEX idx ON user(name);",
+		"SELECT 1",
 	}, statements)
 
-	require.Empty(t, Split("-- only a comment\n"))
-	require.Empty(t, Split("  ;; "))
-	require.Equal(t, []string{"SELECT 'unterminated"}, Split("SELECT 'unterminated"))
+	require.Empty(t, Split("-- only a comment\n\n  -- another\n"))
+	require.Empty(t, Split("\n\n"))
 }
 
-func TestSplitKeepsCommentsAsWhitespace(t *testing.T) {
-	require.Equal(t, []string{"SELECT 1", "SELECT 2"}, Split("SELECT/**/1;SELECT--x\n2"))
-}
-
-func TestSplitKeepsTriggerBodies(t *testing.T) {
-	trigger := `CREATE TRIGGER IF NOT EXISTS trigger_update_memo_modification_time
-	AFTER UPDATE ON memo
-	FOR EACH ROW
-	BEGIN
-		UPDATE memo SET updated_ts = strftime('%s', 'now') WHERE id = NEW.id;
-		UPDATE memo SET pinned = CASE WHEN NEW.pinned = 1 THEN 1 ELSE 0 END WHERE id = NEW.id;
-	END`
-	statements := Split("DROP TRIGGER IF EXISTS trigger_update_memo_modification_time;\n" + trigger + ";\ncreate temp trigger tmp before insert on memo begin select 1; end;\nSELECT 3")
-	require.Equal(t, []string{
-		"DROP TRIGGER IF EXISTS trigger_update_memo_modification_time",
-		trigger,
-		"create temp trigger tmp before insert on memo begin select 1; end",
-		"SELECT 3",
-	}, statements)
-
-	// CASE outside a trigger has no effect on splitting.
-	require.Equal(t, []string{"SELECT CASE WHEN 1 THEN 'a;b' END", "SELECT 2"}, Split("SELECT CASE WHEN 1 THEN 'a;b' END; SELECT 2"))
+func TestSplitKeepsCompoundStatementsTogether(t *testing.T) {
+	trigger := "CREATE TRIGGER t AFTER UPDATE ON memo\nBEGIN\n  UPDATE memo SET updated_ts = 1 WHERE id = NEW.id;\n  UPDATE memo SET pinned = CASE WHEN NEW.pinned = 1 THEN 1 ELSE 0 END WHERE id = NEW.id;\nEND;"
+	require.Equal(t, []string{"DROP TRIGGER IF EXISTS t;", trigger}, Split("DROP TRIGGER IF EXISTS t;\n\n"+trigger))
 }

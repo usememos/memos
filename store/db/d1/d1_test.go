@@ -119,9 +119,11 @@ func runTransportRoundTrip(t *testing.T, db *DB) {
 	// Multi-statement script through the sql adapter transaction, as the migrator does.
 	tx, err := db.GetDB().Begin()
 	require.NoError(t, err)
+	// One statement per paragraph, as the D1 scripts are laid out.
 	_, err = tx.ExecContext(ctx, `
 		-- schema
 		CREATE TABLE d1_guard (ok INTEGER NOT NULL CONSTRAINT d1_guard_ok CHECK (ok = 1));
+
 		CREATE TABLE memo (id INTEGER PRIMARY KEY AUTOINCREMENT, uid TEXT NOT NULL UNIQUE, content TEXT NOT NULL DEFAULT 'a;b', blob BLOB);
 	`)
 	require.NoError(t, err)

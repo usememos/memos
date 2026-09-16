@@ -183,26 +183,25 @@ func (s *Server) handleQuery(w http.ResponseWriter, r *http.Request, rawRows boo
 		return
 	}
 
-	// Expand every entry into single statements; a parameterized entry must
-	// hold exactly one statement because D1 documents no binding rule for
-	// several.
+	// A parameterized entry is one statement; a parameter-free entry is a
+	// script, executed statement by statement the way D1 does.
 	var stmts []requestStatement
 	for _, entry := range entries {
+		if len(entry.Params) > maxBoundParameters {
+			writeErrors(w, http.StatusBadRequest, 7400, fmt.Sprintf("too many bound parameters: %d", len(entry.Params)))
+			return
+		}
+		if len(entry.Params) > 0 {
+			stmts = append(stmts, entry)
+			continue
+		}
 		parts := sqlsplit.Split(entry.SQL)
 		if len(parts) == 0 {
 			writeErrors(w, http.StatusBadRequest, 7400, "empty sql")
 			return
 		}
-		if len(parts) > 1 && len(entry.Params) > 0 {
-			writeErrors(w, http.StatusBadRequest, 7400, "params cannot be bound to multiple statements")
-			return
-		}
-		if len(entry.Params) > maxBoundParameters {
-			writeErrors(w, http.StatusBadRequest, 7400, fmt.Sprintf("too many bound parameters: %d", len(entry.Params)))
-			return
-		}
 		for _, part := range parts {
-			stmts = append(stmts, requestStatement{SQL: part, Params: entry.Params})
+			stmts = append(stmts, requestStatement{SQL: part})
 		}
 	}
 
@@ -258,10 +257,6 @@ func (s *Server) handleBridge(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	for _, entry := range body.Statements {
-		if len(sqlsplit.Split(entry.SQL)) != 1 {
-			writeBridgeError(w, http.StatusBadRequest, "each bridge entry must hold exactly one statement")
-			return
-		}
 		if len(entry.Params) > maxBoundParameters {
 			writeBridgeError(w, http.StatusBadRequest, fmt.Sprintf("too many bound parameters: %d", len(entry.Params)))
 			return

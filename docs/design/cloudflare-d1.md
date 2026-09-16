@@ -98,8 +98,10 @@ a batch atomically, run a parameter-free script, and report the database size.
 In REST mode reads and single writes go to the `/raw` endpoint, which returns
 rows as arrays with a column list, batches use the documented `batch` body,
 and scripts are sent as one semicolon-separated text. In bridge mode every
-operation is one bridge request; scripts are split into statements locally
-because a bridge entry carries exactly one statement.
+operation is one bridge request; a script is divided into its statements
+locally because a bridge entry carries exactly one statement. That division
+is a layout rule, not a SQL parser: the D1 scripts keep one statement per
+paragraph, so a blank line is the boundary (see Schema and migrations).
 
 Bound parameters travel as JSON numbers, strings, and nulls in both modes;
 booleans become integers. Binary values cannot travel in JSON, so blob columns
@@ -246,6 +248,13 @@ defines for such a driver, and future migrations are added as plain SQL
 files under `store/migration/d1/<version>/` alongside the other drivers'.
 They must avoid the `PRAGMA foreign_keys` toggles the SQLite migrations use,
 which D1 ignores.
+
+D1 scripts follow one layout rule: **one statement per paragraph**. A blank
+line separates statements, and nothing inside a statement, including a table
+or trigger body, a string literal, or a comment, may contain a blank line.
+The bridge transport divides scripts at blank lines to send them as a batch,
+and the test emulator executes them the same way, so a script that breaks the
+rule fails the store suite's fresh install rather than a deployment.
 
 ## Filter dialect
 
