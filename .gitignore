@@ -22,3 +22,6 @@ dist/
 # when --config.store-dir is set without an existing store; it contains a
 # symlink back to the workspace.
 .pnpm-store/
+
+# Local dev database (runtime data)
+local-data/
