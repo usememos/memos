@@ -10,6 +10,7 @@ export const ROUTES = {
   CALENDAR: "/calendar",
   MAP: "/map",
   HABITS: "/habits",
+  AI: "/ai",
   VIEWS: "/views",
   SETTING: "/setting",
   EXPLORE: "/explore",

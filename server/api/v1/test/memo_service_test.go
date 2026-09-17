@@ -224,6 +224,40 @@ func TestCreateAndUpdateMemoRebuildsTagPayload(t *testing.T) {
 	require.Equal(t, []string{"next", "AB"}, stored.Tags)
 }
 
+func TestUpdateMemoRejectsStaleExpectedContent(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	user, err := ts.CreateRegularUser(ctx, "memo-concurrency-user")
+	require.NoError(t, err)
+	userCtx := ts.CreateUserContext(ctx, user.ID)
+
+	memo, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{Memo: &apiv1.Memo{
+		Content:    "original body",
+		Visibility: apiv1.Visibility_PRIVATE,
+	}})
+	require.NoError(t, err)
+
+	_, err = ts.Service.UpdateMemo(userCtx, &apiv1.UpdateMemoRequest{
+		Memo:       &apiv1.Memo{Name: memo.Name, Content: "newer body"},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"content"}},
+	})
+	require.NoError(t, err)
+
+	expectedContent := "original body"
+	_, err = ts.Service.UpdateMemo(userCtx, &apiv1.UpdateMemoRequest{
+		Memo:            &apiv1.Memo{Name: memo.Name, Content: "AI replacement"},
+		UpdateMask:      &fieldmaskpb.FieldMask{Paths: []string{"content"}},
+		ExpectedContent: &expectedContent,
+	})
+	require.Equal(t, codes.FailedPrecondition, status.Code(err))
+
+	got, err := ts.Service.GetMemo(userCtx, &apiv1.GetMemoRequest{Name: memo.Name})
+	require.NoError(t, err)
+	require.Equal(t, "newer body", got.Content)
+}
+
 func TestListMemos(t *testing.T) {
 	ctx := context.Background()
 

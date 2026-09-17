@@ -765,6 +765,30 @@ func (s *ConnectServiceHandler) Transcribe(ctx context.Context, req *connect.Req
 	return connect.NewResponse(resp), nil
 }
 
+func (s *ConnectServiceHandler) ListProviderModels(ctx context.Context, req *connect.Request[v1pb.ListProviderModelsRequest]) (*connect.Response[v1pb.ListProviderModelsResponse], error) {
+	resp, err := s.APIV1Service.ListProviderModels(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) EstimateChatContext(ctx context.Context, req *connect.Request[v1pb.EstimateChatContextRequest]) (*connect.Response[v1pb.EstimateChatContextResponse], error) {
+	resp, err := s.APIV1Service.EstimateChatContext(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) Chat(ctx context.Context, req *connect.Request[v1pb.ChatRequest]) (*connect.Response[v1pb.ChatResponse], error) {
+	resp, err := s.APIV1Service.Chat(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
 // IdentityProviderService
 
 func (s *ConnectServiceHandler) ListIdentityProviders(ctx context.Context, req *connect.Request[v1pb.ListIdentityProvidersRequest]) (*connect.Response[v1pb.ListIdentityProvidersResponse], error) {

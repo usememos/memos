@@ -387,6 +387,11 @@ message UpdateMemoRequest {
 
   // Required. The list of fields to update.
   google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. When present, the update succeeds only if the memo still has
+  // this exact content. This prevents reviewed full-content replacements from
+  // silently overwriting edits made after the review snapshot was created.
+  optional string expected_content = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message DeleteMemoRequest {

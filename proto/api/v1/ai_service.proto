@@ -17,6 +17,36 @@ service AIService {
     };
     option (google.api.method_signature) = "audio";
   }
+
+  // ListProviderModels lists the models an instance AI provider offers. The
+  // server calls the provider's model catalog endpoint, so this requires
+  // network access to the provider.
+  rpc ListProviderModels(ListProviderModelsRequest) returns (ListProviderModelsResponse) {
+    option (google.api.http) = {get: "/api/v1/ai/{provider_id}/models"};
+    option (google.api.method_signature) = "provider_id";
+  }
+
+  // EstimateChatContext resolves a context selection and reports how much of
+  // the chat context budget it would consume. The Hub calls this while the user
+  // edits the selection so an over-budget selection is refused before sending.
+  rpc EstimateChatContext(EstimateChatContextRequest) returns (EstimateChatContextResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/ai:estimateChatContext"
+      body: "*"
+    };
+    option (google.api.method_signature) = "filter";
+  }
+
+  // Chat runs one conversational turn with an instance AI provider. The caller
+  // resends the whole conversation each turn; the server keeps no chat state.
+  // The model may propose note changes, but this method never writes a memo.
+  rpc Chat(ChatRequest) returns (ChatResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/ai:chat"
+      body: "*"
+    };
+    option (google.api.method_signature) = "messages";
+  }
 }
 
 message TranscribeRequest {
@@ -43,4 +73,137 @@ message TranscriptionAudio {
 message TranscribeResponse {
   // The transcribed text.
   string text = 1;
+}
+
+message ListProviderModelsRequest {
+  // Required. The provider id from the instance AI setting.
+  string provider_id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message ListProviderModelsResponse {
+  // The models the provider offers, ordered by identifier.
+  repeated AIProviderModel models = 1;
+}
+
+message AIProviderModel {
+  // The provider-specific model identifier, e.g. "anthropic/claude-sonnet-4".
+  string id = 1;
+
+  // The model's total context window in tokens. Zero when the provider does not
+  // report one.
+  int64 context_length = 2;
+}
+
+message EstimateChatContextRequest {
+  // Required. A CEL filter selecting which notes the model may read. An empty
+  // filter selects nothing, not everything.
+  string filter = 1 [(google.api.field_behavior) = REQUIRED];
+
+  reserved 2;
+  reserved "context_budget_tokens";
+}
+
+message EstimateChatContextResponse {
+  // How many notes the selection matched.
+  int64 memo_count = 1;
+
+  // The total character count of the matched notes' content.
+  int64 total_chars = 2;
+
+  // The estimated token cost of the selection.
+  int64 estimated_tokens = 3;
+
+  // The budget this estimate was measured against.
+  int64 context_budget_tokens = 4;
+
+  // Whether the selection fits the budget.
+  bool fits = 5;
+}
+
+// ChatMessageRole identifies who produced a message.
+enum ChatMessageRole {
+  CHAT_MESSAGE_ROLE_UNSPECIFIED = 0;
+  CHAT_MESSAGE_ROLE_USER = 1;
+  CHAT_MESSAGE_ROLE_ASSISTANT = 2;
+}
+
+message ChatMessage {
+  ChatMessageRole role = 1;
+
+  // The message text. For assistant messages this is the visible reply with any
+  // proposal blocks removed.
+  string content = 2;
+}
+
+message ChatRequest {
+  // Provider, model, and token limits come from the instance chat setting so
+  // callers cannot bypass administrator-controlled capabilities or budgets.
+  reserved 1, 2, 5, 6;
+  reserved "provider_id", "model", "context_budget_tokens", "max_completion_tokens";
+
+  // Optional. A CEL filter selecting which notes the model may read. An empty
+  // filter means the model sees none of the user's notes.
+  string filter = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // Required. The conversation so far, oldest first, ending with the new user
+  // message. The server keeps no conversation state.
+  repeated ChatMessage messages = 4 [(google.api.field_behavior) = REQUIRED];
+
+}
+
+// ChatProposalAction is the kind of note change the model proposes.
+enum ChatProposalAction {
+  CHAT_PROPOSAL_ACTION_UNSPECIFIED = 0;
+  // Create a new note from the proposed content.
+  CHAT_PROPOSAL_ACTION_CREATE = 1;
+  // Replace the content of an existing note.
+  CHAT_PROPOSAL_ACTION_UPDATE = 2;
+}
+
+// ChatProposal is a note change the model suggested but did not perform. The
+// Hub shows it for confirmation and applies it through the normal memo API, so
+// access control and change notifications stay in one place.
+message ChatProposal {
+  ChatProposalAction action = 1;
+
+  // The proposed note content in Markdown. Tags are derived from #hashtags in
+  // this content, matching CreateMemo.
+  string content = 2;
+
+  // The note to update, formatted "memos/{uid}". Empty for create proposals.
+  string target = 3;
+
+  // The target note content the model read. Present only when an update target
+  // belongs to this turn's selected context; clients use it as an optimistic
+  // concurrency precondition when applying the proposal.
+  optional string target_content = 4;
+}
+
+message ChatResponse {
+  // The model's reply, with proposal blocks removed.
+  string content = 1;
+
+  // The note changes the model proposed. Never applied by the server.
+  repeated ChatProposal proposals = 2;
+
+  // How many notes were injected as context.
+  int64 context_memo_count = 3;
+
+  // The estimated token cost of the injected context.
+  int64 context_estimated_tokens = 4;
+
+  // The context budget this turn was measured against.
+  int64 context_budget_tokens = 5;
+
+  // Token usage reported by the provider. Zero when the provider omits it.
+  int64 prompt_tokens = 6;
+  int64 completion_tokens = 7;
+  int64 total_tokens = 8;
+
+  // The model the provider reports having used, which can differ from the
+  // requested model when a router picks a backend.
+  string model = 9;
+
+  // True when the provider stopped because the reply hit the token limit.
+  bool truncated = 10;
 }

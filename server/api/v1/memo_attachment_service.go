@@ -48,7 +48,7 @@ func (s *APIV1Service) SetMemoAttachments(ctx context.Context, request *v1pb.Set
 		return nil, err
 	}
 	updatedTsSec := time.Now().Unix()
-	if err := s.applyMemoMutation(ctx, memo, prepared, &store.UpdateMemo{ID: memo.ID, UpdatedTs: &updatedTsSec}, requiredAttachmentIDs, nil); err != nil {
+	if err := s.applyMemoMutation(ctx, memo, prepared, &store.UpdateMemo{ID: memo.ID, UpdatedTs: &updatedTsSec}, nil, requiredAttachmentIDs, nil); err != nil {
 		return nil, err
 	}
 	_, _, memoMessage, err := s.buildUpdatedMemoState(ctx, memo.ID)
@@ -194,6 +194,7 @@ func (s *APIV1Service) applyMemoMutation(
 	memo *store.Memo,
 	prepared *preparedMemoAttachments,
 	memoUpdate *store.UpdateMemo,
+	expectedMemoContent *string,
 	requiredAttachmentIDs []int32,
 	referenceRelations *[]*store.MemoRelation,
 ) error {
@@ -233,10 +234,14 @@ func (s *APIV1Service) applyMemoMutation(
 		}
 		referenceRelations = &relations
 	}
+	expectedContent := memo.Content
+	if expectedMemoContent != nil {
+		expectedContent = *expectedMemoContent
+	}
 	mutation := &store.MemoMutation{
 		MemoID:                    memo.ID,
 		MemoCreatorID:             memo.CreatorID,
-		ExpectedMemoContent:       memo.Content,
+		ExpectedMemoContent:       expectedContent,
 		MemoUpdate:                memoUpdate,
 		Bindings:                  bindings,
 		RemovedAttachmentIDs:      removedAttachmentIDs,

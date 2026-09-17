@@ -16,6 +16,7 @@ import { SpaceRoute } from "./SpaceRoute";
 
 const AdminSignIn = lazyWithReload(() => import("@/pages/AdminSignIn"));
 const About = lazyWithReload(() => import("@/pages/About"));
+const AIHub = lazyWithReload(() => import("@/pages/AIHub"));
 const Archived = lazyWithReload(() => import("@/pages/Archived"));
 const AuthCallback = lazyWithReload(() => import("@/pages/AuthCallback"));
 const MemoMap = lazyWithReload(() => import("@/pages/Map"));
@@ -99,6 +100,7 @@ export const routeConfig: RouteObject[] = [
                     children: [
                       { path: Routes.VIEWS, element: <MemoViews /> },
                       { path: Routes.HABITS, element: <Habits /> },
+                      { path: Routes.AI, element: <AIHub /> },
                     ],
                   },
                 ],

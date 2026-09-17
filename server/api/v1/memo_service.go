@@ -464,12 +464,12 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 		}
 	}
 
-	if contentUpdated || attachmentsUpdated || relationsUpdated {
+	if contentUpdated || attachmentsUpdated || relationsUpdated || request.ExpectedContent != nil {
 		var relations *[]*store.MemoRelation
 		if relationsUpdated {
 			relations = &preparedRelations
 		}
-		if err := s.applyMemoMutation(ctx, memo, preparedAttachments, update, requiredAttachmentIDs, relations); err != nil {
+		if err := s.applyMemoMutation(ctx, memo, preparedAttachments, update, request.ExpectedContent, requiredAttachmentIDs, relations); err != nil {
 			return nil, err
 		}
 	} else if err = s.Store.UpdateMemo(ctx, update); err != nil {

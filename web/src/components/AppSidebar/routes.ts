@@ -10,6 +10,7 @@ export type SidebarRouteKind =
   | "map"
   | "attachments"
   | "habits"
+  | "ai"
   | "inbox"
   | "settings"
   | "memo"
@@ -32,6 +33,7 @@ export const getSidebarRouteKind = (path: string): SidebarRouteKind => {
   if (matchPath(ROUTES.MAP, normalizedPath)) return "map";
   if (matchPath(ROUTES.ATTACHMENTS, normalizedPath)) return "attachments";
   if (matchPath(ROUTES.HABITS, normalizedPath)) return "habits";
+  if (matchPath(ROUTES.AI, normalizedPath)) return "ai";
   if (matchPath(ROUTES.INBOX, normalizedPath)) return "inbox";
   if (matchPath(ROUTES.SETTING, normalizedPath)) return "settings";
   if (matchPath("/memos/:uid", normalizedPath) || matchPath(`${ROUTES.SHARED_MEMO}/:token`, normalizedPath)) return "memo";

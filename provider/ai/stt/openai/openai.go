@@ -6,7 +6,6 @@ package openai
 import (
 	"context"
 	"mime"
-	"net/url"
 	"strings"
 
 	openaisdk "github.com/openai/openai-go/v3"
@@ -17,8 +16,6 @@ import (
 	"github.com/usememos/memos/provider/ai/stt"
 )
 
-const defaultEndpoint = "https://api.openai.com/v1"
-
 // Transcriber implements stt.Transcriber for OpenAI-compatible STT endpoints.
 type Transcriber struct {
 	client openaisdk.Client
@@ -26,7 +23,7 @@ type Transcriber struct {
 
 // New constructs a Transcriber from a provider config.
 func New(cfg ai.ProviderConfig, options stt.Options) (*Transcriber, error) {
-	endpoint, err := normalizeEndpoint(cfg.Endpoint)
+	endpoint, err := ai.NormalizeEndpoint(cfg.Type, cfg.Endpoint)
 	if err != nil {
 		return nil, err
 	}
@@ -76,17 +73,6 @@ func (t *Transcriber) Transcribe(ctx context.Context, req stt.Request) (*stt.Res
 		Text:     resp.Text,
 		Language: resp.Language,
 	}, nil
-}
-
-func normalizeEndpoint(endpoint string) (string, error) {
-	endpoint = strings.TrimSpace(endpoint)
-	if endpoint == "" {
-		endpoint = defaultEndpoint
-	}
-	if _, err := url.ParseRequestURI(endpoint); err != nil {
-		return "", errors.Wrap(err, "invalid OpenAI endpoint")
-	}
-	return strings.TrimRight(endpoint, "/"), nil
 }
 
 func normalizeAudioMetadata(req stt.Request) (string, string, error) {

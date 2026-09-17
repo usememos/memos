@@ -553,24 +553,21 @@ type ListMemosRequest struct {
 	OrderBy string `protobuf:"bytes,4,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	// Optional. A CEL expression to filter memos. Combine terms with && and ||.
 	// Available fields:
-	//
-	//	content (string), creator (string, e.g. "users/1"),
-	//	created_ts / updated_ts (timestamp), pinned (bool),
-	//	visibility (string: PRIVATE | PROTECTED | PUBLIC | SPACE),
-	//	space (string resource name, or null when the memo has no space;
-	//	  supports == and comparisons against null, e.g. space != null),
-	//	tags (list<string>; match with `"work" in tags`, not `tag == "work"`),
-	//	has_task_list / has_link / has_code / has_incomplete_tasks (bool),
-	//	has_location (bool; true when the memo has a location attached).
-	//
+	//   content (string), creator (string, e.g. "users/1"),
+	//   created_ts / updated_ts (timestamp), pinned (bool),
+	//   visibility (string: PRIVATE | PROTECTED | PUBLIC | SPACE),
+	//   space (string resource name, or null when the memo has no space;
+	//     supports == and comparisons against null, e.g. space != null),
+	//   tags (list<string>; match with `"work" in tags`, not `tag == "work"`),
+	//   has_task_list / has_link / has_code / has_incomplete_tasks (bool),
+	//   has_location (bool; true when the memo has a location attached).
 	// Note: the time fields here are created_ts / updated_ts, which differ from
 	// the create_time / update_time names used by order_by.
 	// Examples:
-	//
-	//	pinned == true && visibility == "PUBLIC"
-	//	space == "spaces/team" or space == null
-	//	tags.exists(t, t == "urgent")
-	//	content.contains("roadmap") && created_ts > now - duration("168h")
+	//   pinned == true && visibility == "PUBLIC"
+	//   space == "spaces/team" or space == null
+	//   tags.exists(t, t == "urgent")
+	//   content.contains("roadmap") && created_ts > now - duration("168h")
 	Filter string `protobuf:"bytes,5,opt,name=filter,proto3" json:"filter,omitempty"`
 	// Optional. If true, show deleted memos in the response.
 	ShowDeleted   bool `protobuf:"varint,6,opt,name=show_deleted,json=showDeleted,proto3" json:"show_deleted,omitempty"`
@@ -757,9 +754,13 @@ type UpdateMemoRequest struct {
 	// The `name` field is required.
 	Memo *Memo `protobuf:"bytes,1,opt,name=memo,proto3" json:"memo,omitempty"`
 	// Required. The list of fields to update.
-	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
+	// Optional. When present, the update succeeds only if the memo still has
+	// this exact content. This prevents reviewed full-content replacements from
+	// silently overwriting edits made after the review snapshot was created.
+	ExpectedContent *string `protobuf:"bytes,3,opt,name=expected_content,json=expectedContent,proto3,oneof" json:"expected_content,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *UpdateMemoRequest) Reset() {
@@ -804,6 +805,13 @@ func (x *UpdateMemoRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 		return x.UpdateMask
 	}
 	return nil
+}
+
+func (x *UpdateMemoRequest) GetExpectedContent() string {
+	if x != nil && x.ExpectedContent != nil {
+		return *x.ExpectedContent
+	}
+	return ""
 }
 
 type DeleteMemoRequest struct {
@@ -2394,11 +2402,13 @@ const file_api_v1_memo_service_proto_rawDesc = "" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"?\n" +
 	"\x0eGetMemoRequest\x12-\n" +
 	"\x04name\x18\x01 \x01(\tB\x19\xe0A\x02\xfaA\x13\n" +
-	"\x11memos.api.v1/MemoR\x04name\"\x82\x01\n" +
+	"\x11memos.api.v1/MemoR\x04name\"\xcc\x01\n" +
 	"\x11UpdateMemoRequest\x12+\n" +
 	"\x04memo\x18\x01 \x01(\v2\x12.memos.api.v1.MemoB\x03\xe0A\x02R\x04memo\x12@\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
-	"updateMask\"]\n" +
+	"updateMask\x123\n" +
+	"\x10expected_content\x18\x03 \x01(\tB\x03\xe0A\x01H\x00R\x0fexpectedContent\x88\x01\x01B\x13\n" +
+	"\x11_expected_content\"]\n" +
 	"\x11DeleteMemoRequest\x12-\n" +
 	"\x04name\x18\x01 \x01(\tB\x19\xe0A\x02\xfaA\x13\n" +
 	"\x11memos.api.v1/MemoR\x04name\x12\x19\n" +
@@ -2689,6 +2699,7 @@ func file_api_v1_memo_service_proto_init() {
 	file_api_v1_attachment_service_proto_init()
 	file_api_v1_common_proto_init()
 	file_api_v1_memo_service_proto_msgTypes[1].OneofWrappers = []any{}
+	file_api_v1_memo_service_proto_msgTypes[7].OneofWrappers = []any{}
 	file_api_v1_memo_service_proto_msgTypes[23].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

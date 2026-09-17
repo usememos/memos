@@ -21,6 +21,15 @@ const (
 	maxTranscriptionConfigLanguageLength = 32
 	maxTranscriptionConfigPromptLength   = 4096
 	maxBatchGetInstanceSettings          = 100
+
+	maxChatConfigModelLength = 256
+	// maxChatContextBudgetTokens bounds the injectable note context. The cap is
+	// generous but finite so a misconfiguration cannot request an absurd prompt.
+	maxChatContextBudgetTokens = 1_000_000
+	// maxChatCompletionTokens bounds a reply limit. The value reaches the provider
+	// as a spending instruction, so a request must not be able to make it
+	// unbounded.
+	maxChatCompletionTokens = 100_000
 )
 
 type instanceSettingCaller struct {

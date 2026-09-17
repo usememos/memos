@@ -2,8 +2,8 @@
 // @generated from file api/v1/ai_service.proto (package memos.api.v1, syntax proto3)
 /* eslint-disable */
 
-import type { GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv2";
-import { fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
+import type { GenEnum, GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv2";
+import { enumDesc, fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
 import { file_google_api_annotations } from "../../google/api/annotations_pb";
 import { file_google_api_client } from "../../google/api/client_pb";
 import { file_google_api_field_behavior } from "../../google/api/field_behavior_pb";
@@ -13,7 +13,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file api/v1/ai_service.proto.
  */
 export const file_api_v1_ai_service: GenFile = /*@__PURE__*/
-  fileDesc("ChdhcGkvdjEvYWlfc2VydmljZS5wcm90bxIMbWVtb3MuYXBpLnYxIkkKEVRyYW5zY3JpYmVSZXF1ZXN0EjQKBWF1ZGlvGAEgASgLMiAubWVtb3MuYXBpLnYxLlRyYW5zY3JpcHRpb25BdWRpb0ID4EECIncKElRyYW5zY3JpcHRpb25BdWRpbxIWCgdjb250ZW50GAEgASgMQgPgQQRIABINCgN1cmkYAiABKAlIABIVCghmaWxlbmFtZRgDIAEoCUID4EEBEhkKDGNvbnRlbnRfdHlwZRgEIAEoCUID4EEBQggKBnNvdXJjZSIiChJUcmFuc2NyaWJlUmVzcG9uc2USDAoEdGV4dBgBIAEoCTKGAQoJQUlTZXJ2aWNlEnkKClRyYW5zY3JpYmUSHy5tZW1vcy5hcGkudjEuVHJhbnNjcmliZVJlcXVlc3QaIC5tZW1vcy5hcGkudjEuVHJhbnNjcmliZVJlc3BvbnNlIijaQQVhdWRpb4LT5JMCGjoBKiIVL2FwaS92MS9haTp0cmFuc2NyaWJlQqYBChBjb20ubWVtb3MuYXBpLnYxQg5BaVNlcnZpY2VQcm90b1ABWjBnaXRodWIuY29tL3VzZW1lbW9zL21lbW9zL3Byb3RvL2dlbi9hcGkvdjE7YXBpdjGiAgNNQViqAgxNZW1vcy5BcGkuVjHKAgxNZW1vc1xBcGlcVjHiAhhNZW1vc1xBcGlcVjFcR1BCTWV0YWRhdGHqAg5NZW1vczo6QXBpOjpWMWIGcHJvdG8z", [file_google_api_annotations, file_google_api_client, file_google_api_field_behavior]);
+  fileDesc("ChdhcGkvdjEvYWlfc2VydmljZS5wcm90bxIMbWVtb3MuYXBpLnYxIkkKEVRyYW5zY3JpYmVSZXF1ZXN0EjQKBWF1ZGlvGAEgASgLMiAubWVtb3MuYXBpLnYxLlRyYW5zY3JpcHRpb25BdWRpb0ID4EECIncKElRyYW5zY3JpcHRpb25BdWRpbxIWCgdjb250ZW50GAEgASgMQgPgQQRIABINCgN1cmkYAiABKAlIABIVCghmaWxlbmFtZRgDIAEoCUID4EEBEhkKDGNvbnRlbnRfdHlwZRgEIAEoCUID4EEBQggKBnNvdXJjZSIiChJUcmFuc2NyaWJlUmVzcG9uc2USDAoEdGV4dBgBIAEoCSI1ChlMaXN0UHJvdmlkZXJNb2RlbHNSZXF1ZXN0EhgKC3Byb3ZpZGVyX2lkGAEgASgJQgPgQQIiSwoaTGlzdFByb3ZpZGVyTW9kZWxzUmVzcG9uc2USLQoGbW9kZWxzGAEgAygLMh0ubWVtb3MuYXBpLnYxLkFJUHJvdmlkZXJNb2RlbCI1Cg9BSVByb3ZpZGVyTW9kZWwSCgoCaWQYASABKAkSFgoOY29udGV4dF9sZW5ndGgYAiABKAMiTgoaRXN0aW1hdGVDaGF0Q29udGV4dFJlcXVlc3QSEwoGZmlsdGVyGAEgASgJQgPgQQJKBAgCEANSFWNvbnRleHRfYnVkZ2V0X3Rva2VucyKNAQobRXN0aW1hdGVDaGF0Q29udGV4dFJlc3BvbnNlEhIKCm1lbW9fY291bnQYASABKAMSEwoLdG90YWxfY2hhcnMYAiABKAMSGAoQZXN0aW1hdGVkX3Rva2VucxgDIAEoAxIdChVjb250ZXh0X2J1ZGdldF90b2tlbnMYBCABKAMSDAoEZml0cxgFIAEoCCJLCgtDaGF0TWVzc2FnZRIrCgRyb2xlGAEgASgOMh0ubWVtb3MuYXBpLnYxLkNoYXRNZXNzYWdlUm9sZRIPCgdjb250ZW50GAIgASgJIq4BCgtDaGF0UmVxdWVzdBITCgZmaWx0ZXIYAyABKAlCA+BBARIwCghtZXNzYWdlcxgEIAMoCzIZLm1lbW9zLmFwaS52MS5DaGF0TWVzc2FnZUID4EECSgQIARACSgQIAhADSgQIBRAGSgQIBhAHUgtwcm92aWRlcl9pZFIFbW9kZWxSFWNvbnRleHRfYnVkZ2V0X3Rva2Vuc1IVbWF4X2NvbXBsZXRpb25fdG9rZW5zIpEBCgxDaGF0UHJvcG9zYWwSMAoGYWN0aW9uGAEgASgOMiAubWVtb3MuYXBpLnYxLkNoYXRQcm9wb3NhbEFjdGlvbhIPCgdjb250ZW50GAIgASgJEg4KBnRhcmdldBgDIAEoCRIbCg50YXJnZXRfY29udGVudBgEIAEoCUgAiAEBQhEKD190YXJnZXRfY29udGVudCKVAgoMQ2hhdFJlc3BvbnNlEg8KB2NvbnRlbnQYASABKAkSLQoJcHJvcG9zYWxzGAIgAygLMhoubWVtb3MuYXBpLnYxLkNoYXRQcm9wb3NhbBIaChJjb250ZXh0X21lbW9fY291bnQYAyABKAMSIAoYY29udGV4dF9lc3RpbWF0ZWRfdG9rZW5zGAQgASgDEh0KFWNvbnRleHRfYnVkZ2V0X3Rva2VucxgFIAEoAxIVCg1wcm9tcHRfdG9rZW5zGAYgASgDEhkKEWNvbXBsZXRpb25fdG9rZW5zGAcgASgDEhQKDHRvdGFsX3Rva2VucxgIIAEoAxINCgVtb2RlbBgJIAEoCRIRCgl0cnVuY2F0ZWQYCiABKAgqcQoPQ2hhdE1lc3NhZ2VSb2xlEiEKHUNIQVRfTUVTU0FHRV9ST0xFX1VOU1BFQ0lGSUVEEAASGgoWQ0hBVF9NRVNTQUdFX1JPTEVfVVNFUhABEh8KG0NIQVRfTUVTU0FHRV9ST0xFX0FTU0lTVEFOVBACKnwKEkNoYXRQcm9wb3NhbEFjdGlvbhIkCiBDSEFUX1BST1BPU0FMX0FDVElPTl9VTlNQRUNJRklFRBAAEh8KG0NIQVRfUFJPUE9TQUxfQUNUSU9OX0NSRUFURRABEh8KG0NIQVRfUFJPUE9TQUxfQUNUSU9OX1VQREFURRACMq4ECglBSVNlcnZpY2USeQoKVHJhbnNjcmliZRIfLm1lbW9zLmFwaS52MS5UcmFuc2NyaWJlUmVxdWVzdBogLm1lbW9zLmFwaS52MS5UcmFuc2NyaWJlUmVzcG9uc2UiKNpBBWF1ZGlvgtPkkwIaOgEqIhUvYXBpL3YxL2FpOnRyYW5zY3JpYmUSngEKEkxpc3RQcm92aWRlck1vZGVscxInLm1lbW9zLmFwaS52MS5MaXN0UHJvdmlkZXJNb2RlbHNSZXF1ZXN0GigubWVtb3MuYXBpLnYxLkxpc3RQcm92aWRlck1vZGVsc1Jlc3BvbnNlIjXaQQtwcm92aWRlcl9pZILT5JMCIRIfL2FwaS92MS9haS97cHJvdmlkZXJfaWR9L21vZGVscxKeAQoTRXN0aW1hdGVDaGF0Q29udGV4dBIoLm1lbW9zLmFwaS52MS5Fc3RpbWF0ZUNoYXRDb250ZXh0UmVxdWVzdBopLm1lbW9zLmFwaS52MS5Fc3RpbWF0ZUNoYXRDb250ZXh0UmVzcG9uc2UiMtpBBmZpbHRlcoLT5JMCIzoBKiIeL2FwaS92MS9haTplc3RpbWF0ZUNoYXRDb250ZXh0EmQKBENoYXQSGS5tZW1vcy5hcGkudjEuQ2hhdFJlcXVlc3QaGi5tZW1vcy5hcGkudjEuQ2hhdFJlc3BvbnNlIiXaQQhtZXNzYWdlc4LT5JMCFDoBKiIPL2FwaS92MS9haTpjaGF0QqYBChBjb20ubWVtb3MuYXBpLnYxQg5BaVNlcnZpY2VQcm90b1ABWjBnaXRodWIuY29tL3VzZW1lbW9zL21lbW9zL3Byb3RvL2dlbi9hcGkvdjE7YXBpdjGiAgNNQViqAgxNZW1vcy5BcGkuVjHKAgxNZW1vc1xBcGlcVjHiAhhNZW1vc1xBcGlcVjFcR1BCTWV0YWRhdGHqAg5NZW1vczo6QXBpOjpWMWIGcHJvdG8z", [file_google_api_annotations, file_google_api_client, file_google_api_field_behavior]);
 
 /**
  * @generated from message memos.api.v1.TranscribeRequest
@@ -101,6 +101,375 @@ export const TranscribeResponseSchema: GenMessage<TranscribeResponse> = /*@__PUR
   messageDesc(file_api_v1_ai_service, 2);
 
 /**
+ * @generated from message memos.api.v1.ListProviderModelsRequest
+ */
+export type ListProviderModelsRequest = Message<"memos.api.v1.ListProviderModelsRequest"> & {
+  /**
+   * Required. The provider id from the instance AI setting.
+   *
+   * @generated from field: string provider_id = 1;
+   */
+  providerId: string;
+};
+
+/**
+ * Describes the message memos.api.v1.ListProviderModelsRequest.
+ * Use `create(ListProviderModelsRequestSchema)` to create a new message.
+ */
+export const ListProviderModelsRequestSchema: GenMessage<ListProviderModelsRequest> = /*@__PURE__*/
+  messageDesc(file_api_v1_ai_service, 3);
+
+/**
+ * @generated from message memos.api.v1.ListProviderModelsResponse
+ */
+export type ListProviderModelsResponse = Message<"memos.api.v1.ListProviderModelsResponse"> & {
+  /**
+   * The models the provider offers, ordered by identifier.
+   *
+   * @generated from field: repeated memos.api.v1.AIProviderModel models = 1;
+   */
+  models: AIProviderModel[];
+};
+
+/**
+ * Describes the message memos.api.v1.ListProviderModelsResponse.
+ * Use `create(ListProviderModelsResponseSchema)` to create a new message.
+ */
+export const ListProviderModelsResponseSchema: GenMessage<ListProviderModelsResponse> = /*@__PURE__*/
+  messageDesc(file_api_v1_ai_service, 4);
+
+/**
+ * @generated from message memos.api.v1.AIProviderModel
+ */
+export type AIProviderModel = Message<"memos.api.v1.AIProviderModel"> & {
+  /**
+   * The provider-specific model identifier, e.g. "anthropic/claude-sonnet-4".
+   *
+   * @generated from field: string id = 1;
+   */
+  id: string;
+
+  /**
+   * The model's total context window in tokens. Zero when the provider does not
+   * report one.
+   *
+   * @generated from field: int64 context_length = 2;
+   */
+  contextLength: bigint;
+};
+
+/**
+ * Describes the message memos.api.v1.AIProviderModel.
+ * Use `create(AIProviderModelSchema)` to create a new message.
+ */
+export const AIProviderModelSchema: GenMessage<AIProviderModel> = /*@__PURE__*/
+  messageDesc(file_api_v1_ai_service, 5);
+
+/**
+ * @generated from message memos.api.v1.EstimateChatContextRequest
+ */
+export type EstimateChatContextRequest = Message<"memos.api.v1.EstimateChatContextRequest"> & {
+  /**
+   * Required. A CEL filter selecting which notes the model may read. An empty
+   * filter selects nothing, not everything.
+   *
+   * @generated from field: string filter = 1;
+   */
+  filter: string;
+};
+
+/**
+ * Describes the message memos.api.v1.EstimateChatContextRequest.
+ * Use `create(EstimateChatContextRequestSchema)` to create a new message.
+ */
+export const EstimateChatContextRequestSchema: GenMessage<EstimateChatContextRequest> = /*@__PURE__*/
+  messageDesc(file_api_v1_ai_service, 6);
+
+/**
+ * @generated from message memos.api.v1.EstimateChatContextResponse
+ */
+export type EstimateChatContextResponse = Message<"memos.api.v1.EstimateChatContextResponse"> & {
+  /**
+   * How many notes the selection matched.
+   *
+   * @generated from field: int64 memo_count = 1;
+   */
+  memoCount: bigint;
+
+  /**
+   * The total character count of the matched notes' content.
+   *
+   * @generated from field: int64 total_chars = 2;
+   */
+  totalChars: bigint;
+
+  /**
+   * The estimated token cost of the selection.
+   *
+   * @generated from field: int64 estimated_tokens = 3;
+   */
+  estimatedTokens: bigint;
+
+  /**
+   * The budget this estimate was measured against.
+   *
+   * @generated from field: int64 context_budget_tokens = 4;
+   */
+  contextBudgetTokens: bigint;
+
+  /**
+   * Whether the selection fits the budget.
+   *
+   * @generated from field: bool fits = 5;
+   */
+  fits: boolean;
+};
+
+/**
+ * Describes the message memos.api.v1.EstimateChatContextResponse.
+ * Use `create(EstimateChatContextResponseSchema)` to create a new message.
+ */
+export const EstimateChatContextResponseSchema: GenMessage<EstimateChatContextResponse> = /*@__PURE__*/
+  messageDesc(file_api_v1_ai_service, 7);
+
+/**
+ * @generated from message memos.api.v1.ChatMessage
+ */
+export type ChatMessage = Message<"memos.api.v1.ChatMessage"> & {
+  /**
+   * @generated from field: memos.api.v1.ChatMessageRole role = 1;
+   */
+  role: ChatMessageRole;
+
+  /**
+   * The message text. For assistant messages this is the visible reply with any
+   * proposal blocks removed.
+   *
+   * @generated from field: string content = 2;
+   */
+  content: string;
+};
+
+/**
+ * Describes the message memos.api.v1.ChatMessage.
+ * Use `create(ChatMessageSchema)` to create a new message.
+ */
+export const ChatMessageSchema: GenMessage<ChatMessage> = /*@__PURE__*/
+  messageDesc(file_api_v1_ai_service, 8);
+
+/**
+ * @generated from message memos.api.v1.ChatRequest
+ */
+export type ChatRequest = Message<"memos.api.v1.ChatRequest"> & {
+  /**
+   * Optional. A CEL filter selecting which notes the model may read. An empty
+   * filter means the model sees none of the user's notes.
+   *
+   * @generated from field: string filter = 3;
+   */
+  filter: string;
+
+  /**
+   * Required. The conversation so far, oldest first, ending with the new user
+   * message. The server keeps no conversation state.
+   *
+   * @generated from field: repeated memos.api.v1.ChatMessage messages = 4;
+   */
+  messages: ChatMessage[];
+};
+
+/**
+ * Describes the message memos.api.v1.ChatRequest.
+ * Use `create(ChatRequestSchema)` to create a new message.
+ */
+export const ChatRequestSchema: GenMessage<ChatRequest> = /*@__PURE__*/
+  messageDesc(file_api_v1_ai_service, 9);
+
+/**
+ * ChatProposal is a note change the model suggested but did not perform. The
+ * Hub shows it for confirmation and applies it through the normal memo API, so
+ * access control and change notifications stay in one place.
+ *
+ * @generated from message memos.api.v1.ChatProposal
+ */
+export type ChatProposal = Message<"memos.api.v1.ChatProposal"> & {
+  /**
+   * @generated from field: memos.api.v1.ChatProposalAction action = 1;
+   */
+  action: ChatProposalAction;
+
+  /**
+   * The proposed note content in Markdown. Tags are derived from #hashtags in
+   * this content, matching CreateMemo.
+   *
+   * @generated from field: string content = 2;
+   */
+  content: string;
+
+  /**
+   * The note to update, formatted "memos/{uid}". Empty for create proposals.
+   *
+   * @generated from field: string target = 3;
+   */
+  target: string;
+
+  /**
+   * The target note content the model read. Present only when an update target
+   * belongs to this turn's selected context; clients use it as an optimistic
+   * concurrency precondition when applying the proposal.
+   *
+   * @generated from field: optional string target_content = 4;
+   */
+  targetContent?: string | undefined;
+};
+
+/**
+ * Describes the message memos.api.v1.ChatProposal.
+ * Use `create(ChatProposalSchema)` to create a new message.
+ */
+export const ChatProposalSchema: GenMessage<ChatProposal> = /*@__PURE__*/
+  messageDesc(file_api_v1_ai_service, 10);
+
+/**
+ * @generated from message memos.api.v1.ChatResponse
+ */
+export type ChatResponse = Message<"memos.api.v1.ChatResponse"> & {
+  /**
+   * The model's reply, with proposal blocks removed.
+   *
+   * @generated from field: string content = 1;
+   */
+  content: string;
+
+  /**
+   * The note changes the model proposed. Never applied by the server.
+   *
+   * @generated from field: repeated memos.api.v1.ChatProposal proposals = 2;
+   */
+  proposals: ChatProposal[];
+
+  /**
+   * How many notes were injected as context.
+   *
+   * @generated from field: int64 context_memo_count = 3;
+   */
+  contextMemoCount: bigint;
+
+  /**
+   * The estimated token cost of the injected context.
+   *
+   * @generated from field: int64 context_estimated_tokens = 4;
+   */
+  contextEstimatedTokens: bigint;
+
+  /**
+   * The context budget this turn was measured against.
+   *
+   * @generated from field: int64 context_budget_tokens = 5;
+   */
+  contextBudgetTokens: bigint;
+
+  /**
+   * Token usage reported by the provider. Zero when the provider omits it.
+   *
+   * @generated from field: int64 prompt_tokens = 6;
+   */
+  promptTokens: bigint;
+
+  /**
+   * @generated from field: int64 completion_tokens = 7;
+   */
+  completionTokens: bigint;
+
+  /**
+   * @generated from field: int64 total_tokens = 8;
+   */
+  totalTokens: bigint;
+
+  /**
+   * The model the provider reports having used, which can differ from the
+   * requested model when a router picks a backend.
+   *
+   * @generated from field: string model = 9;
+   */
+  model: string;
+
+  /**
+   * True when the provider stopped because the reply hit the token limit.
+   *
+   * @generated from field: bool truncated = 10;
+   */
+  truncated: boolean;
+};
+
+/**
+ * Describes the message memos.api.v1.ChatResponse.
+ * Use `create(ChatResponseSchema)` to create a new message.
+ */
+export const ChatResponseSchema: GenMessage<ChatResponse> = /*@__PURE__*/
+  messageDesc(file_api_v1_ai_service, 11);
+
+/**
+ * ChatMessageRole identifies who produced a message.
+ *
+ * @generated from enum memos.api.v1.ChatMessageRole
+ */
+export enum ChatMessageRole {
+  /**
+   * @generated from enum value: CHAT_MESSAGE_ROLE_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * @generated from enum value: CHAT_MESSAGE_ROLE_USER = 1;
+   */
+  USER = 1,
+
+  /**
+   * @generated from enum value: CHAT_MESSAGE_ROLE_ASSISTANT = 2;
+   */
+  ASSISTANT = 2,
+}
+
+/**
+ * Describes the enum memos.api.v1.ChatMessageRole.
+ */
+export const ChatMessageRoleSchema: GenEnum<ChatMessageRole> = /*@__PURE__*/
+  enumDesc(file_api_v1_ai_service, 0);
+
+/**
+ * ChatProposalAction is the kind of note change the model proposes.
+ *
+ * @generated from enum memos.api.v1.ChatProposalAction
+ */
+export enum ChatProposalAction {
+  /**
+   * @generated from enum value: CHAT_PROPOSAL_ACTION_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * Create a new note from the proposed content.
+   *
+   * @generated from enum value: CHAT_PROPOSAL_ACTION_CREATE = 1;
+   */
+  CREATE = 1,
+
+  /**
+   * Replace the content of an existing note.
+   *
+   * @generated from enum value: CHAT_PROPOSAL_ACTION_UPDATE = 2;
+   */
+  UPDATE = 2,
+}
+
+/**
+ * Describes the enum memos.api.v1.ChatProposalAction.
+ */
+export const ChatProposalActionSchema: GenEnum<ChatProposalAction> = /*@__PURE__*/
+  enumDesc(file_api_v1_ai_service, 1);
+
+/**
  * @generated from service memos.api.v1.AIService
  */
 export const AIService: GenService<{
@@ -113,6 +482,42 @@ export const AIService: GenService<{
     methodKind: "unary";
     input: typeof TranscribeRequestSchema;
     output: typeof TranscribeResponseSchema;
+  },
+  /**
+   * ListProviderModels lists the models an instance AI provider offers. The
+   * server calls the provider's model catalog endpoint, so this requires
+   * network access to the provider.
+   *
+   * @generated from rpc memos.api.v1.AIService.ListProviderModels
+   */
+  listProviderModels: {
+    methodKind: "unary";
+    input: typeof ListProviderModelsRequestSchema;
+    output: typeof ListProviderModelsResponseSchema;
+  },
+  /**
+   * EstimateChatContext resolves a context selection and reports how much of
+   * the chat context budget it would consume. The Hub calls this while the user
+   * edits the selection so an over-budget selection is refused before sending.
+   *
+   * @generated from rpc memos.api.v1.AIService.EstimateChatContext
+   */
+  estimateChatContext: {
+    methodKind: "unary";
+    input: typeof EstimateChatContextRequestSchema;
+    output: typeof EstimateChatContextResponseSchema;
+  },
+  /**
+   * Chat runs one conversational turn with an instance AI provider. The caller
+   * resends the whole conversation each turn; the server keeps no chat state.
+   * The model may propose note changes, but this method never writes a memo.
+   *
+   * @generated from rpc memos.api.v1.AIService.Chat
+   */
+  chat: {
+    methodKind: "unary";
+    input: typeof ChatRequestSchema;
+    output: typeof ChatResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_api_v1_ai_service, 0);

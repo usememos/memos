@@ -71,6 +71,9 @@ type APIV1Service struct {
 
 	// instanceStatsCache memoizes GetInstanceStats results for instanceStatsCacheTTL.
 	instanceStatsCache instanceStatsCache
+	// providerModelsCache memoizes per-provider model catalogs for
+	// providerModelsCacheTTL.
+	providerModelsCache providerModelsCache
 
 	linkMetadataFetcher linkMetadataFetcher
 	attachmentUploads   attachmentUploads

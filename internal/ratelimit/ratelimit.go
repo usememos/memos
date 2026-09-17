@@ -38,6 +38,14 @@ const (
 	ScopeUploadUser Scope = "upload_user"
 	// ScopeTranscribeUser counts transcription calls per user.
 	ScopeTranscribeUser Scope = "transcribe_user"
+	// ScopeChatUser counts AI Hub chat calls per user. Each call spends the
+	// instance's provider credit, so it is budgeted like transcription.
+	ScopeChatUser Scope = "chat_user"
+	// ScopeChatEstimateUser counts AI Hub context estimates per user. An estimate
+	// only queries local notes and costs no provider credit, but it fires on
+	// every selection change, so it gets its own looser budget rather than eating
+	// into the chat budget.
+	ScopeChatEstimateUser Scope = "chat_estimate_user"
 	// ScopeWriteUser counts content creation per user.
 	ScopeWriteUser Scope = "write_user"
 )
@@ -73,7 +81,11 @@ func DefaultPolicy() Policy {
 		ScopeLinkMetadata:       {Limit: 60, Window: time.Minute},
 		ScopeUploadUser:         {Limit: 120, Window: time.Minute},
 		ScopeTranscribeUser:     {Limit: 20, Window: time.Hour},
-		ScopeWriteUser:          {Limit: 120, Window: time.Minute},
+		ScopeChatUser:           {Limit: 120, Window: time.Hour},
+		// Estimates are cheap and fire as the user edits the tag selection, so
+		// this budget is per minute and well above any human clicking rate.
+		ScopeChatEstimateUser: {Limit: 120, Window: time.Minute},
+		ScopeWriteUser:        {Limit: 120, Window: time.Minute},
 	}
 }
 

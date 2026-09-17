@@ -12,6 +12,7 @@ import (
 
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
+	"github.com/usememos/memos/provider/ai"
 	"github.com/usememos/memos/store"
 )
 
@@ -99,16 +100,16 @@ func (s *APIV1Service) prepareInstanceAISettingForUpdate(ctx context.Context, se
 		if provider.Title == "" {
 			return errors.New("provider title is required")
 		}
-		if provider.Type != storepb.AIProviderType_OPENAI && provider.Type != storepb.AIProviderType_GEMINI {
+		providerType := convertAIProviderTypeFromStore(provider.Type)
+		if providerType == "" {
 			return errors.Errorf("provider %q has unsupported type", provider.Id)
 		}
 
+		// Fall back to the provider type's canonical endpoint so the default
+		// lives in one place (provider/ai) rather than being restated here.
 		provider.Endpoint = strings.TrimSpace(provider.Endpoint)
-		if provider.Type == storepb.AIProviderType_OPENAI && provider.Endpoint == "" {
-			provider.Endpoint = "https://api.openai.com/v1"
-		}
-		if provider.Type == storepb.AIProviderType_GEMINI && provider.Endpoint == "" {
-			provider.Endpoint = "https://generativelanguage.googleapis.com/v1beta"
+		if provider.Endpoint == "" {
+			provider.Endpoint = ai.DefaultEndpoint(providerType)
 		}
 
 		if provider.ApiKey == "" {
@@ -124,7 +125,7 @@ func (s *APIV1Service) prepareInstanceAISettingForUpdate(ctx context.Context, se
 	if err := preparePersistedTranscriptionConfig(setting, existing); err != nil {
 		return err
 	}
-	return nil
+	return preparePersistedChatConfig(setting, existing)
 }
 
 func preparePersistedTranscriptionConfig(setting *storepb.InstanceAISetting, existing *storepb.InstanceAISetting) error {
@@ -146,15 +147,19 @@ func preparePersistedTranscriptionConfig(setting *storepb.InstanceAISetting, exi
 	cfg.Prompt = strings.TrimSpace(cfg.Prompt)
 
 	if cfg.ProviderId != "" {
-		referenced := false
+		var referenced *storepb.AIProviderConfig
 		for _, provider := range setting.Providers {
 			if provider != nil && provider.Id == cfg.ProviderId {
-				referenced = true
+				referenced = provider
 				break
 			}
 		}
-		if !referenced {
+		if referenced == nil {
 			return errors.Errorf("transcription provider_id %q does not reference any configured provider", cfg.ProviderId)
+		}
+		providerType := convertAIProviderTypeFromStore(referenced.Type)
+		if providerType != ai.ProviderOpenAI && providerType != ai.ProviderGemini {
+			return errors.Errorf("provider type %q is not supported for transcription", providerType)
 		}
 	}
 
@@ -166,6 +171,56 @@ func preparePersistedTranscriptionConfig(setting *storepb.InstanceAISetting, exi
 	}
 	if len(cfg.Prompt) > maxTranscriptionConfigPromptLength {
 		return errors.Errorf("transcription prompt is too long; maximum length is %d characters", maxTranscriptionConfigPromptLength)
+	}
+	return nil
+}
+
+// preparePersistedChatConfig validates and normalizes the chat config. Like the
+// transcription config, an omitted chat config means "keep the stored one" so a
+// provider-only update cannot silently disable chat.
+func preparePersistedChatConfig(setting *storepb.InstanceAISetting, existing *storepb.InstanceAISetting) error {
+	if setting.Chat == nil && existing != nil {
+		setting.Chat = existing.GetChat()
+	}
+	if setting.Chat == nil {
+		return nil
+	}
+
+	cfg := setting.Chat
+	cfg.ProviderId = strings.TrimSpace(cfg.ProviderId)
+	cfg.Model = strings.TrimSpace(cfg.Model)
+
+	if cfg.ProviderId != "" {
+		var referenced *storepb.AIProviderConfig
+		for _, provider := range setting.Providers {
+			if provider != nil && provider.Id == cfg.ProviderId {
+				referenced = provider
+				break
+			}
+		}
+		if referenced == nil {
+			return errors.Errorf("chat provider_id %q does not reference any configured provider", cfg.ProviderId)
+		}
+		providerType := convertAIProviderTypeFromStore(referenced.Type)
+		if !ai.IsOpenAICompatible(providerType) {
+			return errors.Errorf("provider type %q is not supported for chat", providerType)
+		}
+	}
+
+	if len(cfg.Model) > maxChatConfigModelLength {
+		return errors.Errorf("chat model is too long; maximum length is %d characters", maxChatConfigModelLength)
+	}
+	if cfg.ContextBudgetTokens < 0 {
+		return errors.New("chat context_budget_tokens cannot be negative")
+	}
+	if cfg.ContextBudgetTokens > maxChatContextBudgetTokens {
+		return errors.Errorf("chat context_budget_tokens must be at most %d", maxChatContextBudgetTokens)
+	}
+	if cfg.MaxCompletionTokens < 0 {
+		return errors.New("chat max_completion_tokens cannot be negative")
+	}
+	if cfg.MaxCompletionTokens > maxChatCompletionTokens {
+		return errors.Errorf("chat max_completion_tokens must be at most %d", maxChatCompletionTokens)
 	}
 	return nil
 }

@@ -19,6 +19,7 @@ import {
   MenuIcon,
   PaperclipIcon,
   SearchIcon,
+  SparklesIcon,
   SquarePenIcon,
   Trash2Icon,
   UserRoundIcon,
@@ -386,6 +387,13 @@ const GlobalNavigation = () => {
           path: ROUTES.HABITS,
           icon: FlameIcon,
           active: routeKind === "habits",
+        },
+        {
+          id: "ai",
+          label: t("ai.title"),
+          path: ROUTES.AI,
+          icon: SparklesIcon,
+          active: routeKind === "ai",
         },
         {
           id: "calendar",

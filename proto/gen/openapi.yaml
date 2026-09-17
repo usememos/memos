@@ -6,6 +6,82 @@ info:
     title: ""
     version: 0.0.1
 paths:
+    /api/v1/ai/{providerId}/models:
+        get:
+            tags:
+                - AIService
+            description: "ListProviderModels lists the models an instance AI provider offers. The\r\n server calls the provider's model catalog endpoint, so this requires\r\n network access to the provider."
+            operationId: AIService_ListProviderModels
+            parameters:
+                - name: providerId
+                  in: path
+                  description: Required. The provider id from the instance AI setting.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListProviderModelsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/ai:chat:
+        post:
+            tags:
+                - AIService
+            description: "Chat runs one conversational turn with an instance AI provider. The caller\r\n resends the whole conversation each turn; the server keeps no chat state.\r\n The model may propose note changes, but this method never writes a memo."
+            operationId: AIService_Chat
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ChatRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ChatResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/ai:estimateChatContext:
+        post:
+            tags:
+                - AIService
+            description: "EstimateChatContext resolves a context selection and reports how much of\r\n the chat context budget it would consume. The Hub calls this while the user\r\n edits the selection so an over-budget selection is refused before sending."
+            operationId: AIService_EstimateChatContext
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/EstimateChatContextRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/EstimateChatContextResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/ai:transcribe:
         post:
             tags:
@@ -1025,6 +1101,14 @@ paths:
                   schema:
                     type: string
                     format: field-mask
+                - name: expectedContent
+                  in: query
+                  description: |-
+                    Optional. When present, the update succeeds only if the memo still has
+                     this exact content. This prevents reviewed full-content replacements from
+                     silently overwriting edits made after the review snapshot was created.
+                  schema:
+                    type: string
             requestBody:
                 content:
                     application/json:
@@ -3022,6 +3106,15 @@ paths:
                                 $ref: '#/components/schemas/Status'
 components:
     schemas:
+        AIProviderModel:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: The provider-specific model identifier, e.g. "anthropic/claude-sonnet-4".
+                contextLength:
+                    type: string
+                    description: "The model's total context window in tokens. Zero when the provider does not\r\n report one."
         AcceptSpaceInvitationRequest:
             required:
                 - name
@@ -3134,6 +3227,88 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/User'
+        ChatMessage:
+            type: object
+            properties:
+                role:
+                    enum:
+                        - CHAT_MESSAGE_ROLE_UNSPECIFIED
+                        - CHAT_MESSAGE_ROLE_USER
+                        - CHAT_MESSAGE_ROLE_ASSISTANT
+                    type: string
+                    format: enum
+                content:
+                    type: string
+                    description: "The message text. For assistant messages this is the visible reply with any\r\n proposal blocks removed."
+        ChatProposal:
+            type: object
+            properties:
+                action:
+                    enum:
+                        - CHAT_PROPOSAL_ACTION_UNSPECIFIED
+                        - CHAT_PROPOSAL_ACTION_CREATE
+                        - CHAT_PROPOSAL_ACTION_UPDATE
+                    type: string
+                    format: enum
+                content:
+                    type: string
+                    description: "The proposed note content in Markdown. Tags are derived from #hashtags in\r\n this content, matching CreateMemo."
+                target:
+                    type: string
+                    description: The note to update, formatted "memos/{uid}". Empty for create proposals.
+                targetContent:
+                    type: string
+                    description: |-
+                        The target note content the model read. Present only when an update target
+                         belongs to this turn's selected context; clients use it as an optimistic
+                         concurrency precondition when applying the proposal.
+            description: "ChatProposal is a note change the model suggested but did not perform. The\r\n Hub shows it for confirmation and applies it through the normal memo API, so\r\n access control and change notifications stay in one place."
+        ChatRequest:
+            required:
+                - messages
+            type: object
+            properties:
+                filter:
+                    type: string
+                    description: "Optional. A CEL filter selecting which notes the model may read. An empty\r\n filter means the model sees none of the user's notes."
+                messages:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ChatMessage'
+                    description: "Required. The conversation so far, oldest first, ending with the new user\r\n message. The server keeps no conversation state."
+        ChatResponse:
+            type: object
+            properties:
+                content:
+                    type: string
+                    description: The model's reply, with proposal blocks removed.
+                proposals:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ChatProposal'
+                    description: The note changes the model proposed. Never applied by the server.
+                contextMemoCount:
+                    type: string
+                    description: How many notes were injected as context.
+                contextEstimatedTokens:
+                    type: string
+                    description: The estimated token cost of the injected context.
+                contextBudgetTokens:
+                    type: string
+                    description: The context budget this turn was measured against.
+                promptTokens:
+                    type: string
+                    description: Token usage reported by the provider. Zero when the provider omits it.
+                completionTokens:
+                    type: string
+                totalTokens:
+                    type: string
+                model:
+                    type: string
+                    description: "The model the provider reports having used, which can differ from the\r\n requested model when a router picks a backend."
+                truncated:
+                    type: boolean
+                    description: True when the provider stopped because the reply hit the token limit.
         Color:
             type: object
             properties:
@@ -3345,6 +3520,32 @@ components:
                 name:
                     type: string
                     description: 'Required. Format: spaces/{space}/invitations/{username}.'
+        EstimateChatContextRequest:
+            required:
+                - filter
+            type: object
+            properties:
+                filter:
+                    type: string
+                    description: "Required. A CEL filter selecting which notes the model may read. An empty\r\n filter selects nothing, not everything."
+        EstimateChatContextResponse:
+            type: object
+            properties:
+                memoCount:
+                    type: string
+                    description: How many notes the selection matched.
+                totalChars:
+                    type: string
+                    description: The total character count of the matched notes' content.
+                estimatedTokens:
+                    type: string
+                    description: The estimated token cost of the selection.
+                contextBudgetTokens:
+                    type: string
+                    description: The budget this estimate was measured against.
+                fits:
+                    type: boolean
+                    description: Whether the selection fits the budget.
         FieldMapping:
             type: object
             properties:
@@ -3595,6 +3796,8 @@ components:
                         - AI_PROVIDER_TYPE_UNSPECIFIED
                         - OPENAI
                         - GEMINI
+                        - OPENROUTER
+                        - DEEPINFRA
                     type: string
                     format: enum
                 endpoint:
@@ -3624,6 +3827,10 @@ components:
                     allOf:
                         - $ref: '#/components/schemas/InstanceSetting_TranscriptionConfig'
                     description: "transcription is the speech-to-text feature configuration.\r\n When unset or transcription.provider_id is empty, transcription is disabled."
+                chat:
+                    allOf:
+                        - $ref: '#/components/schemas/InstanceSetting_ChatConfig'
+                    description: "chat is the conversational feature configuration.\r\n When unset or chat.provider_id is empty, chat is disabled."
             description: AI provider configuration settings.
         InstanceSetting_AccessSetting:
             type: object
@@ -3636,6 +3843,22 @@ components:
                     type: string
                     format: enum
             description: Access policy configuration for the instance.
+        InstanceSetting_ChatConfig:
+            type: object
+            properties:
+                providerId:
+                    type: string
+                    description: "provider_id references an entry in AISetting.providers[].id.\r\n Empty string means chat is disabled."
+                model:
+                    type: string
+                    description: "model is the provider-specific model identifier.\r\n Empty string falls back to the engine default."
+                contextBudgetTokens:
+                    type: string
+                    description: "context_budget_tokens caps how many tokens of note content may be injected\r\n into one turn. Zero falls back to the server default."
+                maxCompletionTokens:
+                    type: string
+                    description: max_completion_tokens bounds the reply length. Zero leaves it to the provider.
+            description: ChatConfig configures the conversational AI feature.
         InstanceSetting_GeneralSetting:
             type: object
             properties:
@@ -3952,6 +4175,14 @@ components:
                 nextPageToken:
                     type: string
                     description: A token for the next page of results.
+        ListProviderModelsResponse:
+            type: object
+            properties:
+                models:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/AIProviderModel'
+                    description: The models the provider offers, ordered by identifier.
         ListSpaceInvitationsResponse:
             type: object
             properties:

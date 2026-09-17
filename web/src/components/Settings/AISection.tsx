@@ -1,6 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import { isEqual } from "lodash-es";
-import { MoreVerticalIcon, PlusIcon } from "lucide-react";
+import { MoreVerticalIcon, PlusIcon, RefreshCwIcon } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { v4 as uuidv4 } from "uuid";
@@ -12,12 +12,24 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { aiServiceClient } from "@/connect";
 import { useInstance } from "@/contexts/InstanceContext";
+import {
+  AI_PROVIDER_TYPE_OPTIONS,
+  DEFAULT_CHAT_CONTEXT_BUDGET_TOKENS,
+  getDefaultEndpointPlaceholder,
+  getProviderTypeLabel,
+  isChatCapableProviderType,
+  isTranscriptionCapableProviderType,
+} from "@/lib/ai-providers";
+import { handleError } from "@/lib/error";
 import {
   InstanceSetting_AIProviderConfig,
   InstanceSetting_AIProviderConfigSchema,
   InstanceSetting_AIProviderType,
   InstanceSetting_AISettingSchema,
+  InstanceSetting_ChatConfig,
+  InstanceSetting_ChatConfigSchema,
   InstanceSetting_Key,
   InstanceSetting_TranscriptionConfig,
   InstanceSetting_TranscriptionConfigSchema,
@@ -47,15 +59,18 @@ type LocalTranscription = {
   prompt: string;
 };
 
-const providerTypeOptions = [InstanceSetting_AIProviderType.OPENAI, InstanceSetting_AIProviderType.GEMINI];
-
-const byokNotes = ["setting.ai.byok-key-note", "setting.ai.byok-storage-note", "setting.ai.byok-model-note"] as const;
-
-const getProviderTypeLabel = (type: InstanceSetting_AIProviderType) => {
-  return InstanceSetting_AIProviderType[type] ?? "UNKNOWN";
+type LocalChat = {
+  providerId: string;
+  model: string;
+  // Kept as strings because the proto fields are int64 (bigint in TS) and a
+  // number input's raw value is text anyway. Converted at the boundaries.
+  contextBudgetTokens: string;
+  maxCompletionTokens: string;
 };
 
-const providerTypeSelectOptions = providerTypeOptions.map((type) => ({ value: String(type), label: getProviderTypeLabel(type) }));
+const providerTypeSelectOptions = AI_PROVIDER_TYPE_OPTIONS.map((type) => ({ value: String(type), label: getProviderTypeLabel(type) }));
+
+const byokNotes = ["setting.ai.byok-key-note", "setting.ai.byok-storage-note", "setting.ai.byok-model-note"] as const;
 
 const toLocalProvider = (provider: InstanceSetting_AIProviderConfig): LocalAIProvider => ({
   id: provider.id,
@@ -73,6 +88,19 @@ const toLocalTranscription = (config: InstanceSetting_TranscriptionConfig | unde
   language: config?.language ?? "",
   prompt: config?.prompt ?? "",
 });
+
+const toLocalChat = (config: InstanceSetting_ChatConfig | undefined): LocalChat => ({
+  providerId: config?.providerId ?? "",
+  model: config?.model ?? "",
+  contextBudgetTokens: config?.contextBudgetTokens ? String(config.contextBudgetTokens) : "",
+  maxCompletionTokens: config?.maxCompletionTokens ? String(config.maxCompletionTokens) : "",
+});
+
+/** Parses a token-count input into a non-negative int64 value. */
+const parseTokenCount = (value: string): bigint => {
+  const parsed = Number.parseInt(value, 10);
+  return Number.isFinite(parsed) && parsed > 0 ? BigInt(parsed) : 0n;
+};
 
 const newProvider = (): LocalAIProvider => ({
   id: uuidv4(),
@@ -101,12 +129,21 @@ const toTranscriptionConfig = (transcription: LocalTranscription) =>
     prompt: transcription.prompt,
   });
 
+const toChatConfig = (chat: LocalChat) =>
+  create(InstanceSetting_ChatConfigSchema, {
+    providerId: chat.providerId,
+    model: chat.model.trim(),
+    contextBudgetTokens: parseTokenCount(chat.contextBudgetTokens),
+    maxCompletionTokens: parseTokenCount(chat.maxCompletionTokens),
+  });
+
 const AISection = () => {
   const t = useTranslate();
   const saveInstanceSetting = useInstanceSettingUpdater();
   const { aiSetting: originalSetting } = useInstance();
   const [providers, setProviders] = useState<LocalAIProvider[]>(() => originalSetting.providers.map(toLocalProvider));
   const [transcription, setTranscription] = useState<LocalTranscription>(() => toLocalTranscription(originalSetting.transcription));
+  const [chat, setChat] = useState<LocalChat>(() => toLocalChat(originalSetting.chat));
   const [editingProvider, setEditingProvider] = useState<LocalAIProvider | undefined>();
   const [deleteTarget, setDeleteTarget] = useState<LocalAIProvider | undefined>();
 
@@ -127,20 +164,34 @@ const AISection = () => {
     }
   }, [originalSetting.transcription]);
 
+  // The chat draft needs the same protection as the transcription draft.
+  const lastSyncedChat = useRef<LocalChat>(toLocalChat(originalSetting.chat));
+  useEffect(() => {
+    const next = toLocalChat(originalSetting.chat);
+    if (!isEqual(lastSyncedChat.current, next)) {
+      setChat(next);
+      lastSyncedChat.current = next;
+    }
+  }, [originalSetting.chat]);
+
   const originalTranscription = useMemo(() => toLocalTranscription(originalSetting.transcription), [originalSetting.transcription]);
   const transcriptionHasChanges = !isEqual(transcription, originalTranscription);
+
+  const originalChat = useMemo(() => toLocalChat(originalSetting.chat), [originalSetting.chat]);
+  const chatHasChanges = !isEqual(chat, originalChat);
 
   const transcriptionProviderRef = useMemo(
     () => providers.find((provider) => provider.id === transcription.providerId),
     [providers, transcription.providerId],
   );
 
-  // Persists the AI setting using a specific providers list and transcription
-  // value. Provider operations pass originalSetting.transcription so an
-  // in-progress transcription draft is never accidentally committed.
+  // Persists the AI setting using explicit provider/transcription/chat values.
+  // Provider operations pass the persisted drafts so an in-progress draft is
+  // never accidentally committed.
   const persistAISetting = async (
     nextProviders: LocalAIProvider[],
     nextTranscription: InstanceSetting_TranscriptionConfig | undefined,
+    nextChat: InstanceSetting_ChatConfig | undefined,
     errorContext: string,
   ) => {
     return saveInstanceSetting({
@@ -152,6 +203,7 @@ const AISection = () => {
           value: create(InstanceSetting_AISettingSchema, {
             providers: nextProviders.map(toProviderConfig),
             transcription: nextTranscription,
+            chat: nextChat,
           }),
         },
       }),
@@ -186,7 +238,7 @@ const AISection = () => {
       ? providers.map((item) => (item.id === normalizedProvider.id ? normalizedProvider : item))
       : [...providers, normalizedProvider];
 
-    const ok = await persistAISetting(nextProviders, originalSetting.transcription, "Update AI provider");
+    const ok = await persistAISetting(nextProviders, originalSetting.transcription, originalSetting.chat, "Update AI provider");
     if (!ok) return;
     setProviders(nextProviders);
     setEditingProvider(undefined);
@@ -197,20 +249,26 @@ const AISection = () => {
     const target = deleteTarget;
     const nextProviders = providers.filter((provider) => provider.id !== target.id);
 
-    // If the persisted transcription references the deleted provider, the
-    // server would reject the save (provider_id must reference an existing
-    // provider). Send a cleared transcription in that case.
+    // If a persisted config references the deleted provider, the server would
+    // reject the save (provider_id must reference an existing provider). Send a
+    // cleared config in that case.
     const persistedTranscription = originalSetting.transcription;
     const nextTranscription =
       persistedTranscription && persistedTranscription.providerId === target.id
         ? create(InstanceSetting_TranscriptionConfigSchema, {})
         : persistedTranscription;
 
-    const ok = await persistAISetting(nextProviders, nextTranscription, "Delete AI provider");
+    const persistedChat = originalSetting.chat;
+    const nextChat = persistedChat && persistedChat.providerId === target.id ? create(InstanceSetting_ChatConfigSchema, {}) : persistedChat;
+
+    const ok = await persistAISetting(nextProviders, nextTranscription, nextChat, "Delete AI provider");
     if (!ok) return;
     setProviders(nextProviders);
     if (transcription.providerId === target.id) {
       setTranscription((prev) => ({ ...prev, providerId: "" }));
+    }
+    if (chat.providerId === target.id) {
+      setChat((prev) => ({ ...prev, providerId: "" }));
     }
     setDeleteTarget(undefined);
   };
@@ -220,7 +278,15 @@ const AISection = () => {
       toast.error(t("setting.ai.transcription-empty-providers"));
       return;
     }
-    await persistAISetting(providers, toTranscriptionConfig(transcription), "Update transcription");
+    await persistAISetting(providers, toTranscriptionConfig(transcription), originalSetting.chat, "Update transcription");
+  };
+
+  const handleSaveChat = async () => {
+    if (chat.providerId && !providers.some((provider) => provider.id === chat.providerId)) {
+      toast.error(t("setting.ai.transcription-empty-providers"));
+      return;
+    }
+    await persistAISetting(providers, originalSetting.transcription, toChatConfig(chat), "Update chat");
   };
 
   return (
@@ -328,6 +394,19 @@ const AISection = () => {
         />
       </SettingGroup>
 
+      <SettingGroup
+        title={t("setting.ai.chat-title")}
+        description={t("setting.ai.chat-description")}
+        showSeparator
+        actions={
+          <Button disabled={!chatHasChanges} onClick={handleSaveChat}>
+            {t("common.save")}
+          </Button>
+        }
+      >
+        <ChatForm providers={providers} chat={chat} onChange={setChat} />
+      </SettingGroup>
+
       <AIProviderDialog
         provider={editingProvider}
         onOpenChange={(open) => !open && setEditingProvider(undefined)}
@@ -356,14 +435,18 @@ interface TranscriptionFormProps {
 
 const TranscriptionForm = ({ providers, transcription, referencedProvider, onChange }: TranscriptionFormProps) => {
   const t = useTranslate();
-  const noProviders = providers.length === 0;
+  const transcriptionProviders = useMemo(
+    () => providers.filter((provider) => isTranscriptionCapableProviderType(provider.type)),
+    [providers],
+  );
+  const noProviders = transcriptionProviders.length === 0;
 
   const providerOptions = useMemo(
     () => [
       { value: "__none__", label: t("setting.ai.transcription-no-provider") },
-      ...providers.map((provider) => ({ value: provider.id, label: provider.title || provider.id })),
+      ...transcriptionProviders.map((provider) => ({ value: provider.id, label: provider.title || provider.id })),
     ],
-    [providers, t],
+    [transcriptionProviders, t],
   );
 
   const update = (partial: Partial<LocalTranscription>) => {
@@ -440,6 +523,148 @@ const TranscriptionForm = ({ providers, transcription, referencedProvider, onCha
         />
         <p className="text-xs text-muted-foreground">{t("setting.ai.transcription-prompt-help")}</p>
       </div>
+    </div>
+  );
+};
+
+interface ChatFormProps {
+  providers: LocalAIProvider[];
+  chat: LocalChat;
+  onChange: (next: LocalChat) => void;
+}
+
+const ChatForm = ({ providers, chat, onChange }: ChatFormProps) => {
+  const t = useTranslate();
+  // Only providers that speak the OpenAI wire protocol can run chat.
+  const chatProviders = useMemo(() => providers.filter((provider) => isChatCapableProviderType(provider.type)), [providers]);
+  const [models, setModels] = useState<string[]>([]);
+  const [isLoadingModels, setIsLoadingModels] = useState(false);
+
+  const selectedProvider = useMemo(
+    () => chatProviders.find((provider) => provider.id === chat.providerId),
+    [chatProviders, chat.providerId],
+  );
+
+  const providerOptions = useMemo(
+    () => [
+      { value: "__none__", label: t("setting.ai.chat-no-provider") },
+      ...chatProviders.map((provider) => ({ value: provider.id, label: provider.title || provider.id })),
+    ],
+    [chatProviders, t],
+  );
+
+  // Drop a fetched catalog when the provider changes, since slugs are not
+  // portable between providers.
+  useEffect(() => {
+    setModels([]);
+  }, [chat.providerId]);
+
+  const update = (partial: Partial<LocalChat>) => {
+    onChange({ ...chat, ...partial });
+  };
+
+  // Loads the provider's model catalog so the user picks a real slug instead of
+  // typing one from memory.
+  const handleLoadModels = async () => {
+    if (!chat.providerId) return;
+    setIsLoadingModels(true);
+    try {
+      const response = await aiServiceClient.listProviderModels({ providerId: chat.providerId });
+      setModels(response.models.map((model) => model.id));
+      if (response.models.length === 0) {
+        toast.error(t("setting.ai.chat-no-models"));
+      }
+    } catch (error: unknown) {
+      await handleError(error, toast.error, { context: "List provider models" });
+    } finally {
+      setIsLoadingModels(false);
+    }
+  };
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-3xl">
+      <div className="flex flex-col gap-1.5 sm:col-span-2">
+        <Label>{t("setting.ai.chat-provider")}</Label>
+        <Select
+          value={chat.providerId || "__none__"}
+          items={providerOptions}
+          onValueChange={(value) => update({ providerId: value === "__none__" ? "" : value })}
+          disabled={chatProviders.length === 0}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {providerOptions.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {chatProviders.length === 0 && <p className="text-xs text-muted-foreground">{t("setting.ai.chat-empty-providers")}</p>}
+      </div>
+
+      <div className="flex flex-col gap-1.5 sm:col-span-2">
+        <Label>{t("setting.ai.chat-model")}</Label>
+        <div className="flex gap-2">
+          <Input
+            value={chat.model}
+            onChange={(e) => update({ model: e.target.value })}
+            placeholder={t("setting.ai.chat-model-placeholder")}
+            disabled={!chat.providerId}
+            maxLength={256}
+            list="chat-model-options"
+          />
+          <datalist id="chat-model-options">
+            {models.map((model) => (
+              <option key={model} value={model} />
+            ))}
+          </datalist>
+          <Button
+            type="button"
+            variant="outline"
+            disabled={!chat.providerId || isLoadingModels}
+            onClick={handleLoadModels}
+            aria-label={t("setting.ai.chat-load-models")}
+          >
+            <RefreshCwIcon className={`w-4 h-4 ${isLoadingModels ? "animate-spin" : ""}`} />
+          </Button>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          {models.length > 0 ? t("setting.ai.chat-models-loaded", { count: models.length }) : t("setting.ai.chat-model-help")}
+        </p>
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <Label>{t("setting.ai.chat-context-budget")}</Label>
+        <Input
+          type="number"
+          min={0}
+          value={chat.contextBudgetTokens}
+          onChange={(e) => update({ contextBudgetTokens: e.target.value })}
+          placeholder={String(DEFAULT_CHAT_CONTEXT_BUDGET_TOKENS)}
+          disabled={!chat.providerId}
+        />
+        <p className="text-xs text-muted-foreground">{t("setting.ai.chat-context-budget-help")}</p>
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <Label>{t("setting.ai.chat-max-completion")}</Label>
+        <Input
+          type="number"
+          min={0}
+          value={chat.maxCompletionTokens}
+          onChange={(e) => update({ maxCompletionTokens: e.target.value })}
+          placeholder={t("setting.ai.chat-max-completion-placeholder")}
+          disabled={!chat.providerId}
+        />
+        <p className="text-xs text-muted-foreground">{t("setting.ai.chat-max-completion-help")}</p>
+      </div>
+
+      {selectedProvider && !selectedProvider.apiKeySet && (
+        <p className="text-xs text-destructive sm:col-span-2">{t("setting.ai.transcription-warning-no-key")}</p>
+      )}
     </div>
   );
 };
@@ -534,17 +759,6 @@ const AIProviderDialog = ({ provider, onOpenChange, onSave }: AIProviderDialogPr
       </DialogContent>
     </Dialog>
   );
-};
-
-const getDefaultEndpointPlaceholder = (type: InstanceSetting_AIProviderType) => {
-  switch (type) {
-    case InstanceSetting_AIProviderType.OPENAI:
-      return "https://api.openai.com/v1";
-    case InstanceSetting_AIProviderType.GEMINI:
-      return "https://generativelanguage.googleapis.com/v1beta";
-    default:
-      return "";
-  }
 };
 
 export default AISection;

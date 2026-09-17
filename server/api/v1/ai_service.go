@@ -208,7 +208,7 @@ func (*APIV1Service) resolveAIProvider(setting *storepb.InstanceAISetting, provi
 
 	provider, err := ai.FindProvider(providers, providerID)
 	if err != nil {
-		return ai.ProviderConfig{}, status.Errorf(codes.FailedPrecondition, "transcription provider is not configured")
+		return ai.ProviderConfig{}, status.Errorf(codes.FailedPrecondition, "AI provider is not configured")
 	}
 	return *provider, nil
 }
@@ -229,6 +229,10 @@ func convertAIProviderTypeFromStore(providerType storepb.AIProviderType) ai.Prov
 		return ai.ProviderOpenAI
 	case storepb.AIProviderType_GEMINI:
 		return ai.ProviderGemini
+	case storepb.AIProviderType_OPENROUTER:
+		return ai.ProviderOpenRouter
+	case storepb.AIProviderType_DEEPINFRA:
+		return ai.ProviderDeepInfra
 	default:
 		return ""
 	}

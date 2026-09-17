@@ -370,6 +370,7 @@ func convertInstanceAISettingFromStore(setting *storepb.InstanceAISetting) *v1pb
 	aiSetting := &v1pb.InstanceSetting_AISetting{
 		Providers:     make([]*v1pb.InstanceSetting_AIProviderConfig, 0, len(setting.Providers)),
 		Transcription: convertTranscriptionConfigFromStore(setting.GetTranscription()),
+		Chat:          convertChatConfigFromStore(setting.GetChat()),
 	}
 	for _, provider := range setting.Providers {
 		if provider == nil {
@@ -396,6 +397,7 @@ func convertInstanceAISettingToStore(setting *v1pb.InstanceSetting_AISetting) *s
 	aiSetting := &storepb.InstanceAISetting{
 		Providers:     make([]*storepb.AIProviderConfig, 0, len(setting.Providers)),
 		Transcription: convertTranscriptionConfigToStore(setting.GetTranscription()),
+		Chat:          convertChatConfigToStore(setting.GetChat()),
 	}
 	for _, provider := range setting.Providers {
 		if provider == nil {
@@ -433,5 +435,29 @@ func convertTranscriptionConfigToStore(setting *v1pb.InstanceSetting_Transcripti
 		Model:      setting.GetModel(),
 		Language:   setting.GetLanguage(),
 		Prompt:     setting.GetPrompt(),
+	}
+}
+
+func convertChatConfigFromStore(setting *storepb.ChatConfig) *v1pb.InstanceSetting_ChatConfig {
+	if setting == nil {
+		return nil
+	}
+	return &v1pb.InstanceSetting_ChatConfig{
+		ProviderId:          setting.GetProviderId(),
+		Model:               setting.GetModel(),
+		ContextBudgetTokens: setting.GetContextBudgetTokens(),
+		MaxCompletionTokens: setting.GetMaxCompletionTokens(),
+	}
+}
+
+func convertChatConfigToStore(setting *v1pb.InstanceSetting_ChatConfig) *storepb.ChatConfig {
+	if setting == nil {
+		return nil
+	}
+	return &storepb.ChatConfig{
+		ProviderId:          setting.GetProviderId(),
+		Model:               setting.GetModel(),
+		ContextBudgetTokens: setting.GetContextBudgetTokens(),
+		MaxCompletionTokens: setting.GetMaxCompletionTokens(),
 	}
 }

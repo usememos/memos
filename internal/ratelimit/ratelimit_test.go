@@ -223,6 +223,7 @@ func TestDefaultPolicyCoversEveryScope(t *testing.T) {
 	for _, scope := range []Scope{
 		ScopeAnonymous, ScopeAuthenticated, ScopeSignInIP, ScopeSignInAccount, ScopeSignupIP, ScopeValidateIP,
 		ScopePasswordResetIP, ScopePasswordResetEmail, ScopeLinkMetadata, ScopeUploadUser, ScopeTranscribeUser, ScopeWriteUser,
+		ScopeChatUser, ScopeChatEstimateUser,
 	} {
 		rule, ok := p.Rule(scope)
 		require.True(t, ok, scope)

@@ -19,7 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AIService_Transcribe_FullMethodName = "/memos.api.v1.AIService/Transcribe"
+	AIService_Transcribe_FullMethodName          = "/memos.api.v1.AIService/Transcribe"
+	AIService_ListProviderModels_FullMethodName  = "/memos.api.v1.AIService/ListProviderModels"
+	AIService_EstimateChatContext_FullMethodName = "/memos.api.v1.AIService/EstimateChatContext"
+	AIService_Chat_FullMethodName                = "/memos.api.v1.AIService/Chat"
 )
 
 // AIServiceClient is the client API for AIService service.
@@ -28,6 +31,18 @@ const (
 type AIServiceClient interface {
 	// Transcribe transcribes an audio file using an instance AI provider.
 	Transcribe(ctx context.Context, in *TranscribeRequest, opts ...grpc.CallOption) (*TranscribeResponse, error)
+	// ListProviderModels lists the models an instance AI provider offers. The
+	// server calls the provider's model catalog endpoint, so this requires
+	// network access to the provider.
+	ListProviderModels(ctx context.Context, in *ListProviderModelsRequest, opts ...grpc.CallOption) (*ListProviderModelsResponse, error)
+	// EstimateChatContext resolves a context selection and reports how much of
+	// the chat context budget it would consume. The Hub calls this while the user
+	// edits the selection so an over-budget selection is refused before sending.
+	EstimateChatContext(ctx context.Context, in *EstimateChatContextRequest, opts ...grpc.CallOption) (*EstimateChatContextResponse, error)
+	// Chat runs one conversational turn with an instance AI provider. The caller
+	// resends the whole conversation each turn; the server keeps no chat state.
+	// The model may propose note changes, but this method never writes a memo.
+	Chat(ctx context.Context, in *ChatRequest, opts ...grpc.CallOption) (*ChatResponse, error)
 }
 
 type aIServiceClient struct {
@@ -48,12 +63,54 @@ func (c *aIServiceClient) Transcribe(ctx context.Context, in *TranscribeRequest,
 	return out, nil
 }
 
+func (c *aIServiceClient) ListProviderModels(ctx context.Context, in *ListProviderModelsRequest, opts ...grpc.CallOption) (*ListProviderModelsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListProviderModelsResponse)
+	err := c.cc.Invoke(ctx, AIService_ListProviderModels_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *aIServiceClient) EstimateChatContext(ctx context.Context, in *EstimateChatContextRequest, opts ...grpc.CallOption) (*EstimateChatContextResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(EstimateChatContextResponse)
+	err := c.cc.Invoke(ctx, AIService_EstimateChatContext_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *aIServiceClient) Chat(ctx context.Context, in *ChatRequest, opts ...grpc.CallOption) (*ChatResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ChatResponse)
+	err := c.cc.Invoke(ctx, AIService_Chat_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AIServiceServer is the server API for AIService service.
 // All implementations must embed UnimplementedAIServiceServer
 // for forward compatibility.
 type AIServiceServer interface {
 	// Transcribe transcribes an audio file using an instance AI provider.
 	Transcribe(context.Context, *TranscribeRequest) (*TranscribeResponse, error)
+	// ListProviderModels lists the models an instance AI provider offers. The
+	// server calls the provider's model catalog endpoint, so this requires
+	// network access to the provider.
+	ListProviderModels(context.Context, *ListProviderModelsRequest) (*ListProviderModelsResponse, error)
+	// EstimateChatContext resolves a context selection and reports how much of
+	// the chat context budget it would consume. The Hub calls this while the user
+	// edits the selection so an over-budget selection is refused before sending.
+	EstimateChatContext(context.Context, *EstimateChatContextRequest) (*EstimateChatContextResponse, error)
+	// Chat runs one conversational turn with an instance AI provider. The caller
+	// resends the whole conversation each turn; the server keeps no chat state.
+	// The model may propose note changes, but this method never writes a memo.
+	Chat(context.Context, *ChatRequest) (*ChatResponse, error)
 	mustEmbedUnimplementedAIServiceServer()
 }
 
@@ -66,6 +123,15 @@ type UnimplementedAIServiceServer struct{}
 
 func (UnimplementedAIServiceServer) Transcribe(context.Context, *TranscribeRequest) (*TranscribeResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Transcribe not implemented")
+}
+func (UnimplementedAIServiceServer) ListProviderModels(context.Context, *ListProviderModelsRequest) (*ListProviderModelsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListProviderModels not implemented")
+}
+func (UnimplementedAIServiceServer) EstimateChatContext(context.Context, *EstimateChatContextRequest) (*EstimateChatContextResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method EstimateChatContext not implemented")
+}
+func (UnimplementedAIServiceServer) Chat(context.Context, *ChatRequest) (*ChatResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Chat not implemented")
 }
 func (UnimplementedAIServiceServer) mustEmbedUnimplementedAIServiceServer() {}
 func (UnimplementedAIServiceServer) testEmbeddedByValue()                   {}
@@ -106,6 +172,60 @@ func _AIService_Transcribe_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AIService_ListProviderModels_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListProviderModelsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AIServiceServer).ListProviderModels(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AIService_ListProviderModels_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AIServiceServer).ListProviderModels(ctx, req.(*ListProviderModelsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AIService_EstimateChatContext_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EstimateChatContextRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AIServiceServer).EstimateChatContext(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AIService_EstimateChatContext_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AIServiceServer).EstimateChatContext(ctx, req.(*EstimateChatContextRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AIService_Chat_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChatRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AIServiceServer).Chat(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AIService_Chat_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AIServiceServer).Chat(ctx, req.(*ChatRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AIService_ServiceDesc is the grpc.ServiceDesc for AIService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -116,6 +236,18 @@ var AIService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Transcribe",
 			Handler:    _AIService_Transcribe_Handler,
+		},
+		{
+			MethodName: "ListProviderModels",
+			Handler:    _AIService_ListProviderModels_Handler,
+		},
+		{
+			MethodName: "EstimateChatContext",
+			Handler:    _AIService_EstimateChatContext_Handler,
+		},
+		{
+			MethodName: "Chat",
+			Handler:    _AIService_Chat_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

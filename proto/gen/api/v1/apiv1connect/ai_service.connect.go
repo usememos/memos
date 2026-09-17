@@ -35,12 +35,32 @@ const (
 const (
 	// AIServiceTranscribeProcedure is the fully-qualified name of the AIService's Transcribe RPC.
 	AIServiceTranscribeProcedure = "/memos.api.v1.AIService/Transcribe"
+	// AIServiceListProviderModelsProcedure is the fully-qualified name of the AIService's
+	// ListProviderModels RPC.
+	AIServiceListProviderModelsProcedure = "/memos.api.v1.AIService/ListProviderModels"
+	// AIServiceEstimateChatContextProcedure is the fully-qualified name of the AIService's
+	// EstimateChatContext RPC.
+	AIServiceEstimateChatContextProcedure = "/memos.api.v1.AIService/EstimateChatContext"
+	// AIServiceChatProcedure is the fully-qualified name of the AIService's Chat RPC.
+	AIServiceChatProcedure = "/memos.api.v1.AIService/Chat"
 )
 
 // AIServiceClient is a client for the memos.api.v1.AIService service.
 type AIServiceClient interface {
 	// Transcribe transcribes an audio file using an instance AI provider.
 	Transcribe(context.Context, *connect.Request[v1.TranscribeRequest]) (*connect.Response[v1.TranscribeResponse], error)
+	// ListProviderModels lists the models an instance AI provider offers. The
+	// server calls the provider's model catalog endpoint, so this requires
+	// network access to the provider.
+	ListProviderModels(context.Context, *connect.Request[v1.ListProviderModelsRequest]) (*connect.Response[v1.ListProviderModelsResponse], error)
+	// EstimateChatContext resolves a context selection and reports how much of
+	// the chat context budget it would consume. The Hub calls this while the user
+	// edits the selection so an over-budget selection is refused before sending.
+	EstimateChatContext(context.Context, *connect.Request[v1.EstimateChatContextRequest]) (*connect.Response[v1.EstimateChatContextResponse], error)
+	// Chat runs one conversational turn with an instance AI provider. The caller
+	// resends the whole conversation each turn; the server keeps no chat state.
+	// The model may propose note changes, but this method never writes a memo.
+	Chat(context.Context, *connect.Request[v1.ChatRequest]) (*connect.Response[v1.ChatResponse], error)
 }
 
 // NewAIServiceClient constructs a client for the memos.api.v1.AIService service. By default, it
@@ -60,12 +80,33 @@ func NewAIServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...c
 			connect.WithSchema(aIServiceMethods.ByName("Transcribe")),
 			connect.WithClientOptions(opts...),
 		),
+		listProviderModels: connect.NewClient[v1.ListProviderModelsRequest, v1.ListProviderModelsResponse](
+			httpClient,
+			baseURL+AIServiceListProviderModelsProcedure,
+			connect.WithSchema(aIServiceMethods.ByName("ListProviderModels")),
+			connect.WithClientOptions(opts...),
+		),
+		estimateChatContext: connect.NewClient[v1.EstimateChatContextRequest, v1.EstimateChatContextResponse](
+			httpClient,
+			baseURL+AIServiceEstimateChatContextProcedure,
+			connect.WithSchema(aIServiceMethods.ByName("EstimateChatContext")),
+			connect.WithClientOptions(opts...),
+		),
+		chat: connect.NewClient[v1.ChatRequest, v1.ChatResponse](
+			httpClient,
+			baseURL+AIServiceChatProcedure,
+			connect.WithSchema(aIServiceMethods.ByName("Chat")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // aIServiceClient implements AIServiceClient.
 type aIServiceClient struct {
-	transcribe *connect.Client[v1.TranscribeRequest, v1.TranscribeResponse]
+	transcribe          *connect.Client[v1.TranscribeRequest, v1.TranscribeResponse]
+	listProviderModels  *connect.Client[v1.ListProviderModelsRequest, v1.ListProviderModelsResponse]
+	estimateChatContext *connect.Client[v1.EstimateChatContextRequest, v1.EstimateChatContextResponse]
+	chat                *connect.Client[v1.ChatRequest, v1.ChatResponse]
 }
 
 // Transcribe calls memos.api.v1.AIService.Transcribe.
@@ -73,10 +114,37 @@ func (c *aIServiceClient) Transcribe(ctx context.Context, req *connect.Request[v
 	return c.transcribe.CallUnary(ctx, req)
 }
 
+// ListProviderModels calls memos.api.v1.AIService.ListProviderModels.
+func (c *aIServiceClient) ListProviderModels(ctx context.Context, req *connect.Request[v1.ListProviderModelsRequest]) (*connect.Response[v1.ListProviderModelsResponse], error) {
+	return c.listProviderModels.CallUnary(ctx, req)
+}
+
+// EstimateChatContext calls memos.api.v1.AIService.EstimateChatContext.
+func (c *aIServiceClient) EstimateChatContext(ctx context.Context, req *connect.Request[v1.EstimateChatContextRequest]) (*connect.Response[v1.EstimateChatContextResponse], error) {
+	return c.estimateChatContext.CallUnary(ctx, req)
+}
+
+// Chat calls memos.api.v1.AIService.Chat.
+func (c *aIServiceClient) Chat(ctx context.Context, req *connect.Request[v1.ChatRequest]) (*connect.Response[v1.ChatResponse], error) {
+	return c.chat.CallUnary(ctx, req)
+}
+
 // AIServiceHandler is an implementation of the memos.api.v1.AIService service.
 type AIServiceHandler interface {
 	// Transcribe transcribes an audio file using an instance AI provider.
 	Transcribe(context.Context, *connect.Request[v1.TranscribeRequest]) (*connect.Response[v1.TranscribeResponse], error)
+	// ListProviderModels lists the models an instance AI provider offers. The
+	// server calls the provider's model catalog endpoint, so this requires
+	// network access to the provider.
+	ListProviderModels(context.Context, *connect.Request[v1.ListProviderModelsRequest]) (*connect.Response[v1.ListProviderModelsResponse], error)
+	// EstimateChatContext resolves a context selection and reports how much of
+	// the chat context budget it would consume. The Hub calls this while the user
+	// edits the selection so an over-budget selection is refused before sending.
+	EstimateChatContext(context.Context, *connect.Request[v1.EstimateChatContextRequest]) (*connect.Response[v1.EstimateChatContextResponse], error)
+	// Chat runs one conversational turn with an instance AI provider. The caller
+	// resends the whole conversation each turn; the server keeps no chat state.
+	// The model may propose note changes, but this method never writes a memo.
+	Chat(context.Context, *connect.Request[v1.ChatRequest]) (*connect.Response[v1.ChatResponse], error)
 }
 
 // NewAIServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -92,10 +160,34 @@ func NewAIServiceHandler(svc AIServiceHandler, opts ...connect.HandlerOption) (s
 		connect.WithSchema(aIServiceMethods.ByName("Transcribe")),
 		connect.WithHandlerOptions(opts...),
 	)
+	aIServiceListProviderModelsHandler := connect.NewUnaryHandler(
+		AIServiceListProviderModelsProcedure,
+		svc.ListProviderModels,
+		connect.WithSchema(aIServiceMethods.ByName("ListProviderModels")),
+		connect.WithHandlerOptions(opts...),
+	)
+	aIServiceEstimateChatContextHandler := connect.NewUnaryHandler(
+		AIServiceEstimateChatContextProcedure,
+		svc.EstimateChatContext,
+		connect.WithSchema(aIServiceMethods.ByName("EstimateChatContext")),
+		connect.WithHandlerOptions(opts...),
+	)
+	aIServiceChatHandler := connect.NewUnaryHandler(
+		AIServiceChatProcedure,
+		svc.Chat,
+		connect.WithSchema(aIServiceMethods.ByName("Chat")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/memos.api.v1.AIService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case AIServiceTranscribeProcedure:
 			aIServiceTranscribeHandler.ServeHTTP(w, r)
+		case AIServiceListProviderModelsProcedure:
+			aIServiceListProviderModelsHandler.ServeHTTP(w, r)
+		case AIServiceEstimateChatContextProcedure:
+			aIServiceEstimateChatContextHandler.ServeHTTP(w, r)
+		case AIServiceChatProcedure:
+			aIServiceChatHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -107,4 +199,16 @@ type UnimplementedAIServiceHandler struct{}
 
 func (UnimplementedAIServiceHandler) Transcribe(context.Context, *connect.Request[v1.TranscribeRequest]) (*connect.Response[v1.TranscribeResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.AIService.Transcribe is not implemented"))
+}
+
+func (UnimplementedAIServiceHandler) ListProviderModels(context.Context, *connect.Request[v1.ListProviderModelsRequest]) (*connect.Response[v1.ListProviderModelsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.AIService.ListProviderModels is not implemented"))
+}
+
+func (UnimplementedAIServiceHandler) EstimateChatContext(context.Context, *connect.Request[v1.EstimateChatContextRequest]) (*connect.Response[v1.EstimateChatContextResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.AIService.EstimateChatContext is not implemented"))
+}
+
+func (UnimplementedAIServiceHandler) Chat(context.Context, *connect.Request[v1.ChatRequest]) (*connect.Response[v1.ChatResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.AIService.Chat is not implemented"))
 }

@@ -318,6 +318,10 @@ message InstanceSetting {
     // transcription is the speech-to-text feature configuration.
     // When unset or transcription.provider_id is empty, transcription is disabled.
     TranscriptionConfig transcription = 2;
+
+    // chat is the conversational feature configuration.
+    // When unset or chat.provider_id is empty, chat is disabled.
+    ChatConfig chat = 3;
   }
 
   // AIProviderConfig represents one callable AI provider connection.
@@ -335,10 +339,32 @@ message InstanceSetting {
   }
 
   // AIProviderType is the provider implementation type.
+  // OPENROUTER and DEEPINFRA speak the OpenAI wire protocol, so they share the
+  // OpenAI chat implementation and differ only in endpoint and model catalog.
   enum AIProviderType {
     AI_PROVIDER_TYPE_UNSPECIFIED = 0;
     OPENAI = 1;
     GEMINI = 2;
+    OPENROUTER = 3;
+    DEEPINFRA = 4;
+  }
+
+  // ChatConfig configures the conversational AI feature.
+  message ChatConfig {
+    // provider_id references an entry in AISetting.providers[].id.
+    // Empty string means chat is disabled.
+    string provider_id = 1;
+
+    // model is the provider-specific model identifier.
+    // Empty string falls back to the engine default.
+    string model = 2;
+
+    // context_budget_tokens caps how many tokens of note content may be injected
+    // into one turn. Zero falls back to the server default.
+    int64 context_budget_tokens = 3;
+
+    // max_completion_tokens bounds the reply length. Zero leaves it to the provider.
+    int64 max_completion_tokens = 4;
   }
 
   // TranscriptionConfig configures the speech-to-text feature.
