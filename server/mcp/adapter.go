@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"io"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -14,6 +15,8 @@ import (
 	"github.com/labstack/echo/v5"
 	sdkmcp "github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/pkg/errors"
+
+	"github.com/usememos/memos/internal/clientip"
 )
 
 type apiAdapter struct {
@@ -68,7 +71,7 @@ func buildAPIRequest(ctx context.Context, operation *openAPIOperation, arguments
 	if operation.RequestBody != nil {
 		bodyValue, ok := arguments["body"]
 		if !ok || bodyValue == nil {
-			if operation.RequestBody.Required {
+			if requestBodyRequired(operation) {
 				return nil, errors.New(`missing required request body "body"`)
 			}
 			bodyValue = map[string]any{}
@@ -82,6 +85,17 @@ func buildAPIRequest(ctx context.Context, operation *openAPIOperation, arguments
 	}
 
 	req := httptest.NewRequest(operation.Method, path, body).WithContext(ctx)
+	// httptest.NewRequest stamps a fixed peer address (192.0.2.1) on every
+	// request. The client-address middleware runs again on this in-process
+	// request and would otherwise key every MCP caller's anonymous rate limit
+	// and address records on that placeholder. The SDK hands the tool handler
+	// the /mcp request's context, so the address resolved for the real caller
+	// is already there; present it as the peer so the middleware resolves to
+	// the same value (a trusted-proxy address with no forwarding headers
+	// resolves to itself).
+	if ip := clientip.FromContext(ctx); ip != "" {
+		req.RemoteAddr = net.JoinHostPort(ip, "0")
+	}
 	if body != nil {
 		req.Header.Set("Content-Type", "application/json")
 	}

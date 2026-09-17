@@ -42,6 +42,14 @@ func NewDB(profile *profile.Profile) (store.Driver, error) {
 	// - Journal mode set to WAL: it's the recommended journal mode for most applications
 	// as it prevents locking issues.
 	// - mmap size set to 0: it disables memory mapping, which can cause OOM errors on some systems.
+	// - Transactions begin IMMEDIATE: several drivers' transactions read before they
+	//   write (a membership or lifecycle check, then an insert). With the default
+	//   DEFERRED mode such a transaction holds a read snapshot when it tries to
+	//   write, and if any other connection committed in between (for example the
+	//   asynchronous personal-access-token last-used update that runs on every
+	//   token-authenticated request) SQLite refuses the upgrade with SQLITE_BUSY
+	//   at once, without consulting busy_timeout. Taking the write lock up front
+	//   makes those transactions queue behind the busy handler instead.
 	//
 	// Notes:
 	// - When using the `modernc.org/sqlite` driver, each pragma must be prefixed with `_pragma=`.
@@ -50,7 +58,7 @@ func NewDB(profile *profile.Profile) (store.Driver, error) {
 	// - https://pkg.go.dev/modernc.org/sqlite#Driver.Open
 	// - https://www.sqlite.org/sharedcache.html
 	// - https://www.sqlite.org/pragma.html
-	sqliteDB, err := sql.Open("sqlite", profile.DSN+"?_pragma=foreign_keys(0)&_pragma=busy_timeout(10000)&_pragma=journal_mode(WAL)&_pragma=mmap_size(0)")
+	sqliteDB, err := sql.Open("sqlite", profile.DSN+"?_pragma=foreign_keys(0)&_pragma=busy_timeout(10000)&_pragma=journal_mode(WAL)&_pragma=mmap_size(0)&_txlock=immediate")
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to open db with dsn: %s", profile.DSN)
 	}

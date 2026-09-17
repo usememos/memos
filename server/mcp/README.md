@@ -62,7 +62,8 @@ fast on any inconsistency:
 6. The caller's `Authorization` header is read from the request (`request.Extra.Header` on the SDK's `*sdkmcp.CallToolRequest`).
 7. `apiAdapter.execute` (`adapter.go`) builds the API request
    (`buildAPIRequest`: path-parameter substitution, query encoding, JSON body),
-   forwards the bearer token, and runs it against the Echo server through an
+   forwards the bearer token, presents the caller's resolved client address as
+   the request peer, and runs it against the Echo server through an
    `httptest.ResponseRecorder`.
 8. The recorder body is decoded; a non-2xx status becomes a tool error
    (`newToolErrorResult`), otherwise the value is wrapped by
@@ -93,8 +94,10 @@ use `$ref`. `openapi.go` resolves these into local definitions:
   to `required`. Body `$defs` are lifted to the schema's top-level `$defs`.
 - Per-operation overrides relax resource-level requirements for create and
   partial-update bodies and remove fields already supplied by a path binding
-  from `body: "*"` schemas. Memo updates may omit `updateMask` so the REST
-  gateway can infer it from the fields present in the request body.
+  from `body: "*"` schemas. Memo and space updates may omit `updateMask` so the
+  REST gateway can infer it from the fields present in the request body. A
+  `body: "*"` binding whose only field is path-bound (accepting or declining a
+  space invitation) has its `body` made optional instead of demanding `{}`.
 - The schema sets `"additionalProperties": false`.
 
 The output schema is the operation's 200 `application/json` schema. When a 200
@@ -122,6 +125,13 @@ response has no JSON body, the fallback is:
   the in-process API request. Mutating tools therefore require a valid token
   (personal access token or access token); public reads may work without one,
   exactly as the REST API allows.
+- **Client address:** the `/mcp` request passes through the same client-address
+  middleware as every other route, which resolves the caller behind trusted
+  proxies. The adapter reads that resolved address from the tool handler's
+  context and sets it as the in-process request's peer, so the middleware's
+  second pass resolves to the same value. Without this every tool call would
+  present `httptest`'s placeholder peer (`192.0.2.1`), and all anonymous MCP
+  callers would share one rate-limit bucket.
 - **Origin safety:** `isAllowedMCPOrigin` allows a request when the `Origin`
   header is absent (desktop clients commonly omit it), when its host matches
   the request `Host` header (host comparison only — scheme is not checked), or
@@ -150,7 +160,9 @@ a personal access token as a bearer credential. Example client config:
 ## Tool surface
 
 The server exposes a curated allowlist (`curatedOperationIDs` in `catalog.go`),
-centered on memos and attachments, plus two read-only orientation tools:
+centered on memos and attachments, plus the space service (memos carry a
+placement and a `SPACE` audience, so agents must be able to discover and
+administer spaces and answer invitations) and two read-only orientation tools:
 `user_list_memo_views` (surfaces a user's named CEL filters for reuse with
 `memo_list_memos`) and `auth_get_current_user` (a "whoami" so an agent can
 resolve its own user — the single allowed auth/identity operation):
@@ -177,6 +189,22 @@ resolve its own user — the single allowed auth/identity operation):
 | `AttachmentService_DeleteAttachment` | `attachment_delete_attachment` |
 | `UserService_ListMemoViews` | `user_list_memo_views` |
 | `AuthService_GetCurrentUser` | `auth_get_current_user` |
+| `SpaceService_ListSpaces` | `space_list_spaces` |
+| `SpaceService_GetSpace` | `space_get_space` |
+| `SpaceService_CreateSpace` | `space_create_space` |
+| `SpaceService_UpdateSpace` | `space_update_space` |
+| `SpaceService_DeleteSpace` | `space_delete_space` |
+| `SpaceService_ListSpaceMembers` | `space_list_space_members` |
+| `SpaceService_GetSpaceMember` | `space_get_space_member` |
+| `SpaceService_UpdateSpaceMember` | `space_update_space_member` |
+| `SpaceService_DeleteSpaceMember` | `space_delete_space_member` |
+| `SpaceService_ListSpaceInvitations` | `space_list_space_invitations` |
+| `SpaceService_ListUserSpaceInvitations` | `space_list_user_space_invitations` |
+| `SpaceService_GetSpaceInvitation` | `space_get_space_invitation` |
+| `SpaceService_CreateSpaceInvitation` | `space_create_space_invitation` |
+| `SpaceService_AcceptSpaceInvitation` | `space_accept_space_invitation` |
+| `SpaceService_DeclineSpaceInvitation` | `space_decline_space_invitation` |
+| `SpaceService_DeleteSpaceInvitation` | `space_delete_space_invitation` |
 
 **Naming rule** (`toolNameFromOperationID`): drop the `Service` suffix from the
 subject and convert both subject and method from camelCase to snake_case, joined
@@ -193,8 +221,11 @@ by `_`. So `MemoService_ListMemos → memo_list_memos`.
 Per-operation overrides then correct cases the method heuristic gets wrong.
 `MemoService_SetMemoAttachments` and `MemoService_SetMemoRelations` are PATCH
 but declaratively replace the full set on a memo, so they report both
-`IdempotentHint: true` and `DestructiveHint: true`. `MemoService_UpdateMemo`
-also reports `DestructiveHint: true` because it can overwrite existing fields.
+`IdempotentHint: true` and `DestructiveHint: true`. `MemoService_UpdateMemo`,
+`SpaceService_UpdateSpace`, and `SpaceService_UpdateSpaceMember` also report
+`DestructiveHint: true` because they overwrite existing fields (a member's role
+included). `SpaceService_DeleteSpace` is destructive by method, and the API
+also deletes every memo placed in the space.
 
 `OpenWorldHint` is `false` for all tools. Annotations are client hints; they do
 not replace API authorization.
@@ -271,13 +302,13 @@ go test ./server/mcp/...
 
 - `openapi_test.go` — spec parsing, registry building, `$ref` resolution.
 - `catalog_test.go` — tool selection, naming, schema and annotation building.
-- `adapter_test.go` — request construction and in-process execution (`adapter.go`), plus result normalization and error shaping (`result.go`).
+- `adapter_test.go` — request construction and in-process execution (`adapter.go`), including the client-address peer, plus result normalization and error shaping (`result.go`).
 - `validation_test.go` — argument validation against input schemas.
 - `service_test.go` — the origin-header check, the stateless `2026-07-28`
   flow (`server/discover`, `tools/list`, `tools/call` with MCP headers), the
-  request body limit, plus the legacy end-to-end MCP protocol
-  (`initialize`, `tools/list`, `tools/call`) confirming object-shaped
-  `structuredContent`.
+  request body limit, client-address forwarding through the in-process hop,
+  plus the legacy end-to-end MCP protocol (`initialize`, `tools/list`,
+  `tools/call`) confirming object-shaped `structuredContent`.
 
 ## Design notes
 

@@ -11,7 +11,7 @@ import (
 )
 
 func TestCuratedOperationIDsStayMemoFocused(t *testing.T) {
-	require.Len(t, curatedOperationIDs, 20)
+	require.Len(t, curatedOperationIDs, 36)
 
 	for _, operationID := range curatedOperationIDs {
 		require.NotContains(t, operationID, "Admin")
@@ -446,4 +446,99 @@ func TestBuildCuratedToolsUseStandardSchemaFormats(t *testing.T) {
 		}
 	}
 	require.True(t, sawBase64Content, "expected attachment content to advertise contentEncoding base64")
+}
+
+func TestBuildToolFromOperationExposesSpaceTools(t *testing.T) {
+	spec, err := loadOpenAPISpec("../../proto/gen/openapi.yaml")
+	require.NoError(t, err)
+	registry, err := buildOperationRegistry(spec)
+	require.NoError(t, err)
+
+	tool, operation := buildToolFromOperation(registry["SpaceService_ListSpaces"])
+	require.Equal(t, "space_list_spaces", tool.Name)
+	require.Equal(t, "GET", operation.Method)
+	require.Equal(t, "/api/v1/spaces", operation.Path)
+	require.True(t, tool.Annotations.ReadOnlyHint)
+
+	tool, operation = buildToolFromOperation(registry["SpaceService_CreateSpace"])
+	require.Equal(t, "space_create_space", tool.Name)
+	require.Equal(t, "POST", operation.Method)
+	input, ok := tool.InputSchema.(jsonSchema)
+	require.True(t, ok)
+	require.Contains(t, input["required"], "body")
+	require.NoError(t, validateToolArguments(input, map[string]any{
+		"body": map[string]any{"title": "Team"},
+	}))
+	require.Error(t, validateToolArguments(input, map[string]any{
+		"body": map[string]any{"description": "no title"},
+	}))
+
+	tool, operation = buildToolFromOperation(registry["SpaceService_DeleteSpace"])
+	require.Equal(t, "space_delete_space", tool.Name)
+	require.Equal(t, "DELETE", operation.Method)
+	require.True(t, *tool.Annotations.DestructiveHint)
+}
+
+func TestBuildToolFromOperationTailorsSpaceUpdateBodies(t *testing.T) {
+	spec, err := loadOpenAPISpec("../../proto/gen/openapi.yaml")
+	require.NoError(t, err)
+	registry, err := buildOperationRegistry(spec)
+	require.NoError(t, err)
+
+	tool, operation := buildToolFromOperation(registry["SpaceService_UpdateSpace"])
+	require.Equal(t, "PATCH", operation.Method)
+	require.True(t, *tool.Annotations.DestructiveHint)
+	input, ok := tool.InputSchema.(jsonSchema)
+	require.True(t, ok)
+	body := schemaProperties(schemaProperties(input["properties"])["body"])
+	require.NotContains(t, schemaProperties(body["properties"]), "name")
+	// The gateway infers the update mask from the fields present, so a partial
+	// body is valid but an empty one is not.
+	require.NoError(t, validateToolArguments(input, map[string]any{
+		"space": "spaces/team",
+		"body":  map[string]any{"description": "renamed"},
+	}))
+	require.Error(t, validateToolArguments(input, map[string]any{
+		"space": "spaces/team",
+		"body":  map[string]any{},
+	}))
+
+	tool, operation = buildToolFromOperation(registry["SpaceService_UpdateSpaceMember"])
+	require.Equal(t, "PATCH", operation.Method)
+	require.True(t, *tool.Annotations.DestructiveHint)
+	input, ok = tool.InputSchema.(jsonSchema)
+	require.True(t, ok)
+	body = schemaProperties(schemaProperties(input["properties"])["body"])
+	require.NotContains(t, schemaProperties(body["properties"]), "name")
+	require.NotContains(t, schemaProperties(body["properties"]), "user")
+	require.Equal(t, []string{"role"}, body["required"])
+	require.NoError(t, validateToolArguments(input, map[string]any{
+		"space":  "spaces/team",
+		"member": "sam",
+		"body":   map[string]any{"role": "ADMIN"},
+	}))
+}
+
+func TestBuildToolFromOperationMakesInvitationResponseBodiesOptional(t *testing.T) {
+	spec, err := loadOpenAPISpec("../../proto/gen/openapi.yaml")
+	require.NoError(t, err)
+	registry, err := buildOperationRegistry(spec)
+	require.NoError(t, err)
+
+	for _, operationID := range []string{"SpaceService_AcceptSpaceInvitation", "SpaceService_DeclineSpaceInvitation"} {
+		operation := registry[operationID]
+		require.True(t, operation.RequestBody.Required, operationID)
+		require.False(t, requestBodyRequired(operation), operationID)
+
+		tool, _ := buildToolFromOperation(operation)
+		input, ok := tool.InputSchema.(jsonSchema)
+		require.True(t, ok)
+		require.NotContains(t, input["required"], "body", operationID)
+		body := schemaProperties(schemaProperties(input["properties"])["body"])
+		require.NotContains(t, schemaProperties(body["properties"]), "name", operationID)
+		require.NoError(t, validateToolArguments(input, map[string]any{
+			"space":      "spaces/team",
+			"invitation": "sam",
+		}), operationID)
+	}
 }

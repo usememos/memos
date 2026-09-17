@@ -12,6 +12,8 @@ import (
 	"github.com/labstack/echo/v5"
 	sdkmcp "github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
+
+	"github.com/usememos/memos/internal/clientip"
 )
 
 func TestNormalizeStructuredContentKeepsObjects(t *testing.T) {
@@ -116,6 +118,44 @@ func TestBuildAPIRequestMapsPathQueryAndBody(t *testing.T) {
 	body, err := io.ReadAll(req.Body)
 	require.NoError(t, err)
 	require.JSONEq(t, `{"memo":{"name":"memos/abc123","content":"updated"}}`, string(body))
+}
+
+func TestBuildAPIRequestPresentsResolvedClientAddressAsPeer(t *testing.T) {
+	operation := &openAPIOperation{Method: "GET", Path: "/api/v1/memos"}
+
+	req, err := buildAPIRequest(context.Background(), operation, map[string]any{}, "")
+	require.NoError(t, err)
+	require.Equal(t, "192.0.2.1:1234", req.RemoteAddr, "httptest placeholder stays when no address was resolved")
+
+	ctx := clientip.WithClientIP(context.Background(), "203.0.113.9")
+	req, err = buildAPIRequest(ctx, operation, map[string]any{}, "")
+	require.NoError(t, err)
+	require.Equal(t, "203.0.113.9:0", req.RemoteAddr)
+
+	ctx = clientip.WithClientIP(context.Background(), "2001:db8::9")
+	req, err = buildAPIRequest(ctx, operation, map[string]any{}, "")
+	require.NoError(t, err)
+	require.Equal(t, "[2001:db8::9]:0", req.RemoteAddr)
+}
+
+func TestBuildAPIRequestOmitsOptionalOverriddenBody(t *testing.T) {
+	operation := &openAPIOperation{
+		OperationID: "SpaceService_AcceptSpaceInvitation",
+		Method:      "POST",
+		Path:        "/api/v1/spaces/{space}/invitations/{invitation}:accept",
+		Parameters: []openAPIParameter{
+			{Name: "space", In: "path", Required: true},
+			{Name: "invitation", In: "path", Required: true},
+		},
+		RequestBody: &openAPIRequestBody{Required: true},
+	}
+
+	req, err := buildAPIRequest(context.Background(), operation, map[string]any{"space": "team", "invitation": "sam"}, "")
+	require.NoError(t, err)
+	require.Equal(t, "/api/v1/spaces/team/invitations/sam:accept", req.URL.Path)
+	body, err := io.ReadAll(req.Body)
+	require.NoError(t, err)
+	require.JSONEq(t, `{}`, string(body))
 }
 
 func TestBuildAPIRequestAcceptsResourceNamesForPathParameters(t *testing.T) {

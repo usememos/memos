@@ -4,15 +4,16 @@
 
   These questions test whether an LLM can accomplish realistic tasks by
   composing the curated MCP tools (memo_list_memos with CEL filters,
-  memo_list_memo_comments, memo_list_memo_reactions, user_list_memo_views,
-  auth_get_current_user, ...). They are NOT unit tests of the server plumbing —
-  see *_test.go for that.
+  memo_list_memo_comments, memo_list_memo_reactions, space_list_spaces,
+  space_list_space_members, user_list_memo_views, auth_get_current_user, ...).
+  They are NOT unit tests of the server plumbing — see *_test.go for that.
 
   Answers are pinned to the deterministic seed in
   store/seed/sqlite/01__dump.sql and were verified by querying a fresh
-  demo-mode instance. Run against a freshly seeded instance ONLY (the public
-  demo at demo.usememos.com is a shared, mutable account and will not match).
-  See README.md in this directory for how to launch one.
+  demo-mode instance through the MCP tools. Run against a freshly seeded
+  instance ONLY (the public demo at demo.usememos.com is a shared, mutable
+  account and will not match). See README.md in this directory for how to
+  launch one.
 
   Questions deliberately avoid absolute dates: the seed uses relative
   timestamps (strftime('now','-N days')), so only relative ordering, counts,
@@ -20,28 +21,28 @@
 -->
 <evaluation>
   <qa_pair>
-    <question>Look at every memo in the instance and add up all the emoji reactions across them. What is the total number of reactions?</question>
-    <answer>12</answer>
+    <question>Look at every memo in the instance, including comments, and add up all the emoji reactions across them. What is the total number of reactions?</question>
+    <answer>35</answer>
   </qa_pair>
   <qa_pair>
     <question>How many memos are pinned?</question>
     <answer>2</answer>
   </qa_pair>
   <qa_pair>
-    <question>Considering only the memos that are NOT pinned, one of them has more reactions than any other. That memo is about a book the author started reading. What is the title of that book?</question>
-    <answer>Deep Work</answer>
+    <question>Considering only memos written by the user johnny, one has more reactions than any other. Give that memo's resource name (memos/...).</question>
+    <answer>memos/johnnyshipped01</answer>
   </qa_pair>
   <qa_pair>
-    <question>Two memos are pinned. One contains external hyperlinks and the other does not. Give the single tag of the pinned memo that contains hyperlinks.</question>
+    <question>Two memos are pinned. One contains a task list and the other does not. Give the single tag of the pinned memo that does NOT contain a task list.</question>
     <answer>sponsors</answer>
   </qa_pair>
   <qa_pair>
     <question>How many memos contain at least one fenced code block?</question>
-    <answer>2</answer>
+    <answer>4</answer>
   </qa_pair>
   <qa_pair>
     <question>How many distinct users have authored the memos in this instance?</question>
-    <answer>2</answer>
+    <answer>4</answer>
   </qa_pair>
   <qa_pair>
     <question>Find the memo that is a cheat sheet of git commands. How many comments does it have?</question>
@@ -57,6 +58,26 @@
   </qa_pair>
   <qa_pair>
     <question>Using the authenticated session, what is the username (login name) of the account these memos belong to?</question>
-    <answer>demo</answer>
+    <answer>steven</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>How many spaces is the authenticated user a member of?</question>
+    <answer>4</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>Which space has the most accepted members? Give its title.</question>
+    <answer>Updates</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>Who administers the Travel space? Give that member's username.</question>
+    <answer>bob</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>How many top-level memos (not comments) are placed in the Dev space?</question>
+    <answer>6</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>How many top-level memos (not comments) are not placed in any space?</question>
+    <answer>2</answer>
   </qa_pair>
 </evaluation>

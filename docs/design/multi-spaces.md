@@ -153,7 +153,7 @@ The Space-user pair is unique and represents one current relationship slot. `INV
 
 The change ships in migration `0.31` for SQLite, MySQL, and PostgreSQL, with equivalent fresh-install schemas. Existing membership rows are backfilled to `ACTIVE`. Existing memos keep their UID, author, visibility, relations, permalink, and become Unassigned. Comment rows and comment visibility are not rewritten. SQLite rebuilds the affected tables where its `ALTER TABLE` support requires it.
 
-Space creation, invitation transitions, membership changes, placement and audience changes, comment creation, memo deletion, and Space deletion use ordinary transactions where partial application would corrupt directly affected data. On MySQL and PostgreSQL, operations that create or activate a Space relationship serialize with user deletion on the target user row, and invitation creation serializes with Space deletion on the Space row. This prevents a concurrent delete from leaving an orphaned active membership or invitation. Space deletion directly removes assigned memos and their owned rows in the same style as existing user deletion, then uses the existing best-effort attachment storage cleanup after commit. The initial version does not introduce general transaction retries, a cleanup queue, or a global concurrency framework.
+Space creation, invitation transitions, membership changes, placement and audience changes, comment creation, memo deletion, and Space deletion use ordinary transactions where partial application would corrupt directly affected data. On MySQL and PostgreSQL, operations that create or activate a Space relationship serialize with user deletion on the target user row, and invitation creation serializes with Space deletion on the Space row. On SQLite every store transaction begins `IMMEDIATE`, so a transaction that has read a parent row holds the single write lock until it ends and a concurrent delete waits rather than committing underneath it. This prevents a concurrent delete from leaving an orphaned active membership or invitation. Space deletion directly removes assigned memos and their owned rows in the same style as existing user deletion, then uses the existing best-effort attachment storage cleanup after commit. The initial version does not introduce general transaction retries, a cleanup queue, or a global concurrency framework.
 
 ### API shape
 
@@ -169,7 +169,7 @@ Memo listing expresses placement through the CEL filter: `space == "spaces/{spac
 
 Placement and audience use the existing memo update mechanism so the memo author can change them atomically. The Space API does not add an operation for an `ADMIN` to move, withdraw, or otherwise mutate an individual memo.
 
-MCP memo operations reuse the same memo policy; Space management is not exposed through MCP in the initial version.
+MCP memo operations reuse the same memo policy. The Space service is exposed through MCP as the `space_*` tools, which run in-process against the same REST bindings and therefore the same membership authorization; see `server/mcp/README.md`.
 
 ### UI shape
 
@@ -181,7 +181,7 @@ Creating an invitation also delivers a `SPACE_INVITATION` inbox notification to 
 
 Before `SPACE` can be stored, one shared, memo-local, fail-closed policy must cover point reads, lists and counts, files, reactions, relations, notifications, email, webhooks, shares, search, statistics, public feeds, and MCP. Child resources resolve the memo they directly belong to. Application `ADMIN` bypasses only the memo-local checks on named operations; drivers resolve the actor's role inside the mutation transaction alongside the actor's lifecycle state, and an archived administrator holds no privilege.
 
-Unknown visibility denies access. A missing or invalid placement denies `SPACE` reads and placement-dependent operations. Other audiences continue to govern ordinary reads, but an invalid Space identity is omitted. Inactive users, pending invitations, unknown relationship states, and invalid membership roles deny any access that depends on them. Every membership authorization requires `status = ACTIVE` and role `ADMIN` or `USER`. Where the database supports row locks, relationship creation and activation serialize against user deletion, and invitation creation serializes against Space deletion. Database list and count authorization is applied before pagination:
+Unknown visibility denies access. A missing or invalid placement denies `SPACE` reads and placement-dependent operations. Other audiences continue to govern ordinary reads, but an invalid Space identity is omitted. Inactive users, pending invitations, unknown relationship states, and invalid membership roles deny any access that depends on them. Every membership authorization requires `status = ACTIVE` and role `ADMIN` or `USER`. Where the database supports row locks, relationship creation and activation serialize against user deletion, and invitation creation serializes against Space deletion; on SQLite the same serialization comes from `IMMEDIATE` transactions. Database list and count authorization is applied before pagination:
 
 ```text
 PRIVATE + active authenticated author

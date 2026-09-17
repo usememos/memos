@@ -15,6 +15,7 @@ import (
 	sdkmcp "github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 
+	"github.com/usememos/memos/internal/clientip"
 	"github.com/usememos/memos/internal/profile"
 	memosproto "github.com/usememos/memos/proto"
 )
@@ -109,6 +110,226 @@ func TestMCPToolHandlerForwardsArgumentsAndAuthorization(t *testing.T) {
 	require.Equal(t, map[string]any{
 		"memos": []any{map[string]any{"name": "memos/test"}},
 	}, result.StructuredContent)
+}
+
+// TestMCPToolCallForwardsClientAddress covers the in-process hop: the /mcp
+// request resolves the caller (behind a trusted proxy or not), and the API
+// handler that serves the tool call must see that same address, not the
+// httptest placeholder peer (192.0.2.1) that the adapter's synthetic request
+// would otherwise carry into the client-address middleware. It must also not
+// re-open header trust: a forwarding header from an untrusted peer stays
+// ignored on the second pass.
+func TestMCPToolCallForwardsClientAddress(t *testing.T) {
+	tests := []struct {
+		name         string
+		remoteAddr   string
+		forwardedFor string
+		expectedIP   string
+	}{
+		{
+			name:         "trusted loopback proxy forwards the client",
+			remoteAddr:   "127.0.0.1:5555",
+			forwardedFor: "203.0.113.9",
+			expectedIP:   "203.0.113.9",
+		},
+		{
+			name:       "direct public peer",
+			remoteAddr: "203.0.113.9:4242",
+			expectedIP: "203.0.113.9",
+		},
+		{
+			name:         "forwarding header from an untrusted peer is ignored",
+			remoteAddr:   "203.0.113.9:4242",
+			forwardedFor: "198.51.100.1",
+			expectedIP:   "203.0.113.9",
+		},
+		{
+			name:         "IPv6 client behind a trusted proxy",
+			remoteAddr:   "[::1]:5555",
+			forwardedFor: "2001:db8::9",
+			expectedIP:   "2001:db8::9",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			echoServer := echo.New()
+			resolver, err := clientip.ParseTrustedProxies(nil)
+			require.NoError(t, err)
+			echoServer.Use(clientip.Middleware(resolver))
+
+			seen := ""
+			echoServer.GET("/api/v1/memos", func(c *echo.Context) error {
+				seen = clientip.FromContext(c.Request().Context())
+				return c.JSON(http.StatusOK, map[string]any{"memos": []any{}})
+			})
+			service, err := NewMCPService(&profile.Profile{Version: "test-version"}, echoServer)
+			require.NoError(t, err)
+			service.RegisterRoutes(echoServer)
+			initializeMCP(t, echoServer)
+
+			payload, err := json.Marshal(map[string]any{
+				"jsonrpc": "2.0",
+				"id":      2,
+				"method":  "tools/call",
+				"params":  map[string]any{"name": "memo_list_memos", "arguments": map[string]any{}},
+			})
+			require.NoError(t, err)
+			request := httptest.NewRequest(http.MethodPost, "/mcp", bytes.NewReader(payload))
+			request.RemoteAddr = test.remoteAddr
+			if test.forwardedFor != "" {
+				request.Header.Set("X-Forwarded-For", test.forwardedFor)
+			}
+			request.Header.Set("Content-Type", "application/json")
+			request.Header.Set("Accept", "application/json, text/event-stream")
+			recorder := httptest.NewRecorder()
+			echoServer.ServeHTTP(recorder, request)
+			require.Equal(t, http.StatusOK, recorder.Code, recorder.Body.String())
+			require.Equal(t, test.expectedIP, seen)
+		})
+	}
+}
+
+// TestMCPToolCallBindsSpaceResourcesFromPath drives the space tools through the
+// adapter: canonical and nested resource names collapse to path segments, the
+// custom-method suffixes (":accept", ":decline") survive substitution, the
+// path-bound fields removed from the schemas never reappear in the body, and
+// the invitation responses need no body at all.
+func TestMCPToolCallBindsSpaceResourcesFromPath(t *testing.T) {
+	tests := []struct {
+		name       string
+		toolName   string
+		arguments  map[string]any
+		method     string
+		path       string
+		body       map[string]any
+		response   map[string]any
+		structured map[string]any
+	}{
+		{
+			name:     "accept invitation without body",
+			toolName: "space_accept_space_invitation",
+			arguments: map[string]any{
+				"space":      "spaces/team",
+				"invitation": "spaces/team/invitations/sam",
+			},
+			method:     http.MethodPost,
+			path:       "/api/v1/spaces/team/invitations/sam:accept",
+			body:       map[string]any{},
+			response:   map[string]any{"name": "spaces/team/members/sam", "role": "USER"},
+			structured: map[string]any{"name": "spaces/team/members/sam", "role": "USER"},
+		},
+		{
+			name:     "decline invitation with explicit empty body",
+			toolName: "space_decline_space_invitation",
+			arguments: map[string]any{
+				"space":      "team",
+				"invitation": "sam",
+				"body":       map[string]any{},
+			},
+			method:     http.MethodPost,
+			path:       "/api/v1/spaces/team/invitations/sam:decline",
+			body:       map[string]any{},
+			response:   map[string]any{},
+			structured: map[string]any{},
+		},
+		{
+			name:     "update member role without update mask",
+			toolName: "space_update_space_member",
+			arguments: map[string]any{
+				"space":  "spaces/team",
+				"member": "spaces/team/members/sam",
+				"body":   map[string]any{"role": "ADMIN"},
+			},
+			method:     http.MethodPatch,
+			path:       "/api/v1/spaces/team/members/sam",
+			body:       map[string]any{"role": "ADMIN"},
+			response:   map[string]any{"name": "spaces/team/members/sam", "role": "ADMIN"},
+			structured: map[string]any{"name": "spaces/team/members/sam", "role": "ADMIN"},
+		},
+		{
+			name:     "partial space update without update mask",
+			toolName: "space_update_space",
+			arguments: map[string]any{
+				"space": "team",
+				"body":  map[string]any{"description": "renamed"},
+			},
+			method:     http.MethodPatch,
+			path:       "/api/v1/spaces/team",
+			body:       map[string]any{"description": "renamed"},
+			response:   map[string]any{"name": "spaces/team", "title": "Team", "description": "renamed"},
+			structured: map[string]any{"name": "spaces/team", "title": "Team", "description": "renamed"},
+		},
+		{
+			name:     "create invitation binds the parent space",
+			toolName: "space_create_space_invitation",
+			arguments: map[string]any{
+				"space": "spaces/team",
+				"body":  map[string]any{"invitee": "users/sam", "role": "USER"},
+			},
+			method:     http.MethodPost,
+			path:       "/api/v1/spaces/team/invitations",
+			body:       map[string]any{"invitee": "users/sam", "role": "USER"},
+			response:   map[string]any{"name": "spaces/team/invitations/sam"},
+			structured: map[string]any{"name": "spaces/team/invitations/sam"},
+		},
+		{
+			name:     "delete member from nested name",
+			toolName: "space_delete_space_member",
+			arguments: map[string]any{
+				"space":  "spaces/team",
+				"member": "spaces/team/members/sam",
+			},
+			method:     http.MethodDelete,
+			path:       "/api/v1/spaces/team/members/sam",
+			response:   map[string]any{},
+			structured: map[string]any{},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			echoServer := echo.New()
+			routeHits := 0
+			echoServer.Any("/api/v1/spaces/*", func(c *echo.Context) error {
+				routeHits++
+				require.Equal(t, test.method, c.Request().Method)
+				require.Equal(t, test.path, c.Request().URL.Path)
+				require.Empty(t, c.QueryParam("updateMask"))
+				if test.body != nil {
+					body := map[string]any{}
+					require.NoError(t, json.NewDecoder(c.Request().Body).Decode(&body))
+					require.Equal(t, test.body, body)
+					require.NotContains(t, body, "name")
+					require.NotContains(t, body, "user")
+				} else {
+					require.Empty(t, c.Request().Header.Get("Content-Type"))
+				}
+				return c.JSON(http.StatusOK, test.response)
+			})
+
+			service, err := NewMCPService(&profile.Profile{Version: "test-version"}, echoServer)
+			require.NoError(t, err)
+			service.RegisterRoutes(echoServer)
+
+			initializeMCP(t, echoServer)
+			response := postMCP(t, echoServer, map[string]any{
+				"jsonrpc": "2.0",
+				"id":      2,
+				"method":  "tools/call",
+				"params": map[string]any{
+					"name":      test.toolName,
+					"arguments": test.arguments,
+				},
+			})
+
+			result, ok := response["result"].(map[string]any)
+			require.True(t, ok)
+			require.NotEqual(t, true, result["isError"], result)
+			require.Equal(t, test.structured, result["structuredContent"])
+			require.Equal(t, 1, routeHits)
+		})
+	}
 }
 
 func TestMCPProtocolListsCuratedToolsOnly(t *testing.T) {

@@ -11,9 +11,17 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-func TestSQLiteStaleRelationshipWriteCannotOutliveDeletedParent(t *testing.T) {
+// TestSQLiteRelationshipWriteSerializesWithParentDelete confirms how SQLite
+// keeps a relationship write from outliving a deleted parent. The store opens
+// every transaction IMMEDIATE, so a transaction that has read the parent holds
+// the write lock until it ends: a concurrent delete waits instead of committing
+// underneath it (with DEFERRED transactions the delete would commit and the
+// later insert would fail with SQLITE_BUSY at once). Once the transaction ends
+// the delete proceeds, and a fresh relationship write for the deleted parent
+// fails on its own read.
+func TestSQLiteRelationshipWriteSerializesWithParentDelete(t *testing.T) {
 	if getDriverFromEnv() != "sqlite" {
-		t.Skip("this test confirms SQLite's stale-snapshot write serialization")
+		t.Skip("this test confirms SQLite's IMMEDIATE transaction serialization")
 	}
 
 	ctx := context.Background()
@@ -26,23 +34,45 @@ func TestSQLiteStaleRelationshipWriteCannotOutliveDeletedParent(t *testing.T) {
 	space, err := ts.CreateSpace(ctx, &store.Space{UID: "sqlite-stale-space", Title: "SQLite Stale Parent"}, owner.ID)
 	require.NoError(t, err)
 
-	staleTx, err := ts.GetDriver().GetDB().BeginTx(ctx, nil)
+	writer, err := ts.GetDriver().GetDB().BeginTx(ctx, nil)
 	require.NoError(t, err)
-	staleTxOpen := true
+	writerOpen := true
 	defer func() {
-		if staleTxOpen {
-			_ = staleTx.Rollback()
+		if writerOpen {
+			_ = writer.Rollback()
 		}
 	}()
 	var storedUserID int32
-	require.NoError(t, staleTx.QueryRowContext(ctx, "SELECT id FROM user WHERE id = ?", target.ID).Scan(&storedUserID))
+	require.NoError(t, writer.QueryRowContext(ctx, "SELECT id FROM user WHERE id = ?", target.ID).Scan(&storedUserID))
 
-	_, err = ts.DeleteUser(ctx, &store.DeleteUser{ID: target.ID})
+	deleteDone := make(chan error, 1)
+	go func() {
+		_, deleteErr := ts.DeleteUser(context.Background(), &store.DeleteUser{ID: target.ID})
+		deleteDone <- deleteErr
+	}()
+	select {
+	case deleteErr := <-deleteDone:
+		require.FailNowf(t, "user deletion did not wait", "deletion finished while a transaction that read the user was open: %v", deleteErr)
+	case <-time.After(300 * time.Millisecond):
+	}
+
+	// The transaction that read the parent may still write it: the delete has
+	// not happened yet, and it will clean this row up when it does.
+	_, err = writer.ExecContext(ctx, `INSERT INTO space_member (space_id, user_id, status, role) VALUES (?, ?, 'INVITED', 'USER')`, space.ID, target.ID)
 	require.NoError(t, err)
-	_, err = staleTx.ExecContext(ctx, `INSERT INTO space_member (space_id, user_id, status, role) VALUES (?, ?, 'INVITED', 'USER')`, space.ID, target.ID)
-	require.Error(t, err, "a transaction with a stale parent snapshot must not upgrade to write an orphan relationship")
-	require.NoError(t, staleTx.Rollback())
-	staleTxOpen = false
+	require.NoError(t, writer.Commit())
+	writerOpen = false
+
+	select {
+	case deleteErr := <-deleteDone:
+		require.NoError(t, deleteErr)
+	case <-time.After(15 * time.Second):
+		require.FailNow(t, "timed out waiting for user deletion after the transaction ended")
+	}
+
+	// After the delete, a relationship write for the parent fails on its own read.
+	_, err = ts.CreateSpaceInvitation(ctx, &store.SpaceInvitation{SpaceID: space.ID, UserID: target.ID, Role: store.SpaceMemberRoleUser}, owner.ID)
+	require.ErrorIs(t, err, store.ErrSpaceMemberNotActive)
 
 	var relationshipCount int
 	require.NoError(t, ts.GetDriver().GetDB().QueryRowContext(ctx,
@@ -54,7 +84,7 @@ func TestSQLiteStaleRelationshipWriteCannotOutliveDeletedParent(t *testing.T) {
 func TestSpaceInvitationWaitsForConcurrentUserDelete(t *testing.T) {
 	driver := getDriverFromEnv()
 	if driver == "sqlite" || driver == "d1" {
-		t.Skip("SQLite serializes the competing writes and rejects stale transaction upgrades; D1 has no row locks")
+		t.Skip("SQLite transactions begin IMMEDIATE and serialize competing writes without row locks; D1 has no row locks")
 	}
 
 	setupCtx := context.Background()
@@ -117,7 +147,7 @@ func TestSpaceInvitationWaitsForConcurrentUserDelete(t *testing.T) {
 func TestSpaceInvitationWaitsForConcurrentSpaceDelete(t *testing.T) {
 	driver := getDriverFromEnv()
 	if driver == "sqlite" || driver == "d1" {
-		t.Skip("SQLite serializes the competing writes and rejects stale transaction upgrades; D1 has no row locks")
+		t.Skip("SQLite transactions begin IMMEDIATE and serialize competing writes without row locks; D1 has no row locks")
 	}
 
 	setupCtx := context.Background()

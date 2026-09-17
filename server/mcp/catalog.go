@@ -32,6 +32,25 @@ var curatedOperationIDs = []string{
 	// The only allowed auth/identity operation: a read-only "whoami" so agents
 	// can resolve the current user (e.g. for UserService_ListMemoViews).
 	"AuthService_GetCurrentUser",
+	// Spaces: memos carry a placement (Memo.space) and a SPACE audience, so an
+	// agent needs to discover, create, and administer the spaces it can place
+	// memos in, and to handle the invitations that grant membership.
+	"SpaceService_ListSpaces",
+	"SpaceService_GetSpace",
+	"SpaceService_CreateSpace",
+	"SpaceService_UpdateSpace",
+	"SpaceService_DeleteSpace",
+	"SpaceService_ListSpaceMembers",
+	"SpaceService_GetSpaceMember",
+	"SpaceService_UpdateSpaceMember",
+	"SpaceService_DeleteSpaceMember",
+	"SpaceService_ListSpaceInvitations",
+	"SpaceService_ListUserSpaceInvitations",
+	"SpaceService_GetSpaceInvitation",
+	"SpaceService_CreateSpaceInvitation",
+	"SpaceService_AcceptSpaceInvitation",
+	"SpaceService_DeclineSpaceInvitation",
+	"SpaceService_DeleteSpaceInvitation",
 }
 
 type registeredOperation struct {
@@ -53,6 +72,10 @@ type requestBodySchemaOverride struct {
 	// properties. It replaces a cleared required list for partial updates so an
 	// empty body is rejected up front instead of failing later at the API.
 	minProperties int
+	// bodyOptional drops "body" from the tool's required arguments. It is for
+	// body: "*" bindings whose only field is supplied by the path, so that a
+	// caller does not have to pass an empty object to satisfy the schema.
+	bodyOptional bool
 }
 
 // requestBodySchemaOverrides adjusts resource schemas to match how each HTTP
@@ -83,6 +106,41 @@ var requestBodySchemaOverrides = map[string]requestBodySchemaOverride{
 		required:          []string{"reaction"},
 		omittedProperties: []string{"name"},
 	},
+	// UpdateSpace requires an update mask, which the REST gateway infers from
+	// the fields present in the body. The space name comes from the path.
+	"SpaceService_UpdateSpace": {
+		clearRequired:     true,
+		omittedProperties: []string{"name"},
+		minProperties:     1,
+	},
+	// Only a member's role is mutable; the member name and user identity are
+	// both fixed by the path.
+	"SpaceService_UpdateSpaceMember": {
+		required:          []string{"role"},
+		omittedProperties: []string{"name", "user"},
+	},
+	// Accept and decline are body: "*" bindings whose single field, the
+	// invitation name, is already bound from the path.
+	"SpaceService_AcceptSpaceInvitation": {
+		clearRequired:     true,
+		omittedProperties: []string{"name"},
+		bodyOptional:      true,
+	},
+	"SpaceService_DeclineSpaceInvitation": {
+		clearRequired:     true,
+		omittedProperties: []string{"name"},
+		bodyOptional:      true,
+	},
+}
+
+// requestBodyRequired reports whether a tool call must carry a "body" argument
+// for the operation: the OpenAPI request body is required and no override has
+// made it optional.
+func requestBodyRequired(operation *openAPIOperation) bool {
+	if operation.RequestBody == nil || !operation.RequestBody.Required {
+		return false
+	}
+	return !requestBodySchemaOverrides[operation.OperationID].bodyOptional
 }
 
 var wordBoundary = regexp.MustCompile(`([a-z0-9])([A-Z])`)
@@ -215,7 +273,7 @@ func inputSchemaForOperation(operation *openAPIOperation) jsonSchema {
 			defs[name] = definition
 		}
 		properties["body"] = bodySchema
-		if operation.RequestBody.Required {
+		if requestBodyRequired(operation) {
 			required = append(required, "body")
 		}
 	}
@@ -304,6 +362,8 @@ var destructiveOperationIDs = map[string]bool{
 	"MemoService_UpdateMemo":         true,
 	"MemoService_SetMemoAttachments": true,
 	"MemoService_SetMemoRelations":   true,
+	"SpaceService_UpdateSpace":       true,
+	"SpaceService_UpdateSpaceMember": true,
 }
 
 // annotationsForOperation derives the method-based annotations and then applies
