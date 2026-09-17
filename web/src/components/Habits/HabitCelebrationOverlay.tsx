@@ -61,7 +61,7 @@ const CelebrationParticles = ({ tier }: { tier: HabitCelebrationEvent["tier"] })
         key={left}
         data-particle
         aria-hidden="true"
-        className="absolute top-[17%] size-3 rounded-full bg-warning shadow-[0_0_24px_hsl(var(--warning))]"
+        className="absolute top-[17%] size-3 rounded-full bg-warning shadow-[0_0_24px_var(--warning)]"
         style={{
           left,
           animation: `habit-firework ${tier === "minimum" ? 900 : tier === "target" ? 1800 : 2400}ms ease-out ${index * 70}ms forwards`,
@@ -149,12 +149,12 @@ const HabitCelebrationOverlay = ({ event, onDismiss, returnFocus }: Props) => {
       <style>{animationStyles}</style>
       <CelebrationParticles tier="major" />
       <div
-        className="pointer-events-none fixed inset-0 z-overlay bg-[radial-gradient(circle_at_center,hsl(var(--warning)/0.18),transparent_58%)] motion-reduce:bg-none"
+        className="pointer-events-none fixed inset-0 z-overlay bg-[radial-gradient(circle_at_center,color-mix(in_oklch,var(--warning)_18%,transparent),transparent_58%)] motion-reduce:bg-none"
         aria-hidden="true"
       />
       <Dialog open onOpenChange={(open) => !open && onDismiss()}>
         <DialogContent
-          className="overflow-visible border-warning/40 bg-card text-center shadow-[0_24px_100px_hsl(var(--warning)/0.2)]"
+          className="overflow-visible border-warning/40 bg-card text-center shadow-[0_24px_100px_color-mix(in_oklch,var(--warning)_20%,transparent)]"
           showCloseButton
           initialFocus={continueButtonRef}
           finalFocus={returnFocus}

@@ -61,6 +61,13 @@ describe("HabitCelebrationOverlay", () => {
     expect(document.querySelector("[data-major-emblem]")).not.toHaveClass("motion-safe:animate-bounce");
   });
 
+  it("uses the OKLCH warning token without wrapping it in an incompatible color function", () => {
+    const { rerender } = render(<HabitCelebrationOverlay event={event("target")} onDismiss={vi.fn()} />);
+    expect(document.body.innerHTML).not.toContain("hsl(var(--warning))");
+    rerender(<HabitCelebrationOverlay event={event("major")} onDismiss={vi.fn()} />);
+    expect(document.body.innerHTML).not.toContain("hsl(var(--warning)");
+  });
+
   it("dismisses a non-modal celebration with Escape", () => {
     const onDismiss = vi.fn();
     render(<HabitCelebrationOverlay event={event("target")} onDismiss={onDismiss} />);
