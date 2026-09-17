@@ -182,6 +182,28 @@ func (s *APIV1Service) RefreshToken(ctx context.Context, _ *v1pb.RefreshTokenReq
 	}, nil
 }
 
+// currentRefreshTokenID returns the token ID of the refresh cookie on the
+// request, or "" when the request carries no valid refresh cookie.
+func currentRefreshTokenID(ctx context.Context, secret string) string {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return ""
+	}
+	cookies := md.Get("cookie")
+	if len(cookies) == 0 {
+		return ""
+	}
+	refreshToken := auth.ExtractRefreshTokenFromCookie(cookies[0])
+	if refreshToken == "" {
+		return ""
+	}
+	claims, err := auth.ParseRefreshToken(refreshToken, []byte(secret))
+	if err != nil {
+		return ""
+	}
+	return claims.TokenID
+}
+
 func (s *APIV1Service) clearAuthCookies(ctx context.Context) error {
 	// Clear refresh token cookie
 	refreshCookie := s.buildRefreshTokenCookie(ctx, "", time.Time{})

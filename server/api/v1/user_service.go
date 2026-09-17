@@ -24,6 +24,15 @@ import (
 
 const maxBatchGetUsers = 100
 
+const (
+	// maxAvatarImageBytes is the largest avatar image a user may set. It
+	// matches the limit the web client enforces before encoding the file.
+	maxAvatarImageBytes = 2 << 20
+	// maxAvatarDataURIBytes bounds the stored data URI: the image bytes
+	// base64-encoded (4/3 expansion) plus the "data:<type>;base64," prefix.
+	maxAvatarDataURIBytes = maxAvatarImageBytes/3*4 + 256
+)
+
 func validatePassword(password string) error {
 	if password == "" {
 		return errors.New("password must not be empty")
@@ -359,6 +368,7 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get instance general setting: %v", err)
 	}
+	passwordChanged := false
 	for _, field := range request.UpdateMask.Paths {
 		switch field {
 		case "username":
@@ -383,6 +393,9 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 		case "avatar_url":
 			// Validate avatar MIME type to prevent XSS during upload
 			if request.User.AvatarUrl != "" {
+				if len(request.User.AvatarUrl) > maxAvatarDataURIBytes {
+					return nil, status.Errorf(codes.InvalidArgument, "avatar exceeds the maximum size of %d bytes", maxAvatarImageBytes)
+				}
 				imageType, _, err := extractImageInfo(request.User.AvatarUrl)
 				if err != nil {
 					return nil, status.Errorf(codes.InvalidArgument, "invalid avatar format: %v", err)
@@ -419,6 +432,7 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 			}
 			passwordHashStr := string(passwordHash)
 			update.PasswordHash = &passwordHashStr
+			passwordChanged = true
 		case "state":
 			if currentUser.Role != store.RoleAdmin {
 				return nil, status.Errorf(codes.PermissionDenied, "permission denied")
@@ -436,6 +450,18 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 			return nil, status.Error(codes.FailedPrecondition, "an active space must retain an active administrator")
 		}
 		return nil, convertUserWriteError(err, "failed to update user")
+	}
+	if passwordChanged {
+		// A new password ends every other session. The caller's own browser
+		// session survives when they changed their own password; an admin
+		// resetting another account revokes all of that account's sessions.
+		keepTokenID := ""
+		if currentUser.ID == user.ID {
+			keepTokenID = currentRefreshTokenID(ctx, s.Secret)
+		}
+		if err := s.Store.RemoveUserRefreshTokensExcept(ctx, user.ID, keepTokenID); err != nil {
+			slog.Warn("failed to revoke sessions after password change", "user_id", user.ID, "error", err)
+		}
 	}
 
 	return convertUserFromStore(updatedUser, currentUser), nil

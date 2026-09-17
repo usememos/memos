@@ -12,6 +12,8 @@ import (
 	"image/png"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -31,6 +33,7 @@ import (
 	apiv1service "github.com/usememos/memos/server/api/v1"
 	"github.com/usememos/memos/server/auth"
 	"github.com/usememos/memos/store"
+	"github.com/usememos/memos/store/db"
 	teststore "github.com/usememos/memos/store/test"
 )
 
@@ -860,4 +863,165 @@ func newExpiredRefreshTokenCookie(ctx context.Context, t *testing.T, stores *sto
 	refreshToken, _, err := auth.GenerateRefreshToken(userID, tokenID, []byte(secret))
 	require.NoError(t, err)
 	return &http.Cookie{Name: auth.RefreshTokenCookieName, Value: refreshToken}
+}
+
+// oversizedPNGHeader returns a valid PNG header that declares width×height
+// pixels without carrying pixel data, the shape of a decompression bomb.
+func oversizedPNGHeader(width, height uint32) []byte {
+	var buf bytes.Buffer
+	buf.Write([]byte{0x89, 'P', 'N', 'G', '\r', '\n', 0x1a, '\n'})
+	ihdr := make([]byte, 13)
+	binary.BigEndian.PutUint32(ihdr[0:4], width)
+	binary.BigEndian.PutUint32(ihdr[4:8], height)
+	ihdr[8] = 8
+	ihdr[9] = 2
+	for _, chunk := range []struct {
+		kind string
+		data []byte
+	}{{"IHDR", ihdr}, {"IEND", nil}} {
+		_ = binary.Write(&buf, binary.BigEndian, uint32(len(chunk.data)))
+		buf.WriteString(chunk.kind)
+		buf.Write(chunk.data)
+		_ = binary.Write(&buf, binary.BigEndian, crc32.ChecksumIEEE(append([]byte(chunk.kind), chunk.data...)))
+	}
+	return buf.Bytes()
+}
+
+func createPublicImageMemo(ctx context.Context, t *testing.T, svc *apiv1service.APIV1Service, username, filename, mimeType string, content []byte) *apiv1.Attachment {
+	t.Helper()
+	creator, err := svc.Store.CreateUser(ctx, &store.User{Username: username, Role: store.RoleUser, Email: username + "@example.com"})
+	require.NoError(t, err)
+	creatorCtx := context.WithValue(ctx, auth.UserIDContextKey, creator.ID)
+	attachment, err := svc.CreateAttachment(creatorCtx, &apiv1.CreateAttachmentRequest{Attachment: &apiv1.Attachment{
+		Filename: filename, Type: mimeType, Content: content,
+	}})
+	require.NoError(t, err)
+	_, err = svc.CreateMemo(creatorCtx, &apiv1.CreateMemoRequest{Memo: &apiv1.Memo{
+		Content: "image memo", Visibility: apiv1.Visibility_PUBLIC, Attachments: []*apiv1.Attachment{{Name: attachment.Name}},
+	}})
+	require.NoError(t, err)
+	return attachment
+}
+
+// A small PNG that declares billions of pixels must not be decoded for a
+// thumbnail; the original is served and the failure is remembered so later
+// requests do not retry the decode.
+func TestServeAttachmentFile_ThumbnailRefusesOversizedImage(t *testing.T) {
+	ctx := context.Background()
+	svc, fs, _, cleanup := newShareAttachmentTestServices(ctx, t)
+	defer cleanup()
+
+	bomb := oversizedPNGHeader(100_000, 100_000)
+	attachment := createPublicImageMemo(ctx, t, svc, "bomb-owner", "bomb.png", "image/png", bomb)
+
+	e := echo.New()
+	fs.RegisterRoutes(e)
+	for range 2 {
+		rec := httptest.NewRecorder()
+		e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/bomb.png?thumbnail=true", attachment.Name), nil))
+		require.Equal(t, http.StatusOK, rec.Code)
+		require.Equal(t, "image/png", rec.Header().Get(echo.HeaderContentType))
+		require.Equal(t, bomb, rec.Body.Bytes(), "original is served instead of a thumbnail")
+	}
+	uid := strings.TrimPrefix(attachment.Name, "attachments/")
+	require.NoFileExists(t, filepath.Join(fs.Profile.Data, thumbnailCacheFolder, uid+".v2.jpeg"))
+	require.FileExists(t, filepath.Join(fs.Profile.Data, thumbnailCacheFolder, uid+".v2.jpeg"+thumbnailFailedMarkerSuffix))
+}
+
+// newSharedProfileTestServices builds the API service, file server, and
+// store on one profile, as in production, so derived caches written by the
+// file server live in the directory the store cleans up.
+func newSharedProfileTestServices(ctx context.Context, t *testing.T) (*apiv1service.APIV1Service, *FileServerService, func()) {
+	t.Helper()
+	dataDir := t.TempDir()
+	testProfile := &profile.Profile{
+		Demo:        true,
+		Version:     "test-1.0.0",
+		InstanceURL: "http://localhost:8080",
+		Driver:      "sqlite",
+		DSN:         filepath.Join(dataDir, "memos_test.db"),
+		Data:        dataDir,
+	}
+	dbDriver, err := db.NewDBDriver(testProfile)
+	require.NoError(t, err)
+	testStore := store.New(dbDriver, testProfile)
+	require.NoError(t, testStore.Migrate(ctx))
+	setInstanceAccessMode(ctx, t, testStore, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC)
+	secret := "test-secret"
+	apiService := &apiv1service.APIV1Service{
+		Secret:          secret,
+		Profile:         testProfile,
+		Store:           testStore,
+		MarkdownService: markdown.NewService(markdown.WithTagExtension()),
+		SSEHub:          apiv1service.NewSSEHub(),
+	}
+	return apiService, NewFileServerService(testProfile, testStore, secret), func() { testStore.Close() }
+}
+
+// Deleting an attachment removes the cached thumbnail written for it.
+func TestDeleteAttachmentRemovesCachedThumbnail(t *testing.T) {
+	ctx := context.Background()
+	svc, fs, cleanup := newSharedProfileTestServices(ctx, t)
+	defer cleanup()
+
+	var pngBuf bytes.Buffer
+	require.NoError(t, png.Encode(&pngBuf, image.NewRGBA(image.Rect(0, 0, 8, 8))))
+	attachment := createPublicImageMemo(ctx, t, svc, "thumb-owner", "small.png", "image/png", pngBuf.Bytes())
+	owner, err := svc.Store.GetUser(ctx, &store.FindUser{Username: func() *string { s := "thumb-owner"; return &s }()})
+	require.NoError(t, err)
+
+	e := echo.New()
+	fs.RegisterRoutes(e)
+	rec := httptest.NewRecorder()
+	e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/small.png?thumbnail=true", attachment.Name), nil))
+	require.Equal(t, http.StatusOK, rec.Code)
+	require.Equal(t, "image/jpeg", rec.Header().Get(echo.HeaderContentType))
+	uid := strings.TrimPrefix(attachment.Name, "attachments/")
+	thumbnailPath := filepath.Join(fs.Profile.Data, thumbnailCacheFolder, uid+".v2.jpeg")
+	require.FileExists(t, thumbnailPath)
+
+	ownerCtx := context.WithValue(ctx, auth.UserIDContextKey, owner.ID)
+	_, err = svc.DeleteAttachment(ownerCtx, &apiv1.DeleteAttachmentRequest{Name: attachment.Name})
+	require.NoError(t, err)
+	require.NoFileExists(t, thumbnailPath)
+}
+
+// A storage read failure is transient and must not be remembered as a
+// thumbnail verdict; only unsupported images get the failure marker.
+func TestThumbnailFailureMarkerOnlyForUnsupportedImages(t *testing.T) {
+	ctx := context.Background()
+	svc, fs, cleanup := newSharedProfileTestServices(ctx, t)
+	defer cleanup()
+	_, err := svc.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_STORAGE,
+		Value: &storepb.InstanceSetting_StorageSetting{StorageSetting: &storepb.InstanceStorageSetting{
+			Storages:         []*storepb.Storage{{Id: "local", Name: "Local", Type: storepb.StorageType_STORAGE_TYPE_LOCAL}},
+			DefaultStorageId: "local",
+		}},
+	})
+	require.NoError(t, err)
+
+	var pngBuf bytes.Buffer
+	require.NoError(t, png.Encode(&pngBuf, image.NewRGBA(image.Rect(0, 0, 8, 8))))
+	attachment := createPublicImageMemo(ctx, t, svc, "transient-owner", "gone.png", "image/png", pngBuf.Bytes())
+	uid := strings.TrimPrefix(attachment.Name, "attachments/")
+	stored, err := svc.Store.GetAttachment(ctx, &store.FindAttachment{UID: &uid})
+	require.NoError(t, err)
+	require.Equal(t, storepb.AttachmentStorageType_LOCAL, stored.StorageType)
+	localPath := fs.resolveLocalPath(stored.Reference)
+	require.NoError(t, os.Rename(localPath, localPath+".away"))
+
+	e := echo.New()
+	fs.RegisterRoutes(e)
+	rec := httptest.NewRecorder()
+	e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/gone.png?thumbnail=true", attachment.Name), nil))
+	marker := filepath.Join(fs.Profile.Data, thumbnailCacheFolder, uid+".v2.jpeg"+thumbnailFailedMarkerSuffix)
+	require.NoFileExists(t, marker, "a read failure is not a verdict on the image")
+
+	// Once the bytes are back, the thumbnail is generated normally.
+	require.NoError(t, os.Rename(localPath+".away", localPath))
+	rec = httptest.NewRecorder()
+	e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/gone.png?thumbnail=true", attachment.Name), nil))
+	require.Equal(t, http.StatusOK, rec.Code)
+	require.Equal(t, "image/jpeg", rec.Header().Get(echo.HeaderContentType))
 }

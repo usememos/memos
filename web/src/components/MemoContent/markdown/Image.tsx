@@ -16,6 +16,7 @@ export const Image = ({ className, alt, node: _node, height, width, style, ...pr
       {...props}
       loading="lazy"
       decoding="async"
+      referrerPolicy="no-referrer"
     />
   );
 };

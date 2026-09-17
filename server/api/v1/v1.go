@@ -29,13 +29,30 @@ import (
 // it derives its own limit from this constant to keep the two gates in lockstep.
 const MaxAPIRequestBytes = 256 << 20
 
+// maxGeneralRequestBytes caps every procedure that does not carry file bytes.
+// Request bodies are buffered in memory before they are parsed, so the cap is
+// what bounds memory per in-flight request; it leaves ample room for the
+// largest memo content and settings an instance can be configured to accept.
+const maxGeneralRequestBytes = 16 << 20
+
+// inlineContentProcedures carry a whole file in one request body and keep
+// the large cap; the size of that content is checked again by the handler
+// against the instance upload limit.
+var inlineContentProcedures = map[string]struct{}{
+	"/memos.api.v1.AttachmentService/CreateAttachment": {},
+	"/memos.api.v1.AIService/Transcribe":               {},
+}
+
 // requestBodyLimit returns the request body cap for a procedure. Chunked
 // uploads carry at most one chunk per call, so they get a much lower cap.
 func requestBodyLimit(procedure string) int64 {
 	if procedure == attachmentUploadProcedure || procedure == importMemosProcedure {
 		return uploadRequestLimit
 	}
-	return MaxAPIRequestBytes
+	if _, ok := inlineContentProcedures[procedure]; ok {
+		return MaxAPIRequestBytes
+	}
+	return maxGeneralRequestBytes
 }
 
 type APIV1Service struct {

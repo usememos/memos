@@ -18,6 +18,7 @@ import (
 
 	"github.com/usememos/memos/core/memoarchive"
 	"github.com/usememos/memos/core/memopayload"
+	"github.com/usememos/memos/internal/ratelimit"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
@@ -167,7 +168,11 @@ func (s *APIV1Service) ImportMemoArchive(ctx context.Context, user *store.User, 
 		if err := importer.importMemo(record); err != nil {
 			importer.report.Failed++
 			importer.report.Failures = append(importer.report.Failures, &v1pb.MemoImportIssue{Memo: record.UID, Message: err.Error()})
+			continue
 		}
+		// An imported memo counts against the same write budget as one
+		// created through CreateMemo, so an archive cannot bypass it.
+		s.charge(ratelimit.ScopeWriteUser, userKey(user.ID), 1)
 	}
 	for _, written := range importer.written {
 		if err := ctx.Err(); err != nil {
@@ -429,40 +434,58 @@ func (i *memoArchiveImporter) importAttachments(record *memoarchive.Memo, curren
 	for _, attachment := range current {
 		bound[attachment.UID] = struct{}{}
 	}
+	toBind := make([]*v1pb.Attachment, 0, len(record.Attachments))
+	// created holds only attachments this run stored; a pre-existing
+	// attachment that is merely re-bound is never discarded on failure.
 	created := make([]*v1pb.Attachment, 0, len(record.Attachments))
 	for index := range record.Attachments {
 		entry := &record.Attachments[index]
 		if _, ok := bound[entry.UID]; ok {
 			continue
 		}
-		name, err := i.importAttachment(entry)
+		name, stored, err := i.importAttachment(entry)
 		if err != nil {
 			i.discardAttachments(created)
 			return nil, errors.Wrapf(err, "attachment %s", entry.UID)
 		}
-		created = append(created, &v1pb.Attachment{Name: name})
+		attachment := &v1pb.Attachment{Name: name}
+		toBind = append(toBind, attachment)
+		if stored {
+			created = append(created, attachment)
+			// Stored bytes count against the same upload budget as an upload.
+			i.service.charge(ratelimit.ScopeUploadUser, userKey(i.user.ID), 1)
+		}
 	}
-	return created, nil
+	return toBind, nil
 }
 
 // importAttachment stores one attachment entry and returns the resource name
-// to bind.
-func (i *memoArchiveImporter) importAttachment(entry *memoarchive.Attachment) (string, error) {
+// to bind, and whether this run stored a new attachment for it.
+func (i *memoArchiveImporter) importAttachment(entry *memoarchive.Attachment) (string, bool, error) {
 	mimeType, ok := normalizeMimeType(entry.Type)
 	if !ok {
-		return "", errors.Errorf("invalid media type %q", entry.Type)
+		return "", false, errors.Errorf("invalid media type %q", entry.Type)
 	}
 	if !validateFilename(entry.Filename) {
-		return "", errors.New("filename contains invalid characters")
+		return "", false, errors.New("filename contains invalid characters")
 	}
 	uid, err := i.resolveAttachmentUID(entry)
 	if err != nil {
-		return "", err
+		return "", false, err
 	}
 	if uid == "" {
 		// An identical unlinked attachment already belongs to the user.
-		return AttachmentNamePrefix + entry.UID, nil
+		return AttachmentNamePrefix + entry.UID, false, nil
 	}
+	name, err := i.storeAttachment(entry, uid, mimeType)
+	if err != nil {
+		return "", false, err
+	}
+	return name, true, nil
+}
+
+// storeAttachment writes a new attachment for the entry under uid.
+func (i *memoArchiveImporter) storeAttachment(entry *memoarchive.Attachment, uid, mimeType string) (string, error) {
 	if entry.ExternalLink != "" {
 		attachment, err := i.service.Store.CreateAttachment(i.ctx, &store.Attachment{
 			UID:         uid,

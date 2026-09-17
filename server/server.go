@@ -24,7 +24,17 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-const shutdownTimeout = 10 * time.Second
+const (
+	shutdownTimeout = 10 * time.Second
+
+	// readHeaderTimeout bounds how long a client may take to send request
+	// headers, so idle or slow connections cannot pin a worker forever. Bodies
+	// and responses are not bounded here: uploads and SSE streams are
+	// legitimately long, and the request context still ends on disconnect.
+	readHeaderTimeout = 15 * time.Second
+	// idleTimeout closes keep-alive connections that send nothing.
+	idleTimeout = 2 * time.Minute
+)
 
 type Server struct {
 	Secret  string
@@ -117,7 +127,11 @@ func (s *Server) Start() error {
 	}
 
 	// Start Echo server directly (no cmux needed - all traffic is HTTP).
-	s.httpServer = &http.Server{Handler: s.echoServer}
+	s.httpServer = &http.Server{
+		Handler:           s.echoServer,
+		ReadHeaderTimeout: readHeaderTimeout,
+		IdleTimeout:       idleTimeout,
+	}
 	go func() {
 		if err := s.httpServer.Serve(listener); err != nil && err != http.ErrServerClosed {
 			slog.Error("failed to start echo server", "error", err)

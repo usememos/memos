@@ -139,8 +139,15 @@ func saveAttachmentContent(
 		if !strings.Contains(filepathTemplate, "{filename}") {
 			filepathTemplate = filepath.Join(filepathTemplate, "{filename}")
 		}
-		filepathTemplate = replaceFilenameWithPathTemplate(filepathTemplate, create.Filename)
-		key, err := driver.UploadObject(ctx, filepathTemplate, create.Type, content)
+		objectKey := replaceFilenameWithPathTemplate(filepathTemplate, create.Filename)
+		if !strings.Contains(filepathTemplate, "{uuid}") {
+			// PutObject overwrites silently, and two users can pick the same
+			// filename in the same second, so a template without a random
+			// component gets the attachment UID appended to keep keys unique.
+			ext := filepath.Ext(objectKey)
+			objectKey = strings.TrimSuffix(objectKey, ext) + "_" + create.UID + ext
+		}
+		key, err := driver.UploadObject(ctx, objectKey, create.Type, content)
 		if err != nil {
 			return errors.Wrap(err, "failed to upload via storage driver")
 		}

@@ -3,14 +3,15 @@ package v1
 import (
 	"bytes"
 	"context"
-	"image"
 	"io"
+	"net/http"
 
 	"github.com/disintegration/imaging"
 	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"github.com/usememos/memos/internal/imagelimit"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
@@ -45,6 +46,28 @@ func shouldStripExif(mimeType string) bool {
 	return exifCapableImageTypes[mimeType]
 }
 
+// shouldStripExifContent reports whether the content must be stripped of
+// EXIF metadata, judging by the declared type and by sniffing the leading
+// bytes. The source is rewound afterwards.
+func shouldStripExifContent(source io.ReadSeeker, declaredType string) (bool, error) {
+	if shouldStripExif(declaredType) {
+		return true, nil
+	}
+	if _, err := source.Seek(0, io.SeekStart); err != nil {
+		return false, errors.Wrap(err, "failed to rewind attachment content")
+	}
+	header := make([]byte, 512)
+	n, err := io.ReadFull(source, header)
+	if err != nil && !errors.Is(err, io.ErrUnexpectedEOF) && !errors.Is(err, io.EOF) {
+		return false, errors.Wrap(err, "failed to read attachment header")
+	}
+	if _, err := source.Seek(0, io.SeekStart); err != nil {
+		return false, errors.Wrap(err, "failed to rewind attachment content")
+	}
+	sniffed, ok := normalizeMimeType(http.DetectContentType(header[:n]))
+	return ok && shouldStripExif(sniffed), nil
+}
+
 func (s *APIV1Service) acquireImageProcessingSlot(ctx context.Context) (func(), error) {
 	if s.imageProcessingSemaphore == nil {
 		return func() {}, nil
@@ -58,19 +81,7 @@ func (s *APIV1Service) acquireImageProcessingSlot(ctx context.Context) (func(), 
 }
 
 func validateImageReaderPixelCount(reader io.Reader) error {
-	config, _, err := image.DecodeConfig(reader)
-	if err != nil {
-		// Some formats supported by imaging do not expose dimensions through
-		// the standard image registry. Let the full decoder handle those.
-		return nil //nolint:nilerr
-	}
-	if config.Width <= 0 || config.Height <= 0 {
-		return errors.New("invalid image dimensions")
-	}
-	if config.Width > maxImagePixels/config.Height {
-		return errors.Errorf("image dimensions exceed maximum of %d pixels", maxImagePixels)
-	}
-	return nil
+	return imagelimit.CheckReader(reader)
 }
 
 // stripImageExif removes EXIF metadata from image files by decoding and re-encoding them.
@@ -79,7 +90,7 @@ func validateImageReaderPixelCount(reader io.Reader) error {
 // The function preserves the correct image orientation by applying EXIF orientation tags
 // during decoding before stripping all metadata. Images are re-encoded with high quality
 // to minimize visual degradation. The re-encoded output is returned in memory; its size
-// is bounded by maxImagePixels, which the decoder already has to hold.
+// is bounded by imagelimit.MaxPixels, which the decoder already has to hold.
 //
 // Supported formats:
 //   - JPEG/JPG: Re-encoded as JPEG with quality 95

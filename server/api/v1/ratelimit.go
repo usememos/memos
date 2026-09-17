@@ -2,6 +2,8 @@ package v1
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"log/slog"
 	"math"
 	"net/http"
@@ -14,6 +16,7 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 
 	"github.com/usememos/memos/internal/clientip"
+	"github.com/usememos/memos/internal/identifier"
 	"github.com/usememos/memos/internal/ratelimit"
 	"github.com/usememos/memos/server/auth"
 )
@@ -122,6 +125,18 @@ func userKey(userID int32) string {
 	return strconv.Itoa(int(userID))
 }
 
+// accountKey is the limiter key for a submitted account name. Names longer
+// than any valid username are replaced by a digest, so the limiter stores a
+// bounded key for an attacker-chosen string while still counting each
+// distinct submission separately.
+func accountKey(username string) string {
+	if len(username) <= identifier.MaxUsernameLength {
+		return username
+	}
+	sum := sha256.Sum256([]byte(username))
+	return "sha256:" + hex.EncodeToString(sum[:])
+}
+
 // charge records cost units against scope and key.
 func (s *APIV1Service) charge(scope ratelimit.Scope, key string, cost int) {
 	if s.RateLimiter == nil || key == "" {
@@ -198,7 +213,7 @@ type signInAttempt struct {
 // reserveSignIn consumes the sign-in budgets for an attempt. It returns the
 // rate-limit error when either budget is spent; a refusal charges nothing.
 func (s *APIV1Service) reserveSignIn(clientIP, username string) (*signInAttempt, error) {
-	attempt := &signInAttempt{service: s, clientIP: clientIP, username: username}
+	attempt := &signInAttempt{service: s, clientIP: clientIP, username: accountKey(username)}
 	if err := s.throttleAndCharge(ratelimit.ScopeSignInIP, clientIP, 1); err != nil {
 		return nil, err
 	}

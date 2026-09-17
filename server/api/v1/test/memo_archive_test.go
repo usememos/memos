@@ -5,6 +5,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"strconv"
 	"testing"
 	"time"
 
@@ -15,7 +16,9 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/usememos/memos/core/memoarchive"
+	"github.com/usememos/memos/internal/ratelimit"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
+	storepb "github.com/usememos/memos/proto/gen/store"
 	apiv1 "github.com/usememos/memos/server/api/v1"
 	"github.com/usememos/memos/store"
 )
@@ -526,4 +529,117 @@ func TestImportMemos(t *testing.T) {
 		})
 		require.Equal(t, codes.NotFound, status.Code(err))
 	})
+}
+
+// buildImportArchive writes a one-memo archive whose attachments are given
+// as (uid, filename, bytes). Sizes and digests are computed from the bytes.
+func buildImportArchive(t *testing.T, username string, attachments []struct {
+	uid, filename string
+	content       []byte
+}) []byte {
+	t.Helper()
+	var buf bytes.Buffer
+	writer := memoarchive.NewWriter(&buf, mustTime(t, "2026-04-01T00:00:00Z"))
+	require.NoError(t, writer.WriteManifest(&memoarchive.Manifest{
+		Format: memoarchive.Format, FormatVersion: memoarchive.FormatVersion,
+		Generator:  memoarchive.Generator{Name: "test", Version: "1"},
+		ExportTime: "2026-04-01T00:00:00Z",
+		Scope:      memoarchive.Scope{Kind: memoarchive.ScopeKindUser, User: &memoarchive.ScopeUser{Username: username}},
+	}))
+	record := &memoarchive.Memo{
+		UID: "importedmemo1", Creator: username, CreateTime: "2026-04-01T00:00:00Z", UpdateTime: "2026-04-01T00:00:00Z",
+		State: "NORMAL", Visibility: "PRIVATE", ContentPath: memoarchive.ContentPath("importedmemo1"),
+	}
+	for _, attachment := range attachments {
+		path := memoarchive.AttachmentPath(attachment.uid, attachment.filename)
+		digest, size, err := writer.WriteAttachment(path, bytes.NewReader(attachment.content))
+		require.NoError(t, err)
+		record.Attachments = append(record.Attachments, memoarchive.Attachment{
+			UID: attachment.uid, Filename: attachment.filename, Type: "application/octet-stream", Size: size, SHA256: digest, Path: path,
+			CreateTime: "2026-04-01T00:00:00Z",
+		})
+	}
+	require.NoError(t, writer.WriteMemo(record, []byte("imported memo")))
+	require.NoError(t, writer.Close())
+	return buf.Bytes()
+}
+
+// A memo that fails to import must not take a pre-existing attachment of the
+// user with it: only attachments the run stored are discarded.
+func TestImportMemosFailureKeepsPreexistingAttachment(t *testing.T) {
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+	t.Cleanup(ts.Service.CloseUploads)
+	ctx := context.Background()
+	_, err := ts.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key:   storepb.InstanceSettingKey_STORAGE,
+		Value: &storepb.InstanceSetting_StorageSetting{StorageSetting: &storepb.InstanceStorageSetting{UploadSizeLimitMb: 1}},
+	})
+	require.NoError(t, err)
+	user, err := ts.CreateRegularUser(ctx, "keeper")
+	require.NoError(t, err)
+	userCtx := ts.CreateUserContext(ctx, user.ID)
+
+	existingContent := []byte("bytes the user already uploaded")
+	existing, err := ts.Service.CreateAttachment(userCtx, &v1pb.CreateAttachmentRequest{
+		AttachmentId: "keepme0001",
+		Attachment:   &v1pb.Attachment{Filename: "keep.bin", Type: "application/octet-stream", Content: existingContent},
+	})
+	require.NoError(t, err)
+
+	archive := buildImportArchive(t, "keeper", []struct {
+		uid, filename string
+		content       []byte
+	}{
+		{"keepme0001", "keep.bin", existingContent},
+		{"toolarge01", "big.bin", bytes.Repeat([]byte("x"), 2<<20)},
+	})
+	response, err := ts.Service.ImportMemos(userCtx, &v1pb.ImportMemosRequest{
+		Name:        userName(user),
+		Upload:      &v1pb.ImportMemosRequest_Spec{Spec: &v1pb.ImportMemosSpec{TotalSize: int64(len(archive))}},
+		Data:        archive,
+		FinishWrite: true,
+	})
+	require.NoError(t, err)
+	report := response.GetReport()
+	require.NotNil(t, report)
+	require.Equal(t, int32(1), report.Failed)
+	require.Zero(t, report.Created)
+
+	kept, err := ts.Service.GetAttachment(userCtx, &v1pb.GetAttachmentRequest{Name: existing.Name})
+	require.NoError(t, err, "the pre-existing attachment survives the failed import")
+	require.Equal(t, existing.Name, kept.Name)
+}
+
+// Imported memos and stored attachments count against the same per-user
+// write and upload budgets as the regular create paths.
+func TestImportMemosChargesWriteAndUploadBudgets(t *testing.T) {
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+	t.Cleanup(ts.Service.CloseUploads)
+	limiter := ratelimit.NewMemoryLimiter(ratelimit.DefaultPolicy())
+	ts.Service.RateLimiter = limiter
+	ctx := context.Background()
+	user, err := ts.CreateRegularUser(ctx, "charged")
+	require.NoError(t, err)
+	userCtx := ts.CreateUserContext(ctx, user.ID)
+	key := strconv.Itoa(int(user.ID))
+	writeBefore := limiter.Allowed(ratelimit.ScopeWriteUser, key, 1).Remaining
+	uploadBefore := limiter.Allowed(ratelimit.ScopeUploadUser, key, 1).Remaining
+
+	archive := buildImportArchive(t, "charged", []struct {
+		uid, filename string
+		content       []byte
+	}{{"newfile001", "new.bin", []byte("fresh bytes")}})
+	response, err := ts.Service.ImportMemos(userCtx, &v1pb.ImportMemosRequest{
+		Name:        userName(user),
+		Upload:      &v1pb.ImportMemosRequest_Spec{Spec: &v1pb.ImportMemosSpec{TotalSize: int64(len(archive))}},
+		Data:        archive,
+		FinishWrite: true,
+	})
+	require.NoError(t, err)
+	require.Equal(t, int32(1), response.GetReport().Created)
+
+	require.Equal(t, writeBefore-1, limiter.Allowed(ratelimit.ScopeWriteUser, key, 1).Remaining)
+	require.Equal(t, uploadBefore-1, limiter.Allowed(ratelimit.ScopeUploadUser, key, 1).Remaining)
 }

@@ -140,6 +140,11 @@ func (s *APIV1Service) finishMemoImport(ctx context.Context, user *store.User, u
 		return status.Errorf(codes.InvalidArgument, "invalid memo archive: %v", err)
 	}
 	if request.ValidateOnly {
+		// A plan can be requested again and again on the same staged archive,
+		// each time re-parsing it in full, so it costs an archive unit too.
+		if err := s.throttleAndCharge(ratelimit.ScopeArchiveUser, userKey(user.ID), 1); err != nil {
+			return err
+		}
 		plan, err := s.PlanMemoArchiveImport(ctx, user, archive)
 		if err != nil {
 			slog.Error("memo archive plan failed", slog.Int("user", int(user.ID)), slog.Any("error", err))

@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -687,4 +688,21 @@ func TestRenderRegexLiteralFallbackOnD1(t *testing.T) {
 		_, err := engine.CompileToStatement(context.Background(), expression, RenderOptions{Dialect: DialectD1})
 		require.ErrorContains(t, err, "not supported on Cloudflare D1", expression)
 	}
+}
+
+func TestCompileRejectsOversizedExpression(t *testing.T) {
+	t.Parallel()
+	engine, err := NewEngine(NewSchema())
+	require.NoError(t, err)
+
+	var builder strings.Builder
+	builder.WriteString(`content.contains("a")`)
+	for builder.Len() < maxFilterExpressionSize+64 {
+		builder.WriteString(` || content.contains("a")`)
+	}
+	_, err = engine.Compile(context.Background(), builder.String())
+	require.Error(t, err)
+
+	_, err = engine.Compile(context.Background(), `content.contains("a") || content.contains("b")`)
+	require.NoError(t, err)
 }

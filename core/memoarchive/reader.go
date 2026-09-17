@@ -26,6 +26,12 @@ const (
 	// maxContentBytes bounds one memo content file. Instances enforce their
 	// own, smaller content length limit on import.
 	maxContentBytes = 64 << 20
+	// maxExpansionRatio bounds the total declared uncompressed size relative
+	// to the container, with maxExpansionSlack of headroom for tiny archives.
+	// Memo text deflates around ten to one and media hardly at all, so a
+	// container that claims to expand further is a decompression bomb.
+	maxExpansionRatio = 64
+	maxExpansionSlack = 64 << 20
 )
 
 // Archive is a validated, opened Memo Archive. Memos are ordered so that a
@@ -50,10 +56,16 @@ func Read(r io.ReaderAt, size int64) (*Archive, error) {
 		return nil, errors.Errorf("archive has more than %d entries", maxEntries)
 	}
 	archive := &Archive{entries: make(map[string]*zip.File, len(reader.File))}
+	var totalCompressed, totalUncompressed uint64
 	for _, file := range reader.File {
 		if strings.HasSuffix(file.Name, "/") && file.UncompressedSize64 == 0 {
 			// Directory entries carry no data; readers must not depend on them.
 			continue
+		}
+		totalCompressed += file.CompressedSize64
+		totalUncompressed += file.UncompressedSize64
+		if totalUncompressed > maxExpansionRatio*totalCompressed+maxExpansionSlack {
+			return nil, errors.Errorf("archive declares %d uncompressed bytes for %d compressed bytes", totalUncompressed, totalCompressed)
 		}
 		if err := ValidateEntryName(file.Name); err != nil {
 			return nil, err

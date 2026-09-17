@@ -57,7 +57,9 @@ export const SANITIZE_SCHEMA = {
       "loading",
     ],
   },
-  tagNames: [...(defaultSchema.tagNames || []), "iframe"],
+  // `picture`/`source` carry `srcSet`, which the https-only `src` rule below does not cover;
+  // drop them so every remote image goes through the `img` `src` rule.
+  tagNames: [...(defaultSchema.tagNames || []).filter((tag) => tag !== "picture" && tag !== "source"), "iframe"],
   protocols: {
     ...defaultSchema.protocols,
     src: ["https"],

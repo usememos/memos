@@ -21,8 +21,14 @@ type Engine struct {
 }
 
 // NewEngine builds a new Engine for the provided schema.
+// maxFilterExpressionSize bounds a filter expression in code points. Every
+// term compiles to its own SQL predicate, so the expression length is what
+// bounds the query the database has to run.
+const maxFilterExpressionSize = 8 << 10
+
 func NewEngine(schema Schema) (*Engine, error) {
-	env, err := cel.NewEnv(schema.EnvOptions...)
+	options := append([]cel.EnvOption{cel.ParserExpressionSizeLimit(maxFilterExpressionSize)}, schema.EnvOptions...)
+	env, err := cel.NewEnv(options...)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create CEL environment")
 	}

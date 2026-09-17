@@ -255,3 +255,42 @@ func upsertS3StorageSetting(ctx context.Context, t testing.TB, ts *TestService, 
 	})
 	require.NoError(t, err)
 }
+
+// Two uploads with the same filename under a path template that carries no
+// random component must not overwrite each other's object.
+func TestS3ObjectKeysStayUniqueWithoutUUIDTemplate(t *testing.T) {
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+	fake := fakes3.New(t, "flat")
+	ctx := context.Background()
+	storage := fakeStorage("flat-s3", "Flat", fake.Config("flat"))
+	_, err := ts.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_STORAGE,
+		Value: &storepb.InstanceSetting_StorageSetting{StorageSetting: &storepb.InstanceStorageSetting{
+			FilepathTemplate: "files/{filename}", UploadSizeLimitMb: 30, Storages: []*storepb.Storage{storage}, DefaultStorageId: storage.Id,
+		}},
+	})
+	require.NoError(t, err)
+
+	keys := map[string]bool{}
+	for i, username := range []string{"first-user", "second-user"} {
+		user, err := ts.CreateRegularUser(ctx, username)
+		require.NoError(t, err)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
+		content := []byte("content of user " + username)
+		created, err := ts.Service.CreateAttachment(userCtx, &v1pb.CreateAttachmentRequest{Attachment: &v1pb.Attachment{
+			Filename: "notes.txt", Type: "text/plain", Content: content,
+		}})
+		require.NoError(t, err)
+		uid, err := apiv1.ExtractAttachmentUIDFromName(created.Name)
+		require.NoError(t, err)
+		row, err := ts.Store.GetAttachment(ctx, &store.FindAttachment{UID: &uid})
+		require.NoError(t, err)
+		key := row.Payload.GetS3Object().GetKey()
+		require.False(t, keys[key], "upload %d reused key %q", i, key)
+		keys[key] = true
+		stored, err := fake.GetObject("flat", key)
+		require.NoError(t, err)
+		require.Equal(t, content, stored)
+	}
+}

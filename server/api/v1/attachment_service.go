@@ -33,7 +33,6 @@ const (
 	// Quality 95 maintains visual quality while ensuring metadata is removed.
 	defaultJPEGQuality        = 95
 	maxBatchDeleteAttachments = 100
-	maxImagePixels            = 50_000_000
 )
 
 // exifCapableImageTypes defines image formats that may contain EXIF metadata.
@@ -228,7 +227,13 @@ func (s *APIV1Service) processAndSaveAttachment(ctx context.Context, create *sto
 	content := io.ReadSeeker(source)
 	// Strip EXIF metadata from images for privacy protection. Motion photo
 	// containers are kept intact because re-encoding would drop the video.
-	if shouldStripExif(create.Type) && !isAndroidMotionContainer(create.Payload.GetMotionMedia()) {
+	// The decision uses the sniffed bytes as well as the declared type, so a
+	// client cannot skip stripping by labeling a JPEG as something else.
+	needsExifStrip, err := shouldStripExifContent(source, create.Type)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to inspect attachment content: %v", err)
+	}
+	if needsExifStrip && !isAndroidMotionContainer(create.Payload.GetMotionMedia()) {
 		release, err := s.acquireImageProcessingSlot(ctx)
 		if err != nil {
 			return nil, status.Errorf(codes.ResourceExhausted, "too many image processing requests")
@@ -298,7 +303,7 @@ func (s *APIV1Service) ListAttachments(ctx context.Context, request *v1pb.ListAt
 	if request.PageToken != "" {
 		// Simple implementation: page token is the offset as string
 		// In production, you might want to use encrypted tokens
-		if parsed, err := fmt.Sscanf(request.PageToken, "%d", &offset); err != nil || parsed != 1 {
+		if parsed, err := fmt.Sscanf(request.PageToken, "%d", &offset); err != nil || parsed != 1 || offset < 0 {
 			return nil, status.Errorf(codes.InvalidArgument, "invalid page token")
 		}
 	}

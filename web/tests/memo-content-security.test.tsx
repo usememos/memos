@@ -76,6 +76,17 @@ describe("trusted iframe providers", () => {
     expect(isTrustedIframeSrc("https://evil.example/embed/abc123")).toBe(false);
   });
 
+  it("drops picture sources that would bypass the https-only image rule", () => {
+    const html = renderMemoContent(
+      '<picture><source srcset="http://tracker.example/a.png"><img src="https://img.example/a.png"></picture>',
+    );
+
+    expect(html).not.toMatch(/<picture/);
+    expect(html).not.toMatch(/<source/);
+    expect(html).not.toMatch(/tracker\.example/);
+    expect(html).toMatch(/img\.example\/a\.png/);
+  });
+
   it("drops untrusted iframe embeds during rendering", () => {
     const trusted = renderMemoContent('<iframe src="https://www.youtube.com/embed/abc123" title="demo"></iframe>');
     const untrusted = renderMemoContent('<iframe src="https://evil.example/embed/abc123" title="demo"></iframe>');

@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"strings"
 	"testing"
 	"time"
 
@@ -10,6 +11,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"github.com/usememos/memos/internal/identifier"
 	"github.com/usememos/memos/internal/ratelimit"
 )
 
@@ -84,4 +86,15 @@ func TestNewChallengeRequiredError(t *testing.T) {
 	require.True(t, ok)
 	require.Equal(t, reasonChallengeRequired, info.Reason)
 	require.Nil(t, rateLimitHTTPHeaders(st))
+}
+
+func TestAccountKeyBoundsLength(t *testing.T) {
+	require.Equal(t, "alice", accountKey("alice"))
+	long := strings.Repeat("a", identifier.MaxUsernameLength+1)
+	key := accountKey(long)
+	require.True(t, strings.HasPrefix(key, "sha256:"))
+	require.Len(t, key, len("sha256:")+64)
+	// Distinct submissions stay distinct; the same submission maps to one key.
+	require.NotEqual(t, key, accountKey(long+"b"))
+	require.Equal(t, key, accountKey(long))
 }
