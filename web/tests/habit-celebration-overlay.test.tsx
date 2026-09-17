@@ -50,8 +50,15 @@ describe("HabitCelebrationOverlay", () => {
 
   it("uses a polite announcement and hides decorative particles", () => {
     const { container } = render(<HabitCelebrationOverlay event={event("target")} onDismiss={vi.fn()} />);
-    expect(screen.getByRole("status")).toHaveTextContent("Target crushed. 24 minutes logged. 10 XP earned.");
+    const announcement = screen.getByRole("status");
+    expect(announcement).toHaveClass("sr-only");
+    expect(announcement).toHaveTextContent("Target crushed. 24 minutes logged. 10 XP earned.");
     expect(container.querySelectorAll('[aria-hidden="true"][data-particle]').length).toBeGreaterThan(0);
+  });
+
+  it("does not leave an infinite trophy animation running in the major dialog", () => {
+    render(<HabitCelebrationOverlay event={event("major")} onDismiss={vi.fn()} />);
+    expect(document.querySelector("[data-major-emblem]")).not.toHaveClass("motion-safe:animate-bounce");
   });
 
   it("dismisses a non-modal celebration with Escape", () => {

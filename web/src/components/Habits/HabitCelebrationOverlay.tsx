@@ -104,8 +104,6 @@ const HabitCelebrationOverlay = ({ event, onDismiss, returnFocus }: Props) => {
         <CelebrationParticles tier={event.tier} />
         <div className="pointer-events-none fixed inset-x-4 top-20 z-overlay flex justify-center sm:top-24">
           <section
-            role="status"
-            aria-live="polite"
             className={cn(
               "pointer-events-auto relative w-full max-w-md overflow-hidden rounded-3xl border bg-card px-6 py-5 text-center shadow-2xl",
               target ? "border-warning/50" : "border-primary/40",
@@ -133,7 +131,9 @@ const HabitCelebrationOverlay = ({ event, onDismiss, returnFocus }: Props) => {
                 ? `${event.xpAwarded} XP earned · ${event.targetValue} minute target`
                 : `Minimum cleared · day ${event.currentStreak}`}
             </p>
-            <span className="sr-only">{announcement}</span>
+            <span role="status" aria-live="polite" className="sr-only">
+              {announcement}
+            </span>
           </section>
         </div>
       </>
@@ -159,7 +159,7 @@ const HabitCelebrationOverlay = ({ event, onDismiss, returnFocus }: Props) => {
           initialFocus={continueButtonRef}
           finalFocus={returnFocus}
         >
-          <div className="text-6xl motion-safe:animate-bounce" aria-hidden="true">
+          <div className="text-6xl" data-major-emblem aria-hidden="true">
             🏆
           </div>
           <DialogTitle className="text-center text-3xl text-foreground">{title}</DialogTitle>
