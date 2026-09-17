@@ -140,7 +140,7 @@ const CreatorDisplay: React.FC<{ creator: User }> = ({ creator }) => (
       viewTransition
     >
       <span className="flex size-5 shrink-0 items-center justify-center">
-        <UserAvatar className="size-5 rounded-[5px]" avatarUrl={creator.avatarUrl} />
+        <UserAvatar className="size-5 rounded-[6px]" avatarUrl={creator.avatarUrl} />
       </span>
       <span className="min-w-0 truncate">{creator.displayName || creator.username}</span>
     </Link>

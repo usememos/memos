@@ -1,8 +1,12 @@
 import { FOCUS_VISIBLE_OUTLINE_CLASSES } from "@/components/ui/focus";
 import { cn } from "@/lib/utils";
 
-export const MEMO_CARD_BASE_CLASSES =
-  "relative group flex flex-col justify-start items-start bg-card w-full px-4 py-3 mb-2 gap-2 text-card-foreground rounded-lg border border-border/70 transition-colors";
+export const MEMO_CARD_BASE_CLASSES = cn(
+  "relative group flex flex-col justify-start items-start bg-card w-full px-4 py-3 mb-2 gap-2 text-card-foreground rounded-xl border border-border/70 shadow-xs",
+  "transition-[box-shadow,border-color] duration-200 motion-reduce:transition-none",
+  "hover:border-primary/30 hover:shadow-md focus-within:border-primary/30 focus-within:shadow-md",
+  "group-hover/card:border-primary/30 group-hover/card:shadow-md group-focus-within/card:border-primary/30 group-focus-within/card:shadow-md",
+);
 
 /**
  * A memo's timestamp as a control, on the card header and in the editor: one line of muted

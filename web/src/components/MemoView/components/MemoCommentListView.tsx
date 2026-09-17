@@ -38,7 +38,10 @@ const MemoCommentListView: React.FC = () => {
   }
 
   return (
-    <div ref={viewportRef} className="rounded-b-lg border border-t-0 border-border/70 px-4 pb-2 pt-1.5">
+    <div
+      ref={viewportRef}
+      className="rounded-b-xl border border-t-0 border-border/70 bg-muted/25 px-4 pb-2 pt-1.5 transition-colors duration-200 motion-reduce:transition-none group-hover/card:border-primary/30 group-focus-within/card:border-primary/30"
+    >
       <MetadataSection
         title={t("memo.comment.self")}
         count={commentAmount}

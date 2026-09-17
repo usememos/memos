@@ -184,7 +184,11 @@ const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
 
   const article = (
     <article
-      className={cn(MEMO_CARD_BASE_CLASSES, showCommentPreview ? "mb-0 rounded-b-none" : "mb-2", className)}
+      className={cn(
+        MEMO_CARD_BASE_CLASSES,
+        showCommentPreview && "mb-0 rounded-b-none border-b-0",
+        className,
+      )}
       ref={cardRef}
       tabIndex={readonly ? -1 : 0}
     >
@@ -218,7 +222,7 @@ const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
   );
 
   const memoDisplay = showCommentPreview ? (
-    <div className="w-full mb-2">
+    <div className="group/card w-full mb-2">
       {article}
       <MemoCommentListView />
     </div>
