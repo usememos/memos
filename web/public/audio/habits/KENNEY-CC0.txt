@@ -1,0 +1,7 @@
+Asset: confirmation_002.ogg from Interface Sounds
+Creator: Kenney
+Source: https://kenney.nl/assets/interface-sounds
+License: Creative Commons Zero (CC0 1.0 Universal)
+License URL: https://creativecommons.org/publicdomain/zero/1.0/
+
+The source pack permits personal, educational, and commercial use. Attribution is not required; this note is retained for provenance.
