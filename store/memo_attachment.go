@@ -13,7 +13,8 @@ var ErrMemoMutationConflict = errors.New("memo state changed")
 // MemoAttachmentBinding describes one attachment that should be bound to a
 // memo. WasBoundToMemo distinguishes an existing binding from a new one so the
 // driver can reject ownership transfers while preserving legacy rows already
-// attached to the memo.
+// attached to the memo. A new binding must be owned by the memo author, or by
+// the acting instance administrator.
 type MemoAttachmentBinding struct {
 	ID             int32
 	UID            string
@@ -40,6 +41,48 @@ type MemoMutation struct {
 	ReplaceReferenceRelations bool
 	ReferenceRelations        []*MemoRelation
 	Policy                    *MemoWritePolicy
+}
+
+// MemoAttachmentBindingOwnerAllowed reports whether an unbound attachment may
+// be bound to a memo: it must be owned by the memo author, or by the acting
+// instance administrator. Ownership is never transferred between accounts.
+func MemoAttachmentBindingOwnerAllowed(attachmentCreatorID, memoCreatorID, actorUserID int32, actorIsAdmin bool) bool {
+	if attachmentCreatorID == memoCreatorID {
+		return true
+	}
+	return actorIsAdmin && attachmentCreatorID == actorUserID
+}
+
+// MemoAttachmentRemovalAllowed reports whether an attachment may be removed
+// from a memo. Removal deletes the attachment, so it must be bound to that
+// memo and owned by the actor unless the actor is an instance administrator.
+func MemoAttachmentRemovalAllowed(attachment *Attachment, memoID, actorUserID int32, actorIsAdmin bool) bool {
+	if attachment == nil || attachment.MemoID == nil || *attachment.MemoID != memoID {
+		return false
+	}
+	return actorIsAdmin || attachment.CreatorID == actorUserID
+}
+
+// WritePolicy returns the transport-facing policy governing the mutation, if
+// any: the mutation's own policy, else the one carried by its memo update.
+func (m *MemoMutation) WritePolicy() *MemoWritePolicy {
+	if m.Policy != nil {
+		return m.Policy
+	}
+	if m.MemoUpdate != nil {
+		return m.MemoUpdate.Policy
+	}
+	return nil
+}
+
+// ActorUserID returns the user performing the mutation. Transport-facing
+// updates carry the actor in their policy, which may differ from the memo
+// author when an instance administrator acts; creations act as the author.
+func (m *MemoMutation) ActorUserID() int32 {
+	if policy := m.WritePolicy(); policy != nil {
+		return policy.ActorUserID
+	}
+	return m.MemoCreatorID
 }
 
 // ApplyMemoMutation atomically applies memo fields, attachment bindings, and

@@ -52,6 +52,38 @@ func (d MemoReadDecision) Allowed() bool {
 	return d.Denial == MemoReadDenialNone
 }
 
+// IsActiveUser reports whether the user exists and is in the normal lifecycle
+// state, which every authenticated authorization decision requires.
+func IsActiveUser(user *store.User) bool {
+	return user != nil && user.RowStatus == store.Normal
+}
+
+// IsInstanceAdmin reports whether the user is an active application ADMIN.
+// An instance administrator is the superuser for named memo operations: every
+// memo-local authorization check (authorship, audience, Space membership and
+// participation, attachment and reaction ownership) passes. Structural
+// validity still applies, and collection listings keep the audience predicate
+// so feeds never surface other users' private memos.
+func IsInstanceAdmin(user *store.User) bool {
+	return IsActiveUser(user) && user.Role == store.RoleAdmin
+}
+
+// CanManageMemo reports whether the actor may perform author-level operations
+// on the memo: the active author, or an instance administrator.
+func CanManageMemo(actor *store.User, memo *store.Memo) bool {
+	return memo != nil && ownsOrAdministers(actor, memo.CreatorID)
+}
+
+// CanManageAttachment reports whether the actor may mutate an attachment row
+// directly: the active owner, or an instance administrator.
+func CanManageAttachment(actor *store.User, attachment *store.Attachment) bool {
+	return attachment != nil && ownsOrAdministers(actor, attachment.CreatorID)
+}
+
+func ownsOrAdministers(actor *store.User, creatorID int32) bool {
+	return IsActiveUser(actor) && (actor.ID == creatorID || actor.Role == store.RoleAdmin)
+}
+
 // CheckMemoReadContext evaluates access to exactly one memo. Unknown audience,
 // invalid lifecycle state, and a missing or invalid creator fail closed. A
 // dangling placement only invalidates SPACE reads; other audiences
@@ -69,12 +101,18 @@ func CheckMemoReadContext(ctx MemoReadContext) MemoReadDecision {
 		return MemoReadDecision{Denial: MemoReadDenialNotFound}
 	}
 
-	viewerActive := ctx.Viewer != nil && ctx.Viewer.RowStatus == store.Normal
-	viewerIsAuthor := viewerActive && ctx.Viewer.ID == memo.CreatorID
-	if memo.RowStatus == store.Archived && !viewerIsAuthor {
+	if memo.RowStatus != store.Normal && memo.RowStatus != store.Archived {
 		return MemoReadDecision{Denial: MemoReadDenialNotFound}
 	}
-	if memo.RowStatus != store.Normal && memo.RowStatus != store.Archived {
+	// A structurally valid memo is readable by name to an instance
+	// administrator regardless of audience, placement, or lifecycle state.
+	if IsInstanceAdmin(ctx.Viewer) {
+		return MemoReadDecision{Class: MemoReadClassPrivate}
+	}
+
+	viewerActive := IsActiveUser(ctx.Viewer)
+	viewerIsAuthor := viewerActive && ctx.Viewer.ID == memo.CreatorID
+	if memo.RowStatus == store.Archived && !viewerIsAuthor {
 		return MemoReadDecision{Denial: MemoReadDenialNotFound}
 	}
 

@@ -30,7 +30,7 @@ import { cn } from "@/lib/utils";
 import { State } from "@/types/proto/api/v1/common_pb";
 import { Memo, type MemoRelation, Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
-import { isSuperUser } from "@/utils/user";
+import { canManageMemo } from "@/utils/user";
 import MemoOutline from "./MemoOutline";
 import MemoSharePanel from "./MemoSharePanel";
 
@@ -107,13 +107,13 @@ const MemoDetailSidebar = ({
   const { profile } = useInstance();
   const [sharePanelOpen, setSharePanelOpen] = useState(false);
 
-  const readonly = forceReadonly || (memo.creator !== currentUser?.name && !isSuperUser(currentUser));
+  const readonly = forceReadonly || !canManageMemo(memo, currentUser);
   const canEdit = !!onEdit && !readonly && memo.state === State.NORMAL;
   const canComment = !!onCommentCreate && !forceReadonly && !!currentUser && memo.state === State.NORMAL;
   const canManageShares =
     !forceReadonly &&
     !memo.parent &&
-    memo.creator === currentUser?.name &&
+    canManageMemo(memo, currentUser) &&
     memo.state === State.NORMAL &&
     memo.visibility !== Visibility.SPACE;
 

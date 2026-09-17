@@ -113,7 +113,7 @@ service MemoService {
     option (google.api.http) = {delete: "/api/v1/{name=memos/*/reactions/*}"};
     option (google.api.method_signature) = "name";
   }
-  // CreateMemoShare creates a share link for a memo. Requires authentication as the memo creator.
+  // CreateMemoShare creates a share link for a memo. Requires the memo creator or an instance administrator.
   rpc CreateMemoShare(CreateMemoShareRequest) returns (MemoShare) {
     option (google.api.http) = {
       post: "/api/v1/{parent=memos/*}/shares"
@@ -121,12 +121,12 @@ service MemoService {
     };
     option (google.api.method_signature) = "parent,memo_share";
   }
-  // ListMemoShares lists all share links for a memo. Requires authentication as the memo creator.
+  // ListMemoShares lists all share links for a memo. Requires the memo creator or an instance administrator.
   rpc ListMemoShares(ListMemoSharesRequest) returns (ListMemoSharesResponse) {
     option (google.api.http) = {get: "/api/v1/{parent=memos/*}/shares"};
     option (google.api.method_signature) = "parent";
   }
-  // DeleteMemoShare revokes a share link. Requires authentication as the memo creator.
+  // DeleteMemoShare revokes a share link. Requires the memo creator or an instance administrator.
   rpc DeleteMemoShare(DeleteMemoShareRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {delete: "/api/v1/{name=memos/*/shares/*}"};
     option (google.api.method_signature) = "name";

@@ -16,13 +16,9 @@ func (d *DB) DeleteMemoWithPolicy(ctx context.Context, delete *store.DeleteMemoW
 	}
 	defer func() { _ = tx.Rollback() }()
 
-	var actorStatus store.RowStatus
-	if err := tx.QueryRowContext(ctx, `SELECT row_status FROM "user" WHERE id = $1`, delete.ActorUserID).Scan(&actorStatus); errors.Is(err, sql.ErrNoRows) {
-		return nil, store.ErrMemoPermissionDenied
-	} else if err != nil {
-		return nil, errors.Wrap(err, "failed to read memo deletion actor")
-	} else if actorStatus != store.Normal {
-		return nil, store.ErrMemoPermissionDenied
+	actor, err := requirePostgresActiveMemoActor(ctx, tx, delete.ActorUserID)
+	if err != nil {
+		return nil, err
 	}
 
 	var creatorID int32
@@ -36,7 +32,7 @@ func (d *DB) DeleteMemoWithPolicy(ctx context.Context, delete *store.DeleteMemoW
 	} else if err != nil {
 		return nil, errors.Wrap(err, "failed to read memo")
 	}
-	if creatorID != delete.ActorUserID {
+	if creatorID != delete.ActorUserID && !actor.Admin {
 		return nil, store.ErrMemoPermissionDenied
 	}
 	memoSpaceID := store.NullInt32Pointer(memoSpace)
@@ -47,7 +43,7 @@ func (d *DB) DeleteMemoWithPolicy(ctx context.Context, delete *store.DeleteMemoW
 			return nil, errors.Wrap(err, "failed to read memo space state")
 		}
 	}
-	actorCanRead := store.MemoDeleteActorCanRead(rowStatus, visibility, memoSpaceID, spaceExists, actorMember)
+	actorCanRead := store.MemoDeleteActorCanRead(rowStatus, visibility, memoSpaceID, spaceExists, actorMember || actor.Admin)
 
 	attachments, err := deletePostgresMemoSetTx(ctx, tx, []int32{delete.MemoID})
 	if err != nil {

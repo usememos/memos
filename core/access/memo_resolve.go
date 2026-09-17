@@ -67,7 +67,9 @@ func (f MemoReadFacts) WithViewer(ctx context.Context, s MemoReadStore, viewer *
 	if f.Memo == nil || f.Memo.SpaceID == nil || !f.SpaceValid {
 		return readContext, nil
 	}
-	if viewer == nil || viewer.RowStatus != store.Normal {
+	// Membership never changes the outcome for an inactive viewer or for an
+	// instance administrator, so skip the lookup for both.
+	if !IsActiveUser(viewer) || IsInstanceAdmin(viewer) {
 		return readContext, nil
 	}
 	membership, err := s.GetSpaceMember(ctx, &store.FindSpaceMember{SpaceID: f.Memo.SpaceID, UserID: &viewer.ID})

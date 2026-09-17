@@ -264,7 +264,7 @@ func TestSpaceMemoAccessDoesNotFlowAcrossCommentRelation(t *testing.T) {
 	require.NoError(t, err)
 	member, err := ts.CreateUser(ctx, &store.User{Username: "memo-space-member", Role: store.RoleUser, PasswordHash: "hash"})
 	require.NoError(t, err)
-	outsider, err := ts.CreateUser(ctx, &store.User{Username: "memo-space-outsider", Role: store.RoleAdmin, PasswordHash: "hash"})
+	outsider, err := ts.CreateUser(ctx, &store.User{Username: "memo-space-outsider", Role: store.RoleUser, PasswordHash: "hash"})
 	require.NoError(t, err)
 
 	space, err := ts.CreateSpace(ctx, &store.Space{UID: "memo-space", Title: "Memo Space"}, owner.ID)
@@ -280,6 +280,17 @@ func TestSpaceMemoAccessDoesNotFlowAcrossCommentRelation(t *testing.T) {
 		UID: "outsider-assigned", CreatorID: outsider.ID, Content: "no", Visibility: store.Public, SpaceID: &space.ID,
 	})
 	require.ErrorIs(t, err, store.ErrMemoSpaceMembershipRequired)
+	applicationAdmin, err := ts.CreateUser(ctx, &store.User{Username: "memo-space-app-admin", Role: store.RoleAdmin, PasswordHash: "hash"})
+	require.NoError(t, err)
+	_, err = ts.CreateMemo(ctx, &store.Memo{
+		UID: "admin-assigned", CreatorID: applicationAdmin.ID, Content: "superuser", Visibility: store.Private, SpaceID: &space.ID,
+	})
+	require.NoError(t, err, "an instance administrator places memos without membership")
+	missingSpaceID := space.ID + 1000
+	_, err = ts.CreateMemo(ctx, &store.Memo{
+		UID: "admin-dangling", CreatorID: applicationAdmin.ID, Content: "no", Visibility: store.Public, SpaceID: &missingSpaceID,
+	})
+	require.ErrorIs(t, err, store.ErrMemoSpaceNotWritable, "structural validity still applies to an administrator")
 
 	comment, err := ts.CreateMemoComment(ctx, &store.Memo{
 		UID: "space-public-comment", CreatorID: owner.ID, Content: "public comment", Visibility: store.Public,

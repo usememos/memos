@@ -140,12 +140,14 @@ func TestUpsertMemoReactionRevalidatesSpaceParticipation(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	// An application ADMIN has no Space participation bypass.
-	_, err = ts.Service.UpsertMemoReaction(adminCtx, &apiv1.UpsertMemoReactionRequest{
+	// An application ADMIN is the superuser and participates without membership.
+	adminReaction, err := ts.Service.UpsertMemoReaction(adminCtx, &apiv1.UpsertMemoReactionRequest{
 		Name:     memoName,
 		Reaction: &apiv1.Reaction{ReactionType: "🔥"},
 	})
-	require.Equal(t, codes.PermissionDenied, status.Code(err))
+	require.NoError(t, err)
+	_, err = ts.Service.DeleteMemoReaction(adminCtx, &apiv1.DeleteMemoReactionRequest{Name: adminReaction.Name})
+	require.NoError(t, err)
 
 	require.NoError(t, ts.Store.DeleteSpaceMember(ctx, &store.DeleteSpaceMember{SpaceID: space.ID, UserID: member.ID}, owner.ID))
 	_, err = ts.Service.DeleteMemoReaction(memberCtx, &apiv1.DeleteMemoReactionRequest{Name: memberReaction.Name})
@@ -183,7 +185,7 @@ func TestAssignedMemoReactionsFollowMemoReadAccess(t *testing.T) {
 	require.NoError(t, err)
 	member, err := ts.CreateRegularUser(ctx, "assigned-reaction-member")
 	require.NoError(t, err)
-	outsider, err := ts.CreateHostUser(ctx, "assigned-reaction-app-admin")
+	outsider, err := ts.CreateRegularUser(ctx, "assigned-reaction-outsider")
 	require.NoError(t, err)
 	ownerCtx := ts.CreateUserContext(ctx, owner.ID)
 	memberCtx := ts.CreateUserContext(ctx, member.ID)
@@ -355,15 +357,15 @@ func TestDeleteMemoReaction(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, reaction)
 
-		// Application ADMIN is an instance role, not reaction ownership.
+		// Application ADMIN is the superuser and may withdraw any reaction.
 		_, err = ts.Service.DeleteMemoReaction(hostCtx, &apiv1.DeleteMemoReactionRequest{
 			Name: reaction.Name,
 		})
-		require.Equal(t, codes.PermissionDenied, status.Code(err))
+		require.NoError(t, err)
 		memoID := parseMemoIDFromNameForTest(t, ts, memo.Name)
 		remainingReaction, err := ts.Store.GetReaction(ctx, &store.FindReaction{MemoID: &memoID, CreatorID: &regularUser.ID})
 		require.NoError(t, err)
-		require.NotNil(t, remainingReaction)
+		require.Nil(t, remainingReaction)
 	})
 
 	t.Run("DeleteMemoReaction permission denied for non-owner", func(t *testing.T) {

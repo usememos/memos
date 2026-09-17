@@ -84,11 +84,11 @@ type MemoServiceClient interface {
 	UpsertMemoReaction(ctx context.Context, in *UpsertMemoReactionRequest, opts ...grpc.CallOption) (*Reaction, error)
 	// DeleteMemoReaction deletes a reaction for a memo.
 	DeleteMemoReaction(ctx context.Context, in *DeleteMemoReactionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// CreateMemoShare creates a share link for a memo. Requires authentication as the memo creator.
+	// CreateMemoShare creates a share link for a memo. Requires the memo creator or an instance administrator.
 	CreateMemoShare(ctx context.Context, in *CreateMemoShareRequest, opts ...grpc.CallOption) (*MemoShare, error)
-	// ListMemoShares lists all share links for a memo. Requires authentication as the memo creator.
+	// ListMemoShares lists all share links for a memo. Requires the memo creator or an instance administrator.
 	ListMemoShares(ctx context.Context, in *ListMemoSharesRequest, opts ...grpc.CallOption) (*ListMemoSharesResponse, error)
-	// DeleteMemoShare revokes a share link. Requires authentication as the memo creator.
+	// DeleteMemoShare revokes a share link. Requires the memo creator or an instance administrator.
 	DeleteMemoShare(ctx context.Context, in *DeleteMemoShareRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// GetSharedMemo resolves a share token to its memo. No authentication required.
 	// Returns NOT_FOUND if the token is invalid or expired.
@@ -349,11 +349,11 @@ type MemoServiceServer interface {
 	UpsertMemoReaction(context.Context, *UpsertMemoReactionRequest) (*Reaction, error)
 	// DeleteMemoReaction deletes a reaction for a memo.
 	DeleteMemoReaction(context.Context, *DeleteMemoReactionRequest) (*emptypb.Empty, error)
-	// CreateMemoShare creates a share link for a memo. Requires authentication as the memo creator.
+	// CreateMemoShare creates a share link for a memo. Requires the memo creator or an instance administrator.
 	CreateMemoShare(context.Context, *CreateMemoShareRequest) (*MemoShare, error)
-	// ListMemoShares lists all share links for a memo. Requires authentication as the memo creator.
+	// ListMemoShares lists all share links for a memo. Requires the memo creator or an instance administrator.
 	ListMemoShares(context.Context, *ListMemoSharesRequest) (*ListMemoSharesResponse, error)
-	// DeleteMemoShare revokes a share link. Requires authentication as the memo creator.
+	// DeleteMemoShare revokes a share link. Requires the memo creator or an instance administrator.
 	DeleteMemoShare(context.Context, *DeleteMemoShareRequest) (*emptypb.Empty, error)
 	// GetSharedMemo resolves a share token to its memo. No authentication required.
 	// Returns NOT_FOUND if the token is invalid or expired.

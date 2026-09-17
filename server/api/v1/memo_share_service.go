@@ -48,7 +48,7 @@ func (s *APIV1Service) CreateMemoShare(ctx context.Context, request *v1pb.Create
 	if memo.RowStatus != store.Normal {
 		return nil, status.Errorf(codes.FailedPrecondition, "only active memos can be shared")
 	}
-	if memo.CreatorID != user.ID {
+	if !access.CanManageMemo(user, memo) {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 	if memo.Visibility == store.SpaceAudience {
@@ -102,10 +102,10 @@ func (s *APIV1Service) ListMemoShares(ctx context.Context, request *v1pb.ListMem
 	if memo == nil {
 		return nil, status.Errorf(codes.NotFound, "memo not found")
 	}
-	if memo.CreatorID != user.ID {
+	if !access.CanManageMemo(user, memo) {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
-	if err := s.requireAssignedMemoWritable(ctx, memo, user.ID); err != nil {
+	if err := s.requireAssignedMemoWritable(ctx, memo, user); err != nil {
 		return nil, err
 	}
 
@@ -146,7 +146,7 @@ func (s *APIV1Service) DeleteMemoShare(ctx context.Context, request *v1pb.Delete
 	if memo == nil {
 		return nil, status.Errorf(codes.NotFound, "memo not found")
 	}
-	if memo.CreatorID != user.ID {
+	if !access.CanManageMemo(user, memo) {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 	ms, err := s.Store.GetMemoShare(ctx, &store.FindMemoShare{UID: &shareToken})

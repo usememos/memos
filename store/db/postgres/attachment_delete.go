@@ -19,18 +19,22 @@ func (d *DB) DeleteAttachmentsWithPolicy(ctx context.Context, policy *store.Atta
 	}
 	defer func() { _ = tx.Rollback() }()
 
+	actor, err := requirePostgresActiveMemoActor(ctx, tx, policy.ActorUserID)
+	if err != nil {
+		return err
+	}
 	attachments, err := listPostgresAttachmentSnapshots(ctx, tx, attachmentIDs)
 	if err != nil {
 		return errors.Wrap(err, "failed to read attachment delete targets")
 	}
-	memoIDs, err := store.ValidateAttachmentMutationTargets(policy.ActorUserID, attachmentIDs, attachments)
+	memoIDs, err := store.ValidateAttachmentMutationTargets(policy.ActorUserID, actor.Admin, attachmentIDs, attachments)
 	if err != nil {
 		return err
 	}
 	if err := store.ValidateAttachmentDeletionMemoSnapshots(memoIDs, policy.ExpectedMemoContents); err != nil {
 		return err
 	}
-	if err := authorizePostgresAttachmentMutation(ctx, tx, policy.ActorUserID, memoIDs, policy.ExpectedMemoContents); err != nil {
+	if err := authorizePostgresAttachmentMutation(ctx, tx, policy.ActorUserID, actor.Admin, memoIDs, policy.ExpectedMemoContents); err != nil {
 		return err
 	}
 
@@ -68,23 +72,13 @@ func authorizePostgresAttachmentMutation(
 	ctx context.Context,
 	tx *sql.Tx,
 	actorUserID int32,
+	actorIsAdmin bool,
 	memoIDs []int32,
 	expectedMemoContents map[int32]string,
 ) error {
-	var actorStatus store.RowStatus
-	if err := tx.QueryRowContext(ctx, `SELECT row_status FROM "user" WHERE id = $1`, actorUserID).Scan(&actorStatus); err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return store.ErrMemoPermissionDenied
-		}
-		return errors.Wrap(err, "failed to read attachment actor")
-	}
-	if actorStatus != store.Normal {
-		return store.ErrMemoPermissionDenied
-	}
-
 	writePolicy := &store.MemoWritePolicy{ActorUserID: actorUserID}
 	for _, memoID := range memoIDs {
-		snapshot := &store.MemoWriteSnapshot{}
+		snapshot := &store.MemoWriteSnapshot{ActorIsAdmin: actorIsAdmin}
 		var memoSpace sql.NullInt64
 		var content string
 		if err := tx.QueryRowContext(ctx, `SELECT creator_id, row_status, space_id, visibility, content

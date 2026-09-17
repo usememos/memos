@@ -26,7 +26,7 @@ func (d *DB) CreateAttachment(ctx context.Context, create *store.Attachment) (*s
 		return nil, err
 	}
 	defer func() { _ = tx.Rollback() }()
-	if err := validatePostgresMemoWritePolicy(ctx, tx, *create.MemoID, create.Policy, nil); err != nil {
+	if _, err := validatePostgresMemoWritePolicy(ctx, tx, *create.MemoID, create.Policy, nil); err != nil {
 		return nil, err
 	}
 	attachment, err := insertPostgresAttachment(ctx, tx, create)
@@ -225,15 +225,19 @@ func (d *DB) UpdateAttachment(ctx context.Context, update *store.UpdateAttachmen
 		return err
 	}
 	defer func() { _ = tx.Rollback() }()
+	actor, err := requirePostgresActiveMemoActor(ctx, tx, update.Policy.ActorUserID)
+	if err != nil {
+		return err
+	}
 	attachments, err := listPostgresAttachmentSnapshots(ctx, tx, attachmentIDs)
 	if err != nil {
 		return err
 	}
-	memoIDs, err := store.ValidateAttachmentMutationTargets(update.Policy.ActorUserID, attachmentIDs, attachments)
+	memoIDs, err := store.ValidateAttachmentMutationTargets(update.Policy.ActorUserID, actor.Admin, attachmentIDs, attachments)
 	if err != nil {
 		return err
 	}
-	if err := authorizePostgresAttachmentMutation(ctx, tx, update.Policy.ActorUserID, memoIDs, nil); err != nil {
+	if err := authorizePostgresAttachmentMutation(ctx, tx, update.Policy.ActorUserID, actor.Admin, memoIDs, nil); err != nil {
 		return err
 	}
 	if err := applyPostgresAttachmentUpdate(ctx, tx, update); err != nil {

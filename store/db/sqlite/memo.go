@@ -2,7 +2,6 @@ package sqlite
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"strings"
 
@@ -70,29 +69,40 @@ func insertSQLiteMemo(ctx context.Context, tx dbExecutor, create *store.Memo) er
 }
 
 func validateSQLiteMemoCreate(ctx context.Context, tx dbExecutor, create *store.Memo) error {
-	var actorStatus store.RowStatus
-	err := tx.QueryRowContext(ctx, "SELECT row_status FROM user WHERE id = ?", create.CreatorID).Scan(&actorStatus)
-	if errors.Is(err, sql.ErrNoRows) || (err == nil && actorStatus != store.Normal) {
-		return store.ErrMemoSpaceMembershipRequired
-	}
+	actor, err := readSQLiteMemoActor(ctx, tx, create.CreatorID)
 	if err != nil {
 		return err
 	}
-	if create.SpaceID != nil {
+	if !actor.Active {
+		return store.ErrMemoSpaceMembershipRequired
+	}
+	if create.SpaceID == nil {
+		return nil
+	}
+	if !actor.Admin {
 		return validateSQLiteMemoSpaceMember(ctx, tx, *create.SpaceID, create.CreatorID)
 	}
-	return nil
-}
-
-func validateSQLiteMemoSpaceMember(ctx context.Context, tx dbExecutor, spaceID, userID int32) error {
-	var exists bool
-	if err := tx.QueryRowContext(ctx, "SELECT EXISTS(SELECT 1 FROM space WHERE id = ?)", spaceID).Scan(&exists); err != nil {
+	// An instance administrator places memos without membership; the target
+	// Space must still exist.
+	exists, err := sqliteSpaceExists(ctx, tx, *create.SpaceID)
+	if err != nil {
 		return err
 	}
 	if !exists {
 		return store.ErrMemoSpaceNotWritable
 	}
-	err := tx.QueryRowContext(ctx, `SELECT EXISTS(
+	return nil
+}
+
+func validateSQLiteMemoSpaceMember(ctx context.Context, tx dbExecutor, spaceID, userID int32) error {
+	exists, err := sqliteSpaceExists(ctx, tx, spaceID)
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return store.ErrMemoSpaceNotWritable
+	}
+	err = tx.QueryRowContext(ctx, `SELECT EXISTS(
 		SELECT 1 FROM space_member sm JOIN user u ON u.id = sm.user_id
 		WHERE sm.space_id = ? AND sm.user_id = ? AND sm.status = 'ACTIVE'
 			AND sm.role IN ('ADMIN', 'USER') AND u.row_status = 'NORMAL')`, spaceID, userID).Scan(&exists)
@@ -274,7 +284,7 @@ func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
 		return err
 	}
 	defer func() { _ = tx.Rollback() }()
-	if err := validateSQLiteMemoWritePolicy(ctx, tx, update.ID, update.Policy, update); err != nil {
+	if _, err := validateSQLiteMemoWritePolicy(ctx, tx, update.ID, update.Policy, update); err != nil {
 		return err
 	}
 	if err := applyMemoUpdate(ctx, tx, update); err != nil {

@@ -115,10 +115,11 @@ func (s *APIV1Service) projectMemoCollaborationContext(ctx context.Context, memo
 		}
 		return nil
 	}
-	// Placement is visible to the author and to active members only; a
-	// non-member reading an assigned PUBLIC memo learns nothing about its Space.
+	// Placement is visible to the author, to active members, and to an
+	// instance administrator; a non-member reading an assigned PUBLIC memo
+	// learns nothing about its Space.
 	viewer := readContext.Viewer
-	if viewer == nil || (viewer.ID != memo.CreatorID && !readContext.ViewerSpaceMember) {
+	if viewer == nil || (viewer.ID != memo.CreatorID && !readContext.ViewerSpaceMember && !access.IsInstanceAdmin(viewer)) {
 		return nil
 	}
 	space, err := s.Store.GetSpace(ctx, &store.FindSpace{ID: memo.SpaceID})

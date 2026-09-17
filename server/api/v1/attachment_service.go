@@ -17,6 +17,7 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 
+	"github.com/usememos/memos/core/access"
 	"github.com/usememos/memos/internal/motionphoto"
 	"github.com/usememos/memos/internal/ratelimit"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
@@ -149,10 +150,10 @@ func (s *APIV1Service) prepareAttachment(ctx context.Context, request *v1pb.Crea
 		if memo == nil {
 			return nil, status.Errorf(codes.NotFound, "memo not found: %s", *request.Attachment.Memo)
 		}
-		if !canModifyMemo(user, memo) {
+		if !access.CanManageMemo(user, memo) {
 			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 		}
-		if err := s.requireAssignedMemoWritable(ctx, memo, user.ID); err != nil {
+		if err := s.requireAssignedMemoWritable(ctx, memo, user); err != nil {
 			return nil, err
 		}
 		create.MemoID = &memo.ID
@@ -384,8 +385,7 @@ func (s *APIV1Service) UpdateAttachment(ctx context.Context, request *v1pb.Updat
 	if attachment == nil {
 		return nil, status.Errorf(codes.NotFound, "attachment not found")
 	}
-	// Only the creator can update the attachment.
-	if attachment.CreatorID != user.ID {
+	if !access.CanManageAttachment(user, attachment) {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
@@ -490,7 +490,7 @@ func (s *APIV1Service) BatchDeleteAttachments(ctx context.Context, request *v1pb
 		if attachment == nil {
 			return nil, status.Errorf(codes.NotFound, "attachment not found")
 		}
-		if attachment.CreatorID != user.ID {
+		if !access.CanManageAttachment(user, attachment) {
 			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 		}
 		attachments = append(attachments, attachment)
@@ -525,7 +525,7 @@ func (s *APIV1Service) validateAttachmentDeletionPreflight(ctx context.Context, 
 			}
 			memos[memo.ID] = memo
 		}
-		if memo.CreatorID != user.ID {
+		if !access.CanManageMemo(user, memo) {
 			return nil, status.Error(codes.PermissionDenied, "permission denied")
 		}
 	}
@@ -560,7 +560,7 @@ func (s *APIV1Service) validateAttachmentMotionGroupDeletion(
 		if attachment == nil || attachment.ID <= 0 || attachment.UID == "" {
 			return nil, status.Error(codes.InvalidArgument, "invalid attachment")
 		}
-		if attachment.CreatorID != user.ID {
+		if !access.CanManageAttachment(user, attachment) {
 			return nil, status.Error(codes.PermissionDenied, "permission denied")
 		}
 		deletingUIDs[attachment.UID] = struct{}{}
@@ -637,7 +637,7 @@ func (s *APIV1Service) checkAttachmentAccess(ctx context.Context, attachment *st
 		if user == nil {
 			return status.Errorf(codes.Unauthenticated, "user not authenticated")
 		}
-		if attachment.CreatorID != user.ID {
+		if !access.CanManageAttachment(user, attachment) {
 			return status.Errorf(codes.PermissionDenied, "permission denied")
 		}
 		return nil

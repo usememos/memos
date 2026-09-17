@@ -14,6 +14,7 @@ import { State } from "@/types/proto/api/v1/common_pb";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { checkAllTasks, uncheckAllTasks } from "@/utils/markdown-task-actions";
+import { canManageMemo } from "@/utils/user";
 import { isMemoDetailPath } from "../MemoView/navigation";
 
 interface UseMemoActionHandlersOptions {
@@ -27,7 +28,7 @@ export const useMemoActionHandlers = ({ memo, parentPage, onEdit, setDeleteDialo
   const t = useTranslate();
   const location = useLocation();
   const currentUser = useCurrentUser();
-  const canMove = memo.creator === currentUser?.name && !location.pathname.startsWith(ROUTES.SHARED_MEMO);
+  const canMove = canManageMemo(memo, currentUser) && !location.pathname.startsWith(ROUTES.SHARED_MEMO);
   const navigateTo = useNavigateTo();
   const queryClient = useQueryClient();
   const { profile } = useInstance();

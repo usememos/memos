@@ -11,6 +11,7 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 
+	"github.com/usememos/memos/core/access"
 	"github.com/usememos/memos/markdown"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
@@ -36,7 +37,7 @@ func (s *APIV1Service) SetMemoAttachments(ctx context.Context, request *v1pb.Set
 	if memo == nil {
 		return nil, status.Errorf(codes.NotFound, "memo not found")
 	}
-	if !canModifyMemo(user, memo) {
+	if !access.CanManageMemo(user, memo) {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 	prepared, err := s.prepareMemoAttachments(ctx, user, memo, request.Attachments)
@@ -83,7 +84,7 @@ func (s *APIV1Service) prepareMemoAttachments(
 		}
 	}
 
-	normalizedAttachments, err := s.normalizeMemoAttachmentRequest(ctx, memo, currentAttachments, requestAttachments)
+	normalizedAttachments, err := s.normalizeMemoAttachmentRequest(ctx, user, memo, currentAttachments, requestAttachments)
 	if err != nil {
 		return nil, err
 	}
@@ -93,13 +94,11 @@ func (s *APIV1Service) prepareMemoAttachments(
 		requestedIDs[attachment.ID] = true
 	}
 
+	// The same removal rule is revalidated by the driver in the transaction.
 	removedAttachments := make([]*store.Attachment, 0)
 	for _, attachment := range currentAttachments {
 		if !requestedIDs[attachment.ID] {
-			if attachment.CreatorID != memo.CreatorID {
-				return nil, status.Errorf(codes.FailedPrecondition, "cannot remove another user's attachment from this memo")
-			}
-			if attachment.CreatorID != user.ID {
+			if !store.MemoAttachmentRemovalAllowed(attachment, memo.ID, user.ID, access.IsInstanceAdmin(user)) {
 				return nil, status.Errorf(codes.PermissionDenied, "cannot remove another user's attachment")
 			}
 			removedAttachments = append(removedAttachments, attachment)
@@ -204,7 +203,7 @@ func (s *APIV1Service) applyMemoMutation(
 	if user == nil {
 		return status.Error(codes.Unauthenticated, "user not authenticated")
 	}
-	if memo.CreatorID != user.ID {
+	if !access.CanManageMemo(user, memo) {
 		return status.Error(codes.PermissionDenied, "permission denied")
 	}
 	policy := memoWritePolicy(user.ID, false)
@@ -258,6 +257,7 @@ func (s *APIV1Service) applyMemoMutation(
 
 func (s *APIV1Service) normalizeMemoAttachmentRequest(
 	ctx context.Context,
+	user *store.User,
 	memo *store.Memo,
 	currentAttachments []*store.Attachment,
 	requestAttachments []*v1pb.Attachment,
@@ -284,10 +284,11 @@ func (s *APIV1Service) normalizeMemoAttachmentRequest(
 			return nil, status.Errorf(codes.NotFound, "attachment not found: %s", attachmentUID)
 		}
 		_, alreadyInTarget := currentByID[attachment.ID]
-		if attachment.CreatorID != memo.CreatorID && !alreadyInTarget {
+		if !alreadyInTarget && !store.MemoAttachmentBindingOwnerAllowed(attachment.CreatorID, memo.CreatorID, user.ID, access.IsInstanceAdmin(user)) {
 			// Hide another user's unlinked or foreign-memo attachment from the
-			// caller. Admin status grants memo maintenance privileges, not the
-			// right to transfer attachment ownership into a different account.
+			// caller. A new binding must be owned by the memo author or by the
+			// acting administrator; ownership is never transferred between
+			// accounts.
 			return nil, status.Errorf(codes.NotFound, "attachment not found: %s", attachmentUID)
 		}
 		if attachment.MemoID != nil && !alreadyInTarget {

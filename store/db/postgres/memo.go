@@ -67,16 +67,27 @@ func insertPostgresMemo(ctx context.Context, tx *sql.Tx, create *store.Memo) err
 }
 
 func validatePostgresMemoCreate(ctx context.Context, tx *sql.Tx, create *store.Memo) error {
-	var actorStatus store.RowStatus
-	err := tx.QueryRowContext(ctx, `SELECT row_status FROM "user" WHERE id = $1`, create.CreatorID).Scan(&actorStatus)
-	if errors.Is(err, sql.ErrNoRows) || (err == nil && actorStatus != store.Normal) {
-		return store.ErrMemoSpaceMembershipRequired
-	}
+	actor, err := readPostgresMemoActor(ctx, tx, create.CreatorID)
 	if err != nil {
 		return err
 	}
-	if create.SpaceID != nil {
+	if !actor.Active {
+		return store.ErrMemoSpaceMembershipRequired
+	}
+	if create.SpaceID == nil {
+		return nil
+	}
+	if !actor.Admin {
 		return validatePostgresMemoSpaceMember(ctx, tx, *create.SpaceID, create.CreatorID)
+	}
+	// An instance administrator places memos without membership; the target
+	// Space must still exist.
+	exists, err := postgresSpaceExists(ctx, tx, *create.SpaceID)
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return store.ErrMemoSpaceNotWritable
 	}
 	return nil
 }
@@ -282,7 +293,7 @@ func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
 		return err
 	}
 	defer func() { _ = tx.Rollback() }()
-	if err := validatePostgresMemoWritePolicy(ctx, tx, update.ID, update.Policy, update); err != nil {
+	if _, err := validatePostgresMemoWritePolicy(ctx, tx, update.ID, update.Policy, update); err != nil {
 		return err
 	}
 	if err := applyMemoUpdate(ctx, tx, update); err != nil {

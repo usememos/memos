@@ -18,18 +18,22 @@ func (d *DB) DeleteAttachmentsWithPolicy(ctx context.Context, policy *store.Atta
 		return errors.Wrap(err, "failed to begin attachment delete transaction")
 	}
 	defer func() { _ = tx.Rollback() }()
+	actor, err := requireSQLiteActiveMemoActor(ctx, tx, policy.ActorUserID)
+	if err != nil {
+		return err
+	}
 	attachments, err := listSQLiteAttachmentSnapshots(ctx, tx, attachmentIDs)
 	if err != nil {
 		return errors.Wrap(err, "failed to read attachment delete targets")
 	}
-	memoIDs, err := store.ValidateAttachmentMutationTargets(policy.ActorUserID, attachmentIDs, attachments)
+	memoIDs, err := store.ValidateAttachmentMutationTargets(policy.ActorUserID, actor.Admin, attachmentIDs, attachments)
 	if err != nil {
 		return err
 	}
 	if err := store.ValidateAttachmentDeletionMemoSnapshots(memoIDs, policy.ExpectedMemoContents); err != nil {
 		return err
 	}
-	if err := authorizeSQLiteAttachmentMutation(ctx, tx, policy.ActorUserID, memoIDs, policy.ExpectedMemoContents); err != nil {
+	if err := authorizeSQLiteAttachmentMutation(ctx, tx, policy.ActorUserID, actor.Admin, memoIDs, policy.ExpectedMemoContents); err != nil {
 		return err
 	}
 
@@ -67,22 +71,12 @@ func authorizeSQLiteAttachmentMutation(
 	ctx context.Context,
 	tx dbExecutor,
 	actorUserID int32,
+	actorIsAdmin bool,
 	memoIDs []int32,
 	expectedMemoContents map[int32]string,
 ) error {
-	var actorStatus store.RowStatus
-	if err := tx.QueryRowContext(ctx, "SELECT row_status FROM user WHERE id = ?", actorUserID).Scan(&actorStatus); err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return store.ErrMemoPermissionDenied
-		}
-		return errors.Wrap(err, "failed to read attachment actor")
-	}
-	if actorStatus != store.Normal {
-		return store.ErrMemoPermissionDenied
-	}
-
 	for _, memoID := range memoIDs {
-		snapshot := &store.MemoWriteSnapshot{}
+		snapshot := &store.MemoWriteSnapshot{ActorIsAdmin: actorIsAdmin}
 		var currentSpace sql.NullInt64
 		var content string
 		if err := tx.QueryRowContext(ctx, `SELECT creator_id, row_status, space_id, visibility, content
@@ -104,7 +98,7 @@ func authorizeSQLiteAttachmentMutation(
 				return errors.Wrap(err, "failed to read attachment memo space")
 			}
 			snapshot.SourceSpaceExists = exists
-			if exists {
+			if exists && !actorIsAdmin {
 				active, err := sqliteSpaceMemberActive(ctx, tx, *snapshot.SpaceID, actorUserID)
 				if err != nil {
 					return errors.Wrap(err, "failed to read attachment memo membership")

@@ -21,14 +21,19 @@ func validatePostgresReactionWritePolicy(ctx context.Context, tx *sql.Tx, reacti
 	return store.ValidateReactionWriteParticipation(reaction, participation)
 }
 
-func validatePostgresReactionDeletePolicy(ctx context.Context, tx *sql.Tx, reaction *store.Reaction) error {
+// validatePostgresReactionDeletePolicy authorizes a withdrawal and returns the
+// participation snapshot so the caller can honour an administrator actor.
+func validatePostgresReactionDeletePolicy(ctx context.Context, tx *sql.Tx, reaction *store.Reaction) (*store.MemoCommentAuthorizationSnapshot, error) {
 	policy := reaction.Policy
 	participation, err := readPostgresMemoParticipation(ctx, tx, reaction.MemoID, policy.ActorUserID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return store.ErrReactionMemoNotFound
+			return nil, store.ErrReactionMemoNotFound
 		}
-		return errors.Wrap(err, "failed to read reaction participation")
+		return nil, errors.Wrap(err, "failed to read reaction participation")
 	}
-	return store.ValidateReactionWithdrawal(reaction, participation)
+	if err := store.ValidateReactionWithdrawal(reaction, participation); err != nil {
+		return nil, err
+	}
+	return participation, nil
 }

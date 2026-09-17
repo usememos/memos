@@ -1225,7 +1225,7 @@ paths:
         get:
             tags:
                 - MemoService
-            description: ListMemoShares lists all share links for a memo. Requires authentication as the memo creator.
+            description: ListMemoShares lists all share links for a memo. Requires the memo creator or an instance administrator.
             operationId: MemoService_ListMemoShares
             parameters:
                 - name: memo
@@ -1250,7 +1250,7 @@ paths:
         post:
             tags:
                 - MemoService
-            description: CreateMemoShare creates a share link for a memo. Requires authentication as the memo creator.
+            description: CreateMemoShare creates a share link for a memo. Requires the memo creator or an instance administrator.
             operationId: MemoService_CreateMemoShare
             parameters:
                 - name: memo
@@ -1282,7 +1282,7 @@ paths:
         delete:
             tags:
                 - MemoService
-            description: DeleteMemoShare revokes a share link. Requires authentication as the memo creator.
+            description: DeleteMemoShare revokes a share link. Requires the memo creator or an instance administrator.
             operationId: MemoService_DeleteMemoShare
             parameters:
                 - name: memo

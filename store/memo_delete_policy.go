@@ -6,8 +6,9 @@ import (
 	"github.com/pkg/errors"
 )
 
-// DeleteMemoWithPolicy identifies one author-owned memo to delete atomically.
-// Relations do not confer lifecycle authority, so no related memo is deleted.
+// DeleteMemoWithPolicy identifies one memo to delete atomically on behalf of
+// its author or an instance administrator. Relations do not confer lifecycle
+// authority, so no related memo is deleted.
 type DeleteMemoWithPolicy struct {
 	MemoID      int32
 	ActorUserID int32
@@ -21,9 +22,10 @@ type DeleteMemoWithPolicyResult struct {
 }
 
 // MemoDeleteActorCanRead applies the memo-local audience matrix after the
-// deletion transaction has established that the actor is the active author.
-// Invalid lifecycle or audience state fails closed. Placement validity matters
-// only for the Space audience; it is not an extra read gate for other values.
+// deletion transaction has established that the actor is the active author or
+// an instance administrator, who counts as a member everywhere. Invalid
+// lifecycle or audience state fails closed. Placement validity matters only
+// for the Space audience; it is not an extra read gate for other values.
 func MemoDeleteActorCanRead(rowStatus RowStatus, visibility Visibility, spaceID *int32, spaceExists, actorMember bool) bool {
 	if rowStatus != Normal && rowStatus != Archived {
 		return false

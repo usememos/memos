@@ -9,6 +9,7 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 
+	"github.com/usememos/memos/core/access"
 	"github.com/usememos/memos/internal/ratelimit"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	"github.com/usememos/memos/store"
@@ -127,7 +128,7 @@ func (s *APIV1Service) DeleteMemoReaction(ctx context.Context, request *v1pb.Del
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
-	if reaction.CreatorID != user.ID {
+	if reaction.CreatorID != user.ID && !access.IsInstanceAdmin(user) {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{ID: &reaction.MemoID})

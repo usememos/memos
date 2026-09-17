@@ -323,7 +323,7 @@ func TestCreateAttachmentMemoPermission(t *testing.T) {
 		require.Equal(t, memoIDFromName(ctx, t, ts, memo.Name), *stored.MemoID)
 	})
 
-	t.Run("admin cannot create an admin-owned attachment linked to another user's memo", func(t *testing.T) {
+	t.Run("admin creates an admin-owned attachment linked to another user's memo", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -341,7 +341,7 @@ func TestCreateAttachmentMemoPermission(t *testing.T) {
 		})
 		require.NoError(t, err)
 
-		_, err = ts.Service.CreateAttachment(adminCtx, &v1pb.CreateAttachmentRequest{
+		created, err := ts.Service.CreateAttachment(adminCtx, &v1pb.CreateAttachmentRequest{
 			Attachment: &v1pb.Attachment{
 				Filename: "admin.txt",
 				Type:     "text/plain",
@@ -349,10 +349,27 @@ func TestCreateAttachmentMemoPermission(t *testing.T) {
 				Memo:     &memo.Name,
 			},
 		})
-		require.Equal(t, codes.PermissionDenied, status.Code(err))
+		require.NoError(t, err, "an instance administrator is the superuser for named memo operations")
 		attachments, err := ts.Store.ListAttachments(ctx, &store.FindAttachment{CreatorID: &admin.ID})
 		require.NoError(t, err)
-		require.Empty(t, attachments)
+		require.Len(t, attachments, 1, "the attachment stays owned by the administrator")
+		require.NotNil(t, attachments[0].MemoID)
+
+		// Removal deletes the attachment, so the memo author cannot remove a
+		// file the administrator owns; the administrator can.
+		_, err = ts.Service.SetMemoAttachments(ownerCtx, &v1pb.SetMemoAttachmentsRequest{
+			Name:        memo.Name,
+			Attachments: []*v1pb.Attachment{},
+		})
+		require.Equal(t, codes.PermissionDenied, status.Code(err))
+		_, err = ts.Service.SetMemoAttachments(adminCtx, &v1pb.SetMemoAttachmentsRequest{
+			Name:        memo.Name,
+			Attachments: []*v1pb.Attachment{},
+		})
+		require.NoError(t, err)
+		attachments, err = ts.Store.ListAttachments(ctx, &store.FindAttachment{CreatorID: &admin.ID})
+		require.NoError(t, err)
+		require.Empty(t, attachments, "removal deletes the bound attachment: %s", created.Name)
 	})
 
 	t.Run("non-owner cannot create attachment directly linked to memo", func(t *testing.T) {

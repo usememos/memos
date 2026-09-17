@@ -1403,7 +1403,7 @@ export const MemoService: GenService<{
     output: typeof EmptySchema;
   },
   /**
-   * CreateMemoShare creates a share link for a memo. Requires authentication as the memo creator.
+   * CreateMemoShare creates a share link for a memo. Requires the memo creator or an instance administrator.
    *
    * @generated from rpc memos.api.v1.MemoService.CreateMemoShare
    */
@@ -1413,7 +1413,7 @@ export const MemoService: GenService<{
     output: typeof MemoShareSchema;
   },
   /**
-   * ListMemoShares lists all share links for a memo. Requires authentication as the memo creator.
+   * ListMemoShares lists all share links for a memo. Requires the memo creator or an instance administrator.
    *
    * @generated from rpc memos.api.v1.MemoService.ListMemoShares
    */
@@ -1423,7 +1423,7 @@ export const MemoService: GenService<{
     output: typeof ListMemoSharesResponseSchema;
   },
   /**
-   * DeleteMemoShare revokes a share link. Requires authentication as the memo creator.
+   * DeleteMemoShare revokes a share link. Requires the memo creator or an instance administrator.
    *
    * @generated from rpc memos.api.v1.MemoService.DeleteMemoShare
    */

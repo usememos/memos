@@ -12,6 +12,7 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/emptypb"
 
+	"github.com/usememos/memos/core/access"
 	"github.com/usememos/memos/core/memopayload"
 	"github.com/usememos/memos/internal/ratelimit"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
@@ -307,9 +308,7 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 	if user == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
-	// Application administrators are not implicit memo collaborators. Ordinary
-	// content updates remain author-controlled.
-	if memo.CreatorID != user.ID {
+	if !access.CanManageMemo(user, memo) {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
@@ -332,7 +331,7 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 			nextSpaceID = nil
 			update.ClearSpace = true
 		} else {
-			target, err := s.resolveWritableSpaceByName(ctx, request.Memo.GetSpace(), user.ID)
+			target, err := s.resolveSpaceForMemoPlacement(ctx, request.Memo.GetSpace(), user)
 			if err != nil {
 				return nil, err
 			}
@@ -510,15 +509,13 @@ func (s *APIV1Service) DeleteMemo(ctx context.Context, request *v1pb.DeleteMemoR
 	if user == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
-	// Application administrators do not receive ordinary content-deletion
-	// authority merely from their instance role.
-	if memo.CreatorID != user.ID {
+	if !access.CanManageMemo(user, memo) {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 	var deletedMemoMessage *v1pb.Memo
-	// Deletion is a narrow author lifecycle capability and may remain available
-	// after the author loses read access to a memo with the SPACE audience. Only
-	// build a content-bearing webhook payload when the author can still read the
+	// Deletion is a narrow lifecycle capability and may remain available after
+	// the author loses read access to a memo with the SPACE audience. Only
+	// build a content-bearing webhook payload when the actor can still read the
 	// memo immediately before deletion.
 	if s.checkMemoReadAccess(ctx, memo) == nil {
 		reactions, err := s.Store.ListReactions(ctx, &store.FindReaction{MemoID: &memo.ID})

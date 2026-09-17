@@ -12,6 +12,7 @@ import { extractSpaceUidFromName, getDuplicateSpaceTitles } from "@/lib/space-di
 import { type Memo, Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { getAssignableVisibilityOptions, getVisibilityOption } from "@/utils/memo";
+import { canManageMemo } from "@/utils/user";
 
 const UNASSIGNED = "unassigned";
 
@@ -35,7 +36,7 @@ export default function MemoMoveDialog({ memo, onOpenChange }: { memo: Memo; onO
     : t("memo.move.unassigned");
   const visibilityOption = getVisibilityOption(visibility);
   const canSubmit =
-    currentUser?.name === memo.creator && (memo.space || undefined) !== nextSpace && (!nextSpace || !!selectedSpace) && !isPending;
+    canManageMemo(memo, currentUser) && (memo.space || undefined) !== nextSpace && (!nextSpace || !!selectedSpace) && !isPending;
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

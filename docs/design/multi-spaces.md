@@ -70,7 +70,7 @@ These sources establish product mechanics, not demand or prevalence. This resear
 - A reaction belongs to one memo and has no independent audience.
 - A Space invitation is a pending offer to one existing active registered user with a selected `ADMIN` or `USER` role. It grants no Space access before that user accepts it.
 - A Space membership is an accepted relationship between one active registered user and one Space with role `ADMIN` or `USER`. The creator becomes the first `ADMIN`; there is no permanent owner.
-- Application `ADMIN` is a control-plane role and is not an implicit Space member or memo reader.
+- Application `ADMIN` is the instance superuser. On any named memo operation it passes every memo-local authorization check: authorship, audience, Space membership and participation, attachment and reaction ownership. Structural validity still applies, and collection listings keep the audience predicate, so an administrator's feeds never surface other users' private memos. It is not an implicit Space member for Space browsing or governance.
 
 ### Read access and distribution
 
@@ -86,6 +86,8 @@ The v1 API calls a memo's audience `visibility` for compatibility. Ordinary iden
 Space placement adds no additional read gate. In particular, an active non-member may directly read an assigned `PROTECTED` or `PUBLIC` memo, and anonymous access to an assigned `PUBLIC` memo follows instance policy. Such access does not reveal Space metadata, membership, or the Space feed. A memo's Space reference is returned only to its author or an active member.
 
 An unexpired bearer share is an explicit capability exception for one exact memo. It does not grant list, feed, Space, or related-memo access.
+
+An application `ADMIN` may read any structurally valid memo by name, including archived memos and memos with the `SPACE` audience in Spaces they do not belong to. This bypass applies to point reads and their child resources (files, reactions, relations, comment creation) only. Lists, counts, feeds, and the Space filter keep the ordinary predicate, so an administrator's Explore and Space feeds show exactly what a regular user with the same memberships would see.
 
 Distribution is derived rather than separately configured:
 
@@ -115,6 +117,7 @@ Reading and participation are separate. A caller may read an assigned `PUBLIC` o
 | Edit content or audience; manage attachments, references, or shares | Memo author; if assigned, the author is also an active member of its Space. |
 | Delete one memo | Memo author. This does not delete another memo. |
 | Withdraw or move a memo | Memo author. Source membership is unnecessary; target membership is required. |
+| Any named memo operation above, on any memo | Application `ADMIN`, as superuser. Membership is not required; the placement and any target Space must still exist. An attachment a superuser adds stays owned by the administrator; because removal deletes the file, only its owner or an administrator removes it, and memo deletion still removes it. |
 | Hard-delete a Space | Space `ADMIN`. |
 
 Any membership change or user archival that would leave a Space without an active `ADMIN` is rejected.
@@ -176,7 +179,7 @@ Creating an invitation also delivers a `SPACE_INVITATION` inbox notification to 
 
 ### Security invariants
 
-Before `SPACE` can be stored, one shared, memo-local, fail-closed policy must cover point reads, lists and counts, files, reactions, relations, notifications, email, webhooks, shares, search, statistics, public feeds, and MCP. Child resources resolve the memo they directly belong to. Application `ADMIN` receives no implicit bypass.
+Before `SPACE` can be stored, one shared, memo-local, fail-closed policy must cover point reads, lists and counts, files, reactions, relations, notifications, email, webhooks, shares, search, statistics, public feeds, and MCP. Child resources resolve the memo they directly belong to. Application `ADMIN` bypasses only the memo-local checks on named operations; drivers resolve the actor's role inside the mutation transaction alongside the actor's lifecycle state, and an archived administrator holds no privilege.
 
 Unknown visibility denies access. A missing or invalid placement denies `SPACE` reads and placement-dependent operations. Other audiences continue to govern ordinary reads, but an invalid Space identity is omitted. Inactive users, pending invitations, unknown relationship states, and invalid membership roles deny any access that depends on them. Every membership authorization requires `status = ACTIVE` and role `ADMIN` or `USER`. Where the database supports row locks, relationship creation and activation serialize against user deletion, and invitation creation serializes against Space deletion. Database list and count authorization is applied before pagination:
 
@@ -208,11 +211,11 @@ Files for `PRIVATE`, `PROTECTED`, and `SPACE` memos use `private, no-store`; pub
 | Follow relations during Space deletion | Rejected; relations cannot extend deletion into other Spaces or Unassigned content. |
 | Move or delete a member's memos when membership ends | Rejected; historical contributions remain until an author lifecycle action or Space deletion. |
 | Give a Space `ADMIN` a separate operation to evict or otherwise mutate one memo | Rejected; placement belongs to the memo author's lifecycle, while Space governance is limited to Space metadata, membership, and aggregate hard deletion. |
-| Give application `ADMIN` implicit Space or memo access | Rejected; moderation and recovery require separate control-plane design. |
+| Give application `ADMIN` implicit Space or memo access | Revised on 2026-09-17: application `ADMIN` is the superuser for named memo operations, without becoming an implicit Space member for browsing or governance. Collection listings are unchanged. |
 | Let a Space `ADMIN` directly create an active membership | Rejected; only the invited user can turn a pending offer into membership. |
 | Add a separate invitation table now | Rejected for this iteration because the relationship state fits the unique Space-user slot and the design intentionally omits history, expiration, and delivery credentials. Revisit when those requirements appear. |
 | Rename v1 `visibility` to `audience`, or expose both fields | Rejected; the domain term is Audience, while one legacy v1 field remains the compatibility representation. |
 
 ## Deferred design
 
-Email and external-user invitations, invitation expiration, inviter attribution, invitation history, open enrollment, account erasure beyond the membership guard, notification retention policy and per-user notification preferences, application-admin moderation and recovery, audit history, soft deletion, restoration, retryable external-object cleanup, delivery-time cancellation of queued email/webhooks, broader concurrent-mutation hardening, and asynchronous deletion of very large Spaces remain deferred. Later work must preserve invitee consent, independent memo authorization, non-propagating relations, and explicit Space aggregate deletion unless this design is revisited.
+Email and external-user invitations, invitation expiration, inviter attribution, invitation history, open enrollment, account erasure beyond the membership guard, notification retention policy and per-user notification preferences, collaborative editing by Space members, audit history, soft deletion, restoration, retryable external-object cleanup, delivery-time cancellation of queued email/webhooks, broader concurrent-mutation hardening, and asynchronous deletion of very large Spaces remain deferred. Later work must preserve invitee consent, independent memo authorization, non-propagating relations, and explicit Space aggregate deletion unless this design is revisited.

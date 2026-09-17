@@ -91,11 +91,9 @@ func (s *APIV1Service) resolveMemoAccessScope(ctx context.Context) (*store.MemoA
 	return newMemoAccessScope(currentUser, allowPublic), currentUser, nil
 }
 
-// resolveWritableSpaceByName resolves a space resource name and requires the
-// caller to be an active member of it. A non-member receives NotFound so that
-// an existing collaboration boundary stays indistinguishable from a missing
-// resource.
-func (s *APIV1Service) resolveWritableSpaceByName(ctx context.Context, name string, userID int32) (*store.Space, error) {
+// resolveSpaceByName resolves a space resource name to an existing Space
+// without any membership check.
+func (s *APIV1Service) resolveSpaceByName(ctx context.Context, name string) (*store.Space, error) {
 	spaceUID, err := ExtractSpaceUIDFromName(name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid space name: %v", err)
@@ -107,6 +105,18 @@ func (s *APIV1Service) resolveWritableSpaceByName(ctx context.Context, name stri
 	if space == nil {
 		return nil, status.Error(codes.NotFound, "space not found")
 	}
+	return space, nil
+}
+
+// resolveWritableSpaceByName resolves a space resource name and requires the
+// caller to be an active member of it. A non-member receives NotFound so that
+// an existing collaboration boundary stays indistinguishable from a missing
+// resource.
+func (s *APIV1Service) resolveWritableSpaceByName(ctx context.Context, name string, userID int32) (*store.Space, error) {
+	space, err := s.resolveSpaceByName(ctx, name)
+	if err != nil {
+		return nil, err
+	}
 	active, err := s.isActiveSpaceMember(ctx, space.ID, userID)
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed to resolve space membership")
@@ -115,6 +125,17 @@ func (s *APIV1Service) resolveWritableSpaceByName(ctx context.Context, name stri
 		return nil, status.Error(codes.NotFound, "space not found")
 	}
 	return space, nil
+}
+
+// resolveSpaceForMemoPlacement resolves the Space a memo is being placed in.
+// An instance administrator may place memos in any existing Space; every
+// other caller must be an active member. Collection scopes such as the space
+// filter keep using resolveWritableSpaceByName, so feeds stay membership-only.
+func (s *APIV1Service) resolveSpaceForMemoPlacement(ctx context.Context, name string, user *store.User) (*store.Space, error) {
+	if access.IsInstanceAdmin(user) {
+		return s.resolveSpaceByName(ctx, name)
+	}
+	return s.resolveWritableSpaceByName(ctx, name, user.ID)
 }
 
 func (s *APIV1Service) isActiveSpaceMember(ctx context.Context, spaceID, userID int32) (bool, error) {
@@ -161,7 +182,10 @@ func mapMemoWriteError(err error, operation string) error {
 	}
 }
 
-func (s *APIV1Service) requireAssignedMemoWritable(ctx context.Context, memo *store.Memo, userID int32) error {
+// requireAssignedMemoWritable requires the placement of an assigned memo to be
+// valid and the actor to be an active member of it. An instance administrator
+// is exempt from membership but not from placement validity.
+func (s *APIV1Service) requireAssignedMemoWritable(ctx context.Context, memo *store.Memo, user *store.User) error {
 	if memo.SpaceID == nil {
 		return nil
 	}
@@ -172,7 +196,10 @@ func (s *APIV1Service) requireAssignedMemoWritable(ctx context.Context, memo *st
 	if space == nil {
 		return status.Errorf(codes.FailedPrecondition, "memo has invalid space placement")
 	}
-	active, err := s.isActiveSpaceMember(ctx, space.ID, userID)
+	if access.IsInstanceAdmin(user) {
+		return nil
+	}
+	active, err := s.isActiveSpaceMember(ctx, space.ID, user.ID)
 	if err != nil {
 		return status.Errorf(codes.Internal, "failed to resolve space membership")
 	}

@@ -14,7 +14,7 @@ func TestValidateMemoRelationEndpointReadDanglingPlacement(t *testing.T) {
 		t.Run(string(visibility), func(t *testing.T) {
 			err := store.ValidateMemoRelationEndpointRead(&store.MemoRelationEndpointSnapshot{
 				ActorUserID:          1,
-				ActorActive:          true,
+				Actor:                store.MemoActorState{Active: true},
 				EndpointID:           2,
 				EndpointCreatorID:    1,
 				EndpointRowStatus:    store.Normal,
@@ -29,7 +29,7 @@ func TestValidateMemoRelationEndpointReadDanglingPlacement(t *testing.T) {
 
 	err := store.ValidateMemoRelationEndpointRead(&store.MemoRelationEndpointSnapshot{
 		ActorUserID:          1,
-		ActorActive:          true,
+		Actor:                store.MemoActorState{Active: true},
 		EndpointID:           2,
 		EndpointCreatorID:    2,
 		EndpointRowStatus:    store.Normal,

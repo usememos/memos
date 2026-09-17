@@ -16,13 +16,9 @@ func (d *DB) DeleteMemoWithPolicy(ctx context.Context, delete *store.DeleteMemoW
 	}
 	defer func() { _ = tx.Rollback() }()
 
-	var actorStatus store.RowStatus
-	if err := tx.QueryRowContext(ctx, "SELECT row_status FROM user WHERE id = ?", delete.ActorUserID).Scan(&actorStatus); errors.Is(err, sql.ErrNoRows) {
-		return nil, store.ErrMemoPermissionDenied
-	} else if err != nil {
-		return nil, errors.Wrap(err, "failed to read memo deletion actor")
-	} else if actorStatus != store.Normal {
-		return nil, store.ErrMemoPermissionDenied
+	actor, err := requireMySQLActiveMemoActor(ctx, tx, delete.ActorUserID)
+	if err != nil {
+		return nil, err
 	}
 
 	var creatorID int32
@@ -36,7 +32,7 @@ func (d *DB) DeleteMemoWithPolicy(ctx context.Context, delete *store.DeleteMemoW
 	} else if err != nil {
 		return nil, errors.Wrap(err, "failed to read memo")
 	}
-	if creatorID != delete.ActorUserID {
+	if creatorID != delete.ActorUserID && !actor.Admin {
 		return nil, store.ErrMemoPermissionDenied
 	}
 	spaceID := store.NullInt32Pointer(space)
@@ -48,13 +44,13 @@ func (d *DB) DeleteMemoWithPolicy(ctx context.Context, delete *store.DeleteMemoW
 			return nil, errors.Wrap(err, "failed to read memo space")
 		}
 	}
-	if spaceID != nil && spaceExists {
+	if spaceID != nil && spaceExists && !actor.Admin {
 		actorMember, err = mysqlSpaceMemberActive(ctx, tx, *spaceID, delete.ActorUserID)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to read memo membership")
 		}
 	}
-	actorCanRead := store.MemoDeleteActorCanRead(rowStatus, visibility, spaceID, spaceExists, actorMember)
+	actorCanRead := store.MemoDeleteActorCanRead(rowStatus, visibility, spaceID, spaceExists, actorMember || actor.Admin)
 
 	attachments, err := deleteMySQLMemoSetTx(ctx, tx, []int32{delete.MemoID})
 	if err != nil {

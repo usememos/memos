@@ -46,7 +46,7 @@ func (s *APIV1Service) prepareMemoCreate(ctx context.Context, user *store.User, 
 		Visibility: visibility,
 	}
 	if input.Space != nil && input.GetSpace() != "" {
-		space, err := s.resolveWritableSpaceByName(ctx, input.GetSpace(), user.ID)
+		space, err := s.resolveSpaceForMemoPlacement(ctx, input.GetSpace(), user)
 		if err != nil {
 			return nil, err
 		}

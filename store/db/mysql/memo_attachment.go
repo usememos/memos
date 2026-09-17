@@ -51,14 +51,15 @@ func (d *DB) ApplyMemoMutation(ctx context.Context, mutation *store.MemoMutation
 			}
 		}
 	}
-	policy := mutation.Policy
-	if policy == nil && mutation.MemoUpdate != nil {
-		policy = mutation.MemoUpdate.Policy
-	}
+	policy := mutation.WritePolicy()
+	actorUserID := mutation.ActorUserID()
+	actorIsAdmin := false
 	if policy != nil {
-		if err := validateMySQLMemoWritePolicy(ctx, tx, mutation.MemoID, policy, mutation.MemoUpdate); err != nil {
+		snapshot, err := validateMySQLMemoWritePolicy(ctx, tx, mutation.MemoID, policy, mutation.MemoUpdate)
+		if err != nil {
 			return err
 		}
+		actorIsAdmin = snapshot.ActorIsAdmin
 	}
 
 	var creatorID int32
@@ -80,7 +81,7 @@ func (d *DB) ApplyMemoMutation(ctx context.Context, mutation *store.MemoMutation
 		return errors.Wrap(store.ErrMemoMutationConflict, "removed attachment no longer exists")
 	}
 	for _, attachment := range removedAttachments {
-		if attachment.CreatorID != mutation.MemoCreatorID || attachment.MemoID == nil || *attachment.MemoID != mutation.MemoID {
+		if !store.MemoAttachmentRemovalAllowed(attachment, mutation.MemoID, actorUserID, actorIsAdmin) {
 			return errors.Wrap(store.ErrMemoMutationConflict, "attachment is no longer removable from the memo")
 		}
 	}
@@ -98,7 +99,7 @@ func (d *DB) ApplyMemoMutation(ctx context.Context, mutation *store.MemoMutation
 			if !memoID.Valid || memoID.Int32 != mutation.MemoID {
 				return errors.Wrapf(store.ErrMemoMutationConflict, "attachment %s is no longer bound to the memo", binding.UID)
 			}
-		} else if attachmentCreatorID != mutation.MemoCreatorID || memoID.Valid {
+		} else if !store.MemoAttachmentBindingOwnerAllowed(attachmentCreatorID, mutation.MemoCreatorID, actorUserID, actorIsAdmin) || memoID.Valid {
 			return errors.Wrapf(store.ErrMemoMutationConflict, "attachment %s is no longer available", binding.UID)
 		}
 		if _, err := tx.ExecContext(ctx, "UPDATE `attachment` SET `memo_id` = ?, `updated_ts` = FROM_UNIXTIME(?) WHERE `id` = ?", mutation.MemoID, binding.UpdatedTs, binding.ID); err != nil {
