@@ -65,7 +65,7 @@ const HabitFormDialog = ({ open, habit, pending, onOpenChange, onSave, onDelete 
   };
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent size="lg" className="border-slate-700 bg-slate-950 text-slate-100">
+      <DialogContent size="lg">
         <form onSubmit={submit} className="space-y-5">
           <DialogHeader>
             <DialogTitle>{habit ? "Edit habit" : "Create your first habit"}</DialogTitle>
@@ -106,7 +106,7 @@ const HabitFormDialog = ({ open, habit, pending, onOpenChange, onSave, onDelete 
             </label>
           </div>
           {error && (
-            <p role="alert" className="text-sm text-red-300">
+            <p role="alert" className="text-sm text-destructive">
               {error}
             </p>
           )}
@@ -119,7 +119,7 @@ const HabitFormDialog = ({ open, habit, pending, onOpenChange, onSave, onDelete 
             <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button type="submit" disabled={pending} className="bg-amber-400 text-slate-950 hover:bg-amber-300">
+            <Button type="submit" disabled={pending}>
               {pending ? "Saving…" : "Save habit"}
             </Button>
           </DialogFooter>

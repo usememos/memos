@@ -11,7 +11,7 @@ const HabitMomentumChart = ({ days, target }: Props) => {
   return (
     <div className="space-y-4">
       <div
-        className="flex h-44 items-end gap-1.5 rounded-2xl border border-white/8 bg-black/15 px-3 pb-3 pt-5 sm:gap-2"
+        className="flex h-44 items-end gap-1.5 rounded-2xl border border-border bg-muted/40 px-3 pb-3 pt-5 sm:gap-2"
         role="group"
         aria-label="Fourteen day habit performance chart. A text summary follows."
       >
@@ -29,11 +29,11 @@ const HabitMomentumChart = ({ days, target }: Props) => {
               <div
                 className={cn(
                   "w-full max-w-8 rounded-t-md transition-[height] duration-500 motion-reduce:transition-none",
-                  day.targetMet ? "bg-amber-400" : day.successful ? "bg-violet-400" : "bg-white/10",
+                  day.targetMet ? "bg-primary" : day.successful ? "bg-success" : "bg-muted-foreground/25",
                 )}
                 style={{ height: `${height}%` }}
               />
-              <span className="text-[10px] font-medium text-slate-500">{weekday}</span>
+              <span className="text-[10px] font-medium text-muted-foreground">{weekday}</span>
             </div>
           );
         })}
@@ -48,17 +48,17 @@ const HabitMomentumChart = ({ days, target }: Props) => {
           </li>
         ))}
       </ul>
-      <div className="flex flex-wrap gap-4 text-xs text-slate-400">
+      <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
         <span className="flex items-center gap-1.5">
-          <span className="size-2 rounded-full bg-amber-400" />
+          <span className="size-2 rounded-full bg-primary" />
           Target met
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="size-2 rounded-full bg-violet-400" />
+          <span className="size-2 rounded-full bg-success" />
           Minimum met
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="size-2 rounded-full bg-white/10" />
+          <span className="size-2 rounded-full bg-muted-foreground/25" />
           Missed or open
         </span>
       </div>

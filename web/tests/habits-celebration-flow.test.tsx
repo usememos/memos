@@ -77,7 +77,7 @@ const makeSummary = ({ recorded, value, xp, streak }: { recorded: boolean; value
 
 const renderPage = async () => {
   const rendered = render(<Habits />);
-  await screen.findByRole("button", { name: /log it|update/i });
+  await screen.findByRole("button", { name: /log progress|save progress/i });
   return rendered;
 };
 
@@ -96,7 +96,7 @@ describe("Habits celebration flow", () => {
 
   it("celebrates a first target save only after mutation and authoritative refetch", async () => {
     await renderPage();
-    fireEvent.click(screen.getByRole("button", { name: "Log it" }));
+    fireEvent.click(screen.getByRole("button", { name: "Log progress" }));
 
     await waitFor(() => expect(screen.getByTestId("celebration")).toHaveTextContent("target"));
     expect(mocks.prepareHabitAudio).toHaveBeenCalledOnce();
@@ -110,7 +110,7 @@ describe("Habits celebration flow", () => {
     mocks.refetchSummary.mockResolvedValue({ data: makeSummary({ recorded: true, value: 20, xp: 90, streak: 5 }) });
     await renderPage();
     fireEvent.change(screen.getByLabelText("Minutes today"), { target: { value: "20" } });
-    fireEvent.click(screen.getByRole("button", { name: "Update" }));
+    fireEvent.click(screen.getByRole("button", { name: "Save progress" }));
 
     await waitFor(() => expect(mocks.refetchSummary).toHaveBeenCalledOnce());
     expect(screen.queryByTestId("celebration")).not.toBeInTheDocument();
@@ -121,7 +121,7 @@ describe("Habits celebration flow", () => {
     mocks.refetchSummary.mockResolvedValue({ data: makeSummary({ recorded: true, value: 1, xp: 80, streak: 0 }) });
     await renderPage();
     fireEvent.change(screen.getByLabelText("Minutes today"), { target: { value: "1" } });
-    fireEvent.click(screen.getByRole("button", { name: "Log it" }));
+    fireEvent.click(screen.getByRole("button", { name: "Log progress" }));
 
     await waitFor(() => expect(mocks.refetchSummary).toHaveBeenCalledOnce());
     expect(screen.queryByTestId("celebration")).not.toBeInTheDocument();
@@ -131,7 +131,7 @@ describe("Habits celebration flow", () => {
   it("does not refetch or celebrate after a rejected mutation", async () => {
     mocks.saveLog.mockRejectedValue(new Error("offline"));
     await renderPage();
-    fireEvent.click(screen.getByRole("button", { name: "Log it" }));
+    fireEvent.click(screen.getByRole("button", { name: "Log progress" }));
 
     await waitFor(() => expect(mocks.toast.error).toHaveBeenCalledWith("Could not save today's progress"));
     expect(mocks.refetchSummary).not.toHaveBeenCalled();
@@ -141,7 +141,7 @@ describe("Habits celebration flow", () => {
   it("reports an authoritative refresh failure without celebrating", async () => {
     mocks.refetchSummary.mockRejectedValue(new Error("offline"));
     await renderPage();
-    fireEvent.click(screen.getByRole("button", { name: "Log it" }));
+    fireEvent.click(screen.getByRole("button", { name: "Log progress" }));
 
     await waitFor(() => expect(mocks.toast).toHaveBeenCalledWith("Progress saved, but the latest score could not be loaded"));
     expect(screen.queryByTestId("celebration")).not.toBeInTheDocument();
@@ -154,7 +154,7 @@ describe("Habits celebration flow", () => {
     expect(window.localStorage.getItem("memos.habits.sound-enabled.v1")).toBe("false");
     expect(mocks.stopHabitSounds).toHaveBeenCalled();
 
-    fireEvent.click(screen.getByRole("button", { name: "Log it" }));
+    fireEvent.click(screen.getByRole("button", { name: "Log progress" }));
     await waitFor(() => expect(screen.getByTestId("celebration")).toHaveTextContent("target"));
     expect(mocks.playHabitSound).not.toHaveBeenCalled();
 

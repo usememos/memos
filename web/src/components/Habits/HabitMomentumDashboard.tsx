@@ -1,4 +1,4 @@
-import { CheckIcon, FlameIcon, PencilIcon, RotateCcwIcon, SparklesIcon, TargetIcon, TrophyIcon, ZapIcon } from "lucide-react";
+import { CheckIcon, FlameIcon, Link2Icon, PencilIcon, RotateCcwIcon, SparklesIcon, TargetIcon, TrophyIcon, ZapIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
@@ -62,7 +62,7 @@ const HabitMomentumDashboard = ({ summary, today, saving, onLog, onUndo, onEdit 
   return (
     <div className="space-y-5">
       {summary.needsRecovery && (
-        <div className="flex items-start gap-3 rounded-2xl border border-warning/30 bg-warning/5 p-4 text-warning">
+        <div className="flex items-start gap-3 rounded-2xl border border-primary/20 bg-primary/5 p-4 text-primary">
           <RotateCcwIcon className="mt-0.5 size-5 shrink-0" />
           <div>
             <p className="font-semibold">Never miss twice.</p>
@@ -72,10 +72,10 @@ const HabitMomentumDashboard = ({ summary, today, saving, onLog, onUndo, onEdit 
           </div>
         </div>
       )}
-      <section className="overflow-hidden rounded-3xl border border-border bg-linear-to-br from-warning/10 to-card p-5 shadow-sm sm:p-7">
+      <section className="overflow-hidden rounded-3xl border border-border bg-linear-to-br from-primary/10 to-card p-5 shadow-sm sm:p-7">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-warning">
+            <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
               <SparklesIcon className="size-4" />
               Identity-based habit
             </div>
@@ -92,11 +92,11 @@ const HabitMomentumDashboard = ({ summary, today, saving, onLog, onUndo, onEdit 
           <div className="min-w-72 rounded-2xl border border-border bg-muted/40 p-4">
             <div className="flex items-center justify-between text-sm">
               <span className="font-medium text-foreground">Level {summary.level}</span>
-              <span className="text-warning">{summary.xp} XP</span>
+              <span className="text-primary">{summary.xp} XP</span>
             </div>
             <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
               <div
-                className="h-full rounded-full bg-warning transition-[width] duration-500 motion-reduce:transition-none"
+                className="h-full rounded-full bg-primary transition-[width] duration-500 motion-reduce:transition-none"
                 style={{ width: `${summary.levelProgressXp}%` }}
               />
             </div>
@@ -111,7 +111,7 @@ const HabitMomentumDashboard = ({ summary, today, saving, onLog, onUndo, onEdit 
             label="Current streak"
             value={daysLabel(summary.currentStreak)}
             detail={`Best: ${daysLabel(summary.bestStreak)}`}
-            accent="text-warning"
+            accent="text-primary"
           />
           <Metric
             icon={TargetIcon}
@@ -125,7 +125,7 @@ const HabitMomentumDashboard = ({ summary, today, saving, onLog, onUndo, onEdit 
             label="Target rate"
             value={`${summary.targetPercent}%`}
             detail={`${summary.targetDays} performance ${summary.targetDays === 1 ? "day" : "days"}`}
-            accent="text-warning"
+            accent="text-primary"
           />
           <Metric
             icon={ZapIcon}
@@ -142,17 +142,17 @@ const HabitMomentumDashboard = ({ summary, today, saving, onLog, onUndo, onEdit 
             <div>
               <h2 className="text-lg font-semibold text-foreground">Performance, last 14 days</h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                Amber reaches the {habit.targetValue}-minute target. Violet still protects the chain.
+                Indigo reaches the {habit.targetValue}-minute target. Green still protects the chain.
               </p>
             </div>
             <span className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">{summary.totalValue} minutes total</span>
           </div>
           <HabitMomentumChart days={summary.recentDays} target={habit.targetValue} />
         </section>
-        <section className="rounded-3xl border border-warning/30 bg-warning/5 p-5 sm:p-6">
+        <section className="rounded-3xl border border-primary/20 bg-primary/[0.035] p-5 sm:p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-warning">Today's action</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Today's action</p>
               <h2 className="mt-2 text-xl font-semibold text-foreground">Log your minutes</h2>
             </div>
             {todayEntry?.successful && (
@@ -173,8 +173,12 @@ const HabitMomentumDashboard = ({ summary, today, saving, onLog, onUndo, onEdit 
                 className="h-12 text-xl"
               />
             </label>
-            <Button onClick={submit} disabled={saving} className="h-12 px-5">
-              {saving ? "Saving…" : todayEntry?.recorded ? "Update" : "Log it"}
+            <Button
+              onClick={submit}
+              disabled={saving}
+              className="h-12 rounded-xl px-5 font-semibold shadow-sm transition-all hover:-translate-y-px hover:shadow-md"
+            >
+              {saving ? "Saving…" : todayEntry?.recorded ? "Save progress" : "Log progress"}
             </Button>
           </div>
           <div className="mt-3 flex items-center justify-between text-xs">
@@ -207,8 +211,13 @@ const HabitMomentumDashboard = ({ summary, today, saving, onLog, onUndo, onEdit 
             </div>
           </div>
         </section>
-        <section className="rounded-3xl border border-border bg-card p-5 sm:p-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-warning">The chain</p>
+        <section className="rounded-3xl border border-primary/15 bg-card p-5 sm:p-6">
+          <div className="flex items-center gap-2">
+            <span className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <Link2Icon className="size-4" />
+            </span>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">The chain</p>
+          </div>
           <div className="mt-5 grid grid-cols-7 gap-2">
             {summary.recentDays.slice(-7).map((day) => (
               <div
@@ -217,9 +226,9 @@ const HabitMomentumDashboard = ({ summary, today, saving, onLog, onUndo, onEdit 
                 className={cn(
                   "aspect-square rounded-xl border",
                   day.targetMet
-                    ? "border-warning/60 bg-warning shadow-sm"
+                    ? "border-primary/60 bg-primary shadow-sm"
                     : day.successful
-                      ? "border-primary/60 bg-primary"
+                      ? "border-success/60 bg-success"
                       : day.recorded
                         ? "border-destructive/30 bg-destructive/10"
                         : "border-border bg-muted/40",

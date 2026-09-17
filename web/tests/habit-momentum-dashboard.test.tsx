@@ -50,7 +50,7 @@ describe("HabitMomentumDashboard", () => {
     const onLog = vi.fn().mockResolvedValue(undefined);
     render(<HabitMomentumDashboard summary={summary} today="2026-09-16" onLog={onLog} onUndo={vi.fn()} onEdit={vi.fn()} />);
     fireEvent.change(screen.getByLabelText("Minutes today"), { target: { value: "27" } });
-    fireEvent.click(screen.getByRole("button", { name: "Log it" }));
+    fireEvent.click(screen.getByRole("button", { name: "Log progress" }));
     expect(onLog).toHaveBeenCalledWith(27);
   });
 
@@ -59,7 +59,7 @@ describe("HabitMomentumDashboard", () => {
     toastMocks.success.mockClear();
     const onLog = vi.fn().mockRejectedValue(new Error("offline"));
     render(<HabitMomentumDashboard summary={summary} today="2026-09-16" onLog={onLog} onUndo={vi.fn()} onEdit={vi.fn()} />);
-    fireEvent.click(screen.getByRole("button", { name: "Log it" }));
+    fireEvent.click(screen.getByRole("button", { name: "Log progress" }));
     await waitFor(() => expect(toastMocks.error).toHaveBeenCalledWith("Could not save today's progress"));
     expect(toastMocks.success).not.toHaveBeenCalled();
   });

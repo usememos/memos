@@ -113,7 +113,7 @@ const Habits = () => {
     <div className="mx-auto w-full max-w-7xl">
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-2xl bg-warning text-warning-foreground">
+          <div className="flex size-10 items-center justify-center rounded-2xl bg-primary/10 text-primary ring-1 ring-primary/15">
             <FlameIcon className="size-5" />
           </div>
           <div>
@@ -136,13 +136,16 @@ const Habits = () => {
             {soundEnabled ? <Volume2Icon className="size-4" /> : <VolumeXIcon className="size-4" />}
           </Button>
           <Button
+            className="h-10 rounded-xl px-3.5 font-semibold shadow-sm transition-all hover:-translate-y-px hover:bg-primary/90 hover:shadow-md"
             onClick={() => {
               setEditing(false);
               setFormOpen(true);
             }}
           >
-            <PlusIcon className="size-4" />
-            New habit
+            <span className="flex size-5 items-center justify-center rounded-md bg-primary-foreground/15">
+              <PlusIcon className="size-3.5" />
+            </span>
+            <span>New habit</span>
           </Button>
         </div>
       </div>
@@ -153,7 +156,7 @@ const Habits = () => {
               type="button"
               key={habit.name}
               onClick={() => setSelectedName(habit.name)}
-              className={`shrink-0 rounded-full border px-4 py-2 text-sm ${habit.name === selectedName ? "border-warning bg-warning text-warning-foreground" : "border-border bg-background text-muted-foreground hover:text-foreground"}`}
+              className={`shrink-0 rounded-full border px-4 py-2 text-sm transition-colors ${habit.name === selectedName ? "border-primary/20 bg-primary/10 font-medium text-primary shadow-xs" : "border-border bg-background text-muted-foreground hover:border-primary/20 hover:text-foreground"}`}
             >
               {habit.title}
             </button>
@@ -162,7 +165,7 @@ const Habits = () => {
       )}
       {habits.length === 0 ? (
         <section className="flex min-h-[60vh] flex-col items-center justify-center rounded-3xl border border-dashed border-border bg-muted/20 px-6 text-center">
-          <div className="flex size-16 items-center justify-center rounded-3xl bg-warning/15 text-warning">
+          <div className="flex size-16 items-center justify-center rounded-3xl bg-primary/10 text-primary">
             <FlameIcon className="size-8" />
           </div>
           <h2 className="mt-6 text-2xl font-semibold text-foreground">Build your first chain</h2>
@@ -175,8 +178,8 @@ const Habits = () => {
           </Button>
         </section>
       ) : scheduled && selected ? (
-        <section className="flex min-h-[50vh] flex-col items-center justify-center rounded-3xl border border-warning/30 bg-warning/5 px-6 text-center">
-          <FlameIcon className="size-10 text-warning" />
+        <section className="flex min-h-[50vh] flex-col items-center justify-center rounded-3xl border border-primary/20 bg-primary/5 px-6 text-center">
+          <FlameIcon className="size-10 text-primary" />
           <h2 className="mt-5 text-2xl font-semibold text-foreground">{selected.title} starts soon</h2>
           <p className="mt-2 text-muted-foreground">Your first tracking day is {selected.startDate}. The chain begins then.</p>
           <Button
