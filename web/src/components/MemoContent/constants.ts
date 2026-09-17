@@ -1,3 +1,4 @@
+import { defaultUrlTransform } from "react-markdown";
 import { defaultSchema } from "rehype-sanitize";
 
 // Class names added by remark-gfm for task lists
@@ -20,6 +21,12 @@ const KATEX_INLINE_CLASS_NAMES = ["language-math", "math-inline"] as const;
 const KATEX_BLOCK_CLASS_NAMES = ["language-math", "math-display"] as const;
 const SPAN_CLASS_NAMES = ["mention", "tag"] as const;
 const INPUT_ATTRIBUTES = [...(defaultSchema.attributes?.input || []), ["checked", true]] as const;
+
+/**
+ * Link schemes the browser hands off to another app (dialer, messaging) instead of navigating.
+ * They cannot run script, so they are as safe as the `mailto:` the default schema already allows.
+ */
+const HANDOFF_LINK_PROTOCOLS = ["tel", "sms"];
 
 export const isTrustedIframeSrc = (src: string): boolean => TRUSTED_IFRAME_SRC_PATTERNS.some((pattern) => pattern.test(src));
 
@@ -62,6 +69,21 @@ export const SANITIZE_SCHEMA = {
   tagNames: [...(defaultSchema.tagNames || []).filter((tag) => tag !== "picture" && tag !== "source"), "iframe"],
   protocols: {
     ...defaultSchema.protocols,
+    href: [...(defaultSchema.protocols?.href || []), ...HANDOFF_LINK_PROTOCOLS],
     src: ["https"],
   },
+};
+
+/**
+ * react-markdown applies its own `href` allowlist (`defaultUrlTransform`) before the sanitizer
+ * runs, and it does not know about the handoff schemes above. Let those through unchanged and
+ * defer everything else to the default, so `javascript:` and friends are still dropped.
+ */
+export const memoUrlTransform = (url: string): string => {
+  // Exact-case match, mirroring how the sanitizer compares schemes.
+  const colon = url.indexOf(":");
+  if (colon > 0 && HANDOFF_LINK_PROTOCOLS.includes(url.slice(0, colon))) {
+    return url;
+  }
+  return defaultUrlTransform(url);
 };

@@ -8,6 +8,7 @@ import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { lazyWithReload } from "@/utils/lazy";
 import { resolveManagedAttachmentImageSource } from "@/utils/managed-attachment";
 import { CodeBlock } from "./CodeBlock";
+import { memoUrlTransform } from "./constants";
 import { MarkdownRenderContext, rootMarkdownRenderContext } from "./MarkdownRenderContext";
 import { Mention } from "./Mention";
 import { AnchorLink, Blockquote, Heading, HorizontalRule, Image, InlineCode, Link, List, ListItem, Paragraph } from "./markdown";
@@ -159,6 +160,7 @@ export const MemoMarkdownRendererCore = ({
       <ReactMarkdown
         remarkPlugins={buildRemarkPlugins(mathRemarkPlugins)}
         rehypePlugins={buildRehypePlugins(mathRehypePlugins)}
+        urlTransform={memoUrlTransform}
         components={markdownComponents}
       >
         {content}

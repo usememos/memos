@@ -31,4 +31,12 @@ describe("memo content paragraph links", () => {
       undefined,
     ]);
   });
+
+  it("does not offer previews for handoff links", () => {
+    expect(collectSingleLinkHrefs("<tel:+440000000000>\n\n<mailto:me@example.com>\n\n<https://example.com>")).toEqual([
+      undefined,
+      undefined,
+      "https://example.com",
+    ]);
+  });
 });
