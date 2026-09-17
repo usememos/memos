@@ -16,17 +16,12 @@ import (
 	"github.com/usememos/memos/internal/version"
 	"github.com/usememos/memos/store"
 	"github.com/usememos/memos/store/db"
-	"github.com/usememos/memos/store/db/d1/d1test"
 )
 
 // NewTestingStore creates a new testing store with a fresh database.
 // Each test gets its own isolated database:
 //   - SQLite: new temp file per test
 //   - MySQL/PostgreSQL: new database per test in shared container
-//   - D1: new emulated database per test (see store/db/d1/d1test), reached
-//     over the REST protocol or, with D1_ACCESS=bridge, the bridge protocol;
-//     or the database named by D1_DSN when set. That database is shared, so
-//     run one test at a time against it
 func NewTestingStore(ctx context.Context, t *testing.T) *store.Store {
 	driver := getDriverFromEnv()
 	profile := getTestingProfileForDriver(t, driver)
@@ -110,16 +105,6 @@ func getTestingProfileForDriver(t *testing.T, driver string) *profile.Profile {
 		dsn = GetMySQLDSN(t)
 	case "postgres":
 		dsn = GetPostgresDSN(t)
-	case "d1":
-		dsn = os.Getenv("D1_DSN")
-		if dsn == "" {
-			server := d1test.New(t)
-			if os.Getenv("D1_ACCESS") == "bridge" {
-				dsn = server.BridgeDSN()
-			} else {
-				dsn = server.DSN()
-			}
-		}
 	default:
 		t.Fatalf("unsupported driver: %s", driver)
 	}

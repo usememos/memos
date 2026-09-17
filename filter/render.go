@@ -3,7 +3,6 @@ package filter
 import (
 	"fmt"
 	"strings"
-	"unicode"
 
 	"github.com/pkg/errors"
 )
@@ -237,7 +236,7 @@ func (r *renderer) timestampAccessorExpr(field Field, accessor string) (string, 
 	var base string
 	var off int
 	switch r.dialect {
-	case DialectSQLite, DialectD1:
+	case DialectSQLite:
 		base = fmt.Sprintf("CAST(strftime('%s', %s, 'unixepoch') AS INTEGER)", spec.sqlite, col)
 		off = spec.off[0]
 	case DialectPostgres:
@@ -371,7 +370,7 @@ func (r *renderer) renderJSONBoolComparison(field Field, op ComparisonOperator, 
 
 	jsonExpr := jsonExtractExpr(r.dialect, field)
 	switch r.dialect {
-	case DialectSQLite, DialectD1:
+	case DialectSQLite:
 		switch op {
 		case CompareEq:
 			if field.Name == "has_task_list" {
@@ -555,73 +554,9 @@ func (r *renderer) renderRegex(cond *RegexCondition) (renderResult, error) {
 	case DialectMySQL, DialectSQLite:
 		// MySQL has a native REGEXP operator; SQLite uses the registered regexp() function.
 		return renderResult{sql: fmt.Sprintf("%s REGEXP %s", column, r.addArg(cond.Pattern))}, nil
-	case DialectD1:
-		return r.renderLiteralRegex(column, cond.Pattern)
 	default:
 		return renderResult{}, errors.Errorf("unsupported dialect %s", r.dialect)
 	}
-}
-
-// renderLiteralRegex renders matches() for Cloudflare D1, which exposes no
-// REGEXP operator and accepts no custom functions. Only patterns that are a
-// literal string with optional ^ and $ anchors can be expressed, as
-// case-sensitive substring, prefix, suffix, or equality tests; any other
-// pattern is rejected at compile time.
-func (r *renderer) renderLiteralRegex(column, pattern string) (renderResult, error) {
-	literal, anchoredStart, anchoredEnd, ok := literalRegexPattern(pattern)
-	if !ok {
-		return renderResult{}, errors.Errorf("regular expression %q is not supported on Cloudflare D1: only literal text with optional ^ and $ anchors can be matched", pattern)
-	}
-	switch {
-	case anchoredStart && anchoredEnd:
-		return renderResult{sql: fmt.Sprintf("%s = %s", column, r.addArg(literal))}, nil
-	case literal == "":
-		return renderResult{sql: "1 = 1", trivial: true}, nil
-	case anchoredStart:
-		return renderResult{sql: fmt.Sprintf("instr(%s, %s) = 1", column, r.addArg(literal))}, nil
-	case anchoredEnd:
-		lengthValue := r.addArg(literal)
-		compareValue := r.addArg(literal)
-		return renderResult{sql: fmt.Sprintf("substr(%s, -length(%s)) = %s", column, lengthValue, compareValue)}, nil
-	default:
-		return renderResult{sql: fmt.Sprintf("instr(%s, %s) > 0", column, r.addArg(literal))}, nil
-	}
-}
-
-// literalRegexPattern reports whether pattern is a literal string with
-// optional ^ and $ anchors and returns the literal text. Backslash-escaped
-// punctuation is accepted as the punctuation character; every other
-// metacharacter or escape sequence makes the pattern non-literal.
-func literalRegexPattern(pattern string) (literal string, anchoredStart bool, anchoredEnd bool, ok bool) {
-	if strings.HasPrefix(pattern, "^") {
-		anchoredStart = true
-		pattern = pattern[1:]
-	}
-	var builder strings.Builder
-	runes := []rune(pattern)
-	for i := 0; i < len(runes); i++ {
-		c := runes[i]
-		switch {
-		case c == '\\':
-			if i+1 >= len(runes) {
-				return "", false, false, false
-			}
-			next := runes[i+1]
-			if unicode.IsLetter(next) || unicode.IsDigit(next) {
-				// \d, \w, \n and similar are classes or controls, not literals.
-				return "", false, false, false
-			}
-			builder.WriteRune(next)
-			i++
-		case c == '$' && i == len(runes)-1:
-			anchoredEnd = true
-		case strings.ContainsRune(`.*+?()[]{}|^$`, c):
-			return "", false, false, false
-		default:
-			builder.WriteRune(c)
-		}
-	}
-	return builder.String(), anchoredStart, anchoredEnd, true
 }
 
 // foldedLike renders a case-insensitive LIKE comparison of colExpr against a
@@ -632,10 +567,6 @@ func (r *renderer) foldedLike(colExpr, pattern string) string {
 		// memos_unicode_lower gives Unicode-aware folding; ESCAPE '\' is required
 		// because SQLite has no default LIKE escape character.
 		return fmt.Sprintf(`memos_unicode_lower(%s) LIKE memos_unicode_lower(%s) ESCAPE '\'`, colExpr, r.addArg(pattern))
-	case DialectD1:
-		// D1 cannot register custom functions, so folding is limited to the
-		// ASCII range covered by SQLite's built-in LOWER.
-		return fmt.Sprintf(`LOWER(%s) LIKE LOWER(%s) ESCAPE '\'`, colExpr, r.addArg(pattern))
 	case DialectPostgres:
 		// ILIKE is case-insensitive; backslash is the default escape character.
 		return fmt.Sprintf("%s ILIKE %s", colExpr, r.addArg(pattern))
@@ -688,7 +619,7 @@ func (r *renderer) renderTagComprehension(field Field, pred PredicateExpr, kind 
 
 	var elements, length string
 	switch r.dialect {
-	case DialectSQLite, DialectD1:
+	case DialectSQLite:
 		arrayExpr = fmt.Sprintf("COALESCE(%s, JSON_ARRAY())", arrayExpr)
 		elements = fmt.Sprintf("json_each(%s) AS tag_item", arrayExpr)
 		length = fmt.Sprintf("json_array_length(%s)", arrayExpr)
@@ -741,7 +672,7 @@ func (r *renderer) tagElementPredicateSQL(element string, pred PredicateExpr) (s
 	case *EqualsPredicate:
 		placeholder := r.addArg(p.Value)
 		switch r.dialect {
-		case DialectSQLite, DialectD1:
+		case DialectSQLite:
 			return fmt.Sprintf("(%s COLLATE BINARY) = (%s COLLATE BINARY)", element, placeholder), nil
 		case DialectMySQL:
 			return fmt.Sprintf("CAST(%s AS BINARY) = CAST(%s AS BINARY)", element, placeholder), nil
@@ -766,7 +697,7 @@ func (r *renderer) tagElementTextMatch(element string, mode TextMatchMode, value
 	}
 
 	switch r.dialect {
-	case DialectSQLite, DialectD1:
+	case DialectSQLite:
 		switch mode {
 		case TextMatchPrefix:
 			return fmt.Sprintf("instr(%s, %s) = 1", element, r.addArg(value)), nil
@@ -808,7 +739,7 @@ func tagLikePattern(mode TextMatchMode, value string) string {
 func (r *renderer) jsonExistsSQL(field Field) (string, error) {
 	expr := jsonExtractExpr(r.dialect, field)
 	switch r.dialect {
-	case DialectSQLite, DialectD1, DialectPostgres:
+	case DialectSQLite, DialectPostgres:
 		// SQLite's JSON_EXTRACT and Postgres' terminal ->> fold both a missing
 		// key and a JSON null to SQL NULL.
 		return fmt.Sprintf("%s IS NOT NULL", expr), nil
@@ -848,7 +779,7 @@ func (r *renderer) renderJSONExistsComparison(field Field, op ComparisonOperator
 func (r *renderer) jsonBoolPredicate(field Field) (string, error) {
 	expr := jsonExtractExpr(r.dialect, field)
 	switch r.dialect {
-	case DialectSQLite, DialectD1:
+	case DialectSQLite:
 		return fmt.Sprintf("%s IS TRUE", expr), nil
 	case DialectMySQL:
 		return fmt.Sprintf("COALESCE(%s, CAST('false' AS JSON)) = CAST('true' AS JSON)", expr), nil
@@ -901,7 +832,7 @@ func (r *renderer) addArg(value any) string {
 func (r *renderer) addBoolArg(value bool) string {
 	var v any
 	switch r.dialect {
-	case DialectSQLite, DialectD1:
+	case DialectSQLite:
 		if value {
 			v = 1
 		} else {
@@ -982,7 +913,7 @@ func jsonPath(field Field) string {
 func jsonExtractExpr(d DialectName, field Field) string {
 	column := qualifyColumn(d, field.Column)
 	switch d {
-	case DialectSQLite, DialectD1, DialectMySQL:
+	case DialectSQLite, DialectMySQL:
 		return fmt.Sprintf("JSON_EXTRACT(%s, '%s')", column, jsonPath(field))
 	case DialectPostgres:
 		return buildPostgresJSONAccessor(column, field.JSONPath, true)
@@ -994,7 +925,7 @@ func jsonExtractExpr(d DialectName, field Field) string {
 func jsonArrayExpr(d DialectName, field Field) string {
 	column := qualifyColumn(d, field.Column)
 	switch d {
-	case DialectSQLite, DialectD1, DialectMySQL:
+	case DialectSQLite, DialectMySQL:
 		return fmt.Sprintf("JSON_EXTRACT(%s, '%s')", column, jsonPath(field))
 	case DialectPostgres:
 		return buildPostgresJSONAccessor(column, field.JSONPath, false)
@@ -1006,7 +937,7 @@ func jsonArrayExpr(d DialectName, field Field) string {
 func jsonArrayLengthExpr(d DialectName, field Field) string {
 	arrayExpr := jsonArrayExpr(d, field)
 	switch d {
-	case DialectSQLite, DialectD1:
+	case DialectSQLite:
 		return fmt.Sprintf("JSON_ARRAY_LENGTH(COALESCE(%s, JSON_ARRAY()))", arrayExpr)
 	case DialectMySQL:
 		return fmt.Sprintf("JSON_LENGTH(COALESCE(%s, JSON_ARRAY()))", arrayExpr)

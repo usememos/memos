@@ -5,7 +5,6 @@ import (
 
 	"github.com/usememos/memos/internal/profile"
 	"github.com/usememos/memos/store"
-	"github.com/usememos/memos/store/db/d1"
 	"github.com/usememos/memos/store/db/mysql"
 	"github.com/usememos/memos/store/db/postgres"
 	"github.com/usememos/memos/store/db/sqlite"
@@ -23,8 +22,6 @@ func NewDBDriver(profile *profile.Profile) (store.Driver, error) {
 		driver, err = mysql.NewDB(profile)
 	case "postgres":
 		driver, err = postgres.NewDB(profile)
-	case "d1":
-		driver, err = d1.NewDB(profile)
 	default:
 		return nil, errors.New("unknown db driver")
 	}
