@@ -1,8 +1,12 @@
 import { create } from "@bufbuild/protobuf";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import HabitMomentumDashboard from "@/components/Habits/HabitMomentumDashboard";
 import { HabitSchema, HabitSummarySchema } from "@/types/proto/api/v1/habit_service_pb";
+
+const toastMocks = vi.hoisted(() => ({ error: vi.fn(), success: vi.fn() }));
+
+vi.mock("react-hot-toast", () => ({ default: toastMocks, toast: toastMocks }));
 
 const summary = create(HabitSummarySchema, {
   habit: create(HabitSchema, {
@@ -48,5 +52,15 @@ describe("HabitMomentumDashboard", () => {
     fireEvent.change(screen.getByLabelText("Minutes today"), { target: { value: "27" } });
     fireEvent.click(screen.getByRole("button", { name: "Log it" }));
     expect(onLog).toHaveBeenCalledWith(27);
+  });
+
+  it("reports a save failure without emitting an optimistic reward", async () => {
+    toastMocks.error.mockClear();
+    toastMocks.success.mockClear();
+    const onLog = vi.fn().mockRejectedValue(new Error("offline"));
+    render(<HabitMomentumDashboard summary={summary} today="2026-09-16" onLog={onLog} onUndo={vi.fn()} onEdit={vi.fn()} />);
+    fireEvent.click(screen.getByRole("button", { name: "Log it" }));
+    await waitFor(() => expect(toastMocks.error).toHaveBeenCalledWith("Could not save today's progress"));
+    expect(toastMocks.success).not.toHaveBeenCalled();
   });
 });
