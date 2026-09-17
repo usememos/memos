@@ -133,10 +133,21 @@ func deleteUserTargetsTx(ctx context.Context, tx dbExecutor, userID int32, targe
 	if err := deleteMemoRelationsTx(ctx, tx, memoIDs); err != nil {
 		return err
 	}
+	if err := deleteHabitsByCreatorTx(ctx, tx, userID); err != nil {
+		return err
+	}
 	if err := deleteUserRowTx(ctx, tx, userID); err != nil {
 		return err
 	}
 	return nil
+}
+
+func deleteHabitsByCreatorTx(ctx context.Context, tx dbExecutor, userID int32) error {
+	if _, err := tx.ExecContext(ctx, "DELETE FROM habit_log WHERE habit_id IN (SELECT id FROM habit WHERE creator_id = ?)", userID); err != nil {
+		return err
+	}
+	_, err := tx.ExecContext(ctx, "DELETE FROM habit WHERE creator_id = ?", userID)
+	return err
 }
 
 func listDeleteUserMemos(ctx context.Context, tx dbExecutor, userID int32) ([]int32, error) {
