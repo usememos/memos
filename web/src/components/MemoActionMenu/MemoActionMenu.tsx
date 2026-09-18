@@ -22,6 +22,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
@@ -135,7 +136,17 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
           </DropdownMenuItem>
         )}
 
-        {(canMove || !readonly) && (
+        {isComment && !readonly && (
+          <>
+            {!isArchived && <DropdownMenuSeparator />}
+            <DropdownMenuItem onClick={handleDeleteMemoClick}>
+              <TrashIcon />
+              {t("common.delete")}
+            </DropdownMenuItem>
+          </>
+        )}
+
+        {!isComment && (canMove || !readonly) && (
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>
               <MoreHorizontalIcon />

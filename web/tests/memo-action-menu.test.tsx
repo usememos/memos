@@ -64,6 +64,54 @@ describe("MemoActionMenu", () => {
     expect(screen.queryByRole("menuitem", { name: "common.more" })).not.toBeInTheDocument();
   });
 
+  it("shows comment actions with Delete last and no memo organization actions", async () => {
+    render(<MemoActionMenu memo={create(MemoSchema, { name: "memos/2", parent: "memos/1", state: State.NORMAL })} />);
+    fireEvent.click(screen.getByRole("button", { name: "common.more" }));
+    await screen.findByRole("menuitem", { name: "common.edit" });
+
+    expect(screen.getAllByRole("menuitem").map((item) => item.textContent)).toEqual(["common.edit", "common.copy", "common.delete"]);
+    expect(screen.getByRole("separator").nextElementSibling).toBe(screen.getByRole("menuitem", { name: "common.delete" }));
+
+    fireEvent.click(screen.getByRole("menuitem", { name: "common.delete" }));
+    expect(handlers.handleDeleteMemoClick).toHaveBeenCalledOnce();
+    expect(handlers.confirmDeleteMemo).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["memo.copy-link", "handleCopyLink"],
+    ["memo.copy-content", "handleCopyContent"],
+  ] as const)("allows %s on a read-only comment", async (label, handler) => {
+    render(<MemoActionMenu memo={create(MemoSchema, { name: "memos/2", parent: "memos/1", state: State.NORMAL })} readonly />);
+    fireEvent.click(screen.getByRole("button", { name: "common.more" }));
+    await screen.findByRole("menuitem", { name: "common.copy" });
+    expect(screen.getAllByRole("menuitem").map((item) => item.textContent)).toEqual(["common.copy"]);
+
+    fireEvent.click(screen.getByRole("menuitem", { name: "common.copy" }));
+    fireEvent.click(await screen.findByRole("menuitem", { name: label }));
+    expect(handlers[handler]).toHaveBeenCalledOnce();
+  });
+
+  it.each([false, true])("only shows task actions on writable task comments (readonly: %s)", async (readonly) => {
+    const memo = create(MemoSchema, {
+      name: "memos/2",
+      parent: "memos/1",
+      state: State.NORMAL,
+      property: { hasTaskList: true, hasIncompleteTasks: true },
+    });
+    render(<MemoActionMenu memo={memo} readonly={readonly} />);
+    fireEvent.click(screen.getByRole("button", { name: "common.more" }));
+    await screen.findByRole("menuitem", { name: "common.copy" });
+
+    if (readonly) {
+      expect(screen.queryByRole("menuitem", { name: "memo.task-actions.title" })).not.toBeInTheDocument();
+    } else {
+      fireEvent.click(screen.getByRole("menuitem", { name: "memo.task-actions.title" }));
+      expect(await screen.findByRole("menuitem", { name: "memo.task-actions.uncheck-all" })).toBeInTheDocument();
+      fireEvent.click(screen.getByRole("menuitem", { name: "memo.task-actions.check-all" }));
+      expect(handlers.handleCheckAllTaskListItemsClick).toHaveBeenCalledOnce();
+    }
+  });
+
   it("is a quiet compact control that takes the accent fill while open", async () => {
     const memo = create(MemoSchema, { name: "memos/1", state: State.NORMAL, pinned: false });
     render(<MemoActionMenu memo={memo} />);
