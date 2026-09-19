@@ -5,6 +5,8 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"os"
+	"path/filepath"
 	"strconv"
 	"testing"
 	"time"
@@ -15,7 +17,7 @@ import (
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/usememos/memos/core/memoarchive"
+	"github.com/usememos/memos/core/memoexport"
 	"github.com/usememos/memos/internal/ratelimit"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
@@ -123,14 +125,14 @@ func mustTime(t *testing.T, value string) time.Time {
 	return parsed
 }
 
-func readArchive(t *testing.T, data []byte) *memoarchive.Archive {
+func readArchive(t *testing.T, data []byte) *memoexport.File {
 	t.Helper()
-	archive, err := memoarchive.Read(bytes.NewReader(data), int64(len(data)))
+	archive, err := memoexport.Read(bytes.NewReader(data), int64(len(data)))
 	require.NoError(t, err)
 	return archive
 }
 
-func exportArchive(t *testing.T, ts *TestService, user *store.User) *memoarchive.Archive {
+func exportArchive(t *testing.T, ts *TestService, user *store.User) *memoexport.File {
 	t.Helper()
 	return readArchive(t, exportArchiveBytes(t, ts, user))
 }
@@ -138,19 +140,19 @@ func exportArchive(t *testing.T, ts *TestService, user *store.User) *memoarchive
 func exportArchiveBytes(t *testing.T, ts *TestService, user *store.User) []byte {
 	t.Helper()
 	var buffer bytes.Buffer
-	require.NoError(t, ts.Service.ExportMemoArchive(context.Background(), user, &buffer))
+	require.NoError(t, ts.Service.WriteMemoExport(context.Background(), user, &buffer))
 	return buffer.Bytes()
 }
 
-func archiveMemosByUID(archive *memoarchive.Archive) map[string]*memoarchive.Memo {
-	byUID := make(map[string]*memoarchive.Memo, len(archive.Memos))
+func archiveMemosByUID(archive *memoexport.File) map[string]*memoexport.Memo {
+	byUID := make(map[string]*memoexport.Memo, len(archive.Memos))
 	for _, memo := range archive.Memos {
 		byUID[memo.UID] = memo
 	}
 	return byUID
 }
 
-func TestExportMemoArchive(t *testing.T) {
+func TestWriteMemoExport(t *testing.T) {
 	ts := NewTestService(t)
 	defer ts.Cleanup()
 	fixture := buildArchiveFixture(t, ts, "exporter")
@@ -164,9 +166,9 @@ func TestExportMemoArchive(t *testing.T) {
 	require.NoError(t, err)
 
 	archive := exportArchive(t, ts, fixture.user)
-	require.Equal(t, memoarchive.ScopeKindUser, archive.Manifest.Scope.Kind)
+	require.Equal(t, memoexport.ScopeKindUser, archive.Manifest.Scope.Kind)
 	require.Equal(t, "exporter", archive.Manifest.Scope.User.Username)
-	require.Equal(t, &memoarchive.Counts{Memos: 5, Attachments: 1}, archive.Manifest.Counts)
+	require.Equal(t, &memoexport.Counts{Memos: 5, Attachments: 1}, archive.Manifest.Counts)
 	require.Empty(t, archive.Warnings)
 	require.Len(t, archive.Memos, 5)
 
@@ -182,8 +184,8 @@ func TestExportMemoArchive(t *testing.T) {
 	require.Equal(t, "NORMAL", parent.State)
 	require.Equal(t, "PRIVATE", parent.Visibility)
 	require.True(t, parent.Pinned)
-	require.Equal(t, &memoarchive.Location{Placeholder: "Office", Latitude: 52.52, Longitude: 13.405}, parent.Location)
-	require.Equal(t, []memoarchive.Relation{{Type: "REFERENCE", Memo: "referenced1"}}, parent.Relations)
+	require.Equal(t, &memoexport.Location{Placeholder: "Office", Latitude: 52.52, Longitude: 13.405}, parent.Location)
+	require.Equal(t, []memoexport.Relation{{Type: "REFERENCE", Memo: "referenced1"}}, parent.Relations)
 	require.Empty(t, parent.Parent)
 	content, err := archive.Content(parent)
 	require.NoError(t, err)
@@ -207,14 +209,14 @@ func TestExportMemoArchive(t *testing.T) {
 	// The comment is older than its parent but must still follow it.
 	require.Less(t, indexOfMemo(archive, "parent00001"), indexOfMemo(archive, "comment0001"))
 
-	require.Equal(t, &memoarchive.Space{UID: "team-notes", Title: "Team Notes"}, byUID["spacememo01"].Space)
+	require.Equal(t, &memoexport.Space{UID: "team-notes", Title: "Team Notes"}, byUID["spacememo01"].Space)
 	require.Equal(t, "SPACE", byUID["spacememo01"].Visibility)
 	require.Equal(t, "ARCHIVED", byUID["archived001"].State)
 	require.Equal(t, "PROTECTED", byUID["archived001"].Visibility)
 	require.Equal(t, []string{"work"}, byUID["referenced1"].Tags)
 }
 
-func indexOfMemo(archive *memoarchive.Archive, uid string) int {
+func indexOfMemo(archive *memoexport.File, uid string) int {
 	for index, memo := range archive.Memos {
 		if memo.UID == uid {
 			return index
@@ -223,7 +225,7 @@ func indexOfMemo(archive *memoarchive.Archive, uid string) int {
 	return -1
 }
 
-func TestImportMemoArchiveIntoAnotherAccount(t *testing.T) {
+func TestImportMemoExportIntoAnotherAccount(t *testing.T) {
 	ts := NewTestService(t)
 	defer ts.Cleanup()
 	fixture := buildArchiveFixture(t, ts, "exporter")
@@ -234,7 +236,7 @@ func TestImportMemoArchiveIntoAnotherAccount(t *testing.T) {
 	require.NoError(t, err)
 	importerCtx := ts.CreateUserContext(ctx, importer.ID)
 
-	report, err := ts.Service.ImportMemoArchive(importerCtx, importer, archive, v1pb.ImportMemosRequest_SKIP)
+	report, err := ts.Service.ImportMemoExport(importerCtx, importer, archive, v1pb.ImportMemosRequest_SKIP)
 	require.NoError(t, err)
 	require.Equal(t, int32(5), report.Created)
 	require.Zero(t, report.Updated)
@@ -305,7 +307,7 @@ func TestImportMemoArchiveIntoAnotherAccount(t *testing.T) {
 	require.Equal(t, fixture.photo, blob)
 }
 
-func TestPlanMemoArchiveImport(t *testing.T) {
+func TestPlanMemoImport(t *testing.T) {
 	ts := NewTestService(t)
 	defer ts.Cleanup()
 	fixture := buildArchiveFixture(t, ts, "owner")
@@ -325,27 +327,27 @@ func TestPlanMemoArchiveImport(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	plan, err := ts.Service.PlanMemoArchiveImport(fixture.userCtx, fixture.user, archive)
+	plan, err := ts.Service.PlanMemoImport(fixture.userCtx, fixture.user, archive)
 	require.NoError(t, err)
 	require.Equal(t, int32(5), plan.Memos)
 	require.Equal(t, int32(4), plan.Existing)
 	require.Equal(t, int32(1), plan.Renamed)
 	require.Zero(t, plan.New)
 
-	plan, err = ts.Service.PlanMemoArchiveImport(otherCtx, other, archive)
+	plan, err = ts.Service.PlanMemoImport(otherCtx, other, archive)
 	require.NoError(t, err)
 	require.Zero(t, plan.Existing)
 	require.Equal(t, int32(5), plan.Renamed)
 	require.Zero(t, plan.New)
 }
 
-func TestImportMemoArchiveConflictPolicies(t *testing.T) {
+func TestImportMemoExportConflictPolicies(t *testing.T) {
 	ts := NewTestService(t)
 	defer ts.Cleanup()
 	fixture := buildArchiveFixture(t, ts, "owner")
 	data := exportArchiveBytes(t, ts, fixture.user)
 	ctx := context.Background()
-	openArchive := func() *memoarchive.Archive { return readArchive(t, data) }
+	openArchive := func() *memoexport.File { return readArchive(t, data) }
 	countOwn := func() int {
 		memos, err := ts.Store.ListMemos(ctx, &store.FindMemo{CreatorID: &fixture.user.ID})
 		require.NoError(t, err)
@@ -353,7 +355,7 @@ func TestImportMemoArchiveConflictPolicies(t *testing.T) {
 	}
 
 	t.Run("skip is idempotent", func(t *testing.T) {
-		report, err := ts.Service.ImportMemoArchive(fixture.userCtx, fixture.user, openArchive(), v1pb.ImportMemosRequest_SKIP)
+		report, err := ts.Service.ImportMemoExport(fixture.userCtx, fixture.user, openArchive(), v1pb.ImportMemosRequest_SKIP)
 		require.NoError(t, err)
 		require.Equal(t, int32(5), report.Skipped)
 		require.Zero(t, report.Created+report.Updated+report.Failed)
@@ -368,7 +370,7 @@ func TestImportMemoArchiveConflictPolicies(t *testing.T) {
 		})
 		require.NoError(t, err)
 
-		report, err := ts.Service.ImportMemoArchive(fixture.userCtx, fixture.user, openArchive(), v1pb.ImportMemosRequest_REPLACE)
+		report, err := ts.Service.ImportMemoExport(fixture.userCtx, fixture.user, openArchive(), v1pb.ImportMemosRequest_REPLACE)
 		require.NoError(t, err)
 		require.Equal(t, int32(5), report.Updated, "%v", report.Failures)
 		require.Zero(t, report.Failed)
@@ -387,7 +389,7 @@ func TestImportMemoArchiveConflictPolicies(t *testing.T) {
 	})
 
 	t.Run("duplicate creates copies", func(t *testing.T) {
-		report, err := ts.Service.ImportMemoArchive(fixture.userCtx, fixture.user, openArchive(), v1pb.ImportMemosRequest_DUPLICATE)
+		report, err := ts.Service.ImportMemoExport(fixture.userCtx, fixture.user, openArchive(), v1pb.ImportMemosRequest_DUPLICATE)
 		require.NoError(t, err)
 		require.Equal(t, int32(5), report.Created, "%v", report.Failures)
 		require.Zero(t, report.Failed)
@@ -419,8 +421,10 @@ func TestExportMemos(t *testing.T) {
 
 	body, err := ts.Service.ExportMemos(fixture.userCtx, &v1pb.ExportMemosRequest{Name: userName(fixture.user)})
 	require.NoError(t, err)
-	require.Equal(t, memoarchive.MediaType, body.ContentType)
-	require.Len(t, readArchive(t, body.Data).Memos, 5)
+	require.Equal(t, "application/vnd.usememos.export+zip", body.ContentType)
+	exported := readArchive(t, body.Data)
+	require.Equal(t, "memos-export", exported.Manifest.Format)
+	require.Len(t, exported.Memos, 5)
 
 	other, err := ts.CreateRegularUser(ctx, "other")
 	require.NoError(t, err)
@@ -428,6 +432,42 @@ func TestExportMemos(t *testing.T) {
 	require.Equal(t, codes.PermissionDenied, status.Code(err))
 	_, err = ts.Service.ExportMemos(ctx, &v1pb.ExportMemosRequest{Name: userName(fixture.user)})
 	require.Equal(t, codes.Unauthenticated, status.Code(err))
+}
+
+func TestImportMemosExportFormats(t *testing.T) {
+	for _, filename := range []string{"golden.zip", "legacy.zip"} {
+		t.Run(filename, func(t *testing.T) {
+			ts := NewTestService(t)
+			defer ts.Cleanup()
+			t.Cleanup(ts.Service.CloseUploads)
+			user, err := ts.CreateRegularUser(context.Background(), "importer")
+			require.NoError(t, err)
+			ctx := ts.CreateUserContext(context.Background(), user.ID)
+			data, err := os.ReadFile(filepath.Join("..", "..", "..", "..", "core", "memoexport", "testdata", "1.0", filename))
+			require.NoError(t, err)
+			response, err := ts.Service.ImportMemos(ctx, &v1pb.ImportMemosRequest{
+				Name:        userName(user),
+				Upload:      &v1pb.ImportMemosRequest_Spec{Spec: &v1pb.ImportMemosSpec{TotalSize: int64(len(data))}},
+				Data:        data,
+				FinishWrite: true,
+			})
+			require.NoError(t, err)
+			report := response.GetReport()
+			require.NotNil(t, report)
+			require.EqualValues(t, 3, report.Created)
+			require.Empty(t, report.Failures)
+			memos, err := ts.Store.ListMemos(ctx, &store.FindMemo{CreatorID: &user.ID})
+			require.NoError(t, err)
+			require.Len(t, memos, 3)
+			archived := 0
+			for _, memo := range memos {
+				if memo.RowStatus == store.Archived {
+					archived++
+				}
+			}
+			require.Equal(t, 1, archived)
+		})
+	}
 }
 
 func TestImportMemos(t *testing.T) {
@@ -513,7 +553,7 @@ func TestImportMemos(t *testing.T) {
 			FinishWrite: true,
 		})
 		require.Equal(t, codes.InvalidArgument, status.Code(err))
-		require.Contains(t, err.Error(), "invalid memo archive")
+		require.Contains(t, err.Error(), "invalid memo export file")
 	})
 
 	t.Run("refuses another account's upload id", func(t *testing.T) {
@@ -531,7 +571,7 @@ func TestImportMemos(t *testing.T) {
 	})
 }
 
-// buildImportArchive writes a one-memo archive whose attachments are given
+// buildImportArchive writes a one-memo export file whose attachments are given
 // as (uid, filename, bytes). Sizes and digests are computed from the bytes.
 func buildImportArchive(t *testing.T, username string, attachments []struct {
 	uid, filename string
@@ -539,22 +579,22 @@ func buildImportArchive(t *testing.T, username string, attachments []struct {
 }) []byte {
 	t.Helper()
 	var buf bytes.Buffer
-	writer := memoarchive.NewWriter(&buf, mustTime(t, "2026-04-01T00:00:00Z"))
-	require.NoError(t, writer.WriteManifest(&memoarchive.Manifest{
-		Format: memoarchive.Format, FormatVersion: memoarchive.FormatVersion,
-		Generator:  memoarchive.Generator{Name: "test", Version: "1"},
+	writer := memoexport.NewWriter(&buf, mustTime(t, "2026-04-01T00:00:00Z"))
+	require.NoError(t, writer.WriteManifest(&memoexport.Manifest{
+		Format: memoexport.Format, FormatVersion: memoexport.FormatVersion,
+		Generator:  memoexport.Generator{Name: "test", Version: "1"},
 		ExportTime: "2026-04-01T00:00:00Z",
-		Scope:      memoarchive.Scope{Kind: memoarchive.ScopeKindUser, User: &memoarchive.ScopeUser{Username: username}},
+		Scope:      memoexport.Scope{Kind: memoexport.ScopeKindUser, User: &memoexport.ScopeUser{Username: username}},
 	}))
-	record := &memoarchive.Memo{
+	record := &memoexport.Memo{
 		UID: "importedmemo1", Creator: username, CreateTime: "2026-04-01T00:00:00Z", UpdateTime: "2026-04-01T00:00:00Z",
-		State: "NORMAL", Visibility: "PRIVATE", ContentPath: memoarchive.ContentPath("importedmemo1"),
+		State: "NORMAL", Visibility: "PRIVATE", ContentPath: memoexport.ContentPath("importedmemo1"),
 	}
 	for _, attachment := range attachments {
-		path := memoarchive.AttachmentPath(attachment.uid, attachment.filename)
+		path := memoexport.AttachmentPath(attachment.uid, attachment.filename)
 		digest, size, err := writer.WriteAttachment(path, bytes.NewReader(attachment.content))
 		require.NoError(t, err)
-		record.Attachments = append(record.Attachments, memoarchive.Attachment{
+		record.Attachments = append(record.Attachments, memoexport.Attachment{
 			UID: attachment.uid, Filename: attachment.filename, Type: "application/octet-stream", Size: size, SHA256: digest, Path: path,
 			CreateTime: "2026-04-01T00:00:00Z",
 		})

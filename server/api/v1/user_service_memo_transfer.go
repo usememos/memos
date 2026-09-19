@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/usememos/memos/core/memoarchive"
+	"github.com/usememos/memos/core/memoexport"
 	"github.com/usememos/memos/internal/ratelimit"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	"github.com/usememos/memos/store"
@@ -32,8 +32,8 @@ type memoImportState struct {
 
 type memoImports = uploadSessions[memoImportState]
 
-// resolveArchiveOwner resolves users/{user} and asserts it is the caller.
-func (s *APIV1Service) resolveArchiveOwner(ctx context.Context, name string) (*store.User, error) {
+// resolveMemoTransferOwner resolves users/{user} and asserts it is the caller.
+func (s *APIV1Service) resolveMemoTransferOwner(ctx context.Context, name string) (*store.User, error) {
 	user, err := ResolveUserByName(ctx, s.Store, name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
@@ -47,9 +47,9 @@ func (s *APIV1Service) resolveArchiveOwner(ctx context.Context, name string) (*s
 	return user, nil
 }
 
-// ExportMemos writes the caller's Memo Archive into the response body.
+// ExportMemos writes the caller's Memos export file into the response body.
 func (s *APIV1Service) ExportMemos(ctx context.Context, request *v1pb.ExportMemosRequest) (*httpbody.HttpBody, error) {
-	user, err := s.resolveArchiveOwner(ctx, request.Name)
+	user, err := s.resolveMemoTransferOwner(ctx, request.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -57,17 +57,17 @@ func (s *APIV1Service) ExportMemos(ctx context.Context, request *v1pb.ExportMemo
 		return nil, err
 	}
 	var archive bytes.Buffer
-	if err := s.ExportMemoArchive(ctx, user, &archive); err != nil {
-		slog.Error("memo archive export failed", slog.Int("user", int(user.ID)), slog.Any("error", err))
+	if err := s.WriteMemoExport(ctx, user, &archive); err != nil {
+		slog.Error("memo export failed", slog.Int("user", int(user.ID)), slog.Any("error", err))
 		return nil, status.Error(codes.Internal, "failed to export memos")
 	}
-	return &httpbody.HttpBody{ContentType: memoarchive.MediaType, Data: archive.Bytes()}, nil
+	return &httpbody.HttpBody{ContentType: memoexport.MediaType, Data: archive.Bytes()}, nil
 }
 
 // ImportMemos stages an archive in chunks and, on the finishing call, plans
 // or imports it. See the proto comment for the protocol.
 func (s *APIV1Service) ImportMemos(ctx context.Context, request *v1pb.ImportMemosRequest) (*v1pb.ImportMemosResponse, error) {
-	user, err := s.resolveArchiveOwner(ctx, request.Name)
+	user, err := s.resolveMemoTransferOwner(ctx, request.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -135,9 +135,9 @@ func (s *APIV1Service) finishMemoImport(ctx context.Context, user *store.User, u
 		return status.Errorf(codes.Internal, "failed to open upload file: %v", err)
 	}
 	defer file.Close()
-	archive, err := memoarchive.Read(file, upload.totalSize)
+	archive, err := memoexport.Read(file, upload.totalSize)
 	if err != nil {
-		return status.Errorf(codes.InvalidArgument, "invalid memo archive: %v", err)
+		return status.Errorf(codes.InvalidArgument, "invalid memo export file: %v", err)
 	}
 	if request.ValidateOnly {
 		// A plan can be requested again and again on the same staged archive,
@@ -145,17 +145,17 @@ func (s *APIV1Service) finishMemoImport(ctx context.Context, user *store.User, u
 		if err := s.throttleAndCharge(ratelimit.ScopeArchiveUser, userKey(user.ID), 1); err != nil {
 			return err
 		}
-		plan, err := s.PlanMemoArchiveImport(ctx, user, archive)
+		plan, err := s.PlanMemoImport(ctx, user, archive)
 		if err != nil {
-			slog.Error("memo archive plan failed", slog.Int("user", int(user.ID)), slog.Any("error", err))
+			slog.Error("memo import planning failed", slog.Int("user", int(user.ID)), slog.Any("error", err))
 			return status.Error(codes.Internal, "failed to inspect the archive")
 		}
 		response.Result = &v1pb.ImportMemosResponse_Plan{Plan: plan}
 		return nil
 	}
-	report, err := s.ImportMemoArchive(ctx, user, archive, request.ConflictPolicy)
+	report, err := s.ImportMemoExport(ctx, user, archive, request.ConflictPolicy)
 	if err != nil {
-		slog.Error("memo archive import failed", slog.Int("user", int(user.ID)), slog.Any("error", err))
+		slog.Error("memo import failed", slog.Int("user", int(user.ID)), slog.Any("error", err))
 		return status.Error(codes.Internal, "failed to import memos")
 	}
 	upload.state.report = report

@@ -739,11 +739,11 @@
       "refresh": "Atualizar",
       "load-error": "Falha ao carregar estatísticas"
     },
-    "memo-archive": {
+    "memo-export": {
       "review-file": "Ficheiro",
       "description": "Mova os seus memorandos e anexos entre Memos instâncias com um único ficheiro comprimido.",
       "export-action": "Exportar",
-      "export-description": "Descarregue todos os memorandos que criou, incluindo comentários, memorandos arquivados e ficheiros anexos, como um Ficheiro de Memorandos.",
+      "export-description": "Descarregue todos os memorandos que criou, incluindo comentários, memorandos arquivados e ficheiros anexos, como um ficheiro de exportação do Memos.",
       "export-detail": "Um ficheiro ZIP com um ficheiro Markdown e um registo JSON por memorando.",
       "export-failed": "Falha na exportação.",
       "export-label": "Descarregue o ficheiro",
@@ -753,8 +753,8 @@
       "import-action": "Selecionar ficheiro",
       "import-another": "Importar outro ficheiro",
       "import-confirm": "Importar {{count}} memorandos",
-      "import-description": "Importar um Ficheiro de Memorandos desta ou de outra instância Memos. Os Memos mantêm os seus identificadores, pelo que importar o mesmo ficheiro duas vezes não cria duplicados.",
-      "import-detail": "Selecionar um ficheiro memos-archive-*.zip.",
+      "import-description": "Importar um ficheiro de exportação do Memos desta ou de outra instância Memos. Os Memos mantêm os seus identificadores, pelo que importar o mesmo ficheiro duas vezes não cria duplicados.",
+      "import-detail": "Selecionar um ficheiro *.zip.",
       "import-failed": "Falha na importação.",
       "import-label": "Carregar ficheiro",
       "import-success": "{{created}} novas notas importadas e {{updated}} notas atualizadas.",
@@ -762,7 +762,7 @@
       "importing": "Importando…",
       "label": "Exportar e Importar",
       "policy-duplicate": "Criar uma cópia",
-      "policy-duplicate-description": "Manter os memorandos existentes e adicionar as versões arquivadas como novos memorandos.",
+      "policy-duplicate-description": "Manter os memorandos existentes e adicionar as versões do ficheiro como novos memorandos.",
       "policy-question": "{{count}} destes memorandos já existem na sua conta. O que lhes deve acontecer?",
       "policy-replace": "Substituir pelo ficheiro",
       "policy-replace-description": "Sobrescrever o conteúdo e as definições com o ficheiro.",

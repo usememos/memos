@@ -1,4 +1,4 @@
-# Memo Archive Format
+# Memos Export Format
 
 Status: Proposed
 
@@ -8,11 +8,11 @@ Existing domain language: [Memos context](../../CONTEXT.md)
 
 Related: [Multi-Spaces Design](multi-spaces.md), [ADR 0002: Username Format and References](../adr/0002-username-format-and-references.md), [ADR 0003: Space UID Allocation and Format](../adr/0003-space-uid-allocation-and-format.md)
 
-Normative schemas: [`memo-archive/1.0/manifest.schema.json`](memo-archive/1.0/manifest.schema.json), [`memo-archive/1.0/memo.schema.json`](memo-archive/1.0/memo.schema.json)
+Normative schemas: [`memo-export/1.0/manifest.schema.json`](memo-export/1.0/manifest.schema.json), [`memo-export/1.0/memo.schema.json`](memo-export/1.0/memo.schema.json)
 
 ## Summary
 
-A Memo Archive is a ZIP container that carries one user's memos and their attachments out of a Memos instance and back into a Memos instance running the same or a later release. It is the single format for personal export, personal import, and migration between instances or database backends.
+Memos Export Format is a ZIP-based format that carries one user's memos and their attachments out of a Memos instance and back into a Memos instance running the same or a later release. It is the single format for personal export, personal import, and migration between instances or database backends.
 
 The format is built only from published standards and the public API's own vocabulary. The container is a plain ZIP file as specified by the PKWARE APPNOTE, identified by its manifest. Records are RFC 8259 JSON documents that use the proto3 JSON mapping of the public API messages, so every field name, enum string, and timestamp form is one a client already sees on the wire. Memo content is stored as untouched bytes in a separate Markdown file. Two JSON Schema documents are the normative definition of the records; this document explains them and defines the container and the import semantics that the schemas cannot express.
 
@@ -42,14 +42,14 @@ The design reuses established specifications rather than inventing encodings. Ea
 | --- | --- | --- |
 | Container | PKWARE APPNOTE 6.3.10 (ZIP) | Methods Store (0) and Deflate (8), UTF-8 names via the language encoding flag (bit 11), ZIP64 permitted. |
 | Self-identification | RFC 8259 JSON manifest | `manifest.json` carries `format` and `formatVersion`. A leading `mimetype` entry in the EPUB and OpenDocument manner was tried and rejected: macOS Archive Utility recognizes that signature, sees an unknown vendor type, and refuses to expand the file. |
-| Media type | RFC 6838 §3.2 vendor tree | `application/vnd.usememos.archive+zip` for the container; attachment types are IANA media types. |
+| Media type | RFC 6838 §3.2 vendor tree | `application/vnd.usememos.export+zip` for the container; attachment types are IANA media types. |
 | Records | RFC 8259 (JSON), UTF-8 without byte order mark | One JSON document per memo plus one manifest. |
 | Record vocabulary | Protocol Buffers proto3 JSON mapping | lowerCamelCase field names, enum names as strings, timestamps as RFC 3339 strings. |
 | Timestamps | RFC 3339 §5.6 `date-time` | UTC with `Z` designator. |
 | Schema | JSON Schema 2020-12 | Normative `manifest.schema.json` and `memo.schema.json`. |
 | Digest | FIPS 180-4 SHA-256 | Lowercase hexadecimal, 64 characters. |
 | Path safety | CWE-22 (path traversal in archive extraction, "zip slip") | Entry names are validated, never sanitized; violations reject the archive. |
-| Download | RFC 6266 `Content-Disposition` | `attachment; filename*=UTF-8''memos-archive-….zip`. |
+| Download | RFC 6266 `Content-Disposition` | `attachment; filename*=UTF-8''memos-export-….zip`. |
 
 The container is deliberately an ordinary ZIP file so that every desktop extractor opens it with a double click. The record conventions come from the API the archive mirrors, so the archive needs no vocabulary of its own.
 
@@ -58,7 +58,7 @@ The container is deliberately an ordinary ZIP file so that every desktop extract
 ### Container layout
 
 ```
-memos-archive-<username>-<YYYYMMDDTHHMMSSZ>.zip
+memos-export-<username>-<YYYYMMDDTHHMMSSZ>.zip
 ├── manifest.json                  first entry, archive-level record
 ├── memos/
 │   ├── <memo-uid>.json            memo record
@@ -99,7 +99,7 @@ Readers ignore unknown members in any object. This is what lets a minor version 
 
 ```json
 {
-  "format": "memos-archive",
+  "format": "memos-export",
   "formatVersion": "1.0",
   "generator": { "name": "memos", "version": "0.31.0" },
   "exportTime": "2026-09-16T08:30:00Z",
@@ -113,7 +113,7 @@ Readers ignore unknown members in any object. This is what lets a minor version 
 
 | Field | Required | Meaning |
 | --- | --- | --- |
-| `format` | yes | Always `memos-archive`. Readers reject any other value. |
+| `format` | yes | Writers emit `memos-export`. Readers also accept the legacy `memos-archive` identifier. |
 | `formatVersion` | yes | `MAJOR.MINOR`. See versioning. |
 | `generator` | yes | The software that wrote the archive. Diagnostic only. |
 | `exportTime` | yes | When the archive was written. |
@@ -211,7 +211,7 @@ An attachment belongs to exactly one memo record. Attachments not linked to any 
 
 The importer's behavior is part of the format. An archive only survives a release if the release still does this with it.
 
-1. Validate. `manifest.json` exists, `format` is `memos-archive`, the major version is supported, every entry name passes the container rules, and every record validates against its schema. Any failure aborts before anything is written.
+1. Validate. `manifest.json` exists, `format` is `memos-export` or legacy `memos-archive`, the major version is supported, every entry name passes the container rules, and every record validates against its schema. Any failure aborts before anything is written.
 2. Load memo records. Order so that parents precede comments, then by `createTime`.
 3. Resolve each UID:
    - No memo has that UID: create it with that UID.
@@ -230,8 +230,8 @@ Because step 3 keys on the UID, running the same archive twice produces the same
 ### Export semantics
 
 - The exporter writes only memos the requesting user created and attachments linked to them. No administrator bypass exists.
-- The response carries `Content-Type: application/vnd.usememos.archive+zip` and an RFC 6266 `Content-Disposition` with the archive filename.
-- The archive filename is `memos-archive-<username>-<YYYYMMDDTHHMMSSZ>.zip`, where the timestamp is the RFC 3339 basic form of `exportTime`.
+- The response carries `Content-Type: application/vnd.usememos.export+zip` and an RFC 6266 `Content-Disposition` with the archive filename.
+- The archive filename is `memos-export-<username>-<YYYYMMDDTHHMMSSZ>.zip`, where the timestamp is the RFC 3339 basic form of `exportTime`.
 - Export and import run under the same authentication as the rest of the API and count against a dedicated rate-limit scope.
 
 ### Transport
@@ -247,6 +247,14 @@ The plan carries the manifest's export time, exporter, and generator, the archiv
 
 The web client offers both operations under Settings, Export & Import. Import is a three-step flow: the user chooses a file, the client uploads it once and finishes with `validate_only` to show the plan, and the conflict policy is asked for only when `existing` is greater than zero. Confirming sends one more finishing call on the same upload. An expired upload returns to the file picker.
 
+### Naming and compatibility
+
+The product actions are **Export memos** and **Import memos**. **Memos Export Format** names the file format; it is unrelated to a memo's **Archived** state. The Go package is `core/memoexport`.
+
+Before 0.31.0 stable, this format was named Memo Archive. New exports use `format: "memos-export"`, the media type `application/vnd.usememos.export+zip`, and the filename prefix `memos-export-`. Readers continue accepting `format: "memos-archive"`; the file picker also accepts the old `application/vnd.usememos.archive+zip` media type. Import validates the manifest and does not depend on the filename or media type.
+
+The ZIP layout and record semantics are unchanged, so `formatVersion` remains `1.0`. This is a prerelease identifier transition: older prerelease readers that only accept `memos-archive` cannot read new exports. The original prerelease fixture remains in `testdata/1.0/legacy.zip` and is tested alongside the current fixture.
+
 ### Versioning and evolution
 
 `formatVersion` is `MAJOR.MINOR`.
@@ -259,7 +267,7 @@ A change is a minor bump when it only adds optional members, adds entries, adds 
 
 Within a major version a member is never removed. A member that stops being useful is marked deprecated in the schema and writers keep emitting it.
 
-Each version has its own schema directory, `docs/design/memo-archive/<MAJOR.MINOR>/`, and a golden archive under test data. CI validates every golden archive against its schema and imports every golden archive ever published, so a reader regression against an older version fails the build.
+Each version has its own schema directory, `docs/design/memo-export/<MAJOR.MINOR>/`, and a golden archive under test data. CI validates every golden archive against its schema and imports every golden archive ever published, so a reader regression against an older version fails the build.
 
 ### Security invariants
 

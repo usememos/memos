@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://usememos.com/schemas/memo-archive/1.0/memo.schema.json",
-  "title": "Memo Archive memo record",
-  "description": "One memo and its attachments, stored at memos/{uid}.json in a Memo Archive. Field names, enum strings, and timestamps follow the proto3 JSON mapping of the public API. Unknown members are permitted so that later minor versions can add fields.",
+  "$id": "https://usememos.com/schemas/memo-export/1.0/memo.schema.json",
+  "title": "Memos Export Format memo record",
+  "description": "One memo and its attachments, stored at memos/{uid}.json in a Memos export file. Field names, enum strings, and timestamps follow the proto3 JSON mapping of the public API. Unknown members are permitted so that later minor versions can add fields.",
   "type": "object",
   "required": ["uid", "creator", "createTime", "updateTime", "state", "visibility", "pinned", "contentPath"],
   "properties": {

@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { getErrorMessage } from "@/lib/error";
-import { exportMemos, importStagedMemoArchive, type StagedMemoArchive, stageMemoArchive } from "@/lib/memo-archive";
+import { exportMemos, importStagedMemos, type StagedMemoImport, stageMemoImport } from "@/lib/memo-export";
 import type { MemoImportIssue, MemoImportReport } from "@/types/proto/api/v1/user_service_pb";
 import { ImportMemosRequest_ConflictPolicy } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
@@ -20,18 +20,18 @@ import SettingSection from "./SettingSection";
 const POLICIES = [
   {
     value: ImportMemosRequest_ConflictPolicy.SKIP,
-    label: "setting.memo-archive.policy-skip",
-    description: "setting.memo-archive.policy-skip-description",
+    label: "setting.memo-export.policy-skip",
+    description: "setting.memo-export.policy-skip-description",
   },
   {
     value: ImportMemosRequest_ConflictPolicy.REPLACE,
-    label: "setting.memo-archive.policy-replace",
-    description: "setting.memo-archive.policy-replace-description",
+    label: "setting.memo-export.policy-replace",
+    description: "setting.memo-export.policy-replace-description",
   },
   {
     value: ImportMemosRequest_ConflictPolicy.DUPLICATE,
-    label: "setting.memo-archive.policy-duplicate",
-    description: "setting.memo-archive.policy-duplicate-description",
+    label: "setting.memo-export.policy-duplicate",
+    description: "setting.memo-export.policy-duplicate-description",
   },
 ] as const;
 
@@ -40,7 +40,7 @@ const POLICIES = [
 // asked for in the review stage, and only when some memos already exist.
 type ImportStage =
   | { kind: "idle" }
-  | { kind: "review"; file: File; staged: StagedMemoArchive; policy: ImportMemosRequest_ConflictPolicy }
+  | { kind: "review"; file: File; staged: StagedMemoImport; policy: ImportMemosRequest_ConflictPolicy }
   | { kind: "done"; report: MemoImportReport };
 
 const IssueList = ({ issues, tone }: { issues: MemoImportIssue[]; tone: "warning" | "failure" }) => {
@@ -54,7 +54,7 @@ const IssueList = ({ issues, tone }: { issues: MemoImportIssue[]; tone: "warning
   );
 };
 
-const MemoArchiveSection = () => {
+const MemoExportSection = () => {
   const t = useTranslate();
   const user = useCurrentUser();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -67,9 +67,9 @@ const MemoArchiveSection = () => {
     setExporting(true);
     try {
       await exportMemos(user.name, user.username);
-      toast.success(t("setting.memo-archive.export-success"));
+      toast.success(t("setting.memo-export.export-success"));
     } catch (error) {
-      toast.error(getErrorMessage(error, t("setting.memo-archive.export-failed")));
+      toast.error(getErrorMessage(error, t("setting.memo-export.export-failed")));
     } finally {
       setExporting(false);
     }
@@ -81,10 +81,10 @@ const MemoArchiveSection = () => {
     if (!file || !user) return;
     setBusy(true);
     try {
-      const staged = await stageMemoArchive(user.name, file);
+      const staged = await stageMemoImport(user.name, file);
       setStage({ kind: "review", file, staged, policy: ImportMemosRequest_ConflictPolicy.SKIP });
     } catch (error) {
-      toast.error(getErrorMessage(error, t("setting.memo-archive.import-failed")));
+      toast.error(getErrorMessage(error, t("setting.memo-export.import-failed")));
     } finally {
       setBusy(false);
     }
@@ -94,11 +94,11 @@ const MemoArchiveSection = () => {
     if (stage.kind !== "review" || !user) return;
     setBusy(true);
     try {
-      const report = await importStagedMemoArchive(user.name, stage.staged, stage.policy);
+      const report = await importStagedMemos(user.name, stage.staged, stage.policy);
       setStage({ kind: "done", report });
-      toast.success(t("setting.memo-archive.import-success", { created: report.created, updated: report.updated }));
+      toast.success(t("setting.memo-export.import-success", { created: report.created, updated: report.updated }));
     } catch (error) {
-      toast.error(getErrorMessage(error, t("setting.memo-archive.import-failed")));
+      toast.error(getErrorMessage(error, t("setting.memo-export.import-failed")));
       if (ConnectError.from(error).code === Code.NotFound) {
         // The staged upload expired; start over from the file picker.
         setStage({ kind: "idle" });
@@ -111,33 +111,33 @@ const MemoArchiveSection = () => {
   if (!user) return null;
 
   return (
-    <SettingSection title={t("setting.memo-archive.label")} description={t("setting.memo-archive.description")}>
-      <SettingGroup title={t("setting.memo-archive.export-title")} description={t("setting.memo-archive.export-description")}>
+    <SettingSection title={t("setting.memo-export.label")} description={t("setting.memo-export.description")}>
+      <SettingGroup title={t("setting.memo-export.export-title")} description={t("setting.memo-export.export-description")}>
         <SettingList>
-          <SettingListItem label={t("setting.memo-archive.export-label")} description={t("setting.memo-archive.export-detail")}>
+          <SettingListItem label={t("setting.memo-export.export-label")} description={t("setting.memo-export.export-detail")}>
             <Button variant="outline" size="sm" disabled={exporting} onClick={handleExport}>
               <DownloadIcon className="w-4 h-4 mr-1.5" />
-              {exporting ? t("setting.memo-archive.exporting") : t("setting.memo-archive.export-action")}
+              {exporting ? t("setting.memo-export.exporting") : t("setting.memo-export.export-action")}
             </Button>
           </SettingListItem>
         </SettingList>
       </SettingGroup>
 
-      <SettingGroup showSeparator title={t("setting.memo-archive.import-title")} description={t("setting.memo-archive.import-description")}>
+      <SettingGroup showSeparator title={t("setting.memo-export.import-title")} description={t("setting.memo-export.import-description")}>
         <input
           ref={fileInputRef}
           type="file"
-          accept=".zip,application/zip,application/vnd.usememos.archive+zip"
+          accept=".zip,application/zip,application/vnd.usememos.export+zip,application/vnd.usememos.archive+zip"
           className="hidden"
           onChange={handleFileChosen}
         />
 
         {stage.kind === "idle" && (
           <SettingList>
-            <SettingListItem label={t("setting.memo-archive.import-label")} description={t("setting.memo-archive.import-detail")}>
+            <SettingListItem label={t("setting.memo-export.import-label")} description={t("setting.memo-export.import-detail")}>
               <Button variant="outline" size="sm" disabled={busy} onClick={() => fileInputRef.current?.click()}>
                 <UploadIcon className="w-4 h-4 mr-1.5" />
-                {busy ? t("setting.memo-archive.reading") : t("setting.memo-archive.import-action")}
+                {busy ? t("setting.memo-export.reading") : t("setting.memo-export.import-action")}
               </Button>
             </SettingListItem>
           </SettingList>
@@ -146,24 +146,22 @@ const MemoArchiveSection = () => {
         {stage.kind === "review" && (
           <div className="flex flex-col gap-3">
             <SettingList>
-              <StatRow label={t("setting.memo-archive.review-file")} value={stage.file.name} />
+              <StatRow label={t("setting.memo-export.review-file")} value={stage.file.name} />
               <StatRow
-                label={t("setting.memo-archive.review-exported")}
+                label={t("setting.memo-export.review-exported")}
                 value={`${stage.staged.plan.exporter} · ${
                   stage.staged.plan.exportTime ? dayjs(timestampDate(stage.staged.plan.exportTime)).format("YYYY-MM-DD HH:mm") : ""
                 }`}
               />
-              <StatRow label={t("setting.memo-archive.review-memos")} value={String(stage.staged.plan.memos)} />
-              <StatRow label={t("setting.memo-archive.review-attachments")} value={String(stage.staged.plan.attachments)} />
-              <StatRow label={t("setting.memo-archive.review-new")} value={String(stage.staged.plan.new + stage.staged.plan.renamed)} />
-              <StatRow label={t("setting.memo-archive.review-existing")} value={String(stage.staged.plan.existing)} />
+              <StatRow label={t("setting.memo-export.review-memos")} value={String(stage.staged.plan.memos)} />
+              <StatRow label={t("setting.memo-export.review-attachments")} value={String(stage.staged.plan.attachments)} />
+              <StatRow label={t("setting.memo-export.review-new")} value={String(stage.staged.plan.new + stage.staged.plan.renamed)} />
+              <StatRow label={t("setting.memo-export.review-existing")} value={String(stage.staged.plan.existing)} />
             </SettingList>
 
             {stage.staged.plan.existing > 0 && (
               <div className="flex flex-col gap-2 rounded-lg border border-border p-3">
-                <div className="text-sm font-medium">
-                  {t("setting.memo-archive.policy-question", { count: stage.staged.plan.existing })}
-                </div>
+                <div className="text-sm font-medium">{t("setting.memo-export.policy-question", { count: stage.staged.plan.existing })}</div>
                 <RadioGroup
                   value={String(stage.policy)}
                   onValueChange={(value) => setStage({ ...stage, policy: Number(value) as ImportMemosRequest_ConflictPolicy })}
@@ -171,9 +169,9 @@ const MemoArchiveSection = () => {
                 >
                   {POLICIES.map((option) => (
                     <div key={option.value} className="flex items-start gap-2">
-                      <RadioGroupItem value={String(option.value)} id={`memo-archive-policy-${option.value}`} className="mt-0.5" />
+                      <RadioGroupItem value={String(option.value)} id={`memo-export-policy-${option.value}`} className="mt-0.5" />
                       <Label
-                        htmlFor={`memo-archive-policy-${option.value}`}
+                        htmlFor={`memo-export-policy-${option.value}`}
                         className="flex cursor-pointer flex-col items-start gap-1 font-normal leading-5"
                       >
                         <span className="text-sm text-foreground">{t(option.label)}</span>
@@ -192,7 +190,7 @@ const MemoArchiveSection = () => {
                 {t("common.cancel")}
               </Button>
               <Button size="sm" disabled={busy} onClick={handleImport}>
-                {busy ? t("setting.memo-archive.importing") : t("setting.memo-archive.import-confirm", { count: stage.staged.plan.memos })}
+                {busy ? t("setting.memo-export.importing") : t("setting.memo-export.import-confirm", { count: stage.staged.plan.memos })}
               </Button>
             </div>
           </div>
@@ -201,16 +199,16 @@ const MemoArchiveSection = () => {
         {stage.kind === "done" && (
           <div className="flex flex-col gap-3">
             <SettingList>
-              <StatRow label={t("setting.memo-archive.report-created")} value={String(stage.report.created)} />
-              <StatRow label={t("setting.memo-archive.report-updated")} value={String(stage.report.updated)} />
-              <StatRow label={t("setting.memo-archive.report-skipped")} value={String(stage.report.skipped)} />
-              <StatRow label={t("setting.memo-archive.report-failed")} value={String(stage.report.failed)} />
+              <StatRow label={t("setting.memo-export.report-created")} value={String(stage.report.created)} />
+              <StatRow label={t("setting.memo-export.report-updated")} value={String(stage.report.updated)} />
+              <StatRow label={t("setting.memo-export.report-skipped")} value={String(stage.report.skipped)} />
+              <StatRow label={t("setting.memo-export.report-failed")} value={String(stage.report.failed)} />
             </SettingList>
             <IssueList issues={stage.report.failures} tone="failure" />
             <IssueList issues={stage.report.warnings} tone="warning" />
             <div className="flex items-center justify-end">
               <Button variant="outline" size="sm" onClick={() => setStage({ kind: "idle" })}>
-                {t("setting.memo-archive.import-another")}
+                {t("setting.memo-export.import-another")}
               </Button>
             </div>
           </div>
@@ -220,4 +218,4 @@ const MemoArchiveSection = () => {
   );
 };
 
-export default MemoArchiveSection;
+export default MemoExportSection;

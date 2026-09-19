@@ -1,4 +1,4 @@
-package memoarchive
+package memoexport
 
 import (
 	"encoding/json"
@@ -7,7 +7,9 @@ import (
 
 const (
 	// Format is the value of the manifest's format member.
-	Format = "memos-archive"
+	Format = "memos-export"
+	// legacyFormat identifies exports written before the format was renamed.
+	legacyFormat = "memos-archive"
 	// FormatVersion is the newest version this package writes.
 	FormatVersion = "1.0"
 	// FormatMajor is the major version this package reads.
@@ -16,7 +18,7 @@ const (
 	// stored inside the container: a leading "mimetype" entry makes macOS
 	// Archive Utility treat the file as an unknown document package and
 	// refuse to expand it.
-	MediaType = "application/vnd.usememos.archive+zip"
+	MediaType = "application/vnd.usememos.export+zip"
 
 	// ManifestEntry holds the archive-level record and identifies the format.
 	ManifestEntry = "manifest.json"

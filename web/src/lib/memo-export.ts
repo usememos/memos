@@ -7,17 +7,17 @@ import { ImportMemosRequest_ConflictPolicy, ImportMemosSpecSchema } from "@/type
 
 const DEFAULT_CHUNK_SIZE = 2 * 1024 * 1024;
 
-// exportMemos downloads the user's Memo Archive.
+// exportMemos downloads the user's Memos export file.
 export async function exportMemos(userName: string, username: string): Promise<void> {
   const body = await userServiceClient.exportMemos({ name: userName });
   const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
   const url = URL.createObjectURL(new Blob([body.data as BlobPart], { type: body.contentType }));
-  downloadFileFromUrl(url, `memos-archive-${username}-${stamp}.zip`);
+  downloadFileFromUrl(url, `memos-export-${username}-${stamp}.zip`);
   // Give the browser a tick to start the download before revoking.
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-export interface StagedMemoArchive {
+export interface StagedMemoImport {
   uploadId: string;
   size: number;
   plan: MemoImportPlan;
@@ -34,9 +34,9 @@ async function sendChunk(request: ImportMemosRequest, signal?: AbortSignal) {
   }
 }
 
-// stageMemoArchive uploads the archive in chunks and finishes with
+// stageMemoImport uploads the archive in chunks and finishes with
 // validate_only, returning the staged upload and the server's plan.
-export async function stageMemoArchive(userName: string, file: File, signal?: AbortSignal): Promise<StagedMemoArchive> {
+export async function stageMemoImport(userName: string, file: File, signal?: AbortSignal): Promise<StagedMemoImport> {
   const spec = create(ImportMemosSpecSchema, { totalSize: BigInt(file.size) });
   const initial = await userServiceClient.importMemos({ name: userName, upload: { case: "spec", value: spec } }, { signal });
   if (!initial.uploadId || initial.committedSize !== 0n || initial.maxChunkSize <= 0) {
@@ -68,10 +68,10 @@ export async function stageMemoArchive(userName: string, file: File, signal?: Ab
   }
 }
 
-// importStagedMemoArchive imports a staged archive with the chosen policy.
-export async function importStagedMemoArchive(
+// importStagedMemos imports a staged archive with the chosen policy.
+export async function importStagedMemos(
   userName: string,
-  staged: StagedMemoArchive,
+  staged: StagedMemoImport,
   conflictPolicy: ImportMemosRequest_ConflictPolicy,
 ): Promise<MemoImportReport> {
   const response = await userServiceClient.importMemos({

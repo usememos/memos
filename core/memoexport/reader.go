@@ -1,4 +1,4 @@
-package memoarchive
+package memoexport
 
 import (
 	"archive/zip"
@@ -34,9 +34,9 @@ const (
 	maxExpansionSlack = 64 << 20
 )
 
-// Archive is a validated, opened Memo Archive. Memos are ordered so that a
+// File is a validated, opened Memos export file. Memos are ordered so that a
 // parent precedes its comments, then by createTime, then by UID.
-type Archive struct {
+type File struct {
 	Manifest *Manifest
 	Memos    []*Memo
 	// Warnings lists every soft deviation the reader corrected.
@@ -47,7 +47,7 @@ type Archive struct {
 
 // Read validates the container and loads every memo record. It fails on the
 // first hard violation without returning a partial archive.
-func Read(r io.ReaderAt, size int64) (*Archive, error) {
+func Read(r io.ReaderAt, size int64) (*File, error) {
 	reader, err := zip.NewReader(r, size)
 	if err != nil {
 		return nil, errors.Wrap(err, "not a ZIP file")
@@ -55,7 +55,7 @@ func Read(r io.ReaderAt, size int64) (*Archive, error) {
 	if len(reader.File) > maxEntries {
 		return nil, errors.Errorf("archive has more than %d entries", maxEntries)
 	}
-	archive := &Archive{entries: make(map[string]*zip.File, len(reader.File))}
+	archive := &File{entries: make(map[string]*zip.File, len(reader.File))}
 	var totalCompressed, totalUncompressed uint64
 	for _, file := range reader.File {
 		if strings.HasSuffix(file.Name, "/") && file.UncompressedSize64 == 0 {
@@ -94,13 +94,13 @@ func Read(r io.ReaderAt, size int64) (*Archive, error) {
 }
 
 // Content returns the exact bytes of a memo's content file.
-func (a *Archive) Content(memo *Memo) ([]byte, error) {
+func (a *File) Content(memo *Memo) ([]byte, error) {
 	return a.readEntry(memo.ContentPath, maxContentBytes)
 }
 
 // ReadAttachment returns the bytes of an attachment entry after checking
 // their length and SHA-256 digest against the attachment record.
-func (a *Archive) ReadAttachment(attachment *Attachment) ([]byte, error) {
+func (a *File) ReadAttachment(attachment *Attachment) ([]byte, error) {
 	if attachment.Path == "" {
 		return nil, errors.Errorf("attachment %s has no bytes in the archive", attachment.UID)
 	}
@@ -122,7 +122,7 @@ func (a *Archive) ReadAttachment(attachment *Attachment) ([]byte, error) {
 	return content, nil
 }
 
-func (a *Archive) readManifest() (*Manifest, error) {
+func (a *File) readManifest() (*Manifest, error) {
 	if _, ok := a.entries[ManifestEntry]; !ok {
 		return nil, errors.Errorf("%s is missing", ManifestEntry)
 	}
@@ -140,7 +140,7 @@ func (a *Archive) readManifest() (*Manifest, error) {
 	return manifest, nil
 }
 
-func (a *Archive) readMemos() error {
+func (a *File) readMemos() error {
 	records := make(map[string]*Memo)
 	contents := make(map[string]struct{})
 	names := slices.Sorted(maps.Keys(a.entries))
@@ -236,7 +236,7 @@ func orderMemos(records map[string]*Memo) []*Memo {
 	return ordered
 }
 
-func (a *Archive) readEntry(name string, limit int64) ([]byte, error) {
+func (a *File) readEntry(name string, limit int64) ([]byte, error) {
 	file, ok := a.entries[name]
 	if !ok {
 		return nil, errors.Errorf("entry %q is missing", name)

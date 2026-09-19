@@ -681,11 +681,11 @@
       "transcription-title": "Transcrição",
       "transcription-warning-no-key": "O provedor selecionado não possui uma chave API definida. Edite a integração acima para adicionar uma."
     },
-    "memo-archive": {
+    "memo-export": {
       "review-file": "Arquivo",
       "description": "Mova seus memorandos e anexos entre instâncias Memos com um único arquivo compactado.",
       "export-action": "Exportar",
-      "export-description": "Baixe todos os memorandos que você criou, incluindo comentários, memorandos arquivados e arquivos anexos, como um Arquivo de Memorandos.",
+      "export-description": "Baixe todos os memorandos que você criou, incluindo comentários, memorandos arquivados e arquivos anexos, como um arquivo de exportação do Memos.",
       "export-detail": "Um arquivo ZIP com um arquivo Markdown e um registro JSON por memorando.",
       "export-failed": "Falha na exportação.",
       "export-label": "Baixar arquivo",
@@ -695,8 +695,8 @@
       "import-action": "Selecionar arquivo",
       "import-another": "Importar outro arquivo",
       "import-confirm": "Importar {{count}} memorandos",
-      "import-description": "Importe um Arquivo de Memorandos desta ou de outra instância Memos. Os Memos mantêm seus identificadores, portanto, importar o mesmo arquivo duas vezes não cria duplicatas.",
-      "import-detail": "Selecione um arquivo memos-archive-*.zip.",
+      "import-description": "Importe um arquivo de exportação do Memos desta ou de outra instância Memos. Os Memos mantêm seus identificadores, portanto, importar o mesmo arquivo duas vezes não cria duplicatas.",
+      "import-detail": "Selecione um arquivo *.zip.",
       "import-failed": "A importação falhou.",
       "import-label": "Carregar arquivo",
       "import-success": "{{created}} novas notas importadas e {{updated}} notas atualizadas.",
@@ -704,7 +704,7 @@
       "importing": "Importando…",
       "label": "Exportar e Importar",
       "policy-duplicate": "Criar uma cópia",
-      "policy-duplicate-description": "Manter os memorandos existentes e adicionar as versões arquivadas como novos memorandos.",
+      "policy-duplicate-description": "Manter os memorandos existentes e adicionar as versões do arquivo como novos memorandos.",
       "policy-question": "{{count}} destes memorandos já existem na sua conta. O que deve acontecer com eles?",
       "policy-replace": "Substituir pelo arquivo",
       "policy-replace-description": "Sobrescrever o conteúdo e as configurações com o arquivo.",

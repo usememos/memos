@@ -40,7 +40,7 @@ const (
 	ScopeTranscribeUser Scope = "transcribe_user"
 	// ScopeWriteUser counts content creation per user.
 	ScopeWriteUser Scope = "write_user"
-	// ScopeArchiveUser counts memo archive exports and imports per user.
+	// ScopeArchiveUser counts memo exports and imports per user.
 	ScopeArchiveUser Scope = "archive_user"
 )
 

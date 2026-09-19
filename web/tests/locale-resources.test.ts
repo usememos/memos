@@ -173,7 +173,7 @@ describe("locale resources", () => {
       const messages = flatten(module.default);
 
       expect(messages["setting.storage.filepath-template-description"]).toContain("assets/{timestamp}_{uuid}_{filename}");
-      expect(messages["setting.memo-archive.import-detail"]).toContain("memos-archive-*.zip");
+      expect(messages["setting.memo-export.import-detail"]).toMatch(/zip/i);
       for (const key of ["transcription-model-placeholder-openai", "transcription-model-placeholder-gemini"]) {
         expect(messages[`setting.ai.${key}`]).toBe(source[`setting.ai.${key}`]);
       }

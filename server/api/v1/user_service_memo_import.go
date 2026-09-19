@@ -16,7 +16,7 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/usememos/memos/core/memoarchive"
+	"github.com/usememos/memos/core/memoexport"
 	"github.com/usememos/memos/core/memopayload"
 	"github.com/usememos/memos/internal/ratelimit"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
@@ -24,13 +24,13 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-// PlanMemoArchiveImport classifies every record of an archive against the
+// PlanMemoImport classifies every record of an archive against the
 // instance without writing anything.
-func (s *APIV1Service) PlanMemoArchiveImport(ctx context.Context, user *store.User, archive *memoarchive.Archive) (*v1pb.MemoImportPlan, error) {
+func (s *APIV1Service) PlanMemoImport(ctx context.Context, user *store.User, archive *memoexport.File) (*v1pb.MemoImportPlan, error) {
 	if user == nil || archive == nil {
 		return nil, errors.New("user and archive are required")
 	}
-	exportTime, err := memoarchive.ParseTime(archive.Manifest.ExportTime)
+	exportTime, err := memoexport.ParseTime(archive.Manifest.ExportTime)
 	if err != nil {
 		return nil, errors.Wrap(err, "invalid export time")
 	}
@@ -68,7 +68,7 @@ func (s *APIV1Service) PlanMemoArchiveImport(ctx context.Context, user *store.Us
 }
 
 // findMemosByUID loads the instance memos whose UIDs appear in the archive.
-func (s *APIV1Service) findMemosByUID(ctx context.Context, archive *memoarchive.Archive, excludeContent bool) (map[string]*store.Memo, error) {
+func (s *APIV1Service) findMemosByUID(ctx context.Context, archive *memoexport.File, excludeContent bool) (map[string]*store.Memo, error) {
 	uids := make([]string, 0, len(archive.Memos))
 	for _, record := range archive.Memos {
 		uids = append(uids, record.UID)
@@ -86,7 +86,7 @@ func (s *APIV1Service) findMemosByUID(ctx context.Context, archive *memoarchive.
 	return found, nil
 }
 
-func archiveIssues(warnings []memoarchive.Warning) []*v1pb.MemoImportIssue {
+func archiveIssues(warnings []memoexport.Warning) []*v1pb.MemoImportIssue {
 	issues := make([]*v1pb.MemoImportIssue, 0, len(warnings))
 	for _, warning := range warnings {
 		issues = append(issues, &v1pb.MemoImportIssue{Memo: warning.UID, Message: warning.Message})
@@ -97,15 +97,15 @@ func archiveIssues(warnings []memoarchive.Warning) []*v1pb.MemoImportIssue {
 // writtenMemo pairs an archive record with the instance memo it was created
 // as or merged into, for the relation pass.
 type writtenMemo struct {
-	record *memoarchive.Memo
+	record *memoexport.Memo
 	memo   *store.Memo
 }
 
-type memoArchiveImporter struct {
+type memoImporter struct {
 	service *APIV1Service
 	ctx     context.Context
 	user    *store.User
-	archive *memoarchive.Archive
+	archive *memoexport.File
 	policy  v1pb.ImportMemosRequest_ConflictPolicy
 	report  *v1pb.MemoImportReport
 
@@ -126,10 +126,10 @@ type memoArchiveImporter struct {
 	memberSpaces []*store.Space
 }
 
-// ImportMemoArchive applies an opened archive to the importing user's memos
+// ImportMemoExport applies an opened archive to the importing user's memos
 // following the documented import semantics. The user in ctx must be the
 // same as user.
-func (s *APIV1Service) ImportMemoArchive(ctx context.Context, user *store.User, archive *memoarchive.Archive, policy v1pb.ImportMemosRequest_ConflictPolicy) (*v1pb.MemoImportReport, error) {
+func (s *APIV1Service) ImportMemoExport(ctx context.Context, user *store.User, archive *memoexport.File, policy v1pb.ImportMemosRequest_ConflictPolicy) (*v1pb.MemoImportReport, error) {
 	if user == nil || archive == nil {
 		return nil, errors.New("user and archive are required")
 	}
@@ -148,7 +148,7 @@ func (s *APIV1Service) ImportMemoArchive(ctx context.Context, user *store.User, 
 	if err != nil {
 		return nil, err
 	}
-	importer := &memoArchiveImporter{
+	importer := &memoImporter{
 		service:            s,
 		ctx:                ctx,
 		user:               user,
@@ -188,11 +188,11 @@ func (s *APIV1Service) ImportMemoArchive(ctx context.Context, user *store.User, 
 	return importer.report, nil
 }
 
-func (i *memoArchiveImporter) warn(uid, message string) {
+func (i *memoImporter) warn(uid, message string) {
 	i.report.Warnings = append(i.report.Warnings, &v1pb.MemoImportIssue{Memo: uid, Message: message})
 }
 
-func (i *memoArchiveImporter) importMemo(record *memoarchive.Memo) error {
+func (i *memoImporter) importMemo(record *memoexport.Memo) error {
 	content, err := i.archive.Content(record)
 	if err != nil {
 		return err
@@ -217,7 +217,7 @@ func (i *memoArchiveImporter) importMemo(record *memoarchive.Memo) error {
 	return i.createMemo(record, targetUID, content)
 }
 
-func (i *memoArchiveImporter) createMemo(record *memoarchive.Memo, targetUID string, content []byte) error {
+func (i *memoImporter) createMemo(record *memoexport.Memo, targetUID string, content []byte) error {
 	memo, err := i.buildMemo(record, targetUID, content)
 	if err != nil {
 		return err
@@ -269,7 +269,7 @@ func (i *memoArchiveImporter) createMemo(record *memoarchive.Memo, targetUID str
 	return nil
 }
 
-func (i *memoArchiveImporter) replaceMemo(record *memoarchive.Memo, existing *store.Memo, content []byte) error {
+func (i *memoImporter) replaceMemo(record *memoexport.Memo, existing *store.Memo, content []byte) error {
 	next, err := i.buildMemo(record, existing.UID, content)
 	if err != nil {
 		return err
@@ -316,7 +316,7 @@ func (i *memoArchiveImporter) replaceMemo(record *memoarchive.Memo, existing *st
 // bindAttachments prepares the memo's attachment set, resolves the managed
 // references in its content, and runs write. When any step fails, the
 // attachments this run created for the memo are removed again.
-func (i *memoArchiveImporter) bindAttachments(memo *store.Memo, names, added []*v1pb.Attachment, write func(*preparedMemoAttachments, []int32) error) error {
+func (i *memoImporter) bindAttachments(memo *store.Memo, names, added []*v1pb.Attachment, write func(*preparedMemoAttachments, []int32) error) error {
 	err := func() error {
 		prepared, err := i.service.prepareMemoAttachments(i.ctx, i.user, memo, names)
 		if err != nil {
@@ -336,12 +336,12 @@ func (i *memoArchiveImporter) bindAttachments(memo *store.Memo, names, added []*
 
 // buildMemo turns a record into the memo row to write, resolving the Space
 // and applying the visibility fallback.
-func (i *memoArchiveImporter) buildMemo(record *memoarchive.Memo, uid string, content []byte) (*store.Memo, error) {
-	createdTs, err := memoarchive.ParseTime(record.CreateTime)
+func (i *memoImporter) buildMemo(record *memoexport.Memo, uid string, content []byte) (*store.Memo, error) {
+	createdTs, err := memoexport.ParseTime(record.CreateTime)
 	if err != nil {
 		return nil, err
 	}
-	updatedTs, err := memoarchive.ParseTime(record.UpdateTime)
+	updatedTs, err := memoexport.ParseTime(record.UpdateTime)
 	if err != nil {
 		return nil, err
 	}
@@ -384,7 +384,7 @@ func (i *memoArchiveImporter) buildMemo(record *memoarchive.Memo, uid string, co
 
 // resolveSpace matches a record's Space by UID, then by title, among the
 // Spaces the importing user is an active member of.
-func (i *memoArchiveImporter) resolveSpace(space *memoarchive.Space) (*int32, error) {
+func (i *memoImporter) resolveSpace(space *memoexport.Space) (*int32, error) {
 	if cached, ok := i.spaces[space.UID]; ok {
 		return cached, nil
 	}
@@ -416,7 +416,7 @@ func (i *memoArchiveImporter) resolveSpace(space *memoarchive.Space) (*int32, er
 
 // resolveMemo finds the instance memo an archive UID refers to: one this run
 // has already placed, or one on the instance the user may read.
-func (i *memoArchiveImporter) resolveMemo(uid string) (*store.Memo, error) {
+func (i *memoImporter) resolveMemo(uid string) (*store.Memo, error) {
 	if memo, ok := i.resolved[uid]; ok {
 		return memo, nil
 	}
@@ -429,7 +429,7 @@ func (i *memoArchiveImporter) resolveMemo(uid string) (*store.Memo, error) {
 
 // importAttachments creates the attachments of a record that the memo does
 // not already hold and returns their names for binding.
-func (i *memoArchiveImporter) importAttachments(record *memoarchive.Memo, current []*store.Attachment) ([]*v1pb.Attachment, error) {
+func (i *memoImporter) importAttachments(record *memoexport.Memo, current []*store.Attachment) ([]*v1pb.Attachment, error) {
 	bound := make(map[string]struct{}, len(current))
 	for _, attachment := range current {
 		bound[attachment.UID] = struct{}{}
@@ -461,7 +461,7 @@ func (i *memoArchiveImporter) importAttachments(record *memoarchive.Memo, curren
 
 // importAttachment stores one attachment entry and returns the resource name
 // to bind, and whether this run stored a new attachment for it.
-func (i *memoArchiveImporter) importAttachment(entry *memoarchive.Attachment) (string, bool, error) {
+func (i *memoImporter) importAttachment(entry *memoexport.Attachment) (string, bool, error) {
 	mimeType, ok := normalizeMimeType(entry.Type)
 	if !ok {
 		return "", false, errors.Errorf("invalid media type %q", entry.Type)
@@ -485,7 +485,7 @@ func (i *memoArchiveImporter) importAttachment(entry *memoarchive.Attachment) (s
 }
 
 // storeAttachment writes a new attachment for the entry under uid.
-func (i *memoArchiveImporter) storeAttachment(entry *memoarchive.Attachment, uid, mimeType string) (string, error) {
+func (i *memoImporter) storeAttachment(entry *memoexport.Attachment, uid, mimeType string) (string, error) {
 	if entry.ExternalLink != "" {
 		attachment, err := i.service.Store.CreateAttachment(i.ctx, &store.Attachment{
 			UID:         uid,
@@ -536,7 +536,7 @@ func (i *memoArchiveImporter) storeAttachment(entry *memoarchive.Attachment, uid
 // resolveAttachmentUID decides which UID a new attachment gets. It returns
 // the empty string when an unlinked attachment with the same UID, owner, and
 // bytes already exists and should simply be bound.
-func (i *memoArchiveImporter) resolveAttachmentUID(entry *memoarchive.Attachment) (string, error) {
+func (i *memoImporter) resolveAttachmentUID(entry *memoexport.Attachment) (string, error) {
 	existing, err := i.service.Store.GetAttachment(i.ctx, &store.FindAttachment{UID: &entry.UID})
 	if err != nil {
 		return "", errors.Wrap(err, "failed to look up attachment")
@@ -555,7 +555,7 @@ func (i *memoArchiveImporter) resolveAttachmentUID(entry *memoarchive.Attachment
 
 // storedAttachmentDigest streams an attachment from storage and returns its
 // lowercase hexadecimal SHA-256.
-func (i *memoArchiveImporter) storedAttachmentDigest(attachment *store.Attachment) (string, error) {
+func (i *memoImporter) storedAttachmentDigest(attachment *store.Attachment) (string, error) {
 	content, err := i.service.openAttachmentContent(i.ctx, attachment)
 	if err != nil {
 		return "", err
@@ -570,7 +570,7 @@ func (i *memoArchiveImporter) storedAttachmentDigest(attachment *store.Attachmen
 
 // discardAttachments removes attachments this run created for a memo that
 // then failed, so no orphan uploads are left behind.
-func (i *memoArchiveImporter) discardAttachments(attachments []*v1pb.Attachment) {
+func (i *memoImporter) discardAttachments(attachments []*v1pb.Attachment) {
 	for _, attachment := range attachments {
 		uid, err := ExtractAttachmentUIDFromName(attachment.Name)
 		if err != nil {
@@ -589,7 +589,7 @@ func (i *memoArchiveImporter) discardAttachments(attachments []*v1pb.Attachment)
 // applyRelations replaces the memo's REFERENCE relations with those from the
 // record, skipping targets that exist neither in the archive nor on the
 // instance.
-func (i *memoArchiveImporter) applyRelations(written writtenMemo) error {
+func (i *memoImporter) applyRelations(written writtenMemo) error {
 	record := written.record
 	if len(record.Relations) == 0 {
 		return nil

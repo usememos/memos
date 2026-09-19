@@ -10,7 +10,7 @@ import (
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	"github.com/usememos/memos/core/memoarchive"
+	"github.com/usememos/memos/core/memoexport"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
@@ -18,9 +18,9 @@ import (
 // archiveQueryChunk bounds the number of IDs placed in one IN clause.
 const archiveQueryChunk = 500
 
-// memoArchiveExport gathers everything one user's archive needs before any
+// memoExportData gathers everything one user's archive needs before any
 // entry is written, so the manifest can carry accurate counts.
-type memoArchiveExport struct {
+type memoExportData struct {
 	memos            []*store.Memo
 	attachmentsByID  map[int32][]*store.Attachment
 	relatedIDsByID   map[int32][]int32
@@ -31,34 +31,34 @@ type memoArchiveExport struct {
 	attachmentsCount int
 }
 
-// ExportMemoArchive writes a Memo Archive holding every memo the user
+// WriteMemoExport writes a Memos export file holding every memo the user
 // created, including comments and archived memos, and the attachments linked
 // to them. Nothing another user created is included.
-func (s *APIV1Service) ExportMemoArchive(ctx context.Context, user *store.User, w io.Writer) error {
+func (s *APIV1Service) WriteMemoExport(ctx context.Context, user *store.User, w io.Writer) error {
 	if user == nil {
 		return errors.New("user is required")
 	}
-	export, err := s.loadMemoArchiveExport(ctx, user)
+	export, err := s.loadMemoExportData(ctx, user)
 	if err != nil {
 		return err
 	}
 
 	exportTime := time.Now().UTC().Truncate(time.Second)
-	writer := memoarchive.NewWriter(w, exportTime)
-	if err := writer.WriteManifest(&memoarchive.Manifest{
-		Generator:  memoarchive.Generator{Name: "memos", Version: s.Profile.Version},
-		ExportTime: memoarchive.FormatTime(exportTime.Unix()),
-		Scope: memoarchive.Scope{
-			Kind: memoarchive.ScopeKindUser,
-			User: &memoarchive.ScopeUser{Username: user.Username, DisplayName: user.Nickname},
+	writer := memoexport.NewWriter(w, exportTime)
+	if err := writer.WriteManifest(&memoexport.Manifest{
+		Generator:  memoexport.Generator{Name: "memos", Version: s.Profile.Version},
+		ExportTime: memoexport.FormatTime(exportTime.Unix()),
+		Scope: memoexport.Scope{
+			Kind: memoexport.ScopeKindUser,
+			User: &memoexport.ScopeUser{Username: user.Username, DisplayName: user.Nickname},
 		},
-		Counts: &memoarchive.Counts{Memos: len(export.memos), Attachments: export.attachmentsCount},
+		Counts: &memoexport.Counts{Memos: len(export.memos), Attachments: export.attachmentsCount},
 	}); err != nil {
 		return err
 	}
 
 	for _, memo := range export.memos {
-		record, err := s.buildMemoArchiveRecord(ctx, writer, user, export, memo)
+		record, err := s.buildMemoExportRecord(ctx, writer, user, export, memo)
 		if err != nil {
 			return err
 		}
@@ -69,12 +69,12 @@ func (s *APIV1Service) ExportMemoArchive(ctx context.Context, user *store.User, 
 	return writer.Close()
 }
 
-func (s *APIV1Service) loadMemoArchiveExport(ctx context.Context, user *store.User) (*memoArchiveExport, error) {
+func (s *APIV1Service) loadMemoExportData(ctx context.Context, user *store.User) (*memoExportData, error) {
 	memos, err := s.Store.ListMemos(ctx, &store.FindMemo{CreatorID: &user.ID})
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to list memos")
 	}
-	export := &memoArchiveExport{
+	export := &memoExportData{
 		memos:           memos,
 		attachmentsByID: make(map[int32][]*store.Attachment),
 		relatedIDsByID:  make(map[int32][]int32),
@@ -165,19 +165,19 @@ func (s *APIV1Service) loadMemoArchiveExport(ctx context.Context, user *store.Us
 	return export, nil
 }
 
-func (s *APIV1Service) buildMemoArchiveRecord(ctx context.Context, writer *memoarchive.Writer, user *store.User, export *memoArchiveExport, memo *store.Memo) (*memoarchive.Memo, error) {
-	record := &memoarchive.Memo{
+func (s *APIV1Service) buildMemoExportRecord(ctx context.Context, writer *memoexport.Writer, user *store.User, export *memoExportData, memo *store.Memo) (*memoexport.Memo, error) {
+	record := &memoexport.Memo{
 		UID:        memo.UID,
 		Creator:    user.Username,
-		CreateTime: memoarchive.FormatTime(memo.CreatedTs),
-		UpdateTime: memoarchive.FormatTime(memo.UpdatedTs),
+		CreateTime: memoexport.FormatTime(memo.CreatedTs),
+		UpdateTime: memoexport.FormatTime(memo.UpdatedTs),
 		State:      string(memo.RowStatus),
 		Visibility: memo.Visibility.String(),
 		Pinned:     memo.Pinned,
 		Tags:       memo.Payload.GetTags(),
 	}
 	if location := memo.Payload.GetLocation(); location != nil {
-		record.Location = &memoarchive.Location{
+		record.Location = &memoexport.Location{
 			Placeholder: location.Placeholder,
 			Latitude:    location.Latitude,
 			Longitude:   location.Longitude,
@@ -185,7 +185,7 @@ func (s *APIV1Service) buildMemoArchiveRecord(ctx context.Context, writer *memoa
 	}
 	if memo.SpaceID != nil {
 		if space := export.spacesByID[*memo.SpaceID]; space != nil {
-			record.Space = &memoarchive.Space{UID: space.UID, Title: space.Title}
+			record.Space = &memoexport.Space{UID: space.UID, Title: space.Title}
 		}
 	}
 	if memo.ParentUID != nil && *memo.ParentUID != "" {
@@ -196,26 +196,26 @@ func (s *APIV1Service) buildMemoArchiveRecord(ctx context.Context, writer *memoa
 		if !ok {
 			continue
 		}
-		record.Relations = append(record.Relations, memoarchive.Relation{Type: memoarchive.RelationReference, Memo: uid})
+		record.Relations = append(record.Relations, memoexport.Relation{Type: memoexport.RelationReference, Memo: uid})
 	}
 	for _, reaction := range export.reactionsByID[memo.ID] {
 		username, ok := export.usernames[reaction.CreatorID]
 		if !ok {
 			continue
 		}
-		record.Reactions = append(record.Reactions, memoarchive.Reaction{
+		record.Reactions = append(record.Reactions, memoexport.Reaction{
 			ReactionType: reaction.ReactionType,
 			Creator:      username,
-			CreateTime:   memoarchive.FormatTime(reaction.CreatedTs),
+			CreateTime:   memoexport.FormatTime(reaction.CreatedTs),
 		})
 	}
 	for _, attachment := range export.attachmentsByID[memo.ID] {
-		entry := memoarchive.Attachment{
+		entry := memoexport.Attachment{
 			UID:        attachment.UID,
 			Filename:   attachment.Filename,
 			Type:       attachment.Type,
 			Size:       attachment.Size,
-			CreateTime: memoarchive.FormatTime(attachment.CreatedTs),
+			CreateTime: memoexport.FormatTime(attachment.CreatedTs),
 		}
 		if metadata := convertMediaMetadataFromStore(attachment.Payload.GetMediaMetadata()); metadata != nil {
 			raw, err := protojson.Marshal(metadata)
@@ -231,7 +231,7 @@ func (s *APIV1Service) buildMemoArchiveRecord(ctx context.Context, writer *memoa
 			if err != nil {
 				return nil, errors.Wrapf(err, "failed to read attachment %s", attachment.UID)
 			}
-			entry.Path = memoarchive.AttachmentPath(attachment.UID, attachment.Filename)
+			entry.Path = memoexport.AttachmentPath(attachment.UID, attachment.Filename)
 			digest, size, err := writer.WriteAttachment(entry.Path, content)
 			_ = content.Close()
 			if err != nil {

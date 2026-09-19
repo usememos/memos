@@ -1,4 +1,4 @@
-package memoarchive
+package memoexport
 
 import (
 	"archive/zip"
@@ -12,7 +12,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-// Writer streams a Memo Archive to an io.Writer. Entries are written in the
+// Writer streams a Memos export file to an io.Writer. Entries are written in the
 // order the caller supplies them, so a caller that wants attachment digests
 // in a memo record writes the attachment bytes before the record.
 type Writer struct {

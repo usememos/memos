@@ -1,5 +1,5 @@
 import {
-  ArchiveIcon,
+  ArrowLeftRightIcon,
   AstroidIcon,
   BarChart3Icon,
   CogIcon,
@@ -21,7 +21,7 @@ import AccessTokenSection from "@/components/Settings/AccessTokenSection";
 import AISection from "@/components/Settings/AISection";
 import InstanceSection from "@/components/Settings/InstanceSection";
 import MemberSection from "@/components/Settings/MemberSection";
-import MemoArchiveSection from "@/components/Settings/MemoArchiveSection";
+import MemoExportSection from "@/components/Settings/MemoExportSection";
 import MemoRelatedSettings from "@/components/Settings/MemoRelatedSettings";
 import MyAccountSection from "@/components/Settings/MyAccountSection";
 import NotificationSection from "@/components/Settings/NotificationSection";
@@ -36,7 +36,7 @@ import { InstanceSetting_Key } from "@/types/proto/api/v1/instance_service_pb";
 
 export type SettingSectionKey =
   | "my-account"
-  | "memo-archive"
+  | "memo-export"
   | "spaces"
   | "access-token"
   | "preference"
@@ -69,13 +69,6 @@ export const SETTINGS_SECTIONS: SettingSectionDefinition[] = [
     labelKey: "setting.my-account.label",
     icon: UserIcon,
     component: MyAccountSection,
-  },
-  {
-    key: "memo-archive",
-    scope: "basic",
-    labelKey: "setting.memo-archive.label",
-    icon: ArchiveIcon,
-    component: MemoArchiveSection,
   },
   {
     key: "spaces",
@@ -132,6 +125,13 @@ export const SETTINGS_SECTIONS: SettingSectionDefinition[] = [
     labelKey: "setting.tags.label",
     icon: TagsIcon,
     component: TagsSection,
+  },
+  {
+    key: "memo-export",
+    scope: "basic",
+    labelKey: "setting.memo-export.label",
+    icon: ArrowLeftRightIcon,
+    component: MemoExportSection,
   },
   {
     key: "storage",

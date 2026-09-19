@@ -1,4 +1,4 @@
-package memoarchive
+package memoexport
 
 import (
 	"regexp"

@@ -1,4 +1,4 @@
-package memoarchive
+package memoexport
 
 import (
 	"archive/zip"
@@ -35,6 +35,7 @@ func newGoldenFixture() goldenFixture {
 	photoDigest := sha256.Sum256(photo)
 	return goldenFixture{
 		manifest: Manifest{
+			Format:     Format,
 			Generator:  Generator{Name: "memos", Version: "0.31.0"},
 			ExportTime: "2026-09-16T08:30:00Z",
 			Scope:      Scope{Kind: ScopeKindUser, User: &ScopeUser{Username: "steven", DisplayName: "Steven"}},
@@ -122,16 +123,16 @@ func writeFixture(t *testing.T, fixture goldenFixture) []byte {
 	return buffer.Bytes()
 }
 
-func readArchive(t *testing.T, data []byte) *Archive {
+func readArchive(t *testing.T, data []byte) *File {
 	t.Helper()
 	archive, err := Read(bytes.NewReader(data), int64(len(data)))
 	require.NoError(t, err)
 	return archive
 }
 
-func requireFixtureRoundTrip(t *testing.T, fixture goldenFixture, archive *Archive) {
+func requireFixtureRoundTrip(t *testing.T, fixture goldenFixture, archive *File) {
 	t.Helper()
-	require.Equal(t, Format, archive.Manifest.Format)
+	require.Equal(t, fixture.manifest.Format, archive.Manifest.Format)
 	require.Equal(t, FormatVersion, archive.Manifest.FormatVersion)
 	require.Equal(t, fixture.manifest.Scope, archive.Manifest.Scope)
 	require.Empty(t, archive.Warnings)
@@ -195,15 +196,19 @@ func TestGoldenArchives(t *testing.T) {
 		require.NoError(t, os.MkdirAll(filepath.Dir(goldenPath), 0o755))
 		require.NoError(t, os.WriteFile(goldenPath, writeFixture(t, fixture), 0o644))
 	}
-	versions, err := filepath.Glob(filepath.Join("testdata", "*", "golden.zip"))
+	versions, err := filepath.Glob(filepath.Join("testdata", "*", "*.zip"))
 	require.NoError(t, err)
 	require.NotEmpty(t, versions, "no golden archives found; run with -update")
 	for _, path := range versions {
-		t.Run(filepath.Base(filepath.Dir(path)), func(t *testing.T) {
+		t.Run(filepath.Join(filepath.Base(filepath.Dir(path)), filepath.Base(path)), func(t *testing.T) {
 			data, err := os.ReadFile(path)
 			require.NoError(t, err)
 			archive := readArchive(t, data)
 			if filepath.Base(filepath.Dir(path)) == FormatVersion {
+				fixture := newGoldenFixture()
+				if filepath.Base(path) == "legacy.zip" {
+					fixture.manifest.Format = legacyFormat
+				}
 				requireFixtureRoundTrip(t, fixture, archive)
 			}
 		})
@@ -323,6 +328,17 @@ func TestReaderRejectsUnsafeArchives(t *testing.T) {
 		"missing manifest": {
 			mutate: func(_ *zip.Writer, f *zip.File, _ []byte) bool { return f.Name == ManifestEntry },
 			want:   "manifest.json is missing",
+		},
+		"unknown format": {
+			mutate: func(w *zip.Writer, f *zip.File, content []byte) bool {
+				if f.Name != ManifestEntry {
+					return false
+				}
+				entry, _ := w.Create(ManifestEntry)
+				_, _ = entry.Write(bytes.ReplaceAll(content, []byte(`"format":"memos-export"`), []byte(`"format":"other-export"`)))
+				return true
+			},
+			want: `format "other-export" is not "memos-export"`,
 		},
 		"unsupported major": {
 			mutate: func(w *zip.Writer, f *zip.File, content []byte) bool {

@@ -1,13 +1,14 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://usememos.com/schemas/memo-archive/1.0/manifest.schema.json",
-  "title": "Memo Archive manifest",
-  "description": "Archive-level record stored at manifest.json in a Memo Archive. Unknown members are permitted so that later minor versions can add fields.",
+  "$id": "https://usememos.com/schemas/memo-export/1.0/manifest.schema.json",
+  "title": "Memos Export Format manifest",
+  "description": "Archive-level record stored at manifest.json in a Memos export file. Unknown members are permitted so that later minor versions can add fields.",
   "type": "object",
   "required": ["format", "formatVersion", "generator", "exportTime", "scope"],
   "properties": {
     "format": {
-      "const": "memos-archive"
+      "enum": ["memos-export", "memos-archive"],
+      "description": "Writers emit memos-export. Readers also accept the legacy memos-archive identifier."
     },
     "formatVersion": {
       "type": "string",

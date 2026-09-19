@@ -148,11 +148,11 @@ type UserServiceClient interface {
 	// GetUserStats returns statistics for a specific user.
 	GetUserStats(context.Context, *connect.Request[v1.GetUserStatsRequest]) (*connect.Response[v1.UserStats], error)
 	// ExportMemos writes every memo the user created, with comments, archived
-	// memos, and attachment files, as a Memo Archive (a ZIP file, see
-	// docs/design/memo-archive-format.md). Only the user may export their own
+	// memos, and attachment files, as a Memos export file (a ZIP file, see
+	// docs/design/memos-export-format.md). Only the user may export their own
 	// memos. The body is the archive; content_type is its media type.
 	ExportMemos(context.Context, *connect.Request[v1.ExportMemosRequest]) (*connect.Response[httpbody.HttpBody], error)
-	// ImportMemos uploads a Memo Archive in bounded chunks and imports it into
+	// ImportMemos uploads a Memos export file in bounded chunks and imports it into
 	// the user's memos. The first call carries the spec and returns an
 	// upload_id; later calls carry that upload_id. A finishing call with
 	// validate_only returns the plan and keeps the archive staged; a finishing
@@ -648,11 +648,11 @@ type UserServiceHandler interface {
 	// GetUserStats returns statistics for a specific user.
 	GetUserStats(context.Context, *connect.Request[v1.GetUserStatsRequest]) (*connect.Response[v1.UserStats], error)
 	// ExportMemos writes every memo the user created, with comments, archived
-	// memos, and attachment files, as a Memo Archive (a ZIP file, see
-	// docs/design/memo-archive-format.md). Only the user may export their own
+	// memos, and attachment files, as a Memos export file (a ZIP file, see
+	// docs/design/memos-export-format.md). Only the user may export their own
 	// memos. The body is the archive; content_type is its media type.
 	ExportMemos(context.Context, *connect.Request[v1.ExportMemosRequest]) (*connect.Response[httpbody.HttpBody], error)
-	// ImportMemos uploads a Memo Archive in bounded chunks and imports it into
+	// ImportMemos uploads a Memos export file in bounded chunks and imports it into
 	// the user's memos. The first call carries the spec and returns an
 	// upload_id; later calls carry that upload_id. A finishing call with
 	// validate_only returns the plan and keeps the archive staged; a finishing

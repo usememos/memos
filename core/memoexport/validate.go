@@ -1,4 +1,4 @@
-package memoarchive
+package memoexport
 
 import (
 	"fmt"
@@ -45,7 +45,7 @@ func parseFormatVersion(version string) (int, int, error) {
 }
 
 func validateManifest(manifest *Manifest) error {
-	if manifest.Format != Format {
+	if manifest.Format != Format && manifest.Format != legacyFormat {
 		return errors.Errorf("format %q is not %q", manifest.Format, Format)
 	}
 	major, _, err := parseFormatVersion(manifest.FormatVersion)

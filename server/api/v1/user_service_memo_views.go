@@ -58,7 +58,7 @@ func convertMemoViewFromStore(username string, memoView *storepb.MemoViewsUserSe
 }
 
 // requireCallerIs asserts that the caller is user. Personal resources such as
-// memo views and memo archives are never reachable by another account.
+// memo views and memo exports are never reachable by another account.
 func (s *APIV1Service) requireCallerIs(ctx context.Context, user *store.User) error {
 	currentUser, err := s.fetchCurrentUser(ctx)
 	if err != nil {
