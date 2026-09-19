@@ -3,6 +3,7 @@ package email
 import (
 	"errors"
 	"fmt"
+	"net/mail"
 	"strings"
 	"time"
 )
@@ -44,7 +45,8 @@ func (m *Message) Format(fromEmail, fromName string) string {
 
 	// From header
 	if fromName != "" {
-		fmt.Fprintf(&sb, "From: %s <%s>\r\n", fromName, fromEmail)
+		from := mail.Address{Name: fromName, Address: fromEmail}
+		fmt.Fprintf(&sb, "From: %s\r\n", from.String())
 	} else {
 		fmt.Fprintf(&sb, "From: %s\r\n", fromEmail)
 	}
