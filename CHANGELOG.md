@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.31.0](https://github.com/usememos/memos/compare/v0.31.0-rc.2...v0.31.0) (2026-09-19)
+
+
+### Features
+
+* **cli:** accept -V and --version alongside the version subcommand ([#6321](https://github.com/usememos/memos/issues/6321)) ([38584e8](https://github.com/usememos/memos/commit/38584e8d6fe43c848cf3087b90e62ef36cb9c720))
+* **d1:** add bridge access mode ([#6333](https://github.com/usememos/memos/issues/6333)) ([5ddf474](https://github.com/usememos/memos/commit/5ddf4745a20d7260deccb7039e30e4cc2380ad2d))
+* export and import memos as a Memo Archive ([#6334](https://github.com/usememos/memos/issues/6334)) ([019ca26](https://github.com/usememos/memos/commit/019ca26bd316c9dea7f18b90b05d1df5e2f4c1dc))
+* **store:** add Cloudflare D1 database driver ([#6330](https://github.com/usememos/memos/issues/6330)) ([2e3db14](https://github.com/usememos/memos/commit/2e3db14741a416419e0a466c42f3f2d7691a57fc))
+* **web:** highlight search matches in memo content ([#6335](https://github.com/usememos/memos/issues/6335)) ([14d3c68](https://github.com/usememos/memos/commit/14d3c689dd29f00b715a7850084fb8273644288e))
+
+
+### Bug Fixes
+
+* block CGNAT SSRF and restore cross-database CI coverage ([f4d97fa](https://github.com/usememos/memos/commit/f4d97fafcdab534e7e01c376d2b06a3c6aa98a33))
+* **d1:** close guard gaps, chunk-free list bindings, and statement ([9ca1292](https://github.com/usememos/memos/commit/9ca12926c7c112d84184fd12c3717b099eb51fd2))
+* harden attachment, auth, and import paths for public deployment ([471745b](https://github.com/usememos/memos/commit/471745b4314820dcb4b8b451095679ee6cfc71c3))
+* **i18n:** sync translations and remove unused locale keys ([2204ece](https://github.com/usememos/memos/commit/2204eceeef34625cfd3e74fea7ad71769c9abc43))
+* **map:** clean up failed WebGL layers before leaving map ([305310c](https://github.com/usememos/memos/commit/305310cdd18345acc25466d24e800b3f85c49593))
+* **web:** limit comment menus to relevant actions ([7e3d3c6](https://github.com/usememos/memos/commit/7e3d3c63156c206209fdc8e75a4fb117b1aaf1fb))
+* **web:** render tel: and sms: markdown links ([#6341](https://github.com/usememos/memos/issues/6341)) ([289ca1e](https://github.com/usememos/memos/commit/289ca1ec3d1dd25e62b65e78761161c602bcc1b9))
+* **web:** toggle numbered task list items correctly ([#6346](https://github.com/usememos/memos/issues/6346)) ([fa5e55d](https://github.com/usememos/memos/commit/fa5e55dfc169a8ae86d35560057bb96a456d6dd7))
+
 ## [0.31.0-rc.2](https://github.com/usememos/memos/compare/v0.31.0-rc.1...v0.31.0-rc.2) (2026-09-15)
 
 ### Highlights
