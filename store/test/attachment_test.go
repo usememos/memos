@@ -392,7 +392,7 @@ func TestMemoMutationRollsBackWhenRequiredAttachmentIsMissing(t *testing.T) {
 	require.Equal(t, memo.ID, *storedRemoved.MemoID)
 }
 
-func TestMemoMutationRollsBackMemoAndRelationsTogether(t *testing.T) {
+func TestMemoMutationRejectsCommentInReferenceReplacement(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)

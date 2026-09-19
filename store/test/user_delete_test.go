@@ -2,6 +2,7 @@ package test
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -24,6 +25,150 @@ func TestDeleteUserIsIdempotent(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, second)
 	require.Empty(t, second.UserSettingKeys)
+}
+
+func TestDeleteUserBatchBoundariesAndRollback(t *testing.T) {
+	for _, count := range []int{499, 500, 501, 1001} {
+		t.Run(fmt.Sprint(count), func(t *testing.T) {
+			ctx := context.Background()
+			ts := NewTestingStore(ctx, t)
+			defer ts.Close()
+			owner, err := createTestingUserWithRole(ctx, ts, "batch-owner", store.RoleUser)
+			require.NoError(t, err)
+			peer, err := createTestingUserWithRole(ctx, ts, "batch-peer", store.RoleUser)
+			require.NoError(t, err)
+			keepMemo, err := ts.CreateMemo(ctx, &store.Memo{UID: "keep-memo", CreatorID: peer.ID, Content: "keep", Visibility: store.Public})
+			require.NoError(t, err)
+			keepMemo, err = ts.GetMemo(ctx, &store.FindMemo{ID: &keepMemo.ID})
+			require.NoError(t, err)
+			keepAttachment, err := ts.CreateAttachment(ctx, &store.Attachment{UID: "keep-attachment", CreatorID: peer.ID,
+				MemoID: &keepMemo.ID, Filename: "keep.txt", Type: "text/plain", Blob: []byte("keep")})
+			require.NoError(t, err)
+			keepInbox, err := ts.CreateInbox(ctx, &store.Inbox{SenderID: peer.ID, ReceiverID: peer.ID, Status: store.UNREAD,
+				Message: &storepb.InboxMessage{Type: storepb.InboxMessage_MEMO_MENTION}})
+			require.NoError(t, err)
+			keepShare, err := ts.CreateMemoShare(ctx, &store.MemoShare{UID: "keep-share", MemoID: keepMemo.ID, CreatorID: peer.ID})
+			require.NoError(t, err)
+			keepReaction, err := ts.UpsertReaction(ctx, &store.Reaction{CreatorID: peer.ID, MemoID: keepMemo.ID, ReactionType: "keep"})
+			require.NoError(t, err)
+			attachmentIDs := make([]int32, 0, count)
+			for i := range count {
+				uid := fmt.Sprintf("batch-%d", i)
+				memo, err := ts.CreateMemo(ctx, &store.Memo{UID: uid, CreatorID: owner.ID, Content: uid, Visibility: store.Public})
+				require.NoError(t, err)
+				creatorID := owner.ID
+				if i%2 == 0 {
+					creatorID = peer.ID
+				}
+				attachment, err := ts.CreateAttachment(ctx, &store.Attachment{UID: uid, CreatorID: creatorID, MemoID: &memo.ID,
+					Filename: uid + ".txt", Type: "text/plain", Blob: []byte(uid), Reference: uid})
+				require.NoError(t, err)
+				attachmentIDs = append(attachmentIDs, attachment.ID)
+				_, err = ts.UpsertReaction(ctx, &store.Reaction{CreatorID: peer.ID, MemoID: memo.ID, ReactionType: "thumbs-up"})
+				require.NoError(t, err)
+				_, err = ts.CreateMemoShare(ctx, &store.MemoShare{UID: uid, MemoID: memo.ID, CreatorID: peer.ID})
+				require.NoError(t, err)
+				_, err = ts.CreateInbox(ctx, &store.Inbox{SenderID: owner.ID, ReceiverID: peer.ID, Status: store.UNREAD,
+					Message: &storepb.InboxMessage{Type: storepb.InboxMessage_MEMO_MENTION}})
+				require.NoError(t, err)
+				// Exercise both incoming and outgoing relation cleanup across every batch.
+				_, err = ts.UpsertMemoRelation(ctx, &store.MemoRelation{MemoID: memo.ID, RelatedMemoID: keepMemo.ID, Type: store.MemoRelationReference})
+				require.NoError(t, err)
+				_, err = ts.UpsertMemoRelation(ctx, &store.MemoRelation{MemoID: keepMemo.ID, RelatedMemoID: memo.ID, Type: store.MemoRelationReference})
+				require.NoError(t, err)
+			}
+			_, err = ts.UpsertUserSetting(ctx, &storepb.UserSetting{UserId: owner.ID, Key: storepb.UserSetting_GENERAL,
+				Value: &storepb.UserSetting_General{General: &storepb.GeneralUserSetting{Locale: "en"}}})
+			require.NoError(t, err)
+			_, err = ts.CreateUserIdentity(ctx, &store.UserIdentity{UserID: owner.ID, Provider: "test", ExternUID: "batch-owner"})
+			require.NoError(t, err)
+			// Prime facade caches before forcing a failure after every delete statement.
+			_, err = ts.GetUser(ctx, &store.FindUser{ID: &owner.ID})
+			require.NoError(t, err)
+			_, err = ts.GetUserSetting(ctx, &store.FindUserSetting{UserID: &owner.ID, Key: storepb.UserSetting_GENERAL})
+			require.NoError(t, err)
+			if count > 500 {
+				before := snapshotUserDeletion(t, ts)
+				result, err := ts.DeleteUser(store.WithDeleteUserFailpoint(ctx, store.DeleteUserFailpointBeforeCommit), &store.DeleteUser{ID: owner.ID})
+				require.ErrorContains(t, err, "delete user failpoint before commit")
+				require.Nil(t, result, "failed deletion must not expose resources for physical cleanup")
+				require.Equal(t, before, snapshotUserDeletion(t, ts), "all batches and related tables must roll back")
+				cachedUser, err := ts.GetUser(ctx, &store.FindUser{ID: &owner.ID})
+				require.NoError(t, err)
+				require.NotNil(t, cachedUser)
+				cachedSetting, err := ts.GetUserSetting(ctx, &store.FindUserSetting{UserID: &owner.ID, Key: storepb.UserSetting_GENERAL})
+				require.NoError(t, err)
+				require.Equal(t, "en", cachedSetting.GetGeneral().GetLocale())
+			}
+			result, err := ts.DeleteUser(ctx, &store.DeleteUser{ID: owner.ID})
+			require.NoError(t, err)
+			require.ElementsMatch(t, []storepb.UserSetting_Key{storepb.UserSetting_GENERAL}, result.UserSettingKeys)
+			var deletedIDs []int32
+			for _, attachment := range result.Attachments {
+				deletedIDs = append(deletedIDs, attachment.ID)
+				require.Equal(t, attachment.UID, attachment.Reference)
+			}
+			require.ElementsMatch(t, attachmentIDs, deletedIDs, "each attachment must be returned exactly once, even if both owner and memo match")
+			after := snapshotUserDeletion(t, ts)
+			require.Len(t, after.users, 1)
+			require.Equal(t, peer.ID, after.users[0].ID)
+			require.Equal(t, []*store.Memo{keepMemo}, after.memos)
+			require.Len(t, after.attachments, 1)
+			require.Equal(t, keepAttachment.ID, after.attachments[0].ID)
+			require.Equal(t, []byte("keep"), after.attachments[0].Blob)
+			require.Equal(t, []*store.MemoShare{keepShare}, after.shares)
+			require.Equal(t, []*store.Reaction{keepReaction}, after.reactions)
+			require.Len(t, after.inboxes, 1)
+			require.Equal(t, keepInbox.ID, after.inboxes[0].ID)
+			require.Empty(t, after.relations)
+			require.Empty(t, after.settings)
+			require.Empty(t, after.identities)
+			cachedUser, err := ts.GetUser(ctx, &store.FindUser{ID: &owner.ID})
+			require.NoError(t, err)
+			require.Nil(t, cachedUser)
+			cachedSetting, err := ts.GetUserSetting(ctx, &store.FindUserSetting{UserID: &owner.ID, Key: storepb.UserSetting_GENERAL})
+			require.NoError(t, err)
+			require.Nil(t, cachedSetting)
+		})
+	}
+}
+
+type userDeletionSnapshot struct {
+	users       []*store.User
+	memos       []*store.Memo
+	attachments []*store.Attachment
+	shares      []*store.MemoShare
+	reactions   []*store.Reaction
+	inboxes     []*store.Inbox
+	relations   []*store.MemoRelation
+	settings    []*storepb.UserSetting
+	identities  []*store.UserIdentity
+}
+
+func snapshotUserDeletion(t *testing.T, ts *store.Store) userDeletionSnapshot {
+	t.Helper()
+	ctx := context.Background()
+	var result userDeletionSnapshot
+	var err error
+	result.users, err = ts.ListUsers(ctx, &store.FindUser{})
+	require.NoError(t, err)
+	result.memos, err = ts.ListMemos(ctx, &store.FindMemo{})
+	require.NoError(t, err)
+	result.attachments, err = ts.ListAttachments(ctx, &store.FindAttachment{GetBlob: true, SkipDefaultLimit: true})
+	require.NoError(t, err)
+	result.shares, err = ts.ListMemoShares(ctx, &store.FindMemoShare{})
+	require.NoError(t, err)
+	result.reactions, err = ts.ListReactions(ctx, &store.FindReaction{})
+	require.NoError(t, err)
+	result.inboxes, err = ts.ListInboxes(ctx, &store.FindInbox{})
+	require.NoError(t, err)
+	result.relations, err = ts.ListMemoRelations(ctx, &store.FindMemoRelation{})
+	require.NoError(t, err)
+	result.settings, err = ts.ListUserSettings(ctx, &store.FindUserSetting{})
+	require.NoError(t, err)
+	result.identities, err = ts.ListUserIdentities(ctx, &store.FindUserIdentity{})
+	require.NoError(t, err)
+	return result
 }
 
 func TestDeleteUserCleansRelatedData(t *testing.T) {

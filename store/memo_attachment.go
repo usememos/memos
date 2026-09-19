@@ -108,7 +108,8 @@ func (s *Store) ApplyMemoMutation(ctx context.Context, mutation *MemoMutation) e
 		mutation.MemoCreatorID = create.CreatorID
 		mutation.ExpectedMemoContent = create.Content
 	}
-	if err := validateMemoWritePolicy(mutation.Policy); err != nil {
+	policy := mutation.WritePolicy()
+	if err := validateMemoWritePolicy(policy); err != nil {
 		return err
 	}
 	mutation.RemovedAttachmentIDs = slices.Clone(mutation.RemovedAttachmentIDs)
@@ -124,10 +125,11 @@ func (s *Store) ApplyMemoMutation(ctx context.Context, mutation *MemoMutation) e
 		removedAttachmentIDs[attachmentID] = struct{}{}
 	}
 	for _, binding := range mutation.Bindings {
-		if binding != nil {
-			if _, removed := removedAttachmentIDs[binding.ID]; removed {
-				return errors.New("attachment cannot be both bound and removed")
-			}
+		if binding == nil {
+			return errors.New("attachment binding is required")
+		}
+		if _, removed := removedAttachmentIDs[binding.ID]; removed {
+			return errors.New("attachment cannot be both bound and removed")
 		}
 	}
 	for _, attachmentID := range mutation.RequiredAttachmentIDs {
@@ -135,7 +137,7 @@ func (s *Store) ApplyMemoMutation(ctx context.Context, mutation *MemoMutation) e
 			return errors.New("attachment cannot be both required and removed")
 		}
 	}
-	if mutation.Policy != nil && mutation.Policy.LifecycleOnly &&
+	if policy != nil && policy.LifecycleOnly &&
 		(len(mutation.Bindings) != 0 || len(mutation.RemovedAttachmentIDs) != 0 || len(mutation.RequiredAttachmentIDs) != 0 || mutation.ReplaceReferenceRelations) {
 		return ErrMemoSpaceMembershipRequired
 	}
