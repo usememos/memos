@@ -66,7 +66,7 @@ jobs:
           case "${{ matrix.test-group }}" in
             store)
               # Run store tests for all drivers (sqlite, mysql, postgres)
-              go test -v -coverprofile=coverage.out -covermode=atomic ./store/...
+              DRIVER= go test -v -coverprofile=coverage.out -covermode=atomic ./store/...
               ;;
             server)
               # Includes ./server/test, which boots the real server via
@@ -82,7 +82,7 @@ jobs:
               ;;
           esac
         env:
-          DRIVER: ${{ matrix.test-group == 'store' && '' || 'sqlite' }}
+          DRIVER: sqlite
 
       - name: Upload coverage
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'

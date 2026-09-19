@@ -113,7 +113,13 @@ func resolveAllowedIPs(ctx context.Context, host string) ([]net.IP, error) {
 }
 
 func isInternalIP(ip net.IP) bool {
-	return ip.IsLoopback() || ip.IsPrivate() || ip.IsLinkLocalUnicast() || ip.IsUnspecified()
+	if ip.IsLoopback() || ip.IsPrivate() || ip.IsLinkLocalUnicast() || ip.IsUnspecified() {
+		return true
+	}
+	// IsPrivate excludes RFC 6598 shared address space (100.64.0.0/10).
+	// To4 also covers IPv4-mapped IPv6 addresses.
+	ipv4 := ip.To4()
+	return ipv4 != nil && ipv4[0] == 100 && ipv4[1] >= 64 && ipv4[1] <= 127
 }
 
 func validateURL(urlStr string) error {

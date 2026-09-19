@@ -465,6 +465,37 @@ func TestHTMLMetaFetcherRejectsUnsafeURLsAndRedirects(t *testing.T) {
 	require.ErrorIs(t, err, ErrInternalIP)
 }
 
+func TestValidateURLCGNAT(t *testing.T) {
+	tests := []struct {
+		ip      string
+		blocked bool
+	}{
+		{"100.63.255.255", false},
+		{"100.64.0.0", true},
+		{"100.100.100.200", true},
+		{"100.127.255.255", true},
+		{"100.128.0.0", false},
+		{"::ffff:100.64.0.0", true},
+		{"::ffff:100.100.100.200", true},
+		{"::ffff:100.127.255.255", true},
+		{"::ffff:100.128.0.0", false},
+	}
+	for _, tc := range tests {
+		t.Run(tc.ip, func(t *testing.T) {
+			target := "http://" + net.JoinHostPort(tc.ip, "80") + "/page"
+			err := validateURL(target)
+			if tc.blocked {
+				require.ErrorIs(t, err, ErrInternalIP)
+				redirect, err := http.NewRequest(http.MethodGet, target, nil)
+				require.NoError(t, err)
+				require.ErrorIs(t, newHTTPClient().CheckRedirect(redirect, nil), ErrInternalIP)
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}
+
 func TestSecureDialContextRejectsResolvedInternalIP(t *testing.T) {
 	originalLookupIPAddr := lookupIPAddr
 	originalDialContext := dialContext
@@ -473,16 +504,21 @@ func TestSecureDialContextRejectsResolvedInternalIP(t *testing.T) {
 		dialContext = originalDialContext
 	})
 
-	lookupIPAddr = func(context.Context, string) ([]net.IPAddr, error) {
-		return []net.IPAddr{{IP: net.ParseIP("127.0.0.1")}}, nil
+	for _, ip := range []string{"127.0.0.1", "100.100.100.200", "::ffff:100.100.100.200"} {
+		t.Run(ip, func(t *testing.T) {
+			dialContext = func(context.Context, string, string) (net.Conn, error) {
+				t.Fatal("internal IP should be rejected before dialing")
+				return nil, nil
+			}
+			lookupIPAddr = func(context.Context, string) ([]net.IPAddr, error) {
+				return []net.IPAddr{{IP: net.ParseIP(ip)}}, nil
+			}
+			_, err := secureDialContext(context.Background(), "tcp", "rebind.example:80")
+			require.ErrorIs(t, err, ErrInternalIP)
+			_, err = secureDialContext(context.Background(), "tcp", net.JoinHostPort(ip, "80"))
+			require.ErrorIs(t, err, ErrInternalIP)
+		})
 	}
-	dialContext = func(context.Context, string, string) (net.Conn, error) {
-		t.Fatal("internal IP should be rejected before dialing")
-		return nil, nil
-	}
-
-	_, err := secureDialContext(context.Background(), "tcp", "rebind.example:80")
-	require.ErrorIs(t, err, ErrInternalIP)
 }
 
 func TestSecureDialContextDialsResolvedIP(t *testing.T) {
