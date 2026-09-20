@@ -211,9 +211,7 @@ func inputSchemaForOperation(operation *openAPIOperation) jsonSchema {
 
 	if operation.RequestBody != nil {
 		bodySchema := requestBodySchema(operation)
-		for name, definition := range extractSchemaDefs(bodySchema) {
-			defs[name] = definition
-		}
+		maps.Copy(defs, extractSchemaDefs(bodySchema))
 		properties["body"] = bodySchema
 		if operation.RequestBody.Required {
 			required = append(required, "body")
@@ -272,11 +270,7 @@ func outputSchemaForOperation(operation *openAPIOperation) jsonSchema {
 }
 
 func cloneSchema(schema jsonSchema) jsonSchema {
-	clone := jsonSchema{}
-	for key, value := range schema {
-		clone[key] = value
-	}
-	return clone
+	return maps.Clone(schema)
 }
 
 func extractSchemaDefs(schema jsonSchema) map[string]any {
