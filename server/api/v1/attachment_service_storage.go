@@ -205,7 +205,16 @@ func hasSameManagedStorageObject(left, right *store.Attachment) bool {
 		return left.Reference != "" && left.Reference == right.Reference
 	case storepb.AttachmentStorageType_S3:
 		leftObject, rightObject := left.Payload.GetS3Object(), right.Payload.GetS3Object()
-		return leftObject != nil && rightObject != nil && leftObject.Key != "" && leftObject.Key == rightObject.Key && leftObject.StorageId == rightObject.StorageId
+
+		if leftObject == nil || rightObject == nil {
+			return false
+		}
+
+		if leftObject.Key == "" || rightObject.Key == "" {
+			return false
+		}
+
+		return leftObject.Key == rightObject.Key && leftObject.StorageId == rightObject.StorageId
 	default:
 		return false
 	}
