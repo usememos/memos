@@ -8,6 +8,7 @@ import {
   MEMOS_WEBSITE_URL,
   WEB_CLIPPER_URL,
 } from "@/lib/constants";
+import { isReleaseVersion } from "@/lib/release-version";
 import { useTranslate } from "@/utils/i18n";
 
 const GITHUB_COMMIT_URL_PREFIX = "https://github.com/usememos/memos/commit/";
@@ -18,7 +19,6 @@ const DEFAULT_TAGLINE = "Capture first. Keep it yours.";
 const DEFAULT_LOGO = "/logo.webp";
 
 const isCommitSha = (commit: string) => /^[0-9a-f]{7,40}$/i.test(commit);
-const isSemver = (version: string) => /^\d+\.\d+\.\d+/.test(version);
 
 const Chip = ({ href, children }: { href?: string; children: React.ReactNode }) => {
   const className = "inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 font-mono text-xs text-muted-foreground";
@@ -46,9 +46,9 @@ const About = () => {
   const instanceLogo = customProfile?.logoUrl || DEFAULT_LOGO;
   const isCustomBranded = instanceTitle !== DEFAULT_TITLE;
 
-  const hasSemver = isSemver(profile.version);
-  const releaseUrl = hasSemver ? `${GITHUB_RELEASE_URL_PREFIX}${profile.version}` : "";
-  const versionLabel = hasSemver ? `v${profile.version}` : profile.version;
+  const hasReleaseVersion = isReleaseVersion(profile.version);
+  const releaseUrl = hasReleaseVersion ? `${GITHUB_RELEASE_URL_PREFIX}${profile.version}` : "";
+  const versionLabel = hasReleaseVersion ? `v${profile.version}` : profile.version;
   const hasCommitSha = isCommitSha(profile.commit);
   const commitUrl = hasCommitSha ? `${GITHUB_COMMIT_URL_PREFIX}${profile.commit}` : "";
   const shortCommit = hasCommitSha ? profile.commit.slice(0, 7) : "";

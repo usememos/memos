@@ -17,6 +17,7 @@ on:
       # Anything that can change how an existing database is opened or upgraded.
       - "store/migration/**"
       - "store/migrator.go"
+      - "store/schema_version*.go"
       - "store/db/**"
       - "store/test/containers.go"
       - "store/test/migrator*_test.go"
@@ -25,6 +26,9 @@ on:
       - "scripts/Dockerfile"
       - "scripts/entrypoint.sh"
       - "scripts/release_smoke_test.sh"
+      - "scripts/release_version*"
+      - "scripts/install*"
+      - ".github/workflows/release.yml"
       - ".github/workflows/upgrade-smoke.yml"
 
 concurrency:
@@ -57,6 +61,9 @@ jobs:
           go-version: ${{ env.GO_VERSION }}
           cache: true
           cache-dependency-path: go.sum
+
+      - name: Test release versioning and installer
+        run: go test -v ./scripts/...
 
       # No -race here: testcontainers has known races in its reaper, which is why
       # store/test/migrator_test.go documents skipping the race detector.
