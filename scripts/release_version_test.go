@@ -45,7 +45,10 @@ func TestPreviousReleaseImage(t *testing.T) {
 	}
 	check := func(want string) {
 		t.Helper()
-		out, err := exec.Command("bash", "release_version.sh", "previous-image", repo).CombinedOutput()
+		out, err := exec.Command("bash", "release_version.sh", "previous-tag", repo).CombinedOutput()
+		require.NoError(t, err, string(out))
+		require.Equal(t, "v"+want+"\n", string(out))
+		out, err = exec.Command("bash", "release_version.sh", "previous-image", repo).CombinedOutput()
 		require.NoError(t, err, string(out))
 		require.Equal(t, "neosmemo/memos:"+want+"\n", string(out))
 	}
@@ -83,6 +86,9 @@ func TestPreviousReleaseImage(t *testing.T) {
 	runGit("commit", "--allow-empty", "-m", "old")
 	runGit("tag", "v0.30.0")
 	runGit("commit", "--allow-empty", "-m", "candidate")
-	_, err := exec.Command("bash", "release_version.sh", "previous-image", repo).CombinedOutput()
-	require.Error(t, err)
+	for _, command := range []string{"previous-tag", "previous-image"} {
+		out, err := exec.Command("bash", "release_version.sh", command, repo).CombinedOutput()
+		require.Error(t, err, command)
+		require.Contains(t, string(out), "No supported previous release found")
+	}
 }

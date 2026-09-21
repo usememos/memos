@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io/fs"
 	"log/slog"
-	"path/filepath"
 	"slices"
 	"strconv"
 	"strings"
@@ -39,6 +38,8 @@ import (
 // - Location: store/migration/{driver}/{version}/NN__description.sql
 // - Naming: NN is a zero-based migration sequence, description is human-readable
 // - Ordering: Calendar year, month, and migration sequence are compared numerically
+// - Every driver ships the same set of migration versions; a schema change is
+//   one file per driver under the same YY.MM/NN
 // - LATEST.sql: Full schema for new installations (faster than incremental migrations)
 
 //go:embed migration
@@ -64,18 +65,23 @@ const (
 	baselineSchemaVersion = "0.31.8"
 )
 
+// migrationFile is one embedded migration script with its schema version parsed once.
+type migrationFile struct {
+	path    string
+	version string
+	parsed  [3]int
+}
+
 // isVersionEmpty identifies legacy databases without schema tracking.
 func isVersionEmpty(schemaVersion string) bool {
 	return schemaVersion == "" || schemaVersion == defaultSchemaVersion
 }
 
-func shouldApplyMigration(fileVersion, currentDBVersion, targetVersion string) (bool, error) {
-	afterCurrent, err := compareSchemaVersions(fileVersion, currentDBVersion)
-	if err != nil {
-		return false, err
-	}
-	beforeTarget, err := compareSchemaVersions(fileVersion, targetVersion)
-	return afterCurrent > 0 && beforeTarget <= 0, err
+// shouldApplyMigration reports whether a file version lies after the current
+// database version and at or before the target version.
+func shouldApplyMigration(fileVersion, currentDBVersion, targetVersion [3]int) bool {
+	return compareParsedSchemaVersions(fileVersion, currentDBVersion) > 0 &&
+		compareParsedSchemaVersions(fileVersion, targetVersion) <= 0
 }
 
 // validateMigrationFileName checks if a migration file follows the expected naming convention.
@@ -158,11 +164,16 @@ func (s *Store) initializeInstanceAccessSetting(ctx context.Context) error {
 // applyMigrations applies all necessary migration files between current and target schema versions.
 // It runs all migrations in a single transaction for atomicity.
 func (s *Store) applyMigrations(ctx context.Context, currentSchemaVersion, targetSchemaVersion string) error {
-	filePaths, err := fs.Glob(migrationFS, fmt.Sprintf("%s*/*.sql", s.getMigrationBasePath()))
+	current, err := parseSchemaVersion(currentSchemaVersion)
 	if err != nil {
-		return errors.Wrap(err, "failed to read migration files")
+		return err
 	}
-	if err := s.sortMigrationFiles(filePaths); err != nil {
+	target, err := parseSchemaVersion(targetSchemaVersion)
+	if err != nil {
+		return err
+	}
+	files, err := s.listMigrationFiles()
+	if err != nil {
 		return err
 	}
 
@@ -178,32 +189,24 @@ func (s *Store) applyMigrations(ctx context.Context, currentSchemaVersion, targe
 		slog.String("targetSchemaVersion", targetSchemaVersion))
 
 	migrationsApplied := 0
-	for _, filePath := range filePaths {
-		fileSchemaVersion, err := s.getSchemaVersionOfMigrateScript(filePath)
+	for _, file := range files {
+		if !shouldApplyMigration(file.parsed, current, target) {
+			continue
+		}
+		slog.Info("applying migration",
+			slog.String("file", file.path),
+			slog.String("version", file.version))
+
+		bytes, err := migrationFS.ReadFile(file.path)
 		if err != nil {
-			return errors.Wrap(err, "failed to get schema version of migrate script")
+			return errors.Wrapf(err, "failed to read migration file: %s", file.path)
 		}
 
-		apply, err := shouldApplyMigration(fileSchemaVersion, currentSchemaVersion, targetSchemaVersion)
-		if err != nil {
-			return err
+		stmt := string(bytes)
+		if err := s.execute(ctx, tx, stmt); err != nil {
+			return errors.Wrapf(err, "failed to execute migration %s: %s", file.path, err)
 		}
-		if apply {
-			slog.Info("applying migration",
-				slog.String("file", filePath),
-				slog.String("version", fileSchemaVersion))
-
-			bytes, err := migrationFS.ReadFile(filePath)
-			if err != nil {
-				return errors.Wrapf(err, "failed to read migration file: %s", filePath)
-			}
-
-			stmt := string(bytes)
-			if err := s.execute(ctx, tx, stmt); err != nil {
-				return errors.Wrapf(err, "failed to execute migration %s: %s", filePath, err)
-			}
-			migrationsApplied++
-		}
+		migrationsApplied++
 	}
 
 	if err := tx.Commit(); err != nil {
@@ -311,49 +314,61 @@ func (s *Store) seed(ctx context.Context) error {
 // GetCurrentSchemaVersion returns the latest schema version available for the configured database driver.
 // With no incremental migrations, it returns the fixed v0.31.0 baseline.
 //
-// A driver introduced after the last schema change ships only LATEST.sql and
-// no versioned migration files. LATEST.sql describes the same schema on every
-// driver, so such a driver reports the highest version any driver's migration
-// directory defines and picks up future migrations from there.
+// Only this driver's migration files count. Every driver must ship the same
+// migration versions (TestMigrationVersionsMatchAcrossDrivers enforces this),
+// so a driver never records a version whose SQL it has not executed.
 func (s *Store) GetCurrentSchemaVersion() (string, error) {
-	filePaths, err := fs.Glob(migrationFS, fmt.Sprintf("%s*/*.sql", s.getMigrationBasePath()))
+	files, err := s.listMigrationFiles()
 	if err != nil {
-		return "", errors.Wrap(err, "failed to read migration files")
+		return "", err
 	}
-	if len(filePaths) == 0 {
-		filePaths, err = fs.Glob(migrationFS, "migration/*/*/*.sql")
-		if err != nil {
-			return "", errors.Wrap(err, "failed to read migration files")
-		}
+	if len(files) == 0 {
+		return baselineSchemaVersion, nil
 	}
-	currentSchemaVersion := baselineSchemaVersion
-	for _, filePath := range filePaths {
-		fileSchemaVersion, err := s.getSchemaVersionOfMigrateScript(filePath)
-		if err != nil {
-			return "", errors.Wrap(err, "failed to get schema version of migrate script")
-		}
-		order, err := compareSchemaVersions(fileSchemaVersion, currentSchemaVersion)
-		if err != nil {
-			return "", err
-		}
-		if order > 0 {
-			currentSchemaVersion = fileSchemaVersion
-		}
+	latest := files[len(files)-1]
+	if compareParsedSchemaVersions(latest.parsed, mustParseSchemaVersion(baselineSchemaVersion)) < 0 {
+		return baselineSchemaVersion, nil
 	}
-	return currentSchemaVersion, nil
+	return latest.version, nil
+}
+
+// listMigrationFiles returns this driver's migration scripts in application
+// order. Every filename is validated and every version parsed before any SQL
+// runs, sequences are ordered numerically (including months with more than
+// 100 migrations), and two files that resolve to the same version are rejected
+// because their relative order would be undefined.
+func (s *Store) listMigrationFiles() ([]migrationFile, error) {
+	return listMigrationFilesFrom(migrationFS, s.getMigrationBasePath())
+}
+
+func listMigrationFilesFrom(fsys fs.FS, basePath string) ([]migrationFile, error) {
+	paths, err := fs.Glob(fsys, basePath+"*/*.sql")
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to read migration files")
+	}
+	files := make([]migrationFile, 0, len(paths))
+	seen := make(map[string]string, len(paths))
+	for _, path := range paths {
+		version, err := getSchemaVersionOfMigrateScript(path)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to get schema version of migrate script")
+		}
+		if previous, exists := seen[version]; exists {
+			return nil, errors.Errorf("migration files %s and %s both resolve to schema version %s", previous, path, version)
+		}
+		seen[version] = path
+		files = append(files, migrationFile{path: path, version: version, parsed: mustParseSchemaVersion(version)})
+	}
+	slices.SortFunc(files, func(a, b migrationFile) int {
+		return compareParsedSchemaVersions(a.parsed, b.parsed)
+	})
+	return files, nil
 }
 
 // getSchemaVersionOfMigrateScript extracts the schema version from the migration script file path.
 // Calendar directory YY.MM and file NN__description.sql produce YY.M.(NN+1).
-// If the file is the latest schema file, it returns the current schema version.
-func (s *Store) getSchemaVersionOfMigrateScript(filePath string) (string, error) {
-	// If the file is the latest schema file, return the current schema version.
-	if filepath.Base(filePath) == LatestSchemaFileName {
-		return s.GetCurrentSchemaVersion()
-	}
-
-	normalizedPath := filepath.ToSlash(filePath)
-	elements := strings.Split(normalizedPath, "/")
+func getSchemaVersionOfMigrateScript(filePath string) (string, error) {
+	elements := strings.Split(filePath, "/")
 	if len(elements) < 2 {
 		return "", errors.Errorf("invalid file path: %s", filePath)
 	}
@@ -442,34 +457,4 @@ func (s *Store) checkMinimumUpgradeVersion(ctx context.Context) error {
 			"%s\nStart v0.31.0 and verify it works before upgrading to this version.",
 		schemaVersion, baselineSchemaVersion, upgradePath,
 	)
-}
-
-// sortMigrationFiles validates every filename before any SQL runs and orders
-// sequences numerically, including months with more than 100 migrations.
-func (s *Store) sortMigrationFiles(paths []string) error {
-	versions := make(map[string][3]int, len(paths))
-	for _, path := range paths {
-		value, err := s.getSchemaVersionOfMigrateScript(path)
-		if err != nil {
-			return err
-		}
-		parsed, err := parseSchemaVersion(value)
-		if err != nil {
-			return err
-		}
-		versions[path] = parsed
-	}
-	slices.SortFunc(paths, func(a, b string) int {
-		left, right := versions[a], versions[b]
-		for i := range left {
-			if left[i] < right[i] {
-				return -1
-			}
-			if left[i] > right[i] {
-				return 1
-			}
-		}
-		return 0
-	})
-	return nil
 }

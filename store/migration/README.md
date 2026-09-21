@@ -17,6 +17,9 @@ schema changes across SQLite, MySQL, and PostgreSQL. Do not advance the baseline
 when adding migrations; databases at 0.31.8 must remain upgradeable.
 
 New migrations use `YY.MM/NN__description.sql`, where `NN` starts at `00`.
+Each schema change ships one file per driver under the same `YY.MM/NN`; a
+driver only records versions whose SQL it executed, and the store tests fail
+when drivers disagree. Two files with the same `NN` in one month are rejected.
 For example, `26.09/00__add_column.sql` records schema `26.9.1`; the next
 migration records `26.9.2`. Compare year, month, and sequence numerically.
 The sequence is independent of the application's release revision: a release

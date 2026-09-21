@@ -16,7 +16,10 @@ parse_release_tag() {
   fi
 }
 
-previous_release_image() {
+# previous_release_tag prints the newest stable release tag that is an ancestor
+# of HEAD, excluding tags on HEAD itself. Legacy v0.31.x tags count because
+# v0.31.0 is the fixed upgrade baseline.
+previous_release_tag() {
   local repo="$1" head_sha tag tag_sha
   head_sha="$(git -C "$repo" rev-parse HEAD)"
   while IFS= read -r tag; do
@@ -28,19 +31,34 @@ previous_release_image() {
     tag_sha="$(git -C "$repo" rev-list -n 1 "$tag")"
     [[ "$tag_sha" != "$head_sha" ]] || continue
     if git -C "$repo" merge-base --is-ancestor "$tag" HEAD; then
-      printf 'neosmemo/memos:%s\n' "${tag#v}"
+      printf '%s\n' "$tag"
       return
     fi
   done < <(git -C "$repo" tag --list 'v[0-9]*' --sort=-version:refname)
-  echo 'No supported previous release found; pass --previous-image' >&2
+  echo 'No supported previous release found' >&2
   return 1
 }
 
-if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
-  if [[ "${1:-}" == previous-image ]]; then
-    previous_release_image "${2:?repository required}"
-    exit
+previous_release_image() {
+  local tag
+  if ! tag="$(previous_release_tag "$1")"; then
+    echo 'Pass --previous-image' >&2
+    return 1
   fi
+  printf 'neosmemo/memos:%s\n' "${tag#v}"
+}
+
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+  case "${1:-}" in
+    previous-tag)
+      previous_release_tag "${2:?repository required}"
+      exit
+      ;;
+    previous-image)
+      previous_release_image "${2:?repository required}"
+      exit
+      ;;
+  esac
   tag="${2:?release tag required}"
   if ! parse_release_tag "$tag"; then
     echo "Unsupported release tag format: $tag" >&2

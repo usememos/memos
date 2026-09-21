@@ -32,6 +32,25 @@ func parseSchemaVersion(value string) ([3]int, error) {
 	return result, nil
 }
 
+// mustParseSchemaVersion is for versions the migrator itself produced or
+// declared as constants; those are valid by construction.
+func mustParseSchemaVersion(value string) [3]int {
+	parsed, err := parseSchemaVersion(value)
+	if err != nil {
+		panic(err)
+	}
+	return parsed
+}
+
+func compareParsedSchemaVersions(a, b [3]int) int {
+	for i := range a {
+		if order := cmp.Compare(a[i], b[i]); order != 0 {
+			return order
+		}
+	}
+	return 0
+}
+
 func compareSchemaVersions(a, b string) (int, error) {
 	left, err := parseSchemaVersion(a)
 	if err != nil {
@@ -41,10 +60,5 @@ func compareSchemaVersions(a, b string) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	for i := range left {
-		if order := cmp.Compare(left[i], right[i]); order != 0 {
-			return order, nil
-		}
-	}
-	return 0, nil
+	return compareParsedSchemaVersions(left, right), nil
 }
