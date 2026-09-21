@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.31.1](https://github.com/usememos/memos/compare/v0.31.0...v0.31.1) (2026-09-21)
+
+
+### Bug Fixes
+
+* **i18n:** use neutral Korean label for hidden content ([e3d25e1](https://github.com/usememos/memos/commit/e3d25e18dc4ddd957b7c94dc65ebcf3b33d32ad6))
+
 ## [0.31.0](https://github.com/usememos/memos/compare/v0.30.0...v0.31.0) (2026-09-20)
 
 Memos 0.31 adds Spaces for collaboration, Calendar and Map views for browsing your notes, and tools to move your memos between instances. Writing, search, attachments, and navigation also receive improvements throughout the app.
