@@ -216,7 +216,7 @@
     "space-invitation-open": "빈 공간"
   },
   "memo": {
-    "click-to-show-sensitive-content": "민감한(성인) 콘텐츠 보기",
+    "click-to-show-sensitive-content": "숨겨진 콘텐츠 보기",
     "comment": {
       "self": "댓글",
       "write-a-comment": "댓글 작성"
