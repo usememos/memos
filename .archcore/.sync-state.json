@@ -1,0 +1,436 @@
+{
+  "version": 1,
+  "files": {},
+  "relations": [
+    {
+      "source": "conventions/working-rules.rule.md",
+      "target": "conventions/project-stack.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "conventions/go-conventions.rule.md",
+      "target": "conventions/project-stack.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "conventions/frontend-conventions.rule.md",
+      "target": "conventions/project-stack.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "conventions/database-and-proto.rule.md",
+      "target": "conventions/project-stack.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "conventions/verification-policy.rule.md",
+      "target": "conventions/project-stack.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "spaces/space-uid-allocation.adr.md",
+      "target": "spaces/multi-spaces.adr.md",
+      "type": "related"
+    },
+    {
+      "source": "users/unique-email.adr.md",
+      "target": "users/username-format-and-references.adr.md",
+      "type": "related"
+    },
+    {
+      "source": "api/api-abuse-controls.adr.md",
+      "target": "users/unique-email.adr.md",
+      "type": "related"
+    },
+    {
+      "source": "spaces/space-uid-allocation.adr.md",
+      "target": "users/username-format-and-references.adr.md",
+      "type": "related"
+    },
+    {
+      "source": "export/memos-export-format.rfc.md",
+      "target": "export/export-format-details.rfc.md",
+      "type": "related"
+    },
+    {
+      "source": "export/memos-export-format.rfc.md",
+      "target": "export/export-import-semantics.rfc.md",
+      "type": "related"
+    },
+    {
+      "source": "export/memos-export-format.rfc.md",
+      "target": "spaces/multi-spaces.adr.md",
+      "type": "related"
+    },
+    {
+      "source": "tags/tag-contract-lexical.spec.md",
+      "target": "tags/tag-syntax-and-recognition.adr.md",
+      "type": "implements"
+    },
+    {
+      "source": "tags/tag-contract-lexical.spec.md",
+      "target": "tags/tag-contract-context.spec.md",
+      "type": "related"
+    },
+    {
+      "source": "tags/tag-contract-lexical.spec.md",
+      "target": "tags/tag-contract-identity.spec.md",
+      "type": "related"
+    },
+    {
+      "source": "tags/tag-contract-context.spec.md",
+      "target": "tags/tag-syntax-and-recognition.adr.md",
+      "type": "implements"
+    },
+    {
+      "source": "tags/tag-contract-context.spec.md",
+      "target": "tags/tag-contract-identity.spec.md",
+      "type": "related"
+    },
+    {
+      "source": "tags/tag-contract-identity.spec.md",
+      "target": "tags/tag-syntax-and-recognition.adr.md",
+      "type": "implements"
+    },
+    {
+      "source": "tags/tag-examples-lexical.scenario.md",
+      "target": "tags/tag-contract-lexical.spec.md",
+      "type": "depends_on"
+    },
+    {
+      "source": "tags/tag-examples-lexical.scenario.md",
+      "target": "tags/tag-examples-context.scenario.md",
+      "type": "related"
+    },
+    {
+      "source": "tags/tag-examples-lexical.scenario.md",
+      "target": "tags/tag-examples-identity.scenario.md",
+      "type": "related"
+    },
+    {
+      "source": "tags/tag-examples-context.scenario.md",
+      "target": "tags/tag-contract-context.spec.md",
+      "type": "depends_on"
+    },
+    {
+      "source": "tags/tag-examples-context.scenario.md",
+      "target": "tags/tag-examples-identity.scenario.md",
+      "type": "related"
+    },
+    {
+      "source": "tags/tag-examples-identity.scenario.md",
+      "target": "tags/tag-contract-identity.spec.md",
+      "type": "depends_on"
+    },
+    {
+      "source": "users/email-contract.spec.md",
+      "target": "users/unique-email.adr.md",
+      "type": "implements"
+    },
+    {
+      "source": "api/abuse-contract.spec.md",
+      "target": "api/api-abuse-controls.adr.md",
+      "type": "implements"
+    },
+    {
+      "source": "spaces/space-contract-memo-access.spec.md",
+      "target": "spaces/multi-spaces.adr.md",
+      "type": "implements"
+    },
+    {
+      "source": "spaces/space-contract-memo-access.spec.md",
+      "target": "spaces/space-contract-membership.spec.md",
+      "type": "related"
+    },
+    {
+      "source": "spaces/space-contract-membership.spec.md",
+      "target": "spaces/multi-spaces.adr.md",
+      "type": "implements"
+    },
+    {
+      "source": "spaces/space-contract-membership.spec.md",
+      "target": "spaces/space-uid-allocation.adr.md",
+      "type": "related"
+    },
+    {
+      "source": "export/export-format-details.rfc.md",
+      "target": "export/export-import-semantics.rfc.md",
+      "type": "related"
+    },
+    {
+      "source": "export/export-format-details.rfc.md",
+      "target": "users/username-format-and-references.adr.md",
+      "type": "related"
+    },
+    {
+      "source": "export/export-format-details.rfc.md",
+      "target": "spaces/space-uid-allocation.adr.md",
+      "type": "related"
+    },
+    {
+      "source": "export/export-format-details.rfc.md",
+      "target": "tags/tag-contract-identity.spec.md",
+      "type": "related"
+    },
+    {
+      "source": "config/file-discovery.spec.md",
+      "target": "config/file-formats.spec.md",
+      "type": "related"
+    },
+    {
+      "source": "config/file-discovery.spec.md",
+      "target": "config/effective-configuration.spec.md",
+      "type": "related"
+    },
+    {
+      "source": "config/file-discovery.spec.md",
+      "target": "config/provisioning-validation.spec.md",
+      "type": "related"
+    },
+    {
+      "source": "config/file-formats.spec.md",
+      "target": "config/effective-configuration.spec.md",
+      "type": "related"
+    },
+    {
+      "source": "config/file-formats.spec.md",
+      "target": "config/provisioning-validation.spec.md",
+      "type": "related"
+    },
+    {
+      "source": "config/effective-configuration.spec.md",
+      "target": "config/provisioning-validation.spec.md",
+      "type": "related"
+    },
+    {
+      "source": "config/operating-deployment-configuration.guide.md",
+      "target": "config/provisioning-validation.spec.md",
+      "type": "related"
+    },
+    {
+      "source": "config/operating-deployment-configuration.guide.md",
+      "target": "config/effective-configuration.spec.md",
+      "type": "related"
+    },
+    {
+      "source": "filter/filter-contract.spec.md",
+      "target": "filter/filter-engine.doc.md",
+      "type": "related"
+    },
+    {
+      "source": "filter/filter-contract.spec.md",
+      "target": "conventions/project-stack.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "fileserver/serving-contract.spec.md",
+      "target": "spaces/space-contract-memo-access.spec.md",
+      "type": "related"
+    },
+    {
+      "source": "email/email-contract.spec.md",
+      "target": "email/sending-email.guide.md",
+      "type": "related"
+    },
+    {
+      "source": "mcp/server-contract.spec.md",
+      "target": "api/api-abuse-controls.adr.md",
+      "type": "related"
+    },
+    {
+      "source": "mcp/extending-server.guide.md",
+      "target": "mcp/server-contract.spec.md",
+      "type": "related"
+    },
+    {
+      "source": "mcp/extending-server.guide.md",
+      "target": "conventions/database-and-proto.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "editor/editor-contract.spec.md",
+      "target": "tags/tag-syntax-and-recognition.adr.md",
+      "type": "related"
+    },
+    {
+      "source": "editor/editor-contract.spec.md",
+      "target": "conventions/frontend-conventions.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "editor/editor-development.guide.md",
+      "target": "editor/editor-contract.spec.md",
+      "type": "related"
+    },
+    {
+      "source": "editor/editor-development.guide.md",
+      "target": "conventions/verification-policy.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "ui/confirmation-dialog.spec.md",
+      "target": "ui/component-conventions.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "markdown/rendering-components.spec.md",
+      "target": "conventions/frontend-conventions.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "ui/component-conventions.rule.md",
+      "target": "conventions/frontend-conventions.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "ui/component-conventions.rule.md",
+      "target": "ui/color-conventions.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "ui/color-conventions.rule.md",
+      "target": "conventions/frontend-conventions.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "ui/applying-colors.guide.md",
+      "target": "ui/color-conventions.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "onboarding/running-the-project.guide.md",
+      "target": "conventions/verification-policy.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "onboarding/running-the-project.guide.md",
+      "target": "conventions/project-stack.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "onboarding/running-the-project.guide.md",
+      "target": "conventions/database-and-proto.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "architecture/top-level-map.doc.md",
+      "target": "conventions/working-rules.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "architecture/top-level-map.doc.md",
+      "target": "conventions/project-stack.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "architecture/top-level-map.doc.md",
+      "target": "conventions/verification-policy.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "architecture/top-level-map.doc.md",
+      "target": "architecture/internal-package.doc.md",
+      "type": "related"
+    },
+    {
+      "source": "architecture/top-level-map.doc.md",
+      "target": "architecture/core-package.doc.md",
+      "type": "related"
+    },
+    {
+      "source": "architecture/top-level-map.doc.md",
+      "target": "architecture/provider-package.doc.md",
+      "type": "related"
+    },
+    {
+      "source": "domain/glossary.doc.md",
+      "target": "spaces/multi-spaces.adr.md",
+      "type": "related"
+    },
+    {
+      "source": "domain/glossary.doc.md",
+      "target": "spaces/space-uid-allocation.adr.md",
+      "type": "related"
+    },
+    {
+      "source": "domain/glossary.doc.md",
+      "target": "users/username-format-and-references.adr.md",
+      "type": "related"
+    },
+    {
+      "source": "domain/glossary.doc.md",
+      "target": "tags/tag-syntax-and-recognition.adr.md",
+      "type": "related"
+    },
+    {
+      "source": "filter/maintenance.guide.md",
+      "target": "filter/filter-contract.spec.md",
+      "type": "related"
+    },
+    {
+      "source": "filter/maintenance.guide.md",
+      "target": "filter/filter-engine.doc.md",
+      "type": "related"
+    },
+    {
+      "source": "filter/maintenance.guide.md",
+      "target": "conventions/verification-policy.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "architecture/internal-package.doc.md",
+      "target": "conventions/working-rules.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "architecture/core-package.doc.md",
+      "target": "conventions/working-rules.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "architecture/core-package.doc.md",
+      "target": "export/memos-export-format.rfc.md",
+      "type": "related"
+    },
+    {
+      "source": "architecture/provider-package.doc.md",
+      "target": "conventions/working-rules.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "mcp/running-evaluations.guide.md",
+      "target": "mcp/server-contract.spec.md",
+      "type": "related"
+    },
+    {
+      "source": "auth/auth-state.rfc.md",
+      "target": "conventions/frontend-conventions.rule.md",
+      "type": "related"
+    },
+    {
+      "source": "config/file-discovery.spec.md",
+      "target": "config/deployment-configuration-model.adr.md",
+      "type": "implements"
+    },
+    {
+      "source": "config/file-formats.spec.md",
+      "target": "config/deployment-configuration-model.adr.md",
+      "type": "implements"
+    },
+    {
+      "source": "config/effective-configuration.spec.md",
+      "target": "config/deployment-configuration-model.adr.md",
+      "type": "implements"
+    },
+    {
+      "source": "config/provisioning-validation.spec.md",
+      "target": "config/deployment-configuration-model.adr.md",
+      "type": "implements"
+    },
+    {
+      "source": "ui/placeholder-assets.rule.md",
+      "target": "ui/component-conventions.rule.md",
+      "type": "related"
+    }
+  ]
+}

@@ -15,123 +15,26 @@ source of truth and reuses the API's authentication and authorization as-is.
 
 ## Integration
 
-`server.NewServer` calls `mcp.NewMCPService` after registering the API, file, and gRPC-gateway routes, passing the same Echo server:
-
-```go
-mcpService, err := mcp.NewMCPService(profile, echoServer)
-if err != nil {
-    return nil, errors.Wrap(err, "failed to create MCP service")
-}
-mcpService.RegisterRoutes(echoServer)
-```
-
-The service advertises the **tools** capability only — no prompts, no resources.
+> Moved to [`.archcore/mcp/extending-server.guide.md`](../../.archcore/mcp/extending-server.guide.md).
 
 ## Startup flow
 
-`NewMCPService` (`service.go`) wires everything up at construction time and fails
-fast on any inconsistency:
-
-1. `loadMCPServiceOpenAPISpec` parses the embedded `proto.OpenAPIYAML()` bytes
-   into an `openAPISpec`.
-2. `buildOperationRegistry` (`openapi.go`) indexes every operation by
-   `operationId`, recording method, path, resolved request-body schema, and
-   resolved 200 response schema.
-3. `buildCuratedTools` (`catalog.go`) selects the allowlisted operation IDs and
-   converts each into an `*sdkmcp.Tool` plus a `registeredOperation`. Missing
-   IDs or duplicate tool names are construction errors.
-4. Each tool is registered with `server.AddTool(tool, newMCPToolHandler(...))`.
-5. `sdkmcp.NewStreamableHTTPHandler` wraps the server in stateless,
-   JSON-response mode (no SSE, no session tracking). Stateless mode is also
-   what lets the SDK serve protocol version `2026-07-28`; older clients still
-   negotiate `2025-11-25` and earlier through the legacy `initialize` handshake.
-   The transport body limit is set to the API-wide limit so attachment uploads
-   are not cut off by the SDK's 4 MiB default.
+> Moved to [`.archcore/mcp/server-contract.spec.md`](../../.archcore/mcp/server-contract.spec.md).
 
 ## Request flow
 
-`RegisterRoutes` binds `echoServer.Any("/mcp", ...)`. Each request:
-
-1. `isAllowedMCPOrigin` (`origin.go`) rejects disallowed cross-origin browser requests with `403`.
-2. The request body is capped at 256 MiB before the SDK reads it.
-3. The SDK streamable handler dispatches the MCP message.
-4. On a `tools/call` request, `newMCPToolHandler` (`service.go`) decodes the JSON
-   arguments into a map.
-5. `validateToolArguments` (`validation.go`) checks them against the tool's
-   input schema.
-6. The caller's `Authorization` header is read from the request (`request.Extra.Header` on the SDK's `*sdkmcp.CallToolRequest`).
-7. `apiAdapter.execute` (`adapter.go`) builds the API request
-   (`buildAPIRequest`: path-parameter substitution, query encoding, JSON body),
-   forwards the bearer token, presents the caller's resolved client address as
-   the request peer, and runs it against the Echo server through an
-   `httptest.ResponseRecorder`.
-8. The recorder body is decoded; a non-2xx status becomes a tool error
-   (`newToolErrorResult`), otherwise the value is wrapped by
-   `newStructuredToolResult`.
+> Moved to [`.archcore/mcp/server-contract.spec.md`](../../.archcore/mcp/server-contract.spec.md).
 
 ## Schema resolution
 
-MCP tool schemas must be self-contained JSON Schema, but the OpenAPI components
-use `$ref`. `openapi.go` resolves these into local definitions:
-
-- **Top-level inlining.** The request-body and 200-response schemas for an
-  operation are resolved with `inlineRef = true`, so the outermost `$ref` is
-  expanded in place (`resolveSchemaRef` → `resolveSchemaValue` → `resolveSchemaMap`).
-- **Nested refs become `$defs`.** Any `$ref` encountered below the top level is
-  rewritten to a local `#/$defs/<Name>` pointer, and the referenced component is
-  collected into a `$defs` map (`addSchemaDef`).
-- **Cycle safety.** Recursive component schemas are handled by seeding
-  `defs[name]` with a placeholder and tracking `resolving[name]` before
-  recursing, so a schema that references itself terminates
-  (`addSchemaDef`).
-
-`catalog.go` then assembles the per-tool input schema in
-`inputSchemaForOperation`:
-
-- Path and query parameters become top-level properties; any required
-  parameter stays in `required`.
-- A request body becomes a single `body` property; a required body adds `body`
-  to `required`. Body `$defs` are lifted to the schema's top-level `$defs`.
-- Per-operation overrides relax resource-level requirements for create and
-  partial-update bodies and remove fields already supplied by a path binding
-  from `body: "*"` schemas. Memo and space updates may omit `updateMask` so the
-  REST gateway can infer it from the fields present in the request body. A
-  `body: "*"` binding whose only field is path-bound (accepting or declining a
-  space invitation) has its `body` made optional instead of demanding `{}`.
-- The schema sets `"additionalProperties": false`.
-
-The output schema is the operation's 200 `application/json` schema. When a 200
-response has no JSON body, the fallback is:
-
-```json
-{ "type": "object", "properties": { "ok": { "type": "boolean" } } }
-```
+> Moved to [`.archcore/mcp/server-contract.spec.md`](../../.archcore/mcp/server-contract.spec.md).
 
 ## Endpoint, transport & auth
 
+> Moved to [`.archcore/mcp/server-contract.spec.md`](../../.archcore/mcp/server-contract.spec.md).
+
 - **Endpoint:** `POST /mcp` (the SDK may also use `GET`/`DELETE` on the same
   path for the Streamable HTTP transport).
-- **Transport:** Streamable HTTP, **stateless**, JSON responses.
-- **Protocol versions:** `2026-07-28` down to `2024-11-05`. Clients on
-  `2026-07-28` skip `initialize`, call `server/discover`, carry
-  `_meta.io.modelcontextprotocol/protocolVersion` on every request, and must
-  send the `Mcp-Protocol-Version`, `Mcp-Method`, and (for `tools/call`)
-  `Mcp-Name` headers.
-- **Capabilities:** tools only, without `listChanged` — the catalog is fixed at
-  startup, so `tools/list` and `server/discover` advertise a 24-hour `ttlMs`
-  instead of change notifications.
-- **Request size:** request bodies are limited to 256 MiB before SDK dispatch.
-- **Auth:** the caller's `Authorization: Bearer <token>` header is forwarded to
-  the in-process API request. Mutating tools therefore require a valid token
-  (personal access token or access token); public reads may work without one,
-  exactly as the REST API allows.
-- **Client address:** the `/mcp` request passes through the same client-address
-  middleware as every other route, which resolves the caller behind trusted
-  proxies. The adapter reads that resolved address from the tool handler's
-  context and sets it as the in-process request's peer, so the middleware's
-  second pass resolves to the same value. Without this every tool call would
-  present `httptest`'s placeholder peer (`192.0.2.1`), and all anonymous MCP
-  callers would share one rate-limit bucket.
 - **Origin safety:** `isAllowedMCPOrigin` allows a request when the `Origin`
   header is absent (desktop clients commonly omit it), when its host matches
   the request `Host` header (host comparison only — scheme is not checked), or
@@ -140,24 +43,11 @@ response has no JSON body, the fallback is:
 
 ### Connecting a client
 
-Point any Streamable HTTP MCP client at `https://<your-instance>/mcp` and supply
-a personal access token as a bearer credential. Example client config:
-
-```json
-{
-  "mcpServers": {
-    "memos": {
-      "type": "http",
-      "url": "https://<your-instance>/mcp",
-      "headers": {
-        "Authorization": "Bearer <your-personal-access-token>"
-      }
-    }
-  }
-}
-```
+> Moved to [`.archcore/mcp/extending-server.guide.md`](../../.archcore/mcp/extending-server.guide.md).
 
 ## Tool surface
+
+> Moved to [`.archcore/mcp/server-contract.spec.md`](../../.archcore/mcp/server-contract.spec.md).
 
 The server exposes a curated allowlist (`curatedOperationIDs` in `catalog.go`),
 centered on memos and attachments, plus the space service (memos carry a
@@ -206,65 +96,9 @@ resolve its own user — the single allowed auth/identity operation):
 | `SpaceService_DeclineSpaceInvitation` | `space_decline_space_invitation` |
 | `SpaceService_DeleteSpaceInvitation` | `space_delete_space_invitation` |
 
-**Naming rule** (`toolNameFromOperationID`): drop the `Service` suffix from the
-subject and convert both subject and method from camelCase to snake_case, joined
-by `_`. So `MemoService_ListMemos → memo_list_memos`.
-
-**Annotations** (`annotationsForOperation`) start from the HTTP method:
-
-| Method | ReadOnly | Destructive | Idempotent |
-| --- | --- | --- | --- |
-| GET | true | false | true |
-| DELETE | false | true | true |
-| other (POST, PATCH, …) | false | false | false |
-
-Per-operation overrides then correct cases the method heuristic gets wrong.
-`MemoService_SetMemoAttachments` and `MemoService_SetMemoRelations` are PATCH
-but declaratively replace the full set on a memo, so they report both
-`IdempotentHint: true` and `DestructiveHint: true`. `MemoService_UpdateMemo`,
-`SpaceService_UpdateSpace`, and `SpaceService_UpdateSpaceMember` also report
-`DestructiveHint: true` because they overwrite existing fields (a member's role
-included). `SpaceService_DeleteSpace` is destructive by method, and the API
-also deletes every memo placed in the space.
-
-`OpenWorldHint` is `false` for all tools. Annotations are client hints; they do
-not replace API authorization.
-
-**Result shape.** Every successful result carries object-shaped `structuredContent`
-(`normalizeStructuredContent` in `result.go`):
-
-- a JSON object is returned unchanged;
-- an empty response becomes `{ "ok": true }`;
-- a bare array becomes `{ "result": [...] }`;
-- a scalar becomes `{ "result": value }`.
-
-This is deliberate: it fixes [#6022](https://github.com/usememos/memos/issues/6022),
-where collection tools returned a bare array that strict MCP clients reject.
-
-Inside that envelope the API's JSON is passed through verbatim, so the gateway's
-own encoding is part of the tool contract: whatever it emits is validated against
-the output schema resolved from the same OpenAPI spec. grpc-gateway's stock
-marshaler emits `null` for unset message fields, which no schema declares as
-nullable — `RegisterGateway` therefore installs a marshaler that omits them
-(`newGatewayMarshaler` in `server/api/v1/v1.go`). That fixes
-[#6139](https://github.com/usememos/memos/issues/6139), where `"motionMedia": null`
-failed every tool call returning an attachment.
-
 ## Error handling
 
-Failures are returned as MCP tool errors (`CallToolResult` with `IsError: true`
-and a text content block), not JSON-RPC protocol errors — the handler returns
-`(result, nil)`. Error results omit `structuredContent` so strict clients do not
-validate an error payload against the tool's success-only output schema:
-
-| Failure | Result |
-| --- | --- |
-| Arguments are not valid JSON | tool error: decode message |
-| Arguments fail schema validation | tool error: validation message |
-| Missing required path parameter | tool error: `missing required path parameter "..."` |
-| Missing required request body | tool error: `missing required request body "body"` |
-| API responds non-2xx | tool error: `"<code> <reason phrase>: <api message>"` (e.g. `"404 Not Found: ..."`) (`apiErrorMessage`) |
-| API response body is not decodable JSON | tool error: decode message |
+> Moved to [`.archcore/mcp/server-contract.spec.md`](../../.archcore/mcp/server-contract.spec.md).
 
 ## Core files
 
@@ -280,43 +114,12 @@ validate an error payload against the tool's success-only output schema:
 
 ## Adding a tool
 
-1. Add the OpenAPI `operationId` to `curatedOperationIDs` in `catalog.go`.
-2. If the operation is **not** in the generated OpenAPI, add or adjust the
-   proto/API surface first, then regenerate:
-
-   ```bash
-   cd proto && buf generate
-   ```
-
-3. Extend the tests in `catalog_test.go` / `service_test.go` to cover the new
-   tool.
-
-Never hand-edit `proto/gen/openapi.yaml` or other generated output — change the
-proto definitions and regenerate.
+> Moved to [`.archcore/mcp/extending-server.guide.md`](../../.archcore/mcp/extending-server.guide.md).
 
 ## Testing
 
-```bash
-go test ./server/mcp/...
-```
-
-- `openapi_test.go` — spec parsing, registry building, `$ref` resolution.
-- `catalog_test.go` — tool selection, naming, schema and annotation building.
-- `adapter_test.go` — request construction and in-process execution (`adapter.go`), including the client-address peer, plus result normalization and error shaping (`result.go`).
-- `validation_test.go` — argument validation against input schemas.
-- `service_test.go` — the origin-header check, the stateless `2026-07-28`
-  flow (`server/discover`, `tools/list`, `tools/call` with MCP headers), the
-  request body limit, client-address forwarding through the in-process hop,
-  plus the legacy end-to-end MCP protocol (`initialize`, `tools/list`,
-  `tools/call`) confirming object-shaped `structuredContent`.
+> Moved to [`.archcore/mcp/extending-server.guide.md`](../../.archcore/mcp/extending-server.guide.md).
 
 ## Design notes
 
-- **Two-layer input validation.** `validateToolArguments` runs a hand-rolled
-  structural check (`validateSchemaValue`) and then the `google/jsonschema-go`
-  validator. The first yields friendly messages; the second is the
-  spec-complete backstop.
-- **Embedded vs. file load.** Production reads the spec from
-  `proto.OpenAPIYAML()` (`loadMCPServiceOpenAPISpec`). The path-based
-  `loadOpenAPISpec` in `openapi.go` exists for tests.
-- **Tools only.** The server advertises no prompts or resources in this version.
+> Moved to [`.archcore/mcp/extending-server.guide.md`](../../.archcore/mcp/extending-server.guide.md).
