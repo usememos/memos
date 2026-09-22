@@ -141,6 +141,7 @@
     "no-language-feedback": "Nem található a nyelv? Visszajelzés küldése"
   },
   "editor": {
+    "suggestions": "Javaslatok",
     "add-your-comment-here": "Írd ide a megjegyzésed...",
     "any-thoughts": "Bármi ami a fejedben jár...",
     "exit-focus-mode": "Kilépés a fókusz módból",

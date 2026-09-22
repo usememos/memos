@@ -2,6 +2,10 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import Home from "@/pages/Home";
 
+vi.mock("@/hooks/useMemoSuggestions", () => ({
+  useMemoSuggestions: () => [{ id: "tag:work" }],
+}));
+
 const state = vi.hoisted(() => ({
   selectedSpaceName: undefined as string | undefined,
   editorProps: undefined as Record<string, unknown> | undefined,
@@ -85,6 +89,7 @@ describe("<Home>", () => {
     expect(state.listProps).toMatchObject({ contextFilter: undefined });
     expect(state.editorProps).toMatchObject({ cacheKey: "home-memo-editor", defaultSpace: undefined });
     expect(state.editorProps?.autoFocus).toEqual(expect.any(Function));
+    expect(state.editorProps?.suggestions).toEqual([{ id: "tag:work" }]);
   });
 
   it("filters the feed and sets new memo placement to the selected Space", () => {

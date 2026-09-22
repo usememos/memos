@@ -9,6 +9,7 @@ import { InstanceSetting_Key } from "@/types/proto/api/v1/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString } from "@/utils/memo";
 import { AudioRecorderPanel, EditorContent, EditorMetadata, FocusModeOverlay, TimestampPopover } from "./components";
+import { EditorSuggestions } from "./components/EditorSuggestions";
 import { FOCUS_MODE_STYLES, FORMATTING_TOOLBAR_STORAGE_KEY } from "./constants";
 import type { EditorFileOrigin } from "./Editor/extensions";
 import {
@@ -42,6 +43,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   cacheKey,
   memo,
   parentMemoName,
+  suggestions = [],
   defaultSpace,
   defaultLocation,
   autoFocus,
@@ -388,6 +390,9 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
             onInsertAttachments={inlineImageUpload.insertRemoteImages}
             onInsertLocalFiles={inlineImageUpload.insertLocalImages}
           />
+          {!memo && !parentMemoName && isInitialized && suggestions.length > 0 && (
+            <EditorSuggestions suggestions={suggestions} controllerRef={editorRef} space={editorSpace} />
+          )}
           <EditorToolbar
             onSave={handleSave}
             onCancel={onCancel ? handleCancel : undefined}

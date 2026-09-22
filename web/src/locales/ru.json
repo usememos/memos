@@ -141,6 +141,7 @@
     "no-language-feedback": "Язык не найден? Отправить отзыв"
   },
   "editor": {
+    "suggestions": "Предложения",
     "add-your-comment-here": "Напишите свой комментарий...",
     "any-thoughts": "Напишите что-нибудь...",
     "exit-focus-mode": "Выйти из режима фокуса",

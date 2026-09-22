@@ -141,6 +141,7 @@
     "no-language-feedback": "Jazyk nenalezen? Odeslat zpětnou vazbu"
   },
   "editor": {
+    "suggestions": "Návrhy",
     "add-your-comment-here": "Přidejte sem svůj komentář...",
     "any-thoughts": "Jakékoli myšlenky...",
     "exit-focus-mode": "Ukončit režim soustředění",

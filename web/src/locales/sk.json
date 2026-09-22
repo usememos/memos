@@ -179,6 +179,7 @@
     "no-language-feedback": "Jazyk sa nenašiel? Odoslať spätnú väzbu"
   },
   "editor": {
+    "suggestions": "Návrhy",
     "add-your-comment-here": "Tu pridajte svoj komentár...",
     "any-thoughts": "Akékoľvek myšlienky...",
     "exit-focus-mode": "Ukončite režim zaostrenia",

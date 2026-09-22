@@ -10,6 +10,7 @@ import { NewMemoProvider } from "@/contexts/NewMemoContext";
 import { useSpaceContext } from "@/contexts/SpaceContext";
 import { useMemoFilters, useMemoSorting } from "@/hooks";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { useMemoSuggestions } from "@/hooks/useMemoSuggestions";
 import { spaceScopedCacheKey } from "@/lib/resource-names";
 import { State } from "@/types/proto/api/v1/common_pb";
 import { Memo } from "@/types/proto/api/v1/memo_service_pb";
@@ -17,6 +18,7 @@ import { useTranslate } from "@/utils/i18n";
 
 const Home = () => {
   const user = useCurrentUser();
+  const suggestions = useMemoSuggestions();
   const t = useTranslate();
   const { isUserSettingsInitialized } = useAuth();
   const { claimHomeAutoFocus } = useGlobalMemoEditor();
@@ -61,6 +63,7 @@ const Home = () => {
                 placeholder={t("editor.any-thoughts")}
                 defaultCreateTime={defaultCreateTime}
                 defaultSpace={selectedSpaceName}
+                suggestions={suggestions}
               />
             );
           }}

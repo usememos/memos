@@ -141,6 +141,7 @@
     "no-language-feedback": "Taal niet gevonden? Geef feedback"
   },
   "editor": {
+    "suggestions": "Suggesties",
     "add-your-comment-here": "Voeg hier je opmerking toe…",
     "any-thoughts": "Enkele gedachten…",
     "exit-focus-mode": "Focusmodus afsluiten",

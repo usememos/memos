@@ -212,6 +212,7 @@
     "no-language-feedback": "לא מצאתם את השפה? שלחו משוב"
   },
   "editor": {
+    "suggestions": "הצעות",
     "add-your-comment-here": "הוסיפו את התגובה שלכם כאן...",
     "any-thoughts": "יש מחשבות...",
     "exit-focus-mode": "יציאה ממצב מיקוד",

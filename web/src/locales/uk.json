@@ -141,6 +141,7 @@
     "no-language-feedback": "Мова не знайдена? Надіслати відгук"
   },
   "editor": {
+    "suggestions": "Пропозиції",
     "add-your-comment-here": "Додайте свій коментар тут...",
     "any-thoughts": "Якісь думки...",
     "exit-focus-mode": "Вийти з режиму фокусування",

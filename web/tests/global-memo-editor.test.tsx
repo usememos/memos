@@ -6,6 +6,10 @@ import { GlobalMemoEditorProvider, useGlobalMemoEditor } from "@/contexts/Global
 
 const DIALOG = { name: "editor.new-memo" };
 
+vi.mock("@/hooks/useMemoSuggestions", () => ({
+  useMemoSuggestions: () => [{ id: "tag:work" }],
+}));
+
 const mocks = vi.hoisted(() => ({
   currentUser: { name: "users/test" } as { name: string } | undefined,
   isUserSettingsInitialized: true,
@@ -197,6 +201,7 @@ describe("GlobalMemoEditorProvider", () => {
     expect(mocks.editorProps).toMatchObject({
       autoFocus: true,
       cacheKey: "global-memo-editor",
+      suggestions: [{ id: "tag:work" }],
       onFocusModeExit: expect.any(Function),
     });
     await waitFor(() => expect(dialog).toContainElement(document.activeElement as HTMLElement | null));

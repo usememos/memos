@@ -141,6 +141,7 @@
     "no-language-feedback": "No s'ha trobat l'idioma? Envieu comentaris"
   },
   "editor": {
+    "suggestions": "Suggeriments",
     "add-your-comment-here": "Afegeix el teu comentari aquí...",
     "any-thoughts": "Alguna idea...",
     "exit-focus-mode": "Surt del mode focus",

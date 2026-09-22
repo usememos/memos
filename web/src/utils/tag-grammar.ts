@@ -224,3 +224,9 @@ export function findTagMatches(source: string, from = 0, limit = source.length):
 
   return matches;
 }
+
+/** Whether `value` written as `#value` scans as exactly one complete tag with nothing left over. */
+export function isCompleteTagValue(value: string): boolean {
+  const match = scanTagAt(`#${value}`, 0);
+  return match?.value === value && match.to === value.length + 1;
+}

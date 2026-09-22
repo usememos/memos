@@ -107,6 +107,11 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
     case "RESET":
       return createInitialState();
 
+    case "ACCEPT_SUGGESTION":
+      return state.acceptedSuggestionIds.includes(action.payload)
+        ? state
+        : { ...state, acceptedSuggestionIds: [...state.acceptedSuggestionIds, action.payload] };
+
     default:
       return state;
   }
