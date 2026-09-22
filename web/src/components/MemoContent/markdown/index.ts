@@ -1,5 +1,6 @@
 export { AnchorLink } from "./AnchorLink";
 export { Blockquote } from "./Blockquote";
+export { Details, Summary } from "./Details";
 export { Heading } from "./Heading";
 export { HorizontalRule } from "./HorizontalRule";
 export { Image } from "./Image";

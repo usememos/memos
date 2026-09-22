@@ -11,7 +11,20 @@ import { CodeBlock } from "./CodeBlock";
 import { memoUrlTransform } from "./constants";
 import { MarkdownRenderContext, rootMarkdownRenderContext } from "./MarkdownRenderContext";
 import { Mention } from "./Mention";
-import { AnchorLink, Blockquote, Heading, HorizontalRule, Image, InlineCode, Link, List, ListItem, Paragraph } from "./markdown";
+import {
+  AnchorLink,
+  Blockquote,
+  Details,
+  Heading,
+  HorizontalRule,
+  Image,
+  InlineCode,
+  Link,
+  List,
+  ListItem,
+  Paragraph,
+  Summary,
+} from "./markdown";
 import { hasMathSyntax } from "./math";
 import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from "./Table";
 import { Tag } from "./Tag";
@@ -119,6 +132,8 @@ export const MemoMarkdownRendererCore = ({
     ),
     p: ({ children, ...props }) => <Paragraph {...props}>{children}</Paragraph>,
     blockquote: ({ children, ...props }) => <Blockquote {...props}>{children}</Blockquote>,
+    details: Details,
+    summary: Summary,
     hr: (props) => <HorizontalRule {...props} />,
     ul: ({ children, ...props }) => <List {...props}>{children}</List>,
     ol: ({ children, ...props }) => (
