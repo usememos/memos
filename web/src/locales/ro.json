@@ -179,6 +179,7 @@
     "no-language-feedback": "Limba nu a fost găsită? Trimiteți feedback"
   },
   "editor": {
+    "suggestions": "Sugestii",
     "add-your-comment-here": "Adauga comentariul tau aici...",
     "any-thoughts": "Orice gânduri...",
     "exit-focus-mode": "Ieșiți din modul de focalizare",

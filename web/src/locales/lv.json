@@ -179,6 +179,7 @@
     "no-language-feedback": "Valoda nav atrasta? Iesniedziet atsauksmes"
   },
   "editor": {
+    "suggestions": "Ieteikumi",
     "add-your-comment-here": "Pievienojiet savu komentāru šeit...",
     "any-thoughts": "Jebkuras domas...",
     "exit-focus-mode": "Iziet no fokusa režīma",

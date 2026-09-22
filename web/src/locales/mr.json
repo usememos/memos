@@ -141,6 +141,7 @@
     "no-language-feedback": "भाषा सापडली नाही? अभिप्राय सबमिट करा"
   },
   "editor": {
+    "suggestions": "सूचना",
     "add-your-comment-here": "तुमची टिप्पणी येथे जो़डा",
     "any-thoughts": "आपले विचार...",
     "exit-focus-mode": "फोकस मोड सोडा",

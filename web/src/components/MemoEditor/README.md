@@ -105,6 +105,30 @@ The app formatting keymap sits ahead of CodeMirror's generic `defaultKeymap`: `M
 
 Pure TypeScript functions containing business logic. No React hooks, easy to test.
 
+### Suggestions
+
+Hosts of a new top-level memo (Home, the global composer) pass `useMemoSuggestions()`
+into the `suggestions` prop; edits and comments omit the bar. `lib/memo-suggestions.ts`
+merges typed candidates from providers and keeps the strongest source per id
+(selection, then search, then the selected View). `lib/suggestion-expression.ts` is a
+small Boolean CEL reader shared by the providers; unsupported syntax never falls back
+to scanning free text.
+
+- Tags: explicit tag conditions and selected tags. `insertTag()` is one isolated undo
+  step at the caret that keeps selected text and honors the current Markdown context.
+- Checklist: task-list conditions, including the built-in Tasks View; a negative
+  task-list or incomplete-task condition suppresses it.
+- Visibility: exactly one explicit audience across filters and View, otherwise nothing.
+  Space visibility also requires actual Space placement.
+
+`EditorSuggestions` hides until the draft has text, drops suggestions already satisfied
+(via the Markdown-aware `getTags()` / `hasChecklist()`, so code examples do not count)
+or already accepted, and shows at most three across kinds. Acceptance history lives in
+the editor store so Undo or reverting a choice does not immediately resuggest it, and it
+clears with the draft on reset; nothing is persisted with the memo. `SuggestionsBar` is
+payload-agnostic; a new kind extends the `MemoSuggestion` union and its
+eligibility/application in `EditorSuggestions`.
+
 ### Presentation: inline vs hosted
 
 Every instance is one of two things, and `onFocusModeExit` is the switch:

@@ -141,6 +141,7 @@
     "no-language-feedback": "Finner du ikke språket? Send tilbakemelding"
   },
   "editor": {
+    "suggestions": "Forslag",
     "add-your-comment-here": "Legg til din kommentar her...",
     "any-thoughts": "Noen tanker...",
     "exit-focus-mode": "Avslutt fokusmodus",

@@ -1,3 +1,4 @@
+import type { MemoSuggestion } from "@/lib/memo-suggestions";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import type { Location, Memo, Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import type { EditorFileOrigin } from "../Editor/extensions";
@@ -11,6 +12,8 @@ export interface MemoEditorProps {
   /** Existing memo to edit. When provided, the editor initializes from it without fetching. */
   memo?: Memo;
   parentMemoName?: string;
+  /** Context-derived suggestions for a new top-level memo. */
+  suggestions?: readonly MemoSuggestion[];
   /** Assigns a newly created top-level memo to this Space. Ignored for edits and comments. */
   defaultSpace?: string;
   /** Seeds a new memo once; restored draft metadata takes precedence. */

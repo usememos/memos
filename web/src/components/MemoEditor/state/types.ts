@@ -36,6 +36,8 @@ export interface EditorState {
   /** Whether an audio recording is in flight; gates save. The recorder's full
    *  state lives in useAudioRecorder — only this shared bit reaches the store. */
   recorderBusy: boolean;
+  /** Draft-local acceptance history, retained across Undo but cleared on reset. */
+  acceptedSuggestionIds: string[];
 }
 
 export type EditorAction =
@@ -51,6 +53,7 @@ export type EditorAction =
   | { type: "SET_TIMESTAMPS"; payload: Partial<EditorState["timestamps"]> }
   | { type: "SET_RECORDER_BUSY"; payload: boolean }
   | { type: "SET_JUST_SAVED"; payload: boolean }
+  | { type: "ACCEPT_SUGGESTION"; payload: string }
   | { type: "RESET" };
 
 // Module-private template for createInitialState.
@@ -79,6 +82,7 @@ const defaultState: EditorState = {
   },
   localFiles: [],
   recorderBusy: false,
+  acceptedSuggestionIds: [],
 };
 
 /** Fresh initial state for a mounting editor. */

@@ -179,6 +179,7 @@
     "no-language-feedback": "Keelt ei leitud? Esitage tagasisidet"
   },
   "editor": {
+    "suggestions": "Soovitused",
     "add-your-comment-here": "Lisa oma kommentaar siia...",
     "any-thoughts": "Mingid mõtted...",
     "exit-focus-mode": "Välju teravustamisrežiimist",

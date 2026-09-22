@@ -141,6 +141,7 @@
     "no-language-feedback": "ენა ვერ მოიძებნა? გამოხმაურება"
   },
   "editor": {
+    "suggestions": "შემოთავაზებები",
     "add-your-comment-here": "დაამატეთ თქვენი კომენტარი აქ...",
     "any-thoughts": "რამე იდეები...",
     "exit-focus-mode": "ფოკუსის რეჟიმიდან გასვლა",

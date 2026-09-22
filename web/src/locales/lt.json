@@ -179,6 +179,7 @@
     "no-language-feedback": "Kalba nerasta? Pateikite atsiliepimą"
   },
   "editor": {
+    "suggestions": "Pasiūlymai",
     "add-your-comment-here": "Pridėkite savo komentarą čia...",
     "any-thoughts": "Bet kokios mintys...",
     "exit-focus-mode": "Išeikite iš fokusavimo režimo",

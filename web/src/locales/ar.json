@@ -141,6 +141,7 @@
     "no-language-feedback": "لم يتم العثور على اللغة؟ إرسال ردود الفعل"
   },
   "editor": {
+    "suggestions": "اقتراحات",
     "add-your-comment-here": "أضف تعليقك هنا...",
     "any-thoughts": "أية أفكار...",
     "exit-focus-mode": "الخروج من وضع التركيز",

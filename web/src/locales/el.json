@@ -179,6 +179,7 @@
     "no-language-feedback": "Δεν βρέθηκε η γλώσσα; Υποβολή σχολίων"
   },
   "editor": {
+    "suggestions": "Προτάσεις",
     "add-your-comment-here": "Προσθέστε το σχόλιό σας εδώ...",
     "any-thoughts": "Οποιαδήποτε σκέψη...",
     "exit-focus-mode": "Έξοδος από τη λειτουργία εστίασης",

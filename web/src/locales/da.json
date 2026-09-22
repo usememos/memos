@@ -179,6 +179,7 @@
     "no-language-feedback": "Sprog ikke fundet? Send feedback"
   },
   "editor": {
+    "suggestions": "Forslag",
     "add-your-comment-here": "Tilføj din kommentar her...",
     "any-thoughts": "Nogen tanker...",
     "exit-focus-mode": "Afslut fokustilstand",

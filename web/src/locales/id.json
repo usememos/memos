@@ -141,6 +141,7 @@
     "no-language-feedback": "Bahasa tidak ditemukan? Kirim masukan"
   },
   "editor": {
+    "suggestions": "Saran",
     "add-your-comment-here": "Tambahkan komentar Anda di sini...",
     "any-thoughts": "Punya pemikiran...",
     "exit-focus-mode": "Keluar dari Mode Fokus",

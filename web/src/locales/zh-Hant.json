@@ -219,6 +219,7 @@
     "no-language-feedback": "未找到語言？ 提交回饋"
   },
   "editor": {
+    "suggestions": "建議",
     "add-your-comment-here": "在這裡添加您的評論...",
     "any-thoughts": "任何想法...",
     "exit-focus-mode": "退出專注模式",

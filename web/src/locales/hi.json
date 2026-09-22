@@ -141,6 +141,7 @@
     "no-language-feedback": "भाषा नहीं मिली? प्रतिक्रिया सबमिट करें"
   },
   "editor": {
+    "suggestions": "सुझाव",
     "add-your-comment-here": "अपनी टिप्पणी यहाँ जोड़ें...",
     "any-thoughts": "कोई विचार...",
     "exit-focus-mode": "फोकस मोड से बाहर निकलें",

@@ -171,6 +171,7 @@
     "no-language-feedback": "未找到语言？ 提交反馈"
   },
   "editor": {
+    "suggestions": "建议",
     "add-your-comment-here": "请输入您的评论...",
     "any-thoughts": "此刻的想法...",
     "exit-focus-mode": "退出聚焦模式",

@@ -88,20 +88,24 @@ export const buildMemoFilter = ({
   return combineCELFilters(...conditions);
 };
 
+/** CEL filter of the View selected in the sidebar: the built-in Tasks filter or the saved View's stored filter. */
+export const useSelectedMemoViewFilter = (): string | undefined => {
+  const currentUser = useCurrentUser();
+  const { memoView } = useMemoFilterContext();
+  const { data: memoViews = [] } = useMemoViews(currentUser?.name);
+  return useMemo(() => {
+    if (memoView === BUILTIN_TASKS_VIEW_ID) return BUILTIN_TASKS_VIEW_FILTER;
+    return memoViews.find((view) => getMemoViewId(view.name) === memoView)?.filter;
+  }, [memoView, memoViews]);
+};
+
 export const useMemoFilters = (options: UseMemoFiltersOptions = {}): string | undefined => {
   const { creatorName, includeMemoViews = false, includePinned = false, visibilities } = options;
 
-  const currentUser = useCurrentUser();
-  const { data: memoViews = [] } = useMemoViews(includeMemoViews ? currentUser?.name : undefined);
   const { filters, memoView: currentMemoView } = useMemoFilterContext();
+  const selectedMemoViewFilter = useSelectedMemoViewFilter();
   // The sidebar calendar buckets days by this basis, so a picked day must select on it too.
   const { timeBasis } = useView();
-
-  // Get the selected memo view if needed.
-  const selectedMemoViewFilter = useMemo(() => {
-    if (!includeMemoViews || currentMemoView === BUILTIN_TASKS_VIEW_ID) return undefined;
-    return memoViews.find((memoView) => getMemoViewId(memoView.name) === currentMemoView)?.filter;
-  }, [includeMemoViews, currentMemoView, memoViews]);
 
   return useMemo(
     () =>
@@ -110,7 +114,7 @@ export const useMemoFilters = (options: UseMemoFiltersOptions = {}): string | un
         currentMemoView: includeMemoViews ? currentMemoView : undefined,
         filters,
         includePinned,
-        selectedMemoViewFilter,
+        selectedMemoViewFilter: includeMemoViews ? selectedMemoViewFilter : undefined,
         visibilities,
         timeBasis,
       }),

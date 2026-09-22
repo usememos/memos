@@ -141,6 +141,7 @@
     "no-language-feedback": "Không tìm thấy ngôn ngữ? Gửi phản hồi"
   },
   "editor": {
+    "suggestions": "Gợi ý",
     "add-your-comment-here": "Thêm bình luận của bạn tại đây...",
     "any-thoughts": "Có suy nghĩ gì...",
     "exit-focus-mode": "Thoát chế độ tập trung",

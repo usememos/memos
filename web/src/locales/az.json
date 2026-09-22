@@ -237,6 +237,7 @@
     "no-language-feedback": "Dil tapılmadı? Rəy göndərin"
   },
   "editor": {
+    "suggestions": "Təkliflər",
     "add-your-comment-here": "Şərhinizi bura yazın...",
     "any-thoughts": "Ağlınıza nə gəlir...",
     "exit-focus-mode": "Fokus rejimindən çıx",
