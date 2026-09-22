@@ -260,6 +260,7 @@
     "disconnected": "Ажурирања уживо нису доступна"
   },
   "memo": {
+    "pinned": "Закачено",
     "click-to-show-sensitive-content": "Кликните да бисте приказали осетљив садржај",
     "comment": {
       "self": "Коментари",

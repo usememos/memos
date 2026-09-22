@@ -51,10 +51,6 @@ vi.mock("@/i18n", () => ({
   default: { language: "en" },
 }));
 
-vi.mock("@/components/MemoView/hooks", () => ({
-  useMemoActions: () => ({ unpinMemo: vi.fn() }),
-}));
-
 vi.mock("@/components/MemoView/MemoViewContext", () => ({
   useMemoViewContext: () => ({
     memo: { name: "memos/123", visibility: 1, pinned: false, space: "spaces/product" },

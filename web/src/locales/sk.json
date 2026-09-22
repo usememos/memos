@@ -260,6 +260,7 @@
     "disconnected": "Aktuálne aktualizácie nie sú k dispozícii"
   },
   "memo": {
+    "pinned": "Pripnuté",
     "click-to-show-sensitive-content": "Kliknutím zobrazíte citlivý obsah",
     "comment": {
       "self": "Komentáre",

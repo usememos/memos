@@ -222,6 +222,7 @@
     "disconnected": "Aggiornamenti in tempo reale non disponibili"
   },
   "memo": {
+    "pinned": "Fissato",
     "click-to-show-sensitive-content": "Clicca per mostrare contenuti sensibili",
     "comment": {
       "self": "Commenti",

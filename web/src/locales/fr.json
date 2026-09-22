@@ -222,6 +222,7 @@
     "disconnected": "Mises à jour en direct indisponibles"
   },
   "memo": {
+    "pinned": "Épinglé",
     "click-to-show-sensitive-content": "Cliquez pour afficher le contenu sensible",
     "comment": {
       "self": "Commentaires",

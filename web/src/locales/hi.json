@@ -217,6 +217,7 @@
     "space-invitation-open": "स्पेस खोलें"
   },
   "memo": {
+    "pinned": "पिन किया गया",
     "click-to-show-sensitive-content": "संवेदनशील सामग्री दिखाने के लिए क्लिक करें",
     "comment": {
       "self": "टिप्पणियाँ",

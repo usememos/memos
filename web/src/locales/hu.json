@@ -222,6 +222,7 @@
     "disconnected": "Élő frissítések nem érhetők el"
   },
   "memo": {
+    "pinned": "Rögzítve",
     "click-to-show-sensitive-content": "Kattints a kényes tartalom megjelenítéséhez",
     "comment": {
       "self": "Hozzászólások",

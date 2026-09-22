@@ -25,7 +25,6 @@ export interface MemoHeaderProps {
   timeDisplay?: MemoTimeDisplay;
   showCreator?: boolean;
   showVisibility?: boolean;
-  showPinned?: boolean;
   showSpace?: boolean;
 }
 

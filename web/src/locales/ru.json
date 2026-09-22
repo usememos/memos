@@ -222,6 +222,7 @@
     "disconnected": "Оперативные обновления недоступны."
   },
   "memo": {
+    "pinned": "Закреплено",
     "click-to-show-sensitive-content": "Нажмите, чтобы посмотреть",
     "comment": {
       "self": "Комментарии",

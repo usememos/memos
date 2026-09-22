@@ -293,6 +293,7 @@
     "disconnected": "עדכונים חיים אינם זמינים"
   },
   "memo": {
+    "pinned": "נעוץ",
     "click-to-show-sensitive-content": "לחצו כדי להציג תוכן רגיש",
     "comment": {
       "self": "תגובות",

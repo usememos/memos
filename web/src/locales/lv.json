@@ -260,6 +260,7 @@
     "disconnected": "Tiešraides atjauninājumi nav pieejami"
   },
   "memo": {
+    "pinned": "Piesprausts",
     "click-to-show-sensitive-content": "Noklikšķiniet, lai parādītu sensitīvu saturu",
     "comment": {
       "self": "komentāri",

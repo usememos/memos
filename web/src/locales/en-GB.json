@@ -222,6 +222,7 @@
     "disconnected": "Live updates unavailable"
   },
   "memo": {
+    "pinned": "Pinned",
     "click-to-show-sensitive-content": "Click to show sensitive content",
     "comment": {
       "self": "Comments",

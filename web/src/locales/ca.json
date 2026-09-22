@@ -222,6 +222,7 @@
     "disconnected": "Actualitzacions en directe no disponibles"
   },
   "memo": {
+    "pinned": "Fixat",
     "click-to-show-sensitive-content": "Fes clic per mostrar contingut sensible",
     "comment": {
       "self": "Comentaris",

@@ -217,6 +217,7 @@
     "space-invitation-open": "เปิดพื้นที่"
   },
   "memo": {
+    "pinned": "ปักหมุดแล้ว",
     "click-to-show-sensitive-content": "คลิกเพื่อแสดงเนื้อหาไม่เหมาะสม (NSFW)",
     "comment": {
       "self": "ความคิดเห็น",

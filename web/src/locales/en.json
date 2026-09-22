@@ -318,6 +318,7 @@
     "disconnected": "Live updates unavailable"
   },
   "memo": {
+    "pinned": "Pinned",
     "parent-loading": "Loading original memo…",
     "parent-load-error": "Couldn’t load the original memo.",
     "parent-unavailable": "Original memo unavailable",

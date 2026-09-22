@@ -222,6 +222,7 @@
     "disconnected": "Оновлення в реальному часі недоступні"
   },
   "memo": {
+    "pinned": "Закріплено",
     "click-to-show-sensitive-content": "Натисніть, щоб показати NSFW-контент",
     "comment": {
       "self": "Коментарі",

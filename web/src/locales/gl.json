@@ -222,6 +222,7 @@
     "disconnected": "As actualizacións en directo non están dispoñibles"
   },
   "memo": {
+    "pinned": "Fixado",
     "click-to-show-sensitive-content": "Preme para mostrar contido NSFW",
     "comment": {
       "self": "Comentarios",

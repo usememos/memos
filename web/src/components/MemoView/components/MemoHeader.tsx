@@ -1,10 +1,9 @@
-import { BookmarkIcon } from "lucide-react";
 import { useCallback } from "react";
 import { Link } from "react-router-dom";
 import RelativeTime from "@/components/RelativeTime";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { FOCUS_VISIBLE_OUTLINE_CLASSES } from "@/components/ui/focus";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useNewMemo } from "@/contexts/NewMemoContext";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import i18n from "@/i18n";
@@ -18,7 +17,6 @@ import { ReactionSelector } from "../../MemoReactionListView";
 import UserAvatar from "../../UserAvatar";
 import VisibilityIcon from "../../VisibilityIcon";
 import { MEMO_TIME_CONTROL_CLASSES } from "../constants";
-import { useMemoActions } from "../hooks";
 import { useMemoViewContext, useMemoViewDerived } from "../MemoViewContext";
 import { createMemoNavigationState } from "../navigation";
 import type { MemoHeaderProps } from "../types";
@@ -27,7 +25,7 @@ import MemoSpaceBadge from "./MemoSpaceBadge";
 /** The card's trailing actions are the kit's quiet 24px squares, whether or not they are kit buttons. */
 const MEMO_HEADER_ACTION_CLASSES = cn(buttonVariants({ variant: "quiet", size: "icon-sm" }));
 
-const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showCreator, showVisibility, showPinned, showSpace }) => {
+const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showCreator, showVisibility, showSpace }) => {
   const t = useTranslate();
 
   const { memo, creator, currentUser, parentPage, isArchived, readonly, openEditor } = useMemoViewContext();
@@ -39,8 +37,6 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showC
   const handleGotoMemoDetailPage = useCallback(() => {
     navigateTo(`/${memo.name}`, { state: createMemoNavigationState(parentPage) });
   }, [memo.name, parentPage, navigateTo]);
-
-  const { unpinMemo } = useMemoActions(memo);
 
   const timeValue = isArchived ? (
     memoDisplayTime?.toLocaleString(i18n.language)
@@ -98,24 +94,6 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showC
             </TooltipTrigger>
             <TooltipContent>{visibilityOption && t(visibilityOption.labelKey)}</TooltipContent>
           </Tooltip>
-        )}
-
-        {showPinned && memo.pinned && (
-          <TooltipProvider>
-            <Tooltip>
-              {/* The pinned mark keeps its primary ink; that custom look lives on the raw trigger, not a kit button. */}
-              <TooltipTrigger
-                aria-label={t("common.unpin")}
-                className={cn(MEMO_HEADER_ACTION_CLASSES, "text-primary hover:text-primary")}
-                onClick={unpinMemo}
-              >
-                <BookmarkIcon className="size-4" strokeWidth={1.8} />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{t("common.unpin")}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
         )}
 
         <MemoActionMenu memo={memo} parentPage={parentPage} readonly={readonly} onEdit={openEditor} />

@@ -217,6 +217,7 @@
     "space-invitation-open": "Không gian trống"
   },
   "memo": {
+    "pinned": "Đã ghim",
     "click-to-show-sensitive-content": "Nhấp để hiện nội dung nhạy cảm",
     "comment": {
       "self": "Bình luận",

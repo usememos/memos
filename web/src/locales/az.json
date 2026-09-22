@@ -318,6 +318,7 @@
     "disconnected": "Canlı yeniləmələr əlçatan deyil"
   },
   "memo": {
+    "pinned": "Sabitlənib",
     "parent-loading": "İlkin memo yüklənir…",
     "parent-load-error": "İlkin memonu yükləmək mümkün olmadı.",
     "parent-unavailable": "İlkin memo əlçatan deyil",

@@ -260,6 +260,7 @@
     "disconnected": "Tiesioginiai naujinimai nepasiekiami"
   },
   "memo": {
+    "pinned": "Prisegta",
     "click-to-show-sensitive-content": "Spustelėkite, kad būtų rodomas jautrus turinys",
     "comment": {
       "self": "Komentarai",
