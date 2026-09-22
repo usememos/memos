@@ -260,6 +260,7 @@
     "disconnected": "Liveopdateringer er ikke tilgængelige"
   },
   "memo": {
+    "pinned": "Fastgjort",
     "click-to-show-sensitive-content": "Klik for at vise følsomt indhold",
     "comment": {
       "self": "Kommentarer",

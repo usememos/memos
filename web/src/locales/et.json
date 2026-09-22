@@ -260,6 +260,7 @@
     "disconnected": "Reaalajas värskendused pole saadaval"
   },
   "memo": {
+    "pinned": "Kinnitatud",
     "click-to-show-sensitive-content": "Tundliku sisu kuvamiseks klõpsake",
     "comment": {
       "self": "Kommentaarid",

@@ -222,6 +222,7 @@
     "disconnected": "Atualizações ao vivo indisponíveis"
   },
   "memo": {
+    "pinned": "Afixado",
     "click-to-show-sensitive-content": "Clique para mostrar conteúdo NSFW",
     "comment": {
       "self": "Comentários",

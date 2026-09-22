@@ -222,6 +222,7 @@
     "disconnected": "Live-updates niet beschikbaar"
   },
   "memo": {
+    "pinned": "Vastgezet",
     "click-to-show-sensitive-content": "Klik om NSFW-inhoud te tonen",
     "comment": {
       "self": "Opmerkingen",

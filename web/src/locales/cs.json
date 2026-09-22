@@ -222,6 +222,7 @@
     "disconnected": "Živé aktualizace nejsou k dispozici"
   },
   "memo": {
+    "pinned": "Připnuto",
     "click-to-show-sensitive-content": "Klikněte pro zobrazení citlivého obsahu",
     "comment": {
       "self": "Komentáře",

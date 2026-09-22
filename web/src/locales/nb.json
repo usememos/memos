@@ -222,6 +222,7 @@
     "disconnected": "Liveoppdateringer er ikke tilgjengelige"
   },
   "memo": {
+    "pinned": "Festet",
     "click-to-show-sensitive-content": "Klikk for å vise NSFW-innhold",
     "comment": {
       "self": "Kommentarer",

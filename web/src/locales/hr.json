@@ -222,6 +222,7 @@
     "disconnected": "Ažuriranja uživo nisu dostupna"
   },
   "memo": {
+    "pinned": "Prikvačeno",
     "click-to-show-sensitive-content": "Klikni za prikaz osjetljivog sadržaja",
     "comment": {
       "self": "Komentari",

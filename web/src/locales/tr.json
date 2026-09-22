@@ -247,6 +247,7 @@
     "disconnected": "Canlı güncellemeler kullanılamıyor"
   },
   "memo": {
+    "pinned": "Sabitlendi",
     "parent-loading": "Özgün not yükleniyor…",
     "parent-load-error": "Özgün not yüklenemedi.",
     "parent-unavailable": "Özgün not kullanılamıyor",

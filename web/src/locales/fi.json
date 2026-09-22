@@ -260,6 +260,7 @@
     "disconnected": "Live-päivitykset eivät ole saatavilla"
   },
   "memo": {
+    "pinned": "Kiinnitetty",
     "click-to-show-sensitive-content": "Napsauta näyttääksesi arkaluontoisen sisällön",
     "comment": {
       "self": "Kommentit",

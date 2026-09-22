@@ -222,6 +222,7 @@
     "disconnected": "Live-Updates nicht verfügbar"
   },
   "memo": {
+    "pinned": "Angeheftet",
     "click-to-show-sensitive-content": "Klicken, um sensible Inhalte anzuzeigen",
     "comment": {
       "self": "Kommentare",

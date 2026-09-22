@@ -300,6 +300,7 @@
     "disconnected": "即時更新無法使用"
   },
   "memo": {
+    "pinned": "已置頂",
     "click-to-show-sensitive-content": "點擊顯示敏感內容",
     "comment": {
       "self": "評論",

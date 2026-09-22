@@ -222,6 +222,7 @@
     "disconnected": "პირდაპირი განახლებები მიუწვდომელია"
   },
   "memo": {
+    "pinned": "მიმაგრებულია",
     "click-to-show-sensitive-content": "დააწკაპუნეთ NSFW კონტენტის საჩვენებლად",
     "comment": {
       "self": "კომენტარები",

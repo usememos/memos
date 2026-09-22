@@ -217,6 +217,7 @@
     "space-invitation-open": "Espaço aberto"
   },
   "memo": {
+    "pinned": "Fixado",
     "click-to-show-sensitive-content": "Mostrar conteúdo impróprio",
     "comment": {
       "self": "Comentários",

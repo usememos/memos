@@ -247,6 +247,7 @@
     "space-invitation-open": "打开空间"
   },
   "memo": {
+    "pinned": "已置顶",
     "back-to": "返回{{source}}",
     "click-to-show-sensitive-content": "点击显示敏感内容",
     "comment": {

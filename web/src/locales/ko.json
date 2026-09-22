@@ -217,6 +217,7 @@
     "space-invitation-open": "빈 공간"
   },
   "memo": {
+    "pinned": "고정됨",
     "click-to-show-sensitive-content": "숨겨진 콘텐츠 보기",
     "comment": {
       "self": "댓글",

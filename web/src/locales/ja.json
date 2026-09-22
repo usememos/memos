@@ -222,6 +222,7 @@
     "disconnected": "ライブアップデートは利用できません"
   },
   "memo": {
+    "pinned": "ピン留め済み",
     "click-to-show-sensitive-content": "クリックしてセンシティブな内容を表示",
     "comment": {
       "self": "コメント",

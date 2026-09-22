@@ -222,6 +222,7 @@
     "disconnected": "Posodobitve v živo niso na voljo"
   },
   "memo": {
+    "pinned": "Pripeto",
     "click-to-show-sensitive-content": "Kliknite za prikaz NSFW vsebine",
     "comment": {
       "self": "Komentarji",

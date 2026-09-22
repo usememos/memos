@@ -217,6 +217,7 @@
     "space-invitation-open": "مساحة متاحة"
   },
   "memo": {
+    "pinned": "مثبّت",
     "click-to-show-sensitive-content": "انقر لإظهار المحتوى الحساس",
     "comment": {
       "self": "التعليقات",
