@@ -7,7 +7,6 @@
   --popover-foreground: oklch(0.2671 0.0196 98.939);
   --primary: oklch(0.45 0.08 250);
   --primary-foreground: oklch(0.9818 0.0054 95.0986);
-  --pin-accent: var(--color-amber-400);
   --secondary: oklch(0.9245 0.0138 92.9892);
   --secondary-foreground: oklch(0.4334 0.0177 98.6048);
   --muted: oklch(0.9341 0.0153 90.239);
@@ -59,7 +58,6 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
-  --color-pin-accent: var(--pin-accent);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
