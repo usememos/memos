@@ -42,11 +42,11 @@ export const markdownStyles = {
   paragraph: "my-0 mb-2 leading-6",
   blockquote: "my-0 mb-2 border-s-4 border-primary/30 ps-3 text-muted-foreground italic",
   // Direct-child selectors keep each nested disclosure's indicator independent.
-  details: "my-0 mb-2 min-w-0 ps-6 [&[open]>summary]:mb-2 [&[open]>summary>svg]:rotate-90 [&>*:last-child]:mb-0",
+  details: "my-0 mb-2 min-w-0 ps-5 [&[open]>summary]:mb-1 [&[open]>summary>svg]:rotate-90 [&>*:last-child]:mb-0",
   summary:
-    "relative -ms-6 block cursor-pointer list-none rounded-sm py-1 ps-6 pe-1 font-medium leading-6 [overflow-wrap:anywhere] transition-colors hover:bg-muted/50 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring motion-reduce:transition-none [&::-webkit-details-marker]:hidden",
+    "relative -ms-5 block cursor-pointer list-none rounded-sm ps-5 pe-1 font-normal leading-6 [overflow-wrap:anywhere] transition-colors hover:bg-muted/50 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring motion-reduce:transition-none [&::-webkit-details-marker]:hidden",
   disclosureIcon:
-    "pointer-events-none absolute start-1 top-2 size-4 text-muted-foreground transition-transform duration-150 motion-reduce:transition-none rtl:rotate-180",
+    "pointer-events-none absolute start-0.5 top-1.25 size-3.5 text-muted-foreground transition-transform duration-150 motion-reduce:transition-none rtl:rotate-180",
   bulletList: "my-0 mb-2 list-outside ps-6 list-disc",
   orderedList: "my-0 mb-2 list-outside ps-6 list-decimal",
   listItem: "mt-0.5 leading-6",
