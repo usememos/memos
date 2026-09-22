@@ -30,67 +30,58 @@ func setSchemaVersion(ctx context.Context, t *testing.T, ts *store.Store, schema
 	require.Equal(t, schemaVersion, stored.SchemaVersion, "schema version should be persisted")
 }
 
-// TestMigrationRejectsDowngrade verifies a database written by a newer Memos is
-// refused rather than silently re-migrated. Starting an old binary against a
-// newer database is the most common way a rollback corrupts data.
-func TestMigrationRejectsDowngrade(t *testing.T) {
-	t.Parallel()
+// TestMigrationRejectsUnsupportedSchema verifies rejected startup leaves data
+// and settings unchanged, including an ACCESS setting that would otherwise be created.
+func TestMigrationRejectsUnsupportedSchema(t *testing.T) {
+	for _, tc := range []struct {
+		name, schema, message string
+		missingBasic          bool
+	}{
+		{name: "pre-v0.22", schema: "0.21.0", message: "First upgrade to v0.25.3"},
+		{name: "v0.22", schema: "0.22.0", message: "First upgrade to v0.31.0"},
+		{name: "v0.30", schema: "0.30.1", message: "First upgrade to v0.31.0"},
+		{name: "before-baseline", schema: "0.31.7", message: "First upgrade to v0.31.0"},
+		{name: "empty", schema: "", message: "First upgrade to v0.25.3"},
+		{name: "zero", schema: "0.0.0", message: "First upgrade to v0.25.3"},
+		{name: "missing-basic", missingBasic: true, message: "First upgrade to v0.25.3"},
+		{name: "invalid-month", schema: "26.13.1", message: "invalid database schema version"},
+		{name: "calver-newer", schema: "26.9.1", message: "cannot downgrade schema version"},
+		{name: "invalid", schema: "unknown", message: "invalid database schema version"},
+		{name: "incomplete", schema: "0.31", message: "invalid database schema version"},
+		{name: "prerelease", schema: "0.31.8-rc.1", message: "invalid database schema version"},
+		{name: "build-metadata", schema: "0.31.8+build", message: "invalid database schema version"},
+		{name: "newer", schema: "99.1.1", message: "cannot downgrade schema version"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			ctx := context.Background()
+			ts := NewTestingStore(ctx, t)
+			defer ts.Close()
+			user, err := createTestingHostUser(ctx, ts)
+			require.NoError(t, err)
+			memo, err := ts.CreateMemo(ctx, &store.Memo{
+				UID: "preserved-memo", CreatorID: user.ID, Content: "preserve on rejected startup", Visibility: store.Private,
+			})
+			require.NoError(t, err)
+			memo, err = ts.GetMemo(ctx, &store.FindMemo{UID: &memo.UID})
+			require.NoError(t, err)
+			if tc.missingBasic {
+				require.NoError(t, ts.DeleteInstanceSetting(ctx, &store.DeleteInstanceSetting{Name: "BASIC"}))
+			} else {
+				setSchemaVersion(ctx, t, ts, tc.schema)
+			}
+			require.NoError(t, ts.DeleteInstanceSetting(ctx, &store.DeleteInstanceSetting{Name: "ACCESS"}))
+			before, err := ts.GetDriver().ListInstanceSettings(ctx, &store.FindInstanceSetting{})
+			require.NoError(t, err)
 
-	ctx := context.Background()
-	ts := NewTestingStore(ctx, t)
+			require.ErrorContains(t, ts.Migrate(ctx), tc.message)
 
-	currentVersion, err := ts.GetCurrentSchemaVersion()
-	require.NoError(t, err)
-
-	// Pretend the database was written by a much newer release.
-	setSchemaVersion(ctx, t, ts, "99.0.0")
-
-	err = ts.Migrate(ctx)
-	require.Error(t, err, "migrating a newer database should fail")
-	require.Contains(t, err.Error(), "cannot downgrade schema version",
-		"error should explain the downgrade was refused")
-	require.Contains(t, err.Error(), currentVersion,
-		"error should name the version the binary supports")
-}
-
-// TestMigrationRejectsPreV022Installation verifies installations older than the
-// supported floor are refused with actionable upgrade instructions instead of
-// failing partway through a migration.
-func TestMigrationRejectsPreV022Installation(t *testing.T) {
-	t.Parallel()
-
-	ctx := context.Background()
-	ts := NewTestingStore(ctx, t)
-
-	// 0.21.x predates moving schema tracking from migration_history to system_setting.
-	setSchemaVersion(ctx, t, ts, "0.21.0")
-
-	err := ts.Migrate(ctx)
-	require.Error(t, err, "migrating a pre-0.22 installation should fail")
-	require.Contains(t, err.Error(), "too old to upgrade directly")
-	require.Contains(t, err.Error(), "0.25.3",
-		"error should name the intermediate version to upgrade through")
-}
-
-// TestMigrationAcceptsMinimumSupportedVersion pins the other side of the
-// supported-version boundary: 0.22.0 must clear the floor check that rejects
-// 0.21.x.
-//
-// This asserts only that the floor check passes, not that the whole migration
-// succeeds. The store here has a current schema relabelled as 0.22.0, so
-// replaying the 0.22-onward migrations against it legitimately fails on tables
-// that were since renamed. Verifying a real 0.22 replay needs a genuine 0.22
-// database, which is the container tier's job.
-func TestMigrationAcceptsMinimumSupportedVersion(t *testing.T) {
-	t.Parallel()
-
-	ctx := context.Background()
-	ts := NewTestingStore(ctx, t)
-
-	setSchemaVersion(ctx, t, ts, "0.22.0")
-
-	if err := ts.Migrate(ctx); err != nil {
-		require.NotContains(t, err.Error(), "too old to upgrade directly",
-			"0.22.0 is the supported floor and must clear the minimum-version check")
+			after, err := ts.GetDriver().ListInstanceSettings(ctx, &store.FindInstanceSetting{})
+			require.NoError(t, err)
+			require.ElementsMatch(t, before, after, "rejected startup must not write settings")
+			preserved, err := ts.GetMemo(ctx, &store.FindMemo{UID: &memo.UID})
+			require.NoError(t, err)
+			require.Equal(t, memo, preserved)
+		})
 	}
 }

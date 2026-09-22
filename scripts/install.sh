@@ -17,7 +17,7 @@ Usage:
   install.sh [--version <version>] [--install-dir <dir>] [--repo <owner/name>] [--skip-checksum]
 
 Environment:
-  MEMOS_VERSION         Version to install. Accepts "0.28.1" or "v0.28.1". Defaults to latest release.
+  MEMOS_VERSION         Version to install. Accepts "26.09" or "26.09.1". Defaults to latest release.
   MEMOS_INSTALL_DIR     Directory to install the binary into.
   MEMOS_SKIP_CHECKSUM   Set to 1 to skip checksum verification.
   MEMOS_INSTALL_QUIET   Set to 1 to reduce log output.
@@ -25,7 +25,7 @@ Environment:
 
 Examples:
   curl -fsSL https://raw.githubusercontent.com/usememos/memos/main/scripts/install.sh | sh
-  curl -fsSL https://raw.githubusercontent.com/usememos/memos/main/scripts/install.sh | sh -s -- --version 0.28.1
+  curl -fsSL https://raw.githubusercontent.com/usememos/memos/main/scripts/install.sh | sh -s -- --version 26.09
 EOF
 }
 
@@ -254,7 +254,10 @@ main() {
   VERSION="$(normalize_version "$VERSION")"
 
   install_dir="$(resolve_install_dir)"
-  tag="v${VERSION}"
+  case "$VERSION" in
+    0.*) tag="v${VERSION}" ;;
+    *) tag="$VERSION" ;;
+  esac
 
   asset_suffix="${arch}"
   if [ "$arch" = "armv7" ]; then

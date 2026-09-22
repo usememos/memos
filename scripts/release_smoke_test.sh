@@ -24,7 +24,7 @@ Docker image. With no options, the current worktree is built and tested.
 Options:
   --candidate-image IMAGE  Test an existing image instead of building locally.
   --previous-image IMAGE   Image used to seed the upgrade test. By default, the
-                           latest stable Git tag before HEAD is used.
+                           latest supported stable Git tag before HEAD is used.
   --keep-resources         Keep containers and volumes after the test for debugging.
   -h, --help               Show this help text.
 
@@ -37,7 +37,7 @@ Examples:
   ./scripts/release_smoke_test.sh
   ./scripts/release_smoke_test.sh \
     --candidate-image memos-smoke:local \
-    --previous-image neosmemo/memos:0.29.1
+    --previous-image neosmemo/memos:0.31.0
 EOF
 }
 
@@ -142,25 +142,7 @@ cleanup() {
 trap cleanup EXIT
 
 detect_previous_image() {
-  local head_sha tag tag_sha
-  head_sha="$(git -C "$REPO_ROOT" rev-parse HEAD)"
-
-  while IFS= read -r tag; do
-    case "$tag" in
-      *-rc.*) continue ;;
-    esac
-
-    tag_sha="$(git -C "$REPO_ROOT" rev-list -n 1 "$tag")"
-    if [[ "$tag_sha" == "$head_sha" ]]; then
-      continue
-    fi
-    if git -C "$REPO_ROOT" merge-base --is-ancestor "$tag" HEAD; then
-      printf 'neosmemo/memos:%s\n' "${tag#v}"
-      return
-    fi
-  done < <(git -C "$REPO_ROOT" tag --list 'v[0-9]*' --sort=-version:refname)
-
-  die "could not detect a previous stable release; pass --previous-image"
+  bash "$SCRIPT_DIR/release_version.sh" previous-image "$REPO_ROOT"
 }
 
 build_local_candidate() {

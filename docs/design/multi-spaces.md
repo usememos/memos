@@ -140,6 +140,10 @@ General account erasure remains deferred. As a fail-closed guard, user hard dele
 
 ### Persistence and migration
 
+Historical upgrade scripts are now provided by the v0.31.0 release, with the
+current binary retaining the fresh-install schemas. See the
+[database migration baseline](../../store/migration/README.md).
+
 ```text
 space(id, uid, title, description)
 space_member(space_id, user_id, status INVITED | ACTIVE, role ADMIN | USER)
@@ -151,7 +155,7 @@ The Space-user pair is unique and represents one current relationship slot. `INV
 
 `status` is required and has no default or database `CHECK`; Store logic writes and recognizes `INVITED` and `ACTIVE`, while unknown values fail closed in authorization queries. The existing role constraint remains unchanged. The initial version does not record inviter, invitation, Space, or membership timestamps; they can be added when a concrete attribution, expiration, audit, or ordering requirement exists. A nullable `memo.space_id` directly enforces zero-or-one placement; an association table is unnecessary. Existing `memo_relation` rows remain the source of truth for comments.
 
-The change ships in migration `0.31` for SQLite, MySQL, and PostgreSQL, with equivalent fresh-install schemas. Existing membership rows are backfilled to `ACTIVE`. Existing memos keep their UID, author, visibility, relations, permalink, and become Unassigned. Comment rows and comment visibility are not rewritten. SQLite rebuilds the affected tables where its `ALTER TABLE` support requires it.
+The change shipped in v0.31.0, migration `0.31` for SQLite, MySQL, and PostgreSQL, with equivalent fresh-install schemas. Existing membership rows are backfilled to `ACTIVE`. Existing memos keep their UID, author, visibility, relations, permalink, and become Unassigned. Comment rows and comment visibility are not rewritten. SQLite rebuilds the affected tables where its `ALTER TABLE` support requires it.
 
 Space creation, invitation transitions, membership changes, placement and audience changes, comment creation, memo deletion, and Space deletion use ordinary transactions where partial application would corrupt directly affected data. On MySQL and PostgreSQL, operations that create or activate a Space relationship serialize with user deletion on the target user row, and invitation creation serializes with Space deletion on the Space row. On SQLite every store transaction begins `IMMEDIATE`, so a transaction that has read a parent row holds the single write lock until it ends and a concurrent delete waits rather than committing underneath it. This prevents a concurrent delete from leaving an orphaned active membership or invitation. Space deletion directly removes assigned memos and their owned rows in the same style as existing user deletion, then uses the existing best-effort attachment storage cleanup after commit. The initial version does not introduce general transaction retries, a cleanup queue, or a global concurrency framework.
 

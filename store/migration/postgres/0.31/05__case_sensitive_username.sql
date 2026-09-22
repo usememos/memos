@@ -1,2 +1,0 @@
-ALTER TABLE "user"
-  ALTER COLUMN username TYPE TEXT COLLATE "C";

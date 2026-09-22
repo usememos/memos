@@ -3,7 +3,9 @@ name: Release
 on:
   push:
     tags:
-      - "v*.*.*"
+      # Calendar tags only (26.09, 26.09.1, 26.09-rc.1); legacy v0.x tags
+      # are rejected by scripts/release_version.sh and must not start a run.
+      - "[1-9][0-9].*"
   workflow_dispatch:
 
 concurrency:
@@ -31,9 +33,17 @@ jobs:
     outputs:
       version: ${{ steps.version.outputs.version }}
       tag: ${{ steps.version.outputs.tag }}
-      major_minor: ${{ steps.version.outputs.major_minor }}
+      series: ${{ steps.version.outputs.series }}
       is_prerelease: ${{ steps.version.outputs.is_prerelease }}
+      previous_tag: ${{ steps.version.outputs.previous_tag }}
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          # Previous-release detection walks tags reachable from the release commit.
+          fetch-depth: 0
+          fetch-tags: true
+
       - name: Extract version
         id: version
         env:
@@ -43,27 +53,16 @@ jobs:
           if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
             echo "tag=" >> "$GITHUB_OUTPUT"
             echo "version=manual-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
-            echo "major_minor=" >> "$GITHUB_OUTPUT"
+            echo "series=" >> "$GITHUB_OUTPUT"
             echo "is_prerelease=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
-          if [[ ! "$REF_NAME" =~ ^v([0-9]+\.[0-9]+\.[0-9]+)(-rc\.[0-9]+)?$ ]]; then
-            echo "Unsupported release tag format: $REF_NAME" >&2
-            exit 1
-          fi
-
-          version="${BASH_REMATCH[1]}${BASH_REMATCH[2]}"
-          major_minor="${BASH_REMATCH[1]%.*}"
-          is_prerelease=false
-          if [ -n "${BASH_REMATCH[2]}" ]; then
-            is_prerelease=true
-          fi
-
-          echo "tag=${REF_NAME}" >> "$GITHUB_OUTPUT"
-          echo "version=${version}" >> "$GITHUB_OUTPUT"
-          echo "major_minor=${major_minor}" >> "$GITHUB_OUTPUT"
-          echo "is_prerelease=${is_prerelease}" >> "$GITHUB_OUTPUT"
+          bash scripts/release_version.sh version "$REF_NAME" >> "$GITHUB_OUTPUT"
+          # Release notes span from the previous stable release, not the last
+          # release candidate. An empty value lets GitHub pick the range.
+          previous_tag="$(bash scripts/release_version.sh previous-tag . || true)"
+          echo "previous_tag=${previous_tag}" >> "$GITHUB_OUTPUT"
 
   build-frontend:
     name: Build Frontend
@@ -251,6 +250,9 @@ jobs:
           tag_name: ${{ needs.prepare.outputs.tag }}
           name: ${{ needs.prepare.outputs.tag }}
           prerelease: ${{ needs.prepare.outputs.is_prerelease == 'true' }}
+          make_latest: ${{ needs.prepare.outputs.is_prerelease != 'true' }}
+          generate_release_notes: true
+          previous_tag: ${{ needs.prepare.outputs.previous_tag }}
           files: artifacts/*
 
   build-push:
@@ -334,6 +336,9 @@ jobs:
       contents: read
       packages: write
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
       - name: Download digests
         uses: actions/download-artifact@v4
         with:
@@ -360,23 +365,16 @@ jobs:
       - name: Create manifest list and push
         working-directory: /tmp/digests
         run: |
-          version="${{ needs.prepare.outputs.version }}"
-          if [ "${{ needs.prepare.outputs.is_prerelease }}" = "true" ]; then
-            docker buildx imagetools create \
-              -t "neosmemo/memos:${version}" \
-              -t "ghcr.io/usememos/memos:${version}" \
-              $(printf 'neosmemo/memos@sha256:%s ' *)
-            exit 0
-          fi
-
-          docker buildx imagetools create \
-            -t "neosmemo/memos:${version}" \
-            -t "neosmemo/memos:${{ needs.prepare.outputs.major_minor }}" \
-            -t "neosmemo/memos:stable" \
-            -t "ghcr.io/usememos/memos:${version}" \
-            -t "ghcr.io/usememos/memos:${{ needs.prepare.outputs.major_minor }}" \
-            -t "ghcr.io/usememos/memos:stable" \
-            $(printf 'neosmemo/memos@sha256:%s ' *)
+          tags="$(bash "$GITHUB_WORKSPACE/scripts/release_version.sh" image-tags "${{ needs.prepare.outputs.tag }}")"
+          args=()
+          while IFS= read -r tag; do
+            args+=(-t "neosmemo/memos:${tag}" -t "ghcr.io/usememos/memos:${tag}")
+          done <<< "$tags"
+          digests=()
+          for digest in *; do
+            digests+=("neosmemo/memos@sha256:${digest}")
+          done
+          docker buildx imagetools create "${args[@]}" "${digests[@]}"
 
       - name: Inspect images
         run: |
