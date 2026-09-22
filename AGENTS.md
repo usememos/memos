@@ -8,7 +8,7 @@ repo. If a fact here conflicts with source files or CI config, trust the source 
 Memos is a self-hosted note-taking app.
 
 - Backend: Go 1.27.0, Echo v5, Connect RPC, gRPC-Gateway, Protocol Buffers.
-- Frontend: React 19, TypeScript 6, Vite 8, Tailwind CSS v4, React Query v5.
+- Frontend: React 19, TypeScript 7, Vite 8, Tailwind CSS v4, React Query v5.
 - Storage: SQLite, MySQL, PostgreSQL.
 - Generated API outputs: `proto/gen/` for Go/OpenAPI, `web/src/types/proto/` for TypeScript.
 
@@ -20,6 +20,13 @@ Memos is a self-hosted note-taking app.
 - Add migrations for all database drivers when schema changes, and update each driver's `LATEST.sql`.
 - Add public API endpoints to `server/api/v1/acl_config.go`.
 - Ask before adding heavy dependencies, changing auth/token behavior, or altering Docker/release workflows.
+
+## Documentation
+
+- ADRs and their companion glossary have been retired. Do not recreate them unless explicitly requested.
+- Design documents in `docs/design/` are frozen after implementation. Do not update implemented designs to track later code changes.
+- New and unimplemented designs may still evolve. Frozen documents record the original design; verify current behavior in source code and tests.
+- Keep contributor guidance in this file and package-local `README.md` or `doc.go` files current when relevant code changes.
 
 ## Commands
 
@@ -64,7 +71,7 @@ Every root folder is named for what it holds. Read the folder's `doc.go` or `REA
 | `server/frontend/` | Static SPA serving; `dist/` is the built SPA baked in by `go:embed` | |
 | `server/mcp/` | Model Context Protocol server | |
 | `server/auth/` | JWT access tokens, refresh tokens, PAT handling | |
-| `core/` | Business rules with no HTTP and no SQL: `access`, `notification`, `memopayload` | store, provider, markdown, filter, internal |
+| `core/` | Business rules with no HTTP and no SQL: `access`, `notification`, `memopayload`, `memoexport` | store, provider, markdown, filter, internal |
 | `store/` | Store facade, cache, migrations, `Driver` interface; `store/db/{sqlite,mysql,postgres}/` implement it | provider, markdown, filter, internal |
 | `markdown/` | Markdown engine: parser, AST, memos syntax extensions, renderer, memo payload | proto/gen, internal |
 | `filter/` | CEL filter compiler: parse to IR, render to SQL per driver, filterable field schema | internal |
@@ -112,7 +119,7 @@ Black-box service tests live in `server/api/v1/test/`, unit tests next to the co
 - Follow Biome formatting: 2-space indent, double quotes, semicolons, 140-character line width.
 - Put server data in React Query hooks under `web/src/hooks/`; keep UI-only state in contexts or component state.
 - Use Tailwind CSS v4 utilities, `cn()` for class merging, and CVA for variants.
-- Reuse Radix primitives and existing components before adding new UI primitives.
+- Reuse Base UI primitives and existing components before adding new UI primitives.
 - Keep generated proto TypeScript under `web/src/types/proto/` out of manual edits and Biome rewrites.
 
 ## Database And Proto Rules

@@ -1,12 +1,12 @@
 # Unique Email Design
 
-Status: Accepted
+Status: Implemented
 
 Date: 2026-09-12
 
 Existing domain language: [Memos context](../../CONTEXT.md)
 
-Related: [Multi-Spaces Design](multi-spaces.md), [ADR 0002: Username Format and References](../adr/0002-username-format-and-references.md)
+Related: [Multi-Spaces Design](multi-spaces.md)
 
 ## Summary
 

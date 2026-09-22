@@ -1,12 +1,12 @@
 # Memos Export Format
 
-Status: Proposed
+Status: Implemented
 
 Date: 2026-09-16
 
 Existing domain language: [Memos context](../../CONTEXT.md)
 
-Related: [Multi-Spaces Design](multi-spaces.md), [ADR 0002: Username Format and References](../adr/0002-username-format-and-references.md), [ADR 0003: Space UID Allocation and Format](../adr/0003-space-uid-allocation-and-format.md)
+Related: [Multi-Spaces Design](multi-spaces.md)
 
 Normative schemas: [`memo-export/1.0/manifest.schema.json`](memo-export/1.0/manifest.schema.json), [`memo-export/1.0/memo.schema.json`](memo-export/1.0/memo.schema.json)
 
@@ -81,8 +81,8 @@ Container rules:
 
 ### Identifiers
 
-- A memo is identified by its Memo UID, the `{memo}` segment of `memos/{memo}`, matching `^[a-zA-Z0-9]([a-zA-Z0-9-]{0,34}[a-zA-Z0-9])?$`. An attachment is identified by the `{attachment}` segment of `attachments/{attachment}`, which uses the same grammar. A Space is identified by its Space UID under ADR 0003 and carries its Space title for fallback matching. Database identifiers never appear.
-- A user is identified by username under ADR 0002.
+- A memo is identified by its Memo UID, the `{memo}` segment of `memos/{memo}`, matching `^[a-zA-Z0-9]([a-zA-Z0-9-]{0,34}[a-zA-Z0-9])?$`. An attachment is identified by the `{attachment}` segment of `attachments/{attachment}`, which uses the same grammar. A Space is identified by its Space UID and carries its Space title for fallback matching. Database identifiers never appear.
+- A user is identified by username.
 - References inside the archive are bare UIDs, never resource names, so the resource name patterns of the API can change without a format change.
 
 ### Records

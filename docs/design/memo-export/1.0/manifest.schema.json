@@ -68,7 +68,7 @@
     "username": {
       "type": "string",
       "minLength": 1,
-      "description": "Username as defined by ADR 0002."
+      "description": "Username identifying the user in the export."
     }
   }
 }

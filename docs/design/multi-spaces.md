@@ -1,6 +1,6 @@
 # Multi-Spaces Design
 
-Status: Accepted
+Status: Implemented
 
 Date: 2026-08-23
 
