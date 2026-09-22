@@ -8,11 +8,11 @@ import {
   MEMOS_WEBSITE_URL,
   WEB_CLIPPER_URL,
 } from "@/lib/constants";
-import { isReleaseVersion } from "@/lib/release-version";
+import { getReleaseTag } from "@/lib/release-version";
 import { useTranslate } from "@/utils/i18n";
 
 const GITHUB_COMMIT_URL_PREFIX = "https://github.com/usememos/memos/commit/";
-const GITHUB_RELEASE_URL_PREFIX = "https://github.com/usememos/memos/releases/tag/v";
+const GITHUB_RELEASE_URL_PREFIX = "https://github.com/usememos/memos/releases/tag/";
 
 const DEFAULT_TITLE = "Memos";
 const DEFAULT_TAGLINE = "Capture first. Keep it yours.";
@@ -46,9 +46,9 @@ const About = () => {
   const instanceLogo = customProfile?.logoUrl || DEFAULT_LOGO;
   const isCustomBranded = instanceTitle !== DEFAULT_TITLE;
 
-  const hasReleaseVersion = isReleaseVersion(profile.version);
-  const releaseUrl = hasReleaseVersion ? `${GITHUB_RELEASE_URL_PREFIX}${profile.version}` : "";
-  const versionLabel = hasReleaseVersion ? `v${profile.version}` : profile.version;
+  const releaseTag = getReleaseTag(profile.version);
+  const releaseUrl = releaseTag ? `${GITHUB_RELEASE_URL_PREFIX}${releaseTag}` : "";
+  const versionLabel = releaseTag ?? profile.version;
   const hasCommitSha = isCommitSha(profile.commit);
   const commitUrl = hasCommitSha ? `${GITHUB_COMMIT_URL_PREFIX}${profile.commit}` : "";
   const shortCommit = hasCommitSha ? profile.commit.slice(0, 7) : "";

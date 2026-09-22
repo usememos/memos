@@ -5,10 +5,10 @@ set -euo pipefail
 # Application releases use YY.MM[.N][-rc.N]. Database migration sequences are separate.
 parse_release_tag() {
   local tag="$1"
-  if [[ ! "$tag" =~ ^v([1-9][0-9]\.(0[1-9]|1[0-2]))(\.([1-9][0-9]*))?(-rc\.([1-9][0-9]*))?$ ]]; then
+  if [[ ! "$tag" =~ ^([1-9][0-9]\.(0[1-9]|1[0-2]))(\.([1-9][0-9]*))?(-rc\.([1-9][0-9]*))?$ ]]; then
     return 1
   fi
-  RELEASE_VERSION="${tag#v}"
+  RELEASE_VERSION="$tag"
   RELEASE_SERIES="${BASH_REMATCH[1]}"
   RELEASE_IS_PRERELEASE=false
   if [[ -n "${BASH_REMATCH[5]}" ]]; then
@@ -22,6 +22,7 @@ parse_release_tag() {
 previous_release_tag() {
   local repo="$1" head_sha tag tag_sha
   head_sha="$(git -C "$repo" rev-parse HEAD)"
+  # List calendar releases first: the legacy v prefix would otherwise sort ahead.
   while IFS= read -r tag; do
     if parse_release_tag "$tag"; then
       [[ "$RELEASE_IS_PRERELEASE" == false ]] || continue
@@ -34,7 +35,10 @@ previous_release_tag() {
       printf '%s\n' "$tag"
       return
     fi
-  done < <(git -C "$repo" tag --list 'v[0-9]*' --sort=-version:refname)
+  done < <(
+    git -C "$repo" tag --list '[1-9][0-9].*' --sort=-version:refname
+    git -C "$repo" tag --list 'v0.31.*' --sort=-version:refname
+  )
   echo 'No supported previous release found' >&2
   return 1
 }

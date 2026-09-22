@@ -3,9 +3,9 @@ name: Release
 on:
   push:
     tags:
-      # Calendar tags only (v26.09, v26.09.1, v26.09-rc.1); legacy v0.x tags
+      # Calendar tags only (26.09, 26.09.1, 26.09-rc.1); legacy v0.x tags
       # are rejected by scripts/release_version.sh and must not start a run.
-      - "v[1-9][0-9].*"
+      - "[1-9][0-9].*"
   workflow_dispatch:
 
 concurrency:
@@ -252,7 +252,7 @@ jobs:
           prerelease: ${{ needs.prepare.outputs.is_prerelease == 'true' }}
           make_latest: ${{ needs.prepare.outputs.is_prerelease != 'true' }}
           generate_release_notes: true
-          previous_tag_name: ${{ needs.prepare.outputs.previous_tag }}
+          previous_tag: ${{ needs.prepare.outputs.previous_tag }}
           files: artifacts/*
 
   build-push:

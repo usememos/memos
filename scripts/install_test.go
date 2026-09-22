@@ -12,16 +12,23 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestInstallCalendarRelease(t *testing.T) {
-	for _, input := range []string{"26.09", "v26.09.1", "26.09-rc.1", ""} {
+func TestInstallRelease(t *testing.T) {
+	for _, tc := range []struct{ input, tag string }{
+		{"26.09", "26.09"},
+		{"26.09.1", "26.09.1"},
+		{"v26.09.1", "26.09.1"},
+		{"26.09-rc.1", "26.09-rc.1"},
+		{"0.31.0", "v0.31.0"},
+		{"v0.31.0", "v0.31.0"},
+		{"", "26.09.2"},
+		{"", "v0.31.0"},
+	} {
+		input, tag := tc.input, tc.tag
 		t.Run("version="+input, func(t *testing.T) {
 			dir := t.TempDir()
 			mockBin := filepath.Join(dir, "bin")
 			require.NoError(t, os.Mkdir(mockBin, 0755))
-			version := strings.TrimPrefix(input, "v")
-			if version == "" {
-				version = "26.09.2"
-			}
+			version := strings.TrimPrefix(tag, "v")
 			writeExecutable(t, filepath.Join(dir, "memos"), "#!/bin/sh\nprintf '%s\\n' '"+version+"'\n")
 			archive := filepath.Join(dir, "release.tar.gz")
 			out, err := exec.Command("tar", "-czf", archive, "-C", dir, "memos").CombinedOutput()
@@ -44,7 +51,7 @@ while [ "$#" -gt 0 ]; do
 done
 printf '%s\n' "$url" >> "$TEST_DOWNLOAD_LOG"
 case "$url" in
-  */releases/latest) printf '{"tag_name":"v%s"}\n' "$TEST_VERSION";;
+  */releases/latest) printf '{"tag_name":"%s"}\n' "$TEST_TAG";;
   */checksums.txt) cp "$TEST_FIXTURE/checksums.txt" "$dest";;
   */memos_*.tar.gz) cp "$TEST_FIXTURE/release.tar.gz" "$dest";;
   *) exit 1;;
@@ -57,13 +64,13 @@ esac
 			cmd := exec.Command("sh", args...)
 			logPath := filepath.Join(dir, "downloads.log")
 			cmd.Env = append(os.Environ(), "PATH="+mockBin+string(os.PathListSeparator)+os.Getenv("PATH"), "TEST_FIXTURE="+dir,
-				"TEST_VERSION="+version, "TEST_DOWNLOAD_LOG="+logPath, "MEMOS_VERSION=", "MEMOS_SKIP_CHECKSUM=0", "REPO=usememos/memos")
+				"TEST_TAG="+tag, "TEST_DOWNLOAD_LOG="+logPath, "MEMOS_VERSION=", "MEMOS_SKIP_CHECKSUM=0", "REPO=usememos/memos")
 			out, err = cmd.CombinedOutput()
 			require.NoError(t, err, string(out))
 			log, err := os.ReadFile(logPath)
 			require.NoError(t, err)
-			require.Contains(t, string(log), "https://github.com/usememos/memos/releases/download/v"+version+"/"+asset)
-			require.Contains(t, string(log), "/v"+version+"/checksums.txt")
+			require.Contains(t, string(log), "https://github.com/usememos/memos/releases/download/"+tag+"/"+asset)
+			require.Contains(t, string(log), "/"+tag+"/checksums.txt")
 			out, err = exec.Command(filepath.Join(dir, "installed", "memos")).CombinedOutput()
 			require.NoError(t, err)
 			require.Equal(t, version+"\n", string(out))

@@ -12,23 +12,24 @@ func TestReleaseVersions(t *testing.T) {
 	for _, tc := range []struct {
 		tag, series, prerelease, images string
 	}{
-		{"v26.09", "26.09", "false", "26.09\nstable\n"},
-		{"v26.09.1", "26.09", "false", "26.09.1\n26.09\nstable\n"},
-		{"v26.09.10", "26.09", "false", "26.09.10\n26.09\nstable\n"},
-		{"v27.01", "27.01", "false", "27.01\nstable\n"},
-		{"v26.09-rc.1", "26.09", "true", "26.09-rc.1\n"},
-		{"v26.09.1-rc.2", "26.09", "true", "26.09.1-rc.2\n"},
+		{"26.09", "26.09", "false", "26.09\nstable\n"},
+		{"26.09.1", "26.09", "false", "26.09.1\n26.09\nstable\n"},
+		{"26.09.10", "26.09", "false", "26.09.10\n26.09\nstable\n"},
+		{"26.10.1", "26.10", "false", "26.10.1\n26.10\nstable\n"},
+		{"27.01", "27.01", "false", "27.01\nstable\n"},
+		{"26.09-rc.1", "26.09", "true", "26.09-rc.1\n"},
+		{"26.09.1-rc.2", "26.09", "true", "26.09.1-rc.2\n"},
 	} {
 		t.Run(tc.tag, func(t *testing.T) {
 			out, err := exec.Command("bash", "release_version.sh", "version", tc.tag).CombinedOutput()
 			require.NoError(t, err, string(out))
-			require.Equal(t, "tag="+tc.tag+"\nversion="+strings.TrimPrefix(tc.tag, "v")+"\nseries="+tc.series+"\nis_prerelease="+tc.prerelease+"\n", string(out))
+			require.Equal(t, "tag="+tc.tag+"\nversion="+tc.tag+"\nseries="+tc.series+"\nis_prerelease="+tc.prerelease+"\n", string(out))
 			out, err = exec.Command("bash", "release_version.sh", "image-tags", tc.tag).CombinedOutput()
 			require.NoError(t, err, string(out))
 			require.Equal(t, tc.images, string(out))
 		})
 	}
-	for _, tag := range []string{"v0.31.0", "26.09", "v26.9", "v26.00", "v26.13", "v2026.09", "v26.09.0", "v26.09.01", "v26.09-rc.0", "v26.09-rc.01", "v26.09beta", "v26.09.1+build"} {
+	for _, tag := range []string{"v0.31.0", "v26.09", "v26.09.1", "v26.09-rc.1", "26.9", "26.00", "26.13", "2026.09", "26.09.0", "26.09.01", "26.09-rc.0", "26.09-rc.01", "26.09beta", "26.09.1+build"} {
 		out, err := exec.Command("bash", "release_version.sh", "version", tag).CombinedOutput()
 		require.Error(t, err, tag)
 		require.Contains(t, string(out), "Unsupported release tag")
@@ -47,10 +48,10 @@ func TestPreviousReleaseImage(t *testing.T) {
 		t.Helper()
 		out, err := exec.Command("bash", "release_version.sh", "previous-tag", repo).CombinedOutput()
 		require.NoError(t, err, string(out))
-		require.Equal(t, "v"+want+"\n", string(out))
+		require.Equal(t, want+"\n", string(out))
 		out, err = exec.Command("bash", "release_version.sh", "previous-image", repo).CombinedOutput()
 		require.NoError(t, err, string(out))
-		require.Equal(t, "neosmemo/memos:"+want+"\n", string(out))
+		require.Equal(t, "neosmemo/memos:"+strings.TrimPrefix(want, "v")+"\n", string(out))
 	}
 	runGit("init", "-b", "main")
 	runGit("commit", "--allow-empty", "-m", "old")
@@ -58,27 +59,27 @@ func TestPreviousReleaseImage(t *testing.T) {
 	runGit("commit", "--allow-empty", "-m", "baseline")
 	runGit("tag", "v0.31.0")
 	runGit("commit", "--allow-empty", "-m", "first calendar release")
-	runGit("tag", "v26.09")
-	check("0.31.0")
+	runGit("tag", "26.09")
+	check("v0.31.0")
 	runGit("commit", "--allow-empty", "-m", "point release")
-	runGit("tag", "v26.09.2")
+	runGit("tag", "26.09.2")
 	check("26.09")
 	runGit("commit", "--allow-empty", "-m", "tenth point release")
-	runGit("tag", "v26.09.10")
-	runGit("tag", "v99.99")
+	runGit("tag", "26.09.10")
+	runGit("tag", "99.99")
 	runGit("commit", "--allow-empty", "-m", "release candidate")
-	runGit("tag", "v26.10-rc.1")
+	runGit("tag", "26.10-rc.1")
 	check("26.09.10")
 	runGit("commit", "--allow-empty", "-m", "after release candidate")
 	check("26.09.10")
 	runGit("checkout", "--orphan", "unrelated")
 	runGit("commit", "--allow-empty", "-m", "unrelated release")
-	runGit("tag", "v29.01")
+	runGit("tag", "29.01")
 	runGit("checkout", "main")
 	check("26.09.10")
-	runGit("tag", "v26.10")
+	runGit("tag", "26.10")
 	runGit("commit", "--allow-empty", "-m", "next year")
-	runGit("tag", "v27.01")
+	runGit("tag", "27.01")
 	check("26.10")
 	// The floor excludes pre-baseline tags even if no supported release exists.
 	repo = t.TempDir()
