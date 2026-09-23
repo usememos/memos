@@ -51,7 +51,7 @@ const Inboxes = () => {
           <div className="w-full">
             {notifications.length === 0 ? (
               <Placeholder
-                variant="empty"
+                scene="inbox"
                 message={filter === "unread" ? t("inbox.no-unread") : filter === "archived" ? t("inbox.no-archived") : t("message.no-data")}
               />
             ) : (

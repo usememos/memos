@@ -16,7 +16,7 @@ const feed = vi.hoisted(() => ({
   isFetchNextPageError: false,
 }));
 const sidebar = vi.hoisted(() => ({ setQuickFindOpen: vi.fn() }));
-const filterContext = vi.hoisted(() => ({ removeFilter: vi.fn() }));
+const filterContext = vi.hoisted(() => ({ filters: [{ factor: "celSearch", value: "pinned" }], removeFilter: vi.fn() }));
 const readiness = vi.hoisted(() => ({ userSettings: true }));
 const memoQuery = vi.hoisted(() => ({ request: undefined as Record<string, unknown> | undefined }));
 
@@ -40,7 +40,7 @@ vi.mock("@/hooks/useMemoQueries", () => ({
 
 vi.mock("@/contexts/MemoFilterContext", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/contexts/MemoFilterContext")>()),
-  useMemoFilterContext: () => ({ filters: [{ factor: "celSearch", value: "pinned" }], removeFilter: filterContext.removeFilter }),
+  useMemoFilterContext: () => ({ filters: filterContext.filters, removeFilter: filterContext.removeFilter }),
 }));
 
 vi.mock("@/contexts/AppSidebarContext", () => ({ useAppSidebar: () => sidebar }));
@@ -90,6 +90,7 @@ describe("<PagedMemoList>", () => {
     feed.isFetchNextPageError = false;
     sidebar.setQuickFindOpen.mockClear();
     filterContext.removeFilter.mockClear();
+    filterContext.filters = [{ factor: "celSearch", value: "pinned" }];
     readiness.userSettings = true;
     memoQuery.request = undefined;
   });
@@ -232,11 +233,18 @@ describe("<PagedMemoList>", () => {
     expect(screen.getByTestId("leading-content")).toBeInTheDocument();
   });
 
-  it("uses the tile sprite Placeholder for the empty state", () => {
+  it("uses the search illustration when filters return no memos", () => {
     renderList();
 
     expect(screen.getByText("No data found.")).toBeInTheDocument();
-    expect(screen.getByTestId("placeholder-sprite")).toBeInTheDocument();
+    expect(screen.getByTestId("placeholder-illustration")).toHaveAttribute("data-scene", "search");
+  });
+
+  it("uses the blank memo illustration for an unfiltered empty list", () => {
+    filterContext.filters = [];
+    renderList();
+
+    expect(screen.getByTestId("placeholder-illustration")).toHaveAttribute("data-scene", "memo");
   });
 
   it("combines the selected Space filter with the memo list filter", () => {
@@ -256,7 +264,7 @@ describe("<PagedMemoList>", () => {
 
     expect(screen.getByTestId("leading-content")).toBeInTheDocument();
     expect(screen.getByText("No data found.")).toBeInTheDocument();
-    expect(screen.getByTestId("placeholder-sprite")).toBeInTheDocument();
+    expect(screen.getByTestId("placeholder-illustration")).toBeInTheDocument();
   });
 
   it("places leading content and the empty state in the first grid column", () => {
