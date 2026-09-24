@@ -137,6 +137,12 @@
     "sign-in-to-memos": "Inicia la sessió a Memos",
     "view-all": "Veure-ho tot"
   },
+  "heatmap": {
+    "show-calendar": "Show calendar",
+    "show-heatmap": "Show heatmap",
+    "stats-summary": "{{total}} memos · {{days}} days recorded · {{streak}}-day streak",
+    "title": "Heatmap"
+  },
   "locale-picker": {
     "no-language-feedback": "No s'ha trobat l'idioma? Envieu comentaris"
   },

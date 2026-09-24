@@ -1,4 +1,10 @@
 {
+  "heatmap": {
+    "show-calendar": "Show calendar",
+    "show-heatmap": "Show heatmap",
+    "stats-summary": "{{total}} memos · {{days}} days recorded · {{streak}}-day streak",
+    "title": "Heatmap"
+  },
   "map": {
     "selection": "Seçilmiş qeydlər",
     "loaded": "{{count}} qeyd yükləndi",

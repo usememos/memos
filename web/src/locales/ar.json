@@ -137,6 +137,12 @@
     "unlink": "إلغاء الارتباط",
     "view-all": "عرض الكل"
   },
+  "heatmap": {
+    "show-calendar": "Show calendar",
+    "show-heatmap": "Show heatmap",
+    "stats-summary": "{{total}} memos · {{days}} days recorded · {{streak}}-day streak",
+    "title": "Heatmap"
+  },
   "locale-picker": {
     "no-language-feedback": "لم يتم العثور على اللغة؟ إرسال ردود الفعل"
   },

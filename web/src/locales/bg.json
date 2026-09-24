@@ -175,6 +175,12 @@
     "sign-in-to-memos": "Влизане в Memos",
     "view-all": "Вижте всички"
   },
+  "heatmap": {
+    "show-calendar": "Show calendar",
+    "show-heatmap": "Show heatmap",
+    "stats-summary": "{{total}} memos · {{days}} days recorded · {{streak}}-day streak",
+    "title": "Heatmap"
+  },
   "locale-picker": {
     "no-language-feedback": "Езикът не е намерен? Изпратете обратна връзка"
   },
