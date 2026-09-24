@@ -137,6 +137,12 @@
     "sign-in-to-memos": "Bejelentkezés a következőbe: Memos",
     "view-all": "Összes megtekintése"
   },
+  "heatmap": {
+    "show-calendar": "Show calendar",
+    "show-heatmap": "Show heatmap",
+    "stats-summary": "{{total}} memos · {{days}} days recorded · {{streak}}-day streak",
+    "title": "Heatmap"
+  },
   "locale-picker": {
     "no-language-feedback": "Nem található a nyelv? Visszajelzés küldése"
   },

@@ -215,6 +215,12 @@
     "resize-panel": "調整面板大小",
     "view-all": "查看全部"
   },
+  "heatmap": {
+    "show-calendar": "切換到月曆",
+    "show-heatmap": "切換到熱力圖",
+    "stats-summary": "累計 {{total}} 條 · 記錄 {{days}} 天 · 連續 {{streak}} 天",
+    "title": "熱力圖"
+  },
   "locale-picker": {
     "no-language-feedback": "未找到語言？ 提交回饋"
   },

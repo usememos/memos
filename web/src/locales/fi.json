@@ -175,6 +175,12 @@
     "sign-in-to-memos": "Kirjaudu sisään Memos",
     "view-all": "Näytä kaikki"
   },
+  "heatmap": {
+    "show-calendar": "Show calendar",
+    "show-heatmap": "Show heatmap",
+    "stats-summary": "{{total}} memos · {{days}} days recorded · {{streak}}-day streak",
+    "title": "Heatmap"
+  },
   "locale-picker": {
     "no-language-feedback": "Eikö kieltä löydy? Lähetä palautetta"
   },

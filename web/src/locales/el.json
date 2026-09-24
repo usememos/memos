@@ -175,6 +175,12 @@
     "sign-in-to-memos": "Σύνδεση στο Memos",
     "view-all": "Προβολή όλων"
   },
+  "heatmap": {
+    "show-calendar": "Show calendar",
+    "show-heatmap": "Show heatmap",
+    "stats-summary": "{{total}} memos · {{days}} days recorded · {{streak}}-day streak",
+    "title": "Heatmap"
+  },
   "locale-picker": {
     "no-language-feedback": "Δεν βρέθηκε η γλώσσα; Υποβολή σχολίων"
   },

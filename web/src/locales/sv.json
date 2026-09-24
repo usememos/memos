@@ -137,6 +137,12 @@
     "sign-in-to-memos": "Logga in på Memos",
     "view-all": "Visa alla"
   },
+  "heatmap": {
+    "show-calendar": "Show calendar",
+    "show-heatmap": "Show heatmap",
+    "stats-summary": "{{total}} memos · {{days}} days recorded · {{streak}}-day streak",
+    "title": "Heatmap"
+  },
   "locale-picker": {
     "no-language-feedback": "Språket hittades inte? Skicka feedback"
   },

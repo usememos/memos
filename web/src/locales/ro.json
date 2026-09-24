@@ -175,6 +175,12 @@
     "sign-in-to-memos": "Conectați-vă la Memos",
     "view-all": "Vizualizați tot"
   },
+  "heatmap": {
+    "show-calendar": "Show calendar",
+    "show-heatmap": "Show heatmap",
+    "stats-summary": "{{total}} memos · {{days}} days recorded · {{streak}}-day streak",
+    "title": "Heatmap"
+  },
   "locale-picker": {
     "no-language-feedback": "Limba nu a fost găsită? Trimiteți feedback"
   },

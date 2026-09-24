@@ -175,6 +175,12 @@
     "sign-in-to-memos": "Prisijungti prie Memos",
     "view-all": "Peržiūrėti viską"
   },
+  "heatmap": {
+    "show-calendar": "Show calendar",
+    "show-heatmap": "Show heatmap",
+    "stats-summary": "{{total}} memos · {{days}} days recorded · {{streak}}-day streak",
+    "title": "Heatmap"
+  },
   "locale-picker": {
     "no-language-feedback": "Kalba nerasta? Pateikite atsiliepimą"
   },

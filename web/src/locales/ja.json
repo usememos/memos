@@ -137,6 +137,12 @@
     "resize-panel": "パネルのサイズを変更する",
     "view-all": "すべて表示"
   },
+  "heatmap": {
+    "show-calendar": "Show calendar",
+    "show-heatmap": "Show heatmap",
+    "stats-summary": "{{total}} memos · {{days}} days recorded · {{streak}}-day streak",
+    "title": "Heatmap"
+  },
   "locale-picker": {
     "no-language-feedback": "言語が見つかりませんか? フィードバックを送信する"
   },

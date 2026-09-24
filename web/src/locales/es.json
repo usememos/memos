@@ -137,6 +137,12 @@
     "sign-in-to-memos": "Iniciar sesión en Memos",
     "view-all": "Ver todo"
   },
+  "heatmap": {
+    "show-calendar": "Show calendar",
+    "show-heatmap": "Show heatmap",
+    "stats-summary": "{{total}} memos · {{days}} days recorded · {{streak}}-day streak",
+    "title": "Heatmap"
+  },
   "locale-picker": {
     "no-language-feedback": "¿Idioma no encontrado? Enviar comentarios"
   },
