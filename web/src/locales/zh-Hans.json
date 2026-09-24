@@ -1,4 +1,10 @@
 {
+  "heatmap": {
+    "show-calendar": "切换到月历",
+    "show-heatmap": "切换到热力图",
+    "stats-summary": "累计 {{total}} 条 · 记录 {{days}} 天 · 连续 {{streak}} 天",
+    "title": "热力图"
+  },
   "map": {
     "selection": "选中的 Memo",
     "loaded": "已加载 {{count}} 条",

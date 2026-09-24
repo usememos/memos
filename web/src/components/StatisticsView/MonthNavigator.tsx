@@ -7,7 +7,7 @@ import { addMonths, formatMonthLabel } from "@/lib/calendar-utils";
 import { cn } from "@/lib/utils";
 import type { MonthNavigatorProps } from "@/types/statistics";
 
-export const MonthNavigator = memo(({ visibleMonth, onMonthChange }: MonthNavigatorProps) => {
+export const MonthNavigator = memo(({ visibleMonth, onMonthChange, action }: MonthNavigatorProps) => {
   const { i18n, t } = useTranslation();
   const monthLabel = formatMonthLabel(visibleMonth, i18n.language);
   const handlePrevMonth = () => onMonthChange(addMonths(visibleMonth, -1));
@@ -25,6 +25,8 @@ export const MonthNavigator = memo(({ visibleMonth, onMonthChange }: MonthNaviga
         <Button variant="quiet" size="icon-sm" onClick={handleNextMonth} aria-label={t("common.next-month")}>
           <ChevronRightIcon className="size-4 rtl:rotate-180" strokeWidth={1.75} />
         </Button>
+
+        {action}
       </nav>
     </header>
   );
