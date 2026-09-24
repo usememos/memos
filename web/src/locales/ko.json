@@ -137,6 +137,12 @@
     "unlink": "연결 해제",
     "view-all": "모두 보기"
   },
+  "heatmap": {
+    "show-calendar": "Show calendar",
+    "show-heatmap": "Show heatmap",
+    "stats-summary": "{{total}} memos · {{days}} days recorded · {{streak}}-day streak",
+    "title": "Heatmap"
+  },
   "locale-picker": {
     "no-language-feedback": "언어를 찾을 수 없나요? 피드백 제출"
   },

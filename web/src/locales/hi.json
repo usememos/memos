@@ -137,6 +137,12 @@
     "unlink": "अनलिंक करें",
     "view-all": "सभी देखें"
   },
+  "heatmap": {
+    "show-calendar": "Show calendar",
+    "show-heatmap": "Show heatmap",
+    "stats-summary": "{{total}} memos · {{days}} days recorded · {{streak}}-day streak",
+    "title": "Heatmap"
+  },
   "locale-picker": {
     "no-language-feedback": "भाषा नहीं मिली? प्रतिक्रिया सबमिट करें"
   },
