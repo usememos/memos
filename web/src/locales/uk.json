@@ -137,6 +137,12 @@
     "sign-in-to-memos": "Увійти до Memos",
     "view-all": "Переглянути всі"
   },
+  "heatmap": {
+    "show-calendar": "Show calendar",
+    "show-heatmap": "Show heatmap",
+    "stats-summary": "{{total}} memos · {{days}} days recorded · {{streak}}-day streak",
+    "title": "Heatmap"
+  },
   "locale-picker": {
     "no-language-feedback": "Мова не знайдена? Надіслати відгук"
   },

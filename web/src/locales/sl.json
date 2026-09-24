@@ -137,6 +137,12 @@
     "sign-in-to-memos": "Prijava v Memos",
     "view-all": "Ogled vseh"
   },
+  "heatmap": {
+    "show-calendar": "Show calendar",
+    "show-heatmap": "Show heatmap",
+    "stats-summary": "{{total}} memos · {{days}} days recorded · {{streak}}-day streak",
+    "title": "Heatmap"
+  },
   "locale-picker": {
     "no-language-feedback": "Jezik ni bil najden? Pošlji povratne informacije"
   },

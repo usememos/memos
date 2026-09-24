@@ -175,6 +175,12 @@
     "sign-in-to-memos": "Prihlásiť sa do Memos",
     "view-all": "Zobraziť všetko"
   },
+  "heatmap": {
+    "show-calendar": "Show calendar",
+    "show-heatmap": "Show heatmap",
+    "stats-summary": "{{total}} memos · {{days}} days recorded · {{streak}}-day streak",
+    "title": "Heatmap"
+  },
   "locale-picker": {
     "no-language-feedback": "Jazyk sa nenašiel? Odoslať spätnú väzbu"
   },
