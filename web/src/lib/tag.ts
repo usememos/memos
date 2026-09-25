@@ -75,3 +75,23 @@ export const isValidTagPattern = (pattern: string): boolean => {
 /** Whether any of the memo's tags is set to blur its content for this user. */
 export const isMemoBlurred = (memo: { tags: string[] }, tagsSetting: UserSetting_TagsSetting | undefined): boolean =>
   tagsSetting !== undefined && memo.tags.some((tag) => findTagMetadata(tag, tagsSetting)?.blurContent === true);
+
+/**
+ * A leading emoji doubles as the tag's icon, flomo-style: `#📗读书` shows 📗 in place of
+ * the # mark and drops the emoji from the label. Covers ZWJ sequences (👨‍👩‍👧) and skin-tone
+ * modifiers (👍🏽); keycap sequences (1️⃣) are intentionally left out.
+ */
+const LEADING_EMOJI_RE = /^(\p{Extended_Pictographic}(?:️|\p{Emoji_Modifier})?(?:‍\p{Extended_Pictographic}(?:️|\p{Emoji_Modifier})?)*)/u;
+
+export interface TagEmojiParts {
+  icon?: string;
+  text: string;
+}
+
+export const extractTagEmoji = (tag: string): TagEmojiParts => {
+  const match = tag.match(LEADING_EMOJI_RE);
+  if (!match) return { text: tag };
+  const text = tag.slice(match[0].length);
+  // An emoji-only tag name keeps its emoji as the label rather than rendering nothing.
+  return text ? { icon: match[0], text } : { text: tag };
+};

@@ -12,12 +12,14 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { useLocalStorage, useOverflowTitle } from "@/hooks";
+import { extractTagEmoji } from "@/lib/tag";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import TagTree, { tagRowAriaLabel } from "../TagTree";
 import {
   SIDEBAR_ROW_CLASSES,
   SIDEBAR_ROW_COUNT_RAIL_CLASSES,
+  SidebarRowEmojiSlot,
   SidebarRowIconSlot,
   sidebarRowStateAttributes,
   sidebarRowStateClasses,
@@ -58,6 +60,7 @@ interface FlatTagRowProps {
 
 const FlatTagRow = ({ tag, amount, active, ariaLabel, onClick }: FlatTagRowProps) => {
   const { ref, title } = useOverflowTitle<HTMLSpanElement>(`#${tag}`);
+  const { icon, text } = extractTagEmoji(tag);
   const state = active ? "checked" : "idle";
 
   return (
@@ -70,9 +73,9 @@ const FlatTagRow = ({ tag, amount, active, ariaLabel, onClick }: FlatTagRowProps
       className={cn(SIDEBAR_ROW_CLASSES, sidebarRowStateClasses(state))}
       onClick={onClick}
     >
-      {/* Same leading slot as the tree, so the # marks hold their line when switching modes. */}
-      <SidebarRowIconSlot icon={HashIcon} />
-      <TagPath ref={ref} tag={tag} />
+      {/* A leading emoji replaces the # mark, flomo-style; the slot keeps its line either way. */}
+      {icon ? <SidebarRowEmojiSlot emoji={icon} /> : <SidebarRowIconSlot icon={HashIcon} />}
+      <TagPath ref={ref} tag={text} />
       <span className={SIDEBAR_ROW_COUNT_RAIL_CLASSES}>{amount}</span>
     </button>
   );
