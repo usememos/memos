@@ -406,6 +406,27 @@
       "storage-usage-error": "Votre espace de stockage de pièces jointes est indisponible.",
       "email-in-use": "Ce compte de messagerie est déjà utilisé."
     },
+    "ai-assistant": {
+      "analyze-failed": "AI analysis failed: {{message}}",
+      "analyzed": "AI analysis added as a comment",
+      "api-key": "API key",
+      "base-url": "Endpoint (OpenAI-compatible)",
+      "base-url-placeholder": "e.g. https://api.deepseek.com/v1",
+      "context": "What to share with the AI",
+      "context-count": "Reference count",
+      "context-count-note": "Up to 50, newest first",
+      "context-recent": "Recent cards",
+      "context-self": "Only this card",
+      "context-tag": "Cards under the same tag",
+      "default-prompt": "You are a warm, perceptive writing companion. I will share a card I just wrote. Please: 1) sum up what this note is really saying in one or two sentences; 2) offer one or two follow-up questions worth pondering; 3) point out any echo with my earlier notes. Keep it natural, under 150 words.",
+      "enable": "Analyze new cards after saving",
+      "label": "AI Assistant",
+      "model": "Model",
+      "model-placeholder": "e.g. deepseek-chat, gpt-4o-mini",
+      "prompt": "Analysis prompt",
+      "prompt-note": "The AI follows this prompt for every new card and posts the result as a comment. Falls back to the default prompt when empty.",
+      "storage-note": "After a new card is saved, your own AI analyzes it and appends a comment. These settings live in this browser only and are never uploaded to the server."
+    },
     "instance": {
       "disallow-change-nickname": "Interdire le changement de surnom",
       "disallow-change-username": "Interdire le changement de nom d'utilisateur",

@@ -11,6 +11,7 @@ import {
   type LucideIcon,
   MailIcon,
   Settings2Icon,
+  SparklesIcon,
   TagsIcon,
   UserIcon,
   UsersIcon,
@@ -18,6 +19,7 @@ import {
 } from "lucide-react";
 import { type ComponentType } from "react";
 import AccessTokenSection from "@/components/Settings/AccessTokenSection";
+import AIAssistantSection from "@/components/Settings/AIAssistantSection";
 import AISection from "@/components/Settings/AISection";
 import InstanceSection from "@/components/Settings/InstanceSection";
 import MemberSection from "@/components/Settings/MemberSection";
@@ -49,6 +51,7 @@ export type SettingSectionKey =
   | "sso"
   | "tags"
   | "ai"
+  | "ai-assistant"
   | "resource-stats";
 
 type SettingSectionScope = "basic" | "admin";
@@ -155,6 +158,13 @@ export const SETTINGS_SECTIONS: SettingSectionDefinition[] = [
     labelKey: "setting.sso.label",
     icon: KeyIcon,
     component: SSOSection,
+  },
+  {
+    key: "ai-assistant",
+    scope: "basic",
+    labelKey: "setting.ai-assistant.label",
+    icon: SparklesIcon,
+    component: AIAssistantSection,
   },
   {
     key: "ai",

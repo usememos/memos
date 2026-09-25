@@ -1,3 +1,4 @@
+export * from "./aiAssistantService";
 export * from "./cacheService";
 export * from "./errorService";
 export * from "./memoService";

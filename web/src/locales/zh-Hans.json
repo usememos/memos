@@ -382,6 +382,27 @@
     "back-to-top": "回到顶部"
   },
   "setting": {
+    "ai-assistant": {
+      "analyze-failed": "AI 分析失败：{{message}}",
+      "analyzed": "AI 分析完成，已添加到评论",
+      "api-key": "API 密钥",
+      "base-url": "接口地址（OpenAI 兼容）",
+      "base-url-placeholder": "例如 https://api.deepseek.com/v1",
+      "context": "分享给 AI 的内容范围",
+      "context-count": "参考数量",
+      "context-count-note": "最多 50 张，按时间倒序取最新的",
+      "context-recent": "最近的卡片",
+      "context-self": "仅这张卡片",
+      "context-tag": "同一标签下的卡片",
+      "default-prompt": "你是一位温和而敏锐的写作陪伴者。我会分享一张我刚记录的卡片，请你：1. 用一两句话点出这条记录真正在说什么；2. 如果有值得深挖的地方，给我一两个追问；3. 如果它呼应了我之前的记录，指出来。语气自然，不超过 150 字。",
+      "enable": "保存卡片后自动分析",
+      "label": "AI 助手",
+      "model": "模型",
+      "model-placeholder": "例如 deepseek-chat、gpt-4o-mini",
+      "prompt": "分析提示词",
+      "prompt-note": "AI 会按照这个提示词分析每张新卡片，分析结果以评论形式添加到卡片上。留空时使用默认提示词。",
+      "storage-note": "保存新卡片后自动调用你自己的 AI 分析并追加评论。以下配置仅保存在当前浏览器中，不会上传到服务器。"
+    },
     "member": {
       "active": "启用中",
       "admin": "管理员",
