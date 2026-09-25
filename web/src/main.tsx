@@ -69,7 +69,15 @@ function Main() {
               <ViewProvider>
                 <AppInitializer>
                   <RouterProvider router={router} />
-                  <Toaster position="top-right" />
+                  <Toaster
+                    position="top-right"
+                    toastOptions={{
+                      style: {
+                        background: "var(--popover)",
+                        color: "var(--popover-foreground)",
+                      },
+                    }}
+                  />
                 </AppInitializer>
               </ViewProvider>
             </TooltipProvider>
