@@ -1,7 +1,14 @@
 import { create } from "@bufbuild/protobuf";
 import { toast } from "react-hot-toast";
 import { memoServiceClient } from "@/connect";
-import { type AIAssistantConfig, clampContextCount, isAIAssistantReady, loadAIAssistantConfig, requestAnalysis } from "@/lib/ai-assistant";
+import {
+  type AIAssistantProfile,
+  buildAICommentContent,
+  clampContextCount,
+  loadAIAssistantConfig,
+  pickAssistant,
+  requestAnalysis,
+} from "@/lib/ai-assistant";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { MemoSchema, Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import type { useTranslate } from "@/utils/i18n";
@@ -15,51 +22,55 @@ const pickContextContents = (memos: Memo[], excludeName: string, count: number):
     .slice(0, count)
     .map((memo) => memo.content);
 
-const gatherContext = async (config: AIAssistantConfig, newMemoName: string): Promise<string[]> => {
-  if (config.contextScope === "self") return [];
+const gatherContext = async (assistant: AIAssistantProfile, newMemo: Memo): Promise<string[]> => {
+  if (assistant.contextScope === "self") return [];
 
-  const count = clampContextCount(config.contextCount);
+  const count = clampContextCount(assistant.contextCount);
   // A handful extra so filtering out the new card and comments never starves the list.
   const pageSize = count + 5;
 
-  if (config.contextScope === "recent") {
+  if (assistant.contextScope === "recent") {
     const { memos } = await memoServiceClient.listMemos({ pageSize, orderBy: "create_time desc" });
-    return pickContextContents(memos, newMemoName, count);
+    return pickContextContents(memos, newMemo.name, count);
   }
 
-  // scope === "tag": cards sharing the new card's first tag. The server extracts tags on
-  // save, so read them back instead of parsing the content ourselves.
-  const newMemo = await memoServiceClient.getMemo({ name: newMemoName });
-  const firstTag = newMemo.tags?.[0];
-  if (!firstTag) return [];
-  const escapedTag = firstTag.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+  // scope === "tag"：标签助手用它自己的匹配标签，默认助手用新卡片的第一个标签。
+  const tag = assistant.matchTag || newMemo.tags?.[0];
+  if (!tag) return [];
+  const escapedTag = tag.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
   const { memos } = await memoServiceClient.listMemos({
     pageSize,
     orderBy: "create_time desc",
     filter: `tag in ["${escapedTag}"]`,
   });
-  return pickContextContents(memos, newMemoName, count);
+  return pickContextContents(memos, newMemo.name, count);
 };
 
 /**
- * Fire-and-forget after a new card is saved: analyze it with the user's own AI
- * (OpenAI-compatible) and attach the result as a private comment on the card.
- * Silently skips when the assistant is not configured; errors surface as a toast
- * and never disturb the saved card.
+ * Fire-and-forget after a new card is saved: route it to the matching assistant
+ * (tag assistants first, default assistant as fallback), analyze it with the user's
+ * own AI, and attach the result as a private comment signed with the assistant's name.
+ * Errors surface only as a toast and never disturb the saved card.
  */
 export const analyzeNewMemo = async (memoName: string, content: string, t: Translate, onCommented?: () => void): Promise<void> => {
   const config = loadAIAssistantConfig();
-  if (!isAIAssistantReady(config)) return;
-
-  // 提示词留空时回落到当前语言的默认提示词。
-  const effectiveConfig: AIAssistantConfig = { ...config, prompt: config.prompt.trim() || t("setting.ai-assistant.default-prompt") };
 
   try {
-    const context = await gatherContext(effectiveConfig, memoName);
-    const analysis = await requestAnalysis(effectiveConfig, content, context);
+    // 标签是服务端保存时提取的，读回来做路由，比前端自己解析可靠。
+    const newMemo = await memoServiceClient.getMemo({ name: memoName });
+    const assistant = pickAssistant(config, newMemo.tags ?? []);
+    if (!assistant) return;
+
+    const displayName = assistant.name.trim() || t("setting.ai-assistant.default-name");
+    const prompt = assistant.prompt.trim() || t("setting.ai-assistant.default-prompt");
+    const context = await gatherContext(assistant, newMemo);
+    const analysis = await requestAnalysis(config, prompt, content, context);
     await memoServiceClient.createMemoComment({
       name: memoName,
-      comment: create(MemoSchema, { content: analysis, visibility: Visibility.PRIVATE }),
+      comment: create(MemoSchema, {
+        content: buildAICommentContent(displayName, analysis),
+        visibility: Visibility.PRIVATE,
+      }),
     });
     toast.success(t("setting.ai-assistant.analyzed"));
     onCommented?.();
