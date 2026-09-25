@@ -8,7 +8,7 @@ import { userKeys } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
 import type { Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
-import { errorService, memoService, validationService } from "../services";
+import { analyzeNewMemo, errorService, memoService, validationService } from "../services";
 import { useEditorContext } from "../state";
 
 /** How long a closing host shows "Saved" before it unmounts the editor. */
@@ -104,6 +104,12 @@ export function useMemoSave({
 
       if (!memoName && !parentMemoName) {
         markNewMemo(result.memoName);
+        // AI 卡片助手：新卡片保存成功后，后台分析并把结果追加为评论。
+        // 未配置时静默跳过；分析失败只弹提示，不影响卡片本身。
+        void analyzeNewMemo(result.memoName, state.content, t, () => {
+          void queryClient.invalidateQueries({ queryKey: memoKeys.comments(result.memoName) });
+          void queryClient.invalidateQueries({ queryKey: memoKeys.detail(result.memoName) });
+        });
       }
       onConfirm?.(result.memoName);
     } catch (error) {
