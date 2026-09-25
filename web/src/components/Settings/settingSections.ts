@@ -161,10 +161,11 @@ export const SETTINGS_SECTIONS: SettingSectionDefinition[] = [
   },
   {
     key: "ai-assistant",
-    scope: "basic",
+    scope: "admin",
     labelKey: "setting.ai-assistant.label",
     icon: SparklesIcon,
     component: AIAssistantSection,
+    preloadSettingKeys: [InstanceSetting_Key.AI],
   },
   {
     key: "ai",

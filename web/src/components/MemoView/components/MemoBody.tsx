@@ -5,7 +5,6 @@ import { AttachmentGallery, MemoMetadataRows } from "@/components/MemoMetadata";
 import { separateAttachments } from "@/components/MemoMetadata/Attachment/attachmentHelpers";
 import { isReferenceRelation } from "@/components/MemoMetadata/Relation/relationHelpers";
 import { Button } from "@/components/ui/button";
-import { stripAICommentMarker } from "@/lib/ai-assistant";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { filterInlineManagedAttachments } from "@/utils/managed-attachment";
@@ -33,8 +32,6 @@ const MemoBody: React.FC<MemoBodyProps> = ({ compact }) => {
   const { handleMemoContentClick, handleMemoContentDoubleClick } = useMemoHandlers({ readonly, openEditor, openPreview });
 
   const referencedMemos = memo.relations.filter(isReferenceRelation);
-  // AI 助手评论的署名标记在渲染正文前剥掉；普通卡片内容原样返回。
-  const displayContent = useMemo(() => stripAICommentMarker(memo.content), [memo.content]);
   // Memoized so AttachmentListView's own useMemo chain keeps its cache across body renders.
   const attachmentOnlyItems = useMemo(
     () => filterInlineManagedAttachments(memo.content, memo.attachments),
@@ -57,7 +54,7 @@ const MemoBody: React.FC<MemoBodyProps> = ({ compact }) => {
             <MemoContent
               memoName={memo.name}
               parentPage={parentPage}
-              content={displayContent}
+              content={memo.content}
               attachments={memo.attachments}
               onClick={handleMemoContentClick}
               onDoubleClick={handleMemoContentDoubleClick}

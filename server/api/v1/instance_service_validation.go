@@ -124,6 +124,9 @@ func (s *APIV1Service) prepareInstanceAISettingForUpdate(ctx context.Context, se
 	if err := preparePersistedTranscriptionConfig(setting, existing); err != nil {
 		return err
 	}
+	if err := s.prepareAssistantsConfigForUpdate(ctx, setting, existing); err != nil {
+		return err
+	}
 	return nil
 }
 

@@ -191,6 +191,9 @@ message InstanceAISetting {
   // transcription is the speech-to-text feature configuration.
   // When unset or transcription.provider_id is empty, transcription is disabled.
   TranscriptionConfig transcription = 2;
+
+  // assistants configures automatic AI review of newly created memos.
+  AssistantsConfig assistants = 3;
 }
 
 message AIProviderConfig {
@@ -234,6 +237,73 @@ message TranscriptionConfig {
   // may ignore) and folded into the Gemini generation prompt as a "Context and
   // spelling hints" block (which the LLM will treat more literally).
   string prompt = 4;
+}
+
+// AssistantsConfig configures the automatic memo review feature.
+// When a memo is created, the first enabled assistant whose tag filter matches
+// analyzes it and posts the result as a comment authored by the assistant's
+// dedicated bot account.
+message AssistantsConfig {
+  // enabled is the master switch for automatic memo review.
+  bool enabled = 1;
+
+  // assistants is the ordered list of configured assistants.
+  // Routing picks the first enabled assistant whose tags match the new memo;
+  // an enabled assistant with no tags acts as the fallback for every memo.
+  repeated AIAssistantConfig assistants = 2;
+}
+
+// AIAssistantConfig is one reviewer persona.
+message AIAssistantConfig {
+  // id is a stable client-generated identifier.
+  string id = 1;
+
+  // title is the display name shown as the comment author.
+  string title = 2;
+
+  // icon is an optional emoji used as the assistant's avatar.
+  string icon = 3;
+
+  // prompt is the system instruction sent to the model.
+  // Empty string falls back to the built-in default prompt.
+  string prompt = 4;
+
+  // tags routes memos to this assistant. A memo matches when it carries any
+  // listed tag, or a nested child of it (e.g. "book" matches "book/notes").
+  // An empty list makes this assistant the fallback for unmatched memos.
+  repeated string tags = 5;
+
+  // provider_id references an entry in InstanceAISetting.providers[].id.
+  string provider_id = 6;
+
+  // model is the provider-specific model identifier.
+  // Empty string falls back to the engine default.
+  string model = 7;
+
+  // context_scope selects which of the author's memos are sent as background.
+  AIAssistantContextScope context_scope = 8;
+
+  // context_limit caps how many background memos are included.
+  // Ignored when context_scope is CURRENT_MEMO_ONLY.
+  int32 context_limit = 9;
+
+  // enabled allows pausing one assistant without deleting it.
+  bool enabled = 10;
+
+  // bot_user_id is the user account that authors this assistant's comments.
+  // Assigned by the server when the assistant is saved.
+  int32 bot_user_id = 11;
+}
+
+// AIAssistantContextScope selects the background memos sent with a review.
+enum AIAssistantContextScope {
+  AI_ASSISTANT_CONTEXT_SCOPE_UNSPECIFIED = 0;
+  // CURRENT_MEMO_ONLY sends just the new memo.
+  CURRENT_MEMO_ONLY = 1;
+  // RECENT_MEMOS also sends the author's most recent memos.
+  RECENT_MEMOS = 2;
+  // SAME_TAG_MEMOS also sends the author's memos sharing the matched tag.
+  SAME_TAG_MEMOS = 3;
 }
 
 enum InstanceAccessMode {

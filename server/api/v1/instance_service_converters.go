@@ -370,6 +370,7 @@ func convertInstanceAISettingFromStore(setting *storepb.InstanceAISetting) *v1pb
 	aiSetting := &v1pb.InstanceSetting_AISetting{
 		Providers:     make([]*v1pb.InstanceSetting_AIProviderConfig, 0, len(setting.Providers)),
 		Transcription: convertTranscriptionConfigFromStore(setting.GetTranscription()),
+		Assistants:    convertAssistantsConfigFromStore(setting.GetAssistants()),
 	}
 	for _, provider := range setting.Providers {
 		if provider == nil {
@@ -396,6 +397,7 @@ func convertInstanceAISettingToStore(setting *v1pb.InstanceSetting_AISetting) *s
 	aiSetting := &storepb.InstanceAISetting{
 		Providers:     make([]*storepb.AIProviderConfig, 0, len(setting.Providers)),
 		Transcription: convertTranscriptionConfigToStore(setting.GetTranscription()),
+		Assistants:    convertAssistantsConfigToStore(setting.GetAssistants()),
 	}
 	for _, provider := range setting.Providers {
 		if provider == nil {
@@ -434,4 +436,62 @@ func convertTranscriptionConfigToStore(setting *v1pb.InstanceSetting_Transcripti
 		Language:   setting.GetLanguage(),
 		Prompt:     setting.GetPrompt(),
 	}
+}
+
+func convertAssistantsConfigFromStore(setting *storepb.AssistantsConfig) *v1pb.InstanceSetting_AssistantsConfig {
+	if setting == nil {
+		return nil
+	}
+	config := &v1pb.InstanceSetting_AssistantsConfig{
+		Enabled:    setting.GetEnabled(),
+		Assistants: make([]*v1pb.InstanceSetting_AIAssistantConfig, 0, len(setting.GetAssistants())),
+	}
+	for _, assistant := range setting.GetAssistants() {
+		if assistant == nil {
+			continue
+		}
+		config.Assistants = append(config.Assistants, &v1pb.InstanceSetting_AIAssistantConfig{
+			Id:           assistant.GetId(),
+			Title:        assistant.GetTitle(),
+			Icon:         assistant.GetIcon(),
+			Prompt:       assistant.GetPrompt(),
+			Tags:         append([]string(nil), assistant.GetTags()...),
+			ProviderId:   assistant.GetProviderId(),
+			Model:        assistant.GetModel(),
+			ContextScope: v1pb.InstanceSetting_AIAssistantContextScope(assistant.GetContextScope()),
+			ContextLimit: assistant.GetContextLimit(),
+			Enabled:      assistant.GetEnabled(),
+		})
+	}
+	return config
+}
+
+func convertAssistantsConfigToStore(setting *v1pb.InstanceSetting_AssistantsConfig) *storepb.AssistantsConfig {
+	if setting == nil {
+		return nil
+	}
+	config := &storepb.AssistantsConfig{
+		Enabled:    setting.GetEnabled(),
+		Assistants: make([]*storepb.AIAssistantConfig, 0, len(setting.GetAssistants())),
+	}
+	for _, assistant := range setting.GetAssistants() {
+		if assistant == nil {
+			continue
+		}
+		// bot_user_id is intentionally absent from the API message; it is restored
+		// from the persisted setting by prepareAssistantsConfigForUpdate.
+		config.Assistants = append(config.Assistants, &storepb.AIAssistantConfig{
+			Id:           assistant.GetId(),
+			Title:        assistant.GetTitle(),
+			Icon:         assistant.GetIcon(),
+			Prompt:       assistant.GetPrompt(),
+			Tags:         append([]string(nil), assistant.GetTags()...),
+			ProviderId:   assistant.GetProviderId(),
+			Model:        assistant.GetModel(),
+			ContextScope: storepb.AIAssistantContextScope(assistant.GetContextScope()),
+			ContextLimit: assistant.GetContextLimit(),
+			Enabled:      assistant.GetEnabled(),
+		})
+	}
+	return config
 }
