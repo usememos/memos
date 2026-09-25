@@ -99,3 +99,12 @@ const SidebarRow = ({ state = "idle", icon: Icon, label, count, onClick, trailin
 );
 
 export default SidebarRow;
+
+/** Emoji-sized to match the row's icon box: tags whose name starts with an emoji swap the # mark for it. */
+export const SIDEBAR_ROW_EMOJI_CLASSES = "me-auto flex size-4 shrink-0 items-center justify-center text-[15px] leading-none";
+
+export const SidebarRowEmojiSlot = ({ emoji }: { emoji: string }) => (
+  <span className={SIDEBAR_ROW_SLOT_CLASSES} aria-hidden="true">
+    <span className={SIDEBAR_ROW_EMOJI_CLASSES}>{emoji}</span>
+  </span>
+);

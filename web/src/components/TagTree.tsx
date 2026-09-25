@@ -3,15 +3,18 @@ import { useEffect, useMemo } from "react";
 import {
   SIDEBAR_ROW_BOX_CLASSES,
   SIDEBAR_ROW_COUNT_RAIL_CLASSES,
+  SIDEBAR_ROW_EMOJI_CLASSES,
   SIDEBAR_ROW_ICON_CLASSES,
   SIDEBAR_ROW_LABEL_CLASSES,
   SIDEBAR_ROW_SLOT_BUTTON_CLASSES,
   SIDEBAR_ROW_SLOT_CLASSES,
+  SidebarRowEmojiSlot,
   SidebarRowIconSlot,
   sidebarRowStateAttributes,
   sidebarRowStateClasses,
 } from "@/components/AppSidebar/SidebarRow";
 import { useLocalStorage, useOverflowTitle } from "@/hooks";
+import { extractTagEmoji } from "@/lib/tag";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 
@@ -92,6 +95,13 @@ const TagMark = ({ className }: { className?: string }) => (
   <HashIcon aria-hidden="true" className={cn(SIDEBAR_ROW_ICON_CLASSES, className)} strokeWidth={1.8} />
 );
 
+/** A leading emoji in the tag name takes over the mark slot, flomo-style. */
+const TagEmojiMark = ({ emoji, className }: { emoji: string; className?: string }) => (
+  <span aria-hidden="true" className={cn(SIDEBAR_ROW_EMOJI_CLASSES, className)}>
+    {emoji}
+  </span>
+);
+
 const Chevron = ({ open, className }: { open: boolean; className?: string }) => (
   <ChevronRightIcon
     aria-hidden="true"
@@ -123,6 +133,10 @@ const TagItem = ({ tag, depth, activeTag, expanded, onTagClick, onToggle }: TagI
   const { ref: labelRef, title } = useOverflowTitle<HTMLSpanElement>(isTag ? `#${tag.text}` : tag.text);
   const tagLabel = tag.amount !== undefined ? tagRowAriaLabel(t, tag.text, tag.amount) : undefined;
   const state = isActive ? "checked" : "idle";
+  // A leading emoji in this segment becomes the row's mark; structural rows keep the full text
+  // since their slot already carries the disclosure chevron.
+  const { icon, text: segmentLabel } = extractTagEmoji(tag.key);
+  const label = isTag ? segmentLabel : tag.key;
 
   return (
     <div className="w-full min-w-0">
@@ -152,7 +166,11 @@ const TagItem = ({ tag, depth, activeTag, expanded, onTagClick, onToggle }: TagI
             className={SIDEBAR_ROW_SLOT_BUTTON_CLASSES}
             onClick={() => onToggle(tag.text)}
           >
-            <TagMark className="group-hover:hidden group-has-[:focus-visible]:hidden" />
+            {icon ? (
+              <TagEmojiMark emoji={icon} className="group-hover:hidden group-has-[:focus-visible]:hidden" />
+            ) : (
+              <TagMark className="group-hover:hidden group-has-[:focus-visible]:hidden" />
+            )}
             <Chevron open={open} className="hidden group-hover:block group-has-[:focus-visible]:block" />
           </button>
         )}
@@ -165,9 +183,9 @@ const TagItem = ({ tag, depth, activeTag, expanded, onTagClick, onToggle }: TagI
             className={SIDEBAR_ROW_LABEL_CLASSES}
             onClick={() => onTagClick(tag.text)}
           >
-            {!hasSubTags && <SidebarRowIconSlot icon={HashIcon} />}
+            {!hasSubTags && (icon ? <SidebarRowEmojiSlot emoji={icon} /> : <SidebarRowIconSlot icon={HashIcon} />)}
             <span ref={labelRef} className="min-w-0 flex-1 truncate">
-              {tag.key}
+              {label}
             </span>
             <span className={SIDEBAR_ROW_COUNT_RAIL_CLASSES}>{tag.amount}</span>
           </button>
