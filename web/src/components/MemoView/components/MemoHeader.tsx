@@ -7,6 +7,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { useNewMemo } from "@/contexts/NewMemoContext";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import i18n from "@/i18n";
+import { parseAIComment } from "@/lib/ai-assistant";
 import { cn } from "@/lib/utils";
 import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import type { User } from "@/types/proto/api/v1/user_service_pb";
@@ -32,6 +33,8 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showC
   const { createTime, updateTime, displayTime: memoDisplayTime, isDisplayingUpdatedTime, relativeTimeFormat } = useMemoViewDerived();
   const { newMemoName } = useNewMemo();
   const visibilityOption = getVisibilityOption(memo.visibility);
+  // AI 助手的评论带署名标记：作者栏显示助手身份，而不是创建者本人。
+  const aiAuthor = parseAIComment(memo.content)?.assistantName;
 
   const navigateTo = useNavigateTo();
   const handleGotoMemoDetailPage = useCallback(() => {
@@ -68,7 +71,7 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showC
       <div className="flex min-w-0 flex-1 items-center gap-2">
         {/* The time stays visible while the creator and Space badge can shrink and truncate. */}
         <div data-slot="memo-header-meta" className="flex min-w-0 items-center gap-1.5 overflow-hidden">
-          {showCreator && creator && <CreatorDisplay creator={creator} />}
+          {showCreator && (aiAuthor ? <AIAssistantDisplay name={aiAuthor} /> : creator && <CreatorDisplay creator={creator} />)}
           <TimeDisplay displayTime={displayTime} timeTooltip={timeTooltip} onGotoDetail={handleGotoMemoDetailPage} />
           {spaceMetadata}
         </div>
@@ -122,6 +125,19 @@ const CreatorDisplay: React.FC<{ creator: User }> = ({ creator }) => (
       </span>
       <span className="min-w-0 truncate">{creator.displayName || creator.username}</span>
     </Link>
+    <span aria-hidden="true" className="shrink-0 text-muted-foreground/40">
+      ·
+    </span>
+  </>
+);
+
+/** AI 助手评论的署名：机器人头像 + 助手名，不跳转（它不是真实用户）。 */
+const AIAssistantDisplay: React.FC<{ name: string }> = ({ name }) => (
+  <>
+    <span className="flex min-w-0 shrink items-center gap-1.5 text-ui font-medium text-foreground">
+      <span className="flex size-5 shrink-0 items-center justify-center rounded-[5px] bg-primary/10 text-[13px] leading-none">🤖</span>
+      <span className="min-w-0 truncate">{name}</span>
+    </span>
     <span aria-hidden="true" className="shrink-0 text-muted-foreground/40">
       ·
     </span>
