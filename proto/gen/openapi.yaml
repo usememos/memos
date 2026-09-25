@@ -3580,6 +3580,58 @@ components:
                 accessSetting:
                     $ref: '#/components/schemas/InstanceSetting_AccessSetting'
             description: An instance setting resource.
+        InstanceSetting_AIAssistantConfig:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: id is a stable client-generated identifier.
+                title:
+                    type: string
+                    description: title is the display name shown as the comment author.
+                icon:
+                    type: string
+                    description: icon is an optional emoji used as the assistant's avatar.
+                prompt:
+                    type: string
+                    description: |-
+                        prompt is the system instruction sent to the model.
+                         Empty string falls back to the built-in default prompt.
+                tags:
+                    type: array
+                    items:
+                        type: string
+                    description: |-
+                        tags routes memos to this assistant. A memo matches when it carries any
+                         listed tag, or a nested child of it (e.g. "book" matches "book/notes").
+                         An empty list makes this assistant the fallback for unmatched memos.
+                providerId:
+                    type: string
+                    description: provider_id references an entry in AISetting.providers[].id.
+                model:
+                    type: string
+                    description: |-
+                        model is the provider-specific model identifier.
+                         Empty string falls back to the engine default.
+                contextScope:
+                    enum:
+                        - AI_ASSISTANT_CONTEXT_SCOPE_UNSPECIFIED
+                        - CURRENT_MEMO_ONLY
+                        - RECENT_MEMOS
+                        - SAME_TAG_MEMOS
+                    type: string
+                    description: context_scope selects which of the author's memos are sent as background.
+                    format: enum
+                contextLimit:
+                    type: integer
+                    description: |-
+                        context_limit caps how many background memos are included.
+                         Ignored when context_scope is CURRENT_MEMO_ONLY.
+                    format: int32
+                enabled:
+                    type: boolean
+                    description: enabled allows pausing one assistant without deleting it.
+            description: AIAssistantConfig is one reviewer persona.
         InstanceSetting_AIProviderConfig:
             type: object
             properties:
@@ -3623,6 +3675,10 @@ components:
                     description: |-
                         transcription is the speech-to-text feature configuration.
                          When unset or transcription.provider_id is empty, transcription is disabled.
+                assistants:
+                    allOf:
+                        - $ref: '#/components/schemas/InstanceSetting_AssistantsConfig'
+                    description: assistants configures automatic AI review of newly created memos.
             description: AI provider configuration settings.
         InstanceSetting_AccessSetting:
             type: object
@@ -3635,6 +3691,21 @@ components:
                     type: string
                     format: enum
             description: Access policy configuration for the instance.
+        InstanceSetting_AssistantsConfig:
+            type: object
+            properties:
+                enabled:
+                    type: boolean
+                    description: enabled is the master switch for automatic memo review.
+                assistants:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/InstanceSetting_AIAssistantConfig'
+                    description: |-
+                        assistants is the ordered list of configured assistants.
+                         Routing picks the first enabled assistant whose tags match the new memo;
+                         an enabled assistant with no tags acts as the fallback for every memo.
+            description: AssistantsConfig configures the automatic memo review feature.
         InstanceSetting_GeneralSetting:
             type: object
             properties:

@@ -76,6 +76,10 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 
 	s.dispatchMemoMentionNotificationsBestEffort(ctx, memo, nil, "")
 
+	// Queue automatic AI review. This runs off the request path, so the memo is
+	// returned immediately and the comment appears when the provider answers.
+	s.dispatchAssistantReviewBestEffort(ctx, memo)
+
 	return memoMessage, nil
 }
 

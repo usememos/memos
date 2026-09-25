@@ -91,6 +91,11 @@ type APIV1Service struct {
 	linkMetadataFetcher linkMetadataFetcher
 	attachmentUploads   attachmentUploads
 	memoImports         memoImports
+
+	// assistantReview runs automatic AI review of new memos off the request
+	// path. The worker pool starts on first use so instances without any
+	// assistant configured never spawn it.
+	assistantReview assistantReviewDispatcher
 }
 
 // NewAPIV1Service creates an API v1 service with its shared dependencies.

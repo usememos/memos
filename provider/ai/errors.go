@@ -14,4 +14,7 @@ var (
 	// ErrAudioLLMNotSupported indicates that the provider does not have a
 	// multimodal-audio LLM available in this codebase.
 	ErrAudioLLMNotSupported = errors.New("provider does not support multimodal audio capability")
+	// ErrChatNotSupported indicates that the provider does not have a
+	// text-generation implementation in this codebase.
+	ErrChatNotSupported = errors.New("provider does not support text generation capability")
 )
