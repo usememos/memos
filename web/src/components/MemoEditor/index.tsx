@@ -23,6 +23,7 @@ import {
   useMemoInit,
   useMemoSave,
 } from "./hooks";
+import { useAttachmentTranscription } from "./hooks/useAttachmentTranscription";
 import { cacheService, errorService, transcriptionService } from "./services";
 import { EditorProvider, useEditorContext, useEditorSelector } from "./state";
 import { EditorToolbar, FormattingToolbar } from "./Toolbar";
@@ -149,6 +150,8 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
     editor.scrollToCursor();
   }, []);
 
+  const { transcribeAttachment, transcribingAttachment } = useAttachmentTranscription(insertTranscribedText);
+
   const handleTranscribeRecordedAudio = useCallback(
     async (localFile: LocalFile) => {
       if (!canTranscribe) {
@@ -207,6 +210,10 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   }, [audioRecorder.isBusy, actions, dispatch]);
 
   useEffect(() => {
+    dispatch(actions.setLoading("transcribing", Boolean(transcribingAttachment)));
+  }, [transcribingAttachment, actions, dispatch]);
+
+  useEffect(() => {
     if (!isAudioRecorderOpen) {
       return;
     }
@@ -250,7 +257,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   };
 
   const handleAudioRecorderClick = () => {
-    if (audioRecorder.isBusy) {
+    if (audioRecorder.isBusy || transcribingAttachment) {
       return;
     }
 
@@ -389,6 +396,9 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
             uploadingLocalFileURLs={inlineImageUpload.uploadingLocalFileURLs}
             onInsertAttachments={inlineImageUpload.insertRemoteImages}
             onInsertLocalFiles={inlineImageUpload.insertLocalImages}
+            onTranscribeAttachment={canTranscribe ? transcribeAttachment : undefined}
+            transcribingAttachment={transcribingAttachment}
+            transcriptionDisabled={isSaving || audioRecorder.isBusy || isTranscribingAudio}
           />
           {!memo && !parentMemoName && isInitialized && suggestions.length > 0 && (
             <EditorSuggestions suggestions={suggestions} controllerRef={editorRef} space={editorSpace} />

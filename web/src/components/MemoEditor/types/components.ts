@@ -80,6 +80,9 @@ export interface EditorToolbarProps {
 }
 
 export interface EditorMetadataProps {
+  onTranscribeAttachment?: (attachment: Attachment) => void;
+  transcribingAttachment?: string;
+  transcriptionDisabled?: boolean;
   memoName?: string;
   uploadingLocalFileURLs: ReadonlySet<string>;
   onInsertAttachments: (attachments: Attachment[]) => void;

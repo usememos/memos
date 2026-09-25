@@ -1,4 +1,15 @@
-import { ChevronDownIcon, ChevronUpIcon, FileAudioIcon, FileIcon, ImagePlusIcon, PauseIcon, PlayIcon, XIcon } from "lucide-react";
+import {
+  ChevronDownIcon,
+  ChevronUpIcon,
+  FileAudioIcon,
+  FileIcon,
+  FileTextIcon,
+  ImagePlusIcon,
+  LoaderIcon,
+  PauseIcon,
+  PlayIcon,
+  XIcon,
+} from "lucide-react";
 import { type FC, type MouseEvent, useMemo, useRef, useState } from "react";
 import type { AttachmentItem, LocalFile } from "@/components/MemoEditor/types/attachment";
 import { getAudioRecordingTimeLabel, toAttachmentItems } from "@/components/MemoEditor/types/attachment";
@@ -24,6 +35,9 @@ const collectMembers = <T,>(byId: ReadonlyMap<string, T>, memberIds: string[]): 
   memberIds.map((memberId) => byId.get(memberId)).filter((member): member is T => member !== undefined);
 
 interface AttachmentListEditorProps {
+  onTranscribeAttachment?: (attachment: Attachment) => void;
+  transcribingAttachment?: string;
+  transcriptionDisabled?: boolean;
   attachments: Attachment[];
   localFiles?: LocalFile[];
   onAttachmentsChange?: (attachments: Attachment[]) => void;
@@ -38,19 +52,34 @@ interface AttachmentListEditorProps {
 
 /** Trailing controls of an attachment row: quiet 24px squares that show once the row is engaged. */
 const AttachmentItemActions: FC<{
+  transcriptionAction?: { label: string; onClick: () => void; disabled: boolean; busy: boolean };
   placementAction?: { label: string; onClick: () => void; disabled?: boolean };
   onRemove?: () => void;
   onMoveUp?: () => void;
   onMoveDown?: () => void;
   canMoveUp?: boolean;
   canMoveDown?: boolean;
-}> = ({ placementAction, onRemove, onMoveUp, onMoveDown, canMoveUp = true, canMoveDown = true }) => {
+}> = ({ transcriptionAction, placementAction, onRemove, onMoveUp, onMoveDown, canMoveUp = true, canMoveDown = true }) => {
   const stopPropagation = (event: MouseEvent) => {
     event.stopPropagation();
   };
 
   return (
     <div className={METADATA_ROW_CONTROLS_CLASSES}>
+      {transcriptionAction && (
+        <Button
+          variant="quiet"
+          size="sm"
+          disabled={transcriptionAction.disabled}
+          onClick={(event) => {
+            stopPropagation(event);
+            transcriptionAction.onClick();
+          }}
+        >
+          {transcriptionAction.busy ? <LoaderIcon className="size-3.5 animate-spin" /> : <FileTextIcon className="size-3.5" />}
+          {transcriptionAction.label}
+        </Button>
+      )}
       {placementAction && (
         <Button
           variant="quiet"
@@ -116,6 +145,7 @@ const AttachmentItemActions: FC<{
 };
 
 const AttachmentItemCard: FC<{
+  transcriptionAction?: { label: string; onClick: () => void; disabled: boolean; busy: boolean };
   item: AttachmentItem;
   onPreview?: () => void;
   onRemove?: () => void;
@@ -125,7 +155,18 @@ const AttachmentItemCard: FC<{
   canMoveDown?: boolean;
   isUploadingInline?: boolean;
   placementAction?: { label: string; onClick: () => void; disabled?: boolean };
-}> = ({ item, onPreview, onRemove, onMoveUp, onMoveDown, canMoveUp = true, canMoveDown = true, isUploadingInline, placementAction }) => {
+}> = ({
+  item,
+  onPreview,
+  onRemove,
+  onMoveUp,
+  onMoveDown,
+  canMoveUp = true,
+  canMoveDown = true,
+  isUploadingInline,
+  placementAction,
+  transcriptionAction,
+}) => {
   const t = useTranslate();
   const { category, filename, thumbnailUrl, mimeType, size, sourceUrl, isVoiceNote, audioMeta } = item;
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -226,6 +267,7 @@ const AttachmentItemCard: FC<{
       <MetadataRowDetail parts={detailParts} />
 
       <AttachmentItemActions
+        transcriptionAction={transcriptionAction}
         placementAction={placementAction}
         onRemove={onRemove}
         onMoveUp={onMoveUp}
@@ -248,6 +290,9 @@ const AttachmentListEditor: FC<AttachmentListEditorProps> = ({
   onInsertLocalFiles,
   placementActionsDisabled = false,
   uploadingLocalFileURLs = new Set(),
+  onTranscribeAttachment,
+  transcribingAttachment,
+  transcriptionDisabled = false,
 }) => {
   const t = useTranslate();
   const [previewState, setPreviewState] = useState<{ open: boolean; initialIndex: number }>({ open: false, initialIndex: 0 });
@@ -385,6 +430,16 @@ const AttachmentListEditor: FC<AttachmentListEditorProps> = ({
           const itemAttachments = collectMembers(attachmentsByName, item.memberIds);
           const itemLocalFiles = collectMembers(localFilesByPreviewUrl, item.memberIds);
           const isUploadingInline = item.isLocal && item.memberIds.some((memberID) => uploadingLocalFileURLs.has(memberID));
+          const isTranscribing = item.id === transcribingAttachment;
+          const transcriptionAction =
+            !item.isLocal && item.category === "audio" && onTranscribeAttachment
+              ? {
+                  label: t(isTranscribing ? "editor.audio-recorder.transcribing" : "editor.audio-recorder.transcribe"),
+                  onClick: () => onTranscribeAttachment(itemAttachments[0]),
+                  disabled: transcriptionDisabled || Boolean(transcribingAttachment),
+                  busy: isTranscribing,
+                }
+              : undefined;
           const canInsert =
             (item.category === "image" || item.category === "motion") && (item.isLocal || itemAttachments.some(canInlineAttachment));
           const placementAction = canInsert
@@ -402,12 +457,13 @@ const AttachmentListEditor: FC<AttachmentListEditorProps> = ({
               item={item}
               isUploadingInline={isUploadingInline}
               placementAction={placementAction}
+              transcriptionAction={transcriptionAction}
               onPreview={
                 item.category === "image" || item.category === "video" || item.category === "motion"
                   ? () => handlePreviewItem(item)
                   : undefined
               }
-              onRemove={isUploadingInline ? undefined : () => handleRemoveItem(item)}
+              onRemove={isUploadingInline || isTranscribing ? undefined : () => handleRemoveItem(item)}
               onMoveUp={item.isLocal ? () => handleMoveLocalFiles(item.id, -1) : () => handleMoveAttachments(item.id, -1)}
               onMoveDown={item.isLocal ? () => handleMoveLocalFiles(item.id, 1) : () => handleMoveAttachments(item.id, 1)}
               canMoveUp={itemIndex > 0}
