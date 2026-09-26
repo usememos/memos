@@ -181,7 +181,6 @@
     "profile": "個人檔案",
     "referenced-by": "被引用",
     "referencing": "引用",
-    "relations": "關聯",
     "resize-sidebar": "調整側邊欄寬度",
     "resources": "檔案",
     "restore": "還原",
@@ -254,7 +253,6 @@
       "image-upload-stopped": "圖片上傳已暫停 {{completed}}/{{total}}",
       "insert-image": "插入圖片",
       "keep-as-attachments": "保留為附件",
-      "link-memo": "連結備忘錄",
       "retry-image-upload": "重試",
       "uploading-inline-image": "正在上傳到正文",
       "uploading-images": "正在上傳圖片 {{completed}}/{{total}}"
@@ -419,10 +417,6 @@
     "succeed-copy-content": "內容複製到剪貼簿成功。",
     "succeed-copy-link": "複製連結到剪貼簿成功。",
     "update-succeed": "更新成功"
-  },
-  "reference": {
-    "no-memos-found": "未找到任何備忘錄",
-    "search-placeholder": "搜尋內容"
   },
   "resource": {
     "delete-all-unused": "刪除所有未使用的檔案",
@@ -1011,7 +1005,6 @@
     }
   },
   "tooltip": {
-    "link-memo": "連結備忘錄",
     "select-location": "位置"
   },
   "search": {

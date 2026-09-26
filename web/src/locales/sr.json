@@ -137,7 +137,6 @@
     "profile": "Профиле",
     "referenced-by": "Референца од",
     "referencing": "Референца",
-    "relations": "Односи",
     "resources": "Ресурси",
     "restore": "Ресторе",
     "role": "Улога",
@@ -192,7 +191,6 @@
     "focus-mode": "Фоцус Моде",
     "insert-menu": {
       "add-location": "Додајте локацију",
-      "link-memo": "Меморандум о вези",
       "retry-image-upload": "Покушајте поново",
       "add-attachment": "Додај прилог",
       "image-upload-failed": "Неке слике нису могле бити отпремљене. Покушајте поново или задржите отпремљене датотеке као прилоге.",
@@ -379,10 +377,6 @@
     "succeed-copy-content": "Садржај је успешно копиран.",
     "succeed-copy-link": "Линк је успешно копиран.",
     "update-succeed": "Ажурирање је успело"
-  },
-  "reference": {
-    "no-memos-found": "Нису пронађене белешке",
-    "search-placeholder": "Претражите садржај"
   },
   "resource": {
     "delete-all-unused": "Избришите све неискоришћене",
@@ -939,7 +933,6 @@
     }
   },
   "tooltip": {
-    "link-memo": "Линк Мемо",
     "select-location": "Локација"
   },
   "attachment-details": {

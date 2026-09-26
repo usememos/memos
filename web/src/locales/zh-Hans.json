@@ -141,7 +141,6 @@
     "profile": "个人资料",
     "referenced-by": "被引用",
     "referencing": "引用",
-    "relations": "关系图",
     "resize-panel": "调整面板宽度",
     "resources": "资源库",
     "restore": "恢复",
@@ -219,7 +218,6 @@
       "image-upload-stopped": "图片上传已暂停 {{completed}}/{{total}}",
       "insert-image": "插入图片",
       "keep-as-attachments": "保留为附件",
-      "link-memo": "链接备忘录",
       "retry-image-upload": "重试",
       "uploading-inline-image": "正在上传到正文",
       "uploading-images": "正在上传图片 {{completed}}/{{total}}"
@@ -366,10 +364,6 @@
     "succeed-copy-content": "复制内容到剪贴板成功。",
     "succeed-copy-link": "复制链接到剪贴板成功。",
     "update-succeed": "更新成功"
-  },
-  "reference": {
-    "no-memos-found": "没有发现备忘录",
-    "search-placeholder": "搜索内容"
   },
   "resource": {
     "delete-all-unused": "删除所有未使用资源",
@@ -926,7 +920,6 @@
     }
   },
   "tooltip": {
-    "link-memo": "链接备忘录",
     "select-location": "位置"
   },
   "live-update": {

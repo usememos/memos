@@ -98,7 +98,6 @@
     "profile": "Hồ sơ",
     "referenced-by": "Được tham chiếu bởi",
     "referencing": "Đang tham chiếu",
-    "relations": "Liên kết",
     "resources": "Tài nguyên",
     "restore": "Khôi phục",
     "role": "Vai trò",
@@ -156,7 +155,6 @@
     "save": "Lưu",
     "insert-menu": {
       "add-location": "Thêm vị trí",
-      "link-memo": "Liên kết bản ghi nhớ",
       "add-attachment": "Thêm tệp đính kèm",
       "image-upload-failed": "Một số hình ảnh không thể tải lên. Hãy thử lại hoặc giữ các tệp đã tải lên dưới dạng tệp đính kèm.",
       "image-upload-stopped": "Quá trình tải ảnh dừng lại {{completed}}/{{total}}",
@@ -336,10 +334,6 @@
     "succeed-copy-content": "Đã sao chép nội dung thành công.",
     "succeed-copy-link": "Sao chép liên kết thành công.",
     "update-succeed": "Cập nhật thành công"
-  },
-  "reference": {
-    "no-memos-found": "Không tìm thấy ghi chú",
-    "search-placeholder": "Tìm kiếm nội dung"
   },
   "resource": {
     "delete-all-unused": "Xóa tất cả không sử dụng",
@@ -896,7 +890,6 @@
     }
   },
   "tooltip": {
-    "link-memo": "Liên kết ghi chú",
     "select-location": "Chọn vị trí"
   },
   "live-update": {

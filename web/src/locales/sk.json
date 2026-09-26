@@ -137,7 +137,6 @@
     "profile": "Profil",
     "referenced-by": "Odkazuje",
     "referencing": "Odkazovanie",
-    "relations": "Vzťahy",
     "resources": "Zdroje",
     "restore": "Obnoviť",
     "role": "Role",
@@ -192,7 +191,6 @@
     "focus-mode": "Režim zaostrenia",
     "insert-menu": {
       "add-location": "Pridať polohu",
-      "link-memo": "Odkaz na poznámku",
       "retry-image-upload": "Skúste to znova",
       "add-attachment": "Pridať prílohu",
       "image-upload-failed": "Niektoré obrázky sa nepodarilo nahrať. Skúste to znova alebo ponechajte nahrané súbory ako prílohy.",
@@ -379,10 +377,6 @@
     "succeed-copy-content": "Obsah bol úspešne skopírovaný.",
     "succeed-copy-link": "Odkaz bol úspešne skopírovaný.",
     "update-succeed": "Aktualizácia bola úspešná"
-  },
-  "reference": {
-    "no-memos-found": "Nenašli sa žiadne poznámky",
-    "search-placeholder": "Vyhľadajte obsah"
   },
   "resource": {
     "delete-all-unused": "Vymažte všetky nepoužité",
@@ -939,7 +933,6 @@
     }
   },
   "tooltip": {
-    "link-memo": "Odkaz na poznámku",
     "select-location": "Poloha"
   },
   "attachment-details": {

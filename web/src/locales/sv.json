@@ -98,7 +98,6 @@
     "profile": "Profil",
     "referenced-by": "Refererad av",
     "referencing": "Refererar",
-    "relations": "Relationer",
     "resources": "Resurser",
     "restore": "Återställ",
     "role": "Roll",
@@ -154,7 +153,6 @@
     "focus-mode": "Fokusläge",
     "insert-menu": {
       "add-location": "Lägg till plats",
-      "link-memo": "Länkmemo",
       "retry-image-upload": "Försöka igen",
       "add-attachment": "Lägg till bilaga",
       "image-upload-failed": "Vissa bilder kunde inte laddas upp. Försök igen eller behåll de uppladdade filerna som bilagor.",
@@ -341,10 +339,6 @@
     "succeed-copy-content": "Innehåll kopierades framgångsrikt.",
     "succeed-copy-link": "Länk kopierades framgångsrikt.",
     "update-succeed": "Uppdatering lyckades"
-  },
-  "reference": {
-    "no-memos-found": "Inga anteckningar hittades",
-    "search-placeholder": "Sök innehåll"
   },
   "resource": {
     "delete-all-unused": "Ta bort alla oanvända",
@@ -901,7 +895,6 @@
     }
   },
   "tooltip": {
-    "link-memo": "Länk till anteckning",
     "select-location": "Plats"
   },
   "demo": {

@@ -135,7 +135,6 @@
     "profile": "Profil",
     "referenced-by": "Referans Verilenler",
     "referencing": "Referans Verenler",
-    "relations": "İlişkiler",
     "resize-panel": "Paneli yeniden boyutlandır",
     "resize-sidebar": "Kenar çubuğunu yeniden boyutlandır",
     "resources": "Kaynaklar",
@@ -202,7 +201,6 @@
       "image-upload-stopped": "Görsel yükleme durdu {{completed}}/{{total}}",
       "insert-image": "Görsel ekle",
       "keep-as-attachments": "Ek olarak tut",
-      "link-memo": "Not bağla",
       "retry-image-upload": "Yeniden dene",
       "uploading-inline-image": "İçeriğe yükleniyor",
       "uploading-images": "Görseller yükleniyor {{completed}}/{{total}}"
@@ -371,10 +369,6 @@
     "no-shared-memos": "@{{username}} henüz hiç not paylaşmadı.",
     "not-found-description": "Bu sunucuda @{{username}} adında bir Memos kullanıcısı yok.",
     "not-found-title": "Burada kimse yok"
-  },
-  "reference": {
-    "no-memos-found": "Not bulunamadı",
-    "search-placeholder": "İçerik ara"
   },
   "resource": {
     "delete-all-unused": "Kullanılmayanların hepsini sil",
@@ -977,7 +971,6 @@
     "switch": "Alan değiştir"
   },
   "tooltip": {
-    "link-memo": "Notu Bağla",
     "select-location": "Konum seç"
   },
   "demo": {

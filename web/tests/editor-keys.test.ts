@@ -17,6 +17,7 @@ function makeView(doc: string, onSubmit: () => void = () => {}) {
         onUpdate: () => {},
         onSubmit,
         getTags: () => [],
+        searchMemos: async () => [],
       }),
     }),
     parent: document.body,

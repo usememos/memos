@@ -98,7 +98,6 @@
     "profile": "Профіль",
     "referenced-by": "Згадується в",
     "referencing": "Згадує",
-    "relations": "Зв'язки",
     "resources": "Ресурси",
     "restore": "Відновити",
     "role": "Роль",
@@ -154,7 +153,6 @@
     "focus-mode": "Режим фокусування",
     "insert-menu": {
       "add-location": "Додайте місцезнаходження",
-      "link-memo": "Пам'ятка про посилання",
       "retry-image-upload": "Повторіть спробу",
       "add-attachment": "Додати вкладення",
       "image-upload-failed": "Не вдалося завантажити деякі зображення. Повторіть спробу або збережіть завантажені файли як вкладення.",
@@ -341,10 +339,6 @@
     "succeed-copy-content": "Вміст успішно скопійовано.",
     "succeed-copy-link": "Посилання успішно скопійовано.",
     "update-succeed": "Оновлення успішне"
-  },
-  "reference": {
-    "no-memos-found": "Немає знайдених нотаток",
-    "search-placeholder": "Пошук контенту"
   },
   "resource": {
     "delete-all-unused": "Видалити всі невикористані",
@@ -901,7 +895,6 @@
     }
   },
   "tooltip": {
-    "link-memo": "Посилання на нотатку",
     "select-location": "Місцезнаходження"
   },
   "demo": {

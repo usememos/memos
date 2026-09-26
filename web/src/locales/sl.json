@@ -98,7 +98,6 @@
     "profile": "Profil",
     "referenced-by": "Nanaša se na",
     "referencing": "Nanašanje",
-    "relations": "Relacije",
     "resources": "Viri",
     "restore": "Obnovi",
     "role": "Vloga",
@@ -154,7 +153,6 @@
     "focus-mode": "Način osredotočanja",
     "insert-menu": {
       "add-location": "Dodajte lokacijo",
-      "link-memo": "Beležka povezave",
       "retry-image-upload": "Poskusite znova",
       "add-attachment": "Dodaj prilogo",
       "image-upload-failed": "Nekaterih slik ni bilo mogoče naložiti. Poskusite znova ali pa naložene datoteke shranite kot priloge.",
@@ -341,10 +339,6 @@
     "succeed-copy-content": "Vsebina je uspešno skopirana.",
     "succeed-copy-link": "Povezava je uspešno skopirana.",
     "update-succeed": "Posodobitev je uspešna"
-  },
-  "reference": {
-    "no-memos-found": "Ne najdem beležk",
-    "search-placeholder": "Poišči po vsebini"
   },
   "resource": {
     "delete-all-unused": "Izbriši vse neuporabljene",
@@ -901,7 +895,6 @@
     }
   },
   "tooltip": {
-    "link-memo": "Povezava do beležke",
     "select-location": "Lokacija"
   },
   "demo": {

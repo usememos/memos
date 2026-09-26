@@ -98,7 +98,6 @@
     "profile": "ข้อมูลส่วนตัว",
     "referenced-by": "อ้างอิงโดย",
     "referencing": "กำลังอ้างอิง",
-    "relations": "ความสัมพันธ์",
     "resources": "แหล่งข้อมูล",
     "restore": "คืนค่า",
     "role": "บทบาท",
@@ -156,7 +155,6 @@
     "save": "บันทึก",
     "insert-menu": {
       "add-location": "เพิ่มสถานที่",
-      "link-memo": "บันทึกการเชื่อมโยง",
       "add-attachment": "เพิ่มไฟล์แนบ",
       "image-upload-failed": "ไม่สามารถอัปโหลดรูปภาพบางรูปได้ ลองใหม่อีกครั้งหรือเก็บไฟล์ที่อัปโหลดไว้เป็นไฟล์แนบ",
       "image-upload-stopped": "การอัปโหลดรูปภาพหยุดลง {{completed}}/{{total}}",
@@ -336,10 +334,6 @@
     "succeed-copy-content": "คัดลอกเนื้อหาเรียบร้อยแล้ว",
     "succeed-copy-link": "คัดลอกลิงก์เรียบร้อยแล้ว",
     "update-succeed": "อัปเดตเรียบร้อยแล้ว"
-  },
-  "reference": {
-    "no-memos-found": "ไม่พบบันทึกช่วยจำ",
-    "search-placeholder": "ค้นหาเนื้อหา"
   },
   "resource": {
     "delete-all-unused": "ลบทรัพยากรที่ไม่ได้ใช้ทั้งหมด",
@@ -896,7 +890,6 @@
     }
   },
   "tooltip": {
-    "link-memo": "ลิงก์บันทึกช่วยจำ",
     "select-location": "เลือกตำแหน่ง"
   },
   "live-update": {
