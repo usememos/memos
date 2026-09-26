@@ -47,9 +47,8 @@ func TestMoveMemoPreservesIndependentConversation(t *testing.T) {
 	})
 	require.NoError(t, err)
 	original, err := ts.Service.CreateMemo(authorCtx, &apiv1.CreateMemoRequest{Memo: &apiv1.Memo{
-		Content: "original memo", Space: &sourceName, Visibility: apiv1.Visibility_SPACE,
+		Content: "original memo [Memos](/" + reference.Name + ")", Space: &sourceName, Visibility: apiv1.Visibility_SPACE,
 		Attachments: []*apiv1.Attachment{attachment},
-		Relations:   []*apiv1.MemoRelation{{Type: apiv1.MemoRelation_REFERENCE, RelatedMemo: &apiv1.MemoRelation_Memo{Name: reference.Name}}},
 	}})
 	require.NoError(t, err)
 	comment, err := ts.Service.CreateMemoComment(commenterCtx, &apiv1.CreateMemoCommentRequest{

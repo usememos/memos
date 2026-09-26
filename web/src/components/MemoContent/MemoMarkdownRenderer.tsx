@@ -3,6 +3,7 @@ import { type ComponentProps, memo, type ReactNode, Suspense } from "react";
 import type { Components } from "react-markdown";
 import ReactMarkdown from "react-markdown";
 import { buildRehypePlugins, buildRemarkPlugins } from "@/components/MemoContent/pipeline";
+import { parseMemoReferenceURL } from "@/lib/memo-reference";
 import { isMentionElement, isTagElement, isTaskListItemElement } from "@/types/markdown";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { lazyWithReload } from "@/utils/lazy";
@@ -22,6 +23,7 @@ import {
   Link,
   List,
   ListItem,
+  MemoReferenceLink,
   Paragraph,
   Summary,
 } from "./markdown";
@@ -150,6 +152,16 @@ export const MemoMarkdownRendererCore = ({
           <AnchorLink href={href} memoName={memoName} parentPage={parentPage} compact={compact} {...props}>
             {children}
           </AnchorLink>
+        );
+      }
+      // A root-relative /memos/<uid> link references a memo in this instance: it
+      // routes in-app and renders as a chip, and the server derives the memo's
+      // REFERENCE relations from these same links.
+      if (typeof href === "string" && parseMemoReferenceURL(href)) {
+        return (
+          <MemoReferenceLink href={href} parentPage={parentPage} {...props}>
+            {children}
+          </MemoReferenceLink>
         );
       }
       return (

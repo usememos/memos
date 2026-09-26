@@ -7,4 +7,5 @@ export { Image } from "./Image";
 export { InlineCode } from "./InlineCode";
 export { Link } from "./Link";
 export { List, ListItem } from "./List";
+export { MemoReferenceLink } from "./MemoReferenceLink";
 export { Paragraph } from "./Paragraph";

@@ -5,12 +5,6 @@ export type RelationDirection = "referencing" | "referenced";
 
 export const isReferenceRelation = (relation: MemoRelation): boolean => relation.type === MemoRelation_Type.REFERENCE;
 
-export const getEditorReferenceRelations = (relations: MemoRelation[], memoName?: string): MemoRelation[] => {
-  return relations.filter(
-    (relation) => isReferenceRelation(relation) && (!memoName || !relation.memo?.name || relation.memo.name === memoName),
-  );
-};
-
 export const getRelationBuckets = (relations: MemoRelation[], currentMemoName?: string) => {
   return relations.reduce(
     (groups, relation) => {

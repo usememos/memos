@@ -30,6 +30,7 @@ type ManagedAttachmentReference struct {
 type ExtractedData struct {
 	Tags                               []string
 	Mentions                           []string
+	MemoReferences                     []string
 	ImageDestinations                  []string
 	ManagedAttachmentReferences        []ManagedAttachmentReference
 	InvalidManagedAttachmentReferences []string
@@ -395,10 +396,12 @@ func (s *service) ExtractAll(content []byte) (*ExtractedData, error) {
 	data := &ExtractedData{
 		Tags:                        []string{},
 		Mentions:                    []string{},
+		MemoReferences:              []string{},
 		ImageDestinations:           []string{},
 		ManagedAttachmentReferences: []ManagedAttachmentReference{},
 		Property:                    &storepb.MemoPayload_Property{},
 	}
+	seenMemoReferences := map[string]struct{}{}
 
 	firstBlockChecked := false
 	// Single walk to collect all data
@@ -412,6 +415,15 @@ func (s *service) ExtractAll(content []byte) (*ExtractedData, error) {
 		}
 		if mentionNode, ok := n.(*mast.MentionNode); ok {
 			data.Mentions = append(data.Mentions, string(mentionNode.Username))
+		}
+		if linkNode, ok := n.(*gast.Link); ok {
+			// One relation per referenced memo, however many times the text links to it.
+			if uid, isReference := ParseMemoReferenceURL(string(linkNode.Destination)); isReference {
+				if _, seen := seenMemoReferences[uid]; !seen {
+					seenMemoReferences[uid] = struct{}{}
+					data.MemoReferences = append(data.MemoReferences, uid)
+				}
+			}
 		}
 		if imageNode, ok := n.(*gast.Image); ok {
 			destination := string(imageNode.Destination)

@@ -3,6 +3,7 @@ import { placeholder as cmPlaceholder, EditorView } from "@codemirror/view";
 import { forwardRef, useCallback, useImperativeHandle, useLayoutEffect, useMemo, useRef } from "react";
 import { useTagCounts } from "@/hooks/useUserQueries";
 import { cn } from "@/lib/utils";
+import { useMemoReferenceSearch } from "../hooks/useMemoReferenceSearch";
 import type { EditorController } from "../types/editorController";
 import { createController } from "./controller";
 import "./editor.css";
@@ -55,6 +56,9 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
   const tags = useMemo(() => Object.keys(tagData ?? {}), [tagData]);
   const tagsRef = useRef(tags);
   tagsRef.current = tags;
+  const searchMemos = useMemoReferenceSearch();
+  const searchMemosRef = useRef(searchMemos);
+  searchMemosRef.current = searchMemos;
 
   const applyExternalContent = useCallback((content: string) => {
     pendingExternalContentRef.current = null;
@@ -85,6 +89,7 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
           onUpdate: () => listenersRef.current.forEach((l) => l()),
           onSubmit: () => onSubmitRef.current(),
           getTags: () => tagsRef.current,
+          searchMemos: (query) => searchMemosRef.current(query),
         }),
       }),
       parent: hostRef.current,

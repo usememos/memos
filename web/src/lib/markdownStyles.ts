@@ -85,3 +85,12 @@ export const tagStyles = {
 export const mentionStyles = {
   base: "text-primary underline-offset-2",
 } as const;
+
+/**
+ * Inline memo-reference chip styling (MemoContent/markdown/MemoReferenceLink.tsx).
+ * A pill like a tag rather than an underlined link: a reference points inside the
+ * instance, so it should read as one word in the sentence, not as an exit.
+ */
+export const memoReferenceStyles = {
+  base: "inline-flex max-w-full items-center gap-1 align-baseline rounded-md border border-primary/30 bg-primary/10 px-1.5 py-0.5 text-[0.9em] leading-none text-primary no-underline transition-colors hover:bg-primary/20",
+} as const;

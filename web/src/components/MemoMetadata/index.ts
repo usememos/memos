@@ -4,4 +4,4 @@ export { AttachmentCard, AttachmentGallery, AttachmentListEditor, AttachmentRows
 export { LocationDialog, LocationDisplayEditor, LocationDisplayView } from "./Location";
 export { default as MemoMetadataRows } from "./MemoMetadataRows";
 export { default as MetadataSection } from "./MetadataSection";
-export { LinkMemoDialog, RelationListEditor, RelationRow, RelationRows } from "./Relation";
+export { RelationRow, RelationRows } from "./Relation";

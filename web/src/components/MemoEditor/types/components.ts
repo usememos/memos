@@ -80,7 +80,6 @@ export interface EditorToolbarProps {
 }
 
 export interface EditorMetadataProps {
-  memoName?: string;
   uploadingLocalFileURLs: ReadonlySet<string>;
   onInsertAttachments: (attachments: Attachment[]) => void;
   onInsertLocalFiles: (localFiles: LocalFile[]) => void;

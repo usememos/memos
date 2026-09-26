@@ -1,18 +1,6 @@
-import { uniqBy } from "lodash-es";
-import {
-  CheckIcon,
-  ImageIcon,
-  LinkIcon,
-  LoaderIcon,
-  MapPinIcon,
-  Maximize2Icon,
-  MicIcon,
-  PaperclipIcon,
-  PlusIcon,
-  TypeIcon,
-} from "lucide-react";
+import { CheckIcon, ImageIcon, LoaderIcon, MapPinIcon, Maximize2Icon, MicIcon, PaperclipIcon, PlusIcon, TypeIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { LinkMemoDialog, LocationDialog } from "@/components/MemoMetadata";
+import { LocationDialog } from "@/components/MemoMetadata";
 import type { MapPoint } from "@/components/map/types";
 import { useReverseGeocoding } from "@/components/map/useReverseGeocoding";
 import { Button } from "@/components/ui/button";
@@ -24,36 +12,23 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useDebouncedEffect } from "@/hooks";
-import type { MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
-import { useFileUpload, useLinkMemo, useLocation } from "../hooks";
-import { useEditorContext, useEditorSelector } from "../state";
+import { useFileUpload, useLocation } from "../hooks";
+import { useEditorContext } from "../state";
 import type { InsertMenuProps } from "../types";
 import type { LocalFile } from "../types/attachment";
 
 const InsertMenu = (props: InsertMenuProps) => {
   const t = useTranslate();
   const { actions, dispatch, getState } = useEditorContext();
-  const relations = useEditorSelector((s) => s.metadata.relations);
   const { location: initialLocation, onLocationChange, viewToggles, isUploading: isUploadingProp } = props;
 
-  const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [locationDialogOpen, setLocationDialogOpen] = useState(false);
   const inlineImageInputRef = useRef<HTMLInputElement>(null);
 
   const { fileInputRef, selectingFlag, handleFileInputChange, handleUploadClick } = useFileUpload((newFiles: LocalFile[]) => {
     if (getState().ui.isLoading.saving) return;
     newFiles.forEach((file) => dispatch(actions.addLocalFile(file)));
-  });
-
-  const linkMemo = useLinkMemo({
-    isOpen: linkDialogOpen,
-    currentMemoName: props.memoName,
-    existingRelations: relations,
-    onAddRelation: (relation: MemoRelation) => {
-      dispatch(actions.setMetadata({ relations: uniqBy([...relations, relation], (r) => r.relatedMemo?.name) }));
-      setLinkDialogOpen(false);
-    },
   });
 
   const location = useLocation(props.location);
@@ -87,10 +62,6 @@ const InsertMenu = (props: InsertMenuProps) => {
 
   const isUploading = selectingFlag || isUploadingProp;
   const insertionDisabled = isUploading || props.isSaving;
-
-  const handleOpenLinkDialog = useCallback(() => {
-    setLinkDialogOpen(true);
-  }, []);
 
   const handleLocationClick = useCallback(() => {
     setLocationDialogOpen(true);
@@ -145,7 +116,6 @@ const InsertMenu = (props: InsertMenuProps) => {
     { key: "attachment", label: t("editor.insert-menu.add-attachment"), icon: PaperclipIcon, onClick: handleAttachmentUploadClick },
     { key: "inline-image", label: t("editor.insert-menu.insert-image"), icon: ImageIcon, onClick: handleInlineImageUploadClick },
     { key: "audio", label: t("editor.audio-recorder.trigger"), icon: MicIcon, onClick: props.onAudioRecorderClick },
-    { key: "link", label: t("editor.insert-menu.link-memo"), icon: LinkIcon, onClick: handleOpenLinkDialog },
     { key: "location", label: t("editor.insert-menu.add-location"), icon: MapPinIcon, onClick: handleLocationClick },
   ];
 
@@ -206,17 +176,6 @@ const InsertMenu = (props: InsertMenuProps) => {
         type="file"
         multiple={true}
         accept="image/*"
-      />
-
-      <LinkMemoDialog
-        open={linkDialogOpen}
-        onOpenChange={setLinkDialogOpen}
-        searchText={linkMemo.searchText}
-        onSearchChange={linkMemo.setSearchText}
-        filteredMemos={linkMemo.filteredMemos}
-        isFetching={linkMemo.isFetching}
-        onSelectMemo={linkMemo.addMemoRelation}
-        isAlreadyLinked={linkMemo.isAlreadyLinked}
       />
 
       <LocationDialog

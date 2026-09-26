@@ -84,7 +84,9 @@ func (s *APIV1Service) prepareMemoCreate(ctx context.Context, user *store.User, 
 	if err != nil {
 		return nil, err
 	}
-	relations, err := s.prepareMemoRelations(ctx, memo, input.Relations)
+	// References come from the content's own links, so a relation cannot be requested
+	// for a memo the text does not actually link to.
+	relations, err := s.resolveContentReferenceRelations(ctx, 0, memo.UID, memo.Content)
 	if err != nil {
 		return nil, err
 	}

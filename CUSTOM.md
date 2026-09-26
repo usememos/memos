@@ -69,6 +69,46 @@ Files: `proto/store/user_setting.proto`, `proto/api/v1/user_service.proto`,
 `web/src/components/AppSidebar/AppSidebar.tsx`, `web/src/components/TagTree.tsx`,
 `web/src/components/Settings/TagsSection.tsx`.
 
+### Inline memo references
+
+Typing `@` in the editor opens a picker over the author's own memos; choosing one
+inserts a reference where the cursor is. The reference is an ordinary Markdown
+link to the memo's page — `[Memos](/memos/<uid>)` — so it survives exports, reads
+correctly in other Markdown clients, and can be renamed like any other link text.
+The default label is the literal `Memos` rather than the target's snippet, because
+a snippet written for its own memo rarely reads correctly inside the referencing
+sentence.
+
+In the rendered memo the link becomes a chip that routes in-app instead of
+opening a tab.
+
+**The content is the single source of truth.** `REFERENCE` relations are derived
+from the links in the content on every create and every content edit, which
+replaces upstream's separately-stored relation list:
+
+- Deleting the link deletes the backlink. There is no way for the two to drift.
+- Derivation is lenient: a link to a missing memo, to a memo the author cannot
+  read, or to the memo itself is left as a plain link rather than failing the
+  write.
+- `SetMemoRelations` returns `Unimplemented`, and `UpdateMemo` rejects a
+  `relations` field mask. Clients link a memo by writing the link.
+- The upstream import path still restores the relations recorded in an archive
+  directly through the store, so an imported memo keeps its history; the
+  relations are re-derived from its content the next time it is edited.
+
+The old `+ → Link memo` dialog and the relation editor under the editor are gone,
+since a reference now lives in the text. Backlinks are unchanged: the memo detail
+sidebar and the related-memo rows still list what points at the memo.
+
+Files: `markdown/memo_reference.go`, `markdown/markdown.go`
+(`ExtractedData.MemoReferences`), `server/api/v1/memo_reference_helpers.go`,
+`server/api/v1/memo_service.go` (UpdateMemo),
+`server/api/v1/memo_relation_service.go`, `web/src/lib/memo-reference.ts`,
+`web/src/components/MemoEditor/Editor/memoAutocomplete.ts`,
+`web/src/components/MemoEditor/Editor/completion.ts`,
+`web/src/components/MemoEditor/hooks/useMemoReferenceSearch.ts`,
+`web/src/components/MemoContent/markdown/MemoReferenceLink.tsx`.
+
 ### Automatic AI review of new memos
 
 When a memo is created, a configured assistant reviews it and posts the result

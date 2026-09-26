@@ -98,7 +98,6 @@
     "profile": "Perfil",
     "referenced-by": "Referenciat per",
     "referencing": "Referenciant",
-    "relations": "Relacions",
     "resources": "Recursos",
     "restore": "Restaura",
     "role": "Rol",
@@ -154,7 +153,6 @@
     "focus-mode": "Mode focus",
     "insert-menu": {
       "add-location": "Afegeix la ubicació",
-      "link-memo": "Nota d'enllaç",
       "retry-image-upload": "Torna-ho a provar",
       "add-attachment": "Afegeix un fitxer adjunt",
       "image-upload-failed": "No s'han pogut carregar algunes imatges. Torneu-ho a intentar o conserveu els fitxers carregats com a fitxers adjunts.",
@@ -341,10 +339,6 @@
     "succeed-copy-content": "Contingut copiat correctament.",
     "succeed-copy-link": "Enllaç copiat correctament.",
     "update-succeed": "Actualització correcta"
-  },
-  "reference": {
-    "no-memos-found": "No s'han trobat notes",
-    "search-placeholder": "Cerca contingut"
   },
   "resource": {
     "delete-all-unused": "Elimina tots els sense ús",
@@ -901,7 +895,6 @@
     }
   },
   "tooltip": {
-    "link-memo": "Enllaça nota",
     "select-location": "Ubicació"
   },
   "demo": {

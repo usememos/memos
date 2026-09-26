@@ -137,7 +137,6 @@
     "profile": "Профил",
     "referenced-by": "Позовава се от",
     "referencing": "Рефериране",
-    "relations": "Връзки",
     "resources": "Ресурси",
     "restore": "Възстановяване",
     "role": "Роля",
@@ -192,7 +191,6 @@
     "focus-mode": "Режим на фокусиране",
     "insert-menu": {
       "add-location": "Добавете местоположение",
-      "link-memo": "Бележка за връзка",
       "retry-image-upload": "Опитайте отново",
       "add-attachment": "Добавяне на прикачен файл",
       "image-upload-failed": "Някои изображения не можаха да бъдат качени. Опитайте отново или запазете качените файлове като прикачени файлове.",
@@ -379,10 +377,6 @@
     "succeed-copy-content": "Съдържанието е копирано успешно.",
     "succeed-copy-link": "Връзката е копирана успешно.",
     "update-succeed": "Актуализацията е успешна"
-  },
-  "reference": {
-    "no-memos-found": "Няма намерени бележки",
-    "search-placeholder": "Търсете съдържание"
   },
   "resource": {
     "delete-all-unused": "Изтрийте всички неизползвани",
@@ -939,7 +933,6 @@
     }
   },
   "tooltip": {
-    "link-memo": "Бележка за връзка",
     "select-location": "Местоположение"
   },
   "attachment-details": {

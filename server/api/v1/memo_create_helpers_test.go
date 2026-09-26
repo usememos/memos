@@ -41,12 +41,8 @@ func TestMemoCreateSharedPreparationPreservesFields(t *testing.T) {
 		require.NoError(t, err)
 		return attachment
 	}
-	createReference := func() *v1pb.MemoRelation {
-		return &v1pb.MemoRelation{
-			RelatedMemo: &v1pb.MemoRelation_Memo{Name: referenceTarget.Name},
-			Type:        v1pb.MemoRelation_REFERENCE,
-		}
-	}
+	// A reference is an inline link in the content; there is no separate relation input.
+	referenceLink := fmt.Sprintf("[Memos](/%s)", referenceTarget.Name)
 
 	topAttachment := createAttachment("create-fields-top-image")
 	topAttachmentUID := strings.TrimPrefix(topAttachment.Name, "attachments/")
@@ -56,12 +52,11 @@ func TestMemoCreateSharedPreparationPreservesFields(t *testing.T) {
 	topMemo, err := service.CreateMemo(userCtx, &v1pb.CreateMemoRequest{
 		MemoId: "create-fields-top",
 		Memo: &v1pb.Memo{
-			Content:     fmt.Sprintf("![top](/file/attachments/%s)", topAttachmentUID),
+			Content:     fmt.Sprintf("![top](/file/attachments/%s) %s", topAttachmentUID, referenceLink),
 			Visibility:  v1pb.Visibility_PRIVATE,
 			CreateTime:  timestamppb.New(topCreateTime),
 			UpdateTime:  timestamppb.New(topUpdateTime),
 			Attachments: []*v1pb.Attachment{{Name: topAttachment.Name}},
-			Relations:   []*v1pb.MemoRelation{createReference()},
 			Location:    topLocation,
 		},
 	})
@@ -84,12 +79,11 @@ func TestMemoCreateSharedPreparationPreservesFields(t *testing.T) {
 		Name:      topMemo.Name,
 		CommentId: "create-fields-comment",
 		Comment: &v1pb.Memo{
-			Content:     fmt.Sprintf("![comment](/file/attachments/%s)", commentAttachmentUID),
+			Content:     fmt.Sprintf("![comment](/file/attachments/%s) %s", commentAttachmentUID, referenceLink),
 			Visibility:  v1pb.Visibility_PROTECTED,
 			CreateTime:  timestamppb.New(commentCreateTime),
 			UpdateTime:  timestamppb.New(commentUpdateTime),
 			Attachments: []*v1pb.Attachment{{Name: commentAttachment.Name}},
-			Relations:   []*v1pb.MemoRelation{createReference()},
 			Location:    commentLocation,
 		},
 	})

@@ -6,9 +6,10 @@ import { placeholder as cmPlaceholder, dropCursor, EditorView, type KeyBinding, 
 import { runFormattingCommand } from "@/components/MemoEditor/Editor/formatting";
 import type { EditorCommandId } from "@/components/MemoEditor/formatting/commands";
 import { memoMarkdownExtensions } from "@/utils/memo-markdown-extension";
+import { editorAutocomplete } from "./completion";
 import { headingDecorations } from "./headingDecorations";
 import { liftListItem, sinkListItem } from "./listIndent";
-import { tagAutocomplete } from "./tagAutocomplete";
+import type { MemoReferenceSearch } from "./memoAutocomplete";
 import { tagMentionDecorations } from "./tagMentionDecorations";
 import { memoEditorTheme } from "./theme";
 import { uploadAnchorField } from "./uploadAnchors";
@@ -65,6 +66,7 @@ export interface EditorExtensionsOptions {
   onUpdate: () => void;
   onSubmit: () => void;
   getTags: () => string[];
+  searchMemos: MemoReferenceSearch;
 }
 
 export const placeholderCompartment = new Compartment();
@@ -87,6 +89,7 @@ export function buildEditorExtensions({
   onUpdate,
   onSubmit,
   getTags,
+  searchMemos,
 }: EditorExtensionsOptions): Extension[] {
   // Submitting must outrank defaultKeymap's own Mod-Enter (insertBlankLine): the save
   // shortcut ends the memo, it must not also edit the document. Meta and Ctrl are bound
@@ -140,9 +143,9 @@ export function buildEditorExtensions({
     tagMentionDecorations,
     headingDecorations,
     uploadAnchorField,
-    // tagAutocomplete must precede the editing keymap so the completion popup's
+    // editorAutocomplete must precede the editing keymap so the completion popup's
     // Enter/Escape/arrow bindings win while it is open.
-    tagAutocomplete(getTags),
+    editorAutocomplete({ getTags, searchMemos }),
     // Formatting keys precede defaultKeymap so the conventional Mod-I italic
     // shortcut wins over CodeMirror's generic selectParentSyntax binding.
     keymap.of([...submitKeys, ...editorKeys, ...formattingKeys, indentWithTab, ...defaultKeymap, ...historyKeymap]),

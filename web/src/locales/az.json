@@ -207,7 +207,6 @@
     "profile": "Profil",
     "referenced-by": "İstinad edənlər",
     "referencing": "İstinad edir",
-    "relations": "Əlaqələr",
     "resize-panel": "Panelin ölçüsünü dəyiş",
     "resize-sidebar": "Yan panelin ölçüsünü dəyiş",
     "resources": "Resurslar",
@@ -273,7 +272,6 @@
       "image-upload-stopped": "Şəkil yükləməsi dayandırıldı {{completed}}/{{total}}",
       "insert-image": "Şəkil daxil et",
       "keep-as-attachments": "Qoşma kimi saxla",
-      "link-memo": "Qeydə keçid əlavə et",
       "retry-image-upload": "Yenidən cəhd et",
       "uploading-inline-image": "Məzmuna yüklənir",
       "uploading-images": "Şəkillər yüklənir {{completed}}/{{total}}"
@@ -442,10 +440,6 @@
     "no-shared-memos": "@{{username}} hələ heç bir qeyd paylaşmayıb.",
     "not-found-description": "Bu instansda @{{username}} adlı Memos istifadəçisi yoxdur.",
     "not-found-title": "Burada heç kim yoxdur"
-  },
-  "reference": {
-    "no-memos-found": "Qeyd tapılmadı",
-    "search-placeholder": "Məzmunda axtar"
   },
   "resource": {
     "delete-all-unused": "İstifadə olunmayanların hamısını sil",
@@ -1048,7 +1042,6 @@
     "switch": "Sahəni dəyiş"
   },
   "tooltip": {
-    "link-memo": "Qeydə keçid əlavə et",
     "select-location": "Məkan"
   }
 }

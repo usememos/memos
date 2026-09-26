@@ -9,7 +9,7 @@ export { COMPACT_TOOLBAR_WIDTH, isCompactWidth, useElementWidth } from "./useEle
 export { pairAppleLivePhotoFiles, toLocalFiles, useFileUpload } from "./useFileUpload";
 export { useFocusMode } from "./useFocusMode";
 export { splitInlineLocalFiles, useInlineImageUpload } from "./useInlineImageUpload";
-export { useLinkMemo } from "./useLinkMemo";
 export { useLocation } from "./useLocation";
 export { useMemoInit } from "./useMemoInit";
+export { useMemoReferenceSearch } from "./useMemoReferenceSearch";
 export { useMemoSave } from "./useMemoSave";

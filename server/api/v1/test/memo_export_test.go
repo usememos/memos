@@ -35,6 +35,10 @@ type archiveFixture struct {
 	allMemoUIDs []string
 }
 
+// archiveParentContent links the referenced memo inline, which is how REFERENCE
+// relations are derived now.
+const archiveParentContent = "# Whiteboard\n\nSee the photo. No trailing newline [Memos](/memos/referenced1)"
+
 func buildArchiveFixture(t *testing.T, ts *TestService, username string) *archiveFixture {
 	t.Helper()
 	ctx := context.Background()
@@ -51,7 +55,7 @@ func buildArchiveFixture(t *testing.T, ts *TestService, username string) *archiv
 	})
 	require.NoError(t, err)
 
-	referenced, err := ts.Service.CreateMemo(userCtx, &v1pb.CreateMemoRequest{
+	_, err = ts.Service.CreateMemo(userCtx, &v1pb.CreateMemoRequest{
 		MemoId: "referenced1",
 		Memo: &v1pb.Memo{
 			Content:    "Referenced memo #work",
@@ -65,14 +69,13 @@ func buildArchiveFixture(t *testing.T, ts *TestService, username string) *archiv
 	parent, err := ts.Service.CreateMemo(userCtx, &v1pb.CreateMemoRequest{
 		MemoId: "parent00001",
 		Memo: &v1pb.Memo{
-			Content:     "# Whiteboard\n\nSee the photo. No trailing newline",
+			Content:     archiveParentContent,
 			Visibility:  v1pb.Visibility_PRIVATE,
 			Pinned:      true,
 			CreateTime:  timestamppb.New(mustTime(t, "2026-03-02T14:05:11Z")),
 			UpdateTime:  timestamppb.New(mustTime(t, "2026-03-02T14:20:47Z")),
 			Location:    &v1pb.Location{Placeholder: "Office", Latitude: 52.52, Longitude: 13.405},
 			Attachments: []*v1pb.Attachment{{Name: attachment.Name}},
-			Relations:   []*v1pb.MemoRelation{{Type: v1pb.MemoRelation_REFERENCE, RelatedMemo: &v1pb.MemoRelation_Memo{Name: referenced.Name}}},
 		},
 	})
 	require.NoError(t, err)
@@ -189,7 +192,7 @@ func TestWriteMemoExport(t *testing.T) {
 	require.Empty(t, parent.Parent)
 	content, err := archive.Content(parent)
 	require.NoError(t, err)
-	require.Equal(t, "# Whiteboard\n\nSee the photo. No trailing newline", string(content))
+	require.Equal(t, archiveParentContent, string(content))
 	require.Len(t, parent.Attachments, 1)
 	entry := parent.Attachments[0]
 	require.Equal(t, "photo0001", entry.UID)
@@ -258,7 +261,7 @@ func TestImportMemoExportIntoAnotherAccount(t *testing.T) {
 		require.Equal(t, importer.ID, memo.CreatorID)
 	}
 
-	parent := byContent["# Whiteboard\n\nSee the photo. No trailing newline"]
+	parent := byContent[archiveParentContent]
 	require.NotNil(t, parent)
 	require.True(t, parent.Pinned)
 	require.Equal(t, store.Private, parent.Visibility)
@@ -379,7 +382,7 @@ func TestImportMemoExportConflictPolicies(t *testing.T) {
 		uid := "parent00001"
 		restored, err := ts.Store.GetMemo(ctx, &store.FindMemo{UID: &uid})
 		require.NoError(t, err)
-		require.Equal(t, "# Whiteboard\n\nSee the photo. No trailing newline", restored.Content)
+		require.Equal(t, archiveParentContent, restored.Content)
 		require.True(t, restored.Pinned)
 		require.Equal(t, mustTime(t, "2026-03-02T14:20:47Z").Unix(), restored.UpdatedTs)
 		attachments, err := ts.Store.ListAttachments(ctx, &store.FindAttachment{MemoID: &restored.ID})

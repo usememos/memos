@@ -698,7 +698,7 @@ func TestSetMemoAttachmentsPublishesMemoChanged(t *testing.T) {
 	mustNotReceive(t, client.events, 100*time.Millisecond)
 }
 
-func TestSetMemoRelationsPublishesMemoChanged(t *testing.T) {
+func TestInlineMemoReferencePublishesMemoChanged(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
 
@@ -720,16 +720,16 @@ func TestSetMemoRelationsPublishesMemoChanged(t *testing.T) {
 	client := svc.SSEHub.Subscribe()
 	defer svc.SSEHub.Unsubscribe(client)
 
-	_, err = svc.SetMemoRelations(uctx, &v1pb.SetMemoRelationsRequest{
-		Name: memo1.Name,
-		Relations: []*v1pb.MemoRelation{
-			{
-				RelatedMemo: &v1pb.MemoRelation_Memo{Name: memo2.Name},
-				Type:        v1pb.MemoRelation_REFERENCE,
-			},
-		},
+	// Linking one memo from another's text is what creates the reference, so the
+	// relation and the broadcast both come out of the content write.
+	updated, err := svc.UpdateMemo(uctx, &v1pb.UpdateMemoRequest{
+		Memo:       &v1pb.Memo{Name: memo1.Name, Content: fmt.Sprintf("memo one, see [Memos](/%s)", memo2.Name)},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"content"}},
 	})
 	require.NoError(t, err)
+	require.Len(t, updated.Relations, 1)
+	require.Equal(t, v1pb.MemoRelation_REFERENCE, updated.Relations[0].Type)
+	require.Equal(t, memo2.Name, updated.Relations[0].RelatedMemo.Name)
 
 	requireMemoChanged(t, client.events)
 	mustNotReceive(t, client.events, 100*time.Millisecond)

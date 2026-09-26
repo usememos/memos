@@ -398,16 +398,8 @@ func TestListMemos(t *testing.T) {
 	// Create memoTwo by userTwo referencing memoOne
 	memoTwo, err := ts.Service.CreateMemo(userTwoCtx, &apiv1.CreateMemoRequest{
 		Memo: &apiv1.Memo{
-			Content:    "This is a memo reminding you to check the attachment attached to memoOne. I have referenced the memo below.⬇️",
+			Content:    "This is a memo reminding you to check the attachment attached to memoOne. I have referenced the memo below.⬇️ [Memos](/" + memoOne.Name + ")",
 			Visibility: apiv1.Visibility_PROTECTED,
-			Relations: []*apiv1.MemoRelation{
-				&apiv1.MemoRelation{
-					RelatedMemo: &apiv1.MemoRelation_Memo{
-						Name: memoOne.Name,
-					},
-					Type: apiv1.MemoRelation_REFERENCE,
-				},
-			},
 		},
 	})
 

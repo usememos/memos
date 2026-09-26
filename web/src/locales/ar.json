@@ -98,7 +98,6 @@
     "profile": "الملف الشخصي",
     "referenced-by": "مشار إليه بواسطة",
     "referencing": "يشير إلى",
-    "relations": "العلاقات",
     "resources": "المصادر",
     "restore": "استعادة",
     "role": "الدور",
@@ -156,7 +155,6 @@
     "save": "حفظ",
     "insert-menu": {
       "add-location": "أضف الموقع",
-      "link-memo": "مذكرة الارتباط",
       "image-upload-stopped": "توقف تحميل الصورة {{completed}}/{{total}}",
       "insert-image": "إدراج الصورة",
       "keep-as-attachments": "الاحتفاظ بها كمرفقات",
@@ -336,10 +334,6 @@
     "succeed-copy-content": "تم نسخ المحتوى بنجاح.",
     "succeed-copy-link": "تم نسخ الرابط بنجاح.",
     "update-succeed": "تم التحديث بنجاح"
-  },
-  "reference": {
-    "no-memos-found": "لم يتم العثور على مذكرات",
-    "search-placeholder": "ابحث في المحتوى"
   },
   "resource": {
     "delete-all-unused": "حذف جميع الموارد غير المستخدمة",
@@ -896,7 +890,6 @@
     }
   },
   "tooltip": {
-    "link-memo": "ربط مذكرة",
     "select-location": "الموقع"
   },
   "live-update": {

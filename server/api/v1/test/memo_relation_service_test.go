@@ -2,6 +2,7 @@ package test
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -12,244 +13,151 @@ import (
 	apiv1 "github.com/usememos/memos/proto/gen/api/v1"
 )
 
-func TestSetMemoRelations(t *testing.T) {
-	ctx := context.Background()
-
-	t.Run("SetMemoRelations success by memo owner", func(t *testing.T) {
-		ts := NewTestService(t)
-		defer ts.Cleanup()
-
-		// Create user
-		user, err := ts.CreateRegularUser(ctx, "user")
-		require.NoError(t, err)
-		userCtx := ts.CreateUserContext(ctx, user.ID)
-
-		// Create memo1
-		memo1, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
-			Memo: &apiv1.Memo{
-				Content:    "Test memo 1",
-				Visibility: apiv1.Visibility_PRIVATE,
-			},
-		})
-		require.NoError(t, err)
-		require.NotNil(t, memo1)
-
-		// Create memo2
-		memo2, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
-			Memo: &apiv1.Memo{
-				Content:    "Test memo 2",
-				Visibility: apiv1.Visibility_PRIVATE,
-			},
-		})
-		require.NoError(t, err)
-		require.NotNil(t, memo2)
-
-		// Set memo relations - should succeed
-		_, err = ts.Service.SetMemoRelations(userCtx, &apiv1.SetMemoRelationsRequest{
-			Name: memo1.Name,
-			Relations: []*apiv1.MemoRelation{
-				{
-					RelatedMemo: &apiv1.MemoRelation_Memo{
-						Name: memo2.Name,
-					},
-					Type: apiv1.MemoRelation_REFERENCE,
-				},
-			},
-		})
-		require.NoError(t, err)
-	})
-
-	t.Run("SetMemoRelations host user has no ownership bypass", func(t *testing.T) {
-		ts := NewTestService(t)
-		defer ts.Cleanup()
-
-		// Create regular user
-		regularUser, err := ts.CreateRegularUser(ctx, "user")
-		require.NoError(t, err)
-		regularUserCtx := ts.CreateUserContext(ctx, regularUser.ID)
-
-		// Create host user
-		hostUser, err := ts.CreateHostUser(ctx, "admin")
-		require.NoError(t, err)
-		hostCtx := ts.CreateUserContext(ctx, hostUser.ID)
-
-		// Create memo by regular user
-		memo, err := ts.Service.CreateMemo(regularUserCtx, &apiv1.CreateMemoRequest{
-			Memo: &apiv1.Memo{
-				Content:    "Test memo",
-				Visibility: apiv1.Visibility_PRIVATE,
-			},
-		})
-		require.NoError(t, err)
-		require.NotNil(t, memo)
-
-		// Application ADMIN is the superuser and manages any memo's relations.
-		_, err = ts.Service.SetMemoRelations(hostCtx, &apiv1.SetMemoRelationsRequest{
-			Name:      memo.Name,
-			Relations: []*apiv1.MemoRelation{},
-		})
-		require.NoError(t, err)
-	})
-
-	t.Run("SetMemoRelations permission denied for non-owner", func(t *testing.T) {
-		ts := NewTestService(t)
-		defer ts.Cleanup()
-
-		// Create user1
-		user1, err := ts.CreateRegularUser(ctx, "user1")
-		require.NoError(t, err)
-		user1Ctx := ts.CreateUserContext(ctx, user1.ID)
-
-		// Create user2
-		user2, err := ts.CreateRegularUser(ctx, "user2")
-		require.NoError(t, err)
-		user2Ctx := ts.CreateUserContext(ctx, user2.ID)
-
-		// Create memo by user1
-		memo, err := ts.Service.CreateMemo(user1Ctx, &apiv1.CreateMemoRequest{
-			Memo: &apiv1.Memo{
-				Content:    "Test memo",
-				Visibility: apiv1.Visibility_PRIVATE,
-			},
-		})
-		require.NoError(t, err)
-		require.NotNil(t, memo)
-
-		// User2 tries to modify relations - should fail
-		_, err = ts.Service.SetMemoRelations(user2Ctx, &apiv1.SetMemoRelationsRequest{
-			Name:      memo.Name,
-			Relations: []*apiv1.MemoRelation{},
-		})
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "permission denied")
-	})
-
-	t.Run("SetMemoRelations unauthenticated", func(t *testing.T) {
-		ts := NewTestService(t)
-		defer ts.Cleanup()
-
-		// Create user
-		user, err := ts.CreateRegularUser(ctx, "user")
-		require.NoError(t, err)
-		userCtx := ts.CreateUserContext(ctx, user.ID)
-
-		// Create memo
-		memo, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
-			Memo: &apiv1.Memo{
-				Content:    "Test memo",
-				Visibility: apiv1.Visibility_PRIVATE,
-			},
-		})
-		require.NoError(t, err)
-		require.NotNil(t, memo)
-
-		// Unauthenticated user tries to modify relations - should fail
-		_, err = ts.Service.SetMemoRelations(ctx, &apiv1.SetMemoRelationsRequest{
-			Name:      memo.Name,
-			Relations: []*apiv1.MemoRelation{},
-		})
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "not authenticated")
-	})
-
-	t.Run("SetMemoRelations memo not found", func(t *testing.T) {
-		ts := NewTestService(t)
-		defer ts.Cleanup()
-
-		// Create user
-		user, err := ts.CreateRegularUser(ctx, "user")
-		require.NoError(t, err)
-		userCtx := ts.CreateUserContext(ctx, user.ID)
-
-		// Try to set relations on non-existent memo - should fail
-		_, err = ts.Service.SetMemoRelations(userCtx, &apiv1.SetMemoRelationsRequest{
-			Name:      "memos/nonexistent-uid-12345",
-			Relations: []*apiv1.MemoRelation{},
-		})
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "not found")
-	})
+// link renders the inline reference syntax: a Markdown link to the memo's own path.
+func link(label, memoName string) string {
+	return fmt.Sprintf("[%s](/%s)", label, memoName)
 }
 
-func TestUpdateMemoValidatesAllRelationsBeforeMutation(t *testing.T) {
+func referencedNames(memo *apiv1.Memo) []string {
+	names := make([]string, 0, len(memo.Relations))
+	for _, relation := range memo.Relations {
+		if relation.Type == apiv1.MemoRelation_REFERENCE && relation.Memo.GetName() == memo.Name {
+			names = append(names, relation.RelatedMemo.GetName())
+		}
+	}
+	return names
+}
+
+func TestContentReferencesCreateAndDropRelations(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
-	user, err := ts.CreateRegularUser(ctx, "atomic-relation-update")
+
+	user, err := ts.CreateRegularUser(ctx, "reference-author")
+	require.NoError(t, err)
+	userCtx := ts.CreateUserContext(ctx, user.ID)
+
+	target, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{Memo: &apiv1.Memo{Content: "the older card"}})
+	require.NoError(t, err)
+
+	// Creating with a link in the text is the only way to make a reference.
+	source, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{Content: "building on " + link("Memos", target.Name)},
+	})
+	require.NoError(t, err)
+	require.Equal(t, []string{target.Name}, referencedNames(source))
+
+	// The target learns about it, which is the half that makes this a backlink.
+	fetchedTarget, err := ts.Service.GetMemo(userCtx, &apiv1.GetMemoRequest{Name: target.Name})
+	require.NoError(t, err)
+	require.Len(t, fetchedTarget.Relations, 1)
+	require.Equal(t, source.Name, fetchedTarget.Relations[0].Memo.GetName())
+	require.Equal(t, target.Name, fetchedTarget.Relations[0].RelatedMemo.GetName())
+
+	// Deleting the link deletes the reference: the two can never disagree.
+	updated, err := ts.Service.UpdateMemo(userCtx, &apiv1.UpdateMemoRequest{
+		Memo:       &apiv1.Memo{Name: source.Name, Content: "building on nothing"},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"content"}},
+	})
+	require.NoError(t, err)
+	require.Empty(t, referencedNames(updated))
+
+	fetchedTarget, err = ts.Service.GetMemo(userCtx, &apiv1.GetMemoRequest{Name: target.Name})
+	require.NoError(t, err)
+	require.Empty(t, fetchedTarget.Relations)
+}
+
+func TestContentReferencesTolerateLinksThatResolveToNothing(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	author, err := ts.CreateRegularUser(ctx, "lenient-author")
+	require.NoError(t, err)
+	authorCtx := ts.CreateUserContext(ctx, author.ID)
+	stranger, err := ts.CreateRegularUser(ctx, "lenient-stranger")
+	require.NoError(t, err)
+	strangerCtx := ts.CreateUserContext(ctx, stranger.ID)
+
+	private, err := ts.Service.CreateMemo(strangerCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{Content: "not yours", Visibility: apiv1.Visibility_PRIVATE},
+	})
+	require.NoError(t, err)
+	reachable, err := ts.Service.CreateMemo(authorCtx, &apiv1.CreateMemoRequest{Memo: &apiv1.Memo{Content: "reachable"}})
+	require.NoError(t, err)
+
+	// A deleted target, an unreadable one, and a plain external link must not stop a save.
+	content := fmt.Sprintf(
+		"%s %s %s [site](https://example.com/memos/abc)",
+		link("gone", "memos/doesnotexist"),
+		link("hidden", private.Name),
+		link("Memos", reachable.Name),
+	)
+	source, err := ts.Service.CreateMemo(authorCtx, &apiv1.CreateMemoRequest{Memo: &apiv1.Memo{Content: content}})
+	require.NoError(t, err)
+	require.Equal(t, []string{reachable.Name}, referencedNames(source))
+}
+
+func TestContentReferencesIgnoreSelfLinksAndDeduplicate(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	user, err := ts.CreateRegularUser(ctx, "self-reference")
 	require.NoError(t, err)
 	userCtx := ts.CreateUserContext(ctx, user.ID)
 
 	target, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{Memo: &apiv1.Memo{Content: "target"}})
 	require.NoError(t, err)
-	replacement, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{Memo: &apiv1.Memo{Content: "replacement"}})
-	require.NoError(t, err)
-	source, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{Memo: &apiv1.Memo{
-		Content: "original",
-		Relations: []*apiv1.MemoRelation{{
-			RelatedMemo: &apiv1.MemoRelation_Memo{Name: target.Name},
-			Type:        apiv1.MemoRelation_REFERENCE,
-		}},
-	}})
-	require.NoError(t, err)
-
-	_, err = ts.Service.UpdateMemo(userCtx, &apiv1.UpdateMemoRequest{
-		Memo: &apiv1.Memo{
-			Name:    source.Name,
-			Content: "must roll back",
-			Relations: []*apiv1.MemoRelation{
-				{RelatedMemo: &apiv1.MemoRelation_Memo{Name: replacement.Name}, Type: apiv1.MemoRelation_REFERENCE},
-				{RelatedMemo: &apiv1.MemoRelation_Memo{Name: "invalid-name"}, Type: apiv1.MemoRelation_REFERENCE},
-			},
-		},
-		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"content", "relations"}},
+	source, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
+		MemoId: "self-linking-memo",
+		Memo:   &apiv1.Memo{Content: fmt.Sprintf("%s %s", link("once", target.Name), link("twice", target.Name))},
 	})
-	require.Equal(t, codes.InvalidArgument, status.Code(err))
-
-	stored, err := ts.Service.GetMemo(userCtx, &apiv1.GetMemoRequest{Name: source.Name})
 	require.NoError(t, err)
-	require.Equal(t, "original", stored.Content)
-	require.Len(t, stored.Relations, 1)
-	require.Equal(t, target.Name, stored.Relations[0].RelatedMemo.Name)
+	// Two links to one memo are one reference.
+	require.Equal(t, []string{target.Name}, referencedNames(source))
+
+	updated, err := ts.Service.UpdateMemo(userCtx, &apiv1.UpdateMemoRequest{
+		Memo:       &apiv1.Memo{Name: source.Name, Content: link("me", source.Name)},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"content"}},
+	})
+	require.NoError(t, err)
+	require.Empty(t, referencedNames(updated))
 }
 
-func TestSetMemoRelationsRejectsNonReferenceTypes(t *testing.T) {
+func TestRelationsAreNotClientWritable(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
 
-	user, err := ts.CreateRegularUser(ctx, "relation-type-owner")
+	user, err := ts.CreateRegularUser(ctx, "no-relation-writes")
 	require.NoError(t, err)
 	userCtx := ts.CreateUserContext(ctx, user.ID)
+
+	target, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{Memo: &apiv1.Memo{Content: "target"}})
+	require.NoError(t, err)
 	source, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
-		Memo: &apiv1.Memo{Content: "source", Visibility: apiv1.Visibility_PRIVATE},
+		Memo: &apiv1.Memo{
+			Content:   "no link in this text",
+			Relations: []*apiv1.MemoRelation{{RelatedMemo: &apiv1.MemoRelation_Memo{Name: target.Name}, Type: apiv1.MemoRelation_REFERENCE}},
+		},
 	})
 	require.NoError(t, err)
-	target, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
-		Memo: &apiv1.Memo{Content: "target", Visibility: apiv1.Visibility_PRIVATE},
+	// The request asked for a relation the content does not back up, so there is none.
+	require.Empty(t, referencedNames(source))
+
+	_, err = ts.Service.UpdateMemo(userCtx, &apiv1.UpdateMemoRequest{
+		Memo: &apiv1.Memo{
+			Name:      source.Name,
+			Relations: []*apiv1.MemoRelation{{RelatedMemo: &apiv1.MemoRelation_Memo{Name: target.Name}, Type: apiv1.MemoRelation_REFERENCE}},
+		},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"relations"}},
 	})
-	require.NoError(t, err)
+	require.Equal(t, codes.InvalidArgument, status.Code(err))
 
-	for _, test := range []struct {
-		name         string
-		relationType apiv1.MemoRelation_Type
-	}{
-		{name: "unspecified", relationType: apiv1.MemoRelation_TYPE_UNSPECIFIED},
-		{name: "comment", relationType: apiv1.MemoRelation_COMMENT},
-		{name: "unknown", relationType: apiv1.MemoRelation_Type(999)},
-	} {
-		t.Run(test.name, func(t *testing.T) {
-			_, err := ts.Service.SetMemoRelations(userCtx, &apiv1.SetMemoRelationsRequest{
-				Name: source.Name,
-				Relations: []*apiv1.MemoRelation{{
-					RelatedMemo: &apiv1.MemoRelation_Memo{Name: target.Name},
-					Type:        test.relationType,
-				}},
-			})
-			require.Equal(t, codes.InvalidArgument, status.Code(err))
-
-			stored, err := ts.Service.GetMemo(userCtx, &apiv1.GetMemoRequest{Name: source.Name})
-			require.NoError(t, err)
-			require.Empty(t, stored.Relations)
-		})
-	}
+	_, err = ts.Service.SetMemoRelations(userCtx, &apiv1.SetMemoRelationsRequest{
+		Name:      source.Name,
+		Relations: []*apiv1.MemoRelation{{RelatedMemo: &apiv1.MemoRelation_Memo{Name: target.Name}, Type: apiv1.MemoRelation_REFERENCE}},
+	})
+	require.Equal(t, codes.Unimplemented, status.Code(err))
 }

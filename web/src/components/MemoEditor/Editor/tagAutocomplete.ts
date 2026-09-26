@@ -1,6 +1,5 @@
-import { autocompletion, type CompletionContext, type CompletionResult } from "@codemirror/autocomplete";
+import type { CompletionContext, CompletionResult } from "@codemirror/autocomplete";
 import { ensureSyntaxTree, syntaxTree } from "@codemirror/language";
-import type { Extension } from "@codemirror/state";
 import { findTagMatches, isTagIntroducerAt } from "@/utils/tag-grammar";
 
 /**
@@ -54,11 +53,4 @@ export function makeTagCompletionSource(getTags: () => string[]) {
     // and re-score the options with its own fuzzy matcher.
     return { from, options, filter: false };
   };
-}
-
-export function tagAutocomplete(getTags: () => string[]): Extension {
-  return autocompletion({
-    override: [makeTagCompletionSource(getTags)],
-    icons: false,
-  });
 }

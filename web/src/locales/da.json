@@ -137,7 +137,6 @@
     "profile": "Profil",
     "referenced-by": "Refereret af",
     "referencing": "Referencer",
-    "relations": "Relationer",
     "resources": "Ressourcer",
     "restore": "Gendan",
     "role": "Rolle",
@@ -192,7 +191,6 @@
     "focus-mode": "Fokustilstand",
     "insert-menu": {
       "add-location": "Tilføj placering",
-      "link-memo": "Link memo",
       "retry-image-upload": "Prøv igen",
       "add-attachment": "Tilføj vedhæftet fil",
       "image-upload-failed": "Nogle billeder kunne ikke uploades. Prøv igen, eller behold de uploadede filer som vedhæftede filer.",
@@ -379,10 +377,6 @@
     "succeed-copy-content": "Indholdet blev kopieret.",
     "succeed-copy-link": "Linket blev kopieret.",
     "update-succeed": "Opdatering lykkedes"
-  },
-  "reference": {
-    "no-memos-found": "Ingen memoer fundet",
-    "search-placeholder": "Søg efter indhold"
   },
   "resource": {
     "delete-all-unused": "Slet alle ubrugte",
@@ -939,7 +933,6 @@
     }
   },
   "tooltip": {
-    "link-memo": "Link Memo",
     "select-location": "Beliggenhed"
   },
   "attachment-details": {

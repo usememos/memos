@@ -98,7 +98,6 @@
     "profile": "Profil",
     "referenced-by": "Odkazováno",
     "referencing": "Odkazuje na",
-    "relations": "Souvislosti",
     "resources": "Zdroje",
     "restore": "Obnovit",
     "role": "Role",
@@ -154,7 +153,6 @@
     "focus-mode": "Režim soustředění",
     "insert-menu": {
       "add-location": "Přidat umístění",
-      "link-memo": "Odkaz na poznámku",
       "retry-image-upload": "Zkuste to znovu",
       "add-attachment": "Přidat přílohu",
       "image-upload-failed": "Některé obrázky se nepodařilo nahrát. Zkuste to znovu nebo nahrané soubory ponechte jako přílohy.",
@@ -341,10 +339,6 @@
     "succeed-copy-content": "Obsah úspěšně zkopírován.",
     "succeed-copy-link": "Odkaz byl úspěšně zkopírován.",
     "update-succeed": "Aktualizace proběhla úspěšně"
-  },
-  "reference": {
-    "no-memos-found": "Žádné poznámky nenalezeny",
-    "search-placeholder": "Vyhledat obsah"
   },
   "resource": {
     "delete-all-unused": "Odstranit všechny nepoužité",
@@ -901,7 +895,6 @@
     }
   },
   "tooltip": {
-    "link-memo": "Propojit poznámku",
     "select-location": "Umístění"
   },
   "demo": {

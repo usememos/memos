@@ -386,6 +386,9 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 		}
 		if path == "content" {
 			contentUpdated = true
+			// The content's own links are the memo's references, so rewriting the text
+			// rewrites them.
+			relationsUpdated = true
 			contentLengthLimit, err := s.getContentLengthLimit(ctx)
 			if err != nil {
 				return nil, status.Errorf(codes.Internal, "failed to get content length limit")
@@ -430,7 +433,7 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 		} else if path == "attachments" {
 			attachmentsUpdated = true
 		} else if path == "relations" {
-			relationsUpdated = true
+			return nil, status.Errorf(codes.InvalidArgument, "relations are derived from the memo's content; link a memo inline instead")
 		} else {
 			return nil, status.Errorf(codes.InvalidArgument, "invalid update path: %s", path)
 		}
@@ -445,7 +448,7 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 	}
 	var preparedRelations []*store.MemoRelation
 	if relationsUpdated {
-		preparedRelations, err = s.prepareMemoRelations(ctx, memo, request.Memo.Relations)
+		preparedRelations, err = s.resolveContentReferenceRelations(ctx, memo.ID, memo.UID, nextMemo.Content)
 		if err != nil {
 			return nil, err
 		}
