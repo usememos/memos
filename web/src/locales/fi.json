@@ -791,6 +791,7 @@
       "default-color": "Oletus",
       "matching-rule": "Ankkuroitu regex",
       "no-tags-configured": "Tunnisteen metatietoja ei ole määritetty.",
+      "set-icon": "Set icon for #{{tag}}",
       "tag-name-placeholder": "esim. työ tai projekti/.*",
       "tag-already-exists": "Tunniste on jo olemassa.",
       "tag-pattern-hint": "Tunnisteen nimi tai säännöllinen lausekemalli (esim. projekti/.* vastaa kaikkia projekteja/tageja)",

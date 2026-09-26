@@ -743,6 +743,7 @@
       "default-color": "默认",
       "matching-rule": "锚定正则",
       "no-tags-configured": "未配置标签元数据。",
+      "set-icon": "设置 #{{tag}} 的图标",
       "tag-name-placeholder": "例如工作或project/.*",
       "tag-already-exists": "标签已经存在。",
       "tag-pattern-hint": "标签名称或正则表达式模式（例如 project/.* 匹配所有 project/ 标签）",

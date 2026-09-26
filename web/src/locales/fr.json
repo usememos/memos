@@ -671,6 +671,7 @@
       "background-color": "Couleur de fond",
       "blur-content": "Flou du contenu",
       "no-tags-configured": "Aucune métadonnée de balise configurée.",
+      "set-icon": "Définir l'icône de #{{tag}}",
       "tag-name-placeholder": "par ex. work ou project/.*",
       "tag-already-exists": "La balise existe déjà.",
       "tag-pattern-hint": "Nom de la balise ou modèle d'expression régulière (par exemple, project/.* correspond à toutes les balises project/)",

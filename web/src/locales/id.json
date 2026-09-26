@@ -666,6 +666,7 @@
       "background-color": "Warna latar belakang",
       "blur-content": "Mengaburkan konten",
       "no-tags-configured": "Tidak ada metadata tag yang dikonfigurasi.",
+      "set-icon": "Set icon for #{{tag}}",
       "tag-name-placeholder": "misalnya work atau project/.*",
       "tag-already-exists": "Label sudah ada.",
       "tag-pattern-hint": "Nama tag atau pola ekspresi reguler (misalnya project/.* cocok dengan semua tag project/)",

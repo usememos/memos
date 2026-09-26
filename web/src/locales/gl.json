@@ -671,6 +671,7 @@
       "background-color": "Cor de fondo",
       "blur-content": "Desenfoque o contido",
       "no-tags-configured": "Non se configuraron metadatos de etiquetas.",
+      "set-icon": "Set icon for #{{tag}}",
       "tag-name-placeholder": "p.ex. work ou project/.*",
       "tag-already-exists": "A etiqueta xa existe.",
       "tag-pattern-hint": "Nome da etiqueta ou patrón de expresión regular (por exemplo, project/.* coincide con todas as etiquetas project/)",

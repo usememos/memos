@@ -989,6 +989,7 @@
       "default-color": "Defolt",
       "matching-rule": "Sabitlənmiş regex",
       "no-tags-configured": "Etiket metaməlumatı qurulmayıb.",
+      "set-icon": "Set icon for #{{tag}}",
       "tag-name-placeholder": "məs. work və ya project/.*",
       "tag-already-exists": "Etiket artıq mövcuddur.",
       "tag-pattern-hint": "Etiket adı və ya regex şablonu (məs. project/.* bütün project/ etiketlərinə uyğun gəlir)",

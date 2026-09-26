@@ -671,6 +671,7 @@
       "background-color": "Hintergrundfarbe",
       "blur-content": "Inhalte verwischen",
       "no-tags-configured": "Keine Tag-Metadaten konfiguriert.",
+      "set-icon": "Symbol für #{{tag}} festlegen",
       "tag-name-placeholder": "z.B. work oder project/.*",
       "tag-already-exists": "Tag existiert bereits.",
       "tag-pattern-hint": "Tag-Name oder Regex-Muster (z. B. project/.* stimmt mit allen project/-Tags überein)",

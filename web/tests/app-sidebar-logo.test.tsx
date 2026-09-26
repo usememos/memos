@@ -146,6 +146,8 @@ vi.mock("@/hooks/useUserQueries", () => ({
   useMemoViews: () => ({ data: authState.memoViews }),
   useNotifications: () => ({ data: authState.notifications }),
   useUser: () => ({ data: undefined }),
+  // The tag rail writes icons through the user's tag settings; the sidebar never reads the result.
+  useUpdateUserSetting: () => ({ mutateAsync: vi.fn() }),
 }));
 
 vi.mock("@/i18n", () => ({

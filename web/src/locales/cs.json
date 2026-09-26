@@ -671,6 +671,7 @@
       "background-color": "Barva pozadí",
       "blur-content": "Rozmazání obsahu",
       "no-tags-configured": "Nejsou nakonfigurována žádná metadata značky.",
+      "set-icon": "Set icon for #{{tag}}",
       "tag-name-placeholder": "např. work nebo project/.*",
       "tag-already-exists": "Značka již existuje.",
       "tag-pattern-hint": "Název značky nebo vzor regulárního výrazu (např. project/.* odpovídá všem značkám project/)",

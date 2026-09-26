@@ -3,6 +3,7 @@ import { isEqual } from "lodash-es";
 import { EyeOffIcon, PaletteIcon, PlusIcon, TagIcon, TrashIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
+import TagIconPicker from "@/components/TagIconPicker";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +16,8 @@ import { isValidTagPattern } from "@/lib/tag";
 import { cn } from "@/lib/utils";
 import {
   UserSetting_Key,
+  type UserSetting_TagMetadata,
+  type UserSetting_TagMetadata_Icon,
   UserSetting_TagMetadataSchema,
   UserSetting_TagsSettingSchema,
   UserSettingSchema,
@@ -38,14 +41,13 @@ const hexToColor = (hex: string) =>
 interface LocalTagMeta {
   color?: string;
   blur: boolean;
+  icon?: UserSetting_TagMetadata_Icon;
 }
 
-const toLocalTagMeta = (meta: {
-  backgroundColor?: { red?: number; green?: number; blue?: number };
-  blurContent: boolean;
-}): LocalTagMeta => ({
+const toLocalTagMeta = (meta: UserSetting_TagMetadata): LocalTagMeta => ({
   color: colorToHex(meta.backgroundColor),
   blur: meta.blurContent,
+  icon: meta.icon?.value.case ? meta.icon : undefined,
 });
 
 const TagsSection = () => {
@@ -98,6 +100,10 @@ const TagsSection = () => {
     setLocalTags((prev) => ({ ...prev, [tagName]: { ...prev[tagName], blur } }));
   };
 
+  const handleIconChange = (tagName: string, icon: UserSetting_TagMetadata_Icon | undefined) => {
+    setLocalTags((prev) => ({ ...prev, [tagName]: { ...prev[tagName], icon } }));
+  };
+
   const handleClearColor = (tagName: string) => {
     setLocalTags((prev) => ({ ...prev, [tagName]: { ...prev[tagName], color: undefined } }));
   };
@@ -121,6 +127,7 @@ const TagsSection = () => {
       toast.error(t("setting.tags.invalid-regex"));
       return;
     }
+    // A new rule starts unmarked; its icon is picked from the row it creates.
     setLocalTags((prev) => ({ ...prev, [name]: { color: newTagColor, blur: newTagBlur } }));
     setNewTagName("");
     setNewTagColor(undefined);
@@ -133,6 +140,7 @@ const TagsSection = () => {
         name,
         create(UserSetting_TagMetadataSchema, {
           blurContent: meta.blur,
+          icon: meta.icon,
           ...(meta.color ? { backgroundColor: hexToColor(meta.color) } : {}),
         }),
       ]),
@@ -233,10 +241,15 @@ const TagsSection = () => {
                 <div key={row.name} className="grid gap-3 px-3 py-3 lg:grid-cols-[minmax(12rem,1fr)_auto_auto_auto] lg:items-center">
                   <div className="min-w-0">
                     <div className="flex min-w-0 items-center gap-2">
-                      <TagIcon className="size-4 shrink-0 text-muted-foreground" />
+                      <TagIconPicker
+                        tag={row.name}
+                        value={localTags[row.name].icon}
+                        onChange={(icon) => handleIconChange(row.name, icon)}
+                      />
                       <span className="truncate font-mono text-sm text-foreground">{row.name}</span>
                     </div>
-                    <div className="mt-1 flex flex-wrap items-center gap-2 pl-6 text-xs text-muted-foreground">
+                    {/* Aligned under the name: the 32px picker plus the row's 8px gap. */}
+                    <div className="mt-1 flex flex-wrap items-center gap-2 ps-10 text-xs text-muted-foreground">
                       <span>{t("setting.tags.matching-rule")}</span>
                       <span className="text-border">/</span>
                       <span>{t("setting.tags.used-count", { count: row.count })}</span>

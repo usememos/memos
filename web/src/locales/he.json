@@ -824,6 +824,7 @@
       "default-color": "ברירת מחדל",
       "matching-rule": "ביטוי רגולרי מעוגן",
       "no-tags-configured": "לא הוגדרו מטא־נתונים לתגיות.",
+      "set-icon": "Set icon for #{{tag}}",
       "tag-name-placeholder": "לדוגמה work או project/.*",
       "tag-already-exists": "התגית כבר קיימת.",
       "tag-pattern-hint": "שם תגית או דפוס ביטוי רגולרי (לדוגמה, project/.* תואם לכל תגיות project/)",

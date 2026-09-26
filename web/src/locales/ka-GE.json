@@ -671,6 +671,7 @@
       "background-color": "ფონის ფერი",
       "blur-content": "დაბინდვის შინაარსი",
       "no-tags-configured": "თეგის მეტამონაცემების კონფიგურაცია არ არის.",
+      "set-icon": "Set icon for #{{tag}}",
       "tag-name-placeholder": "მაგ. work ან project/.*",
       "tag-already-exists": "ტეგი უკვე არსებობს.",
       "tag-pattern-hint": "თეგის სახელი ან რეგექსის ნიმუში (მაგ. project/.* ემთხვევა ყველა project/ ტეგს)",

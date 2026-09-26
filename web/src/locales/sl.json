@@ -671,6 +671,7 @@
       "background-color": "Barva ozadja",
       "blur-content": "Zameglitev vsebine",
       "no-tags-configured": "Metapodatki oznake niso konfigurirani.",
+      "set-icon": "Set icon for #{{tag}}",
       "tag-name-placeholder": "npr. work ali project/.*",
       "tag-already-exists": "Oznaka že obstaja.",
       "tag-pattern-hint": "Ime oznake ali vzorec regularnega izraza (npr. project/.* se ujema z vsemi oznakami project/)",

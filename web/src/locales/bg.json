@@ -791,6 +791,7 @@
       "default-color": "По подразбиране",
       "matching-rule": "Закотвен регулярен израз",
       "no-tags-configured": "Няма конфигурирани метаданни за маркер.",
+      "set-icon": "Set icon for #{{tag}}",
       "tag-name-placeholder": "напр. работа или проект/.*",
       "tag-already-exists": "Етикетът вече съществува.",
       "tag-pattern-hint": "Име на етикет или модел на регулярен израз (напр. project/.* съответства на всички project/ тагове)",

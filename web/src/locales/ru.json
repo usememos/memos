@@ -671,6 +671,7 @@
       "background-color": "Цвет фона",
       "blur-content": "Размытие контента",
       "no-tags-configured": "Метаданные тега не настроены.",
+      "set-icon": "Задать значок для #{{tag}}",
       "tag-name-placeholder": "например work или project/.*",
       "tag-already-exists": "Тег уже существует.",
       "tag-pattern-hint": "Имя тега или шаблон регулярного выражения (например, project/.* соответствует всем тегам project/)",

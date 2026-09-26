@@ -791,6 +791,7 @@
       "default-color": "Implicit",
       "matching-rule": "Regex ancorat",
       "no-tags-configured": "Nu au fost configurate metadate de etichetă.",
+      "set-icon": "Set icon for #{{tag}}",
       "tag-name-placeholder": "de ex. lucrare sau proiect/.*",
       "tag-already-exists": "Eticheta există deja.",
       "tag-pattern-hint": "Numele etichetei sau modelul regex (de exemplu, proiect/.* se potrivește cu toate etichetele/proiectul)",

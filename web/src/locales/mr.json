@@ -666,6 +666,7 @@
       "background-color": "पार्श्वभूमी रंग",
       "blur-content": "अस्पष्ट सामग्री",
       "no-tags-configured": "कोणताही टॅग मेटाडेट�� कॉन्फिगर केलेला नाही.",
+      "set-icon": "Set icon for #{{tag}}",
       "tag-name-placeholder": "उदा. work किंवा project/.*",
       "tag-already-exists": "टॅग आधीपासून अस्तित्वात आहे.",
       "tag-pattern-hint": "टॅगचे नाव किंवा रेगेक्स पॅटर्न (उदा. project/.* सर्व project/ टॅगशी जुळते)",

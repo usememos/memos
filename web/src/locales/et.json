@@ -791,6 +791,7 @@
       "default-color": "Vaikimisi",
       "matching-rule": "Ankurdatud regex",
       "no-tags-configured": "Märgendi metaandmeid pole seadistatud.",
+      "set-icon": "Set icon for #{{tag}}",
       "tag-name-placeholder": "nt. töö või projekt/.*",
       "tag-already-exists": "Silt on juba olemas.",
       "tag-pattern-hint": "Märgendi nimi või regex-muster (nt projekt/.* vastab kõigile projektile/märgenditele)",

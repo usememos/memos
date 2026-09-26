@@ -666,6 +666,7 @@
       "background-color": "สีพื้นหลัง",
       "blur-content": "เบลอเนื้อหา",
       "no-tags-configured": "ไม่มีการกำหนดค่าข้อมูลเมตาของแท็ก",
+      "set-icon": "Set icon for #{{tag}}",
       "tag-name-placeholder": "เช่น work หรือ project/.*",
       "tag-already-exists": "มีแท็กอยู่แล้ว",
       "tag-pattern-hint": "ชื่อแท็กหรือรูปแบบ regex (เช่น project/.* ตรงกับแท็ก project/ ทั้งหมด)",

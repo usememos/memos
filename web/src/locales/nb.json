@@ -671,6 +671,7 @@
       "background-color": "Bakgrunnsfarge",
       "blur-content": "Uskarp innhold",
       "no-tags-configured": "Ingen tag-metadata er konfigurert.",
+      "set-icon": "Set icon for #{{tag}}",
       "tag-name-placeholder": "f.eks. work eller project/.*",
       "tag-already-exists": "Taggen finnes allerede.",
       "tag-pattern-hint": "Tagnavn eller regulært uttrykksmønster (f.eks. project/.* samsvarer med alle project/-taggene)",

@@ -671,6 +671,7 @@
       "background-color": "Background color",
       "blur-content": "Blur content",
       "no-tags-configured": "No tag metadata configured.",
+      "set-icon": "Set icon for #{{tag}}",
       "tag-name-placeholder": "e.g. work or project/.*",
       "tag-already-exists": "Tag already exists.",
       "tag-pattern-hint": "Tag name or regex pattern (e.g. project/.* matches all project/ tags)",

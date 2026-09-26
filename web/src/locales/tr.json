@@ -836,6 +836,7 @@
       "background-color": "Arka plan rengi",
       "blur-content": "İçeriği bulanıklaştır",
       "no-tags-configured": "Yapılandırılmış etiket meta verisi yok.",
+      "set-icon": "#{{tag}} için simge ayarla",
       "tag-name-placeholder": "ör. is veya proje/.*",
       "tag-already-exists": "Etiket zaten mevcut.",
       "tag-pattern-hint": "Etiket adı veya regex deseni (ör. proje/.* tüm proje/ etiketlerini eşleştirir)",

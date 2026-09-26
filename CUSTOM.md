@@ -38,14 +38,36 @@ the current stack, as a mode of the existing sidebar statistics panel.
 Files: `web/src/components/AppSidebar/UsageHeatMap.tsx`, `StatisticsView.tsx`,
 `MonthNavigator.tsx`.
 
-### Emoji tag icons
+### Tag icons
 
-A tag whose name starts with an emoji renders that emoji as its sidebar icon
-instead of the `#` prefix, in both flat and tree tag modes. Writing `#📗读书`
-is all that is required; no configuration and no schema change.
+A tag can be given an icon — any Unicode emoji, or one of the Lucide symbols the
+Space picker offers — which replaces the `#` mark in both flat and tree tag
+modes. The icon is picked from the tag's own mark in the sidebar, or per rule in
+Settings → Tags, and is stored on the user's tag metadata as
+`UserTagMetadata.icon`, alongside the background colour and blur flag upstream
+already keeps there. Keys are anchored regex patterns, so `project/.*` can mark a
+whole family at once.
 
-Files: `web/src/lib/tag.ts`, `web/src/components/AppSidebar/TagsSection.tsx`,
-`web/src/components/TagTree.tsx`, `web/src/components/AppSidebar/SidebarRow.tsx`.
+Marks resolve in one order everywhere: the configured icon, then a leading emoji
+in the tag name (so `#📗读书`, the fork's original trick, keeps working without a
+rewrite of existing memos), then the `#` mark.
+
+Picking from the sidebar writes an exact-name rule. That rule wins the metadata
+lookup over any regex rule that styled the tag before, so the regex rule's colour
+and blur are copied across once; clearing the icon removes the rule again when it
+carried nothing else. Tree mode is read-only here because a branch row's mark slot
+already belongs to its disclosure control.
+
+Files: `proto/store/user_setting.proto`, `proto/api/v1/user_service.proto`,
+`store/user_tag_icon.go`, `server/api/v1/user_tag_icon.go`,
+`server/api/v1/user_service.go` (validation),
+`server/api/v1/user_service_converters.go`, `web/src/lib/tag.ts`,
+`web/src/hooks/useTagIcon.ts`, `web/src/components/TagIconPicker.tsx`,
+`web/src/components/CustomIconPicker.tsx` (trigger overrides),
+`web/src/components/AppSidebar/SidebarRow.tsx`,
+`web/src/components/AppSidebar/TagsSection.tsx`,
+`web/src/components/AppSidebar/AppSidebar.tsx`, `web/src/components/TagTree.tsx`,
+`web/src/components/Settings/TagsSection.tsx`.
 
 ### Automatic AI review of new memos
 

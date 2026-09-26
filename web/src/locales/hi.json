@@ -666,6 +666,7 @@
       "background-color": "पृष्ठभूमि का रंग",
       "blur-content": "धुंधली सामग्री",
       "no-tags-configured": "कोई टैग मेटाडेटा कॉन्फ़िगर नहीं किया गया.",
+      "set-icon": "Set icon for #{{tag}}",
       "tag-name-placeholder": "जैसे __कार्य_नमूना__ या __परियोजना_REGEX__",
       "tag-already-exists": "टैग पहले से मौजूद है.",
       "tag-pattern-hint": "टैग नाम या रेगेक्स पैटर्न (जैसे project/.* सभी project/ टैग से मेल खाता है)",

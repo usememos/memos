@@ -59,6 +59,9 @@ func validateUserTagsSetting(setting *v1pb.UserSetting_TagsSetting) error {
 				return errors.Wrapf(err, "background_color for %q", tag)
 			}
 		}
+		if err := store.ValidateUserTagIcon(convertUserTagIconToStore(metadata.GetIcon())); err != nil {
+			return errors.Wrapf(err, "icon for %q", tag)
+		}
 	}
 	return nil
 }

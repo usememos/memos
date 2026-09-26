@@ -671,6 +671,7 @@
       "background-color": "Háttérszín",
       "blur-content": "Tartalom elhomályosítása",
       "no-tags-configured": "Nincsenek konfigurálva címke metaadatok.",
+      "set-icon": "Set icon for #{{tag}}",
       "tag-name-placeholder": "pl. work vagy project/.*",
       "tag-already-exists": "A címke már létezik.",
       "tag-pattern-hint": "Címke neve vagy reguláris kifejezési mintája (pl. a project/.* megfelel az összes project/ címkének)",
