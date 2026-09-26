@@ -98,7 +98,6 @@
     "profile": "Profile",
     "referenced-by": "Referenced by",
     "referencing": "Referencing",
-    "relations": "Relations",
     "resources": "Resources",
     "restore": "Restore",
     "role": "Role",
@@ -154,7 +153,6 @@
     "focus-mode": "Focus Mode",
     "insert-menu": {
       "add-location": "Add location",
-      "link-memo": "Link memo",
       "add-attachment": "Add attachment",
       "image-upload-failed": "Some images could not be uploaded. Retry or keep the uploaded files as attachments.",
       "image-upload-stopped": "Image upload stopped {{completed}}/{{total}}",
@@ -341,10 +339,6 @@
     "succeed-copy-content": "Content copied successfully.",
     "succeed-copy-link": "Link copied successfully.",
     "update-succeed": "Update succeeded"
-  },
-  "reference": {
-    "no-memos-found": "No memos found",
-    "search-placeholder": "Search content"
   },
   "resource": {
     "delete-all-unused": "Delete all unused",
@@ -901,7 +895,6 @@
     }
   },
   "tooltip": {
-    "link-memo": "Link Memo",
     "select-location": "Location"
   },
   "demo": {

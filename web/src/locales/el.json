@@ -137,7 +137,6 @@
     "profile": "Προφίλ",
     "referenced-by": "Αναφέρεται από",
     "referencing": "Αναφορά",
-    "relations": "Συγγένειες",
     "resources": "Πόροι",
     "restore": "Επαναφέρω",
     "role": "Ρόλος",
@@ -192,7 +191,6 @@
     "focus-mode": "Λειτουργία εστίασης",
     "insert-menu": {
       "add-location": "Προσθήκη τοποθεσίας",
-      "link-memo": "Σημείωμα σύνδεσης",
       "retry-image-upload": "Δοκιμάζω πάλι",
       "add-attachment": "Προσθήκη συνημμένου",
       "image-upload-failed": "Δεν ήταν δυνατή η μεταφόρτωση ορισμένων εικόνων. Δοκιμάστε ξανά ή διατηρήστε τα μεταφορτωμένα αρχεία ως συνημμένα.",
@@ -379,10 +377,6 @@
     "succeed-copy-content": "Το περιεχόμενο αντιγράφηκε με επιτυχία.",
     "succeed-copy-link": "Ο σύνδεσμος αντιγράφηκε με επιτυχία.",
     "update-succeed": "Η ενημέρωση ολοκληρώθηκε με επιτυχία"
-  },
-  "reference": {
-    "no-memos-found": "Δεν βρέθηκαν σημειώσεις",
-    "search-placeholder": "Αναζήτηση περιεχομένου"
   },
   "resource": {
     "delete-all-unused": "Διαγράψτε όλα τα αχρησιμοποίητα",
@@ -939,7 +933,6 @@
     }
   },
   "tooltip": {
-    "link-memo": "Σημείωση σύνδεσης",
     "select-location": "Τοποθεσία"
   },
   "attachment-details": {

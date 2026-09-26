@@ -207,7 +207,6 @@
     "profile": "Profile",
     "referenced-by": "Referenced by",
     "referencing": "Referencing",
-    "relations": "Relations",
     "resize-panel": "Resize panel",
     "resize-sidebar": "Resize sidebar",
     "resources": "Resources",
@@ -273,7 +272,6 @@
       "image-upload-stopped": "Image upload stopped {{completed}}/{{total}}",
       "insert-image": "Insert image",
       "keep-as-attachments": "Keep as attachments",
-      "link-memo": "Link memo",
       "retry-image-upload": "Retry",
       "uploading-inline-image": "Uploading to content",
       "uploading-images": "Uploading images {{completed}}/{{total}}"
@@ -442,10 +440,6 @@
     "no-shared-memos": "@{{username}} hasn't shared any memos yet.",
     "not-found-description": "There's no Memos user named @{{username}} on this instance.",
     "not-found-title": "No one here"
-  },
-  "reference": {
-    "no-memos-found": "No memos found",
-    "search-placeholder": "Search content"
   },
   "resource": {
     "delete-all-unused": "Delete all unused",
@@ -1048,7 +1042,6 @@
     "switch": "Switch space"
   },
   "tooltip": {
-    "link-memo": "Link Memo",
     "select-location": "Location"
   }
 }

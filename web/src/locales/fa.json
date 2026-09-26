@@ -98,7 +98,6 @@
     "profile": "مشخصات",
     "referenced-by": "ارجاع داده شده توسط",
     "referencing": "ارجاع دادن",
-    "relations": "روابط",
     "resources": "منابع",
     "restore": "بازیابی",
     "role": "نقش",
@@ -156,7 +155,6 @@
     "save": "ذخیره",
     "insert-menu": {
       "add-location": "اضافه کردن مکان",
-      "link-memo": "پیوند یادداشت",
       "image-upload-stopped": "آپلود تصویر متوقف شد {{completed}}/{{total}}",
       "insert-image": "درج تصویر",
       "keep-as-attachments": "به عنوان پیوست نگه دارید",
@@ -336,10 +334,6 @@
     "succeed-copy-content": "محتوا با موفقیت کپی شد.",
     "succeed-copy-link": "پیوند با موفقیت کپی شد.",
     "update-succeed": "بروزرسانی موفق بود"
-  },
-  "reference": {
-    "no-memos-found": "یادداشتی یافت نشد",
-    "search-placeholder": "جستجوی محتوا"
   },
   "resource": {
     "delete-all-unused": "حذف همه استفاده نشده‌ها",
@@ -896,7 +890,6 @@
     }
   },
   "tooltip": {
-    "link-memo": "پیوند یادداشت",
     "select-location": "موقعیت"
   },
   "live-update": {

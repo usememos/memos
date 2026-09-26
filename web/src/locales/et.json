@@ -137,7 +137,6 @@
     "profile": "Profiil",
     "referenced-by": "Viidatud",
     "referencing": "Viitamine",
-    "relations": "Suhted",
     "resources": "Vahendid",
     "restore": "Taasta",
     "role": "Roll",
@@ -192,7 +191,6 @@
     "focus-mode": "Fookusrežiim",
     "insert-menu": {
       "add-location": "Lisa asukoht",
-      "link-memo": "Lingi memo",
       "retry-image-upload": "Proovi uuesti",
       "add-attachment": "Lisa manus",
       "image-upload-failed": "Mõnda pilti ei õnnestunud üles laadida. Proovige uuesti või hoidke üleslaaditud failid manusena.",
@@ -379,10 +377,6 @@
     "succeed-copy-content": "Sisu kopeerimine õnnestus.",
     "succeed-copy-link": "Link on edukalt kopeeritud.",
     "update-succeed": "Värskendus õnnestus"
-  },
-  "reference": {
-    "no-memos-found": "Memosid ei leitud",
-    "search-placeholder": "Otsige sisu"
   },
   "resource": {
     "delete-all-unused": "Kustuta kõik kasutamata",
@@ -939,7 +933,6 @@
     }
   },
   "tooltip": {
-    "link-memo": "Link Memo",
     "select-location": "Asukoht"
   },
   "attachment-details": {

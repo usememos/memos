@@ -98,7 +98,6 @@
     "profile": "Perfil",
     "referenced-by": "Referida por",
     "referencing": "Referindo",
-    "relations": "Relacións",
     "resources": "Recursos",
     "restore": "Recuperar",
     "role": "Rol",
@@ -154,7 +153,6 @@
     "focus-mode": "Modo Sen distraccións",
     "insert-menu": {
       "add-location": "Engadir localización",
-      "link-memo": "Nota de ligazón",
       "retry-image-upload": "Volve tentar",
       "add-attachment": "Engadir anexo",
       "image-upload-failed": "Non se puideron cargar algunhas imaxes. Téntao de novo ou garda os ficheiros cargados como anexos.",
@@ -341,10 +339,6 @@
     "succeed-copy-content": "Contido copiado correctamente.",
     "succeed-copy-link": "Ligazón copiada correctamente.",
     "update-succeed": "Fíxose a actualización"
-  },
-  "reference": {
-    "no-memos-found": "Non hai memos",
-    "search-placeholder": "Buscar contido"
   },
   "resource": {
     "delete-all-unused": "Eliminar todos sen usar",
@@ -901,7 +895,6 @@
     }
   },
   "tooltip": {
-    "link-memo": "Ligazón á nota",
     "select-location": "Localización"
   },
   "demo": {

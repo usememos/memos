@@ -137,7 +137,6 @@
     "profile": "Profiili",
     "referenced-by": "Viittannut",
     "referencing": "Viittaus",
-    "relations": "Suhteet",
     "resources": "Resurssit",
     "restore": "Palauttaa",
     "role": "Rooli",
@@ -192,7 +191,6 @@
     "focus-mode": "Tarkennustila",
     "insert-menu": {
       "add-location": "Lisää sijainti",
-      "link-memo": "Linkkimuistio",
       "retry-image-upload": "Yritä uudelleen",
       "add-attachment": "Lisää liite",
       "image-upload-failed": "Joidenkin kuvien lataaminen epäonnistui. Yritä uudelleen tai säilytä ladatut tiedostot liitteinä.",
@@ -379,10 +377,6 @@
     "succeed-copy-content": "Sisällön kopiointi onnistui.",
     "succeed-copy-link": "Linkin kopioiminen onnistui.",
     "update-succeed": "Päivitys onnistui"
-  },
-  "reference": {
-    "no-memos-found": "Muistioita ei löytynyt",
-    "search-placeholder": "Hae sisältöä"
   },
   "resource": {
     "delete-all-unused": "Poista kaikki käyttämättömät",
@@ -939,7 +933,6 @@
     }
   },
   "tooltip": {
-    "link-memo": "Linkkimuistio",
     "select-location": "Sijainti"
   },
   "attachment-details": {
