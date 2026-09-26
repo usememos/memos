@@ -4883,6 +4883,15 @@ components:
             description: |-
                 S3 configuration for an S3-compatible object store.
                  Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/
+        TagMetadata_Icon:
+            type: object
+            properties:
+                emoji:
+                    type: string
+                    description: A Unicode emoji sequence.
+                lucide:
+                    type: string
+                    description: A canonical Lucide icon name, such as "leaf".
         TestInstanceEmailSettingRequest:
             type: object
             properties:
@@ -5239,6 +5248,12 @@ components:
                 blurContent:
                     type: boolean
                     description: Whether memos with this tag should have their content blurred.
+                icon:
+                    allOf:
+                        - $ref: '#/components/schemas/TagMetadata_Icon'
+                    description: |-
+                        Optional display icon shown in place of the tag's hash mark.
+                         When unset, clients fall back to a leading emoji in the tag name, then the hash mark.
             description: Tag metadata for user-specific display rules.
         UserSetting_TagsSetting:
             type: object

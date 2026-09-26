@@ -1,5 +1,6 @@
-import { HashIcon, ListTreeIcon, MoreHorizontalIcon } from "lucide-react";
+import { ListTreeIcon, MoreHorizontalIcon } from "lucide-react";
 import { forwardRef, useMemo } from "react";
+import TagIconPicker from "@/components/TagIconPicker";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,15 +13,20 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { useLocalStorage, useOverflowTitle } from "@/hooks";
+import type { CustomIconValue } from "@/lib/custom-icons";
 import { extractTagEmoji } from "@/lib/tag";
 import { cn } from "@/lib/utils";
+import type { UserSetting_TagMetadata_Icon } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import TagTree, { tagRowAriaLabel } from "../TagTree";
 import {
+  SIDEBAR_ROW_BOX_CLASSES,
   SIDEBAR_ROW_CLASSES,
   SIDEBAR_ROW_COUNT_RAIL_CLASSES,
-  SidebarRowEmojiSlot,
-  SidebarRowIconSlot,
+  SIDEBAR_ROW_LABEL_CLASSES,
+  SIDEBAR_ROW_SLOT_BUTTON_CLASSES,
+  SidebarRowTagMark,
+  SidebarRowTagMarkSlot,
   sidebarRowStateAttributes,
   sidebarRowStateClasses,
 } from "./SidebarRow";
@@ -31,6 +37,10 @@ interface Props {
   onSelect?: () => void;
   /** Whose tags these are; keeps tree expansion state from bleeding between users and views. */
   scope: string;
+  /** Resolves a tag's mark. Supplied by the shell, which holds the tag settings. */
+  tagIcon?: (tag: string) => CustomIconValue | undefined;
+  /** Omitted when nobody is signed in to own the preference, which makes the marks read-only. */
+  onTagIconChange?: (tag: string, icon: UserSetting_TagMetadata_Icon | undefined) => void;
 }
 
 const TagPath = forwardRef<HTMLSpanElement, { tag: string }>(({ tag }, ref) => {
@@ -55,33 +65,65 @@ interface FlatTagRowProps {
   active: boolean;
   /** Computed by the parent, which already holds the translator — rows stay subscription-free. */
   ariaLabel: string;
+  icon?: CustomIconValue;
   onClick: () => void;
+  onIconChange?: (icon: UserSetting_TagMetadata_Icon | undefined) => void;
 }
 
-const FlatTagRow = ({ tag, amount, active, ariaLabel, onClick }: FlatTagRowProps) => {
+const FlatTagRow = ({ tag, amount, active, ariaLabel, icon, onClick, onIconChange }: FlatTagRowProps) => {
   const { ref, title } = useOverflowTitle<HTMLSpanElement>(`#${tag}`);
-  const { icon, text } = extractTagEmoji(tag);
+  const { text } = extractTagEmoji(tag);
   const state = active ? "checked" : "idle";
-
-  return (
-    <button
-      type="button"
-      aria-label={ariaLabel}
-      aria-pressed={active || undefined}
-      title={title}
-      {...sidebarRowStateAttributes(state)}
-      className={cn(SIDEBAR_ROW_CLASSES, sidebarRowStateClasses(state))}
-      onClick={onClick}
-    >
-      {/* A leading emoji replaces the # mark, flomo-style; the slot keeps its line either way. */}
-      {icon ? <SidebarRowEmojiSlot emoji={icon} /> : <SidebarRowIconSlot icon={HashIcon} />}
+  const label = (
+    <>
       <TagPath ref={ref} tag={text} />
       <span className={SIDEBAR_ROW_COUNT_RAIL_CLASSES}>{amount}</span>
-    </button>
+    </>
+  );
+
+  // Read-only lists keep the single-control row; owning the tags turns the mark into the
+  // picker, so an icon is one click from the tag itself rather than a trip to settings.
+  if (!onIconChange) {
+    return (
+      <button
+        type="button"
+        aria-label={ariaLabel}
+        aria-pressed={active || undefined}
+        title={title}
+        {...sidebarRowStateAttributes(state)}
+        className={cn(SIDEBAR_ROW_CLASSES, sidebarRowStateClasses(state))}
+        onClick={onClick}
+      >
+        <SidebarRowTagMarkSlot icon={icon} />
+        {label}
+      </button>
+    );
+  }
+
+  return (
+    <div {...sidebarRowStateAttributes(state)} className={cn(SIDEBAR_ROW_BOX_CLASSES, sidebarRowStateClasses(state))}>
+      <TagIconPicker
+        tag={tag}
+        value={icon}
+        onChange={onIconChange}
+        trigger={<button type="button" className={SIDEBAR_ROW_SLOT_BUTTON_CLASSES} />}
+        triggerContent={<SidebarRowTagMark icon={icon} />}
+      />
+      <button
+        type="button"
+        aria-label={ariaLabel}
+        aria-pressed={active || undefined}
+        title={title}
+        className={SIDEBAR_ROW_LABEL_CLASSES}
+        onClick={onClick}
+      >
+        {label}
+      </button>
+    </div>
   );
 };
 
-const TagsSection = ({ tagCount, onSelect, scope }: Props) => {
+const TagsSection = ({ tagCount, onSelect, scope, tagIcon, onTagIconChange }: Props) => {
   const t = useTranslate();
   const { getFiltersByFactor, addFilter, removeFilter } = useMemoFilterContext();
   const [treeMode, setTreeMode] = useLocalStorage<boolean>("tag-view-as-tree", false);
@@ -138,7 +180,7 @@ const TagsSection = ({ tagCount, onSelect, scope }: Props) => {
       }
     >
       {treeMode ? (
-        <TagTree key={scope} tagAmounts={tags} activeTag={activeTag} scope={scope} onTagClick={handleTagClick} />
+        <TagTree key={scope} tagAmounts={tags} activeTag={activeTag} scope={scope} tagIcon={tagIcon} onTagClick={handleTagClick} />
       ) : (
         <>
           {tags.map(([tag, amount]) => (
@@ -148,7 +190,9 @@ const TagsSection = ({ tagCount, onSelect, scope }: Props) => {
               amount={amount}
               active={activeTags.has(tag)}
               ariaLabel={tagRowAriaLabel(t, tag, amount)}
+              icon={tagIcon?.(tag)}
               onClick={() => handleTagClick(tag)}
+              onIconChange={onTagIconChange && ((icon) => onTagIconChange(tag, icon))}
             />
           ))}
         </>

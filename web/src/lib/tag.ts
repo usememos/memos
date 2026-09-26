@@ -1,3 +1,4 @@
+import type { CustomIconValue } from "@/lib/custom-icons";
 import type { UserSetting_TagMetadata, UserSetting_TagsSetting } from "@/types/proto/api/v1/user_service_pb";
 
 // Cache compiled regexes to avoid re-compiling on every tag render.
@@ -95,3 +96,20 @@ export const extractTagEmoji = (tag: string): TagEmojiParts => {
   // An emoji-only tag name keeps its emoji as the label rather than rendering nothing.
   return text ? { icon: match[0], text } : { text: tag };
 };
+
+/** Wraps a bare emoji in the shared icon shape so both icon sources render through one component. */
+export const emojiTagIcon = (emoji?: string): CustomIconValue | undefined =>
+  emoji ? { value: { case: "emoji", value: emoji } } : undefined;
+
+/** The icon configured for this tag in the user's tag settings, if any. */
+export const configuredTagIcon = (tag: string, tagsSetting: UserSetting_TagsSetting | undefined): CustomIconValue | undefined => {
+  const icon = tagsSetting ? findTagMetadata(tag, tagsSetting)?.icon : undefined;
+  return icon?.value.case ? icon : undefined;
+};
+
+/**
+ * A tag's mark, in resolution order: the icon configured in tag settings, then a leading
+ * emoji in the tag name, then nothing (callers fall back to the hash mark).
+ */
+export const resolveTagIcon = (tag: string, tagsSetting: UserSetting_TagsSetting | undefined): CustomIconValue | undefined =>
+  configuredTagIcon(tag, tagsSetting) ?? emojiTagIcon(extractTagEmoji(tag).icon);

@@ -1,20 +1,19 @@
-import { ChevronRightIcon, HashIcon } from "lucide-react";
+import { ChevronRightIcon } from "lucide-react";
 import { useEffect, useMemo } from "react";
 import {
   SIDEBAR_ROW_BOX_CLASSES,
   SIDEBAR_ROW_COUNT_RAIL_CLASSES,
-  SIDEBAR_ROW_EMOJI_CLASSES,
-  SIDEBAR_ROW_ICON_CLASSES,
   SIDEBAR_ROW_LABEL_CLASSES,
   SIDEBAR_ROW_SLOT_BUTTON_CLASSES,
   SIDEBAR_ROW_SLOT_CLASSES,
-  SidebarRowEmojiSlot,
-  SidebarRowIconSlot,
+  SidebarRowTagMark,
+  SidebarRowTagMarkSlot,
   sidebarRowStateAttributes,
   sidebarRowStateClasses,
 } from "@/components/AppSidebar/SidebarRow";
 import { useLocalStorage, useOverflowTitle } from "@/hooks";
-import { extractTagEmoji } from "@/lib/tag";
+import type { CustomIconValue } from "@/lib/custom-icons";
+import { emojiTagIcon, extractTagEmoji } from "@/lib/tag";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 
@@ -33,6 +32,9 @@ interface Props {
   activeTag?: string;
   /** Identifies whose tags these are, so expansion persists per tenant rather than per browser. */
   scope: string;
+  /** Resolves a tag's configured mark from its full path. Marks are read-only here: a branch
+   * row's slot already belongs to its disclosure, so icons are picked in the flat list. */
+  tagIcon?: (tag: string) => CustomIconValue | undefined;
   onTagClick: (tag: string) => void;
 }
 
@@ -91,17 +93,6 @@ const parentPathsOf = (tag: string): string[] => {
   return segments.slice(0, -1).map((_, index) => segments.slice(0, index + 1).join("/"));
 };
 
-const TagMark = ({ className }: { className?: string }) => (
-  <HashIcon aria-hidden="true" className={cn(SIDEBAR_ROW_ICON_CLASSES, className)} strokeWidth={1.8} />
-);
-
-/** A leading emoji in the tag name takes over the mark slot, flomo-style. */
-const TagEmojiMark = ({ emoji, className }: { emoji: string; className?: string }) => (
-  <span aria-hidden="true" className={cn(SIDEBAR_ROW_EMOJI_CLASSES, className)}>
-    {emoji}
-  </span>
-);
-
 const Chevron = ({ open, className }: { open: boolean; className?: string }) => (
   <ChevronRightIcon
     aria-hidden="true"
@@ -119,11 +110,12 @@ interface TagItemProps {
   depth: number;
   activeTag?: string;
   expanded: ReadonlySet<string>;
+  tagIcon?: (tag: string) => CustomIconValue | undefined;
   onTagClick: (tag: string) => void;
   onToggle: (path: string) => void;
 }
 
-const TagItem = ({ tag, depth, activeTag, expanded, onTagClick, onToggle }: TagItemProps) => {
+const TagItem = ({ tag, depth, activeTag, expanded, tagIcon, onTagClick, onToggle }: TagItemProps) => {
   const t = useTranslate();
   const isTag = tag.amount !== undefined;
   const isActive = activeTag === tag.text;
@@ -133,9 +125,11 @@ const TagItem = ({ tag, depth, activeTag, expanded, onTagClick, onToggle }: TagI
   const { ref: labelRef, title } = useOverflowTitle<HTMLSpanElement>(isTag ? `#${tag.text}` : tag.text);
   const tagLabel = tag.amount !== undefined ? tagRowAriaLabel(t, tag.text, tag.amount) : undefined;
   const state = isActive ? "checked" : "idle";
-  // A leading emoji in this segment becomes the row's mark; structural rows keep the full text
-  // since their slot already carries the disclosure chevron.
+  // Icons are configured against the full path, while the legacy emoji prefix lives in the
+  // segment this row shows. Structural rows keep the full text since their slot already
+  // carries the disclosure chevron.
   const { icon, text: segmentLabel } = extractTagEmoji(tag.key);
+  const mark = tagIcon?.(tag.text) ?? emojiTagIcon(icon);
   const label = isTag ? segmentLabel : tag.key;
 
   return (
@@ -166,11 +160,7 @@ const TagItem = ({ tag, depth, activeTag, expanded, onTagClick, onToggle }: TagI
             className={SIDEBAR_ROW_SLOT_BUTTON_CLASSES}
             onClick={() => onToggle(tag.text)}
           >
-            {icon ? (
-              <TagEmojiMark emoji={icon} className="group-hover:hidden group-has-[:focus-visible]:hidden" />
-            ) : (
-              <TagMark className="group-hover:hidden group-has-[:focus-visible]:hidden" />
-            )}
+            <SidebarRowTagMark icon={mark} className="group-hover:hidden group-has-[:focus-visible]:hidden" />
             <Chevron open={open} className="hidden group-hover:block group-has-[:focus-visible]:block" />
           </button>
         )}
@@ -183,7 +173,7 @@ const TagItem = ({ tag, depth, activeTag, expanded, onTagClick, onToggle }: TagI
             className={SIDEBAR_ROW_LABEL_CLASSES}
             onClick={() => onTagClick(tag.text)}
           >
-            {!hasSubTags && (icon ? <SidebarRowEmojiSlot emoji={icon} /> : <SidebarRowIconSlot icon={HashIcon} />)}
+            {!hasSubTags && <SidebarRowTagMarkSlot icon={mark} />}
             <span ref={labelRef} className="min-w-0 flex-1 truncate">
               {label}
             </span>
@@ -220,6 +210,7 @@ const TagItem = ({ tag, depth, activeTag, expanded, onTagClick, onToggle }: TagI
               depth={depth + 1}
               activeTag={activeTag}
               expanded={expanded}
+              tagIcon={tagIcon}
               onTagClick={onTagClick}
               onToggle={onToggle}
             />
@@ -230,7 +221,7 @@ const TagItem = ({ tag, depth, activeTag, expanded, onTagClick, onToggle }: TagI
   );
 };
 
-const TagTree = ({ tagAmounts, activeTag, scope, onTagClick }: Props) => {
+const TagTree = ({ tagAmounts, activeTag, scope, tagIcon, onTagClick }: Props) => {
   const t = useTranslate();
   const tags = useMemo(() => buildTagTree(tagAmounts), [tagAmounts]);
   // Scoped per tenant: the paths are one account's tag names, so another user's profile tree
@@ -270,6 +261,7 @@ const TagTree = ({ tagAmounts, activeTag, scope, onTagClick }: Props) => {
           depth={0}
           activeTag={activeTag}
           expanded={expanded}
+          tagIcon={tagIcon}
           onTagClick={onTagClick}
           onToggle={handleToggle}
         />

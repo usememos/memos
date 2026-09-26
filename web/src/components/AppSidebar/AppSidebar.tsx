@@ -22,7 +22,7 @@ import {
   Trash2Icon,
   UserRoundIcon,
 } from "lucide-react";
-import { type ReactNode, useEffect } from "react";
+import { type ReactNode, useCallback, useEffect } from "react";
 import { Link, matchPath, useLocation, useNavigate } from "react-router-dom";
 import { MAP_MEMO_FILTER } from "@/components/MapView/useMapMemos";
 import { MemoDetailSidebar } from "@/components/MemoDetailSidebar";
@@ -43,10 +43,12 @@ import { useAttachmentLibraryStats } from "@/hooks/useAttachmentLibrary";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { type MemoStatsContext, useFilteredMemoStats } from "@/hooks/useFilteredMemoStats";
 import useMediaQuery from "@/hooks/useMediaQuery";
+import { useSetTagIcon } from "@/hooks/useTagIcon";
 import { useNotifications, useUser } from "@/hooks/useUserQueries";
 import { combineCELFilters } from "@/lib/cel-filter";
 import { getMemoScopePath, getProfileUsername, type PrimaryMemoScope, resolveMemoScope } from "@/lib/memo-views";
 import { userNamePrefix } from "@/lib/resource-names";
+import { resolveTagIcon } from "@/lib/tag";
 import { cn } from "@/lib/utils";
 import { collectionPathForLocation, ROUTES } from "@/router/routes";
 import { State } from "@/types/proto/api/v1/common_pb";
@@ -109,7 +111,7 @@ const CollectionSidebarContent = ({
   const { memoFilter, selectedSpaceName } = useSpaceContext();
   const md = useMediaQuery("md");
   const { mobileOpen, setMobileOpen } = useAppSidebar();
-  const { isInitialized: authInitialized } = useAuth();
+  const { isInitialized: authInitialized, userTagsSetting } = useAuth();
   const { isInitialized: instanceInitialized } = useInstance();
   const profileUsername = getProfileUsername(location.pathname);
   const { data: profileUser } = useUser(`${userNamePrefix}${profileUsername ?? ""}`, {
@@ -130,6 +132,10 @@ const CollectionSidebarContent = ({
   const tagStateScope = isUserLevelCollection
     ? (statsUserName ?? context)
     : `${statsUserName ?? context}${selectedSpaceName ? `:${selectedSpaceName}` : ""}`;
+  // Tag marks are a personal display preference keyed by tag name, so they are resolved and
+  // written here rather than per row, and are read-only until someone owns them.
+  const setTagIcon = useSetTagIcon();
+  const tagIcon = useCallback((tag: string) => resolveTagIcon(tag, userTagsSetting), [userTagsSetting]);
 
   return (
     <div className={SIDEBAR_SECTION_STACK_CLASSES}>
@@ -141,7 +147,13 @@ const CollectionSidebarContent = ({
       )}
       {/* Every collection route narrows the same way: views (yours, so signed-in only), days, tags. */}
       {currentUser && <ViewsSection />}
-      <TagsSection tagCount={tags} scope={tagStateScope} onSelect={() => setMobileOpen(false)} />
+      <TagsSection
+        tagCount={tags}
+        scope={tagStateScope}
+        tagIcon={tagIcon}
+        onTagIconChange={currentUser ? setTagIcon : undefined}
+        onSelect={() => setMobileOpen(false)}
+      />
     </div>
   );
 };

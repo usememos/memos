@@ -1,5 +1,5 @@
 import { AstroidIcon, type LucideIcon, RotateCcwIcon, SearchIcon } from "lucide-react";
-import { type KeyboardEvent, useId, useRef, useState } from "react";
+import { type KeyboardEvent, type ReactElement, type ReactNode, useId, useRef, useState } from "react";
 import CustomIcon from "@/components/CustomIcon";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,9 +36,13 @@ interface Props {
   disabled?: boolean;
   label: string;
   fallback?: LucideIcon;
+  /** Replaces the default outlined button, e.g. so a sidebar row can trigger from its mark slot. */
+  trigger?: ReactElement;
+  /** Replaces the icon drawn inside the trigger; defaults to the current value at settings size. */
+  triggerContent?: ReactNode;
 }
 
-function CustomIconPicker({ value, onChange, disabled, label, fallback = AstroidIcon }: Props) {
+function CustomIconPicker({ value, onChange, disabled, label, fallback = AstroidIcon, trigger, triggerContent }: Props) {
   const t = useTranslate();
   const id = useId();
   const [open, setOpen] = useState(false);
@@ -91,11 +95,12 @@ function CustomIconPicker({ value, onChange, disabled, label, fallback = Astroid
       }}
     >
       <PopoverTrigger
-        render={
-          <Button type="button" variant="outline" size="icon" className="size-8 p-0" disabled={disabled} aria-label={label} title={label} />
-        }
+        disabled={disabled}
+        aria-label={label}
+        title={label}
+        render={trigger ?? <Button type="button" variant="outline" size="icon" className="size-8 p-0" />}
       >
-        <CustomIcon icon={value} fallback={fallback} className="size-5 text-xl" />
+        {triggerContent ?? <CustomIcon icon={value} fallback={fallback} className="size-5 text-xl" />}
       </PopoverTrigger>
       <PopoverContent align="start" className="w-[290px] max-w-[calc(100vw-2rem)] p-2" aria-label={label} initialFocus={searchRef}>
         <Tabs value={tab} onValueChange={changeTab}>

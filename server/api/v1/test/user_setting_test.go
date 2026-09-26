@@ -133,9 +133,11 @@ func TestUserTagSettings(t *testing.T) {
 							Green: 0.1,
 							Blue:  0.1,
 						},
+						Icon: &apiv1.UserSetting_TagMetadata_Icon{Value: &apiv1.UserSetting_TagMetadata_Icon_Emoji{Emoji: "🐞"}},
 					},
 					"private/.*": {
 						BlurContent: true,
+						Icon:        &apiv1.UserSetting_TagMetadata_Icon{Value: &apiv1.UserSetting_TagMetadata_Icon_Lucide{Lucide: "book-open"}},
 					},
 				},
 			},
@@ -150,10 +152,38 @@ func TestUserTagSettings(t *testing.T) {
 	require.Equal(t, "users/tag-user/settings/TAGS", updated.Name)
 	require.Contains(t, updated.GetTagsSetting().GetTags(), "bug")
 	require.True(t, updated.GetTagsSetting().GetTags()["private/.*"].BlurContent)
+	require.Equal(t, "🐞", updated.GetTagsSetting().GetTags()["bug"].GetIcon().GetEmoji())
+	require.Equal(t, "book-open", updated.GetTagsSetting().GetTags()["private/.*"].GetIcon().GetLucide())
 
 	got, err := ts.Service.GetUserSetting(userCtx, &apiv1.GetUserSettingRequest{Name: "users/tag-user/settings/TAGS"})
 	require.NoError(t, err)
 	require.Contains(t, got.GetTagsSetting().GetTags(), "bug")
+	require.Equal(t, "🐞", got.GetTagsSetting().GetTags()["bug"].GetIcon().GetEmoji())
+
+	// An icon that names neither an emoji nor a symbol is a client bug, not a request to clear it.
+	for _, icon := range []*apiv1.UserSetting_TagMetadata_Icon{
+		{},
+		{Value: &apiv1.UserSetting_TagMetadata_Icon_Emoji{Emoji: "not an emoji"}},
+		{Value: &apiv1.UserSetting_TagMetadata_Icon_Lucide{Lucide: "BookOpen"}},
+	} {
+		_, err = ts.Service.UpdateUserSetting(userCtx, &apiv1.UpdateUserSettingRequest{
+			Setting: &apiv1.UserSetting{
+				Name: "users/tag-user/settings/TAGS",
+				Value: &apiv1.UserSetting_TagsSetting_{
+					TagsSetting: &apiv1.UserSetting_TagsSetting{
+						Tags: map[string]*apiv1.UserSetting_TagMetadata{"bug": {Icon: icon}},
+					},
+				},
+			},
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"tags"}},
+		})
+		require.Error(t, err)
+	}
+
+	// The rejected writes left the stored icon alone.
+	got, err = ts.Service.GetUserSetting(userCtx, &apiv1.GetUserSettingRequest{Name: "users/tag-user/settings/TAGS"})
+	require.NoError(t, err)
+	require.Equal(t, "🐞", got.GetTagsSetting().GetTags()["bug"].GetIcon().GetEmoji())
 
 	resp, err := ts.Service.ListUserSettings(userCtx, &apiv1.ListUserSettingsRequest{
 		Parent: apiv1server.BuildUserName(user.Username),

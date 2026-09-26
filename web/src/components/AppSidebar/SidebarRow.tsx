@@ -1,6 +1,8 @@
-import type { LucideIcon } from "lucide-react";
+import { HashIcon, type LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
+import CustomIcon from "@/components/CustomIcon";
 import { FOCUS_VISIBLE_OUTLINE_CLASSES } from "@/components/ui/focus";
+import type { CustomIconValue } from "@/lib/custom-icons";
 import { cn } from "@/lib/utils";
 import { SIDEBAR_LEADING_SLOT_CLASSES, sidebarSurfaceVariants } from "./sidebar-layout";
 
@@ -100,11 +102,24 @@ const SidebarRow = ({ state = "idle", icon: Icon, label, count, onClick, trailin
 
 export default SidebarRow;
 
-/** Emoji-sized to match the row's icon box: tags whose name starts with an emoji swap the # mark for it. */
+/** Emoji-sized to match the row's icon box: a tag with an emoji icon swaps the # mark for it. */
 export const SIDEBAR_ROW_EMOJI_CLASSES = "me-auto flex size-4 shrink-0 items-center justify-center text-[15px] leading-none";
 
-export const SidebarRowEmojiSlot = ({ emoji }: { emoji: string }) => (
+/**
+ * A tag's mark: the icon it was given (emoji or symbol) standing in for the # mark, drawn at
+ * whichever of the row's two glyph scales fits it. Sized here rather than in the picker so
+ * every tag list shares one rail.
+ */
+export const SidebarRowTagMark = ({ icon, className }: { icon?: CustomIconValue; className?: string }) => (
+  <CustomIcon
+    icon={icon}
+    fallback={HashIcon}
+    className={cn(icon?.value.case === "emoji" ? SIDEBAR_ROW_EMOJI_CLASSES : SIDEBAR_ROW_ICON_CLASSES, className)}
+  />
+);
+
+export const SidebarRowTagMarkSlot = ({ icon }: { icon?: CustomIconValue }) => (
   <span className={SIDEBAR_ROW_SLOT_CLASSES} aria-hidden="true">
-    <span className={SIDEBAR_ROW_EMOJI_CLASSES}>{emoji}</span>
+    <SidebarRowTagMark icon={icon} />
   </span>
 );

@@ -55,6 +55,18 @@ message UserTagMetadata {
   google.type.Color background_color = 1;
   // Whether memos with this tag should have their content blurred.
   bool blur_content = 2;
+  // Optional display icon shown in place of the tag's hash mark.
+  // When unset, clients fall back to a leading emoji in the tag name, then the hash mark.
+  Icon icon = 3;
+
+  message Icon {
+    oneof value {
+      // A Unicode emoji sequence.
+      string emoji = 1;
+      // A canonical Lucide icon name, such as "leaf".
+      string lucide = 2;
+    }
+  }
 }
 
 message TagsUserSetting {
