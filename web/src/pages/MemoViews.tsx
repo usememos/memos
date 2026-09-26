@@ -269,7 +269,7 @@ const MemoViews = () => {
   const navigate = useNavigate();
   const user = useCurrentUser();
   const queryClient = useQueryClient();
-  const { data: memoViews = [] } = useMemoViews(user?.name);
+  const { data: memoViews = [], isPending, isError, refetch } = useMemoViews(user?.name);
   const { memoView: selectedMemoView, setMemoView } = useMemoFilterContext();
   const [isCreateFormOpen, setIsCreateFormOpen] = useState(false);
   const [draft, setDraft] = useState<MemoView>(createEmptyMemoView());
@@ -472,6 +472,7 @@ const MemoViews = () => {
       <div className={cn("grid grid-cols-1 gap-6", isCreateFormOpen && "xl:grid-cols-[minmax(0,1fr)_20rem]")}>
         <div className="flex min-w-0 flex-col gap-6">
           <div
+            inert={!isCreateFormOpen}
             className={cn(
               "overflow-hidden rounded-lg border border-border bg-background transition-[max-height,opacity] duration-200",
               isCreateFormOpen ? "max-h-[48rem] opacity-100" : "max-h-0 border-transparent opacity-0",
@@ -547,54 +548,69 @@ const MemoViews = () => {
             </div>
           </div>
 
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center justify-between">
-              <h2 className="text-base font-semibold text-foreground">All views</h2>
-              <Badge variant="outline">{memoViews.length}</Badge>
-            </div>
+          {!(memoViews.length === 0 && isCreateFormOpen) && (
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <h2 className="text-base font-semibold text-foreground">All views</h2>
+                {!isPending && !isError && <Badge variant="outline">{memoViews.length}</Badge>}
+              </div>
 
-            {memoViews.length === 0 ? (
-              <div className="rounded-lg border border-dashed border-border px-4 py-10 text-center">
-                <p className="text-sm font-medium text-foreground">No views yet</p>
-                <p className="mt-1 text-sm text-muted-foreground">Open the create form to choose an example and add your first view.</p>
-              </div>
-            ) : (
-              <div className="divide-y divide-border overflow-hidden rounded-lg border border-border">
-                {memoViews.map((memoView) => (
-                  <div
-                    key={memoView.name}
-                    className="grid gap-3 bg-background px-4 py-3 sm:grid-cols-[minmax(10rem,14rem)_minmax(0,1fr)_2rem]"
-                  >
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-                        <MemoViewIcon icon={memoView.icon} className="size-4 text-base" />
-                        <span className="truncate">{memoView.title}</span>
+              {isPending ? (
+                <p className="py-10 text-center text-sm text-muted-foreground">Loading views…</p>
+              ) : isError ? (
+                <div className="py-10 text-center">
+                  <p className="text-sm text-muted-foreground">Couldn’t load views.</p>
+                  <Button variant="outline" className="mt-4" onClick={() => void refetch()}>
+                    Retry
+                  </Button>
+                </div>
+              ) : memoViews.length === 0 ? (
+                <div className="rounded-lg border border-dashed border-border px-4 py-10 text-center">
+                  <p className="text-sm font-medium text-foreground">No views yet</p>
+                  <p className="mt-1 text-sm text-muted-foreground">Save a filter to quickly return to the memos you need.</p>
+                  <Button variant="outline" className="mt-4" onClick={handleOpenCreateForm}>
+                    <PlusIcon className="size-4" />
+                    {t("setting.memo-view.create")}
+                  </Button>
+                </div>
+              ) : (
+                <div className="divide-y divide-border overflow-hidden rounded-lg border border-border">
+                  {memoViews.map((memoView) => (
+                    <div
+                      key={memoView.name}
+                      className="grid gap-3 bg-background px-4 py-3 sm:grid-cols-[minmax(10rem,14rem)_minmax(0,1fr)_2rem]"
+                    >
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                          <MemoViewIcon icon={memoView.icon} className="size-4 text-base" />
+                          <span className="truncate">{memoView.title}</span>
+                        </div>
+                        <div className="mt-1 font-mono text-xs text-muted-foreground">{getMemoViewId(memoView.name)}</div>
                       </div>
-                      <div className="mt-1 font-mono text-xs text-muted-foreground">{getMemoViewId(memoView.name)}</div>
+                      <pre className="min-w-0 overflow-x-auto rounded-md bg-muted/50 px-3 py-2 font-mono text-xs leading-5 text-muted-foreground">
+                        {memoView.filter}
+                      </pre>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="justify-self-end" />}>
+                          <MoreVerticalIcon className="h-4 w-4" />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => handleEditMemoView(memoView)}>
+                            <PencilIcon className="h-4 w-4" />
+                            {t("common.edit")}
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setDeleteTarget(memoView)}>
+                            <Trash2Icon className="h-4 w-4" />
+                            {t("common.delete")}
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
-                    <pre className="min-w-0 overflow-x-auto rounded-md bg-muted/50 px-3 py-2 font-mono text-xs leading-5 text-muted-foreground">
-                      {memoView.filter}
-                    </pre>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="justify-self-end" />}>
-                        <MoreVerticalIcon className="h-4 w-4" />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleEditMemoView(memoView)}>
-                          <PencilIcon className="h-4 w-4" />
-                          {t("common.edit")}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setDeleteTarget(memoView)}>
-                          <Trash2Icon className="h-4 w-4" />
-                          {t("common.delete")}
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {isCreateFormOpen ? <MemoViewGuide onUseExample={handleUseExample} /> : null}

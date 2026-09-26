@@ -128,7 +128,6 @@
     "yourself": "Jijzelf",
     "empty-placeholder": "Leeg",
     "unlink": "Ontkoppelen",
-    "tasks": "Taken",
     "actions": "Acties",
     "collapse-panel": "Paneel inklappen",
     "expand-panel": "Paneel uitklappen",
@@ -477,6 +476,7 @@
       "uploads-privacy-title": "Uploads en privacy"
     },
     "memo-view": {
+      "create": "Weergave maken",
       "delete-confirm": "Weet je zeker dat je weergave `{{title}}` wilt verwijderen?",
       "delete-success": "Weergave `{{title}}` succesvol verwijderd",
       "change-icon": "Weergavepictogram wijzigen"

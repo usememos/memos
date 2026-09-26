@@ -120,7 +120,6 @@
     "sign-up": "登録",
     "statistics": "統計",
     "tags": "タグ",
-    "tasks": "タスク",
     "title": "タイトル",
     "today": "今日",
     "tree-mode": "ツリーモード",
@@ -477,6 +476,7 @@
       "uploads-privacy-title": "アップロードとプライバシー"
     },
     "memo-view": {
+      "create": "ビューを作成",
       "delete-confirm": "ビュー `{{title}}` を削除してもよろしいですか？",
       "delete-success": "ビュー `{{title}}` を削除しました",
       "change-icon": "ビューのアイコンを変更"

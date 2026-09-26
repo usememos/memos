@@ -128,7 +128,6 @@
     "yourself": "Magad",
     "empty-placeholder": "Üres",
     "unlink": "Leválasztás",
-    "tasks": "Feladatok",
     "actions": "Műveletek",
     "collapse-panel": "Panel összecsukása",
     "expand-panel": "Panel kibontása",
@@ -477,6 +476,7 @@
       "uploads-privacy-title": "Feltöltések és adatvédelem"
     },
     "memo-view": {
+      "create": "Nézet létrehozása",
       "delete-confirm": "Biztosan törlöd a `{{title}}` nézetet?",
       "delete-success": "`{{title}}` nézet sikeresen törölve",
       "change-icon": "Nézet ikonjának módosítása"

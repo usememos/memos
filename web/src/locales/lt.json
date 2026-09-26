@@ -166,7 +166,6 @@
     "visibility": "Matomumas",
     "views": "Rodiniai",
     "yourself": "save",
-    "tasks": "Užduotys",
     "actions": "Veiksmai",
     "collapse-panel": "Sutraukti skydelį",
     "expand-panel": "Išskleisti skydelį",
@@ -593,6 +592,7 @@
       "uploads-privacy-title": "Įkėlimai ir privatumas"
     },
     "memo-view": {
+      "create": "Sukurti rodinį",
       "delete-confirm": "Ar tikrai norite ištrinti rodinį `{{title}}`?",
       "delete-success": "Rodinys `{{title}}` sėkmingai ištrintas",
       "change-icon": "Keisti rodinio piktogramą"

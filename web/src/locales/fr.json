@@ -128,7 +128,6 @@
     "yourself": "Vous-même",
     "empty-placeholder": "Vide",
     "unlink": "Dissocier",
-    "tasks": "Tâches",
     "actions": "Actions",
     "collapse-panel": "Réduire le panneau",
     "expand-panel": "Développer le panneau",
@@ -477,6 +476,7 @@
       "uploads-privacy-title": "Téléchargements et confidentialité"
     },
     "memo-view": {
+      "create": "Créer une vue",
       "delete-confirm": "Êtes-vous sûr de vouloir supprimer la vue `{{title}}` ?",
       "delete-success": "Vue `{{title}}` supprimée avec succès",
       "change-icon": "Modifier l'icône d'affichage"

@@ -128,7 +128,6 @@
     "yourself": "Deg selv",
     "empty-placeholder": "Tømme",
     "unlink": "Fjern tilknytningen",
-    "tasks": "Oppgaver",
     "actions": "Handlinger",
     "collapse-panel": "Skjul panel",
     "expand-panel": "Utvid panel",
@@ -477,6 +476,7 @@
       "uploads-privacy-title": "Opplastinger og personvern"
     },
     "memo-view": {
+      "create": "Opprett visning",
       "delete-confirm": "Er du sikker på at du vil slette visningen `{{title}}`?",
       "delete-success": "Visning `{{title}}` slettet vellykket",
       "change-icon": "Endre visningsikon"

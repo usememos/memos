@@ -1,14 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { buildMemoFilter } from "@/hooks/useMemoFilters";
 import { combineCELFilters } from "@/lib/cel-filter";
-import {
-  BUILTIN_TASKS_VIEW_FILTER,
-  BUILTIN_TASKS_VIEW_ID,
-  getMemoViewId,
-  isMemoCollectionRoute,
-  isMemoScopeRoute,
-  resolveMemoScope,
-} from "@/lib/memo-views";
+import { getMemoViewId, isMemoCollectionRoute, isMemoScopeRoute, resolveMemoScope } from "@/lib/memo-views";
 import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
 
 describe("memo scopes", () => {
@@ -57,17 +50,15 @@ describe("memo views", () => {
       '(space == "spaces/product") && ((creator == "users/steven") && (has_link || has_code) && (content.contains("plan") || pinned) && (tag in ["work"]))',
     );
   });
-  it("uses a collision-safe built-in Tasks view", () => {
-    expect(BUILTIN_TASKS_VIEW_ID).not.toBe("tasks");
-    expect(BUILTIN_TASKS_VIEW_FILTER).toBe("has_task_list && has_incomplete_tasks");
+  it("extracts the saved view ID", () => {
     expect(getMemoViewId("users/steven/views/work")).toBe("work");
   });
 
-  it("composes Tasks with search, tags, creator, and visibility", () => {
+  it("composes a saved task view with search, tags, creator, and visibility", () => {
     expect(
       buildMemoFilter({
         creatorName: "users/steven",
-        currentMemoView: BUILTIN_TASKS_VIEW_ID,
+        selectedMemoViewFilter: "has_task_list && has_incomplete_tasks",
         filters: [
           { factor: "contentSearch", value: "plan" },
           { factor: "tagSearch", value: "work" },
@@ -104,10 +95,9 @@ describe("memo views", () => {
     ).toBe("(has_link) && (has_task_list) && (has_code) && (has_location)");
   });
 
-  it("uses a custom memo view filter when Tasks is not selected", () => {
+  it("uses a saved memo view filter", () => {
     expect(
       buildMemoFilter({
-        currentMemoView: "work",
         filters: [],
         includePinned: false,
         selectedMemoViewFilter: 'tag in ["work"]',

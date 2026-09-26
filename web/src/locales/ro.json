@@ -166,7 +166,6 @@
     "visibility": "Vizibilitate",
     "views": "Vizualizări",
     "yourself": "Te",
-    "tasks": "Sarcini",
     "actions": "Acțiuni",
     "collapse-panel": "Restrângeți panoul",
     "expand-panel": "Extindeți panoul",
@@ -593,6 +592,7 @@
       "uploads-privacy-title": "Încărcări și confidențialitate"
     },
     "memo-view": {
+      "create": "Creează o vizualizare",
       "delete-confirm": "Sigur doriți să ștergeți vizualizarea `{{title}}`?",
       "delete-success": "Vizualizarea `{{title}}` a fost ștearsă cu succes",
       "change-icon": "Schimbă pictograma vizualizării"

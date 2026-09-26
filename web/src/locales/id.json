@@ -136,7 +136,6 @@
     "resize-panel": "Ubah ukuran panel",
     "resize-sidebar": "Ubah ukuran sidebar",
     "sign-in-to-memos": "Masuk ke Memos",
-    "tasks": "Tugas",
     "unlink": "Putuskan tautan",
     "view-all": "Lihat semua"
   },
@@ -387,6 +386,7 @@
       "uploads-privacy-title": "Unggahan & privasi"
     },
     "memo-view": {
+      "create": "Buat tampilan",
       "delete-confirm": "Apakah Anda yakin ingin menghapus tampilan `{{title}}`?",
       "delete-success": "Tampilan `{{title}}` berhasil dihapus",
       "change-icon": "Mengubah ikon tampilan"

@@ -128,7 +128,6 @@
     "yourself": "Tu mateix",
     "empty-placeholder": "Buit",
     "unlink": "Desenllaça",
-    "tasks": "Tasques",
     "actions": "Accions",
     "collapse-panel": "Replega el panell",
     "expand-panel": "Expandeix el panell",
@@ -477,6 +476,7 @@
       "uploads-privacy-title": "Càrregues i privadesa"
     },
     "memo-view": {
+      "create": "Crea una vista",
       "delete-confirm": "Estàs segur que vols eliminar la vista `{{title}}`?",
       "delete-success": "Vista `{{title}}` eliminada correctament",
       "change-icon": "Canvia la icona de vista"

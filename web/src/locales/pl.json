@@ -128,7 +128,6 @@
     "yourself": "Ty sam",
     "empty-placeholder": "Pusty",
     "unlink": "Odczepić",
-    "tasks": "Zadania",
     "actions": "Akcje",
     "collapse-panel": "Zwiń panel",
     "expand-panel": "Rozwiń panel",
@@ -477,6 +476,7 @@
       "uploads-privacy-title": "Przesyłanie i prywatność"
     },
     "memo-view": {
+      "create": "Utwórz widok",
       "delete-confirm": "Czy na pewno chcesz usunąć widok `{{title}}`?",
       "delete-success": "Widok `{{title}}` usunięty pomyślnie",
       "change-icon": "Zmień ikonę widoku"

@@ -128,7 +128,6 @@
     "yourself": "Ti",
     "empty-placeholder": "prazno",
     "unlink": "Prekini povezavo",
-    "tasks": "Naloge",
     "actions": "Dejanja",
     "collapse-panel": "Strni ploščo",
     "expand-panel": "Razširi ploščo",
@@ -477,6 +476,7 @@
       "uploads-privacy-title": "Nalaganja in zasebnost"
     },
     "memo-view": {
+      "create": "Ustvari pogled",
       "delete-confirm": "Ali ste prepričani, da želite izbrisati pogled \"{{title}}\"?",
       "delete-success": "Pogled \"{{title}}\" je uspešno izbrisan",
       "change-icon": "Spremeni ikono pogleda"

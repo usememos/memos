@@ -128,7 +128,6 @@
     "yourself": "Tú mismo",
     "empty-placeholder": "Vacía",
     "unlink": "Desconectar",
-    "tasks": "Tareas",
     "actions": "Acciones",
     "collapse-panel": "Contraer panel",
     "expand-panel": "Expandir panel",
@@ -477,6 +476,7 @@
       "uploads-privacy-title": "Cargas y privacidad"
     },
     "memo-view": {
+      "create": "Crear vista",
       "delete-confirm": "¿Estás seguro de que quieres eliminar la vista `{{title}}`?",
       "delete-success": "Vista `{{title}}` eliminada correctamente",
       "change-icon": "Cambiar icono de vista"

@@ -136,7 +136,6 @@
     "resize-panel": "ปรับขนาดแผง",
     "resize-sidebar": "ปรับขนาดแถบด้านข้าง",
     "sign-in-to-memos": "เข้าสู่ระบบ Memos",
-    "tasks": "งาน",
     "unlink": "ยกเลิกการเชื่อมโยง",
     "view-all": "ดูทั้งหมด"
   },
@@ -387,6 +386,7 @@
       "uploads-privacy-title": "การอัปโหลดและความเป็นส่วนตัว"
     },
     "memo-view": {
+      "create": "สร้างมุมมอง",
       "delete-confirm": "คุณแน่ใจหรือไม่ว่าต้องการลบมุมมอง `{{title}}`?",
       "delete-success": "ลบมุมมอง `{{title}}` เรียบร้อยแล้ว",
       "change-icon": "เปลี่ยนไอคอนการดู"

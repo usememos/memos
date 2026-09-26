@@ -199,7 +199,6 @@
     "sign-up": "註冊",
     "statistics": "統計",
     "tags": "標籤",
-    "tasks": "任務",
     "title": "標題",
     "today": "今天",
     "tree-mode": "樹狀顯示",
@@ -633,6 +632,7 @@
       "uploads-privacy-title": "上傳與隱私"
     },
     "memo-view": {
+      "create": "建立檢視",
       "delete-confirm": "您確定要刪除檢視 `{{title}}` 嗎？",
       "delete-success": "檢視 `{{title}}` 刪除成功",
       "change-icon": "變更檢視圖示"

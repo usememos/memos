@@ -166,7 +166,6 @@
     "visibility": "Sigtbarhed",
     "views": "Visninger",
     "yourself": "Dig selv",
-    "tasks": "Opgaver",
     "actions": "Handlinger",
     "collapse-panel": "Skjul panel",
     "expand-panel": "Udvid panel",
@@ -593,6 +592,7 @@
       "uploads-privacy-title": "Uploads og privatliv"
     },
     "memo-view": {
+      "create": "Opret visning",
       "delete-confirm": "Er du sikker på, at du vil slette visningen `{{title}}`?",
       "delete-success": "Visningen `{{title}}` blev slettet",
       "change-icon": "Skift visningsikon"

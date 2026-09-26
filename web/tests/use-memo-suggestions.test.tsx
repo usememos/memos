@@ -2,7 +2,6 @@ import { renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { MemoFilter } from "@/contexts/MemoFilterContext";
 import { useMemoSuggestions } from "@/hooks/useMemoSuggestions";
-import { BUILTIN_TASKS_VIEW_ID } from "@/lib/memo-views";
 
 const mocks = vi.hoisted(() => ({
   filters: [] as MemoFilter[],
@@ -20,8 +19,9 @@ describe("useMemoSuggestions", () => {
     mocks.views = [];
   });
 
-  it("suggests a checklist in the built-in Tasks View", () => {
-    mocks.memoView = BUILTIN_TASKS_VIEW_ID;
+  it("suggests a checklist in a saved task view", () => {
+    mocks.memoView = "abc";
+    mocks.views = [{ name: "users/me/views/abc", filter: "has_task_list && has_incomplete_tasks" }];
     const { result } = renderHook(() => useMemoSuggestions());
     expect(result.current).toEqual([{ id: "checklist", kind: "checklist", source: "view" }]);
   });

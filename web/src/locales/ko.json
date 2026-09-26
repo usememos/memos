@@ -136,7 +136,6 @@
     "resize-panel": "패널 크기 조정",
     "resize-sidebar": "사이드바 크기 조정",
     "sign-in-to-memos": "Memos에 로그인",
-    "tasks": "작업",
     "unlink": "연결 해제",
     "view-all": "모두 보기"
   },
@@ -387,6 +386,7 @@
       "uploads-privacy-title": "업로드 및 개인 정보 보호"
     },
     "memo-view": {
+      "create": "뷰 만들기",
       "delete-confirm": "보기 `{{title}}`를 정말로 삭제하시겠습니까?",
       "delete-success": "보기 `{{title}}`가 성공적으로 삭제되었습니다",
       "change-icon": "뷰 아이콘 변경"

@@ -116,7 +116,7 @@ to scanning free text.
 
 - Tags: explicit tag conditions and selected tags. `insertTag()` is one isolated undo
   step at the caret that keeps selected text and honors the current Markdown context.
-- Checklist: task-list conditions, including the built-in Tasks View; a negative
+- Checklist: task-list conditions in saved Views or filters; a negative
   task-list or incomplete-task condition suppresses it.
 - Visibility: exactly one explicit audience across filters and View, otherwise nothing.
   Space visibility also requires actual Space placement.

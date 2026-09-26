@@ -7,10 +7,13 @@ import MemoViewIcon from "@/components/MemoViewIcon";
 import MemoViews from "@/pages/MemoViews";
 import { MemoView_IconSchema, MemoViewSchema } from "@/types/proto/api/v1/user_service_pb";
 
-const mocks = vi.hoisted(() => ({ create: vi.fn(), update: vi.fn() }));
+const mocks = vi.hoisted(() => ({ create: vi.fn(), update: vi.fn(), isPending: false, isError: false, refetch: vi.fn() }));
 vi.mock("@/connect", () => ({ userServiceClient: { createMemoView: mocks.create, updateMemoView: mocks.update } }));
 vi.mock("@/hooks/useCurrentUser", () => ({ default: () => ({ name: "users/steven" }) }));
-vi.mock("@/hooks/useUserQueries", () => ({ useMemoViews: () => ({ data: [] }), userKeys: { memoViews: () => ["views"] } }));
+vi.mock("@/hooks/useUserQueries", () => ({
+  useMemoViews: () => ({ data: [], isPending: mocks.isPending, isError: mocks.isError, refetch: mocks.refetch }),
+  userKeys: { memoViews: () => ["views"] },
+}));
 vi.mock("@/contexts/MemoFilterContext", () => ({ useMemoFilterContext: () => ({ setMemoView: vi.fn() }) }));
 vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
 
@@ -19,10 +22,10 @@ const leaf = create(MemoView_IconSchema, { value: { case: "lucide", value: "leaf
 const existingView = create(MemoViewSchema, { name: "users/steven/views/garden", title: "Garden", filter: "pinned", icon: emoji });
 const iconMask = expect.objectContaining({ paths: ["title", "filter", "icon"] });
 
-function renderPage(edit = false) {
+function renderPage(edit = false, openCreate = true) {
   return render(
     <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
-      <MemoryRouter initialEntries={[{ pathname: "/views", state: edit ? { memoView: existingView } : { openCreate: true } }]}>
+      <MemoryRouter initialEntries={[{ pathname: "/views", state: edit ? { memoView: existingView } : { openCreate } }]}>
         <MemoViews />
       </MemoryRouter>
     </QueryClientProvider>,
@@ -31,6 +34,8 @@ function renderPage(edit = false) {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mocks.isPending = false;
+  mocks.isError = false;
   mocks.create.mockResolvedValue({});
   mocks.update.mockResolvedValue({});
 });
@@ -108,5 +113,47 @@ describe("memo view icons", () => {
         }),
       ),
     );
+  });
+});
+
+describe("empty memo views", () => {
+  it("opens the first view from the empty state and offers an optional task example", async () => {
+    renderPage(false, false);
+    expect(screen.getByText("No views yet")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "setting.memo-view.create" }));
+    expect(screen.queryByText("No views yet")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /Open tasks/ }));
+    expect(screen.getByLabelText("common.title")).toHaveValue("Open tasks");
+    expect(screen.getByLabelText("common.filter")).toHaveValue("has_task_list && has_incomplete_tasks");
+    fireEvent.click(screen.getByRole("button", { name: "common.save" }));
+    await waitFor(() =>
+      expect(mocks.create).toHaveBeenCalledWith({
+        parent: "users/steven",
+        memoView: { name: "", title: "Open tasks", filter: "has_task_list && has_incomplete_tasks", icon: undefined },
+      }),
+    );
+  });
+
+  it("returns to the empty state when creating the first view is canceled", () => {
+    renderPage();
+    expect(screen.queryByText("No views yet")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "common.cancel" }));
+    expect(screen.getByText("No views yet")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "setting.memo-view.create" })).toBeInTheDocument();
+  });
+
+  it("does not report empty views while loading or after a failed request", () => {
+    mocks.isPending = true;
+    const page = renderPage(false, false);
+    expect(screen.getByText("Loading views…")).toBeInTheDocument();
+    expect(screen.queryByText("No views yet")).not.toBeInTheDocument();
+    page.unmount();
+    mocks.isPending = false;
+    mocks.isError = true;
+    renderPage(false, false);
+    expect(screen.getByText("Couldn’t load views.")).toBeInTheDocument();
+    expect(screen.queryByText("No views yet")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Retry" }));
+    expect(mocks.refetch).toHaveBeenCalledOnce();
   });
 });

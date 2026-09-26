@@ -166,7 +166,6 @@
     "visibility": "Viditeľnosť",
     "views": "Zobrazenia",
     "yourself": "seba",
-    "tasks": "Úlohy",
     "actions": "Akcie",
     "collapse-panel": "Zbaliť panel",
     "expand-panel": "Rozbaliť panel",
@@ -593,6 +592,7 @@
       "uploads-privacy-title": "Nahrávanie a súkromie"
     },
     "memo-view": {
+      "create": "Vytvoriť zobrazenie",
       "delete-confirm": "Naozaj chcete odstrániť zobrazenie `{{title}}`?",
       "delete-success": "Zobrazenie `{{title}}` bolo úspešne odstránené",
       "change-icon": "Zmeniť ikonu zobrazenia"

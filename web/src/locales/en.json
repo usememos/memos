@@ -220,7 +220,6 @@
     "sign-up": "Sign up",
     "statistics": "Statistics",
     "tags": "Tags",
-    "tasks": "Tasks",
     "title": "Title",
     "today": "Today",
     "tree-mode": "Show as tree",
@@ -786,6 +785,7 @@
       "uploads-privacy-title": "Uploads & privacy"
     },
     "memo-view": {
+      "create": "Create view",
       "change-icon": "Change view icon",
       "delete-confirm": "Are you sure you want to delete view `{{title}}`?",
       "delete-success": "View `{{title}}` deleted successfully"

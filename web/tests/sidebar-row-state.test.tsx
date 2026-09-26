@@ -9,7 +9,6 @@ import TagsSection from "@/components/AppSidebar/TagsSection";
 import MemoFilters from "@/components/MemoFilters";
 import { AppSidebarProvider } from "@/contexts/AppSidebarContext";
 import { MemoFilterProvider, useMemoFilterContext } from "@/contexts/MemoFilterContext";
-import { BUILTIN_TASKS_VIEW_ID } from "@/lib/memo-views";
 
 vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
 vi.mock("@/hooks/useCurrentUser", () => ({ default: () => ({ name: "users/1" }) }));
@@ -82,11 +81,11 @@ const renderChips = (path: string, viewId?: string) =>
 
 describe("MemoFilters", () => {
   it("echoes the active view like any other filter, and clears it from the chip", () => {
-    renderChips("/", BUILTIN_TASKS_VIEW_ID);
+    renderChips("/", "abc");
 
-    expect(screen.getByText("common.tasks")).toBeInTheDocument();
+    expect(screen.getByText("Last week")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Remove filter" }));
-    expect(screen.queryByText("common.tasks")).not.toBeInTheDocument();
+    expect(screen.queryByText("Last week")).not.toBeInTheDocument();
   });
 
   it("names a saved view by its title", () => {
@@ -95,13 +94,13 @@ describe("MemoFilters", () => {
   });
 
   it("announces a view on a creator collection, where it narrows that user's memos", () => {
-    renderChips("/?creator=alice", BUILTIN_TASKS_VIEW_ID);
-    expect(screen.getByText("common.tasks")).toBeInTheDocument();
+    renderChips("/?creator=alice", "abc");
+    expect(screen.getByText("Last week")).toBeInTheDocument();
   });
 
   it("stays quiet about a view off the collection routes, where it does not apply", () => {
-    renderChips("/attachments", BUILTIN_TASKS_VIEW_ID);
-    expect(screen.queryByText("common.tasks")).not.toBeInTheDocument();
+    renderChips("/attachments", "abc");
+    expect(screen.queryByText("Last week")).not.toBeInTheDocument();
   });
 
   it("formats a day filter as a date rather than the raw value", () => {

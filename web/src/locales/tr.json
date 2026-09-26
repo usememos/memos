@@ -148,7 +148,6 @@
     "sign-up": "Kayıt ol",
     "statistics": "İstatistikler",
     "tags": "Etiketler",
-    "tasks": "Görevler",
     "title": "Başlık",
     "today": "Bugün",
     "tree-mode": "Ağaç modu",
@@ -637,6 +636,7 @@
       "theme-description": "Seçilen temayı bu cihaza hemen uygular."
     },
     "memo-view": {
+      "create": "Görünüm oluştur",
       "change-icon": "Görünüm simgesini değiştir",
       "delete-confirm": "`{{title}}` görünümünü silmek istediğinizden emin misiniz?",
       "delete-success": "`{{title}}` görünümü başarıyla silindi"

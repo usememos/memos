@@ -128,7 +128,6 @@
     "yourself": "Själv",
     "empty-placeholder": "Tömma",
     "unlink": "Ta bort länken",
-    "tasks": "Uppgifter",
     "actions": "Åtgärder",
     "collapse-panel": "Minimera panelen",
     "expand-panel": "Expandera panelen",
@@ -477,6 +476,7 @@
       "uploads-privacy-title": "Uppladdningar och sekretess"
     },
     "memo-view": {
+      "create": "Skapa vy",
       "delete-confirm": "Är du säker på att du vill ta bort vyn `{{title}}`?",
       "delete-success": "Vyn `{{title}}` raderades framgångsrikt",
       "change-icon": "Ändra vyikon"

@@ -128,7 +128,6 @@
     "yourself": "Vy sami",
     "empty-placeholder": "Prázdný",
     "unlink": "Odpojit",
-    "tasks": "Úkoly",
     "actions": "Akce",
     "collapse-panel": "Sbalit panel",
     "expand-panel": "Rozbalit panel",
@@ -477,6 +476,7 @@
       "uploads-privacy-title": "Nahrávání a soukromí"
     },
     "memo-view": {
+      "create": "Vytvořit pohled",
       "delete-confirm": "Jste si jisti, že chcete odstranit zobrazení `{{title}}`?",
       "delete-success": "Zobrazení `{{title}}` bylo úspěšně odstraněno",
       "change-icon": "Změnit ikonu zobrazení"

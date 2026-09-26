@@ -136,7 +136,6 @@
     "resize-panel": "Thay đổi kích thước bảng điều khiển",
     "resize-sidebar": "Thay đổi kích thước thanh bên",
     "sign-in-to-memos": "Đăng nhập vào Memos",
-    "tasks": "Nhiệm vụ",
     "unlink": "Hủy liên kết",
     "view-all": "Xem tất cả"
   },
@@ -387,6 +386,7 @@
       "uploads-privacy-title": "Tải lên & quyền riêng tư"
     },
     "memo-view": {
+      "create": "Tạo chế độ xem",
       "delete-confirm": "Bạn có chắc chắn muốn xóa chế độ xem `{{title}}`?",
       "delete-success": "Đã xóa chế độ xem `{{title}}` thành công",
       "change-icon": "Thay đổi biểu tượng xem"

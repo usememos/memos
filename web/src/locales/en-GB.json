@@ -137,7 +137,6 @@
     "resize-panel": "Resize panel",
     "resize-sidebar": "Resize sidebar",
     "sign-in-to-memos": "Sign in to Memos",
-    "tasks": "Tasks",
     "view-all": "View all"
   },
   "locale-picker": {
@@ -477,6 +476,7 @@
       "uploads-privacy-title": "Uploads & privacy"
     },
     "memo-view": {
+      "create": "Create view",
       "delete-confirm": "Are you sure you want to delete view `{{title}}`?",
       "delete-success": "View `{{title}}` deleted successfully",
       "change-icon": "Change view icon"

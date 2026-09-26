@@ -136,7 +136,6 @@
     "resize-panel": "Redimensionar painel",
     "resize-sidebar": "Redimensionar barra lateral",
     "sign-in-to-memos": "Entrar em Memos",
-    "tasks": "Tarefas",
     "unlink": "Desvincular",
     "view-all": "Ver tudo"
   },
@@ -387,6 +386,7 @@
       "uploads-privacy-title": "Uploads e privacidade"
     },
     "memo-view": {
+      "create": "Criar visualização",
       "delete-confirm": "Tem certeza de que deseja excluir a vista `{{title}}`?",
       "delete-success": "Vista `{{title}}` excluída com sucesso",
       "change-icon": "Alterar ícone de visualização"

@@ -128,7 +128,6 @@
     "yourself": "Ti",
     "empty-placeholder": "Prazan",
     "unlink": "Prekini vezu",
-    "tasks": "Zadaci",
     "actions": "Radnje",
     "collapse-panel": "Sažmi ploču",
     "expand-panel": "Proširi ploču",
@@ -477,6 +476,7 @@
       "uploads-privacy-title": "Prijenosi i privatnost"
     },
     "memo-view": {
+      "create": "Stvori prikaz",
       "delete-confirm": "Jesi li siguran da želiš obrisati prikaz `{{title}}`?",
       "delete-success": "Prikaz `{{title}}` uspješno obrisan",
       "change-icon": "Promijeni ikonu prikaza"

@@ -136,7 +136,6 @@
     "resize-panel": "تغییر اندازه پنل",
     "resize-sidebar": "تغییر اندازه نوار کناری",
     "sign-in-to-memos": "ورود به Memos",
-    "tasks": "وظایف",
     "unlink": "لغو پیوند",
     "view-all": "مشاهده همه"
   },
@@ -387,6 +386,7 @@
       "uploads-privacy-title": "آپلودها و حریم خصوصی"
     },
     "memo-view": {
+      "create": "ایجاد نما",
       "delete-confirm": "آیا مطمئن هستید که می‌خواهید نمای «{{title}}» را حذف کنید؟",
       "delete-success": "نمای «{{title}}» با موفقیت حذف شد",
       "change-icon": "تغییر نماد نمایش"

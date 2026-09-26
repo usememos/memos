@@ -166,7 +166,6 @@
     "visibility": "Näkyvyys",
     "views": "Näkymät",
     "yourself": "itseäsi",
-    "tasks": "Tehtävät",
     "actions": "Toiminnot",
     "collapse-panel": "Pienennä paneeli",
     "expand-panel": "Laajenna paneeli",
@@ -593,6 +592,7 @@
       "uploads-privacy-title": "Lataukset ja tietosuoja"
     },
     "memo-view": {
+      "create": "Luo näkymä",
       "delete-confirm": "Haluatko varmasti poistaa näkymän `{{title}}`?",
       "delete-success": "Näkymä `{{title}}` poistettu onnistuneesti",
       "change-icon": "Vaihda näkymäkuvaketta"

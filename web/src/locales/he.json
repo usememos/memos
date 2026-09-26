@@ -192,7 +192,6 @@
     "sign-up": "הרשמה",
     "statistics": "סטטיסטיקה",
     "tags": "תגיות",
-    "tasks": "משימות",
     "title": "כותרת",
     "today": "היום",
     "tree-mode": "מצב עץ",
@@ -626,6 +625,7 @@
       "uploads-privacy-title": "העלאות ופרטיות"
     },
     "memo-view": {
+      "create": "יצירת תצוגה",
       "delete-confirm": "האם אתם בטוחים שברצונכם למחוק את התצוגה `{{title}}`?",
       "delete-success": "התצוגה `{{title}}` נמחקה בהצלחה",
       "change-icon": "שינוי סמל התצוגה"

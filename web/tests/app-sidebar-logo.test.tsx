@@ -3,7 +3,6 @@ import { fireEvent, screen, render as testingLibraryRender, within } from "@test
 import { MemoryRouter, useLocation } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import AppSidebar, { MobileAppHeader, MobileAppSidebar } from "@/components/AppSidebar";
-import { SIDEBAR_SECTION_ACTION_ICON_CLASSES } from "@/components/AppSidebar/SidebarSection";
 import { type MemoFilter } from "@/contexts/MemoFilterContext";
 import { getCollectionCreator, resolveCollectionRoute } from "@/router/routes";
 
@@ -538,16 +537,13 @@ describe("App sidebar logo", () => {
     expect(screen.getByRole("heading", { name: "common.views", level: 2 })).toBeInTheDocument();
     expect(calendar.compareDocumentPosition(views) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     const viewOptions = screen.getByRole("button", { name: "memo.view-options" });
-    const createView = screen.getByRole("button", { name: "common.create" });
+    const createView = screen.getByRole("button", { name: "setting.memo-view.create" });
     expect(viewOptions.closest("nav")).toBe(screen.getByRole("navigation", { name: "Primary" }));
     expect(screen.getByRole("link", { name: "common.timeline" }).nextElementSibling).toBe(viewOptions);
     expect(viewOptions.parentElement).toHaveClass("bg-sidebar-accent", "rounded-md");
     expect(viewOptions.closest("a")).toBeNull();
-    expect(createView).toHaveClass("size-6", "rounded-md", "text-muted-foreground/70", "hover:bg-muted/60", "hover:text-foreground");
-    expect(createView.querySelector("svg")).toHaveClass(SIDEBAR_SECTION_ACTION_ICON_CLASSES);
-    const tasksView = screen.getByRole("button", { name: "common.tasks" });
-    expect(tasksView).toHaveTextContent("common.tasks");
-    expect(tasksView).not.toHaveTextContent("☑️");
+    expect(createView).toHaveTextContent("setting.memo-view.create");
+    expect(screen.queryByRole("button", { name: "common.tasks" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "common.explore" })).not.toBeInTheDocument();
 
     const home = screen.getByRole("link", { name: "common.timeline" });
@@ -586,6 +582,23 @@ describe("App sidebar logo", () => {
       </MemoryRouter>,
     );
     expect(screen.queryByRole("button", { name: "memo.view-options" })).not.toBeInTheDocument();
+  });
+
+  it("opens the create form from the empty Views section and closes the mobile sidebar", () => {
+    const LocationProbe = () => {
+      const location = useLocation();
+      return <output data-testid="view-destination">{JSON.stringify({ pathname: location.pathname, state: location.state })}</output>;
+    };
+    render(
+      <MemoryRouter initialEntries={["/"]}>
+        <AppSidebar />
+        <LocationProbe />
+      </MemoryRouter>,
+    );
+    expect(screen.getAllByRole("button", { name: "setting.memo-view.create" })).toHaveLength(1);
+    fireEvent.click(screen.getByRole("button", { name: "setting.memo-view.create" }));
+    expect(screen.getByTestId("view-destination")).toHaveTextContent(JSON.stringify({ pathname: "/views", state: { openCreate: true } }));
+    expect(sidebarState.setMobileOpen).toHaveBeenCalledWith(false);
   });
 
   it("uses compact text-only actions for a saved view", async () => {

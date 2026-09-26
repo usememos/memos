@@ -166,7 +166,6 @@
     "visibility": "Nähtavus",
     "views": "Vaated",
     "yourself": "iseennast",
-    "tasks": "Ülesanded",
     "actions": "Toimingud",
     "collapse-panel": "Paneeli ahenda",
     "expand-panel": "Paneeli laiendamine",
@@ -593,6 +592,7 @@
       "uploads-privacy-title": "Üleslaadimised ja privaatsus"
     },
     "memo-view": {
+      "create": "Loo vaade",
       "delete-confirm": "Kas olete kindel, et soovite vaate `{{title}}` kustutada?",
       "delete-success": "Vaade `{{title}}` kustutati edukalt",
       "change-icon": "Muuda vaate ikooni"

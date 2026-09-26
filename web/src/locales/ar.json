@@ -136,7 +136,6 @@
     "resize-panel": "تغيير حجم اللوحة",
     "resize-sidebar": "تغيير حجم الشريط الجانبي",
     "sign-in-to-memos": "تسجيل الدخول إلى Memos",
-    "tasks": "المهام",
     "unlink": "إلغاء الارتباط",
     "view-all": "عرض الكل"
   },
@@ -387,6 +386,7 @@
       "uploads-privacy-title": "التحميلات والخصوصية"
     },
     "memo-view": {
+      "create": "إنشاء عرض",
       "delete-confirm": "هل أنت متأكد من حذف طريقة العرض `{{title}}`؟",
       "delete-success": "تم حذف طريقة العرض `{{title}}` بنجاح",
       "change-icon": "تغيير أيقونة العرض"

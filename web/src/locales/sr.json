@@ -166,7 +166,6 @@
     "visibility": "Видљивост",
     "views": "Прикази",
     "yourself": "Себе",
-    "tasks": "Задаци",
     "actions": "Акције",
     "collapse-panel": "Сакриј панел",
     "expand-panel": "Прошири панел",
@@ -593,6 +592,7 @@
       "uploads-privacy-title": "Отпремања и приватност"
     },
     "memo-view": {
+      "create": "Направи приказ",
       "delete-confirm": "Да ли сте сигурни да желите да избришете приказ `{{title}}`?",
       "delete-success": "Приказ `{{title}}` је успешно избрисан",
       "change-icon": "Промени икону приказа"

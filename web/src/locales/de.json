@@ -128,7 +128,6 @@
     "yourself": "Du selbst",
     "empty-placeholder": "Leer",
     "unlink": "Verknüpfung aufheben",
-    "tasks": "Aufgaben",
     "actions": "Aktionen",
     "collapse-panel": "Bedienfeld ausblenden",
     "expand-panel": "Bedienfeld erweitern",
@@ -477,6 +476,7 @@
       "uploads-privacy-title": "Uploads & Datenschutz"
     },
     "memo-view": {
+      "create": "Ansicht erstellen",
       "delete-confirm": "Bist du sicher, dass du die Ansicht `{{title}}` löschen möchtest?",
       "delete-success": "Ansicht `{{title}}` erfolgreich gelöscht",
       "change-icon": "Ansichtssymbol ändern"

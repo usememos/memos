@@ -11,7 +11,7 @@ import { getFilterSearch, isSearchFilter, type MemoFilter, useMemoFilterContext 
 import { useSpaceContext } from "@/contexts/SpaceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoViews } from "@/hooks/useUserQueries";
-import { BUILTIN_TASKS_VIEW_ID, getMemoViewId, isMemoCollectionRoute } from "@/lib/memo-views";
+import { getMemoViewId, isMemoCollectionRoute } from "@/lib/memo-views";
 import { extractSpaceUidFromName, formatSpaceUidForDisplay } from "@/lib/space-display";
 import { cn } from "@/lib/utils";
 import { getCollectionCreator, withCollectionCreator } from "@/router/routes";
@@ -92,8 +92,7 @@ const QuickFindDialog = () => {
   const hintId = useId();
   const viewApplies = isMemoCollectionRoute(location.pathname);
   const selectedMemoView = viewApplies ? memoViews.find((item) => getMemoViewId(item.name) === memoView) : undefined;
-  const lensLabel =
-    viewApplies && memoView === BUILTIN_TASKS_VIEW_ID ? t("common.tasks") : selectedMemoView?.title || getScopeLabel(location.pathname, t);
+  const lensLabel = selectedMemoView?.title || getScopeLabel(location.pathname, t);
   const selectedSpaceUid = selectedSpaceName ? extractSpaceUidFromName(selectedSpaceName) : "";
   const selectedSpaceUidDisplay = selectedSpaceName ? formatSpaceUidForDisplay(selectedSpaceName) : "";
   const showSelectedSpaceUid = selectedSpace ? duplicateSpaceTitles.has(selectedSpace.title) : Boolean(selectedSpaceName);

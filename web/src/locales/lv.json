@@ -166,7 +166,6 @@
     "visibility": "Redzamība",
     "views": "Skati",
     "yourself": "sevi",
-    "tasks": "Uzdevumi",
     "actions": "Darbības",
     "collapse-panel": "Sakļaut paneli",
     "expand-panel": "Izvērst paneli",
@@ -593,6 +592,7 @@
       "uploads-privacy-title": "Augšupielādes un konfidencialitāte"
     },
     "memo-view": {
+      "create": "Izveidot skatu",
       "delete-confirm": "Vai tiešām vēlaties dzēst skatu `{{title}}`?",
       "delete-success": "Skats `{{title}}` veiksmīgi izdzēsts",
       "change-icon": "Mainīt skata ikonu"

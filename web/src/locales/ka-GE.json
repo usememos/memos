@@ -128,7 +128,6 @@
     "yourself": "თქვენ",
     "empty-placeholder": "ცარიელი",
     "unlink": "გაუქმება",
-    "tasks": "ამოცანები",
     "actions": "მოქმედებები",
     "collapse-panel": "პანელის ჩაკეცვა",
     "expand-panel": "პანელის გაფართოება",
@@ -477,6 +476,7 @@
       "uploads-privacy-title": "ატვირთვები და კონფიდენციალურობა"
     },
     "memo-view": {
+      "create": "ხედის შექმნა",
       "delete-confirm": "დარწმუნებული ხართ, რომ გინდათ ხედის `{{title}}` წაშლა?",
       "delete-success": "ხედი `{{title}}` წარმატებით წაიშალა",
       "change-icon": "ხედის ხატულის შეცვლა"

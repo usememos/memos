@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { MoreHorizontalIcon, PlusIcon, SquareCheckIcon } from "lucide-react";
+import { MoreHorizontalIcon, PlusIcon } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -13,7 +13,7 @@ import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoViews, userKeys } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
-import { BUILTIN_TASKS_VIEW_ID, getMemoViewId, isMemoCollectionRoute } from "@/lib/memo-views";
+import { getMemoViewId, isMemoCollectionRoute } from "@/lib/memo-views";
 import { cn } from "@/lib/utils";
 import { getCollectionHomePath, ROUTES } from "@/router/routes";
 import type { MemoView } from "@/types/proto/api/v1/user_service_pb";
@@ -40,7 +40,7 @@ const ViewsSection = ({ manageActive = false }: { manageActive?: boolean }) => {
   const navigate = useNavigate();
   const currentUser = useCurrentUser();
   const queryClient = useQueryClient();
-  const { data: memoViews = [] } = useMemoViews(currentUser?.name);
+  const { data: memoViews = [], isPending, isError } = useMemoViews(currentUser?.name);
   const { memoView: selectedMemoView, setMemoView } = useMemoFilterContext();
   const { setMobileOpen } = useAppSidebar();
   const [deleteTarget, setDeleteTarget] = useState<MemoView>();
@@ -75,19 +75,17 @@ const ViewsSection = ({ manageActive = false }: { manageActive?: boolean }) => {
     <SidebarSection
       label={t("common.views")}
       action={
-        !manageActive && (
-          <Button variant="quiet" size="icon-sm" onClick={handleCreate} aria-label={t("common.create")}>
+        !manageActive &&
+        (memoViews.length > 0 || isError) && (
+          <Button variant="quiet" size="icon-sm" onClick={handleCreate} aria-label={t("setting.memo-view.create")}>
             <PlusIcon className={SIDEBAR_SECTION_ACTION_ICON_CLASSES} strokeWidth={1.8} />
           </Button>
         )
       }
     >
-      <SidebarRow
-        state={!manageActive && selectedMemoView === BUILTIN_TASKS_VIEW_ID ? "checked" : "idle"}
-        icon={SquareCheckIcon}
-        label={t("common.tasks")}
-        onClick={() => handleView(BUILTIN_TASKS_VIEW_ID)}
-      />
+      {!isPending && !isError && memoViews.length === 0 && (
+        <SidebarRow icon={PlusIcon} label={t("setting.memo-view.create")} onClick={handleCreate} />
+      )}
       {memoViews.map((memoView) => {
         const id = getMemoViewId(memoView.name);
         const active = !manageActive && selectedMemoView === id;

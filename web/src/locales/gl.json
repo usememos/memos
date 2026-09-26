@@ -128,7 +128,6 @@
     "yourself": "Ti",
     "empty-placeholder": "Baleiro",
     "unlink": "Desvincular",
-    "tasks": "Tarefas",
     "actions": "Accións",
     "collapse-panel": "Contraer panel",
     "expand-panel": "Expandir panel",
@@ -477,6 +476,7 @@
       "uploads-privacy-title": "Cargas e privacidade"
     },
     "memo-view": {
+      "create": "Crear vista",
       "delete-confirm": "Tes certeza de querer eliminar a vista `{{title}}`?",
       "delete-success": "Eliminouse correctamente a vista `{{title}}`",
       "change-icon": "Cambiar a icona da vista"

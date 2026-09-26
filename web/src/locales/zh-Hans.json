@@ -153,7 +153,6 @@
     "sign-up": "注册",
     "statistics": "统计",
     "tags": "标签",
-    "tasks": "任务",
     "title": "标题",
     "today": "今天",
     "tree-mode": "树形显示",
@@ -460,6 +459,7 @@
       "uploads-privacy-title": "上传与隐私"
     },
     "memo-view": {
+      "create": "创建视图",
       "delete-confirm": "您确定要删除视图 `{{title}}` 吗？",
       "delete-success": "视图 `{{title}}` 删除成功",
       "change-icon": "更改视图图标"

@@ -128,7 +128,6 @@
     "yourself": "Ви",
     "empty-placeholder": "Порожній",
     "unlink": "Від’єднати",
-    "tasks": "завдання",
     "actions": "Дії",
     "collapse-panel": "Згорнути панель",
     "expand-panel": "Розгорнути панель",
@@ -477,6 +476,7 @@
       "uploads-privacy-title": "Завантаження та конфіденційність"
     },
     "memo-view": {
+      "create": "Створити подання",
       "delete-confirm": "Ви впевнені, що хочете видалити подання `{{title}}`?",
       "delete-success": "Подання `{{title}}` успішно видалено",
       "change-icon": "Змінити піктограму подання"

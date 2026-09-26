@@ -136,7 +136,6 @@
     "resize-panel": "पैनल का साइज़ बदलें",
     "resize-sidebar": "साइडबार का साइज़ बदलें",
     "sign-in-to-memos": "साइन इन करें Memos",
-    "tasks": "टास्क",
     "unlink": "अनलिंक करें",
     "view-all": "सभी देखें"
   },
@@ -387,6 +386,7 @@
       "uploads-privacy-title": "अपलोड और प्राइवेसी"
     },
     "memo-view": {
+      "create": "व्यू बनाएँ",
       "delete-confirm": "क्या आप वाकई दृश्य `{{title}}` हटाना चाहते हैं?",
       "delete-success": "दृश्य `{{title}}` सफलतापूर्वक हटाया गया",
       "change-icon": "व्यू आइकन बदलें"
