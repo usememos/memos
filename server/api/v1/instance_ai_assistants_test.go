@@ -24,81 +24,6 @@ func aiSettingWithAssistants(assistants ...*storepb.AIAssistantConfig) *storepb.
 	}
 }
 
-func TestPrepareAssistantsConfigProvisionsBotAccount(t *testing.T) {
-	ctx := context.Background()
-	svc := newIntegrationService(t)
-
-	setting := aiSettingWithAssistants(&storepb.AIAssistantConfig{
-		Id:         "reading",
-		Title:      "Reading partner",
-		Icon:       "📗",
-		ProviderId: "provider-1",
-		Enabled:    true,
-	})
-	require.NoError(t, svc.prepareInstanceAISettingForUpdate(ctx, setting))
-
-	assistant := setting.GetAssistants().GetAssistants()[0]
-	require.Positive(t, assistant.GetBotUserId(), "an enabled assistant must get a bot account")
-
-	username := assistantBotUsername("reading")
-	botUser, err := svc.Store.GetUser(ctx, &store.FindUser{Username: &username})
-	require.NoError(t, err)
-	require.NotNil(t, botUser)
-	assert.Equal(t, assistant.GetBotUserId(), botUser.ID)
-	assert.Equal(t, "Reading partner", botUser.Nickname)
-	assert.Equal(t, store.RoleUser, botUser.Role)
-	// The stored hash is not a bcrypt hash, so password sign-in can never match.
-	assert.Equal(t, assistantBotPasswordHash, botUser.PasswordHash)
-	assert.NotEmpty(t, botUser.AvatarURL, "the configured emoji becomes the avatar")
-}
-
-func TestPrepareAssistantsConfigReusesAndRenamesBotAccount(t *testing.T) {
-	ctx := context.Background()
-	svc := newIntegrationService(t)
-
-	first := aiSettingWithAssistants(&storepb.AIAssistantConfig{
-		Id: "reading", Title: "Reading partner", ProviderId: "provider-1", Enabled: true,
-	})
-	require.NoError(t, svc.prepareInstanceAISettingForUpdate(ctx, first))
-	originalBotID := first.GetAssistants().GetAssistants()[0].GetBotUserId()
-	_, err := svc.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
-		Key:   storepb.InstanceSettingKey_AI,
-		Value: &storepb.InstanceSetting_AiSetting{AiSetting: first},
-	})
-	require.NoError(t, err)
-
-	// Renaming the assistant must rename the same account rather than create a
-	// second one, so existing comments keep their author.
-	second := aiSettingWithAssistants(&storepb.AIAssistantConfig{
-		Id: "reading", Title: "Book buddy", ProviderId: "provider-1", Enabled: true,
-	})
-	require.NoError(t, svc.prepareInstanceAISettingForUpdate(ctx, second))
-
-	assistant := second.GetAssistants().GetAssistants()[0]
-	assert.Equal(t, originalBotID, assistant.GetBotUserId())
-
-	botUser, err := svc.Store.GetUser(ctx, &store.FindUser{ID: &originalBotID})
-	require.NoError(t, err)
-	require.NotNil(t, botUser)
-	assert.Equal(t, "Book buddy", botUser.Nickname)
-}
-
-func TestPrepareAssistantsConfigSkipsDisabledAssistant(t *testing.T) {
-	ctx := context.Background()
-	svc := newIntegrationService(t)
-
-	setting := aiSettingWithAssistants(&storepb.AIAssistantConfig{
-		Id: "draft", Title: "Draft", Enabled: false,
-	})
-	require.NoError(t, svc.prepareInstanceAISettingForUpdate(ctx, setting))
-
-	// A disabled draft may stay half-configured and must not leave an account.
-	username := assistantBotUsername("draft")
-	botUser, err := svc.Store.GetUser(ctx, &store.FindUser{Username: &username})
-	require.NoError(t, err)
-	assert.Nil(t, botUser)
-}
-
 func TestPrepareAssistantsConfigValidation(t *testing.T) {
 	tests := []struct {
 		name      string
@@ -185,9 +110,7 @@ func TestUpdateInstanceSettingRoundTripsAssistants(t *testing.T) {
 	// The submitted "#book" is normalized to its bare form for matching.
 	assert.Equal(t, []string{"book"}, assistant.GetTags())
 	assert.Equal(t, storepb.AIAssistantContextScope_SAME_TAG_MEMOS, assistant.GetContextScope())
-	assert.Positive(t, assistant.GetBotUserId())
 
-	// bot_user_id must survive a later save even though the API never carries it.
 	read, err := svc.GetInstanceSetting(adminCtx, &v1pb.GetInstanceSettingRequest{
 		Name: InstanceSettingNamePrefix + v1pb.InstanceSetting_AI.String(),
 	})
@@ -205,7 +128,6 @@ func TestUpdateInstanceSettingRoundTripsAssistants(t *testing.T) {
 
 	reStored, err := svc.Store.GetInstanceAISetting(ctx)
 	require.NoError(t, err)
-	assert.Equal(t, assistant.GetBotUserId(), reStored.GetAssistants().GetAssistants()[0].GetBotUserId())
 	// The write-only API key must also survive a save that omits it.
 	assert.Equal(t, "sk-test", reStored.GetProviders()[0].GetApiKey())
 }

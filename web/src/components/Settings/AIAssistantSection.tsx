@@ -261,7 +261,8 @@ const AIAssistantSection = () => {
                     <SelectContent>
                       {providers.map((provider) => (
                         <SelectItem key={provider.id} value={provider.id}>
-                          {provider.title}
+                          {/* A provider saved without a title would otherwise be an unreadable blank row. */}
+                          {provider.title || provider.id}
                         </SelectItem>
                       ))}
                     </SelectContent>

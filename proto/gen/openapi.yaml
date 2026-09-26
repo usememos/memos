@@ -4276,6 +4276,14 @@ components:
                     description: |-
                         Optional. The space in which this memo is placed. Format: spaces/{space}.
                          Every memo, including a comment, owns its placement independently.
+                assistant:
+                    readOnly: true
+                    allOf:
+                        - $ref: '#/components/schemas/Memo_AssistantAttribution'
+                    description: |-
+                        assistant identifies the AI assistant that wrote this memo, when it is an
+                         automatic review comment. The memo's creator is still the account it is
+                         stored under, which is the reviewed memo's own author.
         MemoImportIssue:
             type: object
             properties:
@@ -4443,6 +4451,13 @@ components:
                 lucide:
                     type: string
                     description: A canonical Lucide icon name, such as "leaf".
+        Memo_AssistantAttribution:
+            type: object
+            properties:
+                title:
+                    type: string
+                icon:
+                    type: string
         Memo_Property:
             type: object
             properties:

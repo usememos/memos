@@ -290,9 +290,11 @@ message AIAssistantConfig {
   // enabled allows pausing one assistant without deleting it.
   bool enabled = 10;
 
-  // bot_user_id is the user account that authors this assistant's comments.
-  // Assigned by the server when the assistant is saved.
-  int32 bot_user_id = 11;
+  // 11 was bot_user_id, the provisioned account that authored this assistant's
+  // comments. Reviews are now stored under the reviewed memo's own author, so
+  // no separate account exists.
+  reserved 11;
+  reserved "bot_user_id";
 }
 
 // AIAssistantContextScope selects the background memos sent with a review.

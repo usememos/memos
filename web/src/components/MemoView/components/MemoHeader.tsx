@@ -8,7 +8,7 @@ import { useNewMemo } from "@/contexts/NewMemoContext";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import i18n from "@/i18n";
 import { cn } from "@/lib/utils";
-import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
+import { type Memo_AssistantAttribution, Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import type { User } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { getVisibilityOption } from "@/utils/memo";
@@ -68,7 +68,11 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showC
       <div className="flex min-w-0 flex-1 items-center gap-2">
         {/* The time stays visible while the creator and Space badge can shrink and truncate. */}
         <div data-slot="memo-header-meta" className="flex min-w-0 items-center gap-1.5 overflow-hidden">
-          {showCreator && creator && <CreatorDisplay creator={creator} />}
+          {memo.assistant ? (
+            <AssistantDisplay assistant={memo.assistant} />
+          ) : (
+            showCreator && creator && <CreatorDisplay creator={creator} />
+          )}
           <TimeDisplay displayTime={displayTime} timeTooltip={timeTooltip} onGotoDetail={handleGotoMemoDetailPage} />
           {spaceMetadata}
         </div>
@@ -122,6 +126,28 @@ const CreatorDisplay: React.FC<{ creator: User }> = ({ creator }) => (
       </span>
       <span className="min-w-0 truncate">{creator.displayName || creator.username}</span>
     </Link>
+    <span aria-hidden="true" className="shrink-0 text-muted-foreground/40">
+      ·
+    </span>
+  </>
+);
+
+/**
+ * An automatic review is stored under the reviewed memo's own author, so the header
+ * would otherwise credit the author for text they did not write. The assistant takes
+ * the author's place on the line, its emoji filling the avatar's 20px slot. There is
+ * no profile behind it, so unlike the author it is not a link.
+ */
+const AssistantDisplay: React.FC<{ assistant: Memo_AssistantAttribution }> = ({ assistant }) => (
+  <>
+    <span className="flex min-w-0 shrink items-center gap-1.5 text-ui font-medium text-foreground">
+      {assistant.icon && (
+        <span aria-hidden="true" className="flex size-5 shrink-0 items-center justify-center text-[15px] leading-none">
+          {assistant.icon}
+        </span>
+      )}
+      <span className="min-w-0 truncate">{assistant.title}</span>
+    </span>
     <span aria-hidden="true" className="shrink-0 text-muted-foreground/40">
       ·
     </span>

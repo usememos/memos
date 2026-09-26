@@ -280,6 +280,16 @@ message Memo {
     (google.api.resource_reference) = {type: "memos.api.v1/Space"}
   ];
 
+  // assistant identifies the AI assistant that wrote this memo, when it is an
+  // automatic review comment. The memo's creator is still the account it is
+  // stored under, which is the reviewed memo's own author.
+  optional AssistantAttribution assistant = 20 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  message AssistantAttribution {
+    string title = 1;
+    string icon = 2;
+  }
+
   // Computed properties of a memo.
   message Property {
     bool has_link = 1;

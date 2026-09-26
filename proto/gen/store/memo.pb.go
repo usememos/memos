@@ -22,10 +22,15 @@ const (
 )
 
 type MemoPayload struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Property      *MemoPayload_Property  `protobuf:"bytes,1,opt,name=property,proto3" json:"property,omitempty"`
-	Location      *MemoPayload_Location  `protobuf:"bytes,2,opt,name=location,proto3" json:"location,omitempty"`
-	Tags          []string               `protobuf:"bytes,3,rep,name=tags,proto3" json:"tags,omitempty"`
+	state    protoimpl.MessageState `protogen:"open.v1"`
+	Property *MemoPayload_Property  `protobuf:"bytes,1,opt,name=property,proto3" json:"property,omitempty"`
+	Location *MemoPayload_Location  `protobuf:"bytes,2,opt,name=location,proto3" json:"location,omitempty"`
+	Tags     []string               `protobuf:"bytes,3,rep,name=tags,proto3" json:"tags,omitempty"`
+	// assistant records the AI assistant that wrote this memo, when it is an
+	// automatic review comment. Such a comment is stored under the reviewed
+	// memo's own author so it inherits that audience, so this is the only record
+	// of which assistant actually wrote it.
+	Assistant     *MemoPayload_AssistantAttribution `protobuf:"bytes,4,opt,name=assistant,proto3" json:"assistant,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -77,6 +82,13 @@ func (x *MemoPayload) GetLocation() *MemoPayload_Location {
 func (x *MemoPayload) GetTags() []string {
 	if x != nil {
 		return x.Tags
+	}
+	return nil
+}
+
+func (x *MemoPayload) GetAssistant() *MemoPayload_AssistantAttribution {
+	if x != nil {
+		return x.Assistant
 	}
 	return nil
 }
@@ -219,15 +231,80 @@ func (x *MemoPayload_Location) GetLongitude() float64 {
 	return 0
 }
 
+type MemoPayload_AssistantAttribution struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// assistant_id references InstanceAISetting.assistants[].id. It survives a
+	// rename, unlike the title.
+	AssistantId string `protobuf:"bytes,1,opt,name=assistant_id,json=assistantId,proto3" json:"assistant_id,omitempty"`
+	// title and icon are copied at write time so an old comment keeps the
+	// identity it was written under.
+	Title         string `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	Icon          string `protobuf:"bytes,3,opt,name=icon,proto3" json:"icon,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MemoPayload_AssistantAttribution) Reset() {
+	*x = MemoPayload_AssistantAttribution{}
+	mi := &file_store_memo_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MemoPayload_AssistantAttribution) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MemoPayload_AssistantAttribution) ProtoMessage() {}
+
+func (x *MemoPayload_AssistantAttribution) ProtoReflect() protoreflect.Message {
+	mi := &file_store_memo_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MemoPayload_AssistantAttribution.ProtoReflect.Descriptor instead.
+func (*MemoPayload_AssistantAttribution) Descriptor() ([]byte, []int) {
+	return file_store_memo_proto_rawDescGZIP(), []int{0, 2}
+}
+
+func (x *MemoPayload_AssistantAttribution) GetAssistantId() string {
+	if x != nil {
+		return x.AssistantId
+	}
+	return ""
+}
+
+func (x *MemoPayload_AssistantAttribution) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *MemoPayload_AssistantAttribution) GetIcon() string {
+	if x != nil {
+		return x.Icon
+	}
+	return ""
+}
+
 var File_store_memo_proto protoreflect.FileDescriptor
 
 const file_store_memo_proto_rawDesc = "" +
 	"\n" +
-	"\x10store/memo.proto\x12\vmemos.store\"\xb6\x03\n" +
+	"\x10store/memo.proto\x12\vmemos.store\"\xe8\x04\n" +
 	"\vMemoPayload\x12=\n" +
 	"\bproperty\x18\x01 \x01(\v2!.memos.store.MemoPayload.PropertyR\bproperty\x12=\n" +
 	"\blocation\x18\x02 \x01(\v2!.memos.store.MemoPayload.LocationR\blocation\x12\x12\n" +
-	"\x04tags\x18\x03 \x03(\tR\x04tags\x1a\xac\x01\n" +
+	"\x04tags\x18\x03 \x03(\tR\x04tags\x12K\n" +
+	"\tassistant\x18\x04 \x01(\v2-.memos.store.MemoPayload.AssistantAttributionR\tassistant\x1a\xac\x01\n" +
 	"\bProperty\x12\x19\n" +
 	"\bhas_link\x18\x01 \x01(\bR\ahasLink\x12\"\n" +
 	"\rhas_task_list\x18\x02 \x01(\bR\vhasTaskList\x12\x19\n" +
@@ -237,7 +314,11 @@ const file_store_memo_proto_rawDesc = "" +
 	"\bLocation\x12 \n" +
 	"\vplaceholder\x18\x01 \x01(\tR\vplaceholder\x12\x1a\n" +
 	"\blatitude\x18\x02 \x01(\x01R\blatitude\x12\x1c\n" +
-	"\tlongitude\x18\x03 \x01(\x01R\tlongitudeB\x94\x01\n" +
+	"\tlongitude\x18\x03 \x01(\x01R\tlongitude\x1ac\n" +
+	"\x14AssistantAttribution\x12!\n" +
+	"\fassistant_id\x18\x01 \x01(\tR\vassistantId\x12\x14\n" +
+	"\x05title\x18\x02 \x01(\tR\x05title\x12\x12\n" +
+	"\x04icon\x18\x03 \x01(\tR\x04iconB\x94\x01\n" +
 	"\x0fcom.memos.storeB\tMemoProtoP\x01Z)github.com/usememos/memos/proto/gen/store\xa2\x02\x03MSX\xaa\x02\vMemos.Store\xca\x02\vMemos\\Store\xe2\x02\x17Memos\\Store\\GPBMetadata\xea\x02\fMemos::Storeb\x06proto3"
 
 var (
@@ -252,20 +333,22 @@ func file_store_memo_proto_rawDescGZIP() []byte {
 	return file_store_memo_proto_rawDescData
 }
 
-var file_store_memo_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_store_memo_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_store_memo_proto_goTypes = []any{
-	(*MemoPayload)(nil),          // 0: memos.store.MemoPayload
-	(*MemoPayload_Property)(nil), // 1: memos.store.MemoPayload.Property
-	(*MemoPayload_Location)(nil), // 2: memos.store.MemoPayload.Location
+	(*MemoPayload)(nil),                      // 0: memos.store.MemoPayload
+	(*MemoPayload_Property)(nil),             // 1: memos.store.MemoPayload.Property
+	(*MemoPayload_Location)(nil),             // 2: memos.store.MemoPayload.Location
+	(*MemoPayload_AssistantAttribution)(nil), // 3: memos.store.MemoPayload.AssistantAttribution
 }
 var file_store_memo_proto_depIdxs = []int32{
 	1, // 0: memos.store.MemoPayload.property:type_name -> memos.store.MemoPayload.Property
 	2, // 1: memos.store.MemoPayload.location:type_name -> memos.store.MemoPayload.Location
-	2, // [2:2] is the sub-list for method output_type
-	2, // [2:2] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	3, // 2: memos.store.MemoPayload.assistant:type_name -> memos.store.MemoPayload.AssistantAttribution
+	3, // [3:3] is the sub-list for method output_type
+	3, // [3:3] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_store_memo_proto_init() }
@@ -279,7 +362,7 @@ func file_store_memo_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_store_memo_proto_rawDesc), len(file_store_memo_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
