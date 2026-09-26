@@ -94,6 +94,7 @@
     "more": "Több",
     "name": "Név",
     "nickname": "Becenév",
+    "open": "Megnyitás",
     "or": "vagy",
     "password": "Jelszó",
     "pin": "Kitűzés",
@@ -290,7 +291,6 @@
     "oldest-first": "Először a legidősebb",
     "task-actions": {
       "check-all": "Ellenőrizze az összes feladatot",
-      "title": "Feladatok",
       "uncheck-all": "Törölje az összes feladat jelölését",
       "updated": "Feladatok frissítve"
     },
@@ -311,7 +311,6 @@
     "back-to": "Vissza a {{source}}-hez",
     "connections": "Kapcsolatok",
     "grid-compact-hint": "A rácsos elrendezések mindig kompakt kártyákat használnak.",
-    "go-to": "Ugrás a {{source}}-hez",
     "layout": "Elrendezés",
     "layout-auto": "Automatikus",
     "layout-auto-description": "Annyi oszlop, amennyi elfér a képernyőn",

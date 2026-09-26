@@ -4,11 +4,13 @@ import { useCallback } from "react";
 import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
 import { useInstance } from "@/contexts/InstanceContext";
+import { useSpaceContext } from "@/contexts/SpaceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { memoKeys, useDeleteMemo, useUpdateMemo } from "@/hooks/useMemoQueries";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { userKeys } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
+import { extractMemoIdFromName } from "@/lib/resource-names";
 import { ROUTES } from "@/router/routes";
 import { State } from "@/types/proto/api/v1/common_pb";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
@@ -28,7 +30,11 @@ export const useMemoActionHandlers = ({ memo, parentPage, onEdit, setDeleteDialo
   const t = useTranslate();
   const location = useLocation();
   const currentUser = useCurrentUser();
-  const canMove = canManageMemo(memo, currentUser) && !location.pathname.startsWith(ROUTES.SHARED_MEMO);
+  const { spaces } = useSpaceContext();
+  // Move needs somewhere to go: another Space to join, or out of the current one.
+  const hasMoveDestination = spaces.length > 0 || Boolean(memo.space);
+  const canMove =
+    !memo.parent && canManageMemo(memo, currentUser) && !location.pathname.startsWith(ROUTES.SHARED_MEMO) && hasMoveDestination;
   const navigateTo = useNavigateTo();
   const queryClient = useQueryClient();
   const { profile } = useInstance();
@@ -117,9 +123,11 @@ export const useMemoActionHandlers = ({ memo, parentPage, onEdit, setDeleteDialo
     if (host === "") {
       host = window.location.origin;
     }
-    copy(`${host}/${memo.name}`);
+    // A comment's link lands on the comment inside its parent memo, as the comment previews do.
+    const path = memo.parent ? `${memo.parent}#${extractMemoIdFromName(memo.name)}` : memo.name;
+    copy(`${host}/${path}`);
     toast.success(t("message.succeed-copy-link"));
-  }, [memo.name, t, profile.instanceUrl]);
+  }, [memo.name, memo.parent, t, profile.instanceUrl]);
 
   const handleCopyContent = useCallback(() => {
     copy(memo.content);
@@ -158,6 +166,7 @@ export const useMemoActionHandlers = ({ memo, parentPage, onEdit, setDeleteDialo
 
   return {
     canMove,
+    isInMemoDetailPage,
     handleTogglePinMemoBtnClick,
     handleEditMemoClick,
     handleToggleMemoStatusClick,

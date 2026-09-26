@@ -94,6 +94,7 @@
     "more": "Mais",
     "name": "Nome",
     "nickname": "Apelido",
+    "open": "Abrir",
     "or": "ou",
     "password": "Palavra-passe",
     "pin": "Afixar",
@@ -290,7 +291,6 @@
     "oldest-first": "Mais antigo primeiro",
     "task-actions": {
       "check-all": "Verifique todas as tarefas",
-      "title": "Tarefas",
       "uncheck-all": "Desmarque todas as tarefas",
       "updated": "Tarefas atualizadas"
     },
@@ -311,7 +311,6 @@
     "back-to": "Voltar para {{source}}",
     "connections": "Ligações",
     "grid-compact-hint": "Os layouts de grelha utilizam sempre cartões compactos.",
-    "go-to": "Ir para {{source}}",
     "layout": "Layout",
     "layout-auto": "Automático",
     "layout-auto-description": "Quantas colunas couberem no ecrã",

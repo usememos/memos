@@ -94,6 +94,7 @@
     "more": "بیشتر",
     "name": "نام",
     "nickname": "نام مستعار",
+    "open": "باز کردن",
     "or": "یا",
     "password": "گذرواژه",
     "pin": "نشان",
@@ -298,7 +299,6 @@
     "count-memos-updated-in-date": "{{count}} {{memos}} به‌روزرسانی شده در {{date}}",
     "connections": "اتصالات",
     "grid-compact-hint": "طرح‌بندی‌های شبکه‌ای همیشه از کارت‌های فشرده استفاده می‌کنند.",
-    "go-to": "برو به {{source}}",
     "layout": "طرح‌بندی",
     "layout-auto": "خودکار",
     "layout-auto-description": "به تعداد ستون‌هایی که صفحه نمایش را پر می‌کنند",
@@ -312,7 +312,6 @@
     "parent-memo": "یادداشت والد",
     "task-actions": {
       "check-all": "انتخاب همه وظایف",
-      "title": "وظایف",
       "uncheck-all": "انتخاب همه وظایف را بردارید",
       "updated": "وظایف به‌روزرسانی شدند"
     },

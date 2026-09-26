@@ -94,6 +94,7 @@
     "more": "Mehr",
     "name": "Name",
     "nickname": "Spitzname",
+    "open": "Öffnen",
     "or": "oder",
     "password": "Passwort",
     "pin": "Anpinnen",
@@ -290,7 +291,6 @@
     "oldest-first": "Älteste zuerst",
     "task-actions": {
       "check-all": "Überprüfen Sie alle Aufgaben",
-      "title": "Aufgaben",
       "uncheck-all": "Deaktivieren Sie alle Aufgaben",
       "updated": "Aufgaben aktualisiert"
     },
@@ -311,7 +311,6 @@
     "back-to": "Zurück zu {{source}}",
     "connections": "Verbindungen",
     "grid-compact-hint": "Rasterlayouts verwenden immer kompakte Karten.",
-    "go-to": "Gehe zu {{source}}",
     "layout": "Layout",
     "layout-auto": "Automatisch",
     "layout-auto-description": "So viele Spalten, wie auf den Bildschirm passen",

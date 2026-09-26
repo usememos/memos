@@ -46,11 +46,11 @@ describe("MemoDetailSidebar", () => {
     currentUserState.value = { name: "users/alice" };
   });
 
-  it("returns to the scoped map with its filters, viewport, and selection", () => {
+  it("leaves returning to the origin to browser back and the app navigation", () => {
     const parentPage = "/spaces/travel/map?filter=tagSearch%3Atravel&lat=35&lng=135&zoom=12&memo=memos%2Fdetail";
-    renderSidebar(<MemoDetailSidebar memo={create(MemoSchema, { name: "memos/detail" })} parentPage={parentPage} hasExplicitOrigin />);
+    const { container } = renderSidebar(<MemoDetailSidebar memo={create(MemoSchema, { name: "memos/detail" })} parentPage={parentPage} />);
 
-    expect(screen.getByRole("link", { name: "memo.back-to:common.map" })).toHaveAttribute("href", parentPage);
+    expect(container.querySelector(`a[href="${parentPage}"]`)).toBeNull();
   });
 
   it("organizes source, in-page navigation, connections, and frequent actions without repeating metadata", async () => {
@@ -90,7 +90,6 @@ describe("MemoDetailSidebar", () => {
         memo={memo}
         parentMemo={parentMemo}
         parentPage="/explore?filter=tagSearch%3Awork"
-        hasExplicitOrigin
         commentCount={3}
         onEdit={onEdit}
         onCommentsOpen={onCommentsOpen}
@@ -99,7 +98,6 @@ describe("MemoDetailSidebar", () => {
       />,
     );
 
-    expect(screen.getByRole("link", { name: "memo.back-to:common.explore" })).toHaveAttribute("href", "/explore?filter=tagSearch%3Awork");
     expect(screen.getByText("memo.on-this-memo")).toBeInTheDocument();
     expect(screen.getByTestId("outline")).toHaveTextContent("2");
     expect(screen.getByRole("link", { name: /memo.comment.self/ })).toHaveTextContent("3");
@@ -155,8 +153,6 @@ describe("MemoDetailSidebar", () => {
     expect(screen.queryByRole("button", { name: "common.edit" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "memo.comment.write-a-comment" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "common.referenced-by: Incoming backlink" })).toBeInTheDocument();
-
-    expect(screen.getByRole("link", { name: "memo.go-to:common.explore" })).toHaveAttribute("href", "/explore");
   });
 
   it("keeps a simple memo useful without rendering empty navigation or connections", () => {
@@ -169,7 +165,6 @@ describe("MemoDetailSidebar", () => {
 
     renderSidebar(<MemoDetailSidebar memo={memo} parentPage="/" commentCount={0} onEdit={vi.fn()} onCommentCreate={vi.fn()} />);
 
-    expect(screen.getByRole("link", { name: "memo.go-to:common.home" })).toHaveAttribute("href", "/");
     expect(screen.queryByText("memo.on-this-memo")).not.toBeInTheDocument();
     expect(screen.queryByText("memo.connections")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "common.edit" })).toBeInTheDocument();
@@ -206,7 +201,6 @@ describe("MemoDetailSidebar", () => {
 
     renderSidebar(<MemoDetailSidebar memo={memo} parentPage="/archived" commentCount={2} onEdit={vi.fn()} onCommentCreate={vi.fn()} />);
 
-    expect(screen.getByRole("link", { name: "memo.go-to:common.archived" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /memo.comment.self/ })).toHaveTextContent("2");
     expect(screen.queryByRole("button", { name: "common.edit" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "memo.comment.write-a-comment" })).not.toBeInTheDocument();
@@ -230,7 +224,6 @@ describe("MemoDetailSidebar", () => {
         memo={memo}
         parentMemo={parentMemo}
         parentPage="/explore"
-        hasExplicitOrigin
         commentCount={4}
         forceReadonly
         onEdit={vi.fn()}
@@ -239,7 +232,6 @@ describe("MemoDetailSidebar", () => {
       "/memos/shares/share-token",
     );
 
-    expect(screen.queryByRole("link", { name: /memo.back-to/ })).not.toBeInTheDocument();
     expect(screen.getByText("memo.on-this-memo")).toBeInTheDocument();
     expect(screen.getByTestId("outline")).toHaveTextContent("2");
     expect(screen.queryByRole("link", { name: /memo.comment.self/ })).not.toBeInTheDocument();

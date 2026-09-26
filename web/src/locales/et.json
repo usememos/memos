@@ -133,6 +133,7 @@
     "more": "Rohkem",
     "name": "Nimi",
     "nickname": "Hüüdnimi",
+    "open": "Ava",
     "or": "või",
     "password": "Parool",
     "pin": "Pin",
@@ -318,7 +319,6 @@
     "show-more": "Näita rohkem",
     "task-actions": {
       "check-all": "Kontrollige kõiki ülesandeid",
-      "title": "Ülesanded",
       "uncheck-all": "Tühjendage kõigi ülesannete märge",
       "updated": "Ülesanded värskendatud"
     },
@@ -349,7 +349,6 @@
     "back-to": "Tagasi {{source}} juurde",
     "connections": "Ühendused",
     "grid-compact-hint": "Ruudustikupaigutused kasutavad alati kompaktseid kaarte.",
-    "go-to": "Mine {{source}} juurde",
     "layout": "Paigutus",
     "layout-auto": "Automaatne",
     "layout-auto-description": "Nii palju veerge kui ekraanile mahub",

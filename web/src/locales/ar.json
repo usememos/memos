@@ -94,6 +94,7 @@
     "more": "المزيد",
     "name": "الاسم",
     "nickname": "الاسم المستعار",
+    "open": "فتح",
     "or": "أو",
     "password": "كلمة المرور",
     "pin": "ثبّت",
@@ -298,7 +299,6 @@
     "count-memos-updated-in-date": "{{count}} {{memos}} تم التحديث في {{date}}",
     "connections": "الاتصالات",
     "grid-compact-hint": "تستخدم تخطيطات الشبكة دائمًا بطاقات مضغوطة.",
-    "go-to": "الانتقال إلى {{source}}",
     "layout": "التخطيط",
     "layout-auto": "تلقائي",
     "layout-auto-description": "عدد الأعمدة حسب عرض الشاشة",
@@ -312,7 +312,6 @@
     "parent-memo": "المذكرة الأصلية",
     "task-actions": {
       "check-all": "تحديد جميع المهام",
-      "title": "المهام",
       "uncheck-all": "إلغاء تحديد جميع المهام",
       "updated": "تم تحديث المهام"
     },

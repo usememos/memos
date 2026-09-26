@@ -94,6 +94,7 @@
     "more": "Máis",
     "name": "Nome",
     "nickname": "Alcume",
+    "open": "Abrir",
     "or": "ou",
     "password": "Contrasinal",
     "pin": "Fixar",
@@ -290,7 +291,6 @@
     "oldest-first": "Os máis vellos primeiro",
     "task-actions": {
       "check-all": "Comprobe todas as tarefas",
-      "title": "Tarefas",
       "uncheck-all": "Desmarque todas as tarefas",
       "updated": "Tarefas actualizadas"
     },
@@ -311,7 +311,6 @@
     "back-to": "Volver a {{source}}",
     "connections": "Conexións",
     "grid-compact-hint": "Os deseños de cuadrícula sempre usan tarxetas compactas.",
-    "go-to": "Ir a {{source}}",
     "layout": "Deseño",
     "layout-auto": "Automático",
     "layout-auto-description": "Tantas columnas como axusten á pantalla",

@@ -94,6 +94,7 @@
     "more": "अधिक",
     "name": "नाव",
     "nickname": "टोपणनाव",
+    "open": "उघडा",
     "or": "किंवा",
     "password": "गुप्त शब्द",
     "pin": "पिन",
@@ -298,7 +299,6 @@
     "count-memos-updated-in-date": "{{count}} {{memos}} हे {{date}} वर अद्यतनित केले",
     "connections": "जोडण्या",
     "grid-compact-hint": "ग्रिड लेआउटमध्ये नेहमी संक्षिप्त कार्ड वापरले जातात.",
-    "go-to": "{{source}} वर जा",
     "layout": "लेआउट",
     "layout-auto": "ऑटो",
     "layout-auto-description": "स्क्रीनवर मावतील तितके स्तंभ",
@@ -312,7 +312,6 @@
     "parent-memo": "पालक मेमो",
     "task-actions": {
       "check-all": "सर्व कार्ये तपासा",
-      "title": "कार्ये",
       "uncheck-all": "सर्व कार्ये निवड रद्द करा",
       "updated": "कार्ये अद्यतनित केली"
     },

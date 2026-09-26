@@ -28,7 +28,6 @@ const MemoSidebarRegistration = ({
   parentStatus,
   onParentRetry,
   from,
-  hasExplicitOrigin,
   commentCount,
   readonly,
   onEdit,
@@ -41,7 +40,6 @@ const MemoSidebarRegistration = ({
   parentStatus?: MemoParentStatus;
   onParentRetry?: () => void;
   from: string;
-  hasExplicitOrigin: boolean;
   commentCount?: number;
   readonly: boolean;
   onEdit: () => void;
@@ -58,7 +56,6 @@ const MemoSidebarRegistration = ({
       parentStatus,
       onParentRetry,
       from,
-      hasExplicitOrigin,
       commentCount,
       readonly,
       onEdit,
@@ -69,7 +66,6 @@ const MemoSidebarRegistration = ({
   }, [
     commentCount,
     from,
-    hasExplicitOrigin,
     memo,
     onCommentCreate,
     onCommentsOpen,
@@ -233,7 +229,6 @@ const MemoDetail = () => {
           parentStatus={parentStatus}
           onParentRetry={handleParentRetry}
           from={parentPage}
-          hasExplicitOrigin={hasExplicitOrigin}
           commentCount={isShareMode ? undefined : commentCount}
           readonly={isShareMode}
           onEdit={handleEdit}

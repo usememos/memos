@@ -130,6 +130,7 @@
     "name": "名称",
     "next-month": "下个月",
     "nickname": "昵称",
+    "open": "打开",
     "or": "或者",
     "password": "密码",
     "pin": "置顶",
@@ -271,7 +272,6 @@
     "compact-mode": "紧凑模式",
     "connections": "关联",
     "grid-compact-hint": "网格布局始终使用紧凑卡片。",
-    "go-to": "前往{{source}}",
     "layout": "布局",
     "layout-auto": "自动",
     "layout-auto-description": "根据屏幕宽度显示尽可能多的列",
@@ -330,7 +330,6 @@
     "count-memos-updated-in-date": "{{date}} 更新了 {{count}} 条{{memos}}",
     "task-actions": {
       "check-all": "全部完成",
-      "title": "任务",
       "uncheck-all": "全部取消完成",
       "updated": "任务已更新"
     },

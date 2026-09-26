@@ -94,6 +94,7 @@
     "more": "Más",
     "name": "Nombre",
     "nickname": "Apodo",
+    "open": "Abrir",
     "or": "o",
     "password": "Contraseña",
     "pin": "Enganchar",
@@ -290,7 +291,6 @@
     "oldest-first": "El más viejo primero",
     "task-actions": {
       "check-all": "Verificar todas las tareas",
-      "title": "Tareas",
       "uncheck-all": "Desmarque todas las tareas",
       "updated": "Tareas actualizadas"
     },
@@ -311,7 +311,6 @@
     "back-to": "Volver a {{source}}",
     "connections": "Conexiones",
     "grid-compact-hint": "Los diseños de cuadrícula siempre utilizan tarjetas compactas.",
-    "go-to": "Ir a {{source}}",
     "layout": "Diseño",
     "layout-auto": "Automático",
     "layout-auto-description": "Tantas columnas como quepan en la pantalla",

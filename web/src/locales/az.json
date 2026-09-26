@@ -196,6 +196,7 @@
     "name": "Ad",
     "next-month": "Növbəti ay",
     "nickname": "Ləqəb",
+    "open": "Aç",
     "or": "və ya",
     "password": "Parol",
     "pin": "Sancaqla",
@@ -356,7 +357,6 @@
     "compact-mode": "Yığcam rejim",
     "connections": "Bağlantılar",
     "grid-compact-hint": "Şəbəkə düzülüşləri həmişə yığcam kartlardan istifadə edir.",
-    "go-to": "{{source}} bölməsinə keç",
     "layout": "Düzülüş",
     "layout-auto": "Avtomatik",
     "layout-auto-description": "Ekrana sığdığı qədər sütun",
@@ -403,7 +403,6 @@
     "show-more": "Daha çox göstər",
     "task-actions": {
       "check-all": "Bütün tapşırıqları işarələ",
-      "title": "Tapşırıqlar",
       "uncheck-all": "Bütün tapşırıqların işarəsini götür",
       "updated": "Tapşırıqlar yeniləndi"
     },

@@ -94,6 +94,7 @@
     "more": "Mais",
     "name": "Nome",
     "nickname": "Apelido",
+    "open": "Abrir",
     "or": "ou",
     "password": "Senha",
     "pin": "Fixar",
@@ -298,7 +299,6 @@
     "count-memos-updated-in-date": "{{count}} {{memos}} atualizado em {{date}}",
     "connections": "Conexões",
     "grid-compact-hint": "Os layouts de grade sempre usam cartões compactos.",
-    "go-to": "Ir para {{source}}",
     "layout": "Layout",
     "layout-auto": "Automático",
     "layout-auto-description": "Quantas colunas couberem na tela",
@@ -312,7 +312,6 @@
     "parent-memo": "Memorando pai",
     "task-actions": {
       "check-all": "Verificar todas as tarefas",
-      "title": "Tarefas",
       "uncheck-all": "Desmarcar todas as tarefas",
       "updated": "Tarefas atualizadas"
     },

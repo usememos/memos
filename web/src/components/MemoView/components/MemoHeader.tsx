@@ -1,11 +1,9 @@
-import { useCallback } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import RelativeTime from "@/components/RelativeTime";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { FOCUS_VISIBLE_OUTLINE_CLASSES } from "@/components/ui/focus";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useNewMemo } from "@/contexts/NewMemoContext";
-import useNavigateTo from "@/hooks/useNavigateTo";
 import i18n from "@/i18n";
 import { cn } from "@/lib/utils";
 import { getCreatorHomePath } from "@/router/routes";
@@ -19,7 +17,7 @@ import UserAvatar from "../../UserAvatar";
 import VisibilityIcon from "../../VisibilityIcon";
 import { MEMO_TIME_CONTROL_CLASSES } from "../constants";
 import { useMemoViewContext, useMemoViewDerived } from "../MemoViewContext";
-import { createMemoNavigationState } from "../navigation";
+import { createMemoNavigationState, isMemoDetailPath } from "../navigation";
 import type { MemoHeaderProps } from "../types";
 import MemoSpaceBadge from "./MemoSpaceBadge";
 
@@ -30,14 +28,10 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showC
   const t = useTranslate();
 
   const { memo, creator, currentUser, parentPage, isArchived, readonly, openEditor } = useMemoViewContext();
+  const location = useLocation();
   const { createTime, updateTime, displayTime: memoDisplayTime, isDisplayingUpdatedTime, relativeTimeFormat } = useMemoViewDerived();
   const { newMemoName } = useNewMemo();
   const visibilityOption = getVisibilityOption(memo.visibility);
-
-  const navigateTo = useNavigateTo();
-  const handleGotoMemoDetailPage = useCallback(() => {
-    navigateTo(`/${memo.name}`, { state: createMemoNavigationState(parentPage) });
-  }, [memo.name, parentPage, navigateTo]);
 
   const timeValue = isArchived ? (
     memoDisplayTime?.toLocaleString(i18n.language)
@@ -70,7 +64,13 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showC
         {/* The time stays visible while the creator and Space badge can shrink and truncate. */}
         <div data-slot="memo-header-meta" className="flex min-w-0 items-center gap-1.5 overflow-hidden">
           {showCreator && creator && <CreatorDisplay creator={creator} />}
-          <TimeDisplay displayTime={displayTime} timeTooltip={timeTooltip} onGotoDetail={handleGotoMemoDetailPage} />
+          <TimeDisplay
+            displayTime={displayTime}
+            timeTooltip={timeTooltip}
+            memoName={memo.name}
+            parentPage={parentPage}
+            isCurrentPage={isMemoDetailPath(location.pathname, memo.name)}
+          />
           {spaceMetadata}
         </div>
         {memo.name === newMemoName && (
@@ -147,14 +147,27 @@ const TimeTooltip = ({ children, content }: { children: React.ReactElement; cont
 interface TimeDisplayProps {
   displayTime: React.ReactNode;
   timeTooltip: TimeTooltipContent;
-  onGotoDetail: () => void;
+  memoName: string;
+  parentPage: string;
+  /** On the memo's own page the permalink would lead nowhere, so the time is plain text. */
+  isCurrentPage: boolean;
 }
 
-const TimeDisplay: React.FC<TimeDisplayProps> = ({ displayTime, timeTooltip, onGotoDetail }) => (
+/** The timestamp is the memo's permalink: a real link, so it previews its URL and opens in a new tab. */
+const TimeDisplay: React.FC<TimeDisplayProps> = ({ displayTime, timeTooltip, memoName, parentPage, isCurrentPage }) => (
   <TimeTooltip content={timeTooltip}>
-    <button type="button" className={MEMO_TIME_CONTROL_CLASSES} onClick={onGotoDetail}>
-      {displayTime}
-    </button>
+    {isCurrentPage ? (
+      <span className="shrink-0 whitespace-nowrap text-ui text-muted-foreground select-none">{displayTime}</span>
+    ) : (
+      <Link
+        className={cn(MEMO_TIME_CONTROL_CLASSES, "underline-offset-2 hover:underline")}
+        to={`/${memoName}`}
+        state={createMemoNavigationState(parentPage)}
+        viewTransition
+      >
+        {displayTime}
+      </Link>
+    )}
   </TimeTooltip>
 );
 

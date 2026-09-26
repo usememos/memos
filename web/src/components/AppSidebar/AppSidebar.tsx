@@ -240,7 +240,6 @@ const MemoDetailSidebarContent = () => {
       parentStatus={memoDetail.parentStatus}
       onParentRetry={memoDetail.onParentRetry}
       parentPage={memoDetail.from}
-      hasExplicitOrigin={memoDetail.hasExplicitOrigin}
       commentCount={memoDetail.commentCount}
       forceReadonly={memoDetail.readonly}
       onEdit={runAndClose(memoDetail.onEdit)}

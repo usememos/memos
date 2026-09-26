@@ -133,6 +133,7 @@
     "more": "Viac",
     "name": "Meno",
     "nickname": "prezývka",
+    "open": "Otvoriť",
     "or": "alebo",
     "password": "heslo",
     "pin": "Pin",
@@ -318,7 +319,6 @@
     "show-more": "Ukáž viac",
     "task-actions": {
       "check-all": "Skontrolujte všetky úlohy",
-      "title": "Úlohy",
       "uncheck-all": "Zrušte začiarknutie všetkých úloh",
       "updated": "Úlohy aktualizované"
     },
@@ -349,7 +349,6 @@
     "back-to": "Späť na {{source}}",
     "connections": "Pripojenia",
     "grid-compact-hint": "Mriežkové rozloženia vždy používajú kompaktné karty.",
-    "go-to": "Prejsť na {{source}}",
     "layout": "Rozloženie",
     "layout-auto": "Automaticky",
     "layout-auto-description": "Toľko stĺpcov, koľko sa zmestí na obrazovku",

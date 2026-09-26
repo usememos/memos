@@ -97,6 +97,7 @@
     "name": "名前",
     "next-month": "翌月",
     "nickname": "ニックネーム",
+    "open": "開く",
     "or": "もしくは",
     "password": "パスワード",
     "pin": "ピン",
@@ -299,7 +300,6 @@
     "oldest-first": "古い順",
     "task-actions": {
       "check-all": "すべてのタスクをチェックする",
-      "title": "タスク",
       "uncheck-all": "すべてのタスクのチェックを外します",
       "updated": "タスクが更新されました"
     },
@@ -319,7 +319,6 @@
     },
     "back-to": "{{source}}に戻る",
     "connections": "接続",
-    "go-to": "{{source}}へ移動",
     "on-this-memo": "このメモについて",
     "parent-memo": "親メモ"
   },

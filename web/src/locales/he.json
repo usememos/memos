@@ -169,6 +169,7 @@
     "name": "שם",
     "next-month": "החודש הבא",
     "nickname": "כינוי",
+    "open": "פתח",
     "or": "או",
     "password": "סיסמה",
     "pin": "הצמד",
@@ -360,7 +361,6 @@
     "show-more": "הצג עוד",
     "task-actions": {
       "check-all": "סמן את כל המשימות",
-      "title": "משימות",
       "uncheck-all": "בטל סימון של כל המשימות",
       "updated": "המשימות עודכנו"
     },
@@ -390,7 +390,6 @@
     },
     "back-to": "חזרה אל {{source}}",
     "connections": "חיבורים",
-    "go-to": "עבור אל {{source}}",
     "on-this-memo": "על תזכיר זה",
     "parent-memo": "תזכיר אב"
   },

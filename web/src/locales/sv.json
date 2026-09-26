@@ -94,6 +94,7 @@
     "more": "Mer",
     "name": "Namn",
     "nickname": "Smeknamn",
+    "open": "Öppna",
     "or": "eller",
     "password": "Lösenord",
     "pin": "Fäst",
@@ -290,7 +291,6 @@
     "oldest-first": "Äldst först",
     "task-actions": {
       "check-all": "Kontrollera alla uppgifter",
-      "title": "Uppgifter",
       "uncheck-all": "Avmarkera alla uppgifter",
       "updated": "Uppgifter uppdaterade"
     },
@@ -311,7 +311,6 @@
     "back-to": "Tillbaka till {{source}}",
     "connections": "Anslutningar",
     "grid-compact-hint": "Rutnätslayouter använder alltid kompakta kort.",
-    "go-to": "Gå till {{source}}",
     "layout": "Layout",
     "layout-auto": "Auto",
     "layout-auto-description": "Så många kolumner som får plats på skärmen",

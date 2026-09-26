@@ -94,6 +94,7 @@
     "more": "Altro",
     "name": "Nome",
     "nickname": "Nickname",
+    "open": "Apri",
     "or": "oppure",
     "password": "Password",
     "pin": "Fissa",
@@ -290,7 +291,6 @@
     "oldest-first": "Prima il più vecchio",
     "task-actions": {
       "check-all": "Controlla tutte le attività",
-      "title": "Compiti",
       "uncheck-all": "Deseleziona tutte le attività",
       "updated": "Attività aggiornate"
     },
@@ -311,7 +311,6 @@
     "back-to": "Torna a {{source}}",
     "connections": "Connessioni",
     "grid-compact-hint": "I layout a griglia utilizzano sempre schede compatte.",
-    "go-to": "Vai a {{source}}",
     "layout": "Layout",
     "layout-auto": "Automatico",
     "layout-auto-description": "Tante colonne quante ne possono entrare nello schermo",

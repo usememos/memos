@@ -94,6 +94,7 @@
     "more": "เพิ่มเติม",
     "name": "ชื่อ",
     "nickname": "ชื่อเล่น",
+    "open": "เปิด",
     "or": "หรือ",
     "password": "รหัสผ่าน",
     "pin": "ปักหมุด",
@@ -298,7 +299,6 @@
     "count-memos-updated-in-date": "{{count}} {{memos}} อัปเดตเมื่อ {{date}}",
     "connections": "การเชื่อมต่อ",
     "grid-compact-hint": "รูปแบบตารางจะใช้การ์ดแบบกะทัดรัดเสมอ",
-    "go-to": "ไปที่ {{source}}",
     "layout": "รูปแบบการจัดวาง",
     "layout-auto": "อัตโนมัติ",
     "layout-auto-description": "จำนวนคอลัมน์มากที่สุดเท่าที่จะพอดีกับหน้าจอ",
@@ -312,7 +312,6 @@
     "parent-memo": "บันทึกหลัก",
     "task-actions": {
       "check-all": "ตรวจสอบงานทั้งหมด",
-      "title": "งาน",
       "uncheck-all": "ยกเลิกการเลือกงานทั้งหมด",
       "updated": "อัปเดตงานแล้ว"
     },

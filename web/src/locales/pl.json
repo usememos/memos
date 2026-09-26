@@ -94,6 +94,7 @@
     "more": "Więcej",
     "name": "Nazwa",
     "nickname": "Pseudonim",
+    "open": "Otwórz",
     "or": "lub",
     "password": "Hasło",
     "pin": "Przypnij",
@@ -291,7 +292,6 @@
     "oldest-first": "Najpierw najstarszy",
     "task-actions": {
       "check-all": "Sprawdź wszystkie zadania",
-      "title": "Zadania",
       "uncheck-all": "Odznacz wszystkie zadania",
       "updated": "Zadania zaktualizowane"
     },
@@ -311,7 +311,6 @@
     "back-to": "Powrót do {{source}}",
     "connections": "Połączenia",
     "grid-compact-hint": "Układy siatki zawsze korzystają z kart kompaktowych.",
-    "go-to": "Przejdź do {{source}}",
     "layout": "Układ",
     "layout-auto": "Automatycznie",
     "layout-auto-description": "Tyle kolumn, ile mieści się na ekranie",

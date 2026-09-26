@@ -133,6 +133,7 @@
     "more": "Daugiau",
     "name": "Vardas",
     "nickname": "Slapyvardis",
+    "open": "Atidaryti",
     "or": "arba",
     "password": "Slaptažodis",
     "pin": "Smeigtukas",
@@ -318,7 +319,6 @@
     "show-more": "Rodyti daugiau",
     "task-actions": {
       "check-all": "Patikrinkite visas užduotis",
-      "title": "Užduotys",
       "uncheck-all": "Panaikinkite visų užduočių žymėjimą",
       "updated": "Užduotys atnaujintos"
     },
@@ -349,7 +349,6 @@
     "back-to": "Atgal į {{source}}",
     "connections": "Ryšiai",
     "grid-compact-hint": "Tinklelio išdėstymuose visada naudojamos kompaktiškos kortelės.",
-    "go-to": "Eiti į {{source}}",
     "layout": "Išdėstymas",
     "layout-auto": "Automatinis",
     "layout-auto-description": "Tiek stulpelių, kiek telpa ekrane",

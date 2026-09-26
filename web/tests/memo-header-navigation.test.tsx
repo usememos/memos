@@ -110,7 +110,7 @@ describe("MemoHeader navigation", () => {
     expect(reaction.className).not.toMatch(/border-none|rounded-full|ring-/);
   });
 
-  it.each([false, true])("uses a keyboard-operable timestamp and preserves origin when showCreator=%s", (showCreator) => {
+  it.each([false, true])("links the timestamp to the memo and preserves origin when showCreator=%s", (showCreator) => {
     if (showCreator) {
       state.creator = { username: "alice", displayName: "Alice", avatarUrl: "" };
     }
@@ -122,13 +122,25 @@ describe("MemoHeader navigation", () => {
       </MemoryRouter>,
     );
 
-    const timestamp = screen.getByRole("button", { name: "time" });
+    const timestamp = screen.getByRole("link", { name: "time" });
+    expect(timestamp).toHaveAttribute("href", "/memos/123");
     if (showCreator) expect(screen.getByRole("link", { name: /Alice/ })).toHaveAttribute("href", "/?creator=alice");
     timestamp.focus();
     expect(timestamp).toHaveFocus();
 
     fireEvent.click(timestamp);
     expect(screen.getByTestId("location")).toHaveTextContent('/memos/123|{"from":"/explore?filter=tagSearch%3Awork"}');
+  });
+
+  it("shows the time as plain text on the memo's own page", () => {
+    render(
+      <MemoryRouter initialEntries={["/memos/123"]}>
+        <MemoHeader />
+      </MemoryRouter>,
+    );
+
+    expect(screen.queryByRole("link", { name: "time" })).not.toBeInTheDocument();
+    expect(screen.getByText("time").closest("a, button")).toBeNull();
   });
 
   it.each([false, true])("keeps the Space pill beside the timestamp when showCreator=%s", (showCreator) => {
@@ -142,7 +154,7 @@ describe("MemoHeader navigation", () => {
       </MemoryRouter>,
     );
 
-    const timestamp = screen.getByRole("button", { name: "time" });
+    const timestamp = screen.getByRole("link", { name: "time" });
     const space = screen.getByTestId("memo-space");
     const metadata = space.closest('[data-slot="memo-header-meta"]');
 

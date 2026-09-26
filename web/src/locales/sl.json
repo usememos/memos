@@ -94,6 +94,7 @@
     "more": "Več",
     "name": "Ime",
     "nickname": "Nadimek",
+    "open": "Odpri",
     "or": "ali",
     "password": "Geslo",
     "pin": "Pripni",
@@ -290,7 +291,6 @@
     "oldest-first": "Najprej najstarejši",
     "task-actions": {
       "check-all": "Preverite vse naloge",
-      "title": "Naloge",
       "uncheck-all": "Odkljukajte vse naloge",
       "updated": "Naloge posodobljene"
     },
@@ -311,7 +311,6 @@
     "back-to": "Nazaj na {{source}}",
     "connections": "Povezave",
     "grid-compact-hint": "Mrežne postavitve vedno uporabljajo kompaktne kartice.",
-    "go-to": "Pojdi na {{source}}",
     "layout": "Postavitev",
     "layout-auto": "Samodejno",
     "layout-auto-description": "Toliko stolpcev, kolikor se prilega zaslonu",

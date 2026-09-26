@@ -94,6 +94,7 @@
     "more": "अधिक",
     "name": "नाम",
     "nickname": "उपनाम",
+    "open": "खोलें",
     "or": "या",
     "password": "पासवर्ड",
     "pin": "पिन करें",
@@ -298,7 +299,6 @@
     "count-memos-updated-in-date": "{{count}} {{memos}} को {{date}} पर अपडेट किया गया",
     "connections": "कनेक्शन",
     "grid-compact-hint": "ग्रिड लेआउट हमेशा कॉम्पैक्ट कार्ड का इस्तेमाल करते हैं।",
-    "go-to": "{{source}} पर जाएं",
     "layout": "लेआउट",
     "layout-auto": "ऑटो",
     "layout-auto-description": "स्क्रीन में जितने कॉलम फिट हों",
@@ -312,7 +312,6 @@
     "parent-memo": "पैरेंट मेमो",
     "task-actions": {
       "check-all": "सभी टास्क चेक करें",
-      "title": "टास्क",
       "uncheck-all": "सभी टास्क अनचेक करें",
       "updated": "टास्क अपडेट किए गए"
     },

@@ -60,6 +60,14 @@ function DropdownMenuGroup({ ...props }: DropdownMenuPrimitive.Group.Props) {
   return <DropdownMenuPrimitive.Group data-slot="dropdown-menu-group" {...props} />;
 }
 
+const dropdownMenuItemClasses = (size: DropdownMenuSize) =>
+  cn(
+    "data-highlighted:bg-accent data-highlighted:text-accent-foreground data-[variant=destructive]:text-destructive data-[variant=destructive]:data-highlighted:bg-destructive/10 data-[variant=destructive]:data-highlighted:text-destructive data-[variant=destructive]:*:[svg]:!text-destructive [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center rounded-sm outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+    size === "sm"
+      ? "min-h-7 gap-1.5 px-2 py-1 text-ui data-[inset]:ps-7 [&_svg:not([class*='size-'])]:size-3.5"
+      : "gap-2 px-2 py-1.5 text-sm data-[inset]:ps-8 [&_svg:not([class*='size-'])]:size-4",
+  );
+
 function DropdownMenuItem({
   className,
   inset,
@@ -76,13 +84,21 @@ function DropdownMenuItem({
       data-slot="dropdown-menu-item"
       data-inset={inset}
       data-variant={variant}
-      className={cn(
-        "data-highlighted:bg-accent data-highlighted:text-accent-foreground data-[variant=destructive]:text-destructive data-[variant=destructive]:data-highlighted:bg-destructive/10 data-[variant=destructive]:data-highlighted:text-destructive data-[variant=destructive]:*:[svg]:!text-destructive [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center rounded-sm outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
-        size === "sm"
-          ? "min-h-7 gap-1.5 px-2 py-1 text-ui data-[inset]:ps-7 [&_svg:not([class*='size-'])]:size-3.5"
-          : "gap-2 px-2 py-1.5 text-sm data-[inset]:ps-8 [&_svg:not([class*='size-'])]:size-4",
-        className,
-      )}
+      className={cn(dropdownMenuItemClasses(size), className)}
+      {...props}
+    />
+  );
+}
+
+/** A menu item that is a real link, so the browser's open-in-new-tab gestures work on it. */
+function DropdownMenuLinkItem({ className, inset, ...props }: DropdownMenuPrimitive.LinkItem.Props & { inset?: boolean }) {
+  const size = React.useContext(DropdownMenuSizeContext);
+
+  return (
+    <DropdownMenuPrimitive.LinkItem
+      data-slot="dropdown-menu-item"
+      data-inset={inset}
+      className={cn(dropdownMenuItemClasses(size), className)}
       {...props}
     />
   );
@@ -242,6 +258,7 @@ export {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuLinkItem,
   DropdownMenuPortal,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,

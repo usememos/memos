@@ -94,6 +94,7 @@
     "more": "Više",
     "name": "Ime",
     "nickname": "Nadimak",
+    "open": "Otvori",
     "or": "ili",
     "password": "Lozinka",
     "pin": "Prikvači",
@@ -290,7 +291,6 @@
     "oldest-first": "Prvo najstariji",
     "task-actions": {
       "check-all": "Provjerite sve zadatke",
-      "title": "Zadaci",
       "uncheck-all": "Odznačite sve zadatke",
       "updated": "Zadaci ažurirani"
     },
@@ -311,7 +311,6 @@
     "back-to": "Natrag na {{source}}",
     "connections": "Veze",
     "grid-compact-hint": "Mrežni rasporedi uvijek koriste kompaktne kartice.",
-    "go-to": "Idi na {{source}}",
     "layout": "Raspored",
     "layout-auto": "Automatski",
     "layout-auto-description": "Onoliko stupaca koliko stane na zaslon",

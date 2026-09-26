@@ -94,6 +94,7 @@
     "more": "Més",
     "name": "Nom",
     "nickname": "Sobrenom",
+    "open": "Obre",
     "or": "o",
     "password": "Contrasenya",
     "pin": "Enganxa",
@@ -290,7 +291,6 @@
     "oldest-first": "El més vell primer",
     "task-actions": {
       "check-all": "Comproveu totes les tasques",
-      "title": "Tasques",
       "uncheck-all": "Desmarqueu totes les tasques",
       "updated": "Tasques actualitzades"
     },
@@ -311,7 +311,6 @@
     "back-to": "Torna a {{source}}",
     "connections": "Connexions",
     "grid-compact-hint": "Els dissenys de quadrícula sempre utilitzen targetes compactes.",
-    "go-to": "Ves a {{source}}",
     "layout": "Disseny",
     "layout-auto": "Automàtic",
     "layout-auto-description": "Tantes columnes com càpiguen a la pantalla",

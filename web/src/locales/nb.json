@@ -94,6 +94,7 @@
     "more": "Mer",
     "name": "Navn",
     "nickname": "Kallenavn",
+    "open": "Åpne",
     "or": "eller",
     "password": "Passord",
     "pin": "Fest",
@@ -290,7 +291,6 @@
     "oldest-first": "Eldste først",
     "task-actions": {
       "check-all": "Sjekk alle oppgaver",
-      "title": "Oppgaver",
       "uncheck-all": "Fjern merket for alle oppgaver",
       "updated": "Oppgaver oppdatert"
     },
@@ -311,7 +311,6 @@
     "back-to": "Tilbake til {{source}}",
     "connections": "Tilkoblinger",
     "grid-compact-hint": "Rutenettoppsett bruker alltid kompakte kort.",
-    "go-to": "Gå til {{source}}",
     "layout": "Oppsett",
     "layout-auto": "Auto",
     "layout-auto-description": "Så mange kolonner som får plass på skjermen",

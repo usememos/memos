@@ -176,6 +176,7 @@
     "name": "名稱",
     "next-month": "下個月",
     "nickname": "暱稱",
+    "open": "開啟",
     "or": "或",
     "password": "密碼",
     "pin": "置頂",
@@ -367,7 +368,6 @@
     "show-more": "查看更多",
     "task-actions": {
       "check-all": "勾選所有待辦事項",
-      "title": "待辦事項",
       "uncheck-all": "取消勾選所有待辦事項",
       "updated": "待辦事項已更新"
     },
@@ -397,7 +397,6 @@
     },
     "back-to": "返回 {{source}}",
     "connections": "關聯",
-    "go-to": "轉到 {{source}}",
     "on-this-memo": "在此備忘錄中",
     "parent-memo": "原始備忘錄"
   },

@@ -12,7 +12,6 @@ export interface MemoDetailSidebarDescriptor {
   parentStatus?: MemoParentStatus;
   onParentRetry?: () => void;
   from?: string;
-  hasExplicitOrigin?: boolean;
   commentCount?: number;
   readonly?: boolean;
   onEdit?: () => void;

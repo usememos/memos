@@ -124,6 +124,7 @@
     "name": "İsim",
     "next-month": "Sonraki ay",
     "nickname": "Takma Ad",
+    "open": "Aç",
     "or": "veya",
     "password": "Şifre",
     "pin": "Sabitle",
@@ -284,7 +285,6 @@
     "compact-mode": "Kompakt mod",
     "connections": "Bağlantılar",
     "grid-compact-hint": "Izgara düzenleri her zaman kompakt kartlar kullanır.",
-    "go-to": "Git: {{source}}",
     "layout": "Düzen",
     "layout-auto": "Otomatik",
     "layout-auto-description": "Ekrana sığdığı kadar sütun",
@@ -343,7 +343,6 @@
     "on-this-memo": "Bu notta",
     "task-actions": {
       "check-all": "Tüm görevleri kontrol et",
-      "title": "Görevler",
       "uncheck-all": "Tüm görevlerin işaretini kaldırın",
       "updated": "Görevler güncellendi"
     }

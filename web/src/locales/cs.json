@@ -94,6 +94,7 @@
     "more": "Více",
     "name": "Jméno",
     "nickname": "Přezdívka",
+    "open": "Otevřít",
     "or": "nebo",
     "password": "Heslo",
     "pin": "Připnout",
@@ -290,7 +291,6 @@
     "oldest-first": "Nejdříve nejstarší",
     "task-actions": {
       "check-all": "Zkontrolujte všechny úkoly",
-      "title": "Úkoly",
       "uncheck-all": "Zrušte zaškrtnutí všech úkolů",
       "updated": "Úkoly aktualizovány"
     },
@@ -311,7 +311,6 @@
     "back-to": "Zpět na {{source}}",
     "connections": "Připojení",
     "grid-compact-hint": "Mřížkové rozvržení vždy používá kompaktní karty.",
-    "go-to": "Přejít na {{source}}",
     "layout": "Rozvržení",
     "layout-auto": "Automaticky",
     "layout-auto-description": "Tolik sloupců, kolik se vejde na obrazovku",

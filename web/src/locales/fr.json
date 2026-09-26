@@ -94,6 +94,7 @@
     "more": "Plus",
     "name": "Nom",
     "nickname": "Surnom",
+    "open": "Ouvrir",
     "or": "ou",
     "password": "Mot de passe",
     "pin": "Épingler",
@@ -290,7 +291,6 @@
     "oldest-first": "Le plus ancien en premier",
     "task-actions": {
       "check-all": "Vérifiez toutes les tâches",
-      "title": "Tâches",
       "uncheck-all": "Décochez toutes les tâches",
       "updated": "Tâches mises à jour"
     },
@@ -311,7 +311,6 @@
     "back-to": "Retour à {{source}}",
     "connections": "Connexions",
     "grid-compact-hint": "Les mises en page en grille utilisent toujours des cartes compactes.",
-    "go-to": "Aller à {{source}}",
     "layout": "Mise en page",
     "layout-auto": "Automatique",
     "layout-auto-description": "Autant de colonnes que l'écran peut en afficher",

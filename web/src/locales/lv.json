@@ -133,6 +133,7 @@
     "more": "Vairāk",
     "name": "Vārds",
     "nickname": "Segvārds",
+    "open": "Atvērt",
     "or": "vai",
     "password": "Parole",
     "pin": "Piespraust",
@@ -318,7 +319,6 @@
     "show-more": "Rādīt vairāk",
     "task-actions": {
       "check-all": "Pārbaudiet visus uzdevumus",
-      "title": "Uzdevumi",
       "uncheck-all": "Noņemiet atzīmi no visiem uzdevumiem",
       "updated": "Uzdevumi atjaunināti"
     },
@@ -349,7 +349,6 @@
     "back-to": "Atpakaļ uz {{source}}",
     "connections": "Savienojumi",
     "grid-compact-hint": "Režģa izkārtojumos vienmēr tiek izmantotas kompaktas kartes.",
-    "go-to": "Dodieties uz {{source}}",
     "layout": "Izkārtojums",
     "layout-auto": "Automātiski",
     "layout-auto-description": "Tik daudz kolonnu, cik ietilpst ekrānā",

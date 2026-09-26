@@ -94,6 +94,7 @@
     "more": "Thêm",
     "name": "Tên",
     "nickname": "Biệt danh",
+    "open": "Mở",
     "or": "hoặc",
     "password": "Mật khẩu",
     "pin": "Ghim",
@@ -298,7 +299,6 @@
     "count-memos-updated-in-date": "{{count}} {{memos}} được cập nhật vào {{date}}",
     "connections": "Kết nối",
     "grid-compact-hint": "Bố cục lưới luôn sử dụng thẻ nhỏ gọn.",
-    "go-to": "Chuyển đến {{source}}",
     "layout": "Bố cục",
     "layout-auto": "Tự động",
     "layout-auto-description": "Số cột tùy ý cho vừa màn hình",
@@ -312,7 +312,6 @@
     "parent-memo": "Ghi chú cha",
     "task-actions": {
       "check-all": "Chọn tất cả nhiệm vụ",
-      "title": "Nhiệm vụ",
       "uncheck-all": "Bỏ chọn tất cả nhiệm vụ",
       "updated": "Nhiệm vụ đã được cập nhật"
     },

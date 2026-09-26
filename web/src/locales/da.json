@@ -133,6 +133,7 @@
     "more": "Mere",
     "name": "Navn",
     "nickname": "Kaldenavn",
+    "open": "Åbn",
     "or": "eller",
     "password": "Adgangskode",
     "pin": "Stift",
@@ -318,7 +319,6 @@
     "show-more": "Vis mere",
     "task-actions": {
       "check-all": "Tjek alle opgaver",
-      "title": "Opgaver",
       "uncheck-all": "Fjern markeringen i alle opgaver",
       "updated": "Opgaver opdateret"
     },
@@ -349,7 +349,6 @@
     "back-to": "Tilbage til {{source}}",
     "connections": "Forbindelser",
     "grid-compact-hint": "Gitterlayout bruger altid kompakte kort.",
-    "go-to": "Gå til {{source}}",
     "layout": "Layout",
     "layout-auto": "Auto",
     "layout-auto-description": "Så mange kolonner som der er plads til på skærmen",
