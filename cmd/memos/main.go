@@ -33,9 +33,14 @@ func initSlogDefault() {
 var (
 	rootCmd = &cobra.Command{
 		Use:           "memos",
+		Version:       version.GetCurrentVersion(),
 		SilenceErrors: true,
 		SilenceUsage:  true,
-		RunE: func(_ *cobra.Command, _ []string) error {
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			if showVersion, _ := cmd.Flags().GetBool("version-short"); showVersion {
+				fmt.Println(version.GetCurrentVersion())
+				return nil
+			}
 			return runServer()
 		},
 	}
@@ -50,11 +55,13 @@ var (
 
 func init() {
 	cobra.OnInitialize(initSlogDefault)
+	rootCmd.SetVersionTemplate("{{.Version}}\n")
 
 	viper.SetDefault("demo", false)
 	viper.SetDefault("driver", "sqlite")
 	viper.SetDefault("port", 8081)
 
+	rootCmd.Flags().BoolP("version-short", "V", false, "print version")
 	rootCmd.Flags().Bool("demo", false, "enable demo mode")
 	rootCmd.Flags().String("addr", "", "address of server")
 	rootCmd.Flags().Int("port", 8081, "port of server")
