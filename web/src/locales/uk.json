@@ -671,6 +671,7 @@
       "background-color": "Колір фону",
       "blur-content": "Розмиття вмісту",
       "no-tags-configured": "Метадані тегу не налаштовано.",
+      "set-icon": "Задати піктограму для #{{tag}}",
       "tag-name-placeholder": "напр. work або project/.*",
       "tag-already-exists": "Тег уже існує.",
       "tag-pattern-hint": "Назва тегу або шаблон регулярного виразу (наприклад, project/.* відповідає всім тегам project/)",

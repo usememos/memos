@@ -791,6 +791,7 @@
       "default-color": "Predvolené",
       "matching-rule": "Ukotvený regulárny výraz",
       "no-tags-configured": "Nie sú nakonfigurované žiadne metadáta značky.",
+      "set-icon": "Set icon for #{{tag}}",
       "tag-name-placeholder": "napr. práca alebo projekt/.*",
       "tag-already-exists": "Značka už existuje.",
       "tag-pattern-hint": "Názov značky alebo vzor regulárneho výrazu (napr. projekt/.* zodpovedá všetkým projektom/značkám)",

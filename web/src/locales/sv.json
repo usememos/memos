@@ -671,6 +671,7 @@
       "background-color": "Bakgrundsfärg",
       "blur-content": "Oskärpa innehåll",
       "no-tags-configured": "Ingen taggmetadata har konfigurerats.",
+      "set-icon": "Set icon for #{{tag}}",
       "tag-name-placeholder": "t.ex. work eller project/.*",
       "tag-already-exists": "Taggen finns redan.",
       "tag-pattern-hint": "Taggnamn eller regexmönster (t.ex. project/.* matchar alla project/-taggar)",
