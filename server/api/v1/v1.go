@@ -20,6 +20,8 @@ import (
 	"github.com/usememos/memos/internal/ratelimit"
 	"github.com/usememos/memos/markdown"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
+	"github.com/usememos/memos/provider/ai"
+	"github.com/usememos/memos/provider/ai/chat"
 	"github.com/usememos/memos/server/auth"
 	"github.com/usememos/memos/store"
 )
@@ -96,6 +98,10 @@ type APIV1Service struct {
 	// path. The worker pool starts on first use so instances without any
 	// assistant configured never spawn it.
 	assistantReview assistantReviewDispatcher
+
+	// assistantCompleterOverride replaces the chat client an assistant review
+	// uses. Only tests set it.
+	assistantCompleterOverride func(ai.ProviderConfig) (chat.Completer, error)
 }
 
 // NewAPIV1Service creates an API v1 service with its shared dependencies.

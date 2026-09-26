@@ -66,16 +66,27 @@ func (s *APIV1Service) dispatchAssistantReviewBestEffort(ctx context.Context, me
 	}
 	// Route here as well as in the worker so an instance with the feature off,
 	// or a memo no assistant handles, costs nothing beyond this cached read.
-	if routeAssistantForTags(aiSetting.GetAssistants(), memo.Payload.GetTags()) == nil {
+	route := routeAssistantForTags(aiSetting.GetAssistants(), memo.Payload.GetTags())
+	if route == nil {
+		// Logged, because "nothing happened" is otherwise indistinguishable from
+		// a broken provider — the master switch and the tag filter are the two
+		// settings that silently opt a memo out.
+		slog.Debug("No AI assistant handles this memo",
+			slog.String("memo_uid", memo.UID),
+			slog.Bool("feature_enabled", aiSetting.GetAssistants().GetEnabled()),
+			slog.Any("memo_tags", memo.Payload.GetTags()))
 		return
 	}
 
 	s.assistantReview.once.Do(s.startAssistantReviewWorkers)
 	select {
 	case s.assistantReview.queue <- assistantReviewJob{memoID: memo.ID}:
+		slog.Info("Queued AI assistant review",
+			slog.String("memo_uid", memo.UID),
+			slog.String("assistant", route.assistant.GetTitle()))
 	default:
 		slog.Warn("AI assistant review queue is full; skipping memo",
-			slog.Int64("memo_id", int64(memo.ID)))
+			slog.String("memo_uid", memo.UID))
 	}
 }
 
@@ -116,6 +127,12 @@ func (s *APIV1Service) reviewMemoWithAssistant(ctx context.Context, memoID int32
 	if err != nil {
 		return errors.Wrap(err, "failed to read AI setting")
 	}
+	// A review must never review itself, which would loop forever. Reviews are
+	// only dispatched for top-level memos today; this keeps that from becoming
+	// a load-bearing assumption.
+	if memo.Payload.GetAssistant() != nil {
+		return nil
+	}
 	route := routeAssistantForTags(aiSetting.GetAssistants(), memo.Payload.GetTags())
 	if route == nil {
 		return nil
@@ -130,21 +147,13 @@ func (s *APIV1Service) reviewMemoWithAssistant(ctx context.Context, memoID int32
 	if err != nil {
 		return err
 	}
-	botUser, err := s.resolveAssistantBotUser(ctx, assistant)
-	if err != nil {
-		return err
-	}
-	// A bot must never review its own output, which would loop forever.
-	if memo.CreatorID == botUser.ID {
-		return nil
-	}
 
 	contextMemos, err := s.loadAssistantContextMemos(ctx, memo, assistant, route.matchedTag)
 	if err != nil {
 		return errors.Wrap(err, "failed to load context memos")
 	}
 
-	completer, err := newAssistantCompleter(provider)
+	completer, err := s.assistantCompleter(provider)
 	if err != nil {
 		return err
 	}
@@ -166,7 +175,14 @@ func (s *APIV1Service) reviewMemoWithAssistant(ctx context.Context, memoID int32
 		return errors.New("assistant review response was empty")
 	}
 
-	return s.createAssistantComment(ctx, botUser, memo, text)
+	if err := s.createAssistantComment(ctx, assistant, memo, text); err != nil {
+		return err
+	}
+	slog.Info("Posted AI assistant review",
+		slog.String("memo_uid", memo.UID),
+		slog.String("assistant", assistant.GetTitle()),
+		slog.Int("context_memos", len(contextMemos)))
+	return nil
 }
 
 func resolveAssistantProvider(
@@ -194,6 +210,16 @@ func resolveAssistantModel(assistant *storepb.AIAssistantConfig, providerType ai
 	return ai.DefaultChatModel(providerType)
 }
 
+// assistantCompleter builds the chat client for one review. The indirection
+// exists so a test can exercise the whole review path — routing, context,
+// comment authorship, visibility — without a provider.
+func (s *APIV1Service) assistantCompleter(provider ai.ProviderConfig) (chat.Completer, error) {
+	if s.assistantCompleterOverride != nil {
+		return s.assistantCompleterOverride(provider)
+	}
+	return newAssistantCompleter(provider)
+}
+
 func newAssistantCompleter(provider ai.ProviderConfig) (chat.Completer, error) {
 	options := chat.ApplyOptions(nil)
 	switch provider.Type {
@@ -204,38 +230,6 @@ func newAssistantCompleter(provider ai.ProviderConfig) (chat.Completer, error) {
 	default:
 		return nil, errors.Wrapf(ai.ErrChatNotSupported, "provider type %q", provider.Type)
 	}
-}
-
-// resolveAssistantBotUser returns the account that authors this assistant's
-// comments, provisioning it if the stored reference has gone stale.
-func (s *APIV1Service) resolveAssistantBotUser(
-	ctx context.Context,
-	assistant *storepb.AIAssistantConfig,
-) (*store.User, error) {
-	if botUserID := assistant.GetBotUserId(); botUserID > 0 {
-		botUser, err := s.Store.GetUser(ctx, &store.FindUser{ID: &botUserID})
-		if err != nil {
-			return nil, errors.Wrap(err, "failed to load assistant bot account")
-		}
-		if botUser != nil && botUser.RowStatus == store.Normal {
-			return botUser, nil
-		}
-	}
-
-	// The account was removed or was never provisioned (for example, the
-	// assistant was enabled by an older build). Recreate it on demand.
-	if err := s.ensureAssistantBotUser(ctx, assistant); err != nil {
-		return nil, err
-	}
-	botUserID := assistant.GetBotUserId()
-	botUser, err := s.Store.GetUser(ctx, &store.FindUser{ID: &botUserID})
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to load assistant bot account")
-	}
-	if botUser == nil {
-		return nil, errors.Errorf("assistant %q has no bot account", assistant.GetTitle())
-	}
-	return botUser, nil
 }
 
 // loadAssistantContextMemos returns the author's background memos for the
@@ -324,20 +318,34 @@ func truncateRunes(value string, limit int) string {
 	return string(runes[:limit]) + "…"
 }
 
-// createAssistantComment stores the review as a comment authored by the bot.
+// createAssistantComment stores the review as a comment on the reviewed memo.
+//
+// The comment is stored under the reviewed memo's own author, not under an
+// account of its own. A memo's audience is defined by its creator: only the
+// author may comment on a PRIVATE memo, and only the author can read a PRIVATE
+// comment. A review authored by anyone else is therefore rejected outright on a
+// private memo, and invisible to the author even where it is accepted. Which
+// assistant wrote it is recorded in the payload instead.
 func (s *APIV1Service) createAssistantComment(
 	ctx context.Context,
-	botUser *store.User,
+	assistant *storepb.AIAssistantConfig,
 	relatedMemo *store.Memo,
 	content string,
 ) error {
+	author, err := s.Store.GetUser(ctx, &store.FindUser{ID: &relatedMemo.CreatorID})
+	if err != nil {
+		return errors.Wrap(err, "failed to load the reviewed memo's author")
+	}
+	if author == nil {
+		return errors.Errorf("the reviewed memo's author %d no longer exists", relatedMemo.CreatorID)
+	}
 	uid, err := ValidateAndGenerateUID("")
 	if err != nil {
 		return errors.Wrap(err, "failed to generate comment UID")
 	}
 	comment := &store.Memo{
 		UID:       uid,
-		CreatorID: botUser.ID,
+		CreatorID: author.ID,
 		Content:   content,
 		// Inherit placement so a review is never more visible than its memo.
 		Visibility: relatedMemo.Visibility,
@@ -349,8 +357,15 @@ func (s *APIV1Service) createAssistantComment(
 	// Drop any tag the model happened to write. Indexing them would let an
 	// assistant invent entries in the author's tag list.
 	comment.Payload.Tags = nil
+	// Attribution travels with the comment, so a renamed or deleted assistant
+	// does not rewrite the identity an existing review was written under.
+	comment.Payload.Assistant = &storepb.MemoPayload_AssistantAttribution{
+		AssistantId: assistant.GetId(),
+		Title:       assistant.GetTitle(),
+		Icon:        assistant.GetIcon(),
+	}
 
-	if err := s.createMemoWithMutation(ctx, botUser, comment, &relatedMemo.ID, nil, nil, nil); err != nil {
+	if err := s.createMemoWithMutation(ctx, author, comment, &relatedMemo.ID, nil, nil, nil); err != nil {
 		return errors.Wrap(err, "failed to create assistant comment")
 	}
 	s.SSEHub.publishMemoChanged()

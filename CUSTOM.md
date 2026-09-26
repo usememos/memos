@@ -137,12 +137,22 @@ The queue is bounded; bursts beyond it are dropped rather than delaying writes.
 Because the hook is on memo creation rather than in the web client, memos
 created from the API or a mobile client are reviewed too.
 
-**Authorship.** Each enabled assistant owns a provisioned bot account, named
-deterministically from its id (`assistant-<digest>`). The account carries the
-assistant's name and its emoji as an SVG avatar, so comments show a real author
-everywhere, including third-party clients. Sign-in is impossible: the stored
-password hash is deliberately not a valid bcrypt hash. Renaming an assistant
-renames its account rather than creating a second one.
+**Authorship.** A review is stored under the reviewed memo's own author, and
+which assistant wrote it is recorded in the comment's payload
+(`MemoPayload.assistant`) and surfaced as the read-only `Memo.assistant` field.
+The web client shows that attribution in place of the author on the comment's
+header, so the author is never credited with text they did not write.
+
+This is not a cosmetic choice. A memo's audience is defined by its creator:
+only the author may comment on a private memo, and only the author may read a
+private comment. An earlier version gave each assistant its own bot account,
+which meant every review on a private memo was rejected on write and would
+have been invisible on read even if it had been stored — and the composer
+defaults to private. Keeping the author as the creator makes visibility and
+authorization correct without any exception in the authorization rules.
+
+A client that does not know about `Memo.assistant` still sees a consistent
+memo, just without the attribution.
 
 **Safety properties worth preserving when editing this code:**
 
@@ -150,17 +160,27 @@ renames its account rather than creating a second one.
   it is never more visible than its parent.
 - Tags the model happens to write are dropped from the comment payload, so an
   assistant cannot invent entries in the author's tag list.
-- A bot never reviews its own output.
-- `bot_user_id` is server-owned: it is absent from the API message and restored
-  from the persisted setting on every save. The same "absence means keep"
-  rule already protects provider API keys.
+- A memo that already carries `payload.assistant` is never reviewed, so an
+  assistant cannot review its own output. A review is an ordinary memo by the
+  author now, so a tagless fallback assistant would otherwise match it.
+- Attribution is copied into the comment at write time, so renaming or deleting
+  an assistant does not rewrite the identity an existing review was written
+  under.
+
+If an earlier build of this fork provisioned `assistant-<digest>` accounts,
+they are now unused and can be removed by hand in Settings → Members. They are
+deliberately not deleted automatically: deleting a user also deletes their
+memos, which would destroy the reviews they already posted.
 
 Files: `proto/store/instance_setting.proto`, `proto/api/v1/instance_service.proto`,
+`proto/store/memo.proto`, `proto/api/v1/memo_service.proto`,
 `provider/ai/chat/` (text-generation capability for OpenAI-compatible and Gemini
 providers), `server/api/v1/memo_ai_assistant.go`,
 `server/api/v1/memo_ai_assistant_routing.go`,
 `server/api/v1/instance_ai_assistants.go`,
-`web/src/components/Settings/AIAssistantSection.tsx`.
+`server/api/v1/memo_service_converter.go`,
+`web/src/components/Settings/AIAssistantSection.tsx`,
+`web/src/components/MemoView/components/MemoHeader.tsx`.
 
 ## Development
 

@@ -1580,10 +1580,7 @@ type AIAssistantConfig struct {
 	// Ignored when context_scope is CURRENT_MEMO_ONLY.
 	ContextLimit int32 `protobuf:"varint,9,opt,name=context_limit,json=contextLimit,proto3" json:"context_limit,omitempty"`
 	// enabled allows pausing one assistant without deleting it.
-	Enabled bool `protobuf:"varint,10,opt,name=enabled,proto3" json:"enabled,omitempty"`
-	// bot_user_id is the user account that authors this assistant's comments.
-	// Assigned by the server when the assistant is saved.
-	BotUserId     int32 `protobuf:"varint,11,opt,name=bot_user_id,json=botUserId,proto3" json:"bot_user_id,omitempty"`
+	Enabled       bool `protobuf:"varint,10,opt,name=enabled,proto3" json:"enabled,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1686,13 +1683,6 @@ func (x *AIAssistantConfig) GetEnabled() bool {
 		return x.Enabled
 	}
 	return false
-}
-
-func (x *AIAssistantConfig) GetBotUserId() int32 {
-	if x != nil {
-		return x.BotUserId
-	}
-	return 0
 }
 
 type InstanceAccessSetting struct {
@@ -1965,7 +1955,7 @@ const file_store_instance_setting_proto_rawDesc = "" +
 	"\aenabled\x18\x01 \x01(\bR\aenabled\x12>\n" +
 	"\n" +
 	"assistants\x18\x02 \x03(\v2\x1e.memos.store.AIAssistantConfigR\n" +
-	"assistants\"\xda\x02\n" +
+	"assistants\"\xcd\x02\n" +
 	"\x11AIAssistantConfig\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x12\n" +
@@ -1978,8 +1968,7 @@ const file_store_instance_setting_proto_rawDesc = "" +
 	"\rcontext_scope\x18\b \x01(\x0e2$.memos.store.AIAssistantContextScopeR\fcontextScope\x12#\n" +
 	"\rcontext_limit\x18\t \x01(\x05R\fcontextLimit\x12\x18\n" +
 	"\aenabled\x18\n" +
-	" \x01(\bR\aenabled\x12\x1e\n" +
-	"\vbot_user_id\x18\v \x01(\x05R\tbotUserId\"Y\n" +
+	" \x01(\bR\aenabledJ\x04\b\v\x10\fR\vbot_user_id\"Y\n" +
 	"\x15InstanceAccessSetting\x12@\n" +
 	"\vaccess_mode\x18\x01 \x01(\x0e2\x1f.memos.store.InstanceAccessModeR\n" +
 	"accessMode*\xa1\x01\n" +

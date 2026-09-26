@@ -64,6 +64,7 @@ func (s *APIV1Service) convertMemoFromStoreWithCreators(ctx context.Context, mem
 		memoMessage.Tags = memo.Payload.Tags
 		memoMessage.Property = convertMemoPropertyFromStore(memo.Payload.Property)
 		memoMessage.Location = convertLocationFromStore(memo.Payload.Location)
+		memoMessage.Assistant = convertAssistantAttributionFromStore(memo.Payload.Assistant)
 	}
 
 	// Parent identity is part of a readable comment's context. It grants no
@@ -100,6 +101,19 @@ func (s *APIV1Service) convertMemoFromStoreWithCreators(ctx context.Context, mem
 	memoMessage.Snippet = snippet
 
 	return memoMessage, nil
+}
+
+// convertAssistantAttributionFromStore reports which assistant wrote an
+// automatic review. The creator stays the account the comment is stored under,
+// so a client that ignores this field still sees a consistent memo.
+func convertAssistantAttributionFromStore(attribution *storepb.MemoPayload_AssistantAttribution) *v1pb.Memo_AssistantAttribution {
+	if attribution == nil {
+		return nil
+	}
+	return &v1pb.Memo_AssistantAttribution{
+		Title: attribution.GetTitle(),
+		Icon:  attribution.GetIcon(),
+	}
 }
 
 func (s *APIV1Service) projectMemoCollaborationContext(ctx context.Context, memo *store.Memo, message *v1pb.Memo, readContext access.MemoReadContext) error {

@@ -127,22 +127,6 @@ func TestNormalizeAssistantTagsRejectsOversized(t *testing.T) {
 	require.Error(t, err)
 }
 
-func TestAssistantBotUsernameIsStableAndValid(t *testing.T) {
-	first := assistantBotUsername("3f2a1b4c-0000-4000-8000-000000000001")
-	second := assistantBotUsername("3f2a1b4c-0000-4000-8000-000000000001")
-	other := assistantBotUsername("3f2a1b4c-0000-4000-8000-000000000002")
-
-	assert.Equal(t, first, second)
-	assert.NotEqual(t, first, other)
-	assert.True(t, strings.HasPrefix(first, assistantBotUsernamePrefix))
-	// The derived name must satisfy the same rules as a human username.
-	assert.True(t, identifierIsValidUsername(first), "generated username %q must be valid", first)
-
-	// Any identifier shape, including one with characters a username forbids,
-	// still produces a valid account name.
-	assert.True(t, identifierIsValidUsername(assistantBotUsername("读书 助手!!")))
-}
-
 func TestBuildAssistantInput(t *testing.T) {
 	memo := &store.Memo{Content: "Today I read about deliberate practice."}
 
@@ -165,15 +149,4 @@ func TestTruncateRunesCountsCharactersNotBytes(t *testing.T) {
 	assert.Equal(t, "读书笔记", truncateRunes("读书笔记", 4))
 	assert.Equal(t, "读书…", truncateRunes("读书笔记", 2))
 	assert.Equal(t, "abc", truncateRunes("abc", 10))
-}
-
-func TestAssistantBotAvatarURL(t *testing.T) {
-	assert.Empty(t, assistantBotAvatarURL(""))
-
-	avatar := assistantBotAvatarURL("📗")
-	assert.True(t, strings.HasPrefix(avatar, "data:image/svg+xml;utf8,"))
-
-	// Icons are escaped so a hostile value cannot break out of the SVG markup.
-	escaped := assistantBotAvatarURL("<script>")
-	assert.NotContains(t, escaped, "<script>")
 }
