@@ -665,6 +665,96 @@ func TestHasLocationSQLiteBehavior(t *testing.T) {
 	}
 }
 
+func TestRenderJSONBoolComparisonsPerDialect(t *testing.T) {
+	t.Parallel()
+
+	engine, err := NewEngine(NewSchema())
+	require.NoError(t, err)
+
+	predicates := map[DialectName]string{
+		DialectSQLite:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasLink') IS TRUE",
+		DialectMySQL:    "COALESCE(JSON_EXTRACT(`memo`.`payload`, '$.property.hasLink'), CAST('false' AS JSON)) = CAST('true' AS JSON)",
+		DialectPostgres: "(memo.payload->'property'->>'hasLink')::boolean IS TRUE",
+	}
+	for dialect, predicate := range predicates {
+		cases := []struct {
+			expr string
+			sql  string
+		}{
+			{`has_link`, predicate},
+			{`!has_link`, "NOT (" + predicate + ")"},
+			{`has_link == true`, predicate},
+			{`has_link == false`, "NOT (" + predicate + ")"},
+			{`has_link != true`, "NOT (" + predicate + ")"},
+			{`has_link != false`, predicate},
+		}
+		for _, tc := range cases {
+			stmt, err := engine.CompileToStatement(context.Background(), tc.expr, RenderOptions{Dialect: dialect})
+			require.NoError(t, err, dialect, tc.expr)
+			require.Equal(t, tc.sql, stmt.SQL, dialect, tc.expr)
+			require.Empty(t, stmt.Args, dialect, tc.expr)
+		}
+	}
+}
+
+// TestJSONBoolComparisonSQLiteBehavior pins the comparison semantics of the
+// JSON boolean flags against a real database. Memo payloads omit false flags,
+// so a missing key, a missing property object and a NULL payload all count as
+// false, and `flag == false` must match the same rows as `!flag`.
+func TestJSONBoolComparisonSQLiteBehavior(t *testing.T) {
+	db, err := sql.Open("sqlite", ":memory:")
+	require.NoError(t, err)
+	db.SetMaxOpenConns(1)
+	t.Cleanup(func() { require.NoError(t, db.Close()) })
+
+	_, err = db.Exec(`CREATE TABLE memo (id INTEGER PRIMARY KEY, payload TEXT)`)
+	require.NoError(t, err)
+
+	engine, err := NewEngine(NewSchema())
+	require.NoError(t, err)
+
+	flags := map[string]string{
+		"has_task_list":        "hasTaskList",
+		"has_link":             "hasLink",
+		"has_code":             "hasCode",
+		"has_incomplete_tasks": "hasIncompleteTasks",
+	}
+	for field, key := range flags {
+		_, err = db.Exec(`DELETE FROM memo`)
+		require.NoError(t, err)
+		for _, fixture := range []struct {
+			id      int
+			payload any
+		}{
+			{1, `{}`},
+			{2, fmt.Sprintf(`{"property":{"%s":true}}`, key)},
+			{3, fmt.Sprintf(`{"property":{"%s":false}}`, key)},
+			{4, `{"property":{}}`},
+			{5, nil},
+		} {
+			_, err = db.Exec(`INSERT INTO memo (id, payload) VALUES (?, ?)`, fixture.id, fixture.payload)
+			require.NoError(t, err)
+		}
+
+		cases := []struct {
+			expr string
+			want []int
+		}{
+			{field, []int{2}},
+			{"!" + field, []int{1, 3, 4, 5}},
+			{field + " == true", []int{2}},
+			{field + " == false", []int{1, 3, 4, 5}},
+			{field + " != true", []int{1, 3, 4, 5}},
+			{field + " != false", []int{2}},
+		}
+		for _, tc := range cases {
+			stmt, err := engine.CompileToStatement(context.Background(), tc.expr, RenderOptions{Dialect: DialectSQLite})
+			require.NoError(t, err, tc.expr)
+			require.Equal(t, tc.want, selectMemoIDs(t, db, stmt), tc.expr)
+		}
+	}
+}
+
 func TestCompileRejectsOversizedExpression(t *testing.T) {
 	t.Parallel()
 	engine, err := NewEngine(NewSchema())

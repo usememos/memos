@@ -59,8 +59,10 @@ stmt, _ := engine.CompileToStatement(ctx, `has_task_list && visibility == "PUBLI
   matching are case-sensitive, without Unicode normalization; `%` and `_` in
   string operands are literal. Hierarchy works through implied ancestors already
   present in the memo tag set, not through prefix matching.
-- **Boolean Flags** — Fields such as `has_task_list` render as `IS TRUE` equality
-  checks, or comparisons against `CAST('true' AS JSON)` depending on the dialect.
+- **Boolean Flags** — Fields such as `has_task_list` render as an `IS TRUE` check
+  (a comparison against `CAST('true' AS JSON)` on MySQL). Memo payloads omit false
+  flags, so a missing key counts as false: `flag == false` and `flag != true`
+  render as the negated check and match the same memos as `!flag`.
 - **Presence Flags** — `has_location` renders as a JSON key-existence check on
   `memo.payload` (`$.location`). A missing key and an explicit JSON null both
   count as absent on every dialect; any other value — including an empty object —

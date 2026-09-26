@@ -362,59 +362,31 @@ func (r *renderer) renderBoolColumnComparison(field Field, op ComparisonOperator
 	}, nil
 }
 
+// renderJSONBoolComparison compares a JSON boolean flag with a literal. Memo
+// payloads omit false flags, so a missing key means false: comparisons reuse
+// jsonBoolPredicate, which already treats a missing key or a NULL payload as
+// false on every dialect.
 func (r *renderer) renderJSONBoolComparison(field Field, op ComparisonOperator, right ValueExpr) (renderResult, error) {
 	value, err := expectBool(right)
 	if err != nil {
 		return renderResult{}, err
 	}
-
-	jsonExpr := jsonExtractExpr(r.dialect, field)
-	switch r.dialect {
-	case DialectSQLite:
-		switch op {
-		case CompareEq:
-			if field.Name == "has_task_list" {
-				target := "0"
-				if value {
-					target = "1"
-				}
-				return renderResult{sql: fmt.Sprintf("%s = %s", jsonExpr, target)}, nil
-			}
-			if value {
-				return renderResult{sql: fmt.Sprintf("%s IS TRUE", jsonExpr)}, nil
-			}
-			return renderResult{sql: fmt.Sprintf("NOT(%s IS TRUE)", jsonExpr)}, nil
-		case CompareNeq:
-			if field.Name == "has_task_list" {
-				target := "0"
-				if value {
-					target = "1"
-				}
-				return renderResult{sql: fmt.Sprintf("%s != %s", jsonExpr, target)}, nil
-			}
-			if value {
-				return renderResult{sql: fmt.Sprintf("NOT(%s IS TRUE)", jsonExpr)}, nil
-			}
-			return renderResult{sql: fmt.Sprintf("%s IS TRUE", jsonExpr)}, nil
-		default:
-			return renderResult{}, errors.Errorf("operator %s not supported for boolean JSON field", op)
-		}
-	case DialectMySQL:
-		boolStr := "false"
-		if value {
-			boolStr = "true"
-		}
-		return renderResult{
-			sql: fmt.Sprintf("%s %s CAST('%s' AS JSON)", jsonExpr, sqlOperator(op), boolStr),
-		}, nil
-	case DialectPostgres:
-		placeholder := r.addArg(value)
-		return renderResult{
-			sql: fmt.Sprintf("(%s)::boolean %s %s", jsonExpr, sqlOperator(op), placeholder),
-		}, nil
+	want := value
+	switch op {
+	case CompareEq:
+	case CompareNeq:
+		want = !want
 	default:
-		return renderResult{}, errors.Errorf("unsupported dialect %s", r.dialect)
+		return renderResult{}, errors.Errorf("operator %s not supported for boolean JSON field", op)
 	}
+	predicate, err := r.jsonBoolPredicate(field)
+	if err != nil {
+		return renderResult{}, err
+	}
+	if want {
+		return renderResult{sql: predicate}, nil
+	}
+	return renderResult{sql: fmt.Sprintf("NOT (%s)", predicate)}, nil
 }
 
 func (r *renderer) renderInCondition(cond *InCondition) (renderResult, error) {

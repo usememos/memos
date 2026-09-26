@@ -603,8 +603,15 @@ func TestMemoFilterHasTaskList(t *testing.T) {
 	memos = tc.ListWithFilter(`has_task_list == true`)
 	require.Len(t, memos, 1)
 
-	// Note: has_task_list == false is not tested because JSON boolean fields
-	// with false value may not be queryable when the field is not present in JSON
+	// Test: has_task_list == false matches memos whose payload omits the flag
+	memos = tc.ListWithFilter(`has_task_list == false`)
+	require.Len(t, memos, 1)
+	require.False(t, memos[0].Payload.GetProperty().GetHasTaskList())
+
+	// Test: has_task_list != true
+	memos = tc.ListWithFilter(`has_task_list != true`)
+	require.Len(t, memos, 1)
+	require.False(t, memos[0].Payload.GetProperty().GetHasTaskList())
 }
 
 func TestMemoFilterHasLink(t *testing.T) {
@@ -620,6 +627,11 @@ func TestMemoFilterHasLink(t *testing.T) {
 	memos := tc.ListWithFilter(`has_link`)
 	require.Len(t, memos, 1)
 	require.True(t, memos[0].Payload.Property.HasLink)
+
+	// Test: has_link == false matches memos whose payload omits the flag
+	memos = tc.ListWithFilter(`has_link == false`)
+	require.Len(t, memos, 1)
+	require.False(t, memos[0].Payload.GetProperty().GetHasLink())
 }
 
 func TestMemoFilterHasCode(t *testing.T) {
