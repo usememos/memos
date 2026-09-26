@@ -137,7 +137,6 @@
     "profile": "Profilis",
     "referenced-by": "Nurodyta",
     "referencing": "Nuoroda",
-    "relations": "Santykiai",
     "resources": "Ištekliai",
     "restore": "Atkurti",
     "role": "Vaidmuo",
@@ -192,7 +191,6 @@
     "focus-mode": "Fokusavimo režimas",
     "insert-menu": {
       "add-location": "Pridėti vietą",
-      "link-memo": "Nuorodos atmintinė",
       "retry-image-upload": "Bandykite dar kartą",
       "add-attachment": "Pridėti priedą",
       "image-upload-failed": "Kai kurių vaizdų nepavyko įkelti. Bandykite dar kartą arba išsaugokite įkeltus failus kaip priedus.",
@@ -379,10 +377,6 @@
     "succeed-copy-content": "Turinys sėkmingai nukopijuotas.",
     "succeed-copy-link": "Nuoroda sėkmingai nukopijuota.",
     "update-succeed": "Atnaujinimas pavyko"
-  },
-  "reference": {
-    "no-memos-found": "Nerasta jokių atmintinių",
-    "search-placeholder": "Ieškoti turinio"
   },
   "resource": {
     "delete-all-unused": "Ištrinkite visus nenaudojamus",
@@ -939,7 +933,6 @@
     }
   },
   "tooltip": {
-    "link-memo": "Nuorodos atmintinė",
     "select-location": "Vieta"
   },
   "attachment-details": {

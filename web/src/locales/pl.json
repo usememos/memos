@@ -98,7 +98,6 @@
     "profile": "Profil",
     "referenced-by": "Wspomniane przez",
     "referencing": "Odwołuje się do",
-    "relations": "Relacje",
     "resources": "Zasoby",
     "restore": "Przywróć",
     "role": "Rola",
@@ -170,7 +169,6 @@
     },
     "insert-menu": {
       "add-location": "Dodaj lokalizację",
-      "link-memo": "Link do notatki",
       "retry-image-upload": "Spróbować ponownie",
       "add-attachment": "Dodaj załącznik",
       "image-upload-failed": "Niektórych obrazów nie udało się przesłać. Spróbuj ponownie lub zachowaj przesłane pliki jako załączniki.",
@@ -341,10 +339,6 @@
     "succeed-copy-content": "Treść została pomyślnie skopiowana.",
     "succeed-copy-link": "Link skopiowany pomyślnie.",
     "update-succeed": "Aktualizacja zakończona sukcesem"
-  },
-  "reference": {
-    "no-memos-found": "Nie znaleziono notatek",
-    "search-placeholder": "Szukaj treści"
   },
   "resource": {
     "delete-all-unused": "Usuń wszystkie nieużywane",
@@ -901,7 +895,6 @@
     }
   },
   "tooltip": {
-    "link-memo": "Podlinkuj Notatkę",
     "select-location": "Lokalizacja"
   },
   "demo": {

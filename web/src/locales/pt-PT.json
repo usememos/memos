@@ -98,7 +98,6 @@
     "profile": "Perfil",
     "referenced-by": "Referenciado por",
     "referencing": "A referenciar",
-    "relations": "Relações",
     "resources": "Recursos",
     "restore": "Restaurar",
     "role": "Função",
@@ -154,7 +153,6 @@
     "focus-mode": "Modo Foco",
     "insert-menu": {
       "add-location": "Adicionar local",
-      "link-memo": "Vincular memorando",
       "retry-image-upload": "Tentar novamente",
       "add-attachment": "Adicionar anexo",
       "image-upload-failed": "Algumas imagens não puderam ser carregadas. Tente novamente ou mantenha os ficheiros carregados como anexos.",
@@ -341,10 +339,6 @@
     "succeed-copy-content": "Conteúdo copiado com sucesso.",
     "succeed-copy-link": "Link copiado com sucesso.",
     "update-succeed": "Atualização bem-sucedida"
-  },
-  "reference": {
-    "no-memos-found": "Não foram encontrados memos",
-    "search-placeholder": "Pesquisar conteúdo"
   },
   "resource": {
     "delete-all-unused": "Eliminar todos os não utilizados",
@@ -901,7 +895,6 @@
     }
   },
   "tooltip": {
-    "link-memo": "Associar Memo",
     "select-location": "Localização"
   },
   "demo": {

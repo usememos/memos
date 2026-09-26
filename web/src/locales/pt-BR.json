@@ -98,7 +98,6 @@
     "profile": "Perfil",
     "referenced-by": "Referenciado por",
     "referencing": "Referenciando",
-    "relations": "Relações",
     "resources": "Recursos",
     "restore": "Restaurar",
     "role": "Cargo",
@@ -156,7 +155,6 @@
     "save": "Salvar",
     "insert-menu": {
       "add-location": "Adicionar local",
-      "link-memo": "Vincular memorando",
       "add-attachment": "Adicionar anexo",
       "image-upload-failed": "Algumas imagens não puderam ser carregadas. Tente novamente ou mantenha os arquivos carregados como anexos.",
       "image-upload-stopped": "Upload de imagem interrompido {{completed}}/{{total}}",
@@ -336,10 +334,6 @@
     "succeed-copy-content": "Conteúdo copiado com êxito.",
     "succeed-copy-link": "Link copiado com êxito.",
     "update-succeed": "Atualizado com êxito"
-  },
-  "reference": {
-    "no-memos-found": "Nenhum memo encontrado",
-    "search-placeholder": "Pesquisar conteúdo"
   },
   "resource": {
     "delete-all-unused": "Deletar todos os não utilizados",
@@ -896,7 +890,6 @@
     }
   },
   "tooltip": {
-    "link-memo": "Vincular Memo",
     "select-location": "Localização"
   },
   "live-update": {

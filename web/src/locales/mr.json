@@ -98,7 +98,6 @@
     "profile": "प्रोफाइल",
     "referenced-by": "याने संदर्भित",
     "referencing": "संदर्भ देत आहे",
-    "relations": "संबंध",
     "resources": "संसाधने",
     "restore": "पुनर्संचयित करा",
     "role": "भूमिका",
@@ -156,7 +155,6 @@
     "save": "जतन",
     "insert-menu": {
       "add-location": "स्थान जोडा",
-      "link-memo": "लिंक मेमो",
       "image-upload-stopped": "प्रतिमा अपलोड थांबले {{completed}}/{{total}}",
       "insert-image": "प्रतिमा घाला",
       "keep-as-attachments": "संलग्नक म्हणून ठेवा",
@@ -336,10 +334,6 @@
     "succeed-copy-content": "सामग्री यशस्वीरित्या कॉपी केली.",
     "succeed-copy-link": "लिंक यशस्वीरित्या कॉपी केली.",
     "update-succeed": "अपडेट यशस्वी झाले"
-  },
-  "reference": {
-    "no-memos-found": "कोणतेही मेमो आढळले नाहीत",
-    "search-placeholder": "सामग्री शोधा"
   },
   "resource": {
     "delete-all-unused": "सर्व न वापरलेली हटवा",
@@ -896,7 +890,6 @@
     }
   },
   "tooltip": {
-    "link-memo": "मेमो लिंक करा",
     "select-location": "स्थान"
   },
   "live-update": {

@@ -98,7 +98,6 @@
     "profile": "Profiel",
     "referenced-by": "Gerefereerd door",
     "referencing": "Verwijst naar",
-    "relations": "Relaties",
     "resources": "Bronnen",
     "restore": "Terugzetten",
     "role": "Rol",
@@ -154,7 +153,6 @@
     "focus-mode": "Focusmodus",
     "insert-menu": {
       "add-location": "Locatie toevoegen",
-      "link-memo": "Link-memo",
       "retry-image-upload": "Opnieuw proberen",
       "add-attachment": "Bijlage toevoegen",
       "image-upload-failed": "Sommige afbeeldingen konden niet worden geüpload. Probeer het opnieuw of bewaar de geüploade bestanden als bijlagen.",
@@ -341,10 +339,6 @@
     "succeed-copy-content": "Inhoud succesvol gekopieerd.",
     "succeed-copy-link": "Link gekopieerd naar klembord.",
     "update-succeed": "Update voltooid"
-  },
-  "reference": {
-    "no-memos-found": "Geen memos gevonden",
-    "search-placeholder": "Inhoud zoeken"
   },
   "resource": {
     "delete-all-unused": "Alle ongebruikte verwijderen",
@@ -901,7 +895,6 @@
     }
   },
   "tooltip": {
-    "link-memo": "Memo linken",
     "select-location": "Locatie"
   },
   "demo": {

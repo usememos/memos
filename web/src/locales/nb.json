@@ -98,7 +98,6 @@
     "profile": "Profil",
     "referenced-by": "Referert til av",
     "referencing": "Refererer til",
-    "relations": "Relasjon",
     "resources": "Ressurser",
     "restore": "Gjenopprett",
     "role": "Rolle",
@@ -154,7 +153,6 @@
     "focus-mode": "Fokusmodus",
     "insert-menu": {
       "add-location": "Legg til plassering",
-      "link-memo": "Koblingsnotat",
       "retry-image-upload": "Prøv på nytt",
       "add-attachment": "Legg til vedlegg",
       "image-upload-failed": "Noen bilder kunne ikke lastes opp. Prøv på nytt eller behold de opplastede filene som vedlegg.",
@@ -341,10 +339,6 @@
     "succeed-copy-content": "Innhold kopiert vellykket.",
     "succeed-copy-link": "Link kopiert.",
     "update-succeed": "Oppdatering vellykket"
-  },
-  "reference": {
-    "no-memos-found": "Ingen memoer funnet",
-    "search-placeholder": "Søk etter innhold"
   },
   "resource": {
     "delete-all-unused": "Slett alle ubrukte",
@@ -901,7 +895,6 @@
     }
   },
   "tooltip": {
-    "link-memo": "Lenke til memo",
     "select-location": "Lokasjon"
   },
   "demo": {

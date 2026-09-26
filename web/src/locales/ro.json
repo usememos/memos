@@ -137,7 +137,6 @@
     "profile": "Profil",
     "referenced-by": "Referit de",
     "referencing": "Referire",
-    "relations": "Relaţii",
     "resources": "Resurse",
     "restore": "Restabili",
     "role": "Rol",
@@ -192,7 +191,6 @@
     "focus-mode": "Modul de focalizare",
     "insert-menu": {
       "add-location": "Adăugați locația",
-      "link-memo": "Notă de legături",
       "retry-image-upload": "Reîncercați",
       "add-attachment": "Adăugați atașament",
       "image-upload-failed": "Unele imagini nu au putut fi încărcate. Încercați din nou sau păstrați fișierele încărcate ca atașamente.",
@@ -379,10 +377,6 @@
     "succeed-copy-content": "Conținutul a fost copiat cu succes.",
     "succeed-copy-link": "Linkul a fost copiat cu succes.",
     "update-succeed": "Actualizarea a reușit"
-  },
-  "reference": {
-    "no-memos-found": "Nu au fost găsite note",
-    "search-placeholder": "Căutați conținut"
   },
   "resource": {
     "delete-all-unused": "Ștergeți toate cele neutilizate",
@@ -939,7 +933,6 @@
     }
   },
   "tooltip": {
-    "link-memo": "Link Memo",
     "select-location": "Locaţie"
   },
   "attachment-details": {

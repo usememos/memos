@@ -137,7 +137,6 @@
     "profile": "Profils",
     "referenced-by": "Atsaucas",
     "referencing": "Atsauces",
-    "relations": "Attiecības",
     "resources": "Resursi",
     "restore": "Atjaunot",
     "role": "Loma",
@@ -192,7 +191,6 @@
     "focus-mode": "Fokusa režīms",
     "insert-menu": {
       "add-location": "Pievienot atrašanās vietu",
-      "link-memo": "Saites piezīme",
       "retry-image-upload": "Mēģiniet vēlreiz",
       "add-attachment": "Pievienot pielikumu",
       "image-upload-failed": "Dažus attēlus nevarēja augšupielādēt. Mēģiniet vēlreiz vai saglabājiet augšupielādētos failus kā pielikumus.",
@@ -379,10 +377,6 @@
     "succeed-copy-content": "Saturs ir veiksmīgi kopēts.",
     "succeed-copy-link": "Saite ir veiksmīgi nokopēta.",
     "update-succeed": "Atjaunināšana izdevās"
-  },
-  "reference": {
-    "no-memos-found": "Nav atrasta neviena piezīme",
-    "search-placeholder": "Meklēt saturu"
   },
   "resource": {
     "delete-all-unused": "Dzēst visu neizmantoto",
@@ -939,7 +933,6 @@
     }
   },
   "tooltip": {
-    "link-memo": "Saites piezīme",
     "select-location": "Atrašanās vieta"
   },
   "attachment-details": {
