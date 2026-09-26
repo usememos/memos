@@ -10,6 +10,7 @@ import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
 
 vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
 vi.mock("@/hooks/useUserQueries", () => ({ useTagCounts: () => ({ data: {} }) }));
+vi.mock("@/hooks/useCurrentUser", () => ({ default: () => undefined }));
 
 let editor: ReturnType<typeof useEditorContext>;
 let controller: React.RefObject<EditorController | null>;

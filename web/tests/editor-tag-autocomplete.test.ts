@@ -156,6 +156,7 @@ describe("tag completion popup", () => {
           onUpdate: () => {},
           onSubmit: () => {},
           getTags: () => ["software/hosted/Memos"],
+          searchMemos: async () => [],
         }),
       }),
       parent: document.body,

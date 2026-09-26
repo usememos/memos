@@ -52,7 +52,6 @@ describe("InsertMenu", () => {
       "editor.insert-menu.add-attachment",
       "editor.insert-menu.insert-image",
       "editor.audio-recorder.trigger",
-      "editor.insert-menu.link-memo",
       "editor.insert-menu.add-location",
       "editor.focus-mode",
       "editor.formatting-toolbar",

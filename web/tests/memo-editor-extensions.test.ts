@@ -24,6 +24,7 @@ describe("MemoEditor CodeMirror extensions", () => {
         onUpdate: vi.fn(),
         onSubmit: vi.fn(),
         getTags: () => [],
+        searchMemos: async () => [],
       }),
     });
     const view = new EditorView({ state, parent });
@@ -52,6 +53,7 @@ describe("MemoEditor CodeMirror extensions", () => {
           onUpdate: vi.fn(),
           onSubmit: vi.fn(),
           getTags: () => [],
+          searchMemos: async () => [],
         }),
       }),
       parent,

@@ -11,6 +11,9 @@ const queries = vi.hoisted(() => ({
 vi.mock("@/hooks/useUserQueries", () => ({
   useTagCounts: queries.useTagCounts,
 }));
+// The `@` memo picker scopes its search to the author; the Editor is rendered
+// here without the auth provider that would supply them.
+vi.mock("@/hooks/useCurrentUser", () => ({ default: () => undefined }));
 
 describe("Editor", () => {
   it("scopes tag autocomplete stats to the current user", () => {
