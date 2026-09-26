@@ -123,7 +123,7 @@ const MemberSection = () => {
             header: t("setting.member.member-column"),
             render: (_, user: User) => (
               <div className="flex min-w-[18rem] items-start gap-3">
-                <UserAvatar className="h-10 w-10 shrink-0 rounded-xl" avatarUrl={user.avatarUrl} />
+                <UserAvatar className="h-10 w-10 shrink-0 rounded-xl" avatarUrl={user.avatarUrl} name={user.displayName || user.username} />
                 <div className="flex min-w-0 flex-1 flex-col">
                   <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                     <span

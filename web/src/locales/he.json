@@ -126,6 +126,7 @@
     "attachments": "קבצים מצורפים",
     "avatar": "תמונת פרופיל",
     "basic": "בסיסי",
+    "browse": "עיון",
     "calendar": "לוח שנה",
     "cancel": "ביטול",
     "clear": "נקה",
@@ -153,6 +154,7 @@
     "explore": "גלה",
     "filter": "סנן",
     "home": "דף הבית",
+    "timeline": "ציר זמן",
     "inbox": "תיבת הדואר הנכנס",
     "language": "שפה",
     "last-updated-at": "עודכן לאחרונה בתאריך",
@@ -977,12 +979,8 @@
     "previous-year": "שנה קודמת",
     "select-month": "בחר חודש"
   },
-  "profile": {
-    "no-shared-memos": "@{{username}} עדיין לא שיתף תזכירים.",
-    "not-found-description": "אין משתמש Memos בשם @{{username}} במופע זה.",
-    "not-found-title": "אין כאן אף אחד"
-  },
   "space": {
+    "all-spaces": "כל המרחבים",
     "icon": {
       "change": "שינוי סמל המרחב",
       "kind": "סוג סמל",

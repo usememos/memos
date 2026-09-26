@@ -1,9 +1,13 @@
-import { createEvent, fireEvent, screen, render as testingRender, waitFor, within } from "@testing-library/react";
-import { createMemoryRouter, MemoryRouter, RouterProvider } from "react-router-dom";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { createMemoryRouter, RouterProvider, useLocation } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import SpaceSwitcher from "@/components/AppSidebar/SpaceSwitcher";
+import { getCollectionCreator, ROUTES, resolveCollectionRoute } from "@/router/routes";
 
-const spaceState = vi.hoisted(() => ({
+const state = vi.hoisted(() => ({
+  currentUser: { name: "users/steven", username: "steven", displayName: "Steven", avatarUrl: "" } as
+    | { name: string; username: string; displayName: string; avatarUrl: string }
+    | undefined,
   spaces: [
     { name: "spaces/product", title: "Product", description: "" },
     { name: "spaces/research", title: "Research", description: "" },
@@ -11,239 +15,209 @@ const spaceState = vi.hoisted(() => ({
   selectedSpace: undefined as { name: string; title: string; description: string } | undefined,
   selectedSpaceName: undefined as string | undefined,
   selectSpace: vi.fn(),
+  setMobileOpen: vi.fn(),
 }));
 
-vi.mock("@/components/MemosLogo", () => ({
-  default: () => <span>Memos</span>,
+vi.mock("@/components/MemosLogo", () => ({ default: () => <span>Memos</span> }));
+vi.mock("@/components/UserMenu", () => ({
+  default: () => <button type="button">Steven account</button>,
+  UserPreferenceDialog: () => null,
 }));
-
+vi.mock("@/hooks/useCurrentUser", () => ({
+  default: () => state.currentUser,
+}));
+vi.mock("@/hooks/useUserQueries", () => ({
+  useUser: () => ({ data: { name: "users/alice", username: "alice", displayName: "Alice", avatarUrl: "" } }),
+  useNotifications: () => ({ data: [] }),
+}));
+vi.mock("@/contexts/AppSidebarContext", () => ({ useAppSidebar: () => ({ setMobileOpen: state.setMobileOpen }) }));
 vi.mock("@/components/CreateSpaceDialog", () => ({
-  default: ({ open, onCreated }: { open: boolean; onCreated?: (space: (typeof spaceState.spaces)[number]) => void }) =>
+  default: ({ open, onCreated }: { open: boolean; onCreated?: (space: (typeof state.spaces)[number]) => void }) =>
     open ? (
       <div role="dialog">
-        Create Space dialog
-        <button type="button" onClick={() => onCreated?.(spaceState.spaces[0])}>
+        <button type="button" onClick={() => onCreated?.(state.spaces[0])}>
           Complete create
         </button>
       </div>
     ) : null,
 }));
-
 vi.mock("@/contexts/SpaceContext", () => ({
   useSpaceContext: () => {
-    const duplicateSpaceTitles = new Set(
-      spaceState.spaces
-        .filter((space, index) => spaceState.spaces.findIndex((candidate) => candidate.title === space.title) !== index)
-        .map((space) => space.title),
-    );
+    const location = useLocation();
+    const route = resolveCollectionRoute(location.pathname);
     return {
-      ...spaceState,
-      duplicateSpaceTitles,
+      ...state,
+      creatorUsername:
+        route.pathname === ROUTES.EXPLORE
+          ? undefined
+          : (getCollectionCreator(location.search) ?? (route.pathname === ROUTES.HOME ? state.currentUser?.username : undefined)),
+      duplicateSpaceTitles: new Set<string>(),
       isLoadingSpaces: false,
       isSpacesError: false,
     };
   },
 }));
-
-vi.mock("@/utils/i18n", () => ({
-  useTranslate: () => (key: string) => key,
+vi.mock("@/utils/i18n", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/utils/i18n")>()),
+  useTranslate: () => (key: string, options?: { source: string }) => (options?.source ? `Back to ${options.source}` : key),
 }));
 
-const render = (ui: React.ReactNode) => testingRender(<MemoryRouter>{ui}</MemoryRouter>);
+const renderAt = (path = "/", size: "md" | "header" = "md") => {
+  const router = createMemoryRouter(
+    [
+      {
+        path: "*",
+        element: (
+          <aside>
+            <SpaceSwitcher size={size} />
+          </aside>
+        ),
+      },
+    ],
+    { initialEntries: [path] },
+  );
+  render(<RouterProvider router={router} />);
+  return router;
+};
+
+const openSwitcher = () => fireEvent.click(screen.getByRole("button", { name: /space.switch:/ }));
 
 describe("SpaceSwitcher", () => {
   beforeEach(() => {
-    spaceState.spaces = [
+    state.currentUser = { name: "users/steven", username: "steven", displayName: "Steven", avatarUrl: "" };
+    state.spaces = [
       { name: "spaces/product", title: "Product", description: "" },
       { name: "spaces/research", title: "Research", description: "" },
     ];
-    spaceState.selectedSpace = undefined;
-    spaceState.selectedSpaceName = undefined;
-    spaceState.selectSpace.mockClear();
+    state.selectedSpace = undefined;
+    state.selectedSpaceName = undefined;
+    state.selectSpace.mockClear();
+    state.setMobileOpen.mockClear();
   });
 
-  it.each([
-    "/",
-    "/setting",
-    "/memos/direct",
-  ])("does not navigate the current scope from %s and leaves modified clicks native", async (path) => {
-    const router = createMemoryRouter([{ path: "*", element: <SpaceSwitcher /> }], { initialEntries: [path] });
-    testingRender(<RouterProvider router={router} />);
-    const key = router.state.location.key;
-    fireEvent.click(screen.getByRole("button", { name: "space.switch: common.memos" }));
-    fireEvent.click(await screen.findByRole("menuitemradio", { name: "Memos" }));
-    expect(router.state.location.key).toBe(key);
-    await waitFor(() => expect(screen.queryByRole("menu")).not.toBeInTheDocument());
-    fireEvent.click(screen.getByRole("button", { name: "space.switch: common.memos" }));
-    const product = await screen.findByRole("menuitemradio", { name: "Product" });
-    const click = createEvent.click(product, { ctrlKey: true, cancelable: true });
-    fireEvent(product, click);
-    expect(click.defaultPrevented).toBe(false);
-    expect(router.state.location.pathname).toBe(path);
+  it("shows an independent creator choice, a collapsed Space selector, and an icon create action", () => {
+    renderAt();
+    openSwitcher();
+    const userButton = screen.getByRole("link", { name: "common.home" });
+    const exploreButton = screen.getByRole("link", { name: "common.explore" });
+    expect(screen.getByRole("navigation", { name: "common.browse" })).toBeInTheDocument();
+    expect(exploreButton).not.toHaveAttribute("aria-current");
+    expect(userButton).toHaveAttribute("aria-current", "page");
+    expect(userButton.compareDocumentPosition(exploreButton) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.getByRole("combobox", { name: "space.switch" })).toHaveTextContent("space.all-spaces");
+    expect(screen.queryByText("Product")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "space.create" })).toHaveAttribute("title", "space.create");
+    expect(screen.getByRole("button", { name: "Steven account" })).toBeInTheDocument();
   });
 
-  it("lists Memos, every available Space, and the create entry", async () => {
-    render(<SpaceSwitcher />);
-
-    const trigger = screen.getByRole("button", { name: "space.switch: common.memos" });
-    expect(trigger).toHaveAttribute("aria-haspopup", "menu");
-    expect(trigger).toHaveAttribute("aria-expanded", "false");
-    fireEvent.click(trigger);
-    expect(trigger).toHaveAttribute("aria-expanded", "true");
-
-    expect(await screen.findByRole("menuitemradio", { name: "Memos" })).toHaveAttribute("aria-checked", "true");
-    const productRow = screen.getByRole("menuitemradio", { name: "Product" });
-    expect(productRow).toHaveAttribute("aria-checked", "false");
-    expect(productRow.querySelector(".lucide-astroid")).not.toBeNull();
-    expect(screen.getByRole("menuitemradio", { name: "Research" })).toBeInTheDocument();
-    expect(screen.getByRole("menuitem", { name: "space.create" })).toBeInTheDocument();
+  it("switches Home to Explore without closing the menu", () => {
+    const router = renderAt("/");
+    openSwitcher();
+    fireEvent.click(screen.getByRole("link", { name: "common.explore" }));
+    expect(router.state.location.pathname).toBe("/explore");
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "common.explore" })).toHaveAttribute("aria-current", "page");
+    fireEvent.click(screen.getByRole("link", { name: "common.home" }));
+    expect(router.state.location.pathname).toBe("/");
+    expect(router.state.location.search).toBe("");
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
   });
 
-  it("fits the popup symmetrically inside the sidebar rail", async () => {
-    render(
-      <aside>
-        <SpaceSwitcher />
-      </aside>,
-    );
+  it("changes creator while preserving the Space and other query parameters", () => {
+    state.selectedSpaceName = "spaces/product";
+    state.selectedSpace = state.spaces[0];
+    const router = renderAt("/spaces/product/calendar/2026/09?filter=tag%3Awork");
+    openSwitcher();
+    fireEvent.click(screen.getByRole("link", { name: "common.home" }));
+    expect(router.state.location.pathname).toBe("/spaces/product/calendar/2026/09");
+    expect(new URLSearchParams(router.state.location.search).get("creator")).toBe("steven");
+    expect(new URLSearchParams(router.state.location.search).get("filter")).toBe("tag:work");
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "common.home" })).toHaveAttribute("aria-current", "page");
 
-    const trigger = screen.getByRole("button", { name: "space.switch: common.memos" });
-    const sidebar = trigger.closest("aside");
-    expect(sidebar).not.toBeNull();
-    vi.spyOn(sidebar as HTMLElement, "getBoundingClientRect").mockReturnValue({ left: 0, right: 223, width: 223 } as DOMRect);
-    vi.spyOn(trigger, "getBoundingClientRect").mockReturnValue({ left: 12, right: 143, width: 131 } as DOMRect);
-
-    fireEvent.click(trigger);
-
-    expect(await screen.findByRole("menu")).toHaveStyle({ width: "199px" });
+    fireEvent.click(screen.getByRole("link", { name: "common.explore" }));
+    expect(new URLSearchParams(router.state.location.search).get("creator")).toBeNull();
+    expect(new URLSearchParams(router.state.location.search).get("filter")).toBe("tag:work");
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "common.explore" })).toHaveAttribute("aria-current", "page");
   });
 
-  it("uses the same symmetric popup rail from the opposite inline edge", async () => {
-    render(
-      <aside>
-        <SpaceSwitcher />
-      </aside>,
-    );
-
-    const trigger = screen.getByRole("button", { name: "space.switch: common.memos" });
-    const sidebar = trigger.closest("aside");
-    expect(sidebar).not.toBeNull();
-    vi.spyOn(sidebar as HTMLElement, "getBoundingClientRect").mockReturnValue({ left: 0, right: 223, width: 223 } as DOMRect);
-    vi.spyOn(trigger, "getBoundingClientRect").mockReturnValue({ left: 80, right: 211, width: 131 } as DOMRect);
-
-    fireEvent.click(trigger);
-
-    expect(await screen.findByRole("menu")).toHaveStyle({ width: "199px" });
+  it("opens Space choices on demand and preserves creator when choosing one", async () => {
+    const router = renderAt("/?creator=alice");
+    openSwitcher();
+    expect(screen.queryByRole("button", { name: "space.create" })).not.toBeInTheDocument();
+    expect(screen.queryByText("Product")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("combobox", { name: "space.switch" }));
+    const product = await screen.findByRole("option", { name: "Product" });
+    fireEvent.pointerDown(product, { pointerType: "mouse" });
+    fireEvent.click(product, { pointerType: "mouse" });
+    await waitFor(() => expect(router.state.location.pathname).toBe("/spaces/product"));
+    expect(new URLSearchParams(router.state.location.search).get("creator")).toBe("alice");
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(state.setMobileOpen).not.toHaveBeenCalled();
   });
 
-  it("marks exactly one context as active", async () => {
-    spaceState.selectedSpaceName = "spaces/product";
-    spaceState.selectedSpace = spaceState.spaces[0];
-    render(<SpaceSwitcher />);
-
-    fireEvent.click(screen.getByRole("button", { name: "space.switch: Product" }));
-
-    const rows = await screen.findAllByRole("menuitemradio");
-    expect(rows.map((row) => row.getAttribute("aria-checked"))).toEqual(["false", "true", "false"]);
-
-    // The active row carries the fill; the check is its only indicator.
-    const active = screen.getByRole("menuitemradio", { name: "Product" });
-    expect(active.className).toContain("bg-accent/60");
-    expect(active.querySelector(".lucide-check")).not.toBeNull();
-    expect(screen.getByRole("menuitemradio", { name: "Research" }).querySelector(".lucide-check")).toBeNull();
-  });
-
-  it("keeps long titles on a truncated rail and exposes the complete value", async () => {
-    const longTitle = "A very long product research and planning space title";
-    spaceState.spaces = [{ name: "spaces/product", title: longTitle, description: "" }];
-    spaceState.selectedSpaceName = spaceState.spaces[0].name;
-    spaceState.selectedSpace = spaceState.spaces[0];
-    render(<SpaceSwitcher />);
-
-    const trigger = screen.getByRole("button", { name: `space.switch: ${longTitle}` });
-    expect(trigger).toHaveAttribute("title", longTitle);
-    expect(within(trigger).getByText(longTitle)).toHaveClass("truncate");
-    fireEvent.click(trigger);
-
-    const row = await screen.findByRole("menuitemradio", { name: longTitle });
-    expect(row).toHaveAttribute("title", longTitle);
-    expect(within(row).getByText(longTitle)).toHaveClass("max-w-full", "truncate");
-  });
-
-  it("uses the compact lockup in header chrome", () => {
-    spaceState.selectedSpaceName = "spaces/product";
-    spaceState.selectedSpace = spaceState.spaces[0];
-    render(<SpaceSwitcher size="header" />);
-
-    const trigger = screen.getByRole("button", { name: "space.switch: Product" });
-    const title = within(trigger).getByText("Product");
-    const mark = trigger.querySelector(".lucide-astroid")?.parentElement;
-
+  it("uses the selected author in the user slot and trigger", () => {
+    state.selectedSpaceName = "spaces/product";
+    state.selectedSpace = state.spaces[0];
+    renderAt("/spaces/product?creator=alice", "header");
+    const trigger = screen.getByRole("button", { name: "space.switch: Alice / Product" });
+    expect(within(trigger).getByText("Alice / Product")).toHaveClass("truncate");
     expect(trigger).toHaveClass("h-9", "gap-2", "px-2");
-    expect(trigger).not.toHaveClass("px-1");
-    expect(title).toHaveClass("text-[15px]", "font-semibold", "leading-5");
-    expect(mark).toHaveClass("size-6", "rounded-[6px]");
-    expect(mark?.querySelector(".lucide-astroid")).toHaveClass("size-3.5");
-    expect(trigger.querySelector(".lucide-chevrons-up-down")).toHaveClass("size-3");
-    expect(trigger.querySelector(".lucide-chevron-down")).toBeNull();
+    openSwitcher();
+    expect(screen.queryByRole("navigation", { name: "common.browse" })).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Back to common.home" })).toHaveAttribute("href", "/spaces/product");
   });
 
-  it("keeps duplicate identity in the header label but out of its geometry", () => {
-    spaceState.spaces = [
-      { name: "spaces/product-notes", title: "Product", description: "" },
-      { name: "spaces/product-archive", title: "Product", description: "" },
-    ];
-    spaceState.selectedSpaceName = spaceState.spaces[0].name;
-    spaceState.selectedSpace = spaceState.spaces[0];
-    render(<SpaceSwitcher size="header" />);
-
-    const trigger = screen.getByRole("button", { name: "space.switch: Product (product-notes)" });
-    expect(trigger).toHaveAttribute("title", "Product (product-notes)");
-    expect(trigger).toHaveClass("h-9", "px-2");
-    expect(within(trigger).queryByTitle("product-notes")).not.toBeInTheDocument();
+  it("returns from another creator to the selected Space Home without closing the menu", () => {
+    state.selectedSpaceName = "spaces/product";
+    state.selectedSpace = state.spaces[0];
+    const router = renderAt("/spaces/product/map?creator=alice");
+    openSwitcher();
+    fireEvent.click(screen.getByRole("link", { name: "Back to common.home" }));
+    expect(router.state.location.pathname).toBe("/spaces/product");
+    expect(router.state.location.search).toBe("");
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "common.home" })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("button", { name: "space.create" })).toBeInTheDocument();
+    expect(state.setMobileOpen).not.toHaveBeenCalled();
   });
 
-  it("shows UIDs only for Spaces whose titles match", async () => {
-    const uuid = "123e4567-e89b-12d3-a456-426614174000";
-    spaceState.spaces = [
-      { name: "spaces/product-notes", title: "Product", description: "" },
-      { name: `spaces/${uuid}`, title: "Product", description: "" },
-      { name: "spaces/research-space", title: "Research", description: "" },
-    ];
-    spaceState.selectedSpaceName = spaceState.spaces[0].name;
-    spaceState.selectedSpace = spaceState.spaces[0];
-    render(<SpaceSwitcher />);
-
-    const trigger = screen.getByRole("button", { name: "space.switch: Product (product-notes)" });
-    expect(within(trigger).getByTitle("product-notes")).toHaveTextContent("product-notes");
-    fireEvent.click(trigger);
-
-    const customIdRow = await screen.findByRole("menuitemradio", { name: "Product (product-notes)" });
-    const uuidRow = screen.getByRole("menuitemradio", { name: `Product (${uuid})` });
-    expect(within(customIdRow).getByTitle("product-notes")).toHaveTextContent("product-notes");
-    expect(within(uuidRow).getByTitle(uuid)).toHaveTextContent("123e4567…");
-    const researchRow = screen.getByRole("menuitemradio", { name: "Research" });
-    expect(within(researchRow).queryByTitle("research-space")).not.toBeInTheDocument();
-    expect(researchRow).not.toHaveTextContent("research-space");
+  it("treats an explicit current creator as Home", () => {
+    renderAt("/calendar/2026/09?creator=steven");
+    openSwitcher();
+    expect(screen.getByRole("link", { name: "common.home" })).toHaveAttribute("aria-current", "page");
+    expect(screen.queryByRole("link", { name: /Back to/ })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "space.create" })).toBeInTheDocument();
   });
 
-  it("links to spaces and opens Space creation", async () => {
-    render(<SpaceSwitcher />);
-    fireEvent.click(screen.getByRole("button", { name: "space.switch: common.memos" }));
-    const product = await screen.findByRole("menuitemradio", { name: "Product" });
-    expect(product).toHaveAttribute("href", "/spaces/product");
-    fireEvent.click(product);
+  it("returns guests from a creator to Explore without showing private actions", () => {
+    state.currentUser = undefined;
+    const router = renderAt("/?creator=alice");
+    openSwitcher();
+    expect(screen.getByRole("link", { name: "Back to common.explore" })).toHaveAttribute("href", "/explore");
+    expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "space.create" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Steven account" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "common.sign-in" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("link", { name: "Back to common.explore" }));
+    expect(router.state.location.pathname).toBe("/explore");
+    expect(router.state.location.search).toBe("");
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "common.home" })).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "common.explore" })).toHaveAttribute("aria-current", "page");
+  });
 
-    await waitFor(() => expect(screen.queryByRole("menu")).not.toBeInTheDocument());
-
-    // Selecting Memos is how a signed-in user gets back to the home feed.
-    fireEvent.click(screen.getByRole("button", { name: "space.switch: common.memos" }));
-    fireEvent.click(await screen.findByRole("menuitemradio", { name: "Memos" }));
-
-    await waitFor(() => expect(screen.queryByRole("menu")).not.toBeInTheDocument());
-    fireEvent.click(screen.getByRole("button", { name: "space.switch: common.memos" }));
-    fireEvent.click(await screen.findByRole("menuitem", { name: "space.create" }));
-    expect(screen.getByRole("dialog", { name: "" })).toHaveTextContent("Create Space dialog");
+  it("keeps the popup aligned to the sidebar rail and opens Space creation", () => {
+    renderAt();
+    const trigger = screen.getByRole("button", { name: /space.switch:/ });
+    const sidebar = trigger.closest("aside") as HTMLElement;
+    vi.spyOn(sidebar, "getBoundingClientRect").mockReturnValue({ left: 0, right: 223, width: 223 } as DOMRect);
+    vi.spyOn(trigger, "getBoundingClientRect").mockReturnValue({ left: 12, right: 143, width: 131 } as DOMRect);
+    openSwitcher();
+    expect(document.querySelector('[data-slot="popover-content"]')).toHaveStyle({ width: "199px" });
+    fireEvent.click(screen.getByRole("button", { name: "space.create" }));
     fireEvent.click(screen.getByRole("button", { name: "Complete create" }));
-    expect(spaceState.selectSpace).toHaveBeenCalledWith(spaceState.spaces[0]);
+    expect(state.selectSpace).toHaveBeenCalledWith(state.spaces[0]);
   });
 });

@@ -66,7 +66,7 @@ type AttachmentServiceClient interface {
 	// Uploads are bound to the authenticated user, expire after 30 minutes of
 	// inactivity, and do not survive a server restart.
 	UploadAttachment(context.Context, *connect.Request[v1.UploadAttachmentRequest]) (*connect.Response[v1.UploadAttachmentResponse], error)
-	// ListAttachments lists all attachments.
+	// ListAttachments lists attachments linked to readable memos and the caller's unlinked uploads.
 	ListAttachments(context.Context, *connect.Request[v1.ListAttachmentsRequest]) (*connect.Response[v1.ListAttachmentsResponse], error)
 	// GetAttachment returns an attachment by name.
 	GetAttachment(context.Context, *connect.Request[v1.GetAttachmentRequest]) (*connect.Response[v1.Attachment], error)
@@ -189,7 +189,7 @@ type AttachmentServiceHandler interface {
 	// Uploads are bound to the authenticated user, expire after 30 minutes of
 	// inactivity, and do not survive a server restart.
 	UploadAttachment(context.Context, *connect.Request[v1.UploadAttachmentRequest]) (*connect.Response[v1.UploadAttachmentResponse], error)
-	// ListAttachments lists all attachments.
+	// ListAttachments lists attachments linked to readable memos and the caller's unlinked uploads.
 	ListAttachments(context.Context, *connect.Request[v1.ListAttachmentsRequest]) (*connect.Response[v1.ListAttachmentsResponse], error)
 	// GetAttachment returns an attachment by name.
 	GetAttachment(context.Context, *connect.Request[v1.GetAttachmentRequest]) (*connect.Response[v1.Attachment], error)

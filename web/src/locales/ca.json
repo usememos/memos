@@ -54,6 +54,7 @@
     "attachments": "Adjunts",
     "avatar": "Avatar",
     "basic": "Bàsic",
+    "browse": "Navega",
     "calendar": "Calendari",
     "cancel": "Cancel·lar",
     "clear": "Netejar",
@@ -80,6 +81,7 @@
     "explore": "Explora",
     "filter": "Filtra",
     "home": "Inici",
+    "timeline": "Cronologia",
     "inbox": "Bústia d'entrada",
     "language": "Llenguatge",
     "last-updated-at": "Darrera actualització el",
@@ -977,12 +979,8 @@
     "previous-year": "L'any anterior",
     "select-month": "Selecciona el mes"
   },
-  "profile": {
-    "no-shared-memos": "@{{username}} encara no ha compartit cap nota.",
-    "not-found-description": "No hi ha cap usuari Memos anomenat @{{username}} en aquesta instància.",
-    "not-found-title": "No hi ha ningú aquí"
-  },
   "space": {
+    "all-spaces": "Tots els espais",
     "icon": {
       "change": "Canvia la icona de l'espai",
       "kind": "Tipus d'icona",

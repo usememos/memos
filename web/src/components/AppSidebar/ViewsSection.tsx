@@ -4,7 +4,6 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
 import ConfirmDialog from "@/components/ConfirmDialog";
-import MemoDisplaySettingMenu from "@/components/MemoDisplaySettingMenu";
 import MemoViewIcon from "@/components/MemoViewIcon";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -16,7 +15,7 @@ import { useMemoViews, userKeys } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
 import { BUILTIN_TASKS_VIEW_ID, getMemoViewId, isMemoCollectionRoute } from "@/lib/memo-views";
 import { cn } from "@/lib/utils";
-import { collectionPathForLocation, ROUTES } from "@/router/routes";
+import { getCollectionHomePath, ROUTES } from "@/router/routes";
 import type { MemoView } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import SidebarRow, {
@@ -49,8 +48,7 @@ const ViewsSection = ({ manageActive = false }: { manageActive?: boolean }) => {
 
   const handleView = (viewId: string) => {
     setMemoView(selectedMemoView === viewId ? undefined : viewId);
-    if (!isMemoCollectionRoute(location.pathname))
-      navigate({ pathname: collectionPathForLocation(ROUTES.HOME, location.pathname), search: location.search });
+    if (!isMemoCollectionRoute(location.pathname)) navigate({ pathname: getCollectionHomePath(location), search: location.search });
     setMobileOpen(false);
   };
 
@@ -78,12 +76,9 @@ const ViewsSection = ({ manageActive = false }: { manageActive?: boolean }) => {
       label={t("common.views")}
       action={
         !manageActive && (
-          <div className="flex items-center gap-0.5">
-            <MemoDisplaySettingMenu />
-            <Button variant="quiet" size="icon-sm" onClick={handleCreate} aria-label={t("common.create")}>
-              <PlusIcon className={SIDEBAR_SECTION_ACTION_ICON_CLASSES} strokeWidth={1.8} />
-            </Button>
-          </div>
+          <Button variant="quiet" size="icon-sm" onClick={handleCreate} aria-label={t("common.create")}>
+            <PlusIcon className={SIDEBAR_SECTION_ACTION_ICON_CLASSES} strokeWidth={1.8} />
+          </Button>
         )
       }
     >

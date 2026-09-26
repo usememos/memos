@@ -4,16 +4,18 @@ import { Badge } from "@/components/ui/badge";
 import VideoPoster from "@/components/VideoPoster";
 import type { AttachmentLibraryMediaItem, AttachmentLibraryMonthGroup } from "@/hooks/useAttachmentLibrary";
 import { cn } from "@/lib/utils";
+import type { User } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { formatMediaDuration } from "@/utils/media-metadata";
-import { AttachmentMetadataLine, AttachmentOpenButton, AttachmentSourceChip } from "./AttachmentLibraryPrimitives";
+import { AttachmentCreator, AttachmentMetadataLine, AttachmentOpenButton, AttachmentSourceChip } from "./AttachmentLibraryPrimitives";
 
 interface AttachmentMediaGridProps {
   groups: AttachmentLibraryMonthGroup[];
+  creators?: Map<string, User | undefined>;
   onPreview: (itemId: string) => void;
 }
 
-const AttachmentMediaCard = ({ item, onPreview }: { item: AttachmentLibraryMediaItem; onPreview: () => void }) => {
+const AttachmentMediaCard = ({ item, creator, onPreview }: { item: AttachmentLibraryMediaItem; creator?: User; onPreview: () => void }) => {
   const t = useTranslate();
   const videoDuration = item.attachments.map((attachment) => attachment.mediaMetadata?.details).find((details) => details?.case === "video")
     ?.value.durationSeconds;
@@ -74,6 +76,7 @@ const AttachmentMediaCard = ({ item, onPreview }: { item: AttachmentLibraryMedia
           className="min-w-0"
           items={[item.fileTypeLabel, item.createdLabel !== "—" ? item.createdLabel : undefined]}
         />
+        <AttachmentCreator creatorName={item.primaryAttachment.creator} user={creator} />
         <div className="flex items-center justify-between gap-2">
           <AttachmentSourceChip memoName={item.memoName} />
           <AttachmentOpenButton href={item.sourceUrl} />
@@ -83,7 +86,7 @@ const AttachmentMediaCard = ({ item, onPreview }: { item: AttachmentLibraryMedia
   );
 };
 
-const AttachmentMediaGrid = ({ groups, onPreview }: AttachmentMediaGridProps) => {
+const AttachmentMediaGrid = ({ groups, creators, onPreview }: AttachmentMediaGridProps) => {
   return (
     <div className="flex flex-col gap-6 sm:gap-8">
       {groups.map((group) => (
@@ -95,7 +98,12 @@ const AttachmentMediaGrid = ({ groups, onPreview }: AttachmentMediaGridProps) =>
 
           <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
             {group.items.map((item) => (
-              <AttachmentMediaCard key={item.id} item={item} onPreview={() => onPreview(item.previewItem.id)} />
+              <AttachmentMediaCard
+                key={item.id}
+                item={item}
+                creator={creators?.get(item.primaryAttachment.creator)}
+                onPreview={() => onPreview(item.previewItem.id)}
+              />
             ))}
           </div>
         </section>

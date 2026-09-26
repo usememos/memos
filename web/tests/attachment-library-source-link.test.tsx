@@ -2,9 +2,11 @@ import { create } from "@bufbuild/protobuf";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter, useLocation } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
+import { AttachmentDocumentRows } from "@/components/AttachmentLibrary/AttachmentFileRows";
 import AttachmentMediaGrid from "@/components/AttachmentLibrary/AttachmentMediaGrid";
 import type { AttachmentLibraryMonthGroup } from "@/hooks/useAttachmentLibrary";
 import { AttachmentSchema, MediaMetadataSchema, VideoMetadataSchema } from "@/types/proto/api/v1/attachment_service_pb";
+import { UserSchema } from "@/types/proto/api/v1/user_service_pb";
 
 vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
 
@@ -20,7 +22,9 @@ describe("<AttachmentMediaGrid>", () => {
       filename: "photo.jpg",
       type: "image/jpeg",
       memo: "memos/source-memo",
+      creator: "users/steven",
     });
+    const creator = create(UserSchema, { name: "users/steven", username: "steven", displayName: "Steven" });
     const groups: AttachmentLibraryMonthGroup[] = [
       {
         key: "2026-07",
@@ -53,13 +57,14 @@ describe("<AttachmentMediaGrid>", () => {
 
     render(
       <MemoryRouter initialEntries={["/spaces/product/attachments?filter=tagSearch%3Awork"]}>
-        <AttachmentMediaGrid groups={groups} onPreview={onPreview} />
+        <AttachmentMediaGrid groups={groups} creators={new Map([[creator.name, creator]])} onPreview={onPreview} />
         <LocationStateProbe />
       </MemoryRouter>,
     );
 
     const memoLink = screen.getByRole("link", { name: "attachment-library.labels.memo" });
     expect(memoLink).toHaveAttribute("href", "/memos/source-memo");
+    expect(screen.getByRole("link", { name: "Steven" })).toHaveAttribute("href", "/?creator=steven");
 
     const fileLink = screen.getByRole("link", { name: "attachment-library.actions.open" });
     expect(fileLink).toHaveAttribute("href", "/file/attachments/photo/photo.jpg");
@@ -68,6 +73,26 @@ describe("<AttachmentMediaGrid>", () => {
     fireEvent.click(memoLink);
     expect(onPreview).not.toHaveBeenCalled();
     expect(screen.getByTestId("location-state")).toHaveTextContent('{"from":"/spaces/product/attachments?filter=tagSearch%3Awork"}');
+  });
+
+  it("shows the uploader on document rows", () => {
+    const attachment = create(AttachmentSchema, {
+      name: "attachments/document",
+      filename: "plan.pdf",
+      type: "application/pdf",
+      creator: "users/steven",
+      memo: "memos/source-memo",
+    });
+
+    render(
+      <MemoryRouter>
+        <AttachmentDocumentRows
+          items={[{ attachment, createdLabel: "Jul 29, 2026", fileTypeLabel: "PDF", memoName: attachment.memo, sourceUrl: "/plan.pdf" }]}
+        />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByRole("link", { name: "steven" })).toHaveAttribute("href", "/?creator=steven");
   });
 
   it("keeps video duration inside the existing play badge", () => {

@@ -31,7 +31,7 @@ service AttachmentService {
       body: "*"
     };
   }
-  // ListAttachments lists all attachments.
+  // ListAttachments lists attachments linked to readable memos and the caller's unlinked uploads.
   rpc ListAttachments(ListAttachmentsRequest) returns (ListAttachmentsResponse) {
     option (google.api.http) = {get: "/api/v1/attachments"};
   }
@@ -177,6 +177,13 @@ message Attachment {
     (google.api.field_behavior) = OPTIONAL,
     (google.api.field_behavior) = IMMUTABLE
   ];
+
+  // Output only. The user who uploaded this attachment, which may differ from
+  // the creator of the linked memo. Format: users/{user}.
+  string creator = 11 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.resource_reference) = {type: "memos.api.v1/User"}
+  ];
 }
 
 message CreateAttachmentRequest {
@@ -258,7 +265,9 @@ message ListAttachmentsRequest {
   // Optional. Filter to apply to the list results.
   // Example: "mime_type==\"image/png\"" or "filename.contains(\"test\")"
   // Supported operators: =, !=, <, <=, >, >=, : (contains), in
-  // Supported fields: filename, mime_type, create_time, memo_id, space.
+  // Supported fields: creator, filename, mime_type, create_time, memo_id, space.
+  // `creator` is the linked memo's creator, or the uploader for an unlinked
+  // attachment. It supports equality with a User resource name.
   // `space` only supports a non-negated `==` comparison with a Space resource
   // name or null.
   // `space` is the linked memo's space resource name, or null when the

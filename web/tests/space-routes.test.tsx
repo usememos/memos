@@ -7,7 +7,14 @@ import { getRouteActionPolicy, getSidebarRouteKind } from "@/components/AppSideb
 import { CalendarHeader } from "@/components/CalendarView/CalendarHeader";
 import { resolveMemoDetailOrigin, resolveMemoParentPage } from "@/components/MemoView/navigation";
 import Calendar from "@/pages/Calendar";
-import { buildCollectionPath, getSpaceSwitchPath, resolveCollectionRoute } from "@/router/routes";
+import {
+  buildCollectionPath,
+  collectionNavigationPath,
+  getCreatorHomePath,
+  getCreatorSwitchPath,
+  getSpaceSwitchPath,
+  resolveCollectionRoute,
+} from "@/router/routes";
 import { SpaceRoute } from "@/router/SpaceRoute";
 
 const state = vi.hoisted(() => ({
@@ -50,11 +57,31 @@ describe("Space route contract", () => {
     );
     expect(getSpaceSwitchPath({ pathname: "/setting", search: "?section=spaces" }, "spaces/b")).toBe("/spaces/b");
   });
-  it("searches from calendar and attachments into the same Space Home", () => {
+  it("combines creator and Space independently across collection views", () => {
+    const location = { pathname: "/spaces/a/calendar/2026/09", search: "?creator=alice&filter=tagSearch%3Awork" };
+    expect(getCreatorSwitchPath(location, "steven")).toBe("/spaces/a/calendar/2026/09?creator=steven&filter=tagSearch%3Awork");
+    expect(getCreatorSwitchPath(location)).toBe("/spaces/a/calendar/2026/09?filter=tagSearch%3Awork");
+    expect(getSpaceSwitchPath(location, "spaces/b")).toBe("/spaces/b/calendar/2026/09?creator=alice&filter=tagSearch%3Awork");
+    expect(collectionNavigationPath("/attachments", location)).toBe("/spaces/a/attachments?creator=alice");
+    expect(getCreatorHomePath("alice")).toBe("/?creator=alice");
+    expect(getCreatorHomePath("júlia")).toBe("/?creator=j%C3%BAlia");
+  });
+  it("keeps personal Home and all-creator Explore distinct while changing views", () => {
+    expect(getCreatorSwitchPath({ pathname: "/", search: "?filter=tagSearch%3Awork" })).toBe("/explore?filter=tagSearch%3Awork");
+    expect(getCreatorSwitchPath({ pathname: "/spaces/a/explore", search: "" }, "alice", "alice")).toBe("/spaces/a");
+    expect(collectionNavigationPath("/calendar", { pathname: "/", search: "" }, "alice")).toBe("/calendar?creator=alice");
+    expect(collectionNavigationPath("/calendar", { pathname: "/explore", search: "" }, "alice")).toBe("/calendar");
+    expect(collectionNavigationPath("/", { pathname: "/calendar", search: "" }, "alice")).toBe("/explore");
+    expect(collectionNavigationPath("/", { pathname: "/calendar", search: "?creator=alice" }, "alice")).toBe("/");
+  });
+  it("searches from All calendar and attachments into Space Explore", () => {
     for (const path of ["/spaces/a/calendar/2026/09", "/spaces/a/attachments"]) {
-      expect(resolveQuickFindSubmission(path, "roadmap", [], "text").destination).toBe("/spaces/a?filter=contentSearch%3Aroadmap");
+      expect(resolveQuickFindSubmission(path, "roadmap", [], "text").destination).toBe("/spaces/a/explore?filter=contentSearch%3Aroadmap");
     }
-    expect(getRouteActionPolicy("/memos/a").searchDestination).toBe("/");
+    expect(getRouteActionPolicy("/memos/a").searchDestination).toBe("/explore");
+    expect(resolveQuickFindSubmission("/spaces/a/calendar", "roadmap", [], "text", "?creator=alice").destination).toBe(
+      "/spaces/a?filter=contentSearch%3Aroadmap&creator=alice",
+    );
   });
   it("carries the full calendar origin through a permanent memo link", () => {
     const parentPage = "/spaces/a/calendar/2026/09/06?filter=tagSearch%3Awork";

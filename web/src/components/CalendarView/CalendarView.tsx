@@ -13,7 +13,6 @@ import useMediaQuery from "@/hooks/useMediaQuery";
 import { useMemoFilters } from "@/hooks/useMemoFilters";
 import { formatMonthLabel, getToday, parseLocalDate } from "@/lib/calendar-utils";
 import { combineCELFilters } from "@/lib/cel-filter";
-import { buildMemoCreatorFilter } from "@/lib/resource-names";
 import { isMemoBlurred } from "@/lib/tag";
 import { collectionPathForLocation } from "@/router/routes";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
@@ -35,7 +34,7 @@ export interface CalendarViewProps {
 }
 
 /**
- * The signed-in user's memos as a month, scoped like Home to the remembered collection.
+ * The readable memos in the selected creator and Space scope, shown as a month.
  * Month and day both live in the URL; this component only reads them and renders.
  *
  * The open day has two homes. From md it is the floating memo panel at the end edge; at xl
@@ -54,23 +53,20 @@ export const CalendarView = ({ month, date }: CalendarViewProps) => {
   const xl = useMediaQuery("xl");
   const { userTagsSetting, isInitialized: authInitialized, isUserSettingsInitialized } = useAuth();
   const { isInitialized: instanceInitialized } = useInstance();
-  const { memoFilter: contextFilter } = useSpaceContext();
+  const { memoFilter: contextFilter, creatorUsername } = useSpaceContext();
 
   // The sidebar's view and tag filters narrow the month exactly as they narrow Home. They are
   // not echoed as chips here: the sidebar already shows them checked and clears them on a
   // second click, and search hands off to Home, so nothing can be active without a sidebar row.
   const viewFilter = useMemoFilters({ includeMemoViews: true, includePinned: false });
-  // Statistics are already creator-scoped server-side, so leaving the creator out of their
-  // filter shares the sidebar's cached query whenever no view or tag is active.
+  // The scope filter includes both creator and Space, and matches the sidebar statistics.
   const statsFilter = useMemo(() => combineCELFilters(contextFilter, viewFilter), [contextFilter, viewFilter]);
-  const memoFilter = useMemo(() => combineCELFilters(viewFilter, user && buildMemoCreatorFilter(user.name)), [viewFilter, user]);
-  const monthFilter = useMemo(() => combineCELFilters(contextFilter, memoFilter), [contextFilter, memoFilter]);
+  const monthFilter = useMemo(() => combineCELFilters(contextFilter, viewFilter), [contextFilter, viewFilter]);
 
   // Statistics draw counts before the month's memos load, and are the only signal the grid
   // has for days outside the month.
   const { statistics } = useFilteredMemoStats({
-    context: "home",
-    userName: user?.name,
+    context: "collection",
     filter: statsFilter,
     enabled: authInitialized && instanceInitialized,
   });
@@ -110,12 +106,16 @@ export const CalendarView = ({ month, date }: CalendarViewProps) => {
       memos={activeMemos}
       selectionKey={activeDate}
       timeDisplay="time"
-      compose={{
-        cacheKey: `calendar-day-editor:${activeDate}`,
-        label: t("calendar.new-memo-on-day"),
-        defaults: { defaultCreateTime },
-        onSavingChange: setSaving,
-      }}
+      compose={
+        user && (!creatorUsername || creatorUsername === user.username)
+          ? {
+              cacheKey: `calendar-day-editor:${activeDate}`,
+              label: t("calendar.new-memo-on-day"),
+              defaults: { defaultCreateTime },
+              onSavingChange: setSaving,
+            }
+          : undefined
+      }
     />
   );
 

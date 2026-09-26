@@ -54,6 +54,7 @@
     "attachments": "Lampiran",
     "avatar": "Avatar",
     "basic": "Dasar",
+    "browse": "Telusuri",
     "calendar": "Kalender",
     "cancel": "Batal",
     "clear": "Bersihkan",
@@ -80,6 +81,7 @@
     "explore": "Jelajahi",
     "filter": "Saring",
     "home": "Beranda",
+    "timeline": "Linimasa",
     "inbox": "Kotak Masuk",
     "language": "Bahasa",
     "last-updated-at": "Terakhir diperbarui pada",
@@ -963,11 +965,6 @@
     "banner-title": "Demo Memos",
     "deploy-link": "Sebarkan Memos Anda sendiri"
   },
-  "profile": {
-    "no-shared-memos": "@{{username}} belum membagikan memo apa pun.",
-    "not-found-description": "Tidak ada pengguna Memos bernama @{{username}} pada instance ini.",
-    "not-found-title": "Tidak ada siapa pun di sini"
-  },
   "search": {
     "access-error": "Anda tidak memiliki akses ke memo ini.",
     "clear-query": "Hapus kueri",
@@ -983,6 +980,7 @@
     "text": "Teks"
   },
   "space": {
+    "all-spaces": "Semua ruang",
     "icon": {
       "change": "Ubah ikon ruang",
       "kind": "Jenis ikon",

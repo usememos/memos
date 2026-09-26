@@ -85,6 +85,7 @@
     "attachments": "附件",
     "avatar": "头像",
     "basic": "基础",
+    "browse": "浏览",
     "calendar": "日历",
     "cancel": "取消",
     "clear": "清除",
@@ -114,6 +115,7 @@
     "explore": "发现",
     "filter": "过滤器",
     "home": "主页",
+    "timeline": "时间线",
     "inbox": "通知",
     "language": "语言",
     "last-updated-at": "最后更新时间",
@@ -964,6 +966,7 @@
     }
   },
   "space": {
+    "all-spaces": "所有空间",
     "icon": {
       "change": "更改空间图标",
       "kind": "图标类型",
@@ -1008,10 +1011,5 @@
     "mode": "搜索模式",
     "syntax-help": "搜索语法",
     "text": "文本"
-  },
-  "profile": {
-    "no-shared-memos": "@{{username}} 尚未分享任何备忘录。",
-    "not-found-description": "此实例中不存在名为 @{{username}} 的 Memos 用户。",
-    "not-found-title": "未找到用户"
   }
 }

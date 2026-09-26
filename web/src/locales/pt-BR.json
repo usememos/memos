@@ -54,6 +54,7 @@
     "attachments": "Anexos",
     "avatar": "Avatar",
     "basic": "Básico",
+    "browse": "Navegar",
     "calendar": "Calendário",
     "cancel": "Cancelar",
     "clear": "Limpar",
@@ -80,6 +81,7 @@
     "explore": "Explorar",
     "filter": "Filtro",
     "home": "Início",
+    "timeline": "Linha do tempo",
     "inbox": "Notificações",
     "language": "Idioma",
     "last-updated-at": "Atualizado em",
@@ -963,11 +965,6 @@
     "banner-title": "Demonstração de Memos",
     "deploy-link": "Implante seu próprio Memos"
   },
-  "profile": {
-    "no-shared-memos": "@{{username}} ainda não compartilhou nenhum memorando.",
-    "not-found-description": "Não existe nenhum usuário Memos chamado @{{username}} nesta instância.",
-    "not-found-title": "Ninguém aqui."
-  },
   "search": {
     "access-error": "Você não tem acesso a esses memorandos.",
     "clear-query": "Limpar consulta",
@@ -983,6 +980,7 @@
     "text": "Texto"
   },
   "space": {
+    "all-spaces": "Todos os espaços",
     "icon": {
       "change": "Alterar ícone do espaço",
       "kind": "Tipo de ícone",

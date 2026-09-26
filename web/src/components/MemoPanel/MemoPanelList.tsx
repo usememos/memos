@@ -51,7 +51,7 @@ export interface MemoPanelListProps {
 export function MemoPanelList({ memos, selectionKey, timeDisplay, emptyText, compose }: MemoPanelListProps) {
   const t = useTranslate();
   const { isUserSettingsInitialized } = useAuth();
-  const { selectedSpaceName } = useSpaceContext();
+  const { selectedSpaceName, creatorUsername } = useSpaceContext();
   const { compactMode } = useView();
   const [composingFor, setComposingFor] = useState<string>();
   const composing = composingFor === selectionKey;
@@ -75,6 +75,7 @@ export function MemoPanelList({ memos, selectionKey, timeDisplay, emptyText, com
             key={memo.name}
             memo={memo}
             timeDisplay={timeDisplay}
+            showCreator={!creatorUsername}
             showVisibility
             showPinned
             showSpace={!selectedSpaceName}

@@ -109,6 +109,19 @@ func TestRenderSpaceFilters(t *testing.T) {
 	}
 }
 
+func TestRenderAttachmentCreatorFilter(t *testing.T) {
+	t.Parallel()
+
+	engine, err := NewEngine(NewAttachmentSchema())
+	require.NoError(t, err)
+	for _, dialect := range []DialectName{DialectSQLite, DialectMySQL, DialectPostgres} {
+		statement, err := engine.CompileToStatement(context.Background(), `creator == "users/alice"`, RenderOptions{Dialect: dialect})
+		require.NoError(t, err, dialect)
+		require.Contains(t, statement.SQL, "CASE WHEN", dialect)
+		require.Equal(t, []any{"users/alice"}, statement.Args, dialect)
+	}
+}
+
 func TestCompileContainsEscapesLikeWildcards(t *testing.T) {
 	t.Parallel()
 

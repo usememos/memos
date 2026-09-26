@@ -6,7 +6,6 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoFilters } from "@/hooks/useMemoFilters";
 import { useInfiniteMemos } from "@/hooks/useMemoQueries";
 import { combineCELFilters } from "@/lib/cel-filter";
-import { buildMemoCreatorFilter } from "@/lib/resource-names";
 import { State } from "@/types/proto/api/v1/common_pb";
 import { mapMemos } from "./model";
 
@@ -19,7 +18,7 @@ export function useMapMemos() {
   const { memoFilter } = useSpaceContext();
   const { timeBasis } = useView();
   const viewFilter = useMemoFilters({ includeMemoViews: true, includePinned: false });
-  const filter = combineCELFilters(memoFilter, viewFilter, user && buildMemoCreatorFilter(user.name), MAP_MEMO_FILTER);
+  const filter = combineCELFilters(memoFilter, viewFilter, MAP_MEMO_FILTER);
   const query = useInfiniteMemos(
     { filter, state: State.NORMAL, pageSize: 500, orderBy: `${timeBasis} desc, name desc` },
     { enabled: Boolean(user) && isUserSettingsInitialized },

@@ -169,7 +169,7 @@ function UpdateAccountDialog({ open, onOpenChange, onSuccess }: Props) {
           <div className="flex flex-row items-center gap-2">
             <Label>{t("common.avatar")}</Label>
             <label className="relative cursor-pointer hover:opacity-80">
-              <UserAvatar className="w-10 h-10" avatarUrl={state.avatarUrl} />
+              <UserAvatar className="w-10 h-10" avatarUrl={state.avatarUrl} name={state.displayName || currentUser?.username} />
               <input type="file" accept="image/*" className="absolute invisible w-full h-full inset-0" onChange={handleAvatarChanged} />
             </label>
             {state.avatarUrl && (

@@ -92,6 +92,7 @@
     "attachments": "Συνημμένα",
     "avatar": "Avatar",
     "basic": "Βασικός",
+    "browse": "Περιήγηση",
     "calendar": "Ημερολόγιο",
     "cancel": "Ματαίωση",
     "clear": "Σαφής",
@@ -119,6 +120,7 @@
     "explore": "Εξερευνώ",
     "filter": "Φίλτρο",
     "home": "Σπίτι",
+    "timeline": "Χρονολόγιο",
     "inbox": "Εισερχόμενα",
     "language": "Γλώσσα",
     "last-updated-at": "Τελευταία ενημέρωση στις",
@@ -977,12 +979,8 @@
     "previous-year": "Προηγούμενο έτος",
     "select-month": "Επιλογή μήνα"
   },
-  "profile": {
-    "no-shared-memos": "Ο χρήστης @{{username}} δεν έχει μοιραστεί ακόμη κανένα σημείωμα.",
-    "not-found-description": "Δεν υπάρχει χρήστης Memos με το όνομα @{{username}} σε αυτήν την παρουσία.",
-    "not-found-title": "Κανείς εδώ"
-  },
   "space": {
+    "all-spaces": "Όλοι οι χώροι",
     "icon": {
       "change": "Αλλαγή εικονιδίου χώρου",
       "kind": "Τύπος εικονιδίου",

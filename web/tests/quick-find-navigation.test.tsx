@@ -169,7 +169,7 @@ describe("Quick Find navigation", () => {
     expect(state.filters.filter((filter) => !predicate(filter))).toEqual([{ factor: "tagSearch", value: "work" }]);
   });
 
-  it("searches from Inbox into global Home in one history step", async () => {
+  it("searches from Inbox into global Explore in one history step", async () => {
     const router = renderSearch("/inbox");
 
     expect(screen.getByTestId("scope")).toHaveTextContent("all");
@@ -178,7 +178,7 @@ describe("Quick Find navigation", () => {
     fireEvent.change(input, { target: { value: "roadmap" } });
     fireEvent.submit(input.closest("form")!);
 
-    await waitFor(() => expect(screen.getByTestId("path")).toHaveTextContent("/?filter=contentSearch%3Aroadmap"));
+    await waitFor(() => expect(screen.getByTestId("path")).toHaveTextContent("/explore?filter=contentSearch%3Aroadmap"));
     expect(state.setFilters).not.toHaveBeenCalled();
     expect(screen.getByTestId("scope")).toHaveTextContent("all");
 
@@ -222,7 +222,7 @@ describe("Quick Find navigation", () => {
     fireEvent.change(input, { target: { value: "roadmap" } });
     fireEvent.submit(input.closest("form")!);
 
-    await waitFor(() => expect(screen.getByTestId("path")).toHaveTextContent("/?filter=contentSearch%3Aroadmap"));
+    await waitFor(() => expect(screen.getByTestId("path")).toHaveTextContent("/explore?filter=contentSearch%3Aroadmap"));
 
     await act(async () => {
       await router.navigate(-1);

@@ -54,6 +54,7 @@
     "attachments": "Přílohy",
     "avatar": "Avatar",
     "basic": "Základní",
+    "browse": "Procházet",
     "calendar": "Kalendář",
     "cancel": "Zrušit",
     "clear": "Vymazat",
@@ -80,6 +81,7 @@
     "explore": "Prozkoumat",
     "filter": "Filtr",
     "home": "Domů",
+    "timeline": "Časová osa",
     "inbox": "Došlá pošta",
     "language": "Jazyk",
     "last-updated-at": "Změněno",
@@ -977,12 +979,8 @@
     "previous-year": "Předchozí rok",
     "select-month": "Vyberte měsíc"
   },
-  "profile": {
-    "no-shared-memos": "@{{username}} zatím nesdílel(a) žádné poznámky.",
-    "not-found-description": "V této instanci není žádný uživatel Memos s názvem @{{username}}.",
-    "not-found-title": "Nikdo zde není"
-  },
   "space": {
+    "all-spaces": "Všechny prostory",
     "icon": {
       "change": "Změnit ikonu prostoru",
       "kind": "Typ ikony",

@@ -1,6 +1,6 @@
 import { useDirection } from "@base-ui/react/direction-provider";
-import { Columns2Icon, Columns3Icon, InfinityIcon, type LucideIcon, Rows3Icon, SlidersHorizontalIcon } from "lucide-react";
-import type { ReactNode } from "react";
+import { ChevronDownIcon, Columns2Icon, Columns3Icon, InfinityIcon, type LucideIcon, Rows3Icon } from "lucide-react";
+import type { ReactNode, RefObject } from "react";
 import { SIDEBAR_SECTION_ACTION_ICON_CLASSES } from "@/components/AppSidebar/SidebarSection";
 import { buttonVariants } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -12,7 +12,7 @@ import { useTranslate } from "@/utils/i18n";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 interface Props {
-  className?: string;
+  anchor?: RefObject<HTMLElement | null>;
 }
 
 interface SettingRowProps {
@@ -185,23 +185,29 @@ function MemoDisplaySettingsContent() {
   );
 }
 
-function MemoDisplaySettingMenu({ className }: Props) {
+function MemoDisplaySettingMenu({ anchor }: Props) {
   const t = useTranslate();
+  const label = `${t("common.timeline")} · ${t("memo.view-options")}`;
 
   return (
     <Popover>
       <Tooltip>
-        <TooltipTrigger render={<span className="inline-flex" />}>
-          <PopoverTrigger
-            aria-label={t("memo.view-options")}
-            className={cn(buttonVariants({ variant: "quiet", size: "icon-sm" }), className)}
-          >
-            <SlidersHorizontalIcon className={SIDEBAR_SECTION_ACTION_ICON_CLASSES} strokeWidth={1.8} />
-          </PopoverTrigger>
+        <TooltipTrigger
+          render={
+            <PopoverTrigger
+              aria-label={label}
+              className={cn(
+                buttonVariants({ variant: "quiet", size: "icon-compact" }),
+                "w-auto rounded-s-none px-1.5 hover:bg-sidebar-accent data-popup-open:[&_svg]:rotate-180",
+              )}
+            />
+          }
+        >
+          <ChevronDownIcon className={cn(SIDEBAR_SECTION_ACTION_ICON_CLASSES, "transition-transform")} strokeWidth={1.8} />
         </TooltipTrigger>
-        <TooltipContent side="top">{t("memo.view-options")}</TooltipContent>
+        <TooltipContent side="bottom">{label}</TooltipContent>
       </Tooltip>
-      <PopoverContent align="end" sideOffset={6} aria-label={t("memo.view-options")} className="w-64 p-0">
+      <PopoverContent anchor={anchor} align="start" sideOffset={6} aria-label={label} className="w-64 p-0">
         <MemoDisplaySettingsContent />
       </PopoverContent>
     </Popover>

@@ -16,8 +16,16 @@ describe("map navigation", () => {
     expect(resolveMemoDetailOrigin(createMemoNavigationState(`/map${search}`))).toBe(`/map${search}`);
     expect(withMemoFilter(`/map${search}`, "tagSearch:food")).toContain("lat=35&lng=135&zoom=14&memo=memos%2Fone&filter=tagSearch%3Afood");
   });
-  it("sends Quick Find to Home within the active collection", () => {
-    expect(getRouteActionPolicy("/map")).toEqual({ searchScope: "route-collection", searchDestination: "/" });
-    expect(getRouteActionPolicy("/spaces/travel/map")).toEqual({ searchScope: "route-collection", searchDestination: "/spaces/travel" });
+  it("sends Quick Find to the matching feed within the active collection", () => {
+    expect(getRouteActionPolicy("/map")).toEqual({ searchScope: "route-collection", searchDestination: "/explore" });
+    expect(getRouteActionPolicy("/map", "?creator=steven")).toEqual({ searchScope: "route-collection", searchDestination: "/" });
+    expect(getRouteActionPolicy("/spaces/travel/map")).toEqual({
+      searchScope: "route-collection",
+      searchDestination: "/spaces/travel/explore",
+    });
+    expect(getRouteActionPolicy("/spaces/travel/map", "?creator=steven")).toEqual({
+      searchScope: "route-collection",
+      searchDestination: "/spaces/travel",
+    });
   });
 });

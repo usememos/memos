@@ -8,6 +8,7 @@ import { useNewMemo } from "@/contexts/NewMemoContext";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import i18n from "@/i18n";
 import { cn } from "@/lib/utils";
+import { getCreatorHomePath } from "@/router/routes";
 import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import type { User } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
@@ -114,11 +115,11 @@ const CreatorDisplay: React.FC<{ creator: User }> = ({ creator }) => (
         "flex min-w-0 shrink items-center gap-1.5 rounded-sm text-ui font-medium text-foreground transition-colors hover:text-foreground/80",
         FOCUS_VISIBLE_OUTLINE_CLASSES,
       )}
-      to={`/u/${encodeURIComponent(creator.username)}`}
+      to={getCreatorHomePath(creator.username)}
       viewTransition
     >
       <span className="flex size-5 shrink-0 items-center justify-center">
-        <UserAvatar className="size-5 rounded-[5px]" avatarUrl={creator.avatarUrl} />
+        <UserAvatar className="size-5 rounded-[5px]" avatarUrl={creator.avatarUrl} name={creator.displayName || creator.username} />
       </span>
       <span className="min-w-0 truncate">{creator.displayName || creator.username}</span>
     </Link>

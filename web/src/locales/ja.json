@@ -55,6 +55,7 @@
     "attachments": "添付ファイル",
     "avatar": "アイコン",
     "basic": "基本設定",
+    "browse": "閲覧",
     "calendar": "カレンダー",
     "cancel": "キャンセル",
     "clear": "クリア",
@@ -81,6 +82,7 @@
     "explore": "共有メモ",
     "filter": "フィルター",
     "home": "ホーム",
+    "timeline": "タイムライン",
     "inbox": "受信トレイ",
     "language": "言語",
     "last-updated-at": "最終更新日時",
@@ -977,12 +979,8 @@
     "previous-year": "前年",
     "select-month": "月を選択"
   },
-  "profile": {
-    "no-shared-memos": "@{{username}}はまだメモを共有していません。",
-    "not-found-description": "このインスタンスには、@{{username}}という名前のMemosユーザーが存在しません。",
-    "not-found-title": "ここには誰もいません"
-  },
   "space": {
+    "all-spaces": "すべてのスペース",
     "icon": {
       "change": "スペースアイコンの変更",
       "kind": "アイコンの種類",

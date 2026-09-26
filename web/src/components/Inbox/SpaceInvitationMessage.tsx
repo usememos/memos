@@ -117,7 +117,11 @@ function SpaceInvitationMessage({ notification }: Props) {
 
       <div className="flex items-start gap-3">
         <div className="relative shrink-0">
-          <UserAvatar className="w-10 h-10 ring-1 ring-border/40" avatarUrl={sender?.avatarUrl} />
+          <UserAvatar
+            className="w-10 h-10 ring-1 ring-border/40"
+            avatarUrl={sender?.avatarUrl}
+            name={sender?.displayName || sender?.username}
+          />
           <div
             className={cn(
               "absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-background flex items-center justify-center shadow-md transition-all",

@@ -54,6 +54,7 @@
     "attachments": "Anexos",
     "avatar": "Avatar",
     "basic": "Básico",
+    "browse": "Navegar",
     "calendar": "Calendario",
     "cancel": "Cancelar",
     "clear": "Limpar",
@@ -80,6 +81,7 @@
     "explore": "Descubrir",
     "filter": "Filtro",
     "home": "Inicio",
+    "timeline": "Cronoloxía",
     "inbox": "Caixa de entrada",
     "language": "Idioma",
     "last-updated-at": "Última actualización",
@@ -977,12 +979,8 @@
     "previous-year": "Ano anterior",
     "select-month": "Seleccionar mes"
   },
-  "profile": {
-    "no-shared-memos": "@{{username}} aínda non compartiu ningunha nota.",
-    "not-found-description": "Non hai ningún usuario Memos chamado @{{username}} nesta instancia.",
-    "not-found-title": "Non hai ninguén aquí"
-  },
   "space": {
+    "all-spaces": "Todos os espazos",
     "icon": {
       "change": "Cambiar icona do espazo",
       "kind": "Tipo de icona",

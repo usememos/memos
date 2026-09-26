@@ -46,7 +46,7 @@ describe("map pagination", () => {
     expect(state.list.mock.calls.map(([request]) => request.pageToken)).toEqual(["", "second", "third"]);
     const request = state.list.mock.calls[0][0];
     expect(request.pageSize).toBe(500);
-    expect(request.filter).toContain('creator == "users/qa"');
+    expect(request.filter).not.toContain('creator == "users/qa"');
     expect(request.filter).toContain('space == "spaces/travel"');
     expect(request.filter).toContain("has_location");
   });

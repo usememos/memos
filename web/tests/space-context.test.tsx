@@ -12,7 +12,7 @@ const state = vi.hoisted(() => ({
   ],
   ready: true,
 }));
-vi.mock("@/hooks/useCurrentUser", () => ({ default: () => ({ name: state.user }) }));
+vi.mock("@/hooks/useCurrentUser", () => ({ default: () => ({ name: state.user, username: state.user.slice("users/".length) }) }));
 vi.mock("@/hooks/useSpaceQueries", () => ({
   useSpaces: () => ({ data: state.spaces, isPending: false, isError: false }),
   useSpace: (_user: string, name?: string) => ({
@@ -64,6 +64,23 @@ describe("URL-owned Space context", () => {
     setup("/explore");
     expect(screen.getByTestId("space")).toHaveTextContent("all");
     expect(screen.getByTestId("filter")).toHaveTextContent("all");
+  });
+  it("filters Home to the signed-in creator, including inside a Space", () => {
+    setup("/spaces/a");
+    expect(screen.getByTestId("filter")).toHaveTextContent('creator == "users/alice"');
+    expect(screen.getByTestId("filter")).toHaveTextContent('space == "spaces/a"');
+  });
+  it("keeps Space Explore across all readable creators", () => {
+    setup("/spaces/a/explore");
+    expect(screen.getByTestId("filter")).toHaveTextContent('space == "spaces/a"');
+    expect(screen.getByTestId("filter")).not.toHaveTextContent("creator ==");
+  });
+  it("combines creator and Space filters from the collection URL", () => {
+    setup("/spaces/a?creator=bob");
+    expect(screen.getByTestId("filter")).toHaveTextContent('space == "spaces/a"');
+    expect(screen.getByTestId("filter")).toHaveTextContent('creator == "users/bob"');
+    fireEvent.click(screen.getByText("B"));
+    expect(screen.getByTestId("path")).toHaveTextContent("/spaces/b?creator=bob");
   });
   it("restores Space from a deep link before metadata has loaded", () => {
     state.ready = false;

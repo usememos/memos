@@ -54,6 +54,7 @@
     "attachments": "Bilagor",
     "avatar": "Profilbild",
     "basic": "Grundläggande",
+    "browse": "Bläddra",
     "calendar": "Kalender",
     "cancel": "Avbryt",
     "clear": "Rensa",
@@ -80,6 +81,7 @@
     "explore": "Utforska",
     "filter": "Filter",
     "home": "Hem",
+    "timeline": "Tidslinje",
     "inbox": "Inkorg",
     "language": "Språk",
     "last-updated-at": "Senast uppdaterad",
@@ -977,12 +979,8 @@
     "previous-year": "Föregående år",
     "select-month": "Välj månad"
   },
-  "profile": {
-    "no-shared-memos": "@{{username}} har inte delat några PM än.",
-    "not-found-description": "Det finns ingen Memos användare med namnet @{{username}} på den här instansen.",
-    "not-found-title": "Ingen här"
-  },
   "space": {
+    "all-spaces": "Alla utrymmen",
     "icon": {
       "change": "Ändra utrymmesikon",
       "kind": "Ikontyp",

@@ -138,6 +138,7 @@ func (d *DB) ListAttachments(ctx context.Context, find *store.FindAttachment) ([
 		"attachment.reference AS reference",
 		"attachment.payload AS payload",
 		"CASE WHEN memo.uid IS NOT NULL THEN memo.uid ELSE NULL END AS memo_uid",
+		"attachment_creator.username AS creator_username",
 	}
 	if find.GetBlob {
 		fields = append(fields, "attachment.blob AS blob")
@@ -148,6 +149,7 @@ func (d *DB) ListAttachments(ctx context.Context, find *store.FindAttachment) ([
 			%s
 		FROM attachment
 		LEFT JOIN memo ON attachment.memo_id = memo.id
+		LEFT JOIN "user" AS attachment_creator ON attachment.creator_id = attachment_creator.id
 		LEFT JOIN space AS attachment_space ON memo.space_id = attachment_space.id
 		WHERE %s
 		ORDER BY attachment.updated_ts DESC
@@ -185,6 +187,7 @@ func (d *DB) ListAttachments(ctx context.Context, find *store.FindAttachment) ([
 			&attachment.Reference,
 			&payloadBytes,
 			&attachment.MemoUID,
+			&attachment.CreatorUsername,
 		}
 		if find.GetBlob {
 			dests = append(dests, &attachment.Blob)

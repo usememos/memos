@@ -92,6 +92,7 @@
     "attachments": "Pielikumi",
     "avatar": "Iemiesojums",
     "basic": "Pamata",
+    "browse": "Pārlūkot",
     "calendar": "Kalendārs",
     "cancel": "Atcelt",
     "clear": "Skaidrs",
@@ -119,6 +120,7 @@
     "explore": "Izpētīt",
     "filter": "Filtrs",
     "home": "Sākums",
+    "timeline": "Laika skala",
     "inbox": "Iesūtne",
     "language": "Valoda",
     "last-updated-at": "Pēdējo reizi atjaunināts plkst",
@@ -977,12 +979,8 @@
     "previous-year": "Iepriekšējais gads",
     "select-month": "Atlasīt mēnesi"
   },
-  "profile": {
-    "no-shared-memos": "@{{username}} vēl nav kopīgojis nevienu piezīmi.",
-    "not-found-description": "Šajā instancē nav neviena Memos lietotāja ar nosaukumu @{{username}}.",
-    "not-found-title": "Šeit neviena nav"
-  },
   "space": {
+    "all-spaces": "Visas telpas",
     "icon": {
       "change": "Mainīt telpas ikonu",
       "kind": "Ikonas veids",

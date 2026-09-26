@@ -54,6 +54,7 @@
     "attachments": "Priloge",
     "avatar": "Avatar",
     "basic": "Osnovni",
+    "browse": "Brskaj",
     "calendar": "Koledar",
     "cancel": "Prekliči",
     "clear": "Počisti",
@@ -80,6 +81,7 @@
     "explore": "Razišči",
     "filter": "Filtriraj",
     "home": "Domov",
+    "timeline": "Časovnica",
     "inbox": "Prejeto",
     "language": "Jezik",
     "last-updated-at": "Zadnja posodobitev",
@@ -977,12 +979,8 @@
     "previous-year": "Prejšnje leto",
     "select-month": "Izberite mesec"
   },
-  "profile": {
-    "no-shared-memos": "@{{username}} še ni delil nobenih zapiskov.",
-    "not-found-description": "V tem primeru ni uporabnika Memos z imenom @{{username}}.",
-    "not-found-title": "Nihče tukaj"
-  },
   "space": {
+    "all-spaces": "Vsi prostori",
     "icon": {
       "change": "Spremeni ikono prostora",
       "kind": "Vrsta ikone",

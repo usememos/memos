@@ -3,8 +3,11 @@ import AudioAttachmentItem from "@/components/MemoMetadata/Attachment/AudioAttac
 import VideoPoster from "@/components/VideoPoster";
 import type { AttachmentLibraryListItem } from "@/hooks/useAttachmentLibrary";
 import { cn } from "@/lib/utils";
+import type { User } from "@/types/proto/api/v1/user_service_pb";
 import { getAttachmentThumbnailUrl, getAttachmentType, isMotionAttachment } from "@/utils/attachment";
-import { AttachmentMetadataLine, AttachmentOpenButton, AttachmentSourceChip } from "./AttachmentLibraryPrimitives";
+import { AttachmentCreator, AttachmentMetadataLine, AttachmentOpenButton, AttachmentSourceChip } from "./AttachmentLibraryPrimitives";
+
+type AttachmentCreators = Map<string, User | undefined>;
 
 const AttachmentThumb = ({ item, className }: { item: AttachmentLibraryListItem; className?: string }) => {
   const type = getAttachmentType(item.attachment);
@@ -42,7 +45,7 @@ const AttachmentThumb = ({ item, className }: { item: AttachmentLibraryListItem;
   );
 };
 
-export const AttachmentDocumentRows = ({ items }: { items: AttachmentLibraryListItem[] }) => {
+export const AttachmentDocumentRows = ({ items, creators }: { items: AttachmentLibraryListItem[]; creators?: AttachmentCreators }) => {
   return (
     <div className="space-y-3">
       {items.map((item) => (
@@ -60,6 +63,7 @@ export const AttachmentDocumentRows = ({ items }: { items: AttachmentLibraryList
             </div>
             <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
               <AttachmentMetadataLine className="min-w-0 max-w-full" items={[item.fileTypeLabel, item.fileSizeLabel, item.createdLabel]} />
+              <AttachmentCreator creatorName={item.attachment.creator} user={creators?.get(item.attachment.creator)} />
               <AttachmentSourceChip memoName={item.memoName} />
             </div>
           </div>
@@ -71,7 +75,7 @@ export const AttachmentDocumentRows = ({ items }: { items: AttachmentLibraryList
   );
 };
 
-export const AttachmentAudioRows = ({ items }: { items: AttachmentLibraryListItem[] }) => {
+export const AttachmentAudioRows = ({ items, creators }: { items: AttachmentLibraryListItem[]; creators?: AttachmentCreators }) => {
   return (
     <div className="space-y-2.5">
       {items.map((item) => (
@@ -88,6 +92,7 @@ export const AttachmentAudioRows = ({ items }: { items: AttachmentLibraryListIte
           <div className="mt-2.5 flex items-center justify-between gap-2 border-t border-border/60 px-0.5 pt-2.5">
             <div className="min-w-0 flex flex-wrap items-center gap-1.5">
               <AttachmentMetadataLine className="min-w-0 max-w-full" items={[item.createdLabel]} />
+              <AttachmentCreator creatorName={item.attachment.creator} user={creators?.get(item.attachment.creator)} />
               <AttachmentSourceChip memoName={item.memoName} />
             </div>
             <AttachmentOpenButton href={item.sourceUrl} />
@@ -98,7 +103,7 @@ export const AttachmentAudioRows = ({ items }: { items: AttachmentLibraryListIte
   );
 };
 
-export const AttachmentUnusedRows = ({ items }: { items: AttachmentLibraryListItem[] }) => {
+export const AttachmentUnusedRows = ({ items, creators }: { items: AttachmentLibraryListItem[]; creators?: AttachmentCreators }) => {
   return (
     <div className="space-y-2.5">
       {items.map((item) => (
@@ -114,6 +119,7 @@ export const AttachmentUnusedRows = ({ items }: { items: AttachmentLibraryListIt
             </div>
             <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
               <AttachmentMetadataLine className="min-w-0 max-w-full" items={[item.fileTypeLabel, item.fileSizeLabel, item.createdLabel]} />
+              <AttachmentCreator creatorName={item.attachment.creator} user={creators?.get(item.attachment.creator)} />
               <AttachmentSourceChip unlinkedLabelKey="attachment-library.labels.not-linked" />
             </div>
           </div>

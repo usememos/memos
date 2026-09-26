@@ -115,10 +115,11 @@ func (s *APIV1Service) prepareAttachment(ctx context.Context, request *v1pb.Crea
 	}
 
 	create := &store.Attachment{
-		UID:       attachmentUID,
-		CreatorID: user.ID,
-		Filename:  request.Attachment.Filename,
-		Type:      request.Attachment.Type,
+		UID:             attachmentUID,
+		CreatorID:       user.ID,
+		CreatorUsername: &user.Username,
+		Filename:        request.Attachment.Filename,
+		Type:            request.Attachment.Type,
 	}
 
 	inputMotionMedia, err := validateClientMotionMedia(request.Attachment.MotionMedia, attachmentUID)
@@ -310,10 +311,9 @@ func (s *APIV1Service) ListAttachments(ctx context.Context, request *v1pb.ListAt
 	}
 
 	findAttachment := &store.FindAttachment{
-		CreatorID: &user.ID,
-		Access:    newMemoAccessScope(user, true),
-		Limit:     &pageSize,
-		Offset:    &offset,
+		Access: newMemoAccessScope(user, true),
+		Limit:  &pageSize,
+		Offset: &offset,
 	}
 	// Parse filter if provided
 	if request.Filter != "" {

@@ -116,7 +116,7 @@ describe("useFilteredMemoStats", () => {
       setTimeBasis: vi.fn(),
     });
 
-    renderHook(() => useFilteredMemoStats({ userName: "users/test", context: "explore", enabled: false }), { wrapper });
+    renderHook(() => useFilteredMemoStats({ userName: "users/test", context: "collection", enabled: false }), { wrapper });
 
     expect(useUserStats).toHaveBeenCalledWith("users/test", { enabled: false, filter: undefined });
     expect(useAllUserStats).toHaveBeenCalledWith(expect.anything(), { enabled: false });
@@ -136,7 +136,7 @@ describe("useFilteredMemoStats", () => {
     expect(useUserStats).toHaveBeenCalledWith("users/test", { enabled: true, filter });
   });
 
-  it("scopes Explore statistics and includes the Space audience", () => {
+  it("scopes collection statistics to a Space without excluding readable private memos", () => {
     mockUseView.mockReturnValue({
       timeBasis: "create_time",
       orderByTimeAsc: false,
@@ -145,18 +145,18 @@ describe("useFilteredMemoStats", () => {
     });
     const filter = 'space == "spaces/product"';
 
-    renderHook(() => useFilteredMemoStats({ context: "explore", filter }), { wrapper });
+    renderHook(() => useFilteredMemoStats({ context: "collection", filter }), { wrapper });
 
     expect(useAllUserStats).toHaveBeenCalledWith(
       {
         state: State.NORMAL,
-        filter: '(space == "spaces/product") && (visibility in ["PUBLIC", "PROTECTED", "SPACE"])',
+        filter,
       },
       { enabled: true },
     );
   });
 
-  it("includes authorized Space memos in All Explore statistics", () => {
+  it("leaves the creator and visibility filters to access control in the All collection", () => {
     mockUseView.mockReturnValue({
       timeBasis: "create_time",
       orderByTimeAsc: false,
@@ -164,12 +164,12 @@ describe("useFilteredMemoStats", () => {
       setTimeBasis: vi.fn(),
     });
 
-    renderHook(() => useFilteredMemoStats({ context: "explore" }), { wrapper });
+    renderHook(() => useFilteredMemoStats({ context: "collection" }), { wrapper });
 
     expect(useAllUserStats).toHaveBeenCalledWith(
       {
         state: State.NORMAL,
-        filter: '(visibility in ["PUBLIC", "PROTECTED", "SPACE"])',
+        filter: undefined,
       },
       { enabled: true },
     );

@@ -92,6 +92,7 @@
     "attachments": "Priedai",
     "avatar": "Avataras",
     "basic": "Pagrindinis",
+    "browse": "Peržiūra",
     "calendar": "Kalendorius",
     "cancel": "Atšaukti",
     "clear": "Aišku",
@@ -119,6 +120,7 @@
     "explore": "Naršyti",
     "filter": "Filtruoti",
     "home": "Pradžia",
+    "timeline": "Laiko juosta",
     "inbox": "Gautieji",
     "language": "Kalba",
     "last-updated-at": "Paskutinį kartą atnaujinta",
@@ -977,12 +979,8 @@
     "previous-year": "Ankstesniais metais",
     "select-month": "Pasirinkite mėnesį"
   },
-  "profile": {
-    "no-shared-memos": "@{{username}} dar nebendrino jokių priminimų.",
-    "not-found-description": "Šioje instancijoje nėra Memos vartotojo, vardu @{{username}}.",
-    "not-found-title": "Čia nieko nėra"
-  },
   "space": {
+    "all-spaces": "Visos erdvės",
     "icon": {
       "change": "Keisti erdvės piktogramą",
       "kind": "Piktogramos tipas",

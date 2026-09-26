@@ -150,8 +150,6 @@ const MemoDetailSidebar = ({
         return t("common.archived");
       case "attachments":
         return t("common.attachments");
-      case "profile":
-        return t("common.profile");
       case "views":
         return t("common.views");
       case "inbox":

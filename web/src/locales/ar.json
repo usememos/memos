@@ -54,6 +54,7 @@
     "attachments": "مرفقات",
     "avatar": "الصورة الشخصية",
     "basic": "بسيط",
+    "browse": "تصفح",
     "calendar": "التقويم",
     "cancel": "ألغِ",
     "clear": "مسح",
@@ -80,6 +81,7 @@
     "explore": "استكشف",
     "filter": "تنقيح",
     "home": "الصفحة الرئيسية",
+    "timeline": "الخط الزمني",
     "inbox": "الوارد",
     "language": "اللغة",
     "last-updated-at": "آخر تحديث في",
@@ -963,11 +965,6 @@
     "banner-title": "عرض توضيحي Memos",
     "deploy-link": "انشر Memos الخاص بك"
   },
-  "profile": {
-    "no-shared-memos": "لم يشارك المستخدم {{username}} أي مذكرات حتى الآن.",
-    "not-found-description": "لا يوجد مستخدم Memos باسم @{{username}} في هذه النسخة.",
-    "not-found-title": "لا يوجد أحد هنا."
-  },
   "search": {
     "access-error": "ليس لديك صلاحية الوصول إلى هذه المذكرات.",
     "clear-query": "مسح الاستعلام",
@@ -983,6 +980,7 @@
     "text": "نص"
   },
   "space": {
+    "all-spaces": "جميع المساحات",
     "icon": {
       "change": "تغيير رمز المساحة",
       "kind": "نوع الرمز",

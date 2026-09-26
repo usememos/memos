@@ -92,6 +92,7 @@
     "attachments": "Atasamente",
     "avatar": "Avatar",
     "basic": "De bază",
+    "browse": "Răsfoiește",
     "calendar": "Calendaristic",
     "cancel": "Anula",
     "clear": "Clar",
@@ -119,6 +120,7 @@
     "explore": "Explora",
     "filter": "Filtra",
     "home": "Acasă",
+    "timeline": "Cronologie",
     "inbox": "Inbox",
     "language": "Limbă",
     "last-updated-at": "Ultima actualizare la",
@@ -977,12 +979,8 @@
     "previous-year": "Anul precedent",
     "select-month": "Selectați luna"
   },
-  "profile": {
-    "no-shared-memos": "@{{username}} nu a distribuit încă nicio notă.",
-    "not-found-description": "Nu există niciun utilizator Memos numit @{{username}} pe această instanță.",
-    "not-found-title": "Nu este nimeni aici"
-  },
   "space": {
+    "all-spaces": "Toate spațiile",
     "icon": {
       "change": "Schimbă pictograma spațiului",
       "kind": "Tip pictogramă",

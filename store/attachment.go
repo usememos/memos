@@ -40,7 +40,8 @@ type Attachment struct {
 	Policy *MemoWritePolicy
 
 	// Composed field
-	MemoUID *string
+	MemoUID         *string
+	CreatorUsername *string
 }
 
 type FindAttachment struct {

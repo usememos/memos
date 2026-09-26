@@ -54,6 +54,7 @@
     "attachments": "Tệp đính kèm",
     "avatar": "Ảnh đại diện",
     "basic": "Cơ bản",
+    "browse": "Duyệt xem",
     "calendar": "Lịch",
     "cancel": "Hủy",
     "clear": "Xóa",
@@ -80,6 +81,7 @@
     "explore": "Khám phá",
     "filter": "Lọc",
     "home": "Trang chủ",
+    "timeline": "Dòng thời gian",
     "inbox": "Hộp thư đến",
     "language": "Ngôn ngữ",
     "last-updated-at": "Cập nhật lần cuối",
@@ -963,11 +965,6 @@
     "banner-title": "Bản demo Memos",
     "deploy-link": "Triển khai Memos của riêng bạn"
   },
-  "profile": {
-    "no-shared-memos": "@{{username}} chưa chia sẻ bất kỳ ghi chú nào.",
-    "not-found-description": "Không có người dùng Memos nào có tên @{{username}} trên phiên bản này.",
-    "not-found-title": "Không có ai ở đây"
-  },
   "search": {
     "access-error": "Bạn không có quyền truy cập vào các bản ghi nhớ này.",
     "clear-query": "Xóa truy vấn",
@@ -983,6 +980,7 @@
     "text": "Văn bản"
   },
   "space": {
+    "all-spaces": "Tất cả không gian",
     "icon": {
       "change": "Thay đổi biểu tượng không gian",
       "kind": "Loại biểu tượng",

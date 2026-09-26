@@ -133,6 +133,7 @@
     "attachments": "附件",
     "avatar": "頭像",
     "basic": "基礎",
+    "browse": "瀏覽",
     "calendar": "日曆",
     "cancel": "取消",
     "clear": "清除",
@@ -160,6 +161,7 @@
     "explore": "探索",
     "filter": "篩選",
     "home": "首頁",
+    "timeline": "時間軸",
     "inbox": "通知",
     "language": "語言",
     "last-updated-at": "最後更新於",
@@ -942,6 +944,7 @@
     }
   },
   "space": {
+    "all-spaces": "所有空間",
     "unavailable": "空間不存在或你沒有存取權限。",
     "back-to-memos": "返回 Memos",
     "create": "建立空間",
@@ -1008,10 +1011,5 @@
     "new-here": "在此記錄",
     "saved-outside-filter": "已儲存。此備忘錄不在目前的地圖結果中。",
     "open-memo": "開啟備忘錄"
-  },
-  "profile": {
-    "no-shared-memos": "@{{username}} 尚未分享任何備忘錄。",
-    "not-found-description": "此實例中沒有名為 @{{username}} 的 Memos 使用者。",
-    "not-found-title": "找不到使用者"
   }
 }
