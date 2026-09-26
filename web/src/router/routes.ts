@@ -93,7 +93,7 @@ export const getCollectionHomePath = (location: { pathname: string; search: stri
   return buildCollectionPath(home, route.spaceName);
 };
 
-/** Carries creator scope between collection views, including implicit personal Home. */
+/** Carries creator scope and collection filters between views, excluding view-specific query state. */
 export const collectionNavigationPath = (
   pathname: string,
   location: { pathname: string; search: string },
@@ -105,10 +105,12 @@ export const collectionNavigationPath = (
       ? undefined
       : ((route.isCollection ? getCollectionCreator(location.search) : undefined) ??
         (!route.isCollection || route.pathname === ROUTES.HOME ? currentUsername : undefined));
+  const filter = route.isCollection ? new URLSearchParams(location.search).get("filter") : null;
+  const search = filter ? new URLSearchParams({ filter }).toString() : "";
   if (pathname === ROUTES.HOME) {
-    return `${getCollectionHomePath(location)}${withCollectionCreator("", creator === currentUsername ? undefined : creator)}`;
+    return `${getCollectionHomePath(location)}${withCollectionCreator(search, creator === currentUsername ? undefined : creator)}`;
   }
-  return `${collectionPathForLocation(pathname, location.pathname)}${withCollectionCreator("", creator)}`;
+  return `${collectionPathForLocation(pathname, location.pathname)}${withCollectionCreator(search, creator)}`;
 };
 
 /** A creator change keeps the current collection view and Space. */

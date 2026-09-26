@@ -62,7 +62,7 @@ describe("Space route contract", () => {
     expect(getCreatorSwitchPath(location, "steven")).toBe("/spaces/a/calendar/2026/09?creator=steven&filter=tagSearch%3Awork");
     expect(getCreatorSwitchPath(location)).toBe("/spaces/a/calendar/2026/09?filter=tagSearch%3Awork");
     expect(getSpaceSwitchPath(location, "spaces/b")).toBe("/spaces/b/calendar/2026/09?creator=alice&filter=tagSearch%3Awork");
-    expect(collectionNavigationPath("/attachments", location)).toBe("/spaces/a/attachments?creator=alice");
+    expect(collectionNavigationPath("/attachments", location)).toBe("/spaces/a/attachments?filter=tagSearch%3Awork&creator=alice");
     expect(getCreatorHomePath("alice")).toBe("/?creator=alice");
     expect(getCreatorHomePath("júlia")).toBe("/?creator=j%C3%BAlia");
   });
@@ -73,6 +73,26 @@ describe("Space route contract", () => {
     expect(collectionNavigationPath("/calendar", { pathname: "/explore", search: "" }, "alice")).toBe("/calendar");
     expect(collectionNavigationPath("/", { pathname: "/calendar", search: "" }, "alice")).toBe("/explore");
     expect(collectionNavigationPath("/", { pathname: "/calendar", search: "?creator=alice" }, "alice")).toBe("/");
+  });
+  it.each(["/", "/calendar", "/map", "/attachments"])("preserves collection filters when navigating to %s", (destination) => {
+    const filter = "tagSearch:work,contentSearch:a%26b,celSearch:visibility%20%3D%3D%20%22PUBLIC%22";
+    const search = `?${new URLSearchParams({ creator: "alice", filter, lat: "31", lng: "121", zoom: "12", memo: "memos/a" })}`;
+    const path = collectionNavigationPath(destination, { pathname: "/spaces/a/map", search }, "steven");
+    const url = new URL(path, "https://memos.test");
+    expect(url.pathname).toBe(destination === "/" ? "/spaces/a" : `/spaces/a${destination}`);
+    expect(Object.fromEntries(url.searchParams)).toEqual({ filter, creator: "alice" });
+  });
+  it.each([
+    ["/", "/calendar", "/calendar?filter=tagSearch%3Awork&creator=alice"],
+    ["/explore", "/calendar", "/calendar?filter=tagSearch%3Awork"],
+    ["/calendar", "/", "/explore?filter=tagSearch%3Awork"],
+  ])("carries filters from %s to %s without changing personal or Explore scope", (pathname, destination, expected) => {
+    expect(collectionNavigationPath(destination, { pathname, search: "?filter=tagSearch%3Awork" }, "alice")).toBe(expected);
+  });
+  it("does not carry filters from non-collection pages", () => {
+    expect(collectionNavigationPath("/calendar", { pathname: "/setting", search: "?filter=tagSearch%3Awork" }, "alice")).toBe(
+      "/calendar?creator=alice",
+    );
   });
   it("searches from All calendar and attachments into Space Explore", () => {
     for (const path of ["/spaces/a/calendar/2026/09", "/spaces/a/attachments"]) {

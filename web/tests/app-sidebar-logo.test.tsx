@@ -210,15 +210,16 @@ describe("App sidebar logo", () => {
     tagsSectionHook.mockClear();
   });
 
-  it("preserves creator when moving between collection pages", () => {
+  it("preserves creator and filters, excluding map state, when moving between collection pages", () => {
     render(
-      <MemoryRouter initialEntries={["/spaces/product/map?creator=alice"]}>
+      <MemoryRouter initialEntries={["/spaces/product/map?creator=alice&filter=tagSearch%3Awork&lat=31&lng=121&zoom=12&memo=memos/a"]}>
         <AppSidebar />
       </MemoryRouter>,
     );
-    expect(screen.getByRole("link", { name: "common.timeline" })).toHaveAttribute("href", "/spaces/product?creator=alice");
-    expect(screen.getByRole("link", { name: "common.calendar" })).toHaveAttribute("href", "/spaces/product/calendar?creator=alice");
-    expect(screen.getByRole("link", { name: "common.attachments" })).toHaveAttribute("href", "/spaces/product/attachments?creator=alice");
+    const search = "?filter=tagSearch%3Awork&creator=alice";
+    expect(screen.getByRole("link", { name: "common.timeline" })).toHaveAttribute("href", `/spaces/product${search}`);
+    expect(screen.getByRole("link", { name: "common.calendar" })).toHaveAttribute("href", `/spaces/product/calendar${search}`);
+    expect(screen.getByRole("link", { name: "common.attachments" })).toHaveAttribute("href", `/spaces/product/attachments${search}`);
   });
 
   it("shows the context switcher and opens the global memo editor", () => {
