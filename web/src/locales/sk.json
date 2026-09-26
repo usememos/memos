@@ -92,6 +92,7 @@
     "attachments": "Prílohy",
     "avatar": "Avatar",
     "basic": "Základné",
+    "browse": "Prehliadať",
     "calendar": "Kalendár",
     "cancel": "Zrušiť",
     "clear": "Jasné",
@@ -119,6 +120,7 @@
     "explore": "Preskúmajte",
     "filter": "Filter",
     "home": "Domov",
+    "timeline": "Časová os",
     "inbox": "Doručená pošta",
     "language": "Jazyk",
     "last-updated-at": "Naposledy aktualizované o",
@@ -977,12 +979,8 @@
     "previous-year": "Predchádzajúci rok",
     "select-month": "Vyberte mesiac"
   },
-  "profile": {
-    "no-shared-memos": "@{{username}} zatiaľ nezdieľa žiadne poznámky.",
-    "not-found-description": "V tejto inštancii nie je žiadny používateľ Memos s menom @{{username}}.",
-    "not-found-title": "Nikto tu nie je"
-  },
   "space": {
+    "all-spaces": "Všetky priestory",
     "icon": {
       "change": "Zmeniť ikonu priestoru",
       "kind": "Typ ikony",

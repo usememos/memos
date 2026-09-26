@@ -61,7 +61,11 @@ const MemoCommentListView: React.FC = () => {
               className={METADATA_ROW_CLASSES}
             >
               <span className={METADATA_ROW_SLOT_CLASSES} aria-hidden="true">
-                <UserAvatar className="size-4 rounded-[4px]" avatarUrl={creator?.avatarUrl} />
+                <UserAvatar
+                  className="size-4 rounded-[4px]"
+                  avatarUrl={creator?.avatarUrl}
+                  name={creator?.displayName || creator?.username}
+                />
               </span>
               <MemoPreview
                 className="min-w-0 flex-1"

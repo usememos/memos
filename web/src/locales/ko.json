@@ -54,6 +54,7 @@
     "attachments": "첨부파일",
     "avatar": "아바타",
     "basic": "기본",
+    "browse": "둘러보기",
     "calendar": "달력",
     "cancel": "취소",
     "clear": "정리하기",
@@ -80,6 +81,7 @@
     "explore": "탐색",
     "filter": "필터",
     "home": "홈",
+    "timeline": "타임라인",
     "inbox": "알림함",
     "language": "언어",
     "last-updated-at": "마지막 수정일",
@@ -963,11 +965,6 @@
     "banner-title": "Memos 데모",
     "deploy-link": "Memos 직접 배포"
   },
-  "profile": {
-    "no-shared-memos": "@{{username}}님은 아직 메모를 공유하지 않았습니다.",
-    "not-found-description": "이 인스턴스에는 @{{username}}이라는 이름의 Memos 사용자가 없습니다.",
-    "not-found-title": "여기에 아무도 없습니다."
-  },
   "search": {
     "access-error": "이 메모에 대한 접근 권한이 없습니다.",
     "clear-query": "쿼리 지우기",
@@ -983,6 +980,7 @@
     "text": "텍스트"
   },
   "space": {
+    "all-spaces": "모든 스페이스",
     "icon": {
       "change": "공간 아이콘 변경",
       "kind": "아이콘 유형",

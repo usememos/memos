@@ -92,6 +92,7 @@
     "attachments": "Vedhæftede filer",
     "avatar": "Avatar",
     "basic": "Grundlæggende",
+    "browse": "Gennemse",
     "calendar": "Kalender",
     "cancel": "Ophæve",
     "clear": "Klar",
@@ -119,6 +120,7 @@
     "explore": "Udforske",
     "filter": "Filter",
     "home": "Hjem",
+    "timeline": "Tidslinje",
     "inbox": "Indbakke",
     "language": "Sprog",
     "last-updated-at": "Sidst opdateret kl",
@@ -977,12 +979,8 @@
     "previous-year": "Forrige år",
     "select-month": "Vælg måned"
   },
-  "profile": {
-    "no-shared-memos": "@{{username}} har endnu ikke delt nogen notater.",
-    "not-found-description": "Der er ingen Memos bruger ved navn @{{username}} på denne instans.",
-    "not-found-title": "Ingen her"
-  },
   "space": {
+    "all-spaces": "Alle rum",
     "icon": {
       "change": "Skift ikon for rum",
       "kind": "Ikontype",

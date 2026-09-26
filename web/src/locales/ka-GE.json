@@ -54,6 +54,7 @@
     "attachments": "დანართები",
     "avatar": "ავატარი",
     "basic": "ძირითადი",
+    "browse": "დათვალიერება",
     "calendar": "კალენდარი",
     "cancel": "გაუქმება",
     "clear": "გასუფთავება",
@@ -80,6 +81,7 @@
     "explore": "კვლევა",
     "filter": "ფილტრი",
     "home": "მთავარი",
+    "timeline": "დროის ხაზი",
     "inbox": "ინბოქსი",
     "language": "ენა",
     "last-updated-at": "ბოლო განახლება",
@@ -977,12 +979,8 @@
     "previous-year": "წინა წელი",
     "select-month": "თვის არჩევა"
   },
-  "profile": {
-    "no-shared-memos": "@{{username}}-ს ჯერ არ გაუზიარებია არცერთი მემო.",
-    "not-found-description": "ამ ინსტანციაში არ არის Memos მომხმარებელი სახელად @{{username}}.",
-    "not-found-title": "აქ არავინაა"
-  },
   "space": {
+    "all-spaces": "ყველა სივრცე",
     "icon": {
       "change": "სივრცის ხატულას შეცვლა",
       "kind": "ხატულას ტიპი",

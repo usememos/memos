@@ -54,6 +54,7 @@
     "attachments": "پیوست‌ها",
     "avatar": "آواتار",
     "basic": "ساده",
+    "browse": "مرور",
     "calendar": "تقویم",
     "cancel": "لغو",
     "clear": "پاکسازی",
@@ -80,6 +81,7 @@
     "explore": "کاوش",
     "filter": "فیلتر",
     "home": "خانه",
+    "timeline": "خط زمانی",
     "inbox": "صندوق ورودی",
     "language": "زبان",
     "last-updated-at": "آخرین بروزرسانی در",
@@ -963,11 +965,6 @@
     "banner-title": "نسخه آزمایشی Memos",
     "deploy-link": "پیاده‌سازی Memos خودتان"
   },
-  "profile": {
-    "no-shared-memos": "@{{username}} هنوز هیچ یادداشتی را به اشتراک نگذاشته است.",
-    "not-found-title": "کسی اینجا نیست.",
-    "not-found-description": "در این نمونهٔ Memos کاربری با نام @{{username}} وجود ندارد."
-  },
   "search": {
     "access-error": "شما به این یادداشت‌ها دسترسی ندارید.",
     "clear-query": "پاک کردن پرس‌وجو",
@@ -983,6 +980,7 @@
     "text": "متن"
   },
   "space": {
+    "all-spaces": "همه فضاها",
     "icon": {
       "change": "تغییر آیکون فضا",
       "kind": "نوع آیکون",

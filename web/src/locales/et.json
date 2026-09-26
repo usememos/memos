@@ -92,6 +92,7 @@
     "attachments": "Manused",
     "avatar": "Avatar",
     "basic": "Põhiline",
+    "browse": "Sirvi",
     "calendar": "Kalender",
     "cancel": "Tühista",
     "clear": "Selge",
@@ -119,6 +120,7 @@
     "explore": "Uurige",
     "filter": "Filter",
     "home": "Kodu",
+    "timeline": "Ajajoon",
     "inbox": "Postkast",
     "language": "Keel",
     "last-updated-at": "Viimati värskendatud kell",
@@ -977,12 +979,8 @@
     "previous-year": "Eelmisel aastal",
     "select-month": "Valige kuu"
   },
-  "profile": {
-    "no-shared-memos": "@{{username}} pole veel ühtegi memo jaganud.",
-    "not-found-description": "Sellel eksemplaril pole Memos kasutajat nimega @{{username}}.",
-    "not-found-title": "Siin pole kedagi"
-  },
   "space": {
+    "all-spaces": "Kõik ruumid",
     "icon": {
       "change": "Muuda ruumi ikooni",
       "kind": "Ikooni tüüp",

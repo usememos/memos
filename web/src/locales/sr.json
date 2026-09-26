@@ -92,6 +92,7 @@
     "attachments": "Прилози",
     "avatar": "Аватар",
     "basic": "Басиц",
+    "browse": "Прегледај",
     "calendar": "Календар",
     "cancel": "Откажи",
     "clear": "Јасно",
@@ -119,6 +120,7 @@
     "explore": "Истражите",
     "filter": "Филтер",
     "home": "Хоме",
+    "timeline": "Временска линија",
     "inbox": "Инбок",
     "language": "Језик",
     "last-updated-at": "Последњи пут ажурирано у",
@@ -977,12 +979,8 @@
     "previous-year": "Претходна година",
     "select-month": "Изаберите месец"
   },
-  "profile": {
-    "no-shared-memos": "@{{username}} још није поделио ниједну поруку.",
-    "not-found-description": "Нема корисника Memos по имену @{{username}} на овој инстанци.",
-    "not-found-title": "Нико овде није доступан"
-  },
   "space": {
+    "all-spaces": "Сви простори",
     "icon": {
       "change": "Промени икону простора",
       "kind": "Тип иконе",

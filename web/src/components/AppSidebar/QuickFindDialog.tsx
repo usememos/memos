@@ -14,6 +14,7 @@ import { useMemoViews } from "@/hooks/useUserQueries";
 import { BUILTIN_TASKS_VIEW_ID, getMemoViewId, isMemoCollectionRoute } from "@/lib/memo-views";
 import { extractSpaceUidFromName, formatSpaceUidForDisplay } from "@/lib/space-display";
 import { cn } from "@/lib/utils";
+import { getCollectionCreator, withCollectionCreator } from "@/router/routes";
 import { useTranslate } from "@/utils/i18n";
 import { getRouteActionPolicy, getSidebarRouteKind } from "./routes";
 
@@ -58,12 +59,15 @@ export const resolveQuickFindSubmission = (
   query: string,
   currentFilters: MemoFilter[],
   mode: QuickFindMode,
+  search = "",
 ): QuickFindSubmission => {
-  const routePolicy = getRouteActionPolicy(pathname);
+  const routePolicy = getRouteActionPolicy(pathname, search);
   const filters = buildQuickFindFilters(query, currentFilters, routePolicy.searchScope !== "all", mode);
   return {
     filters,
-    destination: routePolicy.searchDestination ? `${routePolicy.searchDestination}${getFilterSearch(filters)}` : undefined,
+    destination: routePolicy.searchDestination
+      ? `${routePolicy.searchDestination}${withCollectionCreator(getFilterSearch(filters), routePolicy.searchScope === "route-collection" ? getCollectionCreator(search) : undefined)}`
+      : undefined,
   };
 };
 
@@ -71,7 +75,6 @@ const getScopeLabel = (pathname: string, t: ReturnType<typeof useTranslate>) => 
   const routeKind = getSidebarRouteKind(pathname);
   if (routeKind === "archived") return t("common.archived");
   if (routeKind === "explore") return t("common.explore");
-  if (routeKind === "profile") return t("common.profile");
   return t("common.memos");
 };
 
@@ -111,7 +114,7 @@ const QuickFindDialog = () => {
   }, [filters, quickFindOpen]);
 
   const submitQuery = () => {
-    const submission = resolveQuickFindSubmission(location.pathname, query, filters, mode);
+    const submission = resolveQuickFindSubmission(location.pathname, query, filters, mode, location.search);
 
     if (submission.destination) {
       setMemoView(undefined);

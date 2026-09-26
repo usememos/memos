@@ -373,7 +373,7 @@ describe("GlobalMemoEditorProvider", () => {
   });
 
   it.each([
-    "/u/steven",
+    "/?creator=steven",
     "/archived",
     "/inbox",
     "/setting",

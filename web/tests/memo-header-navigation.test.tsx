@@ -123,6 +123,7 @@ describe("MemoHeader navigation", () => {
     );
 
     const timestamp = screen.getByRole("button", { name: "time" });
+    if (showCreator) expect(screen.getByRole("link", { name: /Alice/ })).toHaveAttribute("href", "/?creator=alice");
     timestamp.focus();
     expect(timestamp).toHaveFocus();
 

@@ -54,6 +54,7 @@
     "attachments": "Файлы",
     "avatar": "Аватар",
     "basic": "Базовые",
+    "browse": "Просмотр",
     "calendar": "Календарь",
     "cancel": "Отменить",
     "clear": "Очистить",
@@ -80,6 +81,7 @@
     "explore": "Обзор",
     "filter": "Фильтр",
     "home": "Главная",
+    "timeline": "Хронология",
     "inbox": "Уведомления",
     "language": "Язык",
     "last-updated-at": "Изменено",
@@ -963,11 +965,6 @@
     "previous-year": "Предыдущий год",
     "select-month": "Выбрать месяц"
   },
-  "profile": {
-    "no-shared-memos": "@{{username}} еще не поделился ни одной заметкой.",
-    "not-found-description": "В этом экземпляре нет пользователя Memos с именем @{{username}}.",
-    "not-found-title": "Здесь никого нет"
-  },
   "search": {
     "access-error": "У вас нет доступа к этим заметкам.",
     "clear-query": "Очистить запрос",
@@ -983,6 +980,7 @@
     "text": "Текст"
   },
   "space": {
+    "all-spaces": "Все пространства",
     "icon": {
       "change": "Изменить значок пространства",
       "kind": "Тип значка",

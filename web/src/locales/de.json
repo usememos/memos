@@ -54,6 +54,7 @@
     "attachments": "Anhänge",
     "avatar": "Avatar",
     "basic": "Allgemeines",
+    "browse": "Durchsuchen",
     "calendar": "Kalender",
     "cancel": "Abbrechen",
     "clear": "Leeren",
@@ -80,6 +81,7 @@
     "explore": "Erkunden",
     "filter": "Filter",
     "home": "Startseite",
+    "timeline": "Zeitleiste",
     "inbox": "Eingang",
     "language": "Sprache",
     "last-updated-at": "Zuletzt aktualisiert am",
@@ -977,12 +979,8 @@
     "previous-year": "Vorheriges Jahr",
     "select-month": "Monat auswählen"
   },
-  "profile": {
-    "no-shared-memos": "@{{username}} hat noch keine Memos geteilt.",
-    "not-found-description": "Es gibt keinen Benutzer Memos mit dem Namen @{{username}} in dieser Instanz.",
-    "not-found-title": "Niemand hier"
-  },
   "space": {
+    "all-spaces": "Alle Bereiche",
     "icon": {
       "change": "Bereichssymbol ändern",
       "kind": "Symboltyp",

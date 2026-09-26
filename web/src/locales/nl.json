@@ -54,6 +54,7 @@
     "attachments": "Bijlagen",
     "avatar": "Avatar",
     "basic": "Simpel",
+    "browse": "Bladeren",
     "calendar": "Kalender",
     "cancel": "Annuleren",
     "clear": "Leegmaken",
@@ -80,6 +81,7 @@
     "explore": "Verkennen",
     "filter": "Filter",
     "home": "Thuis",
+    "timeline": "Tijdlijn",
     "inbox": "Postvak",
     "language": "Taal",
     "last-updated-at": "Laatst bijgewerkt op",
@@ -977,12 +979,8 @@
     "previous-year": "Vorig jaar",
     "select-month": "Selecteer maand"
   },
-  "profile": {
-    "no-shared-memos": "@{{username}} heeft nog geen memo's gedeeld.",
-    "not-found-description": "Er is geen Memos gebruiker met de naam @{{username}} op deze instantie.",
-    "not-found-title": "Niemand hier"
-  },
   "space": {
+    "all-spaces": "Alle ruimtes",
     "icon": {
       "change": "Pictogram van de ruimte wijzigen",
       "kind": "Type pictogram",

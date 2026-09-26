@@ -29,7 +29,7 @@ export function MapView() {
   const routeRef = useRef(location);
   routeRef.current = location;
   const desktop = useMediaQuery("md");
-  const { selectedSpaceName } = useSpaceContext();
+  const { selectedSpaceName, creatorUsername } = useSpaceContext();
   const user = useCurrentUser();
   const { filters, removeFilter } = useMemoFilterContext();
   const query = useMapMemos();
@@ -289,14 +289,16 @@ export function MapView() {
           selectionKey={selectedKey}
           emptyText={t(query.complete ? "map.no-results" : "map.loading")}
           compose={
-            composeLocation && {
-              cacheKey: `map-editor:${user?.name}:${selectedSpaceName ?? "all"}:${locationKey(composeLocation)}`,
-              label: t("map.new-here"),
-              defaults: { defaultLocation: composeLocation },
-              onComposingChange: setComposing,
-              onSavingChange: setSaving,
-              onConfirm: (name) => void afterSave(name),
-            }
+            composeLocation && user && (!creatorUsername || creatorUsername === user.username)
+              ? {
+                  cacheKey: `map-editor:${user?.name}:${selectedSpaceName ?? "all"}:${locationKey(composeLocation)}`,
+                  label: t("map.new-here"),
+                  defaults: { defaultLocation: composeLocation },
+                  onComposingChange: setComposing,
+                  onSavingChange: setSaving,
+                  onConfirm: (name) => void afterSave(name),
+                }
+              : undefined
           }
         />
       </MemoPanel>

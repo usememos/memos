@@ -47,8 +47,8 @@ describe("Memo tag navigation", () => {
     expect(navigateTo).toHaveBeenCalledWith("/?filter=tagSearch%3Awork");
   });
 
-  it("returns a Profile-origin tag to that profile's memo list", () => {
-    origin.parentPage = "/u/alice";
+  it("returns a creator-scoped tag to that creator's memo list", () => {
+    origin.parentPage = "/?creator=alice";
 
     render(
       <MemoryRouter initialEntries={["/memos/parent"]}>
@@ -57,6 +57,6 @@ describe("Memo tag navigation", () => {
     );
 
     fireEvent.click(screen.getByText("#work"));
-    expect(navigateTo).toHaveBeenCalledWith("/u/alice?filter=tagSearch%3Awork");
+    expect(navigateTo).toHaveBeenCalledWith("/?creator=alice&filter=tagSearch%3Awork");
   });
 });

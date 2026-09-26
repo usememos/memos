@@ -12,7 +12,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { refreshAccessToken } from "@/connect";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { InstanceProvider, useInstance } from "@/contexts/InstanceContext";
-import { ViewProvider } from "@/contexts/ViewContext";
 import { useLiveMemoRefresh } from "@/hooks/useLiveMemoRefresh";
 import { useTokenRefreshOnFocus } from "@/hooks/useTokenRefreshOnFocus";
 import { queryClient } from "@/lib/query-client";
@@ -66,20 +65,18 @@ function Main() {
         <InstanceProvider>
           <AuthProvider>
             <TooltipProvider>
-              <ViewProvider>
-                <AppInitializer>
-                  <RouterProvider router={router} />
-                  <Toaster
-                    position="top-right"
-                    toastOptions={{
-                      style: {
-                        background: "var(--popover)",
-                        color: "var(--popover-foreground)",
-                      },
-                    }}
-                  />
-                </AppInitializer>
-              </ViewProvider>
+              <AppInitializer>
+                <RouterProvider router={router} />
+                <Toaster
+                  position="top-right"
+                  toastOptions={{
+                    style: {
+                      background: "var(--popover)",
+                      color: "var(--popover-foreground)",
+                    },
+                  }}
+                />
+              </AppInitializer>
             </TooltipProvider>
           </AuthProvider>
         </InstanceProvider>

@@ -29,7 +29,7 @@ const MemoShareImagePreview = forwardRef<HTMLDivElement, { width: number }>(({ w
       <div className="overflow-hidden rounded-lg border border-border/60 bg-background p-4 sm:p-5">
         <div className="flex items-start gap-3">
           <div className="flex min-w-0 items-center gap-2.5">
-            <UserAvatar avatarUrl={preview.avatarUrl} className="h-8 w-8 rounded-xl" />
+            <UserAvatar avatarUrl={preview.avatarUrl} name={preview.displayName} className="h-8 w-8 rounded-xl" />
             <div className="min-w-0">
               <div className="truncate text-[13px] font-semibold text-foreground">{preview.displayName}</div>
               {preview.formattedDisplayTime && <div className="truncate text-xs text-muted-foreground">{preview.formattedDisplayTime}</div>}

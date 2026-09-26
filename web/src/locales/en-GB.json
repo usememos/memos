@@ -54,6 +54,7 @@
     "attachments": "Attachments",
     "avatar": "Avatar",
     "basic": "Basic",
+    "browse": "Browse",
     "calendar": "Calendar",
     "cancel": "Cancel",
     "clear": "Clear",
@@ -80,6 +81,7 @@
     "explore": "Explore",
     "filter": "Filter",
     "home": "Home",
+    "timeline": "Timeline",
     "inbox": "Inbox",
     "language": "Language",
     "last-updated-at": "Last updated at",
@@ -963,11 +965,6 @@
     "timezone-unknown": "Time zone unknown",
     "title": "Details"
   },
-  "profile": {
-    "no-shared-memos": "@{{username}} hasn't shared any memos yet.",
-    "not-found-description": "There's no Memos user named @{{username}} on this instance.",
-    "not-found-title": "No one here"
-  },
   "search": {
     "access-error": "You don’t have access to these memos.",
     "clear-query": "Clear query",
@@ -983,6 +980,7 @@
     "text": "Text"
   },
   "space": {
+    "all-spaces": "All spaces",
     "icon": {
       "change": "Change space icon",
       "kind": "Icon type",

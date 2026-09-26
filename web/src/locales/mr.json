@@ -54,6 +54,7 @@
     "attachments": "संलग्नक",
     "avatar": "अवतार",
     "basic": "मूलभूत",
+    "browse": "ब्राउझ करा",
     "calendar": "दिनदर्शिका",
     "cancel": "रद्द करा",
     "clear": "साफ",
@@ -80,6 +81,7 @@
     "explore": "अन्वेषण",
     "filter": "गाळा",
     "home": "घर",
+    "timeline": "कालरेषा",
     "inbox": "इनबॉक्स",
     "language": "भाषा",
     "last-updated-at": "शेवटचे अद्यतन",
@@ -963,11 +965,6 @@
     "banner-title": "Memos डेमो",
     "deploy-link": "तुमचे स्वतःचे Memos तैनात करा"
   },
-  "profile": {
-    "no-shared-memos": "@{{username}} ने अद्याप कोणतेही मेमो शेअर केलेले नाहीत.",
-    "not-found-description": "या इन्स्टन्सवर @{{username}} नावाचा कोणताही Memos वापरकर्ता नाही.",
-    "not-found-title": "येथे कोणीही नाही"
-  },
   "search": {
     "access-error": "तुम्हाला या मेमोंचा ॲक्सेस नाही.",
     "clear-query": "क्वेरी साफ करा",
@@ -983,6 +980,7 @@
     "text": "मजकूर"
   },
   "space": {
+    "all-spaces": "सर्व स्पेस",
     "icon": {
       "change": "स्पेस आयकॉन बदला",
       "kind": "आयकॉनचा प्रकार",

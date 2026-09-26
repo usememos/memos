@@ -3,9 +3,17 @@ import { createContext, type ReactNode, useCallback, useContext, useMemo } from 
 import { useLocation, useNavigate } from "react-router-dom";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useSpace, useSpaces } from "@/hooks/useSpaceQueries";
-import { buildCollectionScopeFilter, type CollectionScope } from "@/lib/cel-filter";
+import { buildCollectionScopeFilter, type CollectionScope, combineCELFilters } from "@/lib/cel-filter";
+import { buildMemoCreatorFilter } from "@/lib/resource-names";
 import { getDuplicateSpaceTitles } from "@/lib/space-display";
-import { buildCollectionPath, ROUTES, resolveCollectionRoute } from "@/router/routes";
+import {
+  buildCollectionPath,
+  getCollectionCreator,
+  getCollectionHomePath,
+  ROUTES,
+  resolveCollectionRoute,
+  withCollectionCreator,
+} from "@/router/routes";
 import type { Space } from "@/types/proto/api/v1/space_service_pb";
 
 interface SpaceContextValue {
@@ -14,6 +22,7 @@ interface SpaceContextValue {
   duplicateSpaceTitles: ReadonlySet<string>;
   selectedSpace?: Space;
   selectedSpaceName?: string;
+  creatorUsername?: string;
   collectionScope: CollectionScope;
   memoFilter?: string;
   isLoadingSpaces: boolean;
@@ -29,10 +38,17 @@ const SpaceContext = createContext<SpaceContextValue | null>(null);
 const NO_SPACES: Space[] = [];
 
 export function SpaceProvider({ children }: { children: ReactNode }) {
-  const userName = useCurrentUser()?.name;
+  const user = useCurrentUser();
+  const userName = user?.name;
   const location = useLocation();
   const navigate = useNavigate();
-  const { spaceName: selectedSpaceName } = resolveCollectionRoute(location.pathname);
+  const route = resolveCollectionRoute(location.pathname);
+  const selectedSpaceName = route.spaceName;
+  const creatorUsername = route.isCollection
+    ? route.pathname === ROUTES.EXPLORE
+      ? undefined
+      : (getCollectionCreator(location.search) ?? (route.pathname === ROUTES.HOME ? user?.username : undefined))
+    : undefined;
   const spacesQuery = useSpaces(userName);
   const spaceQuery = useSpace(userName, selectedSpaceName);
   const spaces = spacesQuery.data ?? NO_SPACES;
@@ -47,7 +63,13 @@ export function SpaceProvider({ children }: { children: ReactNode }) {
     () => (selectedSpaceName ? { kind: "space", name: selectedSpaceName } : { kind: "all" }),
     [selectedSpaceName],
   );
-  const selectSpace = useCallback((space: Space) => navigate(buildCollectionPath(ROUTES.HOME, space.name)), [navigate]);
+  const selectSpace = useCallback(
+    (space: Space) => {
+      const homePath = getCollectionHomePath(location);
+      navigate(`${buildCollectionPath(homePath, space.name)}${withCollectionCreator("", getCollectionCreator(location.search))}`);
+    },
+    [location, navigate],
+  );
   const retrySpace = useCallback(() => {
     void spaceQuery.refetch();
   }, [spaceQuery.refetch]);
@@ -58,8 +80,12 @@ export function SpaceProvider({ children }: { children: ReactNode }) {
       duplicateSpaceTitles,
       selectedSpace,
       selectedSpaceName,
+      creatorUsername,
       collectionScope,
-      memoFilter: buildCollectionScopeFilter(collectionScope),
+      memoFilter: combineCELFilters(
+        buildCollectionScopeFilter(collectionScope),
+        creatorUsername && buildMemoCreatorFilter(creatorUsername),
+      ),
       isLoadingSpaces: spacesQuery.isPending,
       isSpacesError: spacesQuery.isError,
       isSpaceReady: !selectedSpaceName || (Boolean(userName) && spaceQuery.isSuccess),
@@ -73,6 +99,7 @@ export function SpaceProvider({ children }: { children: ReactNode }) {
       duplicateSpaceTitles,
       selectedSpace,
       selectedSpaceName,
+      creatorUsername,
       collectionScope,
       spacesQuery.isPending,
       spacesQuery.isError,

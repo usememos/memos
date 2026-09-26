@@ -92,6 +92,7 @@
     "attachments": "Liitteet",
     "avatar": "Avatar",
     "basic": "Perus",
+    "browse": "Selaa",
     "calendar": "Kalenteri",
     "cancel": "Peruuttaa",
     "clear": "Selkeä",
@@ -119,6 +120,7 @@
     "explore": "Tutkia",
     "filter": "Suodattaa",
     "home": "Kotiin",
+    "timeline": "Aikajana",
     "inbox": "Saapuneet",
     "language": "Kieli",
     "last-updated-at": "Viimeksi päivitetty klo",
@@ -977,12 +979,8 @@
     "previous-year": "Edellisessä vuodessa",
     "select-month": "Valitse kuukausi"
   },
-  "profile": {
-    "no-shared-memos": "@{{username}} ei ole vielä jakanut muistioita.",
-    "not-found-description": "Tässä instanssissa ei ole Memos käyttäjää nimeltä @{{username}}.",
-    "not-found-title": "Ei ketään täällä"
-  },
   "space": {
+    "all-spaces": "Kaikki tilat",
     "icon": {
       "change": "Vaihda tilan kuvaketta",
       "kind": "Kuvakkeen tyyppi",

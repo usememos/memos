@@ -80,6 +80,7 @@
     "attachments": "Ekler",
     "avatar": "Profil Resmi",
     "basic": "Temel",
+    "browse": "Göz at",
     "calendar": "Takvim",
     "cancel": "İptal",
     "clear": "Temizle",
@@ -108,6 +109,7 @@
     "explore": "Keşfet",
     "filter": "Filtrele",
     "home": "Ana Sayfa",
+    "timeline": "Zaman çizelgesi",
     "inbox": "Gelen Kutusu",
     "language": "Dil",
     "last-updated-at": "Son güncelleme",
@@ -360,11 +362,6 @@
     "succeed-copy-content": "İçerik başarıyla kopyalandı.",
     "succeed-copy-link": "Bağlantı başarıyla kopyalandı.",
     "update-succeed": "Güncelleme başarılı"
-  },
-  "profile": {
-    "no-shared-memos": "@{{username}} henüz hiç not paylaşmadı.",
-    "not-found-description": "Bu sunucuda @{{username}} adında bir Memos kullanıcısı yok.",
-    "not-found-title": "Burada kimse yok"
   },
   "reference": {
     "no-memos-found": "Not bulunamadı",
@@ -908,6 +905,7 @@
     }
   },
   "space": {
+    "all-spaces": "Tüm alanlar",
     "icon": {
       "change": "Alan simgesini değiştir",
       "kind": "Simge türü",

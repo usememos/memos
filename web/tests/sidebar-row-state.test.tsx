@@ -94,8 +94,8 @@ describe("MemoFilters", () => {
     expect(screen.getByText("Last week")).toBeInTheDocument();
   });
 
-  it("announces a view on a user profile, where it narrows that user's memos", () => {
-    renderChips("/u/alice", BUILTIN_TASKS_VIEW_ID);
+  it("announces a view on a creator collection, where it narrows that user's memos", () => {
+    renderChips("/?creator=alice", BUILTIN_TASKS_VIEW_ID);
     expect(screen.getByText("common.tasks")).toBeInTheDocument();
   });
 

@@ -32,6 +32,9 @@ func convertAttachmentFromStore(attachment *store.Attachment) *v1pb.Attachment {
 		MotionMedia:   convertMotionMediaFromStore(getAttachmentMotionMedia(attachment)),
 		MediaMetadata: convertMediaMetadataFromStore(attachment.Payload.GetMediaMetadata()),
 	}
+	if attachment.CreatorUsername != nil {
+		attachmentMessage.Creator = BuildUserName(*attachment.CreatorUsername)
+	}
 	if attachment.MemoUID != nil && *attachment.MemoUID != "" {
 		memoName := fmt.Sprintf("%s%s", MemoNamePrefix, *attachment.MemoUID)
 		attachmentMessage.Memo = &memoName

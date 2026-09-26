@@ -5,7 +5,7 @@ import { cva } from "class-variance-authority";
  * visible artwork starts at 20px, and first-level labels start at 44px. The full-bleed
  * footer action pads its content directly onto those same rails. Rows reserve a 20px
  * artwork column. Compact navigation is a 28px square like the header's compose control,
- * so its glyph sits 2px inside the artwork rail and reaches the label rail with a 10px gap.
+ * with 6px padding around each glyph and a 6px gap before its label.
  */
 export const SIDEBAR_RAIL_CLASSES = "px-3";
 // Content rows reserve 20px so 16px icons and 20px marks share a stable label rail.
@@ -24,7 +24,7 @@ export const sidebarSurfaceVariants = cva("min-w-0 items-center", {
   variants: {
     role: {
       row: "flex h-7 w-full gap-1 rounded-md px-2 text-ui",
-      navPill: "relative flex h-7 rounded-md px-1.5",
+      navPill: "relative flex h-7 shrink-0 rounded-md px-1.5",
       headerBrand: "flex h-9 max-w-full gap-2 rounded-md px-2",
       mobileBrand: "flex h-9 max-w-full gap-1.5 rounded-md px-1",
       account: "flex h-9 w-full gap-1 rounded-none px-5",

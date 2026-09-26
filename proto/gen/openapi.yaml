@@ -35,7 +35,7 @@ paths:
         get:
             tags:
                 - AttachmentService
-            description: ListAttachments lists all attachments.
+            description: ListAttachments lists attachments linked to readable memos and the caller's unlinked uploads.
             operationId: AttachmentService_ListAttachments
             parameters:
                 - name: pageSize
@@ -61,7 +61,9 @@ paths:
                     Optional. Filter to apply to the list results.
                      Example: "mime_type==\"image/png\"" or "filename.contains(\"test\")"
                      Supported operators: =, !=, <, <=, >, >=, : (contains), in
-                     Supported fields: filename, mime_type, create_time, memo_id, space.
+                     Supported fields: creator, filename, mime_type, create_time, memo_id, space.
+                     `creator` is the linked memo's creator, or the uploader for an unlinked
+                     attachment. It supports equality with a User resource name.
                      `space` only supports a non-negated `==` comparison with a Space resource
                      name or null.
                      `space` is the linked memo's space resource name, or null when the
@@ -3066,6 +3068,12 @@ components:
                     allOf:
                         - $ref: '#/components/schemas/MediaMetadata'
                     description: Optional. Immutable normalized media metadata explicitly supplied by the client at creation time.
+                creator:
+                    readOnly: true
+                    type: string
+                    description: |-
+                        Output only. The user who uploaded this attachment, which may differ from
+                         the creator of the linked memo. Format: users/{user}.
         BatchDeleteAttachmentsRequest:
             required:
                 - names

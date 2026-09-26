@@ -39,6 +39,7 @@ func TestCreateAttachment(t *testing.T) {
 		})
 		require.NoError(t, err)
 		require.Equal(t, "image/png", attachment.Type)
+		require.Equal(t, apiv1.BuildUserName(user.Username), attachment.Creator)
 	})
 
 	// Test case 2: Create attachment with empty type and unknown extension, but detectable content
@@ -525,6 +526,10 @@ func TestListAttachmentsSpaceFilter(t *testing.T) {
 		UID: "attachment-api-space-a", CreatorID: owner.ID, Content: "a", Visibility: store.Private, SpaceID: &spaceA.ID,
 	})
 	require.NoError(t, err)
+	sharedMemo, err := ts.Store.CreateMemo(ctx, &store.Memo{
+		UID: "attachment-api-space-a-shared", CreatorID: owner.ID, Content: "shared", Visibility: store.SpaceAudience, SpaceID: &spaceA.ID,
+	})
+	require.NoError(t, err)
 	spaceBMemo, err := ts.Store.CreateMemo(ctx, &store.Memo{
 		UID: "attachment-api-space-b", CreatorID: owner.ID, Content: "b", Visibility: store.Public, SpaceID: &spaceB.ID,
 	})
@@ -540,6 +545,7 @@ func TestListAttachmentsSpaceFilter(t *testing.T) {
 	createAttachment("attachment-api-unlinked", nil)
 	createAttachment("attachment-api-unassigned-file", &unassignedMemo.ID)
 	createAttachment("attachment-api-space-a-file", &spaceAMemo.ID)
+	createAttachment("attachment-api-space-a-shared-file", &sharedMemo.ID)
 	createAttachment("attachment-api-space-b-file", &spaceBMemo.ID)
 
 	attachmentFilenames := func(response *v1pb.ListAttachmentsResponse) []string {
@@ -553,14 +559,14 @@ func TestListAttachmentsSpaceFilter(t *testing.T) {
 	ownerCtx := ts.CreateUserContext(ctx, owner.ID)
 	allResponse, err := ts.Service.ListAttachments(ownerCtx, &v1pb.ListAttachmentsRequest{PageSize: 100})
 	require.NoError(t, err)
-	require.Len(t, allResponse.Attachments, 4, "omitting the filter must preserve the creator's full readable library")
+	require.Len(t, allResponse.Attachments, 5, "omitting the filter includes every readable attachment and the owner's unused uploads")
 
 	spaceResponse, err := ts.Service.ListAttachments(ownerCtx, &v1pb.ListAttachmentsRequest{
 		PageSize: 100,
 		Filter:   `space == "spaces/` + spaceA.UID + `"`,
 	})
 	require.NoError(t, err)
-	require.Equal(t, []string{"attachment-api-space-a-file.txt"}, attachmentFilenames(spaceResponse))
+	require.ElementsMatch(t, []string{"attachment-api-space-a-file.txt", "attachment-api-space-a-shared-file.txt"}, attachmentFilenames(spaceResponse))
 
 	unassignedResponse, err := ts.Service.ListAttachments(ownerCtx, &v1pb.ListAttachmentsRequest{
 		PageSize: 100,
@@ -587,7 +593,14 @@ func TestListAttachmentsSpaceFilter(t *testing.T) {
 		Filter:   `space == "spaces/` + spaceA.UID + `"`,
 	})
 	require.NoError(t, err)
-	require.Empty(t, memberResponse.Attachments, "the attachment library remains creator-owned")
+	require.Equal(t, []string{"attachment-api-space-a-shared-file.txt"}, attachmentFilenames(memberResponse))
+
+	creatorResponse, err := ts.Service.ListAttachments(ts.CreateUserContext(ctx, member.ID), &v1pb.ListAttachmentsRequest{
+		PageSize: 100,
+		Filter:   `creator == "users/` + owner.Username + `"`,
+	})
+	require.NoError(t, err)
+	require.ElementsMatch(t, []string{"attachment-api-space-a-shared-file.txt", "attachment-api-space-b-file.txt"}, attachmentFilenames(creatorResponse))
 
 	_, err = ts.Service.ListAttachments(ts.CreateUserContext(ctx, outsider.ID), &v1pb.ListAttachmentsRequest{
 		Filter: `space == "spaces/` + spaceA.UID + `"`,
@@ -598,6 +611,37 @@ func TestListAttachmentsSpaceFilter(t *testing.T) {
 		Filter: `space != null`,
 	})
 	require.Equal(t, codes.InvalidArgument, status.Code(err))
+}
+
+func TestAttachmentCreatorIsUploader(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	memoAuthor, err := ts.CreateRegularUser(ctx, "attachment-memo-author")
+	require.NoError(t, err)
+	uploader, err := ts.CreateRegularUser(ctx, "attachment-uploader")
+	require.NoError(t, err)
+	memo, err := ts.Store.CreateMemo(ctx, &store.Memo{
+		UID: "attachment-attribution-memo", CreatorID: memoAuthor.ID, Content: "shared", Visibility: store.Public,
+	})
+	require.NoError(t, err)
+	_, err = ts.Store.CreateAttachment(ctx, &store.Attachment{
+		UID: "attachment-attribution-file", CreatorID: uploader.ID, Filename: "shared.txt", Type: "text/plain", MemoID: &memo.ID,
+	})
+	require.NoError(t, err)
+
+	authorCtx := ts.CreateUserContext(ctx, memoAuthor.ID)
+	listed, err := ts.Service.ListAttachments(authorCtx, &v1pb.ListAttachmentsRequest{
+		Filter: `creator == "users/` + memoAuthor.Username + `"`,
+	})
+	require.NoError(t, err)
+	require.Len(t, listed.Attachments, 1)
+	require.Equal(t, apiv1.BuildUserName(uploader.Username), listed.Attachments[0].Creator)
+
+	got, err := ts.Service.GetAttachment(authorCtx, &v1pb.GetAttachmentRequest{Name: listed.Attachments[0].Name})
+	require.NoError(t, err)
+	require.Equal(t, apiv1.BuildUserName(uploader.Username), got.Creator)
 }
 
 func memoIDFromName(ctx context.Context, t *testing.T, ts *TestService, name string) int32 {

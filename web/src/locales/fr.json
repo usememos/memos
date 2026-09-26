@@ -54,6 +54,7 @@
     "attachments": "Pièces jointes",
     "avatar": "Avatar",
     "basic": "Basique",
+    "browse": "Parcourir",
     "calendar": "Calendrier",
     "cancel": "Annuler",
     "clear": "Effacer",
@@ -80,6 +81,7 @@
     "explore": "Explorer",
     "filter": "Filtrer",
     "home": "Accueil",
+    "timeline": "Chronologie",
     "inbox": "Boîte de réception",
     "language": "Langue",
     "last-updated-at": "Dernière mise à jour le",
@@ -977,12 +979,8 @@
     "previous-year": "Année précédente",
     "select-month": "Sélectionner un mois"
   },
-  "profile": {
-    "no-shared-memos": "@{{username}} n'a encore partagé aucun mémo.",
-    "not-found-description": "Il n'y a pas d'utilisateur Memos nommé @{{username}} sur cette instance.",
-    "not-found-title": "Personne ici"
-  },
   "space": {
+    "all-spaces": "Tous les espaces",
     "icon": {
       "change": "Changer l'icône de l'espace",
       "kind": "Type d'icône",

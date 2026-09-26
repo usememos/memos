@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import Home from "@/pages/Home";
 
 vi.mock("@/hooks/useMemoSuggestions", () => ({
@@ -8,8 +8,11 @@ vi.mock("@/hooks/useMemoSuggestions", () => ({
 
 const state = vi.hoisted(() => ({
   selectedSpaceName: undefined as string | undefined,
+  creatorUsername: undefined as string | undefined,
   editorProps: undefined as Record<string, unknown> | undefined,
   listProps: undefined as Record<string, unknown> | undefined,
+  memoViewProps: undefined as Record<string, unknown> | undefined,
+  filterOptions: undefined as Record<string, unknown> | undefined,
 }));
 
 vi.mock("@/components/MemoEditor", () => ({
@@ -20,7 +23,10 @@ vi.mock("@/components/MemoEditor", () => ({
 }));
 
 vi.mock("@/components/MemoView", () => ({
-  default: () => <div data-testid="memo-view" />,
+  default: (props: Record<string, unknown>) => {
+    state.memoViewProps = props;
+    return <div data-testid="memo-view" />;
+  },
 }));
 
 vi.mock("@/components/PagedMemoList", () => ({
@@ -62,17 +68,27 @@ vi.mock("@/contexts/NewMemoContext", () => ({
 vi.mock("@/contexts/SpaceContext", () => ({
   useSpaceContext: () => ({
     selectedSpaceName: state.selectedSpaceName,
-    memoFilter: state.selectedSpaceName ? `space == "${state.selectedSpaceName}"` : undefined,
+    creatorUsername: state.creatorUsername,
+    memoFilter:
+      [
+        state.selectedSpaceName && `space == "${state.selectedSpaceName}"`,
+        state.creatorUsername && `creator == "users/${state.creatorUsername}"`,
+      ]
+        .filter(Boolean)
+        .join(" && ") || undefined,
   }),
 }));
 
 vi.mock("@/hooks", () => ({
-  useMemoFilters: () => "",
+  useMemoFilters: (options: Record<string, unknown>) => {
+    state.filterOptions = options;
+    return "";
+  },
   useMemoSorting: () => ({ listSort: undefined, orderBy: "create_time desc" }),
 }));
 
 vi.mock("@/hooks/useCurrentUser", () => ({
-  default: () => ({ name: "users/1" }),
+  default: () => ({ name: "users/steven", username: "steven" }),
 }));
 
 vi.mock("@/utils/i18n", () => ({
@@ -80,8 +96,15 @@ vi.mock("@/utils/i18n", () => ({
 }));
 
 describe("<Home>", () => {
-  it("renders the editor and memo cards synchronously without blank placeholders", () => {
+  beforeEach(() => {
     state.selectedSpaceName = undefined;
+    state.creatorUsername = undefined;
+    state.editorProps = undefined;
+    state.listProps = undefined;
+    state.memoViewProps = undefined;
+    state.filterOptions = undefined;
+  });
+  it("renders the editor and memo cards synchronously without blank placeholders", () => {
     render(<Home />);
 
     expect(screen.getByTestId("memo-editor")).toBeInTheDocument();
@@ -90,6 +113,16 @@ describe("<Home>", () => {
     expect(state.editorProps).toMatchObject({ cacheKey: "home-memo-editor", defaultSpace: undefined });
     expect(state.editorProps?.autoFocus).toEqual(expect.any(Function));
     expect(state.editorProps?.suggestions).toEqual([{ id: "tag:work" }]);
+    expect(state.filterOptions).not.toHaveProperty("creatorName");
+    expect(state.memoViewProps).toMatchObject({ showCreator: true });
+  });
+
+  it("shows another creator's matching memos without offering an editor", () => {
+    state.creatorUsername = "alice";
+    render(<Home />);
+    expect(state.listProps).toMatchObject({ contextFilter: 'creator == "users/alice"' });
+    expect(state.memoViewProps).toMatchObject({ showCreator: false });
+    expect(screen.queryByTestId("memo-editor")).not.toBeInTheDocument();
   });
 
   it("filters the feed and sets new memo placement to the selected Space", () => {

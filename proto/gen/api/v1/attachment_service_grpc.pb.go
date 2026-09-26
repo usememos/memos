@@ -40,7 +40,7 @@ type AttachmentServiceClient interface {
 	// Uploads are bound to the authenticated user, expire after 30 minutes of
 	// inactivity, and do not survive a server restart.
 	UploadAttachment(ctx context.Context, in *UploadAttachmentRequest, opts ...grpc.CallOption) (*UploadAttachmentResponse, error)
-	// ListAttachments lists all attachments.
+	// ListAttachments lists attachments linked to readable memos and the caller's unlinked uploads.
 	ListAttachments(ctx context.Context, in *ListAttachmentsRequest, opts ...grpc.CallOption) (*ListAttachmentsResponse, error)
 	// GetAttachment returns an attachment by name.
 	GetAttachment(ctx context.Context, in *GetAttachmentRequest, opts ...grpc.CallOption) (*Attachment, error)
@@ -141,7 +141,7 @@ type AttachmentServiceServer interface {
 	// Uploads are bound to the authenticated user, expire after 30 minutes of
 	// inactivity, and do not survive a server restart.
 	UploadAttachment(context.Context, *UploadAttachmentRequest) (*UploadAttachmentResponse, error)
-	// ListAttachments lists all attachments.
+	// ListAttachments lists attachments linked to readable memos and the caller's unlinked uploads.
 	ListAttachments(context.Context, *ListAttachmentsRequest) (*ListAttachmentsResponse, error)
 	// GetAttachment returns an attachment by name.
 	GetAttachment(context.Context, *GetAttachmentRequest) (*Attachment, error)

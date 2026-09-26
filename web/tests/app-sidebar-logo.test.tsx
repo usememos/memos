@@ -4,16 +4,16 @@ import { MemoryRouter, useLocation } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import AppSidebar, { MobileAppHeader, MobileAppSidebar } from "@/components/AppSidebar";
 import { SIDEBAR_SECTION_ACTION_ICON_CLASSES } from "@/components/AppSidebar/SidebarSection";
-import { type MemoFilter, parseFilterQuery } from "@/contexts/MemoFilterContext";
-import { resolveCollectionRoute } from "@/router/routes";
+import { type MemoFilter } from "@/contexts/MemoFilterContext";
+import { getCollectionCreator, resolveCollectionRoute } from "@/router/routes";
 
 const authState = vi.hoisted(() => ({
   currentUser: { name: "users/test" } as { name: string } | undefined,
   memoViews: [] as Array<{ name: string; title: string }>,
   notifications: [] as Array<{ status: number }>,
+  guestCreator: undefined as { username: string; displayName: string; avatarUrl: string } | undefined,
 }));
 const sidebarState = vi.hoisted(() => ({
-  memoScope: "home" as "home" | "explore",
   mobileOpen: false,
   setMobileOpen: vi.fn(),
   setQuickFindOpen: vi.fn(),
@@ -45,6 +45,7 @@ vi.mock("@/components/UserMenu", () => ({
       User menu
     </button>
   ),
+  UserPreferenceDialog: () => null,
 }));
 
 vi.mock("@/components/CreateSpaceDialog", () => ({
@@ -74,8 +75,6 @@ vi.mock("@/contexts/AppSidebarContext", () => ({
     setMobileOpen: sidebarState.setMobileOpen,
     quickFindOpen: false,
     setQuickFindOpen: sidebarState.setQuickFindOpen,
-    memoScope: sidebarState.memoScope,
-    setMemoScope: vi.fn(),
   }),
 }));
 
@@ -102,7 +101,8 @@ vi.mock("@/contexts/MemoFilterContext", async (importOriginal) => ({
 
 vi.mock("@/contexts/SpaceContext", () => ({
   useSpaceContext: () => {
-    const { spaceName } = resolveCollectionRoute(useLocation().pathname);
+    const location = useLocation();
+    const { spaceName, isCollection } = resolveCollectionRoute(location.pathname);
     const duplicateSpaceTitles = new Set(
       spaceState.spaces
         .filter((space, index) => spaceState.spaces.findIndex((candidate) => candidate.title === space.title) !== index)
@@ -111,6 +111,7 @@ vi.mock("@/contexts/SpaceContext", () => ({
     return {
       ...spaceState,
       selectedSpaceName: spaceName,
+      creatorUsername: isCollection ? getCollectionCreator(location.search) : undefined,
       selectedSpace: spaceName ? spaceState.selectedSpace : undefined,
       memoFilter: spaceName ? `space == ${JSON.stringify(spaceName)}` : undefined,
       duplicateSpaceTitles,
@@ -145,7 +146,7 @@ vi.mock("@/hooks/useUserQueries", () => ({
   },
   useMemoViews: () => ({ data: authState.memoViews }),
   useNotifications: () => ({ data: authState.notifications }),
-  useUser: () => ({ data: undefined }),
+  useUser: () => ({ data: authState.guestCreator }),
 }));
 
 vi.mock("@/i18n", () => ({
@@ -175,7 +176,7 @@ const expectExpandedNavPill = (pill: HTMLElement, label: string) => {
   expect(pill.firstElementChild).toHaveClass("size-4");
   const labelTrack = pill.querySelector("span.grid");
   // The label opens only where the row can afford it; the control's aria-label names it regardless.
-  expect(labelTrack).toHaveClass("@min-[230px]:grid-cols-[1fr]", "@min-[230px]:ps-2");
+  expect(labelTrack).toHaveClass("@min-[230px]:grid-cols-[1fr]", "@min-[230px]:ps-1.5");
   expect(labelTrack).toHaveAttribute("aria-hidden", "true");
   expect(pill.querySelector("[data-sidebar-label]")).toHaveTextContent(label);
 };
@@ -195,7 +196,7 @@ describe("App sidebar logo", () => {
     authState.currentUser = { name: "users/test" };
     authState.memoViews = [];
     authState.notifications = [];
-    sidebarState.memoScope = "home";
+    authState.guestCreator = undefined;
     sidebarState.mobileOpen = false;
     sidebarState.setMobileOpen.mockClear();
     sidebarState.setQuickFindOpen.mockClear();
@@ -209,26 +210,16 @@ describe("App sidebar logo", () => {
     tagsSectionHook.mockClear();
   });
 
-  it("preserves a CEL expression when switching sidebar scopes", async () => {
-    const expression = 'tags.exists(t, t.contains("50%, café & C++"))\n || pinned';
-    filterState.filters = [{ factor: "celSearch", value: expression }];
-    const LocationProbe = () => {
-      const location = useLocation();
-      return (
-        <output data-testid="scope-location">
-          {JSON.stringify({ path: location.pathname, filters: parseFilterQuery(new URLSearchParams(location.search).get("filter")) })}
-        </output>
-      );
-    };
+  it("preserves creator and filters, excluding map state, when moving between collection pages", () => {
     render(
-      <MemoryRouter initialEntries={["/"]}>
+      <MemoryRouter initialEntries={["/spaces/product/map?creator=alice&filter=tagSearch%3Awork&lat=31&lng=121&zoom=12&memo=memos/a"]}>
         <AppSidebar />
-        <LocationProbe />
       </MemoryRouter>,
     );
-    fireEvent.click(screen.getByRole("button", { name: "common.home" }));
-    fireEvent.click(await screen.findByRole("menuitem", { name: "common.explore" }));
-    expect(screen.getByTestId("scope-location")).toHaveTextContent(JSON.stringify({ path: "/explore", filters: filterState.filters }));
+    const search = "?filter=tagSearch%3Awork&creator=alice";
+    expect(screen.getByRole("link", { name: "common.timeline" })).toHaveAttribute("href", `/spaces/product${search}`);
+    expect(screen.getByRole("link", { name: "common.calendar" })).toHaveAttribute("href", `/spaces/product/calendar${search}`);
+    expect(screen.getByRole("link", { name: "common.attachments" })).toHaveAttribute("href", `/spaces/product/attachments${search}`);
   });
 
   it("shows the context switcher and opens the global memo editor", () => {
@@ -292,7 +283,6 @@ describe("App sidebar logo", () => {
   it.each([
     "/archived",
     "/inbox",
-    "/u/alice",
     "/setting",
     "/about",
     "/views",
@@ -322,7 +312,7 @@ describe("App sidebar logo", () => {
       </MemoryRouter>,
     );
 
-    expect(filteredStatsHook).toHaveBeenCalledWith(expect.objectContaining({ context: "explore", filter: 'space == "spaces/product"' }));
+    expect(filteredStatsHook).toHaveBeenCalledWith(expect.objectContaining({ context: "collection", filter: 'space == "spaces/product"' }));
   });
 
   it("includes authorized Space memos in All Explore statistics", () => {
@@ -332,18 +322,7 @@ describe("App sidebar logo", () => {
       </MemoryRouter>,
     );
 
-    expect(filteredStatsHook).toHaveBeenCalledWith(expect.objectContaining({ context: "explore", filter: undefined }));
-  });
-
-  it("keeps Profile statistics and tag UI state unscoped by Space", () => {
-    render(
-      <MemoryRouter initialEntries={["/u/alice"]}>
-        <AppSidebar />
-      </MemoryRouter>,
-    );
-
-    expect(filteredStatsHook).toHaveBeenCalledWith(expect.objectContaining({ context: "profile", filter: undefined }));
-    expect(tagsSectionHook).toHaveBeenCalledWith(expect.objectContaining({ scope: "profile" }));
+    expect(filteredStatsHook).toHaveBeenCalledWith(expect.objectContaining({ context: "collection", filter: undefined }));
   });
 
   it("keeps Archived statistics and tag UI state unscoped by Space", () => {
@@ -357,20 +336,15 @@ describe("App sidebar logo", () => {
     expect(tagsSectionHook).toHaveBeenCalledWith(expect.objectContaining({ scope: "archived" }));
   });
 
-  it("uses one unified signed-in footer surface", () => {
+  it("shows signed-in account actions in the top switcher", () => {
     render(
       <MemoryRouter initialEntries={["/inbox"]}>
         <AppSidebar />
       </MemoryRouter>,
     );
-
-    const footer = screen.getByRole("button", { name: "User menu" }).closest("footer");
-    expect(footer).not.toBeNull();
-    expect(footer).not.toHaveClass("px-3");
-    expect(footer).not.toHaveClass("py-1");
-    expect(footer).not.toHaveClass("py-1.5");
-    expect(footer?.childElementCount).toBe(1);
-    expect(screen.queryByRole("link", { name: /^common\.inbox/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("contentinfo")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "space.switch: common.memos" }));
+    expect(screen.getByRole("button", { name: "User menu" })).toBeInTheDocument();
   });
 
   it("keeps Attachments active after route normalization", () => {
@@ -415,14 +389,13 @@ describe("App sidebar logo", () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByRole("link", { name: "Memos logo" })).toHaveAttribute("href", "/explore");
-    expect(screen.queryByRole("button", { name: /^space\.switch:/ })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "space.switch: common.memos" })).toHaveTextContent("Memos logo");
     const primaryNavigation = screen.getByRole("navigation", { name: "Primary" });
-    expect(primaryNavigation).toHaveClass("h-7", "items-center", "gap-0.5", "px-3");
+    expect(primaryNavigation).toHaveClass("h-7", "items-center", "gap-1", "px-3");
     expect(primaryNavigation).not.toHaveClass("flex-col");
     const navigation = within(primaryNavigation);
     expect(navigation.getByRole("button", { name: "common.search" })).toHaveClass("ms-auto", "h-7", "px-1.5");
-    expectActiveNavPill(navigation.getByRole("link", { name: "common.explore" }), "common.explore");
+    expectActiveNavPill(navigation.getByRole("link", { name: "common.timeline" }), "common.timeline");
     const about = navigation.getByRole("link", { name: "common.about" });
     expect(about).toHaveAttribute("href", "/about");
     expectCollapsedNavPill(about, "common.about");
@@ -431,7 +404,37 @@ describe("App sidebar logo", () => {
     expect(signIn).not.toHaveClass("rounded-md");
     expect(signIn.closest("footer")).not.toBeNull();
     expect(screen.queryByRole("button", { name: "editor.new-memo" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: "common.home" })).not.toBeInTheDocument();
+  });
+
+  it("shows the selected creator in the guest sidebar and mobile header", () => {
+    authState.currentUser = undefined;
+    authState.guestCreator = { username: "steven", displayName: "Steven", avatarUrl: "/avatar.png" };
+
+    render(
+      <MemoryRouter initialEntries={["/?creator=steven"]}>
+        <AppSidebar />
+        <MobileAppHeader />
+      </MemoryRouter>,
+    );
+
+    const creatorLinks = screen.getAllByRole("button", { name: "space.switch: Steven" });
+    expect(creatorLinks).toHaveLength(2);
+    for (const link of creatorLinks) {
+      expect(link.querySelector("img")).toHaveAttribute("src", "/avatar.png");
+    }
+    expect(screen.queryByRole("link", { name: "Memos logo" })).not.toBeInTheDocument();
+  });
+
+  it("shows the selected username while the guest profile is loading", () => {
+    authState.currentUser = undefined;
+
+    render(
+      <MemoryRouter initialEntries={["/?creator=steven"]}>
+        <AppSidebar />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByRole("button", { name: "space.switch: steven" })).toHaveTextContent("steven");
   });
 
   it.each(["/403", "/404", "/unknown"])("uses the common sidebar without inheriting collection content on %s", (path) => {
@@ -458,13 +461,12 @@ describe("App sidebar logo", () => {
     expect(screen.queryByText("Tags")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "space.switch: common.memos" })).toBeInTheDocument();
     const navigation = within(screen.getByRole("navigation", { name: "Primary" }));
-    expectDefaultNavPill(navigation.getByRole("button", { name: "common.home" }), "common.home");
+    expectDefaultNavPill(navigation.getByRole("link", { name: "common.timeline" }), "common.timeline");
     const attachments = navigation.getByRole("link", { name: "common.attachments" });
     expect(attachments).toHaveAttribute("href", "/attachments");
     expectCollapsedNavPill(attachments, "common.attachments");
     expect(screen.queryByRole("link", { name: "common.inbox" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: "common.home" })).not.toBeInTheDocument();
-    expect(screen.getByText("User menu").closest("footer")).not.toBeNull();
+    expect(screen.queryByRole("contentinfo")).not.toBeInTheDocument();
   });
 
   it.each(["/about", "/About/"])("marks the common About link active on %s", (path) => {
@@ -478,8 +480,8 @@ describe("App sidebar logo", () => {
     expect(screen.getByRole("heading", { name: "common.resources", level: 2 })).toBeInTheDocument();
 
     const navigation = within(screen.getByRole("navigation", { name: "Primary" }));
-    const scopeTrigger = navigation.getByRole("button", { name: "common.home" });
-    expectDefaultNavPill(scopeTrigger, "common.home");
+    const scopeTrigger = navigation.getByRole("link", { name: "common.timeline" });
+    expectDefaultNavPill(scopeTrigger, "common.timeline");
     expect(scopeTrigger.querySelector(".lucide-chevron-down")).not.toBeInTheDocument();
     expectCollapsedNavPill(navigation.getByRole("link", { name: "common.attachments" }), "common.attachments");
   });
@@ -493,10 +495,9 @@ describe("App sidebar logo", () => {
     );
 
     const navigation = within(screen.getByRole("navigation", { name: "Primary" }));
-    const explore = navigation.getByRole("link", { name: "common.explore" });
-    expect(explore).toHaveAttribute("href", "/explore");
-    expectDefaultNavPill(explore, "common.explore");
-    expect(screen.queryByRole("link", { name: "common.home" })).not.toBeInTheDocument();
+    const home = navigation.getByRole("link", { name: "common.timeline" });
+    expect(home).toHaveAttribute("href", "/explore");
+    expectDefaultNavPill(home, "common.timeline");
     expect(screen.queryByRole("link", { name: "common.attachments" })).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "common.inbox" })).not.toBeInTheDocument();
     const about = navigation.getByRole("link", { name: "common.about" });
@@ -514,7 +515,7 @@ describe("App sidebar logo", () => {
     );
 
     const navigation = within(screen.getByRole("navigation", { name: "Primary" }));
-    expectCollapsedNavPill(navigation.getByRole("link", { name: "common.explore" }), "common.explore");
+    expectCollapsedNavPill(navigation.getByRole("link", { name: "common.timeline" }), "common.timeline");
     expectActiveNavPill(navigation.getByRole("link", { name: "common.about" }), "common.about");
     expect(screen.queryByText("Calendar")).not.toBeInTheDocument();
   });
@@ -533,23 +534,53 @@ describe("App sidebar logo", () => {
     expect(calendar.compareDocumentPosition(views) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     const viewOptions = screen.getByRole("button", { name: "memo.view-options" });
     const createView = screen.getByRole("button", { name: "common.create" });
-    expect(viewOptions.compareDocumentPosition(createView) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(viewOptions.closest("nav")).toBe(screen.getByRole("navigation", { name: "Primary" }));
+    expect(screen.getByRole("link", { name: "common.timeline" }).nextElementSibling).toBe(viewOptions);
+    expect(viewOptions.parentElement).toHaveClass("bg-sidebar-accent", "rounded-md");
+    expect(viewOptions.closest("a")).toBeNull();
     expect(createView).toHaveClass("size-6", "rounded-md", "text-muted-foreground/70", "hover:bg-muted/60", "hover:text-foreground");
     expect(createView.querySelector("svg")).toHaveClass(SIDEBAR_SECTION_ACTION_ICON_CLASSES);
     const tasksView = screen.getByRole("button", { name: "common.tasks" });
     expect(tasksView).toHaveTextContent("common.tasks");
     expect(tasksView).not.toHaveTextContent("☑️");
-    expect(screen.queryByRole("button", { name: "common.all" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "common.explore" })).not.toBeInTheDocument();
 
-    const scopeTrigger = screen.getByRole("button", { name: "common.home" });
-    expectActiveNavPill(scopeTrigger, "common.home");
-    expect(scopeTrigger.querySelector(".lucide-chevron-down")).toBeInTheDocument();
-    expect(scopeTrigger.querySelector(".lucide-chevrons-up-down")).not.toBeInTheDocument();
+    const home = screen.getByRole("link", { name: "common.timeline" });
+    expectActiveNavPill(home, "common.timeline");
+    expect(home.querySelector(".lucide-chevron-down")).not.toBeInTheDocument();
     expectCollapsedNavPill(screen.getByRole("link", { name: "common.attachments" }), "common.attachments");
-    fireEvent.click(scopeTrigger);
-    expect(await screen.findByRole("menuitem", { name: "common.home" })).toBeInTheDocument();
-    expect(screen.getByRole("menuitem", { name: "common.explore" })).toBeInTheDocument();
-    expect(screen.queryByRole("menuitem", { name: "common.archived" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("menuitem", { name: "common.explore" })).not.toBeInTheDocument();
+  });
+
+  it.each([
+    "/explore",
+    "/?creator=alice",
+    "/spaces/test",
+    "/spaces/test/explore",
+  ])("shows Timeline display settings in every Timeline scope: %s", (path) => {
+    render(
+      <MemoryRouter initialEntries={[path]}>
+        <AppSidebar />
+      </MemoryRouter>,
+    );
+    expect(
+      within(screen.getByRole("navigation", { name: "Primary" })).getByRole("button", { name: "memo.view-options" }),
+    ).toBeInTheDocument();
+  });
+
+  it.each([
+    "/calendar",
+    "/map",
+    "/attachments",
+    "/archived",
+    "/spaces/test/calendar",
+  ])("hides Timeline display settings on other views: %s", (path) => {
+    render(
+      <MemoryRouter initialEntries={[path]}>
+        <AppSidebar />
+      </MemoryRouter>,
+    );
+    expect(screen.queryByRole("button", { name: "memo.view-options" })).not.toBeInTheDocument();
   });
 
   it("uses compact text-only actions for a saved view", async () => {
@@ -572,33 +603,23 @@ describe("App sidebar logo", () => {
     expect(deleteItem).toHaveAttribute("data-variant", "destructive");
   });
 
-  it("keeps collection navigation together and uses the unified user footer", async () => {
+  it("keeps collection navigation together with Home as a direct link", () => {
     render(
       <MemoryRouter initialEntries={["/attachments"]}>
         <AppSidebar />
       </MemoryRouter>,
     );
-
-    const scopeTrigger = screen.getByRole("button", { name: "common.home" });
-    expectCollapsedNavPill(scopeTrigger, "common.home");
-
-    expect(screen.getByRole("button", { name: "User menu" }).closest("footer")).not.toBeNull();
-    expect(screen.queryByRole("link", { name: "common.inbox" })).not.toBeInTheDocument();
-
-    const attachments = screen.getByRole("link", { name: "common.attachments" });
-    expectActiveNavPill(attachments, "common.attachments");
-
-    fireEvent.click(scopeTrigger);
-    expect(await screen.findByText("Calendar")).toBeInTheDocument();
-    expectActiveNavPill(screen.getByRole("button", { name: "common.home" }), "common.home");
-    expect(screen.queryByRole("menuitem", { name: "common.explore" })).not.toBeInTheDocument();
+    const home = screen.getByRole("link", { name: "common.timeline" });
+    expectCollapsedNavPill(home, "common.timeline");
+    expect(home).toHaveAttribute("href", "/explore");
+    expect(screen.queryByRole("contentinfo")).not.toBeInTheDocument();
+    expectActiveNavPill(screen.getByRole("link", { name: "common.attachments" }), "common.attachments");
   });
 
   it.each([
     ["/attachments", "common.attachments"],
     ["/inbox", "common.inbox"],
     ["/setting", "common.basic"],
-    ["/u/test", "common.profile"],
   ])("labels the sidebar content section on %s", (path, label) => {
     render(
       <MemoryRouter initialEntries={[path]}>
@@ -609,38 +630,16 @@ describe("App sidebar logo", () => {
     expect(screen.getByRole("heading", { name: label, level: 2 })).toBeInTheDocument();
   });
 
-  it("keeps the Explore scope available from a global destination", async () => {
-    sidebarState.memoScope = "explore";
+  it.each(["/inbox", "/archived"])("shows Home as the direct destination from %s", (path) => {
     render(
-      <MemoryRouter initialEntries={["/inbox"]}>
+      <MemoryRouter initialEntries={[path]}>
         <AppSidebar />
       </MemoryRouter>,
     );
-
-    const scopeTrigger = screen.getByRole("button", { name: "common.explore" });
-    expectDefaultNavPill(scopeTrigger, "common.explore");
-    expect(scopeTrigger.querySelector(".lucide-chevron-down")).not.toBeInTheDocument();
-    expectCollapsedNavPill(screen.getByRole("link", { name: "common.attachments" }), "common.attachments");
-
-    fireEvent.click(scopeTrigger);
-    expectActiveNavPill(await screen.findByRole("button", { name: "common.explore", current: "page" }), "common.explore");
-  });
-
-  it("leaves Archived through the remembered primary feed without presenting it as a scope", async () => {
-    sidebarState.memoScope = "explore";
-    render(
-      <MemoryRouter initialEntries={["/archived"]}>
-        <AppSidebar />
-      </MemoryRouter>,
-    );
-
-    const scopeTrigger = screen.getByRole("button", { name: "common.explore" });
-    expectDefaultNavPill(scopeTrigger, "common.explore");
-    expect(scopeTrigger.querySelector(".lucide-chevron-down")).not.toBeInTheDocument();
-    expectCollapsedNavPill(screen.getByRole("link", { name: "common.attachments" }), "common.attachments");
-
-    fireEvent.click(scopeTrigger);
-    expectActiveNavPill(await screen.findByRole("button", { name: "common.explore", current: "page" }), "common.explore");
+    const home = screen.getByRole("link", { name: "common.timeline" });
+    expectDefaultNavPill(home, "common.timeline");
+    expect(home).toHaveAttribute("href", "/");
+    expect(screen.queryByRole("button", { name: "common.explore" })).not.toBeInTheDocument();
   });
 
   it("keeps the mobile header limited to navigation and context", () => {

@@ -288,6 +288,20 @@ func NewSchema() Schema {
 // NewAttachmentSchema constructs the attachment filter schema and CEL environment.
 func NewAttachmentSchema() Schema {
 	fields := map[string]Field{
+		"creator": {
+			Name:   "creator",
+			Kind:   FieldKindScalar,
+			Type:   FieldTypeString,
+			Column: Column{Table: "memo", Name: "creator_id"},
+			Expressions: map[DialectName]string{
+				DialectSQLite:   "('users/' || (SELECT username FROM user WHERE id = CASE WHEN attachment.memo_id IS NULL THEN attachment.creator_id ELSE %[1]s END))",
+				DialectMySQL:    "CONCAT('users/', (SELECT username FROM `user` WHERE id = CASE WHEN `attachment`.`memo_id` IS NULL THEN `attachment`.`creator_id` ELSE %[1]s END))",
+				DialectPostgres: "('users/' || (SELECT username FROM \"user\" WHERE id = CASE WHEN attachment.memo_id IS NULL THEN attachment.creator_id ELSE %[1]s END))",
+			},
+			AllowedComparisonOps: map[ComparisonOperator]bool{
+				CompareEq: true,
+			},
+		},
 		"filename": {
 			Name:             "filename",
 			Kind:             FieldKindScalar,
@@ -345,6 +359,7 @@ func NewAttachmentSchema() Schema {
 	}
 
 	envOptions := []cel.EnvOption{
+		cel.Variable("creator", cel.StringType),
 		cel.Variable("filename", cel.StringType),
 		cel.Variable("mime_type", cel.StringType),
 		cel.Variable("create_time", cel.TimestampType),

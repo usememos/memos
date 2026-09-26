@@ -4,9 +4,7 @@ import { combineCELFilters } from "@/lib/cel-filter";
 import {
   BUILTIN_TASKS_VIEW_FILTER,
   BUILTIN_TASKS_VIEW_ID,
-  getMemoScopePath,
   getMemoViewId,
-  getProfileUsername,
   isMemoCollectionRoute,
   isMemoScopeRoute,
   resolveMemoScope,
@@ -14,35 +12,29 @@ import {
 import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
 
 describe("memo scopes", () => {
-  it("resolves collection, profile, and detail routes", () => {
+  it("resolves collection and detail routes", () => {
     expect(resolveMemoScope("/archived")).toBe("archived");
     expect(resolveMemoScope("/explore")).toBe("explore");
-    expect(resolveMemoScope("/u/steven", { currentUsername: "steven" })).toBe("home");
-    expect(resolveMemoScope("/u/maya", { currentUsername: "steven" })).toBe("explore");
     expect(resolveMemoScope("/memos/123", { detailFrom: "/archived?filter=tagSearch%3Awork" })).toBe("archived");
     expect(resolveMemoScope("/memos/123", { memoArchived: true })).toBe("archived");
     expect(resolveMemoScope("/settings", { fallback: "explore" })).toBe("explore");
   });
 
-  it("maps collection routes while limiting primary scope paths to Home and Explore", () => {
+  it("recognizes Home, Archived, and the legacy Explore alias", () => {
     expect(isMemoScopeRoute("/")).toBe(true);
     expect(isMemoScopeRoute("/explore")).toBe(true);
     expect(isMemoScopeRoute("/archived")).toBe(true);
     expect(isMemoScopeRoute("/attachments")).toBe(false);
-    expect(getMemoScopePath("home")).toBe("/");
-    expect(getMemoScopePath("explore")).toBe("/explore");
   });
 
-  it("treats user profiles as collection routes where views and filters apply in place", () => {
+  it("treats Home and calendar as collection routes where views and filters apply in place", () => {
     expect(isMemoCollectionRoute("/")).toBe(true);
     expect(isMemoCollectionRoute("/archived")).toBe(true);
-    expect(isMemoCollectionRoute("/u/steven")).toBe(true);
-    expect(isMemoCollectionRoute("/u/steven/?filter=tagSearch%3Awork")).toBe(true);
+    expect(isMemoCollectionRoute("/?creator=steven")).toBe(true);
+    expect(isMemoCollectionRoute("/u/steven")).toBe(false);
     expect(isMemoCollectionRoute("/calendar")).toBe(true);
     expect(isMemoCollectionRoute("/Calendar/2026/08/02/")).toBe(true);
     expect(isMemoCollectionRoute("/calendars")).toBe(false);
-    expect(getProfileUsername("/u/j%C3%BAlia/")).toBe("júlia");
-    expect(getProfileUsername("/u/steven/memos")).toBeUndefined();
     expect(isMemoScopeRoute("/u/steven")).toBe(false);
     expect(isMemoCollectionRoute("/memos/123")).toBe(false);
     expect(isMemoCollectionRoute("/attachments")).toBe(false);

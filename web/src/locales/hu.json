@@ -54,6 +54,7 @@
     "attachments": "Mellékletek",
     "avatar": "Avatar",
     "basic": "Általános",
+    "browse": "Böngészés",
     "calendar": "Naptár",
     "cancel": "Mégsem",
     "clear": "Törlés",
@@ -80,6 +81,7 @@
     "explore": "Felfedezés",
     "filter": "Szűrő",
     "home": "Főoldal",
+    "timeline": "Idővonal",
     "inbox": "Értesítések",
     "language": "Nyelv",
     "last-updated-at": "Utoljára frissítve",
@@ -977,12 +979,8 @@
     "previous-year": "Előző év.",
     "select-month": "Hónap kiválasztása."
   },
-  "profile": {
-    "no-shared-memos": "@{{username}} még nem osztott meg feljegyzéseket.",
-    "not-found-description": "Nincs Memos @{{username}} nevű felhasználó ezen a példányon.",
-    "not-found-title": "Senki sincs itt"
-  },
   "space": {
+    "all-spaces": "Összes tér",
     "icon": {
       "change": "Tér ikonjának módosítása",
       "kind": "Ikontípus",

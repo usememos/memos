@@ -54,6 +54,7 @@
     "attachments": "Vedlegg",
     "avatar": "Avatar",
     "basic": "Grunnleggende",
+    "browse": "Bla gjennom",
     "calendar": "Kalender",
     "cancel": "Avbryt",
     "clear": "Tøm",
@@ -80,6 +81,7 @@
     "explore": "Utforsk",
     "filter": "Filter",
     "home": "Hjem",
+    "timeline": "Tidslinje",
     "inbox": "Innboks",
     "language": "Språk",
     "last-updated-at": "Sist oppdatert",
@@ -977,12 +979,8 @@
     "previous-year": "Forrige år",
     "select-month": "Velg måned"
   },
-  "profile": {
-    "no-shared-memos": "@{{username}} har ikke delt noen notater ennå.",
-    "not-found-description": "Det finnes ingen Memos-bruker ved navn @{{username}} på denne instansen.",
-    "not-found-title": "Ingen her"
-  },
   "space": {
+    "all-spaces": "Alle rom",
     "icon": {
       "change": "Endre romikon",
       "kind": "Ikontype",

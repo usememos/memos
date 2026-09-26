@@ -92,6 +92,7 @@
     "attachments": "Прикачени файлове",
     "avatar": "Аватар",
     "basic": "Основен",
+    "browse": "Разглеждане",
     "calendar": "Календар",
     "cancel": "Отказ",
     "clear": "ясно",
@@ -119,6 +120,7 @@
     "explore": "Разгледайте",
     "filter": "Филтър",
     "home": "Начало",
+    "timeline": "Хронология",
     "inbox": "Входяща кутия",
     "language": "език",
     "last-updated-at": "Последна актуализация на",
@@ -977,12 +979,8 @@
     "previous-year": "Предишна година",
     "select-month": "Изберете месец"
   },
-  "profile": {
-    "no-shared-memos": "@{{username}} все още не е споделил никакви бележки.",
-    "not-found-description": "Няма потребител на Memos с име @{{username}} в този екземпляр.",
-    "not-found-title": "Няма никой тук"
-  },
   "space": {
+    "all-spaces": "Всички пространства",
     "icon": {
       "change": "Промяна на икона на пространство",
       "kind": "Тип икона",

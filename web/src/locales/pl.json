@@ -54,6 +54,7 @@
     "attachments": "Załączniki",
     "avatar": "Awatar",
     "basic": "Podstawowy",
+    "browse": "Przeglądaj",
     "calendar": "Kalendarz",
     "cancel": "Anuluj",
     "clear": "Wyczyść",
@@ -80,6 +81,7 @@
     "explore": "Odkryj",
     "filter": "Filtr",
     "home": "Strona główna",
+    "timeline": "Oś czasu",
     "inbox": "Skrzynka odbiorcza",
     "language": "Język",
     "last-updated-at": "Ostatnia aktualizacja",
@@ -977,12 +979,8 @@
     "previous-year": "Poprzedni rok",
     "select-month": "Wybierz miesiąc"
   },
-  "profile": {
-    "no-shared-memos": "@{{username}} nie udostępnił jeszcze żadnych notatek.",
-    "not-found-description": "Na tej instancji nie ma użytkownika Memos o nazwie @{{username}}.",
-    "not-found-title": "Nikogo tu nie ma."
-  },
   "space": {
+    "all-spaces": "Wszystkie przestrzenie",
     "icon": {
       "change": "Zmień ikonę przestrzeni",
       "kind": "Typ ikony",

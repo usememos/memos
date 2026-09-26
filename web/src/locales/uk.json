@@ -54,6 +54,7 @@
     "attachments": "Вкладення",
     "avatar": "Аватар",
     "basic": "Основний",
+    "browse": "Перегляд",
     "calendar": "Календар",
     "cancel": "Скасувати",
     "clear": "Очистити",
@@ -80,6 +81,7 @@
     "explore": "Дослідити",
     "filter": "Фільтр",
     "home": "Головна",
+    "timeline": "Хронологія",
     "inbox": "Вхідні",
     "language": "Мова",
     "last-updated-at": "Останнє оновлення",
@@ -977,12 +979,8 @@
     "previous-year": "Попередній рік",
     "select-month": "Виберіть місяць"
   },
-  "profile": {
-    "no-shared-memos": "@{{username}} ще не поділився жодними нотатками.",
-    "not-found-description": "У цьому екземплярі немає користувача Memos з ім'ям @{{username}}.",
-    "not-found-title": "Тут нікого немає"
-  },
   "space": {
+    "all-spaces": "Усі простори",
     "icon": {
       "change": "Змінити значок простору",
       "kind": "Тип значка",

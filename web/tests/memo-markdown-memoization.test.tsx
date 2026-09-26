@@ -1,4 +1,4 @@
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { MemoMarkdownRenderer } from "@/components/MemoContent/MemoMarkdownRenderer";
 import { hasMathSyntax } from "@/components/MemoContent/math";
@@ -30,5 +30,6 @@ describe("<MemoMarkdownRenderer /> memoization", () => {
     rerender(<MemoMarkdownRenderer content="Hello @alice" memoName="memos/1" resolvedMentionUsernames={new Set(["alice"])} />);
 
     expect(hasMathSyntax).toHaveBeenCalledTimes(2);
+    expect(screen.getByRole("link", { name: "@alice" })).toHaveAttribute("href", "/?creator=alice");
   });
 });

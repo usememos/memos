@@ -610,6 +610,9 @@ type Attachment struct {
 	MotionMedia *MotionMedia `protobuf:"bytes,9,opt,name=motion_media,json=motionMedia,proto3" json:"motion_media,omitempty"`
 	// Optional. Immutable normalized media metadata explicitly supplied by the client at creation time.
 	MediaMetadata *MediaMetadata `protobuf:"bytes,10,opt,name=media_metadata,json=mediaMetadata,proto3" json:"media_metadata,omitempty"`
+	// Output only. The user who uploaded this attachment, which may differ from
+	// the creator of the linked memo. Format: users/{user}.
+	Creator       string `protobuf:"bytes,11,opt,name=creator,proto3" json:"creator,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -712,6 +715,13 @@ func (x *Attachment) GetMediaMetadata() *MediaMetadata {
 		return x.MediaMetadata
 	}
 	return nil
+}
+
+func (x *Attachment) GetCreator() string {
+	if x != nil {
+		return x.Creator
+	}
+	return ""
 }
 
 type CreateAttachmentRequest struct {
@@ -1041,7 +1051,9 @@ type ListAttachmentsRequest struct {
 	// Optional. Filter to apply to the list results.
 	// Example: "mime_type==\"image/png\"" or "filename.contains(\"test\")"
 	// Supported operators: =, !=, <, <=, >, >=, : (contains), in
-	// Supported fields: filename, mime_type, create_time, memo_id, space.
+	// Supported fields: creator, filename, mime_type, create_time, memo_id, space.
+	// `creator` is the linked memo's creator, or the uploader for an unlinked
+	// attachment. It supports equality with a User resource name.
 	// `space` only supports a non-negated `==` comparison with a Space resource
 	// name or null.
 	// `space` is the linked memo's space resource name, or null when the
@@ -1410,7 +1422,7 @@ const file_api_v1_attachment_service_proto_rawDesc = "" +
 	"\x10_altitude_meters\"T\n" +
 	"\rVideoMetadata\x12.\n" +
 	"\x10duration_seconds\x18\x01 \x01(\x01H\x00R\x0fdurationSeconds\x88\x01\x01B\x13\n" +
-	"\x11_duration_seconds\"\x8a\x04\n" +
+	"\x11_duration_seconds\"\xbf\x04\n" +
 	"\n" +
 	"Attachment\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
@@ -1424,7 +1436,9 @@ const file_api_v1_attachment_service_proto_rawDesc = "" +
 	"\x04memo\x18\b \x01(\tB\x03\xe0A\x01H\x00R\x04memo\x88\x01\x01\x12A\n" +
 	"\fmotion_media\x18\t \x01(\v2\x19.memos.api.v1.MotionMediaB\x03\xe0A\x01R\vmotionMedia\x12J\n" +
 	"\x0emedia_metadata\x18\n" +
-	" \x01(\v2\x1b.memos.api.v1.MediaMetadataB\x06\xe0A\x01\xe0A\x05R\rmediaMetadata:O\xeaAL\n" +
+	" \x01(\v2\x1b.memos.api.v1.MediaMetadataB\x06\xe0A\x01\xe0A\x05R\rmediaMetadata\x123\n" +
+	"\acreator\x18\v \x01(\tB\x19\xe0A\x03\xfaA\x13\n" +
+	"\x11memos.api.v1/UserR\acreator:O\xeaAL\n" +
 	"\x17memos.api.v1/Attachment\x12\x18attachments/{attachment}*\vattachments2\n" +
 	"attachmentB\a\n" +
 	"\x05_memo\"\x82\x01\n" +

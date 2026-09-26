@@ -5,7 +5,6 @@ import { useMemo } from "react";
 import { type MemoTimeBasis, useView } from "@/contexts/ViewContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useAllUserStats, useUserStats } from "@/hooks/useUserQueries";
-import { combineCELFilters } from "@/lib/cel-filter";
 import { mergeTagCounts } from "@/lib/tag";
 import { State } from "@/types/proto/api/v1/common_pb";
 import type { UserStats } from "@/types/proto/api/v1/user_service_pb";
@@ -17,7 +16,7 @@ export interface FilteredMemoStats {
   loading: boolean;
 }
 
-export type MemoStatsContext = "home" | "explore" | "archived" | "profile";
+export type MemoStatsContext = "home" | "collection" | "archived";
 
 export interface UseFilteredMemoStatsOptions {
   userName?: string;
@@ -44,19 +43,14 @@ export const useFilteredMemoStats = (options: UseFilteredMemoStatsOptions = {}):
   const currentUser = useCurrentUser();
   const { timeBasis } = useView();
 
-  // home/profile: use backend per-user stats (full tag set, not page-limited)
+  // Legacy personal collections use backend per-user stats.
   const { data: userStats, isLoading: isLoadingUserStats } = useUserStats(userName, { enabled, filter });
-  // explore/archived: fetch backend grouped stats and aggregate them locally.
+  // Collection and Archived fetch grouped stats and aggregate them locally.
   // ListAllUserStats AND's the request filter with the server's auth filter, so
   // private memos are not included unless explicitly visible to the current user.
-  const exploreVisibilityFilter = currentUser != null ? 'visibility in ["PUBLIC", "PROTECTED", "SPACE"]' : 'visibility in ["PUBLIC"]';
   const allUserStatsRequest =
-    context === "explore"
-      ? { state: State.NORMAL, filter: combineCELFilters(filter, exploreVisibilityFilter) }
-      : context === "archived"
-        ? { state: State.ARCHIVED, filter }
-        : {};
-  const shouldFetchAllUserStats = context === "explore" || (context === "archived" && !!currentUser?.name);
+    context === "collection" ? { state: State.NORMAL, filter } : context === "archived" ? { state: State.ARCHIVED, filter } : {};
+  const shouldFetchAllUserStats = context === "collection" || (context === "archived" && !!currentUser?.name);
   const { data: allUserStats = [], isLoading: isLoadingAllUserStats } = useAllUserStats(allUserStatsRequest, {
     enabled: enabled && shouldFetchAllUserStats,
   });
@@ -66,7 +60,7 @@ export const useFilteredMemoStats = (options: UseFilteredMemoStatsOptions = {}):
     let activityStats: Record<string, number> = {};
     let tagCount: Record<string, number> = mergeTagCounts();
 
-    if (context === "explore" || context === "archived") {
+    if (context === "collection" || context === "archived") {
       const displayDates: string[] = [];
       tagCount = mergeTagCounts(...allUserStats.map((stats) => stats.tagCount));
       for (const stats of allUserStats) {
@@ -79,7 +73,7 @@ export const useFilteredMemoStats = (options: UseFilteredMemoStatsOptions = {}):
       }
       activityStats = countBy(displayDates);
     } else if (userName && userStats) {
-      // home/profile: use backend per-user stats.
+      // Legacy personal collections use backend per-user stats.
       const sourceArray = timestampsForBasis(userStats, timeBasis);
       if (sourceArray.length > 0) {
         activityStats = countBy(

@@ -1,6 +1,7 @@
 import type { Element } from "hast";
 import { mentionStyles } from "@/lib/markdownStyles";
 import { cn } from "@/lib/utils";
+import { getCreatorHomePath } from "@/router/routes";
 
 interface MentionProps extends React.HTMLAttributes<HTMLSpanElement> {
   node?: Element;
@@ -29,7 +30,7 @@ export const Mention: React.FC<MentionProps> = ({
 
   return (
     <a
-      href={`/u/${username}`}
+      href={getCreatorHomePath(username)}
       className={cn(mentionStyles.base, "hover:underline", className)}
       data-mention={username}
       title={`@${username}`}

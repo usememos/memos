@@ -23,17 +23,17 @@ const Home = () => {
   const { isUserSettingsInitialized } = useAuth();
   const { claimHomeAutoFocus } = useGlobalMemoEditor();
   const { filters } = useMemoFilterContext();
-  const { memoFilter: contextFilter, selectedSpaceName } = useSpaceContext();
+  const { memoFilter: contextFilter, selectedSpaceName, creatorUsername } = useSpaceContext();
   const defaultCreateTime = useMemo(() => deriveDefaultCreateTimeFromFilters(filters), [filters]);
   // Doubles as the remount key: the draft cache only reloads on mount, so the editor
   // has to be rebuilt for the new Space rather than just re-pointed at another cache.
   const editorCacheKey = spaceScopedCacheKey("home-memo-editor", selectedSpaceName);
 
   const memoFilter = useMemoFilters({
-    creatorName: user?.name,
     includeMemoViews: true,
     includePinned: true,
   });
+  const canComposeInScope = Boolean(user && (!creatorUsername || creatorUsername === user.username));
 
   const { listSort, orderBy } = useMemoSorting({
     pinnedFirst: true,
@@ -45,14 +45,22 @@ const Home = () => {
       <NewMemoProvider>
         <PagedMemoList
           renderer={(memo: Memo, { compact }) => (
-            <MemoView key={getMemoKey(memo)} memo={memo} showVisibility showPinned showSpace={!selectedSpaceName} compact={compact} />
+            <MemoView
+              key={getMemoKey(memo)}
+              memo={memo}
+              showCreator={!creatorUsername}
+              showVisibility
+              showPinned
+              showSpace={!selectedSpaceName}
+              compact={compact}
+            />
           )}
           listSort={listSort}
           orderBy={orderBy}
           filter={memoFilter}
           contextFilter={contextFilter}
           renderLeading={({ useGrid }) => {
-            if (!isUserSettingsInitialized) return null;
+            if (!isUserSettingsInitialized || !canComposeInScope) return null;
 
             return (
               <MemoEditor

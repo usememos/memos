@@ -54,6 +54,7 @@
     "attachments": "ไฟล์แนบ",
     "avatar": "สัญลักษณ์",
     "basic": "ทั่วไป",
+    "browse": "เรียกดู",
     "calendar": "ปฏิทิน",
     "cancel": "ยกเลิก",
     "clear": "ล้าง",
@@ -80,6 +81,7 @@
     "explore": "สำรวจ",
     "filter": "ตัวกรอง",
     "home": "หน้าหลัก",
+    "timeline": "ไทม์ไลน์",
     "inbox": "กล่องจดหมาย",
     "language": "ภาษา",
     "last-updated-at": "อัปเดตล่าสุดเมื่อ",
@@ -963,11 +965,6 @@
     "banner-title": "Memos สาธิต",
     "deploy-link": "ปรับใช้ Memos ของคุณเอง"
   },
-  "profile": {
-    "no-shared-memos": "@{{username}} ยังไม่ได้แชร์บันทึกใดๆ",
-    "not-found-description": "ไม่มีผู้ใช้ Memos ชื่อ @{{username}} ในอินสแตนซ์นี้",
-    "not-found-title": "ไม่มีใครอยู่ที่นี่"
-  },
   "search": {
     "access-error": "คุณไม่มีสิทธิ์เข้าถึงบันทึกเหล่านี้",
     "clear-query": "ล้างคำค้นหา",
@@ -983,6 +980,7 @@
     "text": "ข้อความ"
   },
   "space": {
+    "all-spaces": "พื้นที่ทั้งหมด",
     "icon": {
       "change": "เปลี่ยนไอคอนพื้นที่",
       "kind": "ประเภทไอคอน",
