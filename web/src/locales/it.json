@@ -671,6 +671,7 @@
       "background-color": "Colore di sfondo",
       "blur-content": "Sfoca il contenuto",
       "no-tags-configured": "Nessun metadato del tag configurato.",
+      "set-icon": "Imposta icona per #{{tag}}",
       "tag-name-placeholder": "ad es. work o project/.*",
       "tag-already-exists": "L'etichetta esiste già.",
       "tag-pattern-hint": "Nome del tag o modello regex (ad esempio project/.* corrisponde a tutti i tag project/)",

@@ -666,6 +666,7 @@
       "background-color": "رنگ پس زمینه",
       "blur-content": "محو کردن محتوا",
       "no-tags-configured": "هیچ متادیتای برچسب پیکربندی نشده است.",
+      "set-icon": "Set icon for #{{tag}}",
       "tag-name-placeholder": "به عنوان مثال work یا project/.*",
       "tag-already-exists": "برچسب از قبل وجود دارد.",
       "tag-pattern-hint": "نام برچسب یا الگوی regex (به عنوان مثال project/.* با همه برچسب های project/ مطابقت دارد)",
