@@ -174,7 +174,6 @@
     "profile": "פרופיל",
     "referenced-by": "מופנה אליו על ידי",
     "referencing": "מפנה אל",
-    "relations": "קשרים",
     "resize-sidebar": "שנה את גודל סרגל הצד",
     "resources": "משאבים",
     "restore": "שחזר",
@@ -247,7 +246,6 @@
       "image-upload-stopped": "העלאת התמונה נעצרה {{completed}}/{{total}}",
       "insert-image": "הוסף תמונה",
       "keep-as-attachments": "שמור כקבצים מצורפים",
-      "link-memo": "קשר פתק",
       "retry-image-upload": "נסה שוב",
       "uploading-inline-image": "מעלה לתוכן",
       "uploading-images": "מעלה תמונות {{completed}}/{{total}}"
@@ -412,10 +410,6 @@
     "succeed-copy-content": "התוכן הועתק בהצלחה.",
     "succeed-copy-link": "הקישור הועתק בהצלחה.",
     "update-succeed": "העדכון הצליח"
-  },
-  "reference": {
-    "no-memos-found": "לא נמצאו פתקים",
-    "search-placeholder": "חיפוש בתוכן"
   },
   "resource": {
     "delete-all-unused": "מחק את כל המשאבים שאינם בשימוש",
@@ -972,7 +966,6 @@
     }
   },
   "tooltip": {
-    "link-memo": "קשר פתק",
     "select-location": "מיקום"
   },
   "search": {

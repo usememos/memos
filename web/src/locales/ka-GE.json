@@ -98,7 +98,6 @@
     "profile": "პროფილი",
     "referenced-by": "მიუთითებს",
     "referencing": "მითითება",
-    "relations": "კავშირები",
     "resources": "რესურსები",
     "restore": "აღდგენა",
     "role": "როლი",
@@ -154,7 +153,6 @@
     "focus-mode": "ფოკუსის რეჟიმი",
     "insert-menu": {
       "add-location": "მდებარეობის დამატება",
-      "link-memo": "ლინკ შენიშვნა",
       "retry-image-upload": "ხელახლა სცადეთ",
       "add-attachment": "დანართის დამატება",
       "image-upload-failed": "ზოგიერთი სურათის ატვირთვა ვერ მოხერხდა. სცადეთ ხელახლა ან შეინახეთ ატვირთული ფაილები დანართებად.",
@@ -341,10 +339,6 @@
     "succeed-copy-content": "კონტენტი წარმატებით კოპირდა.",
     "succeed-copy-link": "ლინკი წარმატებით კოპირდა.",
     "update-succeed": "განახლება წარმატებით დასრულდა"
-  },
-  "reference": {
-    "no-memos-found": "მემოები ვერ მოიძებნა",
-    "search-placeholder": "კონტენტის ძიება"
   },
   "resource": {
     "delete-all-unused": "ყველა გამოუყენებელის წაშლა",
@@ -901,7 +895,6 @@
     }
   },
   "tooltip": {
-    "link-memo": "მემოს დაკავშირება",
     "select-location": "მდებარეობა"
   },
   "demo": {

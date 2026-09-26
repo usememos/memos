@@ -98,7 +98,6 @@
     "profile": "Profil",
     "referenced-by": "Hivatkozta",
     "referencing": "Hivatkozik",
-    "relations": "Kapcsolatok",
     "resources": "Állományok",
     "restore": "Helyreállítás",
     "role": "Jogosultság",
@@ -154,7 +153,6 @@
     "focus-mode": "Fókusz mód",
     "insert-menu": {
       "add-location": "Hely hozzáadása",
-      "link-memo": "Linkjegyzet",
       "retry-image-upload": "Próbálja újra",
       "add-attachment": "Melléklet hozzáadása",
       "image-upload-failed": "Néhány kép feltöltése sikertelen. Próbálja újra, vagy tartsa meg a feltöltött fájlokat mellékletként.",
@@ -341,10 +339,6 @@
     "succeed-copy-content": "Tartalom sikeresen másolva.",
     "succeed-copy-link": "Hivatkozás sikeresen másolva.",
     "update-succeed": "Sikeres frissítés"
-  },
-  "reference": {
-    "no-memos-found": "Nem található jegyzet",
-    "search-placeholder": "Tartalom keresése"
   },
   "resource": {
     "delete-all-unused": "Nem használtak törlése",
@@ -901,7 +895,6 @@
     }
   },
   "tooltip": {
-    "link-memo": "Jegyzet hivatkozása",
     "select-location": "Helyszín"
   },
   "demo": {

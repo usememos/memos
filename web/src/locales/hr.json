@@ -98,7 +98,6 @@
     "profile": "Profil",
     "referenced-by": "Referencirano od",
     "referencing": "Referencira",
-    "relations": "Odnosi",
     "resources": "Resursi",
     "restore": "Vrati",
     "role": "Uloga",
@@ -154,7 +153,6 @@
     "focus-mode": "Način rada za fokus",
     "insert-menu": {
       "add-location": "Dodajte lokaciju",
-      "link-memo": "Link dopis",
       "retry-image-upload": "Pokušaj ponovo",
       "add-attachment": "Dodaj privitak",
       "image-upload-failed": "Neke slike nije moguće prenijeti. Pokušajte ponovno ili zadržite prenesene datoteke kao privitke.",
@@ -341,10 +339,6 @@
     "succeed-copy-content": "Sadržaj uspješno kopiran.",
     "succeed-copy-link": "Link je uspješno kopiran.",
     "update-succeed": "Ažuriranje uspješno"
-  },
-  "reference": {
-    "no-memos-found": "Nema pronađenih memoa",
-    "search-placeholder": "Pretraži sadržaj"
   },
   "resource": {
     "delete-all-unused": "Obriši sve neiskorištene",
@@ -901,7 +895,6 @@
     }
   },
   "tooltip": {
-    "link-memo": "Linkaj memo",
     "select-location": "Lokacija"
   },
   "demo": {

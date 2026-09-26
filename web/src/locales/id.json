@@ -98,7 +98,6 @@
     "profile": "Profil",
     "referenced-by": "Dirujuk oleh",
     "referencing": "Merujuk",
-    "relations": "Relasi",
     "resources": "Sumber Daya",
     "restore": "Pulihkan",
     "role": "Peran",
@@ -156,7 +155,6 @@
     "save": "Simpan",
     "insert-menu": {
       "add-location": "Tambahkan lokasi",
-      "link-memo": "Tautan memo",
       "add-attachment": "Tambahkan lampiran",
       "image-upload-failed": "Beberapa gambar tidak dapat diunggah. Coba lagi atau simpan file yang diunggah sebagai lampiran.",
       "image-upload-stopped": "Unggahan gambar dihentikan {{completed}}/{{total}}",
@@ -336,10 +334,6 @@
     "succeed-copy-content": "Konten berhasil disalin.",
     "succeed-copy-link": "Tautan berhasil disalin.",
     "update-succeed": "Pembaruan berhasil"
-  },
-  "reference": {
-    "no-memos-found": "Tidak ada memo yang ditemukan",
-    "search-placeholder": "Cari konten"
   },
   "resource": {
     "delete-all-unused": "Hapus semua yang tidak terpakai",
@@ -896,7 +890,6 @@
     }
   },
   "tooltip": {
-    "link-memo": "Tautkan Memo",
     "select-location": "Pilih Lokasi"
   },
   "live-update": {

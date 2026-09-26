@@ -102,7 +102,6 @@
     "profile": "プロフィール",
     "referenced-by": "参照元",
     "referencing": "参照先",
-    "relations": "関連",
     "resize-sidebar": "サイドバーの幅を変更",
     "resources": "リソース",
     "restore": "復元",
@@ -157,7 +156,6 @@
     "save": "保存",
     "insert-menu": {
       "add-location": "場所を追加",
-      "link-memo": "リンクメモ",
       "retry-image-upload": "リトライ",
       "add-attachment": "添付ファイルを追加",
       "image-upload-failed": "一部の画像はアップロードできませんでした。再試行するか、アップロード済みのファイルを添付ファイルとして保存してください。",
@@ -341,10 +339,6 @@
     "succeed-copy-content": "コンテンツのコピーに成功しました。",
     "succeed-copy-link": "リンクのコピーに成功しました。",
     "update-succeed": "変更は保存されました"
-  },
-  "reference": {
-    "no-memos-found": "メモが見つかりません",
-    "search-placeholder": "内容を検索"
   },
   "resource": {
     "delete-all-unused": "未使用をすべて削除",
@@ -901,7 +895,6 @@
     }
   },
   "tooltip": {
-    "link-memo": "メモをリンク",
     "select-location": "場所"
   },
   "demo": {

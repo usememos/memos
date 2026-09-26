@@ -98,7 +98,6 @@
     "profile": "프로필",
     "referenced-by": "참조됨",
     "referencing": "참조중",
-    "relations": "관계",
     "resources": "리소스",
     "restore": "복원",
     "role": "역할",
@@ -156,7 +155,6 @@
     "save": "저장",
     "insert-menu": {
       "add-location": "위치 추가",
-      "link-memo": "링크 메모",
       "add-attachment": "첨부 파일 추가",
       "image-upload-failed": "일부 이미지를 업로드할 수 없습니다. 다시 시도하거나 업로드된 파일을 첨부 파일로 유지하세요.",
       "image-upload-stopped": "이미지 업로드 중지됨 {{completed}}/{{total}}",
@@ -336,10 +334,6 @@
     "succeed-copy-content": "콘텐츠를 클립보드에 복사했습니다.",
     "succeed-copy-link": "링크를 클립보드에 복사했습니다.",
     "update-succeed": "업데이트 성공"
-  },
-  "reference": {
-    "no-memos-found": "메모를 찾을 수 없습니다",
-    "search-placeholder": "내용 검색"
   },
   "resource": {
     "delete-all-unused": "사용하지 않는 항목 모두 삭제",
@@ -896,7 +890,6 @@
     }
   },
   "tooltip": {
-    "link-memo": "메모 링크",
     "select-location": "위치"
   },
   "live-update": {
