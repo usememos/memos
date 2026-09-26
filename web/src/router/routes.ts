@@ -107,8 +107,10 @@ export const collectionNavigationPath = (
         (!route.isCollection || route.pathname === ROUTES.HOME ? currentUsername : undefined));
   const filter = route.isCollection ? new URLSearchParams(location.search).get("filter") : null;
   const search = filter ? new URLSearchParams({ filter }).toString() : "";
+  // A memo list without a creator is Explore; this also sends guests there from any page.
   if (pathname === ROUTES.HOME) {
-    return `${getCollectionHomePath(location)}${withCollectionCreator(search, creator === currentUsername ? undefined : creator)}`;
+    const home = buildCollectionPath(creator ? ROUTES.HOME : ROUTES.EXPLORE, route.spaceName);
+    return `${home}${withCollectionCreator(search, creator === currentUsername ? undefined : creator)}`;
   }
   return `${collectionPathForLocation(pathname, location.pathname)}${withCollectionCreator(search, creator)}`;
 };

@@ -21,7 +21,6 @@ const state = vi.hoisted(() => ({
 vi.mock("@/components/MemosLogo", () => ({ default: () => <span>Memos</span> }));
 vi.mock("@/components/UserMenu", () => ({
   default: () => <button type="button">Steven account</button>,
-  UserPreferenceDialog: () => null,
 }));
 vi.mock("@/hooks/useCurrentUser", () => ({
   default: () => state.currentUser,
@@ -198,14 +197,11 @@ describe("SpaceSwitcher", () => {
     expect(screen.getByRole("link", { name: "Back to common.explore" })).toHaveAttribute("href", "/explore");
     expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "space.create" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Steven account" })).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "common.sign-in" })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("link", { name: "Back to common.explore" }));
     expect(router.state.location.pathname).toBe("/explore");
     expect(router.state.location.search).toBe("");
     expect(screen.getByRole("dialog")).toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: "common.home" })).not.toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "common.explore" })).toHaveAttribute("aria-current", "page");
+    expect(screen.queryByRole("navigation", { name: "common.browse" })).not.toBeInTheDocument();
   });
 
   it("keeps the popup aligned to the sidebar rail and opens Space creation", () => {
@@ -219,5 +215,15 @@ describe("SpaceSwitcher", () => {
     fireEvent.click(screen.getByRole("button", { name: "space.create" }));
     fireEvent.click(screen.getByRole("button", { name: "Complete create" }));
     expect(state.selectSpace).toHaveBeenCalledWith(state.spaces[0]);
+  });
+
+  it("gives guests on Explore only the account panel, with no single-choice Browse control", () => {
+    state.currentUser = undefined;
+    renderAt("/explore");
+    openSwitcher();
+    expect(screen.queryByRole("navigation", { name: "common.browse" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /Back to/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Steven account" })).toBeInTheDocument();
   });
 });

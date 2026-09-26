@@ -8,7 +8,7 @@ import { type MemoFilter } from "@/contexts/MemoFilterContext";
 import { getCollectionCreator, resolveCollectionRoute } from "@/router/routes";
 
 const authState = vi.hoisted(() => ({
-  currentUser: { name: "users/test" } as { name: string } | undefined,
+  currentUser: { name: "users/test" } as { name: string; username?: string } | undefined,
   memoViews: [] as Array<{ name: string; title: string }>,
   notifications: [] as Array<{ status: number }>,
   guestCreator: undefined as { username: string; displayName: string; avatarUrl: string } | undefined,
@@ -45,7 +45,6 @@ vi.mock("@/components/UserMenu", () => ({
       User menu
     </button>
   ),
-  UserPreferenceDialog: () => null,
 }));
 
 vi.mock("@/components/CreateSpaceDialog", () => ({
@@ -396,9 +395,14 @@ describe("App sidebar logo", () => {
     const navigation = within(primaryNavigation);
     expect(navigation.getByRole("button", { name: "common.search" })).toHaveClass("ms-auto", "h-7", "px-1.5");
     expectActiveNavPill(navigation.getByRole("link", { name: "common.timeline" }), "common.timeline");
-    const about = navigation.getByRole("link", { name: "common.about" });
-    expect(about).toHaveAttribute("href", "/about");
-    expectCollapsedNavPill(about, "common.about");
+    const calendar = navigation.getByRole("link", { name: "common.calendar" });
+    expect(calendar).toHaveAttribute("href", "/calendar");
+    expectCollapsedNavPill(calendar, "common.calendar");
+    const map = navigation.getByRole("link", { name: "common.map" });
+    expect(map).toHaveAttribute("href", "/map");
+    expectCollapsedNavPill(map, "common.map");
+    expect(navigation.queryByRole("link", { name: "common.about" })).not.toBeInTheDocument();
+    expect(navigation.queryByRole("link", { name: "common.attachments" })).not.toBeInTheDocument();
     const signIn = screen.getByRole("link", { name: "common.sign-in-to-memos" });
     expect(signIn).toHaveClass("w-full", "px-5");
     expect(signIn).not.toHaveClass("rounded-md");
@@ -500,13 +504,14 @@ describe("App sidebar logo", () => {
     expectDefaultNavPill(home, "common.timeline");
     expect(screen.queryByRole("link", { name: "common.attachments" })).not.toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "common.inbox" })).not.toBeInTheDocument();
-    const about = navigation.getByRole("link", { name: "common.about" });
-    expect(about).toHaveAttribute("href", "/about");
-    expectCollapsedNavPill(about, "common.about");
+    expect(navigation.queryByRole("link", { name: "common.about" })).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: "common.sign-in-to-memos" }).closest("footer")).not.toBeNull();
   });
 
-  it.each(["/about", "/About/"])("marks About active for a guest on %s", (path) => {
+  it.each([
+    ["/calendar/2026/09", "common.calendar"],
+    ["/map", "common.map"],
+  ])("marks the reading view active for a guest on %s", (path, label) => {
     authState.currentUser = undefined;
     render(
       <MemoryRouter initialEntries={[path]}>
@@ -516,7 +521,7 @@ describe("App sidebar logo", () => {
 
     const navigation = within(screen.getByRole("navigation", { name: "Primary" }));
     expectCollapsedNavPill(navigation.getByRole("link", { name: "common.timeline" }), "common.timeline");
-    expectActiveNavPill(navigation.getByRole("link", { name: "common.about" }), "common.about");
+    expectActiveNavPill(navigation.getByRole("link", { name: label }), label);
     expect(screen.queryByText("Calendar")).not.toBeInTheDocument();
   });
 
@@ -631,6 +636,7 @@ describe("App sidebar logo", () => {
   });
 
   it.each(["/inbox", "/archived"])("shows Home as the direct destination from %s", (path) => {
+    authState.currentUser = { name: "users/test", username: "test" };
     render(
       <MemoryRouter initialEntries={[path]}>
         <AppSidebar />

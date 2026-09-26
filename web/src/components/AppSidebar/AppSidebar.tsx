@@ -7,7 +7,6 @@ import {
   FileAudioIcon,
   FileTextIcon,
   ImageIcon,
-  InfoIcon,
   LibraryIcon,
   ListIcon,
   type LucideIcon,
@@ -20,7 +19,7 @@ import {
   UserRoundIcon,
 } from "lucide-react";
 import { useRef } from "react";
-import { Link, matchPath, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { MAP_MEMO_FILTER } from "@/components/MapView/useMapMemos";
 import { MemoDetailSidebar } from "@/components/MemoDetailSidebar";
 import MemoDisplaySettingMenu from "@/components/MemoDisplaySettingMenu";
@@ -41,7 +40,7 @@ import useMediaQuery from "@/hooks/useMediaQuery";
 import { useNotifications } from "@/hooks/useUserQueries";
 import { combineCELFilters } from "@/lib/cel-filter";
 import { cn } from "@/lib/utils";
-import { collectionNavigationPath, ROUTES, resolveCollectionRoute } from "@/router/routes";
+import { collectionNavigationPath, ROUTES } from "@/router/routes";
 import { User_Role, UserNotification_Status } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import CommonSidebarContent from "./CommonSidebarContent";
@@ -268,12 +267,22 @@ const RouteSidebarContent = () => {
   return null;
 };
 
-interface GlobalNavItem {
-  id: string;
+/** Collection views beside Timeline. Attachments is a library of the user's own files, so guests get the reading views only. */
+const NAV_DESTINATIONS = [
+  { kind: "calendar", labelKey: "common.calendar", pathname: ROUTES.CALENDAR, icon: CalendarDaysIcon, signedInOnly: false },
+  { kind: "map", labelKey: "common.map", pathname: ROUTES.MAP, icon: MapIcon, signedInOnly: false },
+  { kind: "attachments", labelKey: "common.attachments", pathname: ROUTES.ATTACHMENTS, icon: PaperclipIcon, signedInOnly: true },
+] as const;
+
+interface NavPillProps {
   label: string;
-  path: string;
   icon: LucideIcon;
-  active: boolean;
+  /** A link when set; otherwise a button that runs `onClick`. */
+  to?: string;
+  onClick?: () => void;
+  active?: boolean;
+  expanded?: boolean;
+  className?: string;
 }
 
 /**
@@ -286,143 +295,86 @@ interface GlobalNavItem {
  * page stays a filled square with its tooltip, leaving room for the other actions.
  * Timeline's trailing arrow shares its surface, with a separate click target.
  */
-const navPillClasses = (active: boolean) =>
-  cn(sidebarSurfaceVariants({ role: "navPill" }), SIDEBAR_ROW_FOCUS_CLASSES, sidebarRowStateClasses(active ? "current" : "idle"));
-
-const NavPillLabel = ({ expanded, label }: { expanded: boolean; label: string }) => (
-  // The control carries its own aria-label; this text is decoration whether or not it is open.
-  <span
-    aria-hidden="true"
-    className={cn(
-      "grid min-w-0 grid-cols-[0fr] ps-0 transition-[grid-template-columns,padding] duration-200 ease-out motion-reduce:transition-none",
-      expanded && "@min-[230px]:grid-cols-[1fr] @min-[230px]:ps-1.5",
-    )}
-  >
-    <span className="flex min-w-0 items-center overflow-hidden">
-      <span data-sidebar-label className="shrink-0 truncate text-[12px] leading-5">
-        {label}
-      </span>
-    </span>
-  </span>
-);
+const NavPill = ({ label, icon: Icon, to, onClick, active = false, expanded = false, className }: NavPillProps) => {
+  const { setMobileOpen } = useAppSidebar();
+  const props = {
+    onClick: () => {
+      setMobileOpen(false);
+      onClick?.();
+    },
+    "aria-label": label,
+    "aria-current": active ? ("page" as const) : undefined,
+    className: cn(
+      sidebarSurfaceVariants({ role: "navPill" }),
+      SIDEBAR_ROW_FOCUS_CLASSES,
+      sidebarRowStateClasses(active ? "current" : "idle"),
+      className,
+    ),
+  };
+  return (
+    <Tooltip disabled={expanded}>
+      <TooltipTrigger render={to ? <Link to={to} {...props} /> : <button type="button" {...props} />}>
+        <span className={SIDEBAR_NAV_LEADING_SLOT_CLASSES} aria-hidden="true">
+          <Icon className="size-4 opacity-75" strokeWidth={1.8} />
+        </span>
+        {/* The control carries its own aria-label; this text is decoration whether or not it is open. */}
+        <span
+          aria-hidden="true"
+          className={cn(
+            "grid min-w-0 grid-cols-[0fr] ps-0 transition-[grid-template-columns,padding] duration-200 ease-out motion-reduce:transition-none",
+            expanded && "@min-[230px]:grid-cols-[1fr] @min-[230px]:ps-1.5",
+          )}
+        >
+          <span className="flex min-w-0 items-center overflow-hidden">
+            <span data-sidebar-label className="shrink-0 truncate text-[12px] leading-5">
+              {label}
+            </span>
+          </span>
+        </span>
+      </TooltipTrigger>
+      <TooltipContent side="bottom">{label}</TooltipContent>
+    </Tooltip>
+  );
+};
 
 const GlobalNavigation = () => {
   const t = useTranslate();
   const timelineRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const currentUser = useCurrentUser();
-  const { setMobileOpen, setQuickFindOpen } = useAppSidebar();
+  const { setQuickFindOpen } = useAppSidebar();
   const routeKind = getSidebarRouteKind(location.pathname);
-  const homeActive = routeKind === "home" || routeKind === "explore";
-  const homePath =
-    !currentUser && !resolveCollectionRoute(location.pathname).isCollection
-      ? ROUTES.EXPLORE
-      : collectionNavigationPath(ROUTES.HOME, location, currentUser?.username);
-  const items: GlobalNavItem[] = currentUser
-    ? [
-        {
-          id: "calendar",
-          label: t("common.calendar"),
-          path: collectionNavigationPath(ROUTES.CALENDAR, location, currentUser.username),
-          icon: CalendarDaysIcon,
-          active: routeKind === "calendar",
-        },
-        {
-          id: "map",
-          label: t("common.map"),
-          path: collectionNavigationPath(ROUTES.MAP, location, currentUser.username),
-          icon: MapIcon,
-          active: routeKind === "map",
-        },
-        {
-          id: "attachments",
-          label: t("common.attachments"),
-          path: collectionNavigationPath(ROUTES.ATTACHMENTS, location, currentUser.username),
-          icon: PaperclipIcon,
-          active: routeKind === "attachments",
-        },
-      ]
-    : [
-        {
-          id: "about",
-          label: t("common.about"),
-          path: ROUTES.ABOUT,
-          icon: InfoIcon,
-          active: Boolean(matchPath(ROUTES.ABOUT, location.pathname)),
-        },
-      ];
-  const expandedItemId = homeActive ? "home" : (items.find((item) => item.active)?.id ?? "home");
+  const timelineActive = routeKind === "home" || routeKind === "explore";
+  const destinations = NAV_DESTINATIONS.filter((destination) => currentUser || !destination.signedInOnly);
+  // The current page shows its label; anywhere else, Timeline does.
+  const expandedKind = destinations.find((destination) => destination.kind === routeKind)?.kind ?? "timeline";
+  const navigationPath = (pathname: string) => collectionNavigationPath(pathname, location, currentUser?.username);
 
   return (
     <TooltipProvider>
       <nav className={cn("@container flex h-7 items-center gap-1", SIDEBAR_RAIL_CLASSES)} aria-label="Primary">
-        <div ref={timelineRef} className={cn("flex shrink-0 items-center rounded-md", homeActive && sidebarRowStateClasses("current"))}>
-          <Tooltip disabled={expandedItemId === "home"}>
-            <TooltipTrigger
-              render={
-                <Link
-                  to={homePath}
-                  onClick={() => setMobileOpen(false)}
-                  aria-label={t("common.timeline")}
-                  aria-current={homeActive ? "page" : undefined}
-                  className={cn(navPillClasses(homeActive), homeActive && "rounded-e-none pe-0")}
-                />
-              }
-            >
-              <span className={SIDEBAR_NAV_LEADING_SLOT_CLASSES} aria-hidden="true">
-                <LibraryIcon className="size-4 opacity-75" strokeWidth={1.8} />
-              </span>
-              <NavPillLabel expanded={expandedItemId === "home"} label={t("common.timeline")} />
-            </TooltipTrigger>
-            <TooltipContent side="bottom">{t("common.timeline")}</TooltipContent>
-          </Tooltip>
-          {homeActive && <MemoDisplaySettingMenu anchor={timelineRef} />}
+        <div ref={timelineRef} className={cn("flex shrink-0 items-center rounded-md", timelineActive && sidebarRowStateClasses("current"))}>
+          <NavPill
+            to={navigationPath(ROUTES.HOME)}
+            label={t("common.timeline")}
+            icon={LibraryIcon}
+            active={timelineActive}
+            expanded={expandedKind === "timeline"}
+            className={cn(timelineActive && "rounded-e-none pe-0")}
+          />
+          {timelineActive && <MemoDisplaySettingMenu anchor={timelineRef} />}
         </div>
-        {items.map((item) => {
-          const Icon = item.icon;
-          const expanded = item.id === expandedItemId;
-          return (
-            <Tooltip key={item.id} disabled={expanded}>
-              <TooltipTrigger
-                render={
-                  <Link
-                    to={item.path}
-                    onClick={() => setMobileOpen(false)}
-                    aria-label={item.label}
-                    aria-current={item.active ? "page" : undefined}
-                    className={navPillClasses(item.active)}
-                  />
-                }
-              >
-                <span className={SIDEBAR_NAV_LEADING_SLOT_CLASSES} aria-hidden="true">
-                  <Icon className="size-4 opacity-75" strokeWidth={1.8} />
-                </span>
-                <NavPillLabel expanded={expanded} label={item.label} />
-              </TooltipTrigger>
-              <TooltipContent side="bottom">{item.label}</TooltipContent>
-            </Tooltip>
-          );
-        })}
-        <Tooltip>
-          <TooltipTrigger
-            render={
-              <button
-                type="button"
-                aria-label={t("common.search")}
-                className={cn("ms-auto", navPillClasses(false))}
-                onClick={() => {
-                  setMobileOpen(false);
-                  setQuickFindOpen(true);
-                }}
-              />
-            }
-          >
-            <span className={SIDEBAR_NAV_LEADING_SLOT_CLASSES} aria-hidden="true">
-              <SearchIcon className="size-4 opacity-75" strokeWidth={1.8} />
-            </span>
-          </TooltipTrigger>
-          <TooltipContent side="bottom">{t("common.search")}</TooltipContent>
-        </Tooltip>
+        {destinations.map((destination) => (
+          <NavPill
+            key={destination.kind}
+            to={navigationPath(destination.pathname)}
+            label={t(destination.labelKey)}
+            icon={destination.icon}
+            active={destination.kind === routeKind}
+            expanded={destination.kind === expandedKind}
+          />
+        ))}
+        <NavPill label={t("common.search")} icon={SearchIcon} onClick={() => setQuickFindOpen(true)} className="ms-auto" />
       </nav>
     </TooltipProvider>
   );

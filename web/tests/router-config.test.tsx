@@ -72,13 +72,13 @@ describe("router configuration", () => {
   });
 
   it("wraps authenticated-only pages in RequireAuthRoute", () => {
-    for (const path of [ROUTES.ARCHIVED, CALENDAR_ROUTE_PATTERN, ROUTES.VIEWS, ROUTES.ATTACHMENTS, ROUTES.INBOX, ROUTES.SETTING]) {
+    for (const path of [ROUTES.ARCHIVED, ROUTES.VIEWS, ROUTES.ATTACHMENTS, ROUTES.INBOX, ROUTES.SETTING]) {
       expect(hasAncestorOfType(routeConfig, path, RequireAuthRoute)).toBe(true);
     }
   });
 
   it("keeps non-feed pages behind their full initialization requirements", () => {
-    for (const path of [ROUTES.VIEWS, ROUTES.ATTACHMENTS, ROUTES.INBOX, ROUTES.SETTING]) {
+    for (const path of [ROUTES.VIEWS, ROUTES.ATTACHMENTS, ROUTES.MAP, ROUTES.INBOX, ROUTES.SETTING]) {
       expect(hasAncestorOfType(routeConfig, path, RequireFullInitializationRoute)).toBe(true);
     }
     expect(hasAncestorOfType(routeConfig, ROUTES.ABOUT, RequireInstanceInitializationRoute)).toBe(true);
@@ -95,7 +95,15 @@ describe("router configuration", () => {
   });
 
   it("leaves public pages outside RequireAuthRoute", () => {
-    for (const path of [ROUTES.ABOUT, ROUTES.EXPLORE, "memos/:uid", "memos/shares/:token", "u/:username"]) {
+    for (const path of [
+      ROUTES.ABOUT,
+      ROUTES.EXPLORE,
+      CALENDAR_ROUTE_PATTERN,
+      ROUTES.MAP,
+      "memos/:uid",
+      "memos/shares/:token",
+      "u/:username",
+    ]) {
       expect(hasAncestorOfType(routeConfig, path, RequireAuthRoute)).toBe(false);
     }
   });

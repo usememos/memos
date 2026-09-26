@@ -97,12 +97,13 @@ export const routeConfig: RouteObject[] = [
                 children: [{ path: Routes.ABOUT, element: <About /> }],
               },
               { path: Routes.EXPLORE, element: <ExploreRoute /> },
+              // Like Timeline, the calendar is public: guests see the memos readable to them.
+              { path: CALENDAR_ROUTE_PATTERN, element: <Calendar /> },
               { path: Routes.USER_PROFILE, element: <LegacyProfileRedirect /> },
               {
                 element: <RequireAuthRoute />,
                 children: [
                   { path: Routes.ARCHIVED, element: <Archived /> },
-                  { path: CALENDAR_ROUTE_PATTERN, element: <Calendar /> },
                   {
                     element: <RequireFullInitializationRoute />,
                     children: [{ path: Routes.VIEWS, element: <MemoViews /> }],
@@ -113,6 +114,10 @@ export const routeConfig: RouteObject[] = [
           },
           { path: "memos/:uid", element: <MemoDetail /> },
           { path: "memos/shares/:token", element: <MemoDetail /> },
+          {
+            element: <RequireFullInitializationRoute />,
+            children: [{ path: Routes.MAP, element: <MemoMap /> }],
+          },
           {
             element: <RequireAuthRoute />,
             children: [
@@ -141,7 +146,6 @@ export const routeConfig: RouteObject[] = [
                     ],
                   },
                   { path: Routes.ATTACHMENTS, element: <Attachments /> },
-                  { path: Routes.MAP, element: <MemoMap /> },
                   { path: Routes.INBOX, element: <Inboxes /> },
                   { path: Routes.SETTING, element: <Setting /> },
                 ],

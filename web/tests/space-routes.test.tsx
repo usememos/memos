@@ -74,6 +74,12 @@ describe("Space route contract", () => {
     expect(collectionNavigationPath("/", { pathname: "/calendar", search: "" }, "alice")).toBe("/explore");
     expect(collectionNavigationPath("/", { pathname: "/calendar", search: "?creator=alice" }, "alice")).toBe("/");
   });
+  it("sends guests to Explore unless a creator is selected", () => {
+    expect(collectionNavigationPath("/", { pathname: "/about", search: "" })).toBe("/explore");
+    expect(collectionNavigationPath("/", { pathname: "/calendar/2026/09", search: "" })).toBe("/explore");
+    expect(collectionNavigationPath("/", { pathname: "/map", search: "?creator=alice" })).toBe("/?creator=alice");
+    expect(collectionNavigationPath("/", { pathname: "/setting", search: "" }, "alice")).toBe("/");
+  });
   it.each(["/", "/calendar", "/map", "/attachments"])("preserves collection filters when navigating to %s", (destination) => {
     const filter = "tagSearch:work,contentSearch:a%26b,celSearch:visibility%20%3D%3D%20%22PUBLIC%22";
     const search = `?${new URLSearchParams({ creator: "alice", filter, lat: "31", lng: "121", zoom: "12", memo: "memos/a" })}`;

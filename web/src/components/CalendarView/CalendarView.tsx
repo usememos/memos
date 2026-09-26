@@ -78,7 +78,7 @@ export const CalendarView = ({ month, date }: CalendarViewProps) => {
     month,
     filter: monthFilter,
     isRedacted,
-    enabled: Boolean(user) && isUserSettingsInitialized,
+    enabled: isUserSettingsInitialized,
   });
 
   const monthLabel = useMemo(() => formatMonthLabel(month, i18n.language), [month, i18n.language]);

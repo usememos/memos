@@ -32,9 +32,9 @@ const LAYOUT_OPTIONS: Record<MemoMaxColumns, { icon: LucideIcon; key: "layout-li
 };
 
 const SettingRow = ({ label, description, children }: SettingRowProps) => (
-  <div className="flex min-h-7 items-center justify-between gap-3">
+  <div className="flex min-h-6 items-center justify-between gap-2">
     <div className="min-w-0">
-      <p className="text-[13px] leading-5 text-foreground">{label}</p>
+      <p className="text-xs leading-4 text-foreground">{label}</p>
       {description && <p className="text-[11px] leading-4 text-muted-foreground">{description}</p>}
     </div>
     {children}
@@ -71,7 +71,7 @@ function MemoDisplaySettingsContent() {
 
   return (
     <div>
-      <section className="px-3 py-2.5">
+      <section className="p-1.5">
         <div
           role="radiogroup"
           aria-label={t("memo.layout")}
@@ -117,7 +117,7 @@ function MemoDisplaySettingsContent() {
                 data-value={value}
                 onClick={() => setMaxColumns(value)}
                 className={cn(
-                  "flex h-7 min-w-0 items-center justify-center gap-1 rounded-md px-1 text-[11px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
+                  "flex h-6 min-w-0 items-center justify-center gap-1 rounded-sm px-1 text-[11px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
                   active ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
                 )}
               >
@@ -129,14 +129,14 @@ function MemoDisplaySettingsContent() {
         </div>
       </section>
 
-      <section className="space-y-2 border-t border-border/60 px-3 py-2.5">
+      <section className="space-y-1 border-t border-border/60 px-2.5 py-2">
         <SettingRow label={t("memo.order-by")}>
           <Select
             value={timeBasis}
             items={timeBasisOptions}
             onValueChange={(value) => setTimeBasis(value === "update_time" ? "update_time" : "create_time")}
           >
-            <SelectTrigger size="sm" className="w-32" aria-label={t("memo.order-by")}>
+            <SelectTrigger size="xs" className="w-32" aria-label={t("memo.order-by")}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -154,7 +154,7 @@ function MemoDisplaySettingsContent() {
             items={sortOrderOptions}
             onValueChange={(value) => setOrderByTimeAsc(value === "asc")}
           >
-            <SelectTrigger size="sm" className="w-32" aria-label={t("memo.direction")}>
+            <SelectTrigger size="xs" className="w-32" aria-label={t("memo.direction")}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -168,7 +168,7 @@ function MemoDisplaySettingsContent() {
         </SettingRow>
       </section>
 
-      <section className="space-y-2 border-t border-border/60 px-3 py-2.5">
+      <section className="space-y-1 border-t border-border/60 px-2.5 py-2">
         <SettingRow label={t("memo.compact-mode")} description={compactLocked ? t("memo.grid-compact-hint") : undefined}>
           <Switch
             aria-label={t("memo.compact-mode")}
@@ -207,7 +207,7 @@ function MemoDisplaySettingMenu({ anchor }: Props) {
         </TooltipTrigger>
         <TooltipContent side="bottom">{label}</TooltipContent>
       </Tooltip>
-      <PopoverContent anchor={anchor} align="start" sideOffset={6} aria-label={label} className="w-64 p-0">
+      <PopoverContent anchor={anchor} align="start" sideOffset={6} aria-label={label} className="w-56 p-0">
         <MemoDisplaySettingsContent />
       </PopoverContent>
     </Popover>

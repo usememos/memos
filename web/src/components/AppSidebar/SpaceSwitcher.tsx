@@ -4,9 +4,8 @@ import {
   ChevronsUpDownIcon,
   CompassIcon,
   HouseIcon,
-  InfoIcon,
   LoaderCircleIcon,
-  LogInIcon,
+  type LucideIcon,
   PlusIcon,
 } from "lucide-react";
 import { useRef, useState } from "react";
@@ -15,11 +14,10 @@ import CreateSpaceDialog from "@/components/CreateSpaceDialog";
 import MemosLogo from "@/components/MemosLogo";
 import SpaceMark from "@/components/SpaceMark";
 import UserAvatar from "@/components/UserAvatar";
-import UserMenu, { type UserPreference, UserPreferenceDialog } from "@/components/UserMenu";
+import UserMenu from "@/components/UserMenu";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
-import { useAppSidebar } from "@/contexts/AppSidebarContext";
 import { useSpaceContext } from "@/contexts/SpaceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useUser } from "@/hooks/useUserQueries";
@@ -29,12 +27,28 @@ import { buildCollectionPath, getCreatorSwitchPath, getSpaceSwitchPath, ROUTES }
 import { useTranslate } from "@/utils/i18n";
 import { sidebarSurfaceVariants } from "./sidebar-layout";
 
+/** One half of the Home/Explore segmented control; the current half is raised. */
+const BrowseLink = ({ to, current, icon: Icon, label }: { to: string; current: boolean; icon: LucideIcon; label: string }) => (
+  <Link
+    to={to}
+    aria-current={current ? "page" : undefined}
+    className={cn(
+      "flex h-8 min-w-0 items-center gap-1.5 rounded-sm px-1.5 text-xs font-medium hover:bg-background/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40",
+      current && "bg-background ring-1 ring-border shadow-sm hover:bg-background",
+    )}
+  >
+    <span className="flex size-5 shrink-0 items-center justify-center">
+      <Icon aria-hidden="true" className="size-4" strokeWidth={1.8} />
+    </span>
+    <span className="min-w-0 truncate">{label}</span>
+  </Link>
+);
+
 function SpaceSwitcher({ className, size = "md" }: { className?: string; size?: "md" | "header" }) {
   const t = useTranslate();
   const location = useLocation();
   const navigate = useNavigate();
   const currentUser = useCurrentUser();
-  const { setMobileOpen } = useAppSidebar();
   const { spaces, duplicateSpaceTitles, selectedSpace, selectedSpaceName, creatorUsername, isLoadingSpaces, isSpacesError, selectSpace } =
     useSpaceContext();
   const { data: otherCreator } = useUser(`users/${creatorUsername ?? ""}`, {
@@ -42,7 +56,6 @@ function SpaceSwitcher({ className, size = "md" }: { className?: string; size?: 
   });
   const [createOpen, setCreateOpen] = useState(false);
   const [open, setOpen] = useState(false);
-  const [preference, setPreference] = useState<UserPreference | null>(null);
   const [menuWidth, setMenuWidth] = useState<number>();
   const triggerRef = useRef<HTMLButtonElement>(null);
   const selectedCreator = creatorUsername ? (creatorUsername === currentUser?.username ? currentUser : otherCreator) : undefined;
@@ -55,11 +68,6 @@ function SpaceSwitcher({ className, size = "md" }: { className?: string; size?: 
   const triggerLabel = showBrand ? t("common.memos") : contextLabel;
   const allSpacesLabel = t("space.all-spaces");
 
-  const navigateTo = (path: string) => {
-    setOpen(false);
-    setMobileOpen(false);
-    navigate(path);
-  };
   const handleOpenChange = (next: boolean) => {
     setOpen(next);
     if (!next) return;
@@ -71,10 +79,6 @@ function SpaceSwitcher({ className, size = "md" }: { className?: string; size?: 
     const inlineInset = Math.min(Math.abs(triggerRect.left - sidebarRect.left), Math.abs(sidebarRect.right - triggerRect.right));
     const width = Math.floor(sidebarRect.width - inlineInset * 2);
     if (width > 0) setMenuWidth(width);
-  };
-  const openPreference = (nextPreference: UserPreference) => {
-    setOpen(false);
-    setPreference(nextPreference);
   };
 
   return (
@@ -123,149 +127,116 @@ function SpaceSwitcher({ className, size = "md" }: { className?: string; size?: 
           className="w-[min(15rem,calc(100vw-1rem))] max-h-[min(27rem,calc(100dvh-5rem))] overflow-y-auto p-0"
           style={menuWidth ? { width: `${menuWidth}px` } : undefined}
         >
-          <div className="px-2 pb-1.5 pt-2">
-            {isOtherCreator ? (
-              <Link
-                to={returnPath}
-                className="flex h-8 items-center gap-2 rounded-sm px-2 text-xs font-medium hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
-              >
-                <ArrowLeftIcon aria-hidden="true" className="size-3.5 rtl:rotate-180" strokeWidth={1.8} />
-                {t("memo.back-to", { source: t(currentUser ? "common.home" : "common.explore") })}
-              </Link>
-            ) : (
-              <>
-                <div className="mb-1.5 px-1 text-[10px] font-semibold tracking-[0.08em] text-muted-foreground uppercase">
-                  {t("common.browse")}
-                </div>
-                <nav aria-label={t("common.browse")} className={cn("grid gap-0.5 rounded-md bg-muted p-0.5", currentUser && "grid-cols-2")}>
-                  {currentUser && (
-                    <Link
-                      to={getCreatorSwitchPath(location, currentUser.username, currentUser.username)}
-                      aria-current={creatorUsername ? "page" : undefined}
-                      className={cn(
-                        "flex h-8 min-w-0 items-center gap-1.5 rounded-sm px-1.5 text-xs font-medium hover:bg-background/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40",
-                        creatorUsername && "bg-background ring-1 ring-border shadow-sm hover:bg-background",
-                      )}
-                    >
-                      <span className="flex size-5 shrink-0 items-center justify-center">
-                        <HouseIcon aria-hidden="true" className="size-4" strokeWidth={1.8} />
-                      </span>
-                      <span className="min-w-0 truncate">{t("common.home")}</span>
-                    </Link>
-                  )}
-                  <Link
-                    to={getCreatorSwitchPath(location, undefined, currentUser?.username)}
-                    aria-current={!creatorUsername ? "page" : undefined}
-                    className={cn(
-                      "flex h-8 min-w-0 items-center gap-1.5 rounded-sm px-1.5 text-xs font-medium hover:bg-background/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40",
-                      !creatorUsername && "bg-background ring-1 ring-border shadow-sm hover:bg-background",
-                    )}
-                  >
-                    <span className="flex size-5 shrink-0 items-center justify-center">
-                      <CompassIcon aria-hidden="true" className="size-4" strokeWidth={1.8} />
-                    </span>
-                    <span className="min-w-0 truncate">{t("common.explore")}</span>
-                  </Link>
-                </nav>
-              </>
-            )}
-            {currentUser && (
-              <>
-                <div className="mb-1 mt-2 flex h-6 items-center justify-between ps-0.5">
-                  <span className="text-[10px] font-semibold tracking-[0.08em] text-muted-foreground uppercase">{t("space.spaces")}</span>
-                  {!isOtherCreator && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      aria-label={t("space.create")}
-                      title={t("space.create")}
-                      onClick={() => {
-                        setOpen(false);
-                        setCreateOpen(true);
-                      }}
-                      className="size-6 text-muted-foreground hover:text-foreground"
-                    >
-                      <PlusIcon className="size-3.5" strokeWidth={1.8} />
-                    </Button>
-                  )}
-                </div>
-                <Select
-                  value={selectedSpaceName ?? "all"}
-                  onValueChange={(value) => {
-                    if (value !== null) navigate(getSpaceSwitchPath(location, value === "all" ? undefined : value));
-                  }}
+          {/* Guests have one collection, Explore, so they only get a way back to it from a creator. */}
+          {(currentUser || isOtherCreator) && (
+            <div className="px-2 pb-1.5 pt-2">
+              {isOtherCreator ? (
+                <Link
+                  to={returnPath}
+                  className="flex h-8 items-center gap-2 rounded-sm px-2 text-xs font-medium hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
                 >
-                  <SelectTrigger aria-label={t("space.switch")} className="h-8 w-full px-2 text-xs font-medium shadow-none">
-                    {selectedSpaceName ? (
-                      <SpaceMark icon={selectedSpace?.icon} size="sm" />
-                    ) : (
-                      <AstroidIcon className="size-4 text-muted-foreground" />
+                  <ArrowLeftIcon aria-hidden="true" className="size-3.5 rtl:rotate-180" strokeWidth={1.8} />
+                  {t("memo.back-to", { source: t(currentUser ? "common.home" : "common.explore") })}
+                </Link>
+              ) : (
+                currentUser && (
+                  <>
+                    <div className="mb-1.5 px-1 text-[10px] font-semibold tracking-[0.08em] text-muted-foreground uppercase">
+                      {t("common.browse")}
+                    </div>
+                    <nav aria-label={t("common.browse")} className="grid grid-cols-2 gap-0.5 rounded-md bg-muted p-0.5">
+                      <BrowseLink
+                        to={getCreatorSwitchPath(location, currentUser.username, currentUser.username)}
+                        current={Boolean(creatorUsername)}
+                        icon={HouseIcon}
+                        label={t("common.home")}
+                      />
+                      <BrowseLink
+                        to={getCreatorSwitchPath(location, undefined, currentUser.username)}
+                        current={!creatorUsername}
+                        icon={CompassIcon}
+                        label={t("common.explore")}
+                      />
+                    </nav>
+                  </>
+                )
+              )}
+              {currentUser && (
+                <>
+                  <div className="mb-1 mt-2 flex h-6 items-center justify-between ps-0.5">
+                    <span className="text-[10px] font-semibold tracking-[0.08em] text-muted-foreground uppercase">{t("space.spaces")}</span>
+                    {!isOtherCreator && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label={t("space.create")}
+                        title={t("space.create")}
+                        onClick={() => {
+                          setOpen(false);
+                          setCreateOpen(true);
+                        }}
+                        className="size-6 text-muted-foreground hover:text-foreground"
+                      >
+                        <PlusIcon className="size-3.5" strokeWidth={1.8} />
+                      </Button>
                     )}
-                    <span className="min-w-0 flex-1 truncate text-start">{selectedSpaceName ? spaceLabel : allSpacesLabel}</span>
-                  </SelectTrigger>
-                  <SelectContent className="max-h-64" align="start">
-                    <SelectItem value="all">
-                      <span className="flex items-center gap-2">
-                        <AstroidIcon className="size-4" />
-                        {allSpacesLabel}
-                      </span>
-                    </SelectItem>
-                    {spaces.map((space) => {
-                      const uid = extractSpaceUidFromName(space.name);
-                      return (
-                        <SelectItem key={space.name} value={space.name}>
-                          <span className="flex items-center gap-2">
-                            <SpaceMark icon={space.icon} size="sm" />
-                            <span className="truncate">
-                              {space.title}
-                              {duplicateSpaceTitles.has(space.title) ? ` (${uid})` : ""}
+                  </div>
+                  <Select
+                    value={selectedSpaceName ?? "all"}
+                    onValueChange={(value) => {
+                      if (value !== null) navigate(getSpaceSwitchPath(location, value === "all" ? undefined : value));
+                    }}
+                  >
+                    <SelectTrigger aria-label={t("space.switch")} className="h-8 w-full px-2 text-xs font-medium shadow-none">
+                      {selectedSpaceName ? (
+                        <SpaceMark icon={selectedSpace?.icon} size="sm" />
+                      ) : (
+                        <AstroidIcon className="size-4 text-muted-foreground" />
+                      )}
+                      <span className="min-w-0 flex-1 truncate text-start">{selectedSpaceName ? spaceLabel : allSpacesLabel}</span>
+                    </SelectTrigger>
+                    <SelectContent className="max-h-64" align="start">
+                      <SelectItem value="all">
+                        <span className="flex items-center gap-2">
+                          <AstroidIcon className="size-4" />
+                          {allSpacesLabel}
+                        </span>
+                      </SelectItem>
+                      {spaces.map((space) => {
+                        const uid = extractSpaceUidFromName(space.name);
+                        return (
+                          <SelectItem key={space.name} value={space.name}>
+                            <span className="flex items-center gap-2">
+                              <SpaceMark icon={space.icon} size="sm" />
+                              <span className="truncate">
+                                {space.title}
+                                {duplicateSpaceTitles.has(space.title) ? ` (${uid})` : ""}
+                              </span>
                             </span>
-                          </span>
+                          </SelectItem>
+                        );
+                      })}
+                      {isLoadingSpaces && (
+                        <SelectItem value="loading" disabled>
+                          <LoaderCircleIcon className="size-4 animate-spin" />
+                          {t("space.loading")}
                         </SelectItem>
-                      );
-                    })}
-                    {isLoadingSpaces && (
-                      <SelectItem value="loading" disabled>
-                        <LoaderCircleIcon className="size-4 animate-spin" />
-                        {t("space.loading")}
-                      </SelectItem>
-                    )}
-                    {isSpacesError && spaces.length === 0 && (
-                      <SelectItem value="error" disabled>
-                        {t("space.load-error")}
-                      </SelectItem>
-                    )}
-                  </SelectContent>
-                </Select>
-              </>
-            )}
-          </div>
-          {currentUser ? (
-            <UserMenu onClose={() => setOpen(false)} onSelectPreference={openPreference} />
-          ) : (
-            <div className="border-t border-border/70 px-2 py-1">
-              <Button
-                variant="ghost"
-                className="h-8 w-full justify-start gap-2 rounded-sm px-2 text-xs font-normal"
-                onClick={() => navigateTo(ROUTES.ABOUT)}
-              >
-                <InfoIcon className="size-3.5 text-muted-foreground" />
-                {t("common.about")}
-              </Button>
-              <Button
-                variant="ghost"
-                className="h-8 w-full justify-start gap-2 rounded-sm px-2 text-xs font-normal"
-                onClick={() => navigateTo(ROUTES.AUTH)}
-              >
-                <LogInIcon className="size-3.5 text-muted-foreground" />
-                {t("common.sign-in")}
-              </Button>
+                      )}
+                      {isSpacesError && spaces.length === 0 && (
+                        <SelectItem value="error" disabled>
+                          {t("space.load-error")}
+                        </SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
+                </>
+              )}
             </div>
           )}
+          <UserMenu onClose={() => setOpen(false)} />
         </PopoverContent>
       </Popover>
       <CreateSpaceDialog open={createOpen} onOpenChange={setCreateOpen} onCreated={selectSpace} />
-      {preference && <UserPreferenceDialog preference={preference} onClose={() => setPreference(null)} />}
     </>
   );
 }
