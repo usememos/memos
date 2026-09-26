@@ -15,6 +15,7 @@ import type { EditorFileOrigin } from "./Editor/extensions";
 import {
   splitInlineLocalFiles,
   toLocalFiles,
+  useAttachmentTranscription,
   useAudioRecorder,
   useAutoSave,
   useBlobUrls,
@@ -23,7 +24,6 @@ import {
   useMemoInit,
   useMemoSave,
 } from "./hooks";
-import { useAttachmentTranscription } from "./hooks/useAttachmentTranscription";
 import { cacheService, errorService, transcriptionService } from "./services";
 import { EditorProvider, useEditorContext, useEditorSelector } from "./state";
 import { EditorToolbar, FormattingToolbar } from "./Toolbar";
@@ -209,9 +209,11 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
     dispatch(actions.setRecorderBusy(audioRecorder.isBusy));
   }, [audioRecorder.isBusy, actions, dispatch]);
 
+  // Both transcription paths insert into the draft when they land, so saving
+  // waits for either one; the recorder itself is idle by then.
   useEffect(() => {
-    dispatch(actions.setLoading("transcribing", Boolean(transcribingAttachment)));
-  }, [transcribingAttachment, actions, dispatch]);
+    dispatch(actions.setLoading("transcribing", isTranscribingAudio || Boolean(transcribingAttachment)));
+  }, [isTranscribingAudio, transcribingAttachment, actions, dispatch]);
 
   useEffect(() => {
     if (!isAudioRecorderOpen) {
@@ -257,7 +259,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   };
 
   const handleAudioRecorderClick = () => {
-    if (audioRecorder.isBusy || transcribingAttachment) {
+    if (audioRecorder.isBusy) {
       return;
     }
 

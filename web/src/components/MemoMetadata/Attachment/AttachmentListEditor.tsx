@@ -431,11 +431,14 @@ const AttachmentListEditor: FC<AttachmentListEditorProps> = ({
           const itemLocalFiles = collectMembers(localFilesByPreviewUrl, item.memberIds);
           const isUploadingInline = item.isLocal && item.memberIds.some((memberID) => uploadingLocalFileURLs.has(memberID));
           const isTranscribing = item.id === transcribingAttachment;
+          // External links are fetched cross-origin by the browser, which most hosts refuse.
+          const transcribableAttachment =
+            !item.isLocal && item.category === "audio" && !itemAttachments[0]?.externalLink ? itemAttachments[0] : undefined;
           const transcriptionAction =
-            !item.isLocal && item.category === "audio" && onTranscribeAttachment
+            transcribableAttachment && onTranscribeAttachment
               ? {
                   label: t(isTranscribing ? "editor.audio-recorder.transcribing" : "editor.audio-recorder.transcribe"),
-                  onClick: () => onTranscribeAttachment(itemAttachments[0]),
+                  onClick: () => onTranscribeAttachment(transcribableAttachment),
                   disabled: transcriptionDisabled || Boolean(transcribingAttachment),
                   busy: isTranscribing,
                 }

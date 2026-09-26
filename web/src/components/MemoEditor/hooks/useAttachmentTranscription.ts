@@ -1,8 +1,9 @@
+import { ConnectError } from "@connectrpc/connect";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { useTranslate } from "@/utils/i18n";
-import { errorService, transcriptionService } from "../services";
+import { transcriptionService } from "../services";
 
 /** Transcribes an existing attachment into the draft without changing the original audio. */
 export const useAttachmentTranscription = (onText: (text: string) => void) => {
@@ -29,7 +30,8 @@ export const useAttachmentTranscription = (onText: (text: string) => void) => {
         toast.success(t("editor.audio-recorder.transcribe-success"));
       } catch (error) {
         if (!controller.signal.aborted) {
-          toast.error(errorService.getErrorMessage(error) || t("editor.audio-recorder.transcribe-error"));
+          // Server errors explain themselves; download and network failures get the translated fallback.
+          toast.error((error instanceof ConnectError && error.rawMessage) || t("editor.audio-recorder.transcribe-error"));
         }
       } finally {
         request.current = undefined;

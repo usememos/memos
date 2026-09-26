@@ -1,4 +1,5 @@
 import { create } from "@bufbuild/protobuf";
+import { Code, ConnectError } from "@connectrpc/connect";
 import { act, renderHook } from "@testing-library/react";
 import { toast } from "react-hot-toast";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -48,7 +49,7 @@ describe("attachment transcription lifecycle", () => {
 
   it("allows retry after a provider failure without modifying the draft", async () => {
     vi.spyOn(transcriptionService, "transcribeAttachment")
-      .mockRejectedValueOnce(new Error("Provider unavailable"))
+      .mockRejectedValueOnce(new ConnectError("Provider unavailable", Code.Unavailable))
       .mockResolvedValueOnce("Retry works");
     const onText = vi.fn();
     const { result } = renderHook(() => useAttachmentTranscription(onText));
@@ -58,6 +59,16 @@ describe("attachment transcription lifecycle", () => {
     expect(result.current.transcribingAttachment).toBeUndefined();
     await act(() => result.current.transcribeAttachment(audio));
     expect(onText).toHaveBeenCalledExactlyOnceWith("Retry works");
+  });
+
+  it("reports download and network failures with the translated fallback", async () => {
+    vi.spyOn(transcriptionService, "transcribeAttachment").mockRejectedValue(new TypeError("Failed to fetch"));
+    const onText = vi.fn();
+    const { result } = renderHook(() => useAttachmentTranscription(onText));
+    await act(() => result.current.transcribeAttachment(audio));
+    expect(onText).not.toHaveBeenCalled();
+    expect(toast.error).toHaveBeenCalledWith("Failed to transcribe audio");
+    expect(result.current.transcribingAttachment).toBeUndefined();
   });
 
   it("cancels on editor unmount and ignores a late transcript", async () => {

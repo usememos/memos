@@ -41,6 +41,12 @@ describe("attachment transcription action", () => {
     expect(screen.getByText("voice.wav")).toBeInTheDocument();
   });
 
+  it("does not offer transcription for externally linked audio", () => {
+    const linked = create(AttachmentSchema, { ...audio, name: "attachments/linked", externalLink: "https://example.com/voice.wav" });
+    render(<AttachmentListEditor attachments={[linked]} onTranscribeAttachment={vi.fn()} />);
+    expect(screen.queryByRole("button", { name: "Transcribe" })).not.toBeInTheDocument();
+  });
+
   it("disables transcription while the editor is saving or recording", () => {
     render(<AttachmentListEditor attachments={[audio]} onTranscribeAttachment={vi.fn()} transcriptionDisabled />);
     expect(screen.getByRole("button", { name: "Transcribe" })).toBeDisabled();

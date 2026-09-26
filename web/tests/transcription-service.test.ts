@@ -17,10 +17,7 @@ afterEach(() => {
 
 describe("existing audio transcription", () => {
   it("downloads authenticated audio and sends its bytes and metadata to the configured AI service", async () => {
-    const response = new Response();
-    // Keep the downloaded Blob and browser File in the same jsdom realm.
-    vi.spyOn(response, "blob").mockResolvedValue(new Blob(["abc"]));
-    const fetchAudio = vi.fn().mockResolvedValue(response);
+    const fetchAudio = vi.fn().mockResolvedValue(new Response("abc"));
     vi.stubGlobal("fetch", fetchAudio);
     transcribe.mockResolvedValue({ text: "Meeting notes" });
     const controller = new AbortController();
@@ -60,7 +57,7 @@ describe("existing audio transcription", () => {
 
   it("rejects oversized download headers before reading the body", async () => {
     const response = new Response(null, { headers: { "Content-Length": "26214401" } });
-    const read = vi.spyOn(response, "blob");
+    const read = vi.spyOn(response, "arrayBuffer");
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(response));
     await expect(transcriptionService.transcribeAttachment(audio)).rejects.toThrow("25 MiB");
     expect(read).not.toHaveBeenCalled();
@@ -68,9 +65,8 @@ describe("existing audio transcription", () => {
   });
 
   it("checks actual body size when the server omits Content-Length", async () => {
-    const blob = new Blob(["abc"]);
-    Object.defineProperty(blob, "size", { value: 26214401 });
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, headers: new Headers(), blob: async () => blob }));
+    const body = new ArrayBuffer(26214401);
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, headers: new Headers(), arrayBuffer: async () => body }));
     await expect(transcriptionService.transcribeAttachment(audio)).rejects.toThrow("25 MiB");
     expect(transcribe).not.toHaveBeenCalled();
   });
