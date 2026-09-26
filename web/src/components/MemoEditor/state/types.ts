@@ -3,7 +3,7 @@ import type { Location, MemoRelation } from "@/types/proto/api/v1/memo_service_p
 import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import type { LocalFile } from "../types/attachment";
 
-export type LoadingKey = "saving" | "uploading" | "loading";
+export type LoadingKey = "saving" | "uploading" | "loading" | "transcribing";
 export type ContentSource = "editor" | "external";
 
 export interface EditorState {
@@ -22,6 +22,7 @@ export interface EditorState {
       saving: boolean;
       uploading: boolean;
       loading: boolean;
+      transcribing: boolean;
     };
     /** Save landed and the editor is about to close; the toolbar shows a brief
      *  confirmation instead of the commit verb. Only hosts that unmount after
@@ -73,6 +74,7 @@ const defaultState: EditorState = {
       saving: false,
       uploading: false,
       loading: false,
+      transcribing: false,
     },
     justSaved: false,
   },

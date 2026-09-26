@@ -15,6 +15,7 @@ import type { EditorFileOrigin } from "./Editor/extensions";
 import {
   splitInlineLocalFiles,
   toLocalFiles,
+  useAttachmentTranscription,
   useAudioRecorder,
   useAutoSave,
   useBlobUrls,
@@ -149,6 +150,8 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
     editor.scrollToCursor();
   }, []);
 
+  const { transcribeAttachment, transcribingAttachment } = useAttachmentTranscription(insertTranscribedText);
+
   const handleTranscribeRecordedAudio = useCallback(
     async (localFile: LocalFile) => {
       if (!canTranscribe) {
@@ -205,6 +208,12 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   useEffect(() => {
     dispatch(actions.setRecorderBusy(audioRecorder.isBusy));
   }, [audioRecorder.isBusy, actions, dispatch]);
+
+  // Both transcription paths insert into the draft when they land, so saving
+  // waits for either one; the recorder itself is idle by then.
+  useEffect(() => {
+    dispatch(actions.setLoading("transcribing", isTranscribingAudio || Boolean(transcribingAttachment)));
+  }, [isTranscribingAudio, transcribingAttachment, actions, dispatch]);
 
   useEffect(() => {
     if (!isAudioRecorderOpen) {
@@ -389,6 +398,9 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
             uploadingLocalFileURLs={inlineImageUpload.uploadingLocalFileURLs}
             onInsertAttachments={inlineImageUpload.insertRemoteImages}
             onInsertLocalFiles={inlineImageUpload.insertLocalImages}
+            onTranscribeAttachment={canTranscribe ? transcribeAttachment : undefined}
+            transcribingAttachment={transcribingAttachment}
+            transcriptionDisabled={isSaving || audioRecorder.isBusy || isTranscribingAudio}
           />
           {!memo && !parentMemoName && isInitialized && suggestions.length > 0 && (
             <EditorSuggestions suggestions={suggestions} controllerRef={editorRef} space={editorSpace} />
