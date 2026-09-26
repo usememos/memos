@@ -671,6 +671,7 @@
       "background-color": "Color de fons",
       "blur-content": "Contingut desenfocat",
       "no-tags-configured": "No s'han configurat metadades d'etiquetes.",
+      "set-icon": "Set icon for #{{tag}}",
       "tag-name-placeholder": "p. ex. work o project/.*",
       "tag-already-exists": "L'etiqueta ja existeix.",
       "tag-pattern-hint": "Nom de l'etiqueta o patró d'expressió regular (p. ex., project/.* coincideix amb totes les etiquetes project/)",

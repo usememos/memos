@@ -666,6 +666,7 @@
       "background-color": "لون الخلفية",
       "blur-content": "طمس المحتوى",
       "no-tags-configured": "لم يتم تكوين بيانات تعريف العلامة.",
+      "set-icon": "Set icon for #{{tag}}",
       "tag-name-placeholder": "على سبيل المثال work أو project/.*",
       "tag-already-exists": "العلامة موجودة بالفعل.",
       "tag-pattern-hint": "اسم العلامة أو نمط التعبير العادي (على سبيل المثال، project/.* يتطابق مع جميع علامات project/)",

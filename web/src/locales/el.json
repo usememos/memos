@@ -791,6 +791,7 @@
       "default-color": "Αθέτηση",
       "matching-rule": "Αγκυρωμένο regex",
       "no-tags-configured": "Δεν έχουν διαμορφωθεί μεταδεδομένα ετικέτας.",
+      "set-icon": "Set icon for #{{tag}}",
       "tag-name-placeholder": "π.χ. εργασία ή έργο/.*",
       "tag-already-exists": "Η ετικέτα υπάρχει ήδη.",
       "tag-pattern-hint": "Όνομα ετικέτας ή μοτίβο regex (π.χ. έργο/.* αντιστοιχεί σε όλα τα έργα/ετικέτες)",

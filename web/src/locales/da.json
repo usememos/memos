@@ -791,6 +791,7 @@
       "default-color": "Misligholdelse",
       "matching-rule": "Forankret regex",
       "no-tags-configured": "Ingen tag-metadata er konfigureret.",
+      "set-icon": "Set icon for #{{tag}}",
       "tag-name-placeholder": "f.eks. arbejde eller projekt/.*",
       "tag-already-exists": "Taget findes allerede.",
       "tag-pattern-hint": "Tagnavn eller regex-mønster (f.eks. project/.* matcher alle projekt/ tags)",
