@@ -666,6 +666,7 @@
       "background-color": "Màu nền",
       "blur-content": "Làm mờ nội dung",
       "no-tags-configured": "Không có siêu dữ liệu thẻ nào được định cấu hình.",
+      "set-icon": "Đặt biểu tượng cho #{{tag}}",
       "tag-name-placeholder": "ví dụ: công việc hoặc project/.*",
       "tag-already-exists": "Thẻ đã tồn tại.",
       "tag-pattern-hint": "Tên thẻ hoặc mẫu biểu thức chính quy (ví dụ: project/.* khớp với tất cả các thẻ project/)",

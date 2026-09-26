@@ -912,6 +912,7 @@
       "default-color": "預設",
       "matching-rule": "錨定正規表示式",
       "no-tags-configured": "尚未設定標籤中繼資料。",
+      "set-icon": "設定 #{{tag}} 的圖示",
       "tag-name-placeholder": "例如工作或project/.*",
       "tag-already-exists": "標籤已經存在。",
       "tag-pattern-hint": "標籤名稱或正規表示式模式（例如 project/.* 符合所有 project/ 標籤）",
