@@ -666,6 +666,7 @@
       "background-color": "배경색",
       "blur-content": "콘텐츠를 흐리게 처리",
       "no-tags-configured": "구성된 태그 메타데이터가 없습니다.",
+      "set-icon": "#{{tag}} 아이콘 설정",
       "tag-name-placeholder": "예를 들어 work 또는 project/.*",
       "tag-already-exists": "태그가 이미 존재합니다.",
       "tag-pattern-hint": "태그 이름 또는 정규식 패턴(예: project/.*는 모든 project/ 태그와 일치함)",

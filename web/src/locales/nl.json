@@ -671,6 +671,7 @@
       "background-color": "Achtergrondkleur",
       "blur-content": "Inhoud vervagen",
       "no-tags-configured": "Geen tag-metagegevens geconfigureerd.",
+      "set-icon": "Pictogram voor #{{tag}} instellen",
       "tag-name-placeholder": "bijv. work of project/.*",
       "tag-already-exists": "Label bestaat al.",
       "tag-pattern-hint": "Tagnaam of regex-patroon (bijvoorbeeld project/.* komt overeen met alle project/ tags)",

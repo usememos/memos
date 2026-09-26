@@ -791,6 +791,7 @@
       "default-color": "Noklusējums",
       "matching-rule": "Noenkurots regex",
       "no-tags-configured": "Nav konfigurēti taga metadati.",
+      "set-icon": "Set icon for #{{tag}}",
       "tag-name-placeholder": "piem. darbs vai projekts/.*",
       "tag-already-exists": "Tags jau pastāv.",
       "tag-pattern-hint": "Taga nosaukums vai regulārā izteiksmes modelis (piem., projekts/.* atbilst visiem projektiem/tagiem)",

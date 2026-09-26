@@ -791,6 +791,7 @@
       "default-color": "Numatytoji",
       "matching-rule": "Įtvirtintas reguliarusis reiškinys",
       "no-tags-configured": "Žymos metaduomenys nesukonfigūruoti.",
+      "set-icon": "Set icon for #{{tag}}",
       "tag-name-placeholder": "pvz. darbas arba projektas/.*",
       "tag-already-exists": "Žyma jau yra.",
       "tag-pattern-hint": "Žymos pavadinimas arba reguliariojo reiškinio šablonas (pvz., projektas/.* atitinka visus projektus/žymas)",

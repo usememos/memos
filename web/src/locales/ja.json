@@ -671,6 +671,7 @@
       "background-color": "背景色",
       "blur-content": "内容をぼかす",
       "no-tags-configured": "タグメタデータが設定されていません。",
+      "set-icon": "#{{tag}} のアイコンを設定",
       "tag-name-placeholder": "例: work または project/.*",
       "tag-already-exists": "タグはすでに存在します。",
       "tag-pattern-hint": "タグ名または正規表現パターン（例: project/.* はすべての project/ タグに一致）",
