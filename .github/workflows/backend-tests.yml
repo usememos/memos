@@ -41,7 +41,26 @@ jobs:
         uses: golangci/golangci-lint-action@v9
         with:
           version: v2.13.1
-          args: --timeout=3m
+          args: --timeout=3m --fix
+
+      - name: Verify goimports formatting
+        run: |
+          export PATH=$PATH:$(go env GOPATH)/bin
+          UNFORMATTED=$(goimports -l . 2>&1 | grep -v "proto/gen/" | grep -v "markdown/parser/tag_unicode_tables.go" || true)
+          if [ -n "$UNFORMATTED" ]; then
+            echo "Unformatted files:"
+            echo "$UNFORMATTED"
+            exit 1
+          fi
+
+      - name: Verify go fix
+        run: |
+          FIXES=$(go fix -n ./... 2>&1 | grep -v "downloading" | grep -v "^#" | grep -v "^$" || true)
+          if [ -n "$FIXES" ]; then
+            echo "go fix suggestions found:"
+            echo "$FIXES"
+            exit 1
+          fi
 
   tests:
     name: Tests (${{ matrix.test-group }})
