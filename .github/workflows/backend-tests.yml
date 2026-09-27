@@ -59,17 +59,15 @@ jobs:
 
       - name: Verify go fix
         run: |
-          set -e
           output=$(go fix -diff ./... 2>&1)
           code=$?
           filtered=$(echo "$output" | grep -v "downloading" || true)
-          if [ $code -eq 1 ]; then
-            echo "go fix suggestions found:"
+          if [ -n "$filtered" ]; then
             echo "$filtered"
+          fi
+          if [ $code -eq 1 ]; then
             exit 1
           elif [ $code -gt 1 ]; then
-            echo "go fix error:"
-            echo "$filtered"
             exit 1
           fi
 
