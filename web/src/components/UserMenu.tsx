@@ -172,7 +172,7 @@ const UserMenu = ({ onClose }: { onClose: () => void }) => {
           <>
             <div className="flex h-8 items-center gap-2 px-2">
               <span className="relative flex size-5 shrink-0 items-center justify-center">
-                <UserAvatar avatarUrl={currentUser.avatarUrl} name={accountLabel} className="size-5 rounded-[5px]" />
+                <UserAvatar avatarUrl={currentUser.avatarUrl} name={accountLabel} className="size-5" />
                 {sseStatus !== "connected" && (
                   <span
                     role="img"

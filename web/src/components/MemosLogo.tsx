@@ -33,7 +33,8 @@ function MemosLogo(props: Props) {
           compact ? cn("px-0", scale.gap) : collapsed ? "px-1" : "gap-2 px-3",
         )}
       >
-        <UserAvatar className={cn("shrink-0", compact && scale.mark)} avatarUrl={avatarUrl} />
+        {/* The instance logo is a brand, not a person, so it keeps a square mark. */}
+        <UserAvatar className={cn("shrink-0", compact ? scale.mark : "rounded-xl")} avatarUrl={avatarUrl} />
         {!collapsed && (
           <span
             className={cn(

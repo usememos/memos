@@ -42,7 +42,7 @@ export const AttachmentCreator = ({ creatorName, user }: AttachmentCreatorProps)
       className="inline-flex min-w-0 max-w-full items-center gap-1.5 rounded-sm text-xs text-muted-foreground hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
       viewTransition
     >
-      <UserAvatar className="size-4 rounded-[4px]" avatarUrl={user?.avatarUrl} name={displayName} />
+      <UserAvatar className="size-4" avatarUrl={user?.avatarUrl} name={displayName} />
       <span className="truncate">{displayName}</span>
     </Link>
   );

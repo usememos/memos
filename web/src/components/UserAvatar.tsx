@@ -18,7 +18,7 @@ const UserAvatar = (props: Props) => {
   return (
     <div
       className={cn(
-        "flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-xl",
+        "flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full",
         avatarUrl
           ? "border border-border"
           : title

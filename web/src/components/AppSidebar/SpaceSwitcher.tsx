@@ -44,6 +44,16 @@ const BrowseLink = ({ to, current, icon: Icon, label }: { to: string; current: b
   </Link>
 );
 
+/**
+ * The creator avatar shares the Space mark's slot but draws 2px smaller: a solid circle carries
+ * more visual weight than the pale Space tile, so equal boxes would make the person look larger.
+ */
+const CreatorAvatar = ({ avatarUrl, name, size }: { avatarUrl?: string; name?: string; size: "md" | "header" }) => (
+  <span className={cn("flex shrink-0 items-center justify-center", size === "header" ? "size-6" : "size-7")}>
+    <UserAvatar avatarUrl={avatarUrl} name={name} className={size === "header" ? "size-[22px]" : "size-[26px]"} />
+  </span>
+);
+
 function SpaceSwitcher({ className, size = "md" }: { className?: string; size?: "md" | "header" }) {
   const t = useTranslate();
   const location = useLocation();
@@ -98,8 +108,26 @@ function SpaceSwitcher({ className, size = "md" }: { className?: string; size?: 
             <MemosLogo compact size={size === "header" ? "header" : "md"} />
           ) : (
             <span className="flex min-w-0 items-center gap-2 overflow-hidden">
-              {creatorUsername ? (
-                <UserAvatar avatarUrl={selectedCreator?.avatarUrl} name={creatorLabel} className="size-6 shrink-0 rounded-[6px]" />
+              {creatorUsername && selectedSpaceName ? (
+                // With a Space selected, the creator recedes to its avatar (its name stays in the tooltip)
+                // so the Space title keeps the width.
+                <span className="flex shrink-0 items-center gap-1">
+                  <CreatorAvatar avatarUrl={selectedCreator?.avatarUrl} name={creatorLabel} size={size} />
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 10 20"
+                    className="h-5 w-2.5 shrink-0 text-muted-foreground/35"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={1.25}
+                    strokeLinecap="round"
+                  >
+                    <path d="M8 3 2 17" />
+                  </svg>
+                  <SpaceMark icon={selectedSpace?.icon} size={size === "header" ? "header" : "md"} />
+                </span>
+              ) : creatorUsername ? (
+                <CreatorAvatar avatarUrl={selectedCreator?.avatarUrl} name={creatorLabel} size={size} />
               ) : (
                 <SpaceMark icon={selectedSpace?.icon} size={size === "header" ? "header" : "md"} />
               )}
@@ -110,7 +138,7 @@ function SpaceSwitcher({ className, size = "md" }: { className?: string; size?: 
                   size === "header" ? "text-[15px] font-semibold leading-5" : "text-[14px] font-medium leading-4",
                 )}
               >
-                {contextLabel}
+                {creatorUsername && selectedSpaceName ? spaceLabel : contextLabel}
               </span>
             </span>
           )}

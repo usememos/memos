@@ -161,7 +161,10 @@ describe("SpaceSwitcher", () => {
     state.selectedSpace = state.spaces[0];
     renderAt("/spaces/product?creator=alice", "header");
     const trigger = screen.getByRole("button", { name: "space.switch: Alice / Product" });
-    expect(within(trigger).getByText("Alice / Product")).toHaveClass("truncate");
+    // With a Space selected, the creator shows as an avatar only; its name stays in the tooltip.
+    expect(trigger).toHaveAttribute("title", "Alice / Product");
+    expect(within(trigger).queryByText("Alice")).not.toBeInTheDocument();
+    expect(within(trigger).getByText("Product")).toHaveClass("truncate");
     expect(trigger).toHaveClass("h-9", "gap-2", "px-2");
     openSwitcher();
     expect(screen.queryByRole("navigation", { name: "common.browse" })).not.toBeInTheDocument();
