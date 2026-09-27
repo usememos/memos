@@ -960,7 +960,7 @@
     "zoom-in": "Ingrandisci",
     "zoom-out": "Riduci",
     "load-error": "Impossibile caricare tutte le note.",
-    "tile-error": "Impossibile caricare la mappa. Le tue note sono ancora disponibili.",
+    "tile-error": "Impossibile caricare la mappa. Le note sono ancora disponibili.",
     "empty": "Nessuna nota con una posizione al momento",
     "empty-hint": "Aggiungi una posizione a una nota per visualizzarla qui.",
     "no-results": "Nessuna nota corrispondente",
@@ -975,6 +975,7 @@
     "new-memo-on-day": "Nuovo memo in questo giorno",
     "next-year": "Anno prossimo",
     "no-memos-in-month": "Nessun memo in {{month}}",
+    "no-memos-on-day": "Nessun memo in questo giorno",
     "previous-year": "Anno precedente",
     "select-month": "Seleziona il mese"
   },

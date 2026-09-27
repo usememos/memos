@@ -4,7 +4,7 @@ import { CrosshairIcon, MinusIcon, PlusIcon } from "lucide-react";
 import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
-import { getLocationDisplayText } from "@/components/MemoMetadata/Location/locationHelpers";
+import { getLocationCoordinatesText } from "@/components/MemoMetadata/Location/locationHelpers";
 import { MEMO_PANEL_INSET, MEMO_PANEL_WIDTH_CSS, MemoPanel, MemoPanelList, type MemoPanelSize } from "@/components/MemoPanel";
 import { createMemoNavigationState } from "@/components/MemoView/navigation";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -16,8 +16,9 @@ import { cn } from "@/lib/utils";
 import { LocationSchema } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { fitMemos, MapCanvas } from "./MapCanvas";
-import { locationKey, type MapViewport, readViewport, splitLabel } from "./model";
+import { locationKey, type MapViewport, pointLabel, readViewport, splitLabel } from "./model";
 import { useMapMemos } from "./useMapMemos";
+import { useMapPins } from "./useMapPins";
 
 /** Enough map beside the card to keep a selection visible. */
 const RESERVED_BESIDE_PANEL = 160;
@@ -33,6 +34,7 @@ export function MapView() {
   const user = useCurrentUser();
   const { filters, removeFilter } = useMemoFilterContext();
   const query = useMapMemos();
+  const pins = useMapPins(query.memos, !creatorUsername);
   const mapRef = useRef<L.Map | null>(null);
   const [panelSize, setPanelSize] = useState<MemoPanelSize>({ width: 0, height: 0 });
   // Only a real change may re-render the map tree.
@@ -111,16 +113,20 @@ export function MapView() {
       }, true);
     }
   }, [query.complete, query.memos, selected, updateQuery]);
+  // A place label is its author's words: the title uses one only when it speaks for every memo
+  // there, and a new memo only inherits the writer's own label, never someone else's.
+  const sharedLabel = singlePoint ? pointLabel(selectedMemos) : "";
+  const ownLabel = singlePoint && user ? pointLabel(selectedMemos.filter((memo) => memo.creator === user.name)) : "";
   const composeLocation = useMemo(
     () =>
       singlePoint
         ? create(LocationSchema, {
             latitude: singlePoint.latitude,
             longitude: singlePoint.longitude,
-            placeholder: getLocationDisplayText(singlePoint),
+            placeholder: ownLabel || getLocationCoordinatesText(singlePoint),
           })
         : undefined,
-    [singlePoint],
+    [singlePoint, ownLabel],
   );
   const afterSave = async (name: string) => {
     setSaving(false);
@@ -147,7 +153,11 @@ export function MapView() {
         { duration: 8000 },
       );
   };
-  const heading = singlePoint ? splitLabel(getLocationDisplayText(singlePoint)) : { title: t("map.selection") };
+  const heading = !singlePoint
+    ? { title: t("map.selection") }
+    : sharedLabel
+      ? splitLabel(sharedLabel)
+      : { title: getLocationCoordinatesText(singlePoint) };
   // Floating surfaces let the basemap show through, the way Notion's and Linear's overlays do.
   const surfaceClass = "rounded-lg border border-border/60 bg-background/85 shadow-xs backdrop-blur-md";
   // The calendar's 28px quiet square, a touch more on phones.
@@ -167,6 +177,7 @@ export function MapView() {
     >
       <MapCanvas
         memos={query.memos}
+        pins={pins}
         selected={selected}
         viewport={viewport}
         complete={query.complete}
@@ -266,7 +277,10 @@ export function MapView() {
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center p-8">
           <div className={cn("pointer-events-auto max-w-sm rounded-xl p-5 text-center", surfaceClass)}>
             <h2 className="font-medium">{t(filters.length ? "map.no-results" : "map.empty")}</h2>
-            <p className="mt-2 text-sm text-muted-foreground">{t(filters.length ? "map.no-results-hint" : "map.empty-hint")}</p>
+            {/* Guests cannot add a location, so only filters get a hint for them. */}
+            {(filters.length > 0 || user) && (
+              <p className="mt-2 text-sm text-muted-foreground">{t(filters.length ? "map.no-results-hint" : "map.empty-hint")}</p>
+            )}
             {filters.length > 0 && (
               <Button className="mt-4" variant="outline" onClick={() => removeFilter(() => true)}>
                 {t("map.clear-filters")}

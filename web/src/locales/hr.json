@@ -960,7 +960,7 @@
     "zoom-in": "Povećaj",
     "zoom-out": "Smanji",
     "load-error": "Nije moguće učitati sve zapise.",
-    "tile-error": "Karta se nije mogla učitati. Vaši zapisi su još uvijek dostupni.",
+    "tile-error": "Karta se nije mogla učitati. Zapisi su još uvijek dostupni.",
     "empty": "Još nema zapisa s lokacijom",
     "empty-hint": "Dodajte lokaciju zapisu da biste ga vidjeli ovdje.",
     "no-results": "Nema odgovarajućih zapisa",
@@ -975,6 +975,7 @@
     "new-memo-on-day": "Nova bilješka na današnji dan",
     "next-year": "Sljedeća godina",
     "no-memos-in-month": "Nema bilješki u {{month}}",
+    "no-memos-on-day": "Nema bilješki na ovaj dan",
     "previous-year": "Prethodna godina",
     "select-month": "Odaberite mjesec"
   },

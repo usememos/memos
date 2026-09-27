@@ -960,7 +960,7 @@
     "zoom-in": "Vergrößern",
     "zoom-out": "Verkleinern",
     "load-error": "Es konnten nicht alle Notizen geladen werden.",
-    "tile-error": "Die Karte konnte nicht geladen werden. Ihre Notizen sind weiterhin verfügbar.",
+    "tile-error": "Die Karte konnte nicht geladen werden. Die Notizen sind weiterhin verfügbar.",
     "empty": "Noch keine Notizen mit Ortsangabe",
     "empty-hint": "Fügen Sie einer Notiz einen Ort hinzu, um ihn hier anzuzeigen.",
     "no-results": "Keine passenden Notizen",
@@ -975,6 +975,7 @@
     "new-memo-on-day": "Neue Notiz an diesem Tag",
     "next-year": "Nächstes Jahr",
     "no-memos-in-month": "Keine Notizen in {{month}}",
+    "no-memos-on-day": "Keine Notizen an diesem Tag",
     "previous-year": "Vorheriges Jahr",
     "select-month": "Monat auswählen"
   },

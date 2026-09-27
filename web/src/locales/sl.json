@@ -960,7 +960,7 @@
     "zoom-in": "Povečaj",
     "zoom-out": "Pomanjšaj",
     "load-error": "Vseh zapiskov ni bilo mogoče naložiti.",
-    "tile-error": "Zemljevida ni bilo mogoče naložiti. Vaši zapiski so še vedno na voljo.",
+    "tile-error": "Zemljevida ni bilo mogoče naložiti. Zapiski so še vedno na voljo.",
     "empty": "Še ni zapiskov z lokacijo",
     "empty-hint": "Dodajte lokacijo zapisku, da ga vidite tukaj.",
     "no-results": "Ni ustreznih zapiskov",
@@ -975,6 +975,7 @@
     "new-memo-on-day": "Nova beležka na ta dan",
     "next-year": "Naslednje leto",
     "no-memos-in-month": "Ni beležk v {{month}}",
+    "no-memos-on-day": "Ta dan ni beležk",
     "previous-year": "Prejšnje leto",
     "select-month": "Izberite mesec"
   },

@@ -1,7 +1,7 @@
 import { create, type MessageInitShape } from "@bufbuild/protobuf";
 import { timestampFromDate } from "@bufbuild/protobuf/wkt";
 import { describe, expect, it } from "vitest";
-import { buildCalendarMonthModel } from "@/components/CalendarView/dayModel";
+import { buildCalendarMonthModel, getMemoThumbnail } from "@/components/CalendarView/dayModel";
 import { AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
 import { type Memo, MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
 
@@ -142,6 +142,32 @@ describe("calendar day snapshots", () => {
     expect(day([memoAt(9, { attachments: [pdf] }), memoAt(10, { content: "Notes" })]).excerpt?.text).toBe("Notes");
   });
 
+  it("attributes the excerpt to the memo it came from, filename fallback included", () => {
+    const text = day([
+      memoAt(9, { creator: "users/bob", content: "Morning run" }),
+      memoAt(10, { creator: "users/alice", content: "Lunch" }),
+    ]);
+    expect(text.excerpt).toMatchObject({ memoName: "memos/9", creator: "users/bob", text: "Morning run" });
+    expect(day([memoAt(9, { creator: "users/carol", attachments: [pdf] })]).excerpt).toMatchObject({
+      creator: "users/carol",
+      text: "doc.pdf",
+    });
+  });
+
+  it("names each creator once, in the order they first wrote, hidden memos included", () => {
+    const summary = buildCalendarMonthModel(
+      [
+        memoAt(11, { creator: "users/bob" }),
+        memoAt(9, { creator: "users/carol", tags: ["private"] }),
+        memoAt(10, { creator: "users/bob" }),
+        memoAt(12, { creator: "users/alice" }),
+      ],
+      "create_time",
+      { isRedacted: (memo) => memo.tags.includes("private") },
+    )["2026-08-02"];
+    expect(summary.creators).toEqual(["users/carol", "users/bob", "users/alice"]);
+  });
+
   it("counts hidden memos without exposing text, filenames, or photos", () => {
     const summary = buildCalendarMonthModel(
       [
@@ -158,5 +184,16 @@ describe("calendar day snapshots", () => {
 
   it("uses update time when selected and ignores undated memos", () => {
     expect(Object.keys(buildCalendarMonthModel([memoAt(9), create(MemoSchema)], "update_time"))).toEqual(["2026-08-03"]);
+  });
+
+  it("finds a single memo's first photo in the same order, for map pins", () => {
+    expect(getMemoThumbnail(memoAt(9, { content: "just words" }))).toBeUndefined();
+    expect(getMemoThumbnail(memoAt(9, { attachments: [pdf] }))).toBeUndefined();
+    expect(getMemoThumbnail(memoAt(9, { content: "![a](https://example.com/inline.jpg)", attachments: [image("later")] }))).toBe(
+      "https://example.com/inline.jpg",
+    );
+    expect(getMemoThumbnail(memoAt(9, { attachments: [image("only")] }))).toBe(
+      day([memoAt(9, { attachments: [image("only")] })]).images[0].thumbnailUrl,
+    );
   });
 });

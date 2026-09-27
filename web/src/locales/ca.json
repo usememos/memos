@@ -960,7 +960,7 @@
     "zoom-in": "Apropa",
     "zoom-out": "Allunya",
     "load-error": "No s'han pogut carregar totes les notes.",
-    "tile-error": "No s'ha pogut carregar el mapa. Les teves notes encara estan disponibles.",
+    "tile-error": "No s'ha pogut carregar el mapa. Les notes encara estan disponibles.",
     "empty": "Encara no hi ha notes amb una ubicació",
     "empty-hint": "Afegeix una ubicació a una nota per veure-la aquí.",
     "no-results": "No hi ha notes coincidents",
@@ -975,6 +975,7 @@
     "new-memo-on-day": "Nova nota en aquest dia",
     "next-year": "L'any que ve",
     "no-memos-in-month": "No hi ha notes a {{month}}",
+    "no-memos-on-day": "No hi ha notes aquest dia",
     "previous-year": "L'any anterior",
     "select-month": "Selecciona el mes"
   },

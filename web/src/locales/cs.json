@@ -960,7 +960,7 @@
     "zoom-in": "Přiblížit",
     "zoom-out": "Oddálit",
     "load-error": "Nelze načíst všechny poznámky.",
-    "tile-error": "Mapa se nepodařilo načíst. Vaše poznámky jsou stále k dispozici.",
+    "tile-error": "Mapa se nepodařilo načíst. Poznámky jsou stále k dispozici.",
     "empty": "Zatím žádné poznámky s polohou",
     "empty-hint": "Přidejte k poznámce polohu, abyste ji zde viděli.",
     "no-results": "Žádné odpovídající poznámky",
@@ -975,6 +975,7 @@
     "new-memo-on-day": "Nová poznámka z tohoto dne",
     "next-year": "Příští rok",
     "no-memos-in-month": "Žádné poznámky v {{month}}",
+    "no-memos-on-day": "Žádné poznámky v tento den",
     "previous-year": "Předchozí rok",
     "select-month": "Vyberte měsíc"
   },

@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
+import { MentionResolutionProvider } from "@/components/MemoContent/MentionResolutionContext";
 import { deriveDefaultCreateTimeFromDate } from "@/components/MemoEditor/utils/deriveDefaultCreateTime";
 import { MEMO_PANEL_INSET, MEMO_PANEL_TITLE_CLASS, MEMO_PANEL_WIDTH_CSS, MemoPanel, MemoPanelList } from "@/components/MemoPanel";
 import MemoListError from "@/components/PagedMemoList/MemoListError";
@@ -17,14 +18,21 @@ import { isMemoBlurred } from "@/lib/tag";
 import { collectionPathForLocation } from "@/router/routes";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
+import { PREVIEW_MIN_CELL_WIDTH } from "./CalendarDayCell";
 import { CalendarGrid } from "./CalendarGrid";
 import { CalendarHeader } from "./CalendarHeader";
 import { buildCalendarPath, getDefaultDate } from "./paths";
 import { useMonthMemos } from "./useMonthMemos";
 
 const NO_MEMOS: Memo[] = [];
-/** Page padding plus seven legible 72px columns. */
-const RESERVED_BESIDE_PANEL = 48 + 7 * 72;
+const NO_CONTENTS: string[] = [];
+/**
+ * What the pushed grid keeps beside the panel: page padding, the grid's 2px border and seven
+ * preview-wide columns. The panel already subtracts both of its insets but the push leaves only
+ * one as a gap, so one comes back off. A persisted card wider than this yields for as long as
+ * the window is narrow, down to its minimum.
+ */
+export const RESERVED_BESIDE_PANEL = 48 + 2 + 7 * PREVIEW_MIN_CELL_WIDTH - MEMO_PANEL_INSET;
 
 export interface CalendarViewProps {
   /** `YYYY-MM` */
@@ -38,10 +46,10 @@ export interface CalendarViewProps {
  * Month and day both live in the URL; this component only reads them and renders.
  *
  * The open day has two homes. From md it is the floating memo panel at the end edge; at xl
- * the grid gives way to it so every column stays legible, below xl it floats over the
- * trailing columns. Below md the grid is compact and the day's list sits under it, the way
- * phone calendars work, so a day is always shown there: today in the current month,
- * otherwise the first of the month, until the URL names one.
+ * the grid gives way to it and the card narrows so every column keeps its preview, below xl
+ * it floats over the trailing columns. Below md the grid is compact and the day's list sits
+ * under it, the way phone calendars work, so a day is always shown there: today in the
+ * current month, otherwise the first of the month, until the URL names one.
  */
 export const CalendarView = ({ month, date }: CalendarViewProps) => {
   const t = useTranslate();
@@ -101,13 +109,21 @@ export const CalendarView = ({ month, date }: CalendarViewProps) => {
   const [saving, setSaving] = useState(false);
   const panelOpen = Boolean(date) && md;
 
+  const showAuthors = !creatorUsername;
+  const authorNames = useMemo(
+    () => (showAuthors ? Array.from(new Set(Object.values(model).flatMap((day) => day.creators))) : []),
+    [model, showAuthors],
+  );
+
+  const canCompose = Boolean(user && (!creatorUsername || creatorUsername === user.username));
   const list = activeDate && (
     <MemoPanelList
       memos={activeMemos}
       selectionKey={activeDate}
       timeDisplay="time"
+      emptyText={canCompose ? undefined : t("calendar.no-memos-on-day")}
       compose={
-        user && (!creatorUsername || creatorUsername === user.username)
+        canCompose
           ? {
               cacheKey: `calendar-day-editor:${activeDate}`,
               label: t("calendar.new-memo-on-day"),
@@ -132,16 +148,19 @@ export const CalendarView = ({ month, date }: CalendarViewProps) => {
         style={{ paddingInlineEnd: xl && panelOpen ? `calc(${MEMO_PANEL_WIDTH_CSS} + ${MEMO_PANEL_INSET}px)` : undefined }}
       >
         <CalendarHeader month={month} monthLabel={monthLabel} today={today} activeDate={activeDate} closable={md} />
-        <CalendarGrid
-          month={month}
-          monthLabel={monthLabel}
-          today={today}
-          counts={statistics.activityStats}
-          model={model}
-          pending={isLoading}
-          selectedDate={activeDate}
-          showRows={md}
-        />
+        <MentionResolutionProvider contents={NO_CONTENTS} userNames={authorNames}>
+          <CalendarGrid
+            month={month}
+            monthLabel={monthLabel}
+            today={today}
+            counts={statistics.activityStats}
+            model={model}
+            pending={isLoading}
+            selectedDate={activeDate}
+            showRows={md}
+            showAuthors={showAuthors}
+          />
+        </MentionResolutionProvider>
         {error && <MemoListError error={error} onRetry={refetch} />}
         {isEmptyMonth && md && (
           <p className="mt-2 shrink-0 text-center text-ui text-muted-foreground">

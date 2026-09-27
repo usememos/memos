@@ -24,8 +24,10 @@ export interface CalendarGridProps {
   model: CalendarMonthModel;
   pending: boolean;
   selectedDate?: string;
-  /** Below md the compact calendar shows tinted dates only, with the stream beneath. */
+  /** Below md the compact calendar shows tinted dates with a mark each, with the stream beneath. */
   showRows: boolean;
+  /** No single creator is selected, so previews carry their author. */
+  showAuthors: boolean;
 }
 
 const KEY_DELTAS: Record<string, number> = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -DAYS_IN_WEEK, ArrowDown: DAYS_IN_WEEK };
@@ -38,7 +40,17 @@ const cornerOf = (index: number, total: number): "ss" | "se" | "es" | "ee" | und
   return undefined;
 };
 
-export const CalendarGrid = ({ month, monthLabel, today, counts, model, pending, selectedDate, showRows }: CalendarGridProps) => {
+export const CalendarGrid = ({
+  month,
+  monthLabel,
+  today,
+  counts,
+  model,
+  pending,
+  selectedDate,
+  showRows,
+  showAuthors,
+}: CalendarGridProps) => {
   const direction = useDirection();
   const { generalSetting } = useInstance();
   const { timeBasis } = useView();
@@ -115,6 +127,7 @@ export const CalendarGrid = ({ month, monthLabel, today, counts, model, pending,
             layout={layout}
             pending={pending}
             timeBasis={timeBasis}
+            showAuthor={showAuthors}
             tabIndex={day.date === focusDate ? 0 : -1}
             isLastColumn={index % DAYS_IN_WEEK === DAYS_IN_WEEK - 1}
             isLastRow={index >= days.length - DAYS_IN_WEEK}

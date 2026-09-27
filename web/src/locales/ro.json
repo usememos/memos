@@ -960,7 +960,7 @@
     "zoom-in": "Mărire",
     "zoom-out": "Micșorare",
     "load-error": "Nu s-au putut încărca toate memo-urile.",
-    "tile-error": "Harta nu s-a putut încărca. Memo-urile dvs. sunt încă disponibile.",
+    "tile-error": "Harta nu s-a putut încărca. Memo-urile sunt încă disponibile.",
     "empty": "Nu există memo-uri cu o locație încă",
     "empty-hint": "Adăugați o locație la un memo pentru a o vedea aici.",
     "no-results": "Nu există memo-uri potrivite",
@@ -975,6 +975,7 @@
     "new-memo-on-day": "Memo nou în această zi",
     "next-year": "Anul viitor",
     "no-memos-in-month": "Niciun memento în {{month}}",
+    "no-memos-on-day": "Niciun memento în această zi",
     "previous-year": "Anul precedent",
     "select-month": "Selectați luna"
   },

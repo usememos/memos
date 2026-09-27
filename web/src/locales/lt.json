@@ -960,7 +960,7 @@
     "zoom-in": "Priartinti",
     "zoom-out": "Tolinti",
     "load-error": "Nepavyko įkelti visų priminimų.",
-    "tile-error": "Žemėlapio įkelti nepavyko. Jūsų priminimai vis dar pasiekiami.",
+    "tile-error": "Žemėlapio įkelti nepavyko. Priminimai vis dar pasiekiami.",
     "empty": "Kol kas nėra priminimų su vieta.",
     "empty-hint": "Pridėkite vietą prie priminimo, kad jį pamatytumėte čia.",
     "no-results": "Nėra atitinkančių priminimų.",
@@ -975,6 +975,7 @@
     "new-memo-on-day": "Naujas priminimas šią dieną",
     "next-year": "Kitais metais",
     "no-memos-in-month": "Nėra priminimų {{month}}",
+    "no-memos-on-day": "Šią dieną priminimų nėra",
     "previous-year": "Ankstesniais metais",
     "select-month": "Pasirinkite mėnesį"
   },

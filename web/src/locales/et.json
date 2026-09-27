@@ -960,7 +960,7 @@
     "zoom-in": "Suumi sisse",
     "zoom-out": "Suumi välja",
     "load-error": "Kõiki memosid ei saanud laadida.",
-    "tile-error": "Kaarti ei saanud laadida. Teie memod on endiselt saadaval.",
+    "tile-error": "Kaarti ei saanud laadida. Memod on endiselt saadaval.",
     "empty": "Asukohaga memosid pole veel olemas",
     "empty-hint": "Lisage memole asukoht, et seda siin näha.",
     "no-results": "Vastavaid memosid pole",
@@ -975,6 +975,7 @@
     "new-memo-on-day": "Uus memo sel päeval",
     "next-year": "Järgmisel aastal",
     "no-memos-in-month": "Memosid pole {{month}}",
+    "no-memos-on-day": "Sel päeval memosid pole",
     "previous-year": "Eelmisel aastal",
     "select-month": "Valige kuu"
   },

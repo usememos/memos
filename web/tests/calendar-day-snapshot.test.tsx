@@ -1,32 +1,50 @@
 import { create } from "@bufbuild/protobuf";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { CalendarDayCell, layoutForCellSize } from "@/components/CalendarView/CalendarDayCell";
 import type { CalendarDaySummary } from "@/components/CalendarView/dayModel";
 import { MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
 
+const users: Record<string, { name: string; username: string; displayName: string; avatarUrl: string }> = {
+  "users/bob": { name: "users/bob", username: "bob", displayName: "Bob Martin", avatarUrl: "/bob.png" },
+  "users/carol": { name: "users/carol", username: "carol", displayName: "Carol Diaz", avatarUrl: "/carol.png" },
+  "users/dan": { name: "users/dan", username: "dan", displayName: "Dan Okafor", avatarUrl: "/dan.png" },
+};
+vi.mock("@/components/MemoContent/MentionResolutionContext", () => ({
+  useResolvedUser: (name: string, options?: { enabled?: boolean }) => (options?.enabled ? users[name] : undefined),
+  useResolvedUsersByNames: (names: string[]) => new Map(names.map((name) => [name, users[name]])),
+}));
+
 const summary: CalendarDaySummary = {
   memos: [create(MemoSchema), create(MemoSchema)],
-  excerpt: { memoName: "memos/a", text: "A memorable afternoon", isCode: false },
+  excerpt: { memoName: "memos/a", creator: "users/bob", text: "A memorable afternoon", isCode: false },
+  creators: ["users/bob", "users/carol", "users/dan"],
   images: [{ memoName: "memos/b", thumbnailUrl: "/photo.jpg" }],
 };
+const textOnly: CalendarDaySummary = { ...summary, images: [] };
 interface CellOptions {
   width?: number;
   height?: number;
   isSelected?: boolean;
   isToday?: boolean;
+  isCurrentMonth?: boolean;
+  showAuthor?: boolean;
 }
-const cell = (value?: CalendarDaySummary, { width = 170, height = 170, isSelected = true, isToday = true }: CellOptions = {}) =>
+const cell = (
+  value?: CalendarDaySummary,
+  { width = 170, height = 170, isSelected = true, isToday = true, isCurrentMonth = true, showAuthor = false }: CellOptions = {},
+) =>
   render(
     <MemoryRouter initialEntries={["/spaces/work/calendar/2026/08?filter=test"]}>
       <CalendarDayCell
-        day={{ date: "2026-08-07", label: 7, count: 0, isCurrentMonth: true, isToday, isSelected }}
+        day={{ date: "2026-08-07", label: 7, count: 0, isCurrentMonth, isToday, isSelected }}
         summary={value}
         maxCount={4}
         layout={layoutForCellSize(width, height)}
         pending={false}
         timeBasis="create_time"
+        showAuthor={showAuthor}
         tabIndex={0}
         isLastColumn={false}
         isLastRow={false}
@@ -102,10 +120,74 @@ describe("calendar daily snapshot cell", () => {
     cell({ ...summary, excerpt: undefined }, { width: 106, height: 88 });
     expect(document.querySelector("img")).toHaveAttribute("src", "/photo.jpg");
   });
-  it("shows only the tinted date when narrow", () => {
-    cell(summary, { width: 72, isSelected: false });
+  it("keeps a slim preview with tighter padding under preview width", () => {
+    cell(summary, { width: 92, height: 140, isSelected: false });
+    expect(screen.getByRole("link")).toHaveClass("sm:px-2");
+    expect(screen.getByText("A memorable afternoon")).toHaveStyle({ WebkitLineClamp: "1" });
+    expect(document.querySelectorAll("img")).toHaveLength(1);
+  });
+  it("trades the preview for a mark on the tinted date when very narrow", () => {
+    cell(summary, { width: 56, isSelected: false });
     expect(screen.getByRole("link")).toHaveClass("bg-primary/16");
     expect(screen.queryByText("A memorable afternoon")).toBeNull();
-    expect(document.querySelector("img")).toBeNull();
+    expect(document.querySelectorAll("img")).toHaveLength(1);
+    expect(document.querySelector("img")).toHaveClass("size-4");
+  });
+  it("leads the excerpt with its author's avatar when several creators share the grid", () => {
+    cell(summary, { showAuthor: true });
+    const excerpt = screen.getByText("A memorable afternoon");
+    const avatar = excerpt.firstElementChild;
+    // Inside the clamped line, so it sits on the first line and never takes a line of its own.
+    expect(avatar).toHaveClass("inline-flex", "size-3.5");
+    expect(avatar?.querySelector("img")).toHaveAttribute("src", "/bob.png");
+    expect(excerpt).toHaveTextContent(/^A memorable afternoon$/);
+  });
+  it("leaves the excerpt unattributed in a single creator's scope", () => {
+    cell(summary);
+    expect(screen.getByText("A memorable afternoon").firstElementChild).toBeNull();
+    expect(document.querySelector('img[src="/bob.png"]')).toBeNull();
+  });
+  it("shows no avatar when the cell is too narrow for an excerpt", () => {
+    cell(summary, { width: 56, showAuthor: true });
+    expect(document.querySelector('img[src="/bob.png"]')).toBeNull();
+  });
+
+  describe("phone mark", () => {
+    // The compact phone grid: a 49px column with no room for preview rows.
+    const phone = { width: 49, height: 0 };
+    const avatars = () => [...document.querySelectorAll("img")].map((image) => image.getAttribute("src"));
+
+    it("shows the day's first photo as a small thumbnail under the date", () => {
+      cell(summary, { ...phone, showAuthor: true });
+      expect(avatars()).toEqual(["/photo.jpg"]);
+      expect(document.querySelector("img")).toHaveClass("size-4");
+      expect(screen.queryByText("A memorable afternoon")).toBeNull();
+    });
+    it("names up to two authors when several creators share the grid and there is no photo", () => {
+      cell(textOnly, { ...phone, showAuthor: true });
+      expect(avatars()).toEqual(["/bob.png", "/carol.png"]);
+    });
+    it("falls back from a photo that fails to load to the next mark", () => {
+      cell(summary, { ...phone, showAuthor: true });
+      fireEvent.error(document.querySelector("img")!);
+      expect(avatars()).toEqual(["/bob.png", "/carol.png"]);
+    });
+    it("draws written lines in a single creator's scope, never the text itself", () => {
+      cell(textOnly, phone);
+      expect(document.querySelector("img")).toBeNull();
+      expect(screen.getByRole("link").querySelectorAll(".rounded-full.bg-current")).toHaveLength(2);
+      expect(screen.getByRole("link")).toHaveTextContent(/^7$/);
+    });
+    it("marks nothing on empty days or days outside the month", () => {
+      cell(undefined, phone);
+      expect(screen.getByRole("link").querySelector(".h-4")).toBeNull();
+      cell(summary, { ...phone, isCurrentMonth: false });
+      expect(document.querySelectorAll("img")).toHaveLength(0);
+    });
+    it("leaves cells with room for a preview unmarked", () => {
+      cell(summary, { showAuthor: true });
+      expect(avatars()).toEqual(["/bob.png", "/photo.jpg"]);
+      expect(document.querySelector("img.size-4")).toBeNull();
+    });
   });
 });

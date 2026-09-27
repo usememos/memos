@@ -960,7 +960,7 @@
     "zoom-in": "Achegar",
     "zoom-out": "Reducir",
     "load-error": "Non se puideron cargar todas as notas.",
-    "tile-error": "Non se puido cargar o mapa. As túas notas aínda están dispoñibles.",
+    "tile-error": "Non se puido cargar o mapa. As notas aínda están dispoñibles.",
     "empty": "Aínda non hai notas cunha localización",
     "empty-hint": "Engade unha localización a unha nota para vela aquí.",
     "no-results": "Non hai notas coincidentes",
@@ -975,6 +975,7 @@
     "new-memo-on-day": "Nova nota neste día",
     "next-year": "O ano que vén",
     "no-memos-in-month": "Non hai notas en {{month}}",
+    "no-memos-on-day": "Non hai notas neste día",
     "previous-year": "Ano anterior",
     "select-month": "Seleccionar mes"
   },

@@ -1,6 +1,15 @@
 import { create } from "@bufbuild/protobuf";
 import { describe, expect, it } from "vitest";
-import { locationKey, mapMemos, readViewport, revealOffset, splitLabel, validLocation } from "@/components/MapView/model";
+import {
+  locationKey,
+  mapMemos,
+  pinFace,
+  pointLabel,
+  readViewport,
+  revealOffset,
+  splitLabel,
+  validLocation,
+} from "@/components/MapView/model";
 import { LocationSchema, MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
 
 const memo = (name: string, latitude = 0, longitude = 0) => create(MemoSchema, { name, location: { latitude, longitude } });
@@ -50,5 +59,23 @@ describe("map model", () => {
     expect(splitLabel("Qiucun, Guangde, Anhui")).toEqual({ title: "Qiucun", subtitle: "Guangde, Anhui" });
     expect(splitLabel("Kyoto")).toEqual({ title: "Kyoto" });
     expect(splitLabel("Kyoto, ")).toEqual({ title: "Kyoto, " });
+  });
+
+  it("picks a pin face in the calendar mark order", () => {
+    expect(pinFace("/thumb.jpg", { avatarUrl: "/bob.png", name: "Bob" })).toEqual({ kind: "photo", url: "/thumb.jpg" });
+    expect(pinFace(undefined, { avatarUrl: "/bob.png", name: "Bob" })).toEqual({ kind: "author", avatarUrl: "/bob.png", name: "Bob" });
+    expect(pinFace(undefined, { avatarUrl: "", name: "Dan" })).toEqual({ kind: "author", avatarUrl: undefined, name: "Dan" });
+    expect(pinFace(undefined, undefined)).toEqual({ kind: "dot" });
+  });
+
+  it("lets a place label speak only for its own author or for everyone who used it", () => {
+    const at = (creator: string, placeholder: string) =>
+      create(MemoSchema, { creator, location: { placeholder, latitude: 35, longitude: 135 } });
+    // One author: their newest label, as before.
+    expect(pointLabel([at("users/alice", "Mom's house"), at("users/alice", "Home")])).toBe("Mom's house");
+    // Several authors: only a label they all used.
+    expect(pointLabel([at("users/alice", "Kyoto Station"), at("users/bob", " Kyoto Station ")])).toBe("Kyoto Station");
+    expect(pointLabel([at("users/alice", "Mom's house"), at("users/bob", "")])).toBe("");
+    expect(pointLabel([])).toBe("");
   });
 });

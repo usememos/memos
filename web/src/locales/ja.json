@@ -975,6 +975,7 @@
     "new-memo-on-day": "この日に新しいメモが作成",
     "next-year": "来年",
     "no-memos-in-month": "{{month}} 件にメモはありません",
+    "no-memos-on-day": "この日のメモはありません",
     "previous-year": "前年",
     "select-month": "月を選択"
   },

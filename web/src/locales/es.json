@@ -960,7 +960,7 @@
     "zoom-in": "Acercar",
     "zoom-out": "Alejar",
     "load-error": "No se pudieron cargar todas las notas.",
-    "tile-error": "No se pudo cargar el mapa. Tus notas siguen disponibles.",
+    "tile-error": "No se pudo cargar el mapa. Las notas siguen disponibles.",
     "empty": "Aún no hay notas con ubicación",
     "empty-hint": "Agrega una ubicación a una nota para verla aquí.",
     "no-results": "No hay notas coincidentes",
@@ -975,6 +975,7 @@
     "new-memo-on-day": "Nuevo memorándum en este día",
     "next-year": "El próximo año",
     "no-memos-in-month": "No hay memorándums en {{month}}",
+    "no-memos-on-day": "No hay memorándums este día",
     "previous-year": "Año anterior",
     "select-month": "Seleccionar mes"
   },

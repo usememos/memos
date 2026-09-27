@@ -960,7 +960,7 @@
     "zoom-in": "Powiększ",
     "zoom-out": "Pomniejsz",
     "load-error": "Nie można załadować wszystkich notatek.",
-    "tile-error": "Nie można załadować mapy. Twoje notatki są nadal dostępne.",
+    "tile-error": "Nie można załadować mapy. Notatki są nadal dostępne.",
     "empty": "Brak notatek z lokalizacją",
     "empty-hint": "Dodaj lokalizację do notatki, aby ją tutaj zobaczyć.",
     "no-results": "Brak pasujących notatek",
@@ -975,6 +975,7 @@
     "new-memo-on-day": "Nowa notatka z tego dnia",
     "next-year": "Następny rok",
     "no-memos-in-month": "Brak notatek w {{month}}",
+    "no-memos-on-day": "Brak notatek w tym dniu",
     "previous-year": "Poprzedni rok",
     "select-month": "Wybierz miesiąc"
   },

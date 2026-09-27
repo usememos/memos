@@ -2,16 +2,21 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import { useEffect, useMemo, useRef } from "react";
+import ReactDOMServer from "react-dom/server";
 import { MapContainer, Marker, useMapEvents } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import { getLocationDisplayText } from "@/components/MemoMetadata/Location/locationHelpers";
 import { BasemapLayer } from "@/components/map/BasemapLayer";
 import { createMarkerIcon, MinimalAttributionControl } from "@/components/map/map-utils";
+import UserAvatar from "@/components/UserAvatar";
+import { cn } from "@/lib/utils";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
-import { type MapViewport, revealOffset } from "./model";
+import { type MapPin, type MapPinFace, type MapViewport, revealOffset } from "./model";
 
 interface Props {
   memos: Memo[];
+  /** Each memo's face and label by name; a memo without one shows the plain dot and its place. */
+  pins: ReadonlyMap<string, MapPin>;
   selected: string[];
   viewport?: MapViewport;
   complete: boolean;
@@ -28,6 +33,37 @@ interface Props {
 // Positron's own city dots are 4px black; ours are bigger, colored and white-edged so they never blend in.
 const markerIcon = createMarkerIcon({ size: 22, dot: 16 });
 const selectedIcon = createMarkerIcon({ size: 36, dot: 20, halo: true });
+const FACE_EDGE = "border-2 border-white shadow-[0_1px_4px_rgba(15,23,42,0.4)]";
+
+/**
+ * A photo or avatar pin, the calendar cell's marks at map scale: a rounded photo square or a
+ * round avatar, white-edged like the dot so it never blends into the basemap. Selection grows
+ * it and adds the dot's translucent halo. A photo that fails to load leaves the primary fill.
+ */
+const createFaceIcon = (face: Exclude<MapPinFace, { kind: "dot" }>, selected: boolean): L.DivIcon => {
+  const box = selected ? 40 : 28;
+  const side = selected ? 30 : 24;
+  const html = ReactDOMServer.renderToString(
+    <div
+      aria-hidden="true"
+      className={cn("grid place-items-center", selected && "bg-primary/20", face.kind === "photo" ? "rounded-[11px]" : "rounded-full")}
+      style={{ width: box, height: box }}
+    >
+      {face.kind === "photo" ? (
+        <span
+          className={cn("block rounded-md bg-primary bg-cover bg-center", FACE_EDGE)}
+          style={{ width: side, height: side, backgroundImage: `url(${JSON.stringify(face.url)})` }}
+        />
+      ) : (
+        <UserAvatar className={cn(FACE_EDGE, selected ? "size-[30px]" : "size-6")} avatarUrl={face.avatarUrl} name={face.name} />
+      )}
+    </div>,
+  );
+  return L.divIcon({ html, className: "", iconSize: [box, box], iconAnchor: [box / 2, box / 2] });
+};
+
+const faceKey = (face: MapPinFace): string =>
+  face.kind === "photo" ? `photo:${face.url}` : face.kind === "author" ? `author:${face.avatarUrl ?? ""}:${face.name ?? ""}` : "dot";
 
 export function fitMemos(map: L.Map, memos: Memo[]) {
   if (memos.length)
@@ -89,19 +125,46 @@ function MapBehavior(props: Props) {
   return null;
 }
 
-function Markers({ memos, selected, onSelect }: Pick<Props, "memos" | "selected" | "onSelect">) {
+function Markers({ memos, pins, selected, onSelect }: Pick<Props, "memos" | "pins" | "selected" | "onSelect">) {
   const names = useRef(new WeakMap<L.Marker, string>());
+  const markers = useRef(new Map<string, L.Marker>());
   const selection = useMemo(() => new Set(selected), [selected]);
   // Identity-stable positions: a fresh tuple per render would make every marker re-enter the cluster tree.
   const points = useMemo(
     () =>
-      memos.map((memo) => ({
-        memo,
-        position: [memo.location!.latitude, memo.location!.longitude] as [number, number],
-        label: getLocationDisplayText(memo.location!),
-      })),
-    [memos],
+      memos.map((memo) => {
+        const pin = pins.get(memo.name);
+        return {
+          memo,
+          position: [memo.location!.latitude, memo.location!.longitude] as [number, number],
+          face: pin?.face ?? { kind: "dot" as const },
+          label: pin?.label ?? getLocationDisplayText(memo.location!),
+        };
+      }),
+    [memos, pins],
   );
+  // One icon per face and state, so a selection change swaps two icons rather than rebuilding every pin.
+  const icons = useRef(new Map<string, L.DivIcon>());
+  const iconFor = (face: MapPinFace, isSelected: boolean): L.DivIcon => {
+    if (face.kind === "dot") return isSelected ? selectedIcon : markerIcon;
+    const key = `${faceKey(face)}:${isSelected}`;
+    let icon = icons.current.get(key);
+    if (!icon) {
+      icon = createFaceIcon(face, isSelected);
+      icons.current.set(key, icon);
+    }
+    return icon;
+  };
+  // Leaflet reads a marker's title only when it is created, and authors resolve after the pins
+  // first draw, so a changed label is written to the live marker and to what a re-added one reads.
+  useEffect(() => {
+    for (const { memo, label } of points) {
+      const marker = markers.current.get(memo.name);
+      if (!marker || marker.options.title === label) continue;
+      marker.options.title = label;
+      marker.getElement()?.setAttribute("title", label);
+    }
+  }, [points]);
   const clusterGroup = useRef<{ refreshClusters(): void } | null>(null);
   useEffect(() => {
     clusterGroup.current?.refreshClusters();
@@ -135,14 +198,17 @@ function Markers({ memos, selected, onSelect }: Pick<Props, "memos" | "selected"
         );
       }}
     >
-      {points.map(({ memo, position, label }) => (
+      {points.map(({ memo, position, face, label }) => (
         <Marker
           key={memo.name}
           ref={(marker) => {
-            if (marker) names.current.set(marker, memo.name);
+            if (marker) {
+              names.current.set(marker, memo.name);
+              markers.current.set(memo.name, marker);
+            } else markers.current.delete(memo.name);
           }}
           position={position}
-          icon={selection.has(memo.name) ? selectedIcon : markerIcon}
+          icon={iconFor(face, selection.has(memo.name))}
           zIndexOffset={selection.has(memo.name) ? 1000 : 0}
           title={label}
           alt={label}
@@ -168,7 +234,7 @@ export function MapCanvas(props: Props) {
       <BasemapLayer onTileError={props.onTileError} />
       <MinimalAttributionControl />
       <MapBehavior {...props} />
-      <Markers memos={props.memos} selected={props.selected} onSelect={props.onSelect} />
+      <Markers memos={props.memos} pins={props.pins} selected={props.selected} onSelect={props.onSelect} />
     </MapContainer>
   );
 }

@@ -5,12 +5,14 @@ import {
   getActivityLevel,
   getTooltipText,
 } from "@/components/ActivityCalendar";
+import { useResolvedUser, useResolvedUsersByNames } from "@/components/MemoContent/MentionResolutionContext";
+import UserAvatar from "@/components/UserAvatar";
 import { FOCUS_VISIBLE_OUTLINE_CLASSES } from "@/components/ui/focus";
 import type { MemoTimeBasis } from "@/contexts/ViewContext";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { CalendarLink } from "./CalendarLink";
-import type { CalendarDaySummary } from "./dayModel";
+import type { CalendarDayImage, CalendarDaySummary } from "./dayModel";
 import { buildCalendarPath, getMonthOfDate } from "./paths";
 
 /** Every excerpt line is one sidebar row of type: 13px on an 18px line. */
@@ -21,6 +23,10 @@ const IMAGE_GAP = 4;
 /** Vertical space the date line and paddings take before any preview can start. */
 const HEADER_HEIGHT = 48;
 const HORIZONTAL_PADDING = 24;
+/** The width a full preview needs; from xl the day panel yields so columns keep it while a day is open. */
+export const PREVIEW_MIN_CELL_WIDTH = 100;
+/** Narrower cells, which only a wide sidebar beside the open panel produces, get a mark instead of a preview. */
+const SLIM_MIN_CELL_WIDTH = 64;
 
 export interface CalendarCellLayout {
   /** Excerpt lines when the day has no photo strip. */
@@ -29,18 +35,30 @@ export interface CalendarCellLayout {
   textLinesWithImages: number;
   /** Photo marks that fit across; 0 when the cell is too narrow or short for a strip. */
   imageCount: number;
+  /** Below preview width: tighter padding, a shorter excerpt and one photo, rather than no preview. */
+  slim: boolean;
+  /** No preview fits (phones, or under slim width): a single mark under the date says what the day holds. */
+  mark: boolean;
 }
 
 /** Use the actual cell size, including width lost to the resizable day panel. */
 export const layoutForCellSize = (width: number, height: number): CalendarCellLayout => {
-  // Too narrow for previews: the date carries the day on its own.
-  const compact = width < 100;
+  // Too narrow for any preview: a mark under the date carries the day.
+  const compact = width < SLIM_MIN_CELL_WIDTH;
+  const slim = !compact && width < PREVIEW_MIN_CELL_WIDTH;
   const available = Math.max(0, height - HEADER_HEIGHT);
   const showImages = !compact && available >= IMAGE_SIZE;
+  const mark = compact || (!showImages && available < LINE_HEIGHT);
   return {
-    textLines: compact ? 0 : Math.min(3, Math.floor(available / LINE_HEIGHT)),
-    textLinesWithImages: showImages ? Math.min(2, Math.floor((available - IMAGE_SIZE - IMAGE_GAP) / LINE_HEIGHT)) : 0,
-    imageCount: showImages ? Math.min(3, Math.max(1, Math.floor((width - HORIZONTAL_PADDING + IMAGE_GAP) / (IMAGE_SIZE + IMAGE_GAP)))) : 0,
+    textLines: compact ? 0 : Math.min(slim ? 2 : 3, Math.floor(available / LINE_HEIGHT)),
+    textLinesWithImages: showImages ? Math.min(slim ? 1 : 2, Math.floor((available - IMAGE_SIZE - IMAGE_GAP) / LINE_HEIGHT)) : 0,
+    imageCount: !showImages
+      ? 0
+      : slim
+        ? 1
+        : Math.min(3, Math.max(1, Math.floor((width - HORIZONTAL_PADDING + IMAGE_GAP) / (IMAGE_SIZE + IMAGE_GAP)))),
+    slim,
+    mark,
   };
 };
 
@@ -53,6 +71,8 @@ export interface CalendarDayCellProps {
   /** The month's memos are still loading; `day.count` from statistics is all we know. */
   pending: boolean;
   timeBasis: MemoTimeBasis;
+  /** Several creators share the grid, so each excerpt leads with its author's avatar. */
+  showAuthor: boolean;
   tabIndex: number;
   isLastColumn: boolean;
   isLastRow: boolean;
@@ -82,16 +102,66 @@ const getNumeralClass = (day: CalendarDayCellData, count: number): string => {
 };
 
 const NO_IMAGES: CalendarDaySummary["images"] = [];
+const NO_CREATORS: string[] = [];
+/** Two 14px avatars side by side fit the narrowest phone column. */
+const MARK_AUTHORS = 2;
 
 /**
- * One day, one excerpt, and a strip of photos. The entire cell opens the day's memo stream.
+ * What a cell too small for a preview shows under its date, in order: the day's first photo;
+ * else who wrote, when several creators share the grid; else a glyph of written lines. The
+ * heat tint still carries how much.
+ */
+const DayMark = ({
+  photo,
+  authorNames,
+  onImageError,
+}: {
+  photo?: CalendarDayImage;
+  /** Empty in a single creator's scope, or when the photo already marks the day. */
+  authorNames: string[];
+  onImageError: (url: string) => void;
+}) => {
+  const authors = useResolvedUsersByNames(authorNames);
+  if (photo) {
+    return (
+      <img
+        src={photo.thumbnailUrl}
+        alt=""
+        loading="lazy"
+        decoding="async"
+        className="size-4 shrink-0 rounded-[3px] object-cover"
+        onError={() => onImageError(photo.thumbnailUrl)}
+      />
+    );
+  }
+  if (authorNames.length > 0) {
+    return (
+      <span className="flex gap-0.5">
+        {authorNames.map((name) => {
+          const user = authors.get(name);
+          return <UserAvatar key={name} className="size-3.5" avatarUrl={user?.avatarUrl} name={user?.displayName || user?.username} />;
+        })}
+      </span>
+    );
+  }
+  return (
+    <span className="flex flex-col gap-[3px] text-muted-foreground/45 transition-colors group-hover/day:text-muted-foreground">
+      <span className="h-0.5 w-4 rounded-full bg-current" />
+      <span className="h-0.5 w-2.5 rounded-full bg-current" />
+    </span>
+  );
+};
+
+/**
+ * One day, one excerpt, and a strip of photos; a single mark when the cell is too small for
+ * them. The entire cell opens the day's memo stream.
  *
  * The cell borrows the sidebar's row grammar: the date and every excerpt line are 13px type
  * on the column's text axis, weight is reserved for the open day, and idle text is muted
  * and lifts to the foreground under the pointer.
  */
 export const CalendarDayCell = memo(
-  ({ day, summary, maxCount, layout, pending, timeBasis, tabIndex, isLastColumn, isLastRow, corner }: CalendarDayCellProps) => {
+  ({ day, summary, maxCount, layout, pending, timeBasis, showAuthor, tabIndex, isLastColumn, isLastRow, corner }: CalendarDayCellProps) => {
     const t = useTranslate();
     const [failedImages, setFailedImages] = useState<string[]>([]);
     const count = summary ? summary.memos.length : day.count;
@@ -104,6 +174,9 @@ export const CalendarDayCell = memo(
     const showImages = images.length > 0;
     const textLines = showImages ? layout.textLinesWithImages : layout.textLines;
     const excerpt = textLines > 0 ? summary?.excerpt : undefined;
+    // A photo that failed to load gives way to the next mark rather than an empty square.
+    const markPhoto = layout.mark ? summary?.images.find((image) => !failedImages.includes(image.thumbnailUrl)) : undefined;
+    const author = useResolvedUser(excerpt?.creator ?? "", { enabled: showAuthor && Boolean(excerpt) });
     const showSkeleton = pending && !summary && day.isCurrentMonth && day.count > 0;
     const numeral = (
       <span
@@ -126,6 +199,7 @@ export const CalendarDayCell = memo(
         aria-current={day.isSelected ? "page" : undefined}
         className={cn(
           "group/day relative flex min-h-14 min-w-0 flex-col overflow-hidden border-border/70 px-1.5 py-2 text-start no-underline transition-colors sm:px-3 sm:min-h-20 md:min-h-[5.5rem]",
+          layout.slim && "sm:px-2",
           !isLastColumn && "border-e",
           !isLastRow && "border-b",
           corner && CORNER_CLASSES[corner],
@@ -145,6 +219,16 @@ export const CalendarDayCell = memo(
           </span>
         )}
 
+        {layout.mark && day.isCurrentMonth && !showSkeleton && summary && (
+          <span aria-hidden="true" className="flex h-4 shrink-0 items-center">
+            <DayMark
+              photo={markPhoto}
+              authorNames={showAuthor && !markPhoto ? summary.creators.slice(0, MARK_AUTHORS) : NO_CREATORS}
+              onImageError={(url) => setFailedImages((failed) => [...failed, url])}
+            />
+          </span>
+        )}
+
         {day.isCurrentMonth && !showSkeleton && (excerpt || showImages) && (
           <span aria-hidden="true" className="mt-1 flex min-w-0 flex-col gap-1">
             {excerpt && (
@@ -157,6 +241,14 @@ export const CalendarDayCell = memo(
                 )}
                 style={{ WebkitLineClamp: textLines }}
               >
+                {/* Inline, so the avatar sits on the first line and the clamp still counts lines. */}
+                {showAuthor && (
+                  <UserAvatar
+                    className="me-1.5 inline-flex size-3.5 align-[-2px]"
+                    avatarUrl={author?.avatarUrl}
+                    name={author?.displayName || author?.username}
+                  />
+                )}
                 {excerpt.text}
               </span>
             )}

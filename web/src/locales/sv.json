@@ -960,7 +960,7 @@
     "zoom-in": "Zooma in",
     "zoom-out": "Zooma ut",
     "load-error": "Kunde inte ladda alla PM.",
-    "tile-error": "Kartan kunde inte laddas. Dina PM är fortfarande tillgängliga.",
+    "tile-error": "Kartan kunde inte laddas. PM:en är fortfarande tillgängliga.",
     "empty": "Inga PM med en plats ännu",
     "empty-hint": "Lägg till en plats i ett PM för att se det här.",
     "no-results": "Inga matchande PM",
@@ -975,6 +975,7 @@
     "new-memo-on-day": "Nytt PM denna dag",
     "next-year": "Nästa år",
     "no-memos-in-month": "Inga PM i {{month}}",
+    "no-memos-on-day": "Inga PM denna dag",
     "previous-year": "Föregående år",
     "select-month": "Välj månad"
   },

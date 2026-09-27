@@ -960,7 +960,7 @@
     "zoom-in": "Zoom inn",
     "zoom-out": "Zoom ut",
     "load-error": "Kunne ikke laste inn alle notatene.",
-    "tile-error": "Kartet kunne ikke lastes inn. Notatene dine er fortsatt tilgjengelige.",
+    "tile-error": "Kartet kunne ikke lastes inn. Notatene er fortsatt tilgjengelige.",
     "empty": "Ingen notater med en plassering ennå",
     "empty-hint": "Legg til en plassering i et notat for å se det her.",
     "no-results": "Ingen samsvarende notater",
@@ -975,6 +975,7 @@
     "new-memo-on-day": "Nytt notat denne dagen",
     "next-year": "Neste år",
     "no-memos-in-month": "Ingen notater i {{month}}",
+    "no-memos-on-day": "Ingen notater denne dagen",
     "previous-year": "Forrige år",
     "select-month": "Velg måned"
   },

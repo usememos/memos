@@ -960,7 +960,7 @@
     "zoom-in": "Zoom avant",
     "zoom-out": "Zoom arrière",
     "load-error": "Impossible de charger tous les mémos.",
-    "tile-error": "La carte n'a pas pu être chargée. Vos mémos sont toujours disponibles.",
+    "tile-error": "La carte n'a pas pu être chargée. Les mémos sont toujours disponibles.",
     "empty": "Aucun mémo géolocalisé pour le moment.",
     "empty-hint": "Ajoutez une localisation à un mémo pour l'afficher ici.",
     "no-results": "Aucun mémo correspondant.",
@@ -975,6 +975,7 @@
     "new-memo-on-day": "Nouvelle note pour aujourd'hui",
     "next-year": "L'année prochaine",
     "no-memos-in-month": "Aucune note dans {{month}}",
+    "no-memos-on-day": "Aucune note ce jour-là",
     "previous-year": "Année précédente",
     "select-month": "Sélectionner un mois"
   },

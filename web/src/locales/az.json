@@ -6,7 +6,7 @@
     "zoom-in": "Yaxınlaşdır",
     "zoom-out": "Uzaqlaşdır",
     "load-error": "Bütün qeydləri yükləmək mümkün olmadı.",
-    "tile-error": "Xəritə yüklənmədi. Qeydləriniz hələ də əlçatandır.",
+    "tile-error": "Xəritə yüklənmədi. Qeydlər hələ də əlçatandır.",
     "empty": "Hələ məkanı olan qeyd yoxdur",
     "empty-hint": "Qeydi burada görmək üçün ona məkan əlavə edin.",
     "no-results": "Uyğun qeyd yoxdur",
@@ -66,6 +66,7 @@
     "new-memo-on-day": "Bu gün üçün yeni qeyd",
     "next-year": "Növbəti il",
     "no-memos-in-month": "{{month}} ayında qeyd yoxdur",
+    "no-memos-on-day": "Bu gün qeyd yoxdur",
     "previous-year": "Əvvəlki il",
     "select-month": "Ay seç"
   },

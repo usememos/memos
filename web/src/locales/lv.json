@@ -960,7 +960,7 @@
     "zoom-in": "Tuvināt",
     "zoom-out": "Tālināt",
     "load-error": "Nevarēja ielādēt visas piezīmes.",
-    "tile-error": "Karti nevarēja ielādēt. Jūsu piezīmes joprojām ir pieejamas.",
+    "tile-error": "Karti nevarēja ielādēt. Piezīmes joprojām ir pieejamas.",
     "empty": "Vēl nav piezīmju ar atrašanās vietu",
     "empty-hint": "Pievienojiet piezīmei atrašanās vietu, lai to šeit redzētu.",
     "no-results": "Nav atbilstošu piezīmju",
@@ -975,6 +975,7 @@
     "new-memo-on-day": "Jauna piezīme šajā dienā",
     "next-year": "Nākamgad",
     "no-memos-in-month": "Nav piezīmju {{month}}",
+    "no-memos-on-day": "Šajā dienā nav piezīmju",
     "previous-year": "Iepriekšējais gads",
     "select-month": "Atlasīt mēnesi"
   },

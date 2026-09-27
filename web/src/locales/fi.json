@@ -960,7 +960,7 @@
     "zoom-in": "Lähennä",
     "zoom-out": "Loitonna",
     "load-error": "Kaikkien muistioiden lataaminen epäonnistui.",
-    "tile-error": "Karttaa ei voitu ladata. Muistionne ovat edelleen saatavilla.",
+    "tile-error": "Karttaa ei voitu ladata. Muistiot ovat edelleen saatavilla.",
     "empty": "Ei vielä muistioita, joilla on sijainti.",
     "empty-hint": "Lisää sijainti muistioon nähdäksesi sen tässä.",
     "no-results": "Ei vastaavia muistioita.",
@@ -975,6 +975,7 @@
     "new-memo-on-day": "Uusi muistio tänä päivänä",
     "next-year": "Ensi vuonna",
     "no-memos-in-month": "Ei muistioita {{month}}",
+    "no-memos-on-day": "Ei muistioita tänä päivänä",
     "previous-year": "Edellisessä vuodessa",
     "select-month": "Valitse kuukausi"
   },

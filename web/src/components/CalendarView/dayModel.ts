@@ -19,6 +19,8 @@ import { classifyManagedAttachmentImageURL, extractAttachmentUIDFromName } from 
 
 export interface CalendarDayExcerpt {
   memoName: string;
+  /** The memo's creator, so a mixed-author scope can attribute the preview. */
+  creator: string;
   text: string;
   isCode: boolean;
 }
@@ -31,6 +33,8 @@ export interface CalendarDayImage {
 export interface CalendarDaySummary {
   /** Every memo, including hidden ones, in chronological order for the day panel. */
   memos: Memo[];
+  /** Each creator once, in the order they first wrote that day; a hidden memo still names its author. */
+  creators: string[];
   excerpt?: CalendarDayExcerpt;
   /** At most one image per memo, from the first two eligible image-bearing memos. */
   images: CalendarDayImage[];
@@ -61,7 +65,12 @@ const getExcerpt = (memo: Memo, tree: Root): CalendarDayExcerpt | undefined => {
       .join("\n")
       .trim() || (!memo.content.trim() ? memo.snippet.trim() : "");
   if (!text) return undefined;
-  return { memoName: memo.name, text: text.length > 280 ? `${text.slice(0, 280).trimEnd()}…` : text, isCode: readable[0]?.isCode ?? false };
+  return {
+    memoName: memo.name,
+    creator: memo.creator,
+    text: text.length > 280 ? `${text.slice(0, 280).trimEnd()}…` : text,
+    isCode: readable[0]?.isCode ?? false,
+  };
 };
 
 // Resolve reference-style images and apply the same src sanitization as the body renderer.
@@ -102,6 +111,17 @@ const getImageCandidates = (memo: Memo, tree: Root): string[] => {
   return candidates;
 };
 
+const parseMarkdown = (content: string): Root => fromMarkdown(content, { extensions: [gfm()], mdastExtensions: [gfmFromMarkdown()] });
+
+/**
+ * The thumbnail of a memo's first photo, chosen the way a calendar day chooses its photos:
+ * Markdown images in reading order, then image attachments. Content with neither is not parsed.
+ */
+export const getMemoThumbnail = (memo: Memo): string | undefined => {
+  if (!memo.content.includes("![") && !memo.attachments.some((attachment) => isImage(attachment.type))) return undefined;
+  return getImageCandidates(memo, parseMarkdown(memo.content))[0];
+};
+
 /** Fold the month into stable day snapshots, independent of API pagination/order. */
 export const buildCalendarMonthModel = (
   memos: Memo[],
@@ -117,17 +137,15 @@ export const buildCalendarMonthModel = (
   const fileFallbacks = new Map<string, CalendarDayExcerpt>();
   for (const { memo, time } of dated) {
     const date = dayjs(time).format(ISO_DATE_FORMAT);
-    const summary = (model[date] ??= { memos: [], images: [] });
+    const summary = (model[date] ??= { memos: [], creators: [], images: [] });
     summary.memos.push(memo);
+    if (!summary.creators.includes(memo.creator)) summary.creators.push(memo.creator);
     if (isRedacted?.(memo)) continue;
-    const tree =
-      !summary.excerpt || summary.images.length < 2
-        ? fromMarkdown(memo.content, { extensions: [gfm()], mdastExtensions: [gfmFromMarkdown()] })
-        : undefined;
+    const tree = !summary.excerpt || summary.images.length < 2 ? parseMarkdown(memo.content) : undefined;
     if (!summary.excerpt && tree) summary.excerpt = getExcerpt(memo, tree);
     if (!fileFallbacks.has(date)) {
       const file = memo.attachments.find((attachment) => !isImage(attachment.type) && !attachment.motionMedia?.groupId);
-      if (file?.filename) fileFallbacks.set(date, { memoName: memo.name, text: file.filename, isCode: false });
+      if (file?.filename) fileFallbacks.set(date, { memoName: memo.name, creator: memo.creator, text: file.filename, isCode: false });
     }
     if (summary.images.length >= 2 || !tree) continue;
     const usedImages = new Set(summary.images.map((image) => imageKey(image.thumbnailUrl)));

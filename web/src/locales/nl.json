@@ -960,7 +960,7 @@
     "zoom-in": "Inzoomen",
     "zoom-out": "Uitzoomen",
     "load-error": "Niet alle memo's konden worden geladen.",
-    "tile-error": "De kaart kon niet worden geladen. Uw memo's zijn nog beschikbaar.",
+    "tile-error": "De kaart kon niet worden geladen. De memo's zijn nog beschikbaar.",
     "empty": "Nog geen memo's met een locatie",
     "empty-hint": "Voeg een locatie toe aan een memo om deze hier te zien.",
     "no-results": "Geen overeenkomende memo's",
@@ -975,6 +975,7 @@
     "new-memo-on-day": "Nieuwe memo op deze dag",
     "next-year": "Volgend jaar",
     "no-memos-in-month": "Geen memo's in {{month}}",
+    "no-memos-on-day": "Geen memo's op deze dag",
     "previous-year": "Vorig jaar",
     "select-month": "Selecteer maand"
   },

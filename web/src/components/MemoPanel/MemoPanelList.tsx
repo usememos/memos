@@ -62,9 +62,14 @@ export function MemoPanelList({ memos, selectionKey, timeDisplay, emptyText, com
   }, [composing, onComposingChange]);
 
   const contents = useMemo(() => memos.map((memo) => memo.content), [memos]);
+  // A mixed-author selection shows each card's creator; resolve them with the reactors in one batch.
+  const showCreator = !creatorUsername;
   const userNames = useMemo(
-    () => Array.from(new Set(memos.flatMap((memo) => memo.reactions.map((reaction) => reaction.creator)))),
-    [memos],
+    () =>
+      Array.from(
+        new Set(memos.flatMap((memo) => [...(showCreator ? [memo.creator] : []), ...memo.reactions.map((reaction) => reaction.creator)])),
+      ),
+    [memos, showCreator],
   );
 
   return (
@@ -75,9 +80,10 @@ export function MemoPanelList({ memos, selectionKey, timeDisplay, emptyText, com
             key={memo.name}
             memo={memo}
             timeDisplay={timeDisplay}
-            showCreator={!creatorUsername}
+            showCreator={showCreator}
             showVisibility
-            showPinned
+            // Pinning is the owner's arrangement, so it only shows in a single creator's scope, as on Home.
+            showPinned={!showCreator}
             showSpace={!selectedSpaceName}
             compact={compactMode}
           />

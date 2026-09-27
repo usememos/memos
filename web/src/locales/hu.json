@@ -960,7 +960,7 @@
     "zoom-in": "Nagyítás",
     "zoom-out": "Kicsinyítés",
     "load-error": "Nem sikerült betölteni az összes feljegyzést.",
-    "tile-error": "A térkép nem tölthető be. A feljegyzései továbbra is elérhetők.",
+    "tile-error": "A térkép nem tölthető be. A feljegyzések továbbra is elérhetők.",
     "empty": "Még nincsenek helyszínnel ellátott feljegyzések.",
     "empty-hint": "Adjon hozzá egy helyszínt egy feljegyzéshez, hogy itt láthassa.",
     "no-results": "Nincsenek egyező feljegyzések.",
@@ -975,6 +975,7 @@
     "new-memo-on-day": "Új emlékeztető ezen a napon.",
     "next-year": "Jövőre.",
     "no-memos-in-month": "Nincsenek emlékeztetők {{month}}-ben.",
+    "no-memos-on-day": "Ezen a napon nincsenek emlékeztetők",
     "previous-year": "Előző év.",
     "select-month": "Hónap kiválasztása."
   },

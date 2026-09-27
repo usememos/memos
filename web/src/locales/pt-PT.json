@@ -960,7 +960,7 @@
     "zoom-in": "Aumentar zoom",
     "zoom-out": "Diminuir zoom",
     "load-error": "Não foi possível carregar todos os memorandos.",
-    "tile-error": "O mapa não pôde ser carregado. Os seus memorandos ainda estão disponíveis.",
+    "tile-error": "O mapa não pôde ser carregado. Os memorandos ainda estão disponíveis.",
     "empty": "Nenhum memorando com localização ainda",
     "empty-hint": "Adicione uma localização a um memorando para o ver aqui.",
     "no-results": "Nenhum memorando correspondente",
@@ -975,6 +975,7 @@
     "new-memo-on-day": "Novo memorando neste dia",
     "next-year": "Próximo ano",
     "no-memos-in-month": "Nenhum memorando em {{month}}",
+    "no-memos-on-day": "Nenhum memorando neste dia",
     "previous-year": "Ano anterior",
     "select-month": "Selecione o mês"
   },

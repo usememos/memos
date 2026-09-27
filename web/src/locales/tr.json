@@ -6,7 +6,7 @@
     "zoom-in": "Yakınlaştır",
     "zoom-out": "Uzaklaştır",
     "load-error": "Notların tamamı yüklenemedi.",
-    "tile-error": "Harita yüklenemedi. Notlarınız hâlâ erişilebilir durumda.",
+    "tile-error": "Harita yüklenemedi. Notlar hâlâ erişilebilir durumda.",
     "empty": "Henüz konum içeren not yok",
     "empty-hint": "Burada görmek için bir nota konum ekleyin.",
     "no-results": "Eşleşen not yok",
@@ -66,6 +66,7 @@
     "new-memo-on-day": "Bu güne yeni not",
     "next-year": "Sonraki yıl",
     "no-memos-in-month": "{{month}} ayında not yok",
+    "no-memos-on-day": "Bu günde not yok",
     "previous-year": "Önceki yıl",
     "select-month": "Ay seç"
   },

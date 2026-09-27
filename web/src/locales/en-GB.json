@@ -913,7 +913,7 @@
     "zoom-in": "Zoom in",
     "zoom-out": "Zoom out",
     "load-error": "Could not load all memos.",
-    "tile-error": "The map could not load. Your memos are still available.",
+    "tile-error": "The map could not load. The memos are still available.",
     "empty": "No memos with a location yet",
     "empty-hint": "Add a location to a memo to see it here.",
     "no-results": "No matching memos",
@@ -928,6 +928,7 @@
     "new-memo-on-day": "New memo on this day",
     "next-year": "Next year",
     "no-memos-in-month": "No memos in {{month}}",
+    "no-memos-on-day": "No memos on this day",
     "previous-year": "Previous year",
     "select-month": "Select month"
   },

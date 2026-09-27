@@ -941,7 +941,7 @@
     "zoom-in": "Perbesar",
     "zoom-out": "Perkecil",
     "load-error": "Tidak dapat memuat semua memo.",
-    "tile-error": "Peta tidak dapat dimuat. Memo Anda masih tersedia.",
+    "tile-error": "Peta tidak dapat dimuat. Memo masih tersedia.",
     "empty": "Belum ada memo dengan lokasi",
     "empty-hint": "Tambahkan lokasi ke memo untuk melihatnya di sini.",
     "no-results": "Tidak ada memo yang cocok",
@@ -956,6 +956,7 @@
     "new-memo-on-day": "Memo baru pada hari ini",
     "next-year": "Tahun depan",
     "no-memos-in-month": "Tidak ada memo dalam {{month}}",
+    "no-memos-on-day": "Tidak ada memo pada hari ini",
     "previous-year": "Tahun sebelumnya",
     "select-month": "Pilih bulan"
   },

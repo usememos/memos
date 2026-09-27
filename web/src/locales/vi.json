@@ -941,7 +941,7 @@
     "zoom-in": "Phóng to",
     "zoom-out": "Thu nhỏ",
     "load-error": "Không thể tải tất cả ghi chú.",
-    "tile-error": "Không thể tải bản đồ. Ghi chú của bạn vẫn còn.",
+    "tile-error": "Không thể tải bản đồ. Các ghi chú vẫn còn.",
     "empty": "Chưa có ghi chú nào có vị trí",
     "empty-hint": "Thêm vị trí vào ghi chú để xem tại đây.",
     "no-results": "Không có ghi chú phù hợp",
@@ -956,6 +956,7 @@
     "new-memo-on-day": "Ghi chú mới trong ngày này",
     "next-year": "Năm tới",
     "no-memos-in-month": "Không có ghi chú nào trong {{month}}",
+    "no-memos-on-day": "Không có ghi chú nào trong ngày này",
     "previous-year": "Năm trước",
     "select-month": "Chọn tháng"
   },

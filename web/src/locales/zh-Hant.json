@@ -48,6 +48,7 @@
     "new-memo-on-day": "在這一天新增備忘錄",
     "next-year": "下一年",
     "no-memos-in-month": "{{month}} 沒有備忘錄",
+    "no-memos-on-day": "這一天沒有備忘錄",
     "previous-year": "上一年",
     "select-month": "選擇月份"
   },
@@ -1000,7 +1001,7 @@
     "zoom-in": "放大",
     "zoom-out": "縮小",
     "load-error": "無法載入所有備忘錄。",
-    "tile-error": "地圖載入失敗。您的備忘錄仍然可用。",
+    "tile-error": "地圖載入失敗。備忘錄仍然可用。",
     "empty": "暫無帶有位置資訊的備忘錄",
     "empty-hint": "為備忘錄新增位置資訊，即可在此處查看。",
     "no-results": "沒有符合的備忘錄",

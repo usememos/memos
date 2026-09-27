@@ -34,6 +34,37 @@ export function mapMemos(pages: { memos: Memo[] }[] | undefined, timeBasis: Memo
     .sort((a, b) => time(b) - time(a) || a.name.localeCompare(b.name));
 }
 
+/**
+ * What a pin shows, in the calendar cell's mark order: the memo's first photo; else its author,
+ * when several creators share the map; else the plain dot.
+ */
+export type MapPinFace = { kind: "photo"; url: string } | { kind: "author"; avatarUrl?: string; name?: string } | { kind: "dot" };
+
+export interface MapPin {
+  face: MapPinFace;
+  /** The pin's tooltip and accessible name: the place, and its author when several share the map. */
+  label: string;
+}
+
+/** `photo` is undefined for a hidden memo, which never shows its images; `author` only when several creators share the map. */
+export function pinFace(photo: string | undefined, author: { avatarUrl?: string; name?: string } | undefined): MapPinFace {
+  if (photo) return { kind: "photo", url: photo };
+  if (author) return { kind: "author", avatarUrl: author.avatarUrl || undefined, name: author.name };
+  return { kind: "dot" };
+}
+
+/**
+ * The label a selection at one point may be titled and written with. A place label is its
+ * author's own words, so it only speaks for memos by that author, or for several authors who
+ * all used it; otherwise there is none and the coordinates stand in. `memos` is newest first.
+ */
+export function pointLabel(memos: Memo[]): string {
+  const labels = new Set(memos.map((memo) => memo.location?.placeholder.trim() ?? ""));
+  const creators = new Set(memos.map((memo) => memo.creator));
+  if (creators.size === 1) return memos[0]?.location?.placeholder.trim() ?? "";
+  return labels.size === 1 ? [...labels][0] : "";
+}
+
 export function readViewport(search: string): MapViewport | undefined {
   const params = new URLSearchParams(search);
   const values = ["lat", "lng", "zoom"].map((key) => params.get(key));
