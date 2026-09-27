@@ -41,7 +41,11 @@ jobs:
         uses: golangci/golangci-lint-action@v9
         with:
           version: v2.13.1
-          args: --timeout=3m --fix
+          args: --timeout=3m
+
+      - name: Install goimports
+        run: |
+          go install golang.org/x/tools/cmd/goimports@latest
 
       - name: Verify goimports formatting
         run: |
@@ -55,12 +59,7 @@ jobs:
 
       - name: Verify go fix
         run: |
-          FIXES=$(go fix -n ./... 2>&1 | grep -v "downloading" | grep -v "^#" | grep -v "^$" || true)
-          if [ -n "$FIXES" ]; then
-            echo "go fix suggestions found:"
-            echo "$FIXES"
-            exit 1
-          fi
+          go fix -diff ./... 2>&1 | grep -v "downloading" && exit 1 || true
 
   tests:
     name: Tests (${{ matrix.test-group }})
