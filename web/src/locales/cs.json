@@ -1000,6 +1000,7 @@
     "create-success": "Prostor vytvořen",
     "creator-admin-note": "Stanete se prvním administrátorem.",
     "current": "Prostor",
+    "no-space": "Bez prostoru",
     "custom-id-conflict": "Tento prostor UID je již používán.",
     "custom-id-help": "Používá se v odkazech a požadavcích API. Později to nelze změnit. Používejte 1–36 ASCII písmen, číslic nebo pomlček; nezačínejte ani nekončete pomlčkou.",
     "custom-id-invalid": "Používejte 1–36 ASCII písmen, číslic nebo pomlček bez pomlčky na začátku nebo na konci.",

@@ -1000,6 +1000,7 @@
     "create-success": "Priestor vytvorený",
     "creator-admin-note": "Stanete sa prvým správcom.",
     "current": "Priestor",
+    "no-space": "Bez priestoru",
     "custom-id-conflict": "Tento priestor UID sa už používa.",
     "custom-id-help": "Používa sa v odkazoch a požiadavkách API. Neskôr sa to nedá zmeniť. Použite 1–36 ASCII písmen, číslic alebo pomlčiek; nezačínajte ani nekončite pomlčkou.",
     "custom-id-invalid": "Použite 1–36 ASCII písmen, číslic alebo pomlčiek bez pomlčky na začiatku alebo na konci.",

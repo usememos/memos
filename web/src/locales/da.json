@@ -1000,6 +1000,7 @@
     "create-success": "Rum oprettet",
     "creator-admin-note": "Du bliver den første administrator.",
     "current": "Rum",
+    "no-space": "Intet rum",
     "custom-id-conflict": "Dette rum UID er allerede i brug.",
     "custom-id-help": "Bruges i links og API anmodninger. Det kan ikke ændres senere. Brug 1–36 ASCII bogstaver, tal eller bindestreger; start eller slut ikke med en bindestreg.",
     "custom-id-invalid": "Brug 1–36 ASCII bogstaver, tal eller bindestreger uden en bindestreg i begyndelsen eller slutningen.",

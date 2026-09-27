@@ -1000,6 +1000,7 @@
     "create-success": "Tér létrehozva",
     "creator-admin-note": "Te leszel az első adminisztrátor.",
     "current": "Tér",
+    "no-space": "Nincs tér",
     "custom-id-conflict": "Ez a tér (UID) már használatban van.",
     "custom-id-help": "Hivatkozásokban és API kérésekben használatos. Később nem módosítható. Használjon 1–36 ASCII betűt, számot vagy kötőjelet; ne kezdődjön vagy végződjön kötőjellel.",
     "custom-id-invalid": "Használjon 1–36 ASCII betűt, számot vagy kötőjelet, kötőjel nélkül az elején vagy a végén.",

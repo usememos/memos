@@ -3,14 +3,14 @@ import type { FC } from "react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import type { Location, Visibility } from "@/types/proto/api/v1/memo_service_pb";
+import { type Location, Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { primaryModifierGlyph } from "@/utils/platform";
 import { validationService } from "../services";
 import { useEditorContext, useEditorSelector } from "../state";
 import type { EditorToolbarProps } from "../types";
 import InsertMenu from "./InsertMenu";
-import VisibilitySelector from "./VisibilitySelector";
+import MemoSettings from "./MemoSettings";
 
 /**
  * Shortcut chip inside the commit button. While saving, a spinner takes the
@@ -36,6 +36,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
   memoName,
   parentMemoName,
   space,
+  canChooseSpace,
   onAudioRecorderClick,
   viewToggles,
   onInsertImages,
@@ -75,6 +76,10 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
     dispatch(actions.setMetadata({ visibility: next }));
   };
 
+  const handleSpaceChange = (next?: string) => {
+    dispatch(actions.setMetadata({ space: next, ...(!next && visibility === Visibility.SPACE ? { visibility: Visibility.PRIVATE } : {}) }));
+  };
+
   const commitButton = justSaved ? (
     <Button size="sm" disabled>
       {t("editor.saved")}
@@ -89,8 +94,8 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
 
   return (
     // Every control on this rail is 28px, the same box as the sidebar's compose control and nav pills.
-    <div className="flex w-full flex-row items-center justify-between">
-      <div className="flex flex-row items-center justify-start gap-1">
+    <div className="flex w-full min-w-0 flex-row items-center justify-between gap-1">
+      <div className="flex min-w-0 flex-1 flex-row items-center justify-start gap-1">
         <InsertMenu
           isUploading={isUploading}
           isSaving={committing}
@@ -101,10 +106,16 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
           viewToggles={viewToggles}
           onInsertImages={onInsertImages}
         />
-        <VisibilitySelector value={visibility} space={space} onChange={handleVisibilityChange} />
+        <MemoSettings
+          value={visibility}
+          space={space}
+          onChange={handleVisibilityChange}
+          onSpaceChange={canChooseSpace ? handleSpaceChange : undefined}
+          disabled={committing}
+        />
       </div>
 
-      <div className="flex flex-row items-center justify-end gap-1">
+      <div className="flex shrink-0 flex-row items-center justify-end gap-1">
         {onCancel && (
           <Button variant="quiet" size="sm" onClick={onCancel} disabled={committing}>
             {t("common.cancel")}

@@ -10,7 +10,7 @@ export type {
   FocusModeOverlayProps,
   InsertMenuProps,
   MemoEditorProps,
-  VisibilitySelectorProps,
+  MemoSettingsProps,
 } from "./components";
 export type { EditorController } from "./editorController";
 export type { LocationState } from "./insertMenu";

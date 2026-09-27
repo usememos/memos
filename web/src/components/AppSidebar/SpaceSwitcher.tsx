@@ -13,6 +13,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import CreateSpaceDialog from "@/components/CreateSpaceDialog";
 import MemosLogo from "@/components/MemosLogo";
 import SpaceMark from "@/components/SpaceMark";
+import SpaceSelectItem from "@/components/SpaceSelectItem";
 import UserAvatar from "@/components/UserAvatar";
 import UserMenu from "@/components/UserMenu";
 import { Button } from "@/components/ui/button";
@@ -215,7 +216,11 @@ function SpaceSwitcher({ className, size = "md" }: { className?: string; size?: 
                       if (value !== null) navigate(getSpaceSwitchPath(location, value === "all" ? undefined : value));
                     }}
                   >
-                    <SelectTrigger aria-label={t("space.switch")} className="h-8 w-full px-2 text-xs font-medium shadow-none">
+                    <SelectTrigger
+                      aria-label={t("space.switch")}
+                      title={selectedSpaceName ? spaceLabel : allSpacesLabel}
+                      className="h-8 w-full px-2 text-xs font-medium shadow-none"
+                    >
                       {selectedSpaceName ? (
                         <SpaceMark icon={selectedSpace?.icon} size="sm" />
                       ) : (
@@ -223,7 +228,7 @@ function SpaceSwitcher({ className, size = "md" }: { className?: string; size?: 
                       )}
                       <span className="min-w-0 flex-1 truncate text-start">{selectedSpaceName ? spaceLabel : allSpacesLabel}</span>
                     </SelectTrigger>
-                    <SelectContent className="max-h-64" align="start">
+                    <SelectContent className="max-h-64 w-(--anchor-width) min-w-0 max-w-[calc(100vw-2rem)]" align="start">
                       <SelectItem value="all">
                         <span className="flex items-center gap-2">
                           <AstroidIcon className="size-4" />
@@ -233,15 +238,12 @@ function SpaceSwitcher({ className, size = "md" }: { className?: string; size?: 
                       {spaces.map((space) => {
                         const uid = extractSpaceUidFromName(space.name);
                         return (
-                          <SelectItem key={space.name} value={space.name}>
-                            <span className="flex items-center gap-2">
-                              <SpaceMark icon={space.icon} size="sm" />
-                              <span className="truncate">
-                                {space.title}
-                                {duplicateSpaceTitles.has(space.title) ? ` (${uid})` : ""}
-                              </span>
-                            </span>
-                          </SelectItem>
+                          <SpaceSelectItem
+                            key={space.name}
+                            value={space.name}
+                            label={duplicateSpaceTitles.has(space.title) ? `${space.title} (${uid})` : space.title}
+                            icon={space.icon}
+                          />
                         );
                       })}
                       {isLoadingSpaces && (

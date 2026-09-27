@@ -1000,6 +1000,7 @@
     "create-success": "Space created",
     "creator-admin-note": "You'll become the first admin.",
     "current": "Space",
+    "no-space": "No space",
     "custom-id-conflict": "This Space UID is already in use.",
     "custom-id-help": "Used in links and API requests. It can't be changed later. Use 1–36 ASCII letters, numbers, or hyphens; don't start or end with a hyphen.",
     "custom-id-invalid": "Use 1–36 ASCII letters, numbers, or hyphens, without a hyphen at the beginning or end.",

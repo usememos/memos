@@ -114,7 +114,7 @@ export const memoService = {
       location: state.metadata.location,
       createTime: state.timestamps.createTime ? timestampFromDate(state.timestamps.createTime) : undefined,
       updateTime: state.timestamps.updateTime ? timestampFromDate(state.timestamps.updateTime) : undefined,
-      space: options.parentMemoName ? undefined : options.space,
+      space: options.parentMemoName ? undefined : (options.space ?? state.metadata.space),
     });
 
     const memo = options.parentMemoName

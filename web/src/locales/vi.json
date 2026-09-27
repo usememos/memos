@@ -1000,6 +1000,7 @@
     "create-success": "Không gian đã được tạo",
     "creator-admin-note": "Bạn sẽ trở thành quản trị viên đầu tiên.",
     "current": "Không gian",
+    "no-space": "Không có không gian",
     "custom-id-conflict": "Không gian UID này đã được sử dụng.",
     "custom-id-help": "Được sử dụng trong các liên kết và yêu cầu API. Không thể thay đổi sau này. Sử dụng 1–36 ASCII chữ cái, số hoặc dấu gạch ngang; không bắt đầu hoặc kết thúc bằng dấu gạch ngang.",
     "custom-id-invalid": "Sử dụng 1–36 ASCII chữ cái, số hoặc dấu gạch ngang, không có dấu gạch ngang ở đầu hoặc cuối.",

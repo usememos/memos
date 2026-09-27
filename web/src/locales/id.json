@@ -1000,6 +1000,7 @@
     "create-success": "Ruang dibuat",
     "creator-admin-note": "Anda akan menjadi admin pertama.",
     "current": "Ruang",
+    "no-space": "Tanpa ruang",
     "custom-id-conflict": "Ruang UID ini sudah digunakan.",
     "custom-id-help": "Digunakan dalam tautan dan permintaan API. Tidak dapat diubah nanti. Gunakan 1–36 huruf, angka, atau tanda hubung ASCII; jangan diawali atau diakhiri dengan tanda hubung.",
     "custom-id-invalid": "Gunakan 1–36 huruf, angka, atau tanda hubung ASCII, tanpa tanda hubung di awal atau akhir.",

@@ -1000,6 +1000,7 @@
     "create-success": "Spațiu creat",
     "creator-admin-note": "Vei deveni primul administrator.",
     "current": "Spațiu",
+    "no-space": "Fără spațiu",
     "custom-id-conflict": "Acest spațiu UID este deja utilizat.",
     "custom-id-help": "Folosit în linkuri și cereri API. Nu poate fi modificat ulterior. Folosește 1–36 ASCII litere, cifre sau cratime; nu începe sau se termină cu o cratimă.",
     "custom-id-invalid": "Folosește 1–36 ASCII litere, cifre sau cratime, fără cratimă la început sau la sfârșit.",

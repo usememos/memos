@@ -36,6 +36,7 @@ describe("Move to Space", () => {
   it("requires a new destination and moves with explicit Space audience", async () => {
     const close = vi.fn();
     render(<MemoMoveDialog memo={memo} onOpenChange={close} />);
+    expect(screen.getByRole("combobox", { name: "space.current" }).querySelector(".bg-sidebar-accent")).not.toBeNull();
     expect(screen.getByRole("button", { name: "memo.move.confirm" })).toBeDisabled();
     await selectDestination("Product");
     fireEvent.click(screen.getByRole("button", { name: "memo.move.confirm" }));
@@ -49,6 +50,7 @@ describe("Move to Space", () => {
   it("defaults to Private when unassigning a Space-visible memo", async () => {
     render(<MemoMoveDialog memo={memo} onOpenChange={vi.fn()} />);
     await selectDestination("memo.move.unassigned");
+    expect(screen.getByRole("combobox", { name: "space.current" }).querySelector(".bg-sidebar-accent")).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "memo.move.confirm" }));
     await waitFor(() =>
       expect(state.update).toHaveBeenCalledWith({

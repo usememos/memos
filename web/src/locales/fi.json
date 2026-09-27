@@ -1000,6 +1000,7 @@
     "create-success": "Tila luotu",
     "creator-admin-note": "Sinusta tulee ensimmäinen ylläpitäjä.",
     "current": "Tila",
+    "no-space": "Ei tilaa",
     "custom-id-conflict": "Tämä tila UID on jo käytössä.",
     "custom-id-help": "Käytetään linkeissä ja API-pyynnöissä. Sitä ei voi muuttaa myöhemmin. Käytä 1–36 ASCII kirjainta, numeroa tai yhdysmerkkiä; älä aloita tai lopeta yhdysmerkillä.",
     "custom-id-invalid": "Käytä 1–36 ASCII kirjainta, numeroa tai yhdysmerkkiä ilman yhdysmerkkiä alussa tai lopussa.",

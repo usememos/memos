@@ -1000,6 +1000,7 @@
     "create-success": "Erdvė sukurta",
     "creator-admin-note": "Jūs tapsite pirmuoju administratoriumi.",
     "current": "Erdvė",
+    "no-space": "Be erdvės",
     "custom-id-conflict": "Ši erdvė UID jau naudojama.",
     "custom-id-help": "Naudojama nuorodose ir API užklausose. Vėliau pakeisti negalima. Naudokite 1–36 ASCII raides, skaičius arba brūkšnelius; nepradėkite ir nesibaikite brūkšneliu.",
     "custom-id-invalid": "Naudokite 1–36 ASCII raides, skaičius arba brūkšnelius be brūkšnelio pradžioje ar pabaigoje.",

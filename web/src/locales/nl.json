@@ -1000,6 +1000,7 @@
     "create-success": "Ruimte aangemaakt",
     "creator-admin-note": "Je wordt de eerste beheerder.",
     "current": "Ruimte",
+    "no-space": "Geen ruimte",
     "custom-id-conflict": "Deze ruimte UID is al in gebruik.",
     "custom-id-help": "Gebruikt in links en API-verzoeken. Kan later niet meer worden gewijzigd. Gebruik 1–36 ASCII letters, cijfers of koppeltekens; begin of eindig niet met een koppelteken.",
     "custom-id-invalid": "Gebruik 1–36 ASCII letters, cijfers of koppeltekens, zonder koppelteken aan het begin of einde.",

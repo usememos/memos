@@ -74,6 +74,8 @@ export interface EditorToolbarProps {
   parentMemoName?: string;
   /** The Space that owns the memo being created or edited, if any. */
   space?: string;
+  /** Only unscoped, new top-level memos can choose a destination. */
+  canChooseSpace?: boolean;
   onAudioRecorderClick: () => void;
   viewToggles?: EditorViewToggles;
   onInsertImages: (files: File[]) => void;
@@ -122,10 +124,11 @@ export interface InsertMenuProps {
   onInsertImages: (files: File[]) => void;
 }
 
-export interface VisibilitySelectorProps {
+export interface MemoSettingsProps {
   value: Visibility;
   onChange: (visibility: Visibility) => void;
   /** The memo's actual placement; independent of the ambient collection scope. */
   space?: string;
-  onOpenChange?: (open: boolean) => void;
+  onSpaceChange?: (space?: string) => void;
+  disabled?: boolean;
 }

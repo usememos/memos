@@ -1000,6 +1000,7 @@
     "create-success": "Espace créé",
     "creator-admin-note": "Vous serez le premier administrateur.",
     "current": "Espace",
+    "no-space": "Aucun espace",
     "custom-id-conflict": "Cet espace UID est déjà utilisé.",
     "custom-id-help": "Utilisé dans les liens et les requêtes API. Il ne peut pas être modifié ultérieurement. Utilisez 1 à 36 ASCII lettres, chiffres ou tirets ; ne commencez ni ne terminez par un tiret.",
     "custom-id-invalid": "Utilisez 1 à 36 ASCII lettres, chiffres ou tirets, sans tiret au début ni à la fin.",

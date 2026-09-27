@@ -4,6 +4,7 @@ import { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
 import SpaceIcon from "@/components/SpaceIcon";
 import SpaceIconPicker from "@/components/SpaceIconPicker";
+import SpaceMark from "@/components/SpaceMark";
 import { SPACE_EMOJI } from "@/lib/space-emoji";
 import { type Space_Icon, Space_IconSchema } from "@/types/proto/api/v1/space_service_pb";
 import { FULLY_QUALIFIED_EMOJI } from "@/utils/tag-unicode-data";
@@ -99,5 +100,25 @@ describe("SpaceIcon", () => {
     expect(view.container).toHaveTextContent("🌱");
     view.rerender(<SpaceIcon icon={icon("future-symbol")} />);
     expect(view.container.querySelector(".lucide-astroid")).not.toBeNull();
+  });
+
+  it("sizes inline emoji independently of surrounding text and keeps them decorative", () => {
+    const view = render(<SpaceIcon icon={icon("🌱", "emoji")} />);
+    expect(screen.getByText("🌱")).toHaveClass("size-4", "text-base");
+    expect(screen.getByText("🌱")).toHaveAttribute("aria-hidden", "true");
+    view.rerender(<SpaceIcon icon={icon("🌱", "emoji")} size={12} />);
+    expect(screen.getByText("🌱")).toHaveClass("size-3", "text-xs");
+  });
+
+  it("uses the same compact identity tile for emoji, symbols, and missing icons", () => {
+    const view = render(<SpaceMark icon={icon("🌱", "emoji")} size="sm" />);
+    expect(view.container.firstElementChild).toHaveClass("size-5", "bg-sidebar-accent");
+    expect(screen.getByText("🌱")).toHaveClass("size-3", "text-sm");
+    view.rerender(<SpaceMark icon={icon("leaf")} size="sm" />);
+    expect(view.container.firstElementChild).toHaveClass("size-5", "bg-sidebar-accent");
+    expect(view.container.querySelector(".lucide-leaf")).toHaveClass("size-3");
+    view.rerender(<SpaceMark size="sm" />);
+    expect(view.container.firstElementChild).toHaveClass("size-5", "bg-sidebar-accent");
+    expect(view.container.querySelector(".lucide-astroid")).toHaveClass("size-3");
   });
 });

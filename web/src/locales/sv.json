@@ -1000,6 +1000,7 @@
     "create-success": "Utrymme skapat",
     "creator-admin-note": "Du blir den första administratören.",
     "current": "Utrymme",
+    "no-space": "Inget utrymme",
     "custom-id-conflict": "Detta utrymme UID används redan.",
     "custom-id-help": "Används i länkar och API-förfrågningar. Kan inte ändras senare. Använd 1–36 ASCII bokstäver, siffror eller bindestreck; börja eller sluta inte med ett bindestreck.",
     "custom-id-invalid": "Använd 1–36 ASCII bokstäver, siffror eller bindestreck, utan bindestreck i början eller slutet.",

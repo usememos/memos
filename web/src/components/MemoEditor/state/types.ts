@@ -11,6 +11,8 @@ export interface EditorState {
   contentSource: ContentSource;
   metadata: {
     visibility: Visibility;
+    /** Destination chosen in an unscoped new-memo composer. */
+    space?: string;
     attachments: Attachment[];
     relations: MemoRelation[];
     location?: Location;

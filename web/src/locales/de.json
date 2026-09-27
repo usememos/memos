@@ -1000,6 +1000,7 @@
     "create-success": "Bereich erstellt",
     "creator-admin-note": "Sie werden der erste Administrator.",
     "current": "Bereich",
+    "no-space": "Kein Bereich",
     "custom-id-conflict": "Diese Bereichs-UID wird bereits verwendet.",
     "custom-id-help": "Wird in Links und API-Anfragen verwendet. Kann später nicht geändert werden. Verwenden Sie 1–36 ASCII Buchstaben, Zahlen oder Bindestriche; beginnen oder enden Sie nicht mit einem Bindestrich.",
     "custom-id-invalid": "Verwenden Sie 1–36 ASCII Buchstaben, Zahlen oder Bindestriche, ohne Bindestrich am Anfang oder Ende.",

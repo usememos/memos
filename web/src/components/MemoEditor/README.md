@@ -56,7 +56,7 @@ MemoEditor/
 │   └── ...                     # Heading/list/viewport decorations, editor.css
 ├── formatting/
 │   └── commands.ts         # Backend-agnostic catalog of formatting verbs
-├── Toolbar/                # EditorToolbar, FormattingToolbar, InsertMenu, VisibilitySelector
+├── Toolbar/                # EditorToolbar, FormattingToolbar, InsertMenu, MemoSettings
 ├── constants.ts
 └── types/                  # EditorController / FormattingController, component props,
                             #   attachment and insert-menu types
@@ -137,6 +137,10 @@ Every instance is one of two things, and `onFocusModeExit` is the switch:
 - **Hosted** (prop supplied) — a host presents the editor full-screen and owns that frame; `contexts/GlobalMemoEditorContext.tsx` is the one today. The editor mounts straight into focus mode and exits by calling back to dismiss the host, so the formatting toolbar's trailing button reads as Close rather than minimize. The ＋ menu's view toggles are absent: focus mode is not the editor's to leave, and it already forces the formatting toolbar on.
 
 Those toggles travel as a single optional `viewToggles` object (`types/components.ts`) down `EditorToolbar` → `InsertMenu`, so they can only appear or disappear together.
+
+### Destination and visibility
+
+`MemoSettings` combines visibility with a compact Space select for new top-level memos created outside a Space. A host-provided `defaultSpace` fixes placement and hides the select; edits and comments also omit it. The selected destination lives in editor metadata and is sent on creation. Clearing a Space-only audience resets it to Private. Drafts retain destination and visibility alongside content, attachments, and location. Long names are truncated in the toolbar, select, and options, with their full text retained for accessible labels and hover titles.
 
 ### Lifecycle hooks
 

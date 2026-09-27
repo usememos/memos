@@ -69,9 +69,20 @@ describe("memo editor relation updates", () => {
     });
   });
 
+  it("saves the draft destination unless the host fixes the Space", async () => {
+    const state = createInitialState();
+    state.content = "Draft";
+    state.metadata = { ...state.metadata, space: "spaces/work" };
+    await memoService.save(state, {});
+    expect(clients.createMemo).toHaveBeenLastCalledWith({ memo: expect.objectContaining({ space: "spaces/work" }) });
+    await memoService.save(state, { space: "spaces/current" });
+    expect(clients.createMemo).toHaveBeenLastCalledWith({ memo: expect.objectContaining({ space: "spaces/current" }) });
+  });
+
   it("does not inherit the selected Space when creating a comment", async () => {
     const state = createInitialState();
     state.content = "Reply";
+    state.metadata = { ...state.metadata, space: "spaces/draft" };
 
     await memoService.save(state, { parentMemoName: "memos/parent", space: "spaces/product" });
 

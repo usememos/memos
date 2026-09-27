@@ -1000,6 +1000,7 @@
     "create-success": "Espai creat",
     "creator-admin-note": "Et convertiràs en el primer administrador.",
     "current": "Espai",
+    "no-space": "Sense espai",
     "custom-id-conflict": "Aquest espai UID ja està en ús.",
     "custom-id-help": "S'utilitza en enllaços i sol·licituds API. No es pot canviar més tard. Utilitzeu 1–36 ASCII lletres, números o guions; no comenceu ni acabeu amb un guió.",
     "custom-id-invalid": "Utilitzeu 1–36 ASCII lletres, números o guions, sense un guió al principi o al final.",

@@ -2,7 +2,7 @@ import { fromJson, type JsonValue, toJson } from "@bufbuild/protobuf";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
 
-import { type Location, LocationSchema } from "@/types/proto/api/v1/memo_service_pb";
+import { type Location, LocationSchema, Visibility } from "@/types/proto/api/v1/memo_service_pb";
 
 export const CACHE_DEBOUNCE_DELAY = 500;
 
@@ -14,13 +14,23 @@ const STRUCTURED_CACHE_ENTRY_VERSION = 3;
 export interface EditorDraft {
   content: string;
   attachments: Attachment[];
+  space?: string;
+  visibility?: Visibility;
   /** Undefined for legacy drafts; null explicitly remembers a removed location. */
   location?: Location | null;
 }
 
 function deserializeDraft(raw: string): EditorDraft {
   try {
-    const parsed = JSON.parse(raw) as { kind?: unknown; version?: unknown; content?: unknown; attachments?: unknown; location?: unknown };
+    const parsed = JSON.parse(raw) as {
+      kind?: unknown;
+      version?: unknown;
+      content?: unknown;
+      attachments?: unknown;
+      location?: unknown;
+      space?: unknown;
+      visibility?: unknown;
+    };
     if (parsed.kind === STRUCTURED_CACHE_ENTRY_KIND && parsed.version === 1 && typeof parsed.content === "string") {
       return { content: parsed.content, attachments: [] };
     }
@@ -49,7 +59,13 @@ function deserializeDraft(raw: string): EditorDraft {
           }
         }
       }
-      return { content: parsed.content, attachments, ...(location !== undefined ? { location } : {}) };
+      const space = typeof parsed.space === "string" && parsed.space.startsWith("spaces/") ? parsed.space : undefined;
+      const visibility = [Visibility.PRIVATE, Visibility.PROTECTED, Visibility.PUBLIC, Visibility.SPACE].includes(
+        parsed.visibility as Visibility,
+      )
+        ? (parsed.visibility as Visibility)
+        : undefined;
+      return { content: parsed.content, attachments, ...(location !== undefined ? { location } : {}), space, visibility };
     }
   } catch {
     // Drafts have historically been stored as raw markdown strings.
@@ -58,19 +74,21 @@ function deserializeDraft(raw: string): EditorDraft {
   return { content: raw, attachments: [] };
 }
 
-function serializeDraft(content: string, attachments: Attachment[], location: Location | null): string {
+function serializeDraft({ content, attachments, location, space, visibility }: EditorDraft): string {
   return JSON.stringify({
     kind: STRUCTURED_CACHE_ENTRY_KIND,
     version: STRUCTURED_CACHE_ENTRY_VERSION,
     location: location ? toJson(LocationSchema, location) : null,
+    space,
+    visibility,
     content,
     attachments: attachments.map((attachment) => toJson(AttachmentSchema, attachment)),
   });
 }
 
-function writeEntry(key: string, content: string, attachments: Attachment[], location: Location | null): void {
-  if (content.trim() || attachments.length > 0) {
-    localStorage.setItem(key, serializeDraft(content, attachments, location));
+function writeEntry(key: string, draft: EditorDraft): void {
+  if (draft.content.trim() || draft.attachments.length > 0 || draft.space) {
+    localStorage.setItem(key, serializeDraft(draft));
   } else {
     localStorage.removeItem(key);
   }
@@ -81,7 +99,7 @@ export const cacheService = {
     return `${username}-${cacheKey || ""}`;
   },
 
-  save: (key: string, content: string, attachments: Attachment[] = [], location: Location | null = null) => {
+  save: (key: string, draft: EditorDraft) => {
     const pendingSave = pendingSaves.get(key);
     if (pendingSave) {
       window.clearTimeout(pendingSave);
@@ -90,20 +108,20 @@ export const cacheService = {
     const timeoutId = window.setTimeout(() => {
       pendingSaves.delete(key);
 
-      writeEntry(key, content, attachments, location);
+      writeEntry(key, draft);
     }, CACHE_DEBOUNCE_DELAY);
 
     pendingSaves.set(key, timeoutId);
   },
 
-  saveNow: (key: string, content: string, attachments: Attachment[] = [], location: Location | null = null) => {
+  saveNow: (key: string, draft: EditorDraft) => {
     const pendingSave = pendingSaves.get(key);
     if (pendingSave) {
       window.clearTimeout(pendingSave);
       pendingSaves.delete(key);
     }
 
-    writeEntry(key, content, attachments, location);
+    writeEntry(key, draft);
   },
 
   load(key: string): string {

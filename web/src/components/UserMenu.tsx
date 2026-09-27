@@ -51,8 +51,10 @@ const PreferenceSubmenu = ({ icon: Icon, label, value, options, onChange, classN
   <DropdownMenu>
     <DropdownMenuTrigger openOnHover render={<Button variant="ghost" className={cn(rowClass, "data-popup-open:bg-accent")} />}>
       <Icon className={iconClass} />
-      <span className="min-w-0 flex-1 text-start">{label}</span>
-      <span className="max-w-28 truncate text-muted-foreground">{options.find((option) => option.value === value)?.label ?? value}</span>
+      <span className="shrink-0 text-start">{label}</span>
+      <span className="min-w-0 flex-1 truncate text-end text-muted-foreground">
+        {options.find((option) => option.value === value)?.label ?? value}
+      </span>
       <ChevronRightIcon className={cn(iconClass, "rtl:rotate-180")} />
     </DropdownMenuTrigger>
     {/* Like a nested submenu: when neither side has room (narrow screens), drop below the row instead of overflowing. */}

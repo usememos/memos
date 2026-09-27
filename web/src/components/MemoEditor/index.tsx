@@ -84,7 +84,9 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   const memoName = memo?.name;
   // Existing resources own their placement. New replies are not placed
   // independently; only a new top-level memo inherits its host's target.
-  const editorSpace = memo ? memo.space : parentMemoName ? undefined : defaultSpace;
+  const draftSpace = useEditorSelector((s) => s.metadata.space);
+  const canChooseSpace = !memo && !parentMemoName && !defaultSpace;
+  const editorSpace = memo ? memo.space : parentMemoName ? undefined : (defaultSpace ?? draftSpace);
   const canTranscribe = useMemo(() => {
     const providerId = aiSetting.transcription?.providerId ?? "";
     if (!providerId) return false;
@@ -105,6 +107,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
     defaultVisibility,
     defaultCreateTime,
     defaultLocation,
+    canChooseSpace,
   });
   const isDraftCacheEnabled = !memo;
 
@@ -411,6 +414,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
             memoName={memoName}
             parentMemoName={parentMemoName}
             space={editorSpace}
+            canChooseSpace={canChooseSpace}
             onAudioRecorderClick={handleAudioRecorderClick}
             viewToggles={viewToggles}
             onInsertImages={handleInsertImages}

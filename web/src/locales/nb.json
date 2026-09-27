@@ -1000,6 +1000,7 @@
     "create-success": "Rom opprettet",
     "creator-admin-note": "Du blir den første administratoren.",
     "current": "Rom",
+    "no-space": "Ingen plass",
     "custom-id-conflict": "Dette rommet UID er allerede i bruk.",
     "custom-id-help": "Brukes i lenker og API-forespørsler. Kan ikke endres senere. Bruk 1–36 ASCII bokstaver, tall eller bindestreker; ikke start eller slutt med bindestrek.",
     "custom-id-invalid": "Bruk 1–36 ASCII bokstaver, tall eller bindestreker, uten bindestrek i begynnelsen eller slutten.",

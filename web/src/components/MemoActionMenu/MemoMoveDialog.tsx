@@ -1,5 +1,7 @@
 import { type FormEvent, useState } from "react";
 import { toast } from "react-hot-toast";
+import SpaceMark from "@/components/SpaceMark";
+import SpaceSelectItem from "@/components/SpaceSelectItem";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -79,15 +81,16 @@ export default function MemoMoveDialog({ memo, onOpenChange }: { memo: Memo; onO
                 if (value === UNASSIGNED && visibility === Visibility.SPACE) setVisibility(Visibility.PRIVATE);
               }}
             >
-              <SelectTrigger id="memo-destination" className="w-full">
-                <SelectValue>{destinationLabel}</SelectValue>
+              <SelectTrigger id="memo-destination" className="w-full min-w-0" title={destinationLabel}>
+                <SelectValue className="min-w-0 flex-1">
+                  {nextSpace && <SpaceMark icon={selectedSpace?.icon} size="sm" />}
+                  <span className="truncate">{destinationLabel}</span>
+                </SelectValue>
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="w-(--anchor-width) min-w-0 max-w-[calc(100vw-2rem)]">
                 <SelectItem value={UNASSIGNED}>{t("memo.move.unassigned")}</SelectItem>
                 {spaces.map((space) => (
-                  <SelectItem key={space.name} value={space.name}>
-                    {spaceLabel(space)}
-                  </SelectItem>
+                  <SpaceSelectItem key={space.name} value={space.name} label={spaceLabel(space)} icon={space.icon} />
                 ))}
               </SelectContent>
             </Select>

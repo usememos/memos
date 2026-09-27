@@ -925,6 +925,7 @@
     "create-success": "Alan oluşturuldu",
     "creator-admin-note": "İlk yönetici siz olacaksınız.",
     "current": "Alan",
+    "no-space": "Alan yok",
     "custom-id-conflict": "Bu alan UID'si zaten kullanılıyor.",
     "custom-id-help": "Bağlantılarda ve API isteklerinde kullanılır. Sonradan değiştirilemez. 1–36 ASCII harf, rakam ya da tire kullanın; tireyle başlamayın ve bitirmeyin.",
     "custom-id-invalid": "Başında ve sonunda tire olmadan 1–36 ASCII harf, rakam ya da tire kullanın.",

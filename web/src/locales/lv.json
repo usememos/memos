@@ -1000,6 +1000,7 @@
     "create-success": "Telpa izveidota",
     "creator-admin-note": "Jūs kļūsiet par pirmo administratoru.",
     "current": "Telpa",
+    "no-space": "Bez telpas",
     "custom-id-conflict": "Šī telpa UID jau tiek izmantota.",
     "custom-id-help": "Izmanto saitēs un API pieprasījumos. To vēlāk nevar mainīt. Izmantojiet 1–36 ASCII burtus, ciparus vai defises; nesāciet un nebeidziet ar defisi.",
     "custom-id-invalid": "Izmantojiet 1–36 ASCII burtus, ciparus vai defises, bez defises sākumā vai beigās.",

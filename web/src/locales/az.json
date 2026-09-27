@@ -996,6 +996,7 @@
     "create-success": "Sahə yaradıldı",
     "creator-admin-note": "Siz ilk admin olacaqsınız.",
     "current": "Sahə",
+    "no-space": "Məkan yoxdur",
     "custom-id-conflict": "Bu Sahə UID-i artıq istifadədədir.",
     "custom-id-help": "Keçidlərdə və API sorğularında istifadə olunur. Sonradan dəyişdirilə bilməz. 1–36 ASCII hərf, rəqəm və ya defis işlədin; defislə başlamayın və bitirməyin.",
     "custom-id-invalid": "1–36 ASCII hərf, rəqəm və ya defis işlədin; əvvəldə və sonda defis olmasın.",

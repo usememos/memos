@@ -1000,6 +1000,7 @@
     "create-success": "공간이 생성되었습니다.",
     "creator-admin-note": "초대 관리자가 됩니다.",
     "current": "공간",
+    "no-space": "스페이스 없음",
     "custom-id-conflict": "이 공간 UID은 이미 사용 중입니다.",
     "custom-id-help": "링크 및 API 요청에 사용됩니다. 나중에 변경할 수 없습니다. 1~36개의 ASCII 문자, 숫자 또는 하이픈을 사용하세요. 하이픈으로 시작하거나 끝나지 않도록 하세요.",
     "custom-id-invalid": "1~36개의 ASCII 문자, 숫자 또는 하이픈을 사용하세요. 시작이나 끝에 하이픈을 사용하지 마세요.",

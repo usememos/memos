@@ -1000,6 +1000,7 @@
     "create-success": "Prostor ustvarjen",
     "creator-admin-note": "Postali boste prvi skrbnik.",
     "current": "Prostor",
+    "no-space": "Brez prostora",
     "custom-id-conflict": "Ta prostor UID je že v uporabi.",
     "custom-id-help": "Uporablja se v povezavah in zahtevah API. Kasneje ga ni mogoče spremeniti. Uporabite črke, številke ali vezaje od 1 do 36 ASCII; ne začnite ali končajte z vezajem.",
     "custom-id-invalid": "Uporabite črke, številke ali vezaje od 1 do 36 ASCII brez vezaja na začetku ali koncu.",

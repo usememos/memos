@@ -986,6 +986,7 @@
     "create-success": "空间已创建",
     "creator-admin-note": "您将成为第一个管理员。",
     "current": "空间",
+    "no-space": "不属于任何空间",
     "custom-id-conflict": "此空间 UID 已被使用。",
     "description-placeholder": "此空间的用途是什么？",
     "load-error": "无法加载空间",

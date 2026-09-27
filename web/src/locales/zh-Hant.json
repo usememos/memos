@@ -952,6 +952,7 @@
     "create-success": "已建立空間",
     "creator-admin-note": "你將成為第一位管理員。",
     "current": "空間",
+    "no-space": "不屬於任何空間",
     "custom-id-conflict": "此空間 UID 已被使用。",
     "custom-id-help": "用於連結與 API 請求，之後無法變更。請使用 1 至 36 個 ASCII 字母、數字或連字號，且開頭與結尾不得為連字號。",
     "custom-id-invalid": "請使用 1 至 36 個 ASCII 字母、數字或連字號，且開頭與結尾不得為連字號。",

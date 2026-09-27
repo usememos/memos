@@ -1000,6 +1000,7 @@
     "create-success": "Utworzono przestrzeń",
     "creator-admin-note": "Zostaniesz pierwszym administratorem.",
     "current": "Przestrzeń",
+    "no-space": "Bez przestrzeni",
     "custom-id-conflict": "Ta przestrzeń UID jest już używana.",
     "custom-id-help": "Używana w linkach i prośbach o API. Nie można jej później zmienić. Użyj 1–36 ASCII liter, cyfr lub łączników; nie zaczynaj ani nie kończ łącznikiem.",
     "custom-id-invalid": "Użyj 1–36 ASCII liter, cyfr lub myślników, bez myślnika na początku lub na końcu.",
