@@ -17,3 +17,8 @@ export function isApplePlatform(): boolean {
 export function primaryModifierGlyph(): string {
   return isApplePlatform() ? "⌘" : "Ctrl";
 }
+
+/** Display form of a primary-modifier shortcut for `key`: "⌘K" on Apple platforms, "Ctrl+K" elsewhere. */
+export function primaryModifierShortcut(key: string): string {
+  return `${isApplePlatform() ? "⌘" : "Ctrl+"}${key.toUpperCase()}`;
+}
