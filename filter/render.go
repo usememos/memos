@@ -369,24 +369,13 @@ func (r *renderer) renderBoolColumnComparison(field Field, op ComparisonOperator
 func (r *renderer) renderJSONBoolComparison(field Field, op ComparisonOperator, right ValueExpr) (renderResult, error) {
 	value, err := expectBool(right)
 	if err != nil {
-		return renderResult{}, err
-	}
-	want := value
-	switch op {
-	case CompareEq:
-	case CompareNeq:
-		want = !want
-	default:
-		return renderResult{}, errors.Errorf("operator %s not supported for boolean JSON field", op)
+		return renderResult{}, errors.Wrap(err, "json boolean comparison requires a boolean value")
 	}
 	predicate, err := r.jsonBoolPredicate(field)
 	if err != nil {
-		return renderResult{}, err
+		return renderResult{}, errors.Wrap(err, "failed to render JSON boolean comparison")
 	}
-	if want {
-		return renderResult{sql: predicate}, nil
-	}
-	return renderResult{sql: fmt.Sprintf("NOT (%s)", predicate)}, nil
+	return renderPredicateComparison(field, op, value, predicate)
 }
 
 func (r *renderer) renderInCondition(cond *InCondition) (renderResult, error) {
@@ -734,6 +723,13 @@ func (r *renderer) renderJSONExistsComparison(field Field, op ComparisonOperator
 	if err != nil {
 		return renderResult{}, errors.Wrap(err, "failed to render JSON existence comparison")
 	}
+	return renderPredicateComparison(field, op, value, existsSQL)
+}
+
+// renderPredicateComparison renders `field == value` or `field != value` for a
+// field whose truth is fully described by predicate: the predicate itself when
+// the comparison asks for true, its negation when it asks for false.
+func renderPredicateComparison(field Field, op ComparisonOperator, value bool, predicate string) (renderResult, error) {
 	want := value
 	switch op {
 	case CompareEq:
@@ -743,9 +739,9 @@ func (r *renderer) renderJSONExistsComparison(field Field, op ComparisonOperator
 		return renderResult{}, errors.Errorf("operator %s not supported for field %q", op, field.Name)
 	}
 	if want {
-		return renderResult{sql: existsSQL}, nil
+		return renderResult{sql: predicate}, nil
 	}
-	return renderResult{sql: fmt.Sprintf("NOT (%s)", existsSQL)}, nil
+	return renderResult{sql: fmt.Sprintf("NOT (%s)", predicate)}, nil
 }
 
 func (r *renderer) jsonBoolPredicate(field Field) (string, error) {

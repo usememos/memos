@@ -632,6 +632,16 @@ func TestMemoFilterHasLink(t *testing.T) {
 	memos = tc.ListWithFilter(`has_link == false`)
 	require.Len(t, memos, 1)
 	require.False(t, memos[0].Payload.GetProperty().GetHasLink())
+
+	// Test: has_link != true
+	memos = tc.ListWithFilter(`has_link != true`)
+	require.Len(t, memos, 1)
+	require.False(t, memos[0].Payload.GetProperty().GetHasLink())
+
+	// Test: has_link != false
+	memos = tc.ListWithFilter(`has_link != false`)
+	require.Len(t, memos, 1)
+	require.True(t, memos[0].Payload.GetProperty().GetHasLink())
 }
 
 func TestMemoFilterHasCode(t *testing.T) {
@@ -647,6 +657,11 @@ func TestMemoFilterHasCode(t *testing.T) {
 	memos := tc.ListWithFilter(`has_code`)
 	require.Len(t, memos, 1)
 	require.True(t, memos[0].Payload.Property.HasCode)
+
+	// Test: has_code == false matches memos whose payload omits the flag
+	memos = tc.ListWithFilter(`has_code == false`)
+	require.Len(t, memos, 1)
+	require.False(t, memos[0].Payload.GetProperty().GetHasCode())
 }
 
 func TestMemoFilterHasIncompleteTasks(t *testing.T) {
@@ -670,6 +685,11 @@ func TestMemoFilterHasIncompleteTasks(t *testing.T) {
 	memos := tc.ListWithFilter(`has_incomplete_tasks`)
 	require.Len(t, memos, 1)
 	require.True(t, memos[0].Payload.Property.HasIncompleteTasks)
+
+	// Test: has_incomplete_tasks == false matches memos whose payload omits the flag
+	memos = tc.ListWithFilter(`has_incomplete_tasks == false`)
+	require.Len(t, memos, 1)
+	require.False(t, memos[0].Payload.GetProperty().GetHasIncompleteTasks())
 }
 
 func TestMemoFilterCombinedJSONBool(t *testing.T) {
