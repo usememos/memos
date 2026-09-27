@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import About from "@/pages/About";
 
@@ -23,6 +23,7 @@ vi.mock("@/utils/i18n", () => ({
       ({
         "common.version": "Version",
         "about.powered-by": "Powered by Memos",
+        "about.sponsor": "Sponsor Memos",
       }) as Record<string, string>
     )[key] ?? key,
 }));
@@ -45,17 +46,24 @@ describe("<About>", () => {
     document.documentElement.removeAttribute("data-theme");
   });
 
-  it("renders the identity hero with linked version, commit, and license chips", () => {
+  it("renders the identity hero with linked version and commit chips", () => {
     renderAbout();
 
     expect(screen.getByRole("heading", { name: "Memos" })).toBeInTheDocument();
     expect(screen.getByText(/Capture first/i)).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "v0.25.0" })).toHaveAttribute("href", "https://github.com/usememos/memos/releases/tag/v0.25.0");
+    expect(screen.getByText("about.description")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Version\s*v0\.25\.0/ })).toHaveAttribute(
+      "href",
+      "https://github.com/usememos/memos/releases/tag/v0.25.0",
+    );
+    expect(screen.getByRole("heading", { name: "Memos" }).parentElement).toContainElement(
+      screen.getByRole("link", { name: /Version\s*v0\.25\.0/ }),
+    );
     expect(screen.getByRole("link", { name: "0123456" })).toHaveAttribute(
       "href",
       "https://github.com/usememos/memos/commit/0123456789abcdef0123456789abcdef01234567",
     );
-    expect(screen.getByRole("link", { name: "MIT" })).toHaveAttribute("href", "https://github.com/usememos/memos/blob/main/LICENSE");
+    expect(screen.queryByRole("link", { name: "MIT" })).not.toBeInTheDocument();
   });
 
   it("links to the project homepage, docs, API docs, GitHub, and Web Clipper", () => {
@@ -78,6 +86,23 @@ describe("<About>", () => {
     expect(screen.queryByTestId("about-bird-sprite")).not.toBeInTheDocument();
   });
 
+  it("offers a single sponsorship link to the Memos project, including on custom instances", () => {
+    mockInstance.generalSetting = {
+      customProfile: { title: "Team Notes", description: "Our shared scratchpad.", logoUrl: "/custom-logo.png" },
+    };
+
+    renderAbout();
+
+    const links = screen.getAllByRole("link", { name: /Sponsor Memos/ });
+    expect(links).toHaveLength(1);
+    expect(within(screen.getByRole("navigation", { name: "about.project-links" })).getByRole("link", { name: /Sponsor Memos/ })).toBe(
+      links[0],
+    );
+    expect(links[0]).toHaveAttribute("href", "https://github.com/sponsors/usememos");
+    expect(links[0]).toHaveAttribute("target", "_blank");
+    expect(links[0]).toHaveAttribute("rel", "noreferrer");
+  });
+
   it("shows a plain version chip and no commit chip on dev builds", () => {
     mockInstance.profile.version = "dev";
     mockInstance.profile.commit = "unknown";
@@ -87,6 +112,7 @@ describe("<About>", () => {
     expect(screen.getByText("dev")).toBeInTheDocument();
     expect(screen.queryByText("vdev")).not.toBeInTheDocument();
     expect(screen.queryByText(/unknown/)).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "about.build" })).not.toBeInTheDocument();
   });
 
   it("shows the demo badge on demo instances", () => {
@@ -106,6 +132,8 @@ describe("<About>", () => {
 
     expect(screen.getByRole("heading", { name: "Team Notes" })).toBeInTheDocument();
     expect(screen.getByText("Our shared scratchpad.")).toBeInTheDocument();
+    expect(screen.queryByText(/Capture first/i)).not.toBeInTheDocument();
+    expect(document.querySelector("img")).toHaveAttribute("src", "/custom-logo.png");
     expect(screen.getByText("Powered by Memos")).toBeInTheDocument();
   });
 
