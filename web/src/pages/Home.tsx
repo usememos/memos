@@ -34,9 +34,12 @@ const Home = () => {
     includePinned: true,
   });
   const canComposeInScope = Boolean(user && (!creatorUsername || creatorUsername === user.username));
+  // Pinning is the owner's arrangement of their own memos, so it only shapes a single
+  // creator's feed; a mixed-author feed like Explore stays purely chronological.
+  const honorPinned = Boolean(creatorUsername);
 
   const { listSort, orderBy } = useMemoSorting({
-    pinnedFirst: true,
+    pinnedFirst: honorPinned,
     state: State.NORMAL,
   });
 
@@ -50,7 +53,7 @@ const Home = () => {
               memo={memo}
               showCreator={!creatorUsername}
               showVisibility
-              showPinned
+              showPinned={honorPinned}
               showSpace={!selectedSpaceName}
               compact={compact}
             />
