@@ -66,13 +66,13 @@ func TestCacheEviction(t *testing.T) {
 	defer cache.Close()
 
 	// Add 5 items (max capacity)
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		key := fmt.Sprintf("key%d", i)
 		cache.Set(ctx, key, i)
 	}
 
 	// Verify all 5 items are in the cache
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		key := fmt.Sprintf("key%d", i)
 		if _, ok := cache.Get(ctx, key); !ok {
 			t.Errorf("Key '%s' should be in the cache", key)
@@ -90,7 +90,7 @@ func TestCacheEviction(t *testing.T) {
 
 	// Some of the original keys should have been evicted
 	evictedCount := 0
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		key := fmt.Sprintf("key%d", i)
 		if _, ok := cache.Get(ctx, key); !ok {
 			evictedCount++
@@ -121,21 +121,21 @@ func TestCacheConcurrency(t *testing.T) {
 	var wg sync.WaitGroup
 	wg.Add(goroutines)
 
-	for i := 0; i < goroutines; i++ {
+	for i := range goroutines {
 		go func(id int) {
 			defer wg.Done()
 
 			baseKey := fmt.Sprintf("worker%d-", id)
 
 			// Set operations
-			for j := 0; j < operationsPerGoroutine; j++ {
+			for j := range operationsPerGoroutine {
 				key := fmt.Sprintf("%skey%d", baseKey, j)
 				value := fmt.Sprintf("value%d-%d", id, j)
 				cache.Set(ctx, key, value)
 			}
 
 			// Get operations
-			for j := 0; j < operationsPerGoroutine; j++ {
+			for j := range operationsPerGoroutine {
 				key := fmt.Sprintf("%skey%d", baseKey, j)
 				val, ok := cache.Get(ctx, key)
 				if !ok {
@@ -149,7 +149,7 @@ func TestCacheConcurrency(t *testing.T) {
 			}
 
 			// Delete half the keys
-			for j := 0; j < operationsPerGoroutine/2; j++ {
+			for j := range operationsPerGoroutine / 2 {
 				key := fmt.Sprintf("%skey%d", baseKey, j)
 				cache.Delete(ctx, key)
 			}
@@ -167,13 +167,13 @@ func TestCacheConcurrency(t *testing.T) {
 
 func TestEvictionCallback(t *testing.T) {
 	ctx := context.Background()
-	evicted := make(map[string]interface{})
+	evicted := make(map[string]any)
 	evictedMu := sync.Mutex{}
 
 	config := DefaultConfig()
 	config.DefaultTTL = 50 * time.Millisecond
 	config.CleanupInterval = 25 * time.Millisecond
-	config.OnEviction = func(key string, value interface{}) {
+	config.OnEviction = func(key string, value any) {
 		evictedMu.Lock()
 		evicted[key] = value
 		evictedMu.Unlock()

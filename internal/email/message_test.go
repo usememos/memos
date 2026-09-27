@@ -156,7 +156,7 @@ func TestMessageFormatSanitizesHeaderValues(t *testing.T) {
 	}
 
 	formatted := msg.Format("sender@example.com\r\nX-Injected-From: bad", "Sender\r\nX-Injected-Name: bad")
-	headers := strings.SplitN(formatted, "\r\n\r\n", 2)[0]
+	headers, _, _ := strings.Cut(formatted, "\r\n\r\n")
 
 	if strings.Contains(headers, "\r\nX-Injected") {
 		t.Fatalf("header value injection was not sanitized:\n%s", headers)

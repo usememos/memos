@@ -42,7 +42,7 @@ func TestListUsersPagination(t *testing.T) {
 
 	// Admin + 5 members = 6 users total.
 	expected := map[string]struct{}{"admin": {}}
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		name := fmt.Sprintf("member-%d", i)
 		_, err := ts.CreateRegularUser(ctx, name)
 		require.NoError(t, err)
@@ -74,7 +74,7 @@ func TestListUsersDefaultPageSizeReturnsAllWhenSmall(t *testing.T) {
 	admin, err := ts.CreateHostUser(ctx, "admin")
 	require.NoError(t, err)
 	adminCtx := ts.CreateUserContext(ctx, admin.ID)
-	for i := 0; i < 3; i++ {
+	for i := range 3 {
 		_, err := ts.CreateRegularUser(ctx, fmt.Sprintf("member-%d", i))
 		require.NoError(t, err)
 	}

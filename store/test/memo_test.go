@@ -252,7 +252,7 @@ func TestMemoListWithPagination(t *testing.T) {
 	require.NoError(t, err)
 
 	// Create 10 memos
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		_, err := ts.CreateMemo(ctx, &store.Memo{
 			UID:        fmt.Sprintf("memo-%d", i),
 			CreatorID:  user.ID,

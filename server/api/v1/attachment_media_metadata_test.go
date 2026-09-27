@@ -23,21 +23,21 @@ func TestValidateClientMediaMetadata(t *testing.T) {
 			Details: &v1pb.MediaMetadata_Photo{Photo: &v1pb.PhotoMetadata{
 				CaptureTime: &v1pb.MediaCaptureTime{
 					LocalDateTime: "2026-08-10T14:32:18.123",
-					UtcOffset:     proto.String("+08:00"),
+					UtcOffset:     new("+08:00"),
 				},
 				Location: &v1pb.MediaLocation{
-					Latitude:       proto.Float64(1.3521),
-					Longitude:      proto.Float64(103.8198),
-					AltitudeMeters: proto.Float64(18.4),
+					Latitude:       new(1.3521),
+					Longitude:      new(103.8198),
+					AltitudeMeters: new(18.4),
 				},
 				SourceExifOrientation: proto.Int32(6),
 				CameraMake:            "Apple",
 				CameraModel:           "iPhone",
 				LensModel:             "Main Camera",
-				FNumber:               proto.Float64(1.78),
-				ExposureTimeSeconds:   proto.Float64(1.0 / 120.0),
+				FNumber:               new(1.78),
+				ExposureTimeSeconds:   new(1.0 / 120.0),
 				Iso:                   proto.Int32(64),
-				FocalLengthMm:         proto.Float64(6.86),
+				FocalLengthMm:         new(6.86),
 			}},
 		}
 	}
@@ -59,7 +59,7 @@ func TestValidateClientMediaMetadata(t *testing.T) {
 
 	t.Run("accepts video metadata", func(t *testing.T) {
 		metadata, err := validateClientMediaMetadata(&v1pb.MediaMetadata{
-			Details: &v1pb.MediaMetadata_Video{Video: &v1pb.VideoMetadata{DurationSeconds: proto.Float64(12.5)}},
+			Details: &v1pb.MediaMetadata_Video{Video: &v1pb.VideoMetadata{DurationSeconds: new(12.5)}},
 		}, "video/mp4")
 		require.NoError(t, err)
 		require.Equal(t, 12.5, metadata.GetVideo().GetDurationSeconds())
@@ -73,7 +73,7 @@ func TestValidateClientMediaMetadata(t *testing.T) {
 
 	t.Run("accepts Z UTC offset", func(t *testing.T) {
 		metadata, err := validateClientMediaMetadata(photoOnly(&v1pb.PhotoMetadata{
-			CaptureTime: &v1pb.MediaCaptureTime{LocalDateTime: "2026-08-10T14:32:18", UtcOffset: proto.String("Z")},
+			CaptureTime: &v1pb.MediaCaptureTime{LocalDateTime: "2026-08-10T14:32:18", UtcOffset: new("Z")},
 		}), "image/jpeg")
 		require.NoError(t, err)
 		require.Equal(t, "Z", metadata.GetPhoto().GetCaptureTime().GetUtcOffset())
@@ -97,15 +97,15 @@ func TestValidateClientMediaMetadata(t *testing.T) {
 		{name: "control character in camera make", mimeType: "image/jpeg", metadata: photoOnly(&v1pb.PhotoMetadata{CameraMake: "Apple\nCo"})},
 		{name: "null byte in lens model", mimeType: "image/jpeg", metadata: photoOnly(&v1pb.PhotoMetadata{LensModel: "Main\x00Camera"})},
 		{name: "long camera model", mimeType: "image/jpeg", metadata: photoOnly(&v1pb.PhotoMetadata{CameraModel: strings.Repeat("x", maxMediaMetadataStringBytes+1)})},
-		{name: "non-finite aperture", mimeType: "image/jpeg", metadata: photoOnly(&v1pb.PhotoMetadata{FNumber: proto.Float64(math.NaN())})},
+		{name: "non-finite aperture", mimeType: "image/jpeg", metadata: photoOnly(&v1pb.PhotoMetadata{FNumber: new(math.NaN())})},
 		{name: "zero exposure", mimeType: "image/jpeg", metadata: photoOnly(&v1pb.PhotoMetadata{ExposureTimeSeconds: proto.Float64(0)})},
 		{name: "zero ISO", mimeType: "image/jpeg", metadata: photoOnly(&v1pb.PhotoMetadata{Iso: proto.Int32(0)})},
 		{name: "invalid capture format", mimeType: "image/jpeg", metadata: photoOnly(&v1pb.PhotoMetadata{CaptureTime: &v1pb.MediaCaptureTime{LocalDateTime: "2026:08:10 14:32:18"}})},
 		{name: "invalid calendar date", mimeType: "image/jpeg", metadata: photoOnly(&v1pb.PhotoMetadata{CaptureTime: &v1pb.MediaCaptureTime{LocalDateTime: "2026-02-30T14:32:18"}})},
-		{name: "invalid offset", mimeType: "image/jpeg", metadata: photoOnly(&v1pb.PhotoMetadata{CaptureTime: &v1pb.MediaCaptureTime{LocalDateTime: "2026-08-10T14:32:18", UtcOffset: proto.String("+14:30")}})},
+		{name: "invalid offset", mimeType: "image/jpeg", metadata: photoOnly(&v1pb.PhotoMetadata{CaptureTime: &v1pb.MediaCaptureTime{LocalDateTime: "2026-08-10T14:32:18", UtcOffset: new("+14:30")}})},
 		{name: "missing longitude", mimeType: "image/jpeg", metadata: photoOnly(&v1pb.PhotoMetadata{Location: &v1pb.MediaLocation{Latitude: proto.Float64(1)}})},
 		{name: "latitude out of range", mimeType: "image/jpeg", metadata: photoOnly(&v1pb.PhotoMetadata{Location: &v1pb.MediaLocation{Latitude: proto.Float64(91), Longitude: proto.Float64(1)}})},
-		{name: "non-finite altitude", mimeType: "image/jpeg", metadata: photoOnly(&v1pb.PhotoMetadata{Location: &v1pb.MediaLocation{Latitude: proto.Float64(1), Longitude: proto.Float64(1), AltitudeMeters: proto.Float64(math.Inf(1))}})},
+		{name: "non-finite altitude", mimeType: "image/jpeg", metadata: photoOnly(&v1pb.PhotoMetadata{Location: &v1pb.MediaLocation{Latitude: proto.Float64(1), Longitude: proto.Float64(1), AltitudeMeters: new(math.Inf(1))}})},
 		{name: "negative duration", mimeType: "video/mp4", metadata: &v1pb.MediaMetadata{Details: &v1pb.MediaMetadata_Video{Video: &v1pb.VideoMetadata{DurationSeconds: proto.Float64(-1)}}}},
 	}
 

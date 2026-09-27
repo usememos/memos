@@ -83,7 +83,7 @@ func TestDeleteMemoShare_RevalidatesSpaceWriteAuthority(t *testing.T) {
 	}, owner.ID)
 	require.NoError(t, err)
 	memo, err := ts.Service.CreateMemo(ownerCtx, &apiv1.CreateMemoRequest{Memo: &apiv1.Memo{
-		Content: "assigned share", Visibility: apiv1.Visibility_PUBLIC, Space: ptr("spaces/" + space.UID),
+		Content: "assigned share", Visibility: apiv1.Visibility_PUBLIC, Space: new("spaces/" + space.UID),
 	}})
 	require.NoError(t, err)
 	share, err := ts.Service.CreateMemoShare(ownerCtx, &apiv1.CreateMemoShareRequest{Parent: memo.Name, MemoShare: &apiv1.MemoShare{}})

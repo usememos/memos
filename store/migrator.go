@@ -376,7 +376,7 @@ func getSchemaVersionOfMigrateScript(filePath string) (string, error) {
 		return "", err
 	}
 	series := elements[len(elements)-2]
-	rawSequence := strings.Split(elements[len(elements)-1], MigrateFileNameSplit)[0]
+	rawSequence, _, _ := strings.Cut(elements[len(elements)-1], MigrateFileNameSplit)
 	sequence, err := strconv.Atoi(rawSequence)
 	if err != nil {
 		return "", errors.Wrapf(err, "failed to convert migration sequence to int: %s", rawSequence)

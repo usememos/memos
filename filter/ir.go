@@ -121,7 +121,7 @@ func (*FieldRef) isValueExpr() {}
 
 // LiteralValue holds a literal scalar.
 type LiteralValue struct {
-	Value interface{}
+	Value any
 }
 
 func (*LiteralValue) isValueExpr() {}

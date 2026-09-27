@@ -148,7 +148,7 @@ func TestAssignedPublicMemoCommentNotifiesReadableRemovedAuthor(t *testing.T) {
 	memo, err := ts.Service.CreateMemo(ownerCtx, &apiv1.CreateMemoRequest{Memo: &apiv1.Memo{
 		Content:    "assigned public memo",
 		Visibility: apiv1.Visibility_PUBLIC,
-		Space:      ptr("spaces/" + space.UID),
+		Space:      new("spaces/" + space.UID),
 	}})
 	require.NoError(t, err)
 	require.NoError(t, ts.Store.DeleteSpaceMember(ctx, &store.DeleteSpaceMember{SpaceID: space.ID, UserID: owner.ID}, owner.ID))

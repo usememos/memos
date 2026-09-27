@@ -48,7 +48,7 @@ func TestUserListByIDList(t *testing.T) {
 
 	// Create 5 users
 	var userIDs []int32
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		user, err := createTestingUserWithRole(ctx, ts, fmt.Sprintf("user_list_%d", i), store.RoleUser)
 		require.NoError(t, err)
 		userIDs = append(userIDs, user.ID)
@@ -266,7 +266,7 @@ func TestUserListWithLimit(t *testing.T) {
 	ts := NewTestingStore(ctx, t)
 
 	// Create 5 users
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		role := store.RoleUser
 		if i == 0 {
 			role = store.RoleAdmin

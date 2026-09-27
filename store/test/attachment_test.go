@@ -562,7 +562,7 @@ func TestAttachmentListWithPagination(t *testing.T) {
 	ts := NewTestingStore(ctx, t)
 
 	// Create 5 attachments
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		_, err := ts.CreateAttachment(ctx, &store.Attachment{
 			UID:       shortuuid.New(),
 			CreatorID: 101,
@@ -642,7 +642,7 @@ func TestMemoMutationConcurrentUpdatesNoSQLiteBusy(t *testing.T) {
 	errs := make([]error, workers)
 	var wg sync.WaitGroup
 	content := "updated"
-	for i := 0; i < workers; i++ {
+	for i := range workers {
 		wg.Go(func() {
 			<-start
 			errs[i] = ts.ApplyMemoMutation(ctx, &store.MemoMutation{
@@ -681,7 +681,7 @@ func TestMemoMutationConcurrentUpdatesSameMemoNoSQLiteBusy(t *testing.T) {
 	errs := make([]error, workers)
 	var wg sync.WaitGroup
 	content := "updated"
-	for i := 0; i < workers; i++ {
+	for i := range workers {
 		wg.Go(func() {
 			<-start
 			errs[i] = ts.ApplyMemoMutation(ctx, &store.MemoMutation{
