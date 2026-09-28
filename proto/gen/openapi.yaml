@@ -3778,6 +3778,9 @@ components:
                 logoUrl:
                     type: string
                     description: The URL of the instance logo.
+                aboutContent:
+                    type: string
+                    description: Markdown content displayed on the instance about page.
             description: CustomProfile is the instance branding.
         GetCurrentUserResponse:
             type: object

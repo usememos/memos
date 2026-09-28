@@ -12,6 +12,7 @@ import (
 
 	apipb "github.com/usememos/memos/proto/gen/api"
 	storepb "github.com/usememos/memos/proto/gen/store"
+	"github.com/usememos/memos/store"
 )
 
 func validateInstanceSetting(setting *apipb.InstanceSetting) error {
@@ -20,6 +21,8 @@ func validateInstanceSetting(setting *apipb.InstanceSetting) error {
 		return err
 	}
 	switch key {
+	case storepb.InstanceSettingKey_GENERAL.String():
+		return validateInstanceGeneralSetting(setting.GetGeneralSetting())
 	case storepb.InstanceSettingKey_MEMO_RELATED.String():
 		if setting.GetMemoRelatedSetting() == nil {
 			return errors.New("memo related setting is required")
@@ -32,6 +35,13 @@ func validateInstanceSetting(setting *apipb.InstanceSetting) error {
 	default:
 		return nil
 	}
+}
+
+func validateInstanceGeneralSetting(setting *apipb.InstanceSetting_GeneralSetting) error {
+	if aboutContent := setting.GetCustomProfile().GetAboutContent(); int64(len(aboutContent)) > store.DefaultMemoContentBytes {
+		return errors.Errorf("custom_profile.about_content must be at most %d bytes", store.DefaultMemoContentBytes)
+	}
+	return nil
 }
 
 func validateInstanceAccessSetting(setting *apipb.InstanceSetting_AccessSetting) error {

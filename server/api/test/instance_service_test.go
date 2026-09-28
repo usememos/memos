@@ -568,6 +568,47 @@ func TestUpdateInstanceSetting(t *testing.T) {
 		require.Contains(t, err.Error(), "access setting is required")
 	})
 
+	t.Run("UpdateInstanceSetting - custom profile about content", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		admin, err := ts.CreateHostUser(ctx, "about-admin")
+		require.NoError(t, err)
+		adminCtx := ts.CreateUserContext(ctx, admin.ID)
+		settingForAboutContent := func(aboutContent string) *apipb.InstanceSetting {
+			return &apipb.InstanceSetting{
+				Name: "instance/settings/GENERAL",
+				Value: &apipb.InstanceSetting_GeneralSetting_{
+					GeneralSetting: &apipb.InstanceSetting_GeneralSetting{
+						CustomProfile: &apipb.InstanceSetting_GeneralSetting_CustomProfile{
+							Title:        "My Memos",
+							AboutContent: aboutContent,
+						},
+					},
+				},
+			}
+		}
+
+		aboutContent := "## Contact\n\nReach me at [example.com](https://example.com).\n\n- [ ] Read the #guidelines"
+		updated, err := ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{InstanceSetting: settingForAboutContent(aboutContent)})
+		require.NoError(t, err)
+		require.Equal(t, aboutContent, updated.GetGeneralSetting().GetCustomProfile().GetAboutContent())
+
+		// The About page is public, so guests must be able to read the content.
+		got, err := ts.Service.GetInstanceSetting(ctx, &apipb.GetInstanceSettingRequest{Name: "instance/settings/GENERAL"})
+		require.NoError(t, err)
+		require.Equal(t, aboutContent, got.GetGeneralSetting().GetCustomProfile().GetAboutContent())
+
+		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{
+			InstanceSetting: settingForAboutContent(strings.Repeat("a", 8*1024+1)),
+		})
+		require.Equal(t, codes.InvalidArgument, status.Code(err))
+
+		got, err = ts.Service.GetInstanceSetting(ctx, &apipb.GetInstanceSettingRequest{Name: "instance/settings/GENERAL"})
+		require.NoError(t, err)
+		require.Equal(t, aboutContent, got.GetGeneralSetting().GetCustomProfile().GetAboutContent())
+	})
+
 	t.Run("UpdateInstanceSetting - AI setting requires admin", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()

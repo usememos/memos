@@ -264,6 +264,9 @@ message InstanceSetting {
 
       // The URL of the instance logo.
       string logo_url = 3;
+
+      // Markdown content displayed on the instance about page.
+      string about_content = 4;
     }
   }
 
