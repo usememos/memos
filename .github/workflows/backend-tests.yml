@@ -42,10 +42,12 @@ jobs:
         with:
           version: v2.13.1
           args: --timeout=3m
+          skip-cache: true
+          skip-pkg-cache: true
 
       - name: Install goimports
         run: |
-          go install golang.org/x/tools/cmd/goimports@latest
+          go install golang.org/x/tools/cmd/goimports@v0.24.0
 
       - name: Verify goimports formatting
         run: |
