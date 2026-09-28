@@ -1,6 +1,7 @@
 import { Badge } from "@usememos/ui";
 import { BookOpenIcon, CodeXmlIcon, ExternalLinkIcon, GitForkIcon, GlobeIcon, HeartIcon, ScissorsIcon, SparklesIcon } from "lucide-react";
 import { useState } from "react";
+import { MemoContentView } from "@/components/MemoEditor/view/MemoContentView";
 import MemosLogo from "@/components/MemosLogo";
 import { WelcomeGuideDialog } from "@/components/WelcomeGuide";
 import { useInstance } from "@/contexts/InstanceContext";
@@ -50,6 +51,7 @@ const About = () => {
 
   const customProfile = generalSetting.customProfile;
   const instanceTitle = customProfile?.title || DEFAULT_TITLE;
+  const aboutContent = customProfile?.aboutContent?.trim() ?? "";
   const isCustomBranded = instanceTitle !== DEFAULT_TITLE;
 
   const releaseTag = getReleaseTag(profile.version);
@@ -106,6 +108,11 @@ const About = () => {
             <p className="mt-6 text-balance mu-heading wrap-anywhere text-mu-text">
               {customProfile?.description || "Simple note-taking for your everyday thoughts."}
             </p>
+            {aboutContent && (
+              <section className="mt-8 min-w-0">
+                <MemoContentView content={aboutContent} />
+              </section>
+            )}
             <p className="mt-6 max-w-md mu-body text-mu-text-secondary">{t("about.description")}</p>
 
             {buildRows.length > 0 && (

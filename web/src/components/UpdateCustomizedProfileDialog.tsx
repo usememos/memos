@@ -1,6 +1,7 @@
 import { create } from "@bufbuild/protobuf";
 import { Button, Dialog, Field, Input, Textarea } from "@usememos/ui";
 import { useState } from "react";
+import Editor from "@/components/MemoEditor/edit/Editor";
 import { useInstance } from "@/contexts/InstanceContext";
 import { useFieldErrors } from "@/hooks/useFieldErrors";
 import { handleError } from "@/lib/error";
@@ -57,11 +58,16 @@ function UpdateCustomizedProfileDialog({ open, onOpenChange, onSuccess }: Props)
     });
   };
 
+  const handleAboutContentChanged = (aboutContent: string) => {
+    setPartialState({ aboutContent });
+  };
+
   const handleRestoreButtonClick = () => {
     setPartialState({
       title: "Memos",
       logoUrl: "",
       description: "",
+      aboutContent: "",
     });
   };
 
@@ -123,6 +129,21 @@ function UpdateCustomizedProfileDialog({ open, onOpenChange, onSuccess }: Props)
           <Field.Root>
             <Field.Label>{t("setting.system.customize-server.description")}</Field.Label>
             <Textarea id="description" rows={3} value={customProfile.description} onChange={handleDescriptionChanged} />
+          </Field.Root>
+
+          <Field.Root>
+            <Field.Label>{t("setting.system.customize-server.about-content")}</Field.Label>
+            <div className="w-full rounded-md border border-mu-line px-3 py-2">
+              <Editor
+                className="min-h-16"
+                value={customProfile.aboutContent}
+                placeholder={t("setting.system.customize-server.about-content-placeholder")}
+                onContentChange={handleAboutContentChanged}
+                onFiles={() => {}}
+                onSubmit={handleSaveButtonClick}
+              />
+            </div>
+            <Field.Description>{t("setting.system.customize-server.about-content-hint")}</Field.Description>
           </Field.Root>
         </div>
 

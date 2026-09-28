@@ -50,6 +50,9 @@ func ValidateUpdate(setting, existing *storepb.InstanceSetting) error {
 		if general.WeekStartDayOffset < -1 || general.WeekStartDayOffset > 6 {
 			return errors.New("week_start_day_offset must be between -1 and 6")
 		}
+		if aboutContent := general.GetCustomProfile().GetAboutContent(); int64(len(aboutContent)) > store.DefaultMemoContentBytes {
+			return errors.Errorf("custom_profile.about_content must be at most %d bytes", store.DefaultMemoContentBytes)
+		}
 	case storepb.InstanceSettingKey_STORAGE:
 		if setting.GetStorageSetting() == nil {
 			return errors.New("storage setting is required")
