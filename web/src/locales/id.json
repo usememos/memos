@@ -490,6 +490,9 @@
       "additional-style": "Gaya tambahan",
       "additional-style-placeholder": "Kode CSS tambahan",
       "customize-server": {
+        "about-content": "Konten halaman Tentang",
+        "about-content-hint": "Mendukung Markdown. Ditampilkan di halaman Tentang di atas info proyek.",
+        "about-content-placeholder": "Info kontak, pedoman penggunaan, perkenalan…",
         "description": "Deskripsi",
         "icon-url": "URL Ikon",
         "title": "Sesuaikan Server"

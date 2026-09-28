@@ -490,6 +490,9 @@
       "additional-style": "สไตล์เพิ่มเติม",
       "additional-style-placeholder": "โค้ด CSS เพิ่มเติม",
       "customize-server": {
+        "about-content": "เนื้อหาหน้าเกี่ยวกับ",
+        "about-content-hint": "รองรับ Markdown แสดงในหน้าเกี่ยวกับ เหนือข้อมูลโปรเจกต์",
+        "about-content-placeholder": "ข้อมูลติดต่อ แนวทางการใช้งาน การแนะนำตัว…",
         "description": "คำอธิบาย",
         "icon-url": "URL ไอคอน",
         "title": "ปรับแต่งเซิร์ฟเวอร์"
