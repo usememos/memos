@@ -893,6 +893,9 @@
       "additional-style-placeholder": "Additional CSS code",
       "basic-description": "Configure the public identity and calendar defaults for this instance.",
       "customize-server": {
+        "about-content": "About page content",
+        "about-content-hint": "Supports Markdown. Shown on the About page above the project info.",
+        "about-content-placeholder": "Contact info, usage guidelines, an introduction…",
         "description": "Description",
         "icon-url": "Icon URL",
         "title": "Customize Server"

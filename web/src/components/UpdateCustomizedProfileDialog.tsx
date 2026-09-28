@@ -1,6 +1,7 @@
 import { create } from "@bufbuild/protobuf";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
+import Editor from "@/components/MemoEditor/Editor";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -57,11 +58,16 @@ function UpdateCustomizedProfileDialog({ open, onOpenChange, onSuccess }: Props)
     });
   };
 
+  const handleAboutContentChanged = (aboutContent: string) => {
+    setPartialState({ aboutContent });
+  };
+
   const handleRestoreButtonClick = () => {
     setPartialState({
       title: "Memos",
       logoUrl: "/logo.webp",
       description: "",
+      aboutContent: "",
     });
   };
 
@@ -130,6 +136,21 @@ function UpdateCustomizedProfileDialog({ open, onOpenChange, onSuccess }: Props)
               onChange={handleDescriptionChanged}
               placeholder="Enter description"
             />
+          </div>
+
+          <div className="grid gap-2">
+            <Label>{t("setting.system.customize-server.about-content")}</Label>
+            <div className="w-full rounded-md border border-border px-3 py-2 shadow-xs">
+              <Editor
+                className="memo-editor-content min-h-16"
+                initialContent={customProfile.aboutContent}
+                placeholder={t("setting.system.customize-server.about-content-placeholder")}
+                onContentChange={handleAboutContentChanged}
+                onFiles={() => {}}
+                onSubmit={handleSaveButtonClick}
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">{t("setting.system.customize-server.about-content-hint")}</p>
           </div>
         </div>
 
