@@ -20,3 +20,12 @@ func TestConfigServerAddressPreservesHost(t *testing.T) {
 		})
 	}
 }
+
+func TestConfigServerAddressUnwrapsBracketedIPv6(t *testing.T) {
+	for host, want := range map[string]string{"[::1]": "[::1]:587", "[2001:db8::1]": "[2001:db8::1]:587"} {
+		t.Run(host, func(t *testing.T) {
+			config := Config{SMTPHost: host, SMTPPort: 587}
+			require.Equal(t, want, config.GetServerAddress())
+		})
+	}
+}

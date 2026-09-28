@@ -62,21 +62,21 @@ func TestSendPreservesSenderOverSMTP(t *testing.T) {
 func receiveSMTPMessage(listener net.Listener) ([]byte, error) {
 	conn, err := listener.Accept()
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "accept SMTP connection")
 	}
 	defer conn.Close()
 	if err := conn.SetDeadline(time.Now().Add(5 * time.Second)); err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "set SMTP connection deadline")
 	}
 	client := textproto.NewConn(conn)
 	if err := client.PrintfLine("220 localhost ESMTP"); err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "write SMTP greeting")
 	}
 	var body []byte
 	for {
 		line, err := client.ReadLine()
 		if err != nil {
-			return nil, err
+			return nil, errors.Wrap(err, "read SMTP command")
 		}
 		command, _, _ := strings.Cut(line, " ")
 		switch command {
@@ -84,20 +84,23 @@ func receiveSMTPMessage(listener net.Listener) ([]byte, error) {
 			err = client.PrintfLine("250 OK")
 		case "DATA":
 			if err := client.PrintfLine("354 Send message"); err != nil {
-				return nil, err
+				return nil, errors.Wrap(err, "write SMTP DATA response")
 			}
 			body, err = client.ReadDotBytes()
 			if err != nil {
-				return nil, err
+				return nil, errors.Wrap(err, "read SMTP message body")
 			}
 			err = client.PrintfLine("250 Accepted")
 		case "QUIT":
-			return body, client.PrintfLine("221 Goodbye")
+			if err := client.PrintfLine("221 Goodbye"); err != nil {
+				return nil, errors.Wrap(err, "write SMTP QUIT response")
+			}
+			return body, nil
 		default:
 			return nil, errors.Errorf("unexpected SMTP command: %s", line)
 		}
 		if err != nil {
-			return nil, err
+			return nil, errors.Wrapf(err, "write SMTP %s response", command)
 		}
 	}
 }
