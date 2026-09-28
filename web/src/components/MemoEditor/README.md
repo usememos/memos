@@ -56,7 +56,7 @@ MemoEditor/
 │   └── ...                     # Heading/list/viewport decorations, editor.css
 ├── formatting/
 │   └── commands.ts         # Backend-agnostic catalog of formatting verbs
-├── Toolbar/                # EditorToolbar, FormattingToolbar, InsertMenu, MemoSettings
+├── Toolbar/                # EditorToolbar, FormattingToolbar, InsertMenu, AudienceMenu
 ├── constants.ts
 └── types/                  # EditorController / FormattingController, component props,
                             #   attachment and insert-menu types
@@ -140,7 +140,7 @@ Those toggles travel as a single optional `viewToggles` object (`types/component
 
 ### Destination and visibility
 
-`MemoSettings` combines visibility with a compact Space select for new top-level memos created outside a Space. A host-provided `defaultSpace` fixes placement and hides the select; edits and comments also omit it. The selected destination lives in editor metadata and is sent on creation. Clearing a Space-only audience resets it to Private. Drafts retain destination and visibility alongside content, attachments, and location. Long names are truncated in the toolbar, select, and options, with their full text retained for accessible labels and hover titles.
+`AudienceMenu` is one dropdown for a memo's visibility and, where allowed, its Space. Visibility options come first; the Space is an optional row below them that never names the empty state: it reads "Add to space" until one is chosen, then shows the Space, and the selected Space in its submenu toggles back off (a check at rest, an ✕ under the pointer or keyboard, always an ✕ on touch). New top-level memos and edits of top-level memos the user can manage offer the row; a host-provided `defaultSpace` fixes a new memo's placement, and comments never offer it because their Space is the parent's. The destination lives in editor metadata: it is sent on creation, and an edit that changes it sends `space` and `visibility` together so the server can validate the move as one transition. Clearing a Space-only audience resets it to Private; adding a Space never changes the audience. Drafts retain destination and visibility alongside content, attachments, and location. Long names are truncated, with their full text retained for accessible labels and hover titles. Moving a memo between Spaces happens here; there is no separate move dialog.
 
 ### Lifecycle hooks
 

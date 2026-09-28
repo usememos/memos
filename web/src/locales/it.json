@@ -284,8 +284,8 @@
       "private-description": "Visibile solo a te",
       "protected-description": "Visibile agli utenti che hanno effettuato l'accesso",
       "public-description": "Visibile a tutti",
-      "space": "Spazio",
-      "space-description": "Visibile ai membri di questo spazio"
+      "space": "Membri",
+      "space-description": "Tutti in {{space}}"
     },
     "count-memos-updated-in-date": "{{count}} {{memos}} aggiornato su {{date}}",
     "newest-first": "Prima il più recente",
@@ -300,15 +300,7 @@
     "parent-load-error": "Impossibile caricare il memo originale.",
     "parent-unavailable": "Memo originale non disponibile",
     "parent-unavailable-description": "Potrebbe essere stato eliminato o potresti non avere più accesso.",
-    "move": {
-      "title": "Sposta nello spazio",
-      "description": "Scegli dove collocare questo memo e chi può leggerlo.",
-      "unassigned": "Non assegnato",
-      "confirm": "Sposta",
-      "success": "Memo spostato",
-      "space-audience": "I membri di {{space}} potranno leggere questo memo.",
-      "history": "Le reazioni esistenti rimangono associate a questo memo. I commenti e i memo collegati mantengono le proprie regole di accesso."
-    },
+    "moved": "Memo spostato",
     "back-to": "Torna a {{source}}",
     "connections": "Connessioni",
     "grid-compact-hint": "I layout a griglia utilizzano sempre schede compatte.",
@@ -1002,7 +994,8 @@
     "create-success": "Spazio creato",
     "creator-admin-note": "Diventerai il primo amministratore.",
     "current": "Spazio",
-    "no-space": "Nessuno spazio",
+    "add-to": "Aggiungi a uno spazio",
+    "remove-from": "Rimuovi da {{space}}",
     "custom-id-conflict": "Questo spazio UID è già in uso.",
     "custom-id-help": "Utilizzato nei link e nelle richieste API. Non può essere modificato in seguito. Utilizzare da 1 a 36 ASCII lettere, numeri o trattini; non iniziare o terminare con un trattino.",
     "custom-id-invalid": "Utilizzare da 1 a 36 ASCII lettere, numeri o trattini, senza trattino all'inizio o alla fine.",

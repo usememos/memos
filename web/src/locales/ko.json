@@ -252,8 +252,8 @@
       "private-description": "나만 보기",
       "protected-description": "로그인한 사용자에게 표시",
       "public-description": "모든 사람에게 표시",
-      "space": "스페이스",
-      "space-description": "이 스페이스의 구성원에게 표시"
+      "space": "멤버",
+      "space-description": "{{space}}의 모든 사람"
     },
     "share": {
       "active-links": "활성 공유 링크",
@@ -287,15 +287,7 @@
     "parent-load-error": "원본 메모를 불러올 수 없습니다.",
     "parent-unavailable": "원본 메모를 사용할 수 없습니다.",
     "parent-unavailable-description": "메모가 삭제되었거나 더 이상 접근 권한이 없을 수 있습니다.",
-    "move": {
-      "title": "다른 공간으로 이동",
-      "description": "이 메모를 어느 공간에 배치하고 누가 읽을 수 있는지 선택하세요.",
-      "unassigned": "지정되지 않음",
-      "confirm": "이동",
-      "success": "메모가 이동되었습니다.",
-      "space-audience": "{{space}}개의 공간이 있으며, 해당 공간의 구성원이 이 메모를 읽을 수 있습니다.",
-      "history": "기존 반응은 이 메모에 유지됩니다. 댓글과 연결된 메모는 자체 액세스 규칙을 유지합니다."
-    },
+    "moved": "메모가 이동되었습니다.",
     "back-to": "{{source}}으로 돌아가기",
     "count-memos-updated-in-date": "{{count}} {{memos}}이 {{date}}에 업데이트되었습니다.",
     "connections": "연결",
@@ -1002,7 +994,8 @@
     "create-success": "공간이 생성되었습니다.",
     "creator-admin-note": "초대 관리자가 됩니다.",
     "current": "공간",
-    "no-space": "스페이스 없음",
+    "add-to": "스페이스에 추가",
+    "remove-from": "{{space}}에서 제거",
     "custom-id-conflict": "이 공간 UID은 이미 사용 중입니다.",
     "custom-id-help": "링크 및 API 요청에 사용됩니다. 나중에 변경할 수 없습니다. 1~36개의 ASCII 문자, 숫자 또는 하이픈을 사용하세요. 하이픈으로 시작하거나 끝나지 않도록 하세요.",
     "custom-id-invalid": "1~36개의 ASCII 문자, 숫자 또는 하이픈을 사용하세요. 시작이나 끝에 하이픈을 사용하지 마세요.",

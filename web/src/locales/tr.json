@@ -257,15 +257,7 @@
     "parent-load-error": "Özgün not yüklenemedi.",
     "parent-unavailable": "Özgün not kullanılamıyor",
     "parent-unavailable-description": "Silinmiş olabilir ya da artık erişiminiz olmayabilir.",
-    "move": {
-      "title": "Alana Taşı",
-      "description": "Bu notun nereye ait olduğunu ve kimlerin okuyabileceğini seçin.",
-      "unassigned": "Atanmamış",
-      "confirm": "Taşı",
-      "success": "Not taşındı",
-      "space-audience": "{{space}} üyeleri bu notu okuyabilecek.",
-      "history": "Mevcut tepkiler bu notla birlikte kalır. Yorumlar ve bağlantılı notlar kendi erişim kurallarını korur."
-    },
+    "moved": "Not taşındı",
     "back-to": "Geri dön: {{source}}",
     "click-to-show-sensitive-content": "Hassas içeriği göstermek için tıklayın",
     "comment": {
@@ -336,8 +328,8 @@
       "protected-description": "Giriş yapmış kullanıcılar görebilir",
       "public": "Herkese Açık",
       "public-description": "Herkes görebilir",
-      "space": "Alan",
-      "space-description": "Bu alanın üyeleri görebilir"
+      "space": "Üyeler",
+      "space-description": "{{space}} içindeki herkes"
     },
     "count-memos-updated-in-date": "{{count}} {{memos}}, {{date}}'te güncellendi",
     "newest-first": "Önce en yeni",
@@ -927,7 +919,8 @@
     "create-success": "Alan oluşturuldu",
     "creator-admin-note": "İlk yönetici siz olacaksınız.",
     "current": "Alan",
-    "no-space": "Alan yok",
+    "add-to": "Alana ekle",
+    "remove-from": "{{space}} alanından çıkar",
     "custom-id-conflict": "Bu alan UID'si zaten kullanılıyor.",
     "custom-id-help": "Bağlantılarda ve API isteklerinde kullanılır. Sonradan değiştirilemez. 1–36 ASCII harf, rakam ya da tire kullanın; tireyle başlamayın ve bitirmeyin.",
     "custom-id-invalid": "Başında ve sonunda tire olmadan 1–36 ASCII harf, rakam ya da tire kullanın.",

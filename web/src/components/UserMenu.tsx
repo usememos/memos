@@ -33,8 +33,11 @@ import { UserNotification_Status } from "@/types/proto/api/v1/user_service_pb";
 import { getLocaleDisplayName, getLocaleWithFallback, loadLocale, useTranslate } from "@/utils/i18n";
 import { getThemeWithFallback, loadTheme, THEME_OPTIONS } from "@/utils/theme";
 
-const rowClass = "h-8 w-full justify-start gap-2 rounded-sm px-2 text-xs font-normal shadow-none hover:bg-accent";
-const iconClass = "size-3.5 shrink-0 text-muted-foreground";
+// One row grammar for the whole scope panel: 28px rows, 13px text, and a 20px leading slot
+// (a 14px glyph with 3px each side) so icons, the avatar and Space marks share one column.
+const rowClass = "h-7 w-full justify-start gap-1.5 rounded-sm px-2 text-ui font-normal shadow-none hover:bg-accent";
+const iconClass = "mx-[3px] size-3.5 shrink-0 text-muted-foreground";
+const chevronClass = "size-3.5 shrink-0 text-muted-foreground";
 
 interface PreferenceSubmenuProps {
   icon: LucideIcon;
@@ -55,7 +58,7 @@ const PreferenceSubmenu = ({ icon: Icon, label, value, options, onChange, classN
       <span className="min-w-0 flex-1 truncate text-end text-muted-foreground">
         {options.find((option) => option.value === value)?.label ?? value}
       </span>
-      <ChevronRightIcon className={cn(iconClass, "rtl:rotate-180")} />
+      <ChevronRightIcon className={cn(chevronClass, "rtl:rotate-180")} />
     </DropdownMenuTrigger>
     {/* Like a nested submenu: when neither side has room (narrow screens), drop below the row instead of overflowing. */}
     <DropdownMenuContent
@@ -108,7 +111,7 @@ const UserPreferenceMenu = () => {
   };
 
   return (
-    <section aria-label={t("setting.preference.label")} className="border-border/70 px-2 py-1 not-first:border-t">
+    <section aria-label={t("setting.preference.label")} className="border-border/70 p-1 not-first:border-t">
       <PreferenceSubmenu
         icon={PaletteIcon}
         label={t("setting.preference.theme")}
@@ -169,10 +172,10 @@ const UserMenu = ({ onClose }: { onClose: () => void }) => {
   return (
     <>
       <UserPreferenceMenu />
-      <section aria-label={t("setting.sso.account")} className="border-t border-border/70 px-2 py-1">
+      <section aria-label={t("setting.sso.account")} className="border-t border-border/70 p-1">
         {currentUser && (
           <>
-            <div className="flex h-8 items-center gap-2 px-2">
+            <div className="flex h-7 items-center gap-1.5 px-2">
               <span className="relative flex size-5 shrink-0 items-center justify-center">
                 <UserAvatar avatarUrl={currentUser.avatarUrl} name={accountLabel} className="size-5" />
                 {sseStatus !== "connected" && (
@@ -186,13 +189,13 @@ const UserMenu = ({ onClose }: { onClose: () => void }) => {
                   />
                 )}
               </span>
-              <span className="min-w-0 flex-1 truncate text-xs font-medium">{accountLabel}</span>
+              <span className="min-w-0 flex-1 truncate text-ui font-medium">{accountLabel}</span>
               <Button
                 variant="ghost"
                 aria-label={inboxLabel}
                 aria-current={inboxActive ? "page" : undefined}
                 className={cn(
-                  "h-5 gap-1 rounded-sm bg-muted/60 px-1.5 text-[10px] font-medium text-muted-foreground shadow-none hover:bg-accent hover:text-foreground",
+                  "h-5 gap-1 rounded-sm bg-muted/60 px-1.5 text-2xs font-medium text-muted-foreground shadow-none hover:bg-accent hover:text-foreground",
                   inboxActive && "bg-accent text-foreground",
                 )}
                 onClick={() => navigateFromMenu(Routes.INBOX)}

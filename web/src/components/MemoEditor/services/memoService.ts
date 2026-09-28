@@ -37,6 +37,14 @@ function buildUpdateMask(
     mask.add("visibility");
     patch.visibility = state.metadata.visibility;
   }
+  // Placement and audience are validated together: a move always states the
+  // audience it lands with, so a Space-only audience never follows it implicitly.
+  if ((state.metadata.space || undefined) !== (prevMemo.space || undefined)) {
+    mask.add("space");
+    mask.add("visibility");
+    patch.space = state.metadata.space ?? "";
+    patch.visibility = state.metadata.visibility;
+  }
   if (!isEqual(allAttachments, prevMemo.attachments)) {
     mask.add("attachments");
     patch.attachments = toAttachmentReferences(allAttachments);
@@ -84,7 +92,7 @@ export const memoService = {
       parentMemoName?: string;
       space?: string;
     },
-  ): Promise<{ memoName: string; hasChanges: boolean }> {
+  ): Promise<{ memoName: string; hasChanges: boolean; moved?: boolean }> {
     // 1. Upload local files first
     const newAttachments = await uploadService.uploadFiles(state.localFiles);
     const allAttachments = [...state.metadata.attachments, ...newAttachments];
@@ -102,7 +110,7 @@ export const memoService = {
         memo: create(MemoSchema, patch as Record<string, unknown>),
         updateMask: create(FieldMaskSchema, { paths: Array.from(mask) }),
       });
-      return { memoName: memo.name, hasChanges: true };
+      return { memoName: memo.name, hasChanges: true, moved: mask.has("space") };
     }
 
     // 3. Create new memo or comment
@@ -137,6 +145,7 @@ export const memoService = {
       content: memo.content,
       metadata: {
         visibility: memo.visibility,
+        space: memo.space || undefined,
         attachments: memo.attachments,
         relations: memo.relations,
         location: memo.location,

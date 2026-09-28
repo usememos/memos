@@ -252,8 +252,8 @@
       "private-description": "Visível apenas para você",
       "protected-description": "Visível para usuários conectados",
       "public-description": "Visível para todos",
-      "space": "Espaço",
-      "space-description": "Visível para membros deste espaço"
+      "space": "Membros",
+      "space-description": "Todos em {{space}}"
     },
     "share": {
       "active-links": "Links de compartilhamento ativos",
@@ -287,15 +287,7 @@
     "parent-load-error": "Não foi possível carregar o memorando original.",
     "parent-unavailable": "Memorando original indisponível",
     "parent-unavailable-description": "Ele pode ter sido excluído ou você pode não ter mais acesso a ele.",
-    "move": {
-      "title": "Mover para o espaço",
-      "description": "Escolha onde este memorando pertence e quem pode lê-lo.",
-      "unassigned": "Não atribuído",
-      "confirm": "Mover",
-      "success": "Memorando movido",
-      "space-audience": "Os membros de {{space}} poderão ler este memorando.",
-      "history": "As reações existentes permanecem com este memorando. Os comentários e os memorandos vinculados mantêm suas próprias regras de acesso."
-    },
+    "moved": "Memorando movido",
     "back-to": "Voltar para {{source}}",
     "count-memos-updated-in-date": "{{count}} {{memos}} atualizado em {{date}}",
     "connections": "Conexões",
@@ -1002,7 +994,8 @@
     "create-success": "Espaço criado",
     "creator-admin-note": "Você será o primeiro administrador.",
     "current": "Espaço",
-    "no-space": "Sem espaço",
+    "add-to": "Adicionar a um espaço",
+    "remove-from": "Remover de {{space}}",
     "custom-id-conflict": "Este espaço UID já está em uso.",
     "custom-id-help": "Usado em links e solicitações API. Não pode ser alterado posteriormente. Use de 1 a 36 ASCII letras, números ou hífens; não comece nem termine com um hífen.",
     "custom-id-invalid": "Use de 1 a 36 ASCII letras, números ou hífens, sem hífen no início ou no fim.",

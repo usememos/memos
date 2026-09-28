@@ -285,8 +285,8 @@
       "private-description": "Widoczne tylko dla Ciebie",
       "protected-description": "Widoczne dla zalogowanych użytkowników",
       "public-description": "Widoczne dla wszystkich",
-      "space": "Przestrzeń",
-      "space-description": "Widoczne dla członków tej przestrzeni"
+      "space": "Członkowie",
+      "space-description": "Wszyscy w {{space}}"
     },
     "count-memos-updated-in-date": "{{count}} {{memos}} zaktualizowano na {{date}}",
     "newest-first": "Najpierw najnowsze",
@@ -300,15 +300,7 @@
     "parent-load-error": "Nie można załadować oryginalnej notatki.",
     "parent-unavailable": "Oryginalna notatka jest niedostępna",
     "parent-unavailable-description": "Mogła zostać usunięta lub nie masz już do niej dostępu.",
-    "move": {
-      "title": "Przenieś do przestrzeni",
-      "description": "Wybierz, gdzie ma się znaleźć ta notatka i kto może ją przeczytać.",
-      "unassigned": "Nieprzypisane",
-      "confirm": "Przenieś",
-      "success": "Notatka przeniesiona",
-      "space-audience": "Członkowie grupy {{space}} będą mogli przeczytać tę notatkę.",
-      "history": "Istniejące reakcje pozostają z tą notatką. Komentarze i powiązane notatki zachowują własne zasady dostępu."
-    },
+    "moved": "Notatka przeniesiona",
     "back-to": "Powrót do {{source}}",
     "connections": "Połączenia",
     "grid-compact-hint": "Układy siatki zawsze korzystają z kart kompaktowych.",
@@ -1002,7 +994,8 @@
     "create-success": "Utworzono przestrzeń",
     "creator-admin-note": "Zostaniesz pierwszym administratorem.",
     "current": "Przestrzeń",
-    "no-space": "Bez przestrzeni",
+    "add-to": "Dodaj do przestrzeni",
+    "remove-from": "Usuń z {{space}}",
     "custom-id-conflict": "Ta przestrzeń UID jest już używana.",
     "custom-id-help": "Używana w linkach i prośbach o API. Nie można jej później zmienić. Użyj 1–36 ASCII liter, cyfr lub łączników; nie zaczynaj ani nie kończ łącznikiem.",
     "custom-id-invalid": "Użyj 1–36 ASCII liter, cyfr lub myślników, bez myślnika na początku lub na końcu.",

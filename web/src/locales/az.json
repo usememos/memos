@@ -328,15 +328,7 @@
     "parent-load-error": "İlkin memonu yükləmək mümkün olmadı.",
     "parent-unavailable": "İlkin memo əlçatan deyil",
     "parent-unavailable-description": "Silinmiş ola bilər və ya artıq giriş icazəniz yoxdur.",
-    "move": {
-      "title": "Məkana köçür",
-      "description": "Bu memonun yerini və onu kimin oxuya biləcəyini seçin.",
-      "unassigned": "Təyin edilməyib",
-      "confirm": "Köçür",
-      "success": "Memo köçürüldü",
-      "space-audience": "{{space}} məkanının üzvləri bu memonu oxuya biləcəklər.",
-      "history": "Mövcud reaksiyalar bu memo ilə qalır. Şərhlər və əlaqəli memolar öz giriş qaydalarını saxlayır."
-    },
+    "moved": "Memo köçürüldü",
     "back-to": "{{source}} bölməsinə qayıt",
     "click-to-show-sensitive-content": "Həssas məzmunu göstərmək üçün klikləyin",
     "comment": {
@@ -416,8 +408,8 @@
       "protected-description": "Daxil olmuş istifadəçilərə görünür",
       "public": "İctimai",
       "public-description": "Hamıya görünür",
-      "space": "Sahə",
-      "space-description": "Bu sahənin üzvlərinə görünür"
+      "space": "Üzvlər",
+      "space-description": "{{space}} daxilində hamı"
     }
   },
   "message": {
@@ -998,7 +990,8 @@
     "create-success": "Sahə yaradıldı",
     "creator-admin-note": "Siz ilk admin olacaqsınız.",
     "current": "Sahə",
-    "no-space": "Məkan yoxdur",
+    "add-to": "Məkana əlavə et",
+    "remove-from": "{{space}} məkanından çıxar",
     "custom-id-conflict": "Bu Sahə UID-i artıq istifadədədir.",
     "custom-id-help": "Keçidlərdə və API sorğularında istifadə olunur. Sonradan dəyişdirilə bilməz. 1–36 ASCII hərf, rəqəm və ya defis işlədin; defislə başlamayın və bitirməyin.",
     "custom-id-invalid": "1–36 ASCII hərf, rəqəm və ya defis işlədin; əvvəldə və sonda defis olmasın.",

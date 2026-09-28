@@ -8,10 +8,8 @@ import {
   CopyIcon,
   Edit3Icon,
   FileTextIcon,
-  FolderInputIcon,
   LinkIcon,
   ListRestartIcon,
-  MoreHorizontalIcon,
   MoreVerticalIcon,
   TrashIcon,
 } from "lucide-react";
@@ -34,13 +32,12 @@ import { State } from "@/types/proto/api/v1/common_pb";
 import { useTranslate } from "@/utils/i18n";
 import { createMemoNavigationState } from "../MemoView/navigation";
 import { useMemoActionHandlers } from "./hooks";
-import MemoMoveDialog from "./MemoMoveDialog";
 import type { MemoActionMenuProps } from "./types";
 
 /**
  * The memo's action menu, in order of how often each action is reached for:
  * open, edit and pin first; then archive, tasks and the Copy submenu; Delete last.
- * Delete joins Move under More only when Move applies. An archived memo offers
+ * A memo's Space is changed in the editor, not here. An archived memo offers
  * only Restore and Delete, and a viewer only Open and Copy.
  */
 const MemoActionMenu = (props: MemoActionMenuProps) => {
@@ -49,7 +46,6 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
 
   // Dialog state
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [moveDialogOpen, setMoveDialogOpen] = useState(false);
 
   // Derived state
   const isComment = Boolean(memo.parent);
@@ -59,7 +55,6 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
 
   // Action handlers
   const {
-    canMove,
     isInMemoDetailPage,
     handleTogglePinMemoBtnClick,
     handleEditMemoClick,
@@ -175,27 +170,8 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
           ))}
         {copySubmenu}
 
-        {canMove ? (
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger>
-              <MoreHorizontalIcon />
-              {t("common.more")}
-            </DropdownMenuSubTrigger>
-            <DropdownMenuSubContent>
-              <DropdownMenuItem onClick={() => setMoveDialogOpen(true)}>
-                <FolderInputIcon />
-                {t("memo.move.title")}
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              {deleteItem}
-            </DropdownMenuSubContent>
-          </DropdownMenuSub>
-        ) : (
-          <>
-            <DropdownMenuSeparator />
-            {deleteItem}
-          </>
-        )}
+        <DropdownMenuSeparator />
+        {deleteItem}
       </>
     );
   };
@@ -208,8 +184,6 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
       <DropdownMenuContent align="end" sideOffset={2} size="sm">
         {renderItems()}
       </DropdownMenuContent>
-
-      {moveDialogOpen && <MemoMoveDialog memo={memo} onOpenChange={setMoveDialogOpen} />}
 
       {/* Delete confirmation dialog */}
       <ConfirmDialog

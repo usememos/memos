@@ -293,8 +293,8 @@
       "protected-description": "サインインしたユーザーに表示",
       "public": "公開メモ",
       "public-description": "全員に表示",
-      "space": "スペース",
-      "space-description": "このスペースのメンバーに表示"
+      "space": "メンバー",
+      "space-description": "{{space}} の全員"
     },
     "count-memos-updated-in-date": "{{count}} {{memos}} を {{date}} に更新",
     "newest-first": "新しい順",
@@ -309,15 +309,7 @@
     "parent-load-error": "元のメモを読み込めませんでした。",
     "parent-unavailable": "元のメモが利用できません",
     "parent-unavailable-description": "削除されたか、アクセス権がなくなった可能性があります。",
-    "move": {
-      "title": "スペースに移動",
-      "description": "このメモの保存場所と閲覧権限を持つユーザーを選択してください。",
-      "unassigned": "未割り当て",
-      "confirm": "移動",
-      "success": "メモが移動されました",
-      "space-audience": "{{space}} のメンバーがこのメモを閲覧できます。",
-      "history": "既存のリアクションはこのメモに残ります。コメントとリンクされたメモは、それぞれ独自のアクセスルールが適用されます。"
-    },
+    "moved": "メモが移動されました",
     "back-to": "{{source}}に戻る",
     "connections": "接続",
     "on-this-memo": "このメモについて",
@@ -1002,7 +994,8 @@
     "create-success": "スペースが作成されました",
     "creator-admin-note": "あなたが最初の管理者になります。",
     "current": "スペース",
-    "no-space": "スペースなし",
+    "add-to": "スペースに追加",
+    "remove-from": "{{space}} から外す",
     "custom-id-conflict": "このスペース UID は既に使用されています。",
     "custom-id-help": "リンクおよび API リクエストで使用されます。後から変更することはできません。1～36文字の ASCII の英字、数字、またはハイフンを使用してください。ハイフンで開始または終了しないでください。",
     "custom-id-invalid": "1～36文字の ASCII の英字、数字、またはハイフンを使用してください。ハイフンで開始または終了しないでください。",

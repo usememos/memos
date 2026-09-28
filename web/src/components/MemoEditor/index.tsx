@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { InstanceSetting_Key } from "@/types/proto/api/v1/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString } from "@/utils/memo";
+import { canManageMemo } from "@/utils/user";
 import { AudioRecorderPanel, EditorContent, EditorMetadata, FocusModeOverlay, TimestampPopover } from "./components";
 import { EditorSuggestions } from "./components/EditorSuggestions";
 import { FOCUS_MODE_STYLES, FORMATTING_TOOLBAR_STORAGE_KEY } from "./constants";
@@ -82,11 +83,12 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   const [isFormattingToolbarVisible, setFormattingToolbarVisible] = useLocalStorage(FORMATTING_TOOLBAR_STORAGE_KEY, false);
 
   const memoName = memo?.name;
-  // Existing resources own their placement. New replies are not placed
-  // independently; only a new top-level memo inherits its host's target.
+  // Replies are never placed independently: a comment's Space is its parent's.
+  // An edited top-level memo can change its Space; a new one can unless its
+  // host fixes the target (e.g. composing inside a Space).
   const draftSpace = useEditorSelector((s) => s.metadata.space);
-  const canChooseSpace = !memo && !parentMemoName && !defaultSpace;
-  const editorSpace = memo ? memo.space : parentMemoName ? undefined : (defaultSpace ?? draftSpace);
+  const canChooseSpace = memo ? !memo.parent && canManageMemo(memo, currentUser) : !parentMemoName && !defaultSpace;
+  const editorSpace = memo ? draftSpace : parentMemoName ? undefined : (defaultSpace ?? draftSpace);
   const canTranscribe = useMemo(() => {
     const providerId = aiSetting.transcription?.providerId ?? "";
     if (!providerId) return false;

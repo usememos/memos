@@ -284,8 +284,8 @@
       "private-description": "Viditelné pouze pro vás",
       "protected-description": "Viditelné pro přihlášené uživatele",
       "public-description": "Viditelné pro všechny",
-      "space": "Prostor",
-      "space-description": "Viditelné pro členy tohoto prostoru"
+      "space": "Členové",
+      "space-description": "Všichni v {{space}}"
     },
     "count-memos-updated-in-date": "{{count}} {{memos}} aktualizováno na {{date}}",
     "newest-first": "Nejdříve nejnovější",
@@ -300,15 +300,7 @@
     "parent-load-error": "Nepodařilo se načíst původní poznámku.",
     "parent-unavailable": "Původní poznámka není k dispozici",
     "parent-unavailable-description": "Možná byla smazána nebo k ní již nemáte přístup.",
-    "move": {
-      "title": "Přesunout do prostoru",
-      "description": "Vyberte, kam tato poznámka patří a kdo ji může číst.",
-      "unassigned": "Nepřiřazeno",
-      "confirm": "Přesunout",
-      "success": "Poznámka přesunuta",
-      "space-audience": "Členové {{space}} si budou moci tuto poznámku přečíst.",
-      "history": "Stávající reakce s touto poznámkou zůstávají. Komentáře a propojené poznámky si zachovávají vlastní pravidla přístupu."
-    },
+    "moved": "Poznámka přesunuta",
     "back-to": "Zpět na {{source}}",
     "connections": "Připojení",
     "grid-compact-hint": "Mřížkové rozvržení vždy používá kompaktní karty.",
@@ -1002,7 +994,8 @@
     "create-success": "Prostor vytvořen",
     "creator-admin-note": "Stanete se prvním administrátorem.",
     "current": "Prostor",
-    "no-space": "Bez prostoru",
+    "add-to": "Přidat do prostoru",
+    "remove-from": "Odebrat z {{space}}",
     "custom-id-conflict": "Tento prostor UID je již používán.",
     "custom-id-help": "Používá se v odkazech a požadavcích API. Později to nelze změnit. Používejte 1–36 ASCII písmen, číslic nebo pomlček; nezačínejte ani nekončete pomlčkou.",
     "custom-id-invalid": "Používejte 1–36 ASCII písmen, číslic nebo pomlček bez pomlčky na začátku nebo na konci.",

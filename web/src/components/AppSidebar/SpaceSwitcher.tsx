@@ -26,6 +26,7 @@ import { extractSpaceUidFromName } from "@/lib/space-display";
 import { cn } from "@/lib/utils";
 import { buildCollectionPath, getCreatorSwitchPath, getSpaceSwitchPath, ROUTES } from "@/router/routes";
 import { useTranslate } from "@/utils/i18n";
+import SidebarSectionHeader from "./SidebarSectionHeader";
 import { sidebarSurfaceVariants } from "./sidebar-layout";
 
 /** One half of the Home/Explore segmented control; the current half is raised. */
@@ -34,12 +35,12 @@ const BrowseLink = ({ to, current, icon: Icon, label }: { to: string; current: b
     to={to}
     aria-current={current ? "page" : undefined}
     className={cn(
-      "flex h-8 min-w-0 items-center gap-1.5 rounded-sm px-1.5 text-xs font-medium hover:bg-background/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40",
+      "flex h-7 min-w-0 items-center gap-1.5 rounded-sm px-1.5 text-ui font-medium hover:bg-background/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40",
       current && "bg-background ring-1 ring-border shadow-sm hover:bg-background",
     )}
   >
     <span className="flex size-5 shrink-0 items-center justify-center">
-      <Icon aria-hidden="true" className="size-4" strokeWidth={1.8} />
+      <Icon aria-hidden="true" className="size-3.5" strokeWidth={1.8} />
     </span>
     <span className="min-w-0 truncate">{label}</span>
   </Link>
@@ -158,21 +159,21 @@ function SpaceSwitcher({ className, size = "md" }: { className?: string; size?: 
         >
           {/* Guests have one collection, Explore, so they only get a way back to it from a creator. */}
           {(currentUser || isOtherCreator) && (
-            <div className="px-2 pb-1.5 pt-2">
+            <div className="flex flex-col p-1">
               {isOtherCreator ? (
                 <Link
                   to={returnPath}
-                  className="flex h-8 items-center gap-2 rounded-sm px-2 text-xs font-medium hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+                  className="flex h-7 items-center gap-1.5 rounded-sm px-2 text-ui hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
                 >
-                  <ArrowLeftIcon aria-hidden="true" className="size-3.5 rtl:rotate-180" strokeWidth={1.8} />
+                  <span className="flex size-5 shrink-0 items-center justify-center">
+                    <ArrowLeftIcon aria-hidden="true" className="size-3.5 rtl:rotate-180" strokeWidth={1.8} />
+                  </span>
                   {t("memo.back-to", { source: t(currentUser ? "common.home" : "common.explore") })}
                 </Link>
               ) : (
                 currentUser && (
                   <>
-                    <div className="mb-1.5 px-1 text-[10px] font-semibold tracking-[0.08em] text-muted-foreground uppercase">
-                      {t("common.browse")}
-                    </div>
+                    <SidebarSectionHeader>{t("common.browse")}</SidebarSectionHeader>
                     <nav aria-label={t("common.browse")} className="grid grid-cols-2 gap-0.5 rounded-md bg-muted p-0.5">
                       <BrowseLink
                         to={getCreatorSwitchPath(location, currentUser.username, currentUser.username)}
@@ -192,23 +193,28 @@ function SpaceSwitcher({ className, size = "md" }: { className?: string; size?: 
               )}
               {currentUser && (
                 <>
-                  <div className="mb-1 mt-2 flex h-6 items-center justify-between ps-0.5">
-                    <span className="text-[10px] font-semibold tracking-[0.08em] text-muted-foreground uppercase">{t("space.spaces")}</span>
-                    {!isOtherCreator && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        aria-label={t("space.create")}
-                        title={t("space.create")}
-                        onClick={() => {
-                          setOpen(false);
-                          setCreateOpen(true);
-                        }}
-                        className="size-6 text-muted-foreground hover:text-foreground"
-                      >
-                        <PlusIcon className="size-3.5" strokeWidth={1.8} />
-                      </Button>
-                    )}
+                  <div className="mt-1">
+                    <SidebarSectionHeader
+                      action={
+                        !isOtherCreator && (
+                          <Button
+                            variant="ghost"
+                            size="icon-sm"
+                            aria-label={t("space.create")}
+                            title={t("space.create")}
+                            onClick={() => {
+                              setOpen(false);
+                              setCreateOpen(true);
+                            }}
+                            className="me-[3px] text-muted-foreground hover:text-foreground"
+                          >
+                            <PlusIcon className="size-3.5" strokeWidth={1.8} />
+                          </Button>
+                        )
+                      }
+                    >
+                      {t("space.spaces")}
+                    </SidebarSectionHeader>
                   </div>
                   <Select
                     value={selectedSpaceName ?? "all"}
@@ -217,14 +223,18 @@ function SpaceSwitcher({ className, size = "md" }: { className?: string; size?: 
                     }}
                   >
                     <SelectTrigger
+                      size="sm"
                       aria-label={t("space.switch")}
                       title={selectedSpaceName ? spaceLabel : allSpacesLabel}
-                      className="h-8 w-full px-2 text-xs font-medium shadow-none"
+                      // The border takes 1px of the row inset; the gap matches the panel rows.
+                      className="w-full text-ui shadow-none data-[size=sm]:gap-1.5 data-[size=sm]:ps-[7px]"
                     >
                       {selectedSpaceName ? (
                         <SpaceMark icon={selectedSpace?.icon} size="sm" />
                       ) : (
-                        <AstroidIcon className="size-4 text-muted-foreground" />
+                        <span className="flex size-5 shrink-0 items-center justify-center">
+                          <AstroidIcon className="size-3.5 text-muted-foreground" strokeWidth={1.8} />
+                        </span>
                       )}
                       <span className="min-w-0 flex-1 truncate text-start">{selectedSpaceName ? spaceLabel : allSpacesLabel}</span>
                     </SelectTrigger>

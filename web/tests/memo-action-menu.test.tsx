@@ -7,7 +7,6 @@ import { State } from "@/types/proto/api/v1/common_pb";
 import { type Memo, MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
 
 const handlers = vi.hoisted(() => ({
-  canMove: true,
   isInMemoDetailPage: false,
   handleTogglePinMemoBtnClick: vi.fn(),
   handleEditMemoClick: vi.fn(),
@@ -22,10 +21,6 @@ const handlers = vi.hoisted(() => ({
 
 vi.mock("@/components/ConfirmDialog", () => ({
   default: () => null,
-}));
-
-vi.mock("@/components/MemoActionMenu/MemoMoveDialog", () => ({
-  default: () => <div role="dialog" aria-label="Move to Space" />,
 }));
 
 vi.mock("@/components/MemoActionMenu/hooks", () => ({
@@ -64,26 +59,14 @@ const memoOf = (fields: Parameters<typeof create<typeof MemoSchema>>[1] = {}) =>
 describe("MemoActionMenu", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    handlers.canMove = false;
     handlers.isInMemoDetailPage = false;
   });
 
-  it("orders an owner's memo actions and puts Delete last when Move does not apply", async () => {
-    await openMenu(memoOf());
+  it("orders an owner's memo actions and puts Delete last, with no Move entry", async () => {
+    await openMenu(memoOf({ space: "spaces/work" }));
     expect(menuItemLabels()).toEqual(["common.open", "common.edit", "common.pin", "common.archive", "common.copy", "common.delete"]);
     const separators = screen.getAllByRole("separator");
     expect(separators[separators.length - 1].nextElementSibling).toBe(screen.getByRole("menuitem", { name: "common.delete" }));
-  });
-
-  it.each(["move", "delete"])("keeps Move and Delete together under More when Move applies (%s)", async (action) => {
-    handlers.canMove = true;
-    await openMenu(memoOf());
-    expect(menuItemLabels()).toEqual(["common.open", "common.edit", "common.pin", "common.archive", "common.copy", "common.more"]);
-
-    fireEvent.click(screen.getByRole("menuitem", { name: "common.more" }));
-    fireEvent.click(await screen.findByRole("menuitem", { name: action === "move" ? "memo.move.title" : "common.delete" }));
-    if (action === "move") expect(await screen.findByRole("dialog", { name: "Move to Space" })).toBeInTheDocument();
-    else expect(handlers.handleDeleteMemoClick).toHaveBeenCalledOnce();
   });
 
   it("offers Unpin on a pinned memo", async () => {
@@ -129,7 +112,6 @@ describe("MemoActionMenu", () => {
   });
 
   it("offers only Restore and Delete on an archived memo", async () => {
-    handlers.canMove = true;
     render(
       <MemoryRouter>
         <MemoActionMenu memo={memoOf({ state: State.ARCHIVED, property: { hasTaskList: true } })} />

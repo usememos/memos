@@ -284,8 +284,8 @@
       "private-description": "Vidljivo samo vama",
       "protected-description": "Vidljivo prijavljenim korisnicima",
       "public-description": "Vidljivo svima",
-      "space": "Prostor",
-      "space-description": "Vidljivo članovima ovog prostora"
+      "space": "Članovi",
+      "space-description": "Svi u {{space}}"
     },
     "count-memos-updated-in-date": "{{count}} {{memos}} ažurirano na {{date}}",
     "newest-first": "Prvo najnoviji",
@@ -300,15 +300,7 @@
     "parent-load-error": "Nije moguće učitati izvornu bilješku.",
     "parent-unavailable": "Izvorna bilješka nije dostupna",
     "parent-unavailable-description": "Možda je izbrisana ili više nemate pristup.",
-    "move": {
-      "title": "Premjesti u prostor",
-      "description": "Odaberite gdje ova bilješka pripada i tko je može čitati.",
-      "unassigned": "Nedodijeljeno",
-      "confirm": "Premjesti",
-      "success": "Bilješka je premještena",
-      "space-audience": "Članovi {{space}} moći će čitati ovu bilješku.",
-      "history": "Postojeće reakcije ostaju s ovom bilješkom. Komentari i povezane bilješke zadržavaju vlastita pravila pristupa."
-    },
+    "moved": "Bilješka je premještena",
     "back-to": "Natrag na {{source}}",
     "connections": "Veze",
     "grid-compact-hint": "Mrežni rasporedi uvijek koriste kompaktne kartice.",
@@ -1002,7 +994,8 @@
     "create-success": "Prostor stvoren",
     "creator-admin-note": "Postat ćete prvi administrator.",
     "current": "Prostor",
-    "no-space": "Bez prostora",
+    "add-to": "Dodaj u prostor",
+    "remove-from": "Ukloni iz {{space}}",
     "custom-id-conflict": "Ovaj prostor UID već se koristi.",
     "custom-id-help": "Koristi se u poveznicama i API zahtjevima. Ne može se kasnije promijeniti. Koristite 1–36 ASCII slova, brojeva ili crtica; nemojte započinjati ili završavati crticom.",
     "custom-id-invalid": "Koristite 1–36 ASCII slova, brojeva ili crtica, bez crtice na početku ili kraju.",

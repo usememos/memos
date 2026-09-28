@@ -252,8 +252,8 @@
       "private-description": "مرئي لك فقط",
       "protected-description": "مرئي للمستخدمين المسجلين",
       "public-description": "مرئي للجميع",
-      "space": "المساحة",
-      "space-description": "مرئي لأعضاء هذه المساحة"
+      "space": "الأعضاء",
+      "space-description": "كل من في {{space}}"
     },
     "share": {
       "active-links": "روابط المشاركة النشطة",
@@ -287,15 +287,7 @@
     "parent-load-error": "تعذر تحميل المذكرة الأصلية.",
     "parent-unavailable": "المذكرة الأصلية غير متوفرة",
     "parent-unavailable-description": "ربما تم حذفها أو ربما لم يعد لديك صلاحية الوصول إليها.",
-    "move": {
-      "title": "نقل إلى مساحة",
-      "description": "اختر مكان هذه المذكرة ومن يمكنه قراءتها.",
-      "unassigned": "غير مُخصصة",
-      "confirm": "نقل",
-      "success": "تم نقل المذكرة",
-      "space-audience": "سيتمكن أعضاء {{space}} من قراءة هذه المذكرة.",
-      "history": "تبقى التفاعلات الموجودة مرتبطة بهذه المذكرة. تحتفظ التعليقات والمذكرات المرتبطة بقواعد الوصول الخاصة بها."
-    },
+    "moved": "تم نقل المذكرة",
     "back-to": "العودة إلى {{source}}",
     "count-memos-updated-in-date": "{{count}} {{memos}} تم التحديث في {{date}}",
     "connections": "الاتصالات",
@@ -1002,7 +994,8 @@
     "create-success": "تم إنشاء المساحة",
     "creator-admin-note": "ستصبح أول مدير.",
     "current": "مساحة",
-    "no-space": "بلا مساحة",
+    "add-to": "إضافة إلى مساحة",
+    "remove-from": "إزالة من {{space}}",
     "custom-id-conflict": "هذه المساحة UID مُستخدمة بالفعل.",
     "custom-id-help": "مُستخدمة في الروابط وطلبات API. لا يمكن تغييرها لاحقًا. استخدم من 1 إلى 36 حرفًا أو رقمًا أو واصلة ASCII؛ لا تبدأ أو تنتهي بواصلة.",
     "custom-id-invalid": "استخدم من 1 إلى 36 حرفًا أو رقمًا أو واصلة ASCII، بدون واصلة في البداية أو النهاية.",

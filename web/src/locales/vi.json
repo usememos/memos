@@ -252,8 +252,8 @@
       "private-description": "Chỉ hiển thị với bạn",
       "protected-description": "Hiển thị với người dùng đã đăng nhập",
       "public-description": "Hiển thị với mọi người",
-      "space": "Không gian",
-      "space-description": "Hiển thị với các thành viên của không gian này"
+      "space": "Thành viên",
+      "space-description": "Mọi người trong {{space}}"
     },
     "share": {
       "active-links": "Liên kết chia sẻ đang hoạt động",
@@ -287,15 +287,7 @@
     "parent-load-error": "Không thể tải bản ghi nhớ gốc.",
     "parent-unavailable": "Bản ghi nhớ gốc không khả dụng",
     "parent-unavailable-description": "Có thể bản ghi nhớ đã bị xóa hoặc bạn không còn quyền truy cập nữa.",
-    "move": {
-      "title": "Di chuyển đến Không gian",
-      "description": "Chọn nơi bản ghi nhớ này thuộc về và ai có thể đọc nó.",
-      "unassigned": "Chưa được chỉ định",
-      "confirm": "Di chuyển",
-      "success": "Bản ghi nhớ đã được di chuyển",
-      "space-audience": "Các thành viên của {{space}} sẽ có thể đọc bản ghi nhớ này.",
-      "history": "Các phản hồi hiện có vẫn giữ nguyên với bản ghi nhớ này. Bình luận và các bản ghi nhớ được liên kết vẫn giữ nguyên quy tắc truy cập riêng."
-    },
+    "moved": "Bản ghi nhớ đã được di chuyển",
     "back-to": "Quay lại {{source}}",
     "count-memos-updated-in-date": "{{count}} {{memos}} được cập nhật vào {{date}}",
     "connections": "Kết nối",
@@ -1002,7 +994,8 @@
     "create-success": "Không gian đã được tạo",
     "creator-admin-note": "Bạn sẽ trở thành quản trị viên đầu tiên.",
     "current": "Không gian",
-    "no-space": "Không có không gian",
+    "add-to": "Thêm vào không gian",
+    "remove-from": "Xóa khỏi {{space}}",
     "custom-id-conflict": "Không gian UID này đã được sử dụng.",
     "custom-id-help": "Được sử dụng trong các liên kết và yêu cầu API. Không thể thay đổi sau này. Sử dụng 1–36 ASCII chữ cái, số hoặc dấu gạch ngang; không bắt đầu hoặc kết thúc bằng dấu gạch ngang.",
     "custom-id-invalid": "Sử dụng 1–36 ASCII chữ cái, số hoặc dấu gạch ngang, không có dấu gạch ngang ở đầu hoặc cuối.",

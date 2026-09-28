@@ -284,8 +284,8 @@
       "private-description": "Bare synlig for deg",
       "protected-description": "Synlig for påloggede brukere",
       "public-description": "Synlig for alle",
-      "space": "Rom",
-      "space-description": "Synlig for medlemmer av dette området"
+      "space": "Medlemmer",
+      "space-description": "Alle i {{space}}"
     },
     "count-memos-updated-in-date": "{{count}} {{memos}} oppdatert på {{date}}",
     "newest-first": "Nyeste først",
@@ -300,15 +300,7 @@
     "parent-load-error": "Kunne ikke laste inn det originale notatet.",
     "parent-unavailable": "Originalt notat er ikke tilgjengelig",
     "parent-unavailable-description": "Det kan ha blitt slettet, eller du har kanskje ikke lenger tilgang.",
-    "move": {
-      "title": "Flytt til rom",
-      "description": "Velg hvor dette notatet hører hjemme og hvem som kan lese det.",
-      "unassigned": "Ikke tilordnet",
-      "confirm": "Flytt",
-      "success": "Notat flyttet",
-      "space-audience": "Medlemmer av {{space}} vil kunne lese dette notatet.",
-      "history": "Eksisterende reaksjoner forblir med dette notatet. Kommentarer og koblede notater beholder sine egne tilgangsregler."
-    },
+    "moved": "Notat flyttet",
     "back-to": "Tilbake til {{source}}",
     "connections": "Tilkoblinger",
     "grid-compact-hint": "Rutenettoppsett bruker alltid kompakte kort.",
@@ -1002,7 +994,8 @@
     "create-success": "Rom opprettet",
     "creator-admin-note": "Du blir den første administratoren.",
     "current": "Rom",
-    "no-space": "Ingen plass",
+    "add-to": "Legg til i rom",
+    "remove-from": "Fjern fra {{space}}",
     "custom-id-conflict": "Dette rommet UID er allerede i bruk.",
     "custom-id-help": "Brukes i lenker og API-forespørsler. Kan ikke endres senere. Bruk 1–36 ASCII bokstaver, tall eller bindestreker; ikke start eller slutt med bindestrek.",
     "custom-id-invalid": "Bruk 1–36 ASCII bokstaver, tall eller bindestreker, uten bindestrek i begynnelsen eller slutten.",

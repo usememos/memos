@@ -299,8 +299,8 @@
       "protected-description": "对登录用户可见",
       "public": "公开",
       "public-description": "对所有人可见",
-      "space": "空间",
-      "space-description": "此空间成员可见"
+      "space": "成员",
+      "space-description": "{{space}} 的所有人"
     },
     "share": {
       "active-links": "活跃的分享链接",
@@ -339,15 +339,7 @@
     "parent-load-error": "无法加载原始备忘录。",
     "parent-unavailable": "原始备忘录不可用",
     "parent-unavailable-description": "它可能已被删除，或者您可能已失去访问权限。",
-    "move": {
-      "title": "移动到空间",
-      "description": "选择此备忘录的归属位置以及谁可以阅读它。",
-      "unassigned": "未分配",
-      "confirm": "移动",
-      "success": "备忘录已移动",
-      "space-audience": "{{space}} 的成员将可以阅读此备忘录。",
-      "history": "现有表态会保留在此备忘录上。评论和关联的备忘录仍遵循各自的访问规则。"
-    }
+    "moved": "备忘录已移动"
   },
   "message": {
     "archived-successfully": "归档成功",
@@ -988,7 +980,8 @@
     "create-success": "空间已创建",
     "creator-admin-note": "您将成为第一个管理员。",
     "current": "空间",
-    "no-space": "不属于任何空间",
+    "add-to": "添加到空间",
+    "remove-from": "从 {{space}} 移除",
     "custom-id-conflict": "此空间 UID 已被使用。",
     "description-placeholder": "此空间的用途是什么？",
     "load-error": "无法加载空间",

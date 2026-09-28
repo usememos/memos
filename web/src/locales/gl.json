@@ -284,8 +284,8 @@
       "private-description": "Só visible para ti",
       "protected-description": "Visible para os usuarios que iniciaron sesión",
       "public-description": "Visible para todos",
-      "space": "Espazo",
-      "space-description": "Visible para os membros deste espazo"
+      "space": "Membros",
+      "space-description": "Todos en {{space}}"
     },
     "count-memos-updated-in-date": "{{count}} {{memos}} actualizado en {{date}}",
     "newest-first": "O máis novo primeiro",
@@ -300,15 +300,7 @@
     "parent-load-error": "Non se puido cargar a nota orixinal.",
     "parent-unavailable": "Nota orixinal non dispoñible",
     "parent-unavailable-description": "Pode que se eliminase ou que xa non teñas acceso.",
-    "move": {
-      "title": "Mover ao espazo",
-      "description": "Escolle onde pertence esta nota e quen pode lela.",
-      "unassigned": "Sen asignar",
-      "confirm": "Mover",
-      "success": "Nota movida",
-      "space-audience": "Os membros de {{space}} poderán ler esta nota.",
-      "history": "As reaccións existentes permanecen con esta nota. Os comentarios e as notas vinculadas manteñen as súas propias regras de acceso."
-    },
+    "moved": "Nota movida",
     "back-to": "Volver a {{source}}",
     "connections": "Conexións",
     "grid-compact-hint": "Os deseños de cuadrícula sempre usan tarxetas compactas.",
@@ -1002,7 +994,8 @@
     "create-success": "Espazo creado",
     "creator-admin-note": "Converteraste no primeiro administrador.",
     "current": "Espazo",
-    "no-space": "Sen espazo",
+    "add-to": "Engadir a un espazo",
+    "remove-from": "Quitar de {{space}}",
     "custom-id-conflict": "Este espazo UID xa está en uso.",
     "custom-id-help": "Úsase en ligazóns e solicitudes API. Non se pode cambiar máis tarde. Usa de 1 a 36 ASCII letras, números ou guións; non comeces nin remates cun guión.",
     "custom-id-invalid": "Usa de 1 a 36 ASCII letras, números ou guións, sen un guión ao principio ou ao final.",

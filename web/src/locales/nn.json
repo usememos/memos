@@ -354,15 +354,7 @@
     "layout-list-description": "Éin kolonne med høveleg lesebreidd",
     "link-preview": "Førehandsvising av lenkje",
     "load-more": "Last fleire",
-    "move": {
-      "confirm": "Flytt",
-      "description": "Vel kvar dette notatet høyrer heime, og kven som kan lesa det.",
-      "history": "Reaksjonane som alt finst, fylgjer notatet. Kommentarar og tilknytte notat held på sine eigne åtgangsreglar.",
-      "space-audience": "Medlemer i {{space}} vil kunne lesa dette notatet.",
-      "success": "Notatet er flytt",
-      "title": "Flytt til rom",
-      "unassigned": "Utan rom"
-    },
+    "moved": "Notatet er flytt",
     "new-badge": "Nytt",
     "newest-first": "Nyaste fyrst",
     "oldest-first": "Eldste fyrst",
@@ -416,8 +408,8 @@
       "protected-description": "Synleg for innlogga brukarar",
       "public": "Offentleg",
       "public-description": "Synleg for alle",
-      "space": "Rom",
-      "space-description": "Synleg for medlemer i dette rommet"
+      "space": "Medlemer",
+      "space-description": "Alle i {{space}}"
     }
   },
   "message": {
@@ -1006,7 +998,8 @@
     "load-error": "Klarte diverre ikkje å laste romma",
     "loading": "Lastar rom…",
     "name-placeholder": "t.d. Produkt",
-    "no-space": "Utan rom",
+    "add-to": "Legg til i rom",
+    "remove-from": "Fjern frå {{space}}",
     "spaces": "Rom",
     "switch": "Byt rom",
     "unavailable": "Dette rommet finst ikkje, eller du har ikkje åtgang til det."

@@ -71,7 +71,7 @@ describe("User menu panel", () => {
     const inbox = within(accountHeader).getByRole("button", { name: "common.inbox" });
     const archived = screen.getByRole("button", { name: "common.archived" });
     expect(screen.queryByText("setting.sso.account")).not.toBeInTheDocument();
-    expect(inbox).toHaveClass("h-5", "text-[10px]");
+    expect(inbox).toHaveClass("h-5", "text-2xs");
     expect(inbox.compareDocumentPosition(archived) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(archived.nextElementSibling).toBe(screen.getByRole("button", { name: "common.settings" }));
     expect(archived).toHaveClass("bg-accent");

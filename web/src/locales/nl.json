@@ -284,8 +284,8 @@
       "private-description": "Alleen voor u zichtbaar",
       "protected-description": "Zichtbaar voor aangemelde gebruikers",
       "public-description": "Zichtbaar voor iedereen",
-      "space": "Ruimte",
-      "space-description": "Zichtbaar voor leden van deze ruimte"
+      "space": "Leden",
+      "space-description": "Iedereen in {{space}}"
     },
     "count-memos-updated-in-date": "{{count}} {{memos}} bijgewerkt op {{date}}",
     "newest-first": "Nieuwste eerst",
@@ -300,15 +300,7 @@
     "parent-load-error": "De originele memo kon niet worden geladen.",
     "parent-unavailable": "Originele memo niet beschikbaar",
     "parent-unavailable-description": "Deze is mogelijk verwijderd of je hebt er geen toegang meer toe.",
-    "move": {
-      "title": "Verplaatsen naar ruimte",
-      "description": "Kies waar deze memo thuishoort en wie hem kan lezen.",
-      "unassigned": "Niet toegewezen",
-      "confirm": "Verplaatsen",
-      "success": "Memo verplaatst",
-      "space-audience": "Leden van {{space}} kunnen deze memo lezen.",
-      "history": "Bestaande reacties blijven bij deze memo. Opmerkingen en gekoppelde memo's behouden hun eigen toegangsregels."
-    },
+    "moved": "Memo verplaatst",
     "back-to": "Terug naar {{source}}",
     "connections": "Verbindingen",
     "grid-compact-hint": "Rasterindelingen gebruiken altijd compacte kaarten.",
@@ -1002,7 +994,8 @@
     "create-success": "Ruimte aangemaakt",
     "creator-admin-note": "Je wordt de eerste beheerder.",
     "current": "Ruimte",
-    "no-space": "Geen ruimte",
+    "add-to": "Toevoegen aan ruimte",
+    "remove-from": "Verwijderen uit {{space}}",
     "custom-id-conflict": "Deze ruimte UID is al in gebruik.",
     "custom-id-help": "Gebruikt in links en API-verzoeken. Kan later niet meer worden gewijzigd. Gebruik 1–36 ASCII letters, cijfers of koppeltekens; begin of eindig niet met een koppelteken.",
     "custom-id-invalid": "Gebruik 1–36 ASCII letters, cijfers of koppeltekens, zonder koppelteken aan het begin of einde.",

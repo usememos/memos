@@ -69,6 +69,10 @@ export function useMemoSave({
 
       // Prevent the autosave unmount flush from restoring the saved draft.
       discardDraft();
+      // A moved memo may leave the feed it was edited in; say where it went.
+      if (result.moved) {
+        toast.success(t("memo.moved"));
+      }
 
       const invalidationPromises: Promise<unknown>[] = [
         queryClient.invalidateQueries({ queryKey: memoKeys.lists() }),

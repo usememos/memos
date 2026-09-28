@@ -284,8 +284,8 @@
       "private-description": "Endast synlig för dig",
       "protected-description": "Synlig för inloggade användare",
       "public-description": "Synlig för alla",
-      "space": "Utrymme",
-      "space-description": "Synlig för medlemmar i detta utrymme"
+      "space": "Medlemmar",
+      "space-description": "Alla i {{space}}"
     },
     "count-memos-updated-in-date": "{{count}} {{memos}} uppdaterad på {{date}}",
     "newest-first": "Nyaste först",
@@ -300,15 +300,7 @@
     "parent-load-error": "Kunde inte läsa in originalmemot.",
     "parent-unavailable": "Originalmemot är inte tillgängligt",
     "parent-unavailable-description": "Det kan ha tagits bort eller så har du inte längre åtkomst.",
-    "move": {
-      "title": "Flytta till utrymme",
-      "description": "Välj var detta memot hör hemma och vem som kan läsa det.",
-      "unassigned": "Ej tilldelat",
-      "confirm": "Flytta",
-      "success": "Memot flyttat",
-      "space-audience": "Medlemmar i {{space}} kommer att kunna läsa detta memot.",
-      "history": "Befintliga reaktioner finns kvar i detta memot. Kommentarer och länkade memot behåller sina egna åtkomstregler."
-    },
+    "moved": "Memot flyttat",
     "back-to": "Tillbaka till {{source}}",
     "connections": "Anslutningar",
     "grid-compact-hint": "Rutnätslayouter använder alltid kompakta kort.",
@@ -1002,7 +994,8 @@
     "create-success": "Utrymme skapat",
     "creator-admin-note": "Du blir den första administratören.",
     "current": "Utrymme",
-    "no-space": "Inget utrymme",
+    "add-to": "Lägg till i utrymme",
+    "remove-from": "Ta bort från {{space}}",
     "custom-id-conflict": "Detta utrymme UID används redan.",
     "custom-id-help": "Används i länkar och API-förfrågningar. Kan inte ändras senare. Använd 1–36 ASCII bokstäver, siffror eller bindestreck; börja eller sluta inte med ett bindestreck.",
     "custom-id-invalid": "Använd 1–36 ASCII bokstäver, siffror eller bindestreck, utan bindestreck i början eller slutet.",

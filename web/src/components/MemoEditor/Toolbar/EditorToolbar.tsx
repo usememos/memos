@@ -9,8 +9,8 @@ import { primaryModifierGlyph } from "@/utils/platform";
 import { validationService } from "../services";
 import { useEditorContext, useEditorSelector } from "../state";
 import type { EditorToolbarProps } from "../types";
+import AudienceMenu from "./AudienceMenu";
 import InsertMenu from "./InsertMenu";
-import MemoSettings from "./MemoSettings";
 
 /**
  * Shortcut chip inside the commit button. While saving, a spinner takes the
@@ -106,7 +106,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
           viewToggles={viewToggles}
           onInsertImages={onInsertImages}
         />
-        <MemoSettings
+        <AudienceMenu
           value={visibility}
           space={space}
           onChange={handleVisibilityChange}

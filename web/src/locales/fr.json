@@ -284,8 +284,8 @@
       "private-description": "Visible uniquement pour vous",
       "protected-description": "Visible pour les utilisateurs connectés",
       "public-description": "Visible pour tous",
-      "space": "Espace",
-      "space-description": "Visible pour les membres de cet espace"
+      "space": "Membres",
+      "space-description": "Tout le monde dans {{space}}"
     },
     "count-memos-updated-in-date": "{{count}} {{memos}} mis à jour sur {{date}}",
     "newest-first": "Le plus récent en premier",
@@ -300,15 +300,7 @@
     "parent-load-error": "Impossible de charger le mémo original.",
     "parent-unavailable": "Mémo original indisponible.",
     "parent-unavailable-description": "Il a peut-être été supprimé ou vous n'y avez plus accès.",
-    "move": {
-      "title": "Déplacer vers l'espace",
-      "description": "Choisissez l'emplacement de ce mémo et les personnes autorisées à le lire.",
-      "unassigned": "Non attribué",
-      "confirm": "Déplacer",
-      "success": "Mémo déplacé",
-      "space-audience": "Les membres de {{space}} pourront lire ce mémo.",
-      "history": "Les réactions existantes sont conservées pour ce mémo. Les commentaires et les notes liées ont leurs propres règles d'accès."
-    },
+    "moved": "Mémo déplacé",
     "back-to": "Retour à {{source}}",
     "connections": "Connexions",
     "grid-compact-hint": "Les mises en page en grille utilisent toujours des cartes compactes.",
@@ -1002,7 +994,8 @@
     "create-success": "Espace créé",
     "creator-admin-note": "Vous serez le premier administrateur.",
     "current": "Espace",
-    "no-space": "Aucun espace",
+    "add-to": "Ajouter à un espace",
+    "remove-from": "Retirer de {{space}}",
     "custom-id-conflict": "Cet espace UID est déjà utilisé.",
     "custom-id-help": "Utilisé dans les liens et les requêtes API. Il ne peut pas être modifié ultérieurement. Utilisez 1 à 36 ASCII lettres, chiffres ou tirets ; ne commencez ni ne terminez par un tiret.",
     "custom-id-invalid": "Utilisez 1 à 36 ASCII lettres, chiffres ou tirets, sans tiret au début ni à la fin.",

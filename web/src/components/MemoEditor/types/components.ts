@@ -124,7 +124,7 @@ export interface InsertMenuProps {
   onInsertImages: (files: File[]) => void;
 }
 
-export interface MemoSettingsProps {
+export interface AudienceMenuProps {
   value: Visibility;
   onChange: (visibility: Visibility) => void;
   /** The memo's actual placement; independent of the ambient collection scope. */

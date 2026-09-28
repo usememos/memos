@@ -284,8 +284,8 @@
       "private-description": "Solo visible para ti",
       "protected-description": "Visible para usuarios registrados",
       "public-description": "Visible para todos",
-      "space": "Espacio",
-      "space-description": "Visible para los miembros de este espacio"
+      "space": "Miembros",
+      "space-description": "Todos en {{space}}"
     },
     "count-memos-updated-in-date": "{{count}} {{memos}} actualizado en {{date}}",
     "newest-first": "Lo nuevo primero",
@@ -300,15 +300,7 @@
     "parent-load-error": "No se pudo cargar el memorándum original.",
     "parent-unavailable": "Memorándum original no disponible.",
     "parent-unavailable-description": "Es posible que se haya eliminado o que ya no tengas acceso.",
-    "move": {
-      "title": "Mover a un espacio",
-      "description": "Elige dónde pertenece este memorándum y quién puede leerlo.",
-      "unassigned": "Sin asignar.",
-      "confirm": "Mover.",
-      "success": "Memorándum movido.",
-      "space-audience": "Los miembros de {{space}} podrán leer este memorándum.",
-      "history": "Las reacciones existentes permanecen con este memorándum. Los comentarios y las notas vinculadas conservan sus propias reglas de acceso."
-    },
+    "moved": "Memorándum movido.",
     "back-to": "Volver a {{source}}",
     "connections": "Conexiones",
     "grid-compact-hint": "Los diseños de cuadrícula siempre utilizan tarjetas compactas.",
@@ -1002,7 +994,8 @@
     "create-success": "Espacio creado",
     "creator-admin-note": "Serás el primer administrador.",
     "current": "Espacio",
-    "no-space": "Sin espacio",
+    "add-to": "Añadir a un espacio",
+    "remove-from": "Quitar de {{space}}",
     "custom-id-conflict": "Este espacio UID ya está en uso.",
     "custom-id-help": "Se usa en enlaces y solicitudes API. No se puede modificar posteriormente. Use de 1 a 36 ASCII letras, números o guiones; no comience ni termine con un guion.",
     "custom-id-invalid": "Use de 1 a 36 ASCII letras, números o guiones, sin guion al principio ni al final.",

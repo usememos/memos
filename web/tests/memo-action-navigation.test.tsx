@@ -11,14 +11,9 @@ const mocks = vi.hoisted(() => ({
   updateMemo: vi.fn(),
   deleteMemo: vi.fn(),
   copy: vi.fn(),
-  spaces: [] as { name: string }[],
 }));
 
 vi.mock("copy-to-clipboard", () => ({ default: mocks.copy }));
-
-vi.mock("@/contexts/SpaceContext", () => ({
-  useSpaceContext: () => ({ spaces: mocks.spaces }),
-}));
 
 vi.mock("@/hooks/useMemoQueries", () => ({
   memoKeys: {
@@ -33,8 +28,6 @@ vi.mock("@/hooks/useUserQueries", () => ({
   userKeys: { stats: () => ["users", "stats"] },
 }));
 
-vi.mock("@/hooks/useCurrentUser", () => ({ default: () => ({ name: "users/alice" }) }));
-
 vi.mock("@/contexts/InstanceContext", () => ({
   useInstance: () => ({ profile: { instanceUrl: "" } }),
 }));
@@ -47,17 +40,16 @@ vi.mock("react-hot-toast", () => ({
   default: { success: vi.fn(), error: vi.fn() },
 }));
 
-const createMemo = (state: State, parent = "", space = ""): Memo =>
+const createMemo = (state: State, parent = ""): Memo =>
   ({
     name: "memos/1",
     creator: "users/alice",
     content: "memo",
     state,
     parent,
-    space,
   }) as Memo;
 
-const renderActions = (state: State, parent = "", parentPage?: string, space = "") => {
+const renderActions = (state: State, parent = "", parentPage?: string) => {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   const invalidateQueries = vi.spyOn(queryClient, "invalidateQueries");
   const wrapper = ({ children }: { children: ReactNode }) => (
@@ -70,7 +62,7 @@ const renderActions = (state: State, parent = "", parentPage?: string, space = "
     () => {
       const location = useLocation();
       const handlers = useMemoActionHandlers({
-        memo: createMemo(state, parent, space),
+        memo: createMemo(state, parent),
         parentPage,
         setDeleteDialogOpen: vi.fn(),
       });
@@ -86,7 +78,6 @@ describe("Memo detail mutation navigation", () => {
     mocks.updateMemo.mockReset().mockResolvedValue(undefined);
     mocks.deleteMemo.mockReset().mockResolvedValue(undefined);
     mocks.copy.mockReset();
-    mocks.spaces = [];
   });
 
   it.each([
@@ -137,16 +128,5 @@ describe("Memo detail mutation navigation", () => {
     const { result } = renderActions(State.NORMAL, parent);
     act(() => result.current.handlers.handleCopyLink());
     expect(mocks.copy).toHaveBeenCalledWith(link);
-  });
-
-  it.each([
-    ["no Space and not in one", [], "", "", false],
-    ["a Space to move to", [{ name: "spaces/product" }], "", "", true],
-    ["a memo already in a Space", [], "spaces/product", "", true],
-    ["a comment", [{ name: "spaces/product" }], "", "memos/parent", false],
-  ] as const)("offers Move only when it applies: %s", (_, spaces, space, parent, expected) => {
-    mocks.spaces = [...spaces];
-    const { result } = renderActions(State.NORMAL, parent, undefined, space);
-    expect(result.current.handlers.canMove).toBe(expected);
   });
 });

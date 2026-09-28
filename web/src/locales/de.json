@@ -284,8 +284,8 @@
       "private-description": "Nur für Sie sichtbar",
       "protected-description": "Für angemeldete Benutzer sichtbar",
       "public-description": "Für alle sichtbar",
-      "space": "Bereich",
-      "space-description": "Für Mitglieder dieses Bereichs sichtbar"
+      "space": "Mitglieder",
+      "space-description": "Alle in {{space}}"
     },
     "count-memos-updated-in-date": "{{count}} {{memos}} aktualisiert auf {{date}}",
     "newest-first": "Das Neueste zuerst",
@@ -300,15 +300,7 @@
     "parent-load-error": "Original-Memo konnte nicht geladen werden.",
     "parent-unavailable": "Original-Memo nicht verfügbar",
     "parent-unavailable-description": "Es wurde möglicherweise gelöscht oder Sie haben keinen Zugriff mehr darauf.",
-    "move": {
-      "title": "In Bereich verschieben",
-      "description": "Wählen Sie, wo dieses Memo hingehört und wer es lesen kann.",
-      "unassigned": "Nicht zugewiesen",
-      "confirm": "Verschieben",
-      "success": "Memo verschoben",
-      "space-audience": "Mitglieder von {{space}} können dieses Memo lesen.",
-      "history": "Vorhandene Reaktionen bleiben diesem Memo zugeordnet. Kommentare und verknüpfte Memos behalten ihre eigenen Zugriffsregeln."
-    },
+    "moved": "Memo verschoben",
     "back-to": "Zurück zu {{source}}",
     "connections": "Verbindungen",
     "grid-compact-hint": "Rasterlayouts verwenden immer kompakte Karten.",
@@ -1002,7 +994,8 @@
     "create-success": "Bereich erstellt",
     "creator-admin-note": "Sie werden der erste Administrator.",
     "current": "Bereich",
-    "no-space": "Kein Bereich",
+    "add-to": "Zu Bereich hinzufügen",
+    "remove-from": "Aus {{space}} entfernen",
     "custom-id-conflict": "Diese Bereichs-UID wird bereits verwendet.",
     "custom-id-help": "Wird in Links und API-Anfragen verwendet. Kann später nicht geändert werden. Verwenden Sie 1–36 ASCII Buchstaben, Zahlen oder Bindestriche; beginnen oder enden Sie nicht mit einem Bindestrich.",
     "custom-id-invalid": "Verwenden Sie 1–36 ASCII Buchstaben, Zahlen oder Bindestriche, ohne Bindestrich am Anfang oder Ende.",

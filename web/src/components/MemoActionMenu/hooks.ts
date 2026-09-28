@@ -4,8 +4,6 @@ import { useCallback } from "react";
 import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
 import { useInstance } from "@/contexts/InstanceContext";
-import { useSpaceContext } from "@/contexts/SpaceContext";
-import useCurrentUser from "@/hooks/useCurrentUser";
 import { memoKeys, useDeleteMemo, useUpdateMemo } from "@/hooks/useMemoQueries";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { userKeys } from "@/hooks/useUserQueries";
@@ -16,7 +14,6 @@ import { State } from "@/types/proto/api/v1/common_pb";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { checkAllTasks, uncheckAllTasks } from "@/utils/markdown-task-actions";
-import { canManageMemo } from "@/utils/user";
 import { isMemoDetailPath } from "../MemoView/navigation";
 
 interface UseMemoActionHandlersOptions {
@@ -29,12 +26,6 @@ interface UseMemoActionHandlersOptions {
 export const useMemoActionHandlers = ({ memo, parentPage, onEdit, setDeleteDialogOpen }: UseMemoActionHandlersOptions) => {
   const t = useTranslate();
   const location = useLocation();
-  const currentUser = useCurrentUser();
-  const { spaces } = useSpaceContext();
-  // Move needs somewhere to go: another Space to join, or out of the current one.
-  const hasMoveDestination = spaces.length > 0 || Boolean(memo.space);
-  const canMove =
-    !memo.parent && canManageMemo(memo, currentUser) && !location.pathname.startsWith(ROUTES.SHARED_MEMO) && hasMoveDestination;
   const navigateTo = useNavigateTo();
   const queryClient = useQueryClient();
   const { profile } = useInstance();
@@ -165,7 +156,6 @@ export const useMemoActionHandlers = ({ memo, parentPage, onEdit, setDeleteDialo
   }, [memo.name, memo.parent, t, isInMemoDetailPage, parentPage, navigateTo, memoUpdatedCallback, deleteMemo, queryClient]);
 
   return {
-    canMove,
     isInMemoDetailPage,
     handleTogglePinMemoBtnClick,
     handleEditMemoClick,

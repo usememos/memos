@@ -284,8 +284,8 @@
       "private-description": "Csak Önnek látható",
       "protected-description": "Bejelentkezett felhasználók számára látható",
       "public-description": "Mindenki számára látható",
-      "space": "Tér",
-      "space-description": "A tér tagjai számára látható"
+      "space": "Tagok",
+      "space-description": "Mindenki itt: {{space}}"
     },
     "count-memos-updated-in-date": "{{count}} Az {{memos}} frissítve az {{date}}-en",
     "newest-first": "Először a legújabb",
@@ -300,15 +300,7 @@
     "parent-load-error": "Az eredeti feljegyzés nem tölthető be.",
     "parent-unavailable": "Az eredeti feljegyzés nem érhető el.",
     "parent-unavailable-description": "Lehet, hogy törölték, vagy már nincs hozzáférésed.",
-    "move": {
-      "title": "Áthelyezés a térbe.",
-      "description": "Válaszd ki, hová tartozik ez a feljegyzés, és ki olvashatja el.",
-      "unassigned": "Nincs hozzárendelve.",
-      "confirm": "Áthelyezés.",
-      "success": "Feljegyzés áthelyezve.",
-      "space-audience": "A(z) {{space}} tagjai olvashatják ezt a feljegyzést.",
-      "history": "A meglévő reakciók ehhez a feljegyzéshez maradnak. A megjegyzések és a kapcsolódó feljegyzések megtartják a saját hozzáférési szabályaikat."
-    },
+    "moved": "Feljegyzés áthelyezve.",
     "back-to": "Vissza a {{source}}-hez",
     "connections": "Kapcsolatok",
     "grid-compact-hint": "A rácsos elrendezések mindig kompakt kártyákat használnak.",
@@ -1002,7 +994,8 @@
     "create-success": "Tér létrehozva",
     "creator-admin-note": "Te leszel az első adminisztrátor.",
     "current": "Tér",
-    "no-space": "Nincs tér",
+    "add-to": "Hozzáadás térhez",
+    "remove-from": "Eltávolítás innen: {{space}}",
     "custom-id-conflict": "Ez a tér (UID) már használatban van.",
     "custom-id-help": "Hivatkozásokban és API kérésekben használatos. Később nem módosítható. Használjon 1–36 ASCII betűt, számot vagy kötőjelet; ne kezdődjön vagy végződjön kötőjellel.",
     "custom-id-invalid": "Használjon 1–36 ASCII betűt, számot vagy kötőjelet, kötőjel nélkül az elején vagy a végén.",

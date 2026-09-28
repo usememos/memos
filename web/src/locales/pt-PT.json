@@ -284,8 +284,8 @@
       "private-description": "Visível apenas para si",
       "protected-description": "Visível para utilizadores ligados",
       "public-description": "Visível para todos",
-      "space": "Espaço",
-      "space-description": "Visível para os membros deste espaço"
+      "space": "Membros",
+      "space-description": "Todos em {{space}}"
     },
     "count-memos-updated-in-date": "{{count}} {{memos}} atualizado em {{date}}",
     "newest-first": "O mais novo primeiro",
@@ -300,15 +300,7 @@
     "parent-load-error": "Não foi possível carregar o memorando original.",
     "parent-unavailable": "Memorando original indisponível",
     "parent-unavailable-description": "Pode ter sido eliminado ou pode já não ter acesso a ele.",
-    "move": {
-      "title": "Mover para o Espaço",
-      "description": "Escolha onde pertence este memorando e quem o pode ler.",
-      "unassigned": "Não atribuído",
-      "confirm": "Mover",
-      "success": "Memorando movido",
-      "space-audience": "Os membros do {{space}} poderão ler este memorando.",
-      "history": "As reações existentes mantêm-se com este memorando. Os comentários e memorandos vinculados mantêm as suas próprias regras de acesso."
-    },
+    "moved": "Memorando movido",
     "back-to": "Voltar para {{source}}",
     "connections": "Ligações",
     "grid-compact-hint": "Os layouts de grelha utilizam sempre cartões compactos.",
@@ -1002,7 +994,8 @@
     "create-success": "Espaço criado",
     "creator-admin-note": "Será o primeiro administrador.",
     "current": "Espaço",
-    "no-space": "Sem espaço",
+    "add-to": "Adicionar a um espaço",
+    "remove-from": "Remover de {{space}}",
     "custom-id-conflict": "Este espaço UID já está em utilização.",
     "custom-id-help": "Utilizado em ligações e pedidos API. Não pode ser alterado posteriormente. Utilize de 1 a 36 ASCII letras, números ou hífens; não comece nem termine com um hífen.",
     "custom-id-invalid": "Utilizar de 1 a 36 ASCII letras, números ou hífens, sem hífen no início ou no fim.",

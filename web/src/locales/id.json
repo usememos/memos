@@ -252,8 +252,8 @@
       "private-description": "Hanya terlihat oleh Anda",
       "protected-description": "Terlihat oleh pengguna yang masuk",
       "public-description": "Terlihat oleh semua orang",
-      "space": "Ruang",
-      "space-description": "Terlihat oleh anggota ruang ini"
+      "space": "Anggota",
+      "space-description": "Semua di {{space}}"
     },
     "share": {
       "active-links": "Tautan berbagi aktif",
@@ -287,15 +287,7 @@
     "parent-load-error": "Tidak dapat memuat memo asli.",
     "parent-unavailable": "Memo asli tidak tersedia",
     "parent-unavailable-description": "Memo tersebut mungkin telah dihapus atau Anda mungkin tidak lagi memiliki akses.",
-    "move": {
-      "title": "Pindah ke Ruang",
-      "description": "Pilih di mana memo ini berada dan siapa yang dapat membacanya.",
-      "unassigned": "Tidak ditugaskan",
-      "confirm": "Pindah",
-      "success": "Memo dipindahkan",
-      "space-audience": "Anggota {{space}} akan dapat membaca memo ini.",
-      "history": "Reaksi yang sudah ada tetap ada pada memo ini. Komentar dan memo yang ditautkan tetap memiliki aturan aksesnya sendiri."
-    },
+    "moved": "Memo dipindahkan",
     "back-to": "Kembali ke {{source}}",
     "count-memos-updated-in-date": "{{count}} {{memos}} diperbarui pada {{date}}",
     "connections": "Koneksi",
@@ -1002,7 +994,8 @@
     "create-success": "Ruang dibuat",
     "creator-admin-note": "Anda akan menjadi admin pertama.",
     "current": "Ruang",
-    "no-space": "Tanpa ruang",
+    "add-to": "Tambahkan ke ruang",
+    "remove-from": "Hapus dari {{space}}",
     "custom-id-conflict": "Ruang UID ini sudah digunakan.",
     "custom-id-help": "Digunakan dalam tautan dan permintaan API. Tidak dapat diubah nanti. Gunakan 1–36 huruf, angka, atau tanda hubung ASCII; jangan diawali atau diakhiri dengan tanda hubung.",
     "custom-id-invalid": "Gunakan 1–36 huruf, angka, atau tanda hubung ASCII, tanpa tanda hubung di awal atau akhir.",

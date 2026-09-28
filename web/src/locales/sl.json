@@ -284,8 +284,8 @@
       "private-description": "Vidno samo vam",
       "protected-description": "Vidno prijavljenim uporabnikom",
       "public-description": "Vidno vsem",
-      "space": "Prostor",
-      "space-description": "Vidno članom tega prostora"
+      "space": "Člani",
+      "space-description": "Vsi v {{space}}"
     },
     "count-memos-updated-in-date": "{{count}} {{memos}} posodobljeno na {{date}}",
     "newest-first": "Najprej najnovejše",
@@ -300,15 +300,7 @@
     "parent-load-error": "Izvirnega zapiska ni bilo mogoče naložiti.",
     "parent-unavailable": "Izvirni zapisek ni na voljo",
     "parent-unavailable-description": "Morda je bil izbrisan ali pa nimate več dostopa.",
-    "move": {
-      "title": "Premakni v prostor",
-      "description": "Izberite, kam spada ta zapisek in kdo ga lahko bere.",
-      "unassigned": "Nedodeljeno",
-      "confirm": "Premakni",
-      "success": "Zapisek premaknjen",
-      "space-audience": "Člani {{space}} bodo lahko prebrali ta zapisek.",
-      "history": "Obstoječi odzivi ostanejo s tem zapiskom. Komentarji in povezani zapiski ohranijo svoja pravila dostopa."
-    },
+    "moved": "Zapisek premaknjen",
     "back-to": "Nazaj na {{source}}",
     "connections": "Povezave",
     "grid-compact-hint": "Mrežne postavitve vedno uporabljajo kompaktne kartice.",
@@ -1002,7 +994,8 @@
     "create-success": "Prostor ustvarjen",
     "creator-admin-note": "Postali boste prvi skrbnik.",
     "current": "Prostor",
-    "no-space": "Brez prostora",
+    "add-to": "Dodaj v prostor",
+    "remove-from": "Odstrani iz {{space}}",
     "custom-id-conflict": "Ta prostor UID je že v uporabi.",
     "custom-id-help": "Uporablja se v povezavah in zahtevah API. Kasneje ga ni mogoče spremeniti. Uporabite črke, številke ali vezaje od 1 do 36 ASCII; ne začnite ali končajte z vezajem.",
     "custom-id-invalid": "Uporabite črke, številke ali vezaje od 1 do 36 ASCII brez vezaja na začetku ali koncu.",

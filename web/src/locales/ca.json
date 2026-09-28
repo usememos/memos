@@ -284,8 +284,8 @@
       "private-description": "Només visible per a tu",
       "protected-description": "Visible per als usuaris que hagin iniciat sessió",
       "public-description": "Visible per a tothom",
-      "space": "Espai",
-      "space-description": "Visible per als membres d'aquest espai"
+      "space": "Membres",
+      "space-description": "Tothom a {{space}}"
     },
     "count-memos-updated-in-date": "{{count}} {{memos}} actualitzat a {{date}}",
     "newest-first": "El més nou primer",
@@ -300,15 +300,7 @@
     "parent-load-error": "No s'ha pogut carregar la nota original.",
     "parent-unavailable": "Nota original no disponible",
     "parent-unavailable-description": "Potser s'ha suprimit o ja no hi tens accés.",
-    "move": {
-      "title": "Mou a l'espai",
-      "description": "Tria on pertany aquesta nota i qui la pot llegir.",
-      "unassigned": "Sense assignar",
-      "confirm": "Mou",
-      "success": "Nota moguda",
-      "space-audience": "Els membres de {{space}} podran llegir aquesta nota.",
-      "history": "Les reaccions existents es mantenen amb aquesta nota. Els comentaris i les notes enllaçades mantenen les seves pròpies regles d'accés."
-    },
+    "moved": "Nota moguda",
     "back-to": "Torna a {{source}}",
     "connections": "Connexions",
     "grid-compact-hint": "Els dissenys de quadrícula sempre utilitzen targetes compactes.",
@@ -1002,7 +994,8 @@
     "create-success": "Espai creat",
     "creator-admin-note": "Et convertiràs en el primer administrador.",
     "current": "Espai",
-    "no-space": "Sense espai",
+    "add-to": "Afegeix a un espai",
+    "remove-from": "Treu de {{space}}",
     "custom-id-conflict": "Aquest espai UID ja està en ús.",
     "custom-id-help": "S'utilitza en enllaços i sol·licituds API. No es pot canviar més tard. Utilitzeu 1–36 ASCII lletres, números o guions; no comenceu ni acabeu amb un guió.",
     "custom-id-invalid": "Utilitzeu 1–36 ASCII lletres, números o guions, sense un guió al principi o al final.",
