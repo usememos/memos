@@ -580,6 +580,9 @@
       "additional-style": "Додатковий стиль",
       "additional-style-placeholder": "Додатковий CSS код",
       "customize-server": {
+        "about-content": "Вміст сторінки «Про програму»",
+        "about-content-hint": "Підтримує Markdown. Показується на сторінці «Про програму» над інформацією про проєкт.",
+        "about-content-placeholder": "Контакти, правила користування, привітання…",
         "description": "Опис",
         "icon-url": "URL значка",
         "title": "Налаштування сервера"

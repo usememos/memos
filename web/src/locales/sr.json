@@ -699,6 +699,9 @@
       "additional-style-placeholder": "Додатни CSS код",
       "basic-description": "Конфигуришите јавни идентитет који приказује ова инстанца.",
       "customize-server": {
+        "about-content": "Садржај странице „О апликацији“",
+        "about-content-hint": "Подржава Markdown. Приказује се на страници „О апликацији“ изнад информација о пројекту.",
+        "about-content-placeholder": "Контакт подаци, смернице за коришћење, представљање…",
         "description": "Опис",
         "icon-url": "Икона URL",
         "title": "Прилагодите сервер"

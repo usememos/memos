@@ -732,6 +732,9 @@
       "additional-style-placeholder": "קוד CSS נוסף",
       "basic-description": "הגדירו את הזהות הציבורית שמוצגת על ידי המופע הזה.",
       "customize-server": {
+        "about-content": "תוכן עמוד אודות",
+        "about-content-hint": "תומך ב-Markdown. מוצג בעמוד אודות מעל פרטי הפרויקט.",
+        "about-content-placeholder": "פרטי קשר, הנחיות שימוש, היכרות…",
         "description": "תיאור",
         "icon-url": "כתובת סמל",
         "title": "התאמת השרת"

@@ -567,6 +567,9 @@
       "additional-style-placeholder": "自定义 CSS 代码",
       "basic-description": "配置该实例对外展示的身份信息和日历默认行为。",
       "customize-server": {
+        "about-content": "关于页面内容",
+        "about-content-hint": "支持 Markdown。显示在关于页面的项目信息上方。",
+        "about-content-placeholder": "联系方式、使用须知、个人介绍…",
         "description": "描述",
         "icon-url": "图标链接",
         "title": "自定义服务器"

@@ -580,6 +580,9 @@
       "additional-style": "Dodatni stili",
       "additional-style-placeholder": "Dodatna CSS koda",
       "customize-server": {
+        "about-content": "Vsebina strani O aplikaciji",
+        "about-content-hint": "Podpira Markdown. Prikazano na strani O aplikaciji nad podatki o projektu.",
+        "about-content-placeholder": "Kontaktni podatki, smernice za uporabo, predstavitev…",
         "description": "Opis",
         "icon-url": "URL ikone",
         "title": "Prilagodi strežnik"

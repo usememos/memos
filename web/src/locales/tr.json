@@ -741,6 +741,9 @@
       "additional-style": "Ek stil",
       "additional-style-placeholder": "Ek CSS kodu",
       "customize-server": {
+        "about-content": "Hakkında sayfası içeriği",
+        "about-content-hint": "Markdown desteklenir. Hakkında sayfasında proje bilgilerinin üstünde gösterilir.",
+        "about-content-placeholder": "İletişim bilgileri, kullanım kuralları, bir tanıtım…",
         "description": "Açıklama",
         "icon-url": "İkon URL'si",
         "title": "Sunucuyu Özelleştir"

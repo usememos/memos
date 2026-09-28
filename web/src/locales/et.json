@@ -699,6 +699,9 @@
       "additional-style-placeholder": "Täiendav CSS kood",
       "basic-description": "Seadistage selle eksemplari kuvatav avalik identiteet.",
       "customize-server": {
+        "about-content": "Teave-lehe sisu",
+        "about-content-hint": "Toetab Markdowni. Kuvatakse Teave-lehel projekti teabe kohal.",
+        "about-content-placeholder": "Kontaktandmed, kasutusjuhised, tutvustus…",
         "description": "Kirjeldus",
         "icon-url": "Ikoon URL",
         "title": "Serveri kohandamine"

@@ -580,6 +580,9 @@
       "additional-style": "Дополнительный стиль",
       "additional-style-placeholder": "Напишите ваш CSS-код здесь",
       "customize-server": {
+        "about-content": "Содержимое страницы «О программе»",
+        "about-content-hint": "Поддерживается Markdown. Отображается на странице «О программе» над информацией о проекте.",
+        "about-content-placeholder": "Контакты, правила использования, приветствие…",
         "description": "Описание",
         "icon-url": "URL иконки",
         "title": "Настроить сервер"
