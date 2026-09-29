@@ -228,7 +228,36 @@ func (f *HTMLMetaFetcher) Get(ctx context.Context, urlStr string) (*HTMLMeta, er
 	}
 }
 
+// youTubeOEmbedURL is YouTube's oEmbed endpoint. Watch pages open with a
+// ~700 KB inline script, so their metadata lies beyond maxHTMLMetaBytes.
+const youTubeOEmbedURL = "https://www.youtube.com/oembed"
+
+var youTubeHosts = map[string]bool{
+	"youtube.com":     true,
+	"www.youtube.com": true,
+	"m.youtube.com":   true,
+	"youtu.be":        true,
+}
+
+// youTubeOEmbedEndpoint returns the oEmbed endpoint for YouTube URLs, or "" for other hosts.
+func youTubeOEmbedEndpoint(urlStr string) string {
+	parsed, err := url.Parse(urlStr)
+	if err != nil || !youTubeHosts[parsed.Hostname()] {
+		return ""
+	}
+	return youTubeOEmbedURL + "?" + url.Values{"format": {"json"}, "url": {urlStr}}.Encode()
+}
+
 func (f *HTMLMetaFetcher) fetch(ctx context.Context, urlStr string) (*HTMLMeta, error) {
+	if endpoint := youTubeOEmbedEndpoint(urlStr); endpoint != "" {
+		// Non-video YouTube pages have no oEmbed; fall back to the HTML document.
+		if oEmbed, err := f.fetchOEmbed(ctx, endpoint); err == nil {
+			if pageURL, err := url.Parse(urlStr); err == nil {
+				return mergeMetadata(pageURL, oEmbed), nil
+			}
+		}
+	}
+
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, urlStr, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create link preview request")

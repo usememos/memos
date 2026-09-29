@@ -560,6 +560,42 @@ func extractTestMetadata(t *testing.T, markup string) *HTMLMeta {
 	return mergeMetadata(pageURL, metadataSource{}, sources.openGraph, sources.twitter, sources.jsonLD, sources.standard, sources.semantic)
 }
 
+func TestHTMLMetaFetcherYouTubeUsesOEmbed(t *testing.T) {
+	for _, videoURL := range []string{
+		"https://www.youtube.com/watch?v=iFmphiZhIKA",
+		"https://m.youtube.com/watch?v=iFmphiZhIKA",
+		"https://youtu.be/iFmphiZhIKA",
+	} {
+		t.Run(videoURL, func(t *testing.T) {
+			fetcher := newTestFetcher(roundTripFunc(func(req *http.Request) (*http.Response, error) {
+				if req.URL.Host != "www.youtube.com" || req.URL.Path != "/oembed" {
+					return nil, fmt.Errorf("unexpected request to %s", req.URL)
+				}
+				require.Equal(t, videoURL, req.URL.Query().Get("url"))
+				return response(req, http.StatusOK, "application/json",
+					`{"type":"video","title":"Video title","thumbnail_url":"https://i.ytimg.com/vi/iFmphiZhIKA/hqdefault.jpg"}`), nil
+			}))
+
+			meta, err := fetcher.Get(context.Background(), videoURL)
+			require.NoError(t, err)
+			require.Equal(t, &HTMLMeta{Title: "Video title", Image: "https://i.ytimg.com/vi/iFmphiZhIKA/hqdefault.jpg"}, meta)
+		})
+	}
+}
+
+func TestHTMLMetaFetcherYouTubeFallsBackToHTML(t *testing.T) {
+	fetcher := newTestFetcher(roundTripFunc(func(req *http.Request) (*http.Response, error) {
+		if req.URL.Path == "/oembed" {
+			return response(req, http.StatusNotFound, "text/html", ""), nil
+		}
+		return response(req, http.StatusOK, "text/html", `<title>Channel</title>`), nil
+	}))
+
+	meta, err := fetcher.Get(context.Background(), "https://www.youtube.com/@memos")
+	require.NoError(t, err)
+	require.Equal(t, "Channel", meta.Title)
+}
+
 func newTestFetcher(transport http.RoundTripper) *HTMLMetaFetcher {
 	fetcher := NewHTMLMetaFetcher()
 	fetcher.client = &http.Client{Transport: transport}
