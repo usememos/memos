@@ -106,9 +106,30 @@ function lineListInfo(text: string): LineListInfo {
 function wrapSelection(view: EditorView, token: string) {
   const { from, to } = view.state.selection.main;
   const sel = view.state.sliceDoc(from, to);
+  // CommonMark cannot close an emphasis delimiter immediately after
+  // whitespace. Keep selection-edge whitespace outside the mark instead of
+  // producing source such as `**important **`, which renders literally.
+  const edgeLeadingWhitespace = sel.match(/^\s*/)?.[0] ?? "";
+  const edgeTrailingWhitespace = sel.match(/\s*$/)?.[0] ?? "";
+  const contentEnd = sel.length - edgeTrailingWhitespace.length;
+  const content = sel.slice(edgeLeadingWhitespace.length, contentEnd);
+
+  // There is no text to mark. Preserve the existing empty-cursor behavior
+  // (an editable delimiter pair), but do not replace a whitespace-only
+  // selection with invalid emphasis or discard its whitespace.
+  if (!content) {
+    if (sel) return;
+    view.dispatch({
+      changes: { from, to, insert: `${token}${token}` },
+      selection: { anchor: from + token.length },
+    });
+    return;
+  }
+
+  const contentStart = from + edgeLeadingWhitespace.length;
   view.dispatch({
-    changes: { from, to, insert: `${token}${sel}${token}` },
-    selection: { anchor: from + token.length, head: from + token.length + sel.length },
+    changes: { from, to, insert: `${edgeLeadingWhitespace}${token}${content}${token}${edgeTrailingWhitespace}` },
+    selection: { anchor: contentStart + token.length, head: contentStart + token.length + content.length },
   });
 }
 
