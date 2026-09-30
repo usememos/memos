@@ -281,6 +281,35 @@ describe("<PreviewImageDialog>", () => {
     expect(screen.getByAltText("Preview image 2 of 2")).toHaveStyle({ transform: "translate3d(0px, 0px, 0) scale(1)" });
   });
 
+  it("clears a stale drag when the item changes", () => {
+    mockPreviewLayout({ width: 1200, height: 800 }, { width: 600, height: 600 });
+    render(
+      <PreviewImageDialog
+        open
+        onOpenChange={vi.fn()}
+        items={[
+          { id: "image-1", kind: "image", sourceUrl: "/image-1.jpg", posterUrl: "/image-1.jpg", filename: "image-1.jpg" },
+          { id: "video-1", kind: "video", sourceUrl: "/video.mp4", posterUrl: "/poster.jpg", filename: "video.mp4" },
+        ]}
+      />,
+    );
+
+    const image = screen.getByAltText("Preview image 1 of 2");
+    fireEvent.doubleClick(image);
+    fireEvent.pointerDown(image, { button: 0, pointerId: 1, clientX: 300, clientY: 300 });
+    fireEvent.pointerMove(image, { pointerId: 1, clientX: 200, clientY: 300 });
+    expect(image).toHaveStyle({ transform: "translate3d(-100px, 0px, 0) scale(2)" });
+
+    fireEvent.keyDown(document, { key: "ArrowRight" });
+    fireEvent.keyDown(document, { key: "ArrowLeft" });
+
+    const returned = screen.getByAltText("Preview image 1 of 2");
+    fireEvent.doubleClick(returned);
+    fireEvent.pointerMove(returned, { pointerId: 1, clientX: 220, clientY: 300 });
+
+    expect(returned).toHaveStyle({ transform: "translate3d(0px, 0px, 0) scale(2)" });
+  });
+
   it("zooms image previews with the wheel", () => {
     render(
       <PreviewImageDialog

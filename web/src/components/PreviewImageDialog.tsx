@@ -101,11 +101,21 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
   }, [itemCount, open]);
 
   useEffect(() => {
+    const drag = panDragRef.current;
+    if (drag && imageRef.current?.hasPointerCapture(drag.pointerId)) {
+      imageRef.current.releasePointerCapture(drag.pointerId);
+    }
+    panDragRef.current = null;
     setZoomScale(MIN_ZOOM);
     setPanOffset(NO_PAN);
+    setIsPanning(false);
   }, [currentItem?.id, open]);
 
   useEffect(() => {
+    if (zoomScale === MIN_ZOOM) {
+      panDragRef.current = null;
+      setIsPanning(false);
+    }
     setPanOffset((current) => {
       if (zoomScale === MIN_ZOOM) {
         return NO_PAN;
