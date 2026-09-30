@@ -20,12 +20,15 @@ const DropdownMenuTrigger = React.forwardRef<HTMLButtonElement, DropdownMenuPrim
 DropdownMenuTrigger.displayName = "DropdownMenuTrigger";
 
 type DropdownMenuContentProps = DropdownMenuPrimitive.Popup.Props &
-  Pick<DropdownMenuPrimitive.Positioner.Props, "align" | "alignOffset" | "collisionAvoidance" | "side" | "sideOffset"> & {
+  Pick<
+    DropdownMenuPrimitive.Positioner.Props,
+    "align" | "alignOffset" | "collisionAvoidance" | "positionMethod" | "side" | "sideOffset"
+  > & {
     size?: DropdownMenuSize;
   };
 
 const DropdownMenuContent = React.forwardRef<HTMLDivElement, DropdownMenuContentProps>(
-  ({ className, align, alignOffset, collisionAvoidance, side, sideOffset = 4, size = "default", ...props }, ref) => {
+  ({ className, align, alignOffset, collisionAvoidance, positionMethod, side, sideOffset = 4, size = "default", ...props }, ref) => {
     return (
       <DropdownMenuSizeContext.Provider value={size}>
         <DropdownMenuPrimitive.Portal>
@@ -33,6 +36,7 @@ const DropdownMenuContent = React.forwardRef<HTMLDivElement, DropdownMenuContent
             align={align}
             alignOffset={alignOffset}
             collisionAvoidance={collisionAvoidance}
+            positionMethod={positionMethod}
             side={side}
             sideOffset={sideOffset}
             className="isolate z-dropdown outline-none"
