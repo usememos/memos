@@ -22,6 +22,8 @@ const MIN_ZOOM = 1;
 const MAX_ZOOM = 4;
 const ZOOM_STEP = 0.2;
 const DOUBLE_TAP_ZOOM = 2;
+const SWIPE_THRESHOLD = 60;
+const SWIPE_DIRECTION_RATIO = 1.5;
 
 const clampZoom = (scale: number) => Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, scale));
 
@@ -55,6 +57,12 @@ interface PinchGesture {
   startPan: PanOffset;
 }
 
+interface SwipeGesture {
+  pointerId: number;
+  startX: number;
+  startY: number;
+}
+
 const distanceBetween = (first: { x: number; y: number }, second: { x: number; y: number }) =>
   Math.hypot(first.x - second.x, first.y - second.y);
 
@@ -65,12 +73,14 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
   const [zoomScale, setZoomScale] = useState(MIN_ZOOM);
   const [showDetails, setShowDetails] = useState(false);
   const [panOffset, setPanOffset] = useState<PanOffset>(NO_PAN);
+  const [swipeOffset, setSwipeOffset] = useState(0);
   const [isInteracting, setIsInteracting] = useState(false);
   const imageRef = useRef<HTMLImageElement>(null);
   const surfaceRef = useRef<HTMLDivElement>(null);
   const pointersRef = useRef(new Map<number, { x: number; y: number }>());
   const panDragRef = useRef<{ pointerId: number; startX: number; startY: number; originX: number; originY: number } | null>(null);
   const pinchRef = useRef<PinchGesture | null>(null);
+  const swipeRef = useRef<SwipeGesture | null>(null);
   const previewItems = useMemo(
     () => items ?? imgUrls.map((url) => ({ id: url, kind: "image" as const, sourceUrl: url, posterUrl: url, filename: "Image" })),
     [imgUrls, items],
@@ -121,8 +131,10 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
     panDragRef.current = null;
     pointersRef.current.clear();
     pinchRef.current = null;
+    swipeRef.current = null;
     setZoomScale(MIN_ZOOM);
     setPanOffset(NO_PAN);
+    setSwipeOffset(0);
     setIsInteracting(false);
   }, [currentItem?.id, open]);
 
@@ -178,6 +190,8 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
       startPan: panOffset,
     };
     panDragRef.current = null;
+    swipeRef.current = null;
+    setSwipeOffset(0);
     setIsInteracting(true);
   };
 
@@ -216,6 +230,8 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
       startPinch();
     } else if (isZoomed) {
       startPan(event.pointerId, { x: event.clientX, y: event.clientY });
+    } else if (hasMultiple) {
+      swipeRef.current = { pointerId: event.pointerId, startX: event.clientX, startY: event.clientY };
     }
   };
 
@@ -227,6 +243,12 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
     pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
     if (pointers.size >= 2 && pinchRef.current) {
       updatePinch();
+      return;
+    }
+    const swipe = swipeRef.current;
+    if (swipe && swipe.pointerId === event.pointerId) {
+      setSwipeOffset(event.clientX - swipe.startX);
+      setIsInteracting(true);
       return;
     }
     const drag = panDragRef.current;
@@ -267,6 +289,20 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
       return;
     }
     if (pointers.size === 0) {
+      const swipe = swipeRef.current;
+      if (swipe && swipe.pointerId === event.pointerId) {
+        const deltaX = event.clientX - swipe.startX;
+        const deltaY = event.clientY - swipe.startY;
+        if (Math.abs(deltaX) > SWIPE_THRESHOLD && Math.abs(deltaX) > Math.abs(deltaY) * SWIPE_DIRECTION_RATIO) {
+          if (deltaX < 0) {
+            handleNext();
+          } else {
+            handlePrevious();
+          }
+        }
+      }
+      swipeRef.current = null;
+      setSwipeOffset(0);
       panDragRef.current = null;
       setIsInteracting(false);
     }
@@ -397,10 +433,10 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
                 className={cn(
                   "max-h-[calc(100dvh-8rem)] max-w-[calc(100vw-1.5rem)] rounded-md object-contain select-none sm:max-h-[calc(100dvh-7rem)] sm:max-w-[calc(100vw-8rem)]",
                   showDetails && "lg:max-w-[calc(100vw-30rem)]",
-                  isZoomed && (isInteracting ? "cursor-grabbing" : "cursor-grab"),
+                  (isZoomed || hasMultiple) && (isInteracting ? "cursor-grabbing" : "cursor-grab"),
                 )}
                 style={{
-                  transform: `translate3d(${panOffset.x}px, ${panOffset.y}px, 0) scale(${zoomScale})`,
+                  transform: `translate3d(${panOffset.x + swipeOffset}px, ${panOffset.y}px, 0) scale(${zoomScale})`,
                   transition: isInteracting ? "none" : "transform 120ms ease-out",
                   transformOrigin: "center center",
                   touchAction: "none",
