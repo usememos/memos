@@ -197,6 +197,29 @@ describe("<PreviewImageDialog>", () => {
     expect(image).toHaveStyle({ transform: "translate3d(900px, 500px, 0) scale(2)" });
   });
 
+  it("clamps the pan to the padded content area", () => {
+    mockPreviewLayout({ width: 1200, height: 800 }, { width: 600, height: 600 });
+    render(
+      <PreviewImageDialog
+        open
+        onOpenChange={vi.fn()}
+        items={[{ id: "image-1", kind: "image", sourceUrl: "/image.jpg", posterUrl: "/image.jpg", filename: "image.jpg" }]}
+      />,
+    );
+
+    const surface = screen.getByTestId("preview-zoom-surface");
+    surface.style.paddingBottom = "80px";
+    surface.style.paddingLeft = "64px";
+    surface.style.paddingRight = "416px";
+    const image = screen.getByAltText("Preview image 1 of 1");
+    fireEvent.doubleClick(image);
+    fireEvent.pointerDown(image, { button: 0, pointerId: 1, clientX: 0, clientY: 0 });
+    fireEvent.pointerMove(image, { pointerId: 1, clientX: 100000, clientY: 100000 });
+    fireEvent.pointerUp(image, { pointerId: 1, clientX: 100000, clientY: 100000 });
+
+    expect(image).toHaveStyle({ transform: "translate3d(1140px, 540px, 0) scale(2)" });
+  });
+
   it("does not pan an image that sits at fit zoom", () => {
     mockPreviewLayout({ width: 1200, height: 800 }, { width: 600, height: 600 });
     render(

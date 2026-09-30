@@ -34,13 +34,16 @@ const NO_PAN: PanOffset = { x: 0, y: 0 };
 
 const clampPan = (offset: number, max: number) => Math.min(max, Math.max(-max, offset));
 
-// The image is centered, so each axis clamps to half of its overflow.
+// The image is centered in the surface's content box, so each axis clamps to half of its overflow.
 const clampPanOffset = (offset: PanOffset, scale: number, image: HTMLImageElement | null, surface: HTMLDivElement | null): PanOffset => {
   if (!image || !surface) {
     return offset;
   }
-  const maxX = Math.max(0, (image.offsetWidth * scale - surface.clientWidth) / 2);
-  const maxY = Math.max(0, (image.offsetHeight * scale - surface.clientHeight) / 2);
+  const style = window.getComputedStyle(surface);
+  const contentWidth = surface.clientWidth - (Number.parseFloat(style.paddingLeft) || 0) - (Number.parseFloat(style.paddingRight) || 0);
+  const contentHeight = surface.clientHeight - (Number.parseFloat(style.paddingTop) || 0) - (Number.parseFloat(style.paddingBottom) || 0);
+  const maxX = Math.max(0, (image.offsetWidth * scale - contentWidth) / 2);
+  const maxY = Math.max(0, (image.offsetHeight * scale - contentHeight) / 2);
   return { x: clampPan(offset.x, maxX), y: clampPan(offset.y, maxY) };
 };
 
