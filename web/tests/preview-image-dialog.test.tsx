@@ -310,6 +310,75 @@ describe("<PreviewImageDialog>", () => {
     expect(returned).toHaveStyle({ transform: "translate3d(0px, 0px, 0) scale(2)" });
   });
 
+  it("zooms about the gesture midpoint with a two-finger pinch", () => {
+    mockPreviewLayout({ width: 1200, height: 800 }, { width: 600, height: 600 });
+    render(
+      <PreviewImageDialog
+        open
+        onOpenChange={vi.fn()}
+        items={[{ id: "image-1", kind: "image", sourceUrl: "/image.jpg", posterUrl: "/image.jpg", filename: "image.jpg" }]}
+      />,
+    );
+
+    const image = screen.getByAltText("Preview image 1 of 1");
+    fireEvent.pointerDown(image, { button: 0, pointerId: 1, clientX: 250, clientY: 300 });
+    fireEvent.pointerDown(image, { button: 0, pointerId: 2, clientX: 350, clientY: 300 });
+    fireEvent.pointerMove(image, { pointerId: 1, clientX: 200, clientY: 300 });
+    fireEvent.pointerMove(image, { pointerId: 2, clientX: 400, clientY: 300 });
+
+    expect(image).toHaveStyle({ transform: "translate3d(-300px, -300px, 0) scale(2)" });
+    expect(screen.getByText("200%")).toBeInTheDocument();
+  });
+
+  it("clamps a pinch at fit zoom and drops the pan", () => {
+    mockPreviewLayout({ width: 1200, height: 800 }, { width: 600, height: 600 });
+    render(
+      <PreviewImageDialog
+        open
+        onOpenChange={vi.fn()}
+        items={[{ id: "image-1", kind: "image", sourceUrl: "/image.jpg", posterUrl: "/image.jpg", filename: "image.jpg" }]}
+      />,
+    );
+
+    const image = screen.getByAltText("Preview image 1 of 1");
+    fireEvent.doubleClick(image);
+    fireEvent.pointerDown(image, { button: 0, pointerId: 1, clientX: 100, clientY: 120 });
+    fireEvent.pointerMove(image, { pointerId: 1, clientX: 180, clientY: 160 });
+    fireEvent.pointerUp(image, { pointerId: 1, clientX: 180, clientY: 160 });
+    expect(image).toHaveStyle({ transform: "translate3d(80px, 40px, 0) scale(2)" });
+
+    fireEvent.pointerDown(image, { button: 0, pointerId: 2, clientX: 100, clientY: 100 });
+    fireEvent.pointerDown(image, { button: 0, pointerId: 3, clientX: 300, clientY: 300 });
+    fireEvent.pointerMove(image, { pointerId: 2, clientX: 190, clientY: 190 });
+    fireEvent.pointerMove(image, { pointerId: 3, clientX: 210, clientY: 210 });
+
+    expect(image).toHaveStyle({ transform: "translate3d(0px, 0px, 0) scale(1)" });
+    expect(screen.getByText("100%")).toBeInTheDocument();
+  });
+
+  it("keeps panning with the finger that stays after a pinch", () => {
+    mockPreviewLayout({ width: 1200, height: 800 }, { width: 600, height: 600 });
+    render(
+      <PreviewImageDialog
+        open
+        onOpenChange={vi.fn()}
+        items={[{ id: "image-1", kind: "image", sourceUrl: "/image.jpg", posterUrl: "/image.jpg", filename: "image.jpg" }]}
+      />,
+    );
+
+    const image = screen.getByAltText("Preview image 1 of 1");
+    fireEvent.pointerDown(image, { button: 0, pointerId: 1, clientX: 250, clientY: 300 });
+    fireEvent.pointerDown(image, { button: 0, pointerId: 2, clientX: 350, clientY: 300 });
+    fireEvent.pointerMove(image, { pointerId: 1, clientX: 200, clientY: 300 });
+    fireEvent.pointerMove(image, { pointerId: 2, clientX: 400, clientY: 300 });
+    expect(image).toHaveStyle({ transform: "translate3d(-300px, -300px, 0) scale(2)" });
+
+    fireEvent.pointerUp(image, { pointerId: 2, clientX: 400, clientY: 300 });
+    fireEvent.pointerMove(image, { pointerId: 1, clientX: 220, clientY: 300 });
+
+    expect(image).toHaveStyle({ transform: "translate3d(-280px, -300px, 0) scale(2)" });
+  });
+
   it("zooms image previews with the wheel", () => {
     render(
       <PreviewImageDialog
