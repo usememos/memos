@@ -310,6 +310,43 @@ func TestLoadDeploymentConfigurationBoundsFilesAndRedactsDecodeErrors(t *testing
 		require.Error(t, err)
 		assert.NotContains(t, err.Error(), "must-not-appear")
 	})
+
+	t.Run("invalid value error names the field and position without the value", func(t *testing.T) {
+		stores := newDeploymentConfigurationTestStore(t)
+		dir := t.TempDir()
+		content := `{
+  "key": "STORAGE",
+  "storageSetting": {
+    "storages": [{"id": "team-assets", "name": "Team assets", "type": "S3", "s3Config": {"accessKeySecret": 13579}}]
+  }
+}`
+		require.NoError(t, os.WriteFile(filepath.Join(dir, "memos-instance-setting-storage.json"), []byte(content), 0600))
+		err := stores.LoadDeploymentConfigurationDir(context.Background(), dir)
+		require.Error(t, err)
+		assert.ErrorContains(t, err, `at line 4:71: invalid value for enum field "type"`)
+
+		content = strings.Replace(content, `"S3"`, `"STORAGE_TYPE_S3"`, 1)
+		require.NoError(t, os.WriteFile(filepath.Join(dir, "memos-instance-setting-storage.json"), []byte(content), 0600))
+		err = stores.LoadDeploymentConfigurationDir(context.Background(), dir)
+		require.Error(t, err)
+		assert.ErrorContains(t, err, `invalid value for string field "accessKeySecret"`)
+		assert.NotContains(t, err.Error(), "13579")
+	})
+
+	t.Run("decode error does not echo text from inside a value", func(t *testing.T) {
+		stores := newDeploymentConfigurationTestStore(t)
+		dir := t.TempDir()
+		content := `{
+  "key": "STORAGE",
+  "storageSetting": {
+    "storages": [{"id": "team-assets", "type": "STORAGE_TYPE_S3", "s3Config": {"accessKeySecret": "ok" "SEKRET invalid value for SEKRETA field SEKRETB: z"}}]
+  }
+}`
+		require.NoError(t, os.WriteFile(filepath.Join(dir, "memos-instance-setting-storage.json"), []byte(content), 0600))
+		err := stores.LoadDeploymentConfigurationDir(context.Background(), dir)
+		require.Error(t, err)
+		assert.NotContains(t, err.Error(), "SEKRET")
+	})
 }
 
 func TestAuthenticationConfigurationMutationsAreSafe(t *testing.T) {
