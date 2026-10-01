@@ -197,6 +197,9 @@
       "more": "Več oblikovanja"
     },
     "comment": "Komentar",
+    "discard-changes": "Zavreči spremembe?",
+    "discard-changes-description": "Neshranjene spremembe te beležke bodo izgubljene.",
+    "discard": "Zavrzi",
     "formatting-toolbar": "Orodna vrstica za oblikovanje",
     "new-memo": "Nov zapisek",
     "saved": "Shranjeno",
@@ -455,6 +458,10 @@
     },
     "preference": {
       "default-memo-visibility": "Privzeta vidnost beležke",
+      "keyboard-description": "Premikajte se brez miške. Nastavitev se shrani v tej napravi.",
+      "keyboard-shortcuts": "Bližnjice na tipkovnici",
+      "keyboard-shortcuts-description": "Pritisnite ? zunaj besedilnega polja za prikaz vseh bližnjic.",
+      "keyboard-title": "Tipkovnica",
       "label": "Nastavitve",
       "theme": "Tema",
       "appearance-description": "Izberite, kako izgleda aplikacija in kateri jezik uporablja za vaš račun.",
@@ -467,7 +474,8 @@
       "save-media-metadata": "Shranite metapodatke medijev",
       "save-media-metadata-description": "Za prihodnja nalaganja shranite razpoložljivo kamero, čas zajemanja, lokacijo, dimenzije slike in osnovne podrobnosti videoposnetka. Vsakdo, ki si lahko ogleda prilogo, lahko prejme te metapodatke. Obstoječe priloge ostanejo nespremenjene.",
       "uploads-privacy-description": "Nadzorujte podatke, ki so občutljivi na zasebnost in so poslani z naloženimi mediji.",
-      "uploads-privacy-title": "Nalaganja in zasebnost"
+      "uploads-privacy-title": "Nalaganja in zasebnost",
+      "view-shortcuts": "Prikaži bližnjice"
     },
     "memo-view": {
       "create": "Ustvari pogled",
@@ -857,6 +865,33 @@
       "your-access": "Vaš dostop",
       "your-spaces": "Vaši prostori"
     }
+  },
+  "shortcuts": {
+    "clear-filters": "Počisti iskanje in filtre",
+    "description": "Bližnjice z eno tipko delujejo povsod zunaj besedilnih polj.",
+    "edit-memo": "Uredi izbrano beležko",
+    "focus-editor": "Postavi fokus v urejevalnik",
+    "go-archived": "Pojdi v arhiv",
+    "go-attachments": "Pojdi na Priloge",
+    "go-back": "Nazaj",
+    "go-calendar": "Pojdi na Koledar",
+    "go-explore": "Pojdi na Razišči",
+    "go-home": "Pojdi na Domov",
+    "go-inbox": "Pojdi v Prejeto",
+    "go-map": "Pojdi na Zemljevid",
+    "go-settings": "Pojdi v Nastavitve",
+    "group-general": "Splošno",
+    "group-memos": "Beležke",
+    "group-navigation": "Krmarjenje",
+    "new-memo": "Nova beležka",
+    "next-memo": "Izberi naslednjo beležko",
+    "open-memo": "Odpri izbrano beležko",
+    "open-search": "Iskanje",
+    "pin-memo": "Pripni ali odpni izbrano beležko",
+    "previous-memo": "Izberi prejšnjo beležko",
+    "show-shortcuts": "Prikaži bližnjice na tipkovnici",
+    "then": "nato",
+    "title": "Bližnjice na tipkovnici"
   },
   "tooltip": {
     "link-memo": "Povezava do beležke",

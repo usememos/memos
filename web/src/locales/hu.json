@@ -197,6 +197,9 @@
       "more": "További formázás"
     },
     "comment": "Megjegyzés",
+    "discard-changes": "Elveti a módosításokat?",
+    "discard-changes-description": "A jegyzet nem mentett módosításai elvesznek.",
+    "discard": "Elvetés",
     "formatting-toolbar": "Formázási eszköztár",
     "new-memo": "Új feljegyzés",
     "saved": "Mentve",
@@ -455,6 +458,10 @@
     },
     "preference": {
       "default-memo-visibility": "Jegyzetek alapértelmezett láthatósága",
+      "keyboard-description": "Navigáljon egér nélkül. A beállítás ezen az eszközön tárolódik.",
+      "keyboard-shortcuts": "Billentyűparancsok",
+      "keyboard-shortcuts-description": "Az összes billentyűparancs megtekintéséhez nyomja meg a ? billentyűt egy szövegmezőn kívül.",
+      "keyboard-title": "Billentyűzet",
       "label": "Preferenciák",
       "theme": "Téma",
       "appearance-description": "Válassza ki, hogyan nézzen ki az alkalmazás, és melyik nyelvet használja a fiókjához.",
@@ -467,7 +474,8 @@
       "save-media-metadata": "Média metaadatok mentése",
       "save-media-metadata-description": "A jövőbeli feltöltésekhez mentse el az elérhető kamerát, a felvétel idejét, a helyszínt, a kép méreteit és az alapvető videóadatokat. Bárki, aki megtekintheti a mellékletet, megkaphatja ezeket a metaadatokat. A meglévő mellékletek változatlanok maradnak.",
       "uploads-privacy-description": "A feltöltött médiával beküldött adatvédelmi szempontból érzékeny információk kezelése.",
-      "uploads-privacy-title": "Feltöltések és adatvédelem"
+      "uploads-privacy-title": "Feltöltések és adatvédelem",
+      "view-shortcuts": "Billentyűparancsok megtekintése"
     },
     "memo-view": {
       "create": "Nézet létrehozása",
@@ -857,6 +865,33 @@
       "delete-confirm-description": "Ez véglegesen törli a teret és a benne elhelyezett jegyzeteket. Ez a művelet nem vonható vissza.",
       "delete-confirm-title": "Törlöd ezt a teret: {{space}}?"
     }
+  },
+  "shortcuts": {
+    "clear-filters": "Keresés és szűrők törlése",
+    "description": "Az egybillentyűs parancsok szövegmezőn kívül bárhol működnek.",
+    "edit-memo": "Kijelölt jegyzet szerkesztése",
+    "focus-editor": "Fókusz a szerkesztőre",
+    "go-archived": "Ugrás az archívumhoz",
+    "go-attachments": "Ugrás a mellékletekhez",
+    "go-back": "Vissza",
+    "go-calendar": "Ugrás a naptárhoz",
+    "go-explore": "Ugrás a felfedezéshez",
+    "go-home": "Ugrás a kezdőlapra",
+    "go-inbox": "Ugrás a beérkezőkhöz",
+    "go-map": "Ugrás a térképhez",
+    "go-settings": "Ugrás a beállításokhoz",
+    "group-general": "Általános",
+    "group-memos": "Jegyzetek",
+    "group-navigation": "Navigáció",
+    "new-memo": "Új jegyzet",
+    "next-memo": "Következő jegyzet kijelölése",
+    "open-memo": "Kijelölt jegyzet megnyitása",
+    "open-search": "Keresés",
+    "pin-memo": "Kijelölt jegyzet rögzítése vagy feloldása",
+    "previous-memo": "Előző jegyzet kijelölése",
+    "show-shortcuts": "Billentyűparancsok megjelenítése",
+    "then": "majd",
+    "title": "Billentyűparancsok"
   },
   "tooltip": {
     "link-memo": "Jegyzet hivatkozása",

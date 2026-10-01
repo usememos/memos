@@ -197,6 +197,9 @@
       "more": "Định dạng khác"
     },
     "comment": "Bình luận",
+    "discard-changes": "Hủy các thay đổi?",
+    "discard-changes-description": "Những thay đổi chưa lưu trong ghi chú này sẽ bị mất.",
+    "discard": "Hủy bỏ",
     "formatting-toolbar": "Thanh công cụ định dạng",
     "new-memo": "Ghi chú mới",
     "saved": "Đã lưu",
@@ -365,6 +368,10 @@
     },
     "preference": {
       "default-memo-visibility": "Quyền xem ghi chú mặc định",
+      "keyboard-description": "Điều hướng mà không cần chuột. Cài đặt được lưu trên thiết bị này.",
+      "keyboard-shortcuts": "Phím tắt",
+      "keyboard-shortcuts-description": "Nhấn ? bên ngoài ô nhập văn bản để xem tất cả phím tắt.",
+      "keyboard-title": "Bàn phím",
       "theme": "Giao diện",
       "label": "Tùy chỉnh",
       "appearance-description": "Chọn giao diện ứng dụng và ngôn ngữ ứng dụng sử dụng cho tài khoản của bạn.",
@@ -377,7 +384,8 @@
       "save-media-metadata-description": "Đối với các lần tải lên trong tương lai, hãy lưu thông tin về máy ảnh, thời gian chụp, vị trí, kích thước hình ảnh và chi tiết video cơ bản. Bất kỳ ai có thể xem tệp đính kèm đều có thể nhận được siêu dữ liệu này. Các tệp đính kèm hiện có không thay đổi.",
       "theme-description": "Áp dụng chủ đề đã chọn ngay lập tức trên thiết bị này.",
       "uploads-privacy-description": "Kiểm soát thông tin nhạy cảm về quyền riêng tư được gửi kèm theo phương tiện đã tải lên.",
-      "uploads-privacy-title": "Tải lên & quyền riêng tư"
+      "uploads-privacy-title": "Tải lên & quyền riêng tư",
+      "view-shortcuts": "Xem phím tắt"
     },
     "memo-view": {
       "create": "Tạo chế độ xem",
@@ -852,6 +860,33 @@
       "refresh": "Làm mới",
       "load-error": "Không thể tải số liệu thống kê"
     }
+  },
+  "shortcuts": {
+    "clear-filters": "Xóa tìm kiếm và bộ lọc",
+    "description": "Phím tắt một phím hoạt động ở mọi nơi ngoài ô nhập văn bản.",
+    "edit-memo": "Chỉnh sửa ghi chú đã chọn",
+    "focus-editor": "Đưa con trỏ vào trình soạn thảo",
+    "go-archived": "Đến mục Đã lưu trữ",
+    "go-attachments": "Đến mục Tệp đính kèm",
+    "go-back": "Quay lại",
+    "go-calendar": "Đến Lịch",
+    "go-explore": "Đến Khám phá",
+    "go-home": "Đến Trang chủ",
+    "go-inbox": "Đến Hộp thư đến",
+    "go-map": "Đến Bản đồ",
+    "go-settings": "Đến Cài đặt",
+    "group-general": "Chung",
+    "group-memos": "Ghi chú",
+    "group-navigation": "Điều hướng",
+    "new-memo": "Ghi chú mới",
+    "next-memo": "Chọn ghi chú tiếp theo",
+    "open-memo": "Mở ghi chú đã chọn",
+    "open-search": "Tìm kiếm",
+    "pin-memo": "Ghim hoặc bỏ ghim ghi chú đã chọn",
+    "previous-memo": "Chọn ghi chú trước đó",
+    "show-shortcuts": "Hiển thị phím tắt",
+    "then": "sau đó",
+    "title": "Phím tắt"
   },
   "tooltip": {
     "link-memo": "Liên kết ghi chú",

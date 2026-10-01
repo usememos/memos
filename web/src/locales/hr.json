@@ -197,6 +197,9 @@
       "more": "Više formatiranja"
     },
     "comment": "Komentar",
+    "discard-changes": "Odbaciti promjene?",
+    "discard-changes-description": "Nespremljene promjene u ovoj bilješci bit će izgubljene.",
+    "discard": "Odbaci",
     "formatting-toolbar": "Alatna traka za oblikovanje",
     "new-memo": "Novi podsjetnik",
     "saved": "Spremljeno",
@@ -455,6 +458,10 @@
     },
     "preference": {
       "default-memo-visibility": "Zadana vidljivost memoa",
+      "keyboard-description": "Krećite se bez miša. Postavka je spremljena na ovom uređaju.",
+      "keyboard-shortcuts": "Tipkovni prečaci",
+      "keyboard-shortcuts-description": "Pritisnite ? izvan tekstnog polja za prikaz svih prečaca.",
+      "keyboard-title": "Tipkovnica",
       "label": "Postavke",
       "theme": "Tema",
       "appearance-description": "Odaberite kako aplikacija izgleda i koji jezik koristi za vaš račun.",
@@ -467,7 +474,8 @@
       "save-media-metadata": "Spremite metapodatke medija",
       "save-media-metadata-description": "Za buduće prijenose spremite dostupnu kameru, vrijeme snimanja, lokaciju, dimenzije slike i osnovne detalje videa. Svatko tko može pregledati privitak može primiti ove metapodatke. Postojeći privitci ostaju nepromijenjeni.",
       "uploads-privacy-description": "Kontrolirajte podatke osjetljive na privatnost koji se šalju s prenesenim medijima.",
-      "uploads-privacy-title": "Prijenosi i privatnost"
+      "uploads-privacy-title": "Prijenosi i privatnost",
+      "view-shortcuts": "Prikaži prečace"
     },
     "memo-view": {
       "create": "Stvori prikaz",
@@ -857,6 +865,33 @@
       "your-access": "Vaš pristup",
       "your-spaces": "Vaši prostori"
     }
+  },
+  "shortcuts": {
+    "clear-filters": "Očisti pretraživanje i filtre",
+    "description": "Prečaci s jednom tipkom rade svugdje izvan tekstnog polja.",
+    "edit-memo": "Uredi odabranu bilješku",
+    "focus-editor": "Aktiviraj uređivač",
+    "go-archived": "Idi na Arhivirano",
+    "go-attachments": "Idi na Privitke",
+    "go-back": "Natrag",
+    "go-calendar": "Idi na Kalendar",
+    "go-explore": "Idi na Istraži",
+    "go-home": "Idi na Početnu",
+    "go-inbox": "Idi u Pristiglu poštu",
+    "go-map": "Idi na Kartu",
+    "go-settings": "Idi na Postavke",
+    "group-general": "Općenito",
+    "group-memos": "Bilješke",
+    "group-navigation": "Navigacija",
+    "new-memo": "Nova bilješka",
+    "next-memo": "Odaberi sljedeću bilješku",
+    "open-memo": "Otvori odabranu bilješku",
+    "open-search": "Pretraži",
+    "pin-memo": "Prikvači ili otkvači odabranu bilješku",
+    "previous-memo": "Odaberi prethodnu bilješku",
+    "show-shortcuts": "Prikaži tipkovne prečace",
+    "then": "zatim",
+    "title": "Tipkovni prečaci"
   },
   "tooltip": {
     "link-memo": "Linkaj memo",

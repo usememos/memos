@@ -197,6 +197,9 @@
       "more": "Mer formatering"
     },
     "comment": "Kommentar",
+    "discard-changes": "Kasta ändringarna?",
+    "discard-changes-description": "Osparade ändringar i den här anteckningen går förlorade.",
+    "discard": "Kasta",
     "formatting-toolbar": "Formateringsverktygsfältet",
     "new-memo": "Nytt memo",
     "saved": "Sparat",
@@ -455,6 +458,10 @@
     },
     "preference": {
       "default-memo-visibility": "Standard synlighet för anteckningar",
+      "keyboard-description": "Navigera utan mus. Inställningen sparas på den här enheten.",
+      "keyboard-shortcuts": "Kortkommandon",
+      "keyboard-shortcuts-description": "Tryck på ? utanför ett textfält för att se alla kortkommandon.",
+      "keyboard-title": "Tangentbord",
       "label": "Preferenser",
       "theme": "Tema",
       "appearance-description": "Välj hur appen ser ut och vilket språk den använder för ditt konto.",
@@ -467,7 +474,8 @@
       "save-media-metadata": "Spara mediametadata",
       "save-media-metadata-description": "För framtida uppladdningar, spara tillgänglig kamera, inspelningstid, plats, bilddimensioner och grundläggande videoinformation. Alla som kan visa den bifogade filen kan ta emot dessa metadata. Befintliga bilagor ändras inte.",
       "uploads-privacy-description": "Kontrollera integritetskänslig information som skickas in med uppladdad media.",
-      "uploads-privacy-title": "Uppladdningar och sekretess"
+      "uploads-privacy-title": "Uppladdningar och sekretess",
+      "view-shortcuts": "Visa kortkommandon"
     },
     "memo-view": {
       "create": "Skapa vy",
@@ -857,6 +865,33 @@
       "your-access": "Din åtkomst",
       "your-spaces": "Dina utrymmen"
     }
+  },
+  "shortcuts": {
+    "clear-filters": "Rensa sökning och filter",
+    "description": "Kortkommandon med en tangent fungerar överallt utanför textfält.",
+    "edit-memo": "Redigera vald anteckning",
+    "focus-editor": "Fokusera redigeraren",
+    "go-archived": "Gå till arkivet",
+    "go-attachments": "Gå till Bilagor",
+    "go-back": "Tillbaka",
+    "go-calendar": "Gå till Kalender",
+    "go-explore": "Gå till Utforska",
+    "go-home": "Gå till Hem",
+    "go-inbox": "Gå till Inkorg",
+    "go-map": "Gå till Karta",
+    "go-settings": "Gå till Inställningar",
+    "group-general": "Allmänt",
+    "group-memos": "Anteckningar",
+    "group-navigation": "Navigering",
+    "new-memo": "Ny anteckning",
+    "next-memo": "Välj nästa anteckning",
+    "open-memo": "Öppna vald anteckning",
+    "open-search": "Sök",
+    "pin-memo": "Fäst eller lossa vald anteckning",
+    "previous-memo": "Välj föregående anteckning",
+    "show-shortcuts": "Visa kortkommandon",
+    "then": "sedan",
+    "title": "Kortkommandon"
   },
   "tooltip": {
     "link-memo": "Länk till anteckning",

@@ -197,6 +197,9 @@
       "more": "Pemformatan lainnya"
     },
     "comment": "Komentar",
+    "discard-changes": "Buang perubahan?",
+    "discard-changes-description": "Perubahan pada memo ini yang belum disimpan akan hilang.",
+    "discard": "Buang",
     "formatting-toolbar": "Toolbar pemformatan",
     "new-memo": "Memo baru",
     "saved": "Tersimpan",
@@ -365,6 +368,10 @@
     },
     "preference": {
       "default-memo-visibility": "Visibilitas memo default",
+      "keyboard-description": "Bernavigasi tanpa mouse. Pengaturan disimpan di perangkat ini.",
+      "keyboard-shortcuts": "Pintasan keyboard",
+      "keyboard-shortcuts-description": "Tekan ? di luar kolom teks untuk melihat semua pintasan.",
+      "keyboard-title": "Papan ketik",
       "theme": "Tema",
       "label": "Preferensi",
       "appearance-description": "Pilih tampilan aplikasi dan bahasa yang digunakan untuk akun Anda.",
@@ -377,7 +384,8 @@
       "save-media-metadata-description": "Untuk unggahan di masa mendatang, simpan kamera yang tersedia, waktu pengambilan gambar, lokasi, dimensi gambar, dan detail video dasar. Siapa pun yang dapat melihat lampiran dapat menerima metadata ini. Lampiran yang sudah ada tidak berubah.",
       "theme-description": "Menerapkan tema yang dipilih secara instan pada perangkat ini.",
       "uploads-privacy-description": "Mengontrol informasi sensitif privasi yang dikirimkan dengan media yang diunggah.",
-      "uploads-privacy-title": "Unggahan & privasi"
+      "uploads-privacy-title": "Unggahan & privasi",
+      "view-shortcuts": "Lihat pintasan"
     },
     "memo-view": {
       "create": "Buat tampilan",
@@ -852,6 +860,33 @@
       "refresh": "Segarkan",
       "load-error": "Gagal memuat statistik"
     }
+  },
+  "shortcuts": {
+    "clear-filters": "Hapus pencarian dan filter",
+    "description": "Pintasan satu tombol berfungsi di mana saja di luar kolom teks.",
+    "edit-memo": "Edit memo yang dipilih",
+    "focus-editor": "Fokus ke editor",
+    "go-archived": "Buka Arsip",
+    "go-attachments": "Buka Lampiran",
+    "go-back": "Kembali",
+    "go-calendar": "Buka Kalender",
+    "go-explore": "Buka Jelajahi",
+    "go-home": "Buka Beranda",
+    "go-inbox": "Buka Kotak Masuk",
+    "go-map": "Buka Peta",
+    "go-settings": "Buka Pengaturan",
+    "group-general": "Umum",
+    "group-memos": "Memo",
+    "group-navigation": "Navigasi",
+    "new-memo": "Memo baru",
+    "next-memo": "Pilih memo berikutnya",
+    "open-memo": "Buka memo yang dipilih",
+    "open-search": "Cari",
+    "pin-memo": "Sematkan atau lepas sematan memo yang dipilih",
+    "previous-memo": "Pilih memo sebelumnya",
+    "show-shortcuts": "Tampilkan pintasan keyboard",
+    "then": "lalu",
+    "title": "Pintasan keyboard"
   },
   "tooltip": {
     "link-memo": "Tautkan Memo",

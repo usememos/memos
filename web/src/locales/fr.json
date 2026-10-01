@@ -197,6 +197,9 @@
       "more": "Options de mise en forme supplémentaires"
     },
     "comment": "Commentaire",
+    "discard-changes": "Abandonner les modifications ?",
+    "discard-changes-description": "Les modifications non enregistrées de cette note seront perdues.",
+    "discard": "Abandonner",
     "formatting-toolbar": "Barre d'outils de mise en forme",
     "new-memo": "Nouvelle note",
     "saved": "Enregistrée",
@@ -455,6 +458,10 @@
     },
     "preference": {
       "default-memo-visibility": "Visibilité par défaut de la note",
+      "keyboard-description": "Naviguez sans souris. Ce réglage est enregistré sur cet appareil.",
+      "keyboard-shortcuts": "Raccourcis clavier",
+      "keyboard-shortcuts-description": "Appuyez sur ? hors d'un champ de texte pour voir tous les raccourcis.",
+      "keyboard-title": "Clavier",
       "label": "Préférences",
       "theme": "Thème",
       "appearance-description": "Choisissez l'apparence de l'application et la langue qu'elle utilise pour votre compte.",
@@ -467,7 +474,8 @@
       "save-media-metadata": "Enregistrer les métadonnées des médias",
       "save-media-metadata-description": "Pour les futurs chargements, enregistrer les informations de la caméra disponible, l'heure de prise de vue, le lieu, les dimensions de l'image et les détails vidéo de base. Toute personne pouvant consulter la pièce jointe peut recevoir ces métadonnées. Les pièces jointes existantes restent inchangées.",
       "uploads-privacy-description": "Contrôler les informations sensibles soumises avec les médias chargés.",
-      "uploads-privacy-title": "Téléchargements et confidentialité"
+      "uploads-privacy-title": "Téléchargements et confidentialité",
+      "view-shortcuts": "Afficher les raccourcis"
     },
     "memo-view": {
       "create": "Créer une vue",
@@ -857,6 +865,33 @@
       "your-access": "Votre accès",
       "your-spaces": "Vos espaces"
     }
+  },
+  "shortcuts": {
+    "clear-filters": "Effacer la recherche et les filtres",
+    "description": "Les raccourcis à une seule touche fonctionnent partout hors des champs de texte.",
+    "edit-memo": "Modifier la note sélectionnée",
+    "focus-editor": "Placer le curseur dans l'éditeur",
+    "go-archived": "Aller aux archives",
+    "go-attachments": "Aller aux pièces jointes",
+    "go-back": "Retour",
+    "go-calendar": "Aller au calendrier",
+    "go-explore": "Aller à Explorer",
+    "go-home": "Aller à l'accueil",
+    "go-inbox": "Aller à la boîte de réception",
+    "go-map": "Aller à la carte",
+    "go-settings": "Aller aux paramètres",
+    "group-general": "Général",
+    "group-memos": "Notes",
+    "group-navigation": "Navigation",
+    "new-memo": "Nouvelle note",
+    "next-memo": "Sélectionner la note suivante",
+    "open-memo": "Ouvrir la note sélectionnée",
+    "open-search": "Rechercher",
+    "pin-memo": "Épingler ou désépingler la note sélectionnée",
+    "previous-memo": "Sélectionner la note précédente",
+    "show-shortcuts": "Afficher les raccourcis clavier",
+    "then": "puis",
+    "title": "Raccourcis clavier"
   },
   "tooltip": {
     "link-memo": "Lier une note",

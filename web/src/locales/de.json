@@ -197,6 +197,9 @@
       "more": "Weitere Formatierung"
     },
     "comment": "Kommentar",
+    "discard-changes": "Änderungen verwerfen?",
+    "discard-changes-description": "Deine ungespeicherten Änderungen an diesem Memo gehen verloren.",
+    "discard": "Verwerfen",
     "formatting-toolbar": "Formatierungsleiste",
     "new-memo": "Neues Memo",
     "saved": "Gespeichert",
@@ -455,6 +458,10 @@
     },
     "preference": {
       "default-memo-visibility": "Standard-Notizsichtbarkeit",
+      "keyboard-description": "Navigiere ohne Maus. Die Einstellung wird auf diesem Gerät gespeichert.",
+      "keyboard-shortcuts": "Tastenkombinationen",
+      "keyboard-shortcuts-description": "Drücke ? außerhalb eines Textfelds, um alle Tastenkombinationen zu sehen.",
+      "keyboard-title": "Tastatur",
       "label": "Einstellungen",
       "theme": "Design",
       "appearance-description": "Wählen Sie aus, wie die App aussieht und welche Sprache sie für Ihr Konto verwendet.",
@@ -467,7 +474,8 @@
       "save-media-metadata": "Medienmetadaten speichern",
       "save-media-metadata-description": "Für zukünftige Uploads werden die verfügbare Kamera, Aufnahmezeitpunkt, Ort, Bildabmessungen und grundlegende Videodetails gespeichert. Jeder, der den Anhang ansehen kann, erhält diese Metadaten. Vorhandene Anhänge bleiben unverändert.",
       "uploads-privacy-description": "Kontrolle über datenschutzrelevante Informationen, die mit hochgeladenen Medien übermittelt werden.",
-      "uploads-privacy-title": "Uploads & Datenschutz"
+      "uploads-privacy-title": "Uploads & Datenschutz",
+      "view-shortcuts": "Tastenkombinationen anzeigen"
     },
     "memo-view": {
       "create": "Ansicht erstellen",
@@ -857,6 +865,33 @@
       "your-access": "Ihr Zugriff",
       "your-spaces": "Ihre Bereiche"
     }
+  },
+  "shortcuts": {
+    "clear-filters": "Suche und Filter zurücksetzen",
+    "description": "Tastenkombinationen mit einer Taste funktionieren überall außerhalb von Textfeldern.",
+    "edit-memo": "Ausgewähltes Memo bearbeiten",
+    "focus-editor": "Editor fokussieren",
+    "go-archived": "Zum Archiv wechseln",
+    "go-attachments": "Zu den Anhängen wechseln",
+    "go-back": "Zurück",
+    "go-calendar": "Zum Kalender wechseln",
+    "go-explore": "Zu Entdecken wechseln",
+    "go-home": "Zur Startseite wechseln",
+    "go-inbox": "Zum Posteingang wechseln",
+    "go-map": "Zur Karte wechseln",
+    "go-settings": "Zu den Einstellungen wechseln",
+    "group-general": "Allgemein",
+    "group-memos": "Memos",
+    "group-navigation": "Navigation",
+    "new-memo": "Neues Memo",
+    "next-memo": "Nächstes Memo auswählen",
+    "open-memo": "Ausgewähltes Memo öffnen",
+    "open-search": "Suchen",
+    "pin-memo": "Ausgewähltes Memo anheften oder lösen",
+    "previous-memo": "Vorheriges Memo auswählen",
+    "show-shortcuts": "Tastenkombinationen anzeigen",
+    "then": "dann",
+    "title": "Tastenkombinationen"
   },
   "tooltip": {
     "link-memo": "Link Memo",
