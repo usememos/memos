@@ -267,6 +267,12 @@ const RouteSidebarContent = () => {
   return null;
 };
 
+/** Returns true when the current route already renders CommonSidebarContent as its primary sidebar. */
+const useIsCommonRoute = () => {
+  const location = useLocation();
+  return getSidebarRouteKind(location.pathname) === "common";
+};
+
 /** Collection views beside Timeline. Attachments is a library of the user's own files, so guests get the reading views only. */
 const NAV_DESTINATIONS = [
   { kind: "calendar", labelKey: "common.calendar", pathname: ROUTES.CALENDAR, icon: CalendarDaysIcon, signedInOnly: false },
@@ -385,6 +391,7 @@ const AppSidebar = ({ className }: { className?: string }) => {
   const currentUser = useCurrentUser();
   const { setMobileOpen } = useAppSidebar();
   const { canOpen: canCompose, openEditor } = useGlobalMemoEditor();
+  const isCommonRoute = useIsCommonRoute();
   return (
     <aside className={cn("flex h-full w-full select-none flex-col bg-sidebar text-sidebar-foreground", className)}>
       <div data-sidebar-header className={cn("flex h-13 shrink-0 items-center justify-between gap-2", SIDEBAR_RAIL_CLASSES)}>
@@ -395,6 +402,14 @@ const AppSidebar = ({ className }: { className?: string }) => {
       <div className="mx-3 mt-2 border-t border-border/70" />
       <div className={cn("min-h-0 flex-1 overflow-y-auto overflow-x-hidden pt-2 pb-3 [scrollbar-width:thin]", SIDEBAR_RAIL_CLASSES)}>
         <RouteSidebarContent />
+        {!isCommonRoute && (
+          <>
+            <div className="mx-0 mt-3 border-t border-border/70" />
+            <div className="pt-2">
+              <CommonSidebarContent />
+            </div>
+          </>
+        )}
       </div>
       {!currentUser && (
         <footer className="shrink-0 border-t border-border/70">
