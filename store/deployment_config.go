@@ -32,6 +32,9 @@ var (
 	idpDeploymentFilenameMatcher             = regexp.MustCompile(`^memos-idp-[a-z0-9]+(?:-[a-z0-9]+)*\.json$`)
 	instanceSettingDeploymentFilenameMatcher = regexp.MustCompile(`^memos-instance-setting-[a-z0-9]+(?:-[a-z0-9]+)*\.json$`)
 	protoJSONUnknownFieldMatcher             = regexp.MustCompile(`unknown field "([^"]+)"`)
+	// Decode errors echo raw JSON tokens, which may be secrets, so only the position, value kind, and field name are kept.
+	// Anchored to the protojson error header so text inside an echoed value can never match.
+	protoJSONDecodeErrorMatcher = regexp.MustCompile(`^proto:[\s\x{00a0}]+(?:syntax error )?\(line (\d+:\d+)\): (?:invalid value for (\w+) field (\w+):)?`)
 )
 
 // LoadDeploymentConfiguration loads the default runtime deployment configuration.
@@ -150,7 +153,14 @@ func readDeploymentProtoJSON(path string, message proto.Message) error {
 		if matches := protoJSONUnknownFieldMatcher.FindStringSubmatch(err.Error()); len(matches) == 2 {
 			return errors.Errorf("failed to decode protobuf JSON: unknown field %q", matches[1])
 		}
-		return errors.New("failed to decode protobuf JSON; verify field names, value types, and JSON syntax")
+		matches := protoJSONDecodeErrorMatcher.FindStringSubmatch(err.Error())
+		if matches == nil {
+			return errors.New("failed to decode protobuf JSON; verify field names, value types, and JSON syntax")
+		}
+		if matches[2] != "" {
+			return errors.Errorf("failed to decode protobuf JSON at line %s: invalid value for %s field %q", matches[1], matches[2], matches[3])
+		}
+		return errors.Errorf("failed to decode protobuf JSON at line %s; verify field names, value types, and JSON syntax", matches[1])
 	}
 	return nil
 }
