@@ -66,16 +66,18 @@ const Home = () => {
             if (!isUserSettingsInitialized || !canComposeInScope) return null;
 
             return (
-              <MemoEditor
-                key={editorCacheKey}
-                autoFocus={claimHomeAutoFocus}
-                className={useGrid ? undefined : "mb-2"}
-                cacheKey={editorCacheKey}
-                placeholder={t("editor.any-thoughts")}
-                defaultCreateTime={defaultCreateTime}
-                defaultSpace={selectedSpaceName}
-                suggestions={suggestions}
-              />
+              <div className="contents" data-memo-composer>
+                <MemoEditor
+                  key={editorCacheKey}
+                  autoFocus={claimHomeAutoFocus}
+                  className={useGrid ? undefined : "mb-2"}
+                  cacheKey={editorCacheKey}
+                  placeholder={t("editor.any-thoughts")}
+                  defaultCreateTime={defaultCreateTime}
+                  defaultSpace={selectedSpaceName}
+                  suggestions={suggestions}
+                />
+              </div>
             );
           }}
         />

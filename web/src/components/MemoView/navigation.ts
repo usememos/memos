@@ -2,6 +2,8 @@ import { ROUTES } from "@/router/routes";
 
 export interface MemoNavigationState {
   from: string;
+  /** Set when a keyboard shortcut opened the memo, so the detail page focuses its card. */
+  focus?: boolean;
 }
 
 interface ResolveMemoDetailOriginOptions {
@@ -35,7 +37,11 @@ export const isMemoResourcePath = (pathname: string): boolean => {
   return memoID.length > 0 && !memoID.includes("/");
 };
 
-export const createMemoNavigationState = (from: string): MemoNavigationState => ({ from });
+export const createMemoNavigationState = (from: string, focus?: boolean): MemoNavigationState => (focus ? { from, focus } : { from });
+
+/** Whether router state asks the detail page to focus the memo card. */
+export const shouldFocusMemoCard = (state: unknown): boolean =>
+  Boolean(state && typeof state === "object" && (state as { focus?: unknown }).focus === true);
 
 /** Reads the origin page out of router state; without one, a detail returns to its collection. */
 export const resolveMemoDetailOrigin = (state: unknown, options: ResolveMemoDetailOriginOptions = {}): string => {

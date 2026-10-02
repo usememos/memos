@@ -1,8 +1,10 @@
 import { create } from "@bufbuild/protobuf";
 import { useMemo } from "react";
+import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/contexts/AuthContext";
+import { useKeyboardShortcutsContext } from "@/contexts/KeyboardShortcutsContext";
 import { useUpdateUserGeneralSetting } from "@/hooks/useUserQueries";
 import { UserSetting_GeneralSetting, UserSetting_GeneralSettingSchema } from "@/types/proto/api/v1/user_service_pb";
 import { loadLocale, useTranslate } from "@/utils/i18n";
@@ -19,6 +21,7 @@ const PreferencesSection = () => {
   const t = useTranslate();
   const { currentUser, userGeneralSetting: generalSetting, refetchSettings } = useAuth();
   const { mutate: updateUserGeneralSetting, isPending: isUpdatingGeneralSetting } = useUpdateUserGeneralSetting(currentUser?.name);
+  const keyboardShortcuts = useKeyboardShortcutsContext();
 
   const handleLocaleSelectChange = (locale: Locale) => {
     // Apply locale immediately for instant UI feedback and persist to localStorage
@@ -148,6 +151,26 @@ const PreferencesSection = () => {
               disabled={isUpdatingGeneralSetting}
               onCheckedChange={handleSaveMediaMetadataChange}
             />
+          </SettingListItem>
+        </SettingList>
+      </SettingGroup>
+
+      <SettingGroup title={t("setting.preference.keyboard-title")} description={t("setting.preference.keyboard-description")} showSeparator>
+        <SettingList>
+          <SettingListItem
+            label={t("setting.preference.keyboard-shortcuts")}
+            description={t("setting.preference.keyboard-shortcuts-description")}
+          >
+            <div className="flex items-center gap-3">
+              <Button variant="outline" size="sm" onClick={keyboardShortcuts.openHelp}>
+                {t("setting.preference.view-shortcuts")}
+              </Button>
+              <Switch
+                aria-label={t("setting.preference.keyboard-shortcuts")}
+                checked={keyboardShortcuts.enabled}
+                onCheckedChange={keyboardShortcuts.setEnabled}
+              />
+            </div>
           </SettingListItem>
         </SettingList>
       </SettingGroup>
