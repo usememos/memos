@@ -221,6 +221,9 @@
     "any-thoughts": "יש מחשבות...",
     "exit-focus-mode": "יציאה ממצב מיקוד",
     "focus-mode": "מצב מיקוד",
+    "discard-changes": "לבטל את השינויים?",
+    "discard-changes-description": "השינויים שלא נשמרו בתזכיר הזה יאבדו.",
+    "discard": "ביטול השינויים",
     "formatting-toolbar": "סרגל עיצוב",
     "format": {
       "heading": "כותרת",
@@ -607,6 +610,10 @@
       "appearance-title": "מראה",
       "default-memo-visibility": "נראות ברירת המחדל של הפתק",
       "default-memo-visibility-description": "הנראות שחלה על פתקים חדשים שנוצרו, אלא אם תשנו אותה בעורך.",
+      "keyboard-description": "אפשר לנווט בלי עכבר. ההגדרה נשמרת במכשיר הזה.",
+      "keyboard-shortcuts": "קיצורי מקלדת",
+      "keyboard-shortcuts-description": "כדי לראות את כל הקיצורים, יש ללחוץ על ? מחוץ לשדה טקסט.",
+      "keyboard-title": "מקלדת",
       "label": "העדפות",
       "language-description": "מעדכן את שפת הממשק באופן מיידי ושומר אותה בחשבון שלכם.",
       "memo-defaults-description": "הגדירו את ברירות המחדל המשמשות בעת כתיבת פתקים חדשים.",
@@ -616,7 +623,8 @@
       "theme-description": "החל את ערכת הנושא שנבחרה באופן מיידי במכשיר הזה.",
       "theme": "ערכת נושא",
       "uploads-privacy-description": "שליטה במידע רגיש לפרטיות שנשלח עם מדיה שהועלתה.",
-      "uploads-privacy-title": "העלאות ופרטיות"
+      "uploads-privacy-title": "העלאות ופרטיות",
+      "view-shortcuts": "הצגת קיצורים"
     },
     "memo-view": {
       "create": "יצירת תצוגה",
@@ -928,6 +936,33 @@
       "your-access": "הגישה שלך",
       "your-spaces": "המרחבים שלך"
     }
+  },
+  "shortcuts": {
+    "clear-filters": "ניקוי החיפוש והמסננים",
+    "description": "קיצורים של מקש יחיד פועלים בכל מקום מחוץ לשדות טקסט.",
+    "edit-memo": "עריכת התזכיר שנבחר",
+    "focus-editor": "העברת המיקוד לעורך",
+    "go-archived": "מעבר לארכיון",
+    "go-attachments": "מעבר לקבצים המצורפים",
+    "go-back": "חזרה",
+    "go-calendar": "מעבר ללוח השנה",
+    "go-explore": "מעבר לעיון",
+    "go-home": "מעבר לדף הבית",
+    "go-inbox": "מעבר לתיבת הדואר הנכנס",
+    "go-map": "מעבר למפה",
+    "go-settings": "מעבר להגדרות",
+    "group-general": "כללי",
+    "group-memos": "תזכירים",
+    "group-navigation": "ניווט",
+    "new-memo": "תזכיר חדש",
+    "next-memo": "בחירת התזכיר הבא",
+    "open-memo": "פתיחת התזכיר שנבחר",
+    "open-search": "חיפוש",
+    "pin-memo": "הצמדה או ביטול הצמדה של התזכיר שנבחר",
+    "previous-memo": "בחירת התזכיר הקודם",
+    "show-shortcuts": "הצגת קיצורי מקלדת",
+    "then": "ואז",
+    "title": "קיצורי מקלדת"
   },
   "tooltip": {
     "link-memo": "קשר פתק",

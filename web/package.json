@@ -31,6 +31,7 @@
     "@lezer/markdown": "^1.7.2",
     "@maplibre/maplibre-gl-leaflet": "^0.1.4",
     "@tailwindcss/vite": "^4.2.4",
+    "@tanstack/react-hotkeys": "0.12.1",
     "@tanstack/react-query": "^5.100.9",
     "@tanstack/react-query-devtools": "^5.100.9",
     "class-variance-authority": "^0.7.1",

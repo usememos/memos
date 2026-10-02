@@ -181,6 +181,9 @@
       "transcribing": "Transcribing..."
     },
     "comment": "Comment",
+    "discard-changes": "Discard changes?",
+    "discard-changes-description": "Your unsaved changes to this memo will be lost.",
+    "discard": "Discard",
     "formatting-toolbar": "Formatting toolbar",
     "format": {
       "heading": "Heading",
@@ -455,6 +458,10 @@
     },
     "preference": {
       "default-memo-visibility": "Default memo visibility",
+      "keyboard-description": "Move around without the mouse. Saved on this device.",
+      "keyboard-shortcuts": "Keyboard shortcuts",
+      "keyboard-shortcuts-description": "Press ? outside a text field to see every shortcut.",
+      "keyboard-title": "Keyboard",
       "label": "Preferences",
       "theme": "Theme",
       "appearance-description": "Choose how the app looks and which language it uses for your account.",
@@ -467,7 +474,8 @@
       "save-media-metadata": "Save media metadata",
       "save-media-metadata-description": "For future uploads, save available camera, capture time, location, image dimensions, and basic video details. Anyone who can view the attachment can receive this metadata. Existing attachments are unchanged.",
       "uploads-privacy-description": "Control privacy-sensitive information submitted with uploaded media.",
-      "uploads-privacy-title": "Uploads & privacy"
+      "uploads-privacy-title": "Uploads & privacy",
+      "view-shortcuts": "View shortcuts"
     },
     "memo-view": {
       "create": "Create view",
@@ -857,6 +865,33 @@
       "your-access": "Your access",
       "your-spaces": "Your spaces"
     }
+  },
+  "shortcuts": {
+    "clear-filters": "Clear search and filters",
+    "description": "Single-key shortcuts work anywhere outside a text field.",
+    "edit-memo": "Edit selected memo",
+    "focus-editor": "Focus the editor",
+    "go-archived": "Go to Archived",
+    "go-attachments": "Go to Attachments",
+    "go-back": "Go back",
+    "go-calendar": "Go to Calendar",
+    "go-explore": "Go to Explore",
+    "go-home": "Go to Home",
+    "go-inbox": "Go to Inbox",
+    "go-map": "Go to Map",
+    "go-settings": "Go to Settings",
+    "group-general": "General",
+    "group-memos": "Memos",
+    "group-navigation": "Navigation",
+    "new-memo": "New memo",
+    "next-memo": "Select next memo",
+    "open-memo": "Open selected memo",
+    "open-search": "Search",
+    "pin-memo": "Pin or unpin selected memo",
+    "previous-memo": "Select previous memo",
+    "show-shortcuts": "Show keyboard shortcuts",
+    "then": "then",
+    "title": "Keyboard shortcuts"
   },
   "tooltip": {
     "link-memo": "Link Memo",

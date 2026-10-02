@@ -197,6 +197,9 @@
       "more": "Altre opzioni di formattazione"
     },
     "comment": "Commento",
+    "discard-changes": "Vuoi annullare le modifiche?",
+    "discard-changes-description": "Le modifiche non salvate a questo memo andranno perse.",
+    "discard": "Annulla modifiche",
     "formatting-toolbar": "Barra degli strumenti di formattazione",
     "new-memo": "Nuovo memo",
     "saved": "Salvato",
@@ -455,6 +458,10 @@
     },
     "preference": {
       "default-memo-visibility": "Visibilità memo predefinita",
+      "keyboard-description": "Naviga senza mouse. L'impostazione viene salvata su questo dispositivo.",
+      "keyboard-shortcuts": "Scorciatoie da tastiera",
+      "keyboard-shortcuts-description": "Premi ? fuori da un campo di testo per vedere tutte le scorciatoie.",
+      "keyboard-title": "Tastiera",
       "label": "Preferenze",
       "theme": "Tema",
       "appearance-description": "Scegli l'aspetto dell'app e la lingua da utilizzare per il tuo account.",
@@ -467,7 +474,8 @@
       "save-media-metadata": "Salva i metadati dei media",
       "save-media-metadata-description": "Per i caricamenti futuri, salva la fotocamera disponibile, l'ora di acquisizione, la posizione, le dimensioni dell'immagine e i dettagli video di base. Chiunque possa visualizzare l'allegato può ricevere questi metadati. Gli allegati esistenti rimangono invariati.",
       "uploads-privacy-description": "Controlla le informazioni sensibili alla privacy inviate con i media caricati.",
-      "uploads-privacy-title": "Caricamenti e privacy"
+      "uploads-privacy-title": "Caricamenti e privacy",
+      "view-shortcuts": "Visualizza le scorciatoie"
     },
     "memo-view": {
       "create": "Crea vista",
@@ -857,6 +865,33 @@
       "your-access": "Il tuo accesso",
       "your-spaces": "I tuoi spazi"
     }
+  },
+  "shortcuts": {
+    "clear-filters": "Cancella ricerca e filtri",
+    "description": "Le scorciatoie a tasto singolo funzionano ovunque fuori dai campi di testo.",
+    "edit-memo": "Modifica il memo selezionato",
+    "focus-editor": "Attiva l'editor",
+    "go-archived": "Vai ad Archivio",
+    "go-attachments": "Vai ad Allegati",
+    "go-back": "Indietro",
+    "go-calendar": "Vai a Calendario",
+    "go-explore": "Vai a Esplora",
+    "go-home": "Vai alla Home",
+    "go-inbox": "Vai alla Posta in arrivo",
+    "go-map": "Vai alla Mappa",
+    "go-settings": "Vai a Impostazioni",
+    "group-general": "Generale",
+    "group-memos": "Memo",
+    "group-navigation": "Navigazione",
+    "new-memo": "Nuovo memo",
+    "next-memo": "Seleziona il memo successivo",
+    "open-memo": "Apri il memo selezionato",
+    "open-search": "Cerca",
+    "pin-memo": "Fissa o rimuovi il memo selezionato",
+    "previous-memo": "Seleziona il memo precedente",
+    "show-shortcuts": "Mostra le scorciatoie da tastiera",
+    "then": "poi",
+    "title": "Scorciatoie da tastiera"
   },
   "tooltip": {
     "link-memo": "Link Memo",

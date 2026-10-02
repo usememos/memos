@@ -197,6 +197,9 @@
       "more": "Més format"
     },
     "comment": "Comentari",
+    "discard-changes": "Voleu descartar els canvis?",
+    "discard-changes-description": "Es perdran els canvis no desats d'aquesta nota.",
+    "discard": "Descarta",
     "formatting-toolbar": "Barra d'eines de format",
     "new-memo": "Nova nota",
     "saved": "Desada",
@@ -455,6 +458,10 @@
     },
     "preference": {
       "default-memo-visibility": "Visibilitat per defecte de la nota",
+      "keyboard-description": "Navegueu sense el ratolí. Aquesta opció es desa en aquest dispositiu.",
+      "keyboard-shortcuts": "Dreceres de teclat",
+      "keyboard-shortcuts-description": "Premeu ? fora d'un camp de text per veure totes les dreceres.",
+      "keyboard-title": "Teclat",
       "label": "Preferències",
       "theme": "Tema",
       "appearance-description": "Trieu com es veu l'aplicació i quin idioma utilitza per al vostre compte.",
@@ -467,7 +474,8 @@
       "save-media-metadata": "Desa les metadades dels continguts multimèdia",
       "save-media-metadata-description": "Per a futures càrregues, desa la càmera disponible, l'hora de captura, la ubicació, les dimensions de la imatge i els detalls bàsics del vídeo. Qualsevol persona que pugui veure el fitxer adjunt pot rebre aquestes metadades. Els fitxers adjunts existents no canvien.",
       "uploads-privacy-description": "Controla la informació sensible a la privadesa enviada amb els continguts multimèdia carregats.",
-      "uploads-privacy-title": "Càrregues i privadesa"
+      "uploads-privacy-title": "Càrregues i privadesa",
+      "view-shortcuts": "Mostra les dreceres"
     },
     "memo-view": {
       "create": "Crea una vista",
@@ -857,6 +865,33 @@
       "your-access": "El teu accés",
       "your-spaces": "Els teus espais"
     }
+  },
+  "shortcuts": {
+    "clear-filters": "Neteja la cerca i els filtres",
+    "description": "Les dreceres d'una sola tecla funcionen arreu fora dels camps de text.",
+    "edit-memo": "Edita la nota seleccionada",
+    "focus-editor": "Posa el focus a l'editor",
+    "go-archived": "Ves a Arxivades",
+    "go-attachments": "Ves a Fitxers adjunts",
+    "go-back": "Enrere",
+    "go-calendar": "Ves al Calendari",
+    "go-explore": "Ves a Explora",
+    "go-home": "Ves a Inici",
+    "go-inbox": "Ves a la Safata d'entrada",
+    "go-map": "Ves al Mapa",
+    "go-settings": "Ves a Configuració",
+    "group-general": "General",
+    "group-memos": "Notes",
+    "group-navigation": "Navegació",
+    "new-memo": "Nota nova",
+    "next-memo": "Selecciona la nota següent",
+    "open-memo": "Obre la nota seleccionada",
+    "open-search": "Cerca",
+    "pin-memo": "Fixa o desfixa la nota seleccionada",
+    "previous-memo": "Selecciona la nota anterior",
+    "show-shortcuts": "Mostra les dreceres de teclat",
+    "then": "després",
+    "title": "Dreceres de teclat"
   },
   "tooltip": {
     "link-memo": "Enllaça nota",

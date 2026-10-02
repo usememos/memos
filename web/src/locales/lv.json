@@ -235,6 +235,9 @@
       "more": "Papildu formatējums"
     },
     "comment": "Komentārs",
+    "discard-changes": "Atmest izmaiņas?",
+    "discard-changes-description": "Nesaglabātās izmaiņas šajā piezīmē tiks zaudētas.",
+    "discard": "Atmest",
     "formatting-toolbar": "Formatēšanas rīkjosla",
     "new-memo": "Jauna piezīme",
     "saved": "Saglabāts",
@@ -574,6 +577,10 @@
       "appearance-title": "Izskats",
       "default-memo-visibility": "Noklusējuma piezīmju redzamība",
       "default-memo-visibility-description": "Redzamība tiek piemērota jaunizveidotajām piezīmēm, ja vien tas nav mainīts redaktorā.",
+      "keyboard-description": "Pārvietojieties bez peles. Iestatījums tiek saglabāts šajā ierīcē.",
+      "keyboard-shortcuts": "Tastatūras īsinājumtaustiņi",
+      "keyboard-shortcuts-description": "Nospiediet ? ārpus teksta lauka, lai skatītu visus īsinājumtaustiņus.",
+      "keyboard-title": "Tastatūra",
       "label": "Preferences",
       "language-description": "Nekavējoties atjaunina saskarnes valodu un saglabā to jūsu kontā.",
       "memo-defaults-description": "Iestatiet noklusējuma iestatījumus, kas tiek izmantoti, veidojot jaunas piezīmes.",
@@ -583,7 +590,8 @@
       "save-media-metadata": "Saglabāt multivides metadatus",
       "save-media-metadata-description": "Turpmākām augšupielādēm saglabājiet pieejamo kameru, uzņemšanas laiku, atrašanās vietu, attēla izmērus un pamata video informāciju. Ikviens, kurš var skatīt pielikumu, var saņemt šos metadatus. Esošie pielikumi netiek mainīti.",
       "uploads-privacy-description": "Kontrolējiet konfidenciālu informāciju, kas iesniegta kopā ar augšupielādēto multividi.",
-      "uploads-privacy-title": "Augšupielādes un konfidencialitāte"
+      "uploads-privacy-title": "Augšupielādes un konfidencialitāte",
+      "view-shortcuts": "Skatīt īsinājumtaustiņus"
     },
     "memo-view": {
       "create": "Izveidot skatu",
@@ -895,6 +903,33 @@
       "your-access": "Jūsu piekļuve",
       "your-spaces": "Jūsu telpas"
     }
+  },
+  "shortcuts": {
+    "clear-filters": "Notīrīt meklēšanu un filtrus",
+    "description": "Viena taustiņa īsinājumtaustiņi darbojas visur ārpus teksta laukiem.",
+    "edit-memo": "Rediģēt atlasīto piezīmi",
+    "focus-editor": "Pāriet uz redaktoru",
+    "go-archived": "Doties uz arhīvu",
+    "go-attachments": "Doties uz pielikumiem",
+    "go-back": "Atpakaļ",
+    "go-calendar": "Doties uz kalendāru",
+    "go-explore": "Doties uz izpēti",
+    "go-home": "Doties uz sākumlapu",
+    "go-inbox": "Doties uz iesūtni",
+    "go-map": "Doties uz karti",
+    "go-settings": "Doties uz iestatījumiem",
+    "group-general": "Vispārīgi",
+    "group-memos": "Piezīmes",
+    "group-navigation": "Navigācija",
+    "new-memo": "Jauna piezīme",
+    "next-memo": "Atlasīt nākamo piezīmi",
+    "open-memo": "Atvērt atlasīto piezīmi",
+    "open-search": "Meklēt",
+    "pin-memo": "Piespraust vai atspraust atlasīto piezīmi",
+    "previous-memo": "Atlasīt iepriekšējo piezīmi",
+    "show-shortcuts": "Rādīt tastatūras īsinājumtaustiņus",
+    "then": "pēc tam",
+    "title": "Tastatūras īsinājumtaustiņi"
   },
   "tooltip": {
     "link-memo": "Saites piezīme",

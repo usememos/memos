@@ -197,6 +197,9 @@
       "more": "Meer opmaakopties"
     },
     "comment": "Opmerking",
+    "discard-changes": "Wijzigingen weggooien?",
+    "discard-changes-description": "Niet-opgeslagen wijzigingen in deze memo gaan verloren.",
+    "discard": "Weggooien",
     "formatting-toolbar": "Opmaakwerkbalk",
     "new-memo": "Nieuwe memo",
     "saved": "Opgeslagen",
@@ -455,6 +458,10 @@
     },
     "preference": {
       "default-memo-visibility": "Standaard memo zichtbaarheid",
+      "keyboard-description": "Navigeer zonder muis. De instelling wordt op dit apparaat opgeslagen.",
+      "keyboard-shortcuts": "Sneltoetsen",
+      "keyboard-shortcuts-description": "Druk buiten een tekstveld op ? om alle sneltoetsen te zien.",
+      "keyboard-title": "Toetsenbord",
       "label": "Voorkeuren",
       "theme": "Thema",
       "appearance-description": "Kies hoe de app eruit ziet en welke taal deze gebruikt voor uw account.",
@@ -467,7 +474,8 @@
       "save-media-metadata": "Mediametadata opslaan",
       "save-media-metadata-description": "Voor toekomstige uploads, sla beschikbare camera, opnametijd, locatie, afmetingen van de afbeelding en basisvideogegevens op. Iedereen die de bijlage kan bekijken, kan deze metadata ontvangen. Bestaande bijlagen blijven ongewijzigd.",
       "uploads-privacy-description": "Beheer privacygevoelige informatie die met geüploade media wordt verzonden.",
-      "uploads-privacy-title": "Uploads en privacy"
+      "uploads-privacy-title": "Uploads en privacy",
+      "view-shortcuts": "Sneltoetsen bekijken"
     },
     "memo-view": {
       "create": "Weergave maken",
@@ -857,6 +865,33 @@
       "your-access": "Jouw toegang",
       "your-spaces": "Jouw ruimtes"
     }
+  },
+  "shortcuts": {
+    "clear-filters": "Zoekopdracht en filters wissen",
+    "description": "Sneltoetsen met één toets werken overal buiten een tekstveld.",
+    "edit-memo": "Geselecteerde memo bewerken",
+    "focus-editor": "Focus op de editor",
+    "go-archived": "Ga naar Archief",
+    "go-attachments": "Ga naar Bijlagen",
+    "go-back": "Terug",
+    "go-calendar": "Ga naar Agenda",
+    "go-explore": "Ga naar Ontdekken",
+    "go-home": "Ga naar Startpagina",
+    "go-inbox": "Ga naar Postvak IN",
+    "go-map": "Ga naar Kaart",
+    "go-settings": "Ga naar Instellingen",
+    "group-general": "Algemeen",
+    "group-memos": "Memo's",
+    "group-navigation": "Navigatie",
+    "new-memo": "Nieuwe memo",
+    "next-memo": "Volgende memo selecteren",
+    "open-memo": "Geselecteerde memo openen",
+    "open-search": "Zoeken",
+    "pin-memo": "Geselecteerde memo vastmaken of losmaken",
+    "previous-memo": "Vorige memo selecteren",
+    "show-shortcuts": "Sneltoetsen tonen",
+    "then": "dan",
+    "title": "Sneltoetsen"
   },
   "tooltip": {
     "link-memo": "Memo linken",

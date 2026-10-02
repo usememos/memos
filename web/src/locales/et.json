@@ -235,6 +235,9 @@
       "more": "Rohkem vormindust"
     },
     "comment": "Kommentaar",
+    "discard-changes": "Kas muudatused hüljata?",
+    "discard-changes-description": "Selle memo salvestamata muudatused lähevad kaotsi.",
+    "discard": "Hülga",
     "formatting-toolbar": "Vormindamise tööriistariba",
     "new-memo": "Uus memo",
     "saved": "Salvestatud",
@@ -574,6 +577,10 @@
       "appearance-title": "Välimus",
       "default-memo-visibility": "Memode vaikenähtavus",
       "default-memo-visibility-description": "Nähtavus rakendatakse äsja loodud memodele, kui seda pole redaktoris muudetud.",
+      "keyboard-description": "Liigu ringi ilma hiireta. Seade salvestatakse sellesse seadmesse.",
+      "keyboard-shortcuts": "Klaviatuuri otseteed",
+      "keyboard-shortcuts-description": "Kõigi otseteede nägemiseks vajuta väljaspool tekstivälja klahvi ?.",
+      "keyboard-title": "Klaviatuur",
       "label": "Eelistused",
       "language-description": "Värskendab koheselt liidese keelt ja salvestab selle teie kontole.",
       "memo-defaults-description": "Määrake uute memode koostamisel kasutatavad vaikeseaded.",
@@ -583,7 +590,8 @@
       "save-media-metadata": "Salvesta meedia metaandmed",
       "save-media-metadata-description": "Tulevaste üleslaadimiste jaoks salvesta saadaolev kaamera, võtteaeg, asukoht, pildi mõõtmed ja video põhiandmed. Kõik, kes saavad manust vaadata, saavad selle metateabe kätte. Olemasolevad manused jäävad muutmata.",
       "uploads-privacy-description": "Kontrolli üleslaaditud meediaga esitatud privaatsustundlikku teavet.",
-      "uploads-privacy-title": "Üleslaadimised ja privaatsus"
+      "uploads-privacy-title": "Üleslaadimised ja privaatsus",
+      "view-shortcuts": "Vaata otseteid"
     },
     "memo-view": {
       "create": "Loo vaade",
@@ -895,6 +903,33 @@
       "your-access": "Sinu juurdepääs",
       "your-spaces": "Sinu ruumid"
     }
+  },
+  "shortcuts": {
+    "clear-filters": "Tühjenda otsing ja filtrid",
+    "description": "Ühe klahviga otseteed toimivad kõikjal väljaspool tekstivälju.",
+    "edit-memo": "Muuda valitud memot",
+    "focus-editor": "Vii fookus redaktorisse",
+    "go-archived": "Mine arhiivi",
+    "go-attachments": "Mine manuste juurde",
+    "go-back": "Tagasi",
+    "go-calendar": "Mine kalendrisse",
+    "go-explore": "Mine avastamislehele",
+    "go-home": "Mine avalehele",
+    "go-inbox": "Mine postkasti",
+    "go-map": "Mine kaardile",
+    "go-settings": "Mine seadetesse",
+    "group-general": "Üldine",
+    "group-memos": "Memod",
+    "group-navigation": "Liikumine",
+    "new-memo": "Uus memo",
+    "next-memo": "Vali järgmine memo",
+    "open-memo": "Ava valitud memo",
+    "open-search": "Otsi",
+    "pin-memo": "Kinnita valitud memo või eemalda kinnitus",
+    "previous-memo": "Vali eelmine memo",
+    "show-shortcuts": "Kuva klaviatuuri otseteed",
+    "then": "seejärel",
+    "title": "Klaviatuuri otseteed"
   },
   "tooltip": {
     "link-memo": "Link Memo",

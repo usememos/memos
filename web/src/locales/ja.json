@@ -150,6 +150,9 @@
     "any-thoughts": "今思ったことは...",
     "exit-focus-mode": "フォーカスを終了",
     "focus-mode": "フォーカスモード",
+    "discard-changes": "変更を破棄しますか？",
+    "discard-changes-description": "このメモの保存されていない変更は失われます。",
+    "discard": "破棄",
     "formatting-toolbar": "書式ツールバー",
     "no-changes-detected": "変更はありません",
     "save": "保存",
@@ -455,6 +458,10 @@
     },
     "preference": {
       "default-memo-visibility": "公開範囲の初期設定",
+      "keyboard-description": "マウスを使わずに移動できます。この設定はこのデバイスに保存されます。",
+      "keyboard-shortcuts": "キーボードショートカット",
+      "keyboard-shortcuts-description": "テキスト入力欄の外で ? を押すと、すべてのショートカットを表示できます。",
+      "keyboard-title": "キーボード",
       "label": "設定",
       "theme": "テーマ",
       "appearance-description": "アプリの外観と、アカウントで使用する言語を選択します。",
@@ -467,7 +474,8 @@
       "save-media-metadata": "メディアメタデータの保存",
       "save-media-metadata-description": "今後のアップロードのために、使用可能なカメラ、撮影時間、場所、画像サイズ、および基本的なビデオの詳細を保存します。添付ファイルを閲覧できるユーザーは誰でもこのメタデータを受け取ることができます。既存の添付ファイルは変更されません。",
       "uploads-privacy-description": "アップロードされたメディアとともに送信されるプライバシーに配慮した情報を管理します。",
-      "uploads-privacy-title": "アップロードとプライバシー"
+      "uploads-privacy-title": "アップロードとプライバシー",
+      "view-shortcuts": "ショートカットを表示"
     },
     "memo-view": {
       "create": "ビューを作成",
@@ -857,6 +865,33 @@
       "your-access": "あなたのアクセス権限",
       "your-spaces": "あなたのスペース"
     }
+  },
+  "shortcuts": {
+    "clear-filters": "検索とフィルターをクリア",
+    "description": "1 キーのショートカットは、テキスト入力欄の外ならどこでも使えます。",
+    "edit-memo": "選択したメモを編集",
+    "focus-editor": "エディターにフォーカス",
+    "go-archived": "アーカイブに移動",
+    "go-attachments": "添付ファイルに移動",
+    "go-back": "戻る",
+    "go-calendar": "カレンダーに移動",
+    "go-explore": "探索に移動",
+    "go-home": "ホームに移動",
+    "go-inbox": "受信トレイに移動",
+    "go-map": "マップに移動",
+    "go-settings": "設定に移動",
+    "group-general": "一般",
+    "group-memos": "メモ",
+    "group-navigation": "ナビゲーション",
+    "new-memo": "新しいメモ",
+    "next-memo": "次のメモを選択",
+    "open-memo": "選択したメモを開く",
+    "open-search": "検索",
+    "pin-memo": "選択したメモをピン留めまたは解除",
+    "previous-memo": "前のメモを選択",
+    "show-shortcuts": "キーボードショートカットを表示",
+    "then": "次に",
+    "title": "キーボードショートカット"
   },
   "tooltip": {
     "link-memo": "メモをリンク",

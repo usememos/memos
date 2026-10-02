@@ -235,6 +235,9 @@
       "more": "Lisää muotoiluja"
     },
     "comment": "Kommentti",
+    "discard-changes": "Hylätäänkö muutokset?",
+    "discard-changes-description": "Tämän muistion tallentamattomat muutokset menetetään.",
+    "discard": "Hylkää",
     "formatting-toolbar": "Muotoilupalkki",
     "new-memo": "Uusi muistio",
     "saved": "Tallennettu",
@@ -574,6 +577,10 @@
       "appearance-title": "Ulkonäkö",
       "default-memo-visibility": "Oletusmuistin näkyvyys",
       "default-memo-visibility-description": "Näkyvyys koskee äskettäin luotuja muistioita, ellei sitä ole muutettu editorissa.",
+      "keyboard-description": "Liiku ilman hiirtä. Asetus tallennetaan tälle laitteelle.",
+      "keyboard-shortcuts": "Pikanäppäimet",
+      "keyboard-shortcuts-description": "Näet kaikki pikanäppäimet painamalla ? tekstikentän ulkopuolella.",
+      "keyboard-title": "Näppäimistö",
       "label": "Asetukset",
       "language-description": "Päivittää käyttöliittymän kielen välittömästi ja tallentaa sen tilillesi.",
       "memo-defaults-description": "Aseta oletusasetukset, joita käytetään luotaessa uusia muistioita.",
@@ -583,7 +590,8 @@
       "save-media-metadata": "Tallenna median metatiedot",
       "save-media-metadata-description": "Tallenna käytettävissä oleva kamera, kuvausaika, sijainti, kuvan mitat ja videon perustiedot tulevia latauksia varten. Kuka tahansa, joka voi tarkastella liitettä, voi vastaanottaa nämä metatiedot. Olemassa olevat liitteet pysyvät muuttumattomina.",
       "uploads-privacy-description": "Hallitse ladatun median mukana lähetettyjä yksityisyyttä suojaavia tietoja.",
-      "uploads-privacy-title": "Lataukset ja tietosuoja"
+      "uploads-privacy-title": "Lataukset ja tietosuoja",
+      "view-shortcuts": "Näytä pikanäppäimet"
     },
     "memo-view": {
       "create": "Luo näkymä",
@@ -895,6 +903,33 @@
       "delete-confirm-description": "Tämä poistaa pysyvästi tilan ja siihen sijoitetut muistiot. Toimintoa ei voi kumota.",
       "delete-confirm-title": "Poistetaanko {{space}}?"
     }
+  },
+  "shortcuts": {
+    "clear-filters": "Tyhjennä haku ja suodattimet",
+    "description": "Yhden näppäimen pikanäppäimet toimivat kaikkialla tekstikenttien ulkopuolella.",
+    "edit-memo": "Muokkaa valittua muistiota",
+    "focus-editor": "Siirrä kohdistus muokkaimeen",
+    "go-archived": "Siirry arkistoon",
+    "go-attachments": "Siirry liitteisiin",
+    "go-back": "Takaisin",
+    "go-calendar": "Siirry kalenteriin",
+    "go-explore": "Siirry selaamaan",
+    "go-home": "Siirry etusivulle",
+    "go-inbox": "Siirry saapuneisiin",
+    "go-map": "Siirry karttaan",
+    "go-settings": "Siirry asetuksiin",
+    "group-general": "Yleiset",
+    "group-memos": "Muistiot",
+    "group-navigation": "Siirtyminen",
+    "new-memo": "Uusi muistio",
+    "next-memo": "Valitse seuraava muistio",
+    "open-memo": "Avaa valittu muistio",
+    "open-search": "Haku",
+    "pin-memo": "Kiinnitä tai irrota valittu muistio",
+    "previous-memo": "Valitse edellinen muistio",
+    "show-shortcuts": "Näytä pikanäppäimet",
+    "then": "sitten",
+    "title": "Pikanäppäimet"
   },
   "tooltip": {
     "link-memo": "Linkkimuistio",

@@ -197,6 +197,9 @@
       "more": "Mais formatação"
     },
     "comment": "Comentário",
+    "discard-changes": "Descartar alterações?",
+    "discard-changes-description": "As alterações não guardadas nesta nota serão perdidas.",
+    "discard": "Descartar",
     "formatting-toolbar": "Barra de ferramentas de formatação",
     "new-memo": "Novo memorando",
     "saved": "Salvo",
@@ -455,6 +458,10 @@
     },
     "preference": {
       "default-memo-visibility": "Visibilidade padrão dos memos",
+      "keyboard-description": "Navegue sem usar o rato. Guardado neste dispositivo.",
+      "keyboard-shortcuts": "Atalhos de teclado",
+      "keyboard-shortcuts-description": "Prima ? fora de um campo de texto para ver todos os atalhos.",
+      "keyboard-title": "Teclado",
       "label": "Preferências",
       "theme": "Tema",
       "appearance-description": "Escolha a aparência do aplicativo e qual idioma ele usa para sua conta.",
@@ -467,7 +474,8 @@
       "save-media-metadata": "Guardar metadados de média",
       "save-media-metadata-description": "Para futuros carregamentos, guarde a câmara disponível, o horário de captura, a localização, as dimensões da imagem e os detalhes básicos do vídeo. Qualquer pessoa que consiga visualizar o anexo pode receber estes metadados. Os anexos existentes permanecem inalterados.",
       "uploads-privacy-description": "Controle as informações de privacidade confidenciais enviadas com os suportes carregados.",
-      "uploads-privacy-title": "Uploads e privacidade"
+      "uploads-privacy-title": "Uploads e privacidade",
+      "view-shortcuts": "Ver atalhos"
     },
     "memo-view": {
       "create": "Criar vista",
@@ -857,6 +865,33 @@
       "your-access": "O seu acesso",
       "your-spaces": "Os seus espaços"
     }
+  },
+  "shortcuts": {
+    "clear-filters": "Limpar pesquisa e filtros",
+    "description": "Os atalhos de uma tecla funcionam em qualquer lugar fora de um campo de texto.",
+    "edit-memo": "Editar a nota selecionada",
+    "focus-editor": "Focar o editor",
+    "go-archived": "Ir para o arquivo",
+    "go-attachments": "Ir para Anexos",
+    "go-back": "Voltar",
+    "go-calendar": "Ir para o Calendário",
+    "go-explore": "Ir para Explorar",
+    "go-home": "Ir para Início",
+    "go-inbox": "Ir para Notificações",
+    "go-map": "Ir para o Mapa",
+    "go-settings": "Ir para Definições",
+    "group-general": "Geral",
+    "group-memos": "Notas",
+    "group-navigation": "Navegação",
+    "new-memo": "Nova nota",
+    "next-memo": "Selecionar a nota seguinte",
+    "open-memo": "Abrir a nota selecionada",
+    "open-search": "Pesquisar",
+    "pin-memo": "Afixar ou desafixar a nota selecionada",
+    "previous-memo": "Selecionar a nota anterior",
+    "show-shortcuts": "Mostrar atalhos de teclado",
+    "then": "depois",
+    "title": "Atalhos de teclado"
   },
   "tooltip": {
     "link-memo": "Associar Memo",

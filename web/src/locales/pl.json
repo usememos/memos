@@ -197,6 +197,9 @@
       "transcribing": "Transkrypcja..."
     },
     "comment": "Komentarz",
+    "discard-changes": "Odrzucić zmiany?",
+    "discard-changes-description": "Niezapisane zmiany w tej notatce zostaną utracone.",
+    "discard": "Odrzuć",
     "formatting-toolbar": "Pasek narzędzi formatowania",
     "new-memo": "Nowa notatka",
     "saved": "Zapisano",
@@ -455,6 +458,10 @@
     },
     "preference": {
       "default-memo-visibility": "Domyślna widoczność notatek",
+      "keyboard-description": "Poruszaj się bez myszy. Ustawienie jest zapisywane na tym urządzeniu.",
+      "keyboard-shortcuts": "Skróty klawiaturowe",
+      "keyboard-shortcuts-description": "Naciśnij ? poza polem tekstowym, aby zobaczyć wszystkie skróty.",
+      "keyboard-title": "Klawiatura",
       "label": "Preferencje",
       "theme": "Motyw",
       "appearance-description": "Wybierz wygląd aplikacji i język, którego używa na Twoim koncie.",
@@ -467,7 +474,8 @@
       "save-media-metadata": "Zapisz metadane multimediów",
       "save-media-metadata-description": "Na potrzeby przyszłych przesyłów zapisz dostępne ustawienia aparatu, czas przechwytywania, lokalizację, wymiary obrazu i podstawowe szczegóły wideo. Każdy, kto może wyświetlić załącznik, może otrzymać te metadane. Istniejące załączniki pozostają niezmienione.",
       "uploads-privacy-description": "Kontroluj informacje wrażliwe dotyczące prywatności przesyłane wraz z przesłanymi multimediami.",
-      "uploads-privacy-title": "Przesyłanie i prywatność"
+      "uploads-privacy-title": "Przesyłanie i prywatność",
+      "view-shortcuts": "Zobacz skróty"
     },
     "memo-view": {
       "create": "Utwórz widok",
@@ -857,6 +865,33 @@
       "your-access": "Twój dostęp",
       "your-spaces": "Twoje przestrzenie"
     }
+  },
+  "shortcuts": {
+    "clear-filters": "Wyczyść wyszukiwanie i filtry",
+    "description": "Skróty jednoklawiszowe działają wszędzie poza polami tekstowymi.",
+    "edit-memo": "Edytuj wybraną notatkę",
+    "focus-editor": "Przenieś fokus do edytora",
+    "go-archived": "Przejdź do archiwum",
+    "go-attachments": "Przejdź do załączników",
+    "go-back": "Wstecz",
+    "go-calendar": "Przejdź do kalendarza",
+    "go-explore": "Przejdź do odkrywania",
+    "go-home": "Przejdź do strony głównej",
+    "go-inbox": "Przejdź do skrzynki odbiorczej",
+    "go-map": "Przejdź do mapy",
+    "go-settings": "Przejdź do ustawień",
+    "group-general": "Ogólne",
+    "group-memos": "Notatki",
+    "group-navigation": "Nawigacja",
+    "new-memo": "Nowa notatka",
+    "next-memo": "Wybierz następną notatkę",
+    "open-memo": "Otwórz wybraną notatkę",
+    "open-search": "Szukaj",
+    "pin-memo": "Przypnij lub odepnij wybraną notatkę",
+    "previous-memo": "Wybierz poprzednią notatkę",
+    "show-shortcuts": "Pokaż skróty klawiaturowe",
+    "then": "potem",
+    "title": "Skróty klawiaturowe"
   },
   "tooltip": {
     "link-memo": "Podlinkuj Notatkę",

@@ -235,6 +235,9 @@
       "more": "Ďalšie formátovanie"
     },
     "comment": "Komentár",
+    "discard-changes": "Zahodiť zmeny?",
+    "discard-changes-description": "Neuložené zmeny v tejto poznámke sa stratia.",
+    "discard": "Zahodiť",
     "formatting-toolbar": "Panel s nástrojmi Formátovanie",
     "new-memo": "Nová poznámka",
     "saved": "Uložené",
@@ -574,6 +577,10 @@
       "appearance-title": "Vzhľad",
       "default-memo-visibility": "Predvolená viditeľnosť poznámky",
       "default-memo-visibility-description": "Viditeľnosť sa použije na novovytvorené poznámky, pokiaľ sa nezmení v editore.",
+      "keyboard-description": "Pohybujte sa bez myši. Nastavenie sa uloží v tomto zariadení.",
+      "keyboard-shortcuts": "Klávesové skratky",
+      "keyboard-shortcuts-description": "Stlačením ? mimo textového poľa zobrazíte všetky skratky.",
+      "keyboard-title": "Klávesnica",
       "label": "Predvoľby",
       "language-description": "Okamžite aktualizuje jazyk rozhrania a uloží ho do vášho účtu.",
       "memo-defaults-description": "Nastavte predvolené hodnoty používané pri vytváraní nových poznámok.",
@@ -583,7 +590,8 @@
       "save-media-metadata": "Uložiť metadáta médií",
       "save-media-metadata-description": "Pre budúce nahrávania uložiť dostupnú kameru, čas snímania, miesto, rozmery obrázka a základné podrobnosti o videu. Tieto metadáta môže dostať ktokoľvek, kto si môže zobraziť prílohu. Existujúce prílohy zostávajú nezmenené.",
       "uploads-privacy-description": "Ovládať informácie citlivé na ochranu súkromia odoslané s nahranými médiami.",
-      "uploads-privacy-title": "Nahrávanie a súkromie"
+      "uploads-privacy-title": "Nahrávanie a súkromie",
+      "view-shortcuts": "Zobraziť skratky"
     },
     "memo-view": {
       "create": "Vytvoriť zobrazenie",
@@ -895,6 +903,33 @@
       "your-access": "Váš prístup",
       "your-spaces": "Vaše priestory"
     }
+  },
+  "shortcuts": {
+    "clear-filters": "Vymazať vyhľadávanie a filtre",
+    "description": "Jednoklávesové skratky fungujú všade mimo textových polí.",
+    "edit-memo": "Upraviť vybranú poznámku",
+    "focus-editor": "Prejsť do editora",
+    "go-archived": "Prejsť na Archivované",
+    "go-attachments": "Prejsť na Prílohy",
+    "go-back": "Späť",
+    "go-calendar": "Prejsť na Kalendár",
+    "go-explore": "Prejsť do sekcie Preskúmajte",
+    "go-home": "Prejsť na Domov",
+    "go-inbox": "Prejsť do Doručenej pošty",
+    "go-map": "Prejsť na Mapu",
+    "go-settings": "Prejsť na Nastavenia",
+    "group-general": "Všeobecné",
+    "group-memos": "Poznámky",
+    "group-navigation": "Navigácia",
+    "new-memo": "Nová poznámka",
+    "next-memo": "Vybrať ďalšiu poznámku",
+    "open-memo": "Otvoriť vybranú poznámku",
+    "open-search": "Hľadať",
+    "pin-memo": "Pripnúť alebo odopnúť vybranú poznámku",
+    "previous-memo": "Vybrať predchádzajúcu poznámku",
+    "show-shortcuts": "Zobraziť klávesové skratky",
+    "then": "potom",
+    "title": "Klávesové skratky"
   },
   "tooltip": {
     "link-memo": "Odkaz na poznámku",

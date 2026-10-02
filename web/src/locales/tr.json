@@ -177,6 +177,9 @@
     "exit-focus-mode": "Odak modundan çık",
     "focus-mode": "Odak modu",
     "comment": "Yorum yap",
+    "discard-changes": "Değişiklikler silinsin mi?",
+    "discard-changes-description": "Bu nottaki kaydedilmemiş değişiklikler kaybolacak.",
+    "discard": "Sil",
     "formatting-toolbar": "Biçimlendirme araç çubuğu",
     "format": {
       "heading": "Başlık",
@@ -616,6 +619,10 @@
     },
     "preference": {
       "default-memo-visibility": "Varsayılan not görünürlüğü",
+      "keyboard-description": "Fare kullanmadan gezinin. Ayar bu cihazda saklanır.",
+      "keyboard-shortcuts": "Klavye kısayolları",
+      "keyboard-shortcuts-description": "Tüm kısayolları görmek için bir metin alanının dışındayken ? tuşuna basın.",
+      "keyboard-title": "Klavye",
       "label": "Tercihler",
       "theme": "Tema",
       "uploads-privacy-description": "Yüklenen medyayla birlikte gönderilen, gizlilik açısından hassas bilgileri denetleyin.",
@@ -628,7 +635,8 @@
       "memo-defaults-title": "Not varsayılanları",
       "save-media-metadata": "Medya meta verilerini kaydet",
       "save-media-metadata-description": "Sonraki yüklemelerde mevcut kamera, çekim zamanı, konum, görsel boyutları ve temel video bilgilerini kaydeder. Eki görüntüleyebilen herkes bu meta verilere ulaşabilir. Mevcut ekler değişmez.",
-      "theme-description": "Seçilen temayı bu cihaza hemen uygular."
+      "theme-description": "Seçilen temayı bu cihaza hemen uygular.",
+      "view-shortcuts": "Kısayolları görüntüle"
     },
     "memo-view": {
       "create": "Görünüm oluştur",
@@ -897,6 +905,33 @@
       "refresh": "Yenile",
       "load-error": "İstatistikler yüklenemedi"
     }
+  },
+  "shortcuts": {
+    "clear-filters": "Aramayı ve filtreleri temizle",
+    "description": "Tek tuşlu kısayollar metin alanlarının dışında her yerde çalışır.",
+    "edit-memo": "Seçili notu düzenle",
+    "focus-editor": "Düzenleyiciye odaklan",
+    "go-archived": "Arşivlendi bölümüne git",
+    "go-attachments": "Eklere git",
+    "go-back": "Geri git",
+    "go-calendar": "Takvime git",
+    "go-explore": "Keşfet bölümüne git",
+    "go-home": "Ana Sayfaya git",
+    "go-inbox": "Gelen Kutusuna git",
+    "go-map": "Haritaya git",
+    "go-settings": "Ayarlara git",
+    "group-general": "Genel",
+    "group-memos": "Notlar",
+    "group-navigation": "Gezinme",
+    "new-memo": "Yeni not",
+    "next-memo": "Sonraki notu seç",
+    "open-memo": "Seçili notu aç",
+    "open-search": "Ara",
+    "pin-memo": "Seçili notu sabitle veya sabitlemeyi kaldır",
+    "previous-memo": "Önceki notu seç",
+    "show-shortcuts": "Klavye kısayollarını göster",
+    "then": "ardından",
+    "title": "Klavye kısayolları"
   },
   "space": {
     "all-spaces": "Tüm alanlar",

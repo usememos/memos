@@ -197,6 +197,9 @@
       "more": "Máis formato"
     },
     "comment": "Comentario",
+    "discard-changes": "Desbotar os cambios?",
+    "discard-changes-description": "Perderanse os cambios sen gardar desta nota.",
+    "discard": "Desbotar",
     "formatting-toolbar": "Barra de ferramentas de formato",
     "new-memo": "Nova nota",
     "saved": "Gardada",
@@ -455,6 +458,10 @@
     },
     "preference": {
       "default-memo-visibility": "Visibilidade por defecto",
+      "keyboard-description": "Navega sen usar o rato. Esta opción gárdase neste dispositivo.",
+      "keyboard-shortcuts": "Atallos de teclado",
+      "keyboard-shortcuts-description": "Preme ? fóra dun campo de texto para ver todos os atallos.",
+      "keyboard-title": "Teclado",
       "label": "Preferencias",
       "theme": "Decorado",
       "appearance-description": "Escolle o aspecto da aplicación e o idioma que usa para a túa conta.",
@@ -467,7 +474,8 @@
       "save-media-metadata": "Gardar metadatos multimedia",
       "save-media-metadata-description": "Para futuras cargas, garda a cámara dispoñible, a hora de captura, a localización, as dimensións da imaxe e os detalles básicos do vídeo. Calquera persoa que poida ver o anexo pode recibir estes metadatos. Os anexos existentes non cambian.",
       "uploads-privacy-description": "Controla a información confidencial sobre a privacidade enviada cos medios cargados.",
-      "uploads-privacy-title": "Cargas e privacidade"
+      "uploads-privacy-title": "Cargas e privacidade",
+      "view-shortcuts": "Ver os atallos"
     },
     "memo-view": {
       "create": "Crear vista",
@@ -857,6 +865,33 @@
       "your-access": "O teu acceso",
       "your-spaces": "Os teus espazos"
     }
+  },
+  "shortcuts": {
+    "clear-filters": "Limpar a busca e os filtros",
+    "description": "Os atallos dunha soa tecla funcionan en calquera lugar fóra dos campos de texto.",
+    "edit-memo": "Editar a nota seleccionada",
+    "focus-editor": "Poñer o foco no editor",
+    "go-archived": "Ir a Arquivadas",
+    "go-attachments": "Ir a Anexos",
+    "go-back": "Volver",
+    "go-calendar": "Ir ao Calendario",
+    "go-explore": "Ir a Explorar",
+    "go-home": "Ir ao Inicio",
+    "go-inbox": "Ir á Caixa de entrada",
+    "go-map": "Ir ao Mapa",
+    "go-settings": "Ir á Configuración",
+    "group-general": "Xeral",
+    "group-memos": "Notas",
+    "group-navigation": "Navegación",
+    "new-memo": "Nova nota",
+    "next-memo": "Seleccionar a seguinte nota",
+    "open-memo": "Abrir a nota seleccionada",
+    "open-search": "Buscar",
+    "pin-memo": "Fixar ou deixar de fixar a nota seleccionada",
+    "previous-memo": "Seleccionar a nota anterior",
+    "show-shortcuts": "Mostrar os atallos de teclado",
+    "then": "despois",
+    "title": "Atallos de teclado"
   },
   "tooltip": {
     "link-memo": "Ligazón á nota",

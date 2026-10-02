@@ -197,6 +197,9 @@
       "more": "추가 서식 지정"
     },
     "comment": "댓글",
+    "discard-changes": "변경 사항을 버리시겠습니까?",
+    "discard-changes-description": "이 메모에 저장하지 않은 변경 사항이 사라집니다.",
+    "discard": "버리기",
     "formatting-toolbar": "서식 도구 모음",
     "new-memo": "새 메모",
     "saved": "저장됨",
@@ -365,6 +368,10 @@
     },
     "preference": {
       "default-memo-visibility": "메모 공개 범위 기본값",
+      "keyboard-description": "마우스 없이 이동할 수 있습니다. 설정은 이 기기에 저장됩니다.",
+      "keyboard-shortcuts": "키보드 단축키",
+      "keyboard-shortcuts-description": "텍스트 입력란 밖에서 ?를 누르면 모든 단축키를 볼 수 있습니다.",
+      "keyboard-title": "키보드",
       "theme": "테마",
       "label": "개인 설정",
       "appearance-description": "앱의 모양과 계정에 사용할 언어를 선택하세요.",
@@ -377,7 +384,8 @@
       "save-media-metadata-description": "향후 업로드를 위해 사용 가능한 카메라, 촬영 시간, 위치, 이미지 크기 및 기본 비디오 세부 정보를 저장합니다. 첨부 파일을 볼 수 있는 모든 사용자는 이 메타데이터를 받을 수 있습니다. 기존 첨부 파일은 변경되지 않습니다.",
       "theme-description": "선택한 테마를 이 기기에 즉시 적용합니다.",
       "uploads-privacy-description": "업로드된 미디어와 함께 제출되는 개인 정보 보호에 민감한 정보를 관리합니다.",
-      "uploads-privacy-title": "업로드 및 개인 정보 보호"
+      "uploads-privacy-title": "업로드 및 개인 정보 보호",
+      "view-shortcuts": "단축키 보기"
     },
     "memo-view": {
       "create": "뷰 만들기",
@@ -852,6 +860,33 @@
       "refresh": "새로 고침",
       "load-error": "통계 불러오기 실패"
     }
+  },
+  "shortcuts": {
+    "clear-filters": "검색 및 필터 지우기",
+    "description": "한 글자 단축키는 텍스트 입력란 밖 어디서나 사용할 수 있습니다.",
+    "edit-memo": "선택한 메모 편집",
+    "focus-editor": "편집기에 포커스",
+    "go-archived": "보관함으로 이동",
+    "go-attachments": "첨부파일로 이동",
+    "go-back": "뒤로 가기",
+    "go-calendar": "캘린더로 이동",
+    "go-explore": "탐색으로 이동",
+    "go-home": "홈으로 이동",
+    "go-inbox": "받은편지함으로 이동",
+    "go-map": "지도로 이동",
+    "go-settings": "설정으로 이동",
+    "group-general": "일반",
+    "group-memos": "메모",
+    "group-navigation": "탐색",
+    "new-memo": "새 메모",
+    "next-memo": "다음 메모 선택",
+    "open-memo": "선택한 메모 열기",
+    "open-search": "검색",
+    "pin-memo": "선택한 메모 고정 또는 고정 해제",
+    "previous-memo": "이전 메모 선택",
+    "show-shortcuts": "키보드 단축키 표시",
+    "then": "다음",
+    "title": "키보드 단축키"
   },
   "tooltip": {
     "link-memo": "메모 링크",

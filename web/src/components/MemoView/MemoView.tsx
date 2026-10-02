@@ -11,16 +11,20 @@ import {
   useRef,
   useState,
 } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useColumnGridUntrapped } from "@/components/ColumnGrid/ColumnGridContext";
 import { useResolvedUser } from "@/components/MemoContent/MentionResolutionContext";
+import { focusEditorIn } from "@/components/MemoEditor/focus";
 import { loadMemoEditor } from "@/components/MemoEditor/loader";
 import type { MemoEditorProps } from "@/components/MemoEditor/types";
 import { useAuth } from "@/contexts/AuthContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
+import { useUpdateMemo } from "@/hooks/useMemoQueries";
 import { isMemoBlurred } from "@/lib/tag";
 import { cn } from "@/lib/utils";
 import { State } from "@/types/proto/api/v1/common_pb";
+import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { lazyWithReload } from "@/utils/lazy";
 import { canManageMemo } from "@/utils/user";
 import { MemoBody, MemoCommentListView, MemoHeader } from "./components";
@@ -28,7 +32,7 @@ import MemoPinnedMark from "./components/MemoPinnedMark";
 import { MEMO_CARD_BASE_CLASSES } from "./constants";
 import { useImagePreview } from "./hooks";
 import { computeCommentAmount, MemoViewContext } from "./MemoViewContext";
-import { isMemoDetailPath, resolveMemoParentPage } from "./navigation";
+import { createMemoNavigationState, isMemoDetailPath, resolveMemoParentPage, shouldFocusMemoCard } from "./navigation";
 import type { MemoViewHandle, MemoViewProps } from "./types";
 
 const MemoShareImageDialog = lazyWithReload(() => import("../MemoActionMenu/MemoShareImageDialog"));
@@ -47,7 +51,10 @@ const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
     showSpace,
   } = props;
   const cardRef = useRef<HTMLDivElement>(null);
+  const restoreCardFocusRef = useRef(false);
   const [showEditor, setShowEditor] = useState(false);
+  // Card shortcuts are registered only while the card itself has focus (see PagedMemoList's j/k).
+  const [cardFocused, setCardFocused] = useState(false);
   const [EditorComponent, setEditorComponent] = useState<ComponentType<MemoEditorProps>>();
   const [cardWidth, setCardWidth] = useState(0);
 
@@ -73,9 +80,7 @@ const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
   const editorHostRef = useRef<HTMLDivElement>(null);
 
   const focusMountedEditor = useCallback(() => {
-    const codeMirrorContent = editorHostRef.current?.querySelector<HTMLElement>('.cm-content[contenteditable="true"]');
-    const fallbackInput = editorHostRef.current?.querySelector<HTMLElement>("textarea, input");
-    (codeMirrorContent ?? fallbackInput)?.focus();
+    focusEditorIn(editorHostRef.current);
   }, []);
 
   const openEditor = useCallback(() => {
@@ -87,10 +92,23 @@ const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
       .then(({ default: MemoEditor }) => {
         setEditorComponent(() => MemoEditor);
         setShowEditor(true);
+        // The editor replaces the card, and unmounting a focused element fires no blur.
+        setCardFocused(false);
       })
       .catch(() => undefined);
   }, [EditorComponent, focusMountedEditor, showEditor]);
-  const closeEditor = useCallback(() => setShowEditor(false), []);
+  const closeEditor = useCallback(() => {
+    restoreCardFocusRef.current = true;
+    setShowEditor(false);
+  }, []);
+
+  useLayoutEffect(() => {
+    if (!showEditor && restoreCardFocusRef.current) {
+      restoreCardFocusRef.current = false;
+      // Preserve focus deliberately moved elsewhere while an asynchronous save finishes.
+      if (document.activeElement === document.body) cardRef.current?.focus({ preventScroll: true });
+    }
+  }, [showEditor]);
 
   // The grid keys tiles by memo name (see getMemoKey), so the focused editor
   // identifies its own tile by name and untraps it for the duration.
@@ -117,6 +135,12 @@ const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
   useImperativeHandle(ref, () => ({ openEditor }), [openEditor]);
 
   const isInMemoDetailPage = isMemoDetailPath(location.pathname, memoData.name);
+
+  // Opened with the keyboard: land focus on the card so card shortcuts (e, p) work immediately.
+  const focusCardOnOpen = isInMemoDetailPage && shouldFocusMemoCard(location.state);
+  useEffect(() => {
+    if (focusCardOnOpen) cardRef.current?.focus();
+  }, [focusCardOnOpen]);
   const showCommentPreview = !isInMemoDetailPage && computeCommentAmount(memoData) > 0;
 
   // The card width is only needed by the share-image dialog. Keep feed cards
@@ -188,7 +212,19 @@ const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
       className={cn(MEMO_CARD_BASE_CLASSES, "group/memo", showCommentPreview ? "mb-0 rounded-b-none" : "mb-2", className)}
       ref={cardRef}
       tabIndex={readonly ? -1 : 0}
+      data-memo-card
+      onFocus={(e) => setCardFocused(e.target === e.currentTarget)}
+      onBlur={(e) => e.target === e.currentTarget && setCardFocused(false)}
     >
+      {cardFocused && (
+        <MemoCardShortcuts
+          memo={memoData}
+          parentPage={parentPage}
+          readonly={readonly}
+          isInMemoDetailPage={isInMemoDetailPage}
+          openEditor={openEditor}
+        />
+      )}
       {showPinned && memoData.pinned && <MemoPinnedMark />}
       <MemoHeader timeDisplay={timeDisplay} showCreator={showCreator} showVisibility={showVisibility} showSpace={showSpace} />
 
@@ -243,6 +279,36 @@ const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
     </MemoViewContext.Provider>
   );
 });
+
+const MemoCardShortcuts = ({
+  memo,
+  parentPage,
+  readonly,
+  isInMemoDetailPage,
+  openEditor,
+}: {
+  memo: Memo;
+  parentPage: string;
+  readonly: boolean;
+  isInMemoDetailPage: boolean;
+  openEditor: () => void;
+}) => {
+  const navigate = useNavigate();
+  const { mutate: updateMemo } = useUpdateMemo();
+  // Same rules as MemoActionMenu: comments never open on their own or pin, archived memos neither edit nor pin.
+  const isComment = Boolean(memo.parent);
+  const canModify = !readonly && memo.state !== State.ARCHIVED;
+  useKeyboardShortcuts({
+    "memo.open":
+      isComment || isInMemoDetailPage
+        ? undefined
+        : () => navigate(`/${memo.name}`, { state: createMemoNavigationState(parentPage, true), viewTransition: true }),
+    "memo.edit": canModify ? openEditor : undefined,
+    "memo.pin":
+      canModify && !isComment ? () => updateMemo({ update: { name: memo.name, pinned: !memo.pinned }, updateMask: ["pinned"] }) : undefined,
+  });
+  return null;
+};
 
 MemoView.displayName = "MemoView";
 

@@ -235,6 +235,9 @@
       "more": "Mere formatering"
     },
     "comment": "Kommentar",
+    "discard-changes": "Kassér ændringer?",
+    "discard-changes-description": "Dine ændringer af dette notat, som ikke er gemt, går tabt.",
+    "discard": "Kassér",
     "formatting-toolbar": "Formateringsværktøjslinje",
     "new-memo": "Nyt notat",
     "saved": "Gemt",
@@ -574,6 +577,10 @@
       "appearance-title": "Udseende",
       "default-memo-visibility": "Standard memosynlighed",
       "default-memo-visibility-description": "Synlighed anvendt på nyoprettede notater, medmindre det ændres i editoren.",
+      "keyboard-description": "Naviger uden musen. Indstillingen gemmes på denne enhed.",
+      "keyboard-shortcuts": "Tastaturgenveje",
+      "keyboard-shortcuts-description": "Tryk på ? uden for et tekstfelt for at se alle genveje.",
+      "keyboard-title": "Tastatur",
       "label": "Præferencer",
       "language-description": "Opdaterer grænsefladesproget med det samme og gemmer det på din konto.",
       "memo-defaults-description": "Indstil de standardindstillinger, der bruges, når du komponerer nye notater.",
@@ -583,7 +590,8 @@
       "save-media-metadata": "Gem mediemetadata",
       "save-media-metadata-description": "Gem tilgængeligt kamera, optagetidspunkt, placering, billeddimensioner og grundlæggende videooplysninger til fremtidige uploads. Enhver, der kan se den vedhæftede fil, kan modtage disse metadata. Eksisterende vedhæftede filer er uændrede.",
       "uploads-privacy-description": "Kontroller privatlivsfølsomme oplysninger, der indsendes med uploadede medier.",
-      "uploads-privacy-title": "Uploads og privatliv"
+      "uploads-privacy-title": "Uploads og privatliv",
+      "view-shortcuts": "Vis genveje"
     },
     "memo-view": {
       "create": "Opret visning",
@@ -895,6 +903,33 @@
       "your-access": "Din adgang",
       "your-spaces": "Dine rum"
     }
+  },
+  "shortcuts": {
+    "clear-filters": "Ryd søgning og filtre",
+    "description": "Genveje med én tast virker overalt uden for tekstfelter.",
+    "edit-memo": "Rediger det valgte notat",
+    "focus-editor": "Sæt fokus på editoren",
+    "go-archived": "Gå til arkivet",
+    "go-attachments": "Gå til vedhæftede filer",
+    "go-back": "Gå tilbage",
+    "go-calendar": "Gå til kalenderen",
+    "go-explore": "Gå til Udforsk",
+    "go-home": "Gå til startsiden",
+    "go-inbox": "Gå til indbakken",
+    "go-map": "Gå til kortet",
+    "go-settings": "Gå til indstillinger",
+    "group-general": "Generelt",
+    "group-memos": "Notater",
+    "group-navigation": "Navigation",
+    "new-memo": "Nyt notat",
+    "next-memo": "Vælg næste notat",
+    "open-memo": "Åbn det valgte notat",
+    "open-search": "Søg",
+    "pin-memo": "Fastgør eller frigør det valgte notat",
+    "previous-memo": "Vælg forrige notat",
+    "show-shortcuts": "Vis tastaturgenveje",
+    "then": "derefter",
+    "title": "Tastaturgenveje"
   },
   "tooltip": {
     "link-memo": "Link Memo",
