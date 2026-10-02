@@ -50,7 +50,7 @@ describe("<About>", () => {
     renderAbout();
 
     expect(screen.getByRole("heading", { name: "Memos" })).toBeInTheDocument();
-    expect(screen.getByText(/Capture first/i)).toBeInTheDocument();
+    expect(screen.getByText(/Your thoughts, your data/i)).toBeInTheDocument();
     expect(screen.getByText("about.description")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Version\s*v0\.25\.0/ })).toHaveAttribute(
       "href",
@@ -132,7 +132,7 @@ describe("<About>", () => {
 
     expect(screen.getByRole("heading", { name: "Team Notes" })).toBeInTheDocument();
     expect(screen.getByText("Our shared scratchpad.")).toBeInTheDocument();
-    expect(screen.queryByText(/Capture first/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Your thoughts, your data/i)).not.toBeInTheDocument();
     expect(document.querySelector("img")).toHaveAttribute("src", "/custom-logo.png");
     expect(screen.getByText("Powered by Memos")).toBeInTheDocument();
   });
