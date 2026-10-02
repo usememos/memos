@@ -67,6 +67,7 @@ const PreferenceSubmenu = ({ icon: Icon, label, value, options, onChange, classN
       sideOffset={8}
       alignOffset={-4}
       collisionAvoidance={{ fallbackAxisSide: "end" }}
+      positionMethod="fixed"
       size="sm"
       className={className}
     >
