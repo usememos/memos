@@ -12,6 +12,7 @@ import {
   collectionNavigationPath,
   getCreatorHomePath,
   getCreatorSwitchPath,
+  getShortcutCollectionPath,
   getSpaceSwitchPath,
   resolveCollectionRoute,
 } from "@/router/routes";
@@ -73,6 +74,16 @@ describe("Space route contract", () => {
     expect(collectionNavigationPath("/calendar", { pathname: "/explore", search: "" }, "alice")).toBe("/calendar");
     expect(collectionNavigationPath("/", { pathname: "/calendar", search: "" }, "alice")).toBe("/explore");
     expect(collectionNavigationPath("/", { pathname: "/calendar", search: "?creator=alice" }, "alice")).toBe("/");
+  });
+  it("takes a signed-in user home from Explore while retaining the active filter and Space", () => {
+    expect(getShortcutCollectionPath("home", { pathname: "/spaces/a/explore", search: "?filter=tagSearch%3Awork" }, "alice")).toBe(
+      "/spaces/a?filter=tagSearch%3Awork",
+    );
+  });
+  it("takes a user to Explore without retaining the creator filter", () => {
+    expect(getShortcutCollectionPath("explore", { pathname: "/spaces/a", search: "?creator=alice&filter=tagSearch%3Awork" }, "alice")).toBe(
+      "/spaces/a/explore?filter=tagSearch%3Awork",
+    );
   });
   it("sends guests to Explore unless a creator is selected", () => {
     expect(collectionNavigationPath("/", { pathname: "/about", search: "" })).toBe("/explore");

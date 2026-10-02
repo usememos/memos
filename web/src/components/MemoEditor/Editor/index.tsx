@@ -19,6 +19,8 @@ interface EditorProps {
   onFiles: (files: File[], origin: EditorFileOrigin) => void;
   /** Invoked by the in-editor save shortcut (Cmd/Ctrl+Enter). */
   onSubmit: () => void;
+  /** Invoked on Escape; when provided, Escape runs it instead of blurring the editor. */
+  onCancel?: () => void;
   isFocusMode?: boolean;
 }
 
@@ -32,6 +34,7 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
     onExternalContentApplied,
     onFiles,
     onSubmit,
+    onCancel,
     isFocusMode,
   } = props;
   const hostRef = useRef<HTMLDivElement>(null);
@@ -47,6 +50,8 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
   onFilesRef.current = onFiles;
   const onSubmitRef = useRef(onSubmit);
   onSubmitRef.current = onSubmit;
+  const onCancelRef = useRef(onCancel);
+  onCancelRef.current = onCancel;
   const placeholderRef = useRef(placeholder);
   const listenersRef = useRef(new Set<() => void>());
   // A user can only author their own memos. Reuse the current-user stats query
@@ -84,6 +89,11 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
           onFiles: (files, origin) => onFilesRef.current(files, origin),
           onUpdate: () => listenersRef.current.forEach((l) => l()),
           onSubmit: () => onSubmitRef.current(),
+          onEscape: () => {
+            if (!onCancelRef.current) return false;
+            onCancelRef.current();
+            return true;
+          },
           getTags: () => tagsRef.current,
         }),
       }),

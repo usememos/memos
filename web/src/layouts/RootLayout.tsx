@@ -9,9 +9,11 @@ import AppSidebar, {
   SidebarResizeHandle,
   useSidebarWidth,
 } from "@/components/AppSidebar";
+import AppShortcuts from "@/components/KeyboardShortcuts/AppShortcuts";
 import { AppSidebarProvider } from "@/contexts/AppSidebarContext";
 import { GlobalMemoEditorProvider } from "@/contexts/GlobalMemoEditorContext";
 import { useInstance } from "@/contexts/InstanceContext";
+import { KeyboardShortcutsProvider } from "@/contexts/KeyboardShortcutsContext";
 import { MemoFilterProvider, useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { SpaceProvider } from "@/contexts/SpaceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -105,6 +107,7 @@ const RootLayoutContent = () => {
         <Outlet />
       </main>
       <QuickFindDialog />
+      <AppShortcuts />
     </div>
   );
 };
@@ -114,7 +117,9 @@ const RootLayout = () => (
     <MemoFilterProvider>
       <AppSidebarProvider>
         <GlobalMemoEditorProvider>
-          <RootLayoutContent />
+          <KeyboardShortcutsProvider>
+            <RootLayoutContent />
+          </KeyboardShortcutsProvider>
         </GlobalMemoEditorProvider>
       </AppSidebarProvider>
     </MemoFilterProvider>

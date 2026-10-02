@@ -115,6 +115,18 @@ export const collectionNavigationPath = (
   return `${collectionPathForLocation(pathname, location.pathname)}${withCollectionCreator(search, creator)}`;
 };
 
+/** Home and Explore shortcuts choose their named feed while carrying the active Space and filter. */
+export const getShortcutCollectionPath = (
+  destination: "home" | "explore",
+  location: { pathname: string; search: string },
+  currentUsername?: string,
+): string => {
+  const route = resolveCollectionRoute(location.pathname);
+  const pathname = buildCollectionPath(destination === "home" && currentUsername ? ROUTES.HOME : ROUTES.EXPLORE, route.spaceName);
+  const filter = route.isCollection ? new URLSearchParams(location.search).get("filter") : null;
+  return filter ? `${pathname}?${new URLSearchParams({ filter })}` : pathname;
+};
+
 /** A creator change keeps the current collection view and Space. */
 export const getCreatorSwitchPath = (
   location: { pathname: string; search: string; hash?: string },
