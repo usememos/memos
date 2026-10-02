@@ -26,6 +26,7 @@ Memos is a self-hosted note-taking app.
 - ADRs and their companion glossary have been retired. Do not recreate them unless explicitly requested.
 - Design documents in `docs/design/` are frozen after implementation. Do not update implemented designs to track later code changes.
 - New and unimplemented designs may still evolve. Frozen documents record the original design; verify current behavior in source code and tests.
+- Brand copy (tagline, descriptions, README intro) comes verbatim from [`BRAND.md`](https://github.com/usememos/.github/blob/main/BRAND.md) in `usememos/.github`. Change it there first; do not keep brand guidelines in this repo.
 - Keep contributor guidance in this file and package-local `README.md` or `doc.go` files current when relevant code changes.
 
 ## Commands

@@ -23,7 +23,7 @@
     "build": "Build",
     "commit": "Commit",
     "demo": "Demo",
-    "description": "An open-source, self-hosted space for your notes, ideas, and everyday thoughts.",
+    "description": "Memos is a timeline for your notes, and it belongs to you. Write in Markdown, post in seconds, and choose who sees each memo: just you, the people you invite, or anyone with the link.",
     "distribution": "Distribution",
     "documents": "Documents",
     "documents-note": "Deploy, configure, and use Memos",
