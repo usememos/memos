@@ -154,6 +154,12 @@ const PagedMemoList = (props: Props) => {
     const cards = Array.from(layoutMeasureRef.current?.querySelectorAll<HTMLElement>("article[data-memo-card]") ?? []);
     if (cards.length === 0) return;
     const current = cards.findIndex((card) => card.contains(document.activeElement));
+    // Pressing forward from the last loaded card paginates instead of dead-ending; the new
+    // cards render into place and the next j press continues from there.
+    if (step === 1 && current === cards.length - 1 && canPaginate && hasNextPage && !isFetchingNextPage) {
+      void fetchNextPage();
+      return;
+    }
     const next = cards[current === -1 ? 0 : Math.min(Math.max(current + step, 0), cards.length - 1)];
     next.focus({ preventScroll: true });
     next.scrollIntoView?.({ block: "nearest" });
