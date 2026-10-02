@@ -93,6 +93,19 @@ describe("editor key bindings", () => {
     view.destroy();
   });
 
+  it("keeps selected trailing whitespace outside a bold mark", () => {
+    const view = makeView("23, lemo ");
+    view.dispatch({ selection: { anchor: 0, head: 9 } });
+
+    press(view, "b", mod());
+
+    // `**23, lemo **` is not valid GFM emphasis: its closing delimiter follows
+    // whitespace and is rendered literally. The trailing space belongs after
+    // the closing delimiter instead.
+    expect(view.state.doc.toString()).toBe("**23, lemo** ");
+    view.destroy();
+  });
+
   it("converts a heading to a paragraph with Mod-Alt-0", () => {
     const view = makeView("## text");
     view.dispatch({ selection: { anchor: 4 } });
