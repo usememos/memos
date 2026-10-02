@@ -10,6 +10,7 @@
 - Uses shared `Dialog` primitives (focus trap, ARIA roles)
 - Blocks dismissal while async confirm is pending
 - Clear separation of title (action) vs description (context)
+- Focus starts on the dialog itself, without selecting either action. Cmd/Ctrl+Enter confirms; Escape dismisses. Focus returns to the opener on close.
 
 ### 2. Async-Aware
 - Accepts sync or async `onConfirm`
