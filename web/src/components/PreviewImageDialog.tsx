@@ -117,7 +117,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
     >
       <DialogContent
         showCloseButton={false}
-        className="!h-[100vh] !w-[100vw] !max-h-[100vh] !max-w-[100vw] overflow-hidden border-0 bg-black/92 p-0 shadow-none"
+        className="!h-dvh !w-[100vw] !max-h-dvh !max-w-[100vw] overflow-hidden border-0 bg-black/92 p-0 shadow-none"
       >
         <VisuallyHidden>
           <DialogTitle>{currentItem.filename || "Attachment preview"}</DialogTitle>
@@ -195,7 +195,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
                 src={currentItem.sourceUrl}
                 poster={currentItem.posterUrl}
                 className={cn(
-                  "max-h-[calc(100vh-8rem)] max-w-[calc(100vw-1.5rem)] rounded-md object-contain sm:max-h-[calc(100vh-7rem)] sm:max-w-[calc(100vw-8rem)]",
+                  "max-h-[calc(100dvh-8rem)] max-w-[calc(100vw-1.5rem)] rounded-md object-contain sm:max-h-[calc(100dvh-7rem)] sm:max-w-[calc(100vw-8rem)]",
                   showDetails && "lg:max-w-[calc(100vw-30rem)]",
                 )}
                 controls
@@ -211,7 +211,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
                 presentationTimestampUs={currentItem.presentationTimestampUs}
                 badgeClassName="left-3 top-3 sm:left-4 sm:top-4"
                 mediaClassName={cn(
-                  "max-h-[calc(100vh-8rem)] max-w-[calc(100vw-1.5rem)] rounded-md object-contain sm:max-h-[calc(100vh-7rem)] sm:max-w-[calc(100vw-8rem)]",
+                  "max-h-[calc(100dvh-8rem)] max-w-[calc(100vw-1.5rem)] rounded-md object-contain sm:max-h-[calc(100dvh-7rem)] sm:max-w-[calc(100vw-8rem)]",
                   showDetails && "lg:max-w-[calc(100vw-30rem)]",
                 )}
               />
@@ -220,7 +220,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
                 src={currentItem.sourceUrl}
                 alt={`Preview image ${safeIndex + 1} of ${itemCount}`}
                 className={cn(
-                  "max-h-[calc(100vh-8rem)] max-w-[calc(100vw-1.5rem)] rounded-md object-contain select-none sm:max-h-[calc(100vh-7rem)] sm:max-w-[calc(100vw-8rem)]",
+                  "max-h-[calc(100dvh-8rem)] max-w-[calc(100vw-1.5rem)] rounded-md object-contain select-none sm:max-h-[calc(100dvh-7rem)] sm:max-w-[calc(100vw-8rem)]",
                   showDetails && "lg:max-w-[calc(100vw-30rem)]",
                 )}
                 style={{
