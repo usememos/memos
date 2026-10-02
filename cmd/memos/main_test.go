@@ -38,8 +38,14 @@ func TestVersionFlagUsesPosixShorthand(t *testing.T) {
 
 func TestVersionFormsPrintTheSameString(t *testing.T) {
 	require.Equal(t, version.GetCurrentVersion(), rootCmd.Version)
+	// Test binaries do not carry VCS metadata. Supply a version so Cobra takes
+	// its version path rather than running the server.
+	originalVersion := rootCmd.Version
+	rootCmd.Version = "26.09"
+	t.Cleanup(func() { rootCmd.Version = originalVersion })
 
-	// Cobra handles the version flag before RunE, so this never starts a server.
+	// Cobra handles the version flag before RunE, and the version subcommand has
+	// its own Run, so none of these start a server.
 	run := func(args ...string) string {
 		var out bytes.Buffer
 		rootCmd.SetOut(&out)
@@ -53,7 +59,8 @@ func TestVersionFormsPrintTheSameString(t *testing.T) {
 		return out.String()
 	}
 
-	expected := version.GetCurrentVersion() + "\n"
+	expected := rootCmd.Version + "\n"
 	require.Equal(t, expected, run("--version"))
 	require.Equal(t, expected, run("-V"))
+	require.Equal(t, expected, run("version"))
 }

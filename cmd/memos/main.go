@@ -42,8 +42,9 @@ var (
 	versionCmd = &cobra.Command{
 		Use:   "version",
 		Short: "Print the current Memos version",
-		Run: func(_ *cobra.Command, _ []string) {
-			fmt.Println(version.GetCurrentVersion())
+		Run: func(cmd *cobra.Command, _ []string) {
+			// Print the root's version so every form shares one source.
+			fmt.Fprintln(cmd.OutOrStdout(), cmd.Root().Version)
 		},
 	}
 )
@@ -226,6 +227,10 @@ func printServerInfo(profile *profile.Profile, accessMode storepb.InstanceAccess
 }
 
 func main() {
+	if err := version.Validate(); err != nil {
+		slog.Error("invalid build metadata", slog.String("error", err.Error()))
+		os.Exit(1)
+	}
 	if err := rootCmd.Execute(); err != nil {
 		slog.Error("memos failed", slog.String("error", err.Error()))
 		os.Exit(1)

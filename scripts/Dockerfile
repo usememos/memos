@@ -14,9 +14,10 @@ COPY . .
 
 # Please build frontend first, so that the static files are available.
 # Refer to `pnpm release` in package.json for the build command.
-ARG TARGETOS TARGETARCH VERSION=dev COMMIT=unknown
+ARG TARGETOS TARGETARCH VERSION COMMIT=unknown
 RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
+    : "${VERSION:?Pass VERSION from scripts/release_version.sh development-version or a release tag}" && \
     CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH \
     go build \
       -trimpath \

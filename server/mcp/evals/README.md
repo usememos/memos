@@ -45,7 +45,7 @@ update both this summary and `memos_eval.xml`; nothing in CI catches drift.
 1. Launch a throwaway demo-mode instance (SQLite, auto-seeded) on a free port:
 
    ```bash
-   go run ./cmd/memos --demo --driver sqlite \
+   go run -buildvcs=true ./cmd/memos --demo --driver sqlite \
      --port 8099 --data "$(mktemp -d)" \
      --instance-url http://localhost:8099
    ```

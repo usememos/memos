@@ -1,12 +1,58 @@
 package scripts
 
 import (
+	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
+	"github.com/usememos/memos/internal/version"
 )
+
+func TestDevelopmentVersion(t *testing.T) {
+	for _, tc := range []struct{ date, version string }{
+		{"2026-09-27T14:58:52Z", "26.09"},
+		{"2026-10-01T00:30:00+08:00", "26.09"},
+		{"2026-12-31T23:30:00-08:00", "27.01"},
+	} {
+		t.Run(tc.date, func(t *testing.T) {
+			repo := t.TempDir()
+			runGit := func(args ...string) {
+				t.Helper()
+				cmd := exec.Command("git", append([]string{"-C", repo, "-c", "user.name=Version Test", "-c", "user.email=test@example.com", "-c", "commit.gpgsign=false"}, args...)...)
+				cmd.Env = append(os.Environ(), "GIT_AUTHOR_DATE=2020-01-01T00:00:00Z", "GIT_COMMITTER_DATE="+tc.date)
+				out, err := cmd.CombinedOutput()
+				require.NoError(t, err, string(out))
+			}
+			check := func(repo string) {
+				t.Helper()
+				cmd := exec.Command("bash", "release_version.sh", "development-version", repo)
+				cmd.Env = append(os.Environ(), "TZ=Pacific/Honolulu")
+				out, err := cmd.CombinedOutput()
+				require.NoError(t, err, string(out))
+				require.Equal(t, tc.version+"\n", string(out))
+			}
+			runGit("init", "-b", "main")
+			runGit("commit", "--allow-empty", "-m", "source")
+			runGit("tag", "26.10.1")
+			check(repo)
+			require.NoError(t, os.WriteFile(filepath.Join(repo, "uncommitted"), []byte("local change"), 0o600))
+			check(repo)
+
+			shallow := filepath.Join(t.TempDir(), "shallow")
+			out, err := exec.Command("git", "clone", "--depth=1", "file://"+repo, shallow).CombinedOutput()
+			require.NoError(t, err, string(out))
+			check(shallow)
+		})
+	}
+	t.Run("no Git metadata", func(t *testing.T) {
+		out, err := exec.Command("bash", "release_version.sh", "development-version", t.TempDir()).CombinedOutput()
+		require.Error(t, err, string(out))
+	})
+}
 
 func TestReleaseVersions(t *testing.T) {
 	for _, tc := range []struct {
@@ -33,6 +79,22 @@ func TestReleaseVersions(t *testing.T) {
 		out, err := exec.Command("bash", "release_version.sh", "version", tag).CombinedOutput()
 		require.Error(t, err, tag)
 		require.Contains(t, string(out), "Unsupported release tag")
+	}
+}
+
+// The script and the binary must accept the same versions, or a tag could
+// build a binary that refuses to start.
+func TestReleaseTagsMatchBinaryVersions(t *testing.T) {
+	original := version.Version
+	t.Cleanup(func() { version.Version = original })
+	for _, tag := range []string{
+		"26.09", "26.09.1", "26.09.10", "27.01", "26.09-rc.1", "26.09.1-rc.2",
+		"v26.09", "0.31.0", "26.9", "26.00", "26.13", "2026.09", "26.09.0", "26.09.01", "26.09-rc.0", "26.09-rc.01",
+		"26.09-dev.1", "26.09-dirty", "26.09beta", "26.09.1+build", "dev",
+	} {
+		scriptErr := exec.Command("bash", "release_version.sh", "version", tag).Run()
+		version.Version = tag
+		require.Equal(t, scriptErr == nil, version.Validate() == nil, tag)
 	}
 }
 

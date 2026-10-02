@@ -146,11 +146,12 @@ detect_previous_image() {
 }
 
 build_local_candidate() {
-  local commit_sha image_tag
+  local commit_sha build_version image_tag
   command -v pnpm >/dev/null 2>&1 || die "pnpm is required to build the local candidate"
 
-  commit_sha="$(git -C "$REPO_ROOT" rev-parse --short=12 HEAD)"
-  image_tag="memos-smoke:${commit_sha}-${run_id}"
+  commit_sha="$(git -C "$REPO_ROOT" rev-parse HEAD)"
+  build_version="$(bash "$SCRIPT_DIR/release_version.sh" development-version "$REPO_ROOT")"
+  image_tag="memos-smoke:${commit_sha:0:12}-${run_id}"
 
   mkdir -p "$(dirname "$frontend_index")"
   if [[ -f "$frontend_index" ]]; then
@@ -168,7 +169,7 @@ build_local_candidate() {
   log "Building candidate image $image_tag"
   docker build \
     --file "$REPO_ROOT/scripts/Dockerfile" \
-    --build-arg VERSION=smoke-local \
+    --build-arg VERSION="$build_version" \
     --build-arg COMMIT="$commit_sha" \
     --tag "$image_tag" \
     "$REPO_ROOT"

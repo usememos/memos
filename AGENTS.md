@@ -35,7 +35,7 @@ Run from the repository root unless a command starts with `cd`.
 
 ```bash
 # Backend
-go run ./cmd/memos --port 8081    # Start backend dev server
+go run -buildvcs=true ./cmd/memos --port 8081 # Start backend with commit-derived CalVer
 go test ./...                      # Run all Go tests
 go test -v ./store/...             # Store tests, including DB drivers via TestContainers
 go test -v -race ./server/...      # Server tests with race detector
@@ -138,6 +138,12 @@ Black-box service tests live in `server/api/v1/test/`, unit tests next to the co
 - If a required check cannot run locally, report the reason and the exact command that remains.
 
 ## CI Reference
+
+- Development builds use the HEAD committer date in UTC as `YY.MM`; release builds inject the CalVer tag.
+- `go build` embeds Git metadata automatically; `go run` needs `-buildvcs=true`. Builds without Git metadata must inject
+  `github.com/usememos/memos/internal/version.Version` through `-ldflags`.
+- Docker excludes `.git`; pass `--build-arg VERSION="$(bash scripts/release_version.sh development-version)"` and
+  `--build-arg COMMIT="$(git rev-parse HEAD)"` when building locally (build frontend assets first).
 
 - Backend CI: Go 1.27.0, `go mod tidy -go=1.27.0`, golangci-lint v2.13.1, test groups `store`, `server`, `internal`, `other`
   (`cmd`, `core`, `markdown`, `filter`, `provider`, `proto`).
