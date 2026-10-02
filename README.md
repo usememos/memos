@@ -4,9 +4,9 @@
 
 <img src="./web/public/logo.webp" alt="" width="96" align="right">
 
-**Catch a thought. Keep it yours.**
+**Your thoughts, your data, shared on your terms.**
 
-Memos is a personal timeline for quick notes: write short memos as they come, and find them later by search, tag, or date. It is open source and self-hosted, so your memos stay on the server you choose.
+Memos is a timeline for your notes, and it belongs to you. Write in Markdown, post in seconds, and choose who sees each memo: just you, the people you invite, or anyone with the link.
 
 **[Run with Docker](#quick-start)** · **[Try the live demo](https://demo.usememos.com/)** · [Read the docs](https://usememos.com/docs)
 
@@ -21,7 +21,7 @@ Memos is a personal timeline for quick notes: write short memos as they come, an
 
 - **Write first** — Save a thought without choosing a title or folder. Memos are written in Markdown and can include images and files.
 - **Find it later** — Search, filter by tag, or look back through any day on the timeline. Pin what matters and save the filters you reuse as views.
-- **Keep it yours** — Self-host Memos with [zero telemetry](https://usememos.com/features/data-ownership), [MIT-licensed source](LICENSE), and a full export of your memos.
+- **Yours to keep** — Self-host Memos with [zero telemetry](https://usememos.com/features/data-ownership), [MIT-licensed source](LICENSE), and a full export of your memos.
 - **Share when you choose** — New memos are private. Make one visible to signed-in users or public when you want to share it.
 
 [Explore all features →](https://usememos.com/features)
