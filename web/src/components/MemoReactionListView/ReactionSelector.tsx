@@ -37,7 +37,13 @@ const ReactionSelector = ({ memo, trigger }: Props) => {
       >
         <SmilePlusIcon className="size-4" strokeWidth={1.8} />
       </PopoverTrigger>
-      <PopoverContent align="center" className="max-w-[90vw] sm:max-w-md">
+      {/*
+       * The header trigger is intentionally hidden once its memo card is no
+       * longer hovered. An exit transition would therefore outlive its anchor
+       * and Base UI would briefly reposition the portal at (0, 0). Close this
+       * picker immediately instead of animating an unanchored popup.
+       */}
+      <PopoverContent align="center" className="max-w-[90vw] transition-none sm:max-w-md">
         <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-1 max-h-64 overflow-y-auto">
           {memoRelatedSetting.reactions.map((reactionType) => (
             <button
