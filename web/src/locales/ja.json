@@ -155,6 +155,9 @@
     "save": "保存",
     "insert-menu": {
       "add-location": "場所を追加",
+      "location-permission-denied": "位置情報へのアクセスが拒否されました。ブラウザの設定で許可してから、もう一度お試しください。",
+      "location-requires-https": "現在地を取得するには、安全な HTTPS 接続が必要です。",
+      "location-unavailable": "現在地を取得できませんでした。もう一度お試しいただくか、手動で選択してください。",
       "link-memo": "リンクメモ",
       "retry-image-upload": "リトライ",
       "add-attachment": "添付ファイルを追加",

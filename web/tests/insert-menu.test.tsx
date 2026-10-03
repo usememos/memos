@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { beforeAll, describe, expect, test, vi } from "vitest";
+import { toast } from "react-hot-toast";
+import { afterEach, beforeAll, describe, expect, test, vi } from "vitest";
 import { createInitialState, EditorProvider } from "@/components/MemoEditor/state";
 import { EditorToolbar } from "@/components/MemoEditor/Toolbar/EditorToolbar";
 import InsertMenu from "@/components/MemoEditor/Toolbar/InsertMenu";
@@ -13,12 +14,30 @@ vi.mock("@/contexts/AuthContext", () => ({ useAuth: () => ({ userGeneralSetting:
 vi.mock("@/hooks/useSpaceQueries", () => ({ useSpaces: () => ({ data: [] }) }));
 vi.mock("@/contexts/SpaceContext", () => ({ useSpaceContext: () => ({ selectedSpaceName: undefined }) }));
 vi.mock("@/components/map/useReverseGeocoding", () => ({ useReverseGeocoding: () => ({ data: undefined }) }));
+vi.mock("react-hot-toast", () => ({ toast: { error: vi.fn() } }));
+
+const originalSecureContextDescriptor = Object.getOwnPropertyDescriptor(window, "isSecureContext");
+const originalGeolocationDescriptor = Object.getOwnPropertyDescriptor(navigator, "geolocation");
 
 beforeAll(() => {
   Element.prototype.scrollIntoView = vi.fn();
   Element.prototype.hasPointerCapture = vi.fn(() => false);
   Element.prototype.setPointerCapture = vi.fn();
   Element.prototype.releasePointerCapture = vi.fn();
+});
+
+afterEach(() => {
+  vi.clearAllMocks();
+  if (originalSecureContextDescriptor) {
+    Object.defineProperty(window, "isSecureContext", originalSecureContextDescriptor);
+  } else {
+    Reflect.deleteProperty(window, "isSecureContext");
+  }
+  if (originalGeolocationDescriptor) {
+    Object.defineProperty(navigator, "geolocation", originalGeolocationDescriptor);
+  } else {
+    Reflect.deleteProperty(navigator, "geolocation");
+  }
 });
 
 const viewToggles = {
@@ -69,6 +88,34 @@ describe("InsertMenu", () => {
     expect(labels).not.toContain("editor.focus-mode");
     expect(labels).not.toContain("editor.formatting-toolbar");
     expect(screen.queryByRole("separator")).not.toBeInTheDocument();
+  });
+
+  test("explains that current-location lookup requires HTTPS while keeping manual location selection available", () => {
+    Object.defineProperty(window, "isSecureContext", { configurable: true, value: false });
+    renderMenu();
+
+    fireEvent.click(screen.getByRole("button", { name: "common.add" }));
+    fireEvent.click(screen.getByRole("menuitem", { name: "editor.insert-menu.add-location" }));
+
+    expect(toast.error).toHaveBeenCalledWith("editor.insert-menu.location-requires-https");
+  });
+
+  test("explains secure-origin errors reported after a geolocation request", () => {
+    Object.defineProperty(window, "isSecureContext", { configurable: true, value: true });
+    Object.defineProperty(navigator, "geolocation", {
+      configurable: true,
+      value: {
+        getCurrentPosition: vi.fn((_success: PositionCallback, error: PositionErrorCallback) =>
+          error({ code: 1, message: "Only secure origins are allowed", PERMISSION_DENIED: 1 } as GeolocationPositionError),
+        ),
+      },
+    });
+    renderMenu();
+
+    fireEvent.click(screen.getByRole("button", { name: "common.add" }));
+    fireEvent.click(screen.getByRole("menuitem", { name: "editor.insert-menu.add-location" }));
+
+    expect(toast.error).toHaveBeenCalledWith("editor.insert-menu.location-requires-https");
   });
 
   test("uses separate unrestricted and multi-image file inputs", () => {

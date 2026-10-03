@@ -152,6 +152,9 @@
     "focus-mode": "Mode concentration",
     "insert-menu": {
       "add-location": "Ajouter un emplacement",
+      "location-permission-denied": "L'accès à la position a été refusé. Autorisez-le dans les paramètres du navigateur, puis réessayez.",
+      "location-requires-https": "Votre position actuelle nécessite une connexion HTTPS sécurisée.",
+      "location-unavailable": "Impossible d'obtenir votre position actuelle. Réessayez ou choisissez-la manuellement.",
       "link-memo": "Lien vers un mémo",
       "retry-image-upload": "Réessayer",
       "add-attachment": "Ajouter une pièce jointe",

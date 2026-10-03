@@ -168,6 +168,9 @@
     },
     "insert-menu": {
       "add-location": "Dodaj lokalizację",
+      "location-permission-denied": "Dostęp do lokalizacji został odrzucony. Zezwól na niego w ustawieniach przeglądarki i spróbuj ponownie.",
+      "location-requires-https": "Twoja bieżąca lokalizacja wymaga bezpiecznego połączenia HTTPS.",
+      "location-unavailable": "Nie udało się pobrać bieżącej lokalizacji. Spróbuj ponownie lub wybierz ją ręcznie.",
       "link-memo": "Link do notatki",
       "retry-image-upload": "Spróbować ponownie",
       "add-attachment": "Dodaj załącznik",

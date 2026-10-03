@@ -190,6 +190,9 @@
     "focus-mode": "Tarkennustila",
     "insert-menu": {
       "add-location": "Lisää sijainti",
+      "location-permission-denied": "Sijainnin käyttö estettiin. Salli se selaimen asetuksissa ja yritä uudelleen.",
+      "location-requires-https": "Nykyinen sijaintisi edellyttää suojattua HTTPS-yhteyttä.",
+      "location-unavailable": "Nykyistä sijaintiasi ei voitu hakea. Yritä uudelleen tai valitse se manuaalisesti.",
       "link-memo": "Linkkimuistio",
       "retry-image-upload": "Yritä uudelleen",
       "add-attachment": "Lisää liite",
