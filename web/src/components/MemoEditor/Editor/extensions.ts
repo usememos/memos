@@ -50,6 +50,7 @@ const formattingKeys: KeyBinding[] = [
   formattingKey("Shift-Mod-7", "orderedList"),
   formattingKey("Shift-Mod-8", "bulletList"),
   formattingKey("Shift-Mod-9", "taskList"),
+  formattingKey("Shift-Mod-.", "blockquote"),
   formattingKey("Mod-Alt-1", "heading1"),
   formattingKey("Mod-Alt-2", "heading2"),
   formattingKey("Mod-Alt-3", "heading3"),

@@ -317,6 +317,23 @@ function setHeading(view: EditorView, level: number) {
   view.dispatch({ changes, selection: view.state.selection.map(changes, 1) });
 }
 
+function toggleBlockquote(view: EditorView) {
+  const { state } = view;
+  const lines = selectedLineNumbers(view).map((lineNumber) => state.doc.line(lineNumber));
+  const quotePrefix = /^(\s*)> ?/;
+  const allQuoted = lines.every((line) => quotePrefix.test(line.text));
+  const changes = lines.map((line) => {
+    const match = quotePrefix.exec(line.text);
+    if (allQuoted && match) {
+      return { from: line.from, to: line.from + match[0].length, insert: match[1] };
+    }
+    const indentation = line.text.match(/^\s*/)?.[0] ?? "";
+    return { from: line.from + indentation.length, to: line.from + indentation.length, insert: "> " };
+  });
+  const transaction = state.changes(changes);
+  view.dispatch({ changes: transaction, selection: state.selection.map(transaction, 1) });
+}
+
 /** Unwrap the link the head sits in to its label text. True when one was found. */
 function unwrapLink(view: EditorView): boolean {
   const head = view.state.selection.main.head;
@@ -370,6 +387,7 @@ export function runFormattingCommand(view: EditorView, command: EditorCommandId,
   if (command === "heading2") return setHeading(view, 2);
   if (command === "heading3") return setHeading(view, 3);
   if (command === "paragraph") return setHeading(view, 0);
+  if (command === "blockquote") return toggleBlockquote(view);
   if (command === "link") {
     // A URL comes from the external-link dialog. It updates an existing link
     // in place; the no-context controller behavior remains a toggle/unlink.

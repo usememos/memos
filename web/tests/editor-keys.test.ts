@@ -141,6 +141,18 @@ describe("editor key bindings", () => {
     view.destroy();
   });
 
+  it("toggles blockquotes with Mod-Shift-.", () => {
+    const view = makeView("first\nsecond");
+    view.dispatch({ selection: { anchor: 0, head: 12 } });
+
+    press(view, ".", mod({ shiftKey: true }));
+    expect(view.state.doc.toString()).toBe("> first\n> second");
+
+    press(view, ".", mod({ shiftKey: true }));
+    expect(view.state.doc.toString()).toBe("first\nsecond");
+    view.destroy();
+  });
+
   it("Tab indents a non-list line by two spaces", () => {
     const view = makeView("hello");
     view.dispatch({ selection: { anchor: 0 } });
