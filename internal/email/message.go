@@ -3,6 +3,7 @@ package email
 import (
 	"errors"
 	"fmt"
+	"mime"
 	"strings"
 	"time"
 )
@@ -36,11 +37,11 @@ func (m *Message) Validate() error {
 func (m *Message) Format(fromEmail, fromName string) string {
 	var sb strings.Builder
 	fromEmail = sanitizeEmailHeaderValue(fromEmail)
-	fromName = sanitizeEmailHeaderValue(fromName)
+	fromName = encodeEmailHeaderText(sanitizeEmailHeaderValue(fromName))
 	to := sanitizeEmailHeaderValues(m.To)
 	cc := sanitizeEmailHeaderValues(m.Cc)
 	replyTo := sanitizeEmailHeaderValue(m.ReplyTo)
-	subject := sanitizeEmailHeaderValue(m.Subject)
+	subject := encodeEmailHeaderText(sanitizeEmailHeaderValue(m.Subject))
 
 	// From header
 	if fromName != "" {
@@ -90,6 +91,13 @@ func (m *Message) Format(fromEmail, fromName string) string {
 func sanitizeEmailHeaderValue(value string) string {
 	value = strings.NewReplacer("\r", " ", "\n", " ").Replace(value)
 	return strings.Join(strings.Fields(value), " ")
+}
+
+// encodeEmailHeaderText encodes free-form header text as RFC 2047 encoded-words when it
+// contains non-ASCII characters; ASCII-only values are returned unchanged. It must not be
+// used on headers carrying addr-specs, which cannot be encoded this way.
+func encodeEmailHeaderText(value string) string {
+	return mime.QEncoding.Encode("utf-8", value)
 }
 
 func sanitizeEmailHeaderValues(values []string) []string {
