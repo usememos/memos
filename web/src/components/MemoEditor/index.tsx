@@ -9,7 +9,7 @@ import { InstanceSetting_Key } from "@/types/proto/api/v1/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString } from "@/utils/memo";
 import { canManageMemo } from "@/utils/user";
-import { AudioRecorderPanel, EditorContent, EditorMetadata, FocusModeOverlay, TimestampPopover } from "./components";
+import { AudioRecorderPanel, EditorContent, EditorMetadata, ExternalLinkDialog, FocusModeOverlay, TimestampPopover } from "./components";
 import { EditorSuggestions } from "./components/EditorSuggestions";
 import { FOCUS_MODE_STYLES, FORMATTING_TOOLBAR_STORAGE_KEY } from "./constants";
 import type { EditorFileOrigin } from "./Editor/extensions";
@@ -75,6 +75,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   const { aiSetting, fetchSetting } = useInstance();
   const [isAudioRecorderOpen, setIsAudioRecorderOpen] = useState(false);
   const [isTranscribingAudio, setIsTranscribingAudio] = useState(false);
+  const [isExternalLinkDialogOpen, setExternalLinkDialogOpen] = useState(false);
   const { createBlobUrl } = useBlobUrls();
   const saveMediaMetadata = userGeneralSetting?.saveMediaMetadata ?? false;
   const inlineImageUpload = useInlineImageUpload(editorRef);
@@ -258,6 +259,11 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
     setFormattingToolbarVisible((visible) => !visible);
   }, [setFormattingToolbarVisible]);
 
+  const handleInsertExternalLink = useCallback((url: string) => {
+    editorRef.current?.formatting?.run("link", { url });
+    editorRef.current?.focus();
+  }, []);
+
   const handleStartAudioRecording = async () => {
     setIsAudioRecorderOpen(true);
     await audioRecorder.startRecording();
@@ -371,6 +377,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
         {(isFocusMode || isFormattingToolbarVisible) && (
           <FormattingToolbar
             controllerRef={editorRef}
+            onOpenLink={() => setExternalLinkDialogOpen(true)}
             exit={isFocusMode ? { action: onFocusModeExit ? "close" : "minimize", onExit: handleToggleFocusMode } : undefined}
           />
         )}
@@ -382,7 +389,13 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
         )}
 
         {/* Editor content grows to fill available space in focus mode */}
-        <EditorContent ref={editorRef} placeholder={placeholder} onSubmit={handleSave} onFiles={handleEditorFiles} />
+        <EditorContent
+          ref={editorRef}
+          placeholder={placeholder}
+          onSubmit={handleSave}
+          onOpenLink={() => setExternalLinkDialogOpen(true)}
+          onFiles={handleEditorFiles}
+        />
 
         {isAudioRecorderOpen && (audioRecorder.isBusy || isTranscribingAudio) && (
           <AudioRecorderPanel
@@ -423,6 +436,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
           />
         </div>
       </div>
+      <ExternalLinkDialog open={isExternalLinkDialogOpen} onOpenChange={setExternalLinkDialogOpen} onConfirm={handleInsertExternalLink} />
     </>
   );
 };

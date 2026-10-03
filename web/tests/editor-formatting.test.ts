@@ -67,6 +67,22 @@ describe("formatting controller", () => {
     expect(view.state.doc.toString()).toBe("obsolete text");
   });
 
+  it("wraps the selected text in an external Markdown link", () => {
+    const { view, f } = setup("Memos", 0, 5);
+
+    f.run("link", { url: "https://usememos.com" });
+
+    expect(view.state.doc.toString()).toBe("[Memos](https://usememos.com)");
+  });
+
+  it("updates an existing external Markdown link instead of unlinking it", () => {
+    const { view, f } = setup("[Memos](https://old.example)", 3, 3);
+
+    f.run("link", { url: "https://usememos.com" });
+
+    expect(view.state.doc.toString()).toBe("[Memos](https://usememos.com)");
+  });
+
   it("toggles a fenced code block and reports it active", () => {
     const { view, f } = setup("first\nsecond", 0, 12);
 
