@@ -50,6 +50,7 @@ const formattingKeys: KeyBinding[] = [
   formattingKey("Shift-Mod-7", "orderedList"),
   formattingKey("Shift-Mod-8", "bulletList"),
   formattingKey("Shift-Mod-9", "taskList"),
+  formattingKey("Shift-Mod-.", "blockquote"),
   formattingKey("Mod-Alt-1", "heading1"),
   formattingKey("Mod-Alt-2", "heading2"),
   formattingKey("Mod-Alt-3", "heading3"),
@@ -64,6 +65,7 @@ export interface EditorExtensionsOptions {
   onFiles: (files: File[], origin: EditorFileOrigin) => void;
   onUpdate: () => void;
   onSubmit: () => void;
+  onOpenLink?: () => void;
   getTags: () => string[];
 }
 
@@ -86,6 +88,7 @@ export function buildEditorExtensions({
   onFiles,
   onUpdate,
   onSubmit,
+  onOpenLink,
   getTags,
 }: EditorExtensionsOptions): Extension[] {
   // Submitting must outrank defaultKeymap's own Mod-Enter (insertBlankLine): the save
@@ -100,6 +103,17 @@ export function buildEditorExtensions({
     { key: "Meta-Enter", run: submit },
     { key: "Ctrl-Enter", run: submit },
   ];
+  const linkKeys: KeyBinding[] = onOpenLink
+    ? [
+        {
+          key: "Mod-k",
+          run: () => {
+            onOpenLink();
+            return true;
+          },
+        },
+      ]
+    : [];
 
   return [
     // Core editing behavior. These are the pieces from CM6 setup that this memo
@@ -145,7 +159,7 @@ export function buildEditorExtensions({
     tagAutocomplete(getTags),
     // Formatting keys precede defaultKeymap so the conventional Mod-I italic
     // shortcut wins over CodeMirror's generic selectParentSyntax binding.
-    keymap.of([...submitKeys, ...editorKeys, ...formattingKeys, indentWithTab, ...defaultKeymap, ...historyKeymap]),
+    keymap.of([...submitKeys, ...editorKeys, ...formattingKeys, ...linkKeys, indentWithTab, ...defaultKeymap, ...historyKeymap]),
     EditorView.updateListener.of((u) => {
       if (u.docChanged) onChange(u.state.doc.toString());
       // Toolbar active-state depends only on the doc and selection; skip the

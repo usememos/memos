@@ -39,6 +39,7 @@ export type EditorCommandId =
   | "bulletList"
   | "orderedList"
   | "taskList"
+  | "blockquote"
   | "paragraph"
   | "heading1"
   | "heading2"
@@ -55,6 +56,7 @@ export interface ActiveFormatState {
   bulletList: boolean;
   orderedList: boolean;
   taskList: boolean;
+  blockquote: boolean;
   link: boolean;
   headingLevel: ToolbarHeadingLevel | null;
 }
@@ -68,6 +70,7 @@ export const EMPTY_ACTIVE_FORMATS: ActiveFormatState = {
   bulletList: false,
   orderedList: false,
   taskList: false,
+  blockquote: false,
   link: false,
   headingLevel: null,
 };

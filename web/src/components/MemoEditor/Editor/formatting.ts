@@ -317,6 +317,23 @@ function setHeading(view: EditorView, level: number) {
   view.dispatch({ changes, selection: view.state.selection.map(changes, 1) });
 }
 
+function toggleBlockquote(view: EditorView) {
+  const { state } = view;
+  const lines = selectedLineNumbers(view).map((lineNumber) => state.doc.line(lineNumber));
+  const quotePrefix = /^(\s*)> ?/;
+  const allQuoted = lines.every((line) => quotePrefix.test(line.text));
+  const changes = lines.map((line) => {
+    const match = quotePrefix.exec(line.text);
+    if (allQuoted && match) {
+      return { from: line.from, to: line.from + match[0].length, insert: match[1] };
+    }
+    const indentation = line.text.match(/^\s*/)?.[0] ?? "";
+    return { from: line.from + indentation.length, to: line.from + indentation.length, insert: "> " };
+  });
+  const transaction = state.changes(changes);
+  view.dispatch({ changes: transaction, selection: state.selection.map(transaction, 1) });
+}
+
 /** Unwrap the link the head sits in to its label text. True when one was found. */
 function unwrapLink(view: EditorView): boolean {
   const head = view.state.selection.main.head;
@@ -337,6 +354,28 @@ function unwrapLink(view: EditorView): boolean {
   return false;
 }
 
+/** Replace the destination of the link the head sits in. True when one was found. */
+function replaceLinkDestination(view: EditorView, url: string): boolean {
+  const head = view.state.selection.main.head;
+  const tree = syntaxTree(view.state);
+  for (const n of ancestors(tree, head, -1)) {
+    if (n.name !== "Link") continue;
+    const marks = childRanges(n, "LinkMark");
+    // marks[0] is `[`, marks[1] is `]` — preserve the label while replacing
+    // the complete inline link, including its old destination/title.
+    if (marks.length < 2) continue;
+    const label = view.state.sliceDoc(marks[0].to, marks[1].from);
+    const offset = Math.max(0, Math.min(label.length, head - marks[0].to));
+    const insert = `[${label}](${url})`;
+    view.dispatch({
+      changes: { from: n.from, to: n.to, insert },
+      selection: { anchor: n.from + 1 + offset },
+    });
+    return true;
+  }
+  return false;
+}
+
 /** Apply one formatting verb to a CodeMirror view. Shared by the toolbar controller and keymap. */
 export function runFormattingCommand(view: EditorView, command: EditorCommandId, ctx?: EditorCommandContext): void {
   if (isMarkCommand(command)) return toggleMark(view, command);
@@ -348,9 +387,12 @@ export function runFormattingCommand(view: EditorView, command: EditorCommandId,
   if (command === "heading2") return setHeading(view, 2);
   if (command === "heading3") return setHeading(view, 3);
   if (command === "paragraph") return setHeading(view, 0);
+  if (command === "blockquote") return toggleBlockquote(view);
   if (command === "link") {
-    // Toggle: inside an existing link, unwrap it to its label.
-    if (unwrapLink(view)) return;
+    // A URL comes from the external-link dialog. It updates an existing link
+    // in place; the no-context controller behavior remains a toggle/unlink.
+    if (ctx?.url !== undefined && replaceLinkDestination(view, ctx.url)) return;
+    if (ctx?.url === undefined && unwrapLink(view)) return;
     const { from, to } = view.state.selection.main;
     const url = ctx?.url ?? "";
     // Empty selection: the URL doubles as the label.
