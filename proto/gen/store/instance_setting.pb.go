@@ -661,6 +661,7 @@ type InstanceCustomProfile struct {
 	Title         string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
 	Description   string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 	LogoUrl       string                 `protobuf:"bytes,3,opt,name=logo_url,json=logoUrl,proto3" json:"logo_url,omitempty"`
+	AboutContent  string                 `protobuf:"bytes,4,opt,name=about_content,json=aboutContent,proto3" json:"about_content,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -712,6 +713,13 @@ func (x *InstanceCustomProfile) GetDescription() string {
 func (x *InstanceCustomProfile) GetLogoUrl() string {
 	if x != nil {
 		return x.LogoUrl
+	}
+	return ""
+}
+
+func (x *InstanceCustomProfile) GetAboutContent() string {
+	if x != nil {
+		return x.AboutContent
 	}
 	return ""
 }
@@ -1617,11 +1625,12 @@ const file_store_instance_setting_proto_rawDesc = "" +
 	"\x0ecustom_profile\x18\x06 \x01(\v2\".memos.store.InstanceCustomProfileR\rcustomProfile\x121\n" +
 	"\x15week_start_day_offset\x18\a \x01(\x05R\x12weekStartDayOffset\x128\n" +
 	"\x18disallow_change_username\x18\b \x01(\bR\x16disallowChangeUsername\x128\n" +
-	"\x18disallow_change_nickname\x18\t \x01(\bR\x16disallowChangeNickname\"j\n" +
+	"\x18disallow_change_nickname\x18\t \x01(\bR\x16disallowChangeNickname\"\x8f\x01\n" +
 	"\x15InstanceCustomProfile\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x19\n" +
-	"\blogo_url\x18\x03 \x01(\tR\alogoUrl\"\xa2\x01\n" +
+	"\blogo_url\x18\x03 \x01(\tR\alogoUrl\x12#\n" +
+	"\rabout_content\x18\x04 \x01(\tR\faboutContent\"\xa2\x01\n" +
 	"\aStorage\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12,\n" +

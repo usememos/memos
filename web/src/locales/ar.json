@@ -490,6 +490,9 @@
       "additional-style": "نمط إضافي",
       "additional-style-placeholder": "كود CSS إضافي",
       "customize-server": {
+        "about-content": "محتوى صفحة التعريف",
+        "about-content-hint": "يدعم Markdown. يظهر صفحة التعريف فوق معلومات المشروع.",
+        "about-content-placeholder": "معلومات الاتصال، إرشادات الاستخدام، تعريف…",
         "description": "الوصف",
         "icon-url": "رابط الأيقونة",
         "title": "تخصيص الخادم"

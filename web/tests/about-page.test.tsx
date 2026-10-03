@@ -10,11 +10,15 @@ const mockInstance = {
     demo: false,
     admin: undefined as { username: string; displayName: string } | undefined,
   },
-  generalSetting: {} as { customProfile?: { title: string; description: string; logoUrl: string } },
+  generalSetting: {} as { customProfile?: { title: string; description: string; logoUrl: string; aboutContent?: string } },
 };
 
 vi.mock("@/contexts/InstanceContext", () => ({
   useInstance: () => mockInstance,
+}));
+
+vi.mock("@/components/MemoContent", () => ({
+  default: ({ content }: { content: string }) => <div data-testid="about-content">{content}</div>,
 }));
 
 vi.mock("@/utils/i18n", () => ({
@@ -135,6 +139,38 @@ describe("<About>", () => {
     expect(screen.queryByText(/Your thoughts, your data/i)).not.toBeInTheDocument();
     expect(document.querySelector("img")).toHaveAttribute("src", "/custom-logo.png");
     expect(screen.getByText("Powered by Memos")).toBeInTheDocument();
+  });
+
+  it("renders the custom about content between the tagline and the built-in Memos info", () => {
+    mockInstance.generalSetting = {
+      customProfile: {
+        title: "Team Notes",
+        description: "Our shared scratchpad.",
+        logoUrl: "",
+        aboutContent: "## Contact\n\nPing #ops for access.",
+      },
+    };
+
+    renderAbout();
+
+    const aboutContent = screen.getByTestId("about-content");
+    expect(aboutContent).toHaveTextContent("## Contact Ping #ops for access.");
+    const tagline = screen.getByText("Our shared scratchpad.");
+    const memosDescription = screen.getByText("about.description");
+    const buildLabel = screen.getByRole("heading", { name: "about.build" });
+    expect(tagline.compareDocumentPosition(aboutContent)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(aboutContent.compareDocumentPosition(memosDescription)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(aboutContent.compareDocumentPosition(buildLabel)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+  });
+
+  it("omits the about content section when it is blank", () => {
+    mockInstance.generalSetting = {
+      customProfile: { title: "Team Notes", description: "", logoUrl: "", aboutContent: "  \n " },
+    };
+
+    renderAbout();
+
+    expect(screen.queryByTestId("about-content")).not.toBeInTheDocument();
   });
 
   it("renders as a page without nested mobile padding", () => {

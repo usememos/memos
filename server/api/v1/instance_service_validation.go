@@ -29,6 +29,8 @@ func validateInstanceSetting(setting *v1pb.InstanceSetting) error {
 		return err
 	}
 	switch key {
+	case storepb.InstanceSettingKey_GENERAL.String():
+		return validateInstanceGeneralSetting(setting.GetGeneralSetting())
 	case storepb.InstanceSettingKey_MEMO_RELATED.String():
 		return validateInstanceMemoRelatedSetting(setting.GetMemoRelatedSetting())
 	case storepb.InstanceSettingKey_TAGS.String():
@@ -38,6 +40,13 @@ func validateInstanceSetting(setting *v1pb.InstanceSetting) error {
 	default:
 		return nil
 	}
+}
+
+func validateInstanceGeneralSetting(setting *v1pb.InstanceSetting_GeneralSetting) error {
+	if aboutContent := setting.GetCustomProfile().GetAboutContent(); len(aboutContent) > store.DefaultContentLengthLimit {
+		return errors.Errorf("custom_profile.about_content must be at most %d bytes", store.DefaultContentLengthLimit)
+	}
+	return nil
 }
 
 func validateInstanceMemoRelatedSetting(setting *v1pb.InstanceSetting_MemoRelatedSetting) error {

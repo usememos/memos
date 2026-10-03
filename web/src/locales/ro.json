@@ -699,6 +699,9 @@
       "additional-style-placeholder": "Cod suplimentar CSS",
       "basic-description": "Configurați identitatea publică afișată de această instanță.",
       "customize-server": {
+        "about-content": "Conținutul paginii Despre",
+        "about-content-hint": "Acceptă Markdown. Afișat pe pagina Despre, deasupra informațiilor despre proiect.",
+        "about-content-placeholder": "Date de contact, reguli de utilizare, o prezentare…",
         "description": "Descriere",
         "icon-url": "Pictograma URL",
         "title": "Personalizați serverul"

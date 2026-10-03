@@ -580,6 +580,9 @@
       "additional-style": "Ekstra styling",
       "additional-style-placeholder": "Ekstra CSS-kode",
       "customize-server": {
+        "about-content": "Innhold på Om-siden",
+        "about-content-hint": "Støtter Markdown. Vises på Om-siden over prosjektinformasjonen.",
+        "about-content-placeholder": "Kontaktinformasjon, retningslinjer for bruk, en introduksjon…",
         "description": "Beskrivelse",
         "icon-url": "Ikon-URL",
         "title": "Tilpass server"

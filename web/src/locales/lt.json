@@ -699,6 +699,9 @@
       "additional-style-placeholder": "Papildomas CSS kodas",
       "basic-description": "Sukonfigūruokite viešąją tapatybę, kurią rodo šis pavyzdys.",
       "customize-server": {
+        "about-content": "Puslapio „Apie“ turinys",
+        "about-content-hint": "Palaiko Markdown. Rodoma puslapyje „Apie“ virš projekto informacijos.",
+        "about-content-placeholder": "Kontaktinė informacija, naudojimo taisyklės, prisistatymas…",
         "description": "Aprašymas",
         "icon-url": "Piktograma URL",
         "title": "Tinkinti serverį"

@@ -699,6 +699,9 @@
       "additional-style-placeholder": "Yderligere CSS-kode",
       "basic-description": "Konfigurer den offentlige identitet, der vises af denne instans.",
       "customize-server": {
+        "about-content": "Indhold på Om-siden",
+        "about-content-hint": "Understøtter Markdown. Vises på Om-siden over projektoplysningerne.",
+        "about-content-placeholder": "Kontaktoplysninger, retningslinjer for brug, en introduktion…",
         "description": "Beskrivelse",
         "icon-url": "Ikon URL",
         "title": "Tilpas server"

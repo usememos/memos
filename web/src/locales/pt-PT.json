@@ -580,6 +580,9 @@
       "additional-style": "Estilo adicional",
       "additional-style-placeholder": "Código CSS adicional",
       "customize-server": {
+        "about-content": "Conteúdo da página Acerca de",
+        "about-content-hint": "Suporta Markdown. Apresentado na página Acerca de, acima das informações do projeto.",
+        "about-content-placeholder": "Informações de contacto, regras de utilização, uma apresentação…",
         "description": "Descrição",
         "icon-url": "URL do Ícone",
         "title": "Personalizar Servidor"

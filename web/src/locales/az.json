@@ -893,6 +893,9 @@
       "additional-style-placeholder": "Əlavə CSS kodu",
       "basic-description": "Bu instans üçün ictimai kimlik və təqvim defoltlarını konfiqurasiya edin.",
       "customize-server": {
+        "about-content": "Haqqında səhifəsinin məzmunu",
+        "about-content-hint": "Markdown dəstəklənir. Haqqında səhifəsində layihə məlumatının üstündə göstərilir.",
+        "about-content-placeholder": "Əlaqə məlumatı, istifadə qaydaları, təqdimat…",
         "description": "Təsvir",
         "icon-url": "İkon URL-i",
         "title": "Serveri fərdiləşdir"

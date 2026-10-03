@@ -580,6 +580,9 @@
       "additional-style": "Dodatkowy styl",
       "additional-style-placeholder": "Dodatkowy kod CSS",
       "customize-server": {
+        "about-content": "Treść strony O aplikacji",
+        "about-content-hint": "Obsługuje Markdown. Wyświetlana na stronie O aplikacji nad informacjami o projekcie.",
+        "about-content-placeholder": "Dane kontaktowe, zasady korzystania, przedstawienie się…",
         "description": "Opis",
         "icon-url": "URL ikony",
         "title": "Dostosuj serwer"

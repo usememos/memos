@@ -580,6 +580,9 @@
       "additional-style": "追加CSS",
       "additional-style-placeholder": "追加CSSコード",
       "customize-server": {
+        "about-content": "概要ページの内容",
+        "about-content-hint": "Markdown に対応しています。概要ページのプロジェクト情報の上に表示されます。",
+        "about-content-placeholder": "連絡先、利用ガイドライン、自己紹介など…",
         "description": "説明",
         "icon-url": "アイコンURL",
         "title": "サーバーをカスタマイズ"

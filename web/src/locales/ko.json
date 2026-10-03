@@ -490,6 +490,9 @@
       "additional-style": "추가 스타일",
       "additional-style-placeholder": "추가 CSS 코드",
       "customize-server": {
+        "about-content": "정보 페이지 내용",
+        "about-content-hint": "Markdown을 지원합니다. 정보 페이지의 프로젝트 정보 위에 표시됩니다.",
+        "about-content-placeholder": "연락처, 이용 안내, 소개…",
         "description": "설명",
         "icon-url": "아이콘 URL",
         "title": "서버 커스터마이징"

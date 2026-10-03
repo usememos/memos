@@ -580,6 +580,9 @@
       "additional-style": "Ytterligare stil",
       "additional-style-placeholder": "Ytterligare CSS kod",
       "customize-server": {
+        "about-content": "Innehåll på Om-sidan",
+        "about-content-hint": "Stöder Markdown. Visas på Om-sidan ovanför projektinformationen.",
+        "about-content-placeholder": "Kontaktuppgifter, riktlinjer för användning, en presentation…",
         "description": "Beskrivning",
         "icon-url": "Ikon-URL",
         "title": "Anpassa server"
