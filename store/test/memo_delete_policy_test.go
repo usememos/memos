@@ -59,11 +59,12 @@ func TestDeleteMemoWithPolicyDeletesOnlyTargetAndIncidentResources(t *testing.T)
 	deleted, err := ts.GetMemo(ctx, &store.FindMemo{ID: &comment.ID})
 	require.NoError(t, err)
 	require.Nil(t, deleted)
-	for _, survivorID := range []int32{contextMemo.ID, reply.ID} {
-		survivor, err := ts.GetMemo(ctx, &store.FindMemo{ID: &survivorID})
-		require.NoError(t, err)
-		require.NotNil(t, survivor)
-	}
+	deletedReply, err := ts.GetMemo(ctx, &store.FindMemo{ID: &reply.ID})
+	require.NoError(t, err)
+	require.Nil(t, deletedReply, "a reply is part of the deleted memo's comment subtree")
+	survivor, err := ts.GetMemo(ctx, &store.FindMemo{ID: &contextMemo.ID})
+	require.NoError(t, err)
+	require.NotNil(t, survivor)
 
 	gotAttachment, err := ts.GetAttachment(ctx, &store.FindAttachment{ID: &attachment.ID})
 	require.NoError(t, err)
@@ -83,7 +84,46 @@ func TestDeleteMemoWithPolicyDeletesOnlyTargetAndIncidentResources(t *testing.T)
 	require.Empty(t, incident)
 	replyRelations, err := ts.ListMemoRelations(ctx, &store.FindMemoRelation{MemoID: &reply.ID})
 	require.NoError(t, err)
-	require.Empty(t, replyRelations, "the surviving reply loses only its deleted context relation")
+	require.Empty(t, replyRelations, "the deleted reply's context relation is removed with it")
+}
+
+func TestDeleteMemoWithPolicyDeletesWholeCommentSubtree(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	defer ts.Close()
+
+	author, err := ts.CreateUser(ctx, &store.User{Username: "delete-subtree-author", Role: store.RoleUser, PasswordHash: "hash"})
+	require.NoError(t, err)
+	commenter, err := ts.CreateUser(ctx, &store.User{Username: "delete-subtree-commenter", Role: store.RoleUser, PasswordHash: "hash"})
+	require.NoError(t, err)
+
+	parent, err := ts.CreateMemo(ctx, &store.Memo{UID: "delete-subtree-parent", CreatorID: author.ID, Content: "parent", Visibility: store.Public})
+	require.NoError(t, err)
+	comment, err := ts.CreateMemoComment(ctx, &store.Memo{UID: "delete-subtree-comment", CreatorID: commenter.ID, Content: "comment", Visibility: store.Public}, parent.ID, commenter.ID)
+	require.NoError(t, err)
+	reply, err := ts.CreateMemoComment(ctx, &store.Memo{UID: "delete-subtree-reply", CreatorID: author.ID, Content: "reply", Visibility: store.Public}, comment.ID, author.ID)
+	require.NoError(t, err)
+	unrelated, err := ts.CreateMemo(ctx, &store.Memo{UID: "delete-subtree-unrelated", CreatorID: commenter.ID, Content: "unrelated", Visibility: store.Public})
+	require.NoError(t, err)
+
+	result, err := ts.DeleteMemoWithPolicy(ctx, &store.DeleteMemoWithPolicy{MemoID: parent.ID, ActorUserID: author.ID})
+	require.NoError(t, err)
+	require.True(t, result.ActorCanRead)
+
+	for _, deletedID := range []int32{parent.ID, comment.ID, reply.ID} {
+		deleted, err := ts.GetMemo(ctx, &store.FindMemo{ID: &deletedID})
+		require.NoError(t, err)
+		require.Nil(t, deleted, "memo %d should be deleted with the parent", deletedID)
+	}
+	survivor, err := ts.GetMemo(ctx, &store.FindMemo{ID: &unrelated.ID})
+	require.NoError(t, err)
+	require.NotNil(t, survivor)
+
+	remaining, err := ts.ListMemos(ctx, &store.FindMemo{CreatorID: &commenter.ID, ExcludeComments: true})
+	require.NoError(t, err)
+	for _, memo := range remaining {
+		require.NotEqual(t, comment.ID, memo.ID, "a deleted comment must not resurface as a top-level memo")
+	}
 }
 
 func TestMemoDeleteActorCanReadAudienceMatrix(t *testing.T) {

@@ -7,8 +7,9 @@ import (
 )
 
 // DeleteMemoWithPolicy identifies one memo to delete atomically on behalf of
-// its author or an instance administrator. Relations do not confer lifecycle
-// authority, so no related memo is deleted.
+// its author or an instance administrator. The memo's comment subtree
+// (comments and their nested replies) is deleted with it; other relations do
+// not confer lifecycle authority.
 type DeleteMemoWithPolicy struct {
 	MemoID      int32
 	ActorUserID int32
@@ -40,8 +41,9 @@ func MemoDeleteActorCanRead(rowStatus RowStatus, visibility Visibility, spaceID 
 	}
 }
 
-// DeleteMemoWithPolicy atomically deletes exactly one memo, its owned database
-// resources, and relations for which it is an endpoint.
+// DeleteMemoWithPolicy atomically deletes one memo, its whole comment
+// subtree, their owned database resources, and relations for which any of
+// them is an endpoint.
 func (s *Store) DeleteMemoWithPolicy(ctx context.Context, delete *DeleteMemoWithPolicy) (*DeleteMemoWithPolicyResult, error) {
 	if delete == nil || delete.MemoID <= 0 || delete.ActorUserID <= 0 {
 		return nil, errors.New("memo deletion requires memo and actor")
