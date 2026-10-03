@@ -152,6 +152,9 @@
     "focus-mode": "Mode focus",
     "insert-menu": {
       "add-location": "Afegeix la ubicació",
+      "location-permission-denied": "S'ha denegat l'accés a la ubicació. Permet-lo a la configuració del navegador i torna-ho a provar.",
+      "location-requires-https": "La vostra ubicació actual requereix una connexió HTTPS segura.",
+      "location-unavailable": "No s'ha pogut obtenir la vostra ubicació actual. Torneu-ho a provar o trieu-la manualment.",
       "link-memo": "Nota d'enllaç",
       "retry-image-upload": "Torna-ho a provar",
       "add-attachment": "Afegeix un fitxer adjunt",

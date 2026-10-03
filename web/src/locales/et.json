@@ -190,6 +190,9 @@
     "focus-mode": "Fookusrežiim",
     "insert-menu": {
       "add-location": "Lisa asukoht",
+      "location-permission-denied": "Juurdepääs asukohale keelati. Lubage see brauseri seadetes ja proovige uuesti.",
+      "location-requires-https": "Teie praegune asukoht nõuab turvalist HTTPS-ühendust.",
+      "location-unavailable": "Teie praegust asukohta ei õnnestunud hankida. Proovige uuesti või valige see käsitsi.",
       "link-memo": "Lingi memo",
       "retry-image-upload": "Proovi uuesti",
       "add-attachment": "Lisa manus",

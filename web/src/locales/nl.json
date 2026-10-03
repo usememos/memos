@@ -152,6 +152,9 @@
     "focus-mode": "Focusmodus",
     "insert-menu": {
       "add-location": "Locatie toevoegen",
+      "location-permission-denied": "Toegang tot de locatie is geweigerd. Sta dit toe in de browserinstellingen en probeer het opnieuw.",
+      "location-requires-https": "Je huidige locatie vereist een beveiligde HTTPS-verbinding.",
+      "location-unavailable": "Je huidige locatie kon niet worden opgehaald. Probeer het opnieuw of kies deze handmatig.",
       "link-memo": "Link-memo",
       "retry-image-upload": "Opnieuw proberen",
       "add-attachment": "Bijlage toevoegen",

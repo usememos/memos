@@ -190,6 +190,9 @@
     "focus-mode": "Modul de focalizare",
     "insert-menu": {
       "add-location": "Adăugați locația",
+      "location-permission-denied": "Accesul la locație a fost refuzat. Permiteți-l în setările browserului și încercați din nou.",
+      "location-requires-https": "Locația dvs. actuală necesită o conexiune HTTPS securizată.",
+      "location-unavailable": "Nu s-a putut obține locația dvs. actuală. Încercați din nou sau alegeți-o manual.",
       "link-memo": "Notă de legături",
       "retry-image-upload": "Reîncercați",
       "add-attachment": "Adăugați atașament",

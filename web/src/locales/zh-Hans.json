@@ -214,6 +214,9 @@
     "insert-menu": {
       "add-attachment": "添加附件",
       "add-location": "添加位置",
+      "location-permission-denied": "位置访问已被拒绝。请在浏览器设置中允许后重试。",
+      "location-requires-https": "当前位置需要安全的 HTTPS 连接。",
+      "location-unavailable": "无法获取当前位置。请重试或手动选择位置。",
       "image-upload-failed": "部分图片上传失败，请重试或将已上传文件保留为附件。",
       "image-upload-stopped": "图片上传已暂停 {{completed}}/{{total}}",
       "insert-image": "插入图片",

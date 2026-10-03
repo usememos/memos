@@ -154,6 +154,9 @@
     "save": "Salvar",
     "insert-menu": {
       "add-location": "Adicionar local",
+      "location-permission-denied": "O acesso à localização foi negado. Permita-o nas configurações do navegador e tente novamente.",
+      "location-requires-https": "Sua localização atual requer uma conexão HTTPS segura.",
+      "location-unavailable": "Não foi possível obter sua localização atual. Tente novamente ou escolha-a manualmente.",
       "link-memo": "Vincular memorando",
       "add-attachment": "Adicionar anexo",
       "image-upload-failed": "Algumas imagens não puderam ser carregadas. Tente novamente ou mantenha os arquivos carregados como anexos.",

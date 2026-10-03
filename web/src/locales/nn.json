@@ -262,6 +262,9 @@
     "insert-menu": {
       "add-attachment": "Legg til vedlegg",
       "add-location": "Legg til stad",
+      "location-permission-denied": "Tilgang til posisjonen blei avslått. Tillat det i nettlesarinnstillingane og prøv igjen.",
+      "location-requires-https": "Den noverande posisjonen din krev ei trygg HTTPS-tilkopling.",
+      "location-unavailable": "Klarte ikkje å hente den noverande posisjonen din. Prøv igjen eller vel han manuelt.",
       "image-upload-failed": "Somme bilete kunne diverre ikkje lastast opp. Prøv att, eller hald på dei opplasta filene som vedlegg.",
       "image-upload-stopped": "Biletopplastinga stogga {{completed}}/{{total}}",
       "insert-image": "Set inn bilete",

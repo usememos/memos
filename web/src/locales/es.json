@@ -152,6 +152,9 @@
     "focus-mode": "Modo enfoque",
     "insert-menu": {
       "add-location": "Agregar ubicación",
+      "location-permission-denied": "Se denegó el acceso a la ubicación. Permítelo en la configuración del navegador e inténtalo de nuevo.",
+      "location-requires-https": "Tu ubicación actual requiere una conexión HTTPS segura.",
+      "location-unavailable": "No se pudo obtener tu ubicación actual. Inténtalo de nuevo o selecciónala manualmente.",
       "link-memo": "Nota de enlace",
       "retry-image-upload": "Rever",
       "add-attachment": "Añadir archivo adjunto",

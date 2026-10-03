@@ -152,6 +152,9 @@
     "focus-mode": "Fokus Modus",
     "insert-menu": {
       "add-location": "Standort hinzufügen",
+      "location-permission-denied": "Der Zugriff auf den Standort wurde verweigert. Erlauben Sie ihn in den Browsereinstellungen und versuchen Sie es erneut.",
+      "location-requires-https": "Ihr aktueller Standort erfordert eine sichere HTTPS-Verbindung.",
+      "location-unavailable": "Ihr aktueller Standort konnte nicht ermittelt werden. Versuchen Sie es erneut oder wählen Sie ihn manuell aus.",
       "link-memo": "Link-Memo",
       "retry-image-upload": "Wiederholen",
       "add-attachment": "Anhang hinzufügen",
