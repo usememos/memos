@@ -1296,8 +1296,9 @@ export const MemoService: GenService<{
     output: typeof MemoSchema;
   },
   /**
-   * DeleteMemo deletes only the named memo and its owned resources. It removes
-   * incident relations but never deletes another memo.
+   * DeleteMemo deletes the named memo and its comment subtree, including nested
+   * replies and their owned resources. It removes incident relations for all
+   * deleted memos.
    *
    * @generated from rpc memos.api.v1.MemoService.DeleteMemo
    */

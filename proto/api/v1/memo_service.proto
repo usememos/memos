@@ -44,8 +44,9 @@ service MemoService {
     };
     option (google.api.method_signature) = "memo,update_mask";
   }
-  // DeleteMemo deletes only the named memo and its owned resources. It removes
-  // incident relations but never deletes another memo.
+  // DeleteMemo deletes the named memo and its comment subtree, including nested
+  // replies and their owned resources. It removes incident relations for all
+  // deleted memos.
   rpc DeleteMemo(DeleteMemoRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {delete: "/api/v1/{name=memos/*}"};
     option (google.api.method_signature) = "name";

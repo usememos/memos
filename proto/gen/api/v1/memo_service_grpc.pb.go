@@ -57,8 +57,9 @@ type MemoServiceClient interface {
 	GetMemo(ctx context.Context, in *GetMemoRequest, opts ...grpc.CallOption) (*Memo, error)
 	// UpdateMemo updates a memo.
 	UpdateMemo(ctx context.Context, in *UpdateMemoRequest, opts ...grpc.CallOption) (*Memo, error)
-	// DeleteMemo deletes only the named memo and its owned resources. It removes
-	// incident relations but never deletes another memo.
+	// DeleteMemo deletes the named memo and its comment subtree, including nested
+	// replies and their owned resources. It removes incident relations for all
+	// deleted memos.
 	DeleteMemo(ctx context.Context, in *DeleteMemoRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// SetMemoAttachments replaces the full set of attachments on a memo with the
 	// provided list (not an append). Pass the complete desired set; an empty list
@@ -322,8 +323,9 @@ type MemoServiceServer interface {
 	GetMemo(context.Context, *GetMemoRequest) (*Memo, error)
 	// UpdateMemo updates a memo.
 	UpdateMemo(context.Context, *UpdateMemoRequest) (*Memo, error)
-	// DeleteMemo deletes only the named memo and its owned resources. It removes
-	// incident relations but never deletes another memo.
+	// DeleteMemo deletes the named memo and its comment subtree, including nested
+	// replies and their owned resources. It removes incident relations for all
+	// deleted memos.
 	DeleteMemo(context.Context, *DeleteMemoRequest) (*emptypb.Empty, error)
 	// SetMemoAttachments replaces the full set of attachments on a memo with the
 	// provided list (not an append). Pass the complete desired set; an empty list
