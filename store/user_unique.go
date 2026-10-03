@@ -43,11 +43,11 @@ func classifyUserUniqueViolation(err error) error {
 	}
 	message := err.Error()
 	for _, marker := range uniqueViolationMarkers {
-		index := strings.Index(message, marker)
-		if index < 0 {
+		_, after, ok := strings.Cut(message, marker)
+		if !ok {
 			continue
 		}
-		target := message[index+len(marker):]
+		target := after
 		switch {
 		case strings.Contains(target, "user_identity"):
 			return errors.Wrap(ErrUserIdentityTaken, message)

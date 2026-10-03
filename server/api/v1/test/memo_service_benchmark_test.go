@@ -109,7 +109,7 @@ func seedListMemosBenchmarkData(ctx context.Context, stores *store.Store, hostUs
 	topLevelMemos := make([]*store.Memo, 0, benchmarkTopLevelMemoCount)
 	commentParentName := ""
 
-	for i := 0; i < benchmarkTopLevelMemoCount; i++ {
+	for i := range benchmarkTopLevelMemoCount {
 		visibility := store.Private
 		if i%4 == 0 {
 			visibility = store.Public

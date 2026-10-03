@@ -169,7 +169,7 @@ func TestMemoManagedAttachmentImages(t *testing.T) {
 			UID: shortuuid.New(), CreatorID: user.ID, Filename: "referenced.png", Type: "image/png", MemoID: &memoID,
 		})
 		require.NoError(t, err)
-		for i := 0; i < 100; i++ {
+		for i := range 100 {
 			attachment, err := ts.Store.CreateAttachment(ctx, &store.Attachment{
 				UID: shortuuid.New(), CreatorID: user.ID, Filename: fmt.Sprintf("extra-%03d.png", i), Type: "image/png", MemoID: &memoID,
 			})

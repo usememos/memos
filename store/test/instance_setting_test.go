@@ -200,7 +200,7 @@ func TestCreateInstanceSettingIfNotExistsIsFirstWriterWins(t *testing.T) {
 	}
 	start := make(chan struct{})
 	results := make(chan result, candidateCount)
-	for i := 0; i < candidateCount; i++ {
+	for i := range candidateCount {
 		value := fmt.Sprintf("candidate-%02d", i)
 		go func() {
 			<-start

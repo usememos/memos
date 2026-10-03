@@ -43,7 +43,7 @@ func TestDemoSeedUsesDeploymentAuthenticationPolicy(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, generalSetting.DisallowPasswordAuth)
 	require.False(t, generalSetting.DisallowUserRegistration, "SSO first-login provisioning must remain enabled")
-	provider, err := stores.GetIdentityProvider(ctx, &store.FindIdentityProvider{UID: ptr("primary-sso")})
+	provider, err := stores.GetIdentityProvider(ctx, &store.FindIdentityProvider{UID: new("primary-sso")})
 	require.NoError(t, err)
 	require.NotNil(t, provider)
 

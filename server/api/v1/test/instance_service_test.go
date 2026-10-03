@@ -113,7 +113,7 @@ func TestGetInstanceProfile_Concurrency(t *testing.T) {
 		results := make(chan *v1pb.InstanceProfile, numGoroutines)
 		errors := make(chan error, numGoroutines)
 
-		for i := 0; i < numGoroutines; i++ {
+		for range numGoroutines {
 			go func() {
 				req := &v1pb.GetInstanceProfileRequest{}
 				resp, err := ts.Service.GetInstanceProfile(ctx, req)
@@ -126,7 +126,7 @@ func TestGetInstanceProfile_Concurrency(t *testing.T) {
 		}
 
 		// Collect all results
-		for i := 0; i < numGoroutines; i++ {
+		for range numGoroutines {
 			select {
 			case err := <-errors:
 				t.Fatalf("Goroutine returned error: %v", err)

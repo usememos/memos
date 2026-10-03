@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"mime"
 	"net/url"
+	"slices"
 	"strings"
 	"unicode"
 	"unicode/utf8"
@@ -409,12 +410,7 @@ func isPotentialHTTPURL(value string) bool {
 }
 
 func containsString(values []string, expected string) bool {
-	for _, value := range values {
-		if value == expected {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(values, expected)
 }
 
 func isJSONOEmbedMediaType(value string) bool {

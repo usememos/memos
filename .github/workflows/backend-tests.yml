@@ -42,6 +42,35 @@ jobs:
         with:
           version: v2.13.1
           args: --timeout=3m
+          skip-cache: true
+
+      - name: Install goimports
+        run: |
+          go install golang.org/x/tools/cmd/goimports@v0.24.0
+
+      - name: Verify goimports formatting
+        run: |
+          export PATH=$PATH:$(go env GOPATH)/bin
+          UNFORMATTED=$(goimports -l . 2>&1 | grep -v "proto/gen/" | grep -v "markdown/parser/tag_unicode_tables.go" || true)
+          if [ -n "$UNFORMATTED" ]; then
+            echo "Unformatted files:"
+            echo "$UNFORMATTED"
+            exit 1
+          fi
+
+      - name: Verify go fix
+        run: |
+          output=$(go fix -diff ./... 2>&1)
+          code=$?
+          filtered=$(echo "$output" | grep -v "downloading" || true)
+          if [ -n "$filtered" ]; then
+            echo "$filtered"
+          fi
+          if [ $code -eq 1 ]; then
+            exit 1
+          elif [ $code -gt 1 ]; then
+            exit 1
+          fi
 
   tests:
     name: Tests (${{ matrix.test-group }})
