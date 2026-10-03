@@ -80,7 +80,7 @@ func TestMessageFormatPlainText(t *testing.T) {
 	formatted := msg.Format("sender@example.com", "Sender Name")
 
 	// Check required headers
-	if !strings.Contains(formatted, "From: Sender Name <sender@example.com>") {
+	if !strings.Contains(formatted, "From: \"Sender Name\" <sender@example.com>") {
 		t.Error("Missing or incorrect From header")
 	}
 	if !strings.Contains(formatted, "To: user@example.com") {
@@ -164,7 +164,7 @@ func TestMessageFormatSanitizesHeaderValues(t *testing.T) {
 	if !strings.Contains(headers, "Subject: Test X-Injected-Subject: bad") {
 		t.Error("subject header was not normalized")
 	}
-	if !strings.Contains(headers, "From: Sender X-Injected-Name: bad <sender@example.com X-Injected-From: bad>") {
+	if !strings.Contains(headers, "From: \"Sender X-Injected-Name: bad\" <sender@example.com X-Injected-From: bad>") {
 		t.Error("from header was not normalized")
 	}
 }
