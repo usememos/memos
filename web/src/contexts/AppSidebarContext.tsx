@@ -1,4 +1,4 @@
-import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { createContext, type ReactNode, type Dispatch, type SetStateAction, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import type { MemoParentStatus } from "@/components/MemoParentPlaceholder";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
@@ -32,7 +32,7 @@ interface AppSidebarContextValue {
   closeMobileThen: (action: () => void) => void;
   completeMobileClose: (open: boolean) => void;
   quickFindOpen: boolean;
-  setQuickFindOpen: (open: boolean) => void;
+  setQuickFindOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 const AppSidebarContext = createContext<AppSidebarContextValue | null>(null);

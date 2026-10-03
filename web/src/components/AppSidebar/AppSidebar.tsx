@@ -44,6 +44,7 @@ import { collectionNavigationPath, ROUTES } from "@/router/routes";
 import { User_Role, UserNotification_Status } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import CommonSidebarContent from "./CommonSidebarContent";
+import { QUICK_FIND_SHORTCUT_ARIA, quickFindShortcutLabel } from "./QuickFindDialog";
 import { getSidebarRouteKind } from "./routes";
 import SidebarRow, { SIDEBAR_ROW_CLASSES, SIDEBAR_ROW_FOCUS_CLASSES, SidebarRowIconSlot, sidebarRowStateClasses } from "./SidebarRow";
 import SidebarSection, { SIDEBAR_SECTION_STACK_CLASSES } from "./SidebarSection";
@@ -282,6 +283,10 @@ interface NavPillProps {
   onClick?: () => void;
   active?: boolean;
   expanded?: boolean;
+  /** Shortcut advertised in the tooltip, e.g. "Ctrl+K" / "⌘K". */
+  shortcut?: string;
+  /** Bound chord for assistive tech, in the `aria-keyshortcuts` syntax, e.g. "Meta+K Control+K". */
+  shortcutAria?: string;
   className?: string;
 }
 
@@ -295,7 +300,7 @@ interface NavPillProps {
  * page stays a filled square with its tooltip, leaving room for the other actions.
  * Timeline's trailing arrow shares its surface, with a separate click target.
  */
-const NavPill = ({ label, icon: Icon, to, onClick, active = false, expanded = false, className }: NavPillProps) => {
+const NavPill = ({ label, icon: Icon, to, onClick, active = false, expanded = false, shortcut, shortcutAria, className }: NavPillProps) => {
   const { setMobileOpen } = useAppSidebar();
   const props = {
     onClick: () => {
@@ -303,6 +308,7 @@ const NavPill = ({ label, icon: Icon, to, onClick, active = false, expanded = fa
       onClick?.();
     },
     "aria-label": label,
+    "aria-keyshortcuts": shortcutAria,
     "aria-current": active ? ("page" as const) : undefined,
     className: cn(
       sidebarSurfaceVariants({ role: "navPill" }),
@@ -332,7 +338,17 @@ const NavPill = ({ label, icon: Icon, to, onClick, active = false, expanded = fa
           </span>
         </span>
       </TooltipTrigger>
-      <TooltipContent side="bottom">{label}</TooltipContent>
+      <TooltipContent side="bottom">
+        {label}
+        {shortcut && (
+          <kbd
+            aria-hidden
+            className="ms-1.5 rounded-[4px] bg-primary-foreground/20 px-1 py-0.5 font-sans text-2xs leading-none font-medium pointer-coarse:hidden"
+          >
+            {shortcut}
+          </kbd>
+        )}
+      </TooltipContent>
     </Tooltip>
   );
 };
@@ -374,7 +390,14 @@ const GlobalNavigation = () => {
             expanded={destination.kind === expandedKind}
           />
         ))}
-        <NavPill label={t("common.search")} icon={SearchIcon} onClick={() => setQuickFindOpen(true)} className="ms-auto" />
+        <NavPill
+          label={t("common.search")}
+          icon={SearchIcon}
+          onClick={() => setQuickFindOpen(true)}
+          shortcut={quickFindShortcutLabel()}
+          shortcutAria={QUICK_FIND_SHORTCUT_ARIA}
+          className="ms-auto"
+        />
       </nav>
     </TooltipProvider>
   );
