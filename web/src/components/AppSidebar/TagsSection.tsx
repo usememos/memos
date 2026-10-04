@@ -83,7 +83,6 @@ const TagsSection = ({ tagCount, onSelect, scope }: Props) => {
   const { getFiltersByFactor, addFilter, removeFilter } = useMemoFilterContext();
   const [treeMode, setTreeMode] = useLocalStorage<boolean>("tag-view-as-tree", false);
   const activeTags = new Set(getFiltersByFactor("tagSearch").map((filter) => filter.value));
-  const activeTag = activeTags.values().next().value as string | undefined;
   const tags = useMemo(() => Object.entries(tagCount).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])), [tagCount]);
 
   if (tags.length === 0) {
@@ -95,7 +94,6 @@ const TagsSection = ({ tagCount, onSelect, scope }: Props) => {
     if (active) {
       removeFilter((filter) => filter.factor === "tagSearch" && filter.value === tag);
     } else {
-      removeFilter((filter) => filter.factor === "tagSearch");
       addFilter({ factor: "tagSearch", value: tag });
     }
     onSelect?.();
@@ -135,7 +133,7 @@ const TagsSection = ({ tagCount, onSelect, scope }: Props) => {
       }
     >
       {treeMode ? (
-        <TagTree key={scope} tagAmounts={tags} activeTag={activeTag} scope={scope} onTagClick={handleTagClick} />
+        <TagTree key={scope} tagAmounts={tags} activeTags={activeTags} scope={scope} onTagClick={handleTagClick} />
       ) : (
         <>
           {tags.map(([tag, amount]) => (
