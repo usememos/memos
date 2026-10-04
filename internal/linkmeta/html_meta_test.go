@@ -569,7 +569,7 @@ func TestHTMLMetaFetcherYouTubeUsesOEmbed(t *testing.T) {
 		t.Run(videoURL, func(t *testing.T) {
 			fetcher := newTestFetcher(roundTripFunc(func(req *http.Request) (*http.Response, error) {
 				if req.URL.Host != "www.youtube.com" || req.URL.Path != "/oembed" {
-					return nil, fmt.Errorf("unexpected request to %s", req.URL)
+					return nil, errors.New("unexpected request to " + req.URL.String())
 				}
 				require.Equal(t, videoURL, req.URL.Query().Get("url"))
 				return response(req, http.StatusOK, "application/json",
