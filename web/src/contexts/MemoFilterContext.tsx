@@ -74,7 +74,9 @@ const MemoFilterContext = createContext<MemoFilterContextValue | null>(null);
 
 export function MemoFilterProvider({ children }: { children: ReactNode }) {
   const [searchParams, setSearchParams] = useSearchParams();
-  const locationStateRef = useRef(useLocation().state);
+  const location = useLocation();
+  const locationStateRef = useRef(location.state);
+  locationStateRef.current = location.state;
   const searchParamsRef = useRef(searchParams);
   searchParamsRef.current = searchParams;
   const setSearchParamsRef = useRef(setSearchParams);

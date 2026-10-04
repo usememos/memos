@@ -119,6 +119,33 @@ describe("MemoFilterProvider", () => {
     ]);
   });
 
+  it("preserves the latest navigation state when selecting or clearing a view", async () => {
+    const state = { from: "/spaces/product" };
+    const router = createMemoryRouter(
+      [
+        {
+          path: "*",
+          element: (
+            <MemoFilterProvider>
+              <Harness />
+            </MemoFilterProvider>
+          ),
+        },
+      ],
+      { initialEntries: ["/", { pathname: "/memos/1", state }], initialIndex: 0 },
+    );
+    render(<RouterProvider router={router} />);
+
+    await act(() => router.navigate(1));
+    fireEvent.click(screen.getByRole("button", { name: "Select view" }));
+    await waitFor(() => expect(new URLSearchParams(router.state.location.search).get("view")).toBe("abc"));
+    expect(router.state.location.state).toEqual(state);
+
+    fireEvent.click(screen.getByRole("button", { name: "Clear view" }));
+    await waitFor(() => expect(new URLSearchParams(router.state.location.search).has("view")).toBe(false));
+    expect(router.state.location.state).toEqual(state);
+  });
+
   it("writes the selected view to the URL", async () => {
     const router = createMemoryRouter(
       [
