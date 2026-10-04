@@ -248,12 +248,14 @@ func validateAndNormalizeDeploymentInstanceSetting(setting *storepb.InstanceSett
 			if s3Config == nil {
 				return errors.New("storageSetting default storage S3 config is required")
 			}
+			// Without an access key pair the default AWS credential chain is used.
+			if (strings.TrimSpace(s3Config.AccessKeyId) == "") != (strings.TrimSpace(s3Config.AccessKeySecret) == "") {
+				return errors.New("storageSetting default S3 config.accessKeyId and config.accessKeySecret must be set together")
+			}
 			for _, field := range []struct {
 				name  string
 				value string
 			}{
-				{name: "accessKeyId", value: s3Config.AccessKeyId},
-				{name: "accessKeySecret", value: s3Config.AccessKeySecret},
 				{name: "endpoint", value: s3Config.Endpoint},
 				{name: "region", value: s3Config.Region},
 				{name: "bucket", value: s3Config.Bucket},

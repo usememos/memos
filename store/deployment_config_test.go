@@ -260,6 +260,15 @@ func TestLoadDeploymentConfigurationSupportsEveryProvisionableSettingGroup(t *te
 	assert.Equal(t, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC, access.AccessMode)
 }
 
+func TestLoadDeploymentConfigurationAcceptsS3WithoutAccessKeys(t *testing.T) {
+	stores := newDeploymentConfigurationTestStore(t)
+	dir := t.TempDir()
+	content := `{"key":"STORAGE","storageSetting":{"storageType":"S3","s3Config":{"endpoint":"https://s3.example.com","region":"us-east-1","bucket":"memos"}}}`
+	require.NoError(t, os.WriteFile(filepath.Join(dir, "memos-instance-setting-storage.json"), []byte(content), 0600))
+	require.NoError(t, stores.LoadDeploymentConfigurationDir(context.Background(), dir))
+	assert.True(t, stores.IsInstanceSettingDeploymentConfigured(storepb.InstanceSettingKey_STORAGE))
+}
+
 func TestLoadDeploymentConfigurationRejectsInvalidSettingResources(t *testing.T) {
 	tests := []struct {
 		name        string
@@ -273,6 +282,16 @@ func TestLoadDeploymentConfigurationRejectsInvalidSettingResources(t *testing.T)
 		{name: "unspecified access mode", content: `{"key":"ACCESS","accessSetting":{}}`, errorString: "accessSetting.accessMode must be PRIVATE or PUBLIC"},
 		{name: "mismatched access oneof", content: `{"key":"ACCESS","generalSetting":{}}`, errorString: "accessSetting must be populated"},
 		{name: "unknown field", content: `{"key":"GENERAL","generalSetting":{},"typo":true}`, errorString: `unknown field "typo"`},
+		{
+			name:        "S3 access key without secret",
+			content:     `{"key":"STORAGE","storageSetting":{"storageType":"S3","s3Config":{"accessKeyId":"access-key","endpoint":"https://s3.example.com","region":"us-east-1","bucket":"memos"}}}`,
+			errorString: "accessKeyId and config.accessKeySecret must be set together",
+		},
+		{
+			name:        "S3 secret without access key",
+			content:     `{"key":"STORAGE","storageSetting":{"storageType":"S3","s3Config":{"accessKeySecret":"secret","endpoint":"https://s3.example.com","region":"us-east-1","bucket":"memos"}}}`,
+			errorString: "accessKeyId and config.accessKeySecret must be set together",
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {

@@ -102,7 +102,8 @@ const hasReusableS3Credential = (
   setting: InstanceSetting_StorageSetting,
   target: InstanceSetting_Storage_S3Config | InstanceSetting_StorageSetting_S3Config | undefined,
 ): boolean => {
-  if (!target) {
+  // Without an access key ID the server uses the default AWS credential chain.
+  if (!target?.accessKeyId) {
     return false;
   }
   // A credential can authorize multiple buckets, so match its provider scope
@@ -181,8 +182,8 @@ const StorageSection = () => {
     } else if (selectedStorageType === InstanceSetting_StorageType.S3) {
       if (
         !instanceStorageSetting.filepathTemplate ||
-        !selectedS3Config?.accessKeyId ||
-        (!canReuseSelectedS3Secret && !selectedS3Config?.accessKeySecret) ||
+        (!selectedS3Config?.accessKeyId && !!selectedS3Config?.accessKeySecret) ||
+        (!!selectedS3Config?.accessKeyId && !canReuseSelectedS3Secret && !selectedS3Config?.accessKeySecret) ||
         !selectedS3Config?.endpoint ||
         !selectedS3Config?.region ||
         !selectedS3Config?.bucket
