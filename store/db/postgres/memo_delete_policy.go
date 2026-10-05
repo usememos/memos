@@ -70,28 +70,28 @@ func listPostgresCommentSubtreeMemoIDs(ctx context.Context, tx *sql.Tx, rootMemo
 		var next []int32
 		for _, batch := range deleteUserBatches(frontier, deleteUserBatchSize) {
 			clause, args := deleteUserInClause(1, batch)
-			rows, err := tx.QueryContext(ctx, "SELECT memo_id FROM memo_relation WHERE type = 'COMMENT' AND related_memo_id IN "+clause, args...)
-			if err != nil {
-				return nil, errors.Wrap(err, "failed to list comment memos")
-			}
-			for rows.Next() {
-				var childID int32
-				if err := rows.Scan(&childID); err != nil {
-					_ = rows.Close()
-					return nil, errors.Wrap(err, "failed to read comment memo id")
+			if err := func() error {
+				rows, err := tx.QueryContext(ctx, "SELECT memo_id FROM memo_relation WHERE type = 'COMMENT' AND related_memo_id IN "+clause, args...)
+				if err != nil {
+					return errors.Wrap(err, "failed to list comment memos")
 				}
-				if _, ok := seen[childID]; ok {
-					continue
+				defer rows.Close()
+				for rows.Next() {
+					var childID int32
+					if err := rows.Scan(&childID); err != nil {
+						return errors.Wrap(err, "failed to read comment memo id")
+					}
+					if _, ok := seen[childID]; ok {
+						continue
+					}
+					seen[childID] = struct{}{}
+					ids = append(ids, childID)
+					next = append(next, childID)
 				}
-				seen[childID] = struct{}{}
-				ids = append(ids, childID)
-				next = append(next, childID)
+				return errors.Wrap(rows.Err(), "failed to list comment memos")
+			}(); err != nil {
+				return nil, err
 			}
-			if err := rows.Err(); err != nil {
-				_ = rows.Close()
-				return nil, errors.Wrap(err, "failed to list comment memos")
-			}
-			_ = rows.Close()
 		}
 		frontier = next
 	}
