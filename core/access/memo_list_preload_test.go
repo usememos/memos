@@ -25,6 +25,7 @@ type fakeMemoListStore struct {
 	listSpacesErr         error
 }
 
+// GetUser serves single-user reads from the fake map while counting calls.
 func (f *fakeMemoListStore) GetUser(_ context.Context, find *store.FindUser) (*store.User, error) {
 	f.getUserCalls++
 	if find == nil || find.ID == nil {
@@ -33,6 +34,7 @@ func (f *fakeMemoListStore) GetUser(_ context.Context, find *store.FindUser) (*s
 	return f.users[*find.ID], nil
 }
 
+// GetSpace serves single-space reads from the fake map while counting calls.
 func (f *fakeMemoListStore) GetSpace(_ context.Context, find *store.FindSpace) (*store.Space, error) {
 	f.getSpaceCalls++
 	if find == nil || find.ID == nil {
@@ -41,6 +43,7 @@ func (f *fakeMemoListStore) GetSpace(_ context.Context, find *store.FindSpace) (
 	return f.spaces[*find.ID], nil
 }
 
+// GetSpaceMember serves single-membership reads from the fake map while counting calls.
 func (f *fakeMemoListStore) GetSpaceMember(_ context.Context, find *store.FindSpaceMember) (*store.SpaceMember, error) {
 	f.getSpaceMemberCalls++
 	for _, member := range f.members {
@@ -58,6 +61,7 @@ func (f *fakeMemoListStore) GetSpaceMember(_ context.Context, find *store.FindSp
 	return nil, nil
 }
 
+// ListSpaces serves batched space reads from the fake map while recording ID lists.
 func (f *fakeMemoListStore) ListSpaces(_ context.Context, find *store.FindSpace) ([]*store.Space, error) {
 	f.listSpacesCalls++
 	if f.listSpacesErr != nil {
@@ -80,6 +84,7 @@ func (f *fakeMemoListStore) ListSpaces(_ context.Context, find *store.FindSpace)
 	return out, nil
 }
 
+// ListSpaceMembers serves batched membership reads from the fake map while counting calls.
 func (f *fakeMemoListStore) ListSpaceMembers(_ context.Context, find *store.FindSpaceMember) ([]*store.SpaceMember, error) {
 	f.listSpaceMembersCalls++
 	out := []*store.SpaceMember{}
@@ -98,6 +103,8 @@ func (f *fakeMemoListStore) ListSpaceMembers(_ context.Context, find *store.Find
 	return out, nil
 }
 
+// preloadTestStore builds a fake store with normal, admin, and archived users,
+// two spaces, and one membership for preload tests.
 func preloadTestStore() *fakeMemoListStore {
 	return &fakeMemoListStore{
 		users: map[int32]*store.User{
@@ -116,6 +123,8 @@ func preloadTestStore() *fakeMemoListStore {
 	}
 }
 
+// TestPreloadMemoList locks in preload call-shape: empty and unassigned inputs
+// issue no store calls, space IDs are deduped, and viewer edge cases skip.
 func TestPreloadMemoList(t *testing.T) {
 	ctx := context.Background()
 	spaceSeven := int32(7)
@@ -209,6 +218,8 @@ func TestPreloadMemoList(t *testing.T) {
 	})
 }
 
+// TestPreloadMemoListReadContextParity locks in field-equality between preloaded
+// read contexts and the per-memo ResolveMemoReadContext path.
 func TestPreloadMemoListReadContextParity(t *testing.T) {
 	ctx := context.Background()
 	spaceSeven := int32(7)

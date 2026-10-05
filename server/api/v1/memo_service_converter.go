@@ -102,6 +102,8 @@ func (s *APIV1Service) convertMemoFromStoreWithCreators(ctx context.Context, mem
 	return memoMessage, nil
 }
 
+// convertMemoFromStoreWithPreload converts one memo using preloaded space
+// contexts instead of per-memo store reads; behavior matches the per-memo path.
 func (s *APIV1Service) convertMemoFromStoreWithPreload(ctx context.Context, memo *store.Memo, reactions []*store.Reaction, attachments []*store.Attachment, relations []*v1pb.MemoRelation, creatorMap map[int32]*store.User, preload *access.MemoListPreload, allowAnonymous bool) (*v1pb.Memo, error) {
 	name := buildMemoName(memo.UID)
 	creator := creatorMap[memo.CreatorID]

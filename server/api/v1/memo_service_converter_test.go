@@ -138,6 +138,7 @@ func TestConvertMemoSpaceProjectionParity(t *testing.T) {
 	}
 }
 
+// ptr returns a pointer to s for building optional protobuf string fields in tests.
 func ptr(s string) *string {
 	return &s
 }
