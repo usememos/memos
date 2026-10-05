@@ -25,7 +25,7 @@ func (d *DB) ApplyMemoMutation(ctx context.Context, mutation *store.MemoMutation
 		// any serializable snapshot reads in this transaction.
 		var contextMemoID int32
 		if err := tx.QueryRowContext(ctx, "SELECT id FROM memo WHERE id = ? FOR UPDATE", *mutation.CommentContextMemoID).Scan(&contextMemoID); errors.Is(err, sql.ErrNoRows) {
-			return store.ErrMemoSpaceNotWritable
+			return store.ErrMemoMutationConflict
 		} else if err != nil {
 			return errors.Wrap(err, "failed to lock comment context memo")
 		}
