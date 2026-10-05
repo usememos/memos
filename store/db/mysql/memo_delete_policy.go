@@ -10,7 +10,9 @@ import (
 )
 
 func (d *DB) DeleteMemoWithPolicy(ctx context.Context, delete *store.DeleteMemoWithPolicy) (*store.DeleteMemoWithPolicyResult, error) {
-	tx, err := d.db.BeginTx(ctx, nil)
+	// Later subtree and attachment reads must see writers that committed before
+	// their memo locks became available.
+	tx, err := d.db.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelReadCommitted})
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to begin memo delete transaction")
 	}
@@ -25,7 +27,7 @@ func (d *DB) DeleteMemoWithPolicy(ctx context.Context, delete *store.DeleteMemoW
 	var rowStatus store.RowStatus
 	var visibility store.Visibility
 	var space sql.NullInt64
-	if err := tx.QueryRowContext(ctx, "SELECT creator_id, row_status, visibility, space_id FROM memo WHERE id = ?", delete.MemoID).Scan(
+	if err := tx.QueryRowContext(ctx, "SELECT creator_id, row_status, visibility, space_id FROM memo WHERE id = ? FOR UPDATE", delete.MemoID).Scan(
 		&creatorID, &rowStatus, &visibility, &space,
 	); errors.Is(err, sql.ErrNoRows) {
 		return nil, store.ErrMemoMutationConflict
@@ -92,7 +94,6 @@ func listMySQLCommentSubtreeMemoIDs(ctx context.Context, tx *sql.Tx, rootMemoID 
 						continue
 					}
 					seen[childID] = struct{}{}
-					ids = append(ids, childID)
 					next = append(next, childID)
 				}
 				return errors.Wrap(rows.Err(), "failed to list comment memos")
@@ -100,7 +101,38 @@ func listMySQLCommentSubtreeMemoIDs(ctx context.Context, tx *sql.Tx, rootMemoID 
 				return nil, err
 			}
 		}
-		frontier = next
+		// Comment creation takes the same memo locks before adding replies.
+		locked, err := lockMySQLCommentMemoIDs(ctx, tx, next)
+		if err != nil {
+			return nil, err
+		}
+		ids = append(ids, locked...)
+		frontier = locked
 	}
 	return ids, nil
+}
+
+func lockMySQLCommentMemoIDs(ctx context.Context, tx *sql.Tx, ids []int32) ([]int32, error) {
+	locked := make([]int32, 0, len(ids))
+	for _, batch := range deleteUserBatches(ids, deleteUserBatchSize) {
+		clause, args := deleteUserInClause(1, batch)
+		if err := func() error {
+			rows, err := tx.QueryContext(ctx, "SELECT id FROM memo WHERE id IN "+clause+" ORDER BY id FOR UPDATE", args...)
+			if err != nil {
+				return err
+			}
+			defer rows.Close()
+			for rows.Next() {
+				var id int32
+				if err := rows.Scan(&id); err != nil {
+					return err
+				}
+				locked = append(locked, id)
+			}
+			return rows.Err()
+		}(); err != nil {
+			return nil, errors.Wrap(err, "failed to lock comment memos")
+		}
+	}
+	return locked, nil
 }

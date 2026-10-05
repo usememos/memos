@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 
@@ -124,6 +125,181 @@ func TestDeleteMemoWithPolicyDeletesWholeCommentSubtree(t *testing.T) {
 	for _, memo := range remaining {
 		require.NotEqual(t, comment.ID, memo.ID, "a deleted comment must not resurface as a top-level memo")
 	}
+}
+
+type memoDeleteRaceFixture struct {
+	store                  *store.Store
+	owner, commenter       *store.User
+	parent, comment, reply *store.Memo
+}
+
+func newMemoDeleteRaceFixture(t *testing.T) *memoDeleteRaceFixture {
+	t.Helper()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	t.Cleanup(func() { require.NoError(t, ts.Close()) })
+	owner, err := ts.CreateUser(ctx, &store.User{Username: "delete-race-owner", Role: store.RoleUser, PasswordHash: "hash"})
+	require.NoError(t, err)
+	commenter, err := ts.CreateUser(ctx, &store.User{Username: "delete-race-commenter", Role: store.RoleUser, PasswordHash: "hash"})
+	require.NoError(t, err)
+	parent, err := ts.CreateMemo(ctx, &store.Memo{UID: "delete-race-parent", CreatorID: owner.ID, Content: "parent", Visibility: store.Public})
+	require.NoError(t, err)
+	comment, err := ts.CreateMemoComment(ctx, &store.Memo{UID: "delete-race-comment", CreatorID: commenter.ID, Content: "comment", Visibility: store.Public}, parent.ID, commenter.ID)
+	require.NoError(t, err)
+	reply, err := ts.CreateMemoComment(ctx, &store.Memo{UID: "delete-race-reply", CreatorID: owner.ID, Content: "reply", Visibility: store.Public}, comment.ID, owner.ID)
+	require.NoError(t, err)
+	return &memoDeleteRaceFixture{store: ts, owner: owner, commenter: commenter, parent: parent, comment: comment, reply: reply}
+}
+
+func TestDeleteMemoWithPolicyBlocksNewRepliesDuringSubtreeDeletion(t *testing.T) {
+	driver := getDriverFromEnv()
+	if driver == "sqlite" || driver == "d1" {
+		t.Skip("SQLite serializes writes with IMMEDIATE transactions; D1 has no row locks")
+	}
+
+	fixture := newMemoDeleteRaceFixture(t)
+	ts, owner, commenter := fixture.store, fixture.owner, fixture.commenter
+	parent, comment, reply := fixture.parent, fixture.comment, fixture.reply
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	share, err := ts.CreateMemoShare(ctx, &store.MemoShare{UID: "delete-race-share", MemoID: parent.ID, CreatorID: owner.ID})
+	require.NoError(t, err)
+
+	// Hold share cleanup so deletion keeps the whole subtree locked while a
+	// writer tries to add a reply to its deepest memo.
+	blocker, err := ts.GetDriver().GetDB().BeginTx(ctx, nil)
+	require.NoError(t, err)
+	blockerOpen := true
+	defer func() {
+		if blockerOpen {
+			_ = blocker.Rollback()
+		}
+	}()
+	query := "SELECT id FROM memo_share WHERE id = ? FOR UPDATE"
+	if driver == "postgres" {
+		query = "SELECT id FROM memo_share WHERE id = $1 FOR UPDATE"
+	}
+	var shareID int32
+	require.NoError(t, blocker.QueryRowContext(ctx, query, share.ID).Scan(&shareID))
+
+	deleteDone := make(chan error, 1)
+	go func() {
+		_, deleteErr := ts.DeleteMemoWithPolicy(ctx, &store.DeleteMemoWithPolicy{MemoID: parent.ID, ActorUserID: owner.ID})
+		deleteDone <- deleteErr
+	}()
+	select {
+	case deleteErr := <-deleteDone:
+		require.FailNowf(t, "deletion ended before locking the subtree", "error: %v", deleteErr)
+	case <-time.After(100 * time.Millisecond):
+	}
+	for _, memoID := range []int32{parent.ID, comment.ID, reply.ID} {
+		waitForLockedParentRow(ctx, t, ts.GetDriver().GetDB(), driver, "memo", memoID)
+		require.NoError(t, ctx.Err())
+	}
+
+	lateCtx, lateCancel := context.WithTimeout(ctx, 300*time.Millisecond)
+	started := time.Now()
+	_, createErr := ts.CreateMemoComment(lateCtx, &store.Memo{UID: "delete-race-late-reply", CreatorID: commenter.ID, Content: "late reply", Visibility: store.Public}, reply.ID, commenter.ID)
+	lateCancel()
+	require.Error(t, createErr)
+	require.GreaterOrEqual(t, time.Since(started), 250*time.Millisecond, "reply creation must wait for subtree deletion: %v", createErr)
+
+	require.NoError(t, blocker.Commit())
+	blockerOpen = false
+	select {
+	case deleteErr := <-deleteDone:
+		require.NoError(t, deleteErr)
+	case <-ctx.Done():
+		require.FailNow(t, "timed out waiting for memo deletion")
+	}
+	for _, uid := range []string{parent.UID, comment.UID, reply.UID, "delete-race-late-reply"} {
+		memo, err := ts.GetMemo(ctx, &store.FindMemo{UID: &uid})
+		require.NoError(t, err)
+		require.Nil(t, memo, "memo %s must not survive subtree deletion", uid)
+	}
+}
+
+func TestDeleteMemoWithPolicyIncludesReplyCommittedWhileWaitingForSubtree(t *testing.T) {
+	driver := getDriverFromEnv()
+	if driver == "sqlite" || driver == "d1" {
+		t.Skip("SQLite serializes writes with IMMEDIATE transactions; D1 has no row locks")
+	}
+
+	fixture := newMemoDeleteRaceFixture(t)
+	ts, owner, commenter := fixture.store, fixture.owner, fixture.commenter
+	parent, comment, reply := fixture.parent, fixture.comment, fixture.reply
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+	attachment, err := ts.CreateAttachment(ctx, &store.Attachment{
+		UID: "delete-race-attachment", CreatorID: commenter.ID, Filename: "late.txt", Type: "text/plain", Blob: []byte("x"),
+	})
+	require.NoError(t, err)
+
+	// Pause reply creation after it locks the context memo but before it commits.
+	blocker, err := ts.GetDriver().GetDB().BeginTx(ctx, nil)
+	require.NoError(t, err)
+	blockerOpen := true
+	defer func() {
+		if blockerOpen {
+			_ = blocker.Rollback()
+		}
+	}()
+	query := "SELECT id FROM attachment WHERE id = ? FOR UPDATE"
+	if driver == "postgres" {
+		query = "SELECT id FROM attachment WHERE id = $1 FOR UPDATE"
+	}
+	var attachmentID int32
+	require.NoError(t, blocker.QueryRowContext(ctx, query, attachment.ID).Scan(&attachmentID))
+
+	late := &store.Memo{UID: "delete-race-committed-reply", CreatorID: commenter.ID, Content: "late reply", Visibility: store.Public}
+	createDone := make(chan error, 1)
+	go func() {
+		createDone <- ts.ApplyMemoMutation(ctx, &store.MemoMutation{
+			MemoCreate: late, CommentContextMemoID: &reply.ID,
+			Bindings:              []*store.MemoAttachmentBinding{{ID: attachment.ID, UID: attachment.UID, UpdatedTs: time.Now().Unix()}},
+			RequiredAttachmentIDs: []int32{attachment.ID},
+		})
+	}()
+	waitForLockedParentRow(ctx, t, ts.GetDriver().GetDB(), driver, "memo", reply.ID)
+	require.NoError(t, ctx.Err())
+
+	deleteDone := make(chan error, 1)
+	go func() {
+		_, deleteErr := ts.DeleteMemoWithPolicy(ctx, &store.DeleteMemoWithPolicy{MemoID: parent.ID, ActorUserID: owner.ID})
+		deleteDone <- deleteErr
+	}()
+	for _, memoID := range []int32{parent.ID, comment.ID} {
+		waitForLockedParentRow(ctx, t, ts.GetDriver().GetDB(), driver, "memo", memoID)
+		require.NoError(t, ctx.Err())
+	}
+	select {
+	case deleteErr := <-deleteDone:
+		require.FailNowf(t, "deletion ended before reply creation committed", "error: %v", deleteErr)
+	default:
+	}
+
+	require.NoError(t, blocker.Commit())
+	blockerOpen = false
+	select {
+	case createErr := <-createDone:
+		require.NoError(t, createErr)
+	case <-ctx.Done():
+		require.FailNow(t, "timed out waiting for reply creation")
+	}
+	select {
+	case deleteErr := <-deleteDone:
+		require.NoError(t, deleteErr)
+	case <-ctx.Done():
+		require.FailNow(t, "timed out waiting for memo deletion")
+	}
+	for _, uid := range []string{parent.UID, comment.UID, reply.UID, late.UID} {
+		memo, err := ts.GetMemo(ctx, &store.FindMemo{UID: &uid})
+		require.NoError(t, err)
+		require.Nil(t, memo, "memo %s must not survive subtree deletion", uid)
+	}
+	gotAttachment, err := ts.GetAttachment(ctx, &store.FindAttachment{ID: &attachment.ID})
+	require.NoError(t, err)
+	require.Nil(t, gotAttachment, "the committed reply's attachment must be deleted with it")
 }
 
 func TestMemoDeleteActorCanReadAudienceMatrix(t *testing.T) {
