@@ -6,6 +6,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// TestExtractImageInfo locks in extractImageInfo behavior: a valid PNG data
+// URI yields its MIME type and payload, and malformed URIs are rejected.
 func TestExtractImageInfo(t *testing.T) {
 	imageType, base64Data, err := extractImageInfo("data:image/png;base64,iVBORw0KGgo=")
 	require.NoError(t, err)
