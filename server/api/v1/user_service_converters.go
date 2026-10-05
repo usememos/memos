@@ -68,10 +68,12 @@ func convertUserRoleToStore(role v1pb.User_Role) store.Role {
 	}
 }
 
+// dataURIRegex is package-level because *regexp.Regexp is safe for concurrent use.
+var dataURIRegex = regexp.MustCompile(`^data:(?P<type>.+);base64,(?P<base64>.+)`)
+
 // extractImageInfo extracts image type and base64 data from a data URI.
 // Data URI format: data:image/png;base64,iVBORw0KGgo...
 func extractImageInfo(dataURI string) (string, string, error) {
-	dataURIRegex := regexp.MustCompile(`^data:(?P<type>.+);base64,(?P<base64>.+)`)
 	matches := dataURIRegex.FindStringSubmatch(dataURI)
 	if len(matches) != 3 {
 		return "", "", errors.New("invalid data URI format")
