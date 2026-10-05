@@ -205,12 +205,19 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list memo creators: %v", err)
 	}
+	// Batch the space read context once for the whole page: one deduped
+	// ListSpaces plus at most one ListSpaceMembers. The viewer is resolved
+	// once here via resolveMemoAccessScope instead of per memo.
+	spacePreload, err := access.PreloadMemoList(ctx, s.Store, memos, currentUser)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to preload memo space context: %v", err)
+	}
 	for _, memo := range memos {
 		reactions := reactionMap[memo.ID]
 		attachments := attachmentMap[memo.ID]
 		relations := relationMap[memo.ID]
 
-		memoMessage, err := s.convertMemoFromStoreWithCreators(ctx, memo, reactions, attachments, relations, creatorMap)
+		memoMessage, err := s.convertMemoFromStoreWithPreload(ctx, memo, reactions, attachments, relations, creatorMap, spacePreload, accessScope.AllowPublic)
 		if err != nil {
 			if stderrors.Is(err, errMemoCreatorNotFound) {
 				slog.Warn("Skipping memo with missing creator",

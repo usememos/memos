@@ -9,6 +9,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"github.com/usememos/memos/core/access"
 	"github.com/usememos/memos/internal/ratelimit"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
@@ -129,7 +130,7 @@ func (s *APIV1Service) ListMemoComments(ctx context.Context, request *v1pb.ListM
 	if err := s.checkMemoReadAccess(ctx, memo); err != nil {
 		return nil, err
 	}
-	accessScope, _, err := s.resolveMemoAccessScope(ctx)
+	accessScope, currentUser, err := s.resolveMemoAccessScope(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "%v", err)
 	}
@@ -215,13 +216,18 @@ func (s *APIV1Service) ListMemoComments(ctx context.Context, request *v1pb.ListM
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list memo creators: %v", err)
 	}
+	// Batch the space read context once for the whole page, as in ListMemos.
+	spacePreload, err := access.PreloadMemoList(ctx, s.Store, memos, currentUser)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to preload memo space context: %v", err)
+	}
 	var memosResponse []*v1pb.Memo
 	for _, m := range memos {
 		reactions := memoReactionsMap[m.ID]
 		attachments := attachmentMap[m.ID]
 		relations := relationMap[m.ID]
 
-		memoMessage, err := s.convertMemoFromStoreWithCreators(ctx, m, reactions, attachments, relations, creatorMap)
+		memoMessage, err := s.convertMemoFromStoreWithPreload(ctx, m, reactions, attachments, relations, creatorMap, spacePreload, accessScope.AllowPublic)
 		if err != nil {
 			if stderrors.Is(err, errMemoCreatorNotFound) {
 				slog.Warn("Skipping memo comment with missing creator",
