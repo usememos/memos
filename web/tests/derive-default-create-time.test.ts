@@ -119,6 +119,15 @@ describe("restampUntouchedDefault", () => {
     expect(first).not.toEqual(second);
   });
 
+  it("distinguishes two saves within the same second by milliseconds", () => {
+    const defaultCreateTime = deriveDefaultCreateTimeFromFilters(filters, filterAppliedAt);
+    const first = restampUntouchedDefault(defaultCreateTime, defaultCreateTime, new Date(2026, 9, 6, 13, 17, 40, 120));
+    const second = restampUntouchedDefault(defaultCreateTime, defaultCreateTime, new Date(2026, 9, 6, 13, 17, 40, 480));
+    expect(first!.getMilliseconds()).toBe(120);
+    expect(second!.getMilliseconds()).toBe(480);
+    expect(first).not.toEqual(second);
+  });
+
   it("preserves a past filtered date while re-stamping the time of day", () => {
     const pastFilters: MemoFilter[] = [{ factor: "displayTime", value: "2026-10-02" }];
     const defaultCreateTime = deriveDefaultCreateTimeFromFilters(pastFilters, filterAppliedAt);

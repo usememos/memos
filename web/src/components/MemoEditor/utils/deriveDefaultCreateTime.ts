@@ -20,7 +20,7 @@ export function deriveDefaultCreateTimeFromFilters(filters: MemoFilter[], now: D
 export function deriveDefaultCreateTimeFromDate(value: string, now: Date = new Date()): Date | undefined {
   const date = parseLocalDate(value);
   if (!date) return undefined;
-  date.setHours(now.getHours(), now.getMinutes(), now.getSeconds());
+  date.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
   return date;
 }
 
@@ -30,7 +30,7 @@ export function deriveDefaultCreateTimeFromDate(value: string, now: Date = new D
  */
 export function withTimeOfDay(date: Date, now: Date = new Date()): Date {
   const next = new Date(date);
-  next.setHours(now.getHours(), now.getMinutes(), now.getSeconds());
+  next.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
   return next;
 }
 
