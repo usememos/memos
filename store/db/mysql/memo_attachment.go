@@ -20,6 +20,16 @@ func (d *DB) ApplyMemoMutation(ctx context.Context, mutation *store.MemoMutation
 	defer func() {
 		_ = tx.Rollback()
 	}()
+	if mutation.CommentContextMemoID != nil {
+		// Deletion locks this row before scanning its replies. Lock it before
+		// any serializable snapshot reads in this transaction.
+		var contextMemoID int32
+		if err := tx.QueryRowContext(ctx, "SELECT id FROM memo WHERE id = ? FOR UPDATE", *mutation.CommentContextMemoID).Scan(&contextMemoID); errors.Is(err, sql.ErrNoRows) {
+			return store.ErrMemoMutationConflict
+		} else if err != nil {
+			return errors.Wrap(err, "failed to lock comment context memo")
+		}
+	}
 	if err := validateMySQLMemoRelationEndpoints(ctx, tx, mutation); err != nil {
 		return err
 	}

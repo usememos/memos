@@ -1263,7 +1263,7 @@ func TestMemoCommentDoesNotFollowParentVisibilityChanges(t *testing.T) {
 	require.Empty(t, comments.Memos, "context visibility must not expand a private comment")
 }
 
-func TestGlobalFeedExcludesCommentsUntilContextIsDeleted(t *testing.T) {
+func TestGlobalFeedExcludesCommentsAndDeletesThemWithContext(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
@@ -1287,14 +1287,12 @@ func TestGlobalFeedExcludesCommentsUntilContextIsDeleted(t *testing.T) {
 
 	_, err = ts.Service.DeleteMemo(ownerCtx, &apiv1.DeleteMemoRequest{Name: contextMemo.Name})
 	require.NoError(t, err)
-	survivor, err := ts.Service.GetMemo(ownerCtx, &apiv1.GetMemoRequest{Name: comment.Name})
-	require.NoError(t, err)
-	require.Empty(t, survivor.GetParent())
+	_, err = ts.Service.GetMemo(ownerCtx, &apiv1.GetMemoRequest{Name: comment.Name})
+	require.Equal(t, codes.NotFound, status.Code(err))
 
 	feed, err = ts.Service.ListMemos(ownerCtx, &apiv1.ListMemosRequest{PageSize: 20})
 	require.NoError(t, err)
-	require.Len(t, feed.Memos, 1)
-	require.Equal(t, comment.Name, feed.Memos[0].Name)
+	require.Empty(t, feed.Memos)
 }
 
 // TestCreateMemoWithCustomTimestamps tests that custom timestamps can be set when creating memos and comments.

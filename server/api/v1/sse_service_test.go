@@ -556,7 +556,7 @@ func TestDeleteMemoReactionPublishesMemoChanged(t *testing.T) {
 	mustNotReceive(t, client.events, 100*time.Millisecond)
 }
 
-func TestDeleteMemo_DeletesOnlyRequestedMemo(t *testing.T) {
+func TestDeleteMemo_DeletesCommentSubtreeOnly(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
 	rootAuthor, err := svc.Store.CreateUser(ctx, &store.User{
@@ -602,7 +602,7 @@ func TestDeleteMemo_DeletesOnlyRequestedMemo(t *testing.T) {
 	require.NoError(t, err)
 	storedReply, err := svc.Store.GetMemo(ctx, &store.FindMemo{UID: &replyUID})
 	require.NoError(t, err)
-	require.NotNil(t, storedReply, "deleting a COMMENT endpoint must not cascade to the replying memo")
+	require.Nil(t, storedReply, "deleting a comment must also delete its replies")
 	rootUID, err := ExtractMemoUIDFromName(root.Name)
 	require.NoError(t, err)
 	storedRoot, err := svc.Store.GetMemo(ctx, &store.FindMemo{UID: &rootUID})

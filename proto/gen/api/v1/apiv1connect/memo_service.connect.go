@@ -104,8 +104,9 @@ type MemoServiceClient interface {
 	GetMemo(context.Context, *connect.Request[v1.GetMemoRequest]) (*connect.Response[v1.Memo], error)
 	// UpdateMemo updates a memo.
 	UpdateMemo(context.Context, *connect.Request[v1.UpdateMemoRequest]) (*connect.Response[v1.Memo], error)
-	// DeleteMemo deletes only the named memo and its owned resources. It removes
-	// incident relations but never deletes another memo.
+	// DeleteMemo deletes the named memo and its comment subtree, including nested
+	// replies and their owned resources. It removes incident relations for all
+	// deleted memos.
 	DeleteMemo(context.Context, *connect.Request[v1.DeleteMemoRequest]) (*connect.Response[emptypb.Empty], error)
 	// SetMemoAttachments replaces the full set of attachments on a memo with the
 	// provided list (not an append). Pass the complete desired set; an empty list
@@ -417,8 +418,9 @@ type MemoServiceHandler interface {
 	GetMemo(context.Context, *connect.Request[v1.GetMemoRequest]) (*connect.Response[v1.Memo], error)
 	// UpdateMemo updates a memo.
 	UpdateMemo(context.Context, *connect.Request[v1.UpdateMemoRequest]) (*connect.Response[v1.Memo], error)
-	// DeleteMemo deletes only the named memo and its owned resources. It removes
-	// incident relations but never deletes another memo.
+	// DeleteMemo deletes the named memo and its comment subtree, including nested
+	// replies and their owned resources. It removes incident relations for all
+	// deleted memos.
 	DeleteMemo(context.Context, *connect.Request[v1.DeleteMemoRequest]) (*connect.Response[emptypb.Empty], error)
 	// SetMemoAttachments replaces the full set of attachments on a memo with the
 	// provided list (not an append). Pass the complete desired set; an empty list
