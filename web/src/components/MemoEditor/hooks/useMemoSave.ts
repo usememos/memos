@@ -10,6 +10,7 @@ import type { Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { errorService, memoService, validationService } from "../services";
 import { useEditorContext } from "../state";
+import { restampUntouchedDefault } from "../utils/deriveDefaultCreateTime";
 
 /** How long a closing host shows "Saved" before it unmounts the editor. */
 const SAVED_CONFIRMATION_MS = 900;
@@ -59,7 +60,21 @@ export function useMemoSave({
     dispatch(actions.setLoading("saving", true));
 
     try {
-      const result = await memoService.save(state, { memoName, parentMemoName, space: defaultSpace });
+      // The filter-derived default timestamp is computed once, when the
+      // filter was applied; re-stamp an untouched one so a new memo is
+      // stored with the save time's hh:mm:ss on the filtered date, not
+      // the filter time. Edit mode owns its timestamps and is untouched.
+      const saveState =
+        !memoName && defaultCreateTime
+          ? {
+              ...state,
+              timestamps: {
+                createTime: restampUntouchedDefault(state.timestamps.createTime, defaultCreateTime),
+                updateTime: restampUntouchedDefault(state.timestamps.updateTime, defaultCreateTime),
+              },
+            }
+          : state;
+      const result = await memoService.save(saveState, { memoName, parentMemoName, space: defaultSpace });
 
       if (!result.hasChanges) {
         toast.error(t("editor.no-changes-detected"));
