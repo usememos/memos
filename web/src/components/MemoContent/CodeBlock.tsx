@@ -114,7 +114,7 @@ const HighlightedCodeBlock = ({ codeContent, language }: HighlightedCodeBlockPro
   };
 
   return (
-    <pre className="relative my-2 rounded-lg border border-border bg-muted/20 overflow-hidden">
+    <pre className="relative my-0 mb-2 rounded-lg border border-border bg-muted/20 overflow-hidden">
       {/* Header with language label and copy button */}
       <div className="flex items-center justify-between px-2 py-1 border-b border-border bg-muted/30">
         <span className="text-xs text-foreground select-none">{language || "text"}</span>

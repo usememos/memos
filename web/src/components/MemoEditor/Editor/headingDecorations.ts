@@ -1,9 +1,14 @@
 import { RangeSetBuilder } from "@codemirror/state";
 import { Decoration, type DecorationSet, EditorView } from "@codemirror/view";
+import { type HeadingLevel, headingTypeClass } from "@/lib/markdownStyles";
 import { HEADING_LINE } from "./formatting";
 import { viewportDecorations } from "./viewportDecorations";
 
-const lineDecorations = [1, 2, 3, 4, 5, 6].map((level) => Decoration.line({ class: `cm-md-h${level}` }));
+// Heading type comes from the same token as the read-only view, so a heading
+// keeps its size and weight when the memo is saved.
+const lineDecorations = ([1, 2, 3, 4, 5, 6] as const).map((level: HeadingLevel) =>
+  Decoration.line({ class: `cm-md-h${level} ${headingTypeClass(level)}` }),
+);
 
 function build(view: EditorView): DecorationSet {
   const builder = new RangeSetBuilder<Decoration>();

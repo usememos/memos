@@ -8,7 +8,7 @@ interface TableProps extends React.HTMLAttributes<HTMLTableElement>, ReactMarkdo
 
 export const Table = ({ children, className, node: _node, ...props }: TableProps) => {
   return (
-    <div className="my-2 w-full overflow-x-auto rounded-lg border border-border bg-muted/20">
+    <div className="my-0 mb-2 w-full overflow-x-auto rounded-lg border border-border bg-muted/20">
       <table className={cn("w-full border-collapse text-sm", className)} {...props}>
         {children}
       </table>
