@@ -13,20 +13,13 @@ import AudienceMenu from "./AudienceMenu";
 import InsertMenu from "./InsertMenu";
 
 /**
- * Shortcut chip inside the commit button. While saving, a spinner takes the
- * chip's place; both layers share one grid cell so the button keeps its width
- * across the swap. Hidden on coarse pointers, where there is no keyboard to hint.
+ * Save shortcut as key caps, shown in the commit button's tooltip rather than on
+ * the button itself so the primary action reads as a plain verb.
  */
-const ShortcutChip: FC<{ busy: boolean }> = ({ busy }) => (
-  <kbd
-    aria-hidden
-    className="grid place-items-center rounded-[4px] bg-primary-foreground/20 px-1 py-0.5 font-sans text-2xs leading-none font-medium pointer-coarse:hidden"
-  >
-    <span className={cn("col-start-1 row-start-1 inline-flex items-center gap-px", busy && "invisible")}>
-      {primaryModifierGlyph()}
-      <CornerDownLeftIcon className="size-2.5" strokeWidth={2.5} />
-    </span>
-    <LoaderIcon className={cn("col-start-1 row-start-1 size-2.5 animate-spin", !busy && "invisible")} strokeWidth={3} />
+const ShortcutKeys: FC = () => (
+  <kbd className="inline-flex items-center gap-px rounded-[4px] bg-primary-foreground/20 px-1 py-0.5 font-sans text-2xs leading-none font-medium">
+    {primaryModifierGlyph()}
+    <CornerDownLeftIcon className="size-2.5" strokeWidth={2.5} />
   </kbd>
 );
 
@@ -85,11 +78,35 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
       {t("editor.saved")}
       <CheckIcon className="size-3.5" strokeWidth={2.5} />
     </Button>
+  ) : blockedMessage ? (
+    // A disabled button fires no pointer events, so a focusable wrapper hosts the tooltip.
+    <Tooltip>
+      <TooltipTrigger render={<span className="inline-flex" tabIndex={0} aria-label={blockedMessage} />}>
+        <Button size="sm" disabled>
+          {commitLabel}
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent side="top">{blockedMessage}</TooltipContent>
+    </Tooltip>
   ) : (
-    <Button size="sm" onClick={onSave} disabled={isSaving || !valid}>
-      {commitLabel}
-      <ShortcutChip busy={isSaving} />
-    </Button>
+    // The same trigger stays mounted through the save so the button keeps focus;
+    // only its tooltip is switched off. Both modifiers save (see
+    // buildEditorExtensions), so both are announced.
+    <Tooltip disabled={isSaving}>
+      <TooltipTrigger render={<Button size="sm" onClick={onSave} disabled={isSaving} aria-keyshortcuts="Meta+Enter Control+Enter" />}>
+        {/* While saving, a spinner covers the label in the same grid cell so the button keeps its width. */}
+        <span className="grid place-items-center">
+          <span className={cn("col-start-1 row-start-1", isSaving && "invisible")}>{commitLabel}</span>
+          <LoaderIcon className={cn("col-start-1 row-start-1 size-3.5 animate-spin", !isSaving && "invisible")} strokeWidth={2.5} />
+        </span>
+      </TooltipTrigger>
+      <TooltipContent side="top">
+        <span className="flex items-center gap-1.5">
+          {commitLabel}
+          <ShortcutKeys />
+        </span>
+      </TooltipContent>
+    </Tooltip>
   );
 
   return (
@@ -122,16 +139,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
           </Button>
         )}
 
-        {blockedMessage ? (
-          <Tooltip>
-            <TooltipTrigger render={<span className="inline-flex" tabIndex={0} aria-label={blockedMessage} />}>
-              {commitButton}
-            </TooltipTrigger>
-            <TooltipContent side="top">{blockedMessage}</TooltipContent>
-          </Tooltip>
-        ) : (
-          commitButton
-        )}
+        {commitButton}
       </div>
     </div>
   );
