@@ -18,6 +18,11 @@ export const METADATA_ROW_CLASSES = cn(
   "aria-pressed:bg-accent aria-pressed:text-accent-foreground data-popup-open:bg-accent data-popup-open:text-accent-foreground",
   FOCUS_VISIBLE_OUTLINE_CLASSES,
 );
+/**
+ * The compact row: 24px instead of 28px, for a list that previews rather than edits (the
+ * comment strip under a feed card). It packs rows into one block of lines.
+ */
+export const METADATA_COMPACT_ROW_CLASSES = cn(METADATA_ROW_CLASSES, "h-6");
 /** The focusable body of a split row; its gap must equal the box's `gap-1`. */
 export const METADATA_ROW_LABEL_CLASSES = `flex h-full min-w-0 flex-1 items-center gap-1 text-start ${FOCUS_VISIBLE_OUTLINE_CLASSES}`;
 export const METADATA_ROW_SLOT_CLASSES = "flex size-5 shrink-0 items-center justify-center";
@@ -107,23 +112,25 @@ interface MetadataSectionProps extends PropsWithChildren {
   count?: number;
   /** A control on the header's trailing end; it pulls out by its own padding to end on the text edge. */
   action?: ReactNode;
+  /** `compact` sets a 20px header over gapless rows, to pair with `METADATA_COMPACT_ROW_CLASSES`. */
+  density?: "default" | "compact";
 }
 
 /**
- * A quiet titled list: a 24px header with an uppercase title on the text edge, then
+ * A quiet titled list: a 24px header (20px when compact) with an uppercase title on the text edge, then
  * rows whose leading glyph lands on that same edge. No box or band, so the list recedes
  * behind the memo's own content.
  */
-const MetadataSection = ({ title, count, action, children }: MetadataSectionProps) => (
+const MetadataSection = ({ title, count, action, density = "default", children }: MetadataSectionProps) => (
   <section className="w-full" aria-label={title}>
-    <div className="mb-0.5 flex h-6 min-w-0 items-center justify-between gap-2">
+    <div className={cn("flex min-w-0 items-center justify-between gap-2", density === "compact" ? "h-5" : "mb-0.5 h-6")}>
       <h3 className="flex min-w-0 items-center gap-1.5 text-2xs font-normal uppercase tracking-wide text-muted-foreground/55 select-none">
         <span className="truncate">{title}</span>
         {count != null && <span className="tabular-nums text-muted-foreground/60">{count}</span>}
       </h3>
       {action && <div className="-me-2 shrink-0">{action}</div>}
     </div>
-    <div className={METADATA_ROW_LIST_CLASSES}>{children}</div>
+    <div className={cn(METADATA_ROW_LIST_CLASSES, density === "compact" && "gap-0")}>{children}</div>
   </section>
 );
 

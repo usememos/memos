@@ -35,8 +35,9 @@ import { useMemoActionHandlers } from "./hooks";
 import type { MemoActionMenuProps } from "./types";
 
 /**
- * The memo's action menu, in order of how often each action is reached for:
- * open, edit and pin first; then archive, tasks and the Copy submenu; Delete last.
+ * The memo's action menu, grouped by what each action does to the card:
+ * write on it (Edit, the task action), place it (Pin, Archive), reach it beyond
+ * the feed (Open its page, Copy its link or content), then Delete last.
  * A memo's Space is changed in the editor, not here. An archived memo offers
  * only Restore and Delete, and a viewer only Open and Copy.
  */
@@ -136,25 +137,10 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
 
     return (
       <>
-        {openItem}
         <DropdownMenuItem onClick={handleEditMemoClick}>
           <Edit3Icon />
           {t("common.edit")}
         </DropdownMenuItem>
-        {!isComment && (
-          <DropdownMenuItem onClick={handleTogglePinMemoBtnClick}>
-            {memo.pinned ? <BookmarkMinusIcon /> : <BookmarkPlusIcon />}
-            {memo.pinned ? t("common.unpin") : t("common.pin")}
-          </DropdownMenuItem>
-        )}
-
-        <DropdownMenuSeparator />
-        {!isComment && (
-          <DropdownMenuItem onClick={handleToggleMemoStatusClick}>
-            <ArchiveIcon />
-            {t("common.archive")}
-          </DropdownMenuItem>
-        )}
         {/* One task action at a time: finish the open tasks, or reset a finished list. */}
         {hasTaskList &&
           (hasOpenTasks ? (
@@ -168,6 +154,24 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
               {t("memo.task-actions.uncheck-all")}
             </DropdownMenuItem>
           ))}
+
+        {/* A comment has no place of its own to pin or archive; it lives under its parent. */}
+        {!isComment && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleTogglePinMemoBtnClick}>
+              {memo.pinned ? <BookmarkMinusIcon /> : <BookmarkPlusIcon />}
+              {memo.pinned ? t("common.unpin") : t("common.pin")}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleToggleMemoStatusClick}>
+              <ArchiveIcon />
+              {t("common.archive")}
+            </DropdownMenuItem>
+          </>
+        )}
+
+        <DropdownMenuSeparator />
+        {openItem}
         {copySubmenu}
 
         <DropdownMenuSeparator />

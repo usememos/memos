@@ -142,14 +142,9 @@ const MemoPreview = ({
   return (
     <MemoViewContext.Provider value={STUB_CONTEXT}>
       <div
-        className={cn(
-          "pointer-events-none",
-          truncate ? "flex items-center gap-1.5 min-w-0 leading-tight" : "flex flex-col gap-1",
-          className,
-        )}
+        className={cn("pointer-events-none", truncate ? "flex items-center gap-2 min-w-0 leading-tight" : "flex flex-col gap-1", className)}
       >
         {showMeta && meta}
-        {showMeta && truncate && (hasContent || hasAttachments) && <div className="text-muted-foreground/50 shrink-0">·</div>}
         {contentNode}
         {hasAttachments &&
           (truncate ? (
