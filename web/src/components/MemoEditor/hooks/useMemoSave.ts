@@ -10,6 +10,7 @@ import type { Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { errorService, memoService, validationService } from "../services";
 import { useEditorContext } from "../state";
+import { resolveDefaultTimestamps, withTimeOfDay } from "../utils/deriveDefaultCreateTime";
 
 /** How long a closing host shows "Saved" before it unmounts the editor. */
 const SAVED_CONFIRMATION_MS = 900;
@@ -59,7 +60,10 @@ export function useMemoSave({
     dispatch(actions.setLoading("saving", true));
 
     try {
-      const result = await memoService.save(state, { memoName, parentMemoName, space: defaultSpace });
+      // Re-stamp filter-derived defaults with the wall-clock time at save so
+      // consecutive creates while a date filter is active keep distinct order.
+      const timestamps = !memoName && defaultCreateTime ? resolveDefaultTimestamps(state.timestamps, defaultCreateTime) : state.timestamps;
+      const result = await memoService.save({ ...state, timestamps }, { memoName, parentMemoName, space: defaultSpace });
 
       if (!result.hasChanges) {
         toast.error(t("editor.no-changes-detected"));
@@ -101,9 +105,11 @@ export function useMemoSave({
         dispatch(actions.setMetadata({ visibility: defaultVisibility }));
       }
       // Reset creates a fresh editor state, so restore calendar-derived values
-      // for the next memo created without remounting this composer.
+      // for the next memo created without remounting this composer. Re-stamp
+      // time-of-day so the composer display advances between consecutive creates.
       if (!memoName && defaultCreateTime) {
-        dispatch(actions.setTimestamps({ createTime: defaultCreateTime, updateTime: defaultCreateTime }));
+        const next = withTimeOfDay(defaultCreateTime);
+        dispatch(actions.setTimestamps({ createTime: next, updateTime: next }));
       }
 
       if (!memoName && !parentMemoName) {
