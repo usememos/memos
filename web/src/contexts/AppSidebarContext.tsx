@@ -2,6 +2,7 @@ import { createContext, type ReactNode, useCallback, useContext, useEffect, useM
 import { useLocation } from "react-router-dom";
 import type { MemoParentStatus } from "@/components/MemoParentPlaceholder";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
+import { isQuickFindShortcut } from "@/utils/keyboard";
 
 export type AttachmentSection = "all" | "media" | "audio" | "documents" | "unused";
 export type InboxFilter = "all" | "unread" | "archived";
@@ -65,6 +66,17 @@ export const AppSidebarProvider = ({ children }: { children: ReactNode }) => {
       }
     };
   }, [location.pathname]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (!isQuickFindShortcut(event)) return;
+      event.preventDefault();
+      setMobileOpen(false);
+      setQuickFindOpen(true);
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const setMemoDetail = useCallback((descriptor?: MemoDetailSidebarDescriptor) => {
     setMemoDetailState(descriptor);
