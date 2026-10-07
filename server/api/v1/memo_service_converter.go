@@ -102,6 +102,115 @@ func (s *APIV1Service) convertMemoFromStoreWithCreators(ctx context.Context, mem
 	return memoMessage, nil
 }
 
+// convertMemoFromStoreWithPreload converts one memo using preloaded space
+// contexts instead of per-memo store reads; behavior matches the per-memo path.
+func (s *APIV1Service) convertMemoFromStoreWithPreload(ctx context.Context, memo *store.Memo, reactions []*store.Reaction, attachments []*store.Attachment, relations []*v1pb.MemoRelation, creatorMap map[int32]*store.User, preload *access.MemoListPreload, allowAnonymous bool) (*v1pb.Memo, error) {
+	name := buildMemoName(memo.UID)
+	creator := creatorMap[memo.CreatorID]
+	if creator == nil {
+		return nil, errMemoCreatorNotFound
+	}
+	memoMessage := &v1pb.Memo{
+		Name:       name,
+		State:      convertStateFromStore(memo.RowStatus),
+		Creator:    BuildUserName(creator.Username),
+		CreateTime: timestamppb.New(time.Unix(memo.CreatedTs, 0)),
+		UpdateTime: timestamppb.New(time.Unix(memo.UpdatedTs, 0)),
+		Content:    memo.Content,
+		Visibility: convertVisibilityFromStore(memo.Visibility),
+		Pinned:     memo.Pinned,
+	}
+	// The read context comes from the list preload, so conversion performs no
+	// store calls of its own: no per-memo fetchCurrentUser and no per-memo
+	// GetSpace. allowAnonymous is the list call's accessScope.AllowPublic, the
+	// same value buildMemoReadContext derives for the same caller.
+	readContext := preload.ReadContextFor(memo, creatorMap, allowAnonymous, nil)
+	var space *store.Space
+	if memo.SpaceID != nil {
+		space = preload.SpaceByID[*memo.SpaceID]
+	}
+	if err := projectMemoSpaceFromPreload(memo, memoMessage, readContext, space); err != nil {
+		return nil, errors.Wrap(err, "failed to project memo collaboration context")
+	}
+	if memo.Payload != nil {
+		memoMessage.Tags = memo.Payload.Tags
+		memoMessage.Property = convertMemoPropertyFromStore(memo.Payload.Property)
+		memoMessage.Location = convertLocationFromStore(memo.Payload.Location)
+	}
+
+	// Parent identity is part of a readable comment's context. It grants no
+	// access to the parent; clients resolve it independently and handle denial.
+	if memo.ParentUID != nil {
+		parentName := buildMemoName(*memo.ParentUID)
+		memoMessage.Parent = &parentName
+	}
+
+	// Reactions have no independent audience and are readable whenever this
+	// memo is readable. Conversion is reached only after memo authorization.
+	reactionMessages, err := s.convertReactionsFromStoreWithCreators(ctx, reactions, creatorMap, name)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to convert reactions")
+	}
+	memoMessage.Reactions = reactionMessages
+
+	if relations != nil {
+		memoMessage.Relations = relations
+	} else {
+		memoMessage.Relations = []*v1pb.MemoRelation{}
+	}
+
+	memoMessage.Attachments = []*v1pb.Attachment{}
+	for _, attachment := range attachments {
+		attachmentResponse := convertAttachmentFromStore(attachment)
+		memoMessage.Attachments = append(memoMessage.Attachments, attachmentResponse)
+	}
+
+	snippet, err := s.getMemoContentSnippet(memo.Content)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get memo content snippet")
+	}
+	memoMessage.Snippet = snippet
+
+	return memoMessage, nil
+}
+
+// projectMemoSpaceFromPreload projects a memo's space placement from an
+// already-loaded space row instead of fetching it. A nil space means the
+// placement dangles. Every branch mirrors projectMemoCollaborationContext;
+// only the GetSpace round-trip is gone. A preload-time ListSpaces error aborts
+// the list before conversion, where the per-memo path would have failed the
+// same list with an Internal error instead.
+func projectMemoSpaceFromPreload(memo *store.Memo, message *v1pb.Memo, readContext access.MemoReadContext, space *store.Space) error {
+	if memo.SpaceID == nil {
+		return nil
+	}
+	if !readContext.SpaceValid {
+		// Placement is not an additional read gate for PRIVATE, PROTECTED, or
+		// PUBLIC. Omit a dangling placement rather than turning it into a second
+		// audience restriction. SPACE already failed closed in the read policy.
+		if memo.Visibility == store.SpaceAudience {
+			return errors.New("memo has invalid space placement")
+		}
+		return nil
+	}
+	// Placement is visible to the author, to active members, and to an
+	// instance administrator; a non-member reading an assigned PUBLIC memo
+	// learns nothing about its Space.
+	viewer := readContext.Viewer
+	if viewer == nil || (viewer.ID != memo.CreatorID && !readContext.ViewerSpaceMember && !access.IsInstanceAdmin(viewer)) {
+		return nil
+	}
+	if space == nil {
+		if memo.Visibility == store.SpaceAudience {
+			return errors.New("memo has invalid space placement")
+		}
+		return nil
+	}
+	spaceName := buildSpaceName(space.UID)
+	message.Space = &spaceName
+	return nil
+}
+
 func (s *APIV1Service) projectMemoCollaborationContext(ctx context.Context, memo *store.Memo, message *v1pb.Memo, readContext access.MemoReadContext) error {
 	if memo.SpaceID == nil {
 		return nil
