@@ -68,6 +68,9 @@ stmt, _ := engine.CompileToStatement(ctx, `has_task_list && visibility == "PUBLI
   count as absent on every dialect; any other value — including an empty object —
   counts as present. Only `==`/`!=` against a boolean literal (or bare/negated
   use) is allowed.
+- **Relation Flags** — `has_attachment` renders as an `EXISTS` subquery on the
+  `attachment` table (`attachment.memo_id = memo.id`), so a memo with several
+  attachments still matches once. Comparison rules match the presence flags.
 - **String Matching** — `content.contains(x)`, `content.startsWith(x)`, and
   `content.endsWith(x)` render as case-insensitive `LIKE`/`ILIKE` with LIKE
   metacharacters (`%`, `_`, `\`) escaped. Available on scalar string fields whose

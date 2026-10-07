@@ -197,6 +197,7 @@ const filterFields = [
   "has_link",
   "has_code",
   "has_location",
+  "has_attachment",
   'created_ts >= now - duration("24h")',
   "created_ts.getFullYear() == ...",
   "created_ts.getMonth() == ... (0 = Jan)",

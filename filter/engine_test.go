@@ -665,6 +665,91 @@ func TestHasLocationSQLiteBehavior(t *testing.T) {
 	}
 }
 
+func TestRenderHasAttachmentPerDialect(t *testing.T) {
+	t.Parallel()
+
+	engine, err := NewEngine(NewSchema())
+	require.NoError(t, err)
+
+	exists := map[DialectName]string{
+		DialectSQLite:   "EXISTS (SELECT 1 FROM `attachment` WHERE `attachment`.`memo_id` = `memo`.`id`)",
+		DialectMySQL:    "EXISTS (SELECT 1 FROM `attachment` WHERE `attachment`.`memo_id` = `memo`.`id`)",
+		DialectPostgres: "EXISTS (SELECT 1 FROM attachment WHERE attachment.memo_id = memo.id)",
+	}
+	for dialect, predicate := range exists {
+		cases := []struct {
+			expr string
+			sql  string
+		}{
+			{`has_attachment`, predicate},
+			{`!has_attachment`, "NOT (" + predicate + ")"},
+			{`has_attachment == true`, predicate},
+			{`has_attachment == false`, "NOT (" + predicate + ")"},
+			{`has_attachment != true`, "NOT (" + predicate + ")"},
+			{`has_attachment != false`, predicate},
+		}
+		for _, tc := range cases {
+			stmt, err := engine.CompileToStatement(context.Background(), tc.expr, RenderOptions{Dialect: dialect})
+			require.NoError(t, err, "%s %s", dialect, tc.expr)
+			require.Equal(t, tc.sql, stmt.SQL, "%s %s", dialect, tc.expr)
+			require.Empty(t, stmt.Args, "%s %s", dialect, tc.expr)
+		}
+	}
+}
+
+func TestCompileRejectsOrderingOnHasAttachment(t *testing.T) {
+	t.Parallel()
+
+	engine, err := NewEngine(NewSchema())
+	require.NoError(t, err)
+
+	_, err = engine.Compile(context.Background(), `has_attachment < true`)
+	require.Error(t, err)
+}
+
+// TestHasAttachmentSQLiteBehavior pins the semantics against a real database:
+// a memo counts as having attachments only when an attachment row references
+// it, no matter how many do, and unattached rows never match any memo.
+func TestHasAttachmentSQLiteBehavior(t *testing.T) {
+	db, err := sql.Open("sqlite", ":memory:")
+	require.NoError(t, err)
+	db.SetMaxOpenConns(1)
+	t.Cleanup(func() { require.NoError(t, db.Close()) })
+
+	_, err = db.Exec(`CREATE TABLE memo (id INTEGER PRIMARY KEY)`)
+	require.NoError(t, err)
+	_, err = db.Exec(`CREATE TABLE attachment (id INTEGER PRIMARY KEY, memo_id INTEGER)`)
+	require.NoError(t, err)
+	for _, id := range []int{1, 2, 3} {
+		_, err = db.Exec(`INSERT INTO memo (id) VALUES (?)`, id)
+		require.NoError(t, err)
+	}
+	// Memo 2 has two attachments, memo 3 has one, and one attachment is not
+	// attached to any memo.
+	for _, memoID := range []any{2, 2, 3, nil} {
+		_, err = db.Exec(`INSERT INTO attachment (memo_id) VALUES (?)`, memoID)
+		require.NoError(t, err)
+	}
+
+	engine, err := NewEngine(NewSchema())
+	require.NoError(t, err)
+
+	cases := []struct {
+		expr string
+		want []int
+	}{
+		{`has_attachment`, []int{2, 3}},
+		{`!has_attachment`, []int{1}},
+		{`has_attachment == false`, []int{1}},
+		{`has_attachment != false`, []int{2, 3}},
+	}
+	for _, tc := range cases {
+		stmt, err := engine.CompileToStatement(context.Background(), tc.expr, RenderOptions{Dialect: DialectSQLite})
+		require.NoError(t, err, tc.expr)
+		require.Equal(t, tc.want, selectMemoIDs(t, db, stmt), tc.expr)
+	}
+}
+
 func TestRenderJSONBoolComparisonsPerDialect(t *testing.T) {
 	t.Parallel()
 

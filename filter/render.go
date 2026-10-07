@@ -149,6 +149,12 @@ func (r *renderer) renderFieldPredicate(cond *FieldPredicateCondition) (renderRe
 			return renderResult{}, errors.Wrap(err, "failed to render JSON existence predicate")
 		}
 		return renderResult{sql: sql}, nil
+	case FieldKindRelationExists:
+		sql, err := r.relationExistsSQL(field)
+		if err != nil {
+			return renderResult{}, err
+		}
+		return renderResult{sql: sql}, nil
 	default:
 		return renderResult{}, errors.Errorf("field %q cannot be used as a predicate", cond.Field)
 	}
@@ -168,6 +174,8 @@ func (r *renderer) renderComparison(cond *ComparisonCondition) (renderResult, er
 			return r.renderJSONBoolComparison(field, cond.Operator, cond.Right)
 		case FieldKindJSONExists:
 			return r.renderJSONExistsComparison(field, cond.Operator, cond.Right)
+		case FieldKindRelationExists:
+			return r.renderRelationExistsComparison(field, cond.Operator, cond.Right)
 		case FieldKindScalar:
 			return r.renderScalarComparison(field, cond.Operator, cond.Right)
 		default:
@@ -722,6 +730,27 @@ func (r *renderer) renderJSONExistsComparison(field Field, op ComparisonOperator
 	existsSQL, err := r.jsonExistsSQL(field)
 	if err != nil {
 		return renderResult{}, errors.Wrap(err, "failed to render JSON existence comparison")
+	}
+	return renderPredicateComparison(field, op, value, existsSQL)
+}
+
+// relationExistsSQL returns the EXISTS predicate the schema defines for the dialect.
+func (r *renderer) relationExistsSQL(field Field) (string, error) {
+	expr, ok := field.Expressions[r.dialect]
+	if !ok || expr == "" {
+		return "", errors.Errorf("field %q has no expression for dialect %s", field.Name, r.dialect)
+	}
+	return expr, nil
+}
+
+func (r *renderer) renderRelationExistsComparison(field Field, op ComparisonOperator, right ValueExpr) (renderResult, error) {
+	value, err := expectBool(right)
+	if err != nil {
+		return renderResult{}, errors.Wrap(err, "relation existence comparison requires a boolean value")
+	}
+	existsSQL, err := r.relationExistsSQL(field)
+	if err != nil {
+		return renderResult{}, err
 	}
 	return renderPredicateComparison(field, op, value, existsSQL)
 }

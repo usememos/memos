@@ -644,6 +644,41 @@ func TestMemoFilterHasLink(t *testing.T) {
 	require.True(t, memos[0].Payload.GetProperty().GetHasLink())
 }
 
+func TestMemoFilterHasAttachment(t *testing.T) {
+	t.Parallel()
+	tc := NewMemoFilterTestContext(t)
+	defer tc.Close()
+
+	single := tc.CreateMemo(NewMemoBuilder("memo-one-attachment", tc.User.ID).Content("One attachment"))
+	multiple := tc.CreateMemo(NewMemoBuilder("memo-two-attachments", tc.User.ID).Content("Two attachments"))
+	none := tc.CreateMemo(NewMemoBuilder("memo-no-attachment", tc.User.ID).Content("No attachment"))
+
+	for _, memoID := range []*int32{&single.ID, &multiple.ID, &multiple.ID, nil} {
+		_, err := tc.Store.CreateAttachment(tc.Ctx, NewAttachmentBuilder(tc.User.ID).Filename("file.txt").MimeType("text/plain").MemoID(memoID).Build())
+		require.NoError(t, err)
+	}
+
+	memoUIDs := func(filters ...string) []string {
+		var uids []string
+		for _, memo := range tc.ListWithFilters(filters...) {
+			uids = append(uids, memo.UID)
+		}
+		return uids
+	}
+
+	// A memo with several attachments is listed once.
+	require.ElementsMatch(t, []string{single.UID, multiple.UID}, memoUIDs(`has_attachment`))
+	require.ElementsMatch(t, []string{single.UID, multiple.UID}, memoUIDs(`has_attachment == true`))
+	require.ElementsMatch(t, []string{single.UID, multiple.UID}, memoUIDs(`has_attachment != false`))
+
+	// An attachment that is not bound to a memo does not affect the result.
+	require.Equal(t, []string{none.UID}, memoUIDs(`!has_attachment`))
+	require.Equal(t, []string{none.UID}, memoUIDs(`has_attachment == false`))
+	require.Equal(t, []string{none.UID}, memoUIDs(`has_attachment != true`))
+
+	require.Equal(t, []string{multiple.UID}, memoUIDs(`has_attachment`, `content.contains("Two")`))
+}
+
 func TestMemoFilterHasCode(t *testing.T) {
 	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
