@@ -699,6 +699,9 @@
       "additional-style-placeholder": "CSS-lisäkoodi",
       "basic-description": "Määritä tämän ilmentymän näyttämä julkinen identiteetti.",
       "customize-server": {
+        "about-content": "Tietoja-sivun sisältö",
+        "about-content-hint": "Tukee Markdownia. Näytetään Tietoja-sivulla projektin tietojen yläpuolella.",
+        "about-content-placeholder": "Yhteystiedot, käyttöohjeet, esittely…",
         "description": "Kuvaus",
         "icon-url": "Kuvake URL",
         "title": "Mukauta palvelinta"

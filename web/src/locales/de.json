@@ -580,6 +580,9 @@
       "additional-style": "Zusätzlicher Stil",
       "additional-style-placeholder": "Zusätzlicher CSS-Code",
       "customize-server": {
+        "about-content": "Inhalt der Über-Seite",
+        "about-content-hint": "Unterstützt Markdown. Wird auf der Über-Seite oberhalb der Projektinformationen angezeigt.",
+        "about-content-placeholder": "Kontaktdaten, Nutzungsrichtlinien, eine Vorstellung…",
         "description": "Beschreibung",
         "icon-url": "Icon-URL",
         "title": "Server anpassen"

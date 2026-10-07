@@ -913,6 +913,9 @@
       "custom-code-description": "Valfri CSS og JavaScript som vert nytta i brukargrensesnittet på heile instansen.",
       "custom-code-title": "Eigendefinert kode",
       "customize-server": {
+        "about-content": "Innhald på Om-sida",
+        "about-content-hint": "Støttar Markdown. Blir vist på Om-sida over prosjektinformasjonen.",
+        "about-content-placeholder": "Kontaktinformasjon, retningsliner for bruk, ei innleiing…",
         "description": "Skildring",
         "icon-url": "Ikonadresse",
         "title": "Tilpass tenar"

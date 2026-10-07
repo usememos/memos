@@ -821,6 +821,9 @@
       "additional-style-placeholder": "自訂 CSS 代碼",
       "basic-description": "設定此實例顯示的公開身分資訊和日曆預設值。",
       "customize-server": {
+        "about-content": "關於頁面內容",
+        "about-content-hint": "支援 Markdown。顯示在關於頁面的專案資訊上方。",
+        "about-content-placeholder": "聯絡方式、使用須知、個人介紹…",
         "description": "說明",
         "icon-url": "圖示網址",
         "title": "自訂伺服器"

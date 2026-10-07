@@ -176,6 +176,7 @@ message InstanceSetting {
       string title = 1;
       string description = 2;
       string logo_url = 3;
+      string about_content = 4;
     }
   }
 

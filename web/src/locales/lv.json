@@ -699,6 +699,9 @@
       "additional-style-placeholder": "Papildu CSS kods",
       "basic-description": "Konfigurējiet šajā instancē parādīto publisko identitāti.",
       "customize-server": {
+        "about-content": "Lapas “Par” saturs",
+        "about-content-hint": "Atbalsta Markdown. Tiek rādīts lapā “Par” virs projekta informācijas.",
+        "about-content-placeholder": "Kontaktinformācija, lietošanas vadlīnijas, iepazīstināšana…",
         "description": "Apraksts",
         "icon-url": "Ikona URL",
         "title": "Pielāgot serveri"

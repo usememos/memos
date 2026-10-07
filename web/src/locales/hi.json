@@ -490,6 +490,9 @@
       "additional-style": "अतिरिक्त स्टाइल",
       "additional-style-placeholder": "अतिरिक्त CSS कोड",
       "customize-server": {
+        "about-content": "परिचय पृष्ठ की सामग्री",
+        "about-content-hint": "Markdown समर्थित है। परिचय पृष्ठ पर प्रोजेक्ट जानकारी के ऊपर दिखाई जाती है।",
+        "about-content-placeholder": "संपर्क जानकारी, उपयोग दिशानिर्देश, परिचय…",
         "description": "विवरण",
         "icon-url": "आइकन URL",
         "title": "सर्वर अनुकूलित करें"

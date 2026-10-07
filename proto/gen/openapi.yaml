@@ -3377,6 +3377,8 @@ components:
                     type: string
                 logoUrl:
                     type: string
+                aboutContent:
+                    type: string
             description: Custom profile configuration for instance branding.
         GetCurrentUserResponse:
             type: object

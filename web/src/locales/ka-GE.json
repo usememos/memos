@@ -580,6 +580,9 @@
       "additional-style": "დამატებითი სტილი",
       "additional-style-placeholder": "დამატებითი CSS კოდი",
       "customize-server": {
+        "about-content": "„შესახებ“ გვერდის შინაარსი",
+        "about-content-hint": "მხარდაჭერილია Markdown. ნაჩვენებია „შესახებ“ გვერდზე, პროექტის ინფორმაციის ზემოთ.",
+        "about-content-placeholder": "საკონტაქტო ინფორმაცია, გამოყენების წესები, გაცნობა…",
         "description": "აღწერა",
         "icon-url": "ხატულას URL",
         "title": "სერვერის მორგება"

@@ -580,6 +580,9 @@
       "additional-style": "Vlastní rozšíření stylu",
       "additional-style-placeholder": "Vlastní rozšíření kódu CSS",
       "customize-server": {
+        "about-content": "Obsah stránky O aplikaci",
+        "about-content-hint": "Podporuje Markdown. Zobrazuje se na stránce O aplikaci nad informacemi o projektu.",
+        "about-content-placeholder": "Kontaktní údaje, pravidla používání, představení…",
         "description": "Popis",
         "icon-url": "URL ikony",
         "title": "Přizpůsobení serveru"

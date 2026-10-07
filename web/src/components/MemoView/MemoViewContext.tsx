@@ -1,9 +1,10 @@
+import { create } from "@bufbuild/protobuf";
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { createContext, useContext } from "react";
 import { useLocation } from "react-router-dom";
 import { useView } from "@/contexts/ViewContext";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
-import { MemoRelation_Type } from "@/types/proto/api/v1/memo_service_pb";
+import { MemoRelation_Type, MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
 import type { User } from "@/types/proto/api/v1/user_service_pb";
 import type { PreviewMediaItem } from "@/utils/media-item";
 import { RELATIVE_TIME_THRESHOLD_MS } from "./constants";
@@ -25,6 +26,23 @@ export interface MemoViewContextValue {
 }
 
 export const MemoViewContext = createContext<MemoViewContextValue | null>(null);
+
+// Read-only context for rendering markdown outside a real memo card (previews, the About page),
+// so memo-aware renderers such as tags and task lists can mount without a memo behind them.
+export const READONLY_STUB_MEMO_VIEW_CONTEXT: MemoViewContextValue = {
+  memo: create(MemoSchema),
+  creator: undefined,
+  currentUser: undefined,
+  parentPage: "/",
+  cardWidth: 0,
+  isArchived: false,
+  readonly: true,
+  showBlurredContent: false,
+  blurred: false,
+  openEditor: () => {},
+  toggleBlurVisibility: () => {},
+  openPreview: () => {},
+};
 
 export const useMemoViewContext = (): MemoViewContextValue => {
   const context = useContext(MemoViewContext);

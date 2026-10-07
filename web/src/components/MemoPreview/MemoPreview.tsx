@@ -1,16 +1,14 @@
-import { create } from "@bufbuild/protobuf";
 import { FileIcon } from "lucide-react";
 import { useMemo } from "react";
 import { extractMemoIdFromName } from "@/lib/resource-names";
 import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
-import { MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
 import type { User } from "@/types/proto/api/v1/user_service_pb";
 import { getAttachmentType, isMotionAttachment } from "@/utils/attachment";
 import { filterInlineManagedAttachments } from "@/utils/managed-attachment";
 import { buildAttachmentVisualItems, countLogicalAttachmentItems } from "@/utils/media-item";
 import MemoContent from "../MemoContent";
-import { MemoViewContext, type MemoViewContextValue } from "../MemoView/MemoViewContext";
+import { MemoViewContext, READONLY_STUB_MEMO_VIEW_CONTEXT } from "../MemoView/MemoViewContext";
 
 interface MemoPreviewProps {
   content: string;
@@ -23,21 +21,6 @@ interface MemoPreviewProps {
   showMemoId?: boolean;
   truncate?: boolean;
 }
-
-const STUB_CONTEXT: MemoViewContextValue = {
-  memo: create(MemoSchema),
-  creator: undefined,
-  currentUser: undefined,
-  parentPage: "/",
-  cardWidth: 0,
-  isArchived: false,
-  readonly: true,
-  showBlurredContent: false,
-  blurred: false,
-  openEditor: () => {},
-  toggleBlurVisibility: () => {},
-  openPreview: () => {},
-};
 
 const AttachmentThumbnails = ({ attachments }: { attachments: Attachment[] }) => {
   const visualAttachments = attachments.filter(
@@ -140,7 +123,7 @@ const MemoPreview = ({
   );
 
   return (
-    <MemoViewContext.Provider value={STUB_CONTEXT}>
+    <MemoViewContext.Provider value={READONLY_STUB_MEMO_VIEW_CONTEXT}>
       <div
         className={cn("pointer-events-none", truncate ? "flex items-center gap-2 min-w-0 leading-tight" : "flex flex-col gap-1", className)}
       >

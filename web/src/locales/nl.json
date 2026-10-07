@@ -580,6 +580,9 @@
       "additional-style": "Optionele stijl",
       "additional-style-placeholder": "Optionele CSS code",
       "customize-server": {
+        "about-content": "Inhoud van de Over-pagina",
+        "about-content-hint": "Ondersteunt Markdown. Wordt op de Over-pagina boven de projectinformatie getoond.",
+        "about-content-placeholder": "Contactgegevens, gebruiksrichtlijnen, een introductie…",
         "description": "Beschrijving",
         "icon-url": "Pictogram-URL",
         "title": "Server aanpassen"

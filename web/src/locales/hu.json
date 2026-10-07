@@ -580,6 +580,9 @@
       "additional-style": "Egyedi stílus",
       "additional-style-placeholder": "Egyedi CSS kód",
       "customize-server": {
+        "about-content": "A Névjegy oldal tartalma",
+        "about-content-hint": "Támogatja a Markdownt. A Névjegy oldalon, a projektinformációk felett jelenik meg.",
+        "about-content-placeholder": "Elérhetőség, használati irányelvek, bemutatkozás…",
         "description": "Leírás",
         "icon-url": "Ikon URL",
         "title": "Szerver személyre szabása"

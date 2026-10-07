@@ -580,6 +580,9 @@
       "additional-style": "Estil addicional",
       "additional-style-placeholder": "Codi CSS addicional",
       "customize-server": {
+        "about-content": "Contingut de la pàgina Quant a",
+        "about-content-hint": "Admet Markdown. Es mostra a la pàgina Quant a, damunt de la informació del projecte.",
+        "about-content-placeholder": "Informació de contacte, normes d'ús, una presentació…",
         "description": "Descripció",
         "icon-url": "URL de la icona",
         "title": "Personalitza el servidor"

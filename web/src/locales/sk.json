@@ -699,6 +699,9 @@
       "additional-style-placeholder": "Dodatočný kód CSS",
       "basic-description": "Nakonfigurujte verejnú identitu zobrazenú touto inštanciou.",
       "customize-server": {
+        "about-content": "Obsah stránky O aplikácii",
+        "about-content-hint": "Podporuje Markdown. Zobrazuje sa na stránke O aplikácii nad informáciami o projekte.",
+        "about-content-placeholder": "Kontaktné údaje, pravidlá používania, predstavenie…",
         "description": "Popis",
         "icon-url": "Ikona URL",
         "title": "Prispôsobiť server"

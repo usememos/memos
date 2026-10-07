@@ -490,6 +490,9 @@
       "additional-style": "استایل اضافی",
       "additional-style-placeholder": "کد CSS اضافی",
       "customize-server": {
+        "about-content": "محتوای صفحه درباره",
+        "about-content-hint": "از Markdown پشتیبانی می‌کند. در صفحه درباره، بالای اطلاعات پروژه نمایش داده می‌شود.",
+        "about-content-placeholder": "اطلاعات تماس، راهنمای استفاده، معرفی…",
         "description": "توضیحات",
         "icon-url": "آدرس آیکون",
         "title": "سفارشی‌سازی سرور"
