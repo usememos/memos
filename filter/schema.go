@@ -34,9 +34,12 @@ const (
 	FieldKindBoolColumn FieldKind = "bool_column"
 	FieldKindJSONBool   FieldKind = "json_bool"
 	// FieldKindJSONExists represents a boolean derived from the presence of a non-null JSON value.
-	FieldKindJSONExists   FieldKind = "json_exists"
-	FieldKindJSONList     FieldKind = "json_list"
-	FieldKindVirtualAlias FieldKind = "virtual_alias"
+	FieldKindJSONExists FieldKind = "json_exists"
+	// FieldKindRelationExists represents a boolean derived from the existence of a related row.
+	// The per-dialect Expressions entry holds the complete EXISTS predicate.
+	FieldKindRelationExists FieldKind = "relation_exists"
+	FieldKindJSONList       FieldKind = "json_list"
+	FieldKindVirtualAlias   FieldKind = "virtual_alias"
 )
 
 // Column identifies the backing table column.
@@ -254,6 +257,20 @@ func NewSchema() Schema {
 				CompareNeq: true,
 			},
 		},
+		"has_attachment": {
+			Name: "has_attachment",
+			Kind: FieldKindRelationExists,
+			Type: FieldTypeBool,
+			Expressions: map[DialectName]string{
+				DialectSQLite:   "EXISTS (SELECT 1 FROM `attachment` WHERE `attachment`.`memo_id` = `memo`.`id`)",
+				DialectMySQL:    "EXISTS (SELECT 1 FROM `attachment` WHERE `attachment`.`memo_id` = `memo`.`id`)",
+				DialectPostgres: "EXISTS (SELECT 1 FROM attachment WHERE attachment.memo_id = memo.id)",
+			},
+			AllowedComparisonOps: map[ComparisonOperator]bool{
+				CompareEq:  true,
+				CompareNeq: true,
+			},
+		},
 	}
 
 	envOptions := []cel.EnvOption{
@@ -273,6 +290,7 @@ func NewSchema() Schema {
 		cel.Variable("has_code", cel.BoolType),
 		cel.Variable("has_incomplete_tasks", cel.BoolType),
 		cel.Variable("has_location", cel.BoolType),
+		cel.Variable("has_attachment", cel.BoolType),
 		cel.Variable("now", cel.TimestampType),
 		ext.Sets(),
 		cel.ASTValidators(cel.ValidateRegexLiterals()),

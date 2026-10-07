@@ -561,7 +561,8 @@ type ListMemosRequest struct {
 	//	  supports == and comparisons against null, e.g. space != null),
 	//	tags (list<string>; match with `"work" in tags`, not `tag == "work"`),
 	//	has_task_list / has_link / has_code / has_incomplete_tasks (bool),
-	//	has_location (bool; true when the memo has a location attached).
+	//	has_location (bool; true when the memo has a location attached),
+	//	has_attachment (bool; true when the memo has at least one attachment).
 	//
 	// Note: the time fields here are created_ts / updated_ts, which differ from
 	// the create_time / update_time names used by order_by.
