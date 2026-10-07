@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import PagedMemoList from "@/components/PagedMemoList";
+import { KeyboardShortcutsProvider } from "@/contexts/KeyboardShortcutsContext";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 
 const view = vi.hoisted(() => ({ maxColumns: 1 as 0 | 1 | 2 | 3, compactMode: false }));
@@ -10,6 +11,7 @@ const feed = vi.hoisted(() => ({
   memos: [] as unknown[],
   hasNextPage: false,
   isLoading: false,
+  isFetchingNextPage: false,
   fetchNextPage: vi.fn(async () => undefined),
   refetch: vi.fn(),
   error: null as ConnectError | null,
@@ -27,7 +29,7 @@ vi.mock("@/hooks/useMemoQueries", () => ({
       data: { pages: [{ memos: feed.memos, nextPageToken: "" }] },
       fetchNextPage: feed.fetchNextPage,
       hasNextPage: feed.hasNextPage,
-      isFetchingNextPage: false,
+      isFetchingNextPage: feed.isFetchingNextPage,
       isLoading: feed.isLoading,
       error: feed.error,
       isError: !!feed.error,
@@ -77,6 +79,21 @@ const renderList = (
     </QueryClientProvider>,
   );
 
+const memoCardRenderer = (m: Memo) => (
+  <article key={m.name} data-memo-card tabIndex={0}>
+    {m.content}
+  </article>
+);
+
+const renderListWithShortcuts = (renderer: (memo: Memo, options: { compact: boolean }) => React.ReactElement) =>
+  render(
+    <QueryClientProvider client={new QueryClient()}>
+      <KeyboardShortcutsProvider>
+        <PagedMemoList renderer={renderer} />
+      </KeyboardShortcutsProvider>
+    </QueryClientProvider>,
+  );
+
 describe("<PagedMemoList>", () => {
   beforeEach(() => {
     view.maxColumns = 1;
@@ -84,6 +101,7 @@ describe("<PagedMemoList>", () => {
     feed.memos = [];
     feed.hasNextPage = false;
     feed.isLoading = false;
+    feed.isFetchingNextPage = false;
     feed.fetchNextPage.mockClear();
     feed.refetch.mockClear();
     feed.error = null;
@@ -317,6 +335,63 @@ describe("<PagedMemoList>", () => {
       } finally {
         widthSpy.mockRestore();
       }
+    });
+  });
+
+  describe("keyboard selection", () => {
+    const memos = [1, 2].map((id) => ({ name: `memos/${id}`, content: `memo ${id}`, updateTime: undefined }) as unknown as Memo);
+
+    beforeEach(() => {
+      feed.memos = memos;
+    });
+
+    const focusLastCard = () => {
+      const cards = screen.getAllByRole("article");
+      act(() => cards[cards.length - 1].focus());
+      return cards[cards.length - 1];
+    };
+
+    it("fetches the next page when pressing forward from the last loaded card", () => {
+      feed.hasNextPage = true;
+      renderListWithShortcuts(memoCardRenderer);
+      const lastCard = focusLastCard();
+
+      fireEvent.keyDown(lastCard, { key: "j" });
+
+      expect(feed.fetchNextPage).toHaveBeenCalledTimes(1);
+    });
+
+    it("keeps the selection on the last card and does not fetch again while the next page is loading", () => {
+      feed.hasNextPage = true;
+      feed.isFetchingNextPage = true;
+      renderListWithShortcuts(memoCardRenderer);
+      const lastCard = focusLastCard();
+
+      fireEvent.keyDown(lastCard, { key: "j" });
+
+      expect(feed.fetchNextPage).not.toHaveBeenCalled();
+      expect(lastCard).toHaveFocus();
+    });
+
+    it("does not fetch when there is no next page", () => {
+      feed.hasNextPage = false;
+      renderListWithShortcuts(memoCardRenderer);
+      const lastCard = focusLastCard();
+
+      fireEvent.keyDown(lastCard, { key: "j" });
+
+      expect(feed.fetchNextPage).not.toHaveBeenCalled();
+      expect(lastCard).toHaveFocus();
+    });
+
+    it("moves focus to the next card when one is loaded after it", () => {
+      renderListWithShortcuts(memoCardRenderer);
+      const cards = screen.getAllByRole("article");
+      act(() => cards[0].focus());
+
+      fireEvent.keyDown(cards[0], { key: "j" });
+
+      expect(cards[1]).toHaveFocus();
     });
   });
 });

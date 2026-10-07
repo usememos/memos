@@ -229,6 +229,9 @@
     "any-thoughts": "任何想法...",
     "exit-focus-mode": "退出專注模式",
     "focus-mode": "專注模式",
+    "discard-changes": "捨棄變更？",
+    "discard-changes-description": "這則備忘錄中未儲存的變更將會遺失。",
+    "discard": "捨棄",
     "formatting-toolbar": "格式工具列",
     "format": {
       "heading": "標題",
@@ -615,6 +618,10 @@
       "appearance-title": "外觀",
       "default-memo-visibility": "備忘錄預設瀏覽權限",
       "default-memo-visibility-description": "套用於新建立的備忘錄，除非在編輯器中變更。",
+      "keyboard-description": "無需滑鼠即可導覽。設定儲存在此裝置上。",
+      "keyboard-shortcuts": "鍵盤快速鍵",
+      "keyboard-shortcuts-description": "在文字欄位外按 ? 可查看所有快速鍵。",
+      "keyboard-title": "鍵盤",
       "label": "偏好設定",
       "language-description": "立即更新介面語言並儲存至您的帳號。",
       "memo-defaults-description": "設定撰寫新備忘錄時使用的預設值。",
@@ -624,7 +631,8 @@
       "theme-description": "立即在此裝置上套入選定的主題。",
       "theme": "主題",
       "uploads-privacy-description": "控制上傳媒體時提交的隱私敏感資訊。",
-      "uploads-privacy-title": "上傳與隱私"
+      "uploads-privacy-title": "上傳與隱私",
+      "view-shortcuts": "查看快速鍵"
     },
     "memo-view": {
       "create": "建立檢視",
@@ -936,6 +944,33 @@
       "review-memos": "檔案中的備忘錄",
       "review-new": "將建立"
     }
+  },
+  "shortcuts": {
+    "clear-filters": "清除搜尋和篩選條件",
+    "description": "單鍵快速鍵可在文字欄位外的任何位置使用。",
+    "edit-memo": "編輯選取的備忘錄",
+    "focus-editor": "移至編輯器",
+    "go-archived": "前往已封存",
+    "go-attachments": "前往附件",
+    "go-back": "返回",
+    "go-calendar": "前往日曆",
+    "go-explore": "前往探索",
+    "go-home": "前往首頁",
+    "go-inbox": "前往通知",
+    "go-map": "前往地圖",
+    "go-settings": "前往設定",
+    "group-general": "一般",
+    "group-memos": "備忘錄",
+    "group-navigation": "導覽",
+    "new-memo": "新增備忘錄",
+    "next-memo": "選取下一則備忘錄",
+    "open-memo": "開啟選取的備忘錄",
+    "open-search": "搜尋",
+    "pin-memo": "置頂或取消置頂選取的備忘錄",
+    "previous-memo": "選取上一則備忘錄",
+    "show-shortcuts": "顯示鍵盤快速鍵",
+    "then": "接著",
+    "title": "鍵盤快速鍵"
   },
   "space": {
     "all-spaces": "所有空間",

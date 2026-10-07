@@ -235,6 +235,9 @@
       "more": "Daugiau formatavimo"
     },
     "comment": "Komentaras",
+    "discard-changes": "Atmesti pakeitimus?",
+    "discard-changes-description": "Neišsaugoti šio užrašo pakeitimai bus prarasti.",
+    "discard": "Atmesti",
     "formatting-toolbar": "Formatavimo įrankių juosta",
     "new-memo": "Naujas priminimas",
     "saved": "Išsaugota",
@@ -574,6 +577,10 @@
       "appearance-title": "Išvaizda",
       "default-memo-visibility": "Numatytasis atmintinės matomumas",
       "default-memo-visibility-description": "Matomumas taikomas naujai sukurtoms pastaboms, nebent tai būtų pakeista redaktoriuje.",
+      "keyboard-description": "Naršykite be pelės. Nuostata išsaugoma šiame įrenginyje.",
+      "keyboard-shortcuts": "Spartieji klavišai",
+      "keyboard-shortcuts-description": "Paspauskite ? ne teksto lauke, kad pamatytumėte visus sparčiuosius klavišus.",
+      "keyboard-title": "Klaviatūra",
       "label": "Parinktys",
       "language-description": "Nedelsiant atnaujina sąsajos kalbą ir išsaugo ją paskyroje.",
       "memo-defaults-description": "Nustatykite numatytuosius nustatymus, naudojamus kuriant naujas pastabas.",
@@ -583,7 +590,8 @@
       "save-media-metadata": "Išsaugoti medijos metaduomenis",
       "save-media-metadata-description": "Ateities įkėlimams išsaugokite turimą kamerą, filmavimo laiką, vietą, vaizdo matmenis ir pagrindinius vaizdo įrašo duomenis. Šiuos metaduomenis gali gauti visi, kas gali peržiūrėti priedą. Esami priedai lieka nepakitę.",
       "uploads-privacy-description": "Valdykite privatumo požiūriu svarbią informaciją, pateiktą kartu su įkelta medija.",
-      "uploads-privacy-title": "Įkėlimai ir privatumas"
+      "uploads-privacy-title": "Įkėlimai ir privatumas",
+      "view-shortcuts": "Peržiūrėti sparčiuosius klavišus"
     },
     "memo-view": {
       "create": "Sukurti rodinį",
@@ -895,6 +903,33 @@
       "delete-confirm-description": "Erdvė ir visi joje esantys užrašai bus visam laikui ištrinti. Šio veiksmo negalima atšaukti.",
       "delete-confirm-title": "Ištrinti {{space}}?"
     }
+  },
+  "shortcuts": {
+    "clear-filters": "Išvalyti paiešką ir filtrus",
+    "description": "Vieno klavišo spartieji klavišai veikia visur, išskyrus teksto laukus.",
+    "edit-memo": "Redaguoti pasirinktą užrašą",
+    "focus-editor": "Pereiti į redagavimo lauką",
+    "go-archived": "Eiti į archyvą",
+    "go-attachments": "Eiti į priedus",
+    "go-back": "Atgal",
+    "go-calendar": "Eiti į kalendorių",
+    "go-explore": "Eiti į naršymą",
+    "go-home": "Eiti į pradžią",
+    "go-inbox": "Eiti į gautuosius",
+    "go-map": "Eiti į žemėlapį",
+    "go-settings": "Eiti į nustatymus",
+    "group-general": "Bendrieji",
+    "group-memos": "Užrašai",
+    "group-navigation": "Naršymas",
+    "new-memo": "Naujas užrašas",
+    "next-memo": "Pasirinkti kitą užrašą",
+    "open-memo": "Atverti pasirinktą užrašą",
+    "open-search": "Ieškoti",
+    "pin-memo": "Prisegti arba atsegti pasirinktą užrašą",
+    "previous-memo": "Pasirinkti ankstesnį užrašą",
+    "show-shortcuts": "Rodyti sparčiuosius klavišus",
+    "then": "tada",
+    "title": "Spartieji klavišai"
   },
   "tooltip": {
     "link-memo": "Nuorodos atmintinė",

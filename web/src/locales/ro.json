@@ -235,6 +235,9 @@
       "more": "Mai multe formatări"
     },
     "comment": "Comentariu",
+    "discard-changes": "Renunțați la modificări?",
+    "discard-changes-description": "Modificările nesalvate ale acestei note se vor pierde.",
+    "discard": "Renunță",
     "formatting-toolbar": "Bara de instrumente de formatare",
     "new-memo": "Memo nou",
     "saved": "Salvat",
@@ -574,6 +577,10 @@
       "appearance-title": "Aspect",
       "default-memo-visibility": "Vizibilitatea implicită a notei",
       "default-memo-visibility-description": "Vizibilitatea aplicată notificărilor nou create, dacă nu este schimbată în editor.",
+      "keyboard-description": "Navigați fără mouse. Setarea este salvată pe acest dispozitiv.",
+      "keyboard-shortcuts": "Comenzi rapide de la tastatură",
+      "keyboard-shortcuts-description": "Apăsați ? în afara unui câmp de text pentru a vedea toate comenzile rapide.",
+      "keyboard-title": "Tastatură",
       "label": "Preferințe",
       "language-description": "Actualizează imediat limba interfeței și o salvează în contul tău.",
       "memo-defaults-description": "Setați setările implicite folosite la compunerea noilor note.",
@@ -583,7 +590,8 @@
       "save-media-metadata": "Salvați metadatele media",
       "save-media-metadata-description": "Pentru încărcările viitoare, salvați camera disponibilă, ora capturii, locația, dimensiunile imaginii și detaliile de bază ale videoclipului. Oricine poate vizualiza atașamentul poate primi aceste metadate. Atașamentele existente rămân neschimbate.",
       "uploads-privacy-description": "Controlați informațiile sensibile la confidențialitate trimise odată cu media încărcată.",
-      "uploads-privacy-title": "Încărcări și confidențialitate"
+      "uploads-privacy-title": "Încărcări și confidențialitate",
+      "view-shortcuts": "Vezi comenzile rapide"
     },
     "memo-view": {
       "create": "Creează o vizualizare",
@@ -895,6 +903,33 @@
       "your-access": "Accesul dvs.",
       "your-spaces": "Spațiile dvs."
     }
+  },
+  "shortcuts": {
+    "clear-filters": "Șterge căutarea și filtrele",
+    "description": "Comenzile rapide cu o singură tastă funcționează oriunde în afara unui câmp de text.",
+    "edit-memo": "Editează nota selectată",
+    "focus-editor": "Activează editorul",
+    "go-archived": "Mergi la arhivă",
+    "go-attachments": "Mergi la Atașamente",
+    "go-back": "Înapoi",
+    "go-calendar": "Mergi la Calendar",
+    "go-explore": "Mergi la Explorare",
+    "go-home": "Mergi la Acasă",
+    "go-inbox": "Mergi la Inbox",
+    "go-map": "Mergi la Hartă",
+    "go-settings": "Mergi la Setări",
+    "group-general": "Generale",
+    "group-memos": "Note",
+    "group-navigation": "Navigare",
+    "new-memo": "Notă nouă",
+    "next-memo": "Selectează nota următoare",
+    "open-memo": "Deschide nota selectată",
+    "open-search": "Caută",
+    "pin-memo": "Fixează sau anulează fixarea notei selectate",
+    "previous-memo": "Selectează nota anterioară",
+    "show-shortcuts": "Afișează comenzile rapide de la tastatură",
+    "then": "apoi",
+    "title": "Comenzi rapide de la tastatură"
   },
   "tooltip": {
     "link-memo": "Link Memo",

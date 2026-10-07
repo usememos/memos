@@ -24,8 +24,10 @@ export default function ConfirmDialog({
   confirmVariant = "default",
 }: ConfirmDialogProps) {
   const [loading, setLoading] = React.useState(false);
+  const dialogRef = React.useRef<HTMLDivElement>(null);
 
   const handleConfirm = async () => {
+    if (loading) return;
     try {
       setLoading(true);
       await onConfirm();
@@ -40,7 +42,27 @@ export default function ConfirmDialog({
 
   return (
     <Dialog open={open} onOpenChange={(o: boolean) => !loading && onOpenChange(o)}>
-      <DialogContent size="sm">
+      {/* Focus the dialog itself so neither action is selected by default. */}
+      <DialogContent
+        ref={dialogRef}
+        size="sm"
+        initialFocus={dialogRef}
+        finalFocus
+        onKeyDown={(event) => {
+          if (
+            event.key !== "Enter" ||
+            !(event.ctrlKey || event.metaKey) ||
+            event.altKey ||
+            event.repeat ||
+            event.nativeEvent.isComposing ||
+            event.defaultPrevented
+          )
+            return;
+          event.preventDefault();
+          event.stopPropagation();
+          void handleConfirm();
+        }}
+      >
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           {description ? <DialogDescription>{description}</DialogDescription> : null}

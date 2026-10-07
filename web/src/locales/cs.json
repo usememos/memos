@@ -197,6 +197,9 @@
       "more": "Další formátování"
     },
     "comment": "Komentář",
+    "discard-changes": "Zahodit změny?",
+    "discard-changes-description": "Neuložené změny této poznámky budou ztraceny.",
+    "discard": "Zahodit",
     "formatting-toolbar": "Panel nástrojů Formátování",
     "new-memo": "Nová poznámka",
     "saved": "Uloženo",
@@ -455,6 +458,10 @@
     },
     "preference": {
       "default-memo-visibility": "Výchozí viditelnost poznámky",
+      "keyboard-description": "Pohybujte se bez myši. Nastavení se ukládá na tomto zařízení.",
+      "keyboard-shortcuts": "Klávesové zkratky",
+      "keyboard-shortcuts-description": "Stisknutím ? mimo textové pole zobrazíte všechny zkratky.",
+      "keyboard-title": "Klávesnice",
       "label": "Předvolby",
       "theme": "Motiv",
       "appearance-description": "Vyberte, jak aplikace vypadá a jaký jazyk používá pro váš účet.",
@@ -467,7 +474,8 @@
       "save-media-metadata": "Uložit metadata médií",
       "save-media-metadata-description": "Pro budoucí nahrávání uložit dostupnou kameru, čas pořízení, místo, rozměry obrázku a základní podrobnosti o videu. Tato metadata může obdržet kdokoli, kdo si může přílohu prohlédnout. Stávající přílohy zůstávají nezměněny.",
       "uploads-privacy-description": "Ovládejte informace citlivé na ochranu soukromí odesílané s nahranými médii.",
-      "uploads-privacy-title": "Nahrávání a soukromí"
+      "uploads-privacy-title": "Nahrávání a soukromí",
+      "view-shortcuts": "Zobrazit zkratky"
     },
     "memo-view": {
       "create": "Vytvořit pohled",
@@ -857,6 +865,33 @@
       "your-access": "Váš přístup",
       "your-spaces": "Vaše prostory"
     }
+  },
+  "shortcuts": {
+    "clear-filters": "Vymazat hledání a filtry",
+    "description": "Jednoklávesové zkratky fungují kdekoli mimo textová pole.",
+    "edit-memo": "Upravit vybranou poznámku",
+    "focus-editor": "Přejít do editoru",
+    "go-archived": "Přejít do archivu",
+    "go-attachments": "Přejít k přílohám",
+    "go-back": "Zpět",
+    "go-calendar": "Přejít do kalendáře",
+    "go-explore": "Přejít do Průzkumu",
+    "go-home": "Přejít na úvodní stránku",
+    "go-inbox": "Přejít do doručené pošty",
+    "go-map": "Přejít na mapu",
+    "go-settings": "Přejít do nastavení",
+    "group-general": "Obecné",
+    "group-memos": "Poznámky",
+    "group-navigation": "Navigace",
+    "new-memo": "Nová poznámka",
+    "next-memo": "Vybrat další poznámku",
+    "open-memo": "Otevřít vybranou poznámku",
+    "open-search": "Hledat",
+    "pin-memo": "Připnout nebo odepnout vybranou poznámku",
+    "previous-memo": "Vybrat předchozí poznámku",
+    "show-shortcuts": "Zobrazit klávesové zkratky",
+    "then": "potom",
+    "title": "Klávesové zkratky"
   },
   "tooltip": {
     "link-memo": "Propojit poznámku",

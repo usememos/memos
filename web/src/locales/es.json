@@ -197,6 +197,9 @@
       "more": "Más formato"
     },
     "comment": "Comentario",
+    "discard-changes": "¿Descartar los cambios?",
+    "discard-changes-description": "Se perderán los cambios sin guardar de este memo.",
+    "discard": "Descartar",
     "formatting-toolbar": "Barra de herramientas de formato",
     "new-memo": "Nuevo memo",
     "saved": "Guardado",
@@ -455,6 +458,10 @@
     },
     "preference": {
       "default-memo-visibility": "Visibilidad predeterminada del memo",
+      "keyboard-description": "Navega sin usar el ratón. Esta opción se guarda en este dispositivo.",
+      "keyboard-shortcuts": "Atajos de teclado",
+      "keyboard-shortcuts-description": "Pulsa ? fuera de un campo de texto para ver todos los atajos.",
+      "keyboard-title": "Teclado",
       "label": "Preferencias",
       "theme": "Tema",
       "appearance-description": "Elija cómo se ve la aplicación y qué idioma utiliza para su cuenta.",
@@ -467,7 +474,8 @@
       "save-media-metadata": "Guardar metadatos multimedia",
       "save-media-metadata-description": "Para futuras cargas, se guarda la cámara disponible, la hora de captura, la ubicación, las dimensiones de la imagen y los detalles básicos del vídeo. Cualquier persona que pueda ver el archivo adjunto puede recibir estos metadatos. Los archivos adjuntos existentes no se modifican.",
       "uploads-privacy-description": "Controlar la información confidencial enviada con los archivos multimedia cargados.",
-      "uploads-privacy-title": "Cargas y privacidad"
+      "uploads-privacy-title": "Cargas y privacidad",
+      "view-shortcuts": "Ver atajos"
     },
     "memo-view": {
       "create": "Crear vista",
@@ -857,6 +865,33 @@
       "your-access": "Su acceso",
       "your-spaces": "Sus espacios"
     }
+  },
+  "shortcuts": {
+    "clear-filters": "Borrar la búsqueda y los filtros",
+    "description": "Los atajos de una sola tecla funcionan en cualquier lugar fuera de los campos de texto.",
+    "edit-memo": "Editar el memo seleccionado",
+    "focus-editor": "Enfocar el editor",
+    "go-archived": "Ir a Archivadas",
+    "go-attachments": "Ir a Archivos adjuntos",
+    "go-back": "Volver",
+    "go-calendar": "Ir al Calendario",
+    "go-explore": "Ir a Explorar",
+    "go-home": "Ir a Inicio",
+    "go-inbox": "Ir a la Bandeja de entrada",
+    "go-map": "Ir al Mapa",
+    "go-settings": "Ir a Ajustes",
+    "group-general": "General",
+    "group-memos": "Memos",
+    "group-navigation": "Navegación",
+    "new-memo": "Nuevo memo",
+    "next-memo": "Seleccionar el siguiente memo",
+    "open-memo": "Abrir el memo seleccionado",
+    "open-search": "Buscar",
+    "pin-memo": "Fijar o desfijar el memo seleccionado",
+    "previous-memo": "Seleccionar el memo anterior",
+    "show-shortcuts": "Mostrar los atajos de teclado",
+    "then": "luego",
+    "title": "Atajos de teclado"
   },
   "tooltip": {
     "link-memo": "Vincular memo",

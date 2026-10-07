@@ -197,6 +197,9 @@
       "more": "Mer formatering"
     },
     "comment": "Kommentar",
+    "discard-changes": "Forkaste endringene?",
+    "discard-changes-description": "Ulagrede endringer i dette notatet vil gå tapt.",
+    "discard": "Forkast",
     "formatting-toolbar": "Formateringsverktøylinje",
     "new-memo": "Nytt notat",
     "saved": "Lagret",
@@ -455,6 +458,10 @@
     },
     "preference": {
       "default-memo-visibility": "Standard synlighet for memoer",
+      "keyboard-description": "Naviger uten mus. Innstillingen lagres på denne enheten.",
+      "keyboard-shortcuts": "Tastatursnarveier",
+      "keyboard-shortcuts-description": "Trykk ? utenfor et tekstfelt for å se alle snarveiene.",
+      "keyboard-title": "Tastatur",
       "label": "Innstillinger",
       "theme": "Tema",
       "appearance-description": "Velg hvordan appen ser ut og hvilket språk den bruker for kontoen din.",
@@ -467,7 +474,8 @@
       "save-media-metadata": "Lagre mediemetadata",
       "save-media-metadata-description": "Lagre tilgjengelig kamera, opptakstidspunkt, sted, bildedimensjoner og grunnleggende videodetaljer for fremtidige opplastinger. Alle som kan se vedlegget kan motta disse metadataene. Eksisterende vedlegg endres ikke.",
       "uploads-privacy-description": "Kontroller personvernsensitiv informasjon som sendes inn med opplastede medier.",
-      "uploads-privacy-title": "Opplastinger og personvern"
+      "uploads-privacy-title": "Opplastinger og personvern",
+      "view-shortcuts": "Vis snarveier"
     },
     "memo-view": {
       "create": "Opprett visning",
@@ -857,6 +865,33 @@
       "your-access": "Din tilgang",
       "your-spaces": "Dine rom"
     }
+  },
+  "shortcuts": {
+    "clear-filters": "Tøm søk og filtre",
+    "description": "Snarveier med én tast fungerer overalt utenfor tekstfelt.",
+    "edit-memo": "Rediger valgt notat",
+    "focus-editor": "Flytt fokus til redigeringsfeltet",
+    "go-archived": "Gå til arkivet",
+    "go-attachments": "Gå til vedlegg",
+    "go-back": "Gå tilbake",
+    "go-calendar": "Gå til kalenderen",
+    "go-explore": "Gå til Utforsk",
+    "go-home": "Gå til startsiden",
+    "go-inbox": "Gå til innboksen",
+    "go-map": "Gå til kartet",
+    "go-settings": "Gå til innstillinger",
+    "group-general": "Generelt",
+    "group-memos": "Notater",
+    "group-navigation": "Navigering",
+    "new-memo": "Nytt notat",
+    "next-memo": "Velg neste notat",
+    "open-memo": "Åpne valgt notat",
+    "open-search": "Søk",
+    "pin-memo": "Fest eller løsne valgt notat",
+    "previous-memo": "Velg forrige notat",
+    "show-shortcuts": "Vis tastatursnarveier",
+    "then": "deretter",
+    "title": "Tastatursnarveier"
   },
   "tooltip": {
     "link-memo": "Lenke til memo",

@@ -248,6 +248,9 @@
     "exit-focus-mode": "Fokus rejimindən çıx",
     "focus-mode": "Fokus rejimi",
     "comment": "Şərh",
+    "discard-changes": "Dəyişikliklər ləğv edilsin?",
+    "discard-changes-description": "Bu qeyddəki saxlanmamış dəyişikliklər itiriləcək.",
+    "discard": "Ləğv et",
     "formatting-toolbar": "Formatlama paneli",
     "format": {
       "heading": "Başlıq",
@@ -768,6 +771,10 @@
       "appearance-title": "Görünüş",
       "default-memo-visibility": "Defolt qeyd görünürlüyü",
       "default-memo-visibility-description": "Redaktorda dəyişdirilmədikcə yeni yaradılan qeydlərə tətbiq edilən görünürlük.",
+      "keyboard-description": "Siçandan istifadə etmədən hərəkət edin. Bu ayar bu cihazda saxlanılır.",
+      "keyboard-shortcuts": "Klaviatura qısayolları",
+      "keyboard-shortcuts-description": "Bütün qısayolları görmək üçün mətn sahəsindən kənarda ? düyməsini basın.",
+      "keyboard-title": "Klaviatura",
       "label": "Tərcihlər",
       "language-description": "İnterfeys dilini dərhal yeniləyir və hesabınızda yadda saxlayır.",
       "memo-defaults-description": "Yeni qeyd yazarkən istifadə olunan defolt dəyərləri təyin edin.",
@@ -777,7 +784,8 @@
       "theme-description": "Seçilmiş mövzunu bu cihazda dərhal tətbiq edir.",
       "theme": "Mövzu",
       "uploads-privacy-description": "Yüklənən media ilə birlikdə göndərilən, məxfiliyə həssas məlumatları idarə edin.",
-      "uploads-privacy-title": "Yükləmələr və məxfilik"
+      "uploads-privacy-title": "Yükləmələr və məxfilik",
+      "view-shortcuts": "Qısayollara bax"
     },
     "memo-view": {
       "create": "Görünüş yarat",
@@ -968,6 +976,33 @@
       "refresh": "Yenilə",
       "load-error": "Statistikanı yükləmək alınmadı"
     }
+  },
+  "shortcuts": {
+    "clear-filters": "Axtarışı və filtrləri təmizlə",
+    "description": "Tək düyməli qısayollar mətn sahəsindən kənarda hər yerdə işləyir.",
+    "edit-memo": "Seçilmiş qeydi redaktə et",
+    "focus-editor": "Redaktora keç",
+    "go-archived": "Arxivə keç",
+    "go-attachments": "Əlavələrə keç",
+    "go-back": "Geri qayıt",
+    "go-calendar": "Təqvimə keç",
+    "go-explore": "Kəşf bölməsinə keç",
+    "go-home": "Ana səhifəyə keç",
+    "go-inbox": "Gələnlər qutusuna keç",
+    "go-map": "Xəritəyə keç",
+    "go-settings": "Ayarlar bölməsinə keç",
+    "group-general": "Ümumi",
+    "group-memos": "Qeydlər",
+    "group-navigation": "Naviqasiya",
+    "new-memo": "Yeni qeyd",
+    "next-memo": "Növbəti qeydi seç",
+    "open-memo": "Seçilmiş qeydi aç",
+    "open-search": "Axtar",
+    "pin-memo": "Seçilmiş qeydi bərkit və ya bərkitməni ləğv et",
+    "previous-memo": "Əvvəlki qeydi seç",
+    "show-shortcuts": "Klaviatura qısayollarını göstər",
+    "then": "sonra",
+    "title": "Klaviatura qısayolları"
   },
   "space": {
     "all-spaces": "Bütün məkanlar",
