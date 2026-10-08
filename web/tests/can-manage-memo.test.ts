@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { User, User_Role } from "@/types/proto/api/v1/user_service_pb";
+import { User, User_Role } from "@/types/proto/api/user_service_pb";
 import { canManageMemo } from "@/utils/user";
 
 const user = (name: string, role: User_Role) => ({ name, role }) as User;

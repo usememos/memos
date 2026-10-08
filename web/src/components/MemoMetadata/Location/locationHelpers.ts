@@ -1,4 +1,4 @@
-import type { Location } from "@/types/proto/api/v1/memo_service_pb";
+import type { Location } from "@/types/proto/api/memo_service_pb";
 
 export const getLocationDisplayText = (location: Location): string => {
   return location.placeholder.trim() || getLocationCoordinatesText(location);

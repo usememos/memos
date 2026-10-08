@@ -6,7 +6,7 @@ import {
   BatchDeleteAttachmentsRequestSchema,
   type ListAttachmentsRequest,
   ListAttachmentsRequestSchema,
-} from "@/types/proto/api/v1/attachment_service_pb";
+} from "@/types/proto/api/attachment_service_pb";
 
 // Query keys factory
 export const attachmentKeys = {

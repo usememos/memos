@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { SpaceMember_Role } from "@/types/proto/api/v1/space_service_pb";
+import { SpaceMember_Role } from "@/types/proto/api/space_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 const SpaceRoleBadge = ({ role }: { role: SpaceMember_Role }) => {

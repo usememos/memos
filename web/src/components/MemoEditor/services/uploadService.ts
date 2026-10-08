@@ -1,8 +1,8 @@
 import { create } from "@bufbuild/protobuf";
 import { Code, ConnectError } from "@connectrpc/connect";
 import { attachmentServiceClient } from "@/connect";
-import type { Attachment, UploadAttachmentRequest } from "@/types/proto/api/v1/attachment_service_pb";
-import { AttachmentSchema, MotionMediaSchema, UploadAttachmentSpecSchema } from "@/types/proto/api/v1/attachment_service_pb";
+import type { Attachment, UploadAttachmentRequest } from "@/types/proto/api/attachment_service_pb";
+import { AttachmentSchema, MotionMediaSchema, UploadAttachmentSpecSchema } from "@/types/proto/api/attachment_service_pb";
 import type { LocalFile } from "../types/attachment";
 
 const DEFAULT_CHUNK_SIZE = 2 * 1024 * 1024;

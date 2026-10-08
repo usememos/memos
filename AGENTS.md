@@ -18,7 +18,7 @@ Memos is a self-hosted note-taking app.
 - Keep diffs scoped. Do not do repo-wide cleanup, dependency churn, or generated-file rewrites unless the task requires it.
 - Do not hand-edit generated proto outputs. Change `.proto` files, then run `buf generate`.
 - Add migrations for all database drivers when schema changes, and update each driver's `LATEST.sql`.
-- Add public API endpoints to `server/api/v1/acl_config.go`.
+- Add public API endpoints to `server/api/acl_config.go`.
 - Ask before adding heavy dependencies, changing auth/token behavior, or altering Docker/release workflows.
 
 ## Documentation
@@ -67,7 +67,7 @@ Every root folder is named for what it holds. Read the folder's `doc.go` or `REA
 | --- | --- | --- |
 | `cmd/memos/` | Cobra/Viper CLI setup and server startup | anything |
 | `server/` | The HTTP process: Echo bootstrap, graceful shutdown, every transport | core, store, provider, markdown, filter, internal |
-| `server/api/v1/` | Connect/gRPC-Gateway services, ACL config, SSE hub. Thin handlers; rules go to `core/` | |
+| `server/api/` | Connect/gRPC-Gateway services, ACL config, SSE hub. Thin handlers; rules go to `core/` | |
 | `server/fileserver/` | Native HTTP file serving, thumbnails, range requests | |
 | `server/frontend/` | Static SPA serving; `dist/` is the built SPA baked in by `go:embed` | |
 | `server/mcp/` | Model Context Protocol server | |
@@ -78,7 +78,7 @@ Every root folder is named for what it holds. Read the folder's `doc.go` or `REA
 | `filter/` | CEL filter compiler: parse to IR, render to SQL per driver, filterable field schema | internal |
 | `provider/` | Backends configured by instance settings: `ai`, `idp`, `storage` | proto/gen, internal |
 | `internal/` | Private plumbing with no memos vocabulary (`identifier`, `email`, `webhook`, `ratelimit`, …) | third party only |
-| `proto/api/v1/`, `proto/store/` | Public API and internal storage proto sources; `proto/gen/` is generated | |
+| `proto/api/`, `proto/store/` | Public API and internal storage proto sources; `proto/gen/` is generated | |
 | `web/src/` | React SPA: `connect.ts` clients, `auth-state.ts`, `hooks/`, `contexts/`, `components/`, `themes/` | |
 
 Layering rules, enforced by `depguard` in `.golangci.yaml`:
@@ -87,11 +87,11 @@ Layering rules, enforced by `depguard` in `.golangci.yaml`:
 - `internal/` packages import nothing from this module (except `internal/testutil`, which may import `proto/gen`).
 - A package goes in `internal/` only if it could be published as a standalone module unchanged. If it knows what a Memo, Space, or instance setting is, it is a root package.
 - Never create `util`, `common`, `base`, `helpers`, `misc`, or `pkg` packages. Name a package for the one thing it does, or put the code next to its only caller.
-- New business rules extracted from `server/api/v1` go to `core/<resource>/`, one package per resource.
+- New business rules extracted from `server/api` go to `core/<resource>/`, one package per resource.
 
-File convention inside `server/api/v1/`: `<resource>_service.go` holds the RPC handlers, `<resource>_service_converters.go` the
+File convention inside `server/api/`: `<resource>_service.go` holds the RPC handlers, `<resource>_service_converters.go` the
 store↔proto conversion, and `<resource>_service_<topic>.go` further splits. Extend the matching file; do not add `*_helpers2.go`.
-Black-box service tests live in `server/api/v1/test/`, unit tests next to the code.
+Black-box service tests live in `server/api/test/`, unit tests next to the code.
 
 ## Change Routing
 
@@ -103,8 +103,8 @@ Black-box service tests live in `server/api/v1/test/`, unit tests next to the co
 | Internal package logic | Relevant `internal/` package tests | `go test -v -race ./internal/...` |
 | Frontend behavior | Components/hooks/contexts under `web/src/` | `cd web && pnpm lint && pnpm test` |
 | Frontend production output | Vite config or release-sensitive UI | `cd web && pnpm build` or `pnpm release` |
-| Proto API | `.proto` source plus generated outputs | `cd proto && buf generate && buf lint` |
-| Public unauthenticated route | `server/api/v1/acl_config.go` | Targeted server test or manual route check |
+| Proto API | `.proto` source, generated outputs, `proto/api/CHANGELOG.md` for breaks | `cd proto && buf generate && buf lint` |
+| Public unauthenticated route | `server/api/acl_config.go` | Targeted server test or manual route check |
 
 ## Go Conventions
 
@@ -127,7 +127,8 @@ Black-box service tests live in `server/api/v1/test/`, unit tests next to the co
 
 - Schema changes require SQLite, MySQL, and PostgreSQL migrations plus `LATEST.sql` updates.
 - Fresh-install SQL and incremental migrations must stay equivalent.
-- Proto field changes must preserve compatibility unless the task explicitly allows a breaking API change.
+- Proto field changes must preserve compatibility unless the task explicitly allows a breaking API change. Record every
+  allowed break in `proto/api/CHANGELOG.md`; CI fails a `buf breaking` failure without an edit there.
 - Regenerate after proto edits and include both Go/OpenAPI and TypeScript generated outputs.
 
 ## Verification Policy

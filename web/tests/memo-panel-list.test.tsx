@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { MemoPanelList } from "@/components/MemoPanel/MemoPanelList";
 import type { MemoViewProps } from "@/components/MemoView/types";
-import { MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
+import { MemoSchema } from "@/types/proto/api/memo_service_pb";
 
 const mocks = vi.hoisted(() => ({
   creatorUsername: undefined as string | undefined,

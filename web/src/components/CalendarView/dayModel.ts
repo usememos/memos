@@ -13,7 +13,7 @@ import { SANITIZE_SCHEMA } from "@/components/MemoContent/constants";
 import type { MemoTimeBasis } from "@/contexts/ViewContext";
 import { getMemoSortTime } from "@/hooks/useMemoSorting";
 import { ISO_DATE_FORMAT } from "@/lib/calendar-utils";
-import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
+import type { Memo } from "@/types/proto/api/memo_service_pb";
 import { getAttachmentThumbnailUrl, getAttachmentUrl, isImage } from "@/utils/attachment";
 import { classifyManagedAttachmentImageURL, extractAttachmentUIDFromName } from "@/utils/managed-attachment";
 

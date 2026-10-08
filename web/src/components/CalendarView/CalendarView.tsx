@@ -16,7 +16,7 @@ import { formatMonthLabel, getToday, parseLocalDate } from "@/lib/calendar-utils
 import { combineCELFilters } from "@/lib/cel-filter";
 import { isMemoBlurred } from "@/lib/tag";
 import { collectionPathForLocation } from "@/router/routes";
-import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
+import type { Memo } from "@/types/proto/api/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { PREVIEW_MIN_CELL_WIDTH } from "./CalendarDayCell";
 import { CalendarGrid } from "./CalendarGrid";

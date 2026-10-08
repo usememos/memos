@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { identityProviderServiceClient } from "@/connect";
 import { useInstance } from "@/contexts/InstanceContext";
 import useDialog from "@/hooks/useDialog";
-import { IdentityProvider } from "@/types/proto/api/v1/idp_service_pb";
+import { IdentityProvider } from "@/types/proto/api/idp_service_pb";
 import {
   InstanceAccessMode,
   InstanceSetting_AccessSetting,
@@ -17,7 +17,7 @@ import {
   InstanceSetting_GeneralSettingSchema,
   InstanceSetting_Key,
   InstanceSettingSchema,
-} from "@/types/proto/api/v1/instance_service_pb";
+} from "@/types/proto/api/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import UpdateCustomizedProfileDialog from "../UpdateCustomizedProfileDialog";
 import SettingGroup from "./SettingGroup";

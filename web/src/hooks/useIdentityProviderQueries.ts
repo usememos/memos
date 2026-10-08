@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { identityProviderServiceClient } from "@/connect";
-import { IdentityProvider } from "@/types/proto/api/v1/idp_service_pb";
+import { IdentityProvider } from "@/types/proto/api/idp_service_pb";
 
 // Query keys factory
 export const identityProviderKeys = {

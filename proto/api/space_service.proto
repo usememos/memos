@@ -1,0 +1,474 @@
+syntax = "proto3";
+
+package memos.api;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+
+option go_package = "gen/api";
+
+// SpaceService manages collaborative spaces, their members and their invitations.
+service SpaceService {
+  // ListSpaces lists the spaces of which the authenticated caller is a member.
+  rpc ListSpaces(ListSpacesRequest) returns (ListSpacesResponse) {
+    option (google.api.http) = {get: "/api/spaces"};
+    option (google.api.method_signature) = "";
+  }
+
+  // GetSpace gets a space of which the authenticated caller is a member.
+  // Spaces the caller is not a member of are reported as not found.
+  rpc GetSpace(GetSpaceRequest) returns (Space) {
+    option (google.api.http) = {get: "/api/{name=spaces/*}"};
+    option (google.api.method_signature) = "name";
+  }
+
+  // CreateSpace creates a space and makes the authenticated caller its first
+  // administrator.
+  rpc CreateSpace(CreateSpaceRequest) returns (Space) {
+    option (google.api.http) = {
+      post: "/api/spaces"
+      body: "space"
+    };
+    option (google.api.method_signature) = "space";
+  }
+
+  // UpdateSpace updates space metadata. Only a space administrator can update
+  // a space.
+  rpc UpdateSpace(UpdateSpaceRequest) returns (Space) {
+    option (google.api.http) = {
+      patch: "/api/{space.name=spaces/*}"
+      body: "space"
+    };
+    option (google.api.method_signature) = "space,update_mask";
+  }
+
+  // DeleteSpace permanently deletes a space and every memo currently placed
+  // in it. It never follows memo relations to other memos. Only a space
+  // administrator can delete a space.
+  rpc DeleteSpace(DeleteSpaceRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/api/{name=spaces/*}"};
+    option (google.api.method_signature) = "name";
+  }
+
+  // ListSpaceMembers lists the members of a space. The caller must be a member
+  // of the space.
+  rpc ListSpaceMembers(ListSpaceMembersRequest) returns (ListSpaceMembersResponse) {
+    option (google.api.http) = {get: "/api/{parent=spaces/*}/members"};
+    option (google.api.method_signature) = "parent";
+  }
+
+  // GetSpaceMember gets one membership in a space. The caller must be a member
+  // of the space.
+  rpc GetSpaceMember(GetSpaceMemberRequest) returns (SpaceMember) {
+    option (google.api.http) = {get: "/api/{name=spaces/*/members/*}"};
+    option (google.api.method_signature) = "name";
+  }
+
+  // UpdateSpaceMember changes a member's space role. Only a space administrator
+  // can change roles, and a space must keep at least one administrator.
+  rpc UpdateSpaceMember(UpdateSpaceMemberRequest) returns (SpaceMember) {
+    option (google.api.http) = {
+      patch: "/api/{space_member.name=spaces/*/members/*}"
+      body: "space_member"
+    };
+    option (google.api.method_signature) = "space_member,update_mask";
+  }
+
+  // DeleteSpaceMember removes a member. A space administrator can remove any
+  // member, and a member may delete their own membership to leave the space.
+  // A space must keep at least one administrator.
+  rpc DeleteSpaceMember(DeleteSpaceMemberRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/api/{name=spaces/*/members/*}"};
+    option (google.api.method_signature) = "name";
+  }
+
+  // ListSpaceInvitations lists the pending invitations for a space. Only a
+  // space administrator can list them.
+  rpc ListSpaceInvitations(ListSpaceInvitationsRequest) returns (ListSpaceInvitationsResponse) {
+    option (google.api.http) = {get: "/api/{parent=spaces/*}/invitations"};
+    option (google.api.method_signature) = "parent";
+  }
+
+  // ListUserSpaceInvitations lists the authenticated user's pending space
+  // invitations. A user cannot list another user's invitations.
+  rpc ListUserSpaceInvitations(ListUserSpaceInvitationsRequest) returns (ListUserSpaceInvitationsResponse) {
+    option (google.api.http) = {get: "/api/{parent=users/*}/spaceInvitations"};
+    option (google.api.method_signature) = "parent";
+  }
+
+  // GetSpaceInvitation gets one pending invitation. Only the invitee or a
+  // space administrator can get it.
+  rpc GetSpaceInvitation(GetSpaceInvitationRequest) returns (SpaceInvitation) {
+    option (google.api.http) = {get: "/api/{name=spaces/*/invitations/*}"};
+    option (google.api.method_signature) = "name";
+  }
+
+  // CreateSpaceInvitation invites an existing active user to a space. Only a
+  // space administrator can invite. The invitee gets no space access until
+  // they accept.
+  rpc CreateSpaceInvitation(CreateSpaceInvitationRequest) returns (SpaceInvitation) {
+    option (google.api.http) = {
+      post: "/api/{parent=spaces/*}/invitations"
+      body: "space_invitation"
+    };
+    option (google.api.method_signature) = "parent,space_invitation";
+  }
+
+  // DeleteSpaceInvitation revokes a pending invitation. Only a space
+  // administrator can revoke it.
+  rpc DeleteSpaceInvitation(DeleteSpaceInvitationRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/api/{name=spaces/*/invitations/*}"};
+    option (google.api.method_signature) = "name";
+  }
+
+  // AcceptSpaceInvitation accepts a pending invitation and creates a
+  // membership with the invited role. Only the invitee can accept it.
+  rpc AcceptSpaceInvitation(AcceptSpaceInvitationRequest) returns (SpaceMember) {
+    option (google.api.http) = {
+      post: "/api/{name=spaces/*/invitations/*}:accept"
+      body: "*"
+    };
+    option (google.api.method_signature) = "name";
+  }
+
+  // DeclineSpaceInvitation declines a pending invitation without creating a
+  // membership. Only the invitee can decline it.
+  rpc DeclineSpaceInvitation(DeclineSpaceInvitationRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/{name=spaces/*/invitations/*}:decline"
+      body: "*"
+    };
+    option (google.api.method_signature) = "name";
+  }
+}
+
+// Space is a collaboration boundary for placed memos.
+message Space {
+  option (google.api.resource) = {
+    type: "memos.api/Space"
+    pattern: "spaces/{space}"
+    singular: "space"
+    plural: "spaces"
+  };
+
+  // Identifier. The resource name of the space.
+  // Format: spaces/{space}
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+
+  // Required. The human-readable title.
+  string title = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. A description of the space.
+  string description = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The display icon. Omit it when updating with the "icon" mask to
+  // reset to the default space mark.
+  Icon icon = 4 [(google.api.field_behavior) = OPTIONAL];
+
+  // Output only. The authenticated user's membership role in this space.
+  // ROLE_UNSPECIFIED when this space is exposed as metadata only.
+  SpaceMember.Role current_user_role = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Output only. The number of accepted members in this space. Pending
+  // invitations are excluded. Zero when this space is exposed as metadata only.
+  int32 member_count = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Icon is the display icon of a space.
+  message Icon {
+    // The icon value.
+    oneof value {
+      // A Unicode emoji sequence.
+      string emoji = 1;
+
+      // A canonical Lucide icon name, such as "leaf".
+      string lucide = 2;
+    }
+  }
+}
+
+// Request message for SpaceService.ListSpaces.
+message ListSpacesRequest {
+  // Optional. The maximum number of spaces to return. The service may return fewer.
+  int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. A page token from a previous call. Provide it to retrieve the next page.
+  string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Response message for SpaceService.ListSpaces.
+message ListSpacesResponse {
+  // The spaces of which the caller is a member.
+  repeated Space spaces = 1;
+
+  // A token to retrieve the next page. Empty when there are no more pages.
+  string next_page_token = 2;
+}
+
+// Request message for SpaceService.GetSpace.
+message GetSpaceRequest {
+  // Required. The resource name of the space.
+  // Format: spaces/{space}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api/Space"}
+  ];
+}
+
+// Request message for SpaceService.CreateSpace.
+message CreateSpaceRequest {
+  // Required. The space to create.
+  Space space = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. The ID to use for the space, which becomes the final segment of
+  // its resource name. If empty, a UUID v4 is generated. Must match
+  // ^[a-zA-Z0-9]([a-zA-Z0-9-]{0,34}[a-zA-Z0-9])?$.
+  string space_id = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Request message for SpaceService.UpdateSpace.
+message UpdateSpaceRequest {
+  // Required. The space with updated values. Its name identifies the space to
+  // update.
+  Space space = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Required. The fields to update. Supported paths: title, description, icon.
+  google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Request message for SpaceService.DeleteSpace.
+message DeleteSpaceRequest {
+  // Required. The resource name of the space.
+  // Format: spaces/{space}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api/Space"}
+  ];
+}
+
+// SpaceMember is a user's membership and governance role in a space.
+message SpaceMember {
+  option (google.api.resource) = {
+    type: "memos.api/SpaceMember"
+    pattern: "spaces/{space}/members/{member}"
+    singular: "spaceMember"
+    plural: "spaceMembers"
+  };
+
+  // Identifier. The resource name of the membership. The member segment is
+  // the member's username.
+  // Format: spaces/{space}/members/{member}
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+
+  // Required. The member user.
+  // Format: users/{user}
+  string user = 2 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api/User"}
+  ];
+
+  // Required. The member's role within this space.
+  Role role = 3 [(google.api.field_behavior) = REQUIRED];
+
+  // Role is a member's governance role within a space.
+  enum Role {
+    ROLE_UNSPECIFIED = 0;
+    // Can update and delete the space, manage members and manage invitations.
+    ADMIN = 1;
+    // A regular member without governance permissions.
+    USER = 2;
+  }
+}
+
+// Request message for SpaceService.ListSpaceMembers.
+message ListSpaceMembersRequest {
+  // Required. The parent space.
+  // Format: spaces/{space}
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {child_type: "memos.api/SpaceMember"}
+  ];
+
+  // Optional. The maximum number of members to return. The service may return fewer.
+  int32 page_size = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. A page token from a previous call. Provide it to retrieve the next page.
+  string page_token = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Response message for SpaceService.ListSpaceMembers.
+message ListSpaceMembersResponse {
+  // The members of the space.
+  repeated SpaceMember space_members = 1;
+
+  // A token to retrieve the next page. Empty when there are no more pages.
+  string next_page_token = 2;
+}
+
+// Request message for SpaceService.GetSpaceMember.
+message GetSpaceMemberRequest {
+  // Required. The resource name of the membership.
+  // Format: spaces/{space}/members/{member}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api/SpaceMember"}
+  ];
+}
+
+// Request message for SpaceService.UpdateSpaceMember.
+message UpdateSpaceMemberRequest {
+  // Required. The membership with the new role. Its name identifies the
+  // membership to update.
+  SpaceMember space_member = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Required. The fields to update. Must include role. The user path is also
+  // accepted, but the user must match the existing member and is never changed.
+  google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Request message for SpaceService.DeleteSpaceMember.
+message DeleteSpaceMemberRequest {
+  // Required. The resource name of the membership.
+  // Format: spaces/{space}/members/{member}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api/SpaceMember"}
+  ];
+}
+
+// SpaceInvitation is a pending invitation for an existing user to join a space.
+message SpaceInvitation {
+  option (google.api.resource) = {
+    type: "memos.api/SpaceInvitation"
+    pattern: "spaces/{space}/invitations/{invitation}"
+    singular: "spaceInvitation"
+    plural: "spaceInvitations"
+  };
+
+  // Identifier. The resource name of the invitation. The invitation segment
+  // is the invitee's username.
+  // Format: spaces/{space}/invitations/{invitation}
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+
+  // Required. The invited user.
+  // Format: users/{user}
+  string invitee = 2 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api/User"}
+  ];
+
+  // Required. The role the user receives after accepting the invitation.
+  SpaceMember.Role role = 3 [(google.api.field_behavior) = REQUIRED];
+
+  // Output only. The space the user is invited to, as metadata only. This lets
+  // an invitee understand the invitation without membership-based GetSpace
+  // access.
+  Space space = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// Request message for SpaceService.ListSpaceInvitations.
+message ListSpaceInvitationsRequest {
+  // Required. The parent space.
+  // Format: spaces/{space}
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {child_type: "memos.api/SpaceInvitation"}
+  ];
+
+  // Optional. The maximum number of invitations to return. The service may return fewer.
+  int32 page_size = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. A page token from a previous call. Provide it to retrieve the next page.
+  string page_token = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Response message for SpaceService.ListSpaceInvitations.
+message ListSpaceInvitationsResponse {
+  // The pending invitations for the space.
+  repeated SpaceInvitation space_invitations = 1;
+
+  // A token to retrieve the next page. Empty when there are no more pages.
+  string next_page_token = 2;
+}
+
+// Request message for SpaceService.ListUserSpaceInvitations.
+message ListUserSpaceInvitationsRequest {
+  // Required. The user whose invitations to list. Must be the authenticated
+  // user.
+  // Format: users/{user}
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api/User"}
+  ];
+
+  // Optional. The maximum number of invitations to return. The service may return fewer.
+  int32 page_size = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. A page token from a previous call. Provide it to retrieve the next page.
+  string page_token = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Response message for SpaceService.ListUserSpaceInvitations.
+message ListUserSpaceInvitationsResponse {
+  // The pending invitations received by the user.
+  repeated SpaceInvitation space_invitations = 1;
+
+  // A token to retrieve the next page. Empty when there are no more pages.
+  string next_page_token = 2;
+}
+
+// Request message for SpaceService.GetSpaceInvitation.
+message GetSpaceInvitationRequest {
+  // Required. The resource name of the invitation.
+  // Format: spaces/{space}/invitations/{invitation}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api/SpaceInvitation"}
+  ];
+}
+
+// Request message for SpaceService.CreateSpaceInvitation.
+message CreateSpaceInvitationRequest {
+  // Required. The parent space.
+  // Format: spaces/{space}
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {child_type: "memos.api/SpaceInvitation"}
+  ];
+
+  // Required. The invitation to create. The role must be ADMIN or USER.
+  SpaceInvitation space_invitation = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Request message for SpaceService.DeleteSpaceInvitation.
+message DeleteSpaceInvitationRequest {
+  // Required. The resource name of the invitation.
+  // Format: spaces/{space}/invitations/{invitation}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api/SpaceInvitation"}
+  ];
+}
+
+// Request message for SpaceService.AcceptSpaceInvitation.
+message AcceptSpaceInvitationRequest {
+  // Required. The resource name of the invitation.
+  // Format: spaces/{space}/invitations/{invitation}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api/SpaceInvitation"}
+  ];
+}
+
+// Request message for SpaceService.DeclineSpaceInvitation.
+message DeclineSpaceInvitationRequest {
+  // Required. The resource name of the invitation.
+  // Format: spaces/{space}/invitations/{invitation}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api/SpaceInvitation"}
+  ];
+}

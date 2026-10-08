@@ -1,8 +1,8 @@
 import { fromJson, type JsonValue, toJson } from "@bufbuild/protobuf";
-import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
-import { AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
+import type { Attachment } from "@/types/proto/api/attachment_service_pb";
+import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
 
-import { type Location, LocationSchema, Visibility } from "@/types/proto/api/v1/memo_service_pb";
+import { type Location, LocationSchema, Visibility } from "@/types/proto/api/memo_service_pb";
 
 export const CACHE_DEBOUNCE_DELAY = 500;
 

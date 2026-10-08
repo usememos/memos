@@ -5,7 +5,7 @@ import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import MemoViewIcon from "@/components/MemoViewIcon";
 import MemoViews from "@/pages/MemoViews";
-import { MemoView_IconSchema, MemoViewSchema } from "@/types/proto/api/v1/user_service_pb";
+import { MemoView_IconSchema, MemoViewSchema } from "@/types/proto/api/user_service_pb";
 
 const mocks = vi.hoisted(() => ({ create: vi.fn(), update: vi.fn(), isPending: false, isError: false, refetch: vi.fn() }));
 vi.mock("@/connect", () => ({ userServiceClient: { createMemoView: mocks.create, updateMemoView: mocks.update } }));

@@ -11,7 +11,7 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import { useDialog } from "@/hooks/useDialog";
 import { WEB_CLIPPER_URL } from "@/lib/constants";
 import { handleError } from "@/lib/error";
-import { CreatePersonalAccessTokenResponse, PersonalAccessToken } from "@/types/proto/api/v1/user_service_pb";
+import { CreatePersonalAccessTokenResponse, PersonalAccessToken } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import CreateAccessTokenDialog from "../CreateAccessTokenDialog";
 import SettingSection from "./SettingSection";
@@ -20,7 +20,7 @@ const EXPIRING_SOON_MS = 30 * 24 * 60 * 60 * 1000;
 
 const ApiUsageExample = () => {
   const t = useTranslate();
-  const example = `curl ${window.location.origin}/api/v1/memos \\\n  -H "Authorization: Bearer memos_pat_..."`;
+  const example = `curl ${window.location.origin}/api/memos \\\n  -H "Authorization: Bearer memos_pat_..."`;
 
   const handleCopy = () => {
     copy(example);
@@ -61,8 +61,8 @@ const listAccessTokens = async (parent: string) => {
   const { personalAccessTokens } = await userServiceClient.listPersonalAccessTokens({ parent });
   return personalAccessTokens.sort(
     (a, b) =>
-      ((b.createdAt ? timestampDate(b.createdAt) : undefined)?.getTime() ?? 0) -
-      ((a.createdAt ? timestampDate(a.createdAt) : undefined)?.getTime() ?? 0),
+      ((b.createTime ? timestampDate(b.createTime) : undefined)?.getTime() ?? 0) -
+      ((a.createTime ? timestampDate(a.createTime) : undefined)?.getTime() ?? 0),
   );
 };
 
@@ -160,8 +160,8 @@ const EmptyState = ({ onCreate }: { onCreate: () => void }) => {
 
 const TokenRow = ({ token, onDelete }: { token: PersonalAccessToken; onDelete: (token: PersonalAccessToken) => void }) => {
   const t = useTranslate();
-  const lastUsedAt = token.lastUsedAt ? timestampDate(token.lastUsedAt) : undefined;
-  const expiresAt = token.expiresAt ? timestampDate(token.expiresAt) : undefined;
+  const lastUsedAt = token.lastUseTime ? timestampDate(token.lastUseTime) : undefined;
+  const expiresAt = token.expireTime ? timestampDate(token.expireTime) : undefined;
   const status = getTokenStatus(lastUsedAt, expiresAt);
 
   return (

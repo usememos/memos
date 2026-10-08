@@ -2,7 +2,7 @@ import { render } from "@testing-library/react";
 import { UserLockIcon } from "lucide-react";
 import { describe, expect, it } from "vitest";
 import VisibilityIcon from "@/components/VisibilityIcon";
-import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
+import { Visibility } from "@/types/proto/api/memo_service_pb";
 import {
   convertVisibilityFromString,
   convertVisibilityToString,

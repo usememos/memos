@@ -22,7 +22,7 @@ import {
   InstanceSetting_StorageSettingSchema,
   InstanceSetting_StorageType,
   InstanceSettingSchema,
-} from "@/types/proto/api/v1/instance_service_pb";
+} from "@/types/proto/api/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import SettingGroup from "./SettingGroup";
 import { SettingPanel } from "./SettingList";

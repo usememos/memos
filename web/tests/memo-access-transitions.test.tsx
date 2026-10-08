@@ -6,7 +6,7 @@ import type { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useResolvedRelationMemos } from "@/components/MemoMetadata/Relation/useResolvedRelationMemos";
 import { findMemoInCollectionQueries, memoKeys, useMemo, useUpdateMemo } from "@/hooks/useMemoQueries";
-import { ListMemosResponseSchema, MemoRelation_Type, MemoRelationSchema, MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
+import { ListMemosResponseSchema, MemoRelation_Type, MemoRelationSchema, MemoSchema } from "@/types/proto/api/memo_service_pb";
 
 const api = vi.hoisted(() => ({ getMemo: vi.fn(), updateMemo: vi.fn() }));
 vi.mock("@/connect", () => ({ memoServiceClient: api }));

@@ -4,8 +4,8 @@ import { useResolvedUsersByNames } from "@/components/MemoContent/MentionResolut
 import { memoServiceClient } from "@/connect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { memoKeys } from "@/hooks/useMemoQueries";
-import type { Memo, Reaction } from "@/types/proto/api/v1/memo_service_pb";
-import type { User } from "@/types/proto/api/v1/user_service_pb";
+import type { Memo, Reaction } from "@/types/proto/api/memo_service_pb";
+import type { User } from "@/types/proto/api/user_service_pb";
 
 export type ReactionGroup = Map<string, User[]>;
 
@@ -51,7 +51,7 @@ export const useReactionActions = ({ memo, onComplete }: UseReactionActionsOptio
         await Promise.all(reactions.map((reaction) => memoServiceClient.deleteMemoReaction({ name: reaction.name })));
       } else {
         await memoServiceClient.upsertMemoReaction({
-          name: memo.name,
+          parent: memo.name,
           reaction: { reactionType },
         });
       }

@@ -1,7 +1,7 @@
 // Package auth provides authentication and authorization for the Memos server.
 //
 // This package is used by:
-// - server/api/v1: gRPC and Connect API interceptors
+// - server/api: gRPC and Connect API interceptors
 // - server/fileserver: HTTP file server authentication
 //
 // Authentication methods supported:

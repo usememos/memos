@@ -14,14 +14,14 @@ import (
 
 	"github.com/usememos/memos/internal/profile"
 	memosproto "github.com/usememos/memos/proto"
-	apiv1 "github.com/usememos/memos/server/api/v1"
+	"github.com/usememos/memos/server/api"
 )
 
 // maxMCPRequestBytes caps the /mcp request body. It tracks the API limit because
 // every tool call is forwarded in-process through the API routes. The SDK
 // enforces its own 4 MiB default, so the value is passed to the transport as
 // well; otherwise attachment uploads over MCP fail with 413 before Echo sees them.
-const maxMCPRequestBytes int64 = apiv1.MaxAPIRequestBytes
+const maxMCPRequestBytes int64 = api.MaxAPIRequestBytes
 
 // toolCatalogTTL is the freshness hint advertised on tools/list and
 // server/discover results. The catalog is fixed at startup, so clients may cache

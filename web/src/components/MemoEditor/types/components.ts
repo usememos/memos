@@ -1,6 +1,6 @@
 import type { MemoSuggestion } from "@/lib/memo-suggestions";
-import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
-import type { Location, Memo, Visibility } from "@/types/proto/api/v1/memo_service_pb";
+import type { Attachment } from "@/types/proto/api/attachment_service_pb";
+import type { Location, Memo, Visibility } from "@/types/proto/api/memo_service_pb";
 import type { EditorFileOrigin } from "../Editor/extensions";
 import type { AudioRecorderStatus } from "../hooks/useAudioRecorder";
 import type { LocalFile } from "./attachment";

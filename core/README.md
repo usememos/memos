@@ -13,5 +13,5 @@ apply the same way.
 
 Layering: `core` may import `store`, `provider`, `markdown`, `filter`,
 `proto/gen`, and `internal`. It must not import `server` or `cmd`. New
-resource-specific rules extracted from `server/api/v1` belong here, one package
+resource-specific rules extracted from `server/api` belong here, one package
 per resource.

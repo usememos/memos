@@ -6,7 +6,7 @@ import useNavigateTo from "@/hooks/useNavigateTo";
 import { useArchiveNotification, useDeleteNotification } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
 import { cn } from "@/lib/utils";
-import { UserNotification, UserNotification_Status } from "@/types/proto/api/v1/user_service_pb";
+import { UserNotification, UserNotification_Status } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 interface Props {

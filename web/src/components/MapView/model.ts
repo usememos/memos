@@ -1,6 +1,6 @@
 import type { MemoTimeBasis } from "@/contexts/ViewContext";
 import { getMemoSortTime } from "@/hooks/useMemoSorting";
-import type { Location, Memo } from "@/types/proto/api/v1/memo_service_pb";
+import type { Location, Memo } from "@/types/proto/api/memo_service_pb";
 
 export interface MapViewport {
   lat: number;

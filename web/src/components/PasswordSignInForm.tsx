@@ -52,7 +52,7 @@ function PasswordSignInForm({ redirectPath }: PasswordSignInFormProps) {
       );
       // Store access token from login response
       if (response.accessToken) {
-        setAccessToken(response.accessToken, response.accessTokenExpiresAt ? timestampDate(response.accessTokenExpiresAt) : undefined);
+        setAccessToken(response.accessToken, response.accessTokenExpireTime ? timestampDate(response.accessTokenExpireTime) : undefined);
       }
       await initialize();
       navigateTo(redirectPath || ROUTES.HOME, { replace: true });

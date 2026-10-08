@@ -1,5 +1,5 @@
 import type { MemoFilter } from "@/contexts/MemoFilterContext";
-import type { Visibility } from "@/types/proto/api/v1/memo_service_pb";
+import type { Visibility } from "@/types/proto/api/memo_service_pb";
 import { VISIBILITY_OPTIONS } from "@/utils/memo";
 import type { MemoSuggestion, SuggestionSource } from "./memo-suggestions";
 import { parseSuggestionExpression, readStringList, type SuggestionExpression, type SuggestionToken } from "./suggestion-expression";

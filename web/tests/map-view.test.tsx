@@ -5,7 +5,7 @@ import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { MapView } from "@/components/MapView/MapView";
 import type { MemoEditorProps } from "@/components/MemoEditor/types";
-import { type Memo, MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
+import { type Memo, MemoSchema } from "@/types/proto/api/memo_service_pb";
 
 const mocks = vi.hoisted(() => ({
   editor: {} as MemoEditorProps,

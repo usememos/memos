@@ -37,7 +37,7 @@ const MemoCommentListView: React.FC = () => {
     enabled: isNearViewport && !isInMemoDetailPage && commentAmount > 0,
     pageSize: 3,
   });
-  const comments = data?.memos ?? [];
+  const comments = data?.comments ?? [];
   const displayedComments = comments.slice(0, 3);
   const { data: commentCreators } = useUsersByNames(displayedComments.map((comment) => comment.creator));
 

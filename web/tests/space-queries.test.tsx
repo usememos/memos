@@ -21,7 +21,7 @@ import {
   useUpdateSpaceMember,
   useUserSpaceInvitations,
 } from "@/hooks/useSpaceQueries";
-import { SpaceInvitationSchema, SpaceMember_Role, SpaceMemberSchema, SpaceSchema } from "@/types/proto/api/v1/space_service_pb";
+import { SpaceInvitationSchema, SpaceMember_Role, SpaceMemberSchema, SpaceSchema } from "@/types/proto/api/space_service_pb";
 
 const clients = vi.hoisted(() => ({
   acceptSpaceInvitation: vi.fn(),

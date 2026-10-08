@@ -19,7 +19,7 @@ import {
   IdentityProviderSchema,
   OAuth2Config,
   OAuth2ConfigSchema,
-} from "@/types/proto/api/v1/idp_service_pb";
+} from "@/types/proto/api/idp_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 const DEFAULT_TEMPLATE = "GitHub";

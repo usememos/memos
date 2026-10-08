@@ -72,7 +72,8 @@ All must pass before you propose the tag:
 
 Write notes for the range from the last stable tag to the candidate, following [release-notes.md](references/release-notes.md).
 Read the commits, the merged PRs (`gh pr view`), and the diff for migrations, proto changes, configuration flags, and removed
-behavior. Save the draft in a temporary directory outside the repo.
+behavior. Carry the `## Unreleased` entries of `proto/api/CHANGELOG.md` into the notes as breaking API changes. Save the
+draft in a temporary directory outside the repo.
 
 ## 5. Propose, Then Tag
 
@@ -125,4 +126,5 @@ that links resolve to the right PRs and commits.
 
 Give the release URL, tag, SHA, image tags and digest, verification results, any reruns and why, and anything not done. Out of
 scope for this skill: announcements, website or docs updates, and the demo deploy (`demo-deploy.yml`, manual dispatch). List
-them as follow-ups for the user rather than doing them.
+them as follow-ups for the user rather than doing them. If `proto/api/CHANGELOG.md` has `## Unreleased` entries, list
+renaming that heading to the tag as a follow-up too.

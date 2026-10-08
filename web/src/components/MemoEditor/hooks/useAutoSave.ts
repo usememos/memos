@@ -1,7 +1,7 @@
 import { equals } from "@bufbuild/protobuf";
 import { useCallback, useEffect, useRef } from "react";
-import { AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
-import { LocationSchema } from "@/types/proto/api/v1/memo_service_pb";
+import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
+import { LocationSchema } from "@/types/proto/api/memo_service_pb";
 import { cacheService, type EditorDraft } from "../services";
 import { type EditorState, useEditorStore } from "../state";
 

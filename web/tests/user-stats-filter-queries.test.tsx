@@ -3,11 +3,11 @@ import { renderHook, waitFor } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useAllUserStats, useUserStats } from "@/hooks/useUserQueries";
-import { State } from "@/types/proto/api/v1/common_pb";
+import { State } from "@/types/proto/api/common_pb";
 
 const clients = vi.hoisted(() => ({
   getUserStats: vi.fn(),
-  listAllUserStats: vi.fn(),
+  listUserStats: vi.fn(),
 }));
 
 vi.mock("@/connect", () => ({
@@ -24,7 +24,7 @@ const createWrapper = () => {
 describe("User statistics filter queries", () => {
   beforeEach(() => {
     clients.getUserStats.mockReset().mockResolvedValue({ name: "users/test/stats" });
-    clients.listAllUserStats.mockReset().mockResolvedValue({ stats: [] });
+    clients.listUserStats.mockReset().mockResolvedValue({ userStats: [] });
   });
 
   it("sends a Space filter with per-user statistics", async () => {
@@ -40,6 +40,6 @@ describe("User statistics filter queries", () => {
     const { result } = renderHook(() => useAllUserStats({ state: State.ARCHIVED, filter }), { wrapper: createWrapper() });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(clients.listAllUserStats).toHaveBeenCalledWith(expect.objectContaining({ state: State.ARCHIVED, filter }));
+    expect(clients.listUserStats).toHaveBeenCalledWith(expect.objectContaining({ parent: "users/-", state: State.ARCHIVED, filter }));
   });
 });

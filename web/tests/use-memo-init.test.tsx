@@ -6,9 +6,9 @@ import { useMemoInit } from "@/components/MemoEditor/hooks/useMemoInit";
 import { cacheService } from "@/components/MemoEditor/services/cacheService";
 import { EditorProvider, useEditorContext } from "@/components/MemoEditor/state";
 import type { EditorController } from "@/components/MemoEditor/types/editorController";
-import { AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
+import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
 
-import { type Location, LocationSchema, Visibility } from "@/types/proto/api/v1/memo_service_pb";
+import { type Location, LocationSchema, Visibility } from "@/types/proto/api/memo_service_pb";
 
 const editorRef = { current: null } as RefObject<EditorController | null>;
 let getEditorState: ReturnType<typeof useEditorContext>["getState"];

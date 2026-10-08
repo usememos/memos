@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package memos.api;
+
+option go_package = "gen/api";
+
+// State is the lifecycle state of a resource.
+enum State {
+  STATE_UNSPECIFIED = 0;
+  // The resource is active.
+  NORMAL = 1;
+  // The resource is archived.
+  ARCHIVED = 2;
+}
+
+// Direction is a sort direction.
+enum Direction {
+  DIRECTION_UNSPECIFIED = 0;
+  // Ascending order.
+  ASC = 1;
+  // Descending order.
+  DESC = 2;
+}
+
+// PageToken is the internal content of an opaque page token. The service
+// serializes it and encodes it as base64; clients must not parse it.
+message PageToken {
+  // The page size used for the next page.
+  int32 limit = 1;
+
+  // The number of items to skip before the next page.
+  int32 offset = 2;
+}

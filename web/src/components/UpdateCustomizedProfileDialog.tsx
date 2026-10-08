@@ -14,7 +14,7 @@ import {
   InstanceSetting_GeneralSetting_CustomProfileSchema,
   InstanceSetting_Key,
   InstanceSettingSchema,
-} from "@/types/proto/api/v1/instance_service_pb";
+} from "@/types/proto/api/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 interface Props {

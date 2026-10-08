@@ -25,7 +25,7 @@ import { useUsersByNames } from "@/hooks/useUserQueries";
 import i18n from "@/i18n";
 import { combineCELFilters } from "@/lib/cel-filter";
 import { handleError } from "@/lib/error";
-import { ListAttachmentsRequestSchema } from "@/types/proto/api/v1/attachment_service_pb";
+import { ListAttachmentsRequestSchema } from "@/types/proto/api/attachment_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 const UNUSED_PAGE_SIZE = 1000;

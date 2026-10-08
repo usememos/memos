@@ -91,7 +91,7 @@ const AuthCallback = () => {
           }
           await userServiceClient.createLinkedIdentity({
             parent: currentUser.name,
-            idpName: identityProviderName,
+            identityProvider: identityProviderName,
             code,
             redirectUri,
             codeVerifier: codeVerifier || "",
@@ -101,7 +101,7 @@ const AuthCallback = () => {
             credentials: {
               case: "ssoCredentials",
               value: {
-                idpName: identityProviderName,
+                identityProvider: identityProviderName,
                 code,
                 redirectUri,
                 codeVerifier: codeVerifier || "", // Pass PKCE code_verifier for token exchange
@@ -110,7 +110,10 @@ const AuthCallback = () => {
           });
           // Store access token from login response
           if (response.accessToken) {
-            setAccessToken(response.accessToken, response.accessTokenExpiresAt ? timestampDate(response.accessTokenExpiresAt) : undefined);
+            setAccessToken(
+              response.accessToken,
+              response.accessTokenExpireTime ? timestampDate(response.accessTokenExpireTime) : undefined,
+            );
           }
         }
         setState({

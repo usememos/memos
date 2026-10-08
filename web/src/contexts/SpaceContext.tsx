@@ -14,7 +14,7 @@ import {
   resolveCollectionRoute,
   withCollectionCreator,
 } from "@/router/routes";
-import type { Space } from "@/types/proto/api/v1/space_service_pb";
+import type { Space } from "@/types/proto/api/space_service_pb";
 
 interface SpaceContextValue {
   spaces: Space[];

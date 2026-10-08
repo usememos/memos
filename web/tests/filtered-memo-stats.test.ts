@@ -25,7 +25,7 @@ vi.mock("@/contexts/ViewContext", async () => {
 
 import { useFilteredMemoStats } from "@/hooks/useFilteredMemoStats";
 import { useAllUserStats, useUserStats } from "@/hooks/useUserQueries";
-import { State } from "@/types/proto/api/v1/common_pb";
+import { State } from "@/types/proto/api/common_pb";
 
 const wrapper = ({ children }: { children: ReactNode }) => children as never;
 
@@ -44,7 +44,7 @@ describe("useFilteredMemoStats", () => {
       data: {
         memoCreatedTimestamps: [ts(2026, 5, 1), ts(2026, 5, 1), ts(2026, 5, 2)],
         memoUpdatedTimestamps: [ts(2026, 5, 3), ts(2026, 5, 3), ts(2026, 5, 3)],
-        tagCount: {},
+        tagCounts: {},
       },
       isLoading: false,
     } as unknown as ReturnType<typeof useUserStats>);
@@ -89,7 +89,7 @@ describe("useFilteredMemoStats", () => {
       data: {
         memoCreatedTimestamps: [ts(2026, 5, 1)],
         memoUpdatedTimestamps: [],
-        tagCount: {},
+        tagCounts: {},
       },
       isLoading: false,
     } as unknown as ReturnType<typeof useUserStats>);

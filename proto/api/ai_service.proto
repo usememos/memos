@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package memos.api;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+
+option go_package = "gen/api";
+
+// AIService runs AI tasks through the AI providers configured on the instance.
+service AIService {
+  // Transcribe transcribes an audio file with the instance's configured
+  // transcription provider. The caller must be signed in, and requests are rate limited per user.
+  rpc Transcribe(TranscribeRequest) returns (TranscribeResponse) {
+    option (google.api.http) = {
+      post: "/api/ai:transcribe"
+      body: "*"
+    };
+    option (google.api.method_signature) = "audio";
+  }
+}
+
+// Request message for AIService.Transcribe.
+message TranscribeRequest {
+  // Required. The audio to transcribe.
+  TranscriptionAudio audio = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Response message for AIService.Transcribe.
+message TranscribeResponse {
+  // The transcribed text.
+  string text = 1;
+}
+
+// TranscriptionAudio is the audio input for a transcription.
+message TranscriptionAudio {
+  // The audio source. Only inline content is supported.
+  oneof source {
+    // Input only. Inline audio bytes, at most 25 MiB.
+    bytes content = 1 [(google.api.field_behavior) = INPUT_ONLY];
+
+    // URI of the audio content. Reserved for future use; the service rejects requests that set it.
+    string uri = 2;
+  }
+
+  // Optional. The uploaded filename, at most 255 characters.
+  string filename = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The MIME type of the audio. If empty, the service detects it from the content.
+  string content_type = 4 [(google.api.field_behavior) = OPTIONAL];
+}

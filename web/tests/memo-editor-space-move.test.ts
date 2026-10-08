@@ -2,7 +2,7 @@ import { create } from "@bufbuild/protobuf";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { memoService } from "@/components/MemoEditor/services/memoService";
 import { createInitialState, type EditorState } from "@/components/MemoEditor/state";
-import { type Memo, MemoSchema, Visibility } from "@/types/proto/api/v1/memo_service_pb";
+import { type Memo, MemoSchema, Visibility } from "@/types/proto/api/memo_service_pb";
 
 const clients = vi.hoisted(() => ({
   getMemo: vi.fn(),

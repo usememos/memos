@@ -38,3 +38,23 @@ jobs:
             echo "❌ Proto files are not formatted. Run 'buf format -w' to fix."
             exit 1
           fi
+
+      # A breaking change to the public API is allowed only when the same change
+      # records it in proto/api/CHANGELOG.md.
+      - name: Check breaking API changes
+        working-directory: proto
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if [[ -z "$BASE_SHA" || "$BASE_SHA" =~ ^0+$ ]] || ! git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null; then
+            echo "No comparable base commit; skipping."
+            exit 0
+          fi
+          if buf breaking --against "../.git#ref=$BASE_SHA,subdir=proto" --path api; then
+            exit 0
+          fi
+          if git diff --quiet "$BASE_SHA" HEAD -- api/CHANGELOG.md; then
+            echo "❌ Breaking API change. Record it in proto/api/CHANGELOG.md, or make the change compatible."
+            exit 1
+          fi
+          echo "::warning::Breaking API change recorded in proto/api/CHANGELOG.md."

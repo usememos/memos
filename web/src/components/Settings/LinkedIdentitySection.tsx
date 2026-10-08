@@ -8,8 +8,8 @@ import { identityProviderServiceClient, userServiceClient } from "@/connect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { absolutifyLink } from "@/lib/browser";
 import { handleError } from "@/lib/error";
-import { IdentityProvider, IdentityProvider_Type } from "@/types/proto/api/v1/idp_service_pb";
-import { LinkedIdentity } from "@/types/proto/api/v1/user_service_pb";
+import { IdentityProvider, IdentityProvider_Type } from "@/types/proto/api/idp_service_pb";
+import { LinkedIdentity } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { storeOAuthState } from "@/utils/oauth";
 import SettingGroup from "./SettingGroup";
@@ -20,7 +20,7 @@ interface LinkedIdentityRow extends Record<string, unknown> {
   providerUid: string;
   title: string;
   typeLabel: string;
-  externUid: string;
+  externalUid: string;
   isLinked: boolean;
   linkedIdentity?: LinkedIdentity;
   identityProvider: IdentityProvider;
@@ -63,8 +63,8 @@ const LinkedIdentitySection = () => {
   const linkedIdentityByProviderName = useMemo(() => {
     const mapping = new Map<string, LinkedIdentity>();
     for (const linkedIdentity of linkedIdentityList) {
-      if (!mapping.has(linkedIdentity.idpName)) {
-        mapping.set(linkedIdentity.idpName, linkedIdentity);
+      if (!mapping.has(linkedIdentity.identityProvider)) {
+        mapping.set(linkedIdentity.identityProvider, linkedIdentity);
       }
     }
     return mapping;
@@ -79,7 +79,7 @@ const LinkedIdentitySection = () => {
           providerUid: getSSOProviderUid(identityProvider.name),
           title: identityProvider.title,
           typeLabel: getIdentityProviderTypeLabel(identityProvider.type),
-          externUid: linkedIdentity?.externUid ?? "",
+          externalUid: linkedIdentity?.externalUid ?? "",
           isLinked: !!linkedIdentity,
           linkedIdentity,
           identityProvider,
@@ -163,7 +163,7 @@ const LinkedIdentitySection = () => {
             ),
           },
           {
-            key: "externUid",
+            key: "externalUid",
             header: t("setting.sso.account"),
             render: (_, row: LinkedIdentityRow) => (
               <div className="flex min-w-[22rem] flex-col gap-2">
@@ -171,8 +171,8 @@ const LinkedIdentitySection = () => {
                   <Badge variant={row.isLinked ? "default" : "outline"} className="rounded-full px-2.5 py-0.5">
                     {row.isLinked ? t("setting.sso.linked") : t("setting.sso.not-linked")}
                   </Badge>
-                  {row.isLinked && row.externUid ? (
-                    <InfoChip label={t("setting.sso.extern-uid")} value={row.externUid} tooltip={row.externUid} />
+                  {row.isLinked && row.externalUid ? (
+                    <InfoChip label={t("setting.sso.extern-uid")} value={row.externalUid} tooltip={row.externalUid} />
                   ) : null}
                 </div>
                 <p className="text-xs text-muted-foreground">

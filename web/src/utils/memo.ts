@@ -1,5 +1,5 @@
 import { Globe2Icon, LockIcon, type LucideIcon, UserLockIcon, UsersIcon } from "lucide-react";
-import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
+import { Visibility } from "@/types/proto/api/memo_service_pb";
 
 export interface VisibilityOption {
   value: Visibility;
