@@ -1,17 +1,24 @@
 package api
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
+	"regexp"
 	"strings"
 	"testing"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/genproto/googleapis/api/annotations"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/reflect/protoregistry"
+	"gopkg.in/yaml.v3"
+
+	memosproto "github.com/usememos/memos/proto"
+	apipb "github.com/usememos/memos/proto/gen/api"
 )
 
 func TestCanonicalGatewayPattern(t *testing.T) {
@@ -89,7 +96,8 @@ func TestGatewayRouteResolverResolvesKnownRoutes(t *testing.T) {
 		{http.MethodPost, "/api/users", "/api/users", "/memos.api.UserService/CreateUser"},
 		{http.MethodGet, "/api/users", "/api/users", "/memos.api.UserService/ListUsers"},
 		{http.MethodGet, "/api/{name=users/*}", "/api/users/1", "/memos.api.UserService/GetUser"},
-		{http.MethodGet, "/api/{parent=users/-}/stats", "/api/users/-/stats", "/memos.api.UserService/ListUserStats"},
+		{http.MethodGet, "/api/{parent=users/*}/stats", "/api/users/-/stats", "/memos.api.UserService/ListUserStats"},
+		{http.MethodGet, "/api/{parent=users/*}/stats", "/api/users/alice/stats", "/memos.api.UserService/ListUserStats"},
 		{http.MethodGet, "/api/{parent=users/*}/views", "/api/users/alice/views", "/memos.api.UserService/ListMemoViews"},
 		{http.MethodPost, "/api/{parent=users/*}/views", "/api/users/alice/views", "/memos.api.UserService/CreateMemoView"},
 		{http.MethodGet, "/api/{name=users/*/views/*}", "/api/users/alice/views/work", "/memos.api.UserService/GetMemoView"},
@@ -205,6 +213,66 @@ func TestGatewayRouteResolverCoversEveryBinding(t *testing.T) {
 
 	require.Positive(t, checked, "should have checked at least one binding")
 	t.Logf("verified %d HTTP bindings", checked)
+}
+
+// TestOpenAPIPathsReachTheirGatewayMethods checks the published contract: every
+// path in the generated OpenAPI spec, filled with a sample value per parameter,
+// must reach the gateway method its operationId names. The OpenAPI generator
+// rewrites path templates, so a binding the gateway cannot match from the
+// advertised path (for example a literal inside a variable) fails here.
+func TestOpenAPIPathsReachTheirGatewayMethods(t *testing.T) {
+	resolver, err := newGatewayRouteResolver()
+	require.NoError(t, err)
+
+	// Register the services in production order with stub servers; the
+	// middleware records the matched procedure without calling a handler.
+	var matched string
+	mux := runtime.NewServeMux(runtime.WithMiddlewares(func(runtime.HandlerFunc) runtime.HandlerFunc {
+		return func(_ http.ResponseWriter, request *http.Request, _ map[string]string) {
+			matched, _ = resolver.resolveRequest(request)
+		}
+	}))
+	ctx := context.Background()
+	require.NoError(t, apipb.RegisterInstanceServiceHandlerServer(ctx, mux, apipb.UnimplementedInstanceServiceServer{}))
+	require.NoError(t, apipb.RegisterAuthServiceHandlerServer(ctx, mux, apipb.UnimplementedAuthServiceServer{}))
+	require.NoError(t, apipb.RegisterUserServiceHandlerServer(ctx, mux, apipb.UnimplementedUserServiceServer{}))
+	require.NoError(t, apipb.RegisterMemoServiceHandlerServer(ctx, mux, apipb.UnimplementedMemoServiceServer{}))
+	require.NoError(t, apipb.RegisterSpaceServiceHandlerServer(ctx, mux, apipb.UnimplementedSpaceServiceServer{}))
+	require.NoError(t, apipb.RegisterAttachmentServiceHandlerServer(ctx, mux, apipb.UnimplementedAttachmentServiceServer{}))
+	require.NoError(t, apipb.RegisterAIServiceHandlerServer(ctx, mux, apipb.UnimplementedAIServiceServer{}))
+	require.NoError(t, apipb.RegisterIdentityProviderServiceHandlerServer(ctx, mux, apipb.UnimplementedIdentityProviderServiceServer{}))
+
+	var spec struct {
+		Paths map[string]map[string]struct {
+			OperationID string `yaml:"operationId"`
+		} `yaml:"paths"`
+	}
+	require.NoError(t, yaml.Unmarshal(memosproto.OpenAPIYAML(), &spec))
+	require.NotEmpty(t, spec.Paths)
+
+	// The generator renders instance/settings/{setting} as /api/instance/{instance}/*,
+	// which no client can call. Fixing it needs a different resource pattern;
+	// remove an entry once its path is correct.
+	knownBroken := map[string]bool{
+		"InstanceService_GetInstanceSetting":    true,
+		"InstanceService_UpdateInstanceSetting": true,
+	}
+
+	parameter := regexp.MustCompile(`\{[^}]+\}`)
+	for path, operations := range spec.Paths {
+		for method, operation := range operations {
+			if knownBroken[operation.OperationID] {
+				continue
+			}
+			service, rpc, ok := strings.Cut(operation.OperationID, "_")
+			require.True(t, ok, "operationId %q", operation.OperationID)
+
+			matched = ""
+			request := httptest.NewRequest(strings.ToUpper(method), parameter.ReplaceAllString(path, "sample"), nil)
+			mux.ServeHTTP(httptest.NewRecorder(), request)
+			assert.Equal(t, "/"+apiPackage+"."+service+"/"+rpc, matched, "%s %s", strings.ToUpper(method), path)
+		}
+	}
 }
 
 func resolveThroughGateway(

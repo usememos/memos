@@ -1852,7 +1852,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/ListUserStats", runtime.WithHTTPPathPattern("/api/{parent=users/-}/stats"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/ListUserStats", runtime.WithHTTPPathPattern("/api/{parent=users/*}/stats"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2523,7 +2523,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/ListUserStats", runtime.WithHTTPPathPattern("/api/{parent=users/-}/stats"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/ListUserStats", runtime.WithHTTPPathPattern("/api/{parent=users/*}/stats"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2940,7 +2940,7 @@ var (
 	pattern_UserService_ListUserSettings_0            = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 2, 5, 2, 2, 3}, []string{"api", "users", "parent", "settings"}, ""))
 	pattern_UserService_GetUserSetting_0              = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 2, 2, 1, 0, 4, 4, 5, 3}, []string{"api", "users", "settings", "name"}, ""))
 	pattern_UserService_UpdateUserSetting_0           = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 2, 2, 1, 0, 4, 4, 5, 3}, []string{"api", "users", "settings", "user_setting.name"}, ""))
-	pattern_UserService_ListUserStats_0               = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 4, 2, 5, 3, 2, 4}, []string{"api", "users", "-", "parent", "stats"}, ""))
+	pattern_UserService_ListUserStats_0               = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 2, 5, 2, 2, 3}, []string{"api", "users", "parent", "stats"}, ""))
 	pattern_UserService_GetUserStats_0                = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 2, 5, 2}, []string{"api", "users", "name"}, "getStats"))
 	pattern_UserService_ListMemoViews_0               = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 2, 5, 2, 2, 3}, []string{"api", "users", "parent", "views"}, ""))
 	pattern_UserService_GetMemoView_0                 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 2, 2, 1, 0, 4, 4, 5, 3}, []string{"api", "users", "views", "name"}, ""))

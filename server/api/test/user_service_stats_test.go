@@ -509,17 +509,35 @@ func TestGetUserStats_AttachmentStorage(t *testing.T) {
 	require.Zero(t, *stats.AttachmentStorageBytes)
 }
 
-func TestListUserStatsRequiresAllUsersParent(t *testing.T) {
+func TestListUserStatsParent(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
 
-	user, err := ts.CreateRegularUser(ctx, "stats-parent")
+	alice, err := ts.CreateRegularUser(ctx, "stats-alice")
 	require.NoError(t, err)
-	userCtx := ts.CreateUserContext(ctx, user.ID)
-
-	for _, parent := range []string{"", "users/stats-parent"} {
-		_, err := ts.Service.ListUserStats(userCtx, &apipb.ListUserStatsRequest{Parent: parent})
-		require.Equal(t, codes.InvalidArgument, status.Code(err), parent)
+	bob, err := ts.CreateRegularUser(ctx, "stats-bob")
+	require.NoError(t, err)
+	for _, user := range []*store.User{alice, bob} {
+		_, err := ts.Service.CreateMemo(ts.CreateUserContext(ctx, user.ID), &apipb.CreateMemoRequest{
+			Memo: &apipb.Memo{Content: "public memo", Visibility: apipb.Visibility_PUBLIC},
+		})
+		require.NoError(t, err)
 	}
+	aliceCtx := ts.CreateUserContext(ctx, alice.ID)
+
+	all, err := ts.Service.ListUserStats(aliceCtx, &apipb.ListUserStatsRequest{Parent: "users/-"})
+	require.NoError(t, err)
+	require.Len(t, all.UserStats, 2)
+
+	one, err := ts.Service.ListUserStats(aliceCtx, &apipb.ListUserStatsRequest{Parent: "users/stats-bob"})
+	require.NoError(t, err)
+	require.Len(t, one.UserStats, 1)
+	require.Equal(t, "users/stats-bob/stats", one.UserStats[0].Name)
+
+	_, err = ts.Service.ListUserStats(aliceCtx, &apipb.ListUserStatsRequest{Parent: "users/missing"})
+	require.Equal(t, codes.NotFound, status.Code(err))
+
+	_, err = ts.Service.ListUserStats(aliceCtx, &apipb.ListUserStatsRequest{})
+	require.Equal(t, codes.InvalidArgument, status.Code(err))
 }

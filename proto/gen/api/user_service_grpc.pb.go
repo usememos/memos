@@ -91,7 +91,8 @@ type UserServiceClient interface {
 	// only the GENERAL and TAGS settings can be updated.
 	UpdateUserSetting(ctx context.Context, in *UpdateUserSettingRequest, opts ...grpc.CallOption) (*UserSetting, error)
 	// ListUserStats returns memo statistics for every user who created at least
-	// one matching memo the caller can read. The parent must be users/-.
+	// one matching memo the caller can read. Use the parent users/- for all
+	// users, or users/{user} for one user.
 	ListUserStats(ctx context.Context, in *ListUserStatsRequest, opts ...grpc.CallOption) (*ListUserStatsResponse, error)
 	// GetUserStats returns memo statistics for one user, counting the user's
 	// memos that the caller can read.
@@ -543,7 +544,8 @@ type UserServiceServer interface {
 	// only the GENERAL and TAGS settings can be updated.
 	UpdateUserSetting(context.Context, *UpdateUserSettingRequest) (*UserSetting, error)
 	// ListUserStats returns memo statistics for every user who created at least
-	// one matching memo the caller can read. The parent must be users/-.
+	// one matching memo the caller can read. Use the parent users/- for all
+	// users, or users/{user} for one user.
 	ListUserStats(context.Context, *ListUserStatsRequest) (*ListUserStatsResponse, error)
 	// GetUserStats returns memo statistics for one user, counting the user's
 	// memos that the caller can read.

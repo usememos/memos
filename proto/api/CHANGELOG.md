@@ -40,8 +40,9 @@ Add entries under a `## Unreleased` heading. After the release ships, rename it 
     `ListMemoReactions`, and `UpsertMemoReaction` take `parent` instead of `name` (REST path variable
     `{parent=memos/*}`). `ListMemoCommentsResponse.memos` is now `comments`. The nested `MemoRelation.Memo` type is
     now `MemoRelation.MemoRef`. The `MemoShare` resource singular/plural is now `memoShare`/`memoShares`.
-  - `UserService.ListAllUserStats` is now `ListUserStats`. It requires `parent: "users/-"` (REST
-    `GET /api/users/-/stats` instead of `GET /api/users:stats`), and the response field `stats` is now `user_stats`.
+  - `UserService.ListAllUserStats` is now `ListUserStats`. It requires a `parent`: `users/-` for all users (REST
+    `GET /api/users/-/stats` instead of `GET /api/users:stats`) or `users/{user}` for one user. The response field
+    `stats` is now `user_stats`.
   - `BatchGetUsersRequest.usernames` is now `names` and takes resource names (`users/{user}`), not bare usernames.
   - `PersonalAccessToken.created_at`, `expires_at`, and `last_used_at` are now `create_time`, `expire_time`, and
     `last_use_time`.

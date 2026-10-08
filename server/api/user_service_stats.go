@@ -54,11 +54,22 @@ func (s *APIService) listUsernamesByID(ctx context.Context, userIDs []int32) (ma
 }
 
 func (s *APIService) ListUserStats(ctx context.Context, request *apipb.ListUserStatsRequest) (*apipb.ListUserStatsResponse, error) {
-	if allUsers := BuildUserName("-"); request.Parent != allUsers {
-		return nil, status.Errorf(codes.InvalidArgument, "parent must be %q", allUsers)
+	// users/- lists every user; users/{user} narrows the list to one creator.
+	var creatorID *int32
+	if request.Parent != BuildUserName("-") {
+		user, err := ResolveUserByName(ctx, s.Store, request.Parent)
+		if err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid parent: %v", err)
+		}
+		if user == nil {
+			return nil, status.Errorf(codes.NotFound, "user not found")
+		}
+		creatorID = &user.ID
 	}
+
 	rowStatus := convertStateToStore(request.State)
 	memoFind := &store.FindMemo{
+		CreatorID: creatorID,
 		// Exclude comments by default.
 		ExcludeComments: true,
 		ExcludeContent:  true,
@@ -79,7 +90,7 @@ func (s *APIService) ListUserStats(ctx context.Context, request *apipb.ListUserS
 
 	if request.State == apipb.State_ARCHIVED {
 		// Archived memos are only visible to their creator.
-		if currentUser == nil {
+		if currentUser == nil || (creatorID != nil && *creatorID != currentUser.ID) {
 			return &apipb.ListUserStatsResponse{}, nil
 		}
 		memoFind.CreatorID = &currentUser.ID

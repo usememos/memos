@@ -157,7 +157,8 @@ type UserServiceClient interface {
 	// only the GENERAL and TAGS settings can be updated.
 	UpdateUserSetting(context.Context, *connect.Request[api.UpdateUserSettingRequest]) (*connect.Response[api.UserSetting], error)
 	// ListUserStats returns memo statistics for every user who created at least
-	// one matching memo the caller can read. The parent must be users/-.
+	// one matching memo the caller can read. Use the parent users/- for all
+	// users, or users/{user} for one user.
 	ListUserStats(context.Context, *connect.Request[api.ListUserStatsRequest]) (*connect.Response[api.ListUserStatsResponse], error)
 	// GetUserStats returns memo statistics for one user, counting the user's
 	// memos that the caller can read.
@@ -679,7 +680,8 @@ type UserServiceHandler interface {
 	// only the GENERAL and TAGS settings can be updated.
 	UpdateUserSetting(context.Context, *connect.Request[api.UpdateUserSettingRequest]) (*connect.Response[api.UserSetting], error)
 	// ListUserStats returns memo statistics for every user who created at least
-	// one matching memo the caller can read. The parent must be users/-.
+	// one matching memo the caller can read. Use the parent users/- for all
+	// users, or users/{user} for one user.
 	ListUserStats(context.Context, *connect.Request[api.ListUserStatsRequest]) (*connect.Response[api.ListUserStatsResponse], error)
 	// GetUserStats returns memo statistics for one user, counting the user's
 	// memos that the caller can read.

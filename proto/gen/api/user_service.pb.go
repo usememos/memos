@@ -1435,9 +1435,9 @@ func (x *UserStats) GetAttachmentStorageBytes() int64 {
 // Request message for UserService.ListUserStats.
 type ListUserStatsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The collection to list statistics across. Only users/- (all
-	// users) is supported.
-	// Format: users/-
+	// Required. The users to list statistics for: users/- for all users, or
+	// users/{user} for one user.
+	// Format: users/{user}
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. A CEL expression selecting the memos to count. Uses the same
 	// filter syntax as ListMemos.
@@ -5156,7 +5156,7 @@ const file_api_user_service_proto_rawDesc = "" +
 	"\x10ListUserSettings\x12\".memos.api.ListUserSettingsRequest\x1a#.memos.api.ListUserSettingsResponse\"/\xdaA\x06parent\x82\xd3\xe4\x93\x02 \x12\x1e/api/{parent=users/*}/settings\x12y\n" +
 	"\x0eGetUserSetting\x12 .memos.api.GetUserSettingRequest\x1a\x16.memos.api.UserSetting\"-\xdaA\x04name\x82\xd3\xe4\x93\x02 \x12\x1e/api/{name=users/*/settings/*}\x12\xae\x01\n" +
 	"\x11UpdateUserSetting\x12#.memos.api.UpdateUserSettingRequest\x1a\x16.memos.api.UserSetting\"\\\xdaA\x18user_setting,update_mask\x82\xd3\xe4\x93\x02;:\fuser_setting2+/api/{user_setting.name=users/*/settings/*}\x12\x80\x01\n" +
-	"\rListUserStats\x12\x1f.memos.api.ListUserStatsRequest\x1a .memos.api.ListUserStatsResponse\",\xdaA\x06parent\x82\xd3\xe4\x93\x02\x1d\x12\x1b/api/{parent=users/-}/stats\x12q\n" +
+	"\rListUserStats\x12\x1f.memos.api.ListUserStatsRequest\x1a .memos.api.ListUserStatsResponse\",\xdaA\x06parent\x82\xd3\xe4\x93\x02\x1d\x12\x1b/api/{parent=users/*}/stats\x12q\n" +
 	"\fGetUserStats\x12\x1e.memos.api.GetUserStatsRequest\x1a\x14.memos.api.UserStats\"+\xdaA\x04name\x82\xd3\xe4\x93\x02\x1e\x12\x1c/api/{name=users/*}:getStats\x12\x80\x01\n" +
 	"\rListMemoViews\x12\x1f.memos.api.ListMemoViewsRequest\x1a .memos.api.ListMemoViewsResponse\",\xdaA\x06parent\x82\xd3\xe4\x93\x02\x1d\x12\x1b/api/{parent=users/*}/views\x12m\n" +
 	"\vGetMemoView\x12\x1d.memos.api.GetMemoViewRequest\x1a\x13.memos.api.MemoView\"*\xdaA\x04name\x82\xd3\xe4\x93\x02\x1d\x12\x1b/api/{name=users/*/views/*}\x12\x8a\x01\n" +

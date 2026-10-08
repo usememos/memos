@@ -93,9 +93,10 @@ service UserService {
   }
 
   // ListUserStats returns memo statistics for every user who created at least
-  // one matching memo the caller can read. The parent must be users/-.
+  // one matching memo the caller can read. Use the parent users/- for all
+  // users, or users/{user} for one user.
   rpc ListUserStats(ListUserStatsRequest) returns (ListUserStatsResponse) {
-    option (google.api.http) = {get: "/api/{parent=users/-}/stats"};
+    option (google.api.http) = {get: "/api/{parent=users/*}/stats"};
     option (google.api.method_signature) = "parent";
   }
 
@@ -639,9 +640,9 @@ message UserStats {
 
 // Request message for UserService.ListUserStats.
 message ListUserStatsRequest {
-  // Required. The collection to list statistics across. Only users/- (all
-  // users) is supported.
-  // Format: users/-
+  // Required. The users to list statistics for: users/- for all users, or
+  // users/{user} for one user.
+  // Format: users/{user}
   string parent = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {child_type: "memos.api/UserStats"}
