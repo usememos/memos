@@ -7,7 +7,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { memoKeys } from "@/hooks/useMemoQueries";
 import MemoDetail from "@/pages/MemoDetail";
-import { type Memo, MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
+import { type Memo, MemoSchema } from "@/types/proto/api/memo_service_pb";
 
 const state = vi.hoisted(() => ({
   currentUser: undefined as { name: string } | undefined,
@@ -47,7 +47,7 @@ describe("memo detail access recovery", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     state.currentUser = undefined;
-    state.listMemoComments.mockResolvedValue({ memos: [], nextPageToken: "" });
+    state.listMemoComments.mockResolvedValue({ comments: [], nextPageToken: "" });
   });
 
   it.each(["fresh", "stale"])("revalidates a %s cached denial before showing a restored memo", async (freshness) => {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { hoistMemoToFront } from "@/hooks/useMemoSorting";
-import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
+import type { Memo } from "@/types/proto/api/memo_service_pb";
 
 const memo = (name: string) => ({ name }) as Memo;
 

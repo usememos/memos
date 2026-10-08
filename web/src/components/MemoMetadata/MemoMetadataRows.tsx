@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useNearViewport } from "@/hooks/useNearViewport";
-import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
-import type { Location, MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
+import type { Attachment } from "@/types/proto/api/attachment_service_pb";
+import type { Location, MemoRelation } from "@/types/proto/api/memo_service_pb";
 import { AttachmentRows } from "./Attachment/AttachmentListView";
 import LocationDisplayView from "./Location/LocationDisplayView";
 import { METADATA_ROW_LIST_CLASSES } from "./MetadataSection";

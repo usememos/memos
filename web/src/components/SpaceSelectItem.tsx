@@ -1,7 +1,7 @@
 import SpaceMark from "@/components/SpaceMark";
 import { SelectItem } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import type { Space_Icon } from "@/types/proto/api/v1/space_service_pb";
+import type { Space_Icon } from "@/types/proto/api/space_service_pb";
 
 interface Props {
   value: string;

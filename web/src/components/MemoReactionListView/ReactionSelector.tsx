@@ -3,7 +3,7 @@ import { type ReactElement, useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useInstance } from "@/contexts/InstanceContext";
 import { cn } from "@/lib/utils";
-import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
+import type { Memo } from "@/types/proto/api/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { useReactionActions } from "./hooks";
 import { REACTION_ADD_CLASSES } from "./ReactionView";

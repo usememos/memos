@@ -17,7 +17,7 @@ import (
 	"github.com/usememos/memos/internal/clientip"
 	"github.com/usememos/memos/internal/profile"
 	storepb "github.com/usememos/memos/proto/gen/store"
-	apiv1 "github.com/usememos/memos/server/api/v1"
+	"github.com/usememos/memos/server/api"
 	"github.com/usememos/memos/server/fileserver"
 	"github.com/usememos/memos/server/frontend"
 	"github.com/usememos/memos/server/mcp"
@@ -41,9 +41,9 @@ type Server struct {
 	Profile *profile.Profile
 	Store   *store.Store
 
-	echoServer   *echo.Echo
-	httpServer   *http.Server
-	apiV1Service *apiv1.APIV1Service
+	echoServer *echo.Echo
+	httpServer *http.Server
+	apiService *api.APIService
 }
 
 func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store) (*Server, error) {
@@ -83,8 +83,8 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	// Serve frontend static files.
 	frontend.NewFrontendService(profile, store).Serve(ctx, echoServer)
 
-	apiV1Service := apiv1.NewAPIV1Service(s.Secret, profile, store)
-	s.apiV1Service = apiV1Service
+	apiService := api.NewAPIService(s.Secret, profile, store)
+	s.apiService = apiService
 
 	// Register HTTP file server routes BEFORE gRPC-Gateway to ensure proper range request handling for Safari.
 	// This uses native HTTP serving (http.ServeContent) instead of gRPC for video/audio files.
@@ -92,7 +92,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	fileServerService.RegisterRoutes(echoServer)
 
 	// Register gRPC gateway as api v1 (includes SSE endpoint on CORS-enabled group).
-	if err := apiV1Service.RegisterGateway(ctx, echoServer); err != nil {
+	if err := apiService.RegisterGateway(ctx, echoServer); err != nil {
 		return nil, errors.Wrap(err, "failed to register gRPC gateway")
 	}
 
@@ -149,7 +149,7 @@ func (s *Server) Shutdown(ctx context.Context) {
 
 	s.closeLongLivedConnections()
 	s.shutdownHTTPServer(ctx)
-	s.apiV1Service.CloseUploads()
+	s.apiService.CloseUploads()
 
 	// Close database connection.
 	if err := s.Store.Close(); err != nil {
@@ -161,7 +161,7 @@ func (s *Server) Shutdown(ctx context.Context) {
 
 func (s *Server) closeLongLivedConnections() {
 	// Long-lived SSE requests do not finish on their own during http.Server.Shutdown.
-	s.apiV1Service.SSEHub.Close()
+	s.apiService.SSEHub.Close()
 }
 
 func (s *Server) shutdownHTTPServer(ctx context.Context) {

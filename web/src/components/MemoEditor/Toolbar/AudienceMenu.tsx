@@ -16,7 +16,7 @@ import VisibilityIcon from "@/components/VisibilityIcon";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useSpaces } from "@/hooks/useSpaceQueries";
 import { extractSpaceUidFromName, getDuplicateSpaceTitles } from "@/lib/space-display";
-import type { Space_Icon } from "@/types/proto/api/v1/space_service_pb";
+import type { Space_Icon } from "@/types/proto/api/space_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { getAssignableVisibilityOptions, getVisibilityOption } from "@/utils/memo";
 import type { AudienceMenuProps } from "../types";

@@ -4,7 +4,7 @@ import type { Components } from "react-markdown";
 import ReactMarkdown from "react-markdown";
 import { buildRehypePlugins, buildRemarkPlugins } from "@/components/MemoContent/pipeline";
 import { isMentionElement, isTagElement, isTaskListItemElement } from "@/types/markdown";
-import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
+import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import { lazyWithReload } from "@/utils/lazy";
 import { resolveManagedAttachmentImageSource } from "@/utils/managed-attachment";
 import { CodeBlock } from "./CodeBlock";

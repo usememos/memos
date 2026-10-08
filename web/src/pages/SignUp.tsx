@@ -18,7 +18,7 @@ import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { ERROR_REASON_CHALLENGE_REQUIRED, handleError, hasErrorReason } from "@/lib/error";
 import { ROUTES } from "@/router/routes";
-import { User_Role, UserSchema } from "@/types/proto/api/v1/user_service_pb";
+import { User_Role, UserSchema } from "@/types/proto/api/user_service_pb";
 import { AUTH_REDIRECT_PARAM, appendSearchParams, getSafeRedirectPath } from "@/utils/auth-redirect";
 import { useTranslate } from "@/utils/i18n";
 
@@ -78,7 +78,7 @@ const SignUp = () => {
       );
       // Store access token from login response
       if (response.accessToken) {
-        setAccessToken(response.accessToken, response.accessTokenExpiresAt ? timestampDate(response.accessTokenExpiresAt) : undefined);
+        setAccessToken(response.accessToken, response.accessTokenExpireTime ? timestampDate(response.accessTokenExpireTime) : undefined);
       }
       // Refresh auth context to load the current user
       await initAuth();

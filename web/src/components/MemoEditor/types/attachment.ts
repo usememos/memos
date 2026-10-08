@@ -1,5 +1,5 @@
-import type { Attachment, MediaMetadata, MotionMedia } from "@/types/proto/api/v1/attachment_service_pb";
-import { MotionMediaFamily, MotionMediaRole } from "@/types/proto/api/v1/attachment_service_pb";
+import type { Attachment, MediaMetadata, MotionMedia } from "@/types/proto/api/attachment_service_pb";
+import { MotionMediaFamily, MotionMediaRole } from "@/types/proto/api/attachment_service_pb";
 import { getAttachmentThumbnailUrl, getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
 import { buildAttachmentVisualItems } from "@/utils/media-item";
 

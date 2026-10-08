@@ -1,0 +1,532 @@
+syntax = "proto3";
+
+package memos.api;
+
+import "api/user_service.proto";
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+import "google/type/color.proto";
+
+option go_package = "gen/api";
+
+// InstanceService exposes the instance profile, instance-wide settings and usage statistics.
+service InstanceService {
+  // GetInstanceProfile gets the instance profile. Available without authentication, including on a private instance.
+  rpc GetInstanceProfile(GetInstanceProfileRequest) returns (InstanceProfile) {
+    option (google.api.http) = {get: "/api/instance/profile"};
+  }
+
+  // GetInstanceSetting gets an instance setting. Available without authentication, except STORAGE and NOTIFICATION,
+  // which are admin only, and AI, which requires a signed-in user and hides transcription defaults from non-admins.
+  rpc GetInstanceSetting(GetInstanceSettingRequest) returns (InstanceSetting) {
+    option (google.api.http) = {get: "/api/{name=instance/settings/*}"};
+    option (google.api.method_signature) = "name";
+  }
+
+  // BatchGetInstanceSettings gets up to 100 instance settings in request order, with the same access rules as
+  // GetInstanceSetting. The call fails if any setting cannot be returned.
+  rpc BatchGetInstanceSettings(BatchGetInstanceSettingsRequest) returns (BatchGetInstanceSettingsResponse) {
+    option (google.api.http) = {
+      post: "/api/instance/settings:batchGet"
+      body: "*"
+    };
+  }
+
+  // UpdateInstanceSetting replaces an instance setting. Admin only. Settings configured by the deployment cannot be
+  // updated. Empty write-only credentials keep the stored values.
+  rpc UpdateInstanceSetting(UpdateInstanceSettingRequest) returns (InstanceSetting) {
+    option (google.api.http) = {
+      patch: "/api/{instance_setting.name=instance/settings/*}"
+      body: "instance_setting"
+    };
+    option (google.api.method_signature) = "instance_setting,update_mask";
+  }
+
+  // TestInstanceEmailSetting sends a test email with the provided or stored SMTP settings. Admin only.
+  rpc TestInstanceEmailSetting(TestInstanceEmailSettingRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/instance/settings/notification:testEmail"
+      body: "*"
+    };
+  }
+
+  // GetInstanceStats gets resource usage statistics for the instance. Admin only. Results are cached for 60 seconds.
+  rpc GetInstanceStats(GetInstanceStatsRequest) returns (InstanceStats) {
+    option (google.api.http) = {get: "/api/instance/stats"};
+  }
+}
+
+// InstanceAccessMode controls whether unauthenticated users may access instance content.
+enum InstanceAccessMode {
+  INSTANCE_ACCESS_MODE_UNSPECIFIED = 0;
+  // Unauthenticated users may only reach the endpoints needed to sign in, register and open share links.
+  // This is the default.
+  INSTANCE_ACCESS_MODE_PRIVATE = 1;
+  // Unauthenticated users may read public content.
+  INSTANCE_ACCESS_MODE_PUBLIC = 2;
+}
+
+// InstanceProfile is the basic information about the instance.
+message InstanceProfile {
+  // The version of the running server.
+  string version = 1;
+
+  // The build commit of the running server.
+  string commit = 2;
+
+  // Whether the instance runs in demo mode.
+  bool demo = 3;
+
+  // The configured URL of the instance.
+  string instance_url = 4;
+
+  // Whether unauthenticated users may access instance content.
+  InstanceAccessMode access_mode = 5;
+
+  // Whether the instance has no users yet and requires initial setup (creating the first admin account).
+  // Unlike a null admin, this stays false once any user exists, so an instance that has lost its admins is not
+  // mistaken for a fresh install.
+  bool needs_setup = 6;
+
+  // The first administrator of the instance, for display purposes.
+  // May be null on an instance that has lost all admins; use needs_setup to determine whether initial setup is
+  // required.
+  User admin = 7;
+
+  // The proof-of-humanity challenge required on signup and password sign-in.
+  // Absent when none is configured, which is the case on every self-hosted instance.
+  Challenge challenge = 8;
+
+  // Challenge describes a proof-of-humanity challenge widget.
+  message Challenge {
+    // The challenge provider, which selects the widget the web app renders.
+    string provider = 1;
+
+    // The provider's public site key for the widget.
+    string site_key = 2;
+  }
+}
+
+// Request message for InstanceService.GetInstanceProfile.
+message GetInstanceProfileRequest {}
+
+// InstanceSetting is one group of instance-wide settings, selected by its key.
+message InstanceSetting {
+  option (google.api.resource) = {
+    type: "memos.api/InstanceSetting"
+    pattern: "instance/settings/{setting}"
+    singular: "instanceSetting"
+    plural: "instanceSettings"
+  };
+
+  // Identifier. The resource name of the instance setting. {setting} is a Key value, such as GENERAL.
+  // Format: instance/settings/{setting}
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+
+  // The setting value. The set field matches the key in name.
+  oneof value {
+    // The value of the GENERAL setting.
+    GeneralSetting general_setting = 2;
+    // The value of the STORAGE setting.
+    StorageSetting storage_setting = 3;
+    // The value of the MEMO_RELATED setting.
+    MemoRelatedSetting memo_related_setting = 4;
+    // The value of the TAGS setting.
+    TagsSetting tags_setting = 5;
+    // The value of the NOTIFICATION setting.
+    NotificationSetting notification_setting = 6;
+    // The value of the AI setting.
+    AISetting ai_setting = 7;
+    // The value of the ACCESS setting.
+    AccessSetting access_setting = 8;
+  }
+
+  // Key identifies an instance setting.
+  enum Key {
+    KEY_UNSPECIFIED = 0;
+    // General settings.
+    GENERAL = 1;
+    // Attachment storage settings.
+    STORAGE = 2;
+    // Memo-related settings.
+    MEMO_RELATED = 3;
+    // Tag metadata.
+    TAGS = 4;
+    // Notification transport settings.
+    NOTIFICATION = 5;
+    // AI provider settings.
+    AI = 6;
+    // Instance access policy settings.
+    ACCESS = 7;
+  }
+
+  // StorageType is the backend of a configured storage.
+  enum StorageType {
+    STORAGE_TYPE_UNSPECIFIED = 0;
+    // Stores attachment content in the application database.
+    DATABASE = 1;
+    // Stores attachment content on the local filesystem.
+    LOCAL = 2;
+    // Stores attachment content in an S3-compatible object store.
+    S3 = 3;
+  }
+
+  // AIProviderType is the provider implementation type.
+  enum AIProviderType {
+    AI_PROVIDER_TYPE_UNSPECIFIED = 0;
+    // OpenAI API. The endpoint defaults to https://api.openai.com/v1.
+    OPENAI = 1;
+    // Google Gemini API. The endpoint defaults to https://generativelanguage.googleapis.com/v1beta.
+    GEMINI = 2;
+  }
+
+  // GeneralSetting is the general instance configuration.
+  message GeneralSetting {
+    // Branding shown in the web app.
+    CustomProfile custom_profile = 1;
+
+    // Whether user self-registration is disabled.
+    bool disallow_user_registration = 2;
+
+    // Whether password authentication is disabled.
+    bool disallow_password_auth = 3;
+
+    // Whether users are prevented from changing their username.
+    bool disallow_change_username = 4;
+
+    // Whether users are prevented from changing their nickname.
+    bool disallow_change_nickname = 5;
+
+    // The first day of the week as an offset from Sunday.
+    // 0: Sunday, 1: Monday, 2: Tuesday, 3: Wednesday, 4: Thursday, 5: Friday, 6: Saturday.
+    // Default is Sunday.
+    int32 week_start_day_offset = 6;
+
+    // Custom CSS injected into the web app.
+    string additional_style = 7;
+
+    // Custom JavaScript injected into the web app.
+    string additional_script = 8;
+
+    // CustomProfile is the instance branding.
+    message CustomProfile {
+      // The instance title.
+      string title = 1;
+
+      // The instance description.
+      string description = 2;
+
+      // The URL of the instance logo.
+      string logo_url = 3;
+    }
+  }
+
+  // StorageSetting is the attachment storage configuration.
+  message StorageSetting {
+    // Configured storage instances, including inactive instances still referenced by attachments.
+    repeated Storage storages = 1;
+
+    // The ID of the storage used for new attachments.
+    string default_storage_id = 2;
+
+    // The template of attachment file paths.
+    // Default is assets/{timestamp}_{uuid}_{filename}.
+    string filepath_template = 3;
+
+    // The maximum upload size in megabytes. Default is 30.
+    int64 upload_size_limit_mb = 4;
+
+    // Legacy compatibility field. New clients use default_storage_id.
+    StorageType storage_type = 5;
+
+    // Legacy compatibility field. New clients use storages.
+    S3Config s3_config = 6;
+
+    // StorageType is the legacy storage type, retained for compatibility with existing clients.
+    enum StorageType {
+      STORAGE_TYPE_UNSPECIFIED = 0;
+      // Database storage.
+      DATABASE = 1;
+      // Local filesystem storage.
+      LOCAL = 2;
+      // S3 storage.
+      S3 = 3;
+    }
+
+    // S3Config is the legacy S3 configuration, retained for compatibility with existing clients.
+    // Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/
+    message S3Config {
+      // The S3 endpoint URL.
+      string endpoint = 1;
+
+      // The S3 region.
+      string region = 2;
+
+      // The S3 bucket.
+      string bucket = 3;
+
+      // The S3 access key ID.
+      string access_key_id = 4;
+
+      // Input only. The S3 access key secret. Never returned; an empty value keeps the stored secret.
+      string access_key_secret = 5 [(google.api.field_behavior) = INPUT_ONLY];
+
+      // Whether to use path-style addressing instead of virtual-hosted-style.
+      bool use_path_style = 6;
+
+      // Whether to skip TLS certificate verification when connecting to the S3 endpoint.
+      // Only enable this for trusted endpoints that use a self-signed certificate; it removes protection against
+      // man-in-the-middle attacks.
+      bool insecure_skip_tls_verify = 7;
+    }
+  }
+
+  // Storage is a configured attachment storage instance.
+  message Storage {
+    // The stable identifier referenced by attachments.
+    string id = 1;
+
+    // The human-readable storage name.
+    string name = 2;
+
+    // The storage backend.
+    StorageType type = 3;
+
+    // The backend-specific configuration.
+    oneof config {
+      // The configuration of an S3 storage.
+      S3Config s3_config = 4;
+    }
+
+    // S3Config is the configuration of an S3-compatible object store.
+    // Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/
+    message S3Config {
+      // The S3 endpoint URL.
+      string endpoint = 1;
+
+      // The S3 region.
+      string region = 2;
+
+      // The S3 bucket.
+      string bucket = 3;
+
+      // The S3 access key ID.
+      string access_key_id = 4;
+
+      // Input only. The S3 access key secret. Never returned; an empty value keeps the stored secret.
+      string access_key_secret = 5 [(google.api.field_behavior) = INPUT_ONLY];
+
+      // Whether to use path-style addressing instead of virtual-hosted-style.
+      bool use_path_style = 6;
+
+      // Whether to skip TLS certificate verification when connecting to the S3 endpoint.
+      // Only enable this for trusted endpoints that use a self-signed certificate; it removes protection against
+      // man-in-the-middle attacks.
+      bool insecure_skip_tls_verify = 7;
+    }
+  }
+
+  // MemoRelatedSetting is the memo-related instance configuration.
+  message MemoRelatedSetting {
+    // The maximum memo content length in bytes. Default and minimum is 8192.
+    int32 content_length_limit = 1;
+
+    // The reactions users can choose from. Defaults to a built-in emoji set when empty.
+    repeated string reactions = 2;
+
+    // Whether double-clicking a memo opens it for editing.
+    bool enable_double_click_edit = 3;
+  }
+
+  // TagsSetting is the instance-wide tag metadata configuration.
+  // Active tag metadata is stored in per-user tag settings. This message remains for backward compatibility with
+  // existing clients and migrations.
+  message TagsSetting {
+    // Map of tag name pattern to tag metadata.
+    // Each key is treated as an anchored regular expression (^pattern$), so a single entry like "project/.*" matches
+    // all tags under that prefix. Exact tag names are also valid.
+    map<string, TagMetadata> tags = 1;
+  }
+
+  // TagMetadata is the display metadata for a tag.
+  message TagMetadata {
+    // The background color of the tag label. When unset, the default tag color is used.
+    google.type.Color background_color = 1;
+
+    // Whether memos with this tag have their content blurred.
+    bool blur_content = 2;
+  }
+
+  // NotificationSetting is the notification transport configuration.
+  message NotificationSetting {
+    // The email delivery configuration.
+    EmailSetting email = 1;
+
+    // EmailSetting is the SMTP configuration for notification emails.
+    message EmailSetting {
+      // Whether email notifications are enabled.
+      bool enabled = 1;
+
+      // The SMTP server host.
+      string smtp_host = 2;
+
+      // The SMTP server port.
+      int32 smtp_port = 3;
+
+      // The SMTP username.
+      string smtp_username = 4;
+
+      // Input only. The SMTP password. Never returned. An empty value keeps the stored password, unless the host,
+      // port, username or encryption settings change.
+      string smtp_password = 5 [(google.api.field_behavior) = INPUT_ONLY];
+
+      // Whether to use STARTTLS.
+      bool use_tls = 6;
+
+      // Whether to use implicit SSL/TLS.
+      bool use_ssl = 7;
+
+      // The sender email address.
+      string from_email = 8;
+
+      // The sender display name.
+      string from_name = 9;
+
+      // The Reply-To email address.
+      string reply_to = 10;
+    }
+  }
+
+  // AISetting is the AI provider configuration.
+  message AISetting {
+    // The AI provider configurations available instance-wide.
+    repeated AIProviderConfig providers = 1;
+
+    // The speech-to-text feature configuration.
+    // When unset or transcription.provider_id is empty, transcription is disabled. An update that omits it keeps the
+    // stored configuration.
+    TranscriptionConfig transcription = 2;
+  }
+
+  // AIProviderConfig is one callable AI provider connection.
+  message AIProviderConfig {
+    // The provider ID. Generated when empty on update.
+    string id = 1;
+
+    // The provider display title.
+    string title = 2;
+
+    // The provider implementation type.
+    AIProviderType type = 3;
+
+    // The provider API endpoint. Defaults to the provider's public endpoint when empty.
+    string endpoint = 4;
+
+    // Input only. The provider API key. Never returned; an empty value keeps the stored key.
+    string api_key = 5 [(google.api.field_behavior) = INPUT_ONLY];
+
+    // Output only. Whether an API key is stored for this provider.
+    bool api_key_set = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+    // Output only. A masked hint of the stored API key.
+    string api_key_hint = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
+  }
+
+  // TranscriptionConfig is the speech-to-text feature configuration.
+  message TranscriptionConfig {
+    // The ID of the provider used for transcription; must reference an entry in AISetting.providers.
+    // Empty means transcription is disabled.
+    string provider_id = 1;
+
+    // The provider-specific model identifier. Hidden from non-admins.
+    // Empty falls back to the engine default (whisper-1 for OPENAI providers, gemini-2.5-flash for GEMINI providers).
+    string model = 2;
+
+    // The default ISO 639-1 language hint sent to the provider. Hidden from non-admins.
+    // Empty lets the provider auto-detect.
+    string language = 3;
+
+    // A default spelling and vocabulary hint passed to the provider. Hidden from non-admins.
+    string prompt = 4;
+  }
+
+  // AccessSetting is the instance access policy.
+  message AccessSetting {
+    // Whether unauthenticated users may access instance content. Must be PRIVATE or PUBLIC on update.
+    InstanceAccessMode access_mode = 1;
+  }
+}
+
+// Request message for InstanceService.GetInstanceSetting.
+message GetInstanceSettingRequest {
+  // Required. The resource name of the instance setting.
+  // Format: instance/settings/{setting}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api/InstanceSetting"}
+  ];
+}
+
+// Request message for InstanceService.BatchGetInstanceSettings.
+message BatchGetInstanceSettingsRequest {
+  // Required. The resource names of the instance settings. At most 100.
+  // Format: instance/settings/{setting}
+  repeated string names = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api/InstanceSetting"}
+  ];
+}
+
+// Response message for InstanceService.BatchGetInstanceSettings.
+message BatchGetInstanceSettingsResponse {
+  // The instance settings, in the same order as the requested names.
+  repeated InstanceSetting instance_settings = 1;
+}
+
+// Request message for InstanceService.UpdateInstanceSetting.
+message UpdateInstanceSettingRequest {
+  // Required. The instance setting, which replaces the stored setting.
+  InstanceSetting instance_setting = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. The list of fields to update. Currently ignored; the whole setting is replaced.
+  google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Request message for InstanceService.TestInstanceEmailSetting.
+message TestInstanceEmailSettingRequest {
+  // Optional. The SMTP settings to test. If omitted, the stored notification email setting is used. An empty
+  // password reuses the stored password when the connection settings are unchanged.
+  InstanceSetting.NotificationSetting.EmailSetting email = 1 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The recipient email address. If omitted, the current user's email address is used.
+  string recipient_email = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// InstanceStats is a snapshot of the instance's resource usage.
+message InstanceStats {
+  // The database size statistics.
+  DatabaseStats database = 1;
+
+  // The recursive size of the data directory in bytes. -1 if unavailable.
+  int64 local_storage_bytes = 2;
+
+  // The time the snapshot was generated on the server.
+  google.protobuf.Timestamp generated_time = 3;
+
+  // DatabaseStats is the database size statistics.
+  message DatabaseStats {
+    // The database driver: "sqlite", "mysql" or "postgres".
+    string driver = 1;
+
+    // The database size in bytes. -1 if unavailable.
+    int64 size_bytes = 2;
+  }
+}
+
+// Request message for InstanceService.GetInstanceStats.
+message GetInstanceStatsRequest {}

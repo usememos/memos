@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { buildMemoFilter } from "@/hooks/useMemoFilters";
 import { combineCELFilters } from "@/lib/cel-filter";
 import { getMemoViewId, isMemoCollectionRoute, isMemoScopeRoute, resolveMemoScope } from "@/lib/memo-views";
-import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
+import { Visibility } from "@/types/proto/api/memo_service_pb";
 
 describe("memo scopes", () => {
   it("resolves collection and detail routes", () => {

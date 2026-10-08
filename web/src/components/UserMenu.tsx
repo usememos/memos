@@ -29,7 +29,7 @@ import { useNotifications, useUpdateUserGeneralSetting } from "@/hooks/useUserQu
 import { locales } from "@/i18n";
 import { cn } from "@/lib/utils";
 import { Routes } from "@/router";
-import { UserNotification_Status } from "@/types/proto/api/v1/user_service_pb";
+import { UserNotification_Status } from "@/types/proto/api/user_service_pb";
 import { getLocaleDisplayName, getLocaleWithFallback, loadLocale, useTranslate } from "@/utils/i18n";
 import { getThemeWithFallback, loadTheme, THEME_OPTIONS } from "@/utils/theme";
 

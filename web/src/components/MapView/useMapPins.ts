@@ -5,7 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useUsersByUsernames } from "@/hooks/useUserQueries";
 import { extractUsernameFromName } from "@/lib/resource-names";
 import { isMemoBlurred } from "@/lib/tag";
-import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
+import type { Memo } from "@/types/proto/api/memo_service_pb";
 import { type MapPin, pinFace } from "./model";
 
 /**

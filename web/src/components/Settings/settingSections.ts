@@ -32,7 +32,7 @@ import SSOSection from "@/components/Settings/SSOSection";
 import StorageSection from "@/components/Settings/StorageSection";
 import TagsSection from "@/components/Settings/TagsSection";
 import WebhookSection from "@/components/Settings/WebhookSection";
-import { InstanceSetting_Key } from "@/types/proto/api/v1/instance_service_pb";
+import { InstanceSetting_Key } from "@/types/proto/api/instance_service_pb";
 
 export type SettingSectionKey =
   | "my-account"

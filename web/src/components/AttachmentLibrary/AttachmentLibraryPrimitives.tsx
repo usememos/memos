@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { extractUsernameFromName } from "@/lib/resource-names";
 import { cn } from "@/lib/utils";
 import { getCreatorHomePath } from "@/router/routes";
-import type { User } from "@/types/proto/api/v1/user_service_pb";
+import type { User } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 interface AttachmentMetadataLineProps {

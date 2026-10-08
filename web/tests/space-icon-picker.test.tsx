@@ -6,7 +6,7 @@ import SpaceIcon from "@/components/SpaceIcon";
 import SpaceIconPicker from "@/components/SpaceIconPicker";
 import SpaceMark from "@/components/SpaceMark";
 import { SPACE_EMOJI } from "@/lib/space-emoji";
-import { type Space_Icon, Space_IconSchema } from "@/types/proto/api/v1/space_service_pb";
+import { type Space_Icon, Space_IconSchema } from "@/types/proto/api/space_service_pb";
 import { FULLY_QUALIFIED_EMOJI } from "@/utils/tag-unicode-data";
 
 vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));

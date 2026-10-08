@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import InstanceSection from "@/components/Settings/InstanceSection";
-import { InstanceAccessMode } from "@/types/proto/api/v1/instance_service_pb";
+import { InstanceAccessMode } from "@/types/proto/api/instance_service_pb";
 
 const instance = vi.hoisted(() => ({
   accessSetting: { accessMode: 1 },

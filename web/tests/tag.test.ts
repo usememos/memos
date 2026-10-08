@@ -1,7 +1,7 @@
 import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
 import { describe, expect, it } from "vitest";
 import { findTagMetadata, mergeTagCounts } from "@/lib/tag";
-import { UserSetting_TagMetadataSchema, UserSetting_TagsSettingSchema, UserStatsSchema } from "@/types/proto/api/v1/user_service_pb";
+import { UserSetting_TagMetadataSchema, UserSetting_TagsSettingSchema, UserStatsSchema } from "@/types/proto/api/user_service_pb";
 
 describe("exact tag keys", () => {
   it("aggregates names that collide with Object prototype properties", () => {
@@ -24,11 +24,11 @@ describe("exact tag keys", () => {
       ["constructor", 2],
       ["__proto__", 3],
     ]);
-    const encoded = toBinary(UserStatsSchema, create(UserStatsSchema, { tagCount: source }));
+    const encoded = toBinary(UserStatsSchema, create(UserStatsSchema, { tagCounts: source }));
     const decoded = fromBinary(UserStatsSchema, encoded);
-    const counts = mergeTagCounts(decoded.tagCount);
+    const counts = mergeTagCounts(decoded.tagCounts);
 
-    expect(Object.keys(decoded.tagCount).sort()).toEqual(["__proto__", "constructor", "normal"]);
+    expect(Object.keys(decoded.tagCounts).sort()).toEqual(["__proto__", "constructor", "normal"]);
     expect(counts.normal).toBe(1);
     expect(counts.constructor).toBe(2);
     expect(counts.__proto__).toBe(3);

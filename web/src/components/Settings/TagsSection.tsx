@@ -18,7 +18,7 @@ import {
   UserSetting_TagMetadataSchema,
   UserSetting_TagsSettingSchema,
   UserSettingSchema,
-} from "@/types/proto/api/v1/user_service_pb";
+} from "@/types/proto/api/user_service_pb";
 import { ColorSchema } from "@/types/proto/google/type/color_pb";
 import { useTranslate } from "@/utils/i18n";
 import SettingGroup from "./SettingGroup";

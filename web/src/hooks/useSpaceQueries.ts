@@ -14,7 +14,7 @@ import {
   type SpaceMember,
   SpaceMemberSchema,
   SpaceSchema,
-} from "@/types/proto/api/v1/space_service_pb";
+} from "@/types/proto/api/space_service_pb";
 
 const SPACE_LIST_PAGE_SIZE = 1000;
 const SPACE_LIST_STALE_TIME = 1000 * 60 * 5;

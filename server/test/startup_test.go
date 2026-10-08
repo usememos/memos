@@ -1,6 +1,6 @@
 // Package test contains black-box startup smoke tests for the full server.
 //
-// Every other server test constructs apiv1.APIV1Service directly, which skips
+// Every other server test constructs api.APIService directly, which skips
 // server.NewServer entirely. That leaves route registration, gRPC-gateway
 // wiring, MCP/fileserver/frontend mounting, CORS and the secret bootstrap
 // covered only by the Docker release script. These tests boot the real server
@@ -176,7 +176,7 @@ func (i *instance) do(t *testing.T, method, path, token string, body any) (int, 
 func (i *instance) createAdmin(t *testing.T) {
 	t.Helper()
 
-	status, body := i.do(t, http.MethodPost, "/api/v1/users", "", map[string]any{
+	status, body := i.do(t, http.MethodPost, "/api/users", "", map[string]any{
 		"username": testAdminUsername,
 		"password": testAdminPassword,
 		"email":    "startup-admin@example.test",
@@ -196,7 +196,7 @@ func (i *instance) createAdmin(t *testing.T) {
 func (i *instance) signIn(t *testing.T) string {
 	t.Helper()
 
-	status, body := i.do(t, http.MethodPost, "/api/v1/auth/signin", "", map[string]any{
+	status, body := i.do(t, http.MethodPost, "/api/auth/signin", "", map[string]any{
 		"passwordCredentials": map[string]any{
 			"username": testAdminUsername,
 			"password": testAdminPassword,
@@ -216,7 +216,7 @@ func (i *instance) signIn(t *testing.T) string {
 func (i *instance) createMemo(t *testing.T, token, memoID, content string) {
 	t.Helper()
 
-	status, body := i.do(t, http.MethodPost, "/api/v1/memos?memoId="+memoID, token, map[string]any{
+	status, body := i.do(t, http.MethodPost, "/api/memos?memoId="+memoID, token, map[string]any{
 		"content":    content,
 		"visibility": "PRIVATE",
 	})
@@ -235,7 +235,7 @@ func (i *instance) createMemo(t *testing.T, token, memoID, content string) {
 func (i *instance) requireMemo(t *testing.T, token, memoID, content string) {
 	t.Helper()
 
-	status, body := i.do(t, http.MethodGet, "/api/v1/memos/"+memoID, token, nil)
+	status, body := i.do(t, http.MethodGet, "/api/memos/"+memoID, token, nil)
 	require.Equal(t, http.StatusOK, status, "reading memo %s should succeed: %s", memoID, body)
 
 	var fetched struct {
@@ -276,13 +276,13 @@ func TestStartupServesEveryRegisteredRouter(t *testing.T) {
 	})
 
 	t.Run("api gateway", func(t *testing.T) {
-		status, body := inst.do(t, http.MethodGet, "/api/v1/instance/profile", "", nil)
+		status, body := inst.do(t, http.MethodGet, "/api/instance/profile", "", nil)
 		require.Equal(t, http.StatusOK, status, "instance profile should be public: %s", body)
 		require.Contains(t, string(body), "version")
 	})
 
 	t.Run("api gateway form post fallback", func(t *testing.T) {
-		req, err := http.NewRequestWithContext(ctx, http.MethodPost, inst.baseURL+"/api/v1/instance/profile", strings.NewReader(""))
+		req, err := http.NewRequestWithContext(ctx, http.MethodPost, inst.baseURL+"/api/instance/profile", strings.NewReader(""))
 		require.NoError(t, err)
 		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
@@ -360,16 +360,16 @@ func TestStartupPrivateInstance(t *testing.T) {
 	require.Equal(t, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE, accessSetting.AccessMode)
 
 	// Bootstrap methods stay reachable so the sign-in page can render.
-	status, body := inst.do(t, http.MethodGet, "/api/v1/instance/profile", "", nil)
+	status, body := inst.do(t, http.MethodGet, "/api/instance/profile", "", nil)
 	require.Equal(t, http.StatusOK, status, "instance profile is an auth bootstrap method: %s", body)
 
 	// Protected procedures are refused for anonymous callers.
-	status, _ = inst.do(t, http.MethodGet, "/api/v1/users", "", nil)
+	status, _ = inst.do(t, http.MethodGet, "/api/users", "", nil)
 	require.Equal(t, http.StatusUnauthorized, status, "anonymous ListUsers should be refused")
 
 	// ListMemos is public but not a bootstrap method, so the private-instance
 	// policy must refuse anonymous callers. The Connect transport enforces this.
-	status, _ = inst.do(t, http.MethodPost, "/memos.api.v1.MemoService/ListMemos", "", map[string]any{})
+	status, _ = inst.do(t, http.MethodPost, "/memos.api.MemoService/ListMemos", "", map[string]any{})
 	require.Equal(t, http.StatusUnauthorized, status,
 		"anonymous ListMemos over Connect should be refused on a private instance")
 
@@ -399,7 +399,7 @@ func TestStartupInitializesLegacyAccessOnce(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC, accessSetting.AccessMode)
 
-		status, body := second.do(t, http.MethodGet, "/api/v1/memos", "", nil)
+		status, body := second.do(t, http.MethodGet, "/api/memos", "", nil)
 		require.Equal(t, http.StatusOK, status, "persisted PUBLIC mode should still allow anonymous access: %s", body)
 	})
 
@@ -416,7 +416,7 @@ func TestStartupInitializesLegacyAccessOnce(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE, accessSetting.AccessMode)
 
-		status, _ := second.do(t, http.MethodGet, "/api/v1/memos", "", nil)
+		status, _ := second.do(t, http.MethodGet, "/api/memos", "", nil)
 		require.Equal(t, http.StatusUnauthorized, status, "canonical URL must not reopen a persisted PRIVATE instance")
 	})
 }
@@ -439,16 +439,16 @@ func TestStartupPrivateInstanceGatewayPolicy(t *testing.T) {
 	token := inst.signIn(t)
 	inst.createMemo(t, token, "startup-private-public", "public on a private instance")
 	status, body := inst.do(t, http.MethodPatch,
-		"/api/v1/memos/startup-private-public?updateMask=visibility", token, map[string]any{
+		"/api/memos/startup-private-public?updateMask=visibility", token, map[string]any{
 			"visibility": "PUBLIC",
 		})
 	require.Equal(t, http.StatusOK, status, "should be able to make the memo public: %s", body)
 
-	status, _ = inst.do(t, http.MethodGet, "/api/v1/memos", "", nil)
+	status, _ = inst.do(t, http.MethodGet, "/api/memos", "", nil)
 	require.Equal(t, http.StatusUnauthorized, status,
 		"anonymous ListMemos over REST should be refused on a private instance")
 
-	status, _ = inst.do(t, http.MethodGet, "/api/v1/memos/startup-private-public", "", nil)
+	status, _ = inst.do(t, http.MethodGet, "/api/memos/startup-private-public", "", nil)
 	require.Equal(t, http.StatusUnauthorized, status,
 		"anonymous GetMemo over REST should be refused on a private instance")
 }
@@ -470,7 +470,7 @@ func TestStartupGatewayOmitsNullMessageFields(t *testing.T) {
 	// A 1x1 GIF: small enough to inline, real enough for the type sniffing the
 	// attachment service runs on upload.
 	const onePixelGIF = "R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
-	status, body := inst.do(t, http.MethodPost, "/api/v1/attachments", token, map[string]any{
+	status, body := inst.do(t, http.MethodPost, "/api/attachments", token, map[string]any{
 		"filename": "pixel.gif",
 		"type":     "image/gif",
 		"content":  onePixelGIF,
@@ -483,7 +483,7 @@ func TestStartupGatewayOmitsNullMessageFields(t *testing.T) {
 	require.NoError(t, json.Unmarshal(body, &created))
 	require.NotEmpty(t, created.Name, "the created attachment should carry a name: %s", body)
 
-	status, body = inst.do(t, http.MethodGet, "/api/v1/"+created.Name, token, nil)
+	status, body = inst.do(t, http.MethodGet, "/api/"+created.Name, token, nil)
 	require.Equal(t, http.StatusOK, status, "reading the attachment should succeed: %s", body)
 
 	fetched := map[string]any{}
@@ -504,7 +504,7 @@ func TestStartupDemoMode(t *testing.T) {
 		instanceURL: "http://localhost",
 	})
 
-	status, body := inst.do(t, http.MethodGet, "/api/v1/memos", "", nil)
+	status, body := inst.do(t, http.MethodGet, "/api/memos", "", nil)
 	require.Equal(t, http.StatusOK, status, "demo instances serve memos anonymously: %s", body)
 
 	var listed struct {

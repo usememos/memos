@@ -12,8 +12,8 @@ import { useMemoFilters, useMemoSorting } from "@/hooks";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoSuggestions } from "@/hooks/useMemoSuggestions";
 import { spaceScopedCacheKey } from "@/lib/resource-names";
-import { State } from "@/types/proto/api/v1/common_pb";
-import { Memo } from "@/types/proto/api/v1/memo_service_pb";
+import { State } from "@/types/proto/api/common_pb";
+import { Memo } from "@/types/proto/api/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 const Home = () => {

@@ -1,6 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import { describe, expect, it } from "vitest";
-import { AttachmentSchema, MediaMetadataSchema, VideoMetadataSchema } from "@/types/proto/api/v1/attachment_service_pb";
+import { AttachmentSchema, MediaMetadataSchema, VideoMetadataSchema } from "@/types/proto/api/attachment_service_pb";
 import { buildMediaMetadataDisplay, formatExposureTime, formatMediaDuration } from "@/utils/media-metadata";
 
 describe("media metadata display formatting", () => {

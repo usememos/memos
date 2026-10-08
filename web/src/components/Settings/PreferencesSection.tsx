@@ -4,7 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUpdateUserGeneralSetting } from "@/hooks/useUserQueries";
-import { UserSetting_GeneralSetting, UserSetting_GeneralSettingSchema } from "@/types/proto/api/v1/user_service_pb";
+import { UserSetting_GeneralSetting, UserSetting_GeneralSettingSchema } from "@/types/proto/api/user_service_pb";
 import { loadLocale, useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString, DEFAULT_VISIBILITY_OPTIONS } from "@/utils/memo";
 import { loadTheme } from "@/utils/theme";

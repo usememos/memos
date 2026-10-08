@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { absolutifyLink } from "@/lib/browser";
 import { handleError } from "@/lib/error";
 import { ROUTES } from "@/router/routes";
-import { IdentityProvider, IdentityProvider_Type } from "@/types/proto/api/v1/idp_service_pb";
+import { IdentityProvider, IdentityProvider_Type } from "@/types/proto/api/idp_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { storeOAuthState } from "@/utils/oauth";
 

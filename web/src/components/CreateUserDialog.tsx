@@ -10,7 +10,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { userServiceClient } from "@/connect";
 import useLoading from "@/hooks/useLoading";
 import { handleError } from "@/lib/error";
-import { User, User_Role, UserSchema } from "@/types/proto/api/v1/user_service_pb";
+import { User, User_Role, UserSchema } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 interface Props {

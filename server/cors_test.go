@@ -82,12 +82,12 @@ func TestAllowedCORSOrigin(t *testing.T) {
 func TestCORSMiddleware(t *testing.T) {
 	e := echo.New()
 	e.Use(newCORSMiddleware(&profile.Profile{InstanceURL: "https://memos.example"}))
-	e.POST("/api/v1/test", func(c *echo.Context) error {
+	e.POST("/api/test", func(c *echo.Context) error {
 		return c.NoContent(http.StatusOK)
 	})
 
 	t.Run("trusted origin gets credentialed access", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodOptions, "/api/v1/test", nil)
+		req := httptest.NewRequest(http.MethodOptions, "/api/test", nil)
 		req.Header.Set("Origin", "https://memos.example")
 		req.Header.Set("Access-Control-Request-Method", http.MethodPost)
 		rec := httptest.NewRecorder()
@@ -106,7 +106,7 @@ func TestCORSMiddleware(t *testing.T) {
 	})
 
 	t.Run("arbitrary origin is reflected without credentials", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodOptions, "/api/v1/test", nil)
+		req := httptest.NewRequest(http.MethodOptions, "/api/test", nil)
 		req.Header.Set("Origin", "https://evil.example")
 		req.Header.Set("Access-Control-Request-Method", http.MethodPost)
 		rec := httptest.NewRecorder()
@@ -127,7 +127,7 @@ func TestCORSMiddleware(t *testing.T) {
 	})
 
 	t.Run("arbitrary origin may send Authorization header", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodOptions, "/api/v1/test", nil)
+		req := httptest.NewRequest(http.MethodOptions, "/api/test", nil)
 		req.Header.Set("Origin", "https://app.third-party.example")
 		req.Header.Set("Access-Control-Request-Method", http.MethodPost)
 		req.Header.Set("Access-Control-Request-Headers", "Authorization")
@@ -141,7 +141,7 @@ func TestCORSMiddleware(t *testing.T) {
 	})
 
 	t.Run("null origin is not reflected", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodOptions, "/api/v1/test", nil)
+		req := httptest.NewRequest(http.MethodOptions, "/api/test", nil)
 		req.Header.Set("Origin", "null")
 		req.Header.Set("Access-Control-Request-Method", http.MethodPost)
 		rec := httptest.NewRecorder()

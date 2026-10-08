@@ -52,10 +52,10 @@ func TestBuildToolFromOperationIncludesSchemasAndMetadata(t *testing.T) {
 	require.Equal(t, "Memo List Memos", tool.Title)
 	require.Equal(t, "MemoService_ListMemos", operation.OperationID)
 	require.Equal(t, "GET", operation.Method)
-	require.Equal(t, "/api/v1/memos", operation.Path)
+	require.Equal(t, "/api/memos", operation.Path)
 	require.Equal(t, "MemoService_ListMemos", tool.Meta["operationId"])
 	require.Equal(t, "GET", tool.Meta["method"])
-	require.Equal(t, "/api/v1/memos", tool.Meta["path"])
+	require.Equal(t, "/api/memos", tool.Meta["path"])
 	require.NotEmpty(t, tool.Description)
 	require.NotNil(t, tool.InputSchema)
 	require.NotNil(t, tool.OutputSchema)
@@ -383,7 +383,7 @@ func TestBuildCuratedToolsRejectsDuplicateToolNames(t *testing.T) {
 			OperationID:    operationID,
 			Description:    operationID,
 			Method:         "GET",
-			Path:           "/api/v1/test",
+			Path:           "/api/test",
 			ResponseSchema: okSchema(),
 		}
 	}
@@ -457,7 +457,7 @@ func TestBuildToolFromOperationExposesSpaceTools(t *testing.T) {
 	tool, operation := buildToolFromOperation(registry["SpaceService_ListSpaces"])
 	require.Equal(t, "space_list_spaces", tool.Name)
 	require.Equal(t, "GET", operation.Method)
-	require.Equal(t, "/api/v1/spaces", operation.Path)
+	require.Equal(t, "/api/spaces", operation.Path)
 	require.True(t, tool.Annotations.ReadOnlyHint)
 
 	tool, operation = buildToolFromOperation(registry["SpaceService_CreateSpace"])

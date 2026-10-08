@@ -1,7 +1,7 @@
 import { ConnectError } from "@connectrpc/connect";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
-import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
+import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { transcriptionService } from "../services";
 

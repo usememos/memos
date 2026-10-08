@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import AuthPageLayout from "@/components/AuthPageLayout";
-import { InstanceAccessMode } from "@/types/proto/api/v1/instance_service_pb";
+import { InstanceAccessMode } from "@/types/proto/api/instance_service_pb";
 
 const instance = vi.hoisted(() => ({ instanceUrl: "https://notes.example.com", accessMode: 1 }));
 

@@ -3,16 +3,16 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import MemoDetailSidebar from "@/components/MemoDetailSidebar/MemoDetailSidebar";
-import { AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
-import { State } from "@/types/proto/api/v1/common_pb";
+import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
+import { State } from "@/types/proto/api/common_pb";
 import {
   LocationSchema,
-  MemoRelation_MemoSchema,
+  MemoRelation_MemoRefSchema,
   MemoRelation_Type,
   MemoRelationSchema,
   MemoSchema,
   Visibility,
-} from "@/types/proto/api/v1/memo_service_pb";
+} from "@/types/proto/api/memo_service_pb";
 
 const copyToClipboard = vi.hoisted(() => vi.fn());
 const currentUserState = vi.hoisted(() => ({ value: { name: "users/alice" } as { name: string } | undefined }));
@@ -36,8 +36,8 @@ const renderSidebar = (sidebar: React.ReactNode, route = "/memos/detail") =>
 const createIncomingReference = (memoName: string, sourceName = "memos/incoming", snippet = "Incoming backlink") =>
   create(MemoRelationSchema, {
     type: MemoRelation_Type.REFERENCE,
-    memo: create(MemoRelation_MemoSchema, { name: sourceName, snippet }),
-    relatedMemo: create(MemoRelation_MemoSchema, { name: memoName }),
+    memo: create(MemoRelation_MemoRefSchema, { name: sourceName, snippet }),
+    relatedMemo: create(MemoRelation_MemoRefSchema, { name: memoName }),
   });
 
 describe("MemoDetailSidebar", () => {
@@ -73,8 +73,8 @@ describe("MemoDetailSidebar", () => {
       relations: [
         create(MemoRelationSchema, {
           type: MemoRelation_Type.REFERENCE,
-          memo: create(MemoRelation_MemoSchema, { name: "memos/detail" }),
-          relatedMemo: create(MemoRelation_MemoSchema, { name: "memos/outgoing", snippet: "Outgoing reference" }),
+          memo: create(MemoRelation_MemoRefSchema, { name: "memos/detail" }),
+          relatedMemo: create(MemoRelation_MemoRefSchema, { name: "memos/outgoing", snippet: "Outgoing reference" }),
         }),
         createIncomingReference("memos/detail"),
       ],

@@ -8,7 +8,7 @@ import type {
   UserSetting_GeneralSetting,
   UserSetting_TagsSetting,
   UserSetting_WebhooksSetting,
-} from "@/types/proto/api/v1/user_service_pb";
+} from "@/types/proto/api/user_service_pb";
 
 interface AuthState {
   currentUser: User | undefined;
@@ -58,7 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   const fetchUserSettings = useCallback(async (userName: string) => {
-    const { settings } = await userServiceClient.listUserSettings({ parent: userName });
+    const { userSettings: settings } = await userServiceClient.listUserSettings({ parent: userName });
     const generalSetting = settings.find((s) => s.value.case === "generalSetting");
     const webhooksSetting = settings.find((s) => s.value.case === "webhooksSetting");
     const tagsSetting = settings.find((s) => s.value.case === "tagsSetting");

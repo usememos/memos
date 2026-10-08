@@ -1,6 +1,6 @@
 import CustomIcon from "@/components/CustomIcon";
 import { cn } from "@/lib/utils";
-import type { Space_Icon } from "@/types/proto/api/v1/space_service_pb";
+import type { Space_Icon } from "@/types/proto/api/space_service_pb";
 
 // Emoji need an explicit font size as well as a box, unlike SVG icons.
 const ICON_SIZE = {

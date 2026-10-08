@@ -13,7 +13,7 @@ import {
   InstanceSetting_MemoRelatedSetting,
   InstanceSetting_MemoRelatedSettingSchema,
   InstanceSettingSchema,
-} from "@/types/proto/api/v1/instance_service_pb";
+} from "@/types/proto/api/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import SettingGroup from "./SettingGroup";
 import { SettingList, SettingListItem, SettingPanel } from "./SettingList";

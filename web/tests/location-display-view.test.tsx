@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import LocationDisplayView from "@/components/MemoMetadata/Location/LocationDisplayView";
-import type { Location } from "@/types/proto/api/v1/memo_service_pb";
+import type { Location } from "@/types/proto/api/memo_service_pb";
 
 vi.mock("@/components/map/LazyLocationPicker", () => ({
   LazyLocationPicker: () => <div data-testid="location-picker" />,

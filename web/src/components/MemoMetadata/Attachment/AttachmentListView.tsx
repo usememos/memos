@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import MotionPhotoPreview from "@/components/MotionPhotoPreview";
 import VideoPoster from "@/components/VideoPoster";
 import { cn } from "@/lib/utils";
-import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
+import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import { getAttachmentUrl } from "@/utils/attachment";
 import type { AttachmentVisualItem, PreviewMediaItem } from "@/utils/media-item";
 import { buildAttachmentVisualItems } from "@/utils/media-item";

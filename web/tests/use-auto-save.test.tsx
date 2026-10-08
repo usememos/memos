@@ -4,8 +4,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useAutoSave } from "@/components/MemoEditor/hooks/useAutoSave";
 import { cacheService } from "@/components/MemoEditor/services/cacheService";
 import { EditorProvider, useEditorContext } from "@/components/MemoEditor/state";
-import { AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
-import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
+import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
+import { Visibility } from "@/types/proto/api/memo_service_pb";
 
 // Probe surfaces the store's dispatch/actions plus the autosave API so tests can
 // drive content changes the way the editor does and assert on cache writes.

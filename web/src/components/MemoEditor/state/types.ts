@@ -1,6 +1,6 @@
-import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
-import type { Location, MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
-import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
+import type { Attachment } from "@/types/proto/api/attachment_service_pb";
+import type { Location, MemoRelation } from "@/types/proto/api/memo_service_pb";
+import { Visibility } from "@/types/proto/api/memo_service_pb";
 import type { LocalFile } from "../types/attachment";
 
 export type LoadingKey = "saving" | "uploading" | "loading" | "transcribing";

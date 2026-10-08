@@ -3,10 +3,10 @@ import { FieldMaskSchema, timestampDate, timestampFromDate } from "@bufbuild/pro
 import { isEqual } from "lodash-es";
 import { getEditorReferenceRelations } from "@/components/MemoMetadata/Relation/relationHelpers";
 import { memoServiceClient } from "@/connect";
-import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
-import { AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
-import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
-import { MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
+import type { Attachment } from "@/types/proto/api/attachment_service_pb";
+import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
+import type { Memo } from "@/types/proto/api/memo_service_pb";
+import { MemoSchema } from "@/types/proto/api/memo_service_pb";
 import type { EditorState } from "../state";
 import { uploadService } from "./uploadService";
 
@@ -127,7 +127,7 @@ export const memoService = {
 
     const memo = options.parentMemoName
       ? await memoServiceClient.createMemoComment({
-          name: options.parentMemoName,
+          parent: options.parentMemoName,
           comment: memoData,
         })
       : await memoServiceClient.createMemo({ memo: memoData });

@@ -2,11 +2,11 @@ import { LinkIcon, type LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { createMemoNavigationState } from "@/components/MemoView/navigation";
-import type { MemoRelation_Memo } from "@/types/proto/api/v1/memo_service_pb";
+import type { MemoRelation_MemoRef } from "@/types/proto/api/memo_service_pb";
 import { METADATA_ROW_CLASSES, METADATA_ROW_LABEL_CLASSES, METADATA_ROW_TEXT_CLASSES, MetadataRowIconSlot } from "../MetadataSection";
 
 interface RelationRowProps {
-  memo: MemoRelation_Memo;
+  memo: MemoRelation_MemoRef;
   parentPage?: string;
   icon?: LucideIcon;
   /**

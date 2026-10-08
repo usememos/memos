@@ -10,7 +10,7 @@ import { BasemapLayer } from "@/components/map/BasemapLayer";
 import { createMarkerIcon, MinimalAttributionControl } from "@/components/map/map-utils";
 import UserAvatar from "@/components/UserAvatar";
 import { cn } from "@/lib/utils";
-import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
+import type { Memo } from "@/types/proto/api/memo_service_pb";
 import { type MapPin, type MapPinFace, type MapViewport, revealOffset } from "./model";
 
 interface Props {

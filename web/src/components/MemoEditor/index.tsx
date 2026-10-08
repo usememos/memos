@@ -5,7 +5,7 @@ import { useInstance } from "@/contexts/InstanceContext";
 import { useLocalStorage } from "@/hooks";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { cn } from "@/lib/utils";
-import { InstanceSetting_Key } from "@/types/proto/api/v1/instance_service_pb";
+import { InstanceSetting_Key } from "@/types/proto/api/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString } from "@/utils/memo";
 import { canManageMemo } from "@/utils/user";

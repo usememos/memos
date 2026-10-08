@@ -2,8 +2,8 @@ import { timestampDate } from "@bufbuild/protobuf/wkt";
 import dayjs from "dayjs";
 import { useMemo } from "react";
 import { type MemoTimeBasis, useView } from "@/contexts/ViewContext";
-import { State } from "@/types/proto/api/v1/common_pb";
-import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
+import { State } from "@/types/proto/api/common_pb";
+import type { Memo } from "@/types/proto/api/memo_service_pb";
 
 export interface UseMemoSortingOptions {
   pinnedFirst?: boolean;

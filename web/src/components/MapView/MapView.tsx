@@ -13,7 +13,7 @@ import { useSpaceContext } from "@/contexts/SpaceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { cn } from "@/lib/utils";
-import { LocationSchema } from "@/types/proto/api/v1/memo_service_pb";
+import { LocationSchema } from "@/types/proto/api/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { fitMemos, MapCanvas } from "./MapCanvas";
 import { locationKey, type MapViewport, pointLabel, readViewport, splitLabel } from "./model";

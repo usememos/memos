@@ -25,18 +25,18 @@ describe("useInfiniteMemoComments", () => {
   it("follows nextPageToken and flattens every fetched comment page", async () => {
     listMemoComments
       .mockResolvedValueOnce({
-        memos: [{ name: "memos/comment-1" }, { name: "memos/comment-2" }],
+        comments: [{ name: "memos/comment-1" }, { name: "memos/comment-2" }],
         nextPageToken: "page-2",
       })
       .mockResolvedValueOnce({
-        memos: [{ name: "memos/comment-3" }],
+        comments: [{ name: "memos/comment-3" }],
         nextPageToken: "",
       });
 
     const { result } = renderHook(() => useInfiniteMemoComments("memos/parent", { pageSize: 2 }), { wrapper });
 
     await waitFor(() => expect(result.current.data?.map((memo) => memo.name)).toEqual(["memos/comment-1", "memos/comment-2"]));
-    expect(listMemoComments).toHaveBeenNthCalledWith(1, expect.objectContaining({ name: "memos/parent", pageSize: 2, pageToken: "" }));
+    expect(listMemoComments).toHaveBeenNthCalledWith(1, expect.objectContaining({ parent: "memos/parent", pageSize: 2, pageToken: "" }));
     expect(result.current.hasNextPage).toBe(true);
 
     await act(async () => {
@@ -48,7 +48,7 @@ describe("useInfiniteMemoComments", () => {
     );
     expect(listMemoComments).toHaveBeenNthCalledWith(
       2,
-      expect.objectContaining({ name: "memos/parent", pageSize: 2, pageToken: "page-2" }),
+      expect.objectContaining({ parent: "memos/parent", pageSize: 2, pageToken: "page-2" }),
     );
     expect(result.current.hasNextPage).toBe(false);
   });

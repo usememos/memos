@@ -8,7 +8,7 @@ import {
   MediaLocationSchema,
   MediaMetadataSchema,
   PhotoMetadataSchema,
-} from "@/types/proto/api/v1/attachment_service_pb";
+} from "@/types/proto/api/attachment_service_pb";
 
 vi.mock("@/hooks/useMediaQuery", () => ({
   __esModule: true,

@@ -4,7 +4,7 @@ import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
 import { CalendarDayCell, layoutForCellSize } from "@/components/CalendarView/CalendarDayCell";
 import type { CalendarDaySummary } from "@/components/CalendarView/dayModel";
-import { MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
+import { MemoSchema } from "@/types/proto/api/memo_service_pb";
 
 const users: Record<string, { name: string; username: string; displayName: string; avatarUrl: string }> = {
   "users/bob": { name: "users/bob", username: "bob", displayName: "Bob Martin", avatarUrl: "/bob.png" },

@@ -1,5 +1,5 @@
 import { extractIdentityProviderUidFromName } from "@/lib/resource-names";
-import { type FieldMapping, type IdentityProvider, IdentityProvider_Type, type OAuth2Config } from "@/types/proto/api/v1/idp_service_pb";
+import { type FieldMapping, type IdentityProvider, IdentityProvider_Type, type OAuth2Config } from "@/types/proto/api/idp_service_pb";
 import type { Translations } from "@/utils/i18n";
 
 type Translate = (key: Translations, params?: Record<string, unknown>) => string;

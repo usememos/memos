@@ -1,7 +1,7 @@
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import type { MemoParentStatus } from "@/components/MemoParentPlaceholder";
-import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
+import type { Memo } from "@/types/proto/api/memo_service_pb";
 
 export type AttachmentSection = "all" | "media" | "audio" | "documents" | "unused";
 export type InboxFilter = "all" | "unread" | "archived";

@@ -6,8 +6,8 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import { buildUserSettingName, userNamePrefix } from "@/lib/resource-names";
 import { mergeTagCounts } from "@/lib/tag";
 import {
-  type ListAllUserStatsRequest,
-  ListAllUserStatsRequestSchema,
+  type ListUserStatsRequest,
+  ListUserStatsRequestSchema,
   User,
   UserNotification,
   UserNotification_Status,
@@ -16,11 +16,13 @@ import {
   UserSetting_Key,
   UserSettingSchema,
   UserStats,
-} from "@/types/proto/api/v1/user_service_pb";
+} from "@/types/proto/api/user_service_pb";
 
 const BATCH_GET_USERS_LIMIT = 100;
 const USER_PROFILE_STALE_TIME = 1000 * 60 * 5;
-type ListAllUserStatsQuery = Pick<ListAllUserStatsRequest, "state" | "filter">;
+type ListUserStatsQuery = Pick<ListUserStatsRequest, "state" | "filter">;
+// ListUserStats aggregates across every user through the "users/-" wildcard parent.
+const ALL_USERS_PARENT = `${userNamePrefix}-`;
 
 // Query keys factory
 export const userKeys = {
@@ -30,7 +32,7 @@ export const userKeys = {
   stats: () => [...userKeys.all, "stats"] as const,
   userStats: (name: string, filter?: string) =>
     filter ? ([...userKeys.stats(), name, filter] as const) : ([...userKeys.stats(), name] as const),
-  allUserStats: (request: Partial<ListAllUserStatsQuery>) => [...userKeys.stats(), "all", request] as const,
+  allUserStats: (request: Partial<ListUserStatsQuery>) => [...userKeys.stats(), "all", request] as const,
   currentUser: () => [...userKeys.all, "current"] as const,
   memoViews: (parent?: string) => [...userKeys.all, "memoViews", parent] as const,
   notifications: () => [...userKeys.all, "notifications"] as const,
@@ -66,12 +68,14 @@ export function useUserStats(username?: string, options?: { enabled?: boolean; f
   });
 }
 
-export function useAllUserStats(request: Partial<ListAllUserStatsQuery> = {}, options?: { enabled?: boolean }) {
+export function useAllUserStats(request: Partial<ListUserStatsQuery> = {}, options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: userKeys.allUserStats(request),
     queryFn: async () => {
-      const { stats } = await userServiceClient.listAllUserStats(create(ListAllUserStatsRequestSchema, request));
-      return stats;
+      const { userStats } = await userServiceClient.listUserStats(
+        create(ListUserStatsRequestSchema, { ...request, parent: ALL_USERS_PARENT }),
+      );
+      return userStats;
     },
     enabled: options?.enabled ?? true,
   });
@@ -162,15 +166,15 @@ export function useTagCounts(forCurrentUser = false) {
         return userServiceClient.getUserStats({ name: currentUser.name });
       } else {
         // Fetch all user stats
-        const { stats } = await userServiceClient.listAllUserStats({});
+        const { userStats } = await userServiceClient.listUserStats({ parent: ALL_USERS_PARENT });
 
         // Aggregate tag counts from all users
-        return mergeTagCounts(...stats.map((userStats) => userStats.tagCount));
+        return mergeTagCounts(...userStats.map((stats) => stats.tagCounts));
       }
     },
     select: (data) => {
       if (forCurrentUser) {
-        return mergeTagCounts((data as UserStats).tagCount);
+        return mergeTagCounts((data as UserStats).tagCounts);
       }
       return data as Record<string, number>;
     },
@@ -218,7 +222,7 @@ export function useUserSettings(parent?: string) {
     queryKey: [...userKeys.all, "settings", parent],
     queryFn: async () => {
       if (!parent) return { settings: [] };
-      const { settings } = await userServiceClient.listUserSettings({ parent });
+      const { userSettings: settings } = await userServiceClient.listUserSettings({ parent });
       return { settings };
     },
     enabled: !!parent,
@@ -232,7 +236,7 @@ export function useUpdateUserSetting() {
   return useMutation({
     mutationFn: async ({ setting, updateMask }: { setting: UserSetting; updateMask: string[] }) => {
       const updatedSetting = await userServiceClient.updateUserSetting({
-        setting,
+        userSetting: setting,
         updateMask: create(FieldMaskSchema, { paths: updateMask }),
       });
       return updatedSetting;
@@ -280,7 +284,7 @@ export function useUpdateUserGeneralSetting(currentUserName?: string) {
       });
 
       const updatedSetting = await userServiceClient.updateUserSetting({
-        setting: userSetting,
+        userSetting,
         updateMask: create(FieldMaskSchema, { paths: updateMask }),
       });
       return updatedSetting;
@@ -350,7 +354,9 @@ export function useUsersByUsernames(usernames: string[], options?: { enabled?: b
         batches.push(missingUsernames.slice(i, i + BATCH_GET_USERS_LIMIT));
       }
 
-      const responses = await Promise.all(batches.map((batch) => userServiceClient.batchGetUsers({ usernames: batch })));
+      const responses = await Promise.all(
+        batches.map((batch) => userServiceClient.batchGetUsers({ names: batch.map((username) => `${userNamePrefix}${username}`) })),
+      );
       const users = responses.flatMap((response) => response.users);
       for (const user of users) {
         usersByUsername.set(user.username, user);
