@@ -267,7 +267,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
     setPanOffset(clampPanOffset(next, zoomScale, imageRef.current, surfaceRef.current));
   };
 
-  const handlePointerEnd = (event: React.PointerEvent<HTMLImageElement>) => {
+  const handlePointerEnd = (event: React.PointerEvent<HTMLImageElement>, cancelled = false) => {
     const pointers = pointersRef.current;
     if (!pointers.has(event.pointerId)) {
       return;
@@ -298,7 +298,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
     }
     if (pointers.size === 0) {
       const swipe = swipeRef.current;
-      if (swipe && swipe.pointerId === event.pointerId) {
+      if (!cancelled && swipe && swipe.pointerId === event.pointerId) {
         const deltaX = event.clientX - swipe.startX;
         const deltaY = event.clientY - swipe.startY;
         if (Math.abs(deltaX) > SWIPE_THRESHOLD && Math.abs(deltaX) > Math.abs(deltaY) * SWIPE_DIRECTION_RATIO) {
@@ -453,7 +453,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
                 onPointerDown={handlePointerDown}
                 onPointerMove={handlePointerMove}
                 onPointerUp={handlePointerEnd}
-                onPointerCancel={handlePointerEnd}
+                onPointerCancel={(event) => handlePointerEnd(event, true)}
                 draggable={false}
                 loading="eager"
                 decoding="async"

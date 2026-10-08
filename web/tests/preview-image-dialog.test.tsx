@@ -486,6 +486,27 @@ describe("<PreviewImageDialog>", () => {
     expect(screen.getByAltText("Preview image 1 of 2")).toBeInTheDocument();
   });
 
+  it("ignores a cancelled swipe", () => {
+    mockPreviewLayout({ width: 1200, height: 800 }, { width: 600, height: 600 });
+    render(
+      <PreviewImageDialog
+        open
+        onOpenChange={vi.fn()}
+        items={[
+          { id: "image-1", kind: "image", sourceUrl: "/image-1.jpg", posterUrl: "/image-1.jpg", filename: "image-1.jpg" },
+          { id: "image-2", kind: "image", sourceUrl: "/image-2.jpg", posterUrl: "/image-2.jpg", filename: "image-2.jpg" },
+        ]}
+      />,
+    );
+
+    const image = screen.getByAltText("Preview image 1 of 2");
+    fireEvent.pointerDown(image, { button: 0, pointerId: 1, clientX: 250, clientY: 300 });
+    fireEvent.pointerMove(image, { pointerId: 1, clientX: 150, clientY: 300 });
+    fireEvent.pointerCancel(image, { pointerId: 1, clientX: 150, clientY: 300 });
+
+    expect(screen.getByAltText("Preview image 1 of 2")).toHaveStyle({ transform: "translate3d(0px, 0px, 0) scale(1)" });
+  });
+
   it("pans a zoomed gallery instead of swiping", () => {
     mockPreviewLayout({ width: 1200, height: 800 }, { width: 600, height: 600 });
     render(
