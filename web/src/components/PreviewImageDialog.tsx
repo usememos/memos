@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight, InfoIcon, RotateCcw, X, ZoomIn, ZoomOut } from "lucide-react";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import MediaMetadataDetails from "@/components/MediaMetadataDetails";
 import MotionPhotoPreview from "@/components/MotionPhotoPreview";
 import { Button } from "@/components/ui/button";
@@ -25,12 +25,39 @@ const DOUBLE_TAP_ZOOM = 2;
 
 const clampZoom = (scale: number) => Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, scale));
 
+interface PanOffset {
+  x: number;
+  y: number;
+}
+
+const NO_PAN: PanOffset = { x: 0, y: 0 };
+
+const clampPan = (offset: number, max: number) => Math.min(max, Math.max(-max, offset));
+
+// The image is centered in the surface's content box, so each axis clamps to half of its overflow.
+const clampPanOffset = (offset: PanOffset, scale: number, image: HTMLImageElement | null, surface: HTMLDivElement | null): PanOffset => {
+  if (!image || !surface) {
+    return offset;
+  }
+  const style = window.getComputedStyle(surface);
+  const contentWidth = surface.clientWidth - (Number.parseFloat(style.paddingLeft) || 0) - (Number.parseFloat(style.paddingRight) || 0);
+  const contentHeight = surface.clientHeight - (Number.parseFloat(style.paddingTop) || 0) - (Number.parseFloat(style.paddingBottom) || 0);
+  const maxX = Math.max(0, (image.offsetWidth * scale - contentWidth) / 2);
+  const maxY = Math.max(0, (image.offsetHeight * scale - contentHeight) / 2);
+  return { x: clampPan(offset.x, maxX), y: clampPan(offset.y, maxY) };
+};
+
 function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIndex = 0 }: Props) {
   const t = useTranslate();
   const sm = useMediaQuery("sm");
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [zoomScale, setZoomScale] = useState(MIN_ZOOM);
   const [showDetails, setShowDetails] = useState(false);
+  const [panOffset, setPanOffset] = useState<PanOffset>(NO_PAN);
+  const [isPanning, setIsPanning] = useState(false);
+  const imageRef = useRef<HTMLImageElement>(null);
+  const surfaceRef = useRef<HTMLDivElement>(null);
+  const panDragRef = useRef<{ pointerId: number; startX: number; startY: number; originX: number; originY: number } | null>(null);
   const previewItems = useMemo(
     () => items ?? imgUrls.map((url) => ({ id: url, kind: "image" as const, sourceUrl: url, posterUrl: url, filename: "Image" })),
     [imgUrls, items],
@@ -74,8 +101,28 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
   }, [itemCount, open]);
 
   useEffect(() => {
+    const drag = panDragRef.current;
+    if (drag && imageRef.current?.hasPointerCapture(drag.pointerId)) {
+      imageRef.current.releasePointerCapture(drag.pointerId);
+    }
+    panDragRef.current = null;
     setZoomScale(MIN_ZOOM);
+    setPanOffset(NO_PAN);
+    setIsPanning(false);
   }, [currentItem?.id, open]);
+
+  useEffect(() => {
+    if (zoomScale === MIN_ZOOM) {
+      panDragRef.current = null;
+      setIsPanning(false);
+    }
+    setPanOffset((current) => {
+      if (zoomScale === MIN_ZOOM) {
+        return NO_PAN;
+      }
+      return clampPanOffset(current, zoomScale, imageRef.current, surfaceRef.current);
+    });
+  }, [zoomScale]);
 
   const handleClose = () => onOpenChange(false);
   const handlePrevious = () => {
@@ -98,6 +145,43 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
     }
   };
   const handleDoubleClick = () => setZoomScale((scale) => (scale === MIN_ZOOM ? DOUBLE_TAP_ZOOM : MIN_ZOOM));
+
+  const handlePointerDown = (event: React.PointerEvent<HTMLImageElement>) => {
+    if (!isZoomed || event.button !== 0) {
+      return;
+    }
+    event.preventDefault();
+    event.currentTarget.setPointerCapture(event.pointerId);
+    panDragRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      originX: panOffset.x,
+      originY: panOffset.y,
+    };
+    setIsPanning(true);
+  };
+
+  const handlePointerMove = (event: React.PointerEvent<HTMLImageElement>) => {
+    const drag = panDragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) {
+      return;
+    }
+    const next = { x: drag.originX + event.clientX - drag.startX, y: drag.originY + event.clientY - drag.startY };
+    setPanOffset(clampPanOffset(next, zoomScale, imageRef.current, surfaceRef.current));
+  };
+
+  const handlePointerEnd = (event: React.PointerEvent<HTMLImageElement>) => {
+    const drag = panDragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) {
+      return;
+    }
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+    panDragRef.current = null;
+    setIsPanning(false);
+  };
 
   if (!itemCount || !currentItem) {
     return null;
@@ -171,10 +255,11 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
         </div>
 
         <div
+          ref={surfaceRef}
           data-testid={isImagePreview ? "preview-zoom-surface" : undefined}
           className={cn(
             "flex h-full w-full items-center justify-center px-3 pb-20 pt-16 sm:px-16 sm:pb-8 sm:pt-20",
-            isImagePreview && "cursor-zoom-in",
+            isImagePreview && !isZoomed && "cursor-zoom-in",
             showDetails && "lg:pr-[26rem]",
           )}
           onWheel={handleWheel}
@@ -217,18 +302,25 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
               />
             ) : (
               <img
+                ref={imageRef}
                 src={currentItem.sourceUrl}
                 alt={`Preview image ${safeIndex + 1} of ${itemCount}`}
                 className={cn(
                   "max-h-[calc(100dvh-8rem)] max-w-[calc(100vw-1.5rem)] rounded-md object-contain select-none sm:max-h-[calc(100dvh-7rem)] sm:max-w-[calc(100vw-8rem)]",
                   showDetails && "lg:max-w-[calc(100vw-30rem)]",
+                  isZoomed && (isPanning ? "cursor-grabbing" : "cursor-grab"),
                 )}
                 style={{
-                  transform: `translate3d(0px, 0px, 0) scale(${zoomScale})`,
-                  transition: "transform 120ms ease-out",
+                  transform: `translate3d(${panOffset.x}px, ${panOffset.y}px, 0) scale(${zoomScale})`,
+                  transition: isPanning ? "none" : "transform 120ms ease-out",
                   transformOrigin: "center center",
+                  touchAction: "none",
                 }}
                 onDoubleClick={handleDoubleClick}
+                onPointerDown={handlePointerDown}
+                onPointerMove={handlePointerMove}
+                onPointerUp={handlePointerEnd}
+                onPointerCancel={handlePointerEnd}
                 draggable={false}
                 loading="eager"
                 decoding="async"
