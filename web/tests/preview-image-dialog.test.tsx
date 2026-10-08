@@ -81,6 +81,22 @@ const mockPreviewLayout = (image: { width: number; height: number }, surface: { 
   vi.spyOn(HTMLElement.prototype, "clientHeight", "get").mockReturnValue(surface.height);
 };
 
+// The pinch anchor is measured from the image's layout center, which the untransformed wrapper reports.
+const mockImageCenter = (image: HTMLElement, x: number, y: number) => {
+  const wrapper = image.parentElement as HTMLElement;
+  vi.spyOn(wrapper, "getBoundingClientRect").mockReturnValue({
+    x: x - 200,
+    y: y - 150,
+    left: x - 200,
+    top: y - 150,
+    right: x + 200,
+    bottom: y + 150,
+    width: 400,
+    height: 300,
+    toJSON: () => ({}),
+  } as DOMRect);
+};
+
 describe("<PreviewImageDialog>", () => {
   beforeEach(() => {
     // jsdom ships PointerEvent but not pointer capture: stub the capture methods.
@@ -321,13 +337,34 @@ describe("<PreviewImageDialog>", () => {
     );
 
     const image = screen.getByAltText("Preview image 1 of 1");
+    mockImageCenter(image, 300, 300);
+    fireEvent.pointerDown(image, { button: 0, pointerId: 1, clientX: 300, clientY: 300 });
+    fireEvent.pointerDown(image, { button: 0, pointerId: 2, clientX: 400, clientY: 300 });
+    fireEvent.pointerMove(image, { pointerId: 1, clientX: 250, clientY: 300 });
+    fireEvent.pointerMove(image, { pointerId: 2, clientX: 450, clientY: 300 });
+
+    expect(image).toHaveStyle({ transform: "translate3d(-50px, 0px, 0) scale(2)" });
+    expect(screen.getByText("200%")).toBeInTheDocument();
+  });
+
+  it("keeps a pinch around the image center from drifting", () => {
+    mockPreviewLayout({ width: 1200, height: 800 }, { width: 600, height: 600 });
+    render(
+      <PreviewImageDialog
+        open
+        onOpenChange={vi.fn()}
+        items={[{ id: "image-1", kind: "image", sourceUrl: "/image.jpg", posterUrl: "/image.jpg", filename: "image.jpg" }]}
+      />,
+    );
+
+    const image = screen.getByAltText("Preview image 1 of 1");
+    mockImageCenter(image, 300, 300);
     fireEvent.pointerDown(image, { button: 0, pointerId: 1, clientX: 250, clientY: 300 });
     fireEvent.pointerDown(image, { button: 0, pointerId: 2, clientX: 350, clientY: 300 });
     fireEvent.pointerMove(image, { pointerId: 1, clientX: 200, clientY: 300 });
     fireEvent.pointerMove(image, { pointerId: 2, clientX: 400, clientY: 300 });
 
-    expect(image).toHaveStyle({ transform: "translate3d(-300px, -300px, 0) scale(2)" });
-    expect(screen.getByText("200%")).toBeInTheDocument();
+    expect(image).toHaveStyle({ transform: "translate3d(0px, 0px, 0) scale(2)" });
   });
 
   it("clamps a pinch at fit zoom and drops the pan", () => {
@@ -367,16 +404,17 @@ describe("<PreviewImageDialog>", () => {
     );
 
     const image = screen.getByAltText("Preview image 1 of 1");
-    fireEvent.pointerDown(image, { button: 0, pointerId: 1, clientX: 250, clientY: 300 });
-    fireEvent.pointerDown(image, { button: 0, pointerId: 2, clientX: 350, clientY: 300 });
-    fireEvent.pointerMove(image, { pointerId: 1, clientX: 200, clientY: 300 });
-    fireEvent.pointerMove(image, { pointerId: 2, clientX: 400, clientY: 300 });
-    expect(image).toHaveStyle({ transform: "translate3d(-300px, -300px, 0) scale(2)" });
+    mockImageCenter(image, 300, 300);
+    fireEvent.pointerDown(image, { button: 0, pointerId: 1, clientX: 300, clientY: 300 });
+    fireEvent.pointerDown(image, { button: 0, pointerId: 2, clientX: 400, clientY: 300 });
+    fireEvent.pointerMove(image, { pointerId: 1, clientX: 250, clientY: 300 });
+    fireEvent.pointerMove(image, { pointerId: 2, clientX: 450, clientY: 300 });
+    expect(image).toHaveStyle({ transform: "translate3d(-50px, 0px, 0) scale(2)" });
 
-    fireEvent.pointerUp(image, { pointerId: 2, clientX: 400, clientY: 300 });
-    fireEvent.pointerMove(image, { pointerId: 1, clientX: 220, clientY: 300 });
+    fireEvent.pointerUp(image, { pointerId: 2, clientX: 450, clientY: 300 });
+    fireEvent.pointerMove(image, { pointerId: 1, clientX: 270, clientY: 300 });
 
-    expect(image).toHaveStyle({ transform: "translate3d(-280px, -300px, 0) scale(2)" });
+    expect(image).toHaveStyle({ transform: "translate3d(-30px, 0px, 0) scale(2)" });
   });
 
   it("follows the finger and swipes to the next image in a gallery", () => {

@@ -50,6 +50,8 @@ const clampPanOffset = (offset: PanOffset, scale: number, image: HTMLImageElemen
 };
 
 interface PinchGesture {
+  startCenterX: number;
+  startCenterY: number;
   startDistance: number;
   startMidpointX: number;
   startMidpointY: number;
@@ -182,10 +184,16 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
 
   const startPinch = () => {
     const [first, second] = [...pointersRef.current.values()];
+    // The untransformed wrapper shares the image's layout center, which the pan offset is measured from.
+    const rect = imageRef.current?.parentElement?.getBoundingClientRect();
+    const startCenterX = rect ? rect.left + rect.width / 2 : 0;
+    const startCenterY = rect ? rect.top + rect.height / 2 : 0;
     pinchRef.current = {
+      startCenterX,
+      startCenterY,
       startDistance: distanceBetween(first, second),
-      startMidpointX: (first.x + second.x) / 2,
-      startMidpointY: (first.y + second.y) / 2,
+      startMidpointX: (first.x + second.x) / 2 - startCenterX,
+      startMidpointY: (first.y + second.y) / 2 - startCenterY,
       startScale: zoomScale,
       startPan: panOffset,
     };
@@ -209,8 +217,8 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
     }
     // Anchor the image point under the moving midpoint as the fingers scale it.
     const ratio = nextScale / pinch.startScale;
-    const midpointX = (first.x + second.x) / 2;
-    const midpointY = (first.y + second.y) / 2;
+    const midpointX = (first.x + second.x) / 2 - pinch.startCenterX;
+    const midpointY = (first.y + second.y) / 2 - pinch.startCenterY;
     const next = {
       x: midpointX - (pinch.startMidpointX - pinch.startPan.x) * ratio,
       y: midpointY - (pinch.startMidpointY - pinch.startPan.y) * ratio,
