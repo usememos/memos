@@ -1,6 +1,7 @@
 package linkmeta
 
 import (
+	"bytes"
 	"context"
 	"io"
 	"net"
@@ -22,7 +23,8 @@ var ErrInternalIP = errors.New("internal IP addresses are not allowed")
 const (
 	defaultLinkPreviewUserAgent = "MemosBot/1.0 (+https://usememos.com)"
 
-	maxHTMLMetaBytes     = 512 * 1024
+	initialHTMLMetaBytes = 512 * 1024
+	maxHTMLMetaBytes     = 2 * 1024 * 1024
 	maxOEmbedBytes       = 128 * 1024
 	maxCacheEntries      = 1000
 	maxConcurrentFetches = 8
@@ -252,26 +254,53 @@ func (f *HTMLMetaFetcher) fetch(ctx context.Context, urlStr string) (*HTMLMeta, 
 		return nil, errors.New("not a HTML page")
 	}
 
-	document, err := html.Parse(io.LimitReader(response.Body, maxHTMLMetaBytes))
+	htmlBody, err := io.ReadAll(io.LimitReader(response.Body, initialHTMLMetaBytes))
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to parse HTML")
+		return nil, errors.Wrap(err, "failed to read HTML")
 	}
 	pageURL, err := finalResponseURL(response, urlStr)
 	if err != nil {
 		return nil, err
 	}
 
-	sources, oEmbedEndpoint := extractDocumentMetadata(document)
-	baseURL := resolveDocumentBase(pageURL, sources.baseHref)
-	var oEmbed metadataSource
-	if endpoint := resolveHTTPURL(baseURL, oEmbedEndpoint); endpoint != "" {
-		// oEmbed is optional enrichment, so its failure must not discard the
-		// metadata already extracted from the HTML document.
-		oEmbed, _ = f.fetchOEmbed(ctx, endpoint)
+	var fetchedOEmbedEndpoint string
+	var fetchedOEmbed metadataSource
+	extract := func() (*HTMLMeta, error) {
+		document, err := html.Parse(bytes.NewReader(htmlBody))
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to parse HTML")
+		}
+		sources, oEmbedEndpoint := extractDocumentMetadata(document)
+		baseURL := resolveDocumentBase(pageURL, sources.baseHref)
+		var oEmbed metadataSource
+		if endpoint := resolveHTTPURL(baseURL, oEmbedEndpoint); endpoint != "" {
+			if endpoint != fetchedOEmbedEndpoint {
+				// oEmbed is optional enrichment, so its failure must not discard
+				// metadata already extracted from the HTML document.
+				fetchedOEmbed, _ = f.fetchOEmbed(ctx, endpoint)
+				fetchedOEmbedEndpoint = endpoint
+			}
+			oEmbed = fetchedOEmbed
+		}
+		return mergeMetadata(baseURL, oEmbed, sources.openGraph, sources.twitter, sources.jsonLD, sources.standard, sources.semantic), nil
 	}
 
-	meta := mergeMetadata(baseURL, oEmbed, sources.openGraph, sources.twitter, sources.jsonLD, sources.standard, sources.semantic)
-	return meta, nil
+	meta, err := extract()
+	if err != nil || (meta.Title != "" && meta.Image != "") || len(htmlBody) < initialHTMLMetaBytes {
+		return meta, err
+	}
+
+	// Metadata can follow a large inline script. Read further only when the
+	// initial document lacks a title or image, while keeping a hard byte cap.
+	rest, err := io.ReadAll(io.LimitReader(response.Body, maxHTMLMetaBytes-int64(len(htmlBody))))
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to read HTML")
+	}
+	if len(rest) == 0 {
+		return meta, nil
+	}
+	htmlBody = append(htmlBody, rest...)
+	return extract()
 }
 
 func (f *HTMLMetaFetcher) fetchOEmbed(ctx context.Context, endpoint string) (metadataSource, error) {
