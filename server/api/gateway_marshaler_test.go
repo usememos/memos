@@ -47,7 +47,7 @@ func TestGatewayMarshalerKeepsMediaMetadataFieldNames(t *testing.T) {
 			Width:  proto.Int32(1920),
 			Height: proto.Int32(1080),
 			Details: &apipb.MediaMetadata_Video{Video: &apipb.VideoMetadata{
-				DurationSeconds: proto.Float64(12.5),
+				DurationSeconds: new(12.5),
 			}},
 		},
 	}

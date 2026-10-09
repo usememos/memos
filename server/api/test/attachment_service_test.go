@@ -714,21 +714,21 @@ func TestCreateAttachmentMediaMetadata(t *testing.T) {
 		Details: &apipb.MediaMetadata_Photo{Photo: &apipb.PhotoMetadata{
 			CaptureTime: &apipb.MediaCaptureTime{
 				LocalDateTime: "2026-08-10T14:32:18.123",
-				UtcOffset:     proto.String("+08:00"),
+				UtcOffset:     new("+08:00"),
 			},
 			Location: &apipb.MediaLocation{
-				Latitude:       proto.Float64(1.3521),
-				Longitude:      proto.Float64(103.8198),
-				AltitudeMeters: proto.Float64(18.4),
+				Latitude:       new(1.3521),
+				Longitude:      new(103.8198),
+				AltitudeMeters: new(18.4),
 			},
 			SourceExifOrientation: proto.Int32(6),
 			CameraMake:            "Apple",
 			CameraModel:           "iPhone",
 			LensModel:             "Main Camera",
-			FNumber:               proto.Float64(1.78),
-			ExposureTimeSeconds:   proto.Float64(1.0 / 120.0),
+			FNumber:               new(1.78),
+			ExposureTimeSeconds:   new(1.0 / 120.0),
 			Iso:                   proto.Int32(64),
-			FocalLengthMm:         proto.Float64(6.86),
+			FocalLengthMm:         new(6.86),
 		}},
 	}
 
@@ -785,7 +785,7 @@ func TestCreateAttachmentMediaMetadata(t *testing.T) {
 				Width:  proto.Int32(1920),
 				Height: proto.Int32(1080),
 				Details: &apipb.MediaMetadata_Video{Video: &apipb.VideoMetadata{
-					DurationSeconds: proto.Float64(12.5),
+					DurationSeconds: new(12.5),
 				}},
 			},
 		},
@@ -995,7 +995,7 @@ func TestDeleteMotionMediaGroupChecksBeyondDefaultAttachmentPage(t *testing.T) {
 		}},
 	})
 	require.NoError(t, err)
-	for i := 0; i < 100; i++ {
+	for i := range 100 {
 		attachment, err := ts.Store.CreateAttachment(ctx, &store.Attachment{
 			UID: shortuuid.New(), CreatorID: user.ID, Filename: "filler.txt", Type: "text/plain",
 		})

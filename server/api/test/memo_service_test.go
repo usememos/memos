@@ -76,7 +76,7 @@ func TestInstanceAdminIsSuperuserForNamedMemoOperations(t *testing.T) {
 	spaceMemo, err := ts.Service.CreateMemo(ownerCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{
 		Content:    "members only",
 		Visibility: apipb.Visibility_SPACE,
-		Space:      ptr("spaces/" + space.UID),
+		Space:      new("spaces/" + space.UID),
 	}})
 	require.NoError(t, err)
 
@@ -119,12 +119,12 @@ func TestInstanceAdminIsSuperuserForNamedMemoOperations(t *testing.T) {
 	})
 	require.NoError(t, err)
 	_, err = ts.Service.UpdateMemo(adminCtx, &apipb.UpdateMemoRequest{
-		Memo:       &apipb.Memo{Name: private.Name, Visibility: apipb.Visibility_SPACE, Space: ptr("spaces/" + space.UID)},
+		Memo:       &apipb.Memo{Name: private.Name, Visibility: apipb.Visibility_SPACE, Space: new("spaces/" + space.UID)},
 		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"visibility", "space"}},
 	})
 	require.NoError(t, err, "an administrator places memos in a Space they are not a member of")
 	_, err = ts.Service.UpdateMemo(adminCtx, &apipb.UpdateMemoRequest{
-		Memo:       &apipb.Memo{Name: private.Name, Space: ptr("spaces/does-not-exist")},
+		Memo:       &apipb.Memo{Name: private.Name, Space: new("spaces/does-not-exist")},
 		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"space"}},
 	})
 	require.Equal(t, codes.NotFound, status.Code(err), "structural validity still applies")
@@ -971,7 +971,7 @@ func TestListMemoCommentsPaginates(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	for i := 0; i < 3; i++ {
+	for i := range 3 {
 		_, err = ts.Service.CreateMemoComment(ownerCtx, &apipb.CreateMemoCommentRequest{
 			Parent: memo.Name,
 			Comment: &apipb.Memo{
@@ -1008,7 +1008,7 @@ func TestListMemoCommentsFiltersArchivedBeforePagination(t *testing.T) {
 	require.NoError(t, err)
 
 	comments := make([]*apipb.Memo, 0, 5)
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		comment, err := ts.Service.CreateMemoComment(ownerCtx, &apipb.CreateMemoCommentRequest{
 			Parent:  memo.Name,
 			Comment: &apipb.Memo{Content: fmt.Sprintf("comment %d", i)},
@@ -1197,7 +1197,7 @@ func TestAssignedMemoCommentListingUsesMemoLocalReadAccess(t *testing.T) {
 	contextMemo, err := ts.Service.CreateMemo(ownerCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{
 		Content:    "assigned public comment context",
 		Visibility: apipb.Visibility_PUBLIC,
-		Space:      ptr("spaces/" + space.UID),
+		Space:      new("spaces/" + space.UID),
 	}})
 	require.NoError(t, err)
 	comment, err := ts.Service.CreateMemoComment(memberCtx, &apipb.CreateMemoCommentRequest{

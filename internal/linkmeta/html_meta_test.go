@@ -432,15 +432,13 @@ func TestHTMLMetaFetcherCoalescesRequests(t *testing.T) {
 	var waitGroup sync.WaitGroup
 	errorsChannel := make(chan error, requestCount)
 	for range requestCount {
-		waitGroup.Add(1)
-		go func() {
-			defer waitGroup.Done()
+		waitGroup.Go(func() {
 			meta, err := fetcher.Get(context.Background(), "http://93.184.216.34/shared")
 			if err == nil && meta.Title != "Shared title" {
 				err = errors.New("unexpected metadata")
 			}
 			errorsChannel <- err
-		}()
+		})
 	}
 	<-started
 	close(release)
@@ -474,11 +472,9 @@ func TestHTMLMetaFetcherLimitsConcurrency(t *testing.T) {
 	const requestCount = 12
 	var waitGroup sync.WaitGroup
 	for index := range requestCount {
-		waitGroup.Add(1)
-		go func() {
-			defer waitGroup.Done()
+		waitGroup.Go(func() {
 			_, _ = fetcher.Get(context.Background(), "http://93.184.216.34/page?id="+string(rune('a'+index)))
-		}()
+		})
 	}
 	for range maxConcurrentFetches {
 		<-entered

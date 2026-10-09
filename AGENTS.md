@@ -42,6 +42,8 @@ go test -v -race ./server/...      # Server tests with race detector
 go test -v -race ./internal/...    # Internal package tests with race detector
 go test -v -run TestFoo ./core/... # Run matching Go tests in one tree
 go mod tidy -go=1.27.0             # Match CI tidy check
+go fix ./...                      # Apply Go modernization fixes
+go fix -diff ./...                 # Match CI modernization check
 golangci-lint run                  # Go lint, config: .golangci.yaml (includes depguard layering rules)
 golangci-lint run --fix            # Auto-fix lint, including goimports
 
@@ -148,8 +150,8 @@ Black-box service tests live in `server/api/test/`, unit tests next to the code.
 - Docker excludes `.git`; pass `--build-arg VERSION="$(bash scripts/release_version.sh development-version)"` and
   `--build-arg COMMIT="$(git rev-parse HEAD)"` when building locally (build frontend assets first).
 
-- Backend CI: Go 1.27.0, `go mod tidy -go=1.27.0`, golangci-lint v2.13.1, test groups `store`, `server`, `internal`, `other`
-  (`cmd`, `core`, `markdown`, `filter`, `provider`, `proto`).
+- Backend CI: Go 1.27.0, `go mod tidy -go=1.27.0`, `go fix -diff ./...`, golangci-lint v2.13.1 (including goimports), test groups
+  `store`, `server`, `internal`, `other` (`cmd`, `core`, `markdown`, `filter`, `provider`, `proto`).
 - Frontend CI: Node 24, pnpm 11.0.1, `pnpm lint`, `pnpm test`, `pnpm build`.
 - Proto CI: `buf lint` and `buf format` check.
 - Docker: `scripts/Dockerfile`, Alpine 3.21 runtime, non-root user, port 5230, multi-arch amd64/arm64/arm/v7.

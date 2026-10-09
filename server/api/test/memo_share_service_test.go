@@ -83,7 +83,7 @@ func TestDeleteMemoShare_RevalidatesSpaceWriteAuthority(t *testing.T) {
 	}, owner.ID)
 	require.NoError(t, err)
 	memo, err := ts.Service.CreateMemo(ownerCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{
-		Content: "assigned share", Visibility: apipb.Visibility_PUBLIC, Space: ptr("spaces/" + space.UID),
+		Content: "assigned share", Visibility: apipb.Visibility_PUBLIC, Space: new("spaces/" + space.UID),
 	}})
 	require.NoError(t, err)
 	share, err := ts.Service.CreateMemoShare(ownerCtx, &apipb.CreateMemoShareRequest{Parent: memo.Name, MemoShare: &apipb.MemoShare{}})
@@ -140,7 +140,7 @@ func TestDeleteMemoShare_OwnerCanRevokeLegacyAdminShare(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	share, err := ts.Store.GetMemoShare(ctx, &store.FindMemoShare{UID: ptr(shareToken)})
+	share, err := ts.Store.GetMemoShare(ctx, &store.FindMemoShare{UID: new(shareToken)})
 	require.NoError(t, err)
 	require.Nil(t, share)
 	_, err = ts.Service.GetSharedMemo(ctx, &apipb.GetSharedMemoRequest{ShareToken: shareToken})

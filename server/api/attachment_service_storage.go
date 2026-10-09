@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"strings"
 	"time"
 
@@ -226,11 +227,8 @@ func hasSameManagedStorageObject(left, right *store.Attachment) bool {
 func (s *APIService) cleanupDeletedAttachmentStorage(ctx context.Context, attachments []*store.Attachment) error {
 	var instanceStorageSetting *storepb.InstanceStorageSetting
 	var instanceStorageSettingErr error
-	for _, attachment := range attachments {
-		if store.AttachmentNeedsInstanceStorageSetting(attachment) {
-			instanceStorageSetting, instanceStorageSettingErr = s.Store.GetInstanceStorageSetting(ctx)
-			break
-		}
+	if slices.ContainsFunc(attachments, store.AttachmentNeedsInstanceStorageSetting) {
+		instanceStorageSetting, instanceStorageSettingErr = s.Store.GetInstanceStorageSetting(ctx)
 	}
 
 	var firstErr error

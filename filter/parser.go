@@ -462,7 +462,7 @@ func getIdentName(expr *exprv1.Expr) (string, error) {
 	return "", errors.New("expression is not an identifier")
 }
 
-func getConstValue(expr *exprv1.Expr) (interface{}, error) {
+func getConstValue(expr *exprv1.Expr) (any, error) {
 	v, ok := expr.ExprKind.(*exprv1.Expr_ConstExpr)
 	if !ok {
 		return nil, errors.New("expression is not a literal")

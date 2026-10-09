@@ -161,12 +161,12 @@ func pathPlaceholderNames(path string) []string {
 // segments match the other arguments. Bare IDs pass through unchanged.
 func trimResourceNamePrefix(path, parameterName, value string, resolved map[string]string) string {
 	placeholder := "/{" + parameterName + "}"
-	index := strings.Index(path, placeholder)
-	if index < 0 {
+	before, _, found := strings.Cut(path, placeholder)
+	if !found {
 		return value
 	}
 
-	prefix, ok := resolvedResourceNamePrefix(path[:index], resolved)
+	prefix, ok := resolvedResourceNamePrefix(before, resolved)
 	if !ok || prefix == "" {
 		return value
 	}

@@ -27,7 +27,7 @@ func TestLoadDeploymentConfigurationPublishesRuntimeOnlyIdentityProvider(t *test
 
 	require.NoError(t, stores.LoadDeploymentConfigurationDir(ctx, dir))
 
-	effective, err := stores.GetIdentityProvider(ctx, &store.FindIdentityProvider{UID: ptr("primary-sso")})
+	effective, err := stores.GetIdentityProvider(ctx, &store.FindIdentityProvider{UID: new("primary-sso")})
 	require.NoError(t, err)
 	require.NotNil(t, effective)
 	assert.Zero(t, effective.Id)
@@ -35,7 +35,7 @@ func TestLoadDeploymentConfigurationPublishesRuntimeOnlyIdentityProvider(t *test
 	assert.Equal(t, "file-secret", effective.Config.GetOauth2Config().ClientSecret)
 	assert.True(t, stores.IsIdentityProviderDeploymentConfigured("primary-sso"))
 
-	stored, err := stores.GetStoredIdentityProvider(ctx, &store.FindIdentityProvider{UID: ptr("primary-sso")})
+	stored, err := stores.GetStoredIdentityProvider(ctx, &store.FindIdentityProvider{UID: new("primary-sso")})
 	require.NoError(t, err)
 	assert.Nil(t, stored)
 }
@@ -59,10 +59,10 @@ func TestLoadDeploymentConfigurationShadowsWithoutChangingStoredResources(t *tes
 	writeDeploymentGeneralSetting(t, filepath.Join(dir, "memos-instance-setting-general.json"), 4, true)
 	require.NoError(t, stores.LoadDeploymentConfigurationDir(ctx, dir))
 
-	effectiveProvider, err := stores.GetIdentityProvider(ctx, &store.FindIdentityProvider{UID: ptr("primary-sso")})
+	effectiveProvider, err := stores.GetIdentityProvider(ctx, &store.FindIdentityProvider{UID: new("primary-sso")})
 	require.NoError(t, err)
 	assert.Equal(t, "File SSO", effectiveProvider.Name)
-	storedProvider, err := stores.GetStoredIdentityProvider(ctx, &store.FindIdentityProvider{UID: ptr("primary-sso")})
+	storedProvider, err := stores.GetStoredIdentityProvider(ctx, &store.FindIdentityProvider{UID: new("primary-sso")})
 	require.NoError(t, err)
 	assert.Equal(t, storedID, storedProvider.Id)
 	assert.Equal(t, "Stored SSO", storedProvider.Name)
@@ -85,11 +85,11 @@ func TestLoadDeploymentConfigurationReturnsDefensiveClones(t *testing.T) {
 	writeDeploymentGeneralSetting(t, filepath.Join(dir, "memos-instance-setting-general.json"), 2, false)
 	require.NoError(t, stores.LoadDeploymentConfigurationDir(ctx, dir))
 
-	provider, err := stores.GetIdentityProvider(ctx, &store.FindIdentityProvider{UID: ptr("primary-sso")})
+	provider, err := stores.GetIdentityProvider(ctx, &store.FindIdentityProvider{UID: new("primary-sso")})
 	require.NoError(t, err)
 	provider.Name = "Mutated"
 	provider.Config.GetOauth2Config().ClientSecret = "mutated-secret"
-	providerAgain, err := stores.GetIdentityProvider(ctx, &store.FindIdentityProvider{UID: ptr("primary-sso")})
+	providerAgain, err := stores.GetIdentityProvider(ctx, &store.FindIdentityProvider{UID: new("primary-sso")})
 	require.NoError(t, err)
 	assert.Equal(t, "File SSO", providerAgain.Name)
 	assert.Equal(t, "file-secret", providerAgain.Config.GetOauth2Config().ClientSecret)
@@ -116,7 +116,7 @@ func TestLoadDeploymentConfigurationPublishesAtomically(t *testing.T) {
 	require.Error(t, err)
 	assert.ErrorContains(t, err, `unknown field "unknown"`)
 
-	provider, getErr := stores.GetIdentityProvider(ctx, &store.FindIdentityProvider{UID: ptr("primary-sso")})
+	provider, getErr := stores.GetIdentityProvider(ctx, &store.FindIdentityProvider{UID: new("primary-sso")})
 	require.NoError(t, getErr)
 	assert.Equal(t, "File SSO", provider.Name)
 }
@@ -501,8 +501,4 @@ func assertBool(value bool) string {
 		return "true"
 	}
 	return "false"
-}
-
-func ptr[T any](value T) *T {
-	return &value
 }

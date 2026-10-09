@@ -95,10 +95,8 @@ func collectSpaceFilterNames(condition filterpkg.Condition, negated bool, names 
 		if valueReferencesSpace(condition.Left) {
 			return errors.New("space does not support the in operator")
 		}
-		for _, value := range condition.Values {
-			if valueReferencesSpace(value) {
-				return errors.New("space does not support the in operator")
-			}
+		if slices.ContainsFunc(condition.Values, valueReferencesSpace) {
+			return errors.New("space does not support the in operator")
 		}
 	case *filterpkg.ElementInCondition:
 		if condition.Field == "space" || valueReferencesSpace(condition.Element) {
@@ -131,10 +129,8 @@ func valueReferencesSpace(value filterpkg.ValueExpr) bool {
 	case *filterpkg.FieldRef:
 		return value.Name == "space"
 	case *filterpkg.FunctionValue:
-		for _, argument := range value.Args {
-			if valueReferencesSpace(argument) {
-				return true
-			}
+		if slices.ContainsFunc(value.Args, valueReferencesSpace) {
+			return true
 		}
 	case *filterpkg.FieldAccessorValue:
 		return value.Field == "space"

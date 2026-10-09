@@ -9,6 +9,8 @@ on:
       - "go.mod"
       - "go.sum"
       - "**.go"
+      - ".golangci.yaml"
+      - ".github/workflows/backend-tests.yml"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -36,6 +38,9 @@ jobs:
         run: |
           go mod tidy -go=${{ env.GO_VERSION }}
           git diff --exit-code
+
+      - name: Verify go fix
+        run: go fix -diff ./...
 
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v9

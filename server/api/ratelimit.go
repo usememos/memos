@@ -45,10 +45,7 @@ const (
 // RESOURCE_EXHAUSTED with an ErrorInfo naming the reason and scope and a RetryInfo
 // carrying the delay, so an AIP-194 client knows this recovers in seconds.
 func newRateLimitError(scope ratelimit.Scope, decision ratelimit.Decision) error {
-	retryAfter := int(math.Ceil(decision.RetryAfter.Seconds()))
-	if retryAfter < 1 {
-		retryAfter = 1
-	}
+	retryAfter := max(int(math.Ceil(decision.RetryAfter.Seconds())), 1)
 	st := status.New(codes.ResourceExhausted, rateLimitMessage)
 	detailed, err := st.WithDetails(
 		&errdetails.ErrorInfo{

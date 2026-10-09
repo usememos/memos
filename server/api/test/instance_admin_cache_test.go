@@ -44,7 +44,7 @@ func TestInstanceAdminRetrieval(t *testing.T) {
 		require.NoError(t, err)
 
 		// Multiple calls should return consistent admin user (from cache)
-		for i := 0; i < 5; i++ {
+		for range 5 {
 			profile, err := ts.Service.GetInstanceProfile(ctx, &apipb.GetInstanceProfileRequest{})
 			require.NoError(t, err)
 			require.NotNil(t, profile.Admin)

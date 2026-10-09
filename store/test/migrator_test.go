@@ -158,7 +158,7 @@ func TestMigrationMultipleReRuns(t *testing.T) {
 	require.NoError(t, err)
 
 	// Run migration multiple times
-	for i := 0; i < 3; i++ {
+	for i := range 3 {
 		err = ts.Migrate(ctx)
 		require.NoError(t, err, "migration run %d should not fail", i+1)
 	}

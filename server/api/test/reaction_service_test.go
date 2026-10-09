@@ -202,7 +202,7 @@ func TestAssignedMemoReactionsFollowMemoReadAccess(t *testing.T) {
 	memo, err := ts.Service.CreateMemo(ownerCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{
 		Content:    "assigned public memo with reactions",
 		Visibility: apipb.Visibility_PUBLIC,
-		Space:      ptr("spaces/" + space.UID),
+		Space:      new("spaces/" + space.UID),
 	}})
 	require.NoError(t, err)
 	_, err = ts.Service.UpsertMemoReaction(ownerCtx, &apipb.UpsertMemoReactionRequest{

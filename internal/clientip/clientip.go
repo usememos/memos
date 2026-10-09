@@ -10,6 +10,7 @@ import (
 	"net"
 	"net/http"
 	"net/netip"
+	"slices"
 	"strings"
 
 	"github.com/labstack/echo/v5"
@@ -119,8 +120,8 @@ func (r *Resolver) Resolve(remoteAddr string, header http.Header) string {
 			}
 		}
 	}
-	for i := len(entries) - 1; i >= 0; i-- {
-		candidate, ok := parseAddr(entries[i])
+	for _, entry := range slices.Backward(entries) {
+		candidate, ok := parseAddr(entry)
 		if !ok {
 			// A malformed entry ends the walk; nothing to its left can be trusted.
 			break

@@ -205,7 +205,7 @@ func TestSSOSignInScopesSameIdentifierByProvider(t *testing.T) {
 	users, err := ts.Store.ListUsers(ctx, &store.FindUser{})
 	require.NoError(t, err)
 	require.Len(t, users, 2)
-	identities, err := ts.Store.ListUserIdentities(ctx, &store.FindUserIdentity{ExternUID: ptr("alice")})
+	identities, err := ts.Store.ListUserIdentities(ctx, &store.FindUserIdentity{ExternUID: new("alice")})
 	require.NoError(t, err)
 	require.Len(t, identities, 2)
 }
@@ -228,14 +228,12 @@ func TestConcurrentSSOFirstSignInConvergesOnOneUser(t *testing.T) {
 	errs := make(chan error, signInCount)
 	var waitGroup sync.WaitGroup
 	for range signInCount {
-		waitGroup.Add(1)
-		go func() {
-			defer waitGroup.Done()
+		waitGroup.Go(func() {
 			<-start
 			response, err := signInWithTestingSSO(ctx, ts, idpName, "concurrent-code")
 			results <- response
 			errs <- err
-		}()
+		})
 	}
 
 	close(start)
@@ -374,8 +372,4 @@ func assertSingleSSOLink(ctx context.Context, t *testing.T, ts *TestService, pro
 	})
 	require.NoError(t, err)
 	require.Len(t, identities, 1)
-}
-
-func ptr[T any](value T) *T {
-	return &value
 }

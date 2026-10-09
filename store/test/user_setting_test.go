@@ -745,7 +745,7 @@ func TestUserSettingGetUserByPATHashLargeTokenCount(t *testing.T) {
 	// Create many PATs for the same user
 	tokenCount := 10
 	hashes := make([]string, tokenCount)
-	for i := 0; i < tokenCount; i++ {
+	for i := range tokenCount {
 		hashes[i] = "pat-hash-" + string(rune('A'+i)) + "-large-test"
 		err = ts.AddUserPersonalAccessToken(ctx, user.ID, &storepb.PersonalAccessTokensUserSetting_PersonalAccessToken{
 			TokenId:     "pat-large-" + string(rune('A'+i)),
