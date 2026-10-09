@@ -153,6 +153,24 @@ describe("TagTree rendering", () => {
     expect(screen.getByText("c").closest('[role="treeitem"]')).toHaveAttribute("aria-selected", "true");
   });
 
+  it("reveals and marks every selected tag", () => {
+    render(
+      <TagTree
+        tagAmounts={[
+          ["work", 1],
+          ["projects/release", 1],
+        ]}
+        activeTags={new Set(["work", "projects/release"])}
+        scope="home"
+        onTagClick={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText("release")).toBeVisible();
+    expect(screen.getByText("work").closest('[role="treeitem"]')).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByText("release").closest('[role="treeitem"]')).toHaveAttribute("aria-selected", "true");
+  });
+
   it("keeps a deliberate collapse across remounts while the filter stays active", () => {
     const tree = (
       <TagTree
