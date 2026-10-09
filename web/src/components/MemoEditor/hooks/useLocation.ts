@@ -38,17 +38,23 @@ export const useLocation = (initialLocation?: Location) => {
     [updatePosition],
   );
 
-  // Stable — merges coordinate update into a single functional setState, avoiding closure over state.position.
+  // Stable — derives the position from both coordinate inputs, so manual entry works before a map point exists.
   const updateCoordinate = useCallback((type: "lat" | "lng", value: string) => {
-    const num = parseFloat(value);
-    const isValid = type === "lat" ? !isNaN(num) && num >= -90 && num <= 90 : !isNaN(num) && num >= -180 && num <= 180;
     setState((prev) => {
       const next = { ...prev, [type === "lat" ? "latInput" : "lngInput"]: value };
-      if (isValid && prev.position) {
-        const newPos = type === "lat" ? { lat: num, lng: prev.position.lng } : { lat: prev.position.lat, lng: num };
-        return { ...next, position: newPos, latInput: String(newPos.lat), lngInput: String(newPos.lng) };
-      }
-      return next;
+      const lat = Number(next.latInput);
+      const lng = Number(next.lngInput);
+      const hasValidPosition =
+        next.latInput.trim() !== "" &&
+        next.lngInput.trim() !== "" &&
+        Number.isFinite(lat) &&
+        Number.isFinite(lng) &&
+        lat >= -90 &&
+        lat <= 90 &&
+        lng >= -180 &&
+        lng <= 180;
+
+      return { ...next, position: hasValidPosition ? { lat, lng } : undefined };
     });
   }, []);
 

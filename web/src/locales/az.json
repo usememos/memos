@@ -268,6 +268,9 @@
     "insert-menu": {
       "add-attachment": "Qoşma əlavə et",
       "add-location": "Məkan əlavə et",
+      "location-permission-denied": "Məkan girişinə icazə verilmədi. Brauzer ayarlarında icazə verin və yenidən cəhd edin.",
+      "location-requires-https": "Cari məkanınız üçün təhlükəsiz HTTPS bağlantısı tələb olunur.",
+      "location-unavailable": "Cari məkanınızı almaq mümkün olmadı. Yenidən cəhd edin və ya əl ilə seçin.",
       "image-upload-failed": "Bəzi şəkillər yüklənə bilmədi. Yenidən cəhd edin və ya yüklənmiş faylları qoşma kimi saxlayın.",
       "image-upload-stopped": "Şəkil yükləməsi dayandırıldı {{completed}}/{{total}}",
       "insert-image": "Şəkil daxil et",

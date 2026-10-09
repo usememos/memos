@@ -152,6 +152,9 @@
     "focus-mode": "Fokusläge",
     "insert-menu": {
       "add-location": "Lägg till plats",
+      "location-permission-denied": "Åtkomst till platsen nekades. Tillåt den i webbläsarens inställningar och försök igen.",
+      "location-requires-https": "Din aktuella plats kräver en säker HTTPS-anslutning.",
+      "location-unavailable": "Det gick inte att hämta din aktuella plats. Försök igen eller välj den manuellt.",
       "link-memo": "Länkmemo",
       "retry-image-upload": "Försöka igen",
       "add-attachment": "Lägg till bilaga",

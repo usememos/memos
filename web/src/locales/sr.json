@@ -190,6 +190,9 @@
     "focus-mode": "Фоцус Моде",
     "insert-menu": {
       "add-location": "Додајте локацију",
+      "location-permission-denied": "Pristup lokaciji je odbijen. Dozvolite ga u podešavanjima pregledača i pokušajte ponovo.",
+      "location-requires-https": "Vaša trenutna lokacija zahteva bezbednu HTTPS vezu.",
+      "location-unavailable": "Nije moguće dobiti vašu trenutnu lokaciju. Pokušajte ponovo ili je izaberite ručno.",
       "link-memo": "Меморандум о вези",
       "retry-image-upload": "Покушајте поново",
       "add-attachment": "Додај прилог",

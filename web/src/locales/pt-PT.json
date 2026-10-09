@@ -152,6 +152,9 @@
     "focus-mode": "Modo Foco",
     "insert-menu": {
       "add-location": "Adicionar local",
+      "location-permission-denied": "O acesso à localização foi recusado. Permita-o nas definições do navegador e tente novamente.",
+      "location-requires-https": "A sua localização atual requer uma ligação HTTPS segura.",
+      "location-unavailable": "Não foi possível obter a sua localização atual. Tente novamente ou escolha-a manualmente.",
       "link-memo": "Vincular memorando",
       "retry-image-upload": "Tentar novamente",
       "add-attachment": "Adicionar anexo",

@@ -197,6 +197,9 @@
     "insert-menu": {
       "add-attachment": "Ek ekle",
       "add-location": "Konum ekle",
+      "location-permission-denied": "Konum erişimi reddedildi. Tarayıcı ayarlarınızdan izin verip tekrar deneyin.",
+      "location-requires-https": "Geçerli konumunuz güvenli bir HTTPS bağlantısı gerektirir.",
+      "location-unavailable": "Geçerli konumunuz alınamadı. Tekrar deneyin veya manuel olarak seçin.",
       "image-upload-failed": "Bazı görseller yüklenemedi. Yeniden deneyin ya da yüklenen dosyaları ek olarak tutun.",
       "image-upload-stopped": "Görsel yükleme durdu {{completed}}/{{total}}",
       "insert-image": "Görsel ekle",

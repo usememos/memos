@@ -152,6 +152,9 @@
     "focus-mode": "Režim soustředění",
     "insert-menu": {
       "add-location": "Přidat umístění",
+      "location-permission-denied": "Přístup k poloze byl zamítnut. Povolte ho v nastavení prohlížeče a zkuste to znovu.",
+      "location-requires-https": "Vaše aktuální poloha vyžaduje zabezpečené připojení HTTPS.",
+      "location-unavailable": "Aktuální polohu se nepodařilo získat. Zkuste to znovu nebo ji vyberte ručně.",
       "link-memo": "Odkaz na poznámku",
       "retry-image-upload": "Zkuste to znovu",
       "add-attachment": "Přidat přílohu",

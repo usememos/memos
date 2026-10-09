@@ -268,6 +268,9 @@
     "insert-menu": {
       "add-attachment": "Add attachment",
       "add-location": "Add location",
+      "location-permission-denied": "Location access was denied. Allow it in your browser settings and try again.",
+      "location-requires-https": "Your current location requires a secure HTTPS connection.",
+      "location-unavailable": "Could not get your current location. Try again or choose it manually.",
       "image-upload-failed": "Some images could not be uploaded. Retry or keep the uploaded files as attachments.",
       "image-upload-stopped": "Image upload stopped {{completed}}/{{total}}",
       "insert-image": "Insert image",

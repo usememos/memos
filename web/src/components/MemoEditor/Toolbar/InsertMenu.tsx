@@ -12,6 +12,7 @@ import {
   TypeIcon,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { toast } from "react-hot-toast";
 import { LinkMemoDialog, LocationDialog } from "@/components/MemoMetadata";
 import type { MapPoint } from "@/components/map/types";
 import { useReverseGeocoding } from "@/components/map/useReverseGeocoding";
@@ -95,18 +96,33 @@ const InsertMenu = (props: InsertMenuProps) => {
   const handleLocationClick = useCallback(() => {
     setLocationDialogOpen(true);
     if (!initialLocation && !locationInitialized) {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            handleLocationPositionChange({ lat: position.coords.latitude, lng: position.coords.longitude });
-          },
-          (error) => {
-            console.error("Geolocation error:", error);
-          },
-        );
+      if (!window.isSecureContext) {
+        const notice = t("editor.insert-menu.location-requires-https");
+        toast.error(notice);
+        return;
       }
+      if (!navigator.geolocation) {
+        const notice = t("editor.insert-menu.location-unavailable");
+        toast.error(notice);
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          handleLocationPositionChange({ lat: position.coords.latitude, lng: position.coords.longitude });
+        },
+        (error) => {
+          console.error("Geolocation error:", error);
+          const notice =
+            error.message.includes("secure origin") || error.message.includes("secure context")
+              ? t("editor.insert-menu.location-requires-https")
+              : error.code === error.PERMISSION_DENIED
+                ? t("editor.insert-menu.location-permission-denied")
+                : t("editor.insert-menu.location-unavailable");
+          toast.error(notice);
+        },
+      );
     }
-  }, [initialLocation, locationInitialized, handleLocationPositionChange]);
+  }, [initialLocation, locationInitialized, handleLocationPositionChange, t]);
 
   const handleLocationConfirm = useCallback(() => {
     const newLocation = getLocation();

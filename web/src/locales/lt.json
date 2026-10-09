@@ -190,6 +190,9 @@
     "focus-mode": "Fokusavimo režimas",
     "insert-menu": {
       "add-location": "Pridėti vietą",
+      "location-permission-denied": "Prieiga prie vietos buvo atmesta. Leiskite ją naršyklės nustatymuose ir bandykite dar kartą.",
+      "location-requires-https": "Jūsų dabartinei vietai reikalingas saugus HTTPS ryšys.",
+      "location-unavailable": "Nepavyko gauti dabartinės vietos. Bandykite dar kartą arba pasirinkite ją rankiniu būdu.",
       "link-memo": "Nuorodos atmintinė",
       "retry-image-upload": "Bandykite dar kartą",
       "add-attachment": "Pridėti priedą",

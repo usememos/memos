@@ -241,6 +241,9 @@
     "insert-menu": {
       "add-attachment": "הוסף קובץ מצורף",
       "add-location": "הוסף מיקום",
+      "location-permission-denied": "הגישה למיקום נדחתה. אפשרו אותה בהגדרות הדפדפן ונסו שוב.",
+      "location-requires-https": "המיקום הנוכחי שלך דורש חיבור HTTPS מאובטח.",
+      "location-unavailable": "לא ניתן לקבל את המיקום הנוכחי שלך. נסו שוב או בחרו אותו ידנית.",
       "image-upload-failed": "לא ניתן להעלות חלק מהתמונות. נסו שוב או השאירו את התמונות שהועלו כקבצים מצורפים.",
       "image-upload-stopped": "העלאת התמונה נעצרה {{completed}}/{{total}}",
       "insert-image": "הוסף תמונה",
