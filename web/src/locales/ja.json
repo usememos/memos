@@ -31,6 +31,7 @@
     "explore-public-memos": "このインスタンスの公開メモを見る",
     "first-run": "初回起動",
     "new-password": "新しいパスワード",
+    "redirecting-to-provider": "{{provider}} にリダイレクトしています…",
     "repeat-new-password": "新しいパスワードを再入力",
     "setup-description": "このインスタンスの管理者アカウントを作成します。",
     "setup-note": "このアカウントはインスタンスの設定、メンバー、IDプロバイダーを管理します。",

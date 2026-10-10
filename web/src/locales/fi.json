@@ -24,6 +24,7 @@
   "auth": {
     "create-your-account": "Luo tili",
     "new-password": "Uusi salasana",
+    "redirecting-to-provider": "Ohjataan palveluun {{provider}}…",
     "repeat-new-password": "Toista uusi salasana",
     "sign-in-tip": "Onko sinulla jo tili?",
     "sign-up-tip": "Eikö sinulla ole vielä tiliä?",

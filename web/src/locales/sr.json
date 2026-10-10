@@ -24,6 +24,7 @@
   "auth": {
     "create-your-account": "Креирајте свој налог",
     "new-password": "Нова лозинка",
+    "redirecting-to-provider": "Преусмеравање на {{provider}}…",
     "repeat-new-password": "Поновите нову лозинку",
     "sign-in-tip": "Већ имате налог?",
     "sign-up-tip": "Још увек немате налог?",

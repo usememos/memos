@@ -97,6 +97,7 @@
     "explore-public-memos": "Utforsk offentlege notat på denne instansen",
     "first-run": "Fyrste oppstart",
     "new-password": "Nytt passord",
+    "redirecting-to-provider": "Vidaresender til {{provider}}…",
     "repeat-new-password": "Skriv det nye passordet ein gong til",
     "setup-description": "Opprett administratorkontoen for denne instansen.",
     "setup-note": "Denne kontoen rår over instansinnstillingar, medlemer og identitetstilbydarar.",

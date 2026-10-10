@@ -24,6 +24,7 @@
   "auth": {
     "create-your-account": "Buat akun Anda",
     "new-password": "Kata sandi baru",
+    "redirecting-to-provider": "Mengalihkan ke {{provider}}…",
     "repeat-new-password": "Ulangi kata sandi baru",
     "sign-in-tip": "Sudah memiliki akun?",
     "sign-up-tip": "Belum memiliki akun?",

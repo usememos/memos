@@ -24,6 +24,7 @@
   "auth": {
     "create-your-account": "अपना खाता बनाएं",
     "new-password": "नया पासवर्ड",
+    "redirecting-to-provider": "{{provider}} पर भेजा जा रहा है…",
     "repeat-new-password": "नया पासवर्ड दोहराएं",
     "sign-in-tip": "क्या आपके पास पहले से खाता है?",
     "sign-up-tip": "अभी तक खाता नहीं है?",

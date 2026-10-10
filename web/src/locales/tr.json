@@ -49,6 +49,7 @@
     "explore-public-memos": "Bu sunucudaki herkese açık notları keşfedin",
     "first-run": "İlk çalıştırma",
     "new-password": "Yeni şifre",
+    "redirecting-to-provider": "{{provider}} hizmetine yönlendiriliyor…",
     "repeat-new-password": "Yeni şifreyi tekrar girin",
     "setup-description": "Bu sunucu için yönetici hesabını oluşturun.",
     "setup-note": "Bu hesap sunucu ayarlarının, üyelerin ve kimlik sağlayıcıların sahibidir.",

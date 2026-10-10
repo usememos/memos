@@ -24,6 +24,7 @@
   "auth": {
     "create-your-account": "Vytvorte si účet",
     "new-password": "Nové heslo",
+    "redirecting-to-provider": "Presmerovanie na {{provider}}…",
     "repeat-new-password": "Zopakujte nové heslo",
     "sign-in-tip": "Už máte účet?",
     "sign-up-tip": "Ešte nemáte účet?",

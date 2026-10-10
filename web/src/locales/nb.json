@@ -24,6 +24,7 @@
   "auth": {
     "create-your-account": "Opprett konto",
     "new-password": "Nytt passord",
+    "redirecting-to-provider": "Videresender til {{provider}}…",
     "repeat-new-password": "Gjenta det nye passordet",
     "sign-in-tip": "Har du allerede en konto?",
     "sign-up-tip": "Har du ikke en konto enda?",

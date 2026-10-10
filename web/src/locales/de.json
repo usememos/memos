@@ -24,6 +24,7 @@
   "auth": {
     "create-your-account": "Benutzerkonto anlegen",
     "new-password": "Neues Passwort",
+    "redirecting-to-provider": "Weiterleitung zu {{provider}}…",
     "repeat-new-password": "Neues Passwort wiederholen",
     "sign-in-tip": "Bereits ein Benutzerkonto?",
     "sign-up-tip": "Noch kein Benutzerkonto?",

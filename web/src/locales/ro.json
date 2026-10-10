@@ -24,6 +24,7 @@
   "auth": {
     "create-your-account": "Creați-vă contul",
     "new-password": "Parolă Nouă",
+    "redirecting-to-provider": "Se redirecționează către {{provider}}…",
     "repeat-new-password": "Repetați noua parolă",
     "sign-in-tip": "Aveți deja un cont?",
     "sign-up-tip": "Nu aveți încă un cont?",

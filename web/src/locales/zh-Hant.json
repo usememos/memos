@@ -31,6 +31,7 @@
     "explore-public-memos": "瀏覽此實例的公開備忘錄",
     "first-run": "初次啟動",
     "new-password": "新密碼",
+    "redirecting-to-provider": "正在跳轉至 {{provider}}…",
     "repeat-new-password": "再次輸入新密碼",
     "setup-description": "為此實例建立管理員帳號。",
     "setup-note": "此帳號擁有實例設定、成員與身分識別提供者的管理權限。",

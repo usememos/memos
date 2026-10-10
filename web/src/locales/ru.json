@@ -24,6 +24,7 @@
   "auth": {
     "create-your-account": "Создание учетной записи",
     "new-password": "Новый пароль",
+    "redirecting-to-provider": "Перенаправление в {{provider}}…",
     "repeat-new-password": "Повторить новый пароль",
     "sign-in-tip": "У вас уже есть учетная запись?",
     "sign-up-tip": "У вас еще нет учетной записи?",

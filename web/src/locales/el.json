@@ -24,6 +24,7 @@
   "auth": {
     "create-your-account": "Δημιουργήστε τον λογαριασμό σας",
     "new-password": "Νέος κωδικός πρόσβασης",
+    "redirecting-to-provider": "Ανακατεύθυνση στο {{provider}}…",
     "repeat-new-password": "Επαναλάβετε τον νέο κωδικό πρόσβασης",
     "sign-in-tip": "Έχετε ήδη λογαριασμό;",
     "sign-up-tip": "Δεν έχετε λογαριασμό ακόμα;",

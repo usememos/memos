@@ -24,6 +24,7 @@
   "auth": {
     "create-your-account": "계정 만들기",
     "new-password": "새 비밀번호",
+    "redirecting-to-provider": "{{provider}}(으)로 이동 중…",
     "repeat-new-password": "새 비밀번호 재확인",
     "sign-in-tip": "이미 계정이 있으신가요?",
     "sign-up-tip": "아직 계정이 없으신가요?",

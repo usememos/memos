@@ -31,7 +31,7 @@ const SignUp = () => {
   const [challengeToken, setChallengeToken] = useState<string | null>(null);
   const [challengeResetKey, setChallengeResetKey] = useState(0);
   const { initialize: initAuth } = useAuth();
-  const { generalSetting: instanceGeneralSetting, profile, initialize: initInstance } = useInstance();
+  const { generalSetting: instanceGeneralSetting, profile, profileLoaded, isInitialized, initialize: initInstance } = useInstance();
   const [searchParams] = useSearchParams();
   const redirectTarget = getSafeRedirectPath(searchParams.get(AUTH_REDIRECT_PARAM));
   const signInPath = appendSearchParams(ROUTES.AUTH, searchParams);
@@ -40,9 +40,11 @@ const SignUp = () => {
   const registrationOpen = !instanceGeneralSetting.disallowUserRegistration;
   const needsSetup = profile.needsSetup;
   // Provider buttons only render on the SSO-provisioned branch below; skip the request elsewhere.
-  const { identityProviderList, isLoading: identityProvidersLoading } = useIdentityProviderList(
-    !needsSetup && registrationOpen && !passwordAuthAllowed,
-  );
+  const {
+    identityProviderList,
+    isLoading: identityProvidersLoading,
+    isSuccess: identityProvidersLoaded,
+  } = useIdentityProviderList(!needsSetup && registrationOpen && !passwordAuthAllowed);
   const hasIdentityProviders = identityProviderList.length > 0;
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -163,7 +165,11 @@ const SignUp = () => {
         {identityProvidersLoading ? (
           <AuthOptionsLoading />
         ) : showSsoOptions ? (
-          <IdentityProviderButtons identityProviderList={identityProviderList} redirectTarget={redirectTarget} />
+          <IdentityProviderButtons
+            identityProviderList={identityProviderList}
+            redirectTarget={redirectTarget}
+            autoSignIn={isInitialized && profileLoaded && identityProvidersLoaded}
+          />
         ) : (
           <AuthEmptyState
             icon={<LockIcon className="h-5 w-5" />}

@@ -24,6 +24,7 @@
   "auth": {
     "create-your-account": "Maak je account",
     "new-password": "Nieuw wachtwoord",
+    "redirecting-to-provider": "Doorsturen naar {{provider}}…",
     "repeat-new-password": "Nieuw wachtwoord herhalen",
     "sign-in-tip": "Al een account?",
     "sign-up-tip": "Nog geen account?",

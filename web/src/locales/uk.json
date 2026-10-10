@@ -24,6 +24,7 @@
   "auth": {
     "create-your-account": "Створіть обліковий запис",
     "new-password": "Новий пароль",
+    "redirecting-to-provider": "Перенаправлення до {{provider}}…",
     "repeat-new-password": "Повторіть новий пароль",
     "sign-in-tip": "Вже маєте обліковий запис?",
     "sign-up-tip": "Ще не маєте облікового запису?",

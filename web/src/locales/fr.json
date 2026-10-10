@@ -24,6 +24,7 @@
   "auth": {
     "create-your-account": "Créez votre compte",
     "new-password": "Nouveau mot de passe",
+    "redirecting-to-provider": "Redirection vers {{provider}}…",
     "repeat-new-password": "Répétez le nouveau mot de passe",
     "sign-in-tip": "Vous avez déjà un compte ?",
     "sign-up-tip": "Vous n'avez pas encore de compte ?",

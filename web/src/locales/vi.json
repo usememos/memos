@@ -24,6 +24,7 @@
   "auth": {
     "create-your-account": "Tạo tài khoản của bạn",
     "new-password": "Mật khẩu mới",
+    "redirecting-to-provider": "Đang chuyển hướng đến {{provider}}…",
     "repeat-new-password": "Nhập lại mật khẩu mới",
     "sign-in-tip": "Đã có tài khoản?",
     "sign-up-tip": "Chưa có tài khoản?",

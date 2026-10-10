@@ -24,6 +24,7 @@
   "auth": {
     "create-your-account": "Fiók létrehozása",
     "new-password": "Új jelszó",
+    "redirecting-to-provider": "Átirányítás ide: {{provider}}…",
     "repeat-new-password": "Jelszó ismét",
     "sign-in-tip": "Már van fiókod?",
     "sign-up-tip": "Még nincs fiókod?",

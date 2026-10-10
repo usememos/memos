@@ -24,6 +24,7 @@
   "auth": {
     "create-your-account": "حساب کاربری خود را ایجاد کنید.",
     "new-password": "گذرواژه جدید",
+    "redirecting-to-provider": "در حال هدایت به {{provider}}…",
     "repeat-new-password": "گذرواژه جدید را تکرار کنید",
     "sign-in-tip": "آیا حساب کاربری تعریف شده دارید؟",
     "sign-up-tip": "آیا حساب کاربری تعریف شده ندارید؟",

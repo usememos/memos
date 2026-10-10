@@ -31,6 +31,7 @@
     "explore-public-memos": "עיינו בפתקים הציבוריים במופע הזה",
     "first-run": "הפעלה ראשונה",
     "new-password": "סיסמה חדשה",
+    "redirecting-to-provider": "מעבר אל {{provider}}…",
     "repeat-new-password": "הקלידו שוב את הסיסמה החדשה",
     "setup-description": "צרו את חשבון המנהל עבור המופע הזה.",
     "setup-note": "חשבון זה מנהל את הגדרות המופע, החברים וספקי הזהות.",

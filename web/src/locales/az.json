@@ -49,6 +49,7 @@
     "explore-public-memos": "Bu instansdakı ictimai qeydləri kəşf edin",
     "first-run": "İlk işə salma",
     "new-password": "Yeni parol",
+    "redirecting-to-provider": "{{provider}} xidmətinə yönləndirilir…",
     "repeat-new-password": "Yeni parolu təkrarlayın",
     "setup-description": "Bu instans üçün administrator hesabı yaradın.",
     "setup-note": "Bu hesab instans parametrlərinə, üzvlərə və kimlik provayderlərinə sahib olur.",
