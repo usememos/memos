@@ -28,6 +28,12 @@ type Profile struct {
 	DSN string
 	// Driver is the database driver: sqlite, mysql, postgres, or d1.
 	Driver string
+	// RDSIAMAuth replaces the DSN password with an Amazon RDS IAM
+	// authentication token signed for every new connection.
+	RDSIAMAuth bool
+	// RDSCABundle is a PEM file of CA certificates, such as the RDS
+	// global-bundle.pem, that the database server certificate must chain to.
+	RDSCABundle string
 	// Version is the current version of server
 	Version string
 	// Commit is the current build commit of server
@@ -64,6 +70,12 @@ func checkDataDir(dataDir string) (string, error) {
 func (p *Profile) Validate() error {
 	if p.Demo && p.Driver != "sqlite" {
 		return errors.Errorf("demo mode requires the sqlite database driver, got %q", p.Driver)
+	}
+	if p.RDSIAMAuth && p.Driver != "mysql" && p.Driver != "postgres" {
+		return errors.Errorf("RDS IAM authentication requires the mysql or postgres database driver, got %q", p.Driver)
+	}
+	if p.RDSCABundle != "" && !p.RDSIAMAuth {
+		return errors.New("--rds-ca-bundle requires --rds-iam-auth")
 	}
 
 	instanceURL, err := normalizeInstanceURL(p.InstanceURL)

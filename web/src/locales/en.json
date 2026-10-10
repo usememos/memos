@@ -849,7 +849,7 @@
     },
     "storage": {
       "accesskey": "Access key",
-      "accesskey-description": "Access key ID for the bucket or S3-compatible service.",
+      "accesskey-description": "Access key ID for the bucket or S3-compatible service. Leave both keys blank to use the server's AWS credentials (environment, shared config, or IAM role).",
       "badge-default": "Default",
       "badge-recommended": "Recommended",
       "bucket": "Bucket",

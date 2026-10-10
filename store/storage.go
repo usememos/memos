@@ -148,7 +148,9 @@ func PrepareInstanceStorageSettingUpdate(incoming, existing *storepb.InstanceSto
 			previous = nil
 		}
 
-		if storage.GetS3Config() != nil && storage.GetS3Config().AccessKeySecret == "" {
+		// An empty access key ID selects the default AWS credential chain, so
+		// there is no secret to preserve.
+		if storage.GetS3Config() != nil && storage.GetS3Config().AccessKeyId != "" && storage.GetS3Config().AccessKeySecret == "" {
 			if previous != nil && previous.GetS3Config() != nil {
 				storage.GetS3Config().AccessKeySecret = previous.GetS3Config().AccessKeySecret
 			} else {
@@ -190,6 +192,9 @@ func PrepareInstanceStorageSettingUpdate(incoming, existing *storepb.InstanceSto
 	for _, storage := range incoming.Storages {
 		if s3Config := storage.GetS3Config(); s3Config != nil && s3Config.AccessKeyId != "" && s3Config.AccessKeySecret == "" {
 			return errors.Errorf("storage %q access key secret is required", storage.Id)
+		}
+		if s3Config := storage.GetS3Config(); s3Config != nil && s3Config.AccessKeyId == "" && s3Config.AccessKeySecret != "" {
+			return errors.Errorf("storage %q access key ID is required with an access key secret", storage.Id)
 		}
 	}
 

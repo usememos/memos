@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -64,6 +65,44 @@ func TestDriverObjectLifecycle(t *testing.T) {
 	require.NoError(t, err)
 
 	assertObjectLifecycle(ctx, t, driver, "assets/notes/test.txt", []byte("attachment stored in fake S3"))
+}
+
+func TestNewDriverCredentials(t *testing.T) {
+	t.Setenv("AWS_ACCESS_KEY_ID", "chain-access-key")
+	t.Setenv("AWS_SECRET_ACCESS_KEY", "chain-secret")
+	t.Setenv("AWS_SESSION_TOKEN", "chain-session")
+	t.Setenv("AWS_CONFIG_FILE", filepath.Join(t.TempDir(), "config"))
+	t.Setenv("AWS_SHARED_CREDENTIALS_FILE", filepath.Join(t.TempDir(), "credentials"))
+	ctx := context.Background()
+	newConfig := func(accessKeyID, secret string) *storepb.StorageS3Config {
+		return &storepb.StorageS3Config{
+			AccessKeyId:     accessKeyID,
+			AccessKeySecret: secret,
+			Endpoint:        "https://s3.example.com",
+			Region:          "us-east-1",
+			Bucket:          "memos",
+		}
+	}
+
+	t.Run("uses configured access keys", func(t *testing.T) {
+		driver, err := NewDriver(ctx, newConfig("access-key", "access-secret"))
+		require.NoError(t, err)
+		creds, err := driver.Client.Options().Credentials.Retrieve(ctx)
+		require.NoError(t, err)
+		require.Equal(t, "access-key", creds.AccessKeyID)
+		require.Equal(t, "access-secret", creds.SecretAccessKey)
+		require.Empty(t, creds.SessionToken)
+	})
+
+	t.Run("falls back to the default credential chain without access keys", func(t *testing.T) {
+		driver, err := NewDriver(ctx, newConfig("", ""))
+		require.NoError(t, err)
+		creds, err := driver.Client.Options().Credentials.Retrieve(ctx)
+		require.NoError(t, err)
+		require.Equal(t, "chain-access-key", creds.AccessKeyID)
+		require.Equal(t, "chain-secret", creds.SecretAccessKey)
+		require.Equal(t, "chain-session", creds.SessionToken)
+	})
 }
 
 func TestNewDriverInsecureSkipTLSVerify(t *testing.T) {
