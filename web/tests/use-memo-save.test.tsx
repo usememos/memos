@@ -45,6 +45,9 @@ describe("useMemoSave", () => {
     mocks.markNewMemo.mockReset();
     mocks.memoSave.mockReset();
     mocks.newMemoName = null;
+    mocks.markNewMemo.mockImplementation((value: string | null | ((current: string | null) => string | null)) => {
+      mocks.newMemoName = typeof value === "function" ? value(mocks.newMemoName) : value;
+    });
   });
 
   it("invalidates scoped attachment libraries after a memo save", async () => {
@@ -101,7 +104,7 @@ describe("useMemoSave", () => {
 
     await act(async () => result.current());
 
-    expect(mocks.markNewMemo).toHaveBeenCalledExactlyOnceWith(null);
+    expect(mocks.newMemoName).toBeNull();
   });
 
   it("preserves the new memo hoist when editing another memo", async () => {
@@ -113,7 +116,29 @@ describe("useMemoSave", () => {
 
     await act(async () => result.current());
 
-    expect(mocks.markNewMemo).not.toHaveBeenCalled();
+    expect(mocks.newMemoName).toBe("memos/new");
+  });
+
+  it("preserves a newer marker created while the edit save is pending", async () => {
+    mocks.newMemoName = "memos/new";
+    let finishSave!: (value: { hasChanges: boolean; memoName: string }) => void;
+    mocks.memoSave.mockReturnValue(
+      new Promise((resolve) => {
+        finishSave = resolve;
+      }),
+    );
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const wrapper = ({ children }: PropsWithChildren) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+    const { result } = renderHook(() => useMemoSave({ memoName: "memos/new", discardDraft: vi.fn() }), { wrapper });
+
+    await act(async () => {
+      const save = result.current();
+      mocks.newMemoName = "memos/newer";
+      finishSave({ hasChanges: true, memoName: "memos/new" });
+      await save;
+    });
+
+    expect(mocks.newMemoName).toBe("memos/newer");
   });
 
   it("preserves the new memo hoist when the edit has no changes", async () => {

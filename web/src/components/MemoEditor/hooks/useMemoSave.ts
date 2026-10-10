@@ -42,7 +42,7 @@ export function useMemoSave({
 }: UseMemoSaveOptions): () => Promise<void> {
   const t = useTranslate();
   const queryClient = useQueryClient();
-  const { newMemoName, markNewMemo } = useNewMemo();
+  const { markNewMemo } = useNewMemo();
   const { actions, dispatch, getState } = useEditorContext();
 
   return useCallback(async () => {
@@ -108,8 +108,8 @@ export function useMemoSave({
 
       if (!memoName && !parentMemoName) {
         markNewMemo(result.memoName);
-      } else if (memoName === newMemoName) {
-        markNewMemo(null);
+      } else if (memoName) {
+        markNewMemo((currentName) => (currentName === memoName ? null : currentName));
       }
       onConfirm?.(result.memoName);
     } catch (error) {
@@ -131,7 +131,6 @@ export function useMemoSave({
     getState,
     markNewMemo,
     memoName,
-    newMemoName,
     onCancel,
     onConfirm,
     parentMemoName,
