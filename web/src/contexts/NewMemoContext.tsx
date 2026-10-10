@@ -5,7 +5,7 @@ interface NewMemoContextValue {
   // memo is ever "new" at a time: creating another overwrites it, which clears
   // the previous one for free.
   newMemoName: string | null;
-  markNewMemo: (name: string) => void;
+  markNewMemo: (name: string | null) => void;
 }
 
 // Default is a safe no-op so MemoEditor/MemoView rendered outside a provider
