@@ -24,6 +24,7 @@
   "auth": {
     "create-your-account": "შექმენით თქვენი ანგარიში",
     "new-password": "ახალი პაროლი",
+    "redirecting-to-provider": "გადამისამართება {{provider}}-ზე…",
     "repeat-new-password": "გაიმეორეთ ახალი პაროლი",
     "sign-in-tip": "დაქვემდებარებული გაქვთ ანგარიში?",
     "sign-up-tip": "ჯერ არ გაქვთ ანგარიში?",

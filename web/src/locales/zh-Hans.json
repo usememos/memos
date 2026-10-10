@@ -49,6 +49,7 @@
     "explore-public-memos": "浏览此实例上的公开 Memo",
     "first-run": "首次运行",
     "new-password": "新密码",
+    "redirecting-to-provider": "正在跳转至 {{provider}}…",
     "repeat-new-password": "重复新密码",
     "setup-description": "为此实例创建管理员账号。",
     "setup-note": "该账号拥有实例设置、成员与身份提供商的管理权限。",

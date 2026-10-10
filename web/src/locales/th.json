@@ -24,6 +24,7 @@
   "auth": {
     "create-your-account": "สร้างบัญชีใหม่",
     "new-password": "รหัสผ่านใหม่",
+    "redirecting-to-provider": "กำลังเปลี่ยนเส้นทางไปยัง {{provider}}…",
     "repeat-new-password": "รหัสผ่านใหม่อีกครั้ง",
     "sign-in-tip": "มีบัญชีอยู่แล้ว?",
     "sign-up-tip": "ยังไม่มีบัญชี?",

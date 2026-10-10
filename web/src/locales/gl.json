@@ -24,6 +24,7 @@
   "auth": {
     "create-your-account": "Crea a túa conta",
     "new-password": "Novo contrasinal",
+    "redirecting-to-provider": "Redirixindo a {{provider}}…",
     "repeat-new-password": "Repite o novo contrasinal",
     "sign-in-tip": "Xa tes unha conta?",
     "sign-up-tip": "Aínda non tes unha conta?",

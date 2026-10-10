@@ -24,6 +24,7 @@
   "auth": {
     "create-your-account": "Създайте своя акаунт",
     "new-password": "Нова парола",
+    "redirecting-to-provider": "Пренасочване към {{provider}}…",
     "repeat-new-password": "Повторете новата парола",
     "sign-in-tip": "Вече имате акаунт?",
     "sign-up-tip": "Все още нямате акаунт?",

@@ -49,6 +49,7 @@
     "explore-public-memos": "Explore public memos on this instance",
     "first-run": "First run",
     "new-password": "New password",
+    "redirecting-to-provider": "Redirecting to {{provider}}…",
     "repeat-new-password": "Repeat the new password",
     "setup-description": "Create the administrator account for this instance.",
     "setup-note": "This account owns instance settings, members, and identity providers.",

@@ -13,7 +13,7 @@ const EMPTY_LIST: IdentityProvider[] = [];
 // Hook to fetch the configured identity providers. Pass `enabled: false` on
 // pages/branches that never render provider buttons to skip the request.
 export function useIdentityProviderList(enabled = true) {
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isSuccess } = useQuery({
     queryKey: identityProviderKeys.list(),
     queryFn: async () => (await identityProviderServiceClient.listIdentityProviders({})).identityProviders,
     staleTime: 60_000,
@@ -22,5 +22,6 @@ export function useIdentityProviderList(enabled = true) {
   return {
     identityProviderList: data ?? EMPTY_LIST,
     isLoading,
+    isSuccess,
   };
 }

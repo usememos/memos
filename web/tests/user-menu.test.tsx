@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import UserMenu from "@/components/UserMenu";
@@ -63,6 +63,20 @@ describe("User menu panel", () => {
     mocks.updateGeneralSetting.mockReset();
     mocks.refetchSettings.mockReset();
     mocks.notifications = [];
+  });
+
+  it("signs out to manual sign-in so an active SSO session cannot immediately sign back in", async () => {
+    const originalLocation = window.location;
+    const replace = vi.fn();
+    Object.defineProperty(window, "location", { configurable: true, value: { ...originalLocation, replace } });
+    try {
+      renderMenu();
+      fireEvent.click(screen.getByRole("button", { name: "common.sign-out" }));
+      await waitFor(() => expect(replace).toHaveBeenCalledWith("/auth?auto_sign_in=false"));
+      expect(mocks.logout).toHaveBeenCalledOnce();
+    } finally {
+      Object.defineProperty(window, "location", { configurable: true, value: originalLocation });
+    }
   });
 
   it("places Inbox beside the account and Archived directly above Settings", () => {

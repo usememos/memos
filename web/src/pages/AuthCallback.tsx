@@ -1,6 +1,6 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { useEffect, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { setAccessToken } from "@/auth-state";
 import { authServiceClient, userServiceClient } from "@/connect";
 import { useAuth } from "@/contexts/AuthContext";
@@ -8,15 +8,18 @@ import useNavigateTo from "@/hooks/useNavigateTo";
 import { absolutifyLink } from "@/lib/browser";
 import { handleError } from "@/lib/error";
 import { ROUTES } from "@/router/routes";
-import { getSafeRedirectPath } from "@/utils/auth-redirect";
+import { buildAuthRoute, getSafeRedirectPath } from "@/utils/auth-redirect";
+import { useTranslate } from "@/utils/i18n";
 import { validateOAuthState } from "@/utils/oauth";
 
 interface State {
   loading: boolean;
   errorMessage: string;
+  returnUrl?: string;
 }
 
 const AuthCallback = () => {
+  const t = useTranslate();
   const navigateTo = useNavigateTo();
   const { currentUser, initialize, isInitialized } = useAuth();
   const [searchParams] = useSearchParams();
@@ -33,12 +36,15 @@ const AuthCallback = () => {
     if (handledRef.current) {
       return;
     }
+    handledRef.current = true;
     // Check for OAuth error response first (e.g., user denied access)
     const error = searchParams.get("error");
     const errorDescription = searchParams.get("error_description");
     const errorUri = searchParams.get("error_uri");
 
     if (error) {
+      const oauthState = searchParams.get("state");
+      const validatedState = oauthState ? validateOAuthState(oauthState) : null;
       // OAuth provider returned an error
       let errorMessage = `OAuth error: ${error}`;
       if (errorDescription) {
@@ -51,6 +57,7 @@ const AuthCallback = () => {
       setState({
         loading: false,
         errorMessage,
+        returnUrl: validatedState?.returnUrl,
       });
       return;
     }
@@ -78,8 +85,6 @@ const AuthCallback = () => {
 
     const { flowMode, identityProviderName, returnUrl, linkingUserName, codeVerifier } = validatedState;
     const redirectUri = absolutifyLink("/auth/callback");
-    handledRef.current = true;
-
     (async () => {
       try {
         if (flowMode === "link") {
@@ -133,6 +138,7 @@ const AuthCallback = () => {
             setState({
               loading: false,
               errorMessage: message,
+              returnUrl,
             });
           },
         });
@@ -143,8 +149,15 @@ const AuthCallback = () => {
   if (state.loading) return null;
 
   return (
-    <div className="p-4 py-24 w-full h-full flex justify-center items-center">
-      <div className="max-w-lg font-mono whitespace-pre-wrap opacity-80">{state.errorMessage}</div>
+    <div className="p-4 py-24 w-full h-full flex flex-col justify-center items-center gap-4">
+      <div className="max-w-lg font-mono whitespace-pre-wrap break-words opacity-80" role="alert">
+        {state.errorMessage}
+      </div>
+      {state.errorMessage && (
+        <Link to={buildAuthRoute({ autoSignIn: false, redirect: state.returnUrl })} className="text-sm text-primary hover:underline">
+          {t("auth.back-to-sign-in")}
+        </Link>
+      )}
     </div>
   );
 };

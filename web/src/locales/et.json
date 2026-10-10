@@ -24,6 +24,7 @@
   "auth": {
     "create-your-account": "Looge oma konto",
     "new-password": "Uus parool",
+    "redirecting-to-provider": "Suunamine teenusesse {{provider}}…",
     "repeat-new-password": "Korrake uut parooli",
     "sign-in-tip": "Kas teil on juba konto?",
     "sign-up-tip": "Kas teil pole veel kontot?",

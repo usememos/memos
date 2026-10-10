@@ -24,6 +24,7 @@
   "auth": {
     "create-your-account": "Izveidojiet savu kontu",
     "new-password": "Jauna parole",
+    "redirecting-to-provider": "Pāradresēšana uz {{provider}}…",
     "repeat-new-password": "Atkārtojiet jauno paroli",
     "sign-in-tip": "Vai jums jau ir konts?",
     "sign-up-tip": "Vai jums vēl nav konta?",

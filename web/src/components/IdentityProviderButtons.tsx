@@ -1,62 +1,98 @@
+import { LoaderIcon } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
+import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { absolutifyLink } from "@/lib/browser";
 import { handleError } from "@/lib/error";
-import { ROUTES } from "@/router/routes";
-import { IdentityProvider, IdentityProvider_Type } from "@/types/proto/api/idp_service_pb";
+import { IdentityProvider } from "@/types/proto/api/idp_service_pb";
+import { AUTH_AUTO_SIGN_IN_PARAM } from "@/utils/auth-redirect";
 import { useTranslate } from "@/utils/i18n";
-import { storeOAuthState } from "@/utils/oauth";
+import { getSSOConfig, signInWithSSO } from "@/utils/sso";
 
 interface Props {
   identityProviderList: IdentityProvider[];
   redirectTarget?: string;
+  autoSignIn?: boolean;
 }
 
-const IdentityProviderButtons = ({ identityProviderList, redirectTarget }: Props) => {
+const IdentityProviderButtons = ({ identityProviderList, redirectTarget, autoSignIn = false }: Props) => {
   const t = useTranslate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [pendingProvider, setPendingProvider] = useState<IdentityProvider>();
+  const pendingRef = useRef(false);
+  const automaticAttemptedRef = useRef(false);
 
-  const handleSignInWithIdentityProvider = async (identityProvider: IdentityProvider) => {
-    if (identityProvider.type === IdentityProvider_Type.OAUTH2) {
-      const redirectUri = absolutifyLink(ROUTES.AUTH_CALLBACK);
-      const oauth2Config = identityProvider.config?.config?.case === "oauth2Config" ? identityProvider.config.config.value : undefined;
-      if (!oauth2Config) {
-        toast.error("Identity provider configuration is invalid.");
-        return;
-      }
-
+  const handleSignInWithIdentityProvider = useCallback(
+    async (identityProvider: IdentityProvider) => {
+      if (pendingRef.current) return;
+      pendingRef.current = true;
+      setPendingProvider(identityProvider);
       try {
-        // Generate and store secure state parameter with CSRF protection
-        // Also generate PKCE parameters (code_challenge) for enhanced security if available
-        const { state, codeChallenge } = await storeOAuthState(identityProvider.name, "signin", redirectTarget);
-
-        // Build OAuth authorization URL with secure state
-        // Include PKCE if available (requires HTTPS/localhost for crypto.subtle)
-        // Using S256 (SHA-256) as the code_challenge_method per RFC 7636
-        let authUrl = `${oauth2Config.authUrl}?client_id=${
-          oauth2Config.clientId
-        }&redirect_uri=${encodeURIComponent(redirectUri)}&state=${state}&response_type=code&scope=${encodeURIComponent(
-          oauth2Config.scopes.join(" "),
-        )}`;
-
-        // Add PKCE parameters if available
-        if (codeChallenge) {
-          authUrl += `&code_challenge=${codeChallenge}&code_challenge_method=S256`;
-        }
-
-        window.location.href = authUrl;
+        // Mark this history entry before leaving, so Back/reload offers manual sign-in.
+        setSearchParams(
+          (previous) => {
+            const next = new URLSearchParams(previous);
+            next.set(AUTH_AUTO_SIGN_IN_PARAM, "false");
+            return next;
+          },
+          { replace: true },
+        );
+        await signInWithSSO(identityProvider, redirectTarget);
       } catch (error) {
+        pendingRef.current = false;
+        setPendingProvider(undefined);
         handleError(error, toast.error, {
           context: "Failed to initiate OAuth flow",
           fallbackMessage: "Failed to initiate sign-in. Please try again.",
         });
       }
+    },
+    [redirectTarget, setSearchParams],
+  );
+
+  useEffect(() => {
+    const provider = identityProviderList[0];
+    if (
+      !autoSignIn ||
+      identityProviderList.length !== 1 ||
+      !provider ||
+      !getSSOConfig(provider) ||
+      searchParams.get(AUTH_AUTO_SIGN_IN_PARAM) === "false" ||
+      automaticAttemptedRef.current
+    ) {
+      return;
     }
-  };
+    automaticAttemptedRef.current = true;
+    void handleSignInWithIdentityProvider(provider);
+  }, [autoSignIn, identityProviderList, searchParams, handleSignInWithIdentityProvider]);
+
+  useEffect(() => {
+    // Back may restore the page from bfcache with React's pending state intact.
+    const onPageShow = (event: PageTransitionEvent) => {
+      if (event.persisted) {
+        pendingRef.current = false;
+        setPendingProvider(undefined);
+      }
+    };
+    window.addEventListener("pageshow", onPageShow);
+    return () => window.removeEventListener("pageshow", onPageShow);
+  }, []);
 
   return (
     <div className="flex w-full flex-col gap-2">
+      {pendingProvider && (
+        <p className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+          <LoaderIcon className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
+          {t("auth.redirecting-to-provider", { provider: pendingProvider.title })}
+        </p>
+      )}
       {identityProviderList.map((identityProvider) => (
-        <Button key={identityProvider.name} variant="outline" onClick={() => handleSignInWithIdentityProvider(identityProvider)}>
+        <Button
+          key={identityProvider.name}
+          variant="outline"
+          disabled={Boolean(pendingProvider)}
+          onClick={() => void handleSignInWithIdentityProvider(identityProvider)}
+        >
           {t("auth.continue-with", { provider: identityProvider.title })}
         </Button>
       ))}

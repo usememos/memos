@@ -24,6 +24,7 @@
   "auth": {
     "create-your-account": "Susikurkite paskyrą",
     "new-password": "Naujas slaptažodis",
+    "redirecting-to-provider": "Nukreipiama į {{provider}}…",
     "repeat-new-password": "Pakartokite naują slaptažodį",
     "sign-in-tip": "Jau turite paskyrą?",
     "sign-up-tip": "Dar neturite paskyros?",
