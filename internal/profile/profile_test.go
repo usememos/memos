@@ -42,3 +42,13 @@ func TestValidateRejectsDemoWithNonSQLiteDriver(t *testing.T) {
 	p := &Profile{Demo: true, Driver: "postgres", Data: t.TempDir()}
 	require.ErrorContains(t, p.Validate(), "demo mode requires the sqlite database driver")
 }
+
+func TestValidateRejectsRDSIAMAuthWithSQLiteDriver(t *testing.T) {
+	p := &Profile{RDSIAMAuth: true, Driver: "sqlite", Data: t.TempDir()}
+	require.ErrorContains(t, p.Validate(), "RDS IAM authentication requires the mysql or postgres database driver")
+}
+
+func TestValidateRejectsRDSCABundleWithoutRDSIAMAuth(t *testing.T) {
+	p := &Profile{RDSCABundle: "/etc/rds/global-bundle.pem", Driver: "postgres", Data: t.TempDir()}
+	require.ErrorContains(t, p.Validate(), "--rds-ca-bundle requires --rds-iam-auth")
+}

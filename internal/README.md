@@ -14,6 +14,7 @@ nothing from `store`, `core`, `server`, `provider`, `markdown`, `filter`, or
 | `motionphoto/` | Live Photo and Motion Photo container parsing |
 | `profile/` | process configuration parsed from flags and environment |
 | `random/` | UUIDs and random strings from a secure source |
+| `rdsiam/` | Amazon RDS IAM authentication tokens signed from the default AWS credential chain |
 | `ratelimit/` | sliding-window rate limiter |
 | `testutil/` | test fixtures and the fake S3 server (the one package allowed to import `proto/gen`) |
 | `version/` | CalVer build metadata from release overrides or the embedded Git commit |
