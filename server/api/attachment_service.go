@@ -310,9 +310,15 @@ func (s *APIService) ListAttachments(ctx context.Context, request *apipb.ListAtt
 		}
 	}
 
+	// Request one extra row so we can tell whether another page exists. The
+	// extra row is dropped before returning, matching the pattern used by
+	// ListUsers. An exact full page that is also the last page must not
+	// advertise a next page token, since the API contract states the token is
+	// empty when there are no more pages.
+	limitPlusOne := pageSize + 1
 	findAttachment := &store.FindAttachment{
 		Access: newMemoAccessScope(user, true),
-		Limit:  &pageSize,
+		Limit:  &limitPlusOne,
 		Offset: &offset,
 	}
 	// Parse filter if provided
@@ -330,13 +336,15 @@ func (s *APIService) ListAttachments(ctx context.Context, request *apipb.ListAtt
 
 	response := &apipb.ListAttachmentsResponse{}
 
-	for _, attachment := range attachments {
-		response.Attachments = append(response.Attachments, convertAttachmentFromStore(attachment))
+	// Only emit a next page token when we actually fetched the extra row, which
+	// proves at least one more result exists.
+	if len(attachments) == limitPlusOne {
+		attachments = attachments[:pageSize]
+		response.NextPageToken = fmt.Sprintf("%d", offset+pageSize)
 	}
 
-	// Set next page token if we got the full page size (indicating there might be more)
-	if len(attachments) == pageSize {
-		response.NextPageToken = fmt.Sprintf("%d", offset+pageSize)
+	for _, attachment := range attachments {
+		response.Attachments = append(response.Attachments, convertAttachmentFromStore(attachment))
 	}
 
 	return response, nil

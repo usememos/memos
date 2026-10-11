@@ -2,6 +2,7 @@ package test
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -1030,4 +1031,62 @@ func TestListAttachmentsRejectsNegativePageToken(t *testing.T) {
 	require.NoError(t, err)
 	_, err = ts.Service.ListAttachments(ts.CreateUserContext(ctx, user.ID), &apipb.ListAttachmentsRequest{PageToken: "-5"})
 	require.Equal(t, codes.InvalidArgument, status.Code(err))
+}
+
+func TestListAttachmentsNextPageToken(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	const pageSize = 3
+
+	t.Run("exact full page has no next token", func(t *testing.T) {
+		user, err := ts.CreateRegularUser(ctx, "attachment-pager-exact")
+		require.NoError(t, err)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
+
+		for i := range pageSize {
+			_, createErr := ts.Store.CreateAttachment(ctx, &store.Attachment{
+				UID:       fmt.Sprintf("attachment-exact-%d", i),
+				CreatorID: user.ID,
+				Filename:  fmt.Sprintf("attachment-exact-%d.txt", i),
+				Type:      "text/plain",
+			})
+			require.NoError(t, createErr)
+		}
+
+		resp, err := ts.Service.ListAttachments(userCtx, &apipb.ListAttachmentsRequest{PageSize: pageSize})
+		require.NoError(t, err)
+		require.Len(t, resp.Attachments, pageSize)
+		require.Empty(t, resp.NextPageToken, "an exact full page must not advertise a next page")
+	})
+
+	t.Run("overflow page advertises exactly one more", func(t *testing.T) {
+		user, err := ts.CreateRegularUser(ctx, "attachment-pager-overflow")
+		require.NoError(t, err)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
+
+		for i := range pageSize + 1 {
+			_, createErr := ts.Store.CreateAttachment(ctx, &store.Attachment{
+				UID:       fmt.Sprintf("attachment-overflow-%d", i),
+				CreatorID: user.ID,
+				Filename:  fmt.Sprintf("attachment-overflow-%d.txt", i),
+				Type:      "text/plain",
+			})
+			require.NoError(t, createErr)
+		}
+
+		first, err := ts.Service.ListAttachments(userCtx, &apipb.ListAttachmentsRequest{PageSize: pageSize})
+		require.NoError(t, err)
+		require.Len(t, first.Attachments, pageSize)
+		require.NotEmpty(t, first.NextPageToken, "a page with a remaining row must advertise a next page")
+
+		second, err := ts.Service.ListAttachments(userCtx, &apipb.ListAttachmentsRequest{
+			PageSize:  pageSize,
+			PageToken: first.NextPageToken,
+		})
+		require.NoError(t, err)
+		require.Len(t, second.Attachments, 1, "the trailing page holds exactly the overflow row")
+		require.Empty(t, second.NextPageToken, "the final page must not advertise a next page")
+	})
 }
