@@ -186,17 +186,51 @@ func TestMessageFormatEncodesNonASCIIHeaders(t *testing.T) {
 		}
 	}
 
-	decoder := new(mime.WordDecoder)
-	for line := range strings.SplitSeq(headers, "\r\n") {
-		if value, ok := strings.CutPrefix(line, "Subject: "); ok {
-			decoded, err := decoder.DecodeHeader(value)
-			if err != nil || decoded != msg.Subject {
-				t.Errorf("subject decodes to %q, err %v", decoded, err)
-			}
-		}
+	parsed, err := mail.ReadMessage(strings.NewReader(formatted))
+	if err != nil {
+		t.Fatalf("formatted message does not parse: %v", err)
+	}
+	decoded, err := new(mime.WordDecoder).DecodeHeader(parsed.Header.Get("Subject"))
+	if err != nil || decoded != msg.Subject {
+		t.Errorf("subject decodes to %q, err %v", decoded, err)
 	}
 	if !strings.Contains(headers, "From: =?utf-8?q?Zo=C3=AB?= <sender@example.com>") {
 		t.Errorf("from name was not encoded:\n%s", headers)
+	}
+}
+
+func TestMessageFormatFoldsLongHeaders(t *testing.T) {
+	msg := Message{
+		To:      []string{"user@example.com"},
+		Subject: strings.Repeat("李雷的空间 ", 30) + "has a very long title",
+		Body:    "Test Body",
+	}
+
+	formatted := msg.Format("sender@example.com", strings.Repeat("Zoë ", 20)+"Memos")
+	headers, _, _ := strings.Cut(formatted, "\r\n\r\n")
+	for line := range strings.SplitSeq(headers, "\r\n") {
+		if len(line) <= maxHeaderLineLength {
+			continue
+		}
+		// A lone encoded word after the header name may exceed the
+		// recommended length; a line that still has a fold point may not.
+		_, value, _ := strings.Cut(line, ": ")
+		if strings.Contains(strings.TrimSpace(value), " ") || len(line) > 998 {
+			t.Errorf("header line of %d characters was not folded:\n%s", len(line), line)
+		}
+	}
+
+	parsed, err := mail.ReadMessage(strings.NewReader(formatted))
+	if err != nil {
+		t.Fatalf("folded message does not parse: %v", err)
+	}
+	decoded, err := new(mime.WordDecoder).DecodeHeader(parsed.Header.Get("Subject"))
+	if err != nil || decoded != msg.Subject {
+		t.Errorf("folded subject decodes to %q, err %v", decoded, err)
+	}
+	from, err := mail.ParseAddress(parsed.Header.Get("From"))
+	if err != nil || from.Name != strings.Repeat("Zoë ", 20)+"Memos" {
+		t.Errorf("folded From decodes to %v, err %v", from, err)
 	}
 }
 
@@ -204,13 +238,11 @@ func TestMessageFormatEncodesNonASCIIFromNameWithSpecials(t *testing.T) {
 	msg := Message{To: []string{"user@example.com"}, Subject: "Test", Body: "Test"}
 	for _, name := range []string{"Zoë <ops>", "Zoë, Team", "Zoë (Memos)"} {
 		formatted := msg.Format("sender@example.com", name)
-		headers, _, _ := strings.Cut(formatted, "\r\n\r\n")
-		var from string
-		for line := range strings.SplitSeq(headers, "\r\n") {
-			if value, ok := strings.CutPrefix(line, "From: "); ok {
-				from = value
-			}
+		parsed, err := mail.ReadMessage(strings.NewReader(formatted))
+		if err != nil {
+			t.Fatalf("formatted message for name %q does not parse: %v", name, err)
 		}
+		from := parsed.Header.Get("From")
 		address, err := mail.ParseAddress(from)
 		if err != nil {
 			t.Errorf("From header %q for name %q does not parse: %v", from, name, err)

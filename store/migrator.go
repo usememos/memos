@@ -218,8 +218,10 @@ func (s *Store) applyMigrations(ctx context.Context, currentSchemaVersion, targe
 		migrationsApplied++
 	}
 
-	// Record the schema version in the same transaction, so a crash cannot
-	// leave migrated tables behind an old version that re-runs them.
+	// Record the schema version in the same transaction, so on SQLite and
+	// PostgreSQL a crash cannot leave migrated tables behind an old version
+	// that re-runs them. MySQL commits DDL implicitly, so there the version
+	// write is only adjacent to the migration, as it was before.
 	if err := s.writeSchemaVersionTx(ctx, tx, basicSetting, targetSchemaVersion); err != nil {
 		return err
 	}
@@ -256,8 +258,9 @@ func (s *Store) preMigrate(ctx context.Context) error {
 			return errors.Errorf("failed to execute SQL file %s, err %s", filePath, err)
 		}
 
-		// Record the schema version with the schema, so a crash cannot leave
-		// an initialized database without one.
+		// Record the schema version with the schema, so on SQLite and
+		// PostgreSQL a crash cannot leave an initialized database without
+		// one. MySQL commits DDL implicitly and keeps the earlier behavior.
 		schemaVersion, err := s.GetCurrentSchemaVersion()
 		if err != nil {
 			return errors.Wrap(err, "failed to get current schema version")
