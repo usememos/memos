@@ -272,13 +272,8 @@ func validateAndNormalizeDeploymentInstanceSetting(setting *storepb.InstanceSett
 		if notification == nil {
 			return errors.New("notificationSetting must be populated for key NOTIFICATION")
 		}
-		if email := notification.Email; email != nil && email.Enabled {
-			if strings.TrimSpace(email.SmtpHost) == "" || email.SmtpPort <= 0 || strings.TrimSpace(email.FromEmail) == "" {
-				return errors.New("enabled notification email requires smtpHost, a positive smtpPort, and fromEmail")
-			}
-			if email.UseTls && email.UseSsl {
-				return errors.New("notification email cannot enable both useTls and useSsl")
-			}
+		if err := ValidateInstanceNotificationSetting(notification); err != nil {
+			return err
 		}
 	case storepb.InstanceSettingKey_AI:
 		if setting.GetAiSetting() == nil {

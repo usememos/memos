@@ -58,6 +58,8 @@ type Driver interface {
 	// CreateInstanceSettingIfNotExists atomically creates the setting when its name is absent and reports whether it inserted the row.
 	CreateInstanceSettingIfNotExists(ctx context.Context, create *InstanceSetting) (bool, error)
 	UpsertInstanceSetting(ctx context.Context, upsert *InstanceSetting) (*InstanceSetting, error)
+	// UpsertInstanceSettingTx writes the setting within tx, for callers that must commit it together with other statements.
+	UpsertInstanceSettingTx(ctx context.Context, tx *sql.Tx, upsert *InstanceSetting) error
 	ListInstanceSettings(ctx context.Context, find *FindInstanceSetting) ([]*InstanceSetting, error)
 	DeleteInstanceSetting(ctx context.Context, delete *DeleteInstanceSetting) error
 

@@ -852,6 +852,61 @@ func TestServeAttachmentFile_RefreshCookieAuthenticatesOwner(t *testing.T) {
 	require.Equal(t, "secret content", rec.Body.String())
 }
 
+// TestServeAttachmentFile_UnlinkedAttachmentOwnerOrAdmin verifies an
+// attachment not linked to a memo follows the API's GetAttachment rule: its
+// creator and an instance admin may read it, other users may not.
+func TestServeAttachmentFile_UnlinkedAttachmentOwnerOrAdmin(t *testing.T) {
+	ctx := context.Background()
+	svc, fs, stores, cleanup := newShareAttachmentTestServices(ctx, t)
+	defer cleanup()
+
+	newUser := func(username string, role store.Role) *store.User {
+		user, err := svc.Store.CreateUser(ctx, &store.User{Username: username, Role: role, Email: username + "@example.com"})
+		require.NoError(t, err)
+		return user
+	}
+	owner := newUser("unlinked-owner", store.RoleUser)
+	admin := newUser("unlinked-admin", store.RoleAdmin)
+	other := newUser("unlinked-other", store.RoleUser)
+
+	attachment, err := svc.CreateAttachment(context.WithValue(ctx, auth.UserIDContextKey, owner.ID), &apipb.CreateAttachmentRequest{
+		Attachment: &apipb.Attachment{
+			Filename: "draft.txt",
+			Type:     "text/plain",
+			Content:  []byte("draft content"),
+		},
+	})
+	require.NoError(t, err)
+
+	e := echo.New()
+	fs.RegisterRoutes(e)
+	url := fmt.Sprintf("/file/%s/%s", attachment.Name, attachment.Filename)
+	getAs := func(user *store.User) int {
+		req := httptest.NewRequest(http.MethodGet, url, nil)
+		req.AddCookie(newRefreshTokenCookie(ctx, t, stores, user.ID, svc.Secret))
+		rec := httptest.NewRecorder()
+		e.ServeHTTP(rec, req)
+		return rec.Code
+	}
+
+	require.Equal(t, http.StatusOK, getAs(owner))
+	require.Equal(t, http.StatusOK, getAs(admin))
+	require.Equal(t, http.StatusForbidden, getAs(other))
+}
+
+func newRefreshTokenCookie(ctx context.Context, t *testing.T, stores *store.Store, userID int32, secret string) *http.Cookie {
+	t.Helper()
+	tokenID := random.UUID()
+	require.NoError(t, stores.AddUserRefreshToken(ctx, userID, &storepb.RefreshTokensUserSetting_RefreshToken{
+		TokenId:   tokenID,
+		ExpiresAt: timestamppb.New(time.Now().Add(auth.RefreshTokenDuration)),
+		CreatedAt: timestamppb.Now(),
+	}))
+	refreshToken, _, err := auth.GenerateRefreshToken(userID, tokenID, []byte(secret))
+	require.NoError(t, err)
+	return &http.Cookie{Name: auth.RefreshTokenCookieName, Value: refreshToken}
+}
+
 func newExpiredRefreshTokenCookie(ctx context.Context, t *testing.T, stores *store.Store, userID int32, secret string) *http.Cookie {
 	t.Helper()
 	tokenID := random.UUID()

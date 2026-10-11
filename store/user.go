@@ -13,6 +13,16 @@ import (
 // has been resolved explicitly.
 var ErrUserHasSpaceMembership = stderrors.New("user still has space memberships")
 
+// ErrLastInstanceAdmin indicates that a user mutation would leave the instance
+// without an active administrator.
+var ErrLastInstanceAdmin = stderrors.New("cannot remove the last instance admin")
+
+// RemovesInstanceAdmin reports whether the update can take the user out of
+// the set of active instance administrators.
+func (update *UpdateUser) RemovesInstanceAdmin() bool {
+	return (update.RowStatus != nil && *update.RowStatus != Normal) || (update.Role != nil && *update.Role != RoleAdmin)
+}
+
 // Role is the type of a role.
 type Role string
 

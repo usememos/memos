@@ -225,6 +225,9 @@ func (s *APIService) UpdateInstanceSetting(ctx context.Context, request *apipb.U
 	// An empty string means "no change", not "clear the credential".
 	switch updateSetting.Key {
 	case storepb.InstanceSettingKey_NOTIFICATION:
+		if err := store.ValidateInstanceNotificationSetting(updateSetting.GetNotificationSetting()); err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid instance setting: %v", err)
+		}
 		if notif := updateSetting.GetNotificationSetting(); notif != nil && notif.Email != nil && notif.Email.SmtpPassword == "" {
 			existing, err := s.Store.GetInstanceNotificationSetting(ctx)
 			if err == nil && existing != nil && existing.Email != nil {

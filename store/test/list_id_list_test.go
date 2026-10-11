@@ -10,10 +10,9 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-// TestListsAcceptLongIDLists lists by id lists far longer than the hundred
-// bound parameters Cloudflare D1 allows per statement. Every driver must
-// accept them: the API hands page-sized lists, up to a thousand entries, to
-// these lookups.
+// TestListsAcceptLongIDLists lists by id lists of a few hundred entries.
+// Every driver must accept them: the API hands page-sized lists, up to a
+// thousand entries, to these lookups.
 func TestListsAcceptLongIDLists(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)

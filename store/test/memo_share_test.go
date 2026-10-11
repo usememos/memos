@@ -94,6 +94,9 @@ func TestMemoShareAuthorizedDeletion(t *testing.T) {
 				wantErr = store.ErrMemoSpaceMembershipRequired
 			case "demoted admin":
 				delete.Policy.ActorUserID = admin.ID
+				// The instance must keep another administrator for the demotion.
+				_, err = createTestingUserWithRole(ctx, ts, "share-standing-admin", store.RoleAdmin)
+				require.NoError(t, err)
 				_, err = ts.UpdateUser(ctx, &store.UpdateUser{ID: admin.ID, Role: new(store.RoleUser)})
 				require.NoError(t, err)
 				wantErr = store.ErrMemoPermissionDenied

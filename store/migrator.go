@@ -13,6 +13,7 @@ import (
 
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
@@ -177,6 +178,14 @@ func (s *Store) applyMigrations(ctx context.Context, currentSchemaVersion, targe
 		return err
 	}
 
+	cachedBasicSetting, err := s.GetInstanceBasicSetting(ctx)
+	if err != nil {
+		return errors.Wrap(err, "failed to get instance basic setting")
+	}
+	// The cache hands out a shared value; change a copy until the commit.
+	basicSetting := &storepb.InstanceBasicSetting{}
+	proto.Merge(basicSetting, cachedBasicSetting)
+
 	// Start a transaction to apply migrations atomically
 	tx, err := s.driver.GetDB().Begin()
 	if err != nil {
@@ -209,17 +218,19 @@ func (s *Store) applyMigrations(ctx context.Context, currentSchemaVersion, targe
 		migrationsApplied++
 	}
 
+	// Record the schema version in the same transaction, so on SQLite and
+	// PostgreSQL a crash cannot leave migrated tables behind an old version
+	// that re-runs them. MySQL commits DDL implicitly, so there the version
+	// write is only adjacent to the migration, as it was before.
+	if err := s.writeSchemaVersionTx(ctx, tx, basicSetting, targetSchemaVersion); err != nil {
+		return err
+	}
 	if err := tx.Commit(); err != nil {
 		return errors.Wrap(err, "failed to commit migration transaction")
 	}
+	s.cacheInstanceBasicSetting(ctx, basicSetting)
 
 	slog.Info("migration completed", slog.Int("migrationsApplied", migrationsApplied))
-
-	// Update schema version after successful migration
-	if err := s.updateCurrentSchemaVersion(ctx, targetSchemaVersion); err != nil {
-		return errors.Wrap(err, "failed to update current schema version")
-	}
-
 	return nil
 }
 
@@ -246,19 +257,23 @@ func (s *Store) preMigrate(ctx context.Context) error {
 		if err := s.execute(ctx, tx, string(bytes)); err != nil {
 			return errors.Errorf("failed to execute SQL file %s, err %s", filePath, err)
 		}
-		if err := tx.Commit(); err != nil {
-			return errors.Wrap(err, "failed to commit transaction")
-		}
 
-		// Upsert current schema version to database.
+		// Record the schema version with the schema, so on SQLite and
+		// PostgreSQL a crash cannot leave an initialized database without
+		// one. MySQL commits DDL implicitly and keeps the earlier behavior.
 		schemaVersion, err := s.GetCurrentSchemaVersion()
 		if err != nil {
 			return errors.Wrap(err, "failed to get current schema version")
 		}
-		slog.Info("database initialized successfully", slog.String("schemaVersion", schemaVersion))
-		if err := s.updateCurrentSchemaVersion(ctx, schemaVersion); err != nil {
-			return errors.Wrap(err, "failed to update current schema version")
+		basicSetting := &storepb.InstanceBasicSetting{}
+		if err := s.writeSchemaVersionTx(ctx, tx, basicSetting, schemaVersion); err != nil {
+			return err
 		}
+		if err := tx.Commit(); err != nil {
+			return errors.Wrap(err, "failed to commit transaction")
+		}
+		s.cacheInstanceBasicSetting(ctx, basicSetting)
+		slog.Info("database initialized successfully", slog.String("schemaVersion", schemaVersion))
 	}
 
 	if err := s.checkMinimumUpgradeVersion(ctx); err != nil {
@@ -405,21 +420,28 @@ func (*Store) execute(ctx context.Context, tx *sql.Tx, stmt string) error {
 	return nil
 }
 
-// updateCurrentSchemaVersion updates the current schema version in the instance basic setting.
-// It retrieves the instance basic setting, updates the schema version, and upserts the setting back to the database.
-func (s *Store) updateCurrentSchemaVersion(ctx context.Context, schemaVersion string) error {
-	instanceBasicSetting, err := s.GetInstanceBasicSetting(ctx)
+// writeSchemaVersionTx sets basicSetting's schema version and writes it
+// within tx. The caller commits tx and then caches basicSetting.
+func (s *Store) writeSchemaVersionTx(ctx context.Context, tx *sql.Tx, basicSetting *storepb.InstanceBasicSetting, schemaVersion string) error {
+	basicSetting.SchemaVersion = schemaVersion
+	value, err := protojson.Marshal(basicSetting)
 	if err != nil {
-		return errors.Wrap(err, "failed to get instance basic setting")
+		return errors.Wrap(err, "failed to marshal instance basic setting")
 	}
-	instanceBasicSetting.SchemaVersion = schemaVersion
-	if _, err := s.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
-		Key:   storepb.InstanceSettingKey_BASIC,
-		Value: &storepb.InstanceSetting_BasicSetting{BasicSetting: instanceBasicSetting},
+	if err := s.driver.UpsertInstanceSettingTx(ctx, tx, &InstanceSetting{
+		Name:  storepb.InstanceSettingKey_BASIC.String(),
+		Value: string(value),
 	}); err != nil {
-		return errors.Wrap(err, "failed to upsert instance setting")
+		return errors.Wrap(err, "failed to update current schema version")
 	}
 	return nil
+}
+
+func (s *Store) cacheInstanceBasicSetting(ctx context.Context, basicSetting *storepb.InstanceBasicSetting) {
+	s.cacheInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key:   storepb.InstanceSettingKey_BASIC,
+		Value: &storepb.InstanceSetting_BasicSetting{BasicSetting: basicSetting},
+	})
 }
 
 // checkMinimumUpgradeVersion rejects databases whose migration history is no longer shipped.

@@ -1,9 +1,15 @@
 package api
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/protobuf/reflect/protoreflect"
+	"google.golang.org/protobuf/reflect/protoregistry"
+
+	// Registers the API service descriptors looked up below.
+	_ "github.com/usememos/memos/proto/gen/api"
 )
 
 // TestPublicMethodsArePublic verifies that methods in PublicMethods are recognized as public.
@@ -20,7 +26,6 @@ func TestPublicMethodsArePublic(t *testing.T) {
 		"/memos.api.UserService/CreateUser",
 		"/memos.api.UserService/GetUser",
 		"/memos.api.UserService/BatchGetUsers",
-		"/memos.api.UserService/GetUserAvatar",
 		"/memos.api.UserService/GetUserStats",
 		"/memos.api.UserService/ListUserStats",
 		// Identity Provider Service
@@ -161,5 +166,22 @@ func TestAuthBootstrapClassification(t *testing.T) {
 		t.Run("gated/"+method, func(t *testing.T) {
 			assert.False(t, IsAuthBootstrapMethod(method), "expected %s to be gated on a private instance", method)
 		})
+	}
+}
+
+// TestACLMethodsExist verifies every ACL entry names a real RPC, so a renamed
+// or removed method cannot leave a stale public entry behind.
+func TestACLMethodsExist(t *testing.T) {
+	for _, methods := range []map[string]struct{}{PublicMethods, AuthBootstrapMethods} {
+		for method := range methods {
+			t.Run(method, func(t *testing.T) {
+				name := protoreflect.FullName(strings.ReplaceAll(strings.TrimPrefix(method, "/"), "/", "."))
+				descriptor, err := protoregistry.GlobalFiles.FindDescriptorByName(name)
+				if assert.NoError(t, err, "%s does not name a registered RPC", method) {
+					_, ok := descriptor.(protoreflect.MethodDescriptor)
+					assert.True(t, ok, "%s is not an RPC method", method)
+				}
+			})
+		}
 	}
 }

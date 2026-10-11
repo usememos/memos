@@ -3,6 +3,8 @@ package email
 import (
 	"errors"
 	"fmt"
+	"mime"
+	"net/mail"
 	"strings"
 	"time"
 )
@@ -40,30 +42,30 @@ func (m *Message) Format(fromEmail, fromName string) string {
 	to := sanitizeEmailHeaderValues(m.To)
 	cc := sanitizeEmailHeaderValues(m.Cc)
 	replyTo := sanitizeEmailHeaderValue(m.ReplyTo)
-	subject := sanitizeEmailHeaderValue(m.Subject)
+	// Header values must be ASCII; RFC 2047 encodes UTF-8 text such as
+	// nicknames and Space titles and leaves ASCII text unchanged.
+	subject := mime.QEncoding.Encode("utf-8", sanitizeEmailHeaderValue(m.Subject))
 
-	// From header
-	if fromName != "" {
-		fmt.Fprintf(&sb, "From: %s <%s>\r\n", fromName, fromEmail)
-	} else {
-		fmt.Fprintf(&sb, "From: %s\r\n", fromEmail)
-	}
+	// From header. net/mail quotes an ASCII display name that contains RFC
+	// 5322 specials and RFC 2047 encodes a non-ASCII one, choosing an
+	// encoding whose words stay valid inside a phrase.
+	writeHeader(&sb, "From", (&mail.Address{Name: fromName, Address: fromEmail}).String())
 
 	// To header
-	fmt.Fprintf(&sb, "To: %s\r\n", strings.Join(to, ", "))
+	writeHeader(&sb, "To", strings.Join(to, ", "))
 
 	// Cc header (optional)
 	if len(cc) > 0 {
-		fmt.Fprintf(&sb, "Cc: %s\r\n", strings.Join(cc, ", "))
+		writeHeader(&sb, "Cc", strings.Join(cc, ", "))
 	}
 
 	// Reply-To header (optional)
 	if replyTo != "" {
-		fmt.Fprintf(&sb, "Reply-To: %s\r\n", replyTo)
+		writeHeader(&sb, "Reply-To", replyTo)
 	}
 
 	// Subject header
-	fmt.Fprintf(&sb, "Subject: %s\r\n", subject)
+	writeHeader(&sb, "Subject", subject)
 
 	// Date header (RFC 5322 format)
 	fmt.Fprintf(&sb, "Date: %s\r\n", time.Now().Format(time.RFC1123Z))
@@ -85,6 +87,35 @@ func (m *Message) Format(fromEmail, fromName string) string {
 	sb.WriteString(m.Body)
 
 	return sb.String()
+}
+
+// maxHeaderLineLength is the line length RFC 5322 recommends; the hard limit
+// is 998 characters, which a long RFC 2047 encoded subject would otherwise
+// exceed.
+const maxHeaderLineLength = 78
+
+// writeHeader writes one header, folding the value at spaces so no line is
+// longer than maxHeaderLineLength unless a single word already is. Receivers
+// unfold CRLF followed by white space back to the single space, so the value
+// is unchanged.
+func writeHeader(sb *strings.Builder, name, value string) {
+	sb.WriteString(name)
+	sb.WriteString(": ")
+	lineLength := len(name) + 2
+	for i, word := range strings.Split(value, " ") {
+		if i > 0 {
+			if lineLength+1+len(word) > maxHeaderLineLength {
+				sb.WriteString("\r\n ")
+				lineLength = 1
+			} else {
+				sb.WriteByte(' ')
+				lineLength++
+			}
+		}
+		sb.WriteString(word)
+		lineLength += len(word)
+	}
+	sb.WriteString("\r\n")
 }
 
 func sanitizeEmailHeaderValue(value string) string {

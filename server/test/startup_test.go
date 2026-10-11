@@ -254,6 +254,21 @@ func unusedPort(t *testing.T) int {
 	return listener.Addr().(*net.TCPAddr).Port
 }
 
+// TestHealthzReportsDatabaseOutage verifies /healthz checks the database
+// instead of always answering ready.
+func TestHealthzReportsDatabaseOutage(t *testing.T) {
+	ctx := context.Background()
+	inst := bootInstance(ctx, t, instanceOptions{instanceURL: "http://localhost"})
+
+	status, _ := inst.do(t, http.MethodGet, "/healthz", "", nil)
+	require.Equal(t, http.StatusOK, status)
+
+	require.NoError(t, inst.server.Store.GetDriver().GetDB().Close())
+	status, body := inst.do(t, http.MethodGet, "/healthz", "", nil)
+	require.Equal(t, http.StatusServiceUnavailable, status)
+	require.Equal(t, "Database unavailable.", string(body))
+}
+
 // TestStartupServesEveryRegisteredRouter boots a fresh instance and checks that
 // each router mounted by server.NewServer actually answers. A registration
 // order regression or a gateway conflict shows up here as a 404.
