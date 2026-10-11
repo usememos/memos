@@ -74,7 +74,7 @@ Every root folder is named for what it holds. Read the folder's `doc.go` or `REA
 | `server/frontend/` | Static SPA serving; `dist/` is the built SPA baked in by `go:embed` | |
 | `server/mcp/` | Model Context Protocol server | |
 | `server/auth/` | JWT access tokens, refresh tokens, PAT handling | |
-| `core/` | Business rules with no HTTP and no SQL: `access`, `notification`, `memopayload`, `memoexport` | store, provider, markdown, filter, internal |
+| `core/` | Business rules with no HTTP and no SQL: `access`, `notification`, `memopayload`, `memoexport`, `usagelimit` | store, provider, markdown, filter, internal |
 | `store/` | Store facade, cache, migrations, `Driver` interface; `store/db/{sqlite,mysql,postgres}/` implement it | provider, markdown, filter, internal |
 | `markdown/` | Markdown engine: parser, AST, memos syntax extensions, renderer, memo payload | proto/gen, internal |
 | `filter/` | CEL filter compiler: parse to IR, render to SQL per driver, filterable field schema | internal |

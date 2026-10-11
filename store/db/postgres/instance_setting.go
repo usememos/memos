@@ -30,6 +30,20 @@ func (d *DB) CreateInstanceSettingIfNotExists(ctx context.Context, create *store
 	return rowsAffected == 1, nil
 }
 
+// UpdateInstanceSettingIfUnchanged replaces the setting value only when the
+// stored value still equals oldValue, and reports whether it did.
+func (d *DB) UpdateInstanceSettingIfUnchanged(ctx context.Context, name, oldValue, newValue string) (bool, error) {
+	result, err := d.db.ExecContext(ctx, "UPDATE system_setting SET value = $1 WHERE name = $2 AND value = $3", newValue, name, oldValue)
+	if err != nil {
+		return false, errors.Wrap(err, "failed to conditionally update instance setting")
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return false, errors.Wrap(err, "failed to inspect conditional instance setting update")
+	}
+	return rowsAffected == 1, nil
+}
+
 func (d *DB) UpsertInstanceSetting(ctx context.Context, upsert *store.InstanceSetting) (*store.InstanceSetting, error) {
 	if err := upsertInstanceSetting(ctx, d.db, upsert); err != nil {
 		return nil, err

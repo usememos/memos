@@ -15,6 +15,7 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/durationpb"
 
+	"github.com/usememos/memos/core/usagelimit"
 	"github.com/usememos/memos/internal/clientip"
 	"github.com/usememos/memos/internal/identifier"
 	"github.com/usememos/memos/internal/ratelimit"
@@ -28,12 +29,19 @@ const (
 	// type ("memos.api/Memo"), so reasons and resources share one name.
 	errorInfoDomain = "memos.api"
 	// reasonRateLimited marks a refusal that recovers on its own after the
-	// advertised delay. Metering will use QUOTA_EXCEEDED for refusals that do not.
+	// advertised delay.
 	reasonRateLimited = "RATE_LIMITED"
+	// reasonQuotaExceeded marks a refusal by a usage limit. It does not recover
+	// with time: the user must free space or an admin must raise the limit.
+	reasonQuotaExceeded = "QUOTA_EXCEEDED"
+	// reasonFileTooLarge marks a file larger than the instance upload limit,
+	// which applies to every user.
+	reasonFileTooLarge = "FILE_TOO_LARGE"
 	// reasonChallengeRequired marks a request that must carry a valid challenge token.
 	reasonChallengeRequired = "CHALLENGE_REQUIRED"
 
-	rateLimitMessage = "too many requests, try again later"
+	rateLimitMessage     = "too many requests, try again later"
+	quotaExceededMessage = "quota exceeded"
 
 	// challengeTokenHeader carries the proof-of-humanity token on the wire; both
 	// transports forward it to metadata under challengeTokenMetadataKey.
@@ -65,6 +73,83 @@ func newRateLimitError(scope ratelimit.Scope, decision ratelimit.Decision) error
 		return st.Err()
 	}
 	return detailed.Err()
+}
+
+// newQuotaExceededError builds the refusal for an action that would exceed a
+// usage limit: RESOURCE_EXHAUSTED with an ErrorInfo carrying the metric, the
+// limit, the usage and the usage limit that applied, and a QuotaFailure naming
+// the user. It carries no RetryInfo, because waiting does not help.
+func newQuotaExceededError(username string, refusal *usagelimit.Refusal) error {
+	st := status.New(codes.ResourceExhausted, quotaExceededMessage)
+	detailed, err := st.WithDetails(
+		&errdetails.ErrorInfo{
+			Reason: reasonQuotaExceeded,
+			Domain: errorInfoDomain,
+			Metadata: map[string]string{
+				"metric":      refusal.Metric.String(),
+				"limit":       strconv.FormatInt(refusal.Limit, 10),
+				"usage":       strconv.FormatInt(refusal.Usage, 10),
+				"usage_limit": UsageLimitNamePrefix + refusal.Source,
+			},
+		},
+		&errdetails.QuotaFailure{
+			Violations: []*errdetails.QuotaFailure_Violation{{
+				Subject:     BuildUserName(username),
+				Description: quotaExceededDescription(refusal),
+			}},
+		},
+	)
+	if err != nil {
+		return st.Err()
+	}
+	return detailed.Err()
+}
+
+// newFileTooLargeError builds the refusal for a file larger than the instance
+// upload limit: RESOURCE_EXHAUSTED with an ErrorInfo carrying the limit and
+// the file size in bytes. It carries no RetryInfo, because waiting does not
+// make the file fit.
+func newFileTooLargeError(limit, size int64) error {
+	st := status.New(codes.ResourceExhausted, "file size exceeds the limit")
+	detailed, err := st.WithDetails(&errdetails.ErrorInfo{
+		Reason: reasonFileTooLarge,
+		Domain: errorInfoDomain,
+		Metadata: map[string]string{
+			"limit": strconv.FormatInt(limit, 10),
+			"size":  strconv.FormatInt(size, 10),
+		},
+	})
+	if err != nil {
+		return st.Err()
+	}
+	return detailed.Err()
+}
+
+func quotaExceededDescription(refusal *usagelimit.Refusal) string {
+	switch refusal.Metric {
+	case usagelimit.MetricMemos:
+		return "You have reached the limit of " + strconv.FormatInt(refusal.Limit, 10) + " memos."
+	case usagelimit.MetricStorageBytes:
+		return "This upload would exceed your storage limit of " + strconv.FormatInt(refusal.Limit, 10) + " bytes."
+	case usagelimit.MetricUploadBytes:
+		return "The file is larger than the limit of " + strconv.FormatInt(refusal.Limit, 10) + " bytes per file."
+	default:
+		return "A usage limit was reached."
+	}
+}
+
+// isQuotaExceeded reports whether err is a usage limit refusal.
+func isQuotaExceeded(err error) bool {
+	st, ok := status.FromError(err)
+	if !ok || st.Code() != codes.ResourceExhausted {
+		return false
+	}
+	for _, detail := range st.Details() {
+		if info, ok := detail.(*errdetails.ErrorInfo); ok && info.GetReason() == reasonQuotaExceeded {
+			return true
+		}
+	}
+	return false
 }
 
 // newChallengeRequiredError builds the refusal for a missing or failed challenge

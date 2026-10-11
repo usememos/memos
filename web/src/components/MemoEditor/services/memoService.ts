@@ -8,6 +8,7 @@ import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
 import type { Memo } from "@/types/proto/api/memo_service_pb";
 import { MemoSchema } from "@/types/proto/api/memo_service_pb";
 import type { EditorState } from "../state";
+import type { LocalFile } from "../types/attachment";
 import { uploadService } from "./uploadService";
 
 /**
@@ -91,10 +92,12 @@ export const memoService = {
       memoName?: string;
       parentMemoName?: string;
       space?: string;
+      /** Runs as each local file finishes uploading, before the memo is saved. */
+      onFileUploaded?: (localFile: LocalFile, attachment: Attachment) => void;
     },
   ): Promise<{ memoName: string; hasChanges: boolean; moved?: boolean }> {
     // 1. Upload local files first
-    const newAttachments = await uploadService.uploadFiles(state.localFiles);
+    const newAttachments = await uploadService.uploadFiles(state.localFiles, options.onFileUploaded);
     const allAttachments = [...state.metadata.attachments, ...newAttachments];
 
     // 2. Update existing memo

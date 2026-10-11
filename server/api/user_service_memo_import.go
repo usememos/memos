@@ -198,7 +198,7 @@ func (i *memoImporter) importMemo(record *memoexport.Memo) error {
 		return err
 	}
 	if len(content) > i.contentLengthLimit {
-		return errors.Errorf("content too long (max %d characters)", i.contentLengthLimit)
+		return errors.Errorf("content too long (max %d bytes)", i.contentLengthLimit)
 	}
 	targetUID := record.UID
 	if existing := i.existing[record.UID]; existing != nil {

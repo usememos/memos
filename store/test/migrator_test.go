@@ -47,7 +47,7 @@ func TestFreshInstall(t *testing.T) {
 	// Verify migration completed successfully
 	currentSchemaVersion, err := ts.GetCurrentSchemaVersion()
 	require.NoError(t, err)
-	require.Equal(t, "0.31.8", currentSchemaVersion, "fresh install should start at the retained baseline")
+	require.Equal(t, "26.10.1", currentSchemaVersion, "fresh install should record the latest migration")
 
 	// Verify we can read instance settings (basic sanity check)
 	instanceSetting, err := ts.GetInstanceBasicSetting(ctx)
@@ -82,12 +82,28 @@ func TestFreshInstall(t *testing.T) {
 
 	requireQueryError(ctx, t, ts.GetDriver().GetDB(), "SELECT parent_memo_id, root_memo_id FROM memo LIMIT 0", "fresh memo schema must not contain canonical-root columns")
 	requireQueryError(ctx, t, ts.GetDriver().GetDB(), "SELECT row_status FROM space LIMIT 0", "fresh Space schema has no archived state")
-	if driver == "sqlite" {
-		var indexName string
-		require.NoError(t, ts.GetDriver().GetDB().QueryRowContext(ctx,
-			"SELECT name FROM sqlite_master WHERE type = 'index' AND name = 'idx_memo_creator_id'",
-		).Scan(&indexName))
-		require.Equal(t, "idx_memo_creator_id", indexName)
+	requireCreatorIndexes(ctx, t, ts, driver)
+}
+
+// requireCreatorIndexes checks the indexes that usage limit checks rely on to
+// count a user's memos and sum a user's attachment sizes.
+func requireCreatorIndexes(ctx context.Context, t *testing.T, ts *store.Store, driver string) {
+	t.Helper()
+	for _, indexName := range []string{"idx_memo_creator_id", "idx_attachment_creator_id"} {
+		var query string
+		switch driver {
+		case "sqlite":
+			query = "SELECT COUNT(*) FROM sqlite_master WHERE type = 'index' AND name = ?"
+		case "mysql":
+			query = "SELECT COUNT(DISTINCT INDEX_NAME) FROM information_schema.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND INDEX_NAME = ?"
+		case "postgres":
+			query = "SELECT COUNT(*) FROM pg_indexes WHERE schemaname = current_schema() AND indexname = $1"
+		default:
+			t.Fatalf("unsupported driver: %s", driver)
+		}
+		var count int
+		require.NoError(t, ts.GetDriver().GetDB().QueryRowContext(ctx, query, indexName).Scan(&count))
+		require.Equal(t, 1, count, "index %s must exist", indexName)
 	}
 }
 

@@ -377,7 +377,7 @@ func (s *Store) GetInstanceAISetting(ctx context.Context) (*storepb.InstanceAISe
 
 const (
 	defaultInstanceStorageType       = storepb.InstanceStorageSetting_LOCAL
-	defaultInstanceUploadSizeLimitMb = 30
+	defaultInstanceUploadSizeLimitMb = 32
 	defaultInstanceFilepathTemplate  = "assets/{timestamp}_{uuid}_{filename}"
 )
 
@@ -470,6 +470,12 @@ func convertInstanceSettingFromRaw(instanceSettingRaw *InstanceSetting) (*storep
 			return nil, err
 		}
 		instanceSetting.Value = &storepb.InstanceSetting_AccessSetting{AccessSetting: accessSetting}
+	case storepb.InstanceSettingKey_USAGE_LIMITS.String():
+		usageLimitsSetting := &storepb.InstanceUsageLimitsSetting{}
+		if err := protojsonUnmarshaler.Unmarshal([]byte(instanceSettingRaw.Value), usageLimitsSetting); err != nil {
+			return nil, err
+		}
+		instanceSetting.Value = &storepb.InstanceSetting_UsageLimitsSetting{UsageLimitsSetting: usageLimitsSetting}
 	default:
 		// Skip unsupported instance setting key.
 		return nil, nil

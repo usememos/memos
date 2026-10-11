@@ -10,6 +10,7 @@ apply the same way.
 | `notification/` | building and dispatching inbox and email notifications |
 | `memopayload/` | rebuilding a memo's derived payload from its markdown |
 | `memoexport/` | the Memos Export Format container and records used for export and import |
+| `usagelimit/` | which usage limits apply to a user, and whether a memo create or an upload stays within them |
 
 Layering: `core` may import `store`, `provider`, `markdown`, `filter`,
 `proto/gen`, and `internal`. It must not import `server` or `cmd`. New

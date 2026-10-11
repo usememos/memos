@@ -63,6 +63,9 @@ const (
 	// UserServiceGetUserStatsProcedure is the fully-qualified name of the UserService's GetUserStats
 	// RPC.
 	UserServiceGetUserStatsProcedure = "/memos.api.UserService/GetUserStats"
+	// UserServiceGetUserUsageProcedure is the fully-qualified name of the UserService's GetUserUsage
+	// RPC.
+	UserServiceGetUserUsageProcedure = "/memos.api.UserService/GetUserUsage"
 	// UserServiceListMemoViewsProcedure is the fully-qualified name of the UserService's ListMemoViews
 	// RPC.
 	UserServiceListMemoViewsProcedure = "/memos.api.UserService/ListMemoViews"
@@ -163,6 +166,9 @@ type UserServiceClient interface {
 	// GetUserStats returns memo statistics for one user, counting the user's
 	// memos that the caller can read.
 	GetUserStats(context.Context, *connect.Request[api.GetUserStatsRequest]) (*connect.Response[api.UserStats], error)
+	// GetUserUsage returns a user's usage and the usage limits in effect for the
+	// user. Only the user or an admin may call it.
+	GetUserUsage(context.Context, *connect.Request[api.GetUserUsageRequest]) (*connect.Response[api.UserUsage], error)
 	// ListMemoViews lists a user's memo views. Each view is a named, reusable
 	// CEL filter (see MemoView.filter); pass its filter string directly to the
 	// ListMemos `filter` argument. Only the user may call it.
@@ -314,6 +320,12 @@ func NewUserServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(userServiceMethods.ByName("GetUserStats")),
 			connect.WithClientOptions(opts...),
 		),
+		getUserUsage: connect.NewClient[api.GetUserUsageRequest, api.UserUsage](
+			httpClient,
+			baseURL+UserServiceGetUserUsageProcedure,
+			connect.WithSchema(userServiceMethods.ByName("GetUserUsage")),
+			connect.WithClientOptions(opts...),
+		),
 		listMemoViews: connect.NewClient[api.ListMemoViewsRequest, api.ListMemoViewsResponse](
 			httpClient,
 			baseURL+UserServiceListMemoViewsProcedure,
@@ -462,6 +474,7 @@ type userServiceClient struct {
 	updateUserSetting           *connect.Client[api.UpdateUserSettingRequest, api.UserSetting]
 	listUserStats               *connect.Client[api.ListUserStatsRequest, api.ListUserStatsResponse]
 	getUserStats                *connect.Client[api.GetUserStatsRequest, api.UserStats]
+	getUserUsage                *connect.Client[api.GetUserUsageRequest, api.UserUsage]
 	listMemoViews               *connect.Client[api.ListMemoViewsRequest, api.ListMemoViewsResponse]
 	getMemoView                 *connect.Client[api.GetMemoViewRequest, api.MemoView]
 	createMemoView              *connect.Client[api.CreateMemoViewRequest, api.MemoView]
@@ -539,6 +552,11 @@ func (c *userServiceClient) ListUserStats(ctx context.Context, req *connect.Requ
 // GetUserStats calls memos.api.UserService.GetUserStats.
 func (c *userServiceClient) GetUserStats(ctx context.Context, req *connect.Request[api.GetUserStatsRequest]) (*connect.Response[api.UserStats], error) {
 	return c.getUserStats.CallUnary(ctx, req)
+}
+
+// GetUserUsage calls memos.api.UserService.GetUserUsage.
+func (c *userServiceClient) GetUserUsage(ctx context.Context, req *connect.Request[api.GetUserUsageRequest]) (*connect.Response[api.UserUsage], error) {
+	return c.getUserUsage.CallUnary(ctx, req)
 }
 
 // ListMemoViews calls memos.api.UserService.ListMemoViews.
@@ -686,6 +704,9 @@ type UserServiceHandler interface {
 	// GetUserStats returns memo statistics for one user, counting the user's
 	// memos that the caller can read.
 	GetUserStats(context.Context, *connect.Request[api.GetUserStatsRequest]) (*connect.Response[api.UserStats], error)
+	// GetUserUsage returns a user's usage and the usage limits in effect for the
+	// user. Only the user or an admin may call it.
+	GetUserUsage(context.Context, *connect.Request[api.GetUserUsageRequest]) (*connect.Response[api.UserUsage], error)
 	// ListMemoViews lists a user's memo views. Each view is a named, reusable
 	// CEL filter (see MemoView.filter); pass its filter string directly to the
 	// ListMemos `filter` argument. Only the user may call it.
@@ -831,6 +852,12 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 		UserServiceGetUserStatsProcedure,
 		svc.GetUserStats,
 		connect.WithSchema(userServiceMethods.ByName("GetUserStats")),
+		connect.WithHandlerOptions(opts...),
+	)
+	userServiceGetUserUsageHandler := connect.NewUnaryHandler(
+		UserServiceGetUserUsageProcedure,
+		svc.GetUserUsage,
+		connect.WithSchema(userServiceMethods.ByName("GetUserUsage")),
 		connect.WithHandlerOptions(opts...),
 	)
 	userServiceListMemoViewsHandler := connect.NewUnaryHandler(
@@ -989,6 +1016,8 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 			userServiceListUserStatsHandler.ServeHTTP(w, r)
 		case UserServiceGetUserStatsProcedure:
 			userServiceGetUserStatsHandler.ServeHTTP(w, r)
+		case UserServiceGetUserUsageProcedure:
+			userServiceGetUserUsageHandler.ServeHTTP(w, r)
 		case UserServiceListMemoViewsProcedure:
 			userServiceListMemoViewsHandler.ServeHTTP(w, r)
 		case UserServiceGetMemoViewProcedure:
@@ -1084,6 +1113,10 @@ func (UnimplementedUserServiceHandler) ListUserStats(context.Context, *connect.R
 
 func (UnimplementedUserServiceHandler) GetUserStats(context.Context, *connect.Request[api.GetUserStatsRequest]) (*connect.Response[api.UserStats], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.GetUserStats is not implemented"))
+}
+
+func (UnimplementedUserServiceHandler) GetUserUsage(context.Context, *connect.Request[api.GetUserUsageRequest]) (*connect.Response[api.UserUsage], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.GetUserUsage is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) ListMemoViews(context.Context, *connect.Request[api.ListMemoViewsRequest]) (*connect.Response[api.ListMemoViewsResponse], error) {

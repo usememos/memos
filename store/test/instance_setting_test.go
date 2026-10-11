@@ -285,7 +285,7 @@ func TestInstanceSettingStorageSetting(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, storageSetting)
 	require.Equal(t, storepb.InstanceStorageSetting_LOCAL, storageSetting.StorageType)
-	require.Equal(t, int64(30), storageSetting.UploadSizeLimitMb)
+	require.Equal(t, int64(32), storageSetting.UploadSizeLimitMb)
 	require.Equal(t, "assets/{timestamp}_{uuid}_{filename}", storageSetting.FilepathTemplate)
 
 	// Set custom storage setting

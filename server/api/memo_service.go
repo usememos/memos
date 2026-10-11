@@ -46,6 +46,9 @@ func (s *APIService) CreateMemo(ctx context.Context, request *apipb.CreateMemoRe
 	if err != nil {
 		return nil, err
 	}
+	if err := s.checkMemoQuota(ctx, user); err != nil {
+		return nil, err
+	}
 
 	if err := s.createMemoWithMutation(ctx, user, prepared.memo, nil, prepared.attachments, prepared.requiredAttachmentIDs, prepared.referenceRelations); err != nil {
 		return nil, mapMemoCreateError(err, memoUID, "failed to create memo")
@@ -387,7 +390,7 @@ func (s *APIService) UpdateMemo(ctx context.Context, request *apipb.UpdateMemoRe
 				return nil, status.Errorf(codes.Internal, "failed to get content length limit")
 			}
 			if len(request.Memo.Content) > contentLengthLimit {
-				return nil, status.Errorf(codes.InvalidArgument, "content too long (max %d characters)", contentLengthLimit)
+				return nil, status.Errorf(codes.InvalidArgument, "content too long (max %d bytes)", contentLengthLimit)
 			}
 			nextMemo.Content = request.Memo.Content
 			if err := memopayload.RebuildMemoPayload(ctx, &nextMemo, s.MarkdownService); err != nil {
