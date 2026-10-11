@@ -51,7 +51,7 @@ function SelectTrigger({
 }
 
 type SelectContentProps = SelectPrimitive.Popup.Props &
-  Pick<SelectPrimitive.Positioner.Props, "align" | "alignItemWithTrigger" | "alignOffset" | "side" | "sideOffset">;
+  Pick<SelectPrimitive.Positioner.Props, "align" | "alignItemWithTrigger" | "alignOffset" | "positionMethod" | "side" | "sideOffset">;
 
 function SelectContent({
   className,
@@ -59,6 +59,7 @@ function SelectContent({
   align = "start",
   alignItemWithTrigger = false,
   alignOffset,
+  positionMethod,
   side,
   sideOffset = 4,
   ...props
@@ -69,6 +70,7 @@ function SelectContent({
         align={align}
         alignItemWithTrigger={alignItemWithTrigger}
         alignOffset={alignOffset}
+        positionMethod={positionMethod}
         side={side}
         sideOffset={sideOffset}
         className="isolate z-dropdown"

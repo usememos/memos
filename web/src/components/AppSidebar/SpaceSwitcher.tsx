@@ -152,6 +152,7 @@ function SpaceSwitcher({ className, size = "md" }: { className?: string; size?: 
         </PopoverTrigger>
         <PopoverContent
           align="start"
+          positionMethod="fixed"
           side="bottom"
           sideOffset={4}
           className="w-[min(15rem,calc(100vw-1rem))] max-h-[min(27rem,calc(100dvh-5rem))] overflow-y-auto p-0"
@@ -238,7 +239,11 @@ function SpaceSwitcher({ className, size = "md" }: { className?: string; size?: 
                       )}
                       <span className="min-w-0 flex-1 truncate text-start">{selectedSpaceName ? spaceLabel : allSpacesLabel}</span>
                     </SelectTrigger>
-                    <SelectContent className="max-h-64 w-(--anchor-width) min-w-0 max-w-[calc(100vw-2rem)]" align="start">
+                    <SelectContent
+                      className="max-h-64 w-(--anchor-width) min-w-0 max-w-[calc(100vw-2rem)]"
+                      align="start"
+                      positionMethod="fixed"
+                    >
                       <SelectItem value="all">
                         <span className="flex items-center gap-2">
                           <AstroidIcon className="size-4" />
