@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { deriveDefaultCreateTimeFromFilters } from "@/components/MemoEditor/utils/deriveDefaultCreateTime";
+import {
+  deriveDefaultCreateTimeFromDate,
+  deriveDefaultCreateTimeFromFilters,
+  restampDefaultCreateTime,
+  withTimeOfDay,
+} from "@/components/MemoEditor/utils/deriveDefaultCreateTime";
 import type { MemoFilter } from "@/contexts/MemoFilterContext";
 
 describe("deriveDefaultCreateTimeFromFilters", () => {
@@ -71,5 +76,44 @@ describe("deriveDefaultCreateTimeFromFilters", () => {
       expect(resultTimeOnly).toBeGreaterThanOrEqual(beforeTimeOnly);
       expect(resultTimeOnly).toBeLessThanOrEqual(afterTimeOnly);
     }
+  });
+});
+
+describe("withTimeOfDay", () => {
+  const now = new Date(2026, 9, 6, 13, 17, 23, 456);
+
+  it("keeps the day and replaces the time of day without mutating the input", () => {
+    const day = new Date(2026, 9, 1, 8, 0, 0);
+    expect(withTimeOfDay(day, now)).toEqual(new Date(2026, 9, 1, 13, 17, 23));
+    expect(day).toEqual(new Date(2026, 9, 1, 8, 0, 0));
+  });
+});
+
+describe("restampDefaultCreateTime", () => {
+  const now = new Date(2026, 9, 6, 13, 17, 23);
+  const defaultCreateTime = deriveDefaultCreateTimeFromDate("2026-10-01", now) as Date;
+
+  it("re-stamps an untouched default with the time of saving", () => {
+    const later = new Date(2026, 9, 6, 13, 18, 10);
+    expect(restampDefaultCreateTime(defaultCreateTime, defaultCreateTime, later)).toEqual(new Date(2026, 9, 1, 13, 18, 10));
+  });
+
+  it("gives consecutive saves distinct, ordered times within the selected day", () => {
+    const first = restampDefaultCreateTime(defaultCreateTime, defaultCreateTime, new Date(2026, 9, 6, 13, 17, 40)) as Date;
+    const second = restampDefaultCreateTime(defaultCreateTime, defaultCreateTime, new Date(2026, 9, 6, 13, 17, 55)) as Date;
+    expect(first.getTime()).toBeLessThan(second.getTime());
+    expect(first.getDate()).toBe(1);
+    expect(second.getDate()).toBe(1);
+  });
+
+  it("leaves a manually edited timestamp alone", () => {
+    const edited = new Date(2026, 8, 20, 9, 30, 0);
+    expect(restampDefaultCreateTime(edited, defaultCreateTime, now)).toBe(edited);
+  });
+
+  it("passes through when there is no default or no timestamp", () => {
+    expect(restampDefaultCreateTime(undefined, defaultCreateTime, now)).toBeUndefined();
+    const time = new Date(2026, 8, 20, 9, 30, 0);
+    expect(restampDefaultCreateTime(time, undefined, now)).toBe(time);
   });
 });
