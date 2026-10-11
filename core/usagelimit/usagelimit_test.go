@@ -90,24 +90,33 @@ func TestCheckMemoCreate(t *testing.T) {
 
 func TestCheckUpload(t *testing.T) {
 	ctx := context.Background()
-	const instanceLimit = 30 << 20
 
 	unlimited := &fakeStore{storage: 1 << 40}
-	require.NoError(t, CheckUpload(ctx, unlimited, 1, 1<<20, instanceLimit))
+	require.NoError(t, CheckUpload(ctx, unlimited, 1, 1<<40), "no limits means any file size")
 	require.Zero(t, unlimited.sumCalls, "no sum query runs without a storage limit")
 
 	s := &fakeStore{storage: 900, setting: &storepb.InstanceUsageLimitsSetting{Limits: []*storepb.InstanceUsageLimitsSetting_UsageLimit{
 		limit("default-storage", MetricStorageBytes, 0, 1000),
 		limit("default-upload", MetricUploadBytes, 0, 200),
+		limit("alice-upload", MetricUploadBytes, 2, 500),
 	}}}
-	require.NoError(t, CheckUpload(ctx, s, 1, 100, instanceLimit), "exactly at the storage limit is allowed")
-	require.Equal(t, &Refusal{Metric: MetricStorageBytes, Limit: 1000, Usage: 900, Source: "default-storage"}, AsRefusal(CheckUpload(ctx, s, 1, 101, instanceLimit)))
-	require.Equal(t, &Refusal{Metric: MetricUploadBytes, Limit: 200, Usage: 201, Source: "default-upload"}, AsRefusal(CheckUpload(ctx, s, 1, 201, instanceLimit)))
+	require.NoError(t, CheckUpload(ctx, s, 1, 100), "exactly at the storage limit is allowed")
+	require.Equal(t, &Refusal{Metric: MetricStorageBytes, Limit: 1000, Usage: 900, Source: "default-storage"}, AsRefusal(CheckUpload(ctx, s, 1, 101)))
+	require.Equal(t, &Refusal{Metric: MetricUploadBytes, Limit: 200, Usage: 201, Source: "default-upload"}, AsRefusal(CheckUpload(ctx, s, 1, 201)))
 
-	// A per-file limit at or above the instance limit has no effect; the
-	// instance limit, checked by the caller, applies instead.
-	s.setting.Limits[1].Value = instanceLimit
+	// A user's own per-file limit replaces the default, even when it is higher.
 	s.storage = 0
-	s.setting.Limits[0].Value = 0
-	require.NoError(t, CheckUpload(ctx, s, 1, instanceLimit, instanceLimit))
+	require.NoError(t, CheckUpload(ctx, s, 2, 500))
+	require.Equal(t, &Refusal{Metric: MetricUploadBytes, Limit: 500, Usage: 501, Source: "alice-upload"}, AsRefusal(CheckUpload(ctx, s, 2, 501)))
+}
+
+func TestCheckFileSize(t *testing.T) {
+	ctx := context.Background()
+	s := &fakeStore{storage: 1 << 40, setting: &storepb.InstanceUsageLimitsSetting{Limits: []*storepb.InstanceUsageLimitsSetting_UsageLimit{
+		limit("default-storage", MetricStorageBytes, 0, 1),
+		limit("default-upload", MetricUploadBytes, 0, 200),
+	}}}
+	require.NoError(t, CheckFileSize(ctx, s, 1, 200), "the storage limit is not checked")
+	require.Equal(t, &Refusal{Metric: MetricUploadBytes, Limit: 200, Usage: 201, Source: "default-upload"}, AsRefusal(CheckFileSize(ctx, s, 1, 201)))
+	require.Zero(t, s.sumCalls, "no sum query runs for a per-file check")
 }

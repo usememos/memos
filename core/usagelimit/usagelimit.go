@@ -144,18 +144,33 @@ func CheckMemoCreate(ctx context.Context, s Store, userID int32) error {
 	return nil
 }
 
-// CheckUpload returns a *Refusal when storing a file of size bytes would break
-// the per-file limit or the storage limit of userID. instanceUploadLimit is
-// the instance-wide upload limit in bytes, which the caller checks first: a
-// per-file usage limit only applies when it is stricter than that limit. With
-// no storage limit in effect it runs no sum query.
-func CheckUpload(ctx context.Context, s Store, userID int32, size, instanceUploadLimit int64) error {
+// CheckFileSize returns a *Refusal when a file of size bytes is larger than
+// the per-file limit of userID. It runs no count or sum query.
+func CheckFileSize(ctx context.Context, s Store, userID int32, size int64) error {
 	effective, err := EffectiveFor(ctx, s, userID)
 	if err != nil {
 		return err
 	}
-	if upload := effective.UploadBytes; upload.Limited() && upload.Value < instanceUploadLimit && size > upload.Value {
+	return effective.checkFileSize(size)
+}
+
+func (e Effective) checkFileSize(size int64) error {
+	if upload := e.UploadBytes; upload.Limited() && size > upload.Value {
 		return &Refusal{Metric: MetricUploadBytes, Limit: upload.Value, Usage: size, Source: upload.Source}
+	}
+	return nil
+}
+
+// CheckUpload returns a *Refusal when storing a file of size bytes would break
+// the per-file limit or the storage limit of userID. With no storage limit in
+// effect it runs no sum query.
+func CheckUpload(ctx context.Context, s Store, userID int32, size int64) error {
+	effective, err := EffectiveFor(ctx, s, userID)
+	if err != nil {
+		return err
+	}
+	if err := effective.checkFileSize(size); err != nil {
+		return err
 	}
 	if !effective.StorageBytes.Limited() {
 		return nil

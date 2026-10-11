@@ -246,10 +246,9 @@ func upsertS3StorageSetting(ctx context.Context, t testing.TB, ts *TestService, 
 		Key: storepb.InstanceSettingKey_STORAGE,
 		Value: &storepb.InstanceSetting_StorageSetting{
 			StorageSetting: &storepb.InstanceStorageSetting{
-				FilepathTemplate:  "attachments/{uuid}_{filename}",
-				UploadSizeLimitMb: 30,
-				Storages:          storages,
-				DefaultStorageId:  defaultStorageID,
+				FilepathTemplate: "attachments/{uuid}_{filename}",
+				Storages:         storages,
+				DefaultStorageId: defaultStorageID,
 			},
 		},
 	})
@@ -267,7 +266,7 @@ func TestS3ObjectKeysStayUniqueWithoutUUIDTemplate(t *testing.T) {
 	_, err := ts.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
 		Key: storepb.InstanceSettingKey_STORAGE,
 		Value: &storepb.InstanceSetting_StorageSetting{StorageSetting: &storepb.InstanceStorageSetting{
-			FilepathTemplate: "files/{filename}", UploadSizeLimitMb: 30, Storages: []*storepb.Storage{storage}, DefaultStorageId: storage.Id,
+			FilepathTemplate: "files/{filename}", Storages: []*storepb.Storage{storage}, DefaultStorageId: storage.Id,
 		}},
 	})
 	require.NoError(t, err)

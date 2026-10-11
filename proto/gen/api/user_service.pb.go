@@ -1619,8 +1619,7 @@ type UserUsage struct {
 	MemosLimit *UserUsage_EffectiveLimit `protobuf:"bytes,4,opt,name=memos_limit,json=memosLimit,proto3" json:"memos_limit,omitempty"`
 	// The limit on storage_bytes.
 	StorageBytesLimit *UserUsage_EffectiveLimit `protobuf:"bytes,5,opt,name=storage_bytes_limit,json=storageBytesLimit,proto3" json:"storage_bytes_limit,omitempty"`
-	// The limit on the size of one uploaded file. It applies only when it is
-	// lower than the instance upload limit.
+	// The limit on the size of one uploaded file.
 	UploadBytesLimit *UserUsage_EffectiveLimit `protobuf:"bytes,6,opt,name=upload_bytes_limit,json=uploadBytesLimit,proto3" json:"upload_bytes_limit,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
@@ -4611,7 +4610,7 @@ func (x *UserStats_MemoTypeStats) GetUndoCount() int32 {
 // from.
 type UserUsage_EffectiveLimit struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The limit. 0 means unlimited, or no extra limit for upload_bytes_limit.
+	// The limit. 0 means unlimited.
 	Value int64 `protobuf:"varint,1,opt,name=value,proto3" json:"value,omitempty"`
 	// The usage limit the value comes from: the user's own limit, or else the
 	// default. Empty when no usage limit applies.

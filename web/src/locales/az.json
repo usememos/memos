@@ -908,8 +908,6 @@
       "custom-code-title": "Xüsusi kod",
       "enable-double-click-to-edit": "Redaktə üçün ikiqat kliki aktivləşdir",
       "label": "Sistem",
-      "max-upload-size": "Maksimum yükləmə ölçüsü (MiB)",
-      "max-upload-size-hint": "Tövsiyə olunan dəyər 32 MiB-dir.",
       "server-name": "Server adı"
     },
     "usage-limits": {
@@ -922,7 +920,6 @@
       "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
-      "file-size-warning": "Not below the instance upload limit of {{limit}} MiB, so it has no effect.",
       "invalid": "Enter a whole number of memos, or a size in MiB.",
       "label": "Usage limits",
       "memos": "Memos",

@@ -501,7 +501,7 @@ func (i *memoImporter) storeAttachment(entry *memoexport.Attachment, uid, mimeTy
 		}
 		return AttachmentNamePrefix + attachment.UID, nil
 	}
-	if err := checkUploadSize(i.storageSetting, entry.Size); err != nil {
+	if err := i.service.checkFileSizeQuota(i.ctx, i.user.ID, entry.Size); err != nil {
 		return "", err
 	}
 	data, err := i.archive.ReadAttachment(entry)

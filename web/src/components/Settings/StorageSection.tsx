@@ -170,10 +170,6 @@ const StorageSection = () => {
   }, [originalSetting]);
 
   const allowSaveStorageSetting = useMemo(() => {
-    if (instanceStorageSetting.uploadSizeLimitMb <= 0) {
-      return false;
-    }
-
     if (selectedStorageType === InstanceSetting_StorageType.LOCAL) {
       if (instanceStorageSetting.filepathTemplate.length === 0) {
         return false;
@@ -192,19 +188,6 @@ const StorageSection = () => {
     }
     return !isEqual(originalSetting, canonicalizeStorageSetting(instanceStorageSetting, originalSetting));
   }, [canReuseSelectedS3Secret, instanceStorageSetting, originalSetting, selectedS3Config, selectedStorageType]);
-
-  const handleMaxUploadSizeChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
-    let num = parseInt(event.target.value);
-    if (Number.isNaN(num)) {
-      num = 0;
-    }
-    setInstanceStorageSetting((current) =>
-      create(InstanceSetting_StorageSettingSchema, {
-        ...current,
-        uploadSizeLimitMb: BigInt(num),
-      }),
-    );
-  };
 
   const handleFilepathTemplateChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInstanceStorageSetting((current) =>
@@ -356,14 +339,6 @@ const StorageSection = () => {
             ))}
           </ul>
         </SettingPanel>
-
-        <SettingRow label={t("setting.system.max-upload-size")} tooltip={t("setting.system.max-upload-size-hint")}>
-          <Input
-            className="w-24 font-mono"
-            value={String(instanceStorageSetting.uploadSizeLimitMb)}
-            onChange={handleMaxUploadSizeChanged}
-          />
-        </SettingRow>
 
         {selectedStorageType !== InstanceSetting_StorageType.DATABASE && (
           <SettingRow

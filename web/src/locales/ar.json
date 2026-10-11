@@ -496,8 +496,6 @@
         "title": "تخصيص الخادم"
       },
       "enable-double-click-to-edit": "تمكين النقر المزدوج للتحرير",
-      "max-upload-size": "الحد الأقصى لحجم الرفع (ميغابايت)",
-      "max-upload-size-hint": "القيمة الموصى بها هي 32 ميغابايت.",
       "server-name": "اسم الخادم",
       "label": "النظام",
       "additional-script-description": "إضافة جافا سكريبت إلى جميع صفحات الويب. استخدام التعليمات البرمجية الموثوقة فقط.",
@@ -607,7 +605,6 @@
       "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
-      "file-size-warning": "Not below the instance upload limit of {{limit}} MiB, so it has no effect.",
       "invalid": "Enter a whole number of memos, or a size in MiB.",
       "label": "Usage limits",
       "memos": "Memos",

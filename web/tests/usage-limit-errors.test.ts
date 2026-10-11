@@ -2,11 +2,11 @@ import { BinaryWriter } from "@bufbuild/protobuf/wire";
 import { Code, ConnectError } from "@connectrpc/connect";
 import { describe, expect, it } from "vitest";
 import { errorService } from "@/components/MemoEditor/services/errorService";
-import { ERROR_REASON_FILE_TOO_LARGE, ERROR_REASON_QUOTA_EXCEEDED, getErrorMessage, getRetryAfterSeconds } from "@/lib/error";
+import { ERROR_REASON_QUOTA_EXCEEDED, getErrorMessage, getRetryAfterSeconds } from "@/lib/error";
 
-function quotaError(metadata: Record<string, string>, reason = ERROR_REASON_QUOTA_EXCEEDED): ConnectError {
+function quotaError(metadata: Record<string, string>): ConnectError {
   const writer = new BinaryWriter();
-  writer.tag(1, 2).string(reason);
+  writer.tag(1, 2).string(ERROR_REASON_QUOTA_EXCEEDED);
   writer.tag(2, 2).string("memos.api");
   for (const [key, value] of Object.entries(metadata)) {
     const entry = new BinaryWriter();
@@ -38,12 +38,6 @@ describe("usage limit refusals", () => {
   it("is not a rate limit, so it carries no wait", () => {
     const error = quotaError({ metric: "MEMOS", limit: "1", usage: "1" });
     expect(getRetryAfterSeconds(error)).toBeUndefined();
-  });
-
-  it("names the instance upload limit", () => {
-    const error = quotaError({ limit: String(32 * 1024 ** 2), size: String(40 * 1024 ** 2) }, ERROR_REASON_FILE_TOO_LARGE);
-    expect(getErrorMessage(error)).toBe("This file is larger than the upload limit of 32.0 MB.");
-    expect(errorService.getErrorMessage(error)).toBe("This file is larger than the upload limit of 32.0 MB.");
   });
 
   it("reaches the editor's own error messages", () => {

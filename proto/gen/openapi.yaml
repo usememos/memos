@@ -4251,9 +4251,6 @@ components:
                     description: |-
                         The template of attachment file paths.
                          Default is assets/{timestamp}_{uuid}_{filename}.
-                uploadSizeLimitMb:
-                    type: string
-                    description: The maximum upload size in megabytes. Default is 32.
                 storageType:
                     enum:
                         - STORAGE_TYPE_UNSPECIFIED
@@ -5575,9 +5572,7 @@ components:
                          Format: users/{user}
                 value:
                     type: string
-                    description: |-
-                        Required. The limit. Must not be negative. 0 means unlimited for MEMOS and
-                         STORAGE_BYTES, and no extra limit for UPLOAD_BYTES.
+                    description: Required. The limit. Must not be negative. 0 means unlimited.
                 createTime:
                     readOnly: true
                     type: string
@@ -5964,16 +5959,14 @@ components:
                 uploadBytesLimit:
                     allOf:
                         - $ref: '#/components/schemas/UserUsage_EffectiveLimit'
-                    description: |-
-                        The limit on the size of one uploaded file. It applies only when it is
-                         lower than the instance upload limit.
+                    description: The limit on the size of one uploaded file.
             description: UserUsage is a user's usage and the usage limits in effect for the user.
         UserUsage_EffectiveLimit:
             type: object
             properties:
                 value:
                     type: string
-                    description: The limit. 0 means unlimited, or no extra limit for upload_bytes_limit.
+                    description: The limit. 0 means unlimited.
                 usageLimit:
                     type: string
                     description: |-

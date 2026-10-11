@@ -279,14 +279,11 @@ message InstanceSetting {
     // Default is assets/{timestamp}_{uuid}_{filename}.
     string filepath_template = 3;
 
-    // The maximum upload size in megabytes. Default is 32.
-    int64 upload_size_limit_mb = 4;
-
     // Legacy compatibility field. New clients use default_storage_id.
-    StorageType storage_type = 5;
+    StorageType storage_type = 4;
 
     // Legacy compatibility field. New clients use storages.
-    S3Config s3_config = 6;
+    S3Config s3_config = 5;
 
     // StorageType is the legacy storage type, retained for compatibility with existing clients.
     enum StorageType {
@@ -600,8 +597,7 @@ message UsageLimit {
     (google.api.resource_reference) = {type: "memos.api/User"}
   ];
 
-  // Required. The limit. Must not be negative. 0 means unlimited for MEMOS and
-  // STORAGE_BYTES, and no extra limit for UPLOAD_BYTES.
+  // Required. The limit. Must not be negative. 0 means unlimited.
   int64 value = 4 [(google.api.field_behavior) = REQUIRED];
 
   // Output only. The creation time.
@@ -619,8 +615,7 @@ message UsageLimit {
     // The total size in bytes of the user's uploads, including uploads not
     // attached to a memo. External links do not count.
     STORAGE_BYTES = 2;
-    // The size in bytes of one uploaded file. It can only lower the instance
-    // upload limit, never raise it.
+    // The size in bytes of one uploaded file.
     UPLOAD_BYTES = 3;
   }
 }

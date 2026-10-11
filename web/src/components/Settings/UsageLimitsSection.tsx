@@ -6,21 +6,17 @@ import ConfirmDialog from "@/components/ConfirmDialog";
 import UserAvatar from "@/components/UserAvatar";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { useInstanceSetting } from "@/hooks/useInstanceQueries";
 import { findUsageLimit, USAGE_LIMIT_METRICS, useSetUsageLimit, useUsageLimits } from "@/hooks/useUsageLimitQueries";
 import { useListUsers } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
 import { cn } from "@/lib/utils";
-import { InstanceSetting_Key, UsageLimit_Metric } from "@/types/proto/api/instance_service_pb";
+import { UsageLimit_Metric } from "@/types/proto/api/instance_service_pb";
 import { User } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import SettingSection from "./SettingSection";
 import SettingTable from "./SettingTable";
 import UsageLimitDialog, { type UsageLimitDialogTarget } from "./UsageLimitDialog";
 import { formatLimitValue } from "./usageLimitValues";
-
-// The store applies 32 MiB when the instance upload limit is unset.
-const DEFAULT_UPLOAD_LIMIT_MIB = 32;
 
 /**
  * A table row: name is empty for the all-users row, otherwise users/{user}.
@@ -36,7 +32,6 @@ const UsageLimitsSection = () => {
   const t = useTranslate();
   const { data: limits, isLoading } = useUsageLimits();
   const { data: users = [] } = useListUsers();
-  const { data: storageSetting } = useInstanceSetting(InstanceSetting_Key.STORAGE);
   const setUsageLimit = useSetUsageLimit();
   const [dialog, setDialog] = useState<{ open: boolean; target: UsageLimitDialogTarget }>({ open: false, target: { kind: "all" } });
   const [removeTarget, setRemoveTarget] = useState<LimitRow | undefined>();
@@ -56,10 +51,6 @@ const UsageLimitsSection = () => {
       ),
     [users, userRows],
   );
-
-  const uploadLimitMiB =
-    (storageSetting?.value.case === "storageSetting" ? Number(storageSetting.value.value.uploadSizeLimitMb) : 0) ||
-    DEFAULT_UPLOAD_LIMIT_MIB;
 
   const openDialog = (target: UsageLimitDialogTarget) => setDialog({ open: true, target });
 
@@ -184,7 +175,6 @@ const UsageLimitsSection = () => {
         onOpenChange={(open) => setDialog((current) => ({ ...current, open }))}
         target={dialog.target}
         candidates={candidates}
-        uploadLimitMiB={uploadLimitMiB}
       />
 
       <ConfirmDialog

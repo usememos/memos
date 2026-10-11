@@ -307,9 +307,20 @@ func (s *APIService) checkMemoQuota(ctx context.Context, user *store.User) error
 }
 
 // checkUploadQuota refuses an upload of size bytes that would break the
-// per-file or storage limit of the user. Call it after checkUploadSize.
-func (s *APIService) checkUploadQuota(ctx context.Context, userID int32, size int64, setting *storepb.InstanceStorageSetting) error {
-	err := usagelimit.CheckUpload(ctx, s.Store, userID, size, attachmentUploadLimit(setting))
+// per-file or storage limit of the user.
+func (s *APIService) checkUploadQuota(ctx context.Context, userID int32, size int64) error {
+	return s.uploadQuotaError(ctx, userID, usagelimit.CheckUpload(ctx, s.Store, userID, size))
+}
+
+// checkFileSizeQuota refuses a file of size bytes that is larger than the
+// per-file limit of the user. It runs no count or sum query.
+func (s *APIService) checkFileSizeQuota(ctx context.Context, userID int32, size int64) error {
+	return s.uploadQuotaError(ctx, userID, usagelimit.CheckFileSize(ctx, s.Store, userID, size))
+}
+
+// uploadQuotaError maps an upload check result to a service error, naming the
+// user in a refusal.
+func (s *APIService) uploadQuotaError(ctx context.Context, userID int32, err error) error {
 	if err == nil {
 		return nil
 	}

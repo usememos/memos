@@ -150,7 +150,6 @@ export const SETTINGS_SECTIONS: SettingSectionDefinition[] = [
     labelKey: "setting.usage-limits.label",
     icon: GaugeIcon,
     component: UsageLimitsSection,
-    preloadSettingKeys: [InstanceSetting_Key.STORAGE],
   },
   {
     key: "notification",

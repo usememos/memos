@@ -575,8 +575,6 @@
       "custom-code-description": "应用到前端的实例范围 CSS 和 JavaScript，可选。",
       "custom-code-title": "自定义代码",
       "enable-double-click-to-edit": "启用双击编辑",
-      "max-upload-size": "最大上传大小 (MiB)",
-      "max-upload-size-hint": "建议值为 32 MiB。",
       "server-name": "服务器名称",
       "label": "系统"
     },
@@ -681,7 +679,6 @@
       "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
-      "file-size-warning": "Not below the instance upload limit of {{limit}} MiB, so it has no effect.",
       "invalid": "Enter a whole number of memos, or a size in MiB.",
       "label": "Usage limits",
       "memos": "Memos",

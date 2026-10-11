@@ -996,8 +996,7 @@ export type UserUsage = Message<"memos.api.UserUsage"> & {
   storageBytesLimit?: UserUsage_EffectiveLimit | undefined;
 
   /**
-   * The limit on the size of one uploaded file. It applies only when it is
-   * lower than the instance upload limit.
+   * The limit on the size of one uploaded file.
    *
    * @generated from field: memos.api.UserUsage.EffectiveLimit upload_bytes_limit = 6;
    */
@@ -1019,7 +1018,7 @@ export const UserUsageSchema: GenMessage<UserUsage> = /*@__PURE__*/
  */
 export type UserUsage_EffectiveLimit = Message<"memos.api.UserUsage.EffectiveLimit"> & {
   /**
-   * The limit. 0 means unlimited, or no extra limit for upload_bytes_limit.
+   * The limit. 0 means unlimited.
    *
    * @generated from field: int64 value = 1;
    */

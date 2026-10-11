@@ -714,8 +714,6 @@
       "custom-code-title": "Cod personalizat",
       "enable-double-click-to-edit": "Activați dublu clic pentru a edita",
       "label": "Sistem",
-      "max-upload-size": "Dimensiunea maximă de încărcare (MiB)",
-      "max-upload-size-hint": "Valoarea recomandată este 32 MiB.",
       "server-name": "Nume server"
     },
     "usage-limits": {
@@ -728,7 +726,6 @@
       "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
-      "file-size-warning": "Not below the instance upload limit of {{limit}} MiB, so it has no effect.",
       "invalid": "Enter a whole number of memos, or a size in MiB.",
       "label": "Usage limits",
       "memos": "Memos",

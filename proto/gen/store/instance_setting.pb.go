@@ -321,8 +321,7 @@ const (
 	// STORAGE_BYTES limits the total size of a user's uploads. External links
 	// do not count.
 	InstanceUsageLimitsSetting_STORAGE_BYTES InstanceUsageLimitsSetting_Metric = 2
-	// UPLOAD_BYTES limits the size of one uploaded file. It can only lower the
-	// instance upload limit.
+	// UPLOAD_BYTES limits the size of one uploaded file.
 	InstanceUsageLimitsSetting_UPLOAD_BYTES InstanceUsageLimitsSetting_Metric = 3
 )
 
@@ -895,15 +894,13 @@ type InstanceStorageSetting struct {
 	// The template of file path.
 	// e.g. assets/{timestamp}_{filename}
 	FilepathTemplate string `protobuf:"bytes,2,opt,name=filepath_template,json=filepathTemplate,proto3" json:"filepath_template,omitempty"`
-	// The max upload size in megabytes.
-	UploadSizeLimitMb int64 `protobuf:"varint,3,opt,name=upload_size_limit_mb,json=uploadSizeLimitMb,proto3" json:"upload_size_limit_mb,omitempty"`
 	// Legacy compatibility field. New code uses storages.
-	S3Config *StorageS3Config `protobuf:"bytes,4,opt,name=s3_config,json=s3Config,proto3" json:"s3_config,omitempty"`
+	S3Config *StorageS3Config `protobuf:"bytes,3,opt,name=s3_config,json=s3Config,proto3" json:"s3_config,omitempty"`
 	// storages contains configured storage instances, including inactive instances
 	// that may still be referenced by existing attachments.
-	Storages []*Storage `protobuf:"bytes,5,rep,name=storages,proto3" json:"storages,omitempty"`
+	Storages []*Storage `protobuf:"bytes,4,rep,name=storages,proto3" json:"storages,omitempty"`
 	// default_storage_id identifies the storage used for new attachments.
-	DefaultStorageId string `protobuf:"bytes,6,opt,name=default_storage_id,json=defaultStorageId,proto3" json:"default_storage_id,omitempty"`
+	DefaultStorageId string `protobuf:"bytes,5,opt,name=default_storage_id,json=defaultStorageId,proto3" json:"default_storage_id,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -950,13 +947,6 @@ func (x *InstanceStorageSetting) GetFilepathTemplate() string {
 		return x.FilepathTemplate
 	}
 	return ""
-}
-
-func (x *InstanceStorageSetting) GetUploadSizeLimitMb() int64 {
-	if x != nil {
-		return x.UploadSizeLimitMb
-	}
-	return 0
 }
 
 func (x *InstanceStorageSetting) GetS3Config() *StorageS3Config {
@@ -1843,14 +1833,13 @@ const file_store_instance_setting_proto_rawDesc = "" +
 	"\x04type\x18\x03 \x01(\x0e2\x18.memos.store.StorageTypeR\x04type\x12;\n" +
 	"\ts3_config\x18\n" +
 	" \x01(\v2\x1c.memos.store.StorageS3ConfigH\x00R\bs3ConfigB\b\n" +
-	"\x06config\"\xb3\x03\n" +
+	"\x06config\"\x82\x03\n" +
 	"\x16InstanceStorageSetting\x12R\n" +
 	"\fstorage_type\x18\x01 \x01(\x0e2/.memos.store.InstanceStorageSetting.StorageTypeR\vstorageType\x12+\n" +
-	"\x11filepath_template\x18\x02 \x01(\tR\x10filepathTemplate\x12/\n" +
-	"\x14upload_size_limit_mb\x18\x03 \x01(\x03R\x11uploadSizeLimitMb\x129\n" +
-	"\ts3_config\x18\x04 \x01(\v2\x1c.memos.store.StorageS3ConfigR\bs3Config\x120\n" +
-	"\bstorages\x18\x05 \x03(\v2\x14.memos.store.StorageR\bstorages\x12,\n" +
-	"\x12default_storage_id\x18\x06 \x01(\tR\x10defaultStorageId\"L\n" +
+	"\x11filepath_template\x18\x02 \x01(\tR\x10filepathTemplate\x129\n" +
+	"\ts3_config\x18\x03 \x01(\v2\x1c.memos.store.StorageS3ConfigR\bs3Config\x120\n" +
+	"\bstorages\x18\x04 \x03(\v2\x14.memos.store.StorageR\bstorages\x12,\n" +
+	"\x12default_storage_id\x18\x05 \x01(\tR\x10defaultStorageId\"L\n" +
 	"\vStorageType\x12\x1c\n" +
 	"\x18STORAGE_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDATABASE\x10\x01\x12\t\n" +

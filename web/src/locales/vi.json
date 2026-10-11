@@ -496,8 +496,6 @@
         "title": "Tùy chỉnh máy chủ"
       },
       "enable-double-click-to-edit": "Bật nhấp đúp để chỉnh sửa",
-      "max-upload-size": "Kích thước tải lên tối đa (MiB)",
-      "max-upload-size-hint": "Giá trị đề xuất là 32 MiB.",
       "server-name": "Tên máy chủ",
       "label": "Hệ thống",
       "additional-script-description": "Chèn JavaScript vào mọi trang web. Chỉ sử dụng mã đáng tin cậy.",
@@ -607,7 +605,6 @@
       "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
-      "file-size-warning": "Not below the instance upload limit of {{limit}} MiB, so it has no effect.",
       "invalid": "Enter a whole number of memos, or a size in MiB.",
       "label": "Usage limits",
       "memos": "Memos",

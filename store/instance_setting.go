@@ -376,9 +376,8 @@ func (s *Store) GetInstanceAISetting(ctx context.Context) (*storepb.InstanceAISe
 }
 
 const (
-	defaultInstanceStorageType       = storepb.InstanceStorageSetting_LOCAL
-	defaultInstanceUploadSizeLimitMb = 32
-	defaultInstanceFilepathTemplate  = "assets/{timestamp}_{uuid}_{filename}"
+	defaultInstanceStorageType      = storepb.InstanceStorageSetting_LOCAL
+	defaultInstanceFilepathTemplate = "assets/{timestamp}_{uuid}_{filename}"
 )
 
 func (s *Store) GetInstanceStorageSetting(ctx context.Context) (*storepb.InstanceStorageSetting, error) {
@@ -397,9 +396,6 @@ func (s *Store) GetInstanceStorageSetting(ctx context.Context) (*storepb.Instanc
 	NormalizeInstanceStorageSetting(instanceStorageSetting)
 	if instanceStorageSetting.StorageType == storepb.InstanceStorageSetting_STORAGE_TYPE_UNSPECIFIED {
 		instanceStorageSetting.StorageType = defaultInstanceStorageType
-	}
-	if instanceStorageSetting.UploadSizeLimitMb == 0 {
-		instanceStorageSetting.UploadSizeLimitMb = defaultInstanceUploadSizeLimitMb
 	}
 	if instanceStorageSetting.FilepathTemplate == "" {
 		instanceStorageSetting.FilepathTemplate = defaultInstanceFilepathTemplate

@@ -604,16 +604,16 @@ func buildImportArchive(t *testing.T, username string, attachments []struct {
 	return buf.Bytes()
 }
 
-// A memo that fails to import must not take a pre-existing attachment of the
+// An archive entry larger than the user's per-file limit fails its memo, and
+// a memo that fails to import must not take a pre-existing attachment of the
 // user with it: only attachments the run stored are discarded.
 func TestImportMemosFailureKeepsPreexistingAttachment(t *testing.T) {
 	ts := NewTestService(t)
 	defer ts.Cleanup()
 	t.Cleanup(ts.Service.CloseUploads)
 	ctx := context.Background()
-	_, err := ts.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
-		Key:   storepb.InstanceSettingKey_STORAGE,
-		Value: &storepb.InstanceSetting_StorageSetting{StorageSetting: &storepb.InstanceStorageSetting{UploadSizeLimitMb: 1}},
+	_, err := ts.Store.CreateUsageLimit(ctx, &storepb.InstanceUsageLimitsSetting_UsageLimit{
+		Uid: "default-upload", Metric: storepb.InstanceUsageLimitsSetting_UPLOAD_BYTES, Value: 1 << 20,
 	})
 	require.NoError(t, err)
 	user, err := ts.CreateRegularUser(ctx, "keeper")

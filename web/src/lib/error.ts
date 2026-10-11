@@ -12,7 +12,6 @@ export interface ErrorInfo {
 export const ERROR_REASON_RATE_LIMITED = "RATE_LIMITED";
 export const ERROR_REASON_CHALLENGE_REQUIRED = "CHALLENGE_REQUIRED";
 export const ERROR_REASON_QUOTA_EXCEEDED = "QUOTA_EXCEEDED";
-export const ERROR_REASON_FILE_TOO_LARGE = "FILE_TOO_LARGE";
 
 const ERROR_INFO_TYPE = "google.rpc.ErrorInfo";
 
@@ -105,23 +104,6 @@ export function getQuotaExceededMessage(error: unknown): string | undefined {
   }
 }
 
-/**
- * Describes a refusal by a size or usage limit in words: QUOTA_EXCEEDED, or
- * FILE_TOO_LARGE for the instance upload limit. Returns undefined for any
- * other error.
- */
-export function getLimitErrorMessage(error: unknown): string | undefined {
-  const quotaMessage = getQuotaExceededMessage(error);
-  if (quotaMessage !== undefined) {
-    return quotaMessage;
-  }
-  const info = getErrorInfo(error);
-  if (info?.reason !== ERROR_REASON_FILE_TOO_LARGE) {
-    return undefined;
-  }
-  return `This file is larger than the upload limit of ${formatFileSize(Number(info.metadata.limit ?? ""))}.`;
-}
-
 function formatWait(seconds: number): string {
   if (seconds < 60) return `${seconds}s`;
   const minutes = Math.ceil(seconds / 60);
@@ -141,7 +123,7 @@ export function getErrorMessage(error: unknown, fallback = "Unknown error"): str
     if (hasErrorReason(error, ERROR_REASON_CHALLENGE_REQUIRED)) {
       return "Complete the verification challenge and try again.";
     }
-    const limitMessage = getLimitErrorMessage(error);
+    const limitMessage = getQuotaExceededMessage(error);
     if (limitMessage !== undefined) {
       return limitMessage;
     }

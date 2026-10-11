@@ -10,7 +10,7 @@ import { handleError } from "@/lib/error";
 import { UsageLimit_Metric } from "@/types/proto/api/instance_service_pb";
 import type { User } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
-import { isFileSizeLimitIneffective, parseLimitInput, toLimitInput } from "./usageLimitValues";
+import { parseLimitInput, toLimitInput } from "./usageLimitValues";
 
 type Inputs = Record<UsageLimit_Metric, string>;
 
@@ -23,8 +23,6 @@ interface Props {
   target: UsageLimitDialogTarget;
   /** The users that can be added, which are those without limits of their own. */
   candidates: User[];
-  /** The instance upload limit in MiB, for the file size warning. */
-  uploadLimitMiB: number;
 }
 
 const userLabel = (user: User) => (user.displayName ? `${user.displayName} (@${user.username})` : `@${user.username}`);
@@ -34,7 +32,7 @@ const userLabel = (user: User) => (user.displayName ? `${user.displayName} (@${u
  * means no limit. For one user, an empty field means the all-users limit
  * applies, and 0 means no limit for that user.
  */
-function UsageLimitDialog({ open, onOpenChange, target, candidates, uploadLimitMiB }: Props) {
+function UsageLimitDialog({ open, onOpenChange, target, candidates }: Props) {
   const t = useTranslate();
   const { data: limits } = useUsageLimits({ enabled: open });
   const [pickedName, setPickedName] = useState("");
@@ -78,13 +76,7 @@ function UsageLimitDialog({ open, onOpenChange, target, candidates, uploadLimitM
       value: value ? toLimitInput(metric, value) : t("setting.usage-limits.unlimited"),
     });
   };
-  const warning = (metric: UsageLimit_Metric) => {
-    if (isInvalid(metric)) return t("setting.usage-limits.invalid");
-    if (metric === UsageLimit_Metric.UPLOAD_BYTES && isFileSizeLimitIneffective(inputs[metric], uploadLimitMiB)) {
-      return t("setting.usage-limits.file-size-warning", { limit: uploadLimitMiB });
-    }
-    return undefined;
-  };
+  const warning = (metric: UsageLimit_Metric) => (isInvalid(metric) ? t("setting.usage-limits.invalid") : undefined);
 
   const hasChanges = USAGE_LIMIT_METRICS.some((metric) => inputs[metric] !== savedInputs[metric]);
   const isValid = USAGE_LIMIT_METRICS.every((metric) => !isInvalid(metric));

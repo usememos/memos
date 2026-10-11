@@ -38,7 +38,7 @@ const maxGeneralRequestBytes = 16 << 20
 
 // inlineContentProcedures carry a whole file in one request body and keep
 // the large cap; the size of that content is checked again by the handler
-// against the instance upload limit.
+// against the user's upload limits.
 var inlineContentProcedures = map[string]struct{}{
 	"/memos.api.AttachmentService/CreateAttachment": {},
 	"/memos.api.AIService/Transcribe":               {},

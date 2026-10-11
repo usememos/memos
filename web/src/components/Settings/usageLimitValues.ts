@@ -32,9 +32,3 @@ export function parseLimitInput(metric: UsageLimit_Metric, input: string): bigin
 export function formatLimitValue(metric: UsageLimit_Metric, value: bigint): string {
   return isByteMetric(metric) ? formatFileSize(Number(value)) : value.toLocaleString();
 }
-
-/** Whether a file size limit, entered in MiB, is not below the instance upload limit and so has no effect. */
-export function isFileSizeLimitIneffective(input: string, instanceUploadLimitMiB: number): boolean {
-  const value = parseLimitInput(UsageLimit_Metric.UPLOAD_BYTES, input);
-  return value !== undefined && value > 0n && value >= BigInt(instanceUploadLimitMiB) * BigInt(MIB);
-}

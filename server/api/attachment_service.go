@@ -5,7 +5,6 @@ import (
 	"context"
 	"io"
 	"log/slog"
-	"math"
 	"mime"
 	"net/http"
 	"path/filepath"
@@ -25,9 +24,7 @@ import (
 )
 
 const (
-	// DefaultUploadSizeLimitBytes applies when no upload size limit is configured.
-	DefaultUploadSizeLimitBytes = 32 << 20
-	MebiByte                    = 1024 * 1024
+	MebiByte = 1024 * 1024
 
 	// defaultJPEGQuality is the JPEG quality used when re-encoding images for EXIF stripping.
 	// Quality 95 maintains visual quality while ensuring metadata is removed.
@@ -176,28 +173,11 @@ func (s *APIService) CreateAttachment(ctx context.Context, request *apipb.Create
 		return nil, status.Errorf(codes.Internal, "failed to get instance storage setting: %v", err)
 	}
 	content := request.Attachment.Content
-	if err := checkUploadSize(instanceStorageSetting, int64(len(content))); err != nil {
-		return nil, err
-	}
-	if err := s.checkUploadQuota(ctx, create.CreatorID, int64(len(content)), instanceStorageSetting); err != nil {
+	if err := s.checkUploadQuota(ctx, create.CreatorID, int64(len(content))); err != nil {
 		return nil, err
 	}
 	create.Size = int64(len(content))
 	return s.processAndSaveAttachment(ctx, create, instanceStorageSetting, bytes.NewReader(content))
-}
-
-func attachmentUploadLimit(setting *storepb.InstanceStorageSetting) int64 {
-	if setting.UploadSizeLimitMb <= 0 {
-		return DefaultUploadSizeLimitBytes
-	}
-	return min(setting.UploadSizeLimitMb, math.MaxInt64/MebiByte) * MebiByte
-}
-
-func checkUploadSize(setting *storepb.InstanceStorageSetting, size int64) error {
-	if limit := attachmentUploadLimit(setting); size > limit {
-		return newFileTooLargeError(limit, size)
-	}
-	return nil
 }
 
 // attachmentSource is the file content handed to the processing pipeline: a

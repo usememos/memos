@@ -49,7 +49,6 @@ func TestDeploymentConfiguredResourcesRejectMutations(t *testing.T) {
 	require.Equal(t, int32(1), setting.GetGeneralSetting().WeekStartDayOffset)
 	storageSetting, err := ts.Service.GetInstanceSetting(adminCtx, &apipb.GetInstanceSettingRequest{Name: "instance/settings/STORAGE"})
 	require.NoError(t, err)
-	require.Equal(t, int64(32), storageSetting.GetStorageSetting().UploadSizeLimitMb)
 	require.Equal(t, "assets/{timestamp}_{uuid}_{filename}", storageSetting.GetStorageSetting().FilepathTemplate)
 
 	_, err = ts.Service.CreateIdentityProvider(adminCtx, &apipb.CreateIdentityProviderRequest{

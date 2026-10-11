@@ -326,8 +326,7 @@ const (
 	// The total size in bytes of the user's uploads, including uploads not
 	// attached to a memo. External links do not count.
 	UsageLimit_STORAGE_BYTES UsageLimit_Metric = 2
-	// The size in bytes of one uploaded file. It can only lower the instance
-	// upload limit, never raise it.
+	// The size in bytes of one uploaded file.
 	UsageLimit_UPLOAD_BYTES UsageLimit_Metric = 3
 )
 
@@ -1071,8 +1070,7 @@ type UsageLimit struct {
 	// Optional. Immutable. The user the limit applies to. Empty means every user.
 	// Format: users/{user}
 	User string `protobuf:"bytes,3,opt,name=user,proto3" json:"user,omitempty"`
-	// Required. The limit. Must not be negative. 0 means unlimited for MEMOS and
-	// STORAGE_BYTES, and no extra limit for UPLOAD_BYTES.
+	// Required. The limit. Must not be negative. 0 means unlimited.
 	Value int64 `protobuf:"varint,4,opt,name=value,proto3" json:"value,omitempty"`
 	// Output only. The creation time.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
@@ -1661,12 +1659,10 @@ type InstanceSetting_StorageSetting struct {
 	// The template of attachment file paths.
 	// Default is assets/{timestamp}_{uuid}_{filename}.
 	FilepathTemplate string `protobuf:"bytes,3,opt,name=filepath_template,json=filepathTemplate,proto3" json:"filepath_template,omitempty"`
-	// The maximum upload size in megabytes. Default is 32.
-	UploadSizeLimitMb int64 `protobuf:"varint,4,opt,name=upload_size_limit_mb,json=uploadSizeLimitMb,proto3" json:"upload_size_limit_mb,omitempty"`
 	// Legacy compatibility field. New clients use default_storage_id.
-	StorageType InstanceSetting_StorageSetting_StorageType `protobuf:"varint,5,opt,name=storage_type,json=storageType,proto3,enum=memos.api.InstanceSetting_StorageSetting_StorageType" json:"storage_type,omitempty"`
+	StorageType InstanceSetting_StorageSetting_StorageType `protobuf:"varint,4,opt,name=storage_type,json=storageType,proto3,enum=memos.api.InstanceSetting_StorageSetting_StorageType" json:"storage_type,omitempty"`
 	// Legacy compatibility field. New clients use storages.
-	S3Config      *InstanceSetting_StorageSetting_S3Config `protobuf:"bytes,6,opt,name=s3_config,json=s3Config,proto3" json:"s3_config,omitempty"`
+	S3Config      *InstanceSetting_StorageSetting_S3Config `protobuf:"bytes,5,opt,name=s3_config,json=s3Config,proto3" json:"s3_config,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1720,13 +1716,6 @@ func (x *InstanceSetting_StorageSetting) GetFilepathTemplate() string {
 		return x.FilepathTemplate
 	}
 	return ""
-}
-
-func (x *InstanceSetting_StorageSetting) GetUploadSizeLimitMb() int64 {
-	if x != nil {
-		return x.UploadSizeLimitMb
-	}
-	return 0
 }
 
 func (x *InstanceSetting_StorageSetting) GetStorageType() InstanceSetting_StorageSetting_StorageType {
@@ -2806,7 +2795,7 @@ const file_api_instance_service_proto_rawDesc = "" +
 	"\tChallenge\x12\x1a\n" +
 	"\bprovider\x18\x01 \x01(\tR\bprovider\x12\x19\n" +
 	"\bsite_key\x18\x02 \x01(\tR\asiteKey\"\x1b\n" +
-	"\x19GetInstanceProfileRequest\"\xf1!\n" +
+	"\x19GetInstanceProfileRequest\"\xc0!\n" +
 	"\x0fInstanceSetting\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12T\n" +
 	"\x0fgeneral_setting\x18\x02 \x01(\v2).memos.api.InstanceSetting.GeneralSettingH\x00R\x0egeneralSetting\x12T\n" +
@@ -2829,14 +2818,13 @@ const file_api_instance_service_proto_rawDesc = "" +
 	"\rCustomProfile\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x19\n" +
-	"\blogo_url\x18\x03 \x01(\tR\alogoUrl\x1a\xe2\x05\n" +
+	"\blogo_url\x18\x03 \x01(\tR\alogoUrl\x1a\xb1\x05\n" +
 	"\x0eStorageSetting\x12>\n" +
 	"\bstorages\x18\x01 \x03(\v2\".memos.api.InstanceSetting.StorageR\bstorages\x12,\n" +
 	"\x12default_storage_id\x18\x02 \x01(\tR\x10defaultStorageId\x12+\n" +
-	"\x11filepath_template\x18\x03 \x01(\tR\x10filepathTemplate\x12/\n" +
-	"\x14upload_size_limit_mb\x18\x04 \x01(\x03R\x11uploadSizeLimitMb\x12X\n" +
-	"\fstorage_type\x18\x05 \x01(\x0e25.memos.api.InstanceSetting.StorageSetting.StorageTypeR\vstorageType\x12O\n" +
-	"\ts3_config\x18\x06 \x01(\v22.memos.api.InstanceSetting.StorageSetting.S3ConfigR\bs3Config\x1a\x8a\x02\n" +
+	"\x11filepath_template\x18\x03 \x01(\tR\x10filepathTemplate\x12X\n" +
+	"\fstorage_type\x18\x04 \x01(\x0e25.memos.api.InstanceSetting.StorageSetting.StorageTypeR\vstorageType\x12O\n" +
+	"\ts3_config\x18\x05 \x01(\v22.memos.api.InstanceSetting.StorageSetting.S3ConfigR\bs3Config\x1a\x8a\x02\n" +
 	"\bS3Config\x12\x1a\n" +
 	"\bendpoint\x18\x01 \x01(\tR\bendpoint\x12\x16\n" +
 	"\x06region\x18\x02 \x01(\tR\x06region\x12\x16\n" +

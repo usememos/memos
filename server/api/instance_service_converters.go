@@ -163,10 +163,9 @@ func convertInstanceStorageSettingFromStore(settingpb *storepb.InstanceStorageSe
 		return nil
 	}
 	setting := &apipb.InstanceSetting_StorageSetting{
-		StorageType:       apipb.InstanceSetting_StorageSetting_StorageType(settingpb.StorageType),
-		FilepathTemplate:  settingpb.FilepathTemplate,
-		UploadSizeLimitMb: settingpb.UploadSizeLimitMb,
-		DefaultStorageId:  settingpb.DefaultStorageId,
+		StorageType:      apipb.InstanceSetting_StorageSetting_StorageType(settingpb.StorageType),
+		FilepathTemplate: settingpb.FilepathTemplate,
+		DefaultStorageId: settingpb.DefaultStorageId,
 	}
 	for _, storagepb := range settingpb.Storages {
 		setting.Storages = append(setting.Storages, convertStorageFromStore(storagepb))
@@ -190,10 +189,9 @@ func convertInstanceStorageSettingToStore(setting *apipb.InstanceSetting_Storage
 		return nil
 	}
 	settingpb := &storepb.InstanceStorageSetting{
-		StorageType:       storepb.InstanceStorageSetting_StorageType(setting.StorageType),
-		FilepathTemplate:  setting.FilepathTemplate,
-		UploadSizeLimitMb: setting.UploadSizeLimitMb,
-		DefaultStorageId:  setting.DefaultStorageId,
+		StorageType:      storepb.InstanceStorageSetting_StorageType(setting.StorageType),
+		FilepathTemplate: setting.FilepathTemplate,
+		DefaultStorageId: setting.DefaultStorageId,
 	}
 	for _, storage := range setting.Storages {
 		settingpb.Storages = append(settingpb.Storages, convertStorageToStore(storage))

@@ -1,8 +1,8 @@
-import { getLimitErrorMessage } from "@/lib/error";
+import { getQuotaExceededMessage } from "@/lib/error";
 
 export const errorService = {
   getErrorMessage(error: unknown): string {
-    const limitMessage = getLimitErrorMessage(error);
+    const limitMessage = getQuotaExceededMessage(error);
     if (limitMessage !== undefined) {
       return limitMessage;
     }

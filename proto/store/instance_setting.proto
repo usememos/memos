@@ -118,15 +118,13 @@ message InstanceStorageSetting {
   // The template of file path.
   // e.g. assets/{timestamp}_{filename}
   string filepath_template = 2;
-  // The max upload size in megabytes.
-  int64 upload_size_limit_mb = 3;
   // Legacy compatibility field. New code uses storages.
-  StorageS3Config s3_config = 4;
+  StorageS3Config s3_config = 3;
   // storages contains configured storage instances, including inactive instances
   // that may still be referenced by existing attachments.
-  repeated Storage storages = 5;
+  repeated Storage storages = 4;
   // default_storage_id identifies the storage used for new attachments.
-  string default_storage_id = 6;
+  string default_storage_id = 5;
 }
 
 // Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/
@@ -276,8 +274,7 @@ message InstanceUsageLimitsSetting {
     // STORAGE_BYTES limits the total size of a user's uploads. External links
     // do not count.
     STORAGE_BYTES = 2;
-    // UPLOAD_BYTES limits the size of one uploaded file. It can only lower the
-    // instance upload limit.
+    // UPLOAD_BYTES limits the size of one uploaded file.
     UPLOAD_BYTES = 3;
   }
 }

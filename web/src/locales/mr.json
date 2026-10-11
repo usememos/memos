@@ -496,8 +496,6 @@
         "title": "सर्व्हर सानुकूलित करा"
       },
       "enable-double-click-to-edit": "डबल क्लिकने संपादन सक्षम करा",
-      "max-upload-size": "कमाल अपलोड आकार (MiB)",
-      "max-upload-size-hint": "शिफारस केलेले मूल्य 32 MiB आहे.",
       "server-name": "सर्व्हरचे नाव",
       "label": "प्रणाली",
       "additional-script-description": "प्रत्येक वेब पेजमध्ये जावास्क्रिप्ट इंजेक्ट करा. फक्त विश्वसनीय कोड वापरा.",
@@ -607,7 +605,6 @@
       "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
-      "file-size-warning": "Not below the instance upload limit of {{limit}} MiB, so it has no effect.",
       "invalid": "Enter a whole number of memos, or a size in MiB.",
       "label": "Usage limits",
       "memos": "Memos",

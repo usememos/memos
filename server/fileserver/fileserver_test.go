@@ -52,10 +52,9 @@ func TestServeAttachmentFile_S3(t *testing.T) {
 	_, err := stores.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
 		Key: storepb.InstanceSettingKey_STORAGE,
 		Value: &storepb.InstanceSetting_StorageSetting{StorageSetting: &storepb.InstanceStorageSetting{
-			FilepathTemplate:  "files/{uuid}_{filename}",
-			UploadSizeLimitMb: 30,
-			Storages:          []*storepb.Storage{configuredStorage},
-			DefaultStorageId:  configuredStorage.Id,
+			FilepathTemplate: "files/{uuid}_{filename}",
+			Storages:         []*storepb.Storage{configuredStorage},
+			DefaultStorageId: configuredStorage.Id,
 		}},
 	})
 	require.NoError(t, err)

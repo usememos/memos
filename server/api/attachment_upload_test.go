@@ -149,6 +149,10 @@ func TestUploadAttachmentValidation(t *testing.T) {
 	}
 	_, err = svc.UploadAttachment(ctx, &apipb.UploadAttachmentRequest{Upload: uploadSpec("file", 3), WriteOffset: 1, Data: []byte("abc")})
 	require.Equal(t, codes.OutOfRange, status.Code(err))
+	_, err = svc.Store.CreateUsageLimit(ctx, &storepb.InstanceUsageLimitsSetting_UsageLimit{
+		Uid: "default-upload", Metric: storepb.InstanceUsageLimitsSetting_UPLOAD_BYTES, Value: 1 << 30,
+	})
+	require.NoError(t, err)
 	_, err = svc.UploadAttachment(ctx, &apipb.UploadAttachmentRequest{Upload: uploadSpec("file", 1<<60)})
 	require.Equal(t, codes.ResourceExhausted, status.Code(err))
 	require.Empty(t, svc.attachmentUploads.entries, "rejected spec calls must not register uploads")
@@ -234,9 +238,10 @@ func TestUploadAttachmentRechecksMemoAndSize(t *testing.T) {
 	_, err = svc.UploadAttachment(ctx, &apipb.UploadAttachmentRequest{Upload: uploadID(initial.UploadId), Data: []byte("abc"), FinishWrite: true})
 	require.Equal(t, codes.NotFound, status.Code(err))
 
+	// A per-file limit set after the upload started applies at finish.
 	id := startTestUpload(ctx, t, svc, 2*MebiByte)
-	_, err = svc.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{Key: storepb.InstanceSettingKey_STORAGE,
-		Value: &storepb.InstanceSetting_StorageSetting{StorageSetting: &storepb.InstanceStorageSetting{UploadSizeLimitMb: 1}},
+	_, err = svc.Store.CreateUsageLimit(ctx, &storepb.InstanceUsageLimitsSetting_UsageLimit{
+		Uid: "default-upload", Metric: storepb.InstanceUsageLimitsSetting_UPLOAD_BYTES, Value: MebiByte,
 	})
 	require.NoError(t, err)
 	_, err = svc.UploadAttachment(ctx, &apipb.UploadAttachmentRequest{Upload: uploadID(id), Data: make([]byte, 2*MebiByte), FinishWrite: true})
@@ -288,13 +293,10 @@ func TestUploadAttachmentExpiryAndLimits(t *testing.T) {
 func TestUploadAttachmentAboveLegacyRequestLimit(t *testing.T) {
 	svc, ctx := newUploadTestService(t)
 	const size = 300 * MebiByte
-	_, err := svc.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{Key: storepb.InstanceSettingKey_STORAGE,
-		Value: &storepb.InstanceSetting_StorageSetting{StorageSetting: &storepb.InstanceStorageSetting{UploadSizeLimitMb: 400}},
-	})
-	require.NoError(t, err)
 	id := startTestUpload(ctx, t, svc, size)
 	chunk := bytes.Repeat([]byte{0x5a}, uploadChunkSize)
 	var response *apipb.UploadAttachmentResponse
+	var err error
 	for offset := int64(0); offset < size; offset += int64(len(chunk)) {
 		response, err = svc.UploadAttachment(ctx, &apipb.UploadAttachmentRequest{
 			Upload: uploadID(id), WriteOffset: offset, Data: chunk, FinishWrite: offset+int64(len(chunk)) == size,

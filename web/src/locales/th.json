@@ -496,8 +496,6 @@
         "title": "ปรับแต่งเซิร์ฟเวอร์"
       },
       "enable-double-click-to-edit": "เปิดใช้งานดับเบิลคลิกเพื่อแก้ไข",
-      "max-upload-size": "ขนาดการอัปโหลดสูงสุด (MiB)",
-      "max-upload-size-hint": "ค่าที่แนะนำคือ 32 MiB",
       "server-name": "ชื่อเซิร์ฟเวอร์",
       "label": "ระบบ",
       "additional-script-description": "แทรก JavaScript ลงในทุกหน้าเว็บ ใช้เฉพาะโค้ดที่เชื่อถือได้เท่านั้น",
@@ -607,7 +605,6 @@
       "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
-      "file-size-warning": "Not below the instance upload limit of {{limit}} MiB, so it has no effect.",
       "invalid": "Enter a whole number of memos, or a size in MiB.",
       "label": "Usage limits",
       "memos": "Memos",

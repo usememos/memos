@@ -711,14 +711,13 @@ message UserUsage {
   // The limit on storage_bytes.
   EffectiveLimit storage_bytes_limit = 5;
 
-  // The limit on the size of one uploaded file. It applies only when it is
-  // lower than the instance upload limit.
+  // The limit on the size of one uploaded file.
   EffectiveLimit upload_bytes_limit = 6;
 
   // EffectiveLimit is the limit in effect for one metric, and where it comes
   // from.
   message EffectiveLimit {
-    // The limit. 0 means unlimited, or no extra limit for upload_bytes_limit.
+    // The limit. 0 means unlimited.
     int64 value = 1;
 
     // The usage limit the value comes from: the user's own limit, or else the

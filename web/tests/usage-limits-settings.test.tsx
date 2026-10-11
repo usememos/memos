@@ -19,7 +19,6 @@ const mocks = vi.hoisted(() => ({
   createUsageLimit: vi.fn(),
   updateUsageLimit: vi.fn(),
   deleteUsageLimit: vi.fn(),
-  getInstanceSetting: vi.fn(),
 }));
 
 vi.mock("@/connect", () => ({
@@ -29,7 +28,6 @@ vi.mock("@/connect", () => ({
     createUsageLimit: mocks.createUsageLimit,
     updateUsageLimit: mocks.updateUsageLimit,
     deleteUsageLimit: mocks.deleteUsageLimit,
-    getInstanceSetting: mocks.getInstanceSetting,
   },
 }));
 vi.mock("@/hooks/useCurrentUser", () => ({ default: () => ({ name: "users/alice" }) }));
@@ -59,7 +57,6 @@ const effective = (value: bigint, usageLimit = "") => create(UserUsage_Effective
 
 beforeEach(() => {
   for (const mock of Object.values(mocks)) mock.mockReset();
-  mocks.getInstanceSetting.mockResolvedValue({ value: { case: "storageSetting", value: { uploadSizeLimitMb: 30n } } });
   mocks.createUsageLimit.mockResolvedValue({});
   mocks.updateUsageLimit.mockResolvedValue({});
   mocks.deleteUsageLimit.mockResolvedValue({});
@@ -174,7 +171,7 @@ describe("UsageLimitDialog", () => {
       ],
       nextPageToken: "",
     });
-    render(<UsageLimitDialog open onOpenChange={vi.fn()} target={{ kind: "all" }} candidates={[]} uploadLimitMiB={32} />, { wrapper });
+    render(<UsageLimitDialog open onOpenChange={vi.fn()} target={{ kind: "all" }} candidates={[]} />, { wrapper });
 
     expect(await screen.findByText("Limits for all users")).toBeInTheDocument();
     const memos = screen.getByRole("textbox", { name: "Memos" });
@@ -206,7 +203,7 @@ describe("UsageLimitDialog", () => {
       ],
       nextPageToken: "",
     });
-    render(<UsageLimitDialog open onOpenChange={vi.fn()} target={{ kind: "user", user: bob }} candidates={[]} uploadLimitMiB={32} />, {
+    render(<UsageLimitDialog open onOpenChange={vi.fn()} target={{ kind: "user", user: bob }} candidates={[]} />, {
       wrapper,
     });
 
@@ -232,7 +229,7 @@ describe("UsageLimitDialog", () => {
 
   it("adds limits for a picked user", async () => {
     mocks.listUsageLimits.mockResolvedValue({ usageLimits: [], nextPageToken: "" });
-    render(<UsageLimitDialog open onOpenChange={vi.fn()} target={{ kind: "add" }} candidates={[carol]} uploadLimitMiB={32} />, { wrapper });
+    render(<UsageLimitDialog open onOpenChange={vi.fn()} target={{ kind: "add" }} candidates={[carol]} />, { wrapper });
 
     expect(await screen.findByRole("heading", { name: "Add user limit" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
@@ -240,8 +237,6 @@ describe("UsageLimitDialog", () => {
     await chooseOption("User", "@carol");
     const fileSize = screen.getByRole("textbox", { name: "Largest file (MiB)" });
     await waitFor(() => expect(fileSize).toBeEnabled());
-    fireEvent.change(fileSize, { target: { value: "32" } });
-    expect(await screen.findByText("Not below the instance upload limit of 32 MiB, so it has no effect.")).toBeInTheDocument();
     fireEvent.change(fileSize, { target: { value: "10" } });
     fireEvent.click(screen.getByRole("button", { name: "Save" }));
 

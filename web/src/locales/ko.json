@@ -496,8 +496,6 @@
         "title": "서버 커스터마이징"
       },
       "enable-double-click-to-edit": "더블 클릭으로 편집 활성화",
-      "max-upload-size": "최대 업로드 크기 (MiB)",
-      "max-upload-size-hint": "권장값은 32 MiB입니다.",
       "server-name": "서버 이름",
       "label": "시스템",
       "additional-script-description": "모든 웹 페이지에 JavaScript를 삽입합니다. 신뢰할 수 있는 코드만 사용합니다.",
@@ -607,7 +605,6 @@
       "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
-      "file-size-warning": "Not below the instance upload limit of {{limit}} MiB, so it has no effect.",
       "invalid": "Enter a whole number of memos, or a size in MiB.",
       "label": "Usage limits",
       "memos": "Memos",

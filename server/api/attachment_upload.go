@@ -121,14 +121,7 @@ func (s *APIService) startAttachmentUpload(ctx context.Context, request *apipb.U
 	if int64(len(request.Data)) > spec.TotalSize {
 		return "", nil, status.Errorf(codes.InvalidArgument, "data exceeds total_size")
 	}
-	setting, err := s.Store.GetInstanceStorageSetting(ctx)
-	if err != nil {
-		return "", nil, status.Errorf(codes.Internal, "failed to get storage setting: %v", err)
-	}
-	if err := checkUploadSize(setting, spec.TotalSize); err != nil {
-		return "", nil, err
-	}
-	if err := s.checkUploadQuota(ctx, ownerID, spec.TotalSize, setting); err != nil {
+	if err := s.checkUploadQuota(ctx, ownerID, spec.TotalSize); err != nil {
 		return "", nil, err
 	}
 	// Validate before allocating a temporary file. Keep the original MIME type
@@ -162,17 +155,14 @@ func (s *APIService) finishAttachmentUpload(ctx context.Context, upload *attachm
 			return s.GetAttachment(ctx, &apipb.GetAttachmentRequest{Name: "attachments/" + upload.state.uid})
 		}
 	}
+	// Check again at finish: the limits may have changed, and other uploads
+	// of the same user may have finished since this one started.
+	if err := s.checkUploadQuota(ctx, upload.ownerID, upload.totalSize); err != nil {
+		return nil, err
+	}
 	setting, err := s.Store.GetInstanceStorageSetting(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get storage setting: %v", err)
-	}
-	if err := checkUploadSize(setting, upload.totalSize); err != nil {
-		return nil, err
-	}
-	// Check again at finish: other uploads of the same user may have finished
-	// since this one started.
-	if err := s.checkUploadQuota(ctx, upload.ownerID, upload.totalSize, setting); err != nil {
-		return nil, err
 	}
 	file, err := os.Open(upload.path)
 	if err != nil {

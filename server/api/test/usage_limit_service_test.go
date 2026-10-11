@@ -4,7 +4,6 @@ import (
 	"context"
 	"os"
 	"path/filepath"
-	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -397,21 +396,20 @@ func TestUploadLimitEnforcement(t *testing.T) {
 	})
 	require.Equal(t, codes.NotFound, status.Code(err), "a refused upload is revoked")
 
-	// A per-file limit above the instance upload limit has no effect: the
-	// instance error applies unchanged.
-	_, err = ts.Service.UpdateUsageLimit(adminCtx, &apipb.UpdateUsageLimitRequest{UsageLimit: &apipb.UsageLimit{Name: "usageLimits/default-upload", Value: 1 << 40}})
-	require.NoError(t, err)
+	// A user's own per-file limit replaces the default in either direction.
 	_, err = ts.Service.UpdateUsageLimit(adminCtx, &apipb.UpdateUsageLimitRequest{UsageLimit: &apipb.UsageLimit{Name: "usageLimits/default-storage", Value: 0}})
 	require.NoError(t, err)
-	err = create(33 << 20)
-	st := status.Convert(err)
-	require.Equal(t, codes.ResourceExhausted, st.Code())
-	require.Equal(t, "file size exceeds the limit", st.Message())
-	require.Len(t, st.Details(), 1)
-	info, ok := st.Details()[0].(*errdetails.ErrorInfo)
-	require.True(t, ok, "the instance limit refusal carries an ErrorInfo")
-	require.Equal(t, "FILE_TOO_LARGE", info.Reason)
-	require.Equal(t, map[string]string{"limit": strconv.Itoa(32 << 20), "size": strconv.Itoa(33 << 20)}, info.Metadata)
+	createUsageLimit(adminCtx, t, ts, "user-upload", apipb.UsageLimit_UPLOAD_BYTES, subject, 1<<20)
+	require.NoError(t, create(1<<20))
+	metadata = requireQuotaExceeded(t, create(1<<20+1), "UPLOAD_BYTES", subject)
+	require.Equal(t, "usageLimits/user-upload", metadata["usage_limit"])
+
+	// Without any per-file limit, a file of any size is accepted.
+	_, err = ts.Service.DeleteUsageLimit(adminCtx, &apipb.DeleteUsageLimitRequest{Name: "usageLimits/user-upload"})
+	require.NoError(t, err)
+	_, err = ts.Service.DeleteUsageLimit(adminCtx, &apipb.DeleteUsageLimitRequest{Name: "usageLimits/default-upload"})
+	require.NoError(t, err)
+	require.NoError(t, create(33<<20))
 }
 
 func TestGetUserUsagePermissions(t *testing.T) {

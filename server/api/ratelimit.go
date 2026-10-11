@@ -34,9 +34,6 @@ const (
 	// reasonQuotaExceeded marks a refusal by a usage limit. It does not recover
 	// with time: the user must free space or an admin must raise the limit.
 	reasonQuotaExceeded = "QUOTA_EXCEEDED"
-	// reasonFileTooLarge marks a file larger than the instance upload limit,
-	// which applies to every user.
-	reasonFileTooLarge = "FILE_TOO_LARGE"
 	// reasonChallengeRequired marks a request that must carry a valid challenge token.
 	reasonChallengeRequired = "CHALLENGE_REQUIRED"
 
@@ -99,26 +96,6 @@ func newQuotaExceededError(username string, refusal *usagelimit.Refusal) error {
 			}},
 		},
 	)
-	if err != nil {
-		return st.Err()
-	}
-	return detailed.Err()
-}
-
-// newFileTooLargeError builds the refusal for a file larger than the instance
-// upload limit: RESOURCE_EXHAUSTED with an ErrorInfo carrying the limit and
-// the file size in bytes. It carries no RetryInfo, because waiting does not
-// make the file fit.
-func newFileTooLargeError(limit, size int64) error {
-	st := status.New(codes.ResourceExhausted, "file size exceeds the limit")
-	detailed, err := st.WithDetails(&errdetails.ErrorInfo{
-		Reason: reasonFileTooLarge,
-		Domain: errorInfoDomain,
-		Metadata: map[string]string{
-			"limit": strconv.FormatInt(limit, 10),
-			"size":  strconv.FormatInt(size, 10),
-		},
-	})
 	if err != nil {
 		return st.Err()
 	}

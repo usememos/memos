@@ -239,9 +239,6 @@ func validateAndNormalizeDeploymentInstanceSetting(setting *storepb.InstanceSett
 			return errors.New("storageSetting.s3Config is required for S3")
 		}
 		NormalizeInstanceStorageSetting(storage)
-		if storage.UploadSizeLimitMb < 0 {
-			return errors.New("storageSetting.uploadSizeLimitMb must not be negative")
-		}
 		defaultStorage := GetDefaultStorage(storage)
 		if defaultStorage != nil && defaultStorage.Type == storepb.StorageType_STORAGE_TYPE_S3 {
 			s3Config := defaultStorage.GetS3Config()
