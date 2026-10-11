@@ -20,6 +20,33 @@ export function deriveDefaultCreateTimeFromFilters(filters: MemoFilter[], now: D
 export function deriveDefaultCreateTimeFromDate(value: string, now: Date = new Date()): Date | undefined {
   const date = parseLocalDate(value);
   if (!date) return undefined;
-  date.setHours(now.getHours(), now.getMinutes(), now.getSeconds());
+  date.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
   return date;
+}
+
+/**
+ * The same calendar date as `date`, combined with `now`'s wall-clock hh:mm:ss.
+ * The input is not mutated.
+ */
+export function withTimeOfDay(date: Date, now: Date = new Date()): Date {
+  const next = new Date(date);
+  next.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
+  return next;
+}
+
+/**
+ * Re-stamp `time` with the current time of day when it is still the untouched
+ * filter-derived default (the same `Date` object). The default is computed
+ * once, when the filter is applied, so without this every memo saved from
+ * that composer would be stored with the filter time instead of its save
+ * time. A timestamp the user picked in the TimestampPopover is a different
+ * object and is returned unchanged, so manual back-dating is preserved.
+ */
+export function restampUntouchedDefault(
+  time: Date | undefined,
+  defaultCreateTime: Date | undefined,
+  now: Date = new Date(),
+): Date | undefined {
+  if (!time || !defaultCreateTime || time !== defaultCreateTime) return time;
+  return withTimeOfDay(time, now);
 }
