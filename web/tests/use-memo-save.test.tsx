@@ -8,6 +8,7 @@ const mocks = vi.hoisted(() => ({
   dispatch: vi.fn(),
   markNewMemo: vi.fn(),
   memoSave: vi.fn(),
+  newMemoName: null as string | null,
 }));
 
 vi.mock("@/components/MemoEditor/services", () => ({
@@ -31,7 +32,7 @@ vi.mock("@/components/MemoEditor/state", () => ({
 }));
 
 vi.mock("@/contexts/NewMemoContext", () => ({
-  useNewMemo: () => ({ markNewMemo: mocks.markNewMemo }),
+  useNewMemo: () => ({ newMemoName: mocks.newMemoName, markNewMemo: mocks.markNewMemo }),
 }));
 
 vi.mock("@/utils/i18n", () => ({
@@ -43,6 +44,10 @@ describe("useMemoSave", () => {
     mocks.dispatch.mockReset();
     mocks.markNewMemo.mockReset();
     mocks.memoSave.mockReset();
+    mocks.newMemoName = null;
+    mocks.markNewMemo.mockImplementation((value: string | null | ((current: string | null) => string | null)) => {
+      mocks.newMemoName = typeof value === "function" ? value(mocks.newMemoName) : value;
+    });
   });
 
   it("invalidates scoped attachment libraries after a memo save", async () => {
@@ -88,6 +93,64 @@ describe("useMemoSave", () => {
     expect(savedOn).toBeGreaterThan(-1);
     expect(reset).toBeGreaterThan(savedOn);
     expect(onConfirm).toHaveBeenCalledWith("memos/existing");
+  });
+
+  it("clears the new memo hoist after editing that memo", async () => {
+    mocks.newMemoName = "memos/new";
+    mocks.memoSave.mockResolvedValue({ hasChanges: true, memoName: "memos/new" });
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const wrapper = ({ children }: PropsWithChildren) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+    const { result } = renderHook(() => useMemoSave({ memoName: "memos/new", discardDraft: vi.fn() }), { wrapper });
+
+    await act(async () => result.current());
+
+    expect(mocks.newMemoName).toBeNull();
+  });
+
+  it("preserves the new memo hoist when editing another memo", async () => {
+    mocks.newMemoName = "memos/new";
+    mocks.memoSave.mockResolvedValue({ hasChanges: true, memoName: "memos/existing" });
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const wrapper = ({ children }: PropsWithChildren) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+    const { result } = renderHook(() => useMemoSave({ memoName: "memos/existing", discardDraft: vi.fn() }), { wrapper });
+
+    await act(async () => result.current());
+
+    expect(mocks.newMemoName).toBe("memos/new");
+  });
+
+  it("preserves a newer marker created while the edit save is pending", async () => {
+    mocks.newMemoName = "memos/new";
+    let finishSave!: (value: { hasChanges: boolean; memoName: string }) => void;
+    mocks.memoSave.mockReturnValue(
+      new Promise((resolve) => {
+        finishSave = resolve;
+      }),
+    );
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const wrapper = ({ children }: PropsWithChildren) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+    const { result } = renderHook(() => useMemoSave({ memoName: "memos/new", discardDraft: vi.fn() }), { wrapper });
+
+    await act(async () => {
+      const save = result.current();
+      mocks.newMemoName = "memos/newer";
+      finishSave({ hasChanges: true, memoName: "memos/new" });
+      await save;
+    });
+
+    expect(mocks.newMemoName).toBe("memos/newer");
+  });
+
+  it("preserves the new memo hoist when the edit has no changes", async () => {
+    mocks.newMemoName = "memos/new";
+    mocks.memoSave.mockResolvedValue({ hasChanges: false, memoName: "memos/new" });
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const wrapper = ({ children }: PropsWithChildren) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+    const { result } = renderHook(() => useMemoSave({ memoName: "memos/new", discardDraft: vi.fn() }), { wrapper });
+
+    await act(async () => result.current());
+
+    expect(mocks.markNewMemo).not.toHaveBeenCalled();
   });
 
   it("does not hold the in-place composer after saving a new memo", async () => {

@@ -108,6 +108,8 @@ export function useMemoSave({
 
       if (!memoName && !parentMemoName) {
         markNewMemo(result.memoName);
+      } else if (memoName) {
+        markNewMemo((currentName) => (currentName === memoName ? null : currentName));
       }
       onConfirm?.(result.memoName);
     } catch (error) {

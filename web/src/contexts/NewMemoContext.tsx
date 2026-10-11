@@ -1,11 +1,11 @@
-import { createContext, type ReactNode, useContext, useMemo, useState } from "react";
+import { createContext, type Dispatch, type ReactNode, type SetStateAction, useContext, useMemo, useState } from "react";
 
 interface NewMemoContextValue {
   // Name of the most recently created memo in this view, or null. Only one
   // memo is ever "new" at a time: creating another overwrites it, which clears
   // the previous one for free.
   newMemoName: string | null;
-  markNewMemo: (name: string) => void;
+  markNewMemo: Dispatch<SetStateAction<string | null>>;
 }
 
 // Default is a safe no-op so MemoEditor/MemoView rendered outside a provider
