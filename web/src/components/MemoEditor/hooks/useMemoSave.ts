@@ -11,6 +11,7 @@ import type { Visibility } from "@/types/proto/api/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { errorService, memoService, validationService } from "../services";
 import { useEditorContext } from "../state";
+import { restampDefaultCreateTime } from "../utils/deriveDefaultCreateTime";
 
 /** How long a closing host shows "Saved" before it unmounts the editor. */
 const SAVED_CONFIRMATION_MS = 900;
@@ -78,12 +79,24 @@ export function useMemoSave({
     };
 
     try {
-      const result = await memoService.save(state, {
-        memoName,
-        parentMemoName,
-        space: defaultSpace,
-        onFileUploaded: (file, attachment) => uploaded.set(file.previewUrl, attachment),
-      });
+      // A new memo composed on a selected day keeps the day but is stamped with
+      // the time of saving, so consecutive memos do not share one createTime.
+      const now = new Date();
+      const timestamps = memoName
+        ? state.timestamps
+        : {
+            createTime: restampDefaultCreateTime(state.timestamps.createTime, defaultCreateTime, now),
+            updateTime: restampDefaultCreateTime(state.timestamps.updateTime, defaultCreateTime, now),
+          };
+      const result = await memoService.save(
+        { ...state, timestamps },
+        {
+          memoName,
+          parentMemoName,
+          space: defaultSpace,
+          onFileUploaded: (file, attachment) => uploaded.set(file.previewUrl, attachment),
+        },
+      );
 
       if (!result.hasChanges) {
         toast.error(t("editor.no-changes-detected"));
