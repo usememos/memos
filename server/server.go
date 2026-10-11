@@ -36,6 +36,9 @@ const (
 	idleTimeout = 2 * time.Minute
 )
 
+// healthzDatabaseTimeout bounds the database ping behind /healthz.
+const healthzDatabaseTimeout = 2 * time.Second
+
 type Server struct {
 	Secret  string
 	Profile *profile.Profile
@@ -75,8 +78,15 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	}
 	s.Secret = secret
 
-	// Register healthz endpoint.
+	// Register healthz endpoint. It reports ready only while the database
+	// answers, so a load balancer stops routing to an instance that lost it.
 	echoServer.GET("/healthz", func(c *echo.Context) error {
+		pingCtx, cancel := context.WithTimeout(c.Request().Context(), healthzDatabaseTimeout)
+		defer cancel()
+		if err := s.Store.GetDriver().GetDB().PingContext(pingCtx); err != nil {
+			slog.Warn("health check failed to reach the database", slog.String("error", err.Error()))
+			return c.String(http.StatusServiceUnavailable, "Database unavailable.")
+		}
 		return c.String(http.StatusOK, "Service ready.")
 	})
 

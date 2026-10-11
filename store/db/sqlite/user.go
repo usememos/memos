@@ -24,6 +24,11 @@ func (d *DB) UpdateUser(ctx context.Context, update *store.UpdateUser) (*store.U
 		return nil, err
 	}
 	defer func() { _ = tx.Rollback() }()
+	if update.RemovesInstanceAdmin() {
+		if err := ensureInstanceAdminRetained(ctx, tx, update.ID); err != nil {
+			return nil, err
+		}
+	}
 	if update.RowStatus != nil && *update.RowStatus == store.Archived {
 		if err := validateSQLiteUserArchive(ctx, tx, update.ID); err != nil {
 			return nil, err
@@ -111,6 +116,30 @@ func validateSQLiteUserArchive(ctx context.Context, tx dbExecutor, userID int32)
 	}
 	if wouldLoseAdmin {
 		return store.ErrLastSpaceAdmin
+	}
+	return nil
+}
+
+// ensureInstanceAdminRetained refuses a mutation that would remove the last
+// active instance administrator. Mutations of ordinary users skip the admin
+// count. SQLite transactions begin IMMEDIATE, so concurrent removals
+// serialize.
+func ensureInstanceAdminRetained(ctx context.Context, tx dbExecutor, userID int32) error {
+	var role, rowStatus string
+	if err := tx.QueryRowContext(ctx, `SELECT role, row_status FROM user WHERE id = ?`, userID).Scan(&role, &rowStatus); errors.Is(err, sql.ErrNoRows) {
+		return nil
+	} else if err != nil {
+		return err
+	}
+	if role != string(store.RoleAdmin) || rowStatus != string(store.Normal) {
+		return nil
+	}
+	var adminCount int
+	if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM user WHERE role = 'ADMIN' AND row_status = 'NORMAL'`).Scan(&adminCount); err != nil {
+		return err
+	}
+	if adminCount <= 1 {
+		return store.ErrLastInstanceAdmin
 	}
 	return nil
 }

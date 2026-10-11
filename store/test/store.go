@@ -125,22 +125,3 @@ func getDriverFromEnv() string {
 	}
 	return driver
 }
-
-// skipRegexFiltersOnD1 skips tests whose matches() patterns go beyond
-// literal text with anchors: D1 has no REGEXP operator, so the filter engine
-// only expresses those and rejects everything else at compile time.
-func skipRegexFiltersOnD1(t *testing.T) {
-	t.Helper()
-	if getDriverFromEnv() == "d1" {
-		t.Skip("only literal regular expressions are supported on Cloudflare D1")
-	}
-}
-
-// skipUnicodeFoldOnD1 skips tests that need Unicode case folding: D1 cannot
-// register custom functions, so it folds with the ASCII-only LOWER().
-func skipUnicodeFoldOnD1(t *testing.T) {
-	t.Helper()
-	if getDriverFromEnv() == "d1" {
-		t.Skip("Cloudflare D1 folds case with ASCII-only LOWER()")
-	}
-}

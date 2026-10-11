@@ -98,3 +98,38 @@ func TestAccountKeyBoundsLength(t *testing.T) {
 	require.NotEqual(t, key, accountKey(long+"b"))
 	require.Equal(t, key, accountKey(long))
 }
+
+// recordingLimiter allows every request and records the keys it is given.
+type recordingLimiter struct {
+	consumed map[ratelimit.Scope][]string
+	refunded map[ratelimit.Scope][]string
+}
+
+func (l *recordingLimiter) Consume(scope ratelimit.Scope, key string, _ int) ratelimit.Decision {
+	l.consumed[scope] = append(l.consumed[scope], key)
+	return ratelimit.Decision{Allowed: true}
+}
+
+func (l *recordingLimiter) Refund(scope ratelimit.Scope, key string, _ int) {
+	l.refunded[scope] = append(l.refunded[scope], key)
+}
+
+func (*recordingLimiter) Allowed(ratelimit.Scope, string, int) ratelimit.Decision {
+	return ratelimit.Decision{Allowed: true}
+}
+
+func (*recordingLimiter) Hit(ratelimit.Scope, string, int) {}
+
+func TestReserveSignInChargesAndRefundsBoundedAccountKey(t *testing.T) {
+	limiter := &recordingLimiter{consumed: map[ratelimit.Scope][]string{}, refunded: map[ratelimit.Scope][]string{}}
+	s := &APIService{RateLimiter: limiter}
+	long := strings.Repeat("a", identifier.MaxUsernameLength+1)
+
+	attempt, err := s.reserveSignIn("192.0.2.1", long)
+	require.NoError(t, err)
+	attempt.succeeded()
+
+	want := []string{accountKey(long)}
+	require.Equal(t, want, limiter.consumed[ratelimit.ScopeSignInAccount], "the raw submission must not become a limiter key")
+	require.Equal(t, want, limiter.refunded[ratelimit.ScopeSignInAccount], "the refund must return the unit that was charged")
+}

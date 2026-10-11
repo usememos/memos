@@ -463,6 +463,9 @@ func (s *APIService) UpdateUser(ctx context.Context, request *apipb.UpdateUserRe
 		if stderrors.Is(err, store.ErrLastSpaceAdmin) {
 			return nil, status.Error(codes.FailedPrecondition, "an active space must retain an active administrator")
 		}
+		if stderrors.Is(err, store.ErrLastInstanceAdmin) {
+			return nil, status.Error(codes.FailedPrecondition, lastInstanceAdminMessage)
+		}
 		return nil, convertUserWriteError(err, "failed to update user")
 	}
 	if passwordChanged {
@@ -509,6 +512,9 @@ func (s *APIService) DeleteUser(ctx context.Context, request *apipb.DeleteUserRe
 		if stderrors.Is(err, store.ErrUserHasSpaceMembership) {
 			return nil, status.Error(codes.FailedPrecondition, "leave all spaces before deleting this account")
 		}
+		if stderrors.Is(err, store.ErrLastInstanceAdmin) {
+			return nil, status.Error(codes.FailedPrecondition, lastInstanceAdminMessage)
+		}
 		return nil, status.Errorf(codes.Internal, "failed to delete user: %v", err)
 	}
 	if isSelfDelete {
@@ -524,6 +530,8 @@ func (s *APIService) DeleteUser(ctx context.Context, request *apipb.DeleteUserRe
 }
 
 const emailTakenMessage = "email is already in use"
+
+const lastInstanceAdminMessage = "the instance must retain an active administrator"
 
 // convertUserWriteError maps the store's uniqueness sentinels onto
 // AlreadyExists and everything else onto Internal with the given context.

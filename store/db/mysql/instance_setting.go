@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"context"
+	"database/sql"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -24,8 +25,24 @@ func (d *DB) CreateInstanceSettingIfNotExists(ctx context.Context, create *store
 }
 
 func (d *DB) UpsertInstanceSetting(ctx context.Context, upsert *store.InstanceSetting) (*store.InstanceSetting, error) {
+	if err := upsertInstanceSetting(ctx, d.db, upsert); err != nil {
+		return nil, err
+	}
+
+	return upsert, nil
+}
+
+func (*DB) UpsertInstanceSettingTx(ctx context.Context, tx *sql.Tx, upsert *store.InstanceSetting) error {
+	return upsertInstanceSetting(ctx, tx, upsert)
+}
+
+type instanceSettingExecer interface {
+	ExecContext(context.Context, string, ...any) (sql.Result, error)
+}
+
+func upsertInstanceSetting(ctx context.Context, executor instanceSettingExecer, upsert *store.InstanceSetting) error {
 	stmt := "INSERT INTO `system_setting` (`name`, `value`, `description`) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE `value` = ?, `description` = ?"
-	_, err := d.db.ExecContext(
+	_, err := executor.ExecContext(
 		ctx,
 		stmt,
 		upsert.Name,
@@ -34,11 +51,7 @@ func (d *DB) UpsertInstanceSetting(ctx context.Context, upsert *store.InstanceSe
 		upsert.Value,
 		upsert.Description,
 	)
-	if err != nil {
-		return nil, err
-	}
-
-	return upsert, nil
+	return err
 }
 
 func (d *DB) ListInstanceSettings(ctx context.Context, find *store.FindInstanceSetting) ([]*store.InstanceSetting, error) {

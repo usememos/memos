@@ -507,6 +507,58 @@ func TestUpdateInstanceSetting(t *testing.T) {
 		}
 	})
 
+	t.Run("UpdateInstanceSetting - notification email validation", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		admin, err := ts.CreateHostUser(ctx, "notification-admin")
+		require.NoError(t, err)
+		adminCtx := ts.CreateUserContext(ctx, admin.ID)
+		update := func(email *apipb.InstanceSetting_NotificationSetting_EmailSetting) error {
+			_, err := ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{
+				InstanceSetting: &apipb.InstanceSetting{
+					Name: "instance/settings/NOTIFICATION",
+					Value: &apipb.InstanceSetting_NotificationSetting_{
+						NotificationSetting: &apipb.InstanceSetting_NotificationSetting{Email: email},
+					},
+				},
+			})
+			return err
+		}
+		valid := func() *apipb.InstanceSetting_NotificationSetting_EmailSetting {
+			return &apipb.InstanceSetting_NotificationSetting_EmailSetting{
+				Enabled:      true,
+				SmtpHost:     "smtp.example.com",
+				SmtpPort:     587,
+				SmtpPassword: "password",
+				FromEmail:    "bot@example.com",
+				UseTls:       true,
+			}
+		}
+
+		bothEncryptions := valid()
+		bothEncryptions.UseSsl = true
+		err = update(bothEncryptions)
+		require.Equal(t, codes.InvalidArgument, status.Code(err))
+		require.Contains(t, err.Error(), "cannot enable both useTls and useSsl")
+
+		for name, mutate := range map[string]func(*apipb.InstanceSetting_NotificationSetting_EmailSetting){
+			"host": func(e *apipb.InstanceSetting_NotificationSetting_EmailSetting) { e.SmtpHost = " " },
+			"port": func(e *apipb.InstanceSetting_NotificationSetting_EmailSetting) { e.SmtpPort = 0 },
+			"from": func(e *apipb.InstanceSetting_NotificationSetting_EmailSetting) { e.FromEmail = "" },
+		} {
+			email := valid()
+			mutate(email)
+			err := update(email)
+			require.Equal(t, codes.InvalidArgument, status.Code(err), "missing %s", name)
+			require.Contains(t, err.Error(), "requires smtpHost", "missing %s", name)
+		}
+
+		require.NoError(t, update(valid()))
+		// Disabled email may be saved incomplete.
+		require.NoError(t, update(&apipb.InstanceSetting_NotificationSetting_EmailSetting{Enabled: false, SmtpPassword: "password"}))
+	})
+
 	t.Run("UpdateInstanceSetting - access setting", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()

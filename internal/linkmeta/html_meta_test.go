@@ -500,11 +500,16 @@ func TestHTMLMetaFetcherRejectsUnsafeURLsAndRedirects(t *testing.T) {
 	require.ErrorIs(t, err, ErrInternalIP)
 }
 
-func TestValidateURLCGNAT(t *testing.T) {
+func TestValidateURLReservedIPv4Ranges(t *testing.T) {
 	tests := []struct {
 		ip      string
 		blocked bool
 	}{
+		{"0.0.0.0", true},
+		{"0.1.2.3", true},
+		{"0.255.255.255", true},
+		{"::ffff:0.1.2.3", true},
+		{"1.0.0.1", false},
 		{"100.63.255.255", false},
 		{"100.64.0.0", true},
 		{"100.100.100.200", true},

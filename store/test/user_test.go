@@ -16,12 +16,12 @@ func TestUserStore(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
-	user, err := createTestingHostUser(ctx, ts)
+	user, err := createTestingUserWithRole(ctx, ts, "test", store.RoleUser)
 	require.NoError(t, err)
 	users, err := ts.ListUsers(ctx, &store.FindUser{})
 	require.NoError(t, err)
 	require.Equal(t, 1, len(users))
-	require.Equal(t, store.RoleAdmin, users[0].Role)
+	require.Equal(t, store.RoleUser, users[0].Role)
 	require.Equal(t, user, users[0])
 	userPatchNickname := "test_nickname_2"
 	userPatch := &store.UpdateUser{
@@ -186,7 +186,7 @@ func TestUserUpdateRowStatus(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
-	user, err := createTestingHostUser(ctx, ts)
+	user, err := createTestingUserWithRole(ctx, ts, "test", store.RoleUser)
 	require.NoError(t, err)
 	require.Equal(t, store.Normal, user.RowStatus)
 

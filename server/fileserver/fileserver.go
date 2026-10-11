@@ -657,7 +657,8 @@ func (s *FileServerService) getMotionPath(attachment *store.Attachment) (string,
 
 // checkAttachmentPermission verifies the user has permission to access the attachment.
 func (s *FileServerService) checkAttachmentPermission(ctx context.Context, c *echo.Context, attachment *store.Attachment) (access.MemoReadClass, error) {
-	// For unlinked attachments, only the creator can access.
+	// For unlinked attachments, only the creator or an admin can access, as in
+	// the API's GetAttachment.
 	if attachment.MemoID == nil {
 		user, err := s.getCurrentUser(ctx, c)
 		if err != nil {
@@ -666,7 +667,7 @@ func (s *FileServerService) checkAttachmentPermission(ctx context.Context, c *ec
 		if user == nil {
 			return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusUnauthorized, "unauthorized access")
 		}
-		if user.ID != attachment.CreatorID {
+		if !access.CanManageAttachment(user, attachment) {
 			return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusForbidden, "forbidden access")
 		}
 		return access.MemoReadClassPrivate, nil

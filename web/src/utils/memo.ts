@@ -70,7 +70,8 @@ export const getAssignableVisibilityOptions = (options: { hasSpacePlacement: boo
 /** Audiences offered as a persistent default. A Space-scoped default has no meaning outside a Space. */
 export const DEFAULT_VISIBILITY_OPTIONS: readonly VisibilityOption[] = VISIBILITY_OPTIONS.filter((option) => !option.requiresSpace);
 
+/** Unknown or empty names fall back to PRIVATE so a bad value never widens a memo's audience. */
 export const convertVisibilityFromString = (visibility: string) =>
-  VISIBILITY_OPTIONS.find((option) => option.name === visibility)?.value ?? Visibility.PUBLIC;
+  VISIBILITY_OPTIONS.find((option) => option.name === visibility)?.value ?? Visibility.PRIVATE;
 
 export const convertVisibilityToString = (visibility: Visibility) => getVisibilityOption(visibility)?.name ?? "PRIVATE";

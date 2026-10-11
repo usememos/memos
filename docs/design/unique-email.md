@@ -29,7 +29,7 @@ The change makes the column nullable, stores one canonical form, enforces unique
 - Linking an SSO identity to an existing account because the identity provider reports the same address.
 - Plus-address or dot folding (`a+b@gmail.com` versus `a@gmail.com`). Those are provider conventions, not identity.
 - Internationalized domain normalization beyond lowercasing.
-- Rate limiting or enumeration resistance on signup. See [Signup Abuse Controls](signup-abuse-controls.md).
+- Rate limiting or enumeration resistance on signup. See [API Abuse Controls](api-abuse-controls.md).
 
 ## Current state
 

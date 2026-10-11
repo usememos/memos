@@ -20,6 +20,11 @@ describe("Space visibility presentation", () => {
     expect(convertVisibilityToString(Visibility.SPACE)).toBe("SPACE");
   });
 
+  it("falls back to PRIVATE for an unknown or empty name", () => {
+    expect(convertVisibilityFromString("")).toBe(Visibility.PRIVATE);
+    expect(convertVisibilityFromString("UNKNOWN")).toBe(Visibility.PRIVATE);
+  });
+
   it("renders a distinct icon per audience", () => {
     const rendered = VISIBILITY_OPTIONS.map((option) => {
       const { container } = render(<VisibilityIcon visibility={option.value} />);

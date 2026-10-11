@@ -22,7 +22,6 @@ var PublicMethods = map[string]struct{}{
 	"/memos.api.UserService/CreateUser":    {}, // Registration policy is enforced in UserService
 	"/memos.api.UserService/GetUser":       {},
 	"/memos.api.UserService/BatchGetUsers": {},
-	"/memos.api.UserService/GetUserAvatar": {},
 	"/memos.api.UserService/GetUserStats":  {},
 	"/memos.api.UserService/ListUserStats": {},
 

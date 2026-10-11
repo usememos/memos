@@ -83,8 +83,8 @@ func TestSQLiteRelationshipWriteSerializesWithParentDelete(t *testing.T) {
 
 func TestSpaceInvitationWaitsForConcurrentUserDelete(t *testing.T) {
 	driver := getDriverFromEnv()
-	if driver == "sqlite" || driver == "d1" {
-		t.Skip("SQLite transactions begin IMMEDIATE and serialize competing writes without row locks; D1 has no row locks")
+	if driver == "sqlite" {
+		t.Skip("SQLite transactions begin IMMEDIATE and serialize competing writes without row locks")
 	}
 
 	setupCtx := context.Background()
@@ -146,8 +146,8 @@ func TestSpaceInvitationWaitsForConcurrentUserDelete(t *testing.T) {
 
 func TestSpaceInvitationWaitsForConcurrentSpaceDelete(t *testing.T) {
 	driver := getDriverFromEnv()
-	if driver == "sqlite" || driver == "d1" {
-		t.Skip("SQLite transactions begin IMMEDIATE and serialize competing writes without row locks; D1 has no row locks")
+	if driver == "sqlite" {
+		t.Skip("SQLite transactions begin IMMEDIATE and serialize competing writes without row locks")
 	}
 
 	setupCtx := context.Background()

@@ -153,8 +153,8 @@ func newMemoDeleteRaceFixture(t *testing.T) *memoDeleteRaceFixture {
 
 func TestDeleteMemoWithPolicyBlocksNewRepliesDuringSubtreeDeletion(t *testing.T) {
 	driver := getDriverFromEnv()
-	if driver == "sqlite" || driver == "d1" {
-		t.Skip("SQLite serializes writes with IMMEDIATE transactions; D1 has no row locks")
+	if driver == "sqlite" {
+		t.Skip("SQLite serializes writes with IMMEDIATE transactions")
 	}
 
 	fixture := newMemoDeleteRaceFixture(t)
@@ -221,8 +221,8 @@ func TestDeleteMemoWithPolicyBlocksNewRepliesDuringSubtreeDeletion(t *testing.T)
 
 func TestDeleteMemoWithPolicyIncludesReplyCommittedWhileWaitingForSubtree(t *testing.T) {
 	driver := getDriverFromEnv()
-	if driver == "sqlite" || driver == "d1" {
-		t.Skip("SQLite serializes writes with IMMEDIATE transactions; D1 has no row locks")
+	if driver == "sqlite" {
+		t.Skip("SQLite serializes writes with IMMEDIATE transactions")
 	}
 
 	fixture := newMemoDeleteRaceFixture(t)

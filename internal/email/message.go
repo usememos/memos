@@ -3,6 +3,8 @@ package email
 import (
 	"errors"
 	"fmt"
+	"mime"
+	"net/mail"
 	"strings"
 	"time"
 )
@@ -40,14 +42,14 @@ func (m *Message) Format(fromEmail, fromName string) string {
 	to := sanitizeEmailHeaderValues(m.To)
 	cc := sanitizeEmailHeaderValues(m.Cc)
 	replyTo := sanitizeEmailHeaderValue(m.ReplyTo)
-	subject := sanitizeEmailHeaderValue(m.Subject)
+	// Header values must be ASCII; RFC 2047 encodes UTF-8 text such as
+	// nicknames and Space titles and leaves ASCII text unchanged.
+	subject := mime.QEncoding.Encode("utf-8", sanitizeEmailHeaderValue(m.Subject))
 
-	// From header
-	if fromName != "" {
-		fmt.Fprintf(&sb, "From: %s <%s>\r\n", fromName, fromEmail)
-	} else {
-		fmt.Fprintf(&sb, "From: %s\r\n", fromEmail)
-	}
+	// From header. net/mail quotes an ASCII display name that contains RFC
+	// 5322 specials and RFC 2047 encodes a non-ASCII one, choosing an
+	// encoding whose words stay valid inside a phrase.
+	fmt.Fprintf(&sb, "From: %s\r\n", (&mail.Address{Name: fromName, Address: fromEmail}).String())
 
 	// To header
 	fmt.Fprintf(&sb, "To: %s\r\n", strings.Join(to, ", "))

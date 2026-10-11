@@ -216,7 +216,7 @@ func (s *APIService) reserveSignIn(clientIP, username string) (*signInAttempt, e
 	}
 	attempt.reserved = append(attempt.reserved, ratelimit.ScopeSignInIP)
 	if username != "" {
-		if err := s.throttleAndCharge(ratelimit.ScopeSignInAccount, username, 1); err != nil {
+		if err := s.throttleAndCharge(ratelimit.ScopeSignInAccount, attempt.username, 1); err != nil {
 			attempt.succeeded()
 			return nil, err
 		}

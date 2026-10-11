@@ -141,7 +141,10 @@ func TestInstanceAdminIsSuperuserForNamedMemoOperations(t *testing.T) {
 	_, err = ts.Service.GetMemo(ownerCtx, &apipb.GetMemoRequest{Name: private.Name})
 	require.Equal(t, codes.NotFound, status.Code(err))
 
-	// An archived administrator holds no privilege.
+	// An archived administrator holds no privilege. Another administrator
+	// must remain for the instance to allow the archive.
+	_, err = ts.CreateHostUser(ctx, "superuser-admin-successor")
+	require.NoError(t, err)
 	archived := store.Archived
 	_, err = ts.Store.UpdateUser(ctx, &store.UpdateUser{ID: admin.ID, RowStatus: &archived})
 	require.NoError(t, err)

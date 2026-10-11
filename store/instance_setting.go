@@ -4,6 +4,7 @@ import (
 	"cmp"
 	"context"
 	"slices"
+	"strings"
 
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -312,6 +313,24 @@ func (s *Store) GetInstanceTagsSetting(ctx context.Context) (*storepb.InstanceTa
 		Value: &storepb.InstanceSetting_TagsSetting{TagsSetting: instanceTagsSetting},
 	})
 	return instanceTagsSetting, nil
+}
+
+// ValidateInstanceNotificationSetting checks the rules a notification setting
+// must meet before it is stored, whether it comes from the API or from
+// deployment configuration: enabled email needs a host, a positive port, and
+// a from address, and TLS and SSL are mutually exclusive.
+func ValidateInstanceNotificationSetting(setting *storepb.InstanceNotificationSetting) error {
+	email := setting.GetEmail()
+	if email == nil || !email.Enabled {
+		return nil
+	}
+	if strings.TrimSpace(email.SmtpHost) == "" || email.SmtpPort <= 0 || strings.TrimSpace(email.FromEmail) == "" {
+		return errors.New("enabled notification email requires smtpHost, a positive smtpPort, and fromEmail")
+	}
+	if email.UseTls && email.UseSsl {
+		return errors.New("notification email cannot enable both useTls and useSsl")
+	}
+	return nil
 }
 
 func (s *Store) GetInstanceNotificationSetting(ctx context.Context) (*storepb.InstanceNotificationSetting, error) {

@@ -1,6 +1,8 @@
 package email
 
 import (
+	"mime"
+	"net/mail"
 	"strings"
 	"testing"
 )
@@ -80,7 +82,7 @@ func TestMessageFormatPlainText(t *testing.T) {
 	formatted := msg.Format("sender@example.com", "Sender Name")
 
 	// Check required headers
-	if !strings.Contains(formatted, "From: Sender Name <sender@example.com>") {
+	if !strings.Contains(formatted, `From: "Sender Name" <sender@example.com>`) {
 		t.Error("Missing or incorrect From header")
 	}
 	if !strings.Contains(formatted, "To: user@example.com") {
@@ -164,8 +166,67 @@ func TestMessageFormatSanitizesHeaderValues(t *testing.T) {
 	if !strings.Contains(headers, "Subject: Test X-Injected-Subject: bad") {
 		t.Error("subject header was not normalized")
 	}
-	if !strings.Contains(headers, "From: Sender X-Injected-Name: bad <sender@example.com X-Injected-From: bad>") {
+	if !strings.Contains(headers, `From: "Sender X-Injected-Name: bad" <sender@example.com X-Injected-From: bad>`) {
 		t.Error("from header was not normalized")
+	}
+}
+
+func TestMessageFormatEncodesNonASCIIHeaders(t *testing.T) {
+	msg := Message{
+		To:      []string{"user@example.com"},
+		Subject: "Zoë commented in 李雷的空间",
+		Body:    "Test Body",
+	}
+
+	formatted := msg.Format("sender@example.com", "Zoë")
+	headers, _, _ := strings.Cut(formatted, "\r\n\r\n")
+	for _, r := range headers {
+		if r > 127 {
+			t.Fatalf("headers contain raw non-ASCII text:\n%s", headers)
+		}
+	}
+
+	decoder := new(mime.WordDecoder)
+	for line := range strings.SplitSeq(headers, "\r\n") {
+		if value, ok := strings.CutPrefix(line, "Subject: "); ok {
+			decoded, err := decoder.DecodeHeader(value)
+			if err != nil || decoded != msg.Subject {
+				t.Errorf("subject decodes to %q, err %v", decoded, err)
+			}
+		}
+	}
+	if !strings.Contains(headers, "From: =?utf-8?q?Zo=C3=AB?= <sender@example.com>") {
+		t.Errorf("from name was not encoded:\n%s", headers)
+	}
+}
+
+func TestMessageFormatEncodesNonASCIIFromNameWithSpecials(t *testing.T) {
+	msg := Message{To: []string{"user@example.com"}, Subject: "Test", Body: "Test"}
+	for _, name := range []string{"Zoë <ops>", "Zoë, Team", "Zoë (Memos)"} {
+		formatted := msg.Format("sender@example.com", name)
+		headers, _, _ := strings.Cut(formatted, "\r\n\r\n")
+		var from string
+		for line := range strings.SplitSeq(headers, "\r\n") {
+			if value, ok := strings.CutPrefix(line, "From: "); ok {
+				from = value
+			}
+		}
+		address, err := mail.ParseAddress(from)
+		if err != nil {
+			t.Errorf("From header %q for name %q does not parse: %v", from, name, err)
+			continue
+		}
+		if address.Name != name || address.Address != "sender@example.com" {
+			t.Errorf("From header %q decodes to %q <%s>, want %q", from, address.Name, address.Address, name)
+		}
+	}
+}
+
+func TestMessageFormatQuotesSpecialsInFromName(t *testing.T) {
+	msg := Message{To: []string{"user@example.com"}, Subject: "Test", Body: "Test"}
+	formatted := msg.Format("sender@example.com", `Memos, "Team"`)
+	if !strings.Contains(formatted, `From: "Memos, \"Team\"" <sender@example.com>`) {
+		t.Errorf("from name with specials was not quoted:\n%s", formatted)
 	}
 }
 
