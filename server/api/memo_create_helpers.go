@@ -67,7 +67,7 @@ func (s *APIService) prepareMemoCreate(ctx context.Context, user *store.User, in
 		return nil, status.Error(codes.Internal, "failed to get content length limit")
 	}
 	if len(memo.Content) > contentLengthLimit {
-		return nil, status.Errorf(codes.InvalidArgument, "content too long (max %d characters)", contentLengthLimit)
+		return nil, status.Errorf(codes.InvalidArgument, "content too long (max %d bytes)", contentLengthLimit)
 	}
 	if err := memopayload.RebuildMemoPayload(ctx, memo, s.MarkdownService); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to rebuild memo payload: %v", err)

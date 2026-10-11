@@ -107,6 +107,13 @@ service UserService {
     option (google.api.method_signature) = "name";
   }
 
+  // GetUserUsage returns a user's usage and the usage limits in effect for the
+  // user. Only the user or an admin may call it.
+  rpc GetUserUsage(GetUserUsageRequest) returns (UserUsage) {
+    option (google.api.http) = {get: "/api/{name=users/*/usage}"};
+    option (google.api.method_signature) = "name";
+  }
+
   // ListMemoViews lists a user's memo views. Each view is a named, reusable
   // CEL filter (see MemoView.filter); pass its filter string directly to the
   // ListMemos `filter` argument. Only the user may call it.
@@ -675,6 +682,60 @@ message GetUserStatsRequest {
   // Optional. A CEL expression selecting the readable non-comment memos to
   // count. Supports the same fields as ListMemos, including `space`.
   string filter = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// UserUsage is a user's usage and the usage limits in effect for the user.
+message UserUsage {
+  option (google.api.resource) = {
+    type: "memos.api/UserUsage"
+    pattern: "users/{user}/usage"
+    singular: "userUsage"
+    plural: "userUsages"
+  };
+
+  // Identifier. The resource name of the user usage singleton.
+  // Format: users/{user}/usage
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+
+  // The number of memos the user created, including comments, archived
+  // memos, and memos in Spaces.
+  int64 memo_count = 2;
+
+  // The total size in bytes of the user's uploads, including uploads not
+  // attached to a memo. External links do not count.
+  int64 storage_bytes = 3;
+
+  // The limit on memo_count.
+  EffectiveLimit memos_limit = 4;
+
+  // The limit on storage_bytes.
+  EffectiveLimit storage_bytes_limit = 5;
+
+  // The limit on the size of one uploaded file. It applies only when it is
+  // lower than the instance upload limit.
+  EffectiveLimit upload_bytes_limit = 6;
+
+  // EffectiveLimit is the limit in effect for one metric, and where it comes
+  // from.
+  message EffectiveLimit {
+    // The limit. 0 means unlimited, or no extra limit for upload_bytes_limit.
+    int64 value = 1;
+
+    // The usage limit the value comes from: the user's own limit, or else the
+    // default. Empty when no usage limit applies.
+    // Format: usageLimits/{usage_limit}
+    string usage_limit = 2 [(google.api.resource_reference) = {type: "memos.api/UsageLimit"}];
+  }
+}
+
+// Request message for UserService.GetUserUsage.
+message GetUserUsageRequest {
+  // Required. The resource name of the user usage.
+  // Format: users/{user}/usage
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api/UserUsage"}
+  ];
 }
 
 // MemoView is a user's saved memo filter.

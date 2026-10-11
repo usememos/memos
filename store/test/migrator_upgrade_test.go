@@ -48,7 +48,7 @@ func TestUpgradeFromBaselineRelease(t *testing.T) {
 
 // TestUpgradeFromCalendarRelease uses local store fixtures until a published
 // CalVer release is available. Application versions do not advance the schema:
-// the first CalVer releases retain v0.31.0's schema unless migrations are added.
+// only migrations do.
 func TestUpgradeFromCalendarRelease(t *testing.T) {
 	for _, tc := range []struct{ previous, candidate string }{
 		{previous: "26.09", candidate: "26.10"},
@@ -68,7 +68,9 @@ func TestUpgradeFromCalendarRelease(t *testing.T) {
 			require.NoError(t, previous.Migrate(ctx))
 			baseline, err := previous.GetInstanceBasicSetting(ctx)
 			require.NoError(t, err)
-			require.Equal(t, "0.31.8", baseline.SchemaVersion, "application CalVer must not become the database schema version")
+			currentSchema, err := previous.GetCurrentSchemaVersion()
+			require.NoError(t, err)
+			require.Equal(t, currentSchema, baseline.SchemaVersion, "application CalVer must not become the database schema version")
 
 			candidateProfile := *previousProfile
 			candidateProfile.Version = tc.candidate
@@ -124,6 +126,7 @@ func requireUpgradePreservesData(ctx context.Context, t *testing.T, previous *st
 		preservedAccess, err := candidate.GetInstanceAccessSetting(ctx)
 		require.NoError(t, err)
 		require.True(t, proto.Equal(access.GetAccessSetting(), preservedAccess), "explicit access mode must not be reset")
+		requireCreatorIndexes(ctx, t, candidate, candidateProfile.Driver)
 	}
 
 	driver, err := storedb.NewDBDriver(candidateProfile)

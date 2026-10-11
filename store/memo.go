@@ -229,6 +229,12 @@ func (s *Store) ListMemos(ctx context.Context, find *FindMemo) ([]*Memo, error) 
 	return s.driver.ListMemos(ctx, find)
 }
 
+// CountUserMemos counts the memos a user created, comments included, in every
+// row status and Space.
+func (s *Store) CountUserMemos(ctx context.Context, creatorID int32) (int64, error) {
+	return s.driver.CountUserMemos(ctx, creatorID)
+}
+
 func (s *Store) GetMemo(ctx context.Context, find *FindMemo) (*Memo, error) {
 	list, err := s.ListMemos(ctx, find)
 	if err != nil {

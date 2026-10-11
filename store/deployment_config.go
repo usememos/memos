@@ -292,6 +292,14 @@ func validateAndNormalizeDeploymentInstanceSetting(setting *storepb.InstanceSett
 		default:
 			return errors.New("accessSetting.accessMode must be PRIVATE or PUBLIC")
 		}
+	case storepb.InstanceSettingKey_USAGE_LIMITS:
+		usageLimits := setting.GetUsageLimitsSetting()
+		if usageLimits == nil {
+			return errors.New("usageLimitsSetting must be populated for key USAGE_LIMITS")
+		}
+		if err := ValidateInstanceUsageLimitsSetting(usageLimits); err != nil {
+			return errors.Wrap(err, "usageLimitsSetting")
+		}
 	case storepb.InstanceSettingKey_BASIC, storepb.InstanceSettingKey_TAGS:
 		return errors.Errorf("key %s cannot be deployment configured", setting.Key)
 	default:

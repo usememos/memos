@@ -33,6 +33,9 @@ export const userKeys = {
   userStats: (name: string, filter?: string) =>
     filter ? ([...userKeys.stats(), name, filter] as const) : ([...userKeys.stats(), name] as const),
   allUserStats: (request: Partial<ListUserStatsQuery>) => [...userKeys.stats(), "all", request] as const,
+  // Usage sits under stats so that every change that refreshes stats (memo
+  // saves, deletes, attachment changes) refreshes usage too.
+  usage: (name: string) => [...userKeys.stats(), "usage", name] as const,
   currentUser: () => [...userKeys.all, "current"] as const,
   memoViews: (parent?: string) => [...userKeys.all, "memoViews", parent] as const,
   notifications: () => [...userKeys.all, "notifications"] as const,
@@ -63,6 +66,20 @@ export function useUserStats(username?: string, options?: { enabled?: boolean; f
       }
       const stats = await userServiceClient.getUserStats({ name: username, filter: options?.filter });
       return stats;
+    },
+    enabled: !!username && (options?.enabled ?? true),
+  });
+}
+
+/** A user's memo count and stored bytes, and the usage limits in effect for the user. */
+export function useUserUsage(username?: string, options?: { enabled?: boolean }) {
+  return useQuery({
+    queryKey: username ? userKeys.usage(username) : userKeys.stats(),
+    queryFn: async () => {
+      if (!username) {
+        throw new Error("Username is required");
+      }
+      return userServiceClient.getUserUsage({ name: `${username}/usage` });
     },
     enabled: !!username && (options?.enabled ?? true),
   });

@@ -179,6 +179,9 @@ func (s *APIService) CreateAttachment(ctx context.Context, request *apipb.Create
 	if err := checkUploadSize(instanceStorageSetting, int64(len(content))); err != nil {
 		return nil, err
 	}
+	if err := s.checkUploadQuota(ctx, create.CreatorID, int64(len(content)), instanceStorageSetting); err != nil {
+		return nil, err
+	}
 	create.Size = int64(len(content))
 	return s.processAndSaveAttachment(ctx, create, instanceStorageSetting, bytes.NewReader(content))
 }
@@ -191,8 +194,8 @@ func attachmentUploadLimit(setting *storepb.InstanceStorageSetting) int64 {
 }
 
 func checkUploadSize(setting *storepb.InstanceStorageSetting, size int64) error {
-	if size > attachmentUploadLimit(setting) {
-		return status.Errorf(codes.ResourceExhausted, "file size exceeds the limit")
+	if limit := attachmentUploadLimit(setting); size > limit {
+		return newFileTooLargeError(limit, size)
 	}
 	return nil
 }

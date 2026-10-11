@@ -32,6 +32,7 @@ const (
 	UserService_UpdateUserSetting_FullMethodName           = "/memos.api.UserService/UpdateUserSetting"
 	UserService_ListUserStats_FullMethodName               = "/memos.api.UserService/ListUserStats"
 	UserService_GetUserStats_FullMethodName                = "/memos.api.UserService/GetUserStats"
+	UserService_GetUserUsage_FullMethodName                = "/memos.api.UserService/GetUserUsage"
 	UserService_ListMemoViews_FullMethodName               = "/memos.api.UserService/ListMemoViews"
 	UserService_GetMemoView_FullMethodName                 = "/memos.api.UserService/GetMemoView"
 	UserService_CreateMemoView_FullMethodName              = "/memos.api.UserService/CreateMemoView"
@@ -97,6 +98,9 @@ type UserServiceClient interface {
 	// GetUserStats returns memo statistics for one user, counting the user's
 	// memos that the caller can read.
 	GetUserStats(ctx context.Context, in *GetUserStatsRequest, opts ...grpc.CallOption) (*UserStats, error)
+	// GetUserUsage returns a user's usage and the usage limits in effect for the
+	// user. Only the user or an admin may call it.
+	GetUserUsage(ctx context.Context, in *GetUserUsageRequest, opts ...grpc.CallOption) (*UserUsage, error)
 	// ListMemoViews lists a user's memo views. Each view is a named, reusable
 	// CEL filter (see MemoView.filter); pass its filter string directly to the
 	// ListMemos `filter` argument. Only the user may call it.
@@ -283,6 +287,16 @@ func (c *userServiceClient) GetUserStats(ctx context.Context, in *GetUserStatsRe
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UserStats)
 	err := c.cc.Invoke(ctx, UserService_GetUserStats_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) GetUserUsage(ctx context.Context, in *GetUserUsageRequest, opts ...grpc.CallOption) (*UserUsage, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UserUsage)
+	err := c.cc.Invoke(ctx, UserService_GetUserUsage_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -550,6 +564,9 @@ type UserServiceServer interface {
 	// GetUserStats returns memo statistics for one user, counting the user's
 	// memos that the caller can read.
 	GetUserStats(context.Context, *GetUserStatsRequest) (*UserStats, error)
+	// GetUserUsage returns a user's usage and the usage limits in effect for the
+	// user. Only the user or an admin may call it.
+	GetUserUsage(context.Context, *GetUserUsageRequest) (*UserUsage, error)
 	// ListMemoViews lists a user's memo views. Each view is a named, reusable
 	// CEL filter (see MemoView.filter); pass its filter string directly to the
 	// ListMemos `filter` argument. Only the user may call it.
@@ -664,6 +681,9 @@ func (UnimplementedUserServiceServer) ListUserStats(context.Context, *ListUserSt
 }
 func (UnimplementedUserServiceServer) GetUserStats(context.Context, *GetUserStatsRequest) (*UserStats, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetUserStats not implemented")
+}
+func (UnimplementedUserServiceServer) GetUserUsage(context.Context, *GetUserUsageRequest) (*UserUsage, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetUserUsage not implemented")
 }
 func (UnimplementedUserServiceServer) ListMemoViews(context.Context, *ListMemoViewsRequest) (*ListMemoViewsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListMemoViews not implemented")
@@ -946,6 +966,24 @@ func _UserService_GetUserStats_Handler(srv interface{}, ctx context.Context, dec
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).GetUserStats(ctx, req.(*GetUserStatsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_GetUserUsage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserUsageRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetUserUsage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_GetUserUsage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetUserUsage(ctx, req.(*GetUserUsageRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1396,6 +1434,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUserStats",
 			Handler:    _UserService_GetUserStats_Handler,
+		},
+		{
+			MethodName: "GetUserUsage",
+			Handler:    _UserService_GetUserUsage_Handler,
 		},
 		{
 			MethodName: "ListMemoViews",

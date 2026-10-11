@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package memos.store;
 
+import "google/protobuf/timestamp.proto";
 import "google/type/color.proto";
 
 option go_package = "gen/store";
@@ -24,6 +25,9 @@ enum InstanceSettingKey {
   AI = 7;
   // ACCESS is the key for instance access policy settings.
   ACCESS = 8;
+  // USAGE_LIMITS is the key for per-user usage limits. Store only; exposed
+  // through the usageLimits API, never through the instance settings API.
+  USAGE_LIMITS = 9;
 }
 
 message InstanceSetting {
@@ -37,6 +41,7 @@ message InstanceSetting {
     InstanceNotificationSetting notification_setting = 7;
     InstanceAISetting ai_setting = 8;
     InstanceAccessSetting access_setting = 9;
+    InstanceUsageLimitsSetting usage_limits_setting = 10;
   }
 }
 
@@ -244,4 +249,35 @@ enum InstanceAccessMode {
 
 message InstanceAccessSetting {
   InstanceAccessMode access_mode = 1;
+}
+
+// InstanceUsageLimitsSetting holds every usage limit of the instance. A limit
+// applies to one user, or to every user when user_id is 0. For each metric, a
+// user's own limit replaces the default.
+message InstanceUsageLimitsSetting {
+  repeated UsageLimit limits = 1;
+
+  message UsageLimit {
+    // uid is the {usage_limit} segment of the usageLimits/{usage_limit} name.
+    string uid = 1;
+    Metric metric = 2;
+    // user_id is the user the limit applies to. 0 means every user.
+    int32 user_id = 3;
+    // value is the limit. 0 means unlimited.
+    int64 value = 4;
+    google.protobuf.Timestamp create_time = 5;
+    google.protobuf.Timestamp update_time = 6;
+  }
+
+  enum Metric {
+    METRIC_UNSPECIFIED = 0;
+    // MEMOS limits the number of memos a user created, comments included.
+    MEMOS = 1;
+    // STORAGE_BYTES limits the total size of a user's uploads. External links
+    // do not count.
+    STORAGE_BYTES = 2;
+    // UPLOAD_BYTES limits the size of one uploaded file. It can only lower the
+    // instance upload limit.
+    UPLOAD_BYTES = 3;
+  }
 }

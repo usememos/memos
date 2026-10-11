@@ -3,6 +3,7 @@ package store
 import (
 	"context"
 	stderrors "errors"
+	"log/slog"
 	"strconv"
 	"strings"
 
@@ -242,5 +243,10 @@ func (s *Store) DeleteUser(ctx context.Context, delete *DeleteUser) (*DeleteUser
 		return nil, errors.New("unexpected nil delete user result")
 	}
 	s.deleteUserCache(ctx, delete.ID, result)
+	// The user is already gone, so a failure here only leaves limits that are
+	// ignored at evaluation and pruned by the next usage limit write.
+	if err := s.DeleteUsageLimitsForUser(ctx, delete.ID); err != nil {
+		slog.Warn("failed to delete usage limits of deleted user", slog.Int("userID", int(delete.ID)), slog.String("error", err.Error()))
+	}
 	return result, nil
 }

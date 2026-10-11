@@ -1,5 +1,12 @@
+import { getLimitErrorMessage } from "@/lib/error";
+
 export const errorService = {
   getErrorMessage(error: unknown): string {
+    const limitMessage = getLimitErrorMessage(error);
+    if (limitMessage !== undefined) {
+      return limitMessage;
+    }
+
     if (error && typeof error === "object" && "rawMessage" in error) {
       return (error as { rawMessage?: string }).rawMessage || "An error occurred";
     }

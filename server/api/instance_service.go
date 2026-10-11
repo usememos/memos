@@ -207,6 +207,10 @@ func (s *APIService) UpdateInstanceSetting(ctx context.Context, request *apipb.U
 		return nil, status.Errorf(codes.InvalidArgument, "invalid instance setting name: %v", err)
 	}
 	settingKey := storepb.InstanceSettingKey(storepb.InstanceSettingKey_value[settingKeyString])
+	if settingKey == storepb.InstanceSettingKey_USAGE_LIMITS {
+		// Usage limits are store only; the usageLimits RPCs are their only API.
+		return nil, status.Errorf(codes.InvalidArgument, "unsupported instance setting key: %v", settingKey)
+	}
 	if s.Store.IsInstanceSettingDeploymentConfigured(settingKey) {
 		return nil, status.Errorf(codes.FailedPrecondition, "instance setting %q is configured by the deployment", settingKeyString)
 	}

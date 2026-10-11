@@ -26,6 +26,11 @@ const (
 	InstanceService_UpdateInstanceSetting_FullMethodName    = "/memos.api.InstanceService/UpdateInstanceSetting"
 	InstanceService_TestInstanceEmailSetting_FullMethodName = "/memos.api.InstanceService/TestInstanceEmailSetting"
 	InstanceService_GetInstanceStats_FullMethodName         = "/memos.api.InstanceService/GetInstanceStats"
+	InstanceService_ListUsageLimits_FullMethodName          = "/memos.api.InstanceService/ListUsageLimits"
+	InstanceService_GetUsageLimit_FullMethodName            = "/memos.api.InstanceService/GetUsageLimit"
+	InstanceService_CreateUsageLimit_FullMethodName         = "/memos.api.InstanceService/CreateUsageLimit"
+	InstanceService_UpdateUsageLimit_FullMethodName         = "/memos.api.InstanceService/UpdateUsageLimit"
+	InstanceService_DeleteUsageLimit_FullMethodName         = "/memos.api.InstanceService/DeleteUsageLimit"
 )
 
 // InstanceServiceClient is the client API for InstanceService service.
@@ -49,6 +54,22 @@ type InstanceServiceClient interface {
 	TestInstanceEmailSetting(ctx context.Context, in *TestInstanceEmailSettingRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// GetInstanceStats gets resource usage statistics for the instance. Admin only. Results are cached for 60 seconds.
 	GetInstanceStats(ctx context.Context, in *GetInstanceStatsRequest, opts ...grpc.CallOption) (*InstanceStats, error)
+	// ListUsageLimits lists the usage limits: the defaults for every user and the
+	// limits for single users. Admin only.
+	ListUsageLimits(ctx context.Context, in *ListUsageLimitsRequest, opts ...grpc.CallOption) (*ListUsageLimitsResponse, error)
+	// GetUsageLimit gets a usage limit. Admin only.
+	GetUsageLimit(ctx context.Context, in *GetUsageLimitRequest, opts ...grpc.CallOption) (*UsageLimit, error)
+	// CreateUsageLimit creates a usage limit. Admin only. There is at most one
+	// limit per metric and user, and one default per metric. Fails with
+	// FAILED_PRECONDITION when the usage limits are configured by the deployment.
+	CreateUsageLimit(ctx context.Context, in *CreateUsageLimitRequest, opts ...grpc.CallOption) (*UsageLimit, error)
+	// UpdateUsageLimit updates the value of a usage limit. Admin only. The metric
+	// and user cannot change.
+	UpdateUsageLimit(ctx context.Context, in *UpdateUsageLimitRequest, opts ...grpc.CallOption) (*UsageLimit, error)
+	// DeleteUsageLimit deletes a usage limit. Admin only. Deleting a user's limit
+	// returns the user to the default; deleting a default makes the metric
+	// unlimited for users without their own limit.
+	DeleteUsageLimit(ctx context.Context, in *DeleteUsageLimitRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type instanceServiceClient struct {
@@ -119,6 +140,56 @@ func (c *instanceServiceClient) GetInstanceStats(ctx context.Context, in *GetIns
 	return out, nil
 }
 
+func (c *instanceServiceClient) ListUsageLimits(ctx context.Context, in *ListUsageLimitsRequest, opts ...grpc.CallOption) (*ListUsageLimitsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListUsageLimitsResponse)
+	err := c.cc.Invoke(ctx, InstanceService_ListUsageLimits_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *instanceServiceClient) GetUsageLimit(ctx context.Context, in *GetUsageLimitRequest, opts ...grpc.CallOption) (*UsageLimit, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UsageLimit)
+	err := c.cc.Invoke(ctx, InstanceService_GetUsageLimit_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *instanceServiceClient) CreateUsageLimit(ctx context.Context, in *CreateUsageLimitRequest, opts ...grpc.CallOption) (*UsageLimit, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UsageLimit)
+	err := c.cc.Invoke(ctx, InstanceService_CreateUsageLimit_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *instanceServiceClient) UpdateUsageLimit(ctx context.Context, in *UpdateUsageLimitRequest, opts ...grpc.CallOption) (*UsageLimit, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UsageLimit)
+	err := c.cc.Invoke(ctx, InstanceService_UpdateUsageLimit_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *instanceServiceClient) DeleteUsageLimit(ctx context.Context, in *DeleteUsageLimitRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, InstanceService_DeleteUsageLimit_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // InstanceServiceServer is the server API for InstanceService service.
 // All implementations must embed UnimplementedInstanceServiceServer
 // for forward compatibility.
@@ -140,6 +211,22 @@ type InstanceServiceServer interface {
 	TestInstanceEmailSetting(context.Context, *TestInstanceEmailSettingRequest) (*emptypb.Empty, error)
 	// GetInstanceStats gets resource usage statistics for the instance. Admin only. Results are cached for 60 seconds.
 	GetInstanceStats(context.Context, *GetInstanceStatsRequest) (*InstanceStats, error)
+	// ListUsageLimits lists the usage limits: the defaults for every user and the
+	// limits for single users. Admin only.
+	ListUsageLimits(context.Context, *ListUsageLimitsRequest) (*ListUsageLimitsResponse, error)
+	// GetUsageLimit gets a usage limit. Admin only.
+	GetUsageLimit(context.Context, *GetUsageLimitRequest) (*UsageLimit, error)
+	// CreateUsageLimit creates a usage limit. Admin only. There is at most one
+	// limit per metric and user, and one default per metric. Fails with
+	// FAILED_PRECONDITION when the usage limits are configured by the deployment.
+	CreateUsageLimit(context.Context, *CreateUsageLimitRequest) (*UsageLimit, error)
+	// UpdateUsageLimit updates the value of a usage limit. Admin only. The metric
+	// and user cannot change.
+	UpdateUsageLimit(context.Context, *UpdateUsageLimitRequest) (*UsageLimit, error)
+	// DeleteUsageLimit deletes a usage limit. Admin only. Deleting a user's limit
+	// returns the user to the default; deleting a default makes the metric
+	// unlimited for users without their own limit.
+	DeleteUsageLimit(context.Context, *DeleteUsageLimitRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedInstanceServiceServer()
 }
 
@@ -167,6 +254,21 @@ func (UnimplementedInstanceServiceServer) TestInstanceEmailSetting(context.Conte
 }
 func (UnimplementedInstanceServiceServer) GetInstanceStats(context.Context, *GetInstanceStatsRequest) (*InstanceStats, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetInstanceStats not implemented")
+}
+func (UnimplementedInstanceServiceServer) ListUsageLimits(context.Context, *ListUsageLimitsRequest) (*ListUsageLimitsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListUsageLimits not implemented")
+}
+func (UnimplementedInstanceServiceServer) GetUsageLimit(context.Context, *GetUsageLimitRequest) (*UsageLimit, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetUsageLimit not implemented")
+}
+func (UnimplementedInstanceServiceServer) CreateUsageLimit(context.Context, *CreateUsageLimitRequest) (*UsageLimit, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateUsageLimit not implemented")
+}
+func (UnimplementedInstanceServiceServer) UpdateUsageLimit(context.Context, *UpdateUsageLimitRequest) (*UsageLimit, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpdateUsageLimit not implemented")
+}
+func (UnimplementedInstanceServiceServer) DeleteUsageLimit(context.Context, *DeleteUsageLimitRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteUsageLimit not implemented")
 }
 func (UnimplementedInstanceServiceServer) mustEmbedUnimplementedInstanceServiceServer() {}
 func (UnimplementedInstanceServiceServer) testEmbeddedByValue()                         {}
@@ -297,6 +399,96 @@ func _InstanceService_GetInstanceStats_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _InstanceService_ListUsageLimits_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListUsageLimitsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InstanceServiceServer).ListUsageLimits(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: InstanceService_ListUsageLimits_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InstanceServiceServer).ListUsageLimits(ctx, req.(*ListUsageLimitsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _InstanceService_GetUsageLimit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUsageLimitRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InstanceServiceServer).GetUsageLimit(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: InstanceService_GetUsageLimit_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InstanceServiceServer).GetUsageLimit(ctx, req.(*GetUsageLimitRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _InstanceService_CreateUsageLimit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateUsageLimitRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InstanceServiceServer).CreateUsageLimit(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: InstanceService_CreateUsageLimit_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InstanceServiceServer).CreateUsageLimit(ctx, req.(*CreateUsageLimitRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _InstanceService_UpdateUsageLimit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateUsageLimitRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InstanceServiceServer).UpdateUsageLimit(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: InstanceService_UpdateUsageLimit_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InstanceServiceServer).UpdateUsageLimit(ctx, req.(*UpdateUsageLimitRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _InstanceService_DeleteUsageLimit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteUsageLimitRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InstanceServiceServer).DeleteUsageLimit(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: InstanceService_DeleteUsageLimit_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InstanceServiceServer).DeleteUsageLimit(ctx, req.(*DeleteUsageLimitRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // InstanceService_ServiceDesc is the grpc.ServiceDesc for InstanceService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -327,6 +519,26 @@ var InstanceService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetInstanceStats",
 			Handler:    _InstanceService_GetInstanceStats_Handler,
+		},
+		{
+			MethodName: "ListUsageLimits",
+			Handler:    _InstanceService_ListUsageLimits_Handler,
+		},
+		{
+			MethodName: "GetUsageLimit",
+			Handler:    _InstanceService_GetUsageLimit_Handler,
+		},
+		{
+			MethodName: "CreateUsageLimit",
+			Handler:    _InstanceService_CreateUsageLimit_Handler,
+		},
+		{
+			MethodName: "UpdateUsageLimit",
+			Handler:    _InstanceService_UpdateUsageLimit_Handler,
+		},
+		{
+			MethodName: "DeleteUsageLimit",
+			Handler:    _InstanceService_DeleteUsageLimit_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -20,7 +20,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file api/instance_service.proto.
  */
 export const file_api_instance_service: GenFile = /*@__PURE__*/
-  fileDesc("ChphcGkvaW5zdGFuY2Vfc2VydmljZS5wcm90bxIJbWVtb3MuYXBpIqkCCg9JbnN0YW5jZVByb2ZpbGUSDwoHdmVyc2lvbhgBIAEoCRIOCgZjb21taXQYAiABKAkSDAoEZGVtbxgDIAEoCBIUCgxpbnN0YW5jZV91cmwYBCABKAkSMgoLYWNjZXNzX21vZGUYBSABKA4yHS5tZW1vcy5hcGkuSW5zdGFuY2VBY2Nlc3NNb2RlEhMKC25lZWRzX3NldHVwGAYgASgIEh4KBWFkbWluGAcgASgLMg8ubWVtb3MuYXBpLlVzZXISNwoJY2hhbGxlbmdlGAggASgLMiQubWVtb3MuYXBpLkluc3RhbmNlUHJvZmlsZS5DaGFsbGVuZ2UaLwoJQ2hhbGxlbmdlEhAKCHByb3ZpZGVyGAEgASgJEhAKCHNpdGVfa2V5GAIgASgJIhsKGUdldEluc3RhbmNlUHJvZmlsZVJlcXVlc3QisRoKD0luc3RhbmNlU2V0dGluZxIRCgRuYW1lGAEgASgJQgPgQQgSRAoPZ2VuZXJhbF9zZXR0aW5nGAIgASgLMikubWVtb3MuYXBpLkluc3RhbmNlU2V0dGluZy5HZW5lcmFsU2V0dGluZ0gAEkQKD3N0b3JhZ2Vfc2V0dGluZxgDIAEoCzIpLm1lbW9zLmFwaS5JbnN0YW5jZVNldHRpbmcuU3RvcmFnZVNldHRpbmdIABJNChRtZW1vX3JlbGF0ZWRfc2V0dGluZxgEIAEoCzItLm1lbW9zLmFwaS5JbnN0YW5jZVNldHRpbmcuTWVtb1JlbGF0ZWRTZXR0aW5nSAASPgoMdGFnc19zZXR0aW5nGAUgASgLMiYubWVtb3MuYXBpLkluc3RhbmNlU2V0dGluZy5UYWdzU2V0dGluZ0gAEk4KFG5vdGlmaWNhdGlvbl9zZXR0aW5nGAYgASgLMi4ubWVtb3MuYXBpLkluc3RhbmNlU2V0dGluZy5Ob3RpZmljYXRpb25TZXR0aW5nSAASOgoKYWlfc2V0dGluZxgHIAEoCzIkLm1lbW9zLmFwaS5JbnN0YW5jZVNldHRpbmcuQUlTZXR0aW5nSAASQgoOYWNjZXNzX3NldHRpbmcYCCABKAsyKC5tZW1vcy5hcGkuSW5zdGFuY2VTZXR0aW5nLkFjY2Vzc1NldHRpbmdIABqEAwoOR2VuZXJhbFNldHRpbmcSTwoOY3VzdG9tX3Byb2ZpbGUYASABKAsyNy5tZW1vcy5hcGkuSW5zdGFuY2VTZXR0aW5nLkdlbmVyYWxTZXR0aW5nLkN1c3RvbVByb2ZpbGUSIgoaZGlzYWxsb3dfdXNlcl9yZWdpc3RyYXRpb24YAiABKAgSHgoWZGlzYWxsb3dfcGFzc3dvcmRfYXV0aBgDIAEoCBIgChhkaXNhbGxvd19jaGFuZ2VfdXNlcm5hbWUYBCABKAgSIAoYZGlzYWxsb3dfY2hhbmdlX25pY2tuYW1lGAUgASgIEh0KFXdlZWtfc3RhcnRfZGF5X29mZnNldBgGIAEoBRIYChBhZGRpdGlvbmFsX3N0eWxlGAcgASgJEhkKEWFkZGl0aW9uYWxfc2NyaXB0GAggASgJGkUKDUN1c3RvbVByb2ZpbGUSDQoFdGl0bGUYASABKAkSEwoLZGVzY3JpcHRpb24YAiABKAkSEAoIbG9nb191cmwYAyABKAkarQQKDlN0b3JhZ2VTZXR0aW5nEjQKCHN0b3JhZ2VzGAEgAygLMiIubWVtb3MuYXBpLkluc3RhbmNlU2V0dGluZy5TdG9yYWdlEhoKEmRlZmF1bHRfc3RvcmFnZV9pZBgCIAEoCRIZChFmaWxlcGF0aF90ZW1wbGF0ZRgDIAEoCRIcChR1cGxvYWRfc2l6ZV9saW1pdF9tYhgEIAEoAxJLCgxzdG9yYWdlX3R5cGUYBSABKA4yNS5tZW1vcy5hcGkuSW5zdGFuY2VTZXR0aW5nLlN0b3JhZ2VTZXR0aW5nLlN0b3JhZ2VUeXBlEkUKCXMzX2NvbmZpZxgGIAEoCzIyLm1lbW9zLmFwaS5JbnN0YW5jZVNldHRpbmcuU3RvcmFnZVNldHRpbmcuUzNDb25maWcarQEKCFMzQ29uZmlnEhAKCGVuZHBvaW50GAEgASgJEg4KBnJlZ2lvbhgCIAEoCRIOCgZidWNrZXQYAyABKAkSFQoNYWNjZXNzX2tleV9pZBgEIAEoCRIeChFhY2Nlc3Nfa2V5X3NlY3JldBgFIAEoCUID4EEEEhYKDnVzZV9wYXRoX3N0eWxlGAYgASgIEiAKGGluc2VjdXJlX3NraXBfdGxzX3ZlcmlmeRgHIAEoCCJMCgtTdG9yYWdlVHlwZRIcChhTVE9SQUdFX1RZUEVfVU5TUEVDSUZJRUQQABIMCghEQVRBQkFTRRABEgkKBUxPQ0FMEAISBgoCUzMQAxrVAgoHU3RvcmFnZRIKCgJpZBgBIAEoCRIMCgRuYW1lGAIgASgJEjQKBHR5cGUYAyABKA4yJi5tZW1vcy5hcGkuSW5zdGFuY2VTZXR0aW5nLlN0b3JhZ2VUeXBlEkAKCXMzX2NvbmZpZxgEIAEoCzIrLm1lbW9zLmFwaS5JbnN0YW5jZVNldHRpbmcuU3RvcmFnZS5TM0NvbmZpZ0gAGq0BCghTM0NvbmZpZxIQCghlbmRwb2ludBgBIAEoCRIOCgZyZWdpb24YAiABKAkSDgoGYnVja2V0GAMgASgJEhUKDWFjY2Vzc19rZXlfaWQYBCABKAkSHgoRYWNjZXNzX2tleV9zZWNyZXQYBSABKAlCA+BBBBIWCg51c2VfcGF0aF9zdHlsZRgGIAEoCBIgChhpbnNlY3VyZV9za2lwX3Rsc192ZXJpZnkYByABKAhCCAoGY29uZmlnGmcKEk1lbW9SZWxhdGVkU2V0dGluZxIcChRjb250ZW50X2xlbmd0aF9saW1pdBgBIAEoBRIRCglyZWFjdGlvbnMYAiADKAkSIAoYZW5hYmxlX2RvdWJsZV9jbGlja19lZGl0GAMgASgIGqIBCgtUYWdzU2V0dGluZxI+CgR0YWdzGAEgAygLMjAubWVtb3MuYXBpLkluc3RhbmNlU2V0dGluZy5UYWdzU2V0dGluZy5UYWdzRW50cnkaUwoJVGFnc0VudHJ5EgsKA2tleRgBIAEoCRI1CgV2YWx1ZRgCIAEoCzImLm1lbW9zLmFwaS5JbnN0YW5jZVNldHRpbmcuVGFnTWV0YWRhdGE6AjgBGlEKC1RhZ01ldGFkYXRhEiwKEGJhY2tncm91bmRfY29sb3IYASABKAsyEi5nb29nbGUudHlwZS5Db2xvchIUCgxibHVyX2NvbnRlbnQYAiABKAgatwIKE05vdGlmaWNhdGlvblNldHRpbmcSSgoFZW1haWwYASABKAsyOy5tZW1vcy5hcGkuSW5zdGFuY2VTZXR0aW5nLk5vdGlmaWNhdGlvblNldHRpbmcuRW1haWxTZXR0aW5nGtMBCgxFbWFpbFNldHRpbmcSDwoHZW5hYmxlZBgBIAEoCBIRCglzbXRwX2hvc3QYAiABKAkSEQoJc210cF9wb3J0GAMgASgFEhUKDXNtdHBfdXNlcm5hbWUYBCABKAkSGgoNc210cF9wYXNzd29yZBgFIAEoCUID4EEEEg8KB3VzZV90bHMYBiABKAgSDwoHdXNlX3NzbBgHIAEoCBISCgpmcm9tX2VtYWlsGAggASgJEhEKCWZyb21fbmFtZRgJIAEoCRIQCghyZXBseV90bxgKIAEoCRqSAQoJQUlTZXR0aW5nEj4KCXByb3ZpZGVycxgBIAMoCzIrLm1lbW9zLmFwaS5JbnN0YW5jZVNldHRpbmcuQUlQcm92aWRlckNvbmZpZxJFCg10cmFuc2NyaXB0aW9uGAIgASgLMi4ubWVtb3MuYXBpLkluc3RhbmNlU2V0dGluZy5UcmFuc2NyaXB0aW9uQ29uZmlnGsMBChBBSVByb3ZpZGVyQ29uZmlnEgoKAmlkGAEgASgJEg0KBXRpdGxlGAIgASgJEjcKBHR5cGUYAyABKA4yKS5tZW1vcy5hcGkuSW5zdGFuY2VTZXR0aW5nLkFJUHJvdmlkZXJUeXBlEhAKCGVuZHBvaW50GAQgASgJEhQKB2FwaV9rZXkYBSABKAlCA+BBBBIYCgthcGlfa2V5X3NldBgGIAEoCEID4EEDEhkKDGFwaV9rZXlfaGludBgHIAEoCUID4EEDGlsKE1RyYW5zY3JpcHRpb25Db25maWcSEwoLcHJvdmlkZXJfaWQYASABKAkSDQoFbW9kZWwYAiABKAkSEAoIbGFuZ3VhZ2UYAyABKAkSDgoGcHJvbXB0GAQgASgJGkMKDUFjY2Vzc1NldHRpbmcSMgoLYWNjZXNzX21vZGUYASABKA4yHS5tZW1vcy5hcGkuSW5zdGFuY2VBY2Nlc3NNb2RlInYKA0tleRITCg9LRVlfVU5TUEVDSUZJRUQQABILCgdHRU5FUkFMEAESCwoHU1RPUkFHRRACEhAKDE1FTU9fUkVMQVRFRBADEggKBFRBR1MQBBIQCgxOT1RJRklDQVRJT04QBRIGCgJBSRAGEgoKBkFDQ0VTUxAHIkwKC1N0b3JhZ2VUeXBlEhwKGFNUT1JBR0VfVFlQRV9VTlNQRUNJRklFRBAAEgwKCERBVEFCQVNFEAESCQoFTE9DQUwQAhIGCgJTMxADIkoKDkFJUHJvdmlkZXJUeXBlEiAKHEFJX1BST1ZJREVSX1RZUEVfVU5TUEVDSUZJRUQQABIKCgZPUEVOQUkQARIKCgZHRU1JTkkQAjpe6kFbChltZW1vcy5hcGkvSW5zdGFuY2VTZXR0aW5nEhtpbnN0YW5jZS9zZXR0aW5ncy97c2V0dGluZ30qEGluc3RhbmNlU2V0dGluZ3MyD2luc3RhbmNlU2V0dGluZ0IHCgV2YWx1ZSJMChlHZXRJbnN0YW5jZVNldHRpbmdSZXF1ZXN0Ei8KBG5hbWUYASABKAlCIeBBAvpBGwoZbWVtb3MuYXBpL0luc3RhbmNlU2V0dGluZyJTCh9CYXRjaEdldEluc3RhbmNlU2V0dGluZ3NSZXF1ZXN0EjAKBW5hbWVzGAEgAygJQiHgQQL6QRsKGW1lbW9zLmFwaS9JbnN0YW5jZVNldHRpbmciWQogQmF0Y2hHZXRJbnN0YW5jZVNldHRpbmdzUmVzcG9uc2USNQoRaW5zdGFuY2Vfc2V0dGluZ3MYASADKAsyGi5tZW1vcy5hcGkuSW5zdGFuY2VTZXR0aW5nIo8BChxVcGRhdGVJbnN0YW5jZVNldHRpbmdSZXF1ZXN0EjkKEGluc3RhbmNlX3NldHRpbmcYASABKAsyGi5tZW1vcy5hcGkuSW5zdGFuY2VTZXR0aW5nQgPgQQISNAoLdXBkYXRlX21hc2sYAiABKAsyGi5nb29nbGUucHJvdG9idWYuRmllbGRNYXNrQgPgQQEikAEKH1Rlc3RJbnN0YW5jZUVtYWlsU2V0dGluZ1JlcXVlc3QSTwoFZW1haWwYASABKAsyOy5tZW1vcy5hcGkuSW5zdGFuY2VTZXR0aW5nLk5vdGlmaWNhdGlvblNldHRpbmcuRW1haWxTZXR0aW5nQgPgQQESHAoPcmVjaXBpZW50X2VtYWlsGAIgASgJQgPgQQEizwEKDUluc3RhbmNlU3RhdHMSOAoIZGF0YWJhc2UYASABKAsyJi5tZW1vcy5hcGkuSW5zdGFuY2VTdGF0cy5EYXRhYmFzZVN0YXRzEhsKE2xvY2FsX3N0b3JhZ2VfYnl0ZXMYAiABKAMSMgoOZ2VuZXJhdGVkX3RpbWUYAyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wGjMKDURhdGFiYXNlU3RhdHMSDgoGZHJpdmVyGAEgASgJEhIKCnNpemVfYnl0ZXMYAiABKAMiGQoXR2V0SW5zdGFuY2VTdGF0c1JlcXVlc3QqfQoSSW5zdGFuY2VBY2Nlc3NNb2RlEiQKIElOU1RBTkNFX0FDQ0VTU19NT0RFX1VOU1BFQ0lGSUVEEAASIAocSU5TVEFOQ0VfQUNDRVNTX01PREVfUFJJVkFURRABEh8KG0lOU1RBTkNFX0FDQ0VTU19NT0RFX1BVQkxJQxACMocHCg9JbnN0YW5jZVNlcnZpY2USdQoSR2V0SW5zdGFuY2VQcm9maWxlEiQubWVtb3MuYXBpLkdldEluc3RhbmNlUHJvZmlsZVJlcXVlc3QaGi5tZW1vcy5hcGkuSW5zdGFuY2VQcm9maWxlIh2C0+STAhcSFS9hcGkvaW5zdGFuY2UvcHJvZmlsZRKGAQoSR2V0SW5zdGFuY2VTZXR0aW5nEiQubWVtb3MuYXBpLkdldEluc3RhbmNlU2V0dGluZ1JlcXVlc3QaGi5tZW1vcy5hcGkuSW5zdGFuY2VTZXR0aW5nIi7aQQRuYW1lgtPkkwIhEh8vYXBpL3tuYW1lPWluc3RhbmNlL3NldHRpbmdzLyp9Ep8BChhCYXRjaEdldEluc3RhbmNlU2V0dGluZ3MSKi5tZW1vcy5hcGkuQmF0Y2hHZXRJbnN0YW5jZVNldHRpbmdzUmVxdWVzdBorLm1lbW9zLmFwaS5CYXRjaEdldEluc3RhbmNlU2V0dGluZ3NSZXNwb25zZSIqgtPkkwIkOgEqIh8vYXBpL2luc3RhbmNlL3NldHRpbmdzOmJhdGNoR2V0EscBChVVcGRhdGVJbnN0YW5jZVNldHRpbmcSJy5tZW1vcy5hcGkuVXBkYXRlSW5zdGFuY2VTZXR0aW5nUmVxdWVzdBoaLm1lbW9zLmFwaS5JbnN0YW5jZVNldHRpbmciadpBHGluc3RhbmNlX3NldHRpbmcsdXBkYXRlX21hc2uC0+STAkQ6EGluc3RhbmNlX3NldHRpbmcyMC9hcGkve2luc3RhbmNlX3NldHRpbmcubmFtZT1pbnN0YW5jZS9zZXR0aW5ncy8qfRKYAQoYVGVzdEluc3RhbmNlRW1haWxTZXR0aW5nEioubWVtb3MuYXBpLlRlc3RJbnN0YW5jZUVtYWlsU2V0dGluZ1JlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHkiOILT5JMCMjoBKiItL2FwaS9pbnN0YW5jZS9zZXR0aW5ncy9ub3RpZmljYXRpb246dGVzdEVtYWlsEm0KEEdldEluc3RhbmNlU3RhdHMSIi5tZW1vcy5hcGkuR2V0SW5zdGFuY2VTdGF0c1JlcXVlc3QaGC5tZW1vcy5hcGkuSW5zdGFuY2VTdGF0cyIbgtPkkwIVEhMvYXBpL2luc3RhbmNlL3N0YXRzQpMBCg1jb20ubWVtb3MuYXBpQhRJbnN0YW5jZVNlcnZpY2VQcm90b1ABWidnaXRodWIuY29tL3VzZW1lbW9zL21lbW9zL3Byb3RvL2dlbi9hcGmiAgNNQViqAglNZW1vcy5BcGnKAglNZW1vc1xBcGniAhVNZW1vc1xBcGlcR1BCTWV0YWRhdGHqAgpNZW1vczo6QXBpYgZwcm90bzM", [file_api_user_service, file_google_api_annotations, file_google_api_client, file_google_api_field_behavior, file_google_api_resource, file_google_protobuf_empty, file_google_protobuf_field_mask, file_google_protobuf_timestamp, file_google_type_color]);
+  fileDesc("ChphcGkvaW5zdGFuY2Vfc2VydmljZS5wcm90bxIJbWVtb3MuYXBpIqkCCg9JbnN0YW5jZVByb2ZpbGUSDwoHdmVyc2lvbhgBIAEoCRIOCgZjb21taXQYAiABKAkSDAoEZGVtbxgDIAEoCBIUCgxpbnN0YW5jZV91cmwYBCABKAkSMgoLYWNjZXNzX21vZGUYBSABKA4yHS5tZW1vcy5hcGkuSW5zdGFuY2VBY2Nlc3NNb2RlEhMKC25lZWRzX3NldHVwGAYgASgIEh4KBWFkbWluGAcgASgLMg8ubWVtb3MuYXBpLlVzZXISNwoJY2hhbGxlbmdlGAggASgLMiQubWVtb3MuYXBpLkluc3RhbmNlUHJvZmlsZS5DaGFsbGVuZ2UaLwoJQ2hhbGxlbmdlEhAKCHByb3ZpZGVyGAEgASgJEhAKCHNpdGVfa2V5GAIgASgJIhsKGUdldEluc3RhbmNlUHJvZmlsZVJlcXVlc3QisRoKD0luc3RhbmNlU2V0dGluZxIRCgRuYW1lGAEgASgJQgPgQQgSRAoPZ2VuZXJhbF9zZXR0aW5nGAIgASgLMikubWVtb3MuYXBpLkluc3RhbmNlU2V0dGluZy5HZW5lcmFsU2V0dGluZ0gAEkQKD3N0b3JhZ2Vfc2V0dGluZxgDIAEoCzIpLm1lbW9zLmFwaS5JbnN0YW5jZVNldHRpbmcuU3RvcmFnZVNldHRpbmdIABJNChRtZW1vX3JlbGF0ZWRfc2V0dGluZxgEIAEoCzItLm1lbW9zLmFwaS5JbnN0YW5jZVNldHRpbmcuTWVtb1JlbGF0ZWRTZXR0aW5nSAASPgoMdGFnc19zZXR0aW5nGAUgASgLMiYubWVtb3MuYXBpLkluc3RhbmNlU2V0dGluZy5UYWdzU2V0dGluZ0gAEk4KFG5vdGlmaWNhdGlvbl9zZXR0aW5nGAYgASgLMi4ubWVtb3MuYXBpLkluc3RhbmNlU2V0dGluZy5Ob3RpZmljYXRpb25TZXR0aW5nSAASOgoKYWlfc2V0dGluZxgHIAEoCzIkLm1lbW9zLmFwaS5JbnN0YW5jZVNldHRpbmcuQUlTZXR0aW5nSAASQgoOYWNjZXNzX3NldHRpbmcYCCABKAsyKC5tZW1vcy5hcGkuSW5zdGFuY2VTZXR0aW5nLkFjY2Vzc1NldHRpbmdIABqEAwoOR2VuZXJhbFNldHRpbmcSTwoOY3VzdG9tX3Byb2ZpbGUYASABKAsyNy5tZW1vcy5hcGkuSW5zdGFuY2VTZXR0aW5nLkdlbmVyYWxTZXR0aW5nLkN1c3RvbVByb2ZpbGUSIgoaZGlzYWxsb3dfdXNlcl9yZWdpc3RyYXRpb24YAiABKAgSHgoWZGlzYWxsb3dfcGFzc3dvcmRfYXV0aBgDIAEoCBIgChhkaXNhbGxvd19jaGFuZ2VfdXNlcm5hbWUYBCABKAgSIAoYZGlzYWxsb3dfY2hhbmdlX25pY2tuYW1lGAUgASgIEh0KFXdlZWtfc3RhcnRfZGF5X29mZnNldBgGIAEoBRIYChBhZGRpdGlvbmFsX3N0eWxlGAcgASgJEhkKEWFkZGl0aW9uYWxfc2NyaXB0GAggASgJGkUKDUN1c3RvbVByb2ZpbGUSDQoFdGl0bGUYASABKAkSEwoLZGVzY3JpcHRpb24YAiABKAkSEAoIbG9nb191cmwYAyABKAkarQQKDlN0b3JhZ2VTZXR0aW5nEjQKCHN0b3JhZ2VzGAEgAygLMiIubWVtb3MuYXBpLkluc3RhbmNlU2V0dGluZy5TdG9yYWdlEhoKEmRlZmF1bHRfc3RvcmFnZV9pZBgCIAEoCRIZChFmaWxlcGF0aF90ZW1wbGF0ZRgDIAEoCRIcChR1cGxvYWRfc2l6ZV9saW1pdF9tYhgEIAEoAxJLCgxzdG9yYWdlX3R5cGUYBSABKA4yNS5tZW1vcy5hcGkuSW5zdGFuY2VTZXR0aW5nLlN0b3JhZ2VTZXR0aW5nLlN0b3JhZ2VUeXBlEkUKCXMzX2NvbmZpZxgGIAEoCzIyLm1lbW9zLmFwaS5JbnN0YW5jZVNldHRpbmcuU3RvcmFnZVNldHRpbmcuUzNDb25maWcarQEKCFMzQ29uZmlnEhAKCGVuZHBvaW50GAEgASgJEg4KBnJlZ2lvbhgCIAEoCRIOCgZidWNrZXQYAyABKAkSFQoNYWNjZXNzX2tleV9pZBgEIAEoCRIeChFhY2Nlc3Nfa2V5X3NlY3JldBgFIAEoCUID4EEEEhYKDnVzZV9wYXRoX3N0eWxlGAYgASgIEiAKGGluc2VjdXJlX3NraXBfdGxzX3ZlcmlmeRgHIAEoCCJMCgtTdG9yYWdlVHlwZRIcChhTVE9SQUdFX1RZUEVfVU5TUEVDSUZJRUQQABIMCghEQVRBQkFTRRABEgkKBUxPQ0FMEAISBgoCUzMQAxrVAgoHU3RvcmFnZRIKCgJpZBgBIAEoCRIMCgRuYW1lGAIgASgJEjQKBHR5cGUYAyABKA4yJi5tZW1vcy5hcGkuSW5zdGFuY2VTZXR0aW5nLlN0b3JhZ2VUeXBlEkAKCXMzX2NvbmZpZxgEIAEoCzIrLm1lbW9zLmFwaS5JbnN0YW5jZVNldHRpbmcuU3RvcmFnZS5TM0NvbmZpZ0gAGq0BCghTM0NvbmZpZxIQCghlbmRwb2ludBgBIAEoCRIOCgZyZWdpb24YAiABKAkSDgoGYnVja2V0GAMgASgJEhUKDWFjY2Vzc19rZXlfaWQYBCABKAkSHgoRYWNjZXNzX2tleV9zZWNyZXQYBSABKAlCA+BBBBIWCg51c2VfcGF0aF9zdHlsZRgGIAEoCBIgChhpbnNlY3VyZV9za2lwX3Rsc192ZXJpZnkYByABKAhCCAoGY29uZmlnGmcKEk1lbW9SZWxhdGVkU2V0dGluZxIcChRjb250ZW50X2xlbmd0aF9saW1pdBgBIAEoBRIRCglyZWFjdGlvbnMYAiADKAkSIAoYZW5hYmxlX2RvdWJsZV9jbGlja19lZGl0GAMgASgIGqIBCgtUYWdzU2V0dGluZxI+CgR0YWdzGAEgAygLMjAubWVtb3MuYXBpLkluc3RhbmNlU2V0dGluZy5UYWdzU2V0dGluZy5UYWdzRW50cnkaUwoJVGFnc0VudHJ5EgsKA2tleRgBIAEoCRI1CgV2YWx1ZRgCIAEoCzImLm1lbW9zLmFwaS5JbnN0YW5jZVNldHRpbmcuVGFnTWV0YWRhdGE6AjgBGlEKC1RhZ01ldGFkYXRhEiwKEGJhY2tncm91bmRfY29sb3IYASABKAsyEi5nb29nbGUudHlwZS5Db2xvchIUCgxibHVyX2NvbnRlbnQYAiABKAgatwIKE05vdGlmaWNhdGlvblNldHRpbmcSSgoFZW1haWwYASABKAsyOy5tZW1vcy5hcGkuSW5zdGFuY2VTZXR0aW5nLk5vdGlmaWNhdGlvblNldHRpbmcuRW1haWxTZXR0aW5nGtMBCgxFbWFpbFNldHRpbmcSDwoHZW5hYmxlZBgBIAEoCBIRCglzbXRwX2hvc3QYAiABKAkSEQoJc210cF9wb3J0GAMgASgFEhUKDXNtdHBfdXNlcm5hbWUYBCABKAkSGgoNc210cF9wYXNzd29yZBgFIAEoCUID4EEEEg8KB3VzZV90bHMYBiABKAgSDwoHdXNlX3NzbBgHIAEoCBISCgpmcm9tX2VtYWlsGAggASgJEhEKCWZyb21fbmFtZRgJIAEoCRIQCghyZXBseV90bxgKIAEoCRqSAQoJQUlTZXR0aW5nEj4KCXByb3ZpZGVycxgBIAMoCzIrLm1lbW9zLmFwaS5JbnN0YW5jZVNldHRpbmcuQUlQcm92aWRlckNvbmZpZxJFCg10cmFuc2NyaXB0aW9uGAIgASgLMi4ubWVtb3MuYXBpLkluc3RhbmNlU2V0dGluZy5UcmFuc2NyaXB0aW9uQ29uZmlnGsMBChBBSVByb3ZpZGVyQ29uZmlnEgoKAmlkGAEgASgJEg0KBXRpdGxlGAIgASgJEjcKBHR5cGUYAyABKA4yKS5tZW1vcy5hcGkuSW5zdGFuY2VTZXR0aW5nLkFJUHJvdmlkZXJUeXBlEhAKCGVuZHBvaW50GAQgASgJEhQKB2FwaV9rZXkYBSABKAlCA+BBBBIYCgthcGlfa2V5X3NldBgGIAEoCEID4EEDEhkKDGFwaV9rZXlfaGludBgHIAEoCUID4EEDGlsKE1RyYW5zY3JpcHRpb25Db25maWcSEwoLcHJvdmlkZXJfaWQYASABKAkSDQoFbW9kZWwYAiABKAkSEAoIbGFuZ3VhZ2UYAyABKAkSDgoGcHJvbXB0GAQgASgJGkMKDUFjY2Vzc1NldHRpbmcSMgoLYWNjZXNzX21vZGUYASABKA4yHS5tZW1vcy5hcGkuSW5zdGFuY2VBY2Nlc3NNb2RlInYKA0tleRITCg9LRVlfVU5TUEVDSUZJRUQQABILCgdHRU5FUkFMEAESCwoHU1RPUkFHRRACEhAKDE1FTU9fUkVMQVRFRBADEggKBFRBR1MQBBIQCgxOT1RJRklDQVRJT04QBRIGCgJBSRAGEgoKBkFDQ0VTUxAHIkwKC1N0b3JhZ2VUeXBlEhwKGFNUT1JBR0VfVFlQRV9VTlNQRUNJRklFRBAAEgwKCERBVEFCQVNFEAESCQoFTE9DQUwQAhIGCgJTMxADIkoKDkFJUHJvdmlkZXJUeXBlEiAKHEFJX1BST1ZJREVSX1RZUEVfVU5TUEVDSUZJRUQQABIKCgZPUEVOQUkQARIKCgZHRU1JTkkQAjpe6kFbChltZW1vcy5hcGkvSW5zdGFuY2VTZXR0aW5nEhtpbnN0YW5jZS9zZXR0aW5ncy97c2V0dGluZ30qEGluc3RhbmNlU2V0dGluZ3MyD2luc3RhbmNlU2V0dGluZ0IHCgV2YWx1ZSJMChlHZXRJbnN0YW5jZVNldHRpbmdSZXF1ZXN0Ei8KBG5hbWUYASABKAlCIeBBAvpBGwoZbWVtb3MuYXBpL0luc3RhbmNlU2V0dGluZyJTCh9CYXRjaEdldEluc3RhbmNlU2V0dGluZ3NSZXF1ZXN0EjAKBW5hbWVzGAEgAygJQiHgQQL6QRsKGW1lbW9zLmFwaS9JbnN0YW5jZVNldHRpbmciWQogQmF0Y2hHZXRJbnN0YW5jZVNldHRpbmdzUmVzcG9uc2USNQoRaW5zdGFuY2Vfc2V0dGluZ3MYASADKAsyGi5tZW1vcy5hcGkuSW5zdGFuY2VTZXR0aW5nIo8BChxVcGRhdGVJbnN0YW5jZVNldHRpbmdSZXF1ZXN0EjkKEGluc3RhbmNlX3NldHRpbmcYASABKAsyGi5tZW1vcy5hcGkuSW5zdGFuY2VTZXR0aW5nQgPgQQISNAoLdXBkYXRlX21hc2sYAiABKAsyGi5nb29nbGUucHJvdG9idWYuRmllbGRNYXNrQgPgQQEikAEKH1Rlc3RJbnN0YW5jZUVtYWlsU2V0dGluZ1JlcXVlc3QSTwoFZW1haWwYASABKAsyOy5tZW1vcy5hcGkuSW5zdGFuY2VTZXR0aW5nLk5vdGlmaWNhdGlvblNldHRpbmcuRW1haWxTZXR0aW5nQgPgQQESHAoPcmVjaXBpZW50X2VtYWlsGAIgASgJQgPgQQEizwEKDUluc3RhbmNlU3RhdHMSOAoIZGF0YWJhc2UYASABKAsyJi5tZW1vcy5hcGkuSW5zdGFuY2VTdGF0cy5EYXRhYmFzZVN0YXRzEhsKE2xvY2FsX3N0b3JhZ2VfYnl0ZXMYAiABKAMSMgoOZ2VuZXJhdGVkX3RpbWUYAyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wGjMKDURhdGFiYXNlU3RhdHMSDgoGZHJpdmVyGAEgASgJEhIKCnNpemVfYnl0ZXMYAiABKAMiGQoXR2V0SW5zdGFuY2VTdGF0c1JlcXVlc3QinwMKClVzYWdlTGltaXQSEQoEbmFtZRgBIAEoCUID4EEIEjQKBm1ldHJpYxgCIAEoDjIcLm1lbW9zLmFwaS5Vc2FnZUxpbWl0Lk1ldHJpY0IG4EEC4EEFEicKBHVzZXIYAyABKAlCGeBBAeBBBfpBEAoObWVtb3MuYXBpL1VzZXISEgoFdmFsdWUYBCABKANCA+BBAhI0CgtjcmVhdGVfdGltZRgFIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCA+BBAxI0Cgt1cGRhdGVfdGltZRgGIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCA+BBAyJQCgZNZXRyaWMSFgoSTUVUUklDX1VOU1BFQ0lGSUVEEAASCQoFTUVNT1MQARIRCg1TVE9SQUdFX0JZVEVTEAISEAoMVVBMT0FEX0JZVEVTEAM6TepBSgoUbWVtb3MuYXBpL1VzYWdlTGltaXQSGXVzYWdlTGltaXRzL3t1c2FnZV9saW1pdH0qC3VzYWdlTGltaXRzMgp1c2FnZUxpbWl0Il4KFkxpc3RVc2FnZUxpbWl0c1JlcXVlc3QSFgoJcGFnZV9zaXplGAEgASgFQgPgQQESFwoKcGFnZV90b2tlbhgCIAEoCUID4EEBEhMKBmZpbHRlchgDIAEoCUID4EEBIl8KF0xpc3RVc2FnZUxpbWl0c1Jlc3BvbnNlEisKDHVzYWdlX2xpbWl0cxgBIAMoCzIVLm1lbW9zLmFwaS5Vc2FnZUxpbWl0EhcKD25leHRfcGFnZV90b2tlbhgCIAEoCSJCChRHZXRVc2FnZUxpbWl0UmVxdWVzdBIqCgRuYW1lGAEgASgJQhzgQQL6QRYKFG1lbW9zLmFwaS9Vc2FnZUxpbWl0ImcKF0NyZWF0ZVVzYWdlTGltaXRSZXF1ZXN0Ei8KC3VzYWdlX2xpbWl0GAEgASgLMhUubWVtb3MuYXBpLlVzYWdlTGltaXRCA+BBAhIbCg51c2FnZV9saW1pdF9pZBgCIAEoCUID4EEBIoABChdVcGRhdGVVc2FnZUxpbWl0UmVxdWVzdBIvCgt1c2FnZV9saW1pdBgBIAEoCzIVLm1lbW9zLmFwaS5Vc2FnZUxpbWl0QgPgQQISNAoLdXBkYXRlX21hc2sYAiABKAsyGi5nb29nbGUucHJvdG9idWYuRmllbGRNYXNrQgPgQQEiRQoXRGVsZXRlVXNhZ2VMaW1pdFJlcXVlc3QSKgoEbmFtZRgBIAEoCUIc4EEC+kEWChRtZW1vcy5hcGkvVXNhZ2VMaW1pdCp9ChJJbnN0YW5jZUFjY2Vzc01vZGUSJAogSU5TVEFOQ0VfQUNDRVNTX01PREVfVU5TUEVDSUZJRUQQABIgChxJTlNUQU5DRV9BQ0NFU1NfTU9ERV9QUklWQVRFEAESHwobSU5TVEFOQ0VfQUNDRVNTX01PREVfUFVCTElDEAIyogwKD0luc3RhbmNlU2VydmljZRJ1ChJHZXRJbnN0YW5jZVByb2ZpbGUSJC5tZW1vcy5hcGkuR2V0SW5zdGFuY2VQcm9maWxlUmVxdWVzdBoaLm1lbW9zLmFwaS5JbnN0YW5jZVByb2ZpbGUiHYLT5JMCFxIVL2FwaS9pbnN0YW5jZS9wcm9maWxlEoYBChJHZXRJbnN0YW5jZVNldHRpbmcSJC5tZW1vcy5hcGkuR2V0SW5zdGFuY2VTZXR0aW5nUmVxdWVzdBoaLm1lbW9zLmFwaS5JbnN0YW5jZVNldHRpbmciLtpBBG5hbWWC0+STAiESHy9hcGkve25hbWU9aW5zdGFuY2Uvc2V0dGluZ3MvKn0SnwEKGEJhdGNoR2V0SW5zdGFuY2VTZXR0aW5ncxIqLm1lbW9zLmFwaS5CYXRjaEdldEluc3RhbmNlU2V0dGluZ3NSZXF1ZXN0GisubWVtb3MuYXBpLkJhdGNoR2V0SW5zdGFuY2VTZXR0aW5nc1Jlc3BvbnNlIiqC0+STAiQ6ASoiHy9hcGkvaW5zdGFuY2Uvc2V0dGluZ3M6YmF0Y2hHZXQSxwEKFVVwZGF0ZUluc3RhbmNlU2V0dGluZxInLm1lbW9zLmFwaS5VcGRhdGVJbnN0YW5jZVNldHRpbmdSZXF1ZXN0GhoubWVtb3MuYXBpLkluc3RhbmNlU2V0dGluZyJp2kEcaW5zdGFuY2Vfc2V0dGluZyx1cGRhdGVfbWFza4LT5JMCRDoQaW5zdGFuY2Vfc2V0dGluZzIwL2FwaS97aW5zdGFuY2Vfc2V0dGluZy5uYW1lPWluc3RhbmNlL3NldHRpbmdzLyp9EpgBChhUZXN0SW5zdGFuY2VFbWFpbFNldHRpbmcSKi5tZW1vcy5hcGkuVGVzdEluc3RhbmNlRW1haWxTZXR0aW5nUmVxdWVzdBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eSI4gtPkkwIyOgEqIi0vYXBpL2luc3RhbmNlL3NldHRpbmdzL25vdGlmaWNhdGlvbjp0ZXN0RW1haWwSbQoQR2V0SW5zdGFuY2VTdGF0cxIiLm1lbW9zLmFwaS5HZXRJbnN0YW5jZVN0YXRzUmVxdWVzdBoYLm1lbW9zLmFwaS5JbnN0YW5jZVN0YXRzIhuC0+STAhUSEy9hcGkvaW5zdGFuY2Uvc3RhdHMScgoPTGlzdFVzYWdlTGltaXRzEiEubWVtb3MuYXBpLkxpc3RVc2FnZUxpbWl0c1JlcXVlc3QaIi5tZW1vcy5hcGkuTGlzdFVzYWdlTGltaXRzUmVzcG9uc2UiGILT5JMCEhIQL2FwaS91c2FnZUxpbWl0cxJxCg1HZXRVc2FnZUxpbWl0Eh8ubWVtb3MuYXBpLkdldFVzYWdlTGltaXRSZXF1ZXN0GhUubWVtb3MuYXBpLlVzYWdlTGltaXQiKNpBBG5hbWWC0+STAhsSGS9hcGkve25hbWU9dXNhZ2VMaW1pdHMvKn0SkQEKEENyZWF0ZVVzYWdlTGltaXQSIi5tZW1vcy5hcGkuQ3JlYXRlVXNhZ2VMaW1pdFJlcXVlc3QaFS5tZW1vcy5hcGkuVXNhZ2VMaW1pdCJC2kEadXNhZ2VfbGltaXQsdXNhZ2VfbGltaXRfaWSC0+STAh86C3VzYWdlX2xpbWl0IhAvYXBpL3VzYWdlTGltaXRzEqMBChBVcGRhdGVVc2FnZUxpbWl0EiIubWVtb3MuYXBpLlVwZGF0ZVVzYWdlTGltaXRSZXF1ZXN0GhUubWVtb3MuYXBpLlVzYWdlTGltaXQiVNpBF3VzYWdlX2xpbWl0LHVwZGF0ZV9tYXNrgtPkkwI0Ogt1c2FnZV9saW1pdDIlL2FwaS97dXNhZ2VfbGltaXQubmFtZT11c2FnZUxpbWl0cy8qfRJ4ChBEZWxldGVVc2FnZUxpbWl0EiIubWVtb3MuYXBpLkRlbGV0ZVVzYWdlTGltaXRSZXF1ZXN0GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5IijaQQRuYW1lgtPkkwIbKhkvYXBpL3tuYW1lPXVzYWdlTGltaXRzLyp9QpMBCg1jb20ubWVtb3MuYXBpQhRJbnN0YW5jZVNlcnZpY2VQcm90b1ABWidnaXRodWIuY29tL3VzZW1lbW9zL21lbW9zL3Byb3RvL2dlbi9hcGmiAgNNQViqAglNZW1vcy5BcGnKAglNZW1vc1xBcGniAhVNZW1vc1xBcGlcR1BCTWV0YWRhdGHqAgpNZW1vczo6QXBpYgZwcm90bzM", [file_api_user_service, file_google_api_annotations, file_google_api_client, file_google_api_field_behavior, file_google_api_resource, file_google_protobuf_empty, file_google_protobuf_field_mask, file_google_protobuf_timestamp, file_google_type_color]);
 
 /**
  * InstanceProfile is the basic information about the instance.
@@ -361,7 +361,7 @@ export type InstanceSetting_StorageSetting = Message<"memos.api.InstanceSetting.
   filepathTemplate: string;
 
   /**
-   * The maximum upload size in megabytes. Default is 30.
+   * The maximum upload size in megabytes. Default is 32.
    *
    * @generated from field: int64 upload_size_limit_mb = 4;
    */
@@ -1302,6 +1302,279 @@ export const GetInstanceStatsRequestSchema: GenMessage<GetInstanceStatsRequest> 
   messageDesc(file_api_instance_service, 9);
 
 /**
+ * UsageLimit sets one limit for every user, or for one user. When both exist
+ * for the same metric, the limit for the user applies to that user.
+ *
+ * @generated from message memos.api.UsageLimit
+ */
+export type UsageLimit = Message<"memos.api.UsageLimit"> & {
+  /**
+   * Identifier. The resource name of the usage limit.
+   * Format: usageLimits/{usage_limit}
+   *
+   * @generated from field: string name = 1;
+   */
+  name: string;
+
+  /**
+   * Required. Immutable. What is limited.
+   *
+   * @generated from field: memos.api.UsageLimit.Metric metric = 2;
+   */
+  metric: UsageLimit_Metric;
+
+  /**
+   * Optional. Immutable. The user the limit applies to. Empty means every user.
+   * Format: users/{user}
+   *
+   * @generated from field: string user = 3;
+   */
+  user: string;
+
+  /**
+   * Required. The limit. Must not be negative. 0 means unlimited for MEMOS and
+   * STORAGE_BYTES, and no extra limit for UPLOAD_BYTES.
+   *
+   * @generated from field: int64 value = 4;
+   */
+  value: bigint;
+
+  /**
+   * Output only. The creation time.
+   *
+   * @generated from field: google.protobuf.Timestamp create_time = 5;
+   */
+  createTime?: Timestamp | undefined;
+
+  /**
+   * Output only. The last update time.
+   *
+   * @generated from field: google.protobuf.Timestamp update_time = 6;
+   */
+  updateTime?: Timestamp | undefined;
+};
+
+/**
+ * Describes the message memos.api.UsageLimit.
+ * Use `create(UsageLimitSchema)` to create a new message.
+ */
+export const UsageLimitSchema: GenMessage<UsageLimit> = /*@__PURE__*/
+  messageDesc(file_api_instance_service, 10);
+
+/**
+ * Metric is what a usage limit counts.
+ *
+ * @generated from enum memos.api.UsageLimit.Metric
+ */
+export enum UsageLimit_Metric {
+  /**
+   * @generated from enum value: METRIC_UNSPECIFIED = 0;
+   */
+  METRIC_UNSPECIFIED = 0,
+
+  /**
+   * The number of memos the user created, including comments, archived
+   * memos, and memos in Spaces.
+   *
+   * @generated from enum value: MEMOS = 1;
+   */
+  MEMOS = 1,
+
+  /**
+   * The total size in bytes of the user's uploads, including uploads not
+   * attached to a memo. External links do not count.
+   *
+   * @generated from enum value: STORAGE_BYTES = 2;
+   */
+  STORAGE_BYTES = 2,
+
+  /**
+   * The size in bytes of one uploaded file. It can only lower the instance
+   * upload limit, never raise it.
+   *
+   * @generated from enum value: UPLOAD_BYTES = 3;
+   */
+  UPLOAD_BYTES = 3,
+}
+
+/**
+ * Describes the enum memos.api.UsageLimit.Metric.
+ */
+export const UsageLimit_MetricSchema: GenEnum<UsageLimit_Metric> = /*@__PURE__*/
+  enumDesc(file_api_instance_service, 10, 0);
+
+/**
+ * Request message for InstanceService.ListUsageLimits.
+ *
+ * @generated from message memos.api.ListUsageLimitsRequest
+ */
+export type ListUsageLimitsRequest = Message<"memos.api.ListUsageLimitsRequest"> & {
+  /**
+   * Optional. The maximum number of usage limits to return. If unspecified, at
+   * most 50 are returned. The maximum value is 1000; values above 1000 are
+   * coerced to 1000.
+   *
+   * @generated from field: int32 page_size = 1;
+   */
+  pageSize: number;
+
+  /**
+   * Optional. A page token from a previous call. Provide it to retrieve the
+   * next page.
+   *
+   * @generated from field: string page_token = 2;
+   */
+  pageToken: string;
+
+  /**
+   * Optional. A CEL filter on `user` and `metric`, combined with `&&`.
+   * `user == ""` selects the defaults for every user.
+   * Example: "user == 'users/steven' && metric == 'STORAGE_BYTES'"
+   *
+   * @generated from field: string filter = 3;
+   */
+  filter: string;
+};
+
+/**
+ * Describes the message memos.api.ListUsageLimitsRequest.
+ * Use `create(ListUsageLimitsRequestSchema)` to create a new message.
+ */
+export const ListUsageLimitsRequestSchema: GenMessage<ListUsageLimitsRequest> = /*@__PURE__*/
+  messageDesc(file_api_instance_service, 11);
+
+/**
+ * Response message for InstanceService.ListUsageLimits.
+ *
+ * @generated from message memos.api.ListUsageLimitsResponse
+ */
+export type ListUsageLimitsResponse = Message<"memos.api.ListUsageLimitsResponse"> & {
+  /**
+   * The usage limits, defaults first, then by user and metric.
+   *
+   * @generated from field: repeated memos.api.UsageLimit usage_limits = 1;
+   */
+  usageLimits: UsageLimit[];
+
+  /**
+   * A token to retrieve the next page. Empty when there are no more pages.
+   *
+   * @generated from field: string next_page_token = 2;
+   */
+  nextPageToken: string;
+};
+
+/**
+ * Describes the message memos.api.ListUsageLimitsResponse.
+ * Use `create(ListUsageLimitsResponseSchema)` to create a new message.
+ */
+export const ListUsageLimitsResponseSchema: GenMessage<ListUsageLimitsResponse> = /*@__PURE__*/
+  messageDesc(file_api_instance_service, 12);
+
+/**
+ * Request message for InstanceService.GetUsageLimit.
+ *
+ * @generated from message memos.api.GetUsageLimitRequest
+ */
+export type GetUsageLimitRequest = Message<"memos.api.GetUsageLimitRequest"> & {
+  /**
+   * Required. The resource name of the usage limit.
+   * Format: usageLimits/{usage_limit}
+   *
+   * @generated from field: string name = 1;
+   */
+  name: string;
+};
+
+/**
+ * Describes the message memos.api.GetUsageLimitRequest.
+ * Use `create(GetUsageLimitRequestSchema)` to create a new message.
+ */
+export const GetUsageLimitRequestSchema: GenMessage<GetUsageLimitRequest> = /*@__PURE__*/
+  messageDesc(file_api_instance_service, 13);
+
+/**
+ * Request message for InstanceService.CreateUsageLimit.
+ *
+ * @generated from message memos.api.CreateUsageLimitRequest
+ */
+export type CreateUsageLimitRequest = Message<"memos.api.CreateUsageLimitRequest"> & {
+  /**
+   * Required. The usage limit to create.
+   *
+   * @generated from field: memos.api.UsageLimit usage_limit = 1;
+   */
+  usageLimit?: UsageLimit | undefined;
+
+  /**
+   * Optional. The ID to use for the usage limit, which becomes the final
+   * segment of its name. Lowercase letters, digits and hyphens, at most 32
+   * characters, starting with a letter. Generated when empty.
+   *
+   * @generated from field: string usage_limit_id = 2;
+   */
+  usageLimitId: string;
+};
+
+/**
+ * Describes the message memos.api.CreateUsageLimitRequest.
+ * Use `create(CreateUsageLimitRequestSchema)` to create a new message.
+ */
+export const CreateUsageLimitRequestSchema: GenMessage<CreateUsageLimitRequest> = /*@__PURE__*/
+  messageDesc(file_api_instance_service, 14);
+
+/**
+ * Request message for InstanceService.UpdateUsageLimit.
+ *
+ * @generated from message memos.api.UpdateUsageLimitRequest
+ */
+export type UpdateUsageLimitRequest = Message<"memos.api.UpdateUsageLimitRequest"> & {
+  /**
+   * Required. The usage limit with its new value.
+   *
+   * @generated from field: memos.api.UsageLimit usage_limit = 1;
+   */
+  usageLimit?: UsageLimit | undefined;
+
+  /**
+   * Optional. The fields to update. Only `value` is supported, which is also
+   * the default.
+   *
+   * @generated from field: google.protobuf.FieldMask update_mask = 2;
+   */
+  updateMask?: FieldMask | undefined;
+};
+
+/**
+ * Describes the message memos.api.UpdateUsageLimitRequest.
+ * Use `create(UpdateUsageLimitRequestSchema)` to create a new message.
+ */
+export const UpdateUsageLimitRequestSchema: GenMessage<UpdateUsageLimitRequest> = /*@__PURE__*/
+  messageDesc(file_api_instance_service, 15);
+
+/**
+ * Request message for InstanceService.DeleteUsageLimit.
+ *
+ * @generated from message memos.api.DeleteUsageLimitRequest
+ */
+export type DeleteUsageLimitRequest = Message<"memos.api.DeleteUsageLimitRequest"> & {
+  /**
+   * Required. The resource name of the usage limit.
+   * Format: usageLimits/{usage_limit}
+   *
+   * @generated from field: string name = 1;
+   */
+  name: string;
+};
+
+/**
+ * Describes the message memos.api.DeleteUsageLimitRequest.
+ * Use `create(DeleteUsageLimitRequestSchema)` to create a new message.
+ */
+export const DeleteUsageLimitRequestSchema: GenMessage<DeleteUsageLimitRequest> = /*@__PURE__*/
+  messageDesc(file_api_instance_service, 16);
+
+/**
  * InstanceAccessMode controls whether unauthenticated users may access instance content.
  *
  * @generated from enum memos.api.InstanceAccessMode
@@ -1402,6 +1675,62 @@ export const InstanceService: GenService<{
     methodKind: "unary";
     input: typeof GetInstanceStatsRequestSchema;
     output: typeof InstanceStatsSchema;
+  },
+  /**
+   * ListUsageLimits lists the usage limits: the defaults for every user and the
+   * limits for single users. Admin only.
+   *
+   * @generated from rpc memos.api.InstanceService.ListUsageLimits
+   */
+  listUsageLimits: {
+    methodKind: "unary";
+    input: typeof ListUsageLimitsRequestSchema;
+    output: typeof ListUsageLimitsResponseSchema;
+  },
+  /**
+   * GetUsageLimit gets a usage limit. Admin only.
+   *
+   * @generated from rpc memos.api.InstanceService.GetUsageLimit
+   */
+  getUsageLimit: {
+    methodKind: "unary";
+    input: typeof GetUsageLimitRequestSchema;
+    output: typeof UsageLimitSchema;
+  },
+  /**
+   * CreateUsageLimit creates a usage limit. Admin only. There is at most one
+   * limit per metric and user, and one default per metric. Fails with
+   * FAILED_PRECONDITION when the usage limits are configured by the deployment.
+   *
+   * @generated from rpc memos.api.InstanceService.CreateUsageLimit
+   */
+  createUsageLimit: {
+    methodKind: "unary";
+    input: typeof CreateUsageLimitRequestSchema;
+    output: typeof UsageLimitSchema;
+  },
+  /**
+   * UpdateUsageLimit updates the value of a usage limit. Admin only. The metric
+   * and user cannot change.
+   *
+   * @generated from rpc memos.api.InstanceService.UpdateUsageLimit
+   */
+  updateUsageLimit: {
+    methodKind: "unary";
+    input: typeof UpdateUsageLimitRequestSchema;
+    output: typeof UsageLimitSchema;
+  },
+  /**
+   * DeleteUsageLimit deletes a usage limit. Admin only. Deleting a user's limit
+   * returns the user to the default; deleting a default makes the metric
+   * unlimited for users without their own limit.
+   *
+   * @generated from rpc memos.api.InstanceService.DeleteUsageLimit
+   */
+  deleteUsageLimit: {
+    methodKind: "unary";
+    input: typeof DeleteUsageLimitRequestSchema;
+    output: typeof EmptySchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_api_instance_service, 0);
