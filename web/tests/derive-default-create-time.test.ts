@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { deriveDefaultCreateTimeFromFilters } from "@/components/MemoEditor/utils/deriveDefaultCreateTime";
+import {
+  deriveDefaultCreateTimeFromFilters,
+  resolveDefaultTimestamps,
+  withTimeOfDay,
+} from "@/components/MemoEditor/utils/deriveDefaultCreateTime";
 import type { MemoFilter } from "@/contexts/MemoFilterContext";
 
 describe("deriveDefaultCreateTimeFromFilters", () => {
@@ -71,5 +75,68 @@ describe("deriveDefaultCreateTimeFromFilters", () => {
       expect(resultTimeOnly).toBeGreaterThanOrEqual(beforeTimeOnly);
       expect(resultTimeOnly).toBeLessThanOrEqual(afterTimeOnly);
     }
+  });
+});
+
+describe("withTimeOfDay", () => {
+  it("preserves the calendar day and applies now's wall-clock time", () => {
+    const date = new Date(2025, 4, 1, 9, 0, 0);
+    const now = new Date(2026, 4, 2, 14, 32, 10);
+    const result = withTimeOfDay(date, now);
+    expect(result.getFullYear()).toBe(2025);
+    expect(result.getMonth()).toBe(4);
+    expect(result.getDate()).toBe(1);
+    expect(result.getHours()).toBe(14);
+    expect(result.getMinutes()).toBe(32);
+    expect(result.getSeconds()).toBe(10);
+  });
+
+  it("does not mutate the input date", () => {
+    const date = new Date(2025, 4, 1, 9, 0, 0);
+    const now = new Date(2026, 4, 2, 14, 32, 10);
+    withTimeOfDay(date, now);
+    expect(date.getHours()).toBe(9);
+  });
+});
+
+describe("resolveDefaultTimestamps", () => {
+  const defaultCreateTime = new Date(2025, 4, 1, 13, 17, 23);
+  const later = new Date(2026, 4, 2, 14, 32, 10);
+
+  it("restamps when createTime is still the seeded default reference", () => {
+    const result = resolveDefaultTimestamps({ createTime: defaultCreateTime, updateTime: defaultCreateTime }, defaultCreateTime, later);
+    expect(result.createTime).not.toBe(defaultCreateTime);
+    expect(result.createTime!.getFullYear()).toBe(2025);
+    expect(result.createTime!.getMonth()).toBe(4);
+    expect(result.createTime!.getDate()).toBe(1);
+    expect(result.createTime!.getHours()).toBe(14);
+    expect(result.createTime!.getMinutes()).toBe(32);
+    expect(result.createTime!.getSeconds()).toBe(10);
+    expect(result.updateTime).toBe(result.createTime);
+  });
+
+  it("restamps a prior shared restamp so consecutive saves get distinct times", () => {
+    const firstSave = new Date(2026, 0, 1, 13, 17, 40);
+    const restored = withTimeOfDay(defaultCreateTime, firstSave);
+    const secondSave = new Date(2026, 0, 1, 13, 18, 10);
+    const result = resolveDefaultTimestamps({ createTime: restored, updateTime: restored }, defaultCreateTime, secondSave);
+    expect(result.createTime!.getHours()).toBe(13);
+    expect(result.createTime!.getMinutes()).toBe(18);
+    expect(result.createTime!.getSeconds()).toBe(10);
+    expect(result.createTime!.getTime()).not.toBe(restored.getTime());
+  });
+
+  it("leaves manual TimestampPopover edits alone", () => {
+    const editedCreate = new Date(2025, 4, 1, 10, 0, 0);
+    const editedUpdate = new Date(2025, 4, 1, 11, 0, 0);
+    const result = resolveDefaultTimestamps({ createTime: editedCreate, updateTime: editedUpdate }, defaultCreateTime, later);
+    expect(result.createTime).toBe(editedCreate);
+    expect(result.updateTime).toBe(editedUpdate);
+  });
+
+  it("returns timestamps unchanged when there is no default", () => {
+    const createTime = new Date(2025, 4, 1, 10, 0, 0);
+    const result = resolveDefaultTimestamps({ createTime, updateTime: createTime }, undefined, later);
+    expect(result.createTime).toBe(createTime);
   });
 });
