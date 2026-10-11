@@ -1023,13 +1023,13 @@ func TestDeleteMotionMediaGroupChecksBeyondDefaultAttachmentPage(t *testing.T) {
 	require.Equal(t, codes.FailedPrecondition, status.Code(err))
 }
 
-func TestListAttachmentsRejectsNegativePageToken(t *testing.T) {
+func TestListAttachmentsRejectsMalformedPageToken(t *testing.T) {
 	ts := NewTestService(t)
 	defer ts.Cleanup()
 	ctx := context.Background()
 	user, err := ts.CreateRegularUser(ctx, "pager")
 	require.NoError(t, err)
-	_, err = ts.Service.ListAttachments(ts.CreateUserContext(ctx, user.ID), &apipb.ListAttachmentsRequest{PageToken: "-5"})
+	_, err = ts.Service.ListAttachments(ts.CreateUserContext(ctx, user.ID), &apipb.ListAttachmentsRequest{PageToken: "not-a-page-token"})
 	require.Equal(t, codes.InvalidArgument, status.Code(err))
 }
 

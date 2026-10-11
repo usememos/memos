@@ -3,7 +3,6 @@ package api
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"io"
 	"log/slog"
 	"math"
@@ -298,24 +297,23 @@ func (s *APIService) ListAttachments(ctx context.Context, request *apipb.ListAtt
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
 
-	pageSize := normalizePageSize(request.PageSize)
-
-	// Parse page token for offset
-	offset := 0
+	var limit, offset int
 	if request.PageToken != "" {
-		// Simple implementation: page token is the offset as string
-		// In production, you might want to use encrypted tokens
-		if parsed, err := fmt.Sscanf(request.PageToken, "%d", &offset); err != nil || parsed != 1 || offset < 0 {
-			return nil, status.Errorf(codes.InvalidArgument, "invalid page token")
+		var pageToken apipb.PageToken
+		if err := unmarshalPageToken(request.PageToken, &pageToken); err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid page token: %v", err)
 		}
+		limit = normalizePageSize(pageToken.Limit)
+		offset = max(int(pageToken.Offset), 0)
+	} else {
+		limit = normalizePageSize(request.PageSize)
 	}
 
 	// Request one extra row so we can tell whether another page exists. The
-	// extra row is dropped before returning, matching the pattern used by
-	// ListUsers. An exact full page that is also the last page must not
-	// advertise a next page token, since the API contract states the token is
-	// empty when there are no more pages.
-	limitPlusOne := pageSize + 1
+	// extra row is dropped before returning. An exact full page that is also
+	// the last page must not advertise a next page token, since the API
+	// contract states the token is empty when there are no more pages.
+	limitPlusOne := limit + 1
 	findAttachment := &store.FindAttachment{
 		Access: newMemoAccessScope(user, true),
 		Limit:  &limitPlusOne,
@@ -339,8 +337,12 @@ func (s *APIService) ListAttachments(ctx context.Context, request *apipb.ListAtt
 	// Only emit a next page token when we actually fetched the extra row, which
 	// proves at least one more result exists.
 	if len(attachments) == limitPlusOne {
-		attachments = attachments[:pageSize]
-		response.NextPageToken = fmt.Sprintf("%d", offset+pageSize)
+		attachments = attachments[:limit]
+		nextPageToken, err := getPageToken(limit, offset+limit)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to get next page token: %v", err)
+		}
+		response.NextPageToken = nextPageToken
 	}
 
 	for _, attachment := range attachments {
