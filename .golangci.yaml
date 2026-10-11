@@ -86,6 +86,9 @@ linters:
           disabled: true
         - name: line-length-limit
           disabled: true
+        # Multiline call arguments are an established repository style.
+        - name: multiline-if-init
+          disabled: true
         - name: function-length
           disabled: true
         - name: max-public-structs

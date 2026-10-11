@@ -119,12 +119,9 @@ func TestCacheConcurrency(t *testing.T) {
 	const operationsPerGoroutine = 100
 
 	var wg sync.WaitGroup
-	wg.Add(goroutines)
 
-	for i := range goroutines {
-		go func(id int) {
-			defer wg.Done()
-
+	for id := range goroutines {
+		wg.Go(func() {
 			baseKey := fmt.Sprintf("worker%d-", id)
 
 			// Set operations
@@ -153,7 +150,7 @@ func TestCacheConcurrency(t *testing.T) {
 				key := fmt.Sprintf("%skey%d", baseKey, j)
 				cache.Delete(ctx, key)
 			}
-		}(i)
+		})
 	}
 
 	wg.Wait()
