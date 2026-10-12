@@ -59,6 +59,7 @@ const LinkMetadataCard = ({ url, fallback, enabled = true }: LinkMetadataCardPro
               className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-[1.01]"
               loading="lazy"
               decoding="async"
+              referrerPolicy="no-referrer"
               onError={() => setImageFailed(true)}
             />
           </span>

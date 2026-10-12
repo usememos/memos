@@ -3,6 +3,8 @@ import { MemoryRouter, Route, Routes, useLocation, useNavigate } from "react-rou
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import RootLayout from "@/layouts/RootLayout";
 
+vi.mock("@/hooks/useMemoSuggestions", () => ({ useMemoSuggestions: () => [] }));
+
 const authState = vi.hoisted(() => ({ currentUser: { name: "users/test" } as { name: string } | undefined }));
 const instanceState = vi.hoisted(() => ({ accessMode: 2, instanceUrl: "https://example.com", demo: true }));
 

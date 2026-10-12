@@ -101,7 +101,7 @@ export const MermaidBlock = ({ children, className }: MermaidBlockProps) => {
 
   return (
     <div
-      className={cn("mermaid-diagram w-full flex justify-center items-center my-2 overflow-x-auto", className)}
+      className={cn("mermaid-diagram w-full flex justify-center items-center my-0 mb-2 overflow-x-auto", className)}
       dangerouslySetInnerHTML={{ __html: svg }}
     />
   );

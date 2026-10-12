@@ -6,10 +6,12 @@ import { attachmentKeys } from "@/hooks/useAttachmentQueries";
 import { memoKeys } from "@/hooks/useMemoQueries";
 import { userKeys } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
-import type { Visibility } from "@/types/proto/api/v1/memo_service_pb";
+import type { Attachment } from "@/types/proto/api/attachment_service_pb";
+import type { Visibility } from "@/types/proto/api/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { errorService, memoService, validationService } from "../services";
 import { useEditorContext } from "../state";
+import { restampDefaultCreateTime } from "../utils/deriveDefaultCreateTime";
 
 /** How long a closing host shows "Saved" before it unmounts the editor. */
 const SAVED_CONFIRMATION_MS = 900;
@@ -58,8 +60,43 @@ export function useMemoSave({
 
     dispatch(actions.setLoading("saving", true));
 
+    // Files that finished uploading, keyed by preview URL. If the save fails
+    // after they uploaded, they move onto the draft as attachments so that a
+    // retry does not upload them again (a refused create would otherwise leak
+    // one copy per attempt into the user's storage).
+    const uploaded = new Map<string, Attachment>();
+    const keepUploadedFiles = () => {
+      if (uploaded.size === 0) return;
+      const current = getState();
+      const moved = current.localFiles.filter((file) => uploaded.has(file.previewUrl));
+      if (moved.length === 0) return;
+      dispatch(
+        actions.setMetadata({
+          attachments: [...current.metadata.attachments, ...moved.map((file) => uploaded.get(file.previewUrl) as Attachment)],
+        }),
+      );
+      dispatch(actions.setLocalFiles(current.localFiles.filter((file) => !uploaded.has(file.previewUrl))));
+    };
+
     try {
-      const result = await memoService.save(state, { memoName, parentMemoName, space: defaultSpace });
+      // A new memo composed on a selected day keeps the day but is stamped with
+      // the time of saving, so consecutive memos do not share one createTime.
+      const now = new Date();
+      const timestamps = memoName
+        ? state.timestamps
+        : {
+            createTime: restampDefaultCreateTime(state.timestamps.createTime, defaultCreateTime, now),
+            updateTime: restampDefaultCreateTime(state.timestamps.updateTime, defaultCreateTime, now),
+          };
+      const result = await memoService.save(
+        { ...state, timestamps },
+        {
+          memoName,
+          parentMemoName,
+          space: defaultSpace,
+          onFileUploaded: (file, attachment) => uploaded.set(file.previewUrl, attachment),
+        },
+      );
 
       if (!result.hasChanges) {
         toast.error(t("editor.no-changes-detected"));
@@ -69,6 +106,10 @@ export function useMemoSave({
 
       // Prevent the autosave unmount flush from restoring the saved draft.
       discardDraft();
+      // A moved memo may leave the feed it was edited in; say where it went.
+      if (result.moved) {
+        toast.success(t("memo.moved"));
+      }
 
       const invalidationPromises: Promise<unknown>[] = [
         queryClient.invalidateQueries({ queryKey: memoKeys.lists() }),
@@ -104,9 +145,17 @@ export function useMemoSave({
 
       if (!memoName && !parentMemoName) {
         markNewMemo(result.memoName);
+      } else if (memoName) {
+        markNewMemo((currentName) => (currentName === memoName ? null : currentName));
       }
       onConfirm?.(result.memoName);
     } catch (error) {
+      keepUploadedFiles();
+      if (uploaded.size > 0) {
+        // The uploads landed even though the save did not.
+        void queryClient.invalidateQueries({ queryKey: attachmentKeys.lists() });
+        void queryClient.invalidateQueries({ queryKey: userKeys.stats() });
+      }
       handleError(error, toast.error, {
         context: "Failed to save memo",
         fallbackMessage: errorService.getErrorMessage(error),

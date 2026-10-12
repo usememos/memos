@@ -17,9 +17,9 @@ import { useSharedMemo, withShareAttachmentLinks } from "@/hooks/useMemoShareQue
 import { LEGACY_MEMO_COMMENTS_ANCHOR_ID, MEMO_COMMENTS_ANCHOR_ID } from "@/lib/memo-comments";
 import { memoNamePrefix } from "@/lib/resource-names";
 import { ROUTES } from "@/router/routes";
-import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
-import { State } from "@/types/proto/api/v1/common_pb";
-import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
+import type { Attachment } from "@/types/proto/api/attachment_service_pb";
+import { State } from "@/types/proto/api/common_pb";
+import type { Memo } from "@/types/proto/api/memo_service_pb";
 import { findMemoAnchorTarget } from "@/utils/markdown-manipulation";
 
 const MemoSidebarRegistration = ({
@@ -28,7 +28,6 @@ const MemoSidebarRegistration = ({
   parentStatus,
   onParentRetry,
   from,
-  hasExplicitOrigin,
   commentCount,
   readonly,
   onEdit,
@@ -41,7 +40,6 @@ const MemoSidebarRegistration = ({
   parentStatus?: MemoParentStatus;
   onParentRetry?: () => void;
   from: string;
-  hasExplicitOrigin: boolean;
   commentCount?: number;
   readonly: boolean;
   onEdit: () => void;
@@ -58,7 +56,6 @@ const MemoSidebarRegistration = ({
       parentStatus,
       onParentRetry,
       from,
-      hasExplicitOrigin,
       commentCount,
       readonly,
       onEdit,
@@ -69,7 +66,6 @@ const MemoSidebarRegistration = ({
   }, [
     commentCount,
     from,
-    hasExplicitOrigin,
     memo,
     onCommentCreate,
     onCommentsOpen,
@@ -233,7 +229,6 @@ const MemoDetail = () => {
           parentStatus={parentStatus}
           onParentRetry={handleParentRetry}
           from={parentPage}
-          hasExplicitOrigin={hasExplicitOrigin}
           commentCount={isShareMode ? undefined : commentCount}
           readonly={isShareMode}
           onEdit={handleEdit}

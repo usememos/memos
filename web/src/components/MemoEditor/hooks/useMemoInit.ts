@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import type { Memo, Visibility } from "@/types/proto/api/v1/memo_service_pb";
+import type { Location, Memo, Visibility } from "@/types/proto/api/memo_service_pb";
 import { cacheService, memoService } from "../services";
 import { useEditorContext } from "../state";
 import type { EditorController } from "../types/editorController";
@@ -12,6 +12,8 @@ interface UseMemoInitOptions {
   autoFocus?: boolean | (() => boolean);
   defaultVisibility?: Visibility;
   defaultCreateTime?: Date;
+  defaultLocation?: Location;
+  canChooseSpace?: boolean;
 }
 
 export const useMemoInit = ({
@@ -22,6 +24,8 @@ export const useMemoInit = ({
   autoFocus,
   defaultVisibility,
   defaultCreateTime,
+  defaultLocation,
+  canChooseSpace = false,
 }: UseMemoInitOptions) => {
   const { actions, dispatch } = useEditorContext();
   const initializedRef = useRef(false);
@@ -44,8 +48,13 @@ export const useMemoInit = ({
       if (cachedDraft.attachments.length > 0) {
         dispatch(actions.setMetadata({ attachments: cachedDraft.attachments }));
       }
-      if (defaultVisibility !== undefined) {
-        dispatch(actions.setMetadata({ visibility: defaultVisibility }));
+      dispatch(actions.setMetadata({ location: cachedDraft.location === null ? undefined : (cachedDraft.location ?? defaultLocation) }));
+      const visibility = cachedDraft.visibility ?? defaultVisibility;
+      if (visibility !== undefined) {
+        dispatch(actions.setMetadata({ visibility }));
+      }
+      if (canChooseSpace) {
+        dispatch(actions.setMetadata({ space: cachedDraft.space }));
       }
       if (defaultCreateTime) {
         dispatch(actions.setTimestamps({ createTime: defaultCreateTime, updateTime: defaultCreateTime }));
@@ -71,7 +80,19 @@ export const useMemoInit = ({
         clearTimeout(restoreCursorTimer);
       }
     };
-  }, [memo, cacheKey, username, autoFocus, defaultVisibility, defaultCreateTime, actions, dispatch, editorRef]);
+  }, [
+    memo,
+    cacheKey,
+    username,
+    autoFocus,
+    defaultVisibility,
+    defaultCreateTime,
+    defaultLocation,
+    canChooseSpace,
+    actions,
+    dispatch,
+    editorRef,
+  ]);
 
   return { isInitialized };
 };

@@ -8,7 +8,7 @@ import {
 } from "@/components/Settings/settingSections";
 import { useInstance } from "@/contexts/InstanceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { User_Role } from "@/types/proto/api/v1/user_service_pb";
+import { User_Role } from "@/types/proto/api/user_service_pb";
 
 const Setting = () => {
   const location = useLocation();

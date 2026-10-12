@@ -22,14 +22,14 @@ func authorizePostgresMemoComment(ctx context.Context, tx *sql.Tx, contextMemoID
 // readPostgresMemoParticipation resolves the current actor, Space, membership,
 // and memo state shared by comment and reaction participation.
 func readPostgresMemoParticipation(ctx context.Context, tx *sql.Tx, memoID, actorUserID int32) (*store.MemoCommentAuthorizationSnapshot, error) {
-	userStatuses, err := readPostgresUserStatuses(ctx, tx, actorUserID)
+	actor, err := readPostgresMemoActor(ctx, tx, actorUserID)
 	if err != nil {
 		return nil, err
 	}
 
 	snapshot := &store.MemoCommentAuthorizationSnapshot{
 		ActorUserID: actorUserID,
-		ActorActive: userStatuses[actorUserID] == store.Normal,
+		Actor:       actor,
 		ContextID:   memoID,
 	}
 	var contextSpace sql.NullInt64

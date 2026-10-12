@@ -4,6 +4,7 @@ import {
   memo,
   Suspense,
   useCallback,
+  useEffect,
   useImperativeHandle,
   useLayoutEffect,
   useMemo,
@@ -11,6 +12,7 @@ import {
   useState,
 } from "react";
 import { useLocation } from "react-router-dom";
+import { useColumnGridUntrapped } from "@/components/ColumnGrid/ColumnGridContext";
 import { useResolvedUser } from "@/components/MemoContent/MentionResolutionContext";
 import { loadMemoEditor } from "@/components/MemoEditor/loader";
 import type { MemoEditorProps } from "@/components/MemoEditor/types";
@@ -18,10 +20,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { isMemoBlurred } from "@/lib/tag";
 import { cn } from "@/lib/utils";
-import { State } from "@/types/proto/api/v1/common_pb";
+import { State } from "@/types/proto/api/common_pb";
 import { lazyWithReload } from "@/utils/lazy";
-import { isSuperUser } from "@/utils/user";
+import { canManageMemo } from "@/utils/user";
 import { MemoBody, MemoCommentListView, MemoHeader } from "./components";
+import MemoPinnedMark from "./components/MemoPinnedMark";
 import { MEMO_CARD_BASE_CLASSES } from "./constants";
 import { useImagePreview } from "./hooks";
 import { computeCommentAmount, MemoViewContext } from "./MemoViewContext";
@@ -52,7 +55,7 @@ const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
   const { userTagsSetting } = useAuth();
   const creator = useResolvedUser(memoData.creator, { enabled: Boolean(showCreator || props.shareImageDialogOpen) });
   const isArchived = memoData.state === State.ARCHIVED;
-  const readonly = memoData.creator !== currentUser?.name && !isSuperUser(currentUser);
+  const readonly = !canManageMemo(memoData, currentUser);
   const location = useLocation();
   const parentPage = resolveMemoParentPage({
     explicitParentPage: parentPageProp,
@@ -88,6 +91,28 @@ const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
       .catch(() => undefined);
   }, [EditorComponent, focusMountedEditor, showEditor]);
   const closeEditor = useCallback(() => setShowEditor(false), []);
+
+  // The grid keys tiles by memo name (see getMemoKey), so the focused editor
+  // identifies its own tile by name and untraps it for the duration.
+  const { setUntrappedKey, clearUntrappedKey } = useColumnGridUntrapped();
+  const handleFocusModeChange = useCallback(
+    (isFocusMode: boolean) => {
+      if (isFocusMode) {
+        setUntrappedKey(memoData.name);
+      } else {
+        clearUntrappedKey(memoData.name);
+      }
+    },
+    [memoData.name, setUntrappedKey, clearUntrappedKey],
+  );
+  // Release the slot when the editor closes or this card unmounts. Both calls
+  // are ownership-scoped, so mounting cards never clobber another card's slot.
+  useEffect(() => {
+    if (!showEditor) {
+      clearUntrappedKey(memoData.name);
+    }
+  }, [showEditor, memoData.name, clearUntrappedKey]);
+  useEffect(() => () => clearUntrappedKey(memoData.name), [memoData.name, clearUntrappedKey]);
 
   useImperativeHandle(ref, () => ({ openEditor }), [openEditor]);
 
@@ -160,17 +185,12 @@ const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
 
   const article = (
     <article
-      className={cn(MEMO_CARD_BASE_CLASSES, showCommentPreview ? "mb-0 rounded-b-none" : "mb-2", className)}
+      className={cn(MEMO_CARD_BASE_CLASSES, "group/memo", showCommentPreview ? "mb-0 rounded-b-none" : "mb-2", className)}
       ref={cardRef}
       tabIndex={readonly ? -1 : 0}
     >
-      <MemoHeader
-        timeDisplay={timeDisplay}
-        showCreator={showCreator}
-        showVisibility={showVisibility}
-        showPinned={showPinned}
-        showSpace={showSpace}
-      />
+      {showPinned && memoData.pinned && <MemoPinnedMark />}
+      <MemoHeader timeDisplay={timeDisplay} showCreator={showCreator} showVisibility={showVisibility} showSpace={showSpace} />
 
       <MemoBody compact={compact} />
 
@@ -214,6 +234,7 @@ const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
             parentMemoName={memoData.parent || undefined}
             onConfirm={closeEditor}
             onCancel={closeEditor}
+            onFocusModeChange={handleFocusModeChange}
           />
         </div>
       ) : (

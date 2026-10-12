@@ -26,8 +26,7 @@ type Profile struct {
 	Data string
 	// DSN points to where memos stores its own data
 	DSN string
-	// Driver is the database driver
-	// sqlite, mysql
+	// Driver is the database driver: sqlite, mysql, or postgres.
 	Driver string
 	// Version is the current version of server
 	Version string
@@ -35,6 +34,11 @@ type Profile struct {
 	Commit string
 	// InstanceURL is the canonical external URL of the Memos instance.
 	InstanceURL string
+	// RateLimit enables the request rate limiter. Off restores unbounded behavior.
+	RateLimit bool
+	// TrustedProxies lists the proxies whose forwarding headers identify the
+	// client: CIDRs, addresses, or the keywords "private" and "none".
+	TrustedProxies []string
 }
 
 func checkDataDir(dataDir string) (string, error) {
@@ -102,7 +106,7 @@ func (p *Profile) Validate() error {
 
 	dataDir, err := checkDataDir(p.Data)
 	if err != nil {
-		slog.Error("failed to check dsn", slog.String("data", dataDir), slog.String("error", err.Error()))
+		slog.Error("failed to check data directory", slog.String("data", p.Data), slog.String("error", err.Error()))
 		return err
 	}
 

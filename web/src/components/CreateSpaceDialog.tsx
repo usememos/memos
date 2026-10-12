@@ -13,7 +13,7 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import { useCreateSpace } from "@/hooks/useSpaceQueries";
 import { handleError } from "@/lib/error";
 import { cn } from "@/lib/utils";
-import type { Space, Space_Icon } from "@/types/proto/api/v1/space_service_pb";
+import type { Space, Space_Icon } from "@/types/proto/api/space_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 const SPACE_UID_PATTERN = /^[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,34}[a-zA-Z0-9])?$/;

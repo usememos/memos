@@ -2,15 +2,15 @@ import { create } from "@bufbuild/protobuf";
 import { timestampFromDate } from "@bufbuild/protobuf/wkt";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { memoServiceClient } from "@/connect";
-import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
-import type { MemoShare } from "@/types/proto/api/v1/memo_service_pb";
+import type { Attachment } from "@/types/proto/api/attachment_service_pb";
+import type { MemoShare } from "@/types/proto/api/memo_service_pb";
 import {
   CreateMemoShareRequestSchema,
   DeleteMemoShareRequestSchema,
   GetSharedMemoRequestSchema,
   ListMemoSharesRequestSchema,
   MemoShareSchema,
-} from "@/types/proto/api/v1/memo_service_pb";
+} from "@/types/proto/api/memo_service_pb";
 
 // Query keys factory for share-related cache management.
 export const memoShareKeys = {

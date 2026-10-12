@@ -22,6 +22,10 @@
   --border: oklch(0.8847 0.0069 97.3627);
   --input: oklch(0.7621 0.0156 98.3528);
   --ring: oklch(0.45 0.08 250);
+  /* Overlay - neutral scrim base behind dialogs, sheets, and focus mode.
+     Alpha comes from the utility (bg-overlay/50, bg-overlay/20), so every
+     theme dims rather than tinting with --foreground. */
+  --overlay: oklch(0 0 0);
   --sidebar: oklch(0.9663 0.008 98.8792);
   --sidebar-foreground: oklch(0.359 0.0051 106.6524);
   --sidebar-accent: oklch(0.9245 0.0138 92.9892);
@@ -39,6 +43,8 @@
   --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 4px 6px -1px hsl(0 0% 0% / 0.1);
   --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 8px 10px -1px hsl(0 0% 0% / 0.1);
   --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
+  /* A surface floating over page content: a soft contact edge plus a wide, faint ambient fall. */
+  --shadow-float: 0 1px 2px hsl(0 0% 0% / 0.05), 0 8px 24px -6px hsl(0 0% 0% / 0.1), 0 24px 56px -16px hsl(0 0% 0% / 0.14);
 }
 
 /* Tailwind v4 token mappings — compiled once at build time, shared by all themes.
@@ -67,6 +73,7 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-overlay: var(--overlay);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-accent: var(--sidebar-accent);
@@ -94,6 +101,7 @@
   --shadow-lg: var(--shadow-lg);
   --shadow-xl: var(--shadow-xl);
   --shadow-2xl: var(--shadow-2xl);
+  --shadow-float: var(--shadow-float);
 
   /* Layering tiers — keep overlays/dropdowns/tooltips stacked consistently.
      Used by the ui/ primitives via z-overlay / z-dropdown / z-tooltip. */

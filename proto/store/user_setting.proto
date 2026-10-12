@@ -13,15 +13,15 @@ message UserSetting {
     // General user settings.
     GENERAL = 1;
     // The memo views of the user.
-    MEMO_VIEWS = 4;
+    MEMO_VIEWS = 2;
     // The webhooks of the user.
-    WEBHOOKS = 5;
+    WEBHOOKS = 3;
     // Refresh tokens for the user.
-    REFRESH_TOKENS = 6;
+    REFRESH_TOKENS = 4;
     // Personal access tokens for the user.
-    PERSONAL_ACCESS_TOKENS = 7;
+    PERSONAL_ACCESS_TOKENS = 5;
     // Per-user tag metadata.
-    TAGS = 8;
+    TAGS = 6;
   }
 
   int32 user_id = 1;
@@ -29,11 +29,11 @@ message UserSetting {
   Key key = 2;
   oneof value {
     GeneralUserSetting general = 3;
-    MemoViewsUserSetting memo_views = 6;
-    WebhooksUserSetting webhooks = 7;
-    RefreshTokensUserSetting refresh_tokens = 8;
-    PersonalAccessTokensUserSetting personal_access_tokens = 9;
-    TagsUserSetting tags = 10;
+    MemoViewsUserSetting memo_views = 4;
+    WebhooksUserSetting webhooks = 5;
+    RefreshTokensUserSetting refresh_tokens = 6;
+    PersonalAccessTokensUserSetting personal_access_tokens = 7;
+    TagsUserSetting tags = 8;
   }
 }
 

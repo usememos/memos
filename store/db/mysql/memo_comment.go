@@ -22,18 +22,17 @@ func authorizeMySQLMemoComment(ctx context.Context, tx *sql.Tx, contextMemoID, a
 // loadMySQLMemoParticipation resolves the current actor, Space, membership,
 // and memo state shared by comment and reaction participation.
 func loadMySQLMemoParticipation(ctx context.Context, tx *sql.Tx, memoID, actorUserID int32) (*store.MemoCommentAuthorizationSnapshot, error) {
-	var actorStatus store.RowStatus
-	actorErr := tx.QueryRowContext(ctx, "SELECT row_status FROM user WHERE id = ?", actorUserID).Scan(&actorStatus)
-	if actorErr != nil && !stderrors.Is(actorErr, sql.ErrNoRows) {
-		return nil, actorErr
+	actor, err := readMySQLMemoActor(ctx, tx, actorUserID)
+	if err != nil {
+		return nil, err
 	}
 	snapshot := &store.MemoCommentAuthorizationSnapshot{
 		ActorUserID: actorUserID,
-		ActorActive: actorErr == nil && actorStatus == store.Normal,
+		Actor:       actor,
 		ContextID:   memoID,
 	}
 	var contextSpace sql.NullInt64
-	err := tx.QueryRowContext(ctx, `SELECT creator_id, row_status, visibility, space_id
+	err = tx.QueryRowContext(ctx, `SELECT creator_id, row_status, visibility, space_id
 		FROM memo WHERE id = ?`, memoID).Scan(
 		&snapshot.ContextCreatorID, &snapshot.ContextRowStatus, &snapshot.ContextVisibility, &contextSpace,
 	)
@@ -46,7 +45,7 @@ func loadMySQLMemoParticipation(ctx context.Context, tx *sql.Tx, memoID, actorUs
 		if err != nil {
 			return nil, err
 		}
-		if snapshot.ContextSpaceExists {
+		if snapshot.ContextSpaceExists && !actor.Admin {
 			snapshot.ContextMemberActive, err = mysqlSpaceMemberActive(ctx, tx, *snapshot.ContextSpaceID, actorUserID)
 			if err != nil {
 				return nil, err

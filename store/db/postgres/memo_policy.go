@@ -8,29 +8,58 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-func validatePostgresMemoWritePolicy(ctx context.Context, tx *sql.Tx, memoID int32, policy *store.MemoWritePolicy, update *store.UpdateMemo) error {
-	var actorStatus store.RowStatus
-	if err := tx.QueryRowContext(ctx, `SELECT row_status FROM "user" WHERE id = $1`, policy.ActorUserID).Scan(&actorStatus); stderrors.Is(err, sql.ErrNoRows) {
-		return store.ErrMemoSpaceMembershipRequired
-	} else if err != nil {
-		return err
-	} else if actorStatus != store.Normal {
-		return store.ErrMemoSpaceMembershipRequired
+// readPostgresMemoActor reads the actor's lifecycle state and instance role
+// inside the mutation transaction. A missing user is the zero state.
+func readPostgresMemoActor(ctx context.Context, tx *sql.Tx, userID int32) (store.MemoActorState, error) {
+	var rowStatus store.RowStatus
+	var role store.Role
+	err := tx.QueryRowContext(ctx, `SELECT row_status, role FROM "user" WHERE id = $1`, userID).Scan(&rowStatus, &role)
+	if stderrors.Is(err, sql.ErrNoRows) {
+		return store.MemoActorState{}, nil
+	}
+	if err != nil {
+		return store.MemoActorState{}, err
+	}
+	return store.NewMemoActorState(rowStatus, role), nil
+}
+
+// requirePostgresActiveMemoActor resolves an actor that must be active;
+// anything else is a permission denial.
+func requirePostgresActiveMemoActor(ctx context.Context, tx *sql.Tx, userID int32) (store.MemoActorState, error) {
+	actor, err := readPostgresMemoActor(ctx, tx, userID)
+	if err != nil {
+		return store.MemoActorState{}, err
+	}
+	if !actor.Active {
+		return store.MemoActorState{}, store.ErrMemoPermissionDenied
+	}
+	return actor, nil
+}
+
+// validatePostgresMemoWritePolicy authorizes a transport-facing memo mutation
+// against current database state and returns the validated snapshot.
+func validatePostgresMemoWritePolicy(ctx context.Context, tx *sql.Tx, memoID int32, policy *store.MemoWritePolicy, update *store.UpdateMemo) (*store.MemoWriteSnapshot, error) {
+	actor, err := readPostgresMemoActor(ctx, tx, policy.ActorUserID)
+	if err != nil {
+		return nil, err
+	}
+	if !actor.Active {
+		return nil, store.ErrMemoSpaceMembershipRequired
 	}
 
-	snapshot := new(store.MemoWriteSnapshot)
+	snapshot := &store.MemoWriteSnapshot{ActorIsAdmin: actor.Admin}
 	var sourceSpace sql.NullInt64
 	if err := tx.QueryRowContext(ctx, `SELECT creator_id, row_status, space_id, visibility FROM memo WHERE id = $1`, memoID).Scan(
 		&snapshot.CreatorID, &snapshot.RowStatus, &sourceSpace, &snapshot.Visibility,
 	); err != nil {
 		if stderrors.Is(err, sql.ErrNoRows) {
-			return store.ErrMemoMutationConflict
+			return nil, store.ErrMemoMutationConflict
 		}
-		return err
+		return nil, err
 	}
 	snapshot.SpaceID = store.NullInt32Pointer(sourceSpace)
 	if err := populatePostgresMemoPolicySpaceState(ctx, tx, policy.ActorUserID, update, snapshot); err != nil {
-		return err
+		return nil, err
 	}
 
 	if update != nil && update.Visibility != nil && *update.Visibility == store.SpaceAudience {
@@ -40,10 +69,13 @@ func validatePostgresMemoWritePolicy(ctx context.Context, tx *sql.Tx, memoID int
 			LIMIT 1`, memoID).Scan(&shareID)
 		snapshot.HasActiveShare = err == nil
 		if err != nil && !stderrors.Is(err, sql.ErrNoRows) {
-			return err
+			return nil, err
 		}
 	}
-	return store.ValidateMemoWriteSnapshot(policy, update, snapshot)
+	if err := store.ValidateMemoWriteSnapshot(policy, update, snapshot); err != nil {
+		return nil, err
+	}
+	return snapshot, nil
 }
 
 func populatePostgresMemoPolicySpaceState(
@@ -75,6 +107,8 @@ func populatePostgresMemoPolicySpaceState(
 	return nil
 }
 
+// readPostgresMemoSpaceState reports whether the Space exists and whether the
+// actor is an active member, in one round trip.
 func readPostgresMemoSpaceState(ctx context.Context, tx *sql.Tx, spaceID, actorUserID int32) (bool, bool, error) {
 	var spaceExists, memberActive bool
 	if err := tx.QueryRowContext(ctx, `SELECT
@@ -85,4 +119,12 @@ func readPostgresMemoSpaceState(ctx context.Context, tx *sql.Tx, spaceID, actorU
 		return false, false, err
 	}
 	return spaceExists, memberActive, nil
+}
+
+func postgresSpaceExists(ctx context.Context, tx *sql.Tx, spaceID int32) (bool, error) {
+	var exists bool
+	if err := tx.QueryRowContext(ctx, "SELECT EXISTS(SELECT 1 FROM space WHERE id = $1)", spaceID).Scan(&exists); err != nil {
+		return false, err
+	}
+	return exists, nil
 }

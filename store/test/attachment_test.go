@@ -3,6 +3,7 @@ package test
 import (
 	"context"
 	"fmt"
+	"math"
 	"sync"
 	"testing"
 	"time"
@@ -391,7 +392,7 @@ func TestMemoMutationRollsBackWhenRequiredAttachmentIsMissing(t *testing.T) {
 	require.Equal(t, memo.ID, *storedRemoved.MemoID)
 }
 
-func TestMemoMutationRollsBackMemoAndRelationsTogether(t *testing.T) {
+func TestMemoMutationRejectsCommentInReferenceReplacement(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
@@ -561,7 +562,7 @@ func TestAttachmentListWithPagination(t *testing.T) {
 	ts := NewTestingStore(ctx, t)
 
 	// Create 5 attachments
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		_, err := ts.CreateAttachment(ctx, &store.Attachment{
 			UID:       shortuuid.New(),
 			CreatorID: 101,
@@ -641,7 +642,7 @@ func TestMemoMutationConcurrentUpdatesNoSQLiteBusy(t *testing.T) {
 	errs := make([]error, workers)
 	var wg sync.WaitGroup
 	content := "updated"
-	for i := 0; i < workers; i++ {
+	for i := range workers {
 		wg.Go(func() {
 			<-start
 			errs[i] = ts.ApplyMemoMutation(ctx, &store.MemoMutation{
@@ -680,7 +681,7 @@ func TestMemoMutationConcurrentUpdatesSameMemoNoSQLiteBusy(t *testing.T) {
 	errs := make([]error, workers)
 	var wg sync.WaitGroup
 	content := "updated"
-	for i := 0; i < workers; i++ {
+	for i := range workers {
 		wg.Go(func() {
 			<-start
 			errs[i] = ts.ApplyMemoMutation(ctx, &store.MemoMutation{
@@ -700,4 +701,56 @@ func TestMemoMutationConcurrentUpdatesSameMemoNoSQLiteBusy(t *testing.T) {
 		}
 		require.ErrorIs(t, err, store.ErrMemoMutationConflict)
 	}
+}
+
+func TestAttachmentStorageUsage(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	creator, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+
+	size, err := ts.GetAttachmentStorageUsage(ctx, creator.ID)
+	require.NoError(t, err)
+	require.Zero(t, size)
+
+	// One row per storage type, with a total exceeding a signed 32-bit integer.
+	var expected int64
+	var first *store.Attachment
+	for i, storageType := range []storepb.AttachmentStorageType{
+		storepb.AttachmentStorageType_ATTACHMENT_STORAGE_TYPE_UNSPECIFIED,
+		storepb.AttachmentStorageType_LOCAL,
+		storepb.AttachmentStorageType_S3,
+	} {
+		attachment, err := ts.CreateAttachment(ctx, &store.Attachment{
+			UID: shortuuid.New(), CreatorID: creator.ID, Filename: "file", Size: math.MaxInt32, StorageType: storageType,
+		})
+		require.NoError(t, err)
+		expected += attachment.Size
+		if i == 0 {
+			first = attachment
+		}
+	}
+	_, err = ts.CreateAttachment(ctx, &store.Attachment{UID: shortuuid.New(), CreatorID: 102, Filename: "other", Size: 123})
+	require.NoError(t, err)
+	// External links store no bytes, even when an import declared a size.
+	_, err = ts.CreateAttachment(ctx, &store.Attachment{
+		UID: shortuuid.New(), CreatorID: creator.ID, Filename: "link", Size: 456, StorageType: storepb.AttachmentStorageType_EXTERNAL, Reference: "https://example.com/file",
+	})
+	require.NoError(t, err)
+	size, err = ts.GetAttachmentStorageUsage(ctx, creator.ID)
+	require.NoError(t, err)
+	require.Equal(t, expected, size, "external links do not count")
+
+	memo, err := ts.CreateMemo(ctx, &store.Memo{UID: shortuuid.New(), CreatorID: creator.ID, Content: "memo", Visibility: store.Private})
+	require.NoError(t, err)
+	require.NoError(t, ts.UpdateAttachment(ctx, &store.UpdateAttachment{ID: first.ID, MemoID: &memo.ID}))
+	size, err = ts.GetAttachmentStorageUsage(ctx, creator.ID)
+	require.NoError(t, err)
+	require.Equal(t, expected, size, "binding does not change storage usage")
+
+	require.NoError(t, ts.DeleteAttachment(ctx, &store.DeleteAttachment{ID: first.ID}))
+	size, err = ts.GetAttachmentStorageUsage(ctx, creator.ID)
+	require.NoError(t, err)
+	require.Equal(t, expected-first.Size, size)
 }

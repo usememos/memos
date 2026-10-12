@@ -215,7 +215,7 @@ func TestInboxListPagination(t *testing.T) {
 	require.NoError(t, err)
 
 	// Create 5 inboxes
-	for i := 0; i < 5; i++ {
+	for range 5 {
 		_, err = ts.CreateInbox(ctx, &store.Inbox{
 			SenderID:   0,
 			ReceiverID: user.ID,
@@ -520,7 +520,7 @@ func TestInboxMessageTypeFilterWithStatusAndPagination(t *testing.T) {
 	require.NoError(t, err)
 
 	// Create multiple inboxes with various combinations
-	for i := 0; i < 5; i++ {
+	for range 5 {
 		_, err = ts.CreateInbox(ctx, &store.Inbox{
 			SenderID:   0,
 			ReceiverID: user.ID,
@@ -533,7 +533,7 @@ func TestInboxMessageTypeFilterWithStatusAndPagination(t *testing.T) {
 	// Archive 2 of them
 	allInboxes, err := ts.ListInboxes(ctx, &store.FindInbox{ReceiverID: &user.ID})
 	require.NoError(t, err)
-	for i := 0; i < 2; i++ {
+	for i := range 2 {
 		_, err = ts.UpdateInbox(ctx, &store.UpdateInbox{ID: allInboxes[i].ID, Status: store.ARCHIVED})
 		require.NoError(t, err)
 	}

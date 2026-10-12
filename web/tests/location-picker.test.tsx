@@ -61,8 +61,9 @@ vi.mock("react-leaflet", () => ({
 vi.mock("@/components/map/map-utils", () => ({
   defaultMarkerIcon: {},
   MinimalAttributionControl: () => <div data-testid="attribution" />,
-  OpenStreetMapTileLayer: () => <div data-testid="map-layer" />,
 }));
+
+vi.mock("@/components/map/BasemapLayer", () => ({ BasemapLayer: () => <div data-testid="map-layer" /> }));
 
 describe("LocationPicker", () => {
   it("uses the explicit minimal attribution control", () => {

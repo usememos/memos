@@ -1,248 +1,239 @@
 import {
   ArchiveIcon,
   BellIcon,
-  CheckIcon,
+  ChevronRightIcon,
   GlobeIcon,
   InfoIcon,
   LogOutIcon,
-  MoreVerticalIcon,
+  type LucideIcon,
   PaletteIcon,
   SettingsIcon,
-  SquareUserIcon,
-  User2Icon,
 } from "lucide-react";
+import { useState } from "react";
 import { matchPath, useLocation } from "react-router-dom";
+import UserAvatar from "@/components/UserAvatar";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useAppSidebar } from "@/contexts/AppSidebarContext";
 import { useAuth } from "@/contexts/AuthContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useSSEConnectionStatus } from "@/hooks/useLiveMemoRefresh";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useNotifications, useUpdateUserGeneralSetting } from "@/hooks/useUserQueries";
+import { locales } from "@/i18n";
 import { cn } from "@/lib/utils";
 import { Routes } from "@/router";
-import { UserNotification_Status } from "@/types/proto/api/v1/user_service_pb";
-import { getLocaleWithFallback, loadLocale, useTranslate } from "@/utils/i18n";
+import { UserNotification_Status } from "@/types/proto/api/user_service_pb";
+import { buildAuthRoute } from "@/utils/auth-redirect";
+import { getLocaleDisplayName, getLocaleWithFallback, loadLocale, useTranslate } from "@/utils/i18n";
 import { getThemeWithFallback, loadTheme, THEME_OPTIONS } from "@/utils/theme";
-import { SIDEBAR_LEADING_SLOT_CLASSES, sidebarSurfaceVariants } from "./AppSidebar/sidebar-layout";
-import { LocaleSearchList } from "./LocalePicker";
-import UserAvatar from "./UserAvatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
-interface Props {
-  collapsed?: boolean;
+// One row grammar for the whole scope panel: 28px rows, 13px text, and a 20px leading slot
+// (a 14px glyph with 3px each side) so icons, the avatar and Space marks share one column.
+const rowClass = "h-7 w-full justify-start gap-1.5 rounded-sm px-2 text-ui font-normal shadow-none hover:bg-accent";
+const iconClass = "mx-[3px] size-3.5 shrink-0 text-muted-foreground";
+const chevronClass = "size-3.5 shrink-0 text-muted-foreground";
+
+interface PreferenceSubmenuProps {
+  icon: LucideIcon;
+  label: string;
+  value: string;
+  options: Array<{ value: string; label: string }>;
+  onChange: (value: string) => void;
+  /** Long lists scroll; typing jumps to a match. */
+  className?: string;
 }
 
-const UserMenu = (props: Props) => {
-  const { collapsed } = props;
+/** A row that opens its choices beside the panel, like a submenu, and applies one on select. */
+const PreferenceSubmenu = ({ icon: Icon, label, value, options, onChange, className }: PreferenceSubmenuProps) => (
+  <DropdownMenu>
+    <DropdownMenuTrigger openOnHover render={<Button variant="ghost" className={cn(rowClass, "data-popup-open:bg-accent")} />}>
+      <Icon className={iconClass} />
+      <span className="shrink-0 text-start">{label}</span>
+      <span className="min-w-0 flex-1 truncate text-end text-muted-foreground">
+        {options.find((option) => option.value === value)?.label ?? value}
+      </span>
+      <ChevronRightIcon className={cn(chevronClass, "rtl:rotate-180")} />
+    </DropdownMenuTrigger>
+    {/* Like a nested submenu: when neither side has room (narrow screens), drop below the row instead of overflowing. */}
+    <DropdownMenuContent
+      side="inline-end"
+      align="start"
+      sideOffset={8}
+      alignOffset={-4}
+      collisionAvoidance={{ fallbackAxisSide: "end" }}
+      size="sm"
+      className={className}
+    >
+      <DropdownMenuRadioGroup value={value} onValueChange={onChange}>
+        {options.map((option) => (
+          <DropdownMenuRadioItem key={option.value} value={option.value} closeOnClick>
+            {option.label}
+          </DropdownMenuRadioItem>
+        ))}
+      </DropdownMenuRadioGroup>
+    </DropdownMenuContent>
+  </DropdownMenu>
+);
+
+const LOCALE_OPTIONS = locales.map((locale) => ({ value: locale, label: getLocaleDisplayName(locale) }));
+
+/** Theme and language apply at once: saved to the account when signed in, otherwise kept in this browser. */
+const UserPreferenceMenu = () => {
+  const t = useTranslate();
+  const currentUser = useCurrentUser();
+  const { userGeneralSetting, refetchSettings } = useAuth();
+  const { mutate: updateUserGeneralSetting } = useUpdateUserGeneralSetting(currentUser?.name);
+  // The chosen value shows immediately, before a signed-in save round-trips.
+  const [theme, setTheme] = useState<string>();
+  const [locale, setLocale] = useState<string>();
+  const currentTheme = theme ?? getThemeWithFallback(userGeneralSetting?.theme);
+  const currentLocale = locale ?? getLocaleWithFallback(userGeneralSetting?.locale);
+
+  const handleThemeChange = (value: string) => {
+    setTheme(value);
+    loadTheme(value);
+    if (currentUser) {
+      updateUserGeneralSetting({ generalSetting: { theme: value }, updateMask: ["theme"] }, { onSuccess: () => refetchSettings() });
+    }
+  };
+
+  const handleLocaleChange = (value: string) => {
+    setLocale(loadLocale(value));
+    if (currentUser) {
+      updateUserGeneralSetting({ generalSetting: { locale: value }, updateMask: ["locale"] }, { onSuccess: () => refetchSettings() });
+    }
+  };
+
+  return (
+    <section aria-label={t("setting.preference.label")} className="border-border/70 p-1 not-first:border-t">
+      <PreferenceSubmenu
+        icon={PaletteIcon}
+        label={t("setting.preference.theme")}
+        value={currentTheme}
+        options={THEME_OPTIONS}
+        onChange={handleThemeChange}
+      />
+      <PreferenceSubmenu
+        icon={GlobeIcon}
+        label={t("common.language")}
+        value={currentLocale}
+        options={LOCALE_OPTIONS}
+        onChange={handleLocaleChange}
+        className="max-h-72"
+      />
+    </section>
+  );
+};
+
+/** The account half of the scope menu: preferences for everyone, then the user's own pages. */
+const UserMenu = ({ onClose }: { onClose: () => void }) => {
   const t = useTranslate();
   const location = useLocation();
   const navigateTo = useNavigateTo();
   const { setMobileOpen } = useAppSidebar();
   const currentUser = useCurrentUser();
-  const { userGeneralSetting, refetchSettings, logout } = useAuth();
-  const { mutate: updateUserGeneralSetting } = useUpdateUserGeneralSetting(currentUser?.name);
-  const { data: notifications = [] } = useNotifications();
   const sseStatus = useSSEConnectionStatus();
-  const currentLocale = getLocaleWithFallback(userGeneralSetting?.locale);
-  const currentTheme = getThemeWithFallback(userGeneralSetting?.theme);
+  const { logout } = useAuth();
+  const { data: notifications = [] } = useNotifications();
+  const unreadCount = notifications.filter((notification) => notification.status === UserNotification_Status.UNREAD).length;
+  const inboxLabel = unreadCount > 0 ? `${t("common.inbox")}, ${unreadCount} ${t("inbox.unread")}` : t("common.inbox");
+  const accountLabel = currentUser?.displayName || currentUser?.username || t("common.profile");
   const inboxActive = Boolean(matchPath(Routes.INBOX, location.pathname));
   const archivedActive = Boolean(matchPath(Routes.ARCHIVED, location.pathname));
-  const unreadCount = notifications.filter((notification) => notification.status === UserNotification_Status.UNREAD).length;
-  const userLabel = currentUser?.displayName || currentUser?.username || t("common.profile");
-  const triggerLabel = `${userLabel}, ${t("common.more")}${unreadCount > 0 ? `, ${unreadCount} ${t("inbox.unread")}` : ""}`;
-  const inboxLabel = unreadCount > 0 ? `${t("common.inbox")}, ${unreadCount} ${t("inbox.unread")}` : t("common.inbox");
-
-  const handleLocaleChange = async (locale: Locale) => {
-    if (!currentUser) return;
-    // Apply locale immediately for instant UI feedback and persist to localStorage
-    loadLocale(locale);
-    // Persist to user settings
-    updateUserGeneralSetting(
-      { generalSetting: { locale }, updateMask: ["locale"] },
-      {
-        onSuccess: () => {
-          refetchSettings();
-        },
-      },
-    );
-  };
-
-  const handleThemeChange = async (theme: string) => {
-    if (!currentUser) return;
-    // Apply theme immediately for instant UI feedback
-    loadTheme(theme);
-    // Persist to user settings
-    updateUserGeneralSetting(
-      { generalSetting: { theme }, updateMask: ["theme"] },
-      {
-        onSuccess: () => {
-          refetchSettings();
-        },
-      },
-    );
-  };
-
-  const handleSignOut = async () => {
-    // First, clear auth state and cache BEFORE doing anything else
-    await logout();
-
-    try {
-      // Then clear user-specific localStorage items
-      // Preserve app-wide settings (theme, locale, view preferences, tag view settings)
-      const keysToPreserve = ["memos-theme", "memos-locale", "memos-view-setting", "tag-view-as-tree"];
-      const keysToRemove: string[] = [];
-
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && !keysToPreserve.includes(key)) {
-          keysToRemove.push(key);
-        }
-      }
-
-      keysToRemove.forEach((key) => localStorage.removeItem(key));
-    } catch {
-      // Ignore errors from localStorage operations
-    }
-
-    // Always redirect to auth page (use replace to prevent back navigation)
-    window.location.replace(Routes.AUTH);
-  };
 
   const navigateFromMenu = (path: string) => {
+    onClose();
     setMobileOpen(false);
     navigateTo(path);
   };
 
+  const handleSignOut = async () => {
+    await logout();
+    try {
+      const keysToPreserve = ["memos-theme", "memos-locale", "memos-view-setting", "tag-view-as-tree"];
+      const keysToRemove: string[] = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && !keysToPreserve.includes(key)) keysToRemove.push(key);
+      }
+      keysToRemove.forEach((key) => localStorage.removeItem(key));
+    } catch {
+      // Ignore errors from localStorage operations.
+    }
+    window.location.replace(buildAuthRoute({ autoSignIn: false }));
+  };
+
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger
-        disabled={!currentUser}
-        aria-label={triggerLabel}
-        className={cn(
-          sidebarSurfaceVariants({ role: collapsed ? "accountCollapsed" : "account" }),
-          "cursor-pointer text-start text-foreground transition-colors hover:bg-sidebar-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/50 data-popup-open:bg-sidebar-accent",
-        )}
-      >
-        <div className={cn(SIDEBAR_LEADING_SLOT_CLASSES, "relative")}>
-          {currentUser?.avatarUrl ? (
-            <UserAvatar className="size-5 rounded-[5px]" avatarUrl={currentUser?.avatarUrl} />
-          ) : (
-            <User2Icon className="me-auto size-4 text-muted-foreground" />
-          )}
-          {sseStatus !== "connected" && (
-            <Tooltip>
-              <TooltipTrigger
-                render={
+    <>
+      <UserPreferenceMenu />
+      <section aria-label={t("setting.sso.account")} className="border-t border-border/70 p-1">
+        {currentUser && (
+          <>
+            <div className="flex h-7 items-center gap-1.5 px-2">
+              <span className="relative flex size-5 shrink-0 items-center justify-center">
+                <UserAvatar avatarUrl={currentUser.avatarUrl} name={accountLabel} className="size-5" />
+                {sseStatus !== "connected" && (
                   <span
+                    role="img"
+                    aria-label={t(`live-update.${sseStatus}` as Parameters<typeof t>[0])}
                     className={cn(
-                      "absolute -bottom-0.5 -end-0.5 size-2.5 rounded-full border-2 border-background",
-                      sseStatus === "connecting" ? "bg-muted-foreground animate-pulse" : "bg-destructive",
+                      "absolute -bottom-0.5 -end-0.5 size-2.5 rounded-full border-2 border-popover",
+                      sseStatus === "connecting" ? "animate-pulse bg-muted-foreground" : "bg-destructive",
                     )}
                   />
-                }
-              />
-              <TooltipContent side="right">{t(`live-update.${sseStatus}` as Parameters<typeof t>[0])}</TooltipContent>
-            </Tooltip>
-          )}
-        </div>
-        {!collapsed && (
-          <span data-sidebar-label className="min-w-0 flex-1 truncate text-start text-[13px] font-medium text-foreground">
-            {userLabel}
-          </span>
-        )}
-        {!collapsed && (
-          <span data-sidebar-trailing className="relative flex size-5 shrink-0 items-center justify-center">
-            <MoreVerticalIcon className="size-4 text-muted-foreground/70" strokeWidth={1.8} />
-            {unreadCount > 0 && (
-              <span
-                aria-hidden="true"
-                data-inbox-unread-indicator
-                className="absolute end-0 top-0 size-1.5 rounded-full bg-primary ring-2 ring-sidebar"
-              />
-            )}
-          </span>
-        )}
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align={collapsed ? "start" : "center"} className={cn(!collapsed && "w-[calc(var(--anchor-width)-1.5rem)]")}>
-        <DropdownMenuItem onClick={() => navigateFromMenu(`/u/${encodeURIComponent(currentUser?.username ?? "")}`)}>
-          <SquareUserIcon className="size-4 text-muted-foreground" />
-          {t("common.profile")}
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          aria-label={inboxLabel}
-          aria-current={inboxActive ? "page" : undefined}
-          className={cn(inboxActive && "bg-accent text-accent-foreground")}
-          onClick={() => navigateFromMenu(Routes.INBOX)}
-        >
-          <BellIcon className="size-4 text-muted-foreground" />
-          <span className="min-w-0 flex-1">{t("common.inbox")}</span>
-          {unreadCount > 0 && (
-            <span
-              aria-hidden="true"
-              className="ms-auto min-w-5 rounded-full bg-primary/10 px-1.5 text-center text-[10px] font-medium text-primary"
+                )}
+              </span>
+              <span className="min-w-0 flex-1 truncate text-ui font-medium">{accountLabel}</span>
+              <Button
+                variant="ghost"
+                aria-label={inboxLabel}
+                aria-current={inboxActive ? "page" : undefined}
+                className={cn(
+                  "h-5 gap-1 rounded-sm bg-muted/60 px-1.5 text-2xs font-medium text-muted-foreground shadow-none hover:bg-accent hover:text-foreground",
+                  inboxActive && "bg-accent text-foreground",
+                )}
+                onClick={() => navigateFromMenu(Routes.INBOX)}
+              >
+                <BellIcon className="size-3" />
+                {t("common.inbox")}
+                {unreadCount > 0 && <span className="tabular-nums text-primary">{unreadCount > 99 ? "99+" : unreadCount}</span>}
+              </Button>
+            </div>
+            <Button
+              variant="ghost"
+              aria-current={archivedActive ? "page" : undefined}
+              className={cn(rowClass, archivedActive && "bg-accent")}
+              onClick={() => navigateFromMenu(Routes.ARCHIVED)}
             >
-              {unreadCount > 99 ? "99+" : unreadCount}
-            </span>
-          )}
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          aria-current={archivedActive ? "page" : undefined}
-          className={cn(archivedActive && "bg-accent text-accent-foreground")}
-          onClick={() => navigateFromMenu(Routes.ARCHIVED)}
-        >
-          <ArchiveIcon className="size-4 text-muted-foreground" />
-          {t("common.archived")}
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger>
-            <GlobeIcon className="size-4 text-muted-foreground" />
-            {t("common.language")}
-          </DropdownMenuSubTrigger>
-          <DropdownMenuSubContent className="max-h-[min(24rem,var(--available-height))] overflow-y-auto p-0">
-            <LocaleSearchList value={currentLocale} onChange={handleLocaleChange} className="w-64" />
-          </DropdownMenuSubContent>
-        </DropdownMenuSub>
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger>
-            <PaletteIcon className="size-4 text-muted-foreground" />
-            {t("setting.preference.theme")}
-          </DropdownMenuSubTrigger>
-          <DropdownMenuSubContent>
-            {THEME_OPTIONS.map((option) => (
-              <DropdownMenuItem key={option.value} onClick={() => handleThemeChange(option.value)}>
-                {currentTheme === option.value && <CheckIcon className="w-4 h-auto" />}
-                {currentTheme !== option.value && <span className="w-4" />}
-                {option.label}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuSubContent>
-        </DropdownMenuSub>
-        <DropdownMenuItem onClick={() => navigateFromMenu(Routes.ABOUT)}>
-          <InfoIcon className="size-4 text-muted-foreground" />
+              <ArchiveIcon className={iconClass} />
+              {t("common.archived")}
+            </Button>
+            <Button variant="ghost" className={rowClass} onClick={() => navigateFromMenu(Routes.SETTING)}>
+              <SettingsIcon className={iconClass} />
+              {t("common.settings")}
+            </Button>
+          </>
+        )}
+        <Button variant="ghost" className={rowClass} onClick={() => navigateFromMenu(Routes.ABOUT)}>
+          <InfoIcon className={iconClass} />
           {t("common.about")}
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => navigateFromMenu(Routes.SETTING)}>
-          <SettingsIcon className="size-4 text-muted-foreground" />
-          {t("common.settings")}
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleSignOut}>
-          <LogOutIcon className="size-4 text-muted-foreground" />
-          {t("common.sign-out")}
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+        </Button>
+        {/* Guests sign in from the sidebar footer, which is always in view. */}
+        {currentUser && (
+          <Button variant="ghost" className={cn(rowClass, "text-muted-foreground")} onClick={() => void handleSignOut()}>
+            <LogOutIcon className={iconClass} />
+            {t("common.sign-out")}
+          </Button>
+        )}
+      </section>
+    </>
   );
 };
 

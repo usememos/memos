@@ -15,8 +15,8 @@ import { attachmentKeys } from "@/hooks/useAttachmentQueries";
 import { userKeys } from "@/hooks/useUserQueries";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/lib/constants";
 import { shouldRetry } from "@/lib/query-client";
-import type { ListMemosRequest, ListMemosResponse, Memo } from "@/types/proto/api/v1/memo_service_pb";
-import { ListMemoCommentsRequestSchema, ListMemosRequestSchema, MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
+import type { ListMemosRequest, ListMemosResponse, Memo } from "@/types/proto/api/memo_service_pb";
+import { ListMemoCommentsRequestSchema, ListMemosRequestSchema, MemoSchema } from "@/types/proto/api/memo_service_pb";
 
 // Query keys factory for consistent cache management
 export const memoKeys = {
@@ -179,12 +179,13 @@ export function useMemos(request: Partial<ListMemosRequest> = {}) {
 export function useInfiniteMemos(request: Partial<ListMemosRequest> = {}, options?: { enabled?: boolean }) {
   return useInfiniteQuery({
     queryKey: memoKeys.list(request),
-    queryFn: async ({ pageParam }) => {
+    queryFn: async ({ pageParam, signal }) => {
       const response = await memoServiceClient.listMemos(
         create(ListMemosRequestSchema, {
           ...request,
           pageToken: pageParam || "",
         } as Record<string, unknown>),
+        { signal },
       );
       return response;
     },
@@ -338,7 +339,7 @@ export function useMemoComments(name: string, options?: { enabled?: boolean; pag
     queryFn: async () => {
       const response = await memoServiceClient.listMemoComments(
         create(ListMemoCommentsRequestSchema, {
-          name,
+          parent: name,
           pageSize: options?.pageSize ?? 0,
         }),
       );
@@ -358,7 +359,7 @@ export function useInfiniteMemoComments(name: string, options?: { enabled?: bool
     queryFn: async ({ pageParam }) => {
       const response = await memoServiceClient.listMemoComments(
         create(ListMemoCommentsRequestSchema, {
-          name,
+          parent: name,
           pageSize,
           pageToken: pageParam || "",
         }),
@@ -367,7 +368,7 @@ export function useInfiniteMemoComments(name: string, options?: { enabled?: bool
     },
     initialPageParam: "",
     getNextPageParam: (lastPage) => lastPage.nextPageToken || undefined,
-    select: (data) => data.pages.flatMap((page) => page.memos),
+    select: (data) => data.pages.flatMap((page) => page.comments),
     enabled: options?.enabled ?? true,
     staleTime: 1000 * 60, // 1 minute
   });

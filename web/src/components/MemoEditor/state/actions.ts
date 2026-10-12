@@ -66,6 +66,11 @@ export const editorActions = {
     payload: value,
   }),
 
+  acceptSuggestion: (id: string): EditorAction => ({
+    type: "ACCEPT_SUGGESTION",
+    payload: id,
+  }),
+
   reset: (): EditorAction => ({
     type: "RESET",
   }),

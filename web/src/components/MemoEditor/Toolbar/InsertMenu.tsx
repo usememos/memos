@@ -24,7 +24,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useDebouncedEffect } from "@/hooks";
-import type { MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
+import type { MemoRelation } from "@/types/proto/api/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { useFileUpload, useLinkMemo, useLocation } from "../hooks";
 import { useEditorContext, useEditorSelector } from "../state";
@@ -152,13 +152,19 @@ const InsertMenu = (props: InsertMenuProps) => {
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger render={<Button variant="secondary" size="icon" disabled={insertionDisabled} aria-label={t("common.add")} />}>
-          {isUploading ? <LoaderIcon className="size-4 animate-spin" /> : <PlusIcon className="size-4" />}
+        <DropdownMenuTrigger
+          render={<Button variant="outline" size="icon-compact" disabled={insertionDisabled} aria-label={t("common.add")} />}
+        >
+          {isUploading ? (
+            <LoaderIcon className="size-4 animate-spin" strokeWidth={1.8} />
+          ) : (
+            <PlusIcon className="size-4" strokeWidth={1.8} />
+          )}
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
+        <DropdownMenuContent align="start" size="sm">
           {insertItems.map((item) => (
             <DropdownMenuItem key={item.key} onClick={item.onClick} disabled={props.isSaving}>
-              <item.icon className="w-4 h-4" />
+              <item.icon />
               {item.label}
             </DropdownMenuItem>
           ))}
@@ -168,13 +174,13 @@ const InsertMenu = (props: InsertMenuProps) => {
             <>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={viewToggles.onToggleFocusMode}>
-                <Maximize2Icon className="w-4 h-4" />
+                <Maximize2Icon />
                 {t("editor.focus-mode")}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={viewToggles.onToggleFormattingToolbar}>
-                <TypeIcon className="w-4 h-4" />
+                <TypeIcon />
                 {t("editor.formatting-toolbar")}
-                {viewToggles.isFormattingToolbarVisible && <CheckIcon className="w-4 h-4 ml-auto" />}
+                {viewToggles.isFormattingToolbarVisible && <CheckIcon className="ms-auto size-3.5" />}
               </DropdownMenuItem>
             </>
           )}

@@ -4,13 +4,16 @@ import type { ReactNode } from "react";
 import { MemoryRouter, useLocation } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useMemoActionHandlers } from "@/components/MemoActionMenu/hooks";
-import { State } from "@/types/proto/api/v1/common_pb";
-import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
+import { State } from "@/types/proto/api/common_pb";
+import type { Memo } from "@/types/proto/api/memo_service_pb";
 
 const mocks = vi.hoisted(() => ({
   updateMemo: vi.fn(),
   deleteMemo: vi.fn(),
+  copy: vi.fn(),
 }));
+
+vi.mock("copy-to-clipboard", () => ({ default: mocks.copy }));
 
 vi.mock("@/hooks/useMemoQueries", () => ({
   memoKeys: {
@@ -24,8 +27,6 @@ vi.mock("@/hooks/useMemoQueries", () => ({
 vi.mock("@/hooks/useUserQueries", () => ({
   userKeys: { stats: () => ["users", "stats"] },
 }));
-
-vi.mock("@/hooks/useCurrentUser", () => ({ default: () => ({ name: "users/alice" }) }));
 
 vi.mock("@/contexts/InstanceContext", () => ({
   useInstance: () => ({ profile: { instanceUrl: "" } }),
@@ -42,6 +43,7 @@ vi.mock("react-hot-toast", () => ({
 const createMemo = (state: State, parent = ""): Memo =>
   ({
     name: "memos/1",
+    creator: "users/alice",
     content: "memo",
     state,
     parent,
@@ -75,6 +77,7 @@ describe("Memo detail mutation navigation", () => {
   beforeEach(() => {
     mocks.updateMemo.mockReset().mockResolvedValue(undefined);
     mocks.deleteMemo.mockReset().mockResolvedValue(undefined);
+    mocks.copy.mockReset();
   });
 
   it.each([
@@ -116,5 +119,14 @@ describe("Memo detail mutation navigation", () => {
 
     expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: ["memos", "memos/parent", "comments"] });
     expect(invalidateQueries).toHaveBeenCalledWith({ queryKey: ["memos", "memos/parent", "detail"] });
+  });
+
+  it.each([
+    ["", "http://localhost:3000/memos/1"],
+    ["memos/parent", "http://localhost:3000/memos/parent#1"],
+  ])("copies a link that lands on the memo, or on the comment inside its parent (parent: %s)", (parent, link) => {
+    const { result } = renderActions(State.NORMAL, parent);
+    act(() => result.current.handlers.handleCopyLink());
+    expect(mocks.copy).toHaveBeenCalledWith(link);
   });
 });

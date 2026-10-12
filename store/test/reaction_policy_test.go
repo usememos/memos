@@ -70,7 +70,9 @@ func TestReactionWritePolicySpaceParticipationIsMemoLocal(t *testing.T) {
 	require.NoError(t, err)
 	member, err := ts.CreateUser(ctx, &store.User{Username: "reaction-space-member", Role: store.RoleUser, PasswordHash: "hash"})
 	require.NoError(t, err)
-	outsider, err := ts.CreateUser(ctx, &store.User{Username: "reaction-space-outsider", Role: store.RoleAdmin, PasswordHash: "hash"})
+	outsider, err := ts.CreateUser(ctx, &store.User{Username: "reaction-space-outsider", Role: store.RoleUser, PasswordHash: "hash"})
+	require.NoError(t, err)
+	applicationAdmin, err := ts.CreateUser(ctx, &store.User{Username: "reaction-space-app-admin", Role: store.RoleAdmin, PasswordHash: "hash"})
 	require.NoError(t, err)
 
 	space, err := ts.CreateSpace(ctx, &store.Space{UID: "reaction-space", Title: "Reaction Space"}, owner.ID)
@@ -87,9 +89,13 @@ func TestReactionWritePolicySpaceParticipationIsMemoLocal(t *testing.T) {
 	})
 	require.NoError(t, err)
 	_, err = ts.UpsertReaction(ctx, &store.Reaction{
-		CreatorID: outsider.ID, MemoID: spaceMemo.ID, ReactionType: "application-admin", Policy: reactionWritePolicy(outsider.ID),
+		CreatorID: outsider.ID, MemoID: spaceMemo.ID, ReactionType: "outsider", Policy: reactionWritePolicy(outsider.ID),
 	})
-	require.ErrorIs(t, err, store.ErrMemoSpaceMembershipRequired, "application ADMIN must not bypass Space membership")
+	require.ErrorIs(t, err, store.ErrMemoSpaceMembershipRequired, "a non-member must not participate")
+	_, err = ts.UpsertReaction(ctx, &store.Reaction{
+		CreatorID: applicationAdmin.ID, MemoID: spaceMemo.ID, ReactionType: "application-admin", Policy: reactionWritePolicy(applicationAdmin.ID),
+	})
+	require.NoError(t, err, "an instance administrator participates without membership")
 
 	require.NoError(t, ts.DeleteSpaceMember(ctx, &store.DeleteSpaceMember{SpaceID: space.ID, UserID: member.ID}, owner.ID))
 	_, err = ts.UpsertReaction(ctx, &store.Reaction{

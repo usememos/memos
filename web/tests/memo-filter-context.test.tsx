@@ -8,7 +8,6 @@ import {
   stringifyFilters,
   useMemoFilterContext,
 } from "@/contexts/MemoFilterContext";
-import { BUILTIN_TASKS_VIEW_ID } from "@/lib/memo-views";
 
 const expression = 'tags.exists(t, t.contains("50%, café & C++"))\n || space == null';
 
@@ -26,8 +25,8 @@ const Harness = () => {
       <button type="button" onClick={() => setFilters([{ factor: "contentSearch", value: "plan" }])}>
         Search plan
       </button>
-      <button type="button" onClick={() => setMemoView(BUILTIN_TASKS_VIEW_ID)}>
-        Select Tasks
+      <button type="button" onClick={() => setMemoView("abc")}>
+        Select view
       </button>
     </div>
   );
@@ -80,7 +79,7 @@ describe("MemoFilterProvider", () => {
       { initialEntries: [origin] },
     );
     render(<RouterProvider router={router} />);
-    fireEvent.click(screen.getByRole("button", { name: "Select Tasks" }));
+    fireEvent.click(screen.getByRole("button", { name: "Select view" }));
     const state = { from: origin };
     await act(() => router.navigate("/memos/1", { state }));
     await waitFor(() => expect(screen.getByTestId("filters")).toHaveTextContent("[]"));
@@ -90,7 +89,7 @@ describe("MemoFilterProvider", () => {
     expect(router.state.location.pathname + router.state.location.search).toBe(origin);
     expect(screen.getByTestId("filters")).toHaveTextContent('"work"');
     await act(() => router.navigate("/spaces/research?filter=tagSearch%3Awork"));
-    expect(screen.getByTestId("memoView")).toHaveTextContent(BUILTIN_TASKS_VIEW_ID);
+    expect(screen.getByTestId("memoView")).toHaveTextContent("abc");
   });
 
   it("keeps encoded values containing colons intact", () => {
@@ -109,9 +108,9 @@ describe("MemoFilterProvider", () => {
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Search plan" }));
-    fireEvent.click(screen.getByRole("button", { name: "Select Tasks" }));
+    fireEvent.click(screen.getByRole("button", { name: "Select view" }));
 
     expect(screen.getByTestId("filters")).toHaveTextContent('[{"factor":"contentSearch","value":"plan"}]');
-    expect(screen.getByTestId("memoView")).toHaveTextContent(BUILTIN_TASKS_VIEW_ID);
+    expect(screen.getByTestId("memoView")).toHaveTextContent("abc");
   });
 });

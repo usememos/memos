@@ -8,6 +8,7 @@ import { ViewProvider } from "@/contexts/ViewContext";
 vi.mock("@/utils/i18n", () => ({
   useTranslate: () => (key: string, params?: Record<string, number>) => {
     const labels: Record<string, string> = {
+      "common.timeline": "Timeline",
       "common.created-at": "Created",
       "common.last-updated-at": "Last updated",
       "memo.compact-mode": "Compact mode",
@@ -43,8 +44,9 @@ describe("MemoDisplaySettingMenu", () => {
       </ViewProvider>,
     );
 
-    const trigger = screen.getByRole("button", { name: "View options" });
-    expect(trigger).toHaveClass("size-6", "rounded-md", "text-muted-foreground/70", "hover:bg-muted/60", "hover:text-foreground");
+    const trigger = screen.getByRole("button", { name: "Timeline · View options" });
+    expect(trigger).toHaveClass("size-7", "w-auto", "px-1.5", "rounded-s-none");
+    expect(trigger.querySelector(".lucide-chevron-down")).toBeInTheDocument();
     expect(trigger.querySelector("svg")).toHaveClass(SIDEBAR_SECTION_ACTION_ICON_CLASSES);
 
     fireEvent.click(trigger);
@@ -60,6 +62,24 @@ describe("MemoDisplaySettingMenu", () => {
     expect(screen.getByText("Grid layouts always use compact cards.")).toBeInTheDocument();
   });
 
+  it("opens only from the arrow, not the adjacent Timeline link", () => {
+    render(
+      <ViewProvider>
+        <div>
+          <a href="#timeline">Timeline</a>
+          <MemoDisplaySettingMenu />
+        </div>
+      </ViewProvider>,
+    );
+    const trigger = screen.getByRole("button", { name: "Timeline · View options" });
+    fireEvent.click(screen.getByRole("link", { name: "Timeline" }));
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryByRole("radiogroup", { name: "Layout" })).not.toBeInTheDocument();
+    fireEvent.click(trigger);
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByRole("radiogroup", { name: "Layout" })).toBeInTheDocument();
+  });
+
   it("moves horizontally in the visual direction for RTL layouts", () => {
     render(
       <DirectionProvider direction="rtl">
@@ -69,7 +89,7 @@ describe("MemoDisplaySettingMenu", () => {
       </DirectionProvider>,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "View options" }));
+    fireEvent.click(screen.getByRole("button", { name: "Timeline · View options" }));
     fireEvent.keyDown(screen.getByRole("radiogroup", { name: "Layout" }), { key: "ArrowLeft" });
 
     expect(screen.getByRole("radio", { name: "2 columns" })).toBeChecked();

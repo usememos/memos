@@ -1,56 +1,59 @@
 package version
 
 import (
-	"fmt"
-	"strings"
+	"regexp"
+	"runtime/debug"
+	"time"
 
-	"golang.org/x/mod/semver"
+	"github.com/pkg/errors"
 )
 
-// Version is set by release builds and defaults to a development build marker.
-var Version = "dev"
+// Version is injected by release builds or derived from the embedded commit date.
+var Version string
 
-// Commit is set by CI builds and defaults to an unknown revision marker.
+// Commit is injected by CI or read from build metadata, falling back to unknown.
 var Commit = "unknown"
 
+// calendarVersion matches YY.MM[.N][-rc.N]; scripts/release_version.sh accepts the same tags.
+var calendarVersion = regexp.MustCompile(`^[1-9][0-9]\.(0[1-9]|1[0-2])(\.[1-9][0-9]*)?(-rc\.[1-9][0-9]*)?$`)
+
+func init() {
+	if info, ok := debug.ReadBuildInfo(); ok {
+		Version, Commit = resolveBuild(Version, Commit, info.Settings)
+	}
+}
+
+func resolveBuild(version, commit string, settings []debug.BuildSetting) (string, string) {
+	for _, setting := range settings {
+		switch setting.Key {
+		case "vcs.time":
+			if version == "" {
+				if timestamp, err := time.Parse(time.RFC3339, setting.Value); err == nil {
+					version = timestamp.UTC().Format("06.01")
+				}
+			}
+		case "vcs.revision":
+			if commit == "" || commit == "unknown" {
+				commit = setting.Value
+			}
+		default:
+		}
+	}
+	return version, commit
+}
+
+// Validate checks that the build has a calendar version before it is exposed.
+func Validate() error {
+	if Version == "" {
+		return errors.New("missing build version: use go run -buildvcs=true ./cmd/memos or inject internal/version.Version with -ldflags")
+	}
+	if !calendarVersion.MatchString(Version) {
+		return errors.Errorf("invalid build version %q: expected YY.MM[.N][-rc.N]", Version)
+	}
+	return nil
+}
+
+// GetCurrentVersion returns the application version.
 func GetCurrentVersion() string {
 	return Version
-}
-
-// GetMinorVersion extracts the minor version (e.g., "0.25") from a full version string (e.g., "0.25.1").
-// Returns the minor version string or empty string if the version format is invalid.
-// Version format should be "major.minor.patch" (e.g., "0.25.1").
-func GetMinorVersion(version string) string {
-	versionList := strings.Split(version, ".")
-	if len(versionList) < 2 {
-		return ""
-	}
-	// Return major.minor only (first two components)
-	return versionList[0] + "." + versionList[1]
-}
-
-// IsVersionGreaterOrEqualThan returns true if version is greater than or equal to target.
-func IsVersionGreaterOrEqualThan(version, target string) bool {
-	return semver.Compare(fmt.Sprintf("v%s", version), fmt.Sprintf("v%s", target)) > -1
-}
-
-// IsVersionGreaterThan returns true if version is greater than target.
-func IsVersionGreaterThan(version, target string) bool {
-	return semver.Compare(fmt.Sprintf("v%s", version), fmt.Sprintf("v%s", target)) > 0
-}
-
-type SortVersion []string
-
-func (s SortVersion) Len() int {
-	return len(s)
-}
-
-func (s SortVersion) Swap(i, j int) {
-	s[i], s[j] = s[j], s[i]
-}
-
-func (s SortVersion) Less(i, j int) bool {
-	v1 := fmt.Sprintf("v%s", s[i])
-	v2 := fmt.Sprintf("v%s", s[j])
-	return semver.Compare(v1, v2) == -1
 }

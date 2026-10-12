@@ -1,7 +1,7 @@
 import { create } from "@bufbuild/protobuf";
 import { Code, ConnectError } from "@connectrpc/connect";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
+import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
 
 const { uploadAttachment } = vi.hoisted(() => ({ uploadAttachment: vi.fn() }));
 vi.mock("@/connect", () => ({ attachmentServiceClient: { uploadAttachment } }));

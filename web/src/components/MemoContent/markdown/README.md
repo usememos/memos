@@ -8,6 +8,12 @@ Small React components used by `MemoMarkdownRenderer` to style HTML emitted by `
 - Strip the `node` prop from DOM output through `ReactMarkdownProps`.
 - Preserve existing markdown behavior while avoiding structural fixes in CSS.
 
+## Collapsible Sections
+
+`Details` and `Summary` preserve native disclosure behavior and authored `open` attributes. Styling uses theme tokens and
+direct-child selectors so nested indicators follow only their own disclosure. Contents enter `NestedMarkdownRenderContext`
+to keep bare links inline, consistent with other nested Markdown blocks.
+
 ## Task Lists
 
 GFM task lists are normalized before rendering by `remarkSplitMixedTaskLists`.

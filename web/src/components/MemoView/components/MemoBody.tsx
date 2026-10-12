@@ -1,7 +1,8 @@
 import { EyeIcon } from "lucide-react";
 import { useMemo } from "react";
 import ClampedSection from "@/components/ClampedSection";
-import { AttachmentListView, LocationDisplayView, RelationListView } from "@/components/MemoMetadata";
+import { AttachmentGallery, MemoMetadataRows } from "@/components/MemoMetadata";
+import { separateAttachments } from "@/components/MemoMetadata/Attachment/attachmentHelpers";
 import { isReferenceRelation } from "@/components/MemoMetadata/Relation/relationHelpers";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -16,15 +17,9 @@ import type { MemoBodyProps } from "../types";
 const BlurOverlay: React.FC<{ onClick?: () => void }> = ({ onClick }) => {
   const t = useTranslate();
   return (
-    <div className="absolute inset-0 z-10 flex items-center justify-center pt-4">
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        className="cursor-pointer rounded-lg bg-card px-3 text-xs text-foreground shadow-sm hover:-translate-y-0.5 hover:border-ring/40 hover:bg-accent hover:text-accent-foreground hover:shadow-md active:translate-y-0 active:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
-        onClick={onClick}
-      >
-        <EyeIcon className="h-3.5 w-3.5" />
+    <div className="absolute inset-0 z-10 flex items-center justify-center">
+      <Button type="button" variant="outline" size="sm" onClick={onClick}>
+        <EyeIcon className="size-3.5" strokeWidth={1.8} />
         {t("memo.click-to-show-sensitive-content")}
       </Button>
     </div>
@@ -42,36 +37,46 @@ const MemoBody: React.FC<MemoBodyProps> = ({ compact }) => {
     () => filterInlineManagedAttachments(memo.content, memo.attachments),
     [memo.content, memo.attachments],
   );
+  const { visual, audio, docs } = useMemo(() => separateAttachments(attachmentOnlyItems), [attachmentOnlyItems]);
 
   return (
-    <>
-      <div
-        className={cn(
-          "w-full flex flex-col justify-start items-start gap-2",
-          blurred && !showBlurredContent && "blur-lg transition-all duration-200",
-        )}
-      >
-        {/* Compact bounds the whole body — attachments included — behind one Show more.
-            Reactions stay outside so they never hide under the fade. */}
-        <ClampedSection enabled={Boolean(compact)}>
-          <MemoContent
-            memoName={memo.name}
-            parentPage={parentPage}
-            content={memo.content}
-            attachments={memo.attachments}
-            onClick={handleMemoContentClick}
-            onDoubleClick={handleMemoContentDoubleClick}
-            compact={Boolean(compact)}
-          />
-          <AttachmentListView attachments={attachmentOnlyItems} onImagePreview={openPreview} />
-          <RelationListView relations={referencedMemos} currentMemoName={memo.name} parentPage={parentPage} />
-          {memo.location && <LocationDisplayView location={memo.location} />}
-        </ClampedSection>
-        <MemoReactionListView memo={memo} reactions={memo.reactions} />
+    <div className="w-full flex flex-col justify-start items-start gap-2">
+      <div data-slot="memo-body" className="relative w-full">
+        <div
+          className={cn(
+            "w-full flex flex-col justify-start items-start gap-2",
+            blurred && !showBlurredContent && "blur-lg transition-all duration-200",
+          )}
+        >
+          {/* Compact bounds the whole body — attachments included — behind one Show more.
+              Reactions stay outside so they never hide under the fade. */}
+          <ClampedSection enabled={Boolean(compact)}>
+            <MemoContent
+              memoName={memo.name}
+              parentPage={parentPage}
+              content={memo.content}
+              attachments={memo.attachments}
+              onClick={handleMemoContentClick}
+              onDoubleClick={handleMemoContentDoubleClick}
+              compact={Boolean(compact)}
+            />
+            <AttachmentGallery visual={visual} onImagePreview={openPreview} />
+            <MemoMetadataRows
+              audio={audio}
+              docs={docs}
+              relations={referencedMemos}
+              currentMemoName={memo.name}
+              parentPage={parentPage}
+              location={memo.location}
+            />
+          </ClampedSection>
+        </div>
+
+        {blurred && !showBlurredContent && <BlurOverlay onClick={toggleBlurVisibility} />}
       </div>
 
-      {blurred && !showBlurredContent && <BlurOverlay onClick={toggleBlurVisibility} />}
-    </>
+      <MemoReactionListView memo={memo} reactions={memo.reactions} />
+    </div>
   );
 };
 

@@ -2,15 +2,15 @@ import { create } from "@bufbuild/protobuf";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import SpaceInvitationMessage from "@/components/Inbox/SpaceInvitationMessage";
-import { type Space, SpaceMember_Role, SpaceSchema } from "@/types/proto/api/v1/space_service_pb";
+import { type Space, SpaceMember_Role, SpaceSchema } from "@/types/proto/api/space_service_pb";
 import {
   type UserNotification,
-  UserNotification_SpaceInvitationPayload_State,
+  UserNotification_SpaceInvitationPayload_InvitationState,
   UserNotification_Status,
   UserNotification_Type,
   UserNotificationSchema,
   UserSchema,
-} from "@/types/proto/api/v1/user_service_pb";
+} from "@/types/proto/api/user_service_pb";
 
 const state = vi.hoisted(() => ({
   acceptInvitation: vi.fn(),
@@ -59,7 +59,7 @@ vi.mock("@/utils/i18n", () => ({
 const space: Space = create(SpaceSchema, { name: "spaces/design", title: "Design team", description: "Product design notes" });
 
 const createNotification = (overrides: {
-  state: UserNotification_SpaceInvitationPayload_State;
+  state: UserNotification_SpaceInvitationPayload_InvitationState;
   status?: UserNotification_Status;
   role?: SpaceMember_Role;
 }): UserNotification =>
@@ -88,7 +88,11 @@ describe("SpaceInvitationMessage", () => {
   });
 
   it("offers accept and decline while the invitation is pending", async () => {
-    render(<SpaceInvitationMessage notification={createNotification({ state: UserNotification_SpaceInvitationPayload_State.PENDING })} />);
+    render(
+      <SpaceInvitationMessage
+        notification={createNotification({ state: UserNotification_SpaceInvitationPayload_InvitationState.PENDING })}
+      />,
+    );
 
     expect(screen.getByText("Bob")).toBeInTheDocument();
     expect(screen.getByText("inbox.space-invitation")).toBeInTheDocument();
@@ -104,7 +108,11 @@ describe("SpaceInvitationMessage", () => {
   });
 
   it("declines the invitation from the inbox", async () => {
-    render(<SpaceInvitationMessage notification={createNotification({ state: UserNotification_SpaceInvitationPayload_State.PENDING })} />);
+    render(
+      <SpaceInvitationMessage
+        notification={createNotification({ state: UserNotification_SpaceInvitationPayload_InvitationState.PENDING })}
+      />,
+    );
 
     fireEvent.click(screen.getByRole("button", { name: "setting.spaces.decline" }));
     await waitFor(() => expect(state.declineInvitation).toHaveBeenCalledWith({ name: "spaces/design/invitations/alice" }));
@@ -114,7 +122,11 @@ describe("SpaceInvitationMessage", () => {
 
   it("reports a failed accept without pretending it succeeded", async () => {
     state.acceptInvitation.mockRejectedValueOnce(new Error("space invitation not found"));
-    render(<SpaceInvitationMessage notification={createNotification({ state: UserNotification_SpaceInvitationPayload_State.PENDING })} />);
+    render(
+      <SpaceInvitationMessage
+        notification={createNotification({ state: UserNotification_SpaceInvitationPayload_InvitationState.PENDING })}
+      />,
+    );
 
     fireEvent.click(screen.getByRole("button", { name: "setting.spaces.accept" }));
     await waitFor(() => expect(state.toastError).toHaveBeenCalled());
@@ -125,7 +137,7 @@ describe("SpaceInvitationMessage", () => {
     render(
       <SpaceInvitationMessage
         notification={createNotification({
-          state: UserNotification_SpaceInvitationPayload_State.ACCEPTED,
+          state: UserNotification_SpaceInvitationPayload_InvitationState.ACCEPTED,
           status: UserNotification_Status.ARCHIVED,
           role: SpaceMember_Role.ADMIN,
         })}
@@ -144,7 +156,9 @@ describe("SpaceInvitationMessage", () => {
   it("archives through the shared notification mutation and reports failures", async () => {
     state.archiveNotification.mockResolvedValueOnce(undefined);
     const { unmount } = render(
-      <SpaceInvitationMessage notification={createNotification({ state: UserNotification_SpaceInvitationPayload_State.PENDING })} />,
+      <SpaceInvitationMessage
+        notification={createNotification({ state: UserNotification_SpaceInvitationPayload_InvitationState.PENDING })}
+      />,
     );
 
     fireEvent.click(screen.getByRole("button", { name: "common.archive" }));
@@ -153,7 +167,11 @@ describe("SpaceInvitationMessage", () => {
     unmount();
 
     state.archiveNotification.mockRejectedValueOnce(new Error("offline"));
-    render(<SpaceInvitationMessage notification={createNotification({ state: UserNotification_SpaceInvitationPayload_State.PENDING })} />);
+    render(
+      <SpaceInvitationMessage
+        notification={createNotification({ state: UserNotification_SpaceInvitationPayload_InvitationState.PENDING })}
+      />,
+    );
     fireEvent.click(screen.getByRole("button", { name: "common.archive" }));
     await waitFor(() => expect(state.toastError).toHaveBeenCalled());
   });
@@ -163,7 +181,7 @@ describe("SpaceInvitationMessage", () => {
     render(
       <SpaceInvitationMessage
         notification={createNotification({
-          state: UserNotification_SpaceInvitationPayload_State.ACCEPTED,
+          state: UserNotification_SpaceInvitationPayload_InvitationState.ACCEPTED,
           status: UserNotification_Status.ARCHIVED,
         })}
       />,

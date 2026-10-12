@@ -17,6 +17,8 @@ import UserAvatar from "../UserAvatar";
 import LinkedIdentitySection from "./LinkedIdentitySection";
 import SettingGroup from "./SettingGroup";
 import SettingSection from "./SettingSection";
+import UsageSection from "./UsageSection";
+import UserStatsSection from "./UserStatsSection";
 
 const MyAccountSection = () => {
   const t = useTranslate();
@@ -46,7 +48,7 @@ const MyAccountSection = () => {
     <SettingSection title={t("setting.my-account.label")}>
       <SettingGroup title={t("setting.account.title")}>
         <div className="w-full flex flex-row flex-wrap justify-start items-center gap-3">
-          <UserAvatar className="shrink-0 w-12 h-12" avatarUrl={user?.avatarUrl} />
+          <UserAvatar className="shrink-0 w-12 h-12" avatarUrl={user?.avatarUrl} name={user?.displayName || user?.username} />
           <div className="flex-1 min-w-40 flex flex-col justify-center items-start gap-1">
             <div className="w-full">
               <span className="text-lg font-semibold">{user?.displayName}</span>
@@ -66,6 +68,10 @@ const MyAccountSection = () => {
           </div>
         </div>
       </SettingGroup>
+
+      <UserStatsSection />
+
+      <UsageSection />
 
       <LinkedIdentitySection />
 

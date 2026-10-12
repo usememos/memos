@@ -18,9 +18,9 @@ func TestMemoRelationMutationRevalidatesRelatedMemo(t *testing.T) {
 
 	spaceOwner, err := ts.CreateUser(ctx, &store.User{Username: "relation-space-owner", Role: store.RoleUser, PasswordHash: "hash"})
 	require.NoError(t, err)
-	// An application ADMIN deliberately acts as the source author. The instance
-	// role must not bypass the related memo's current Space audience.
-	actor, err := ts.CreateUser(ctx, &store.User{Username: "relation-app-admin", Role: store.RoleAdmin, PasswordHash: "hash"})
+	// A regular user acts as the source author, so the related memo's current
+	// Space audience is revalidated on every mutation.
+	actor, err := ts.CreateUser(ctx, &store.User{Username: "relation-space-user", Role: store.RoleUser, PasswordHash: "hash"})
 	require.NoError(t, err)
 	space, err := ts.CreateSpace(ctx, &store.Space{UID: shortuuid.New(), Title: "Relations"}, spaceOwner.ID)
 	require.NoError(t, err)

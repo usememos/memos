@@ -30,7 +30,27 @@ interface Props {
   edge?: "start" | "end";
   /** Accessible name; defaults to the sidebar's. */
   label?: string;
+  /** `line` for a divider between two panes; `grip` for a floating card's edge. */
+  appearance?: keyof typeof INDICATORS;
 }
+
+/**
+ * What the 8px strip shows. `line` is a 2px band centring to whole pixels inside the strip, so
+ * it covers the rail's border and stays crisp at 1x. `grip` is a short pill astride the edge,
+ * like the sheet's grab handle sits on its top, fading in only for a pointer over the strip.
+ */
+const INDICATORS = {
+  line: {
+    base: "h-full w-0.5 transition-colors",
+    dragging: "bg-primary/70",
+    rest: "bg-transparent group-hover:bg-border group-focus-visible:bg-primary/70",
+  },
+  grip: {
+    base: "h-8 w-1 rounded-full transition-[background-color,opacity] duration-150",
+    dragging: "bg-primary/70 opacity-100",
+    rest: "bg-muted-foreground/50 opacity-0 group-hover:opacity-100 group-focus-visible:bg-primary/70 group-focus-visible:opacity-100",
+  },
+} as const;
 
 const SidebarResizeHandle = ({
   width,
@@ -42,9 +62,11 @@ const SidebarResizeHandle = ({
   defaultWidth = SIDEBAR_DEFAULT_WIDTH,
   edge = "end",
   label,
+  appearance = "line",
 }: Props) => {
   const t = useTranslate();
   const direction = useDirection();
+  const indicator = INDICATORS[appearance];
   // Pointer and arrow deltas grow the rail when they move toward its far side: rightward for an
   // end-edge handle in LTR, leftward for a start-edge one; RTL mirrors both.
   const growSign = (edge === "end" ? 1 : -1) * (direction === "rtl" ? -1 : 1);
@@ -170,18 +192,11 @@ const SidebarResizeHandle = ({
       onDoubleClick={() => onWidthChange(defaultWidth)}
       onKeyDown={handleKeyDown}
       className={cn(
-        "group absolute inset-y-0 z-10 flex w-2 cursor-col-resize touch-none justify-center focus-visible:outline-none",
+        "group absolute inset-y-0 z-10 flex w-2 cursor-col-resize touch-none items-center justify-center focus-visible:outline-none",
         edge === "end" ? "-end-1" : "-start-1",
       )}
     >
-      {/* A 2px band centering to whole pixels inside the 8px strip, so it covers the rail's
-          border and stays crisp at 1x instead of antialiasing across a half-pixel seam. */}
-      <div
-        className={cn(
-          "h-full w-0.5 transition-colors",
-          dragging ? "bg-primary/70" : "bg-transparent group-hover:bg-border group-focus-visible:bg-primary/70",
-        )}
-      />
+      <div className={cn(indicator.base, dragging ? indicator.dragging : indicator.rest)} />
     </div>
   );
 };

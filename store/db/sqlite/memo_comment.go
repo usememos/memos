@@ -22,18 +22,14 @@ func authorizeSQLiteMemoComment(ctx context.Context, tx dbExecutor, contextMemoI
 // loadSQLiteMemoParticipation resolves the current actor, Space, membership,
 // and memo state shared by comment and reaction participation.
 func loadSQLiteMemoParticipation(ctx context.Context, tx dbExecutor, memoID, actorUserID int32) (*store.MemoCommentAuthorizationSnapshot, error) {
-	snapshot := &store.MemoCommentAuthorizationSnapshot{ActorUserID: actorUserID, ContextID: memoID}
-	var actorStatus store.RowStatus
-	if err := tx.QueryRowContext(ctx, "SELECT row_status FROM user WHERE id = ?", actorUserID).Scan(&actorStatus); err != nil {
-		if stderrors.Is(err, sql.ErrNoRows) {
-			return nil, store.ErrMemoPermissionDenied
-		}
+	actor, err := readSQLiteMemoActor(ctx, tx, actorUserID)
+	if err != nil {
 		return nil, err
 	}
-	snapshot.ActorActive = actorStatus == store.Normal
+	snapshot := &store.MemoCommentAuthorizationSnapshot{ActorUserID: actorUserID, Actor: actor, ContextID: memoID}
 
 	var contextSpace sql.NullInt64
-	err := tx.QueryRowContext(ctx, `SELECT creator_id, row_status, visibility, space_id FROM memo WHERE id = ?`, memoID).Scan(
+	err = tx.QueryRowContext(ctx, `SELECT creator_id, row_status, visibility, space_id FROM memo WHERE id = ?`, memoID).Scan(
 		&snapshot.ContextCreatorID, &snapshot.ContextRowStatus, &snapshot.ContextVisibility, &contextSpace,
 	)
 	if err != nil {
@@ -47,6 +43,9 @@ func loadSQLiteMemoParticipation(ctx context.Context, tx dbExecutor, memoID, act
 			snapshot.ContextSpaceExists = exists
 		} else if !stderrors.Is(err, sql.ErrNoRows) {
 			return nil, err
+		}
+		if actor.Admin {
+			return snapshot, nil
 		}
 		if snapshot.ContextMemberActive, err = sqliteSpaceMemberActive(ctx, tx, *snapshot.ContextSpaceID, actorUserID); err != nil {
 			return nil, err

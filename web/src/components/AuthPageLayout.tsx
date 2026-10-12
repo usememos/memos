@@ -2,7 +2,7 @@ import { ArrowRightIcon, CompassIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useInstance } from "@/contexts/InstanceContext";
 import { ROUTES } from "@/router/routes";
-import { InstanceAccessMode } from "@/types/proto/api/v1/instance_service_pb";
+import { InstanceAccessMode } from "@/types/proto/api/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import AuthFooter from "./AuthFooter";
 

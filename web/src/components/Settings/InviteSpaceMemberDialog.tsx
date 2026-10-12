@@ -12,7 +12,7 @@ import { useCreateSpaceInvitation } from "@/hooks/useSpaceQueries";
 import { useUsersByUsernames } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
 import { extractSpaceUidFromName } from "@/lib/space-display";
-import { type Space, SpaceInvitationSchema, SpaceMember_Role } from "@/types/proto/api/v1/space_service_pb";
+import { type Space, SpaceInvitationSchema, SpaceMember_Role } from "@/types/proto/api/space_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 const LOOKUP_DELAY_MS = 300;
@@ -149,7 +149,7 @@ const InviteSpaceMemberDialog = ({ open, onOpenChange, space, viewerName, member
                     : "flex w-full items-center gap-3 rounded-lg border border-border px-3 py-2 text-left transition-colors hover:bg-muted/40 disabled:cursor-not-allowed disabled:opacity-60"
                 }
               >
-                <UserAvatar className="size-8 rounded-lg" avatarUrl={candidate.avatarUrl} />
+                <UserAvatar className="size-8" avatarUrl={candidate.avatarUrl} name={candidate.displayName || candidate.username} />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium">{candidate.displayName || `@${candidate.username}`}</p>
                   <p className="truncate text-xs text-muted-foreground">

@@ -56,7 +56,7 @@ MemoEditor/
 │   └── ...                     # Heading/list/viewport decorations, editor.css
 ├── formatting/
 │   └── commands.ts         # Backend-agnostic catalog of formatting verbs
-├── Toolbar/                # EditorToolbar, FormattingToolbar, InsertMenu, VisibilitySelector
+├── Toolbar/                # EditorToolbar, FormattingToolbar, InsertMenu, AudienceMenu
 ├── constants.ts
 └── types/                  # EditorController / FormattingController, component props,
                             #   attachment and insert-menu types
@@ -86,7 +86,7 @@ A reducer (`state/reducer.ts`) drives an **external store**, not a `useReducer` 
 
 ### Editor extensions
 
-`Editor/extensions.ts` exports `buildEditorExtensions()`, which composes the CodeMirror extension set: `@codemirror/lang-markdown` (with GFM), line wrapping, a reconfigurable placeholder, the editor theme, the `#tag`/`@mention` decoration plugin, the `#tag` autocomplete, and an update listener that pushes document changes back to the reducer via `onChange`. It also binds the save shortcut: `Meta-Enter` and `Ctrl-Enter` both call `onSubmit`, bound explicitly rather than through the platform-dependent `Mod-` so either works everywhere, and ordered ahead of `defaultKeymap`'s own `Mod-Enter` (`insertBlankLine`) so saving never also edits the document. Native CodeMirror paste/drop handlers intercept file payloads before its text insertion behavior and pass them to the attachment layer; ordinary markdown text paste/drop remains CodeMirror-owned.
+`Editor/extensions.ts` exports `buildEditorExtensions()`, which composes the CodeMirror extension set: `@codemirror/lang-markdown` (with GFM), line wrapping, a reconfigurable placeholder, the editor theme, the `#tag`/`@mention` decoration plugin, the `#tag` autocomplete, and an update listener that pushes document changes back to the reducer via `onChange`. It also binds the save shortcut: `Meta-Enter` and `Ctrl-Enter` both call `onSubmit`, bound explicitly rather than through the platform-dependent `Mod-` so either works everywhere, and ordered ahead of `defaultKeymap`'s own `Mod-Enter` (`insertBlankLine`) so saving never also edits the document. Native CodeMirror paste/drop handlers intercept file payloads before its text insertion behavior: pasted files join the attachment list (a paste carries no placement gesture, so it never writes into the text), while dropped images are inserted inline at the drop point and other dropped files are attached. Ordinary markdown text paste/drop remains CodeMirror-owned.
 
 The app formatting keymap sits ahead of CodeMirror's generic `defaultKeymap`: `Mod-B`/`Mod-I` toggle bold/italic, `Mod-Shift-S` toggles strikethrough, `Mod-E` toggles inline code, `Mod-Alt-C` toggles a code block, `Mod-Alt-0` restores paragraph text, `Mod-Alt-1` through `Mod-Alt-3` select heading levels, and `Mod-Shift-7` through `Mod-Shift-9` toggle ordered, bullet, and task lists. CodeMirror's Markdown keymap remains enabled separately for structural `Enter` and `Backspace` behavior.
 
@@ -98,12 +98,36 @@ The app formatting keymap sits ahead of CodeMirror's generic `defaultKeymap`: `M
 
 - `Editor/markdownTagRanges.ts` adapts the CodeMirror syntax tree into literal-source ranges, excluding links, code, math, raw HTML syntax, escapes, and entities before calling the shared scanner.
 - `Editor/tagMentionDecorations.ts` decorates the tag matches returned by that adapter; mention recognition remains separate.
-- `Editor/tagAutocomplete.ts` reuses the same adapter for the tag ending at the cursor and offers known tags from `useTagCounts`.
+- `Editor/tagAutocomplete.ts` scans the raw input at the cursor and offers known tags from `useTagCounts`, including inside code, links, and escapes. Bare `#` offers all tags except at an opening heading marker (manual completion still works there). Nested paths match by prefix, path segment, or substring, including an unfinished child after `/`.
 - `@/utils/remark-plugins/remark-tag` is the read-only renderer's Markdown AST adapter to the same scanner.
 
 ### Services
 
 Pure TypeScript functions containing business logic. No React hooks, easy to test.
+
+### Suggestions
+
+Hosts of a new top-level memo (Home, the global composer) pass `useMemoSuggestions()`
+into the `suggestions` prop; edits and comments omit the bar. `lib/memo-suggestions.ts`
+merges typed candidates from providers and keeps the strongest source per id
+(selection, then search, then the selected View). `lib/suggestion-expression.ts` is a
+small Boolean CEL reader shared by the providers; unsupported syntax never falls back
+to scanning free text.
+
+- Tags: explicit tag conditions and selected tags. `insertTag()` is one isolated undo
+  step at the caret that keeps selected text and honors the current Markdown context.
+- Checklist: task-list conditions in saved Views or filters; a negative
+  task-list or incomplete-task condition suppresses it.
+- Visibility: exactly one explicit audience across filters and View, otherwise nothing.
+  Space visibility also requires actual Space placement.
+
+`EditorSuggestions` hides until the draft has text, drops suggestions already satisfied
+(via the Markdown-aware `getTags()` / `hasChecklist()`, so code examples do not count)
+or already accepted, and shows at most three across kinds. Acceptance history lives in
+the editor store so Undo or reverting a choice does not immediately resuggest it, and it
+clears with the draft on reset; nothing is persisted with the memo. `SuggestionsBar` is
+payload-agnostic; a new kind extends the `MemoSuggestion` union and its
+eligibility/application in `EditorSuggestions`.
 
 ### Presentation: inline vs hosted
 
@@ -113,6 +137,10 @@ Every instance is one of two things, and `onFocusModeExit` is the switch:
 - **Hosted** (prop supplied) — a host presents the editor full-screen and owns that frame; `contexts/GlobalMemoEditorContext.tsx` is the one today. The editor mounts straight into focus mode and exits by calling back to dismiss the host, so the formatting toolbar's trailing button reads as Close rather than minimize. The ＋ menu's view toggles are absent: focus mode is not the editor's to leave, and it already forces the formatting toolbar on.
 
 Those toggles travel as a single optional `viewToggles` object (`types/components.ts`) down `EditorToolbar` → `InsertMenu`, so they can only appear or disappear together.
+
+### Destination and visibility
+
+`AudienceMenu` is one dropdown for a memo's visibility and, where allowed, its Space. Visibility options come first; the Space is an optional row below them that never names the empty state: it reads "Add to space" until one is chosen, then shows the Space, and the selected Space in its submenu toggles back off (a check at rest, an ✕ under the pointer or keyboard, always an ✕ on touch). New top-level memos and edits of top-level memos the user can manage offer the row; a host-provided `defaultSpace` fixes a new memo's placement, and comments never offer it because their Space is the parent's. The destination lives in editor metadata: it is sent on creation, and an edit that changes it sends `space` and `visibility` together so the server can validate the move as one transition. Clearing a Space-only audience resets it to Private; adding a Space never changes the audience. Drafts retain destination and visibility alongside content, attachments, and location. Long names are truncated, with their full text retained for accessible labels and hover titles. Moving a memo between Spaces happens here; there is no separate move dialog.
 
 ### Lifecycle hooks
 

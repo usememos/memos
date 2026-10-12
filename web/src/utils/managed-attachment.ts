@@ -4,7 +4,7 @@ import { gfmFromMarkdown } from "mdast-util-gfm";
 import { gfm } from "micromark-extension-gfm";
 import { normalizeIdentifier } from "micromark-util-normalize-identifier";
 import { visit } from "unist-util-visit";
-import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
+import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import { getAttachmentMotionGroupId, getAttachmentUrl, isImage } from "@/utils/attachment";
 
 const ATTACHMENT_NAME_PREFIX = "attachments/";
@@ -25,7 +25,7 @@ interface ManagedImageIndex {
 }
 
 /**
- * Mirrors the server's three-way classification in `internal/markdown`: a URL is
+ * Mirrors the server's three-way classification in `markdown`: a URL is
  * either none of our business, a managed reference, or a managed reference the
  * API refuses. Collapsing the last two would leave the editor unable to warn
  * about content that cannot be saved.

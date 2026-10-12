@@ -1,6 +1,7 @@
 package webhook
 
 import (
+	"context"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
@@ -39,6 +40,14 @@ func TestConfigurePrivateDestinationAllowlist(t *testing.T) {
 		require.NoError(t, ConfigurePrivateDestinationAllowlist([]string{"127.0.0.42"}))
 		require.NoError(t, ValidateURL("http://127.0.0.42/hook"))
 		require.Error(t, ValidateURL("http://127.0.0.43/hook"))
+	})
+
+	t.Run("CGNAT requires an explicit allowlist entry", func(t *testing.T) {
+		resetPrivateDestinationPolicy(t)
+		require.Error(t, ValidateURL("http://100.100.100.200/hook"))
+		require.NoError(t, ConfigurePrivateDestinationAllowlist([]string{"100.100.100.200"}))
+		require.NoError(t, ValidateURL("http://100.100.100.200/hook"))
+		require.Error(t, ValidateURL("http://100.100.100.201/hook"))
 	})
 
 	t.Run("CIDR is normalized and allowed", func(t *testing.T) {
@@ -125,7 +134,7 @@ func TestPostChecksRedirectDestinationAtDialTime(t *testing.T) {
 	defer redirectSource.Close()
 
 	sourceURL := strings.Replace(redirectSource.URL, "127.0.0.1", "localhost", 1)
-	err := Post(&WebhookRequestPayload{URL: sourceURL})
+	err := Post(&Request{URL: sourceURL})
 	require.ErrorContains(t, err, "connection to reserved/private IP address is not allowed")
 	require.False(t, redirectedRequestReceived.Load())
 }
@@ -149,7 +158,7 @@ func TestPostAllowsExplicitPrivateIPPolicyAtDialTime(t *testing.T) {
 			}))
 			defer server.Close()
 
-			require.NoError(t, Post(&WebhookRequestPayload{URL: server.URL}))
+			require.NoError(t, Post(&Request{URL: server.URL}))
 		})
 	}
 }
@@ -255,10 +264,9 @@ func TestPostSignsRequest(t *testing.T) {
 			}))
 			defer server.Close()
 
-			err := Post(&WebhookRequestPayload{
+			err := Post(&Request{
 				URL:           server.URL,
-				ActivityType:  "memos.memo.created",
-				Creator:       "users/1",
+				Label:         "memos.memo.created",
 				SigningSecret: tc.secret,
 			})
 			require.NoError(t, err)
@@ -292,10 +300,9 @@ func TestPostWithoutSecretSetsNoSignatureHeaders(t *testing.T) {
 	}))
 	defer server.Close()
 
-	err := Post(&WebhookRequestPayload{
-		URL:          server.URL,
-		ActivityType: "memos.memo.created",
-		Creator:      "users/1",
+	err := Post(&Request{
+		URL:   server.URL,
+		Label: "memos.memo.created",
 	})
 	require.NoError(t, err)
 	require.False(t, hasSignatureHeaders, "no signature headers should be set when no secret is configured")
@@ -316,10 +323,9 @@ func TestPostRejectsUnspecifiedAddressDestination(t *testing.T) {
 	_, port, err := net.SplitHostPort(strings.TrimPrefix(server.URL, "http://"))
 	require.NoError(t, err)
 
-	err = Post(&WebhookRequestPayload{
-		URL:          "http://0.0.0.0:" + port,
-		ActivityType: "memos.memo.created",
-		Creator:      "users/1",
+	err = Post(&Request{
+		URL:   "http://0.0.0.0:" + port,
+		Label: "memos.memo.created",
 	})
 	require.Error(t, err)
 	require.False(t, receivedRequest.Load(), "the webhook must not reach a local service through the unspecified address")
@@ -332,4 +338,38 @@ func TestValidateURLRejectsUnspecifiedAddress(t *testing.T) {
 
 	require.Error(t, ValidateURL("http://0.0.0.0:8080/hook"))
 	require.Error(t, ValidateURL("http://[::]:8080/hook"))
+}
+
+func TestValidateURLCGNAT(t *testing.T) {
+	resetPrivateDestinationPolicy(t)
+	tests := []struct {
+		ip      string
+		blocked bool
+	}{
+		{"100.63.255.255", false},
+		{"100.64.0.0", true},
+		{"100.100.100.200", true},
+		{"100.127.255.255", true},
+		{"100.128.0.0", false},
+		{"::ffff:100.64.0.0", true},
+		{"::ffff:100.100.100.200", true},
+		{"::ffff:100.127.255.255", true},
+		{"::ffff:100.128.0.0", false},
+	}
+	for _, tc := range tests {
+		t.Run(tc.ip, func(t *testing.T) {
+			address := net.JoinHostPort(tc.ip, "80")
+			err := ValidateURL("http://" + address + "/hook")
+			if tc.blocked {
+				require.ErrorContains(t, err, "must not resolve to a reserved or private IP address")
+				// Cancellation prevents any network connection if the guard regresses.
+				ctx, cancel := context.WithCancel(context.Background())
+				cancel()
+				_, err = safeDialContext(ctx, "tcp", address)
+				require.ErrorContains(t, err, "connection to reserved/private IP address is not allowed")
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
 }

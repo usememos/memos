@@ -18,7 +18,7 @@ type execer interface {
 
 func insertUser(ctx context.Context, e execer, create *store.User) (sql.Result, error) {
 	stmt := "INSERT INTO user (`username`, `role`, `email`, `nickname`, `password_hash`, `avatar_url`) VALUES (?, ?, ?, ?, ?, ?)"
-	return e.ExecContext(ctx, stmt, create.Username, create.Role, create.Email, create.Nickname, create.PasswordHash, create.AvatarURL)
+	return e.ExecContext(ctx, stmt, create.Username, create.Role, nullableEmail(create.Email), create.Nickname, create.PasswordHash, create.AvatarURL)
 }
 
 func insertUserIdentity(ctx context.Context, e execer, create *store.UserIdentity) (sql.Result, error) {
@@ -67,6 +67,7 @@ func (d *DB) CreateUserWithIdentity(ctx context.Context, createUser *store.User,
 	createUser.ID = int32(rawUserID)
 	// RETURNING is unavailable on MySQL, so read back the complete stored row
 	// within the same transaction before adding it to the user cache.
+	var email sql.NullString
 	if err := tx.QueryRowContext(
 		ctx,
 		"SELECT `id`, `username`, `role`, `email`, `nickname`, `password_hash`, `avatar_url`, `description`, UNIX_TIMESTAMP(`created_ts`), UNIX_TIMESTAMP(`updated_ts`), `row_status` FROM `user` WHERE `id` = ?",
@@ -75,7 +76,7 @@ func (d *DB) CreateUserWithIdentity(ctx context.Context, createUser *store.User,
 		&createUser.ID,
 		&createUser.Username,
 		&createUser.Role,
-		&createUser.Email,
+		&email,
 		&createUser.Nickname,
 		&createUser.PasswordHash,
 		&createUser.AvatarURL,
@@ -86,6 +87,7 @@ func (d *DB) CreateUserWithIdentity(ctx context.Context, createUser *store.User,
 	); err != nil {
 		return nil, errors.Wrap(err, "failed to read created user")
 	}
+	createUser.Email = email.String
 
 	createIdentity.UserID = createUser.ID
 	if _, err := insertUserIdentity(ctx, tx, createIdentity); err != nil {

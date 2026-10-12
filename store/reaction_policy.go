@@ -44,7 +44,7 @@ func ValidateReactionWithdrawal(reaction *Reaction, snapshot *MemoCommentAuthori
 	if snapshot.ActorUserID != reaction.Policy.ActorUserID {
 		return ErrReactionPermissionDenied
 	}
-	if !snapshot.ActorActive {
+	if !snapshot.Actor.Active {
 		return ErrReactionPermissionDenied
 	}
 	if snapshot.ContextID != reaction.MemoID {

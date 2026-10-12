@@ -86,7 +86,7 @@ describe("Quick Find", () => {
         { factor: "displayTime", value: "2026-08-03" },
         { factor: "contentSearch", value: "project" },
       ],
-      destination: "/?filter=tagSearch%3Awork%2CdisplayTime%3A2026-08-03%2CcontentSearch%3Aproject",
+      destination: "/explore?filter=tagSearch%3Awork%2CdisplayTime%3A2026-08-03%2CcontentSearch%3Aproject",
     });
   });
 
@@ -97,18 +97,7 @@ describe("Quick Find", () => {
         { factor: "displayTime", value: "2026-08-03" },
         { factor: "contentSearch", value: "project" },
       ],
-      destination: "/?filter=tagSearch%3Awork%2CdisplayTime%3A2026-08-03%2CcontentSearch%3Aproject",
-    });
-  });
-
-  it("keeps Profile search on the Profile and returns its map tab to the memo list", () => {
-    expect(resolveQuickFindSubmission("/u/steven", "project", scopedFilters, "text")).toEqual({
-      filters: [
-        { factor: "tagSearch", value: "work" },
-        { factor: "displayTime", value: "2026-08-03" },
-        { factor: "contentSearch", value: "project" },
-      ],
-      destination: "/u/steven?filter=tagSearch%3Awork%2CdisplayTime%3A2026-08-03%2CcontentSearch%3Aproject",
+      destination: "/explore?filter=tagSearch%3Awork%2CdisplayTime%3A2026-08-03%2CcontentSearch%3Aproject",
     });
   });
 
@@ -123,7 +112,7 @@ describe("Quick Find", () => {
   ])("starts a clean All search from %s", (pathname) => {
     expect(resolveQuickFindSubmission(pathname, "project", scopedFilters, "text")).toEqual({
       filters: [{ factor: "contentSearch", value: "project" }],
-      destination: "/?filter=contentSearch%3Aproject",
+      destination: "/explore?filter=contentSearch%3Aproject",
     });
   });
 

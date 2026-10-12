@@ -29,6 +29,9 @@ func (d *DB) DeleteUser(ctx context.Context, delete *store.DeleteUser) (*store.D
 	defer func() {
 		_ = tx.Rollback()
 	}()
+	if err := ensureInstanceAdminRetained(ctx, tx, delete.ID); err != nil {
+		return nil, err
+	}
 	var userID int32
 	if err := tx.QueryRowContext(ctx, "SELECT id FROM user WHERE id = ?", delete.ID).Scan(&userID); errors.Is(err, sql.ErrNoRows) {
 		return &store.DeleteUserResult{}, nil

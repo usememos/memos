@@ -1,5 +1,7 @@
 import { useDirection } from "@base-ui/react/direction-provider";
 import { type ReactNode, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { cn } from "@/lib/utils";
+import { useColumnGridUntrapped } from "./ColumnGridContext";
 
 interface ColumnGridProps<T> {
   items: T[];
@@ -85,6 +87,7 @@ function ColumnGrid<T>({
   maxColumnWidth,
 }: ColumnGridProps<T>) {
   const direction = useDirection();
+  const { untrappedKeys } = useColumnGridUntrapped();
   const containerRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const refCallbacks = useRef<Map<string, (el: HTMLDivElement | null) => void>>(new Map());
@@ -187,13 +190,14 @@ function ColumnGrid<T>({
     for (const { key, el } of ordered) {
       const target = pos.get(key);
       if (!target) continue;
-      // The leading tile (the note composer) is positioned with left/top rather than a
-      // transform so it never becomes the containing block for its own position:fixed
-      // descendants. A transform (or will-change:transform) here would trap the editor's
-      // focus-mode overlay — which is meant to cover the viewport — inside this column tile.
-      // The leading tile is pinned to column one's top and only shifts horizontally on
-      // resize (which snaps anyway), so it loses no animation by skipping the transform.
-      if (key === LEADING_KEY) {
+      // Untrapped tiles are positioned with left/top rather than a transform so they never
+      // become the containing block for their own position:fixed descendants. A transform
+      // (or will-change:transform) would trap the editor's focus-mode overlay — which is
+      // meant to cover the viewport — inside this column tile. The leading composer tile
+      // always opts out; a memo tile opts out while its inline editor is in focus mode. Both
+      // are pinned horizontally and only shift on resize (which snaps anyway), so neither
+      // loses an animation that matters.
+      if (key === LEADING_KEY || untrappedKeys.has(key)) {
         el.style.transition = "none";
         el.style.transform = "";
         el.style.left = `${target.x}px`;
@@ -202,10 +206,13 @@ function ColumnGrid<T>({
       }
       el.style.transition = "none";
       el.style.transform = `translate3d(${target.x}px, ${target.y}px, 0)`;
+      // Clear any left/top left behind by a previous untrapped stint.
+      el.style.left = "";
+      el.style.top = "";
     }
 
     setContainerHeight(Math.max(0, ...columnY.map((h) => h - GRID_GAP)));
-  }, [items, getKey, estimateHeight, priorityKey, maxColumns, maxColumnWidth, direction]);
+  }, [items, getKey, estimateHeight, priorityKey, maxColumns, maxColumnWidth, direction, untrappedKeys]);
 
   // Keep a stable reference so observer callbacks always run the latest layout.
   const relayoutRef = useRef(relayout);
@@ -299,12 +306,16 @@ function ColumnGrid<T>({
       )}
       {items.map((item) => {
         const key = getKey(item);
+        const isUntrapped = untrappedKeys.has(key);
         return (
           <div
             key={key}
             ref={getItemRef(key)}
-            className="absolute top-0 left-0 transition-transform duration-200 ease-out motion-reduce:transition-none"
-            style={{ willChange: "transform" }}
+            className={cn(
+              "absolute top-0 left-0",
+              !isUntrapped && "transition-transform duration-200 ease-out motion-reduce:transition-none",
+            )}
+            style={isUntrapped ? undefined : { willChange: "transform" }}
           >
             {renderItem(item)}
           </div>

@@ -29,6 +29,9 @@ func (d *DB) DeleteUser(ctx context.Context, delete *store.DeleteUser) (*store.D
 	defer func() {
 		_ = tx.Rollback()
 	}()
+	if err := ensureInstanceAdminRetained(ctx, tx, delete.ID); err != nil {
+		return nil, err
+	}
 	var userID int32
 	// Relationship creation locks this same parent row before inserting or
 	// activating a membership, preventing either transaction from leaving an orphan.

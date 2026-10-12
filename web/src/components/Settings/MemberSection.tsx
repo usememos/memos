@@ -14,8 +14,8 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import { useDialog } from "@/hooks/useDialog";
 import { useDeleteUser, useListUsers } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
-import { State } from "@/types/proto/api/v1/common_pb";
-import { User, User_Role } from "@/types/proto/api/v1/user_service_pb";
+import { State } from "@/types/proto/api/common_pb";
+import { User, User_Role } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import CreateUserDialog from "../CreateUserDialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
@@ -123,7 +123,7 @@ const MemberSection = () => {
             header: t("setting.member.member-column"),
             render: (_, user: User) => (
               <div className="flex min-w-[18rem] items-start gap-3">
-                <UserAvatar className="h-10 w-10 shrink-0 rounded-xl" avatarUrl={user.avatarUrl} />
+                <UserAvatar className="h-10 w-10 shrink-0" avatarUrl={user.avatarUrl} name={user.displayName || user.username} />
                 <div className="flex min-w-0 flex-1 flex-col">
                   <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                     <span

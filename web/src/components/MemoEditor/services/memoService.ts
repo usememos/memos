@@ -3,11 +3,12 @@ import { FieldMaskSchema, timestampDate, timestampFromDate } from "@bufbuild/pro
 import { isEqual } from "lodash-es";
 import { getEditorReferenceRelations } from "@/components/MemoMetadata/Relation/relationHelpers";
 import { memoServiceClient } from "@/connect";
-import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
-import { AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
-import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
-import { MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
+import type { Attachment } from "@/types/proto/api/attachment_service_pb";
+import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
+import type { Memo } from "@/types/proto/api/memo_service_pb";
+import { MemoSchema } from "@/types/proto/api/memo_service_pb";
 import type { EditorState } from "../state";
+import type { LocalFile } from "../types/attachment";
 import { uploadService } from "./uploadService";
 
 /**
@@ -35,6 +36,14 @@ function buildUpdateMask(
   }
   if (!isEqual(state.metadata.visibility, prevMemo.visibility)) {
     mask.add("visibility");
+    patch.visibility = state.metadata.visibility;
+  }
+  // Placement and audience are validated together: a move always states the
+  // audience it lands with, so a Space-only audience never follows it implicitly.
+  if ((state.metadata.space || undefined) !== (prevMemo.space || undefined)) {
+    mask.add("space");
+    mask.add("visibility");
+    patch.space = state.metadata.space ?? "";
     patch.visibility = state.metadata.visibility;
   }
   if (!isEqual(allAttachments, prevMemo.attachments)) {
@@ -83,10 +92,12 @@ export const memoService = {
       memoName?: string;
       parentMemoName?: string;
       space?: string;
+      /** Runs as each local file finishes uploading, before the memo is saved. */
+      onFileUploaded?: (localFile: LocalFile, attachment: Attachment) => void;
     },
-  ): Promise<{ memoName: string; hasChanges: boolean }> {
+  ): Promise<{ memoName: string; hasChanges: boolean; moved?: boolean }> {
     // 1. Upload local files first
-    const newAttachments = await uploadService.uploadFiles(state.localFiles);
+    const newAttachments = await uploadService.uploadFiles(state.localFiles, options.onFileUploaded);
     const allAttachments = [...state.metadata.attachments, ...newAttachments];
 
     // 2. Update existing memo
@@ -102,7 +113,7 @@ export const memoService = {
         memo: create(MemoSchema, patch as Record<string, unknown>),
         updateMask: create(FieldMaskSchema, { paths: Array.from(mask) }),
       });
-      return { memoName: memo.name, hasChanges: true };
+      return { memoName: memo.name, hasChanges: true, moved: mask.has("space") };
     }
 
     // 3. Create new memo or comment
@@ -114,12 +125,12 @@ export const memoService = {
       location: state.metadata.location,
       createTime: state.timestamps.createTime ? timestampFromDate(state.timestamps.createTime) : undefined,
       updateTime: state.timestamps.updateTime ? timestampFromDate(state.timestamps.updateTime) : undefined,
-      space: options.parentMemoName ? undefined : options.space,
+      space: options.parentMemoName ? undefined : (options.space ?? state.metadata.space),
     });
 
     const memo = options.parentMemoName
       ? await memoServiceClient.createMemoComment({
-          name: options.parentMemoName,
+          parent: options.parentMemoName,
           comment: memoData,
         })
       : await memoServiceClient.createMemo({ memo: memoData });
@@ -137,6 +148,7 @@ export const memoService = {
       content: memo.content,
       metadata: {
         visibility: memo.visibility,
+        space: memo.space || undefined,
         attachments: memo.attachments,
         relations: memo.relations,
         location: memo.location,

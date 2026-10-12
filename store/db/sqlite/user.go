@@ -2,6 +2,7 @@ package sqlite
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"strings"
 
@@ -23,6 +24,11 @@ func (d *DB) UpdateUser(ctx context.Context, update *store.UpdateUser) (*store.U
 		return nil, err
 	}
 	defer func() { _ = tx.Rollback() }()
+	if update.RemovesInstanceAdmin() {
+		if err := ensureInstanceAdminRetained(ctx, tx, update.ID); err != nil {
+			return nil, err
+		}
+	}
 	if update.RowStatus != nil && *update.RowStatus == store.Archived {
 		if err := validateSQLiteUserArchive(ctx, tx, update.ID); err != nil {
 			return nil, err
@@ -39,7 +45,7 @@ func (d *DB) UpdateUser(ctx context.Context, update *store.UpdateUser) (*store.U
 		set, args = append(set, "username = ?"), append(args, *v)
 	}
 	if v := update.Email; v != nil {
-		set, args = append(set, "email = ?"), append(args, *v)
+		set, args = append(set, "email = ?"), append(args, nullableEmail(*v))
 	}
 	if v := update.Nickname; v != nil {
 		set, args = append(set, "nickname = ?"), append(args, *v)
@@ -65,11 +71,12 @@ func (d *DB) UpdateUser(ctx context.Context, update *store.UpdateUser) (*store.U
 		RETURNING id, username, role, email, nickname, password_hash, avatar_url, description, created_ts, updated_ts, row_status
 	`
 	user := &store.User{}
+	var email sql.NullString
 	if err := tx.QueryRowContext(ctx, query, args...).Scan(
 		&user.ID,
 		&user.Username,
 		&user.Role,
-		&user.Email,
+		&email,
 		&user.Nickname,
 		&user.PasswordHash,
 		&user.AvatarURL,
@@ -80,6 +87,7 @@ func (d *DB) UpdateUser(ctx context.Context, update *store.UpdateUser) (*store.U
 	); err != nil {
 		return nil, err
 	}
+	user.Email = email.String
 	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
@@ -108,6 +116,30 @@ func validateSQLiteUserArchive(ctx context.Context, tx dbExecutor, userID int32)
 	}
 	if wouldLoseAdmin {
 		return store.ErrLastSpaceAdmin
+	}
+	return nil
+}
+
+// ensureInstanceAdminRetained refuses a mutation that would remove the last
+// active instance administrator. Mutations of ordinary users skip the admin
+// count. SQLite transactions begin IMMEDIATE, so concurrent removals
+// serialize.
+func ensureInstanceAdminRetained(ctx context.Context, tx dbExecutor, userID int32) error {
+	var role, rowStatus string
+	if err := tx.QueryRowContext(ctx, `SELECT role, row_status FROM user WHERE id = ?`, userID).Scan(&role, &rowStatus); errors.Is(err, sql.ErrNoRows) {
+		return nil
+	} else if err != nil {
+		return err
+	}
+	if role != string(store.RoleAdmin) || rowStatus != string(store.Normal) {
+		return nil
+	}
+	var adminCount int
+	if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM user WHERE role = 'ADMIN' AND row_status = 'NORMAL'`).Scan(&adminCount); err != nil {
+		return err
+	}
+	if adminCount <= 1 {
+		return store.ErrLastInstanceAdmin
 	}
 	return nil
 }
@@ -206,11 +238,12 @@ func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User
 	list := make([]*store.User, 0)
 	for rows.Next() {
 		var user store.User
+		var email sql.NullString
 		if err := rows.Scan(
 			&user.ID,
 			&user.Username,
 			&user.Role,
-			&user.Email,
+			&email,
 			&user.Nickname,
 			&user.PasswordHash,
 			&user.AvatarURL,
@@ -221,6 +254,7 @@ func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User
 		); err != nil {
 			return nil, err
 		}
+		user.Email = email.String
 		list = append(list, &user)
 	}
 
@@ -229,4 +263,14 @@ func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User
 	}
 
 	return list, nil
+}
+
+// nullableEmail maps the store's "no address" value to SQL NULL. The email
+// column is nullable so the unique index ignores users without an address;
+// an empty string must never reach the table.
+func nullableEmail(email string) any {
+	if email == "" {
+		return nil
+	}
+	return email
 }

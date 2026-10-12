@@ -13,7 +13,8 @@ var ErrMemoMutationConflict = errors.New("memo state changed")
 // MemoAttachmentBinding describes one attachment that should be bound to a
 // memo. WasBoundToMemo distinguishes an existing binding from a new one so the
 // driver can reject ownership transfers while preserving legacy rows already
-// attached to the memo.
+// attached to the memo. A new binding must be owned by the memo author, or by
+// the acting instance administrator.
 type MemoAttachmentBinding struct {
 	ID             int32
 	UID            string
@@ -42,6 +43,48 @@ type MemoMutation struct {
 	Policy                    *MemoWritePolicy
 }
 
+// MemoAttachmentBindingOwnerAllowed reports whether an unbound attachment may
+// be bound to a memo: it must be owned by the memo author, or by the acting
+// instance administrator. Ownership is never transferred between accounts.
+func MemoAttachmentBindingOwnerAllowed(attachmentCreatorID, memoCreatorID, actorUserID int32, actorIsAdmin bool) bool {
+	if attachmentCreatorID == memoCreatorID {
+		return true
+	}
+	return actorIsAdmin && attachmentCreatorID == actorUserID
+}
+
+// MemoAttachmentRemovalAllowed reports whether an attachment may be removed
+// from a memo. Removal deletes the attachment, so it must be bound to that
+// memo and owned by the actor unless the actor is an instance administrator.
+func MemoAttachmentRemovalAllowed(attachment *Attachment, memoID, actorUserID int32, actorIsAdmin bool) bool {
+	if attachment == nil || attachment.MemoID == nil || *attachment.MemoID != memoID {
+		return false
+	}
+	return actorIsAdmin || attachment.CreatorID == actorUserID
+}
+
+// WritePolicy returns the transport-facing policy governing the mutation, if
+// any: the mutation's own policy, else the one carried by its memo update.
+func (m *MemoMutation) WritePolicy() *MemoWritePolicy {
+	if m.Policy != nil {
+		return m.Policy
+	}
+	if m.MemoUpdate != nil {
+		return m.MemoUpdate.Policy
+	}
+	return nil
+}
+
+// ActorUserID returns the user performing the mutation. Transport-facing
+// updates carry the actor in their policy, which may differ from the memo
+// author when an instance administrator acts; creations act as the author.
+func (m *MemoMutation) ActorUserID() int32 {
+	if policy := m.WritePolicy(); policy != nil {
+		return policy.ActorUserID
+	}
+	return m.MemoCreatorID
+}
+
 // ApplyMemoMutation atomically applies memo fields, attachment bindings, and
 // reference relations after rechecking the state used by API validation.
 func (s *Store) ApplyMemoMutation(ctx context.Context, mutation *MemoMutation) error {
@@ -65,7 +108,8 @@ func (s *Store) ApplyMemoMutation(ctx context.Context, mutation *MemoMutation) e
 		mutation.MemoCreatorID = create.CreatorID
 		mutation.ExpectedMemoContent = create.Content
 	}
-	if err := validateMemoWritePolicy(mutation.Policy); err != nil {
+	policy := mutation.WritePolicy()
+	if err := validateMemoWritePolicy(policy); err != nil {
 		return err
 	}
 	mutation.RemovedAttachmentIDs = slices.Clone(mutation.RemovedAttachmentIDs)
@@ -81,10 +125,11 @@ func (s *Store) ApplyMemoMutation(ctx context.Context, mutation *MemoMutation) e
 		removedAttachmentIDs[attachmentID] = struct{}{}
 	}
 	for _, binding := range mutation.Bindings {
-		if binding != nil {
-			if _, removed := removedAttachmentIDs[binding.ID]; removed {
-				return errors.New("attachment cannot be both bound and removed")
-			}
+		if binding == nil {
+			return errors.New("attachment binding is required")
+		}
+		if _, removed := removedAttachmentIDs[binding.ID]; removed {
+			return errors.New("attachment cannot be both bound and removed")
 		}
 	}
 	for _, attachmentID := range mutation.RequiredAttachmentIDs {
@@ -92,7 +137,7 @@ func (s *Store) ApplyMemoMutation(ctx context.Context, mutation *MemoMutation) e
 			return errors.New("attachment cannot be both required and removed")
 		}
 	}
-	if mutation.Policy != nil && mutation.Policy.LifecycleOnly &&
+	if policy != nil && policy.LifecycleOnly &&
 		(len(mutation.Bindings) != 0 || len(mutation.RemovedAttachmentIDs) != 0 || len(mutation.RequiredAttachmentIDs) != 0 || mutation.ReplaceReferenceRelations) {
 		return ErrMemoSpaceMembershipRequired
 	}

@@ -30,6 +30,12 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Search hits in memo bodies (CSS Custom Highlight API, registered by useSearchMatchHighlight).
+     A translucent wash of the theme's amber keeps the text's own color legible on every theme. */
+  ::highlight(memo-search-match) {
+    background-color: color-mix(in oklch, var(--warning) 40%, transparent);
+  }
 }
 
 @layer components {

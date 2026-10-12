@@ -24,7 +24,7 @@ type MemoRelation struct {
 // authorize one endpoint during a reference-relation mutation.
 type MemoRelationEndpointSnapshot struct {
 	ActorUserID int32
-	ActorActive bool
+	Actor       MemoActorState
 
 	EndpointID         int32
 	EndpointCreatorID  int32
@@ -37,10 +37,10 @@ type MemoRelationEndpointSnapshot struct {
 }
 
 // ValidateMemoRelationEndpointRead applies authenticated memo-local read
-// policy to an endpoint. Application roles are deliberately absent: an
-// instance administrator has no relation-specific read bypass.
+// policy to an endpoint. An active instance administrator passes the audience
+// checks; structural validity still applies.
 func ValidateMemoRelationEndpointRead(snapshot *MemoRelationEndpointSnapshot) error {
-	if snapshot == nil || !snapshot.ActorActive {
+	if snapshot == nil || !snapshot.Actor.Active {
 		return ErrMemoPermissionDenied
 	}
 	if snapshot.EndpointID <= 0 {
@@ -49,15 +49,18 @@ func ValidateMemoRelationEndpointRead(snapshot *MemoRelationEndpointSnapshot) er
 	if snapshot.EndpointRowStatus != Normal && snapshot.EndpointRowStatus != Archived {
 		return ErrMemoMutationConflict
 	}
-	if snapshot.EndpointRowStatus == Archived && snapshot.EndpointCreatorID != snapshot.ActorUserID {
-		return ErrMemoPermissionDenied
-	}
 	if !isValidVisibility(snapshot.EndpointVisibility) {
 		return ErrMemoMutationConflict
 	}
 	if snapshot.EndpointVisibility == SpaceAudience &&
 		(snapshot.EndpointSpaceID == nil || !snapshot.EndpointSpaceExists) {
 		return ErrMemoMutationConflict
+	}
+	if snapshot.Actor.Admin {
+		return nil
+	}
+	if snapshot.EndpointRowStatus == Archived && snapshot.EndpointCreatorID != snapshot.ActorUserID {
+		return ErrMemoPermissionDenied
 	}
 
 	switch snapshot.EndpointVisibility {

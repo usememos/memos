@@ -1,6 +1,6 @@
-import { InstanceSetting_Key } from "@/types/proto/api/v1/instance_service_pb";
-import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
-import { UserSetting_Key } from "@/types/proto/api/v1/user_service_pb";
+import { InstanceSetting_Key } from "@/types/proto/api/instance_service_pb";
+import { Visibility } from "@/types/proto/api/memo_service_pb";
+import { UserSetting_Key } from "@/types/proto/api/user_service_pb";
 
 export const instanceSettingNamePrefix = "instance/settings/";
 export const userNamePrefix = "users/";

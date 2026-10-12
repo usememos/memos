@@ -18,7 +18,7 @@ func (d *DB) CreateMemoShare(ctx context.Context, create *store.MemoShare) (*sto
 		return nil, err
 	}
 	defer func() { _ = tx.Rollback() }()
-	if err := validatePostgresMemoWritePolicy(ctx, tx, create.MemoID, create.Policy, nil); err != nil {
+	if _, err := validatePostgresMemoWritePolicy(ctx, tx, create.MemoID, create.Policy, nil); err != nil {
 		return nil, err
 	}
 	result, err := createPostgresMemoShare(ctx, tx, create)
@@ -162,7 +162,7 @@ func (d *DB) DeleteMemoShare(ctx context.Context, delete *store.DeleteMemoShare)
 			return err
 		}
 		defer func() { _ = tx.Rollback() }()
-		if err := validatePostgresMemoWritePolicy(ctx, tx, *delete.MemoID, delete.Policy, nil); err != nil {
+		if _, err := validatePostgresMemoWritePolicy(ctx, tx, *delete.MemoID, delete.Policy, nil); err != nil {
 			return err
 		}
 		where, args := postgresMemoShareDeleteWhere(delete)

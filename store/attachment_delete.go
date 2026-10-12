@@ -69,8 +69,9 @@ func ValidateAttachmentDeletionMemoSnapshots(memoIDs []int32, expectedMemoConten
 
 // ValidateAttachmentMutationTargets verifies attachment rows used by a
 // transport-facing mutation and returns their distinct memo bindings in
-// ascending order.
-func ValidateAttachmentMutationTargets(actorUserID int32, attachmentIDs []int32, attachments []*Attachment) ([]int32, error) {
+// ascending order. Every attachment must be owned by the actor unless the
+// actor is an instance administrator.
+func ValidateAttachmentMutationTargets(actorUserID int32, actorIsAdmin bool, attachmentIDs []int32, attachments []*Attachment) ([]int32, error) {
 	if actorUserID <= 0 || len(attachmentIDs) == 0 || len(attachments) != len(attachmentIDs) {
 		return nil, ErrMemoMutationConflict
 	}
@@ -94,7 +95,7 @@ func ValidateAttachmentMutationTargets(actorUserID int32, attachmentIDs []int32,
 			return nil, ErrMemoMutationConflict
 		}
 		seen[attachment.ID] = struct{}{}
-		if attachment.CreatorID != actorUserID {
+		if !actorIsAdmin && attachment.CreatorID != actorUserID {
 			return nil, ErrMemoPermissionDenied
 		}
 		if attachment.MemoID != nil {

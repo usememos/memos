@@ -42,8 +42,9 @@ var (
 	versionCmd = &cobra.Command{
 		Use:   "version",
 		Short: "Print the current Memos version",
-		Run: func(_ *cobra.Command, _ []string) {
-			fmt.Println(version.GetCurrentVersion())
+		Run: func(cmd *cobra.Command, _ []string) {
+			// Print the root's version so every form shares one source.
+			fmt.Fprintln(cmd.OutOrStdout(), cmd.Root().Version)
 		},
 	}
 )
@@ -60,12 +61,14 @@ func init() {
 	rootCmd.Flags().Int("port", 8081, "port of server")
 	rootCmd.Flags().String("unix-sock", "", "path to the unix socket, overrides --addr and --port")
 	rootCmd.Flags().String("data", "", "data directory")
-	rootCmd.Flags().String("driver", "sqlite", "database driver")
+	rootCmd.Flags().String("driver", "sqlite", "database driver (sqlite, mysql, postgres)")
 	rootCmd.Flags().String("dsn", "", "database source name (DSN)")
 	rootCmd.Flags().String("instance-url", "", "canonical external URL of the Memos instance")
 	rootCmd.Flags().Bool("allow-private-webhooks", false, "allow webhooks to access any private/reserved IP address")
 	rootCmd.Flags().StringSlice("webhook-private-network-allowlist", nil, "private webhook destinations to allow (exact hostname, IP, or CIDR)")
 	rootCmd.Flags().String("log-level", "info", "log verbosity level (debug, info, warn, error)")
+	rootCmd.Flags().Bool("rate-limit", true, "enable request rate limiting")
+	rootCmd.Flags().StringSlice("trusted-proxies", []string{"private"}, "proxies whose forwarding headers identify the client: CIDRs, IPs, \"private\" (default; the loopback and private ranges), or \"none\" when the instance is reached without a header-rewriting proxy")
 
 	if err := rootCmd.Flags().MarkDeprecated("allow-private-webhooks", "use --webhook-private-network-allowlist to allow only required destinations"); err != nil {
 		panic(err)
@@ -82,6 +85,8 @@ func init() {
 		"allow-private-webhooks",
 		"webhook-private-network-allowlist",
 		"log-level",
+		"rate-limit",
+		"trusted-proxies",
 	} {
 		if err := viper.BindPFlag(key, rootCmd.Flags().Lookup(key)); err != nil {
 			panic(err)
@@ -92,21 +97,31 @@ func init() {
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 	viper.AutomaticEnv()
 
+	// POSIX/BSD users reach for `-V`, GNU users for `--version`, and Go/Rust
+	// users for the `version` subcommand. Register the flag before Cobra's
+	// default so the shorthand stays `-V` rather than Cobra's `-v`, and use a
+	// bare template so all three print exactly the same string.
+	rootCmd.Flags().BoolP("version", "V", false, "print the current Memos version")
+	rootCmd.Version = version.GetCurrentVersion()
+	rootCmd.SetVersionTemplate("{{.Version}}\n")
+
 	rootCmd.AddCommand(versionCmd)
 }
 
 func runServer() error {
 	instanceProfile := &profile.Profile{
-		Demo:        viper.GetBool("demo"),
-		Addr:        viper.GetString("addr"),
-		Port:        viper.GetInt("port"),
-		UNIXSock:    viper.GetString("unix-sock"),
-		Data:        viper.GetString("data"),
-		Driver:      viper.GetString("driver"),
-		DSN:         viper.GetString("dsn"),
-		InstanceURL: viper.GetString("instance-url"),
-		Version:     version.GetCurrentVersion(),
-		Commit:      version.Commit,
+		Demo:           viper.GetBool("demo"),
+		Addr:           viper.GetString("addr"),
+		Port:           viper.GetInt("port"),
+		UNIXSock:       viper.GetString("unix-sock"),
+		Data:           viper.GetString("data"),
+		Driver:         viper.GetString("driver"),
+		DSN:            viper.GetString("dsn"),
+		InstanceURL:    viper.GetString("instance-url"),
+		RateLimit:      viper.GetBool("rate-limit"),
+		TrustedProxies: viper.GetStringSlice("trusted-proxies"),
+		Version:        version.GetCurrentVersion(),
+		Commit:         version.Commit,
 	}
 
 	allowPrivateWebhooks := viper.GetBool("allow-private-webhooks")
@@ -212,6 +227,10 @@ func printServerInfo(profile *profile.Profile, accessMode storepb.InstanceAccess
 }
 
 func main() {
+	if err := version.Validate(); err != nil {
+		slog.Error("invalid build metadata", slog.String("error", err.Error()))
+		os.Exit(1)
+	}
 	if err := rootCmd.Execute(); err != nil {
 		slog.Error("memos failed", slog.String("error", err.Error()))
 		os.Exit(1)

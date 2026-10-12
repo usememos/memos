@@ -8,9 +8,9 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/usememos/memos/internal/base"
-	"github.com/usememos/memos/internal/storage"
+	"github.com/usememos/memos/internal/identifier"
 	storepb "github.com/usememos/memos/proto/gen/store"
+	"github.com/usememos/memos/provider/storage"
 )
 
 type Attachment struct {
@@ -40,7 +40,8 @@ type Attachment struct {
 	Policy *MemoWritePolicy
 
 	// Composed field
-	MemoUID *string
+	MemoUID         *string
+	CreatorUsername *string
 }
 
 type FindAttachment struct {
@@ -112,7 +113,7 @@ func WithCreateAttachmentPostCommitFailpoint(ctx context.Context) context.Contex
 }
 
 func (s *Store) CreateAttachment(ctx context.Context, create *Attachment) (*Attachment, error) {
-	if !base.UIDMatcher.MatchString(create.UID) {
+	if !identifier.UIDMatcher.MatchString(create.UID) {
 		return nil, errors.New("invalid uid")
 	}
 	if err := validateMemoWritePolicy(create.Policy); err != nil {
@@ -175,7 +176,7 @@ func (s *Store) GetAttachment(ctx context.Context, find *FindAttachment) (*Attac
 }
 
 func (s *Store) UpdateAttachment(ctx context.Context, update *UpdateAttachment) error {
-	if update.UID != nil && !base.UIDMatcher.MatchString(*update.UID) {
+	if update.UID != nil && !identifier.UIDMatcher.MatchString(*update.UID) {
 		return errors.New("invalid uid")
 	}
 	if err := validateMemoWritePolicy(update.Policy); err != nil {
@@ -381,8 +382,14 @@ func AttachmentNeedsInstanceStorageSetting(attachment *Attachment) bool {
 	return attachment.Payload.GetS3Object() != nil
 }
 
+// deleteAttachmentDerivedCaches removes every derived asset the file server
+// may have written for the attachment: the current thumbnail, its failure
+// marker, the pre-v2 thumbnail name, and the extracted motion clip. The names
+// must match server/fileserver.
 func (s *Store) deleteAttachmentDerivedCaches(attachment *Attachment) {
 	for _, cachePath := range []string{
+		filepath.Join(s.profile.Data, thumbnailCacheFolder, attachment.UID+".v2.jpeg"),
+		filepath.Join(s.profile.Data, thumbnailCacheFolder, attachment.UID+".v2.jpeg.failed"),
 		filepath.Join(s.profile.Data, thumbnailCacheFolder, attachment.UID+".jpeg"),
 		filepath.Join(s.profile.Data, motionCacheFolder, attachment.UID+".mp4"),
 	} {
@@ -405,4 +412,10 @@ func shouldFailCreateAttachmentPolicy(ctx context.Context) bool {
 func shouldFailCreateAttachmentPostCommit(ctx context.Context) bool {
 	failpoint, ok := ctx.Value(createAttachmentPostCommitFailpointKey{}).(bool)
 	return ok && failpoint
+}
+
+// GetAttachmentStorageUsage returns the total persisted attachment size for a
+// creator in bytes. External links are not counted.
+func (s *Store) GetAttachmentStorageUsage(ctx context.Context, creatorID int32) (int64, error) {
+	return s.driver.GetAttachmentStorageUsage(ctx, creatorID)
 }

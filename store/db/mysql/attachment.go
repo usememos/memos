@@ -9,7 +9,7 @@ import (
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	"github.com/usememos/memos/internal/filter"
+	"github.com/usememos/memos/filter"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
@@ -30,7 +30,7 @@ func (d *DB) CreateAttachment(ctx context.Context, create *store.Attachment) (*s
 		return nil, err
 	}
 	defer func() { _ = tx.Rollback() }()
-	if err := validateMySQLMemoWritePolicy(ctx, tx, *create.MemoID, create.Policy, nil); err != nil {
+	if _, err := validateMySQLMemoWritePolicy(ctx, tx, *create.MemoID, create.Policy, nil); err != nil {
 		return nil, err
 	}
 	id, err := insertMySQLAttachment(ctx, tx, create)
@@ -144,6 +144,7 @@ func (d *DB) ListAttachments(ctx context.Context, find *store.FindAttachment) ([
 		"`attachment`.`reference` AS `reference`",
 		"`attachment`.`payload` AS `payload`",
 		"CASE WHEN `memo`.`uid` IS NOT NULL THEN `memo`.`uid` ELSE NULL END AS `memo_uid`",
+		"`attachment_creator`.`username` AS `creator_username`",
 	}
 	if find.GetBlob {
 		fields = append(fields, "`attachment`.`blob` AS `blob`")
@@ -151,6 +152,7 @@ func (d *DB) ListAttachments(ctx context.Context, find *store.FindAttachment) ([
 
 	query := "SELECT " + strings.Join(fields, ", ") + " FROM `attachment`" + " " +
 		"LEFT JOIN `memo` ON `attachment`.`memo_id` = `memo`.`id`" + " " +
+		"LEFT JOIN `user` AS `attachment_creator` ON `attachment`.`creator_id` = `attachment_creator`.`id`" + " " +
 		"LEFT JOIN `space` AS `attachment_space` ON `memo`.`space_id` = `attachment_space`.`id`" + " " +
 		"WHERE " + strings.Join(where, " AND ") + " " +
 		"ORDER BY `updated_ts` DESC"
@@ -187,6 +189,7 @@ func (d *DB) ListAttachments(ctx context.Context, find *store.FindAttachment) ([
 			&attachment.Reference,
 			&payloadBytes,
 			&attachment.MemoUID,
+			&attachment.CreatorUsername,
 		}
 		if find.GetBlob {
 			dests = append(dests, &attachment.Blob)
@@ -239,15 +242,19 @@ func (d *DB) UpdateAttachment(ctx context.Context, update *store.UpdateAttachmen
 		return err
 	}
 	defer func() { _ = tx.Rollback() }()
+	actor, err := requireMySQLActiveMemoActor(ctx, tx, update.Policy.ActorUserID)
+	if err != nil {
+		return err
+	}
 	attachments, err := listMySQLAttachmentsByIDs(ctx, tx, attachmentIDs)
 	if err != nil {
 		return err
 	}
-	memoIDs, err := store.ValidateAttachmentMutationTargets(update.Policy.ActorUserID, attachmentIDs, attachments)
+	memoIDs, err := store.ValidateAttachmentMutationTargets(update.Policy.ActorUserID, actor.Admin, attachmentIDs, attachments)
 	if err != nil {
 		return err
 	}
-	if err := authorizeMySQLAttachmentMutation(ctx, tx, update.Policy.ActorUserID, memoIDs, nil); err != nil {
+	if err := authorizeMySQLAttachmentMutation(ctx, tx, update.Policy.ActorUserID, actor.Admin, memoIDs, nil); err != nil {
 		return err
 	}
 	if err := applyMySQLAttachmentUpdate(ctx, tx, update); err != nil {
@@ -337,4 +344,13 @@ func listMySQLAttachmentsByIDs(ctx context.Context, tx *sql.Tx, attachmentIDs []
 		}
 	}
 	return attachments, nil
+}
+
+// GetAttachmentStorageUsage returns the total persisted attachment size for a creator in bytes.
+func (d *DB) GetAttachmentStorageUsage(ctx context.Context, creatorID int32) (int64, error) {
+	var size int64
+	if err := d.db.QueryRowContext(ctx, "SELECT COALESCE(SUM(size), 0) FROM attachment WHERE creator_id = ? AND storage_type <> 'EXTERNAL'", creatorID).Scan(&size); err != nil {
+		return 0, errors.Wrap(err, "failed to sum attachment sizes")
+	}
+	return size, nil
 }

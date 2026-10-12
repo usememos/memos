@@ -1,0 +1,409 @@
+package mcp
+
+import (
+	"maps"
+	"regexp"
+	"strings"
+
+	sdkmcp "github.com/modelcontextprotocol/go-sdk/mcp"
+	"github.com/pkg/errors"
+)
+
+var curatedOperationIDs = []string{
+	"MemoService_ListMemos",
+	"MemoService_CreateMemo",
+	"MemoService_GetMemo",
+	"MemoService_UpdateMemo",
+	"MemoService_DeleteMemo",
+	"MemoService_ListMemoComments",
+	"MemoService_CreateMemoComment",
+	"MemoService_ListMemoAttachments",
+	"MemoService_SetMemoAttachments",
+	"MemoService_ListMemoReactions",
+	"MemoService_UpsertMemoReaction",
+	"MemoService_DeleteMemoReaction",
+	"MemoService_ListMemoRelations",
+	"MemoService_SetMemoRelations",
+	"AttachmentService_ListAttachments",
+	"AttachmentService_CreateAttachment",
+	"AttachmentService_GetAttachment",
+	"AttachmentService_DeleteAttachment",
+	"UserService_ListMemoViews",
+	// The only allowed auth/identity operation: a read-only "whoami" so agents
+	// can resolve the current user (e.g. for UserService_ListMemoViews).
+	"AuthService_GetCurrentUser",
+	// Spaces: memos carry a placement (Memo.space) and a SPACE audience, so an
+	// agent needs to discover, create, and administer the spaces it can place
+	// memos in, and to handle the invitations that grant membership.
+	"SpaceService_ListSpaces",
+	"SpaceService_GetSpace",
+	"SpaceService_CreateSpace",
+	"SpaceService_UpdateSpace",
+	"SpaceService_DeleteSpace",
+	"SpaceService_ListSpaceMembers",
+	"SpaceService_GetSpaceMember",
+	"SpaceService_UpdateSpaceMember",
+	"SpaceService_DeleteSpaceMember",
+	"SpaceService_ListSpaceInvitations",
+	"SpaceService_ListUserSpaceInvitations",
+	"SpaceService_GetSpaceInvitation",
+	"SpaceService_CreateSpaceInvitation",
+	"SpaceService_AcceptSpaceInvitation",
+	"SpaceService_DeclineSpaceInvitation",
+	"SpaceService_DeleteSpaceInvitation",
+}
+
+type registeredOperation struct {
+	ToolName    string
+	OperationID string
+	Method      string
+	Path        string
+	Operation   *openAPIOperation
+	InputSchema jsonSchema
+}
+
+type requestBodySchemaOverride struct {
+	// required replaces the base schema's required list when non-empty.
+	required []string
+	// clearRequired explicitly removes the base schema's required list.
+	clearRequired     bool
+	omittedProperties []string
+	// minProperties, when > 0, requires the body to carry at least that many
+	// properties. It replaces a cleared required list for partial updates so an
+	// empty body is rejected up front instead of failing later at the API.
+	minProperties int
+	// bodyOptional drops "body" from the tool's required arguments. It is for
+	// body: "*" bindings whose only field is supplied by the path, so that a
+	// caller does not have to pass an empty object to satisfy the schema.
+	bodyOptional bool
+}
+
+// requestBodySchemaOverrides adjusts resource schemas to match how each HTTP
+// binding consumes its request body. Resource-level required fields are too
+// strict for partial updates, while body: "*" schemas include fields already
+// supplied by the path.
+var requestBodySchemaOverrides = map[string]requestBodySchemaOverride{
+	"MemoService_CreateMemo": {
+		required: []string{"content"},
+	},
+	"MemoService_UpdateMemo": {
+		clearRequired:     true,
+		omittedProperties: []string{"name"},
+		minProperties:     1,
+	},
+	"MemoService_CreateMemoComment": {
+		required: []string{"content"},
+	},
+	"MemoService_SetMemoAttachments": {
+		required:          []string{"attachments"},
+		omittedProperties: []string{"name"},
+	},
+	"MemoService_SetMemoRelations": {
+		required:          []string{"relations"},
+		omittedProperties: []string{"name"},
+	},
+	"MemoService_UpsertMemoReaction": {
+		required:          []string{"reaction"},
+		omittedProperties: []string{"name"},
+	},
+	// UpdateSpace requires an update mask, which the REST gateway infers from
+	// the fields present in the body. The space name comes from the path.
+	"SpaceService_UpdateSpace": {
+		clearRequired:     true,
+		omittedProperties: []string{"name"},
+		minProperties:     1,
+	},
+	// Only a member's role is mutable; the member name and user identity are
+	// both fixed by the path.
+	"SpaceService_UpdateSpaceMember": {
+		required:          []string{"role"},
+		omittedProperties: []string{"name", "user"},
+	},
+	// Accept and decline are body: "*" bindings whose single field, the
+	// invitation name, is already bound from the path.
+	"SpaceService_AcceptSpaceInvitation": {
+		clearRequired:     true,
+		omittedProperties: []string{"name"},
+		bodyOptional:      true,
+	},
+	"SpaceService_DeclineSpaceInvitation": {
+		clearRequired:     true,
+		omittedProperties: []string{"name"},
+		bodyOptional:      true,
+	},
+}
+
+// requestBodyRequired reports whether a tool call must carry a "body" argument
+// for the operation: the OpenAPI request body is required and no override has
+// made it optional.
+func requestBodyRequired(operation *openAPIOperation) bool {
+	if operation.RequestBody == nil || !operation.RequestBody.Required {
+		return false
+	}
+	return !requestBodySchemaOverrides[operation.OperationID].bodyOptional
+}
+
+var wordBoundary = regexp.MustCompile(`([a-z0-9])([A-Z])`)
+
+// validateOperationOverrides fails fast when a per-operation override table
+// references an operation that is not in the registry (e.g. after a proto RPC
+// rename). Without this, a stale key would silently miss and the renamed
+// operation would lose its schema/annotation override with no error.
+func validateOperationOverrides(registry map[string]*openAPIOperation) error {
+	tables := []struct {
+		name string
+		ids  []string
+	}{
+		{"requestBodySchemaOverrides", mapKeys(requestBodySchemaOverrides)},
+		{"idempotentOperationIDs", mapKeys(idempotentOperationIDs)},
+		{"destructiveOperationIDs", mapKeys(destructiveOperationIDs)},
+	}
+	for _, table := range tables {
+		for _, operationID := range table.ids {
+			if _, ok := registry[operationID]; !ok {
+				return errors.Errorf("%s references unknown operation %q", table.name, operationID)
+			}
+		}
+	}
+	return nil
+}
+
+func mapKeys[V any](m map[string]V) []string {
+	keys := make([]string, 0, len(m))
+	for key := range m {
+		keys = append(keys, key)
+	}
+	return keys
+}
+
+func buildCuratedTools(registry map[string]*openAPIOperation) ([]*sdkmcp.Tool, map[string]*registeredOperation, error) {
+	tools := make([]*sdkmcp.Tool, 0, len(curatedOperationIDs))
+	operations := map[string]*registeredOperation{}
+	for _, operationID := range curatedOperationIDs {
+		operation, ok := registry[operationID]
+		if !ok {
+			return nil, nil, errors.Errorf("curated OpenAPI operation %q not found", operationID)
+		}
+
+		tool, registered := buildToolFromOperation(operation)
+		if _, exists := operations[tool.Name]; exists {
+			return nil, nil, errors.Errorf("duplicate MCP tool name %q", tool.Name)
+		}
+
+		tools = append(tools, tool)
+		operations[tool.Name] = registered
+	}
+
+	if err := validateOperationOverrides(registry); err != nil {
+		return nil, nil, err
+	}
+	return tools, operations, nil
+}
+
+func buildToolFromOperation(operation *openAPIOperation) (*sdkmcp.Tool, *registeredOperation) {
+	name := toolNameFromOperationID(operation.OperationID)
+	title := titleFromToolName(name)
+	inputSchema := inputSchemaForOperation(operation)
+	tool := &sdkmcp.Tool{
+		Meta: sdkmcp.Meta{
+			"operationId": operation.OperationID,
+			"method":      operation.Method,
+			"path":        operation.Path,
+		},
+		Name:         name,
+		Title:        title,
+		Description:  operation.Description,
+		InputSchema:  inputSchema,
+		OutputSchema: outputSchemaForOperation(operation),
+		Annotations:  annotationsForOperation(operation, title),
+	}
+
+	return tool, &registeredOperation{
+		ToolName:    name,
+		OperationID: operation.OperationID,
+		Method:      operation.Method,
+		Path:        operation.Path,
+		Operation:   operation,
+		InputSchema: inputSchema,
+	}
+}
+
+func toolNameFromOperationID(operationID string) string {
+	service, method, ok := strings.Cut(operationID, "_")
+	if !ok {
+		return camelToSnake(operationID)
+	}
+	service = strings.TrimSuffix(service, "Service")
+	return camelToSnake(service) + "_" + camelToSnake(method)
+}
+
+func camelToSnake(value string) string {
+	return strings.ToLower(wordBoundary.ReplaceAllString(value, `${1}_${2}`))
+}
+
+func titleFromToolName(name string) string {
+	parts := strings.Split(name, "_")
+	for i, part := range parts {
+		if part == "" {
+			continue
+		}
+		parts[i] = strings.ToUpper(part[:1]) + part[1:]
+	}
+	return strings.Join(parts, " ")
+}
+
+func inputSchemaForOperation(operation *openAPIOperation) jsonSchema {
+	properties := map[string]any{}
+	required := []string{}
+	defs := map[string]any{}
+	for _, parameter := range operation.Parameters {
+		schema := jsonSchema(sanitizeSchemaValue(parameter.Schema).(map[string]any))
+		if parameter.Description != "" {
+			schema["description"] = parameter.Description
+		}
+		properties[parameter.Name] = schema
+		if parameter.Required {
+			required = append(required, parameter.Name)
+		}
+	}
+
+	if operation.RequestBody != nil {
+		bodySchema := requestBodySchema(operation)
+		maps.Copy(defs, extractSchemaDefs(bodySchema))
+		properties["body"] = bodySchema
+		if requestBodyRequired(operation) {
+			required = append(required, "body")
+		}
+	}
+
+	schema := jsonSchema{
+		"type":                 "object",
+		"properties":           properties,
+		"additionalProperties": false,
+	}
+	if len(required) > 0 {
+		schema["required"] = required
+	}
+	if len(defs) > 0 {
+		schema["$defs"] = defs
+	}
+	return schema
+}
+
+func requestBodySchema(operation *openAPIOperation) jsonSchema {
+	if operation.RequestBodySchema == nil {
+		return jsonSchema{"type": "object"}
+	}
+	schema := cloneSchema(operation.RequestBodySchema)
+	override, ok := requestBodySchemaOverrides[operation.OperationID]
+	if !ok {
+		return schema
+	}
+
+	if override.clearRequired {
+		delete(schema, "required")
+	} else if len(override.required) > 0 {
+		schema["required"] = override.required
+	}
+
+	if len(override.omittedProperties) > 0 {
+		properties := maps.Clone(schemaProperties(schema["properties"]))
+		for _, name := range override.omittedProperties {
+			delete(properties, name)
+		}
+		schema["properties"] = properties
+	}
+
+	if override.minProperties > 0 {
+		schema["minProperties"] = override.minProperties
+	}
+	return schema
+}
+
+func outputSchemaForOperation(operation *openAPIOperation) jsonSchema {
+	if operation.ResponseSchema == nil {
+		return okSchema()
+	}
+	return cloneSchema(operation.ResponseSchema)
+}
+
+func cloneSchema(schema jsonSchema) jsonSchema {
+	clone := jsonSchema{}
+	maps.Copy(clone, schema)
+	return clone
+}
+
+func extractSchemaDefs(schema jsonSchema) map[string]any {
+	defs, ok := schema["$defs"].(map[string]any)
+	if !ok {
+		return nil
+	}
+	delete(schema, "$defs")
+	return defs
+}
+
+// idempotentOperationIDs lists operations whose idempotency the HTTP-method
+// heuristic gets wrong. The "Set*" operations declaratively replace the full
+// set on a memo, so repeating an identical call converges to the same state —
+// idempotent — even though they are served over PATCH (which the heuristic
+// treats as non-idempotent).
+var idempotentOperationIDs = map[string]bool{
+	"MemoService_SetMemoAttachments": true,
+	"MemoService_SetMemoRelations":   true,
+}
+
+// destructiveOperationIDs lists mutating operations that can overwrite or
+// remove existing user data despite not using DELETE.
+var destructiveOperationIDs = map[string]bool{
+	"MemoService_UpdateMemo":         true,
+	"MemoService_SetMemoAttachments": true,
+	"MemoService_SetMemoRelations":   true,
+	"SpaceService_UpdateSpace":       true,
+	"SpaceService_UpdateSpaceMember": true,
+}
+
+// annotationsForOperation derives the method-based annotations and then applies
+// per-operation overrides that the HTTP method alone cannot express.
+func annotationsForOperation(operation *openAPIOperation, title string) *sdkmcp.ToolAnnotations {
+	annotations := annotationsForMethod(operation.Method, title)
+	if idempotentOperationIDs[operation.OperationID] {
+		annotations.IdempotentHint = true
+	}
+	if destructiveOperationIDs[operation.OperationID] {
+		destructive := true
+		annotations.DestructiveHint = &destructive
+	}
+	return annotations
+}
+
+func annotationsForMethod(method string, title string) *sdkmcp.ToolAnnotations {
+	openWorld := false
+	destructive := false
+	switch strings.ToUpper(method) {
+	case "GET":
+		return &sdkmcp.ToolAnnotations{
+			Title:           title,
+			ReadOnlyHint:    true,
+			DestructiveHint: &destructive,
+			IdempotentHint:  true,
+			OpenWorldHint:   &openWorld,
+		}
+	case "DELETE":
+		destructive = true
+		return &sdkmcp.ToolAnnotations{
+			Title:           title,
+			ReadOnlyHint:    false,
+			DestructiveHint: &destructive,
+			IdempotentHint:  true,
+			OpenWorldHint:   &openWorld,
+		}
+	default:
+		return &sdkmcp.ToolAnnotations{
+			Title:           title,
+			ReadOnlyHint:    false,
+			DestructiveHint: &destructive,
+			IdempotentHint:  false,
+			OpenWorldHint:   &openWorld,
+		}
+	}
+}

@@ -6,18 +6,31 @@ import { useMemoInit } from "@/components/MemoEditor/hooks/useMemoInit";
 import { cacheService } from "@/components/MemoEditor/services/cacheService";
 import { EditorProvider, useEditorContext } from "@/components/MemoEditor/state";
 import type { EditorController } from "@/components/MemoEditor/types/editorController";
-import { AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
+import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
+
+import { type Location, LocationSchema, Visibility } from "@/types/proto/api/memo_service_pb";
 
 const editorRef = { current: null } as RefObject<EditorController | null>;
 let getEditorState: ReturnType<typeof useEditorContext>["getState"];
 
-function Probe({ autoFocus }: { autoFocus?: boolean | (() => boolean) }) {
+function Probe({
+  autoFocus,
+  defaultLocation,
+  canChooseSpace,
+}: {
+  autoFocus?: boolean | (() => boolean);
+  defaultLocation?: Location;
+  canChooseSpace?: boolean;
+}) {
   getEditorState = useEditorContext().getState;
   useMemoInit({
     editorRef,
     username: "users/steven",
     cacheKey: "restored-draft",
     autoFocus,
+    defaultLocation,
+    canChooseSpace,
+    defaultVisibility: Visibility.PUBLIC,
   });
   return null;
 }
@@ -42,7 +55,7 @@ describe("useMemoInit", () => {
   it.each([true, false])("restores the draft and cursor before evaluating autofocus (%s)", (allowed) => {
     vi.useFakeTimers();
     const key = cacheService.key("users/steven", "restored-draft");
-    cacheService.saveNow(key, "An unfinished memo");
+    cacheService.saveNow(key, { content: "An unfinished memo", attachments: [] });
     cacheService.saveCursor(key, 5);
     const focus = vi.fn();
     const setCursor = vi.fn();
@@ -64,13 +77,61 @@ describe("useMemoInit", () => {
     expect(focus).toHaveBeenCalledTimes(allowed ? 1 : 0);
   });
 
+  it("seeds a new location once and honors a restored removal", () => {
+    const point = create(LocationSchema, { latitude: 35, longitude: 135, placeholder: "Cafe" });
+    const { unmount, rerender } = render(
+      <EditorProvider>
+        <Probe defaultLocation={point} />
+      </EditorProvider>,
+    );
+    expect(getEditorState().metadata.location).toEqual(point);
+    rerender(
+      <EditorProvider>
+        <Probe defaultLocation={create(LocationSchema, { latitude: 1 })} />
+      </EditorProvider>,
+    );
+    expect(getEditorState().metadata.location).toEqual(point);
+    unmount();
+    cacheService.saveNow(cacheService.key("users/steven", "restored-draft"), {
+      content: "Draft without a location",
+      attachments: [],
+      location: null,
+    });
+    render(
+      <EditorProvider>
+        <Probe defaultLocation={point} />
+      </EditorProvider>,
+    );
+    expect(getEditorState().metadata.location).toBeUndefined();
+  });
+
+  it.each([true, false])("restores destination only when the composer can choose a Space (%s)", (canChooseSpace) => {
+    cacheService.saveNow(cacheService.key("users/steven", "restored-draft"), {
+      content: "Draft",
+      attachments: [],
+      location: null,
+      space: "spaces/work",
+      visibility: Visibility.PRIVATE,
+    });
+    render(
+      <EditorProvider>
+        <Probe canChooseSpace={canChooseSpace} />
+      </EditorProvider>,
+    );
+    expect(getEditorState().metadata.space).toBe(canChooseSpace ? "spaces/work" : undefined);
+    expect(getEditorState().metadata.visibility).toBe(Visibility.PRIVATE);
+  });
+
   it("restores uploaded attachment bindings with a new memo draft", async () => {
     const attachment = create(AttachmentSchema, {
       name: "attachments/image-one",
       filename: "image.png",
       type: "image/png",
     });
-    cacheService.saveNow(cacheService.key("users/steven", "restored-draft"), "![image](/file/attachments/image-one)", [attachment]);
+    cacheService.saveNow(cacheService.key("users/steven", "restored-draft"), {
+      content: "![image](/file/attachments/image-one)",
+      attachments: [attachment],
+    });
 
     render(
       <EditorProvider>
