@@ -397,7 +397,7 @@ func TestUserSettingGetUserByPATHashNotFound(t *testing.T) {
 
 	// Lookup non-existent PAT hash
 	result, err := ts.GetUserByPATHash(ctx, "non-existent-hash")
-	require.Error(t, err)
+	require.NoError(t, err)
 	require.Nil(t, result)
 
 	ts.Close()
@@ -413,12 +413,8 @@ func TestUserSettingGetUserByPATHashNoTokensKey(t *testing.T) {
 	// User exists but has no PERSONAL_ACCESS_TOKENS key at all
 	// This simulates fresh users or users upgraded from v0.25.3
 	result, err := ts.GetUserByPATHash(ctx, "any-hash")
-	require.Error(t, err)
+	require.NoError(t, err)
 	require.Nil(t, result)
-	// Error could be "PAT not found" (Postgres) or "sql: no rows in result set" (SQLite/MySQL)
-	require.True(t,
-		strings.Contains(err.Error(), "PAT not found") || strings.Contains(err.Error(), "no rows"),
-		"expected PAT not found or no rows error, got: %v", err)
 
 	// Now add a PAT for the user
 	pat := &storepb.PersonalAccessTokensUserSetting_PersonalAccessToken{
@@ -459,12 +455,8 @@ func TestUserSettingGetUserByPATHashEmptyTokensArray(t *testing.T) {
 
 	// Lookup should fail gracefully, not crash
 	result, err := ts.GetUserByPATHash(ctx, "any-hash")
-	require.Error(t, err)
+	require.NoError(t, err)
 	require.Nil(t, result)
-	// Error could be "PAT not found" (Postgres) or "sql: no rows in result set" (SQLite/MySQL)
-	require.True(t,
-		strings.Contains(err.Error(), "PAT not found") || strings.Contains(err.Error(), "no rows"),
-		"expected PAT not found or no rows error, got: %v", err)
 
 	ts.Close()
 }
@@ -515,7 +507,7 @@ func TestUserSettingGetUserByPATHashWithOtherUsers(t *testing.T) {
 
 	// Should not find non-existent hash even with mixed user states
 	result, err = ts.GetUserByPATHash(ctx, "non-existent")
-	require.Error(t, err)
+	require.NoError(t, err)
 	require.Nil(t, result)
 
 	ts.Close()
@@ -694,7 +686,7 @@ func TestUserSettingGetUserByPATHashAfterRemoval(t *testing.T) {
 
 	// Should no longer be found
 	result, err = ts.GetUserByPATHash(ctx, patHash)
-	require.Error(t, err)
+	require.NoError(t, err)
 	require.Nil(t, result)
 
 	ts.Close()
@@ -763,6 +755,49 @@ func TestUserSettingGetUserByPATHashLargeTokenCount(t *testing.T) {
 		require.Equal(t, user.ID, result.UserID)
 		require.Equal(t, "pat-large-"+string(rune('A'+i)), result.PAT.TokenId)
 	}
+
+	ts.Close()
+}
+
+func TestUserSettingGetUserByPATHashCorruptRow(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	user, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+	other, err := createTestingUserWithRole(ctx, ts, "pat-corrupt-other", store.RoleUser)
+	require.NoError(t, err)
+
+	// A stored row the server cannot decode (lastUsedAt is not a timestamp).
+	const corruptHash = "pat-hash-corrupt"
+	_, err = ts.GetDriver().UpsertUserSetting(ctx, &store.UserSetting{
+		UserID: user.ID,
+		Key:    storepb.UserSetting_PERSONAL_ACCESS_TOKENS,
+		Value:  `{"tokens":[{"tokenId":"pat-corrupt","tokenHash":"` + corruptHash + `","lastUsedAt":""}]}`,
+	})
+	require.NoError(t, err)
+
+	// Looking up the corrupt token is a lookup failure, not a miss.
+	result, err := ts.GetUserByPATHash(ctx, corruptHash)
+	require.Error(t, err)
+	require.Nil(t, result)
+
+	// Other users' tokens still resolve.
+	const otherHash = "pat-hash-other-healthy"
+	err = ts.AddUserPersonalAccessToken(ctx, other.ID, &storepb.PersonalAccessTokensUserSetting_PersonalAccessToken{
+		TokenId:   "pat-other",
+		TokenHash: otherHash,
+	})
+	require.NoError(t, err)
+	result, err = ts.GetUserByPATHash(ctx, otherHash)
+	require.NoError(t, err)
+	require.NotNil(t, result)
+	require.Equal(t, other.ID, result.UserID)
+
+	// An unknown hash is still a plain miss.
+	result, err = ts.GetUserByPATHash(ctx, "pat-hash-unknown")
+	require.NoError(t, err)
+	require.Nil(t, result)
 
 	ts.Close()
 }
