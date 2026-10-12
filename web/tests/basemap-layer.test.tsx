@@ -62,11 +62,13 @@ describe("BasemapLayer", () => {
   });
 
   it("falls back when WebGL initialization throws", async () => {
+    layer.getMaplibreMap.mockReturnValue(undefined);
     layer.addTo.mockImplementation(() => {
       throw new Error("WebGL unavailable");
     });
-    render(<BasemapLayer />);
+    const view = render(<BasemapLayer />);
     expect(await screen.findByText("OSM fallback")).toBeInTheDocument();
+    view.unmount();
     expect(layer.remove).toHaveBeenCalledOnce();
   });
 

@@ -19,32 +19,6 @@ export const RequireFullInitializationRoute = () => {
 };
 
 /**
- * Index-route gate mounted at `/`. Authenticated visitors fall through to the
- * nested Home page; unauthenticated visitors are redirected to `/explore`,
- * preserving the original query string and hash so bookmarks like `/?filter=foo`
- * keep working.
- */
-export const LandingRoute = () => {
-  const currentUser = useCurrentUser();
-  const location = useLocation();
-
-  if (!currentUser) {
-    return (
-      <Navigate
-        to={{
-          pathname: ROUTES.EXPLORE,
-          search: location.search,
-          hash: location.hash,
-        }}
-        replace
-      />
-    );
-  }
-
-  return <Outlet />;
-};
-
-/**
  * Guard for routes that require an authenticated user. Unauthenticated visitors
  * are redirected to `/auth` with the original location preserved as the `redirect`
  * query parameter, so they return to the intended page after signing in.

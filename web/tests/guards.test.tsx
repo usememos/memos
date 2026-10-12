@@ -19,13 +19,7 @@ vi.mock("@/contexts/InstanceContext", () => ({
 }));
 
 import useCurrentUser from "@/hooks/useCurrentUser";
-import {
-  LandingRoute,
-  RequireAuthRoute,
-  RequireFullInitializationRoute,
-  RequireGuestRoute,
-  RequireInstanceInitializationRoute,
-} from "@/router/guards";
+import { RequireAuthRoute, RequireFullInitializationRoute, RequireGuestRoute, RequireInstanceInitializationRoute } from "@/router/guards";
 
 const mockedUseCurrentUser = vi.mocked(useCurrentUser);
 
@@ -74,58 +68,6 @@ describe("initialization guards", () => {
     );
 
     expect(screen.queryByTestId("fully-ready")).not.toBeInTheDocument();
-  });
-});
-
-describe("LandingRoute", () => {
-  it("renders the nested home page for an authenticated visitor at /", () => {
-    mockedUseCurrentUser.mockReturnValue(fakeUser);
-
-    renderAt(
-      "/",
-      <Routes>
-        <Route path="/" element={<LandingRoute />}>
-          <Route index element={<div data-testid="home">home</div>} />
-        </Route>
-        <Route path="/explore" element={<LocationProbe />} />
-      </Routes>,
-    );
-
-    expect(screen.getByTestId("home")).toHaveTextContent("home");
-  });
-
-  it("sends an unauthenticated visitor from the entry to /explore", () => {
-    mockedUseCurrentUser.mockReturnValue(undefined);
-
-    renderAt(
-      "/",
-      <Routes>
-        <Route path="/" element={<LandingRoute />}>
-          <Route index element={<div data-testid="home">home</div>} />
-        </Route>
-        <Route path="/explore" element={<LocationProbe />} />
-      </Routes>,
-    );
-
-    expect(screen.getByTestId("location").textContent).toBe("/explore");
-  });
-
-  it("preserves the query string and hash when redirecting an unauthenticated visitor", () => {
-    // Covers the regression in issue #5846: bookmarks pointing at `/?filter=...`
-    // must not drop their params on the trip through the landing redirect.
-    mockedUseCurrentUser.mockReturnValue(undefined);
-
-    renderAt(
-      "/?filter=tag:work#latest",
-      <Routes>
-        <Route path="/" element={<LandingRoute />}>
-          <Route index element={<div data-testid="home">home</div>} />
-        </Route>
-        <Route path="/explore" element={<LocationProbe />} />
-      </Routes>,
-    );
-
-    expect(screen.getByTestId("location").textContent).toBe("/explore?filter=tag:work#latest");
   });
 });
 

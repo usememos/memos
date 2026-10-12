@@ -21,16 +21,21 @@ func validateSQLiteReactionWritePolicy(ctx context.Context, tx dbExecutor, react
 	return store.ValidateReactionWriteParticipation(reaction, participation)
 }
 
-func validateSQLiteReactionDeletePolicy(ctx context.Context, tx dbExecutor, reaction *store.Reaction) error {
+// validateSQLiteReactionDeletePolicy authorizes a withdrawal and returns the
+// participation snapshot so the caller can honour an administrator actor.
+func validateSQLiteReactionDeletePolicy(ctx context.Context, tx dbExecutor, reaction *store.Reaction) (*store.MemoCommentAuthorizationSnapshot, error) {
 	policy := reaction.Policy
 	participation, err := loadSQLiteMemoParticipation(ctx, tx, reaction.MemoID, policy.ActorUserID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return store.ErrReactionMemoNotFound
+			return nil, store.ErrReactionMemoNotFound
 		}
-		return errors.Wrap(err, "failed to read reaction participation")
+		return nil, errors.Wrap(err, "failed to read reaction participation")
 	}
-	return store.ValidateReactionWithdrawal(reaction, participation)
+	if err := store.ValidateReactionWithdrawal(reaction, participation); err != nil {
+		return nil, err
+	}
+	return participation, nil
 }
 
 func sqliteSpaceMemberActive(ctx context.Context, tx dbExecutor, spaceID, userID int32) (bool, error) {

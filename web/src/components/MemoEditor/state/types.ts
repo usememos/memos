@@ -1,9 +1,9 @@
-import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
-import type { Location, MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
-import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
+import type { Attachment } from "@/types/proto/api/attachment_service_pb";
+import type { Location, MemoRelation } from "@/types/proto/api/memo_service_pb";
+import { Visibility } from "@/types/proto/api/memo_service_pb";
 import type { LocalFile } from "../types/attachment";
 
-export type LoadingKey = "saving" | "uploading" | "loading";
+export type LoadingKey = "saving" | "uploading" | "loading" | "transcribing";
 export type ContentSource = "editor" | "external";
 
 export interface EditorState {
@@ -11,6 +11,8 @@ export interface EditorState {
   contentSource: ContentSource;
   metadata: {
     visibility: Visibility;
+    /** Destination chosen in an unscoped new-memo composer. */
+    space?: string;
     attachments: Attachment[];
     relations: MemoRelation[];
     location?: Location;
@@ -22,6 +24,7 @@ export interface EditorState {
       saving: boolean;
       uploading: boolean;
       loading: boolean;
+      transcribing: boolean;
     };
     /** Save landed and the editor is about to close; the toolbar shows a brief
      *  confirmation instead of the commit verb. Only hosts that unmount after
@@ -36,6 +39,8 @@ export interface EditorState {
   /** Whether an audio recording is in flight; gates save. The recorder's full
    *  state lives in useAudioRecorder — only this shared bit reaches the store. */
   recorderBusy: boolean;
+  /** Draft-local acceptance history, retained across Undo but cleared on reset. */
+  acceptedSuggestionIds: string[];
 }
 
 export type EditorAction =
@@ -51,6 +56,7 @@ export type EditorAction =
   | { type: "SET_TIMESTAMPS"; payload: Partial<EditorState["timestamps"]> }
   | { type: "SET_RECORDER_BUSY"; payload: boolean }
   | { type: "SET_JUST_SAVED"; payload: boolean }
+  | { type: "ACCEPT_SUGGESTION"; payload: string }
   | { type: "RESET" };
 
 // Module-private template for createInitialState.
@@ -70,6 +76,7 @@ const defaultState: EditorState = {
       saving: false,
       uploading: false,
       loading: false,
+      transcribing: false,
     },
     justSaved: false,
   },
@@ -79,6 +86,7 @@ const defaultState: EditorState = {
   },
   localFiles: [],
   recorderBusy: false,
+  acceptedSuggestionIds: [],
 };
 
 /** Fresh initial state for a mounting editor. */

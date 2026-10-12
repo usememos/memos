@@ -19,7 +19,7 @@ import {
   InstanceSetting_NotificationSettingSchema,
   InstanceSetting_StorageSetting,
   InstanceSetting_StorageSettingSchema,
-} from "@/types/proto/api/v1/instance_service_pb";
+} from "@/types/proto/api/instance_service_pb";
 import { setManagedAttachmentInstanceUrl } from "@/utils/managed-attachment";
 
 const instanceSettingNamePrefix = "instance/settings/";
@@ -146,10 +146,10 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
         names: [buildInstanceSettingName(InstanceSetting_Key.GENERAL), buildInstanceSettingName(InstanceSetting_Key.MEMO_RELATED)],
       })
       .then((settingsResponse) => {
-        for (const setting of settingsResponse.settings) {
+        for (const setting of settingsResponse.instanceSettings) {
           fetchedSettingsRef.current.add(setting.name);
         }
-        setState((prev) => ({ ...prev, settings: settingsResponse.settings }));
+        setState((prev) => ({ ...prev, settings: settingsResponse.instanceSettings }));
       })
       .catch((error) => {
         console.error("Failed to initialize instance settings:", error);
@@ -180,10 +180,10 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
 
     try {
       const response = await instanceServiceClient.batchGetInstanceSettings({ names });
-      const fetchedNames = new Set(response.settings.map((setting) => setting.name));
+      const fetchedNames = new Set(response.instanceSettings.map((setting) => setting.name));
       setState((prev) => ({
         ...prev,
-        settings: [...prev.settings.filter((setting) => !fetchedNames.has(setting.name)), ...response.settings],
+        settings: [...prev.settings.filter((setting) => !fetchedNames.has(setting.name)), ...response.instanceSettings],
       }));
     } catch (error) {
       for (const name of names) {
@@ -221,7 +221,7 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
       const isAccessSetting = setting.value.case === "accessSetting";
       const updatedSetting = isAccessSetting
         ? await updateAccessSetting(setting)
-        : await instanceServiceClient.updateInstanceSetting({ setting });
+        : await instanceServiceClient.updateInstanceSetting({ instanceSetting: setting });
       setState((prev) => ({
         ...prev,
         profile:

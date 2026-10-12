@@ -19,7 +19,7 @@ import {
   InstanceSetting_NotificationSettingSchema,
   InstanceSettingSchema,
   TestInstanceEmailSettingRequestSchema,
-} from "@/types/proto/api/v1/instance_service_pb";
+} from "@/types/proto/api/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import SettingGroup from "./SettingGroup";
 import SettingRow from "./SettingRow";

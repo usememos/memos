@@ -1,17 +1,14 @@
-import { createBrowserRouter, Navigate, type RouteObject } from "react-router-dom";
+import { createBrowserRouter, Navigate, type RouteObject, useLocation } from "react-router-dom";
 import App from "@/App";
 import { ChunkLoadErrorFallback } from "@/components/ErrorBoundary";
+import { useAuth } from "@/contexts/AuthContext";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import MainLayout from "@/layouts/MainLayout";
 import RootLayout from "@/layouts/RootLayout";
 import { lazyWithReload } from "@/utils/lazy";
-import {
-  LandingRoute,
-  RequireAuthRoute,
-  RequireFullInitializationRoute,
-  RequireGuestRoute,
-  RequireInstanceInitializationRoute,
-} from "./guards";
-import { CALENDAR_ROUTE_PATTERN, ROUTES, SPACE_ROUTE_PATTERN } from "./routes";
+import { RequireAuthRoute, RequireFullInitializationRoute, RequireGuestRoute, RequireInstanceInitializationRoute } from "./guards";
+import { LegacyProfileRedirect } from "./LegacyProfileRedirect";
+import { CALENDAR_ROUTE_PATTERN, getCollectionCreator, ROUTES, SPACE_ROUTE_PATTERN, withCollectionCreator } from "./routes";
 import { SpaceRoute } from "./SpaceRoute";
 
 const AdminSignIn = lazyWithReload(() => import("@/pages/AdminSignIn"));
@@ -20,7 +17,6 @@ const Archived = lazyWithReload(() => import("@/pages/Archived"));
 const AuthCallback = lazyWithReload(() => import("@/pages/AuthCallback"));
 const MemoMap = lazyWithReload(() => import("@/pages/Map"));
 const Calendar = lazyWithReload(() => import("@/pages/Calendar"));
-const Explore = lazyWithReload(() => import("@/pages/Explore"));
 const Home = lazyWithReload(() => import("@/pages/Home"));
 const Inboxes = lazyWithReload(() => import("@/pages/Inboxes"));
 const MemoDetail = lazyWithReload(() => import("@/pages/MemoDetail"));
@@ -31,7 +27,24 @@ const Setting = lazyWithReload(() => import("@/pages/Setting"));
 const MemoViews = lazyWithReload(() => import("@/pages/MemoViews"));
 const SignIn = lazyWithReload(() => import("@/pages/SignIn"));
 const SignUp = lazyWithReload(() => import("@/pages/SignUp"));
-const UserProfile = lazyWithReload(() => import("@/pages/UserProfile"));
+
+const HomeRoute = () => {
+  const { isIdentityInitialized } = useAuth();
+  const currentUser = useCurrentUser();
+  const location = useLocation();
+  if (!isIdentityInitialized) return null;
+  if (!currentUser && !getCollectionCreator(location.search)) {
+    return <Navigate to={{ pathname: ROUTES.EXPLORE, search: location.search, hash: location.hash }} replace />;
+  }
+  return <Home />;
+};
+
+const ExploreRoute = () => {
+  const location = useLocation();
+  const search = withCollectionCreator(location.search);
+  if (search !== location.search) return <Navigate to={{ pathname: location.pathname, search, hash: location.hash }} replace />;
+  return <Home />;
+};
 
 // Backward compatibility alias.
 export const Routes = ROUTES;
@@ -78,21 +91,19 @@ export const routeConfig: RouteObject[] = [
           {
             element: <MainLayout />,
             children: [
-              {
-                element: <LandingRoute />,
-                children: [{ index: true, element: <Home /> }],
-              },
+              { index: true, element: <HomeRoute /> },
               {
                 element: <RequireInstanceInitializationRoute />,
                 children: [{ path: Routes.ABOUT, element: <About /> }],
               },
-              { path: Routes.EXPLORE, element: <Explore /> },
-              { path: Routes.USER_PROFILE, element: <UserProfile /> },
+              { path: Routes.EXPLORE, element: <ExploreRoute /> },
+              // Like Timeline, the calendar is public: guests see the memos readable to them.
+              { path: CALENDAR_ROUTE_PATTERN, element: <Calendar /> },
+              { path: Routes.USER_PROFILE, element: <LegacyProfileRedirect /> },
               {
                 element: <RequireAuthRoute />,
                 children: [
                   { path: Routes.ARCHIVED, element: <Archived /> },
-                  { path: CALENDAR_ROUTE_PATTERN, element: <Calendar /> },
                   {
                     element: <RequireFullInitializationRoute />,
                     children: [{ path: Routes.VIEWS, element: <MemoViews /> }],
@@ -103,6 +114,10 @@ export const routeConfig: RouteObject[] = [
           },
           { path: "memos/:uid", element: <MemoDetail /> },
           { path: "memos/shares/:token", element: <MemoDetail /> },
+          {
+            element: <RequireFullInitializationRoute />,
+            children: [{ path: Routes.MAP, element: <MemoMap /> }],
+          },
           {
             element: <RequireAuthRoute />,
             children: [
@@ -118,8 +133,8 @@ export const routeConfig: RouteObject[] = [
                           {
                             element: <MainLayout />,
                             children: [
-                              { index: true, element: <Home /> },
-                              { path: "explore", element: <Explore /> },
+                              { index: true, element: <HomeRoute /> },
+                              { path: "explore", element: <ExploreRoute /> },
                               { path: "calendar/:year?/:month?/:day?", element: <Calendar /> },
                             ],
                           },
@@ -131,7 +146,6 @@ export const routeConfig: RouteObject[] = [
                     ],
                   },
                   { path: Routes.ATTACHMENTS, element: <Attachments /> },
-                  { path: Routes.MAP, element: <MemoMap /> },
                   { path: Routes.INBOX, element: <Inboxes /> },
                   { path: Routes.SETTING, element: <Setting /> },
                 ],

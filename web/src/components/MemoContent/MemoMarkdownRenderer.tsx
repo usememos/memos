@@ -4,13 +4,27 @@ import type { Components } from "react-markdown";
 import ReactMarkdown from "react-markdown";
 import { buildRehypePlugins, buildRemarkPlugins } from "@/components/MemoContent/pipeline";
 import { isMentionElement, isTagElement, isTaskListItemElement } from "@/types/markdown";
-import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
+import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import { lazyWithReload } from "@/utils/lazy";
 import { resolveManagedAttachmentImageSource } from "@/utils/managed-attachment";
 import { CodeBlock } from "./CodeBlock";
+import { memoUrlTransform } from "./constants";
 import { MarkdownRenderContext, rootMarkdownRenderContext } from "./MarkdownRenderContext";
 import { Mention } from "./Mention";
-import { AnchorLink, Blockquote, Heading, HorizontalRule, Image, InlineCode, Link, List, ListItem, Paragraph } from "./markdown";
+import {
+  AnchorLink,
+  Blockquote,
+  Details,
+  Heading,
+  HorizontalRule,
+  Image,
+  InlineCode,
+  Link,
+  List,
+  ListItem,
+  Paragraph,
+  Summary,
+} from "./markdown";
 import { hasMathSyntax } from "./math";
 import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from "./Table";
 import { Tag } from "./Tag";
@@ -118,6 +132,8 @@ export const MemoMarkdownRendererCore = ({
     ),
     p: ({ children, ...props }) => <Paragraph {...props}>{children}</Paragraph>,
     blockquote: ({ children, ...props }) => <Blockquote {...props}>{children}</Blockquote>,
+    details: Details,
+    summary: Summary,
     hr: (props) => <HorizontalRule {...props} />,
     ul: ({ children, ...props }) => <List {...props}>{children}</List>,
     ol: ({ children, ...props }) => (
@@ -159,6 +175,7 @@ export const MemoMarkdownRendererCore = ({
       <ReactMarkdown
         remarkPlugins={buildRemarkPlugins(mathRemarkPlugins)}
         rehypePlugins={buildRehypePlugins(mathRehypePlugins)}
+        urlTransform={memoUrlTransform}
         components={markdownComponents}
       >
         {content}

@@ -21,6 +21,7 @@ type Driver interface {
 	// Attachment model related methods.
 	CreateAttachment(ctx context.Context, create *Attachment) (*Attachment, error)
 	ListAttachments(ctx context.Context, find *FindAttachment) ([]*Attachment, error)
+	GetAttachmentStorageUsage(ctx context.Context, creatorID int32) (int64, error)
 	UpdateAttachment(ctx context.Context, update *UpdateAttachment) error
 	DeleteAttachment(ctx context.Context, delete *DeleteAttachment) error
 	DeleteAttachments(ctx context.Context, deletes []*DeleteAttachment) error
@@ -33,6 +34,8 @@ type Driver interface {
 	UpdateMemo(ctx context.Context, update *UpdateMemo) error
 	DeleteMemo(ctx context.Context, delete *DeleteMemo) error
 	DeleteMemoWithPolicy(ctx context.Context, delete *DeleteMemoWithPolicy) (*DeleteMemoWithPolicyResult, error)
+	// CountUserMemos counts the memos a user created, comments included, in every row status and Space.
+	CountUserMemos(ctx context.Context, creatorID int32) (int64, error)
 
 	// Space model related methods.
 	CreateSpace(ctx context.Context, create *Space, creatorID int32) (*Space, error)
@@ -56,7 +59,11 @@ type Driver interface {
 	// InstanceSetting model related methods.
 	// CreateInstanceSettingIfNotExists atomically creates the setting when its name is absent and reports whether it inserted the row.
 	CreateInstanceSettingIfNotExists(ctx context.Context, create *InstanceSetting) (bool, error)
+	// UpdateInstanceSettingIfUnchanged replaces the value only when the stored value still equals oldValue, and reports whether it did.
+	UpdateInstanceSettingIfUnchanged(ctx context.Context, name, oldValue, newValue string) (bool, error)
 	UpsertInstanceSetting(ctx context.Context, upsert *InstanceSetting) (*InstanceSetting, error)
+	// UpsertInstanceSettingTx writes the setting within tx, for callers that must commit it together with other statements.
+	UpsertInstanceSettingTx(ctx context.Context, tx *sql.Tx, upsert *InstanceSetting) error
 	ListInstanceSettings(ctx context.Context, find *FindInstanceSetting) ([]*InstanceSetting, error)
 	DeleteInstanceSetting(ctx context.Context, delete *DeleteInstanceSetting) error
 
@@ -70,6 +77,9 @@ type Driver interface {
 	UpsertUserSetting(ctx context.Context, upsert *UserSetting) (*UserSetting, error)
 	ListUserSettings(ctx context.Context, find *FindUserSetting) ([]*UserSetting, error)
 	DeleteUserSettings(ctx context.Context, delete *DeleteUserSetting) error
+	// GetUserByPATHash returns the token matching tokenHash with its owner ID, or
+	// (nil, nil) when no stored token matches. An error means the lookup itself
+	// failed, including a stored row that cannot be decoded.
 	GetUserByPATHash(ctx context.Context, tokenHash string) (*PATQueryResult, error)
 
 	// IdentityProvider model related methods.

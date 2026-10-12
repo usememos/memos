@@ -1,8 +1,8 @@
 // Package auth provides authentication and authorization for the Memos server.
 //
 // This package is used by:
-// - server/router/api/v1: gRPC and Connect API interceptors
-// - server/router/fileserver: HTTP file server authentication
+// - server/api: gRPC and Connect API interceptors
+// - server/fileserver: HTTP file server authentication
 //
 // Authentication methods supported:
 // - JWT access tokens: Short-lived tokens (15 minutes) for API access
@@ -11,6 +11,7 @@
 package auth
 
 import (
+	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
@@ -19,7 +20,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/pkg/errors"
 
-	"github.com/usememos/memos/internal/util"
+	"github.com/usememos/memos/internal/random"
 )
 
 const (
@@ -67,12 +68,13 @@ type ClaimsMessage struct {
 }
 
 // AccessTokenClaims contains claims for short-lived access tokens.
-// These tokens are validated by signature only (stateless).
+// Authentication also checks AuthHash against the user's current password hash.
 type AccessTokenClaims struct {
-	Type     string `json:"type"`     // "access"
-	Role     string `json:"role"`     // User role
-	Status   string `json:"status"`   // User status
-	Username string `json:"username"` // Username for display
+	Type     string `json:"type"`      // "access"
+	Role     string `json:"role"`      // User role
+	Status   string `json:"status"`    // User status
+	Username string `json:"username"`  // Username for display
+	AuthHash string `json:"auth_hash"` // Password-bound session validation
 	jwt.RegisteredClaims
 }
 
@@ -130,8 +132,8 @@ func generateToken(username string, userID int32, audience string, expirationTim
 	return tokenString, nil
 }
 
-// GenerateAccessTokenV2 generates a short-lived access token with user claims.
-func GenerateAccessTokenV2(userID int32, username, role, status string, secret []byte) (string, time.Time, error) {
+// GenerateAccessTokenV2 generates a short-lived access token bound to the user's current password hash.
+func GenerateAccessTokenV2(userID int32, username, role, status, passwordHash string, secret []byte) (string, time.Time, error) {
 	expiresAt := time.Now().Add(AccessTokenDuration)
 
 	claims := &AccessTokenClaims{
@@ -139,6 +141,7 @@ func GenerateAccessTokenV2(userID int32, username, role, status string, secret [
 		Role:      role,
 		Status:    status,
 		Username:  username,
+		AuthHash:  accessTokenAuthHash(userID, passwordHash, secret),
 		Issuer:    Issuer,
 		Audience:  jwt.ClaimStrings{AccessTokenAudienceName},
 		Subject:   fmt.Sprint(userID),
@@ -155,6 +158,15 @@ func GenerateAccessTokenV2(userID int32, username, role, status string, secret [
 	}
 
 	return tokenString, expiresAt, nil
+}
+
+// accessTokenAuthHash follows the password-bound session hash pattern: changing
+// the stored password invalidates every previously issued access token. The
+// domain-separated HMAC hides the password hash and binds the value to a user.
+func accessTokenAuthHash(userID int32, passwordHash string, secret []byte) string {
+	mac := hmac.New(sha256.New, secret)
+	_, _ = mac.Write([]byte("memos.access-token.auth-hash\x00" + fmt.Sprint(userID) + "\x00" + passwordHash))
+	return hex.EncodeToString(mac.Sum(nil))
 }
 
 // GenerateRefreshToken generates a long-lived refresh token.
@@ -184,10 +196,10 @@ func GenerateRefreshToken(userID int32, tokenID string, secret []byte) (string, 
 
 // GeneratePersonalAccessToken generates a random PAT string.
 func GeneratePersonalAccessToken() string {
-	randomStr, err := util.RandomString(32)
+	randomStr, err := random.String(32)
 	if err != nil {
 		// Fallback to UUID if RandomString fails
-		return PersonalAccessTokenPrefix + util.GenUUID()
+		return PersonalAccessTokenPrefix + random.UUID()
 	}
 	return PersonalAccessTokenPrefix + randomStr
 }
@@ -224,6 +236,11 @@ func ParseAccessTokenV2(tokenString string, secret []byte) (*AccessTokenClaims, 
 	}
 	if claims.Type != "access" {
 		return nil, errors.New("invalid token type: expected access token")
+	}
+	// Pre-upgrade access tokens cannot prove which password they were issued
+	// against. Reject them; an existing refresh session can obtain a bound token.
+	if claims.AuthHash == "" {
+		return nil, errors.New("access token missing auth hash")
 	}
 	return claims, nil
 }

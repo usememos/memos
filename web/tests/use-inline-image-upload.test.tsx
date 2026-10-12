@@ -8,7 +8,7 @@ import { uploadService } from "@/components/MemoEditor/services";
 import { EditorProvider, useEditorContext } from "@/components/MemoEditor/state";
 import type { LocalFile } from "@/components/MemoEditor/types/attachment";
 import type { EditorController } from "@/components/MemoEditor/types/editorController";
-import { AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
+import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
 
 vi.mock("@/utils/i18n", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/utils/i18n")>()),

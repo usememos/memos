@@ -4,7 +4,11 @@ import remarkGfm from "remark-gfm";
 import { describe, expect, it } from "vitest";
 import { TASK_LIST_CLASS, TASK_LIST_ITEM_CLASS } from "@/components/MemoContent/constants";
 import { List, ListItem } from "@/components/MemoContent/markdown";
+import { markdownStyles } from "@/lib/markdownStyles";
 import { remarkSplitMixedTaskLists } from "@/utils/remark-plugins/remark-split-mixed-task-lists";
+
+// renderToStaticMarkup escapes `&` and `>` inside attribute values.
+const listItemClass = markdownStyles.listItem.replaceAll("&", "&amp;").replaceAll(">", "&gt;");
 
 const renderListContent = (content: string): string =>
   renderToStaticMarkup(
@@ -31,8 +35,8 @@ describe("memo content lists", () => {
     expect(listOpenTags[1]).not.toContain(TASK_LIST_CLASS);
     expect(listOpenTags[1]).toContain("ps-6");
     expect(listOpenTags[1]).toContain("list-disc");
-    expect(html).toContain('<li class="mt-0.5 leading-6">milk</li>');
-    expect(html).not.toContain('<li class="mt-0.5 leading-6">\n<p>milk</p>');
+    expect(html).toContain(`<li class="${listItemClass}">milk</li>`);
+    expect(html).not.toContain(`<li class="${listItemClass}">\n<p>milk</p>`);
     expect(html).toContain(TASK_LIST_ITEM_CLASS);
     expect(html).toContain("grid grid-cols-[auto_minmax(0,1fr)] items-start gap-x-2");
     expect(html).toContain('<div class="min-w-0 [overflow-wrap:anywhere] [&amp;&gt;*:last-child]:mb-0"> pickup package</div>');

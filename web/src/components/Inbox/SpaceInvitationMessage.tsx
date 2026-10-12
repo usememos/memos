@@ -14,9 +14,9 @@ import { extractSpaceUidFromName } from "@/lib/space-display";
 import { cn } from "@/lib/utils";
 import {
   UserNotification,
-  UserNotification_SpaceInvitationPayload_State,
+  UserNotification_SpaceInvitationPayload_InvitationState,
   UserNotification_Status,
-} from "@/types/proto/api/v1/user_service_pb";
+} from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 interface Props {
@@ -79,7 +79,7 @@ function SpaceInvitationMessage({ notification }: Props) {
   }
 
   const isUnread = notification.status === UserNotification_Status.UNREAD;
-  const isPending = payload.state === UserNotification_SpaceInvitationPayload_State.PENDING;
+  const isPending = payload.state === UserNotification_SpaceInvitationPayload_InvitationState.PENDING;
   const isBusy = acceptInvitation.isPending || declineInvitation.isPending;
   const spaceUid = extractSpaceUidFromName(space.name);
   const spaceLabel = `${space.title} (${spaceUid})`;
@@ -117,7 +117,11 @@ function SpaceInvitationMessage({ notification }: Props) {
 
       <div className="flex items-start gap-3">
         <div className="relative shrink-0">
-          <UserAvatar className="w-10 h-10 ring-1 ring-border/40" avatarUrl={sender?.avatarUrl} />
+          <UserAvatar
+            className="w-10 h-10 ring-1 ring-border/40"
+            avatarUrl={sender?.avatarUrl}
+            name={sender?.displayName || sender?.username}
+          />
           <div
             className={cn(
               "absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-background flex items-center justify-center shadow-md transition-all",

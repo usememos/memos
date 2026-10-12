@@ -4,26 +4,24 @@ import { CrosshairIcon, MinusIcon, PlusIcon } from "lucide-react";
 import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
-import { MentionResolutionProvider } from "@/components/MemoContent/MentionResolutionContext";
-import MemoEditor from "@/components/MemoEditor";
-import { getLocationDisplayText } from "@/components/MemoMetadata/Location/locationHelpers";
-import MemoView from "@/components/MemoView";
+import { getLocationCoordinatesText } from "@/components/MemoMetadata/Location/locationHelpers";
+import { MEMO_PANEL_INSET, MEMO_PANEL_WIDTH_CSS, MemoPanel, MemoPanelList, type MemoPanelSize } from "@/components/MemoPanel";
 import { createMemoNavigationState } from "@/components/MemoView/navigation";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { useAuth } from "@/contexts/AuthContext";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
-import { NewMemoProvider } from "@/contexts/NewMemoContext";
 import { useSpaceContext } from "@/contexts/SpaceContext";
-import { useView } from "@/contexts/ViewContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { cn } from "@/lib/utils";
-import { LocationSchema } from "@/types/proto/api/v1/memo_service_pb";
+import { LocationSchema } from "@/types/proto/api/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { fitMemos, MapCanvas } from "./MapCanvas";
-import { MapPanel } from "./MapPanel";
-import { locationKey, type MapViewport, readViewport, splitLabel } from "./model";
+import { locationKey, type MapViewport, pointLabel, readViewport, splitLabel } from "./model";
 import { useMapMemos } from "./useMapMemos";
+import { useMapPins } from "./useMapPins";
+
+/** Enough map beside the card to keep a selection visible. */
+const RESERVED_BESIDE_PANEL = 160;
 
 export function MapView() {
   const t = useTranslate();
@@ -32,18 +30,16 @@ export function MapView() {
   const routeRef = useRef(location);
   routeRef.current = location;
   const desktop = useMediaQuery("md");
-  const { selectedSpaceName } = useSpaceContext();
+  const { selectedSpaceName, creatorUsername } = useSpaceContext();
   const user = useCurrentUser();
-  const { isUserSettingsInitialized } = useAuth();
-  const { compactMode } = useView();
   const { filters, removeFilter } = useMemoFilterContext();
   const query = useMapMemos();
+  const pins = useMapPins(query.memos, !creatorUsername);
   const mapRef = useRef<L.Map | null>(null);
-  const frameRef = useRef<HTMLElement>(null);
-  const [panelSize, setPanelSize] = useState({ width: 0, height: 0 });
-  // The panel reports on every resize-drag frame; only a real change may re-render the map tree.
+  const [panelSize, setPanelSize] = useState<MemoPanelSize>({ width: 0, height: 0 });
+  // Only a real change may re-render the map tree.
   const onPanelSize = useCallback(
-    (next: { width: number; height: number }) =>
+    (next: MemoPanelSize) =>
       setPanelSize((prev) => {
         const width = Math.round(next.width);
         const height = Math.round(next.height);
@@ -53,8 +49,7 @@ export function MapView() {
   );
   const [tileError, setTileError] = useState(false);
   const [saving, setSaving] = useState(false);
-  // Which selection is being written into; a changed selection closes the editor rather than moving a memo.
-  const [composingFor, setComposingFor] = useState<string>();
+  const [composing, setComposing] = useState(false);
   const viewport = readViewport(location.search);
   // Selection is keyed by its joined names so panning, which rewrites the search, leaves it identity-stable.
   const selectedKey = new URLSearchParams(location.search).getAll("memo").join("|");
@@ -67,7 +62,6 @@ export function MapView() {
     selectedMemos.length > 0 && selectedMemos.every((memo) => locationKey(memo.location!) === locationKey(selectedMemos[0].location!))
       ? selectedMemos[0].location
       : undefined;
-  const composing = !!singlePoint && composingFor === selectedKey;
   const open = selected.length > 0;
 
   const updateQuery = useCallback(
@@ -119,20 +113,23 @@ export function MapView() {
       }, true);
     }
   }, [query.complete, query.memos, selected, updateQuery]);
+  // A place label is its author's words: the title uses one only when it speaks for every memo
+  // there, and a new memo only inherits the writer's own label, never someone else's.
+  const sharedLabel = singlePoint ? pointLabel(selectedMemos) : "";
+  const ownLabel = singlePoint && user ? pointLabel(selectedMemos.filter((memo) => memo.creator === user.name)) : "";
   const composeLocation = useMemo(
     () =>
       singlePoint
         ? create(LocationSchema, {
             latitude: singlePoint.latitude,
             longitude: singlePoint.longitude,
-            placeholder: getLocationDisplayText(singlePoint),
+            placeholder: ownLabel || getLocationCoordinatesText(singlePoint),
           })
         : undefined,
-    [singlePoint],
+    [singlePoint, ownLabel],
   );
   const afterSave = async (name: string) => {
     setSaving(false);
-    setComposingFor(undefined);
     const result = await query.refetch();
     if (result.data?.pages.some((page) => page.memos.some((memo) => memo.name === name && memo.location))) {
       updateQuery((search) => search.set("memo", name));
@@ -156,74 +153,31 @@ export function MapView() {
         { duration: 8000 },
       );
   };
-  const heading = singlePoint ? splitLabel(getLocationDisplayText(singlePoint)) : { title: t("map.selection") };
-  const contents = useMemo(() => selectedMemos.map((memo) => memo.content), [selectedMemos]);
+  const heading = !singlePoint
+    ? { title: t("map.selection") }
+    : sharedLabel
+      ? splitLabel(sharedLabel)
+      : { title: getLocationCoordinatesText(singlePoint) };
   // Floating surfaces let the basemap show through, the way Notion's and Linear's overlays do.
   const surfaceClass = "rounded-lg border border-border/60 bg-background/85 shadow-xs backdrop-blur-md";
   // The calendar's 28px quiet square, a touch more on phones.
   const toolClass = cn(buttonVariants({ variant: "quiet", size: "icon-compact" }), "size-8 md:size-7");
-  const chipClass = buttonVariants({ variant: "quiet", size: "sm" });
-
-  const panelChildren = (
-    <NewMemoProvider>
-      <MentionResolutionProvider contents={contents}>
-        {selectedMemos.map((memo) => (
-          <MemoView
-            key={memo.name}
-            memo={memo}
-            compact={compactMode}
-            showVisibility
-            showPinned
-            showSpace={!selectedSpaceName}
-            parentPage={`${location.pathname}${location.search}`}
-          />
-        ))}
-      </MentionResolutionProvider>
-      {!selectedMemos.length && <p className="text-sm text-muted-foreground">{t(query.complete ? "map.no-results" : "map.loading")}</p>}
-      {/* Like a day in the calendar, a place ends with a quiet row that becomes the editor in place. */}
-      {composeLocation &&
-        isUserSettingsInitialized &&
-        (composing ? (
-          <MemoEditor
-            key={selectedKey}
-            cacheKey={`map-editor:${user?.name}:${selectedSpaceName ?? "all"}:${locationKey(composeLocation)}`}
-            defaultLocation={composeLocation}
-            defaultSpace={selectedSpaceName}
-            autoFocus
-            onSavingChange={setSaving}
-            onConfirm={(name) => void afterSave(name)}
-            onCancel={() => setComposingFor(undefined)}
-          />
-        ) : (
-          <button type="button" className={cn(chipClass, "self-start")} onClick={() => setComposingFor(selectedKey)}>
-            <PlusIcon strokeWidth={1.8} />
-            <span>{t("map.new-here")}</span>
-          </button>
-        ))}
-    </NewMemoProvider>
-  );
-  // The panel slides out over 200ms; keep what it was showing so it never flashes an empty state on the way.
-  const lastShown = useRef({ heading, children: panelChildren });
-  if (open) lastShown.current = { heading, children: panelChildren };
-  const shown = lastShown.current;
 
   return (
     <section
-      ref={frameRef}
-      // `clip`, not `hidden`: the panel mounts translated outside this box and takes focus, and a hidden
-      // overflow would let the browser scroll the whole map to reveal it for the length of the slide.
       className="relative isolate min-h-0 w-full flex-1 overflow-clip [&_.leaflet-bottom]:bottom-[var(--map-inset-bottom)]! [&_.leaflet-right]:right-[var(--map-inset-end)]! [&_.leaflet-bottom]:transition-[bottom] [&_.leaflet-right]:transition-[right] [&_.leaflet-bottom]:duration-200 [&_.leaflet-right]:duration-200"
       style={
         {
           // Controls and attribution keep clear of the panel: above a bottom sheet, beside a side rail.
           "--map-inset-bottom": !desktop && open ? `${panelSize.height}px` : "0px",
-          "--map-inset-end": desktop && open ? `${panelSize.width + 12}px` : "0px",
+          "--map-inset-end": desktop && open ? `calc(${MEMO_PANEL_WIDTH_CSS} + ${MEMO_PANEL_INSET}px)` : "0px",
         } as CSSProperties
       }
       data-map-page
     >
       <MapCanvas
         memos={query.memos}
+        pins={pins}
         selected={selected}
         viewport={viewport}
         complete={query.complete}
@@ -323,7 +277,10 @@ export function MapView() {
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center p-8">
           <div className={cn("pointer-events-auto max-w-sm rounded-xl p-5 text-center", surfaceClass)}>
             <h2 className="font-medium">{t(filters.length ? "map.no-results" : "map.empty")}</h2>
-            <p className="mt-2 text-sm text-muted-foreground">{t(filters.length ? "map.no-results-hint" : "map.empty-hint")}</p>
+            {/* Guests cannot add a location, so only filters get a hint for them. */}
+            {(filters.length > 0 || user) && (
+              <p className="mt-2 text-sm text-muted-foreground">{t(filters.length ? "map.no-results-hint" : "map.empty-hint")}</p>
+            )}
             {filters.length > 0 && (
               <Button className="mt-4" variant="outline" onClick={() => removeFilter(() => true)}>
                 {t("map.clear-filters")}
@@ -332,18 +289,33 @@ export function MapView() {
           </div>
         </div>
       )}
-      <MapPanel
+      <MemoPanel
         open={open}
-        title={shown.heading.title}
-        subtitle={shown.heading.subtitle}
-        desktop={desktop}
-        container={frameRef}
+        title={heading.title}
+        subtitle={heading.subtitle}
+        reservedWidth={RESERVED_BESIDE_PANEL}
         busy={saving}
         onClose={clearSelection}
         onSize={onPanelSize}
       >
-        {shown.children}
-      </MapPanel>
+        <MemoPanelList
+          memos={selectedMemos}
+          selectionKey={selectedKey}
+          emptyText={t(query.complete ? "map.no-results" : "map.loading")}
+          compose={
+            composeLocation && user && (!creatorUsername || creatorUsername === user.username)
+              ? {
+                  cacheKey: `map-editor:${user?.name}:${selectedSpaceName ?? "all"}:${locationKey(composeLocation)}`,
+                  label: t("map.new-here"),
+                  defaults: { defaultLocation: composeLocation },
+                  onComposingChange: setComposing,
+                  onSavingChange: setSaving,
+                  onConfirm: (name) => void afterSave(name),
+                }
+              : undefined
+          }
+        />
+      </MemoPanel>
     </section>
   );
 }

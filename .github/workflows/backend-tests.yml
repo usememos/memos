@@ -9,13 +9,15 @@ on:
       - "go.mod"
       - "go.sum"
       - "**.go"
+      - ".golangci.yaml"
+      - ".github/workflows/backend-tests.yml"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
-  GO_VERSION: "1.27.0"
+  GO_VERSION: "1.27.2"
 
 jobs:
   static-checks:
@@ -37,10 +39,13 @@ jobs:
           go mod tidy -go=${{ env.GO_VERSION }}
           git diff --exit-code
 
+      - name: Verify go fix
+        run: go fix -diff ./...
+
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v9
         with:
-          version: v2.13.1
+          version: v2.14.0
           args: --timeout=3m
 
   tests:
@@ -66,7 +71,7 @@ jobs:
           case "${{ matrix.test-group }}" in
             store)
               # Run store tests for all drivers (sqlite, mysql, postgres)
-              go test -v -coverprofile=coverage.out -covermode=atomic ./store/...
+              DRIVER= go test -v -coverprofile=coverage.out -covermode=atomic ./store/...
               ;;
             server)
               # Includes ./server/test, which boots the real server via
@@ -78,11 +83,11 @@ jobs:
               ;;
             other)
               go test -v -race -coverprofile=coverage.out -covermode=atomic \
-                ./cmd/... ./internal/... ./proto/...
+                ./cmd/... ./core/... ./markdown/... ./filter/... ./provider/... ./proto/...
               ;;
           esac
         env:
-          DRIVER: ${{ matrix.test-group == 'store' && '' || 'sqlite' }}
+          DRIVER: sqlite
 
       - name: Upload coverage
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'

@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"time"
 
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -125,20 +126,24 @@ func (s *Store) DeleteUserSettings(ctx context.Context, delete *DeleteUserSettin
 	return nil
 }
 
-// GetUserByPATHash finds a user by PAT hash.
+// GetUserByPATHash finds the user owning the personal access token with the
+// given hash. It returns (nil, nil) when no token matches or its user no longer
+// exists, and an error only when the lookup itself fails.
 func (s *Store) GetUserByPATHash(ctx context.Context, tokenHash string) (*PATQueryResult, error) {
 	result, err := s.driver.GetUserByPATHash(ctx, tokenHash)
 	if err != nil {
 		return nil, err
 	}
+	if result == nil {
+		return nil, nil
+	}
 
-	// Fetch user info
 	user, err := s.GetUser(ctx, &FindUser{ID: &result.UserID})
 	if err != nil {
 		return nil, err
 	}
 	if user == nil {
-		return nil, errors.New("user not found for PAT")
+		return nil, nil
 	}
 	result.User = user
 
@@ -170,7 +175,10 @@ func (s *Store) AddUserRefreshToken(ctx context.Context, userID int32, token *st
 		return err
 	}
 
-	tokens = append(tokens, token)
+	// Expired tokens can never authenticate again; drop them here so the
+	// list is bounded by the tokens issued within one lifetime rather than
+	// by every sign-in the account ever made.
+	tokens = append(pruneExpiredRefreshTokens(tokens, time.Now()), token)
 
 	_, err = s.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: userID,
@@ -179,6 +187,43 @@ func (s *Store) AddUserRefreshToken(ctx context.Context, userID int32, token *st
 			RefreshTokens: &storepb.RefreshTokensUserSetting{
 				RefreshTokens: tokens,
 			},
+		},
+	})
+	return err
+}
+
+func pruneExpiredRefreshTokens(tokens []*storepb.RefreshTokensUserSetting_RefreshToken, now time.Time) []*storepb.RefreshTokensUserSetting_RefreshToken {
+	live := make([]*storepb.RefreshTokensUserSetting_RefreshToken, 0, len(tokens))
+	for _, token := range tokens {
+		if token == nil || (token.ExpiresAt != nil && token.ExpiresAt.AsTime().Before(now)) {
+			continue
+		}
+		live = append(live, token)
+	}
+	return live
+}
+
+// RemoveUserRefreshTokensExcept revokes every refresh token of the user other
+// than keepTokenID. An empty keepTokenID revokes all of them.
+func (s *Store) RemoveUserRefreshTokensExcept(ctx context.Context, userID int32, keepTokenID string) error {
+	s.refreshTokenMu.Lock()
+	defer s.refreshTokenMu.Unlock()
+
+	existingTokens, err := s.GetUserRefreshTokens(ctx, userID)
+	if err != nil {
+		return err
+	}
+	kept := make([]*storepb.RefreshTokensUserSetting_RefreshToken, 0, 1)
+	for _, token := range existingTokens {
+		if keepTokenID != "" && token.TokenId == keepTokenID {
+			kept = append(kept, token)
+		}
+	}
+	_, err = s.UpsertUserSetting(ctx, &storepb.UserSetting{
+		UserId: userID,
+		Key:    storepb.UserSetting_REFRESH_TOKENS,
+		Value: &storepb.UserSetting_RefreshTokens{
+			RefreshTokens: &storepb.RefreshTokensUserSetting{RefreshTokens: kept},
 		},
 	})
 	return err

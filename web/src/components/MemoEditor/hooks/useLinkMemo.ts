@@ -8,10 +8,10 @@ import { buildMemoCreatorFilter } from "@/lib/resource-names";
 import {
   type Memo,
   type MemoRelation,
-  MemoRelation_MemoSchema,
+  MemoRelation_MemoRefSchema,
   MemoRelation_Type,
   MemoRelationSchema,
-} from "@/types/proto/api/v1/memo_service_pb";
+} from "@/types/proto/api/memo_service_pb";
 
 interface UseLinkMemoParams {
   isOpen: boolean;
@@ -70,7 +70,7 @@ export const useLinkMemo = ({ isOpen, currentMemoName, existingRelations, onAddR
   const addMemoRelation = (memo: Memo) => {
     const relation = create(MemoRelationSchema, {
       type: MemoRelation_Type.REFERENCE,
-      relatedMemo: create(MemoRelation_MemoSchema, {
+      relatedMemo: create(MemoRelation_MemoRefSchema, {
         name: memo.name,
         snippet: memo.snippet,
       }),

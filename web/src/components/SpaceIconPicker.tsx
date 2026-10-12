@@ -1,6 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import CustomIconPicker from "@/components/CustomIconPicker";
-import { type Space_Icon, Space_IconSchema } from "@/types/proto/api/v1/space_service_pb";
+import { type Space_Icon, Space_IconSchema } from "@/types/proto/api/space_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 interface Props {

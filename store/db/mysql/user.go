@@ -40,6 +40,11 @@ func (d *DB) UpdateUser(ctx context.Context, update *store.UpdateUser) (*store.U
 		return nil, err
 	}
 	defer func() { _ = tx.Rollback() }()
+	if update.RemovesInstanceAdmin() {
+		if err := ensureInstanceAdminRetained(ctx, tx, update.ID); err != nil {
+			return nil, err
+		}
+	}
 	if update.RowStatus != nil && *update.RowStatus == store.Archived {
 		if err := validateMySQLUserArchive(ctx, tx, update.ID); err != nil {
 			return nil, err
@@ -56,7 +61,7 @@ func (d *DB) UpdateUser(ctx context.Context, update *store.UpdateUser) (*store.U
 		set, args = append(set, "`username` = ?"), append(args, *v)
 	}
 	if v := update.Email; v != nil {
-		set, args = append(set, "`email` = ?"), append(args, *v)
+		set, args = append(set, "`email` = ?"), append(args, nullableEmail(*v))
 	}
 	if v := update.Nickname; v != nil {
 		set, args = append(set, "`nickname` = ?"), append(args, *v)
@@ -80,13 +85,15 @@ func (d *DB) UpdateUser(ctx context.Context, update *store.UpdateUser) (*store.U
 		return nil, err
 	}
 	user := &store.User{}
+	var email sql.NullString
 	if err := tx.QueryRowContext(ctx, `SELECT id, username, role, email, nickname, password_hash, avatar_url, description,
 		UNIX_TIMESTAMP(created_ts), UNIX_TIMESTAMP(updated_ts), row_status FROM user WHERE id = ?`, update.ID).Scan(
-		&user.ID, &user.Username, &user.Role, &user.Email, &user.Nickname, &user.PasswordHash, &user.AvatarURL,
+		&user.ID, &user.Username, &user.Role, &email, &user.Nickname, &user.PasswordHash, &user.AvatarURL,
 		&user.Description, &user.CreatedTs, &user.UpdatedTs, &user.RowStatus,
 	); err != nil {
 		return nil, err
 	}
+	user.Email = email.String
 	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
@@ -115,6 +122,44 @@ func validateMySQLUserArchive(ctx context.Context, tx *sql.Tx, userID int32) err
 	}
 	if wouldLoseAdmin {
 		return store.ErrLastSpaceAdmin
+	}
+	return nil
+}
+
+// ensureInstanceAdminRetained refuses a mutation that would remove the last
+// active instance administrator. The target's role is read first without a
+// lock so mutations of ordinary users skip the admin scan; for an active
+// admin every caller then locks the active admin rows in id order before
+// touching the target, so concurrent removals serialize instead of each
+// seeing the other admin as still active.
+func ensureInstanceAdminRetained(ctx context.Context, tx *sql.Tx, userID int32) error {
+	var role, rowStatus string
+	if err := tx.QueryRowContext(ctx, `SELECT role, row_status FROM user WHERE id = ?`, userID).Scan(&role, &rowStatus); errors.Is(err, sql.ErrNoRows) {
+		return nil
+	} else if err != nil {
+		return err
+	}
+	if role != string(store.RoleAdmin) || rowStatus != string(store.Normal) {
+		return nil
+	}
+	rows, err := tx.QueryContext(ctx, `SELECT id FROM user WHERE role = 'ADMIN' AND row_status = 'NORMAL' ORDER BY id FOR UPDATE`)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+	adminCount := 0
+	for rows.Next() {
+		var id int32
+		if err := rows.Scan(&id); err != nil {
+			return err
+		}
+		adminCount++
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	if adminCount <= 1 {
+		return store.ErrLastInstanceAdmin
 	}
 	return nil
 }
@@ -198,11 +243,12 @@ func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User
 	list := make([]*store.User, 0)
 	for rows.Next() {
 		var user store.User
+		var email sql.NullString
 		if err := rows.Scan(
 			&user.ID,
 			&user.Username,
 			&user.Role,
-			&user.Email,
+			&email,
 			&user.Nickname,
 			&user.PasswordHash,
 			&user.AvatarURL,
@@ -213,6 +259,7 @@ func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User
 		); err != nil {
 			return nil, err
 		}
+		user.Email = email.String
 		list = append(list, &user)
 	}
 
@@ -232,4 +279,14 @@ func (d *DB) GetUser(ctx context.Context, find *store.FindUser) (*store.User, er
 		return nil, errors.Errorf("unexpected user count: %d", len(list))
 	}
 	return list[0], nil
+}
+
+// nullableEmail maps the store's "no address" value to SQL NULL. The email
+// column is nullable so the unique index ignores users without an address;
+// an empty string must never reach the table.
+func nullableEmail(email string) any {
+	if email == "" {
+		return nil
+	}
+	return email
 }

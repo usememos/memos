@@ -4,11 +4,11 @@ import { memoService } from "@/components/MemoEditor/services/memoService";
 import { createInitialState, type EditorState } from "@/components/MemoEditor/state";
 import {
   type Memo,
-  MemoRelation_MemoSchema,
+  MemoRelation_MemoRefSchema,
   MemoRelation_Type,
   MemoRelationSchema,
   MemoSchema,
-} from "@/types/proto/api/v1/memo_service_pb";
+} from "@/types/proto/api/memo_service_pb";
 
 const clients = vi.hoisted(() => ({
   createMemo: vi.fn(),
@@ -32,14 +32,14 @@ vi.mock("@/connect", () => ({
 const createRelation = (type: MemoRelation_Type, memoName: string, relatedMemoName: string) =>
   create(MemoRelationSchema, {
     type,
-    memo: create(MemoRelation_MemoSchema, { name: memoName }),
-    relatedMemo: create(MemoRelation_MemoSchema, { name: relatedMemoName }),
+    memo: create(MemoRelation_MemoRefSchema, { name: memoName }),
+    relatedMemo: create(MemoRelation_MemoRefSchema, { name: relatedMemoName }),
   });
 
 const createReference = (relatedMemoName: string) =>
   create(MemoRelationSchema, {
     type: MemoRelation_Type.REFERENCE,
-    relatedMemo: create(MemoRelation_MemoSchema, { name: relatedMemoName }),
+    relatedMemo: create(MemoRelation_MemoRefSchema, { name: relatedMemoName }),
   });
 
 const createEditorState = (memo: Memo): EditorState => ({
@@ -69,15 +69,26 @@ describe("memo editor relation updates", () => {
     });
   });
 
+  it("saves the draft destination unless the host fixes the Space", async () => {
+    const state = createInitialState();
+    state.content = "Draft";
+    state.metadata = { ...state.metadata, space: "spaces/work" };
+    await memoService.save(state, {});
+    expect(clients.createMemo).toHaveBeenLastCalledWith({ memo: expect.objectContaining({ space: "spaces/work" }) });
+    await memoService.save(state, { space: "spaces/current" });
+    expect(clients.createMemo).toHaveBeenLastCalledWith({ memo: expect.objectContaining({ space: "spaces/current" }) });
+  });
+
   it("does not inherit the selected Space when creating a comment", async () => {
     const state = createInitialState();
     state.content = "Reply";
+    state.metadata = { ...state.metadata, space: "spaces/draft" };
 
     await memoService.save(state, { parentMemoName: "memos/parent", space: "spaces/product" });
 
     expect(clients.createMemoComment).toHaveBeenCalledOnce();
     const request = clients.createMemoComment.mock.calls[0][0];
-    expect(request.name).toBe("memos/parent");
+    expect(request.parent).toBe("memos/parent");
     expect(request.comment.content).toBe("Reply");
     expect(request.comment.space).toBeUndefined();
   });

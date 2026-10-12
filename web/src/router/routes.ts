@@ -66,6 +66,68 @@ export const buildCollectionPath = (pathname: string, spaceName?: string): strin
 export const collectionPathForLocation = (pathname: string, currentPath: string): string =>
   buildCollectionPath(pathname, resolveCollectionRoute(currentPath).spaceName);
 
+/** An explicit creator is a URL-owned collection filter, independent of the selected Space. */
+export const getCollectionCreator = (search: string): string | undefined => {
+  const username = new URLSearchParams(search).get("creator");
+  return username || undefined;
+};
+
+export const withCollectionCreator = (search: string, username?: string): string => {
+  const params = new URLSearchParams(search);
+  if (username) params.set("creator", username);
+  else params.delete("creator");
+  const query = params.toString();
+  return query ? `?${query}` : "";
+};
+
+/** The canonical all-Space collection for one creator. */
+export const getCreatorHomePath = (username: string): string => `${ROUTES.HOME}${withCollectionCreator("", username)}`;
+
+/** Home is personal; Explore is all readable creators. Other collection views keep explicit creator filters. */
+export const getCollectionHomePath = (location: { pathname: string; search: string }): string => {
+  const route = resolveCollectionRoute(location.pathname);
+  const home =
+    route.pathname === ROUTES.EXPLORE || (route.isCollection && route.pathname !== ROUTES.HOME && !getCollectionCreator(location.search))
+      ? ROUTES.EXPLORE
+      : ROUTES.HOME;
+  return buildCollectionPath(home, route.spaceName);
+};
+
+/** Carries creator scope and collection filters between views, excluding view-specific query state. */
+export const collectionNavigationPath = (
+  pathname: string,
+  location: { pathname: string; search: string },
+  currentUsername?: string,
+): string => {
+  const route = resolveCollectionRoute(location.pathname);
+  const creator =
+    route.pathname === ROUTES.EXPLORE
+      ? undefined
+      : ((route.isCollection ? getCollectionCreator(location.search) : undefined) ??
+        (!route.isCollection || route.pathname === ROUTES.HOME ? currentUsername : undefined));
+  const filter = route.isCollection ? new URLSearchParams(location.search).get("filter") : null;
+  const search = filter ? new URLSearchParams({ filter }).toString() : "";
+  // A memo list without a creator is Explore; this also sends guests there from any page.
+  if (pathname === ROUTES.HOME) {
+    const home = buildCollectionPath(creator ? ROUTES.HOME : ROUTES.EXPLORE, route.spaceName);
+    return `${home}${withCollectionCreator(search, creator === currentUsername ? undefined : creator)}`;
+  }
+  return `${collectionPathForLocation(pathname, location.pathname)}${withCollectionCreator(search, creator)}`;
+};
+
+/** A creator change keeps the current collection view and Space. */
+export const getCreatorSwitchPath = (
+  location: { pathname: string; search: string; hash?: string },
+  username?: string,
+  currentUsername?: string,
+): string => {
+  const route = resolveCollectionRoute(location.pathname);
+  const isMemoList = route.pathname === ROUTES.HOME || route.pathname === ROUTES.EXPLORE || !route.isCollection;
+  const pathname = isMemoList ? buildCollectionPath(username ? ROUTES.HOME : ROUTES.EXPLORE, route.spaceName) : location.pathname;
+  const creator = username === currentUsername && isMemoList ? undefined : username;
+  return `${pathname}${withCollectionCreator(location.search, creator)}${location.hash || ""}`;
+};
+
 /** Switching preserves collection views and their query; other pages start at Home. */
 export const getSpaceSwitchPath = (location: { pathname: string; search: string; hash?: string }, spaceName?: string): string => {
   const route = resolveCollectionRoute(location.pathname);

@@ -3,8 +3,9 @@ import {
   ChevronUpIcon,
   FileAudioIcon,
   FileIcon,
+  FileTextIcon,
   ImagePlusIcon,
-  PaperclipIcon,
+  LoaderIcon,
   PauseIcon,
   PlayIcon,
   XIcon,
@@ -12,11 +13,18 @@ import {
 import { type FC, type MouseEvent, useMemo, useRef, useState } from "react";
 import type { AttachmentItem, LocalFile } from "@/components/MemoEditor/types/attachment";
 import { getAudioRecordingTimeLabel, toAttachmentItems } from "@/components/MemoEditor/types/attachment";
-import MetadataSection from "@/components/MemoMetadata/MetadataSection";
+import MetadataSection, {
+  METADATA_ROW_BOX_CLASSES,
+  METADATA_ROW_CONTROLS_CLASSES,
+  METADATA_ROW_SLOT_BUTTON_CLASSES,
+  METADATA_ROW_SLOT_CLASSES,
+  METADATA_ROW_TEXT_CLASSES,
+  MetadataRowDetail,
+} from "@/components/MemoMetadata/MetadataSection";
 import PreviewImageDialog from "@/components/PreviewImageDialog";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
+import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import { formatFileSize, getFileTypeLabel } from "@/utils/format";
 import { useTranslate } from "@/utils/i18n";
 import { canInlineAttachment, extractAttachmentUIDFromName } from "@/utils/managed-attachment";
@@ -27,6 +35,9 @@ const collectMembers = <T,>(byId: ReadonlyMap<string, T>, memberIds: string[]): 
   memberIds.map((memberId) => byId.get(memberId)).filter((member): member is T => member !== undefined);
 
 interface AttachmentListEditorProps {
+  onTranscribeAttachment?: (attachment: Attachment) => void;
+  transcribingAttachment?: string;
+  transcriptionDisabled?: boolean;
   attachments: Attachment[];
   localFiles?: LocalFile[];
   onAttachmentsChange?: (attachments: Attachment[]) => void;
@@ -39,38 +50,53 @@ interface AttachmentListEditorProps {
   uploadingLocalFileURLs?: ReadonlySet<string>;
 }
 
+/** Trailing controls of an attachment row: quiet 24px squares that show once the row is engaged. */
 const AttachmentItemActions: FC<{
+  transcriptionAction?: { label: string; onClick: () => void; disabled: boolean; busy: boolean };
   placementAction?: { label: string; onClick: () => void; disabled?: boolean };
   onRemove?: () => void;
   onMoveUp?: () => void;
   onMoveDown?: () => void;
   canMoveUp?: boolean;
   canMoveDown?: boolean;
-}> = ({ placementAction, onRemove, onMoveUp, onMoveDown, canMoveUp = true, canMoveDown = true }) => {
+}> = ({ transcriptionAction, placementAction, onRemove, onMoveUp, onMoveDown, canMoveUp = true, canMoveDown = true }) => {
   const stopPropagation = (event: MouseEvent) => {
     event.stopPropagation();
   };
 
   return (
-    <div className="shrink-0 flex items-center gap-0.5">
+    <div className={METADATA_ROW_CONTROLS_CLASSES}>
+      {transcriptionAction && (
+        <Button
+          variant="quiet"
+          size="sm"
+          disabled={transcriptionAction.disabled}
+          onClick={(event) => {
+            stopPropagation(event);
+            transcriptionAction.onClick();
+          }}
+        >
+          {transcriptionAction.busy ? <LoaderIcon className="size-3.5 animate-spin" /> : <FileTextIcon className="size-3.5" />}
+          {transcriptionAction.label}
+        </Button>
+      )}
       {placementAction && (
         <Button
-          variant="ghost"
+          variant="quiet"
           size="sm"
           onClick={(event) => {
             stopPropagation(event);
             placementAction.onClick();
           }}
-          className="h-6 gap-1 px-1.5 text-[10px] text-muted-foreground"
           disabled={placementAction.disabled}
         >
-          <ImagePlusIcon className="size-3" />
+          <ImagePlusIcon className="size-3.5" strokeWidth={1.8} />
           {placementAction.label}
         </Button>
       )}
       {onMoveUp && (
         <Button
-          variant="ghost"
+          variant="quiet"
           size="icon-sm"
           onClick={(event) => {
             stopPropagation(event);
@@ -80,13 +106,13 @@ const AttachmentItemActions: FC<{
           title="Move up"
           aria-label="Move attachment up"
         >
-          <ChevronUpIcon className="h-3 w-3 text-muted-foreground" />
+          <ChevronUpIcon className="size-3.5" strokeWidth={1.8} />
         </Button>
       )}
 
       {onMoveDown && (
         <Button
-          variant="ghost"
+          variant="quiet"
           size="icon-sm"
           onClick={(event) => {
             stopPropagation(event);
@@ -96,13 +122,13 @@ const AttachmentItemActions: FC<{
           title="Move down"
           aria-label="Move attachment down"
         >
-          <ChevronDownIcon className="h-3 w-3 text-muted-foreground" />
+          <ChevronDownIcon className="size-3.5" strokeWidth={1.8} />
         </Button>
       )}
 
       {onRemove && (
         <Button
-          variant="ghost"
+          variant="quiet"
           size="icon-sm"
           onClick={(event) => {
             stopPropagation(event);
@@ -111,7 +137,7 @@ const AttachmentItemActions: FC<{
           title="Remove"
           aria-label="Remove attachment"
         >
-          <XIcon className="h-3 w-3 text-muted-foreground hover:text-destructive" />
+          <XIcon className="size-3.5" strokeWidth={1.8} />
         </Button>
       )}
     </div>
@@ -119,6 +145,7 @@ const AttachmentItemActions: FC<{
 };
 
 const AttachmentItemCard: FC<{
+  transcriptionAction?: { label: string; onClick: () => void; disabled: boolean; busy: boolean };
   item: AttachmentItem;
   onPreview?: () => void;
   onRemove?: () => void;
@@ -128,7 +155,18 @@ const AttachmentItemCard: FC<{
   canMoveDown?: boolean;
   isUploadingInline?: boolean;
   placementAction?: { label: string; onClick: () => void; disabled?: boolean };
-}> = ({ item, onPreview, onRemove, onMoveUp, onMoveDown, canMoveUp = true, canMoveDown = true, isUploadingInline, placementAction }) => {
+}> = ({
+  item,
+  onPreview,
+  onRemove,
+  onMoveUp,
+  onMoveDown,
+  canMoveUp = true,
+  canMoveDown = true,
+  isUploadingInline,
+  placementAction,
+  transcriptionAction,
+}) => {
   const t = useTranslate();
   const { category, filename, thumbnailUrl, mimeType, size, sourceUrl, isVoiceNote, audioMeta } = item;
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -147,7 +185,7 @@ const AttachmentItemCard: FC<{
     audioMeta?.durationSeconds ? formatAudioTime(audioMeta.durationSeconds) : undefined,
     fileTypeLabel,
     size ? formatFileSize(size) : undefined,
-  ].filter(Boolean);
+  ];
 
   const handleAudioToggle = async (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
@@ -161,90 +199,82 @@ const AttachmentItemCard: FC<{
   };
 
   return (
-    <div
-      className="relative rounded border border-transparent px-1.5 py-1 transition-all hover:border-border hover:bg-accent/20"
-      aria-busy={isUploadingInline || undefined}
-    >
-      <div className="flex items-center gap-1.5">
-        <div className="relative flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded bg-muted/40">
-          {(category === "image" || category === "motion") && thumbnailUrl ? (
-            <div
-              onClick={(event) => {
-                event.stopPropagation();
-                onPreview?.();
-              }}
-              className={cn("h-full w-full overflow-hidden", isPreviewable ? "cursor-pointer" : "cursor-default")}
-              aria-label={`Preview ${filename}`}
-            >
-              <img src={thumbnailUrl} alt="" className="h-full w-full object-cover" loading="lazy" decoding="async" />
-            </div>
-          ) : isVoiceNote ? (
-            <>
-              <button
-                type="button"
-                onClick={handleAudioToggle}
-                className="flex size-full items-center justify-center rounded bg-muted/40 text-muted-foreground hover:bg-accent hover:text-foreground"
-                aria-label={isPlaying ? t("editor.audio-recorder.pause-recording") : t("editor.audio-recorder.play-recording")}
-              >
-                {isPlaying ? <PauseIcon className="h-3.5 w-3.5" /> : <PlayIcon className="h-3.5 w-3.5 translate-x-[0.5px]" />}
-              </button>
-              <audio
-                ref={audioRef}
-                preload="none"
-                className="hidden"
-                onPlay={() => setIsPlaying(true)}
-                onPause={() => setIsPlaying(false)}
-                onEnded={() => setIsPlaying(false)}
-              />
-            </>
-          ) : category === "video" ? (
+    <div className={METADATA_ROW_BOX_CLASSES} aria-busy={isUploadingInline || undefined}>
+      <div className={cn(METADATA_ROW_SLOT_CLASSES, "relative overflow-hidden rounded-[5px] bg-muted/40")}>
+        {(category === "image" || category === "motion") && thumbnailUrl ? (
+          <div
+            onClick={(event) => {
+              event.stopPropagation();
+              onPreview?.();
+            }}
+            className={cn("size-full overflow-hidden", isPreviewable ? "cursor-pointer" : "cursor-default")}
+            aria-label={`Preview ${filename}`}
+          >
+            <img src={thumbnailUrl} alt="" className="size-full object-cover" loading="lazy" decoding="async" />
+          </div>
+        ) : isVoiceNote ? (
+          <>
             <button
               type="button"
-              onClick={(event) => {
-                event.stopPropagation();
-                onPreview?.();
-              }}
-              className="flex size-full items-center justify-center rounded bg-muted/40 text-muted-foreground hover:bg-accent hover:text-foreground"
-              aria-label={`Preview ${filename}`}
+              onClick={handleAudioToggle}
+              className={METADATA_ROW_SLOT_BUTTON_CLASSES}
+              aria-pressed={isPlaying}
+              aria-label={isPlaying ? t("editor.audio-recorder.pause-recording") : t("editor.audio-recorder.play-recording")}
             >
-              <PlayIcon className="h-3.5 w-3.5 translate-x-[0.5px]" />
+              {isPlaying ? (
+                <PauseIcon className="size-3.5" strokeWidth={1.8} />
+              ) : (
+                <PlayIcon className="size-3.5 translate-x-[0.5px]" strokeWidth={1.8} />
+              )}
             </button>
-          ) : category === "audio" ? (
-            <FileAudioIcon className="h-3.5 w-3.5 text-muted-foreground" />
-          ) : (
-            <FileIcon className="h-3.5 w-3.5 text-muted-foreground" />
-          )}
-          {category === "motion" && (
-            <span className="absolute inset-x-0 bottom-0 bg-black/70 text-center text-[7px] font-semibold uppercase tracking-wide text-white">
-              Live
-            </span>
-          )}
-        </div>
-
-        <div className="min-w-0 flex-1 flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-1.5">
-          <span className="truncate text-xs" title={filename}>
-            {titleLabel}
+            <audio
+              ref={audioRef}
+              preload="none"
+              className="hidden"
+              onPlay={() => setIsPlaying(true)}
+              onPause={() => setIsPlaying(false)}
+              onEnded={() => setIsPlaying(false)}
+            />
+          </>
+        ) : category === "video" ? (
+          <button
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              onPreview?.();
+            }}
+            className={METADATA_ROW_SLOT_BUTTON_CLASSES}
+            aria-label={`Preview ${filename}`}
+          >
+            <PlayIcon className="size-3.5 translate-x-[0.5px]" strokeWidth={1.8} />
+          </button>
+        ) : category === "audio" ? (
+          <FileAudioIcon className="size-3.5 text-muted-foreground" strokeWidth={1.8} />
+        ) : (
+          <FileIcon className="size-3.5 text-muted-foreground" strokeWidth={1.8} />
+        )}
+        {category === "motion" && (
+          <span className="absolute inset-x-0 bottom-0 bg-black/70 text-center text-[7px] font-semibold uppercase tracking-wide text-white">
+            Live
           </span>
-
-          <div className="flex shrink-0 items-center gap-1 text-[11px] text-muted-foreground">
-            {detailParts.map((part, index) => (
-              <span key={`${item.id}-${part}`}>
-                {index > 0 && <span className="hidden text-muted-foreground/50 sm:inline"> • </span>}
-                <span>{part}</span>
-              </span>
-            ))}
-          </div>
-        </div>
-
-        <AttachmentItemActions
-          placementAction={placementAction}
-          onRemove={onRemove}
-          onMoveUp={onMoveUp}
-          onMoveDown={onMoveDown}
-          canMoveUp={canMoveUp}
-          canMoveDown={canMoveDown}
-        />
+        )}
       </div>
+
+      <span className={METADATA_ROW_TEXT_CLASSES} title={filename}>
+        {titleLabel}
+      </span>
+
+      <MetadataRowDetail parts={detailParts} />
+
+      <AttachmentItemActions
+        transcriptionAction={transcriptionAction}
+        placementAction={placementAction}
+        onRemove={onRemove}
+        onMoveUp={onMoveUp}
+        onMoveDown={onMoveDown}
+        canMoveUp={canMoveUp}
+        canMoveDown={canMoveDown}
+      />
     </div>
   );
 };
@@ -260,6 +290,9 @@ const AttachmentListEditor: FC<AttachmentListEditorProps> = ({
   onInsertLocalFiles,
   placementActionsDisabled = false,
   uploadingLocalFileURLs = new Set(),
+  onTranscribeAttachment,
+  transcribingAttachment,
+  transcriptionDisabled = false,
 }) => {
   const t = useTranslate();
   const [previewState, setPreviewState] = useState<{ open: boolean; initialIndex: number }>({ open: false, initialIndex: 0 });
@@ -390,13 +423,26 @@ const AttachmentListEditor: FC<AttachmentListEditorProps> = ({
 
   return (
     <>
-      <MetadataSection icon={PaperclipIcon} title="Attachments" count={items.length} contentClassName="flex flex-col gap-1 p-1 sm:p-1.5">
+      <MetadataSection title={t("common.attachments")}>
         {items.map((item) => {
           const itemList = item.isLocal ? localItems : attachmentItems;
           const itemIndex = itemList.findIndex((entry) => entry.id === item.id);
           const itemAttachments = collectMembers(attachmentsByName, item.memberIds);
           const itemLocalFiles = collectMembers(localFilesByPreviewUrl, item.memberIds);
           const isUploadingInline = item.isLocal && item.memberIds.some((memberID) => uploadingLocalFileURLs.has(memberID));
+          const isTranscribing = item.id === transcribingAttachment;
+          // External links are fetched cross-origin by the browser, which most hosts refuse.
+          const transcribableAttachment =
+            !item.isLocal && item.category === "audio" && !itemAttachments[0]?.externalLink ? itemAttachments[0] : undefined;
+          const transcriptionAction =
+            transcribableAttachment && onTranscribeAttachment
+              ? {
+                  label: t(isTranscribing ? "editor.audio-recorder.transcribing" : "editor.audio-recorder.transcribe"),
+                  onClick: () => onTranscribeAttachment(transcribableAttachment),
+                  disabled: transcriptionDisabled || Boolean(transcribingAttachment),
+                  busy: isTranscribing,
+                }
+              : undefined;
           const canInsert =
             (item.category === "image" || item.category === "motion") && (item.isLocal || itemAttachments.some(canInlineAttachment));
           const placementAction = canInsert
@@ -414,12 +460,13 @@ const AttachmentListEditor: FC<AttachmentListEditorProps> = ({
               item={item}
               isUploadingInline={isUploadingInline}
               placementAction={placementAction}
+              transcriptionAction={transcriptionAction}
               onPreview={
                 item.category === "image" || item.category === "video" || item.category === "motion"
                   ? () => handlePreviewItem(item)
                   : undefined
               }
-              onRemove={isUploadingInline ? undefined : () => handleRemoveItem(item)}
+              onRemove={isUploadingInline || isTranscribing ? undefined : () => handleRemoveItem(item)}
               onMoveUp={item.isLocal ? () => handleMoveLocalFiles(item.id, -1) : () => handleMoveAttachments(item.id, -1)}
               onMoveDown={item.isLocal ? () => handleMoveLocalFiles(item.id, 1) : () => handleMoveAttachments(item.id, 1)}
               canMoveUp={itemIndex > 0}

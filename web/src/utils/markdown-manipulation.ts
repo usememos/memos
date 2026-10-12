@@ -46,8 +46,8 @@ export function toggleTaskAtLine(markdown: string, lineNumber: number, checked: 
 
   const line = lines[lineNumber];
 
-  // Match task list patterns: - [ ], - [x], - [X], etc.
-  const taskPattern = /^(\s*[-*+]\s+)\[([ xX])\](\s+.*)$/;
+  // Match bullet and numbered tasks, retaining any trailing carriage return.
+  const taskPattern = /^(\s*(?:[-*+]|\d+[.)])\s+)\[([ xX])\](\s+.*)$/s;
   const match = line.match(taskPattern);
 
   if (!match) {

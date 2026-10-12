@@ -200,7 +200,7 @@ func TestCreateInstanceSettingIfNotExistsIsFirstWriterWins(t *testing.T) {
 	}
 	start := make(chan struct{})
 	results := make(chan result, candidateCount)
-	for i := 0; i < candidateCount; i++ {
+	for i := range candidateCount {
 		value := fmt.Sprintf("candidate-%02d", i)
 		go func() {
 			<-start
@@ -250,7 +250,6 @@ func TestInstanceSettingMemoRelatedSetting(t *testing.T) {
 	memoSetting, err := ts.GetInstanceMemoRelatedSetting(ctx)
 	require.NoError(t, err)
 	require.NotNil(t, memoSetting)
-	require.GreaterOrEqual(t, memoSetting.ContentLengthLimit, int32(store.DefaultContentLengthLimit))
 	require.NotEmpty(t, memoSetting.Reactions)
 
 	// Set custom memo related setting
@@ -259,8 +258,7 @@ func TestInstanceSettingMemoRelatedSetting(t *testing.T) {
 		Key: storepb.InstanceSettingKey_MEMO_RELATED,
 		Value: &storepb.InstanceSetting_MemoRelatedSetting{
 			MemoRelatedSetting: &storepb.InstanceMemoRelatedSetting{
-				ContentLengthLimit: 16384,
-				Reactions:          customReactions,
+				Reactions: customReactions,
 			},
 		},
 	})
@@ -269,7 +267,6 @@ func TestInstanceSettingMemoRelatedSetting(t *testing.T) {
 	// Verify
 	memoSetting, err = ts.GetInstanceMemoRelatedSetting(ctx)
 	require.NoError(t, err)
-	require.Equal(t, int32(16384), memoSetting.ContentLengthLimit)
 	require.Equal(t, customReactions, memoSetting.Reactions)
 
 	ts.Close()
@@ -285,7 +282,6 @@ func TestInstanceSettingStorageSetting(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, storageSetting)
 	require.Equal(t, storepb.InstanceStorageSetting_LOCAL, storageSetting.StorageType)
-	require.Equal(t, int64(30), storageSetting.UploadSizeLimitMb)
 	require.Equal(t, "assets/{timestamp}_{uuid}_{filename}", storageSetting.FilepathTemplate)
 
 	// Set custom storage setting
@@ -293,9 +289,8 @@ func TestInstanceSettingStorageSetting(t *testing.T) {
 		Key: storepb.InstanceSettingKey_STORAGE,
 		Value: &storepb.InstanceSetting_StorageSetting{
 			StorageSetting: &storepb.InstanceStorageSetting{
-				StorageType:       storepb.InstanceStorageSetting_LOCAL,
-				UploadSizeLimitMb: 100,
-				FilepathTemplate:  "uploads/{date}/{filename}",
+				StorageType:      storepb.InstanceStorageSetting_LOCAL,
+				FilepathTemplate: "uploads/{date}/{filename}",
 			},
 		},
 	})
@@ -305,7 +300,6 @@ func TestInstanceSettingStorageSetting(t *testing.T) {
 	storageSetting, err = ts.GetInstanceStorageSetting(ctx)
 	require.NoError(t, err)
 	require.Equal(t, storepb.InstanceStorageSetting_LOCAL, storageSetting.StorageType)
-	require.Equal(t, int64(100), storageSetting.UploadSizeLimitMb)
 	require.Equal(t, "uploads/{date}/{filename}", storageSetting.FilepathTemplate)
 
 	ts.Close()
@@ -631,8 +625,7 @@ func TestInstanceSettingEdgeCases(t *testing.T) {
 		Key: storepb.InstanceSettingKey_MEMO_RELATED,
 		Value: &storepb.InstanceSetting_MemoRelatedSetting{
 			MemoRelatedSetting: &storepb.InstanceMemoRelatedSetting{
-				ContentLengthLimit: 1000,
-				Reactions:          unicodeReactions,
+				Reactions: unicodeReactions,
 			},
 		},
 	})

@@ -8,8 +8,8 @@ describe("sidebar route content", () => {
     ["/explore", "explore"],
     ["/Explore/", "explore"],
     ["/ARCHIVED/", "archived"],
-    ["/u/steven", "profile"],
-    ["/U/Steven/", "profile"],
+    ["/u/steven", "common"],
+    ["/U/Steven/", "common"],
     ["/views", "views"],
     ["/Views/", "views"],
     ["/calendar", "calendar"],
@@ -45,24 +45,17 @@ describe("sidebar route content", () => {
     });
   });
 
-  it.each(["/attachments", "/calendar/2026/08/02"])("keeps the route scope when %s sends search to Home", (path) => {
+  it.each(["/attachments", "/calendar/2026/08/02"])("keeps the All scope when %s sends search to Explore", (path) => {
     expect(getRouteActionPolicy(path)).toEqual({
       searchScope: "route-collection",
-      searchDestination: "/",
+      searchDestination: "/explore",
     });
   });
 
-  it("keeps Profile search on Profile", () => {
-    expect(getRouteActionPolicy("/u/steven")).toEqual({
-      searchScope: "profile",
-      searchDestination: "/u/steven",
-    });
-  });
-
-  it("normalizes a Profile route without changing its spelling", () => {
-    expect(getRouteActionPolicy("/U/Steven/")).toEqual({
-      searchScope: "profile",
-      searchDestination: "/U/Steven",
+  it("keeps a creator when Calendar sends search to Home", () => {
+    expect(getRouteActionPolicy("/spaces/a/calendar/2026/08/02", "?creator=alice")).toEqual({
+      searchScope: "route-collection",
+      searchDestination: "/spaces/a",
     });
   });
 
@@ -86,7 +79,7 @@ describe("sidebar route content", () => {
   ])("sends search to All on %s", (path) => {
     expect(getRouteActionPolicy(path)).toEqual({
       searchScope: "all",
-      searchDestination: "/",
+      searchDestination: "/explore",
     });
   });
 });

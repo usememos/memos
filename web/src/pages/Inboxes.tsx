@@ -7,7 +7,7 @@ import SpaceInvitationMessage from "@/components/Inbox/SpaceInvitationMessage";
 import Placeholder from "@/components/Placeholder";
 import { useAppSidebar } from "@/contexts/AppSidebarContext";
 import { useNotifications } from "@/hooks/useUserQueries";
-import { UserNotification, UserNotification_Status, UserNotification_Type } from "@/types/proto/api/v1/user_service_pb";
+import { UserNotification, UserNotification_Status, UserNotification_Type } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 const Inboxes = () => {
@@ -51,7 +51,7 @@ const Inboxes = () => {
           <div className="w-full">
             {notifications.length === 0 ? (
               <Placeholder
-                variant="empty"
+                scene="inbox"
                 message={filter === "unread" ? t("inbox.no-unread") : filter === "archived" ? t("inbox.no-archived") : t("message.no-data")}
               />
             ) : (

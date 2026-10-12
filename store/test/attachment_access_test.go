@@ -127,6 +127,40 @@ func TestAttachmentSpaceFilterFiltersByMemoPlacement(t *testing.T) {
 	require.ElementsMatch(t, []int32{unlinked.ID, unassigned.ID}, attachmentIDs(unassignedAttachments))
 }
 
+func TestAttachmentCreatorFilterUsesMemoAuthor(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	defer ts.Close()
+
+	uploader, err := ts.CreateUser(ctx, &store.User{Username: "attachment-uploader", Role: store.RoleUser, PasswordHash: "hash"})
+	require.NoError(t, err)
+	author, err := ts.CreateUser(ctx, &store.User{Username: "attachment-memo-author", Role: store.RoleUser, PasswordHash: "hash"})
+	require.NoError(t, err)
+	memo, err := ts.CreateMemo(ctx, &store.Memo{
+		UID: "attachment-creator-memo", CreatorID: author.ID, Content: "public memo", Visibility: store.Public,
+	})
+	require.NoError(t, err)
+	linked, err := ts.CreateAttachment(ctx, &store.Attachment{
+		UID: "attachment-creator-linked", CreatorID: uploader.ID, Filename: "linked.txt", Type: "text/plain", MemoID: &memo.ID,
+	})
+	require.NoError(t, err)
+	unlinked, err := ts.CreateAttachment(ctx, &store.Attachment{
+		UID: "attachment-creator-unlinked", CreatorID: uploader.ID, Filename: "unlinked.txt", Type: "text/plain",
+	})
+	require.NoError(t, err)
+
+	access := &store.MemoAccessScope{UserID: &uploader.ID, AllowPublic: true, AllowProtected: true}
+	list := func(filter string) []*store.Attachment {
+		attachments, listErr := ts.ListAttachments(ctx, &store.FindAttachment{
+			Access: access, Filters: []string{filter}, SkipDefaultLimit: true,
+		})
+		require.NoError(t, listErr)
+		return attachments
+	}
+	require.Equal(t, []int32{linked.ID}, attachmentIDs(list(`creator == "users/attachment-memo-author"`)))
+	require.Equal(t, []int32{unlinked.ID}, attachmentIDs(list(`creator == "users/attachment-uploader"`)))
+}
+
 func TestAttachmentAccessScopeUsesDirectMemoAudience(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)

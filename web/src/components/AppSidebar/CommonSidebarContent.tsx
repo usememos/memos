@@ -1,7 +1,6 @@
 import { BookOpenIcon, BracesIcon, ExternalLinkIcon, GitForkIcon, InfoIcon, type LucideIcon } from "lucide-react";
 import { Link, matchPath, useLocation } from "react-router-dom";
 import { useAppSidebar } from "@/contexts/AppSidebarContext";
-import useCurrentUser from "@/hooks/useCurrentUser";
 import { MEMOS_API_DOCUMENTATION_URL, MEMOS_DOCUMENTATION_URL, MEMOS_GITHUB_URL } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { ROUTES } from "@/router/routes";
@@ -24,25 +23,22 @@ const RESOURCE_LINKS: ResourceLink[] = [
 const CommonSidebarContent = () => {
   const t = useTranslate();
   const location = useLocation();
-  const currentUser = useCurrentUser();
   const { setMobileOpen } = useAppSidebar();
   const aboutActive = Boolean(matchPath(ROUTES.ABOUT, location.pathname));
 
   return (
     <div className={SIDEBAR_SECTION_STACK_CLASSES}>
-      {currentUser && (
-        <SidebarSection ariaLabel={t("common.about")}>
-          <Link
-            to={ROUTES.ABOUT}
-            aria-current={aboutActive ? "page" : undefined}
-            onClick={() => setMobileOpen(false)}
-            className={cn(SIDEBAR_ROW_CLASSES, sidebarRowStateClasses(aboutActive ? "current" : "idle"))}
-          >
-            <SidebarRowIconSlot icon={InfoIcon} />
-            <span className="min-w-0 flex-1 truncate">{t("common.about")}</span>
-          </Link>
-        </SidebarSection>
-      )}
+      <SidebarSection ariaLabel={t("common.about")}>
+        <Link
+          to={ROUTES.ABOUT}
+          aria-current={aboutActive ? "page" : undefined}
+          onClick={() => setMobileOpen(false)}
+          className={cn(SIDEBAR_ROW_CLASSES, sidebarRowStateClasses(aboutActive ? "current" : "idle"))}
+        >
+          <SidebarRowIconSlot icon={InfoIcon} />
+          <span className="min-w-0 flex-1 truncate">{t("common.about")}</span>
+        </Link>
+      </SidebarSection>
 
       <SidebarSection label={t("common.resources")}>
         {RESOURCE_LINKS.map((resource) => (

@@ -22,11 +22,9 @@ func validateSQLiteMemoRelationEndpoints(ctx context.Context, executor dbExecuto
 		return nil
 	}
 
-	var actorStatus store.RowStatus
-	if err := executor.QueryRowContext(ctx, "SELECT row_status FROM user WHERE id = ?", mutation.MemoCreatorID).Scan(&actorStatus); err != nil {
-		if stderrors.Is(err, sql.ErrNoRows) {
-			return store.ErrMemoPermissionDenied
-		}
+	actorUserID := mutation.ActorUserID()
+	actor, err := readSQLiteMemoActor(ctx, executor, actorUserID)
+	if err != nil {
 		return err
 	}
 
@@ -40,8 +38,8 @@ func validateSQLiteMemoRelationEndpoints(ctx context.Context, executor dbExecuto
 			return err
 		}
 		snapshot := &store.MemoRelationEndpointSnapshot{
-			ActorUserID:        mutation.MemoCreatorID,
-			ActorActive:        actorStatus == store.Normal,
+			ActorUserID:        actorUserID,
+			Actor:              actor,
 			EndpointID:         state.id,
 			EndpointCreatorID:  state.creatorID,
 			EndpointRowStatus:  state.rowStatus,
@@ -52,8 +50,8 @@ func validateSQLiteMemoRelationEndpoints(ctx context.Context, executor dbExecuto
 			if err := executor.QueryRowContext(ctx, "SELECT EXISTS(SELECT 1 FROM space WHERE id = ?)", *state.spaceID).Scan(&snapshot.EndpointSpaceExists); err != nil {
 				return err
 			}
-			if snapshot.EndpointSpaceExists {
-				active, err := sqliteSpaceMemberActive(ctx, executor, *state.spaceID, mutation.MemoCreatorID)
+			if snapshot.EndpointSpaceExists && !actor.Admin {
+				active, err := sqliteSpaceMemberActive(ctx, executor, *state.spaceID, actorUserID)
 				if err != nil {
 					return err
 				}

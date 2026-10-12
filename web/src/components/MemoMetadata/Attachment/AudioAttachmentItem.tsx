@@ -1,12 +1,25 @@
-import { PauseIcon, PlayIcon } from "lucide-react";
+import { DownloadIcon, Maximize2Icon, PauseIcon, PlayIcon, RotateCcwIcon, RotateCwIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { formatFileSize, getFileTypeLabel } from "@/utils/format";
+import {
+  METADATA_ROW_BOX_CLASSES,
+  METADATA_ROW_HINT_CLASSES,
+  METADATA_ROW_ICON_CLASSES,
+  METADATA_ROW_LABEL_CLASSES,
+  METADATA_ROW_SLOT_BUTTON_CLASSES,
+  METADATA_ROW_TEXT_CLASSES,
+  MetadataRowDetail,
+} from "../MetadataSection";
 import { formatAudioTime, toggleAudioPlayback } from "./attachmentHelpers";
 
 const AUDIO_PLAYBACK_RATES = [0.5, 0.75, 1, 1.5, 2] as const;
 const UNKNOWN_DURATION_LABEL = "--:--";
+const SKIP_SECONDS = 10;
+const OPEN_PLAYER_CLASSES = cn(METADATA_ROW_LABEL_CLASSES, "cursor-pointer");
+const DOWNLOAD_CLASSES = buttonVariants({ variant: "quiet", size: "icon" });
 
 const getDurationLabel = (duration: number): string => (duration > 0 ? formatAudioTime(duration) : UNKNOWN_DURATION_LABEL);
 
@@ -19,16 +32,15 @@ interface AudioProgressBarProps {
   filename: string;
   currentTime: number;
   duration: number;
-  progressPercent: number;
   onSeek: (value: number) => void;
-  className?: string;
 }
 
-const AudioProgressBar = ({ filename, currentTime, duration, progressPercent, onSeek, className }: AudioProgressBarProps) => (
-  <div className={`flex items-center gap-2 ${className ?? ""}`}>
-    <div className="relative flex h-3.5 min-w-0 flex-1 items-center">
-      <div className="absolute inset-x-0 h-1 rounded-full bg-muted/75" />
-      <div className="absolute start-0 h-1 rounded-full bg-foreground/20" style={{ width: `${Math.min(progressPercent, 100)}%` }} />
+const AudioProgressBar = ({ filename, currentTime, duration, onSeek }: AudioProgressBarProps) => {
+  const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
+  return (
+    <div className="relative flex h-4 w-full items-center">
+      <div className="absolute inset-x-0 h-1 rounded-full bg-muted" />
+      <div className="absolute start-0 h-1 rounded-full bg-primary/60" style={{ width: `${Math.min(progressPercent, 100)}%` }} />
       <input
         type="range"
         min={0}
@@ -37,44 +49,46 @@ const AudioProgressBar = ({ filename, currentTime, duration, progressPercent, on
         value={Math.min(currentTime, duration || 0)}
         onChange={(e) => onSeek(Number(e.target.value))}
         aria-label={`Seek ${filename}`}
-        className="relative z-10 h-3.5 w-full cursor-pointer appearance-none bg-transparent outline-none disabled:cursor-default
+        className="relative z-10 h-4 w-full cursor-pointer appearance-none bg-transparent outline-none disabled:cursor-default
           [&::-webkit-slider-runnable-track]:h-1 [&::-webkit-slider-runnable-track]:rounded-full
           [&::-webkit-slider-runnable-track]:bg-transparent
-          [&::-webkit-slider-thumb]:mt-[-2.5px] [&::-webkit-slider-thumb]:size-2 [&::-webkit-slider-thumb]:appearance-none
-          [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-border/50
-          [&::-webkit-slider-thumb]:bg-background/95
+          [&::-webkit-slider-thumb]:mt-[-4px] [&::-webkit-slider-thumb]:size-3 [&::-webkit-slider-thumb]:appearance-none
+          [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border [&::-webkit-slider-thumb]:border-border
+          [&::-webkit-slider-thumb]:bg-background [&::-webkit-slider-thumb]:shadow-xs
           [&::-moz-range-track]:h-1 [&::-moz-range-track]:rounded-full [&::-moz-range-track]:bg-transparent
-          [&::-moz-range-thumb]:size-2 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border
-          [&::-moz-range-thumb]:border-border/50 [&::-moz-range-thumb]:bg-background/95"
+          [&::-moz-range-thumb]:size-3 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border
+          [&::-moz-range-thumb]:border-border [&::-moz-range-thumb]:bg-background"
         disabled={duration === 0}
       />
     </div>
-  </div>
-);
+  );
+};
 
 interface AudioAttachmentItemProps {
   filename: string;
   sourceUrl: string;
   mimeType: string;
   size?: number;
-  title?: string;
-  compact?: boolean;
-  className?: string;
 }
 
-const AudioAttachmentItem = ({ filename, sourceUrl, mimeType, size, title, compact = false, className }: AudioAttachmentItemProps) => {
+/**
+ * An audio attachment is a metadata row like a document. The play control in the leading
+ * slot starts and pauses playback in place; the name opens a small player with the
+ * scrubber, skip, speed and download. The audio element lives here, not in the dialog, so
+ * playback carries on when the dialog closes and the row's glyph always reflects it.
+ */
+const AudioAttachmentItem = ({ filename, sourceUrl, mimeType, size }: AudioAttachmentItemProps) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [playbackRate, setPlaybackRate] = useState<(typeof AUDIO_PLAYBACK_RATES)[number]>(1);
-  const displayTitle = title ?? filename;
+  const [playerOpen, setPlayerOpen] = useState(false);
+  // Only the open player reads the playhead, so the row does not re-render on every timeupdate while it plays.
+  const [currentTime, setCurrentTime] = useState(0);
   const fileTypeLabel = getFileTypeLabel(mimeType);
   const fileSizeLabel = size ? formatFileSize(size) : undefined;
-  const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
-  const currentTimeLabel = formatAudioTime(currentTime);
-  const durationLabel = getDurationLabel(duration);
-  const timeLabel = `${currentTimeLabel} / ${durationLabel}`;
+  const PlaybackIcon = isPlaying ? PauseIcon : PlayIcon;
+  const playbackLabel = isPlaying ? `Pause ${filename}` : `Play ${filename}`;
 
   useEffect(() => {
     if (!audioRef.current) {
@@ -105,6 +119,18 @@ const AudioAttachmentItem = ({ filename, sourceUrl, mimeType, size, title, compa
     setCurrentTime(nextTime);
   };
 
+  const skip = (seconds: number) => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    const limit = duration > 0 ? duration : Number.POSITIVE_INFINITY;
+    handleSeek(Math.min(Math.max(audio.currentTime + seconds, 0), limit));
+  };
+
+  const handlePlayerOpenChange = (open: boolean) => {
+    if (open) setCurrentTime(audioRef.current?.currentTime ?? 0);
+    setPlayerOpen(open);
+  };
+
   const handlePlaybackRateChange = () => {
     setPlaybackRate((currentRate) => getNextPlaybackRate(currentRate));
   };
@@ -114,50 +140,23 @@ const AudioAttachmentItem = ({ filename, sourceUrl, mimeType, size, title, compa
   };
 
   return (
-    <div className={cn("rounded-xl border border-border/40 bg-background/75", compact ? "px-3 py-2.5" : "px-2 py-1.5", className)}>
-      <div className="flex items-start justify-between gap-2">
-        <div className={cn("min-w-0 flex flex-1", compact ? "flex-col gap-0.5" : "items-baseline gap-1")}>
-          <div className="truncate text-sm font-medium leading-5 text-foreground" title={filename}>
-            {displayTitle}
-          </div>
-          <div className="truncate text-[11px] leading-4 text-muted-foreground">
-            {fileTypeLabel}
-            {fileSizeLabel ? ` · ${fileSizeLabel}` : ""}
-          </div>
-        </div>
-
-        <Button
-          variant="outline"
-          size="icon-sm"
+    <>
+      <div className={METADATA_ROW_BOX_CLASSES}>
+        <button
+          type="button"
+          className={METADATA_ROW_SLOT_BUTTON_CLASSES}
           onClick={togglePlayback}
-          aria-label={isPlaying ? `Pause ${displayTitle}` : `Play ${displayTitle}`}
+          aria-pressed={isPlaying}
+          aria-label={playbackLabel}
         >
-          {isPlaying ? <PauseIcon className="size-2.5" /> : <PlayIcon className="size-2.5 translate-x-[0.5px]" />}
-        </Button>
-      </div>
-
-      <div className={cn("mt-1", compact ? "space-y-1.5" : "flex items-center gap-1")}>
-        <AudioProgressBar
-          filename={filename}
-          currentTime={currentTime}
-          duration={duration}
-          progressPercent={progressPercent}
-          onSeek={handleSeek}
-          className="min-w-0 flex-1"
-        />
-
-        <div className={cn("flex items-center", compact ? "justify-between gap-2" : "shrink-0 gap-1")}>
-          <div className="shrink-0 text-[10px] tabular-nums text-muted-foreground">{timeLabel}</div>
-
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handlePlaybackRateChange}
-            aria-label={`Playback speed ${playbackRate}x for ${displayTitle}`}
-          >
-            {playbackRate}x
-          </Button>
-        </div>
+          <PlaybackIcon className={METADATA_ROW_ICON_CLASSES} strokeWidth={1.8} />
+        </button>
+        {/* The name opens the player; an open glyph takes the detail rail's place once the row is engaged. */}
+        <button type="button" className={OPEN_PLAYER_CLASSES} onClick={() => handlePlayerOpenChange(true)} title={filename}>
+          <span className={METADATA_ROW_TEXT_CLASSES}>{filename}</span>
+          <MetadataRowDetail parts={[duration > 0 ? getDurationLabel(duration) : undefined, fileTypeLabel, fileSizeLabel]} />
+          <Maximize2Icon aria-hidden="true" className={METADATA_ROW_HINT_CLASSES} strokeWidth={1.8} />
+        </button>
       </div>
 
       <audio
@@ -166,7 +165,7 @@ const AudioAttachmentItem = ({ filename, sourceUrl, mimeType, size, title, compa
         className="hidden"
         onLoadedMetadata={(e) => handleDuration(e.currentTarget.duration)}
         onDurationChange={(e) => handleDuration(e.currentTarget.duration)}
-        onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
+        onTimeUpdate={playerOpen ? (e) => setCurrentTime(e.currentTarget.currentTime) : undefined}
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
         onEnded={() => {
@@ -174,7 +173,49 @@ const AudioAttachmentItem = ({ filename, sourceUrl, mimeType, size, title, compa
           setCurrentTime(0);
         }}
       />
-    </div>
+
+      <Dialog open={playerOpen} onOpenChange={handlePlayerOpenChange}>
+        <DialogContent size="sm">
+          <DialogHeader>
+            <DialogTitle>{filename}</DialogTitle>
+            <DialogDescription>{[fileTypeLabel, fileSizeLabel].filter(Boolean).join(" · ")}</DialogDescription>
+          </DialogHeader>
+
+          <div className="flex flex-col gap-1">
+            <AudioProgressBar filename={filename} currentTime={currentTime} duration={duration} onSeek={handleSeek} />
+            <div className="flex items-center justify-between text-2xs tabular-nums text-muted-foreground/60">
+              <span>{formatAudioTime(currentTime)}</span>
+              <span>{getDurationLabel(duration)}</span>
+            </div>
+          </div>
+
+          {/* One 32px rail: download at the start, transport in the middle, speed at the end. */}
+          <div className="grid grid-cols-[1fr_auto_1fr] items-center">
+            <div className="flex justify-start">
+              <a href={sourceUrl} download className={DOWNLOAD_CLASSES} aria-label={`Download ${filename}`}>
+                <DownloadIcon className="size-4" strokeWidth={1.8} />
+              </a>
+            </div>
+            <div className="flex items-center gap-1">
+              <Button variant="quiet" size="icon" onClick={() => skip(-SKIP_SECONDS)} aria-label={`Back ${SKIP_SECONDS} seconds`}>
+                <RotateCcwIcon className="size-4" strokeWidth={1.8} />
+              </Button>
+              <Button size="icon" onClick={togglePlayback} aria-label={playbackLabel}>
+                <PlaybackIcon className="size-4" strokeWidth={2} />
+              </Button>
+              <Button variant="quiet" size="icon" onClick={() => skip(SKIP_SECONDS)} aria-label={`Forward ${SKIP_SECONDS} seconds`}>
+                <RotateCwIcon className="size-4" strokeWidth={1.8} />
+              </Button>
+            </div>
+            <div className="flex justify-end">
+              <Button variant="quiet" size="sm" onClick={handlePlaybackRateChange} aria-label={`Playback speed ${playbackRate}x`}>
+                {playbackRate}x
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 

@@ -47,8 +47,8 @@ import { handleError } from "@/lib/error";
 import { extractUsernameFromName } from "@/lib/resource-names";
 import { extractSpaceUidFromName } from "@/lib/space-display";
 import { ROUTES } from "@/router/routes";
-import { type Space, type SpaceInvitation, type SpaceMember, SpaceMember_Role } from "@/types/proto/api/v1/space_service_pb";
-import type { User } from "@/types/proto/api/v1/user_service_pb";
+import { type Space, type SpaceInvitation, type SpaceMember, SpaceMember_Role } from "@/types/proto/api/space_service_pb";
+import type { User } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 type DetailTab = "general" | "members";
@@ -66,7 +66,7 @@ const MemberIdentity = ({ member, user, isCurrentUser }: { member: SpaceMember; 
 
   return (
     <div className="flex min-w-0 items-center gap-3">
-      <UserAvatar className="size-10 rounded-xl" avatarUrl={user?.avatarUrl} />
+      <UserAvatar className="size-10" avatarUrl={user?.avatarUrl} name={displayName} />
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-1.5">
           <p className="truncate text-sm font-medium">{displayName}</p>
@@ -84,7 +84,7 @@ const InvitationIdentity = ({ invitation, user }: { invitation: SpaceInvitation;
 
   return (
     <div className="flex min-w-0 items-center gap-3">
-      <UserAvatar className="size-10 rounded-xl" avatarUrl={user?.avatarUrl} />
+      <UserAvatar className="size-10" avatarUrl={user?.avatarUrl} name={displayName} />
       <div className="min-w-0">
         <p className="truncate text-sm font-medium">{displayName}</p>
         <p className="mt-0.5 truncate text-xs text-muted-foreground">@{username}</p>

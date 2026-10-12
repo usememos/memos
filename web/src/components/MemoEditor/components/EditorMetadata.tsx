@@ -1,10 +1,19 @@
 import type { FC } from "react";
 import { AttachmentListEditor, LocationDisplayEditor, RelationListEditor } from "@/components/MemoMetadata";
+import { METADATA_ROW_LIST_CLASSES } from "@/components/MemoMetadata/MetadataSection";
 import { extractManagedAttachmentUIDs } from "@/utils/managed-attachment";
 import { useEditorContext, useEditorSelector } from "../state";
 import type { EditorMetadataProps } from "../types";
 
-export const EditorMetadata: FC<EditorMetadataProps> = ({ memoName, uploadingLocalFileURLs, onInsertAttachments, onInsertLocalFiles }) => {
+export const EditorMetadata: FC<EditorMetadataProps> = ({
+  memoName,
+  uploadingLocalFileURLs,
+  onInsertAttachments,
+  onInsertLocalFiles,
+  onTranscribeAttachment,
+  transcribingAttachment,
+  transcriptionDisabled,
+}) => {
   const { actions, dispatch } = useEditorContext();
   const attachments = useEditorSelector((s) => s.metadata.attachments);
   const localFiles = useEditorSelector((s) => s.localFiles);
@@ -29,6 +38,9 @@ export const EditorMetadata: FC<EditorMetadataProps> = ({ memoName, uploadingLoc
         onInsertLocalFiles={onInsertLocalFiles}
         placementActionsDisabled={placementActionsDisabled}
         uploadingLocalFileURLs={uploadingLocalFileURLs}
+        onTranscribeAttachment={onTranscribeAttachment}
+        transcribingAttachment={transcribingAttachment}
+        transcriptionDisabled={transcriptionDisabled}
       />
 
       <RelationListEditor
@@ -37,7 +49,11 @@ export const EditorMetadata: FC<EditorMetadataProps> = ({ memoName, uploadingLoc
         memoName={memoName}
       />
 
-      {location && <LocationDisplayEditor location={location} onRemove={() => dispatch(actions.setMetadata({ location: undefined }))} />}
+      {location && (
+        <div className={METADATA_ROW_LIST_CLASSES}>
+          <LocationDisplayEditor location={location} onRemove={() => dispatch(actions.setMetadata({ location: undefined }))} />
+        </div>
+      )}
     </div>
   );
 };

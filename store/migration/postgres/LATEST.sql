@@ -13,12 +13,14 @@ CREATE TABLE "user" (
   row_status TEXT NOT NULL DEFAULT 'NORMAL',
   username TEXT COLLATE "C" NOT NULL UNIQUE,
   role TEXT NOT NULL DEFAULT 'USER',
-  email TEXT NOT NULL DEFAULT '',
+  email TEXT COLLATE "C" DEFAULT NULL,
   nickname TEXT NOT NULL DEFAULT '',
   password_hash TEXT NOT NULL,
   avatar_url TEXT NOT NULL,
   description TEXT NOT NULL DEFAULT ''
 );
+
+CREATE UNIQUE INDEX idx_user_email ON "user" (email);
 
 -- user_setting
 CREATE TABLE user_setting (
@@ -64,6 +66,7 @@ CREATE TABLE memo (
 );
 
 CREATE INDEX idx_memo_space_id ON memo(space_id, row_status, created_ts DESC, id DESC);
+CREATE INDEX idx_memo_creator_id ON memo(creator_id);
 
 -- memo_relation
 CREATE TABLE memo_relation (
@@ -92,6 +95,8 @@ CREATE TABLE attachment (
   reference TEXT NOT NULL DEFAULT '',
   payload TEXT NOT NULL DEFAULT '{}'
 );
+
+CREATE INDEX idx_attachment_creator_id ON attachment(creator_id);
 
 -- idp
 CREATE TABLE idp (

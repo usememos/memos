@@ -1,7 +1,7 @@
 import { create } from "@bufbuild/protobuf";
 import { useCallback, useMemo, useRef, useState } from "react";
 import type { MapPoint } from "@/components/map/types";
-import { Location, LocationSchema } from "@/types/proto/api/v1/memo_service_pb";
+import { Location, LocationSchema } from "@/types/proto/api/memo_service_pb";
 import { LocationState } from "../types/insertMenu";
 
 export const useLocation = (initialLocation?: Location) => {

@@ -3,6 +3,9 @@ import { ROUTES } from "@/router/routes";
 /** Query parameter used to preserve the intended destination across the auth flow. */
 export const AUTH_REDIRECT_PARAM = "redirect";
 
+/** Set to false to show manual SSO controls instead of automatically redirecting. */
+export const AUTH_AUTO_SIGN_IN_PARAM = "auto_sign_in";
+
 /** Query parameter used to surface why the user was sent to the auth page. */
 export const AUTH_REASON_PARAM = "reason";
 
@@ -39,7 +42,7 @@ export function getSafeRedirectPath(path: string | null | undefined): string | u
  * Builds a URL pointing at the auth entry page, optionally embedding a validated
  * `redirect` target and a machine-readable `reason` code.
  */
-export function buildAuthRoute(options?: { redirect?: string | null; reason?: string | null }): string {
+export function buildAuthRoute(options?: { redirect?: string | null; reason?: string | null; autoSignIn?: boolean }): string {
   const searchParams = new URLSearchParams();
   const redirectPath = getSafeRedirectPath(options?.redirect);
 
@@ -51,6 +54,10 @@ export function buildAuthRoute(options?: { redirect?: string | null; reason?: st
     searchParams.set(AUTH_REASON_PARAM, options.reason);
   }
 
+  if (options?.autoSignIn === false) {
+    searchParams.set(AUTH_AUTO_SIGN_IN_PARAM, "false");
+  }
+
   const search = searchParams.toString();
   return search ? `${ROUTES.AUTH}?${search}` : ROUTES.AUTH;
 }
@@ -60,7 +67,7 @@ const PUBLIC_ROUTE_PREFIXES = [
   ROUTES.ABOUT, // About page
   ROUTES.EXPLORE, // Explore page
   `${ROUTES.SHARED_MEMO}/`, // Shared memo pages (share-link viewer)
-  "/u/", // User profile pages (dynamic)
+  "/u/", // Legacy author links redirect to Home with a creator filter
   "/memos/", // Individual memo detail pages (dynamic)
 ] as const;
 

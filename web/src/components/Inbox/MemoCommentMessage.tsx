@@ -6,7 +6,7 @@ import useNavigateTo from "@/hooks/useNavigateTo";
 import { useArchiveNotification, useDeleteNotification } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
 import { cn } from "@/lib/utils";
-import { UserNotification, UserNotification_Status } from "@/types/proto/api/v1/user_service_pb";
+import { UserNotification, UserNotification_Status } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 interface Props {
@@ -83,7 +83,11 @@ function MemoCommentMessage({ notification }: Props) {
 
       <div className="flex items-start gap-3">
         <div className="relative shrink-0">
-          <UserAvatar className="w-10 h-10 ring-1 ring-border/40" avatarUrl={sender?.avatarUrl} />
+          <UserAvatar
+            className="w-10 h-10 ring-1 ring-border/40"
+            avatarUrl={sender?.avatarUrl}
+            name={sender?.displayName || sender?.username}
+          />
           <div
             className={cn(
               "absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-background flex items-center justify-center shadow-md transition-all",

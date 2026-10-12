@@ -17,6 +17,12 @@ export interface EditorController {
   setMarkdown(markdown: string): void;
   /** Insert markdown at the cursor as its own block. */
   insertMarkdown(markdown: string): void;
+  /** Actual Markdown tags, excluding code, URLs, and other literal contexts. */
+  getTags(): string[];
+  /** Whether the document contains a parsed Markdown checklist, checked or unchecked. */
+  hasChecklist(): boolean;
+  /** Insert a tag at the caret without replacing selected text, then advance the caret. Returns whether it was inserted. */
+  insertTag(tag: string): boolean;
   createUploadAnchor(descriptor: UploadAnchorDescriptor, position?: number): void;
   updateUploadAnchor(descriptor: UploadAnchorDescriptor): void;
   resolveUploadAnchor(id: string, markdown: string): void;

@@ -6,7 +6,7 @@ import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
 import remarkGfm from "remark-gfm";
 import { describe, expect, it } from "vitest";
-import { isTrustedIframeSrc, SANITIZE_SCHEMA } from "@/components/MemoContent/constants";
+import { isTrustedIframeSrc, memoUrlTransform, SANITIZE_SCHEMA } from "@/components/MemoContent/constants";
 import { remarkCurrencySafeMath } from "@/utils/remark-plugins/remark-currency-safe-math";
 
 type IframeProps = React.ComponentProps<"iframe">;
@@ -31,7 +31,7 @@ const renderMemoContent = (content: string): string =>
 
 const renderGfmContent = (content: string): string =>
   renderToStaticMarkup(
-    <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[[rehypeSanitize, SANITIZE_SCHEMA]]}>
+    <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[[rehypeSanitize, SANITIZE_SCHEMA]]} urlTransform={memoUrlTransform}>
       {content}
     </ReactMarkdown>,
   );
@@ -50,6 +50,22 @@ describe("memo content sanitization", () => {
 
     expect(html).toMatch(/class="katex"/);
     expect(html).toMatch(/class="katex-html"/);
+  });
+
+  it("keeps tel: and sms: link targets", () => {
+    const html = renderGfmContent("[phone me](tel:+440000000000) [text me](sms:+440000000000?body=hi)");
+
+    expect(html).toContain('href="tel:+440000000000"');
+    expect(html).toContain('href="sms:+440000000000?body=hi"');
+  });
+
+  it("still strips script-capable link targets", () => {
+    const html = renderGfmContent("[x](javascript:alert(1)) [y](data:text/html,hi) [z](vbscript:msgbox)");
+
+    expect(html).not.toMatch(/javascript:/);
+    expect(html).not.toMatch(/data:/);
+    expect(html).not.toMatch(/vbscript:/);
+    expect(html).toMatch(/<a>x<\/a>/);
   });
 
   it("preserves checked state for GFM task list items", () => {
@@ -74,6 +90,17 @@ describe("trusted iframe providers", () => {
     expect(isTrustedIframeSrc("https://app.diagrams.net/?embed=1")).toBe(true);
     expect(isTrustedIframeSrc("https://www.draw.io/?embed=1")).toBe(true);
     expect(isTrustedIframeSrc("https://evil.example/embed/abc123")).toBe(false);
+  });
+
+  it("drops picture sources that would bypass the https-only image rule", () => {
+    const html = renderMemoContent(
+      '<picture><source srcset="http://tracker.example/a.png"><img src="https://img.example/a.png"></picture>',
+    );
+
+    expect(html).not.toMatch(/<picture/);
+    expect(html).not.toMatch(/<source/);
+    expect(html).not.toMatch(/tracker\.example/);
+    expect(html).toMatch(/img\.example\/a\.png/);
   });
 
   it("drops untrusted iframe embeds during rendering", () => {

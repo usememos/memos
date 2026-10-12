@@ -1,4 +1,4 @@
 export { LinkMemoDialog } from "./LinkMemoDialog";
-export { default as RelationCard } from "./RelationCard";
 export { default as RelationListEditor } from "./RelationListEditor";
-export { default as RelationListView } from "./RelationListView";
+export { default as RelationRow } from "./RelationRow";
+export { default as RelationRows } from "./RelationRows";

@@ -6,7 +6,7 @@ import type { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useMapMemos } from "@/components/MapView/useMapMemos";
 import { memoDetailQueryOptions, useDeleteMemo, useUpdateMemo } from "@/hooks/useMemoQueries";
-import { MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
+import { MemoSchema } from "@/types/proto/api/memo_service_pb";
 
 const state = vi.hoisted(() => ({ list: vi.fn(), update: vi.fn(), delete: vi.fn(), get: vi.fn(), filter: "", settingsReady: true }));
 vi.mock("@/connect", () => ({
@@ -46,7 +46,7 @@ describe("map pagination", () => {
     expect(state.list.mock.calls.map(([request]) => request.pageToken)).toEqual(["", "second", "third"]);
     const request = state.list.mock.calls[0][0];
     expect(request.pageSize).toBe(500);
-    expect(request.filter).toContain('creator == "users/qa"');
+    expect(request.filter).not.toContain('creator == "users/qa"');
     expect(request.filter).toContain('space == "spaces/travel"');
     expect(request.filter).toContain("has_location");
   });

@@ -1,7 +1,7 @@
 import { create } from "@bufbuild/protobuf";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { LocalFile } from "@/components/MemoEditor/types/attachment";
-import { MediaMetadataSchema } from "@/types/proto/api/v1/attachment_service_pb";
+import { MediaMetadataSchema } from "@/types/proto/api/attachment_service_pb";
 
 const mocks = vi.hoisted(() => ({
   uploadAttachment: vi.fn(),

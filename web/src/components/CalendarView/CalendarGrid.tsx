@@ -1,10 +1,11 @@
 import { useDirection } from "@base-ui/react/direction-provider";
 import dayjs from "dayjs";
-import { type KeyboardEvent, useLayoutEffect, useRef, useState } from "react";
-import { type CalendarData, useMonthDays, useWeekdayLabels } from "@/components/ActivityCalendar";
+import { type KeyboardEvent, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { type CalendarData, calculateMaxCount, useMonthDays, useWeekdayLabels, WEEKDAY_LABEL_CLASSES } from "@/components/ActivityCalendar";
 import { useInstance } from "@/contexts/InstanceContext";
 import { useView } from "@/contexts/ViewContext";
 import { ISO_DATE_FORMAT } from "@/lib/calendar-utils";
+import { cn } from "@/lib/utils";
 import { CalendarDayCell, layoutForCellSize } from "./CalendarDayCell";
 import type { CalendarMonthModel } from "./dayModel";
 import { getDefaultDate } from "./paths";
@@ -23,8 +24,10 @@ export interface CalendarGridProps {
   model: CalendarMonthModel;
   pending: boolean;
   selectedDate?: string;
-  /** Below md the compact calendar shows dates and counts, with the stream beneath. */
+  /** Below md the compact calendar shows tinted dates with a mark each, with the stream beneath. */
   showRows: boolean;
+  /** No single creator is selected, so previews carry their author. */
+  showAuthors: boolean;
 }
 
 const KEY_DELTAS: Record<string, number> = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -DAYS_IN_WEEK, ArrowDown: DAYS_IN_WEEK };
@@ -37,7 +40,17 @@ const cornerOf = (index: number, total: number): "ss" | "se" | "es" | "ee" | und
   return undefined;
 };
 
-export const CalendarGrid = ({ month, monthLabel, today, counts, model, pending, selectedDate, showRows }: CalendarGridProps) => {
+export const CalendarGrid = ({
+  month,
+  monthLabel,
+  today,
+  counts,
+  model,
+  pending,
+  selectedDate,
+  showRows,
+  showAuthors,
+}: CalendarGridProps) => {
   const direction = useDirection();
   const { generalSetting } = useInstance();
   const { timeBasis } = useView();
@@ -46,6 +59,8 @@ export const CalendarGrid = ({ month, monthLabel, today, counts, model, pending,
   const weekdayLabels = useWeekdayLabels(generalSetting.weekStartDayOffset);
 
   const days = useMonthDays({ month, data: counts, weekStartDayOffset: generalSetting.weekStartDayOffset, today, selectedDate });
+  // The same all-time ceiling the sidebar heatmap uses, so a day reads the same tint in both.
+  const maxCount = useMemo(() => calculateMaxCount(counts), [counts]);
   const firstDate = `${month}-01`;
   const lastDate = dayjs(firstDate).endOf("month").format(ISO_DATE_FORMAT);
   // One tab stop for the grid: the open day, else today, else the first of the month.
@@ -64,6 +79,8 @@ export const CalendarGrid = ({ month, monthLabel, today, counts, model, pending,
     observer.observe(el);
     return () => observer.disconnect();
   }, [rowCount, showRows]);
+  // One layout for every cell, and a stable reference so unchanged cells skip re-rendering.
+  const layout = useMemo(() => layoutForCellSize(cellSize.width, showRows ? cellSize.height : 0), [cellSize, showRows]);
 
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     const current = (event.target as HTMLElement).dataset.calendarDate;
@@ -91,12 +108,12 @@ export const CalendarGrid = ({ month, monthLabel, today, counts, model, pending,
       <div className="grid grid-cols-7 px-px" aria-hidden="true">
         {weekdayLabels.map((label) => (
           <div key={label} className="flex h-8 items-end px-3 pb-1.5">
-            <span className="text-2xs leading-none text-muted-foreground/60">{label}</span>
+            <span className={cn("leading-none", WEEKDAY_LABEL_CLASSES)}>{label}</span>
           </div>
         ))}
       </div>
       {/* From xl the grid fills the sticky section, so the rows share its height evenly with a
-          floor that keeps the date, count, and a short excerpt visible on short windows. */}
+          floor that keeps the date and a short excerpt visible on short windows. */}
       <div
         ref={cellsRef}
         className="grid auto-rows-fr grid-cols-7 overflow-hidden rounded-lg border border-border/70 bg-card md:[grid-auto-rows:9rem] xl:min-h-0 xl:flex-1 xl:[grid-auto-rows:minmax(5.5rem,1fr)]"
@@ -106,9 +123,11 @@ export const CalendarGrid = ({ month, monthLabel, today, counts, model, pending,
             key={day.date}
             day={day}
             summary={model[day.date]}
-            layout={layoutForCellSize(cellSize.width, showRows ? cellSize.height : 0)}
+            maxCount={maxCount}
+            layout={layout}
             pending={pending}
             timeBasis={timeBasis}
+            showAuthor={showAuthors}
             tabIndex={day.date === focusDate ? 0 : -1}
             isLastColumn={index % DAYS_IN_WEEK === DAYS_IN_WEEK - 1}
             isLastRow={index >= days.length - DAYS_IN_WEEK}

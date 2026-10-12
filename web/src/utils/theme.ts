@@ -175,10 +175,27 @@ const setThemeAttribute = (theme: ResolvedTheme): void => {
  * Updates the theme-color meta tag to match the current theme background.
  * This colors the browser/status bar on mobile devices.
  */
-const updateThemeColorMeta = (theme: ResolvedTheme): void => {
-  const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
-  if (meta) {
-    meta.content = THEME_COLORS[theme];
+const updateThemeColorMeta = (theme: Theme): void => {
+  const lightMeta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"][media*="light"]');
+  const darkMeta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"][media*="dark"]');
+
+  if (theme === "system") {
+    if (lightMeta) {
+      lightMeta.content = THEME_COLORS.default;
+    }
+    if (darkMeta) {
+      darkMeta.content = THEME_COLORS["default-dark"];
+    }
+    return;
+  }
+
+  const resolvedTheme = resolveTheme(theme);
+  const color = THEME_COLORS[resolvedTheme];
+  if (lightMeta) {
+    lightMeta.content = color;
+  }
+  if (darkMeta) {
+    darkMeta.content = color;
   }
 };
 
@@ -213,7 +230,7 @@ export const loadTheme = (themeName: string): void => {
 
   injectThemeStyle(resolvedTheme);
   setThemeAttribute(resolvedTheme);
-  updateThemeColorMeta(resolvedTheme);
+  updateThemeColorMeta(validTheme);
   updateColorScheme(resolvedTheme);
   setStoredTheme(validTheme); // Store original theme preference (not resolved)
 };

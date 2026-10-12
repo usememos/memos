@@ -1,0 +1,1081 @@
+package fileserver
+
+import (
+	"bytes"
+	"context"
+	"encoding/base64"
+	"encoding/binary"
+	"fmt"
+	"hash/crc32"
+	"image"
+	"image/color"
+	"image/png"
+	"net/http"
+	"net/http/httptest"
+	"os"
+	"path/filepath"
+	"strings"
+	"testing"
+	"time"
+
+	"github.com/labstack/echo/v5"
+	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"github.com/usememos/memos/internal/profile"
+	"github.com/usememos/memos/internal/random"
+	"github.com/usememos/memos/internal/testutil"
+	"github.com/usememos/memos/internal/testutil/fakes3"
+	"github.com/usememos/memos/markdown"
+	apipb "github.com/usememos/memos/proto/gen/api"
+	storepb "github.com/usememos/memos/proto/gen/store"
+	"github.com/usememos/memos/server/api"
+	"github.com/usememos/memos/server/auth"
+	"github.com/usememos/memos/store"
+	"github.com/usememos/memos/store/db"
+	teststore "github.com/usememos/memos/store/test"
+)
+
+func TestServeAttachmentFile_S3(t *testing.T) {
+	ctx := context.Background()
+	fake := fakes3.New(t, "file-server-attachments")
+	svc, fs, stores, cleanup := newShareAttachmentTestServices(ctx, t)
+	defer cleanup()
+
+	configuredStorage := &storepb.Storage{
+		Id:     "s3-files",
+		Name:   "File server S3",
+		Type:   storepb.StorageType_STORAGE_TYPE_S3,
+		Config: &storepb.Storage_S3Config{S3Config: fake.Config("file-server-attachments")},
+	}
+	_, err := stores.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_STORAGE,
+		Value: &storepb.InstanceSetting_StorageSetting{StorageSetting: &storepb.InstanceStorageSetting{
+			FilepathTemplate: "files/{uuid}_{filename}",
+			Storages:         []*storepb.Storage{configuredStorage},
+			DefaultStorageId: configuredStorage.Id,
+		}},
+	})
+	require.NoError(t, err)
+
+	creator, err := stores.CreateUser(ctx, &store.User{
+		Username: "s3-file-owner",
+		Role:     store.RoleUser,
+		Email:    "s3-file-owner@example.com",
+	})
+	require.NoError(t, err)
+	creatorCtx := context.WithValue(ctx, auth.UserIDContextKey, creator.ID)
+	content := []byte("content streamed from S3")
+	attachment, err := svc.CreateAttachment(creatorCtx, &apipb.CreateAttachmentRequest{Attachment: &apipb.Attachment{
+		Filename: "document.txt",
+		Type:     "text/plain",
+		Content:  content,
+	}})
+	require.NoError(t, err)
+	_, err = svc.CreateMemo(creatorCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{
+		Content:     "public S3 attachment",
+		Visibility:  apipb.Visibility_PUBLIC,
+		Attachments: []*apipb.Attachment{{Name: attachment.Name}},
+	}})
+	require.NoError(t, err)
+
+	e := echo.New()
+	fs.RegisterRoutes(e)
+	recorder := httptest.NewRecorder()
+	e.ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/%s", attachment.Name, attachment.Filename), nil))
+
+	require.Equal(t, http.StatusOK, recorder.Code)
+	require.Equal(t, content, recorder.Body.Bytes())
+	require.Equal(t, "text/plain; charset=utf-8", recorder.Header().Get(echo.HeaderContentType))
+
+	// S3 cannot produce multipart range responses. The fileserver may ignore a
+	// Range request and send the complete representation instead of forwarding
+	// a request the backend rejects.
+	multiRangeRequest := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/%s", attachment.Name, attachment.Filename), nil)
+	multiRangeRequest.Header.Set("Range", "bytes=0-2,5-7")
+	multiRangeRecorder := httptest.NewRecorder()
+	e.ServeHTTP(multiRangeRecorder, multiRangeRequest)
+	require.Equal(t, http.StatusOK, multiRangeRecorder.Code)
+	require.Equal(t, content, multiRangeRecorder.Body.Bytes())
+	require.Empty(t, multiRangeRecorder.Header().Get("Content-Range"))
+}
+
+func TestServeAttachmentFile_ShareTokenAllowsDirectMemoAttachment(t *testing.T) {
+	ctx := context.Background()
+	svc, fs, stores, cleanup := newShareAttachmentTestServices(ctx, t)
+	defer cleanup()
+
+	creator, err := svc.Store.CreateUser(ctx, &store.User{
+		Username: "share-parent-owner",
+		Role:     store.RoleUser,
+		Email:    "share-parent-owner@example.com",
+	})
+	require.NoError(t, err)
+
+	creatorCtx := context.WithValue(ctx, auth.UserIDContextKey, creator.ID)
+
+	attachment, err := svc.CreateAttachment(creatorCtx, &apipb.CreateAttachmentRequest{
+		Attachment: &apipb.Attachment{
+			Filename: "memo.txt",
+			Type:     "text/plain",
+			Content:  []byte("memo attachment"),
+		},
+	})
+	require.NoError(t, err)
+
+	parentMemo, err := svc.CreateMemo(creatorCtx, &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{
+			Content:    "shared parent",
+			Visibility: apipb.Visibility_PROTECTED,
+			Attachments: []*apipb.Attachment{
+				{Name: attachment.Name},
+			},
+		},
+	})
+	require.NoError(t, err)
+
+	share, err := svc.CreateMemoShare(creatorCtx, &apipb.CreateMemoShareRequest{
+		Parent:    parentMemo.Name,
+		MemoShare: &apipb.MemoShare{},
+	})
+	require.NoError(t, err)
+	shareToken := share.Name[strings.LastIndex(share.Name, "/")+1:]
+
+	e := echo.New()
+	fs.RegisterRoutes(e)
+
+	req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/%s?share_token=%s", attachment.Name, attachment.Filename, shareToken), nil)
+	req.AddCookie(newExpiredRefreshTokenCookie(ctx, t, stores, creator.ID, svc.Secret))
+	rec := httptest.NewRecorder()
+	e.ServeHTTP(rec, req)
+
+	require.Equal(t, http.StatusOK, rec.Code)
+	require.Equal(t, "memo attachment", rec.Body.String())
+}
+
+func TestServeAttachmentFile_CanonicalRouteAndVisibilityAwareCache(t *testing.T) {
+	ctx := context.Background()
+	svc, fs, _, cleanup := newShareAttachmentTestServices(ctx, t)
+	defer cleanup()
+
+	creator, err := svc.Store.CreateUser(ctx, &store.User{
+		Username: "canonical-route-owner",
+		Role:     store.RoleUser,
+		Email:    "canonical-route-owner@example.com",
+	})
+	require.NoError(t, err)
+	creatorCtx := context.WithValue(ctx, auth.UserIDContextKey, creator.ID)
+	attachment, err := svc.CreateAttachment(creatorCtx, &apipb.CreateAttachmentRequest{Attachment: &apipb.Attachment{
+		Filename: "canonical.png",
+		Type:     "image/png",
+		Content:  []byte("canonical image"),
+	}})
+	require.NoError(t, err)
+	memo, err := svc.CreateMemo(creatorCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{
+		Content:     "canonical route",
+		Visibility:  apipb.Visibility_PUBLIC,
+		Attachments: []*apipb.Attachment{{Name: attachment.Name}},
+	}})
+	require.NoError(t, err)
+
+	e := echo.New()
+	fs.RegisterRoutes(e)
+	url := "/file/" + attachment.Name
+	rec := httptest.NewRecorder()
+	e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, url, nil))
+	require.Equal(t, http.StatusOK, rec.Code)
+	require.Equal(t, "canonical image", rec.Body.String())
+	require.Equal(t, publicAttachmentCacheControl, rec.Header().Get(echo.HeaderCacheControl))
+
+	_, err = svc.UpdateMemo(creatorCtx, &apipb.UpdateMemoRequest{
+		Memo:       &apipb.Memo{Name: memo.Name, Visibility: apipb.Visibility_PROTECTED},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"visibility"}},
+	})
+	require.NoError(t, err)
+	rec = httptest.NewRecorder()
+	e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, url, nil))
+	require.Equal(t, http.StatusUnauthorized, rec.Code)
+	require.Equal(t, privateAttachmentCacheControl, rec.Header().Get(echo.HeaderCacheControl))
+}
+
+func TestServeAttachmentFileMemoCreatorLifecycle(t *testing.T) {
+	ctx := context.Background()
+	svc, fs, stores, cleanup := newShareAttachmentTestServices(ctx, t)
+	defer cleanup()
+
+	creator, err := stores.CreateUser(ctx, &store.User{
+		Username: "file-memo-creator-lifecycle", Role: store.RoleUser, Email: "file-creator@example.com",
+	})
+	require.NoError(t, err)
+	creatorCtx := context.WithValue(ctx, auth.UserIDContextKey, creator.ID)
+	attachment, err := svc.CreateAttachment(creatorCtx, &apipb.CreateAttachmentRequest{Attachment: &apipb.Attachment{
+		Filename: "creator-lifecycle.txt", Type: "text/plain", Content: []byte("creator lifecycle"),
+	}})
+	require.NoError(t, err)
+	memo, err := svc.CreateMemo(creatorCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{
+		Content: "public file", Visibility: apipb.Visibility_PUBLIC, Attachments: []*apipb.Attachment{{Name: attachment.Name}},
+	}})
+	require.NoError(t, err)
+
+	e := echo.New()
+	fs.RegisterRoutes(e)
+	url := fmt.Sprintf("/file/%s/%s", attachment.Name, attachment.Filename)
+	archived := store.Archived
+	_, err = stores.UpdateUser(ctx, &store.UpdateUser{ID: creator.ID, RowStatus: &archived})
+	require.NoError(t, err)
+	recorder := httptest.NewRecorder()
+	e.ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, url, nil))
+	require.Equal(t, http.StatusOK, recorder.Code, "an archived creator does not invalidate the memo's PUBLIC audience")
+
+	memoUID := strings.TrimPrefix(memo.Name, "memos/")
+	storedMemo, err := stores.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
+	require.NoError(t, err)
+	require.NotNil(t, storedMemo)
+	_, err = stores.GetDriver().GetDB().ExecContext(ctx,
+		fmt.Sprintf("UPDATE memo SET creator_id = 2147483000 WHERE id = %d", storedMemo.ID))
+	require.NoError(t, err)
+	recorder = httptest.NewRecorder()
+	e.ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, url, nil))
+	require.Equal(t, http.StatusNotFound, recorder.Code, "a dangling memo creator must fail closed for files")
+}
+
+func TestServeAttachmentFile_CommentUsesOwnVisibility(t *testing.T) {
+	ctx := context.Background()
+	svc, fs, _, cleanup := newShareAttachmentTestServices(ctx, t)
+	defer cleanup()
+
+	owner, err := svc.Store.CreateUser(ctx, &store.User{Username: "comment-parent-owner", Role: store.RoleUser, Email: "parent@example.com"})
+	require.NoError(t, err)
+	commenter, err := svc.Store.CreateUser(ctx, &store.User{Username: "comment-file-owner", Role: store.RoleUser, Email: "commenter@example.com"})
+	require.NoError(t, err)
+	ownerCtx := context.WithValue(ctx, auth.UserIDContextKey, owner.ID)
+	commenterCtx := context.WithValue(ctx, auth.UserIDContextKey, commenter.ID)
+	parent, err := svc.CreateMemo(ownerCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{Content: "parent", Visibility: apipb.Visibility_PUBLIC}})
+	require.NoError(t, err)
+	attachment, err := svc.CreateAttachment(commenterCtx, &apipb.CreateAttachmentRequest{Attachment: &apipb.Attachment{
+		Filename: "comment.png",
+		Type:     "image/png",
+		Content:  []byte("comment image"),
+	}})
+	require.NoError(t, err)
+	comment, err := svc.CreateMemoComment(commenterCtx, &apipb.CreateMemoCommentRequest{
+		Parent: parent.Name,
+		Comment: &apipb.Memo{
+			Content:     "comment",
+			Visibility:  apipb.Visibility_PUBLIC,
+			Attachments: []*apipb.Attachment{{Name: attachment.Name}},
+		},
+	})
+	require.NoError(t, err)
+
+	e := echo.New()
+	fs.RegisterRoutes(e)
+	url := "/file/" + attachment.Name
+	rec := httptest.NewRecorder()
+	e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, url, nil))
+	require.Equal(t, http.StatusOK, rec.Code)
+
+	_, err = svc.UpdateMemo(ownerCtx, &apipb.UpdateMemoRequest{
+		Memo:       &apipb.Memo{Name: parent.Name, Visibility: apipb.Visibility_PRIVATE},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"visibility"}},
+	})
+	require.NoError(t, err)
+	rec = httptest.NewRecorder()
+	e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, url, nil))
+	require.Equal(t, http.StatusOK, rec.Code, "changing the context memo must not change attachment access")
+	require.Equal(t, publicAttachmentCacheControl, rec.Header().Get(echo.HeaderCacheControl))
+
+	_, err = svc.UpdateMemo(commenterCtx, &apipb.UpdateMemoRequest{
+		Memo:       &apipb.Memo{Name: comment.Name, Visibility: apipb.Visibility_PROTECTED},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"visibility"}},
+	})
+	require.NoError(t, err)
+	rec = httptest.NewRecorder()
+	e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, url, nil))
+	require.Equal(t, http.StatusUnauthorized, rec.Code)
+	require.Equal(t, privateAttachmentCacheControl, rec.Header().Get(echo.HeaderCacheControl))
+}
+
+func TestServeAttachmentFile_LocalStaticFileSupportsRangeRequests(t *testing.T) {
+	ctx := context.Background()
+	svc, fs, _, cleanup := newShareAttachmentTestServices(ctx, t)
+	defer cleanup()
+
+	creator, err := svc.Store.CreateUser(ctx, &store.User{
+		Username: "range-owner",
+		Role:     store.RoleUser,
+		Email:    "range-owner@example.com",
+	})
+	require.NoError(t, err)
+	creatorCtx := context.WithValue(ctx, auth.UserIDContextKey, creator.ID)
+
+	attachment, err := svc.CreateAttachment(creatorCtx, &apipb.CreateAttachmentRequest{
+		Attachment: &apipb.Attachment{
+			Filename: "range.txt",
+			Type:     "text/plain",
+			Content:  []byte("0123456789"),
+		},
+	})
+	require.NoError(t, err)
+
+	_, err = svc.CreateMemo(creatorCtx, &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{
+			Content:    "range memo",
+			Visibility: apipb.Visibility_PUBLIC,
+			Attachments: []*apipb.Attachment{
+				{Name: attachment.Name},
+			},
+		},
+	})
+	require.NoError(t, err)
+
+	e := echo.New()
+	fs.RegisterRoutes(e)
+
+	req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/%s", attachment.Name, attachment.Filename), nil)
+	req.Header.Set("Range", "bytes=2-5")
+	rec := httptest.NewRecorder()
+	e.ServeHTTP(rec, req)
+
+	require.Equal(t, http.StatusPartialContent, rec.Code)
+	require.Equal(t, "2345", rec.Body.String())
+	require.Equal(t, "bytes 2-5/10", rec.Header().Get("Content-Range"))
+}
+
+func TestServeAttachmentFile_ShareTokenRejectsCommentAttachment(t *testing.T) {
+	ctx := context.Background()
+	svc, fs, _, cleanup := newShareAttachmentTestServices(ctx, t)
+	defer cleanup()
+
+	creator, err := svc.Store.CreateUser(ctx, &store.User{
+		Username: "private-parent-owner",
+		Role:     store.RoleUser,
+		Email:    "private-parent-owner@example.com",
+	})
+	require.NoError(t, err)
+
+	creatorCtx := context.WithValue(ctx, auth.UserIDContextKey, creator.ID)
+	commenter, err := svc.Store.CreateUser(ctx, &store.User{
+		Username: "share-commenter",
+		Role:     store.RoleUser,
+		Email:    "share-commenter@example.com",
+	})
+	require.NoError(t, err)
+	commenterCtx := context.WithValue(ctx, auth.UserIDContextKey, commenter.ID)
+
+	parentMemo, err := svc.CreateMemo(creatorCtx, &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{
+			Content:    "shared parent",
+			Visibility: apipb.Visibility_PROTECTED,
+		},
+	})
+	require.NoError(t, err)
+
+	commentAttachment, err := svc.CreateAttachment(commenterCtx, &apipb.CreateAttachmentRequest{
+		Attachment: &apipb.Attachment{
+			Filename: "comment.txt",
+			Type:     "text/plain",
+			Content:  []byte("comment attachment"),
+		},
+	})
+	require.NoError(t, err)
+
+	_, err = svc.CreateMemoComment(commenterCtx, &apipb.CreateMemoCommentRequest{
+		Parent: parentMemo.Name,
+		Comment: &apipb.Memo{
+			Content:    "comment with attachment",
+			Visibility: apipb.Visibility_PROTECTED,
+			Attachments: []*apipb.Attachment{
+				{Name: commentAttachment.Name},
+			},
+		},
+	})
+	require.NoError(t, err)
+
+	share, err := svc.CreateMemoShare(creatorCtx, &apipb.CreateMemoShareRequest{
+		Parent:    parentMemo.Name,
+		MemoShare: &apipb.MemoShare{},
+	})
+	require.NoError(t, err)
+	shareToken := share.Name[strings.LastIndex(share.Name, "/")+1:]
+
+	e := echo.New()
+	fs.RegisterRoutes(e)
+
+	req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/%s?share_token=%s", commentAttachment.Name, commentAttachment.Filename, shareToken), nil)
+	rec := httptest.NewRecorder()
+	e.ServeHTTP(rec, req)
+
+	require.Equal(t, http.StatusUnauthorized, rec.Code)
+}
+
+func TestServeAttachmentFile_MotionClip(t *testing.T) {
+	ctx := context.Background()
+	svc, fs, _, cleanup := newShareAttachmentTestServices(ctx, t)
+	defer cleanup()
+
+	creator, err := svc.Store.CreateUser(ctx, &store.User{
+		Username: "motion-owner",
+		Role:     store.RoleUser,
+		Email:    "motion-owner@example.com",
+	})
+	require.NoError(t, err)
+	creatorCtx := context.WithValue(ctx, auth.UserIDContextKey, creator.ID)
+
+	attachment, err := svc.CreateAttachment(creatorCtx, &apipb.CreateAttachmentRequest{
+		Attachment: &apipb.Attachment{
+			Filename: "motion.jpg",
+			Type:     "image/jpeg",
+			Content:  testutil.BuildMotionPhotoJPEG(),
+		},
+	})
+	require.NoError(t, err)
+
+	_, err = svc.CreateMemo(creatorCtx, &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{
+			Content:    "motion memo",
+			Visibility: apipb.Visibility_PUBLIC,
+			Attachments: []*apipb.Attachment{
+				{Name: attachment.Name},
+			},
+		},
+	})
+	require.NoError(t, err)
+
+	e := echo.New()
+	fs.RegisterRoutes(e)
+
+	req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/%s?motion=true", attachment.Name, attachment.Filename), nil)
+	rec := httptest.NewRecorder()
+	e.ServeHTTP(rec, req)
+
+	require.Equal(t, http.StatusOK, rec.Code)
+	require.Equal(t, "video/mp4", rec.Header().Get("Content-Type"))
+	require.Contains(t, rec.Body.String(), "ftyp")
+}
+
+func TestServeAttachmentFile_SVGThumbnailServedAsImageWithSecurityHeaders(t *testing.T) {
+	ctx := context.Background()
+	svc, fs, _, cleanup := newShareAttachmentTestServices(ctx, t)
+	defer cleanup()
+
+	creator, err := svc.Store.CreateUser(ctx, &store.User{
+		Username: "svg-owner",
+		Role:     store.RoleUser,
+		Email:    "svg-owner@example.com",
+	})
+	require.NoError(t, err)
+	creatorCtx := context.WithValue(ctx, auth.UserIDContextKey, creator.ID)
+
+	svgContent := []byte(`<svg xmlns="http://www.w3.org/2000/svg" width="120" height="40"><text x="0" y="20">memos</text></svg>`)
+	attachment, err := svc.CreateAttachment(creatorCtx, &apipb.CreateAttachmentRequest{
+		Attachment: &apipb.Attachment{
+			Filename: "preview.svg",
+			Type:     "image/svg+xml",
+			Content:  svgContent,
+		},
+	})
+	require.NoError(t, err)
+
+	_, err = svc.CreateMemo(creatorCtx, &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{
+			Content:    "svg memo",
+			Visibility: apipb.Visibility_PUBLIC,
+			Attachments: []*apipb.Attachment{
+				{Name: attachment.Name},
+			},
+		},
+	})
+	require.NoError(t, err)
+
+	e := echo.New()
+	fs.RegisterRoutes(e)
+
+	req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/%s?thumbnail=true", attachment.Name, attachment.Filename), nil)
+	rec := httptest.NewRecorder()
+	e.ServeHTTP(rec, req)
+
+	require.Equal(t, http.StatusOK, rec.Code)
+	require.Equal(t, "image/svg+xml", rec.Header().Get("Content-Type"))
+	require.Empty(t, rec.Header().Get("Content-Disposition"))
+	require.Equal(t, "nosniff", rec.Header().Get("X-Content-Type-Options"))
+	require.Equal(t, "default-src 'none'; style-src 'unsafe-inline';", rec.Header().Get("Content-Security-Policy"))
+	require.Equal(t, svgContent, rec.Body.Bytes())
+}
+
+func TestServeAttachmentFile_ThumbnailWithSensitiveMetadataServesOriginal(t *testing.T) {
+	ctx := context.Background()
+	svc, fs, _, cleanup := newShareAttachmentTestServices(ctx, t)
+	defer cleanup()
+
+	creator, err := svc.Store.CreateUser(ctx, &store.User{
+		Username: "hdr-owner",
+		Role:     store.RoleUser,
+		Email:    "hdr-owner@example.com",
+	})
+	require.NoError(t, err)
+	creatorCtx := context.WithValue(ctx, auth.UserIDContextKey, creator.ID)
+
+	imageContent := testPNGWithChunk(t, "cICP", []byte{9, 16, 9, 1})
+	attachment, err := svc.CreateAttachment(creatorCtx, &apipb.CreateAttachmentRequest{
+		Attachment: &apipb.Attachment{
+			Filename: "hdr.png",
+			Type:     "image/png",
+			Content:  imageContent,
+		},
+	})
+	require.NoError(t, err)
+
+	_, err = svc.CreateMemo(creatorCtx, &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{
+			Content:    "hdr memo",
+			Visibility: apipb.Visibility_PUBLIC,
+			Attachments: []*apipb.Attachment{
+				{Name: attachment.Name},
+			},
+		},
+	})
+	require.NoError(t, err)
+
+	e := echo.New()
+	fs.RegisterRoutes(e)
+
+	req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/%s?thumbnail=true", attachment.Name, attachment.Filename), nil)
+	rec := httptest.NewRecorder()
+	e.ServeHTTP(rec, req)
+
+	require.Equal(t, http.StatusOK, rec.Code)
+	require.Equal(t, "image/png", rec.Header().Get("Content-Type"))
+	require.Equal(t, imageContent, rec.Body.Bytes())
+}
+
+func TestHasThumbnailSensitiveMetadata(t *testing.T) {
+	tests := []struct {
+		name string
+		data []byte
+		want bool
+	}{
+		{
+			name: "jpeg hdr gain map",
+			data: []byte("xmp hdrgm:Version=\"1.0\""),
+			want: true,
+		},
+		{
+			name: "jpeg icc profile",
+			data: []byte("ICC_PROFILE"),
+			want: true,
+		},
+		{
+			name: "png cicp chunk",
+			data: []byte("cICP"),
+			want: true,
+		},
+		{
+			name: "plain jpeg",
+			data: []byte("plain image data"),
+			want: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			require.Equal(t, tt.want, hasThumbnailSensitiveMetadata(tt.data))
+		})
+	}
+}
+
+func testPNGWithChunk(t *testing.T, chunkType string, chunkData []byte) []byte {
+	t.Helper()
+
+	img := image.NewRGBA(image.Rect(0, 0, 1, 1))
+	img.Set(0, 0, color.RGBA{R: 255, A: 255})
+
+	var encoded bytes.Buffer
+	require.NoError(t, png.Encode(&encoded, img))
+
+	pngData := encoded.Bytes()
+	iendIndex := bytes.LastIndex(pngData, []byte("IEND"))
+	require.GreaterOrEqual(t, iendIndex, 4)
+
+	chunkStart := iendIndex - 4
+	var chunk bytes.Buffer
+	require.NoError(t, binary.Write(&chunk, binary.BigEndian, uint32(len(chunkData))))
+	chunk.WriteString(chunkType)
+	chunk.Write(chunkData)
+	checksum := crc32.ChecksumIEEE(append([]byte(chunkType), chunkData...))
+	require.NoError(t, binary.Write(&chunk, binary.BigEndian, checksum))
+
+	result := make([]byte, 0, len(pngData)+chunk.Len())
+	result = append(result, pngData[:chunkStart]...)
+	result = append(result, chunk.Bytes()...)
+	result = append(result, pngData[chunkStart:]...)
+	return result
+}
+
+func newShareAttachmentTestServices(ctx context.Context, t *testing.T) (*api.APIService, *FileServerService, *store.Store, func()) {
+	t.Helper()
+
+	testStore := teststore.NewTestingStore(ctx, t)
+	setInstanceAccessMode(ctx, t, testStore, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC)
+	testProfile := &profile.Profile{
+		Demo:        true,
+		Version:     "test-1.0.0",
+		InstanceURL: "http://localhost:8080",
+		Driver:      "sqlite",
+		DSN:         ":memory:",
+		Data:        t.TempDir(),
+	}
+	secret := "test-secret"
+	markdownService := markdown.NewService(markdown.WithTagExtension())
+	apiService := &api.APIService{
+		Secret:          secret,
+		Profile:         testProfile,
+		Store:           testStore,
+		MarkdownService: markdownService,
+		SSEHub:          api.NewSSEHub(),
+	}
+	fileService := NewFileServerService(testProfile, testStore, secret)
+
+	return apiService, fileService, testStore, func() {
+		testStore.Close()
+	}
+}
+
+func setInstanceAccessMode(ctx context.Context, t *testing.T, stores *store.Store, mode storepb.InstanceAccessMode) {
+	t.Helper()
+	_, err := stores.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_ACCESS,
+		Value: &storepb.InstanceSetting_AccessSetting{AccessSetting: &storepb.InstanceAccessSetting{
+			AccessMode: mode,
+		}},
+	})
+	require.NoError(t, err)
+}
+
+// makePNGDataURI returns a minimal valid PNG encoded as a data URI, suitable for a
+// user avatar.
+func makePNGDataURI(t *testing.T) string {
+	t.Helper()
+	img := image.NewRGBA(image.Rect(0, 0, 1, 1))
+	img.Set(0, 0, color.RGBA{R: 1, G: 2, B: 3, A: 255})
+	var buf bytes.Buffer
+	require.NoError(t, png.Encode(&buf, img))
+	return "data:image/png;base64," + base64.StdEncoding.EncodeToString(buf.Bytes())
+}
+
+// TestServeAttachmentFile_PrivateInstanceDeniesAnonymous verifies that a public
+// memo's attachment is served to anonymous visitors on an open instance but denied
+// when the instance access policy is private.
+func TestServeAttachmentFile_PrivateInstanceDeniesAnonymous(t *testing.T) {
+	ctx := context.Background()
+	svc, fs, stores, cleanup := newShareAttachmentTestServices(ctx, t)
+	defer cleanup()
+
+	creator, err := svc.Store.CreateUser(ctx, &store.User{
+		Username: "private-attachment-owner",
+		Role:     store.RoleUser,
+		Email:    "private-attachment-owner@example.com",
+	})
+	require.NoError(t, err)
+	creatorCtx := context.WithValue(ctx, auth.UserIDContextKey, creator.ID)
+
+	attachment, err := svc.CreateAttachment(creatorCtx, &apipb.CreateAttachmentRequest{
+		Attachment: &apipb.Attachment{
+			Filename: "public.txt",
+			Type:     "text/plain",
+			Content:  []byte("public content"),
+		},
+	})
+	require.NoError(t, err)
+
+	_, err = svc.CreateMemo(creatorCtx, &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{
+			Content:     "public memo",
+			Visibility:  apipb.Visibility_PUBLIC,
+			Attachments: []*apipb.Attachment{{Name: attachment.Name}},
+		},
+	})
+	require.NoError(t, err)
+
+	e := echo.New()
+	fs.RegisterRoutes(e)
+	url := fmt.Sprintf("/file/%s/%s", attachment.Name, attachment.Filename)
+
+	anonymousGet := func() int {
+		rec := httptest.NewRecorder()
+		e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, url, nil))
+		return rec.Code
+	}
+
+	// Open instance: anonymous access to a public memo's attachment is allowed.
+	setInstanceAccessMode(ctx, t, stores, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC)
+	require.Equal(t, http.StatusOK, anonymousGet())
+
+	// A stale browser session must not prevent access to an otherwise public
+	// attachment. Public authorization is independent of invalid credentials.
+	req := httptest.NewRequest(http.MethodGet, url, nil)
+	req.AddCookie(newExpiredRefreshTokenCookie(ctx, t, stores, creator.ID, svc.Secret))
+	rec := httptest.NewRecorder()
+	e.ServeHTTP(rec, req)
+	require.Equal(t, http.StatusOK, rec.Code)
+	require.Equal(t, "public content", rec.Body.String())
+
+	// Private instance: the same anonymous request is denied.
+	setInstanceAccessMode(ctx, t, stores, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE)
+	require.Equal(t, http.StatusUnauthorized, anonymousGet())
+}
+
+// TestServeUserAvatar_PrivateInstanceRequiresAuth verifies that avatars are exposed
+// to anonymous visitors on an open instance but require authentication on a private
+// instance.
+func TestServeUserAvatar_PrivateInstanceRequiresAuth(t *testing.T) {
+	ctx := context.Background()
+	svc, fs, stores, cleanup := newShareAttachmentTestServices(ctx, t)
+	defer cleanup()
+
+	owner, err := svc.Store.CreateUser(ctx, &store.User{
+		Username:  "avatar-owner",
+		Role:      store.RoleUser,
+		Email:     "avatar-owner@example.com",
+		AvatarURL: makePNGDataURI(t),
+	})
+	require.NoError(t, err)
+
+	e := echo.New()
+	fs.RegisterRoutes(e)
+
+	anonymousGet := func() *httptest.ResponseRecorder {
+		rec := httptest.NewRecorder()
+		e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/file/users/avatar-owner/avatar", nil))
+		return rec
+	}
+
+	// Open instance: anonymous avatar access is allowed.
+	setInstanceAccessMode(ctx, t, stores, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC)
+	publicRec := anonymousGet()
+	require.Equal(t, http.StatusOK, publicRec.Code)
+	require.Equal(t, cacheMaxAge, publicRec.Header().Get(echo.HeaderCacheControl))
+
+	// A stale browser session must not turn a public avatar request into an
+	// authentication error.
+	req := httptest.NewRequest(http.MethodGet, "/file/users/avatar-owner/avatar", nil)
+	req.AddCookie(newExpiredRefreshTokenCookie(ctx, t, stores, owner.ID, svc.Secret))
+	rec := httptest.NewRecorder()
+	e.ServeHTTP(rec, req)
+	require.Equal(t, http.StatusOK, rec.Code)
+	require.Equal(t, "image/png", rec.Header().Get(echo.HeaderContentType))
+
+	// Private instance: anonymous avatar access is denied.
+	setInstanceAccessMode(ctx, t, stores, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE)
+	require.Equal(t, http.StatusUnauthorized, anonymousGet().Code)
+
+	// An authenticated private-instance response must not be stored by shared
+	// or browser caches.
+	tokenID := random.UUID()
+	require.NoError(t, stores.AddUserRefreshToken(ctx, owner.ID, &storepb.RefreshTokensUserSetting_RefreshToken{
+		TokenId:   tokenID,
+		ExpiresAt: timestamppb.New(time.Now().Add(auth.RefreshTokenDuration)),
+		CreatedAt: timestamppb.Now(),
+	}))
+	refreshToken, _, err := auth.GenerateRefreshToken(owner.ID, tokenID, []byte(svc.Secret))
+	require.NoError(t, err)
+	privateReq := httptest.NewRequest(http.MethodGet, "/file/users/avatar-owner/avatar", nil)
+	privateReq.AddCookie(&http.Cookie{Name: auth.RefreshTokenCookieName, Value: refreshToken})
+	privateRec := httptest.NewRecorder()
+	e.ServeHTTP(privateRec, privateReq)
+	require.Equal(t, http.StatusOK, privateRec.Code)
+	require.Equal(t, privateAttachmentCacheControl, privateRec.Header().Get(echo.HeaderCacheControl))
+}
+
+// TestServeAttachmentFile_RefreshCookieAuthenticatesOwner verifies that the file
+// server authenticates a request via the refresh-token cookie (the browser <img>
+// flow) — the AuthenticateToUser cookie fallback — letting the owner fetch their own
+// private memo's attachment without an Authorization header.
+func TestServeAttachmentFile_RefreshCookieAuthenticatesOwner(t *testing.T) {
+	ctx := context.Background()
+	svc, fs, _, cleanup := newShareAttachmentTestServices(ctx, t)
+	defer cleanup()
+
+	owner, err := svc.Store.CreateUser(ctx, &store.User{
+		Username: "cookie-owner",
+		Role:     store.RoleUser,
+		Email:    "cookie-owner@example.com",
+	})
+	require.NoError(t, err)
+	ownerCtx := context.WithValue(ctx, auth.UserIDContextKey, owner.ID)
+
+	attachment, err := svc.CreateAttachment(ownerCtx, &apipb.CreateAttachmentRequest{
+		Attachment: &apipb.Attachment{
+			Filename: "secret.txt",
+			Type:     "text/plain",
+			Content:  []byte("secret content"),
+		},
+	})
+	require.NoError(t, err)
+
+	_, err = svc.CreateMemo(ownerCtx, &apipb.CreateMemoRequest{
+		Memo: &apipb.Memo{
+			Content:     "private memo",
+			Visibility:  apipb.Visibility_PRIVATE,
+			Attachments: []*apipb.Attachment{{Name: attachment.Name}},
+		},
+	})
+	require.NoError(t, err)
+
+	// Mint a valid refresh token for the owner and store its record.
+	tokenID := random.UUID()
+	require.NoError(t, svc.Store.AddUserRefreshToken(ctx, owner.ID, &storepb.RefreshTokensUserSetting_RefreshToken{
+		TokenId:   tokenID,
+		ExpiresAt: timestamppb.New(time.Now().Add(auth.RefreshTokenDuration)),
+		CreatedAt: timestamppb.Now(),
+	}))
+	refreshToken, _, err := auth.GenerateRefreshToken(owner.ID, tokenID, []byte(svc.Secret))
+	require.NoError(t, err)
+
+	e := echo.New()
+	fs.RegisterRoutes(e)
+	url := fmt.Sprintf("/file/%s/%s", attachment.Name, attachment.Filename)
+
+	// Without credentials, the private attachment is denied.
+	rec := httptest.NewRecorder()
+	e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, url, nil))
+	require.Equal(t, http.StatusUnauthorized, rec.Code)
+
+	// With the refresh-token cookie, the owner is authenticated and served.
+	req := httptest.NewRequest(http.MethodGet, url, nil)
+	req.AddCookie(&http.Cookie{Name: auth.RefreshTokenCookieName, Value: refreshToken})
+	rec = httptest.NewRecorder()
+	e.ServeHTTP(rec, req)
+	require.Equal(t, http.StatusOK, rec.Code)
+	require.Equal(t, "secret content", rec.Body.String())
+}
+
+// TestServeAttachmentFile_UnlinkedAttachmentOwnerOrAdmin verifies an
+// attachment not linked to a memo follows the API's GetAttachment rule: its
+// creator and an instance admin may read it, other users may not.
+func TestServeAttachmentFile_UnlinkedAttachmentOwnerOrAdmin(t *testing.T) {
+	ctx := context.Background()
+	svc, fs, stores, cleanup := newShareAttachmentTestServices(ctx, t)
+	defer cleanup()
+
+	newUser := func(username string, role store.Role) *store.User {
+		user, err := svc.Store.CreateUser(ctx, &store.User{Username: username, Role: role, Email: username + "@example.com"})
+		require.NoError(t, err)
+		return user
+	}
+	owner := newUser("unlinked-owner", store.RoleUser)
+	admin := newUser("unlinked-admin", store.RoleAdmin)
+	other := newUser("unlinked-other", store.RoleUser)
+
+	attachment, err := svc.CreateAttachment(context.WithValue(ctx, auth.UserIDContextKey, owner.ID), &apipb.CreateAttachmentRequest{
+		Attachment: &apipb.Attachment{
+			Filename: "draft.txt",
+			Type:     "text/plain",
+			Content:  []byte("draft content"),
+		},
+	})
+	require.NoError(t, err)
+
+	e := echo.New()
+	fs.RegisterRoutes(e)
+	url := fmt.Sprintf("/file/%s/%s", attachment.Name, attachment.Filename)
+	getAs := func(user *store.User) int {
+		req := httptest.NewRequest(http.MethodGet, url, nil)
+		req.AddCookie(newRefreshTokenCookie(ctx, t, stores, user.ID, svc.Secret))
+		rec := httptest.NewRecorder()
+		e.ServeHTTP(rec, req)
+		return rec.Code
+	}
+
+	require.Equal(t, http.StatusOK, getAs(owner))
+	require.Equal(t, http.StatusOK, getAs(admin))
+	require.Equal(t, http.StatusForbidden, getAs(other))
+}
+
+func newRefreshTokenCookie(ctx context.Context, t *testing.T, stores *store.Store, userID int32, secret string) *http.Cookie {
+	t.Helper()
+	tokenID := random.UUID()
+	require.NoError(t, stores.AddUserRefreshToken(ctx, userID, &storepb.RefreshTokensUserSetting_RefreshToken{
+		TokenId:   tokenID,
+		ExpiresAt: timestamppb.New(time.Now().Add(auth.RefreshTokenDuration)),
+		CreatedAt: timestamppb.Now(),
+	}))
+	refreshToken, _, err := auth.GenerateRefreshToken(userID, tokenID, []byte(secret))
+	require.NoError(t, err)
+	return &http.Cookie{Name: auth.RefreshTokenCookieName, Value: refreshToken}
+}
+
+func newExpiredRefreshTokenCookie(ctx context.Context, t *testing.T, stores *store.Store, userID int32, secret string) *http.Cookie {
+	t.Helper()
+	tokenID := random.UUID()
+	require.NoError(t, stores.AddUserRefreshToken(ctx, userID, &storepb.RefreshTokensUserSetting_RefreshToken{
+		TokenId:   tokenID,
+		ExpiresAt: timestamppb.New(time.Now().Add(-time.Hour)),
+		CreatedAt: timestamppb.New(time.Now().Add(-2 * time.Hour)),
+	}))
+	refreshToken, _, err := auth.GenerateRefreshToken(userID, tokenID, []byte(secret))
+	require.NoError(t, err)
+	return &http.Cookie{Name: auth.RefreshTokenCookieName, Value: refreshToken}
+}
+
+// oversizedPNGHeader returns a valid PNG header that declares width×height
+// pixels without carrying pixel data, the shape of a decompression bomb.
+func oversizedPNGHeader(width, height uint32) []byte {
+	var buf bytes.Buffer
+	buf.Write([]byte{0x89, 'P', 'N', 'G', '\r', '\n', 0x1a, '\n'})
+	ihdr := make([]byte, 13)
+	binary.BigEndian.PutUint32(ihdr[0:4], width)
+	binary.BigEndian.PutUint32(ihdr[4:8], height)
+	ihdr[8] = 8
+	ihdr[9] = 2
+	for _, chunk := range []struct {
+		kind string
+		data []byte
+	}{{"IHDR", ihdr}, {"IEND", nil}} {
+		_ = binary.Write(&buf, binary.BigEndian, uint32(len(chunk.data)))
+		buf.WriteString(chunk.kind)
+		buf.Write(chunk.data)
+		_ = binary.Write(&buf, binary.BigEndian, crc32.ChecksumIEEE(append([]byte(chunk.kind), chunk.data...)))
+	}
+	return buf.Bytes()
+}
+
+func createPublicImageMemo(ctx context.Context, t *testing.T, svc *api.APIService, username, filename, mimeType string, content []byte) *apipb.Attachment {
+	t.Helper()
+	creator, err := svc.Store.CreateUser(ctx, &store.User{Username: username, Role: store.RoleUser, Email: username + "@example.com"})
+	require.NoError(t, err)
+	creatorCtx := context.WithValue(ctx, auth.UserIDContextKey, creator.ID)
+	attachment, err := svc.CreateAttachment(creatorCtx, &apipb.CreateAttachmentRequest{Attachment: &apipb.Attachment{
+		Filename: filename, Type: mimeType, Content: content,
+	}})
+	require.NoError(t, err)
+	_, err = svc.CreateMemo(creatorCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{
+		Content: "image memo", Visibility: apipb.Visibility_PUBLIC, Attachments: []*apipb.Attachment{{Name: attachment.Name}},
+	}})
+	require.NoError(t, err)
+	return attachment
+}
+
+// A small PNG that declares billions of pixels must not be decoded for a
+// thumbnail; the original is served and the failure is remembered so later
+// requests do not retry the decode.
+func TestServeAttachmentFile_ThumbnailRefusesOversizedImage(t *testing.T) {
+	ctx := context.Background()
+	svc, fs, _, cleanup := newShareAttachmentTestServices(ctx, t)
+	defer cleanup()
+
+	bomb := oversizedPNGHeader(100_000, 100_000)
+	attachment := createPublicImageMemo(ctx, t, svc, "bomb-owner", "bomb.png", "image/png", bomb)
+
+	e := echo.New()
+	fs.RegisterRoutes(e)
+	for range 2 {
+		rec := httptest.NewRecorder()
+		e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/bomb.png?thumbnail=true", attachment.Name), nil))
+		require.Equal(t, http.StatusOK, rec.Code)
+		require.Equal(t, "image/png", rec.Header().Get(echo.HeaderContentType))
+		require.Equal(t, bomb, rec.Body.Bytes(), "original is served instead of a thumbnail")
+	}
+	uid := strings.TrimPrefix(attachment.Name, "attachments/")
+	require.NoFileExists(t, filepath.Join(fs.Profile.Data, thumbnailCacheFolder, uid+".v2.jpeg"))
+	require.FileExists(t, filepath.Join(fs.Profile.Data, thumbnailCacheFolder, uid+".v2.jpeg"+thumbnailFailedMarkerSuffix))
+}
+
+// newSharedProfileTestServices builds the API service, file server, and
+// store on one profile, as in production, so derived caches written by the
+// file server live in the directory the store cleans up.
+func newSharedProfileTestServices(ctx context.Context, t *testing.T) (*api.APIService, *FileServerService, func()) {
+	t.Helper()
+	dataDir := t.TempDir()
+	testProfile := &profile.Profile{
+		Demo:        true,
+		Version:     "test-1.0.0",
+		InstanceURL: "http://localhost:8080",
+		Driver:      "sqlite",
+		DSN:         filepath.Join(dataDir, "memos_test.db"),
+		Data:        dataDir,
+	}
+	dbDriver, err := db.NewDBDriver(testProfile)
+	require.NoError(t, err)
+	testStore := store.New(dbDriver, testProfile)
+	require.NoError(t, testStore.Migrate(ctx))
+	setInstanceAccessMode(ctx, t, testStore, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC)
+	secret := "test-secret"
+	apiService := &api.APIService{
+		Secret:          secret,
+		Profile:         testProfile,
+		Store:           testStore,
+		MarkdownService: markdown.NewService(markdown.WithTagExtension()),
+		SSEHub:          api.NewSSEHub(),
+	}
+	return apiService, NewFileServerService(testProfile, testStore, secret), func() { testStore.Close() }
+}
+
+// Deleting an attachment removes the cached thumbnail written for it.
+func TestDeleteAttachmentRemovesCachedThumbnail(t *testing.T) {
+	ctx := context.Background()
+	svc, fs, cleanup := newSharedProfileTestServices(ctx, t)
+	defer cleanup()
+
+	var pngBuf bytes.Buffer
+	require.NoError(t, png.Encode(&pngBuf, image.NewRGBA(image.Rect(0, 0, 8, 8))))
+	attachment := createPublicImageMemo(ctx, t, svc, "thumb-owner", "small.png", "image/png", pngBuf.Bytes())
+	owner, err := svc.Store.GetUser(ctx, &store.FindUser{Username: func() *string { s := "thumb-owner"; return &s }()})
+	require.NoError(t, err)
+
+	e := echo.New()
+	fs.RegisterRoutes(e)
+	rec := httptest.NewRecorder()
+	e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/small.png?thumbnail=true", attachment.Name), nil))
+	require.Equal(t, http.StatusOK, rec.Code)
+	require.Equal(t, "image/jpeg", rec.Header().Get(echo.HeaderContentType))
+	uid := strings.TrimPrefix(attachment.Name, "attachments/")
+	thumbnailPath := filepath.Join(fs.Profile.Data, thumbnailCacheFolder, uid+".v2.jpeg")
+	require.FileExists(t, thumbnailPath)
+
+	ownerCtx := context.WithValue(ctx, auth.UserIDContextKey, owner.ID)
+	_, err = svc.DeleteAttachment(ownerCtx, &apipb.DeleteAttachmentRequest{Name: attachment.Name})
+	require.NoError(t, err)
+	require.NoFileExists(t, thumbnailPath)
+}
+
+// A storage read failure is transient and must not be remembered as a
+// thumbnail verdict; only unsupported images get the failure marker.
+func TestThumbnailFailureMarkerOnlyForUnsupportedImages(t *testing.T) {
+	ctx := context.Background()
+	svc, fs, cleanup := newSharedProfileTestServices(ctx, t)
+	defer cleanup()
+	_, err := svc.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_STORAGE,
+		Value: &storepb.InstanceSetting_StorageSetting{StorageSetting: &storepb.InstanceStorageSetting{
+			Storages:         []*storepb.Storage{{Id: "local", Name: "Local", Type: storepb.StorageType_STORAGE_TYPE_LOCAL}},
+			DefaultStorageId: "local",
+		}},
+	})
+	require.NoError(t, err)
+
+	var pngBuf bytes.Buffer
+	require.NoError(t, png.Encode(&pngBuf, image.NewRGBA(image.Rect(0, 0, 8, 8))))
+	attachment := createPublicImageMemo(ctx, t, svc, "transient-owner", "gone.png", "image/png", pngBuf.Bytes())
+	uid := strings.TrimPrefix(attachment.Name, "attachments/")
+	stored, err := svc.Store.GetAttachment(ctx, &store.FindAttachment{UID: &uid})
+	require.NoError(t, err)
+	require.Equal(t, storepb.AttachmentStorageType_LOCAL, stored.StorageType)
+	localPath := fs.resolveLocalPath(stored.Reference)
+	require.NoError(t, os.Rename(localPath, localPath+".away"))
+
+	e := echo.New()
+	fs.RegisterRoutes(e)
+	rec := httptest.NewRecorder()
+	e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/gone.png?thumbnail=true", attachment.Name), nil))
+	marker := filepath.Join(fs.Profile.Data, thumbnailCacheFolder, uid+".v2.jpeg"+thumbnailFailedMarkerSuffix)
+	require.NoFileExists(t, marker, "a read failure is not a verdict on the image")
+
+	// Once the bytes are back, the thumbnail is generated normally.
+	require.NoError(t, os.Rename(localPath+".away", localPath))
+	rec = httptest.NewRecorder()
+	e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/gone.png?thumbnail=true", attachment.Name), nil))
+	require.Equal(t, http.StatusOK, rec.Code)
+	require.Equal(t, "image/jpeg", rec.Header().Get(echo.HeaderContentType))
+}

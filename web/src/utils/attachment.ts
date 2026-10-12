@@ -1,4 +1,4 @@
-import { Attachment, MotionMediaFamily, MotionMediaRole } from "@/types/proto/api/v1/attachment_service_pb";
+import { Attachment, MotionMediaFamily, MotionMediaRole } from "@/types/proto/api/attachment_service_pb";
 
 export const getAttachmentUrl = (attachment: Attachment) => {
   if (attachment.externalLink) {

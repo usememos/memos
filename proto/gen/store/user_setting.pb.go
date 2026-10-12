@@ -30,15 +30,15 @@ const (
 	// General user settings.
 	UserSetting_GENERAL UserSetting_Key = 1
 	// The memo views of the user.
-	UserSetting_MEMO_VIEWS UserSetting_Key = 4
+	UserSetting_MEMO_VIEWS UserSetting_Key = 2
 	// The webhooks of the user.
-	UserSetting_WEBHOOKS UserSetting_Key = 5
+	UserSetting_WEBHOOKS UserSetting_Key = 3
 	// Refresh tokens for the user.
-	UserSetting_REFRESH_TOKENS UserSetting_Key = 6
+	UserSetting_REFRESH_TOKENS UserSetting_Key = 4
 	// Personal access tokens for the user.
-	UserSetting_PERSONAL_ACCESS_TOKENS UserSetting_Key = 7
+	UserSetting_PERSONAL_ACCESS_TOKENS UserSetting_Key = 5
 	// Per-user tag metadata.
-	UserSetting_TAGS UserSetting_Key = 8
+	UserSetting_TAGS UserSetting_Key = 6
 )
 
 // Enum value maps for UserSetting_Key.
@@ -46,20 +46,20 @@ var (
 	UserSetting_Key_name = map[int32]string{
 		0: "KEY_UNSPECIFIED",
 		1: "GENERAL",
-		4: "MEMO_VIEWS",
-		5: "WEBHOOKS",
-		6: "REFRESH_TOKENS",
-		7: "PERSONAL_ACCESS_TOKENS",
-		8: "TAGS",
+		2: "MEMO_VIEWS",
+		3: "WEBHOOKS",
+		4: "REFRESH_TOKENS",
+		5: "PERSONAL_ACCESS_TOKENS",
+		6: "TAGS",
 	}
 	UserSetting_Key_value = map[string]int32{
 		"KEY_UNSPECIFIED":        0,
 		"GENERAL":                1,
-		"MEMO_VIEWS":             4,
-		"WEBHOOKS":               5,
-		"REFRESH_TOKENS":         6,
-		"PERSONAL_ACCESS_TOKENS": 7,
-		"TAGS":                   8,
+		"MEMO_VIEWS":             2,
+		"WEBHOOKS":               3,
+		"REFRESH_TOKENS":         4,
+		"PERSONAL_ACCESS_TOKENS": 5,
+		"TAGS":                   6,
 	}
 )
 
@@ -221,23 +221,23 @@ type UserSetting_General struct {
 }
 
 type UserSetting_MemoViews struct {
-	MemoViews *MemoViewsUserSetting `protobuf:"bytes,6,opt,name=memo_views,json=memoViews,proto3,oneof"`
+	MemoViews *MemoViewsUserSetting `protobuf:"bytes,4,opt,name=memo_views,json=memoViews,proto3,oneof"`
 }
 
 type UserSetting_Webhooks struct {
-	Webhooks *WebhooksUserSetting `protobuf:"bytes,7,opt,name=webhooks,proto3,oneof"`
+	Webhooks *WebhooksUserSetting `protobuf:"bytes,5,opt,name=webhooks,proto3,oneof"`
 }
 
 type UserSetting_RefreshTokens struct {
-	RefreshTokens *RefreshTokensUserSetting `protobuf:"bytes,8,opt,name=refresh_tokens,json=refreshTokens,proto3,oneof"`
+	RefreshTokens *RefreshTokensUserSetting `protobuf:"bytes,6,opt,name=refresh_tokens,json=refreshTokens,proto3,oneof"`
 }
 
 type UserSetting_PersonalAccessTokens struct {
-	PersonalAccessTokens *PersonalAccessTokensUserSetting `protobuf:"bytes,9,opt,name=personal_access_tokens,json=personalAccessTokens,proto3,oneof"`
+	PersonalAccessTokens *PersonalAccessTokensUserSetting `protobuf:"bytes,7,opt,name=personal_access_tokens,json=personalAccessTokens,proto3,oneof"`
 }
 
 type UserSetting_Tags struct {
-	Tags *TagsUserSetting `protobuf:"bytes,10,opt,name=tags,proto3,oneof"`
+	Tags *TagsUserSetting `protobuf:"bytes,8,opt,name=tags,proto3,oneof"`
 }
 
 func (*UserSetting_General) isUserSetting_Value() {}
@@ -1090,21 +1090,20 @@ const file_store_user_setting_proto_rawDesc = "" +
 	"\x03key\x18\x02 \x01(\x0e2\x1c.memos.store.UserSetting.KeyR\x03key\x12;\n" +
 	"\ageneral\x18\x03 \x01(\v2\x1f.memos.store.GeneralUserSettingH\x00R\ageneral\x12B\n" +
 	"\n" +
-	"memo_views\x18\x06 \x01(\v2!.memos.store.MemoViewsUserSettingH\x00R\tmemoViews\x12>\n" +
-	"\bwebhooks\x18\a \x01(\v2 .memos.store.WebhooksUserSettingH\x00R\bwebhooks\x12N\n" +
-	"\x0erefresh_tokens\x18\b \x01(\v2%.memos.store.RefreshTokensUserSettingH\x00R\rrefreshTokens\x12d\n" +
-	"\x16personal_access_tokens\x18\t \x01(\v2,.memos.store.PersonalAccessTokensUserSettingH\x00R\x14personalAccessTokens\x122\n" +
-	"\x04tags\x18\n" +
-	" \x01(\v2\x1c.memos.store.TagsUserSettingH\x00R\x04tags\"\x7f\n" +
+	"memo_views\x18\x04 \x01(\v2!.memos.store.MemoViewsUserSettingH\x00R\tmemoViews\x12>\n" +
+	"\bwebhooks\x18\x05 \x01(\v2 .memos.store.WebhooksUserSettingH\x00R\bwebhooks\x12N\n" +
+	"\x0erefresh_tokens\x18\x06 \x01(\v2%.memos.store.RefreshTokensUserSettingH\x00R\rrefreshTokens\x12d\n" +
+	"\x16personal_access_tokens\x18\a \x01(\v2,.memos.store.PersonalAccessTokensUserSettingH\x00R\x14personalAccessTokens\x122\n" +
+	"\x04tags\x18\b \x01(\v2\x1c.memos.store.TagsUserSettingH\x00R\x04tags\"\x7f\n" +
 	"\x03Key\x12\x13\n" +
 	"\x0fKEY_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aGENERAL\x10\x01\x12\x0e\n" +
 	"\n" +
-	"MEMO_VIEWS\x10\x04\x12\f\n" +
-	"\bWEBHOOKS\x10\x05\x12\x12\n" +
-	"\x0eREFRESH_TOKENS\x10\x06\x12\x1a\n" +
-	"\x16PERSONAL_ACCESS_TOKENS\x10\a\x12\b\n" +
-	"\x04TAGS\x10\bB\a\n" +
+	"MEMO_VIEWS\x10\x02\x12\f\n" +
+	"\bWEBHOOKS\x10\x03\x12\x12\n" +
+	"\x0eREFRESH_TOKENS\x10\x04\x12\x1a\n" +
+	"\x16PERSONAL_ACCESS_TOKENS\x10\x05\x12\b\n" +
+	"\x04TAGS\x10\x06B\a\n" +
 	"\x05value\"\x9b\x01\n" +
 	"\x12GeneralUserSetting\x12\x16\n" +
 	"\x06locale\x18\x01 \x01(\tR\x06locale\x12'\n" +

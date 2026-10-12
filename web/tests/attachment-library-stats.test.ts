@@ -10,7 +10,7 @@ import {
   MotionMediaFamily,
   MotionMediaRole,
   MotionMediaSchema,
-} from "@/types/proto/api/v1/attachment_service_pb";
+} from "@/types/proto/api/attachment_service_pb";
 
 const clients = vi.hoisted(() => ({ listAttachments: vi.fn() }));
 

@@ -5,7 +5,7 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/usememos/memos/internal/base"
+	"github.com/usememos/memos/internal/identifier"
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
 
@@ -178,7 +178,7 @@ func (s *Store) CreateSpace(ctx context.Context, create *Space, creatorID int32)
 	if create == nil {
 		return nil, errors.New("space is required")
 	}
-	if !base.UIDMatcher.MatchString(create.UID) {
+	if !identifier.UIDMatcher.MatchString(create.UID) {
 		return nil, errors.New("invalid uid")
 	}
 	if strings.TrimSpace(create.Title) == "" {

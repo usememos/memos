@@ -30,9 +30,9 @@ describe("memo view navigation", () => {
     ).toBe("/explore?filter=contentSearch%3Aroadmap");
   });
 
-  it("keeps a filtered Profile origin intact", () => {
-    expect(resolveMemoParentPage({ pathname: "/u/alice", search: "?filter=tagSearch%3Awork", memoName: "memos/123" })).toBe(
-      "/u/alice?filter=tagSearch%3Awork",
+  it("keeps a filtered creator collection origin intact", () => {
+    expect(resolveMemoParentPage({ pathname: "/", search: "?creator=alice&filter=tagSearch%3Awork", memoName: "memos/123" })).toBe(
+      "/?creator=alice&filter=tagSearch%3Awork",
     );
   });
 
@@ -46,7 +46,7 @@ describe("memo view navigation", () => {
   });
 
   it("keeps an explicit origin ahead of the archived fallback", () => {
-    expect(resolveMemoDetailOrigin(createMemoNavigationState("/u/alice"), { memoArchived: true })).toBe("/u/alice");
+    expect(resolveMemoDetailOrigin(createMemoNavigationState("/?creator=alice"), { memoArchived: true })).toBe("/?creator=alice");
   });
 
   it("round-trips an explicit origin through router state", () => {
@@ -88,12 +88,12 @@ describe("memo view navigation", () => {
   });
 
   it("replaces the filter without dropping other origin query parameters", () => {
-    expect(withMemoFilter("/u/alice?sort=displayTime&filter=old#section", "tagSearch:design")).toBe(
-      "/u/alice?sort=displayTime&filter=tagSearch%3Adesign",
+    expect(withMemoFilter("/?creator=alice&sort=displayTime&filter=old#section", "tagSearch:design")).toBe(
+      "/?creator=alice&sort=displayTime&filter=tagSearch%3Adesign",
     );
   });
 
-  it("applies a filter within the originating Profile", () => {
-    expect(withMemoFilter("/u/alice", "tagSearch:design")).toBe("/u/alice?filter=tagSearch%3Adesign");
+  it("applies a filter within the originating creator collection", () => {
+    expect(withMemoFilter("/?creator=alice", "tagSearch:design")).toBe("/?creator=alice&filter=tagSearch%3Adesign");
   });
 });

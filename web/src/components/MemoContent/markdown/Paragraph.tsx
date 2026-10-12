@@ -35,7 +35,8 @@ export function getSingleLinkHref(node?: Element): string | undefined {
   }
 
   const href = onlyChild.properties?.href;
-  if (typeof href !== "string") {
+  // Only web links have metadata to preview; `tel:`/`sms:`/`mailto:` hand off to another app.
+  if (typeof href !== "string" || !/^https?:\/\//i.test(href)) {
     return undefined;
   }
 

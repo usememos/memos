@@ -1,7 +1,7 @@
 import { autocompletion, type CompletionContext, type CompletionResult } from "@codemirror/autocomplete";
+import { ensureSyntaxTree, syntaxTree } from "@codemirror/language";
 import type { Extension } from "@codemirror/state";
-import { isTagIntroducerAt } from "@/utils/tag-grammar";
-import { isLiteralTagPosition, tagMatchBefore } from "./markdownTagRanges";
+import { findTagMatches, isTagIntroducerAt } from "@/utils/tag-grammar";
 
 /**
  * Ranks a candidate tag against the typed text (both already lower-cased).
@@ -22,13 +22,27 @@ const matchRank = (tag: string, typed: string): number | undefined => {
 
 export function makeTagCompletionSource(getTags: () => string[]) {
   return (ctx: CompletionContext): CompletionResult | null => {
-    const match = tagMatchBefore(ctx.state, ctx.pos);
-    const source = ctx.state.doc.toString();
-    const explicitBareIntroducer =
-      ctx.explicit && ctx.pos > 0 && isTagIntroducerAt(source, ctx.pos - 1) && isLiteralTagPosition(ctx.state, ctx.pos);
-    if (!match && !explicitBareIntroducer) return null;
+    // Completion is an input aid, including inside code, links, and escapes.
+    // Keep tag spelling rules, but don't restrict candidates to rendered tags.
+    const line = ctx.state.doc.lineAt(ctx.pos);
+    const position = ctx.pos - line.from;
+    const match = findTagMatches(line.text, 0, position).findLast(
+      (candidate) => candidate.to === position || (candidate.to === position - 1 && line.text[position - 1] === "/"),
+    );
+    const bareIntroducer = isTagIntroducerAt(line.text, position - 1);
+    if (!match && !bareIntroducer) return null;
 
-    const typed = (match?.value ?? "").toLowerCase();
+    const from = match ? line.from + match.from + 1 : ctx.pos;
+    if (!ctx.explicit) {
+      const tree = ensureSyntaxTree(ctx.state, ctx.pos) ?? syntaxTree(ctx.state);
+      const node = tree.resolveInner(from - 1, 1);
+      // Only the opening heading marker is reserved. A later # in heading
+      // text still offers tags, including a potential closing heading marker.
+      if (node.name === "HeaderMark" && node.parent?.firstChild?.from === node.from) return null;
+    }
+
+    // A trailing slash is an unfinished child segment, not the end of input.
+    const typed = (match ? match.value + (match.to < position ? "/" : "") : "").toLowerCase();
     const options = getTags()
       .map((tag) => ({ tag, rank: matchRank(tag.toLowerCase(), typed) }))
       .filter((candidate): candidate is { tag: string; rank: number } => candidate.rank !== undefined)
@@ -38,7 +52,7 @@ export function makeTagCompletionSource(getTags: () => string[]) {
     if (options.length === 0) return null;
     // `filter: false` keeps this ranking: CodeMirror would otherwise re-filter
     // and re-score the options with its own fuzzy matcher.
-    return { from: match ? match.from + 1 : ctx.pos, options, filter: false };
+    return { from, options, filter: false };
   };
 }
 

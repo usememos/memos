@@ -2,7 +2,7 @@ import { create } from "@bufbuild/protobuf";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import ReactionSelector from "@/components/MemoReactionListView/ReactionSelector";
-import { MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
+import { MemoSchema } from "@/types/proto/api/memo_service_pb";
 
 vi.mock("@/components/MemoReactionListView/hooks", () => ({
   useReactionActions: () => ({
@@ -25,6 +25,7 @@ describe("ReactionSelector", () => {
     render(<ReactionSelector memo={memo} />);
 
     const trigger = screen.getByRole("button", { name: "setting.memo.add-reaction" });
+    // The default trigger is a round quiet 28px face, closing the strip of reaction pills it follows.
     expect(trigger).toHaveClass("size-7", "rounded-full", "focus-visible:outline-2");
     expect(trigger.className).not.toMatch(/ring-/);
     expect(trigger).toHaveAttribute("aria-expanded", "false");

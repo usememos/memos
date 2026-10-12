@@ -1,10 +1,9 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { MoreHorizontalIcon, PlusIcon, SquareCheckIcon } from "lucide-react";
+import { MoreHorizontalIcon, PlusIcon } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
 import ConfirmDialog from "@/components/ConfirmDialog";
-import MemoDisplaySettingMenu from "@/components/MemoDisplaySettingMenu";
 import MemoViewIcon from "@/components/MemoViewIcon";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -14,10 +13,10 @@ import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoViews, userKeys } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
-import { BUILTIN_TASKS_VIEW_ID, getMemoViewId, isMemoCollectionRoute } from "@/lib/memo-views";
+import { getMemoViewId, isMemoCollectionRoute } from "@/lib/memo-views";
 import { cn } from "@/lib/utils";
-import { collectionPathForLocation, ROUTES } from "@/router/routes";
-import type { MemoView } from "@/types/proto/api/v1/user_service_pb";
+import { getCollectionHomePath, ROUTES } from "@/router/routes";
+import type { MemoView } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import SidebarRow, {
   SIDEBAR_ROW_BOX_CLASSES,
@@ -41,7 +40,7 @@ const ViewsSection = ({ manageActive = false }: { manageActive?: boolean }) => {
   const navigate = useNavigate();
   const currentUser = useCurrentUser();
   const queryClient = useQueryClient();
-  const { data: memoViews = [] } = useMemoViews(currentUser?.name);
+  const { data: memoViews = [], isPending, isError } = useMemoViews(currentUser?.name);
   const { memoView: selectedMemoView, setMemoView } = useMemoFilterContext();
   const { setMobileOpen } = useAppSidebar();
   const [deleteTarget, setDeleteTarget] = useState<MemoView>();
@@ -49,8 +48,7 @@ const ViewsSection = ({ manageActive = false }: { manageActive?: boolean }) => {
 
   const handleView = (viewId: string) => {
     setMemoView(selectedMemoView === viewId ? undefined : viewId);
-    if (!isMemoCollectionRoute(location.pathname))
-      navigate({ pathname: collectionPathForLocation(ROUTES.HOME, location.pathname), search: location.search });
+    if (!isMemoCollectionRoute(location.pathname)) navigate({ pathname: getCollectionHomePath(location), search: location.search });
     setMobileOpen(false);
   };
 
@@ -77,22 +75,17 @@ const ViewsSection = ({ manageActive = false }: { manageActive?: boolean }) => {
     <SidebarSection
       label={t("common.views")}
       action={
-        !manageActive && (
-          <div className="flex items-center gap-0.5">
-            <MemoDisplaySettingMenu />
-            <Button variant="quiet" size="icon-sm" onClick={handleCreate} aria-label={t("common.create")}>
-              <PlusIcon className={SIDEBAR_SECTION_ACTION_ICON_CLASSES} strokeWidth={1.8} />
-            </Button>
-          </div>
+        !manageActive &&
+        (memoViews.length > 0 || isError) && (
+          <Button variant="quiet" size="icon-sm" onClick={handleCreate} aria-label={t("setting.memo-view.create")}>
+            <PlusIcon className={SIDEBAR_SECTION_ACTION_ICON_CLASSES} strokeWidth={1.8} />
+          </Button>
         )
       }
     >
-      <SidebarRow
-        state={!manageActive && selectedMemoView === BUILTIN_TASKS_VIEW_ID ? "checked" : "idle"}
-        icon={SquareCheckIcon}
-        label={t("common.tasks")}
-        onClick={() => handleView(BUILTIN_TASKS_VIEW_ID)}
-      />
+      {!isPending && !isError && memoViews.length === 0 && (
+        <SidebarRow icon={PlusIcon} label={t("setting.memo-view.create")} onClick={handleCreate} />
+      )}
       {memoViews.map((memoView) => {
         const id = getMemoViewId(memoView.name);
         const active = !manageActive && selectedMemoView === id;

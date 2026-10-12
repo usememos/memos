@@ -1,8 +1,7 @@
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import type { MemoParentStatus } from "@/components/MemoParentPlaceholder";
-import type { PrimaryMemoScope } from "@/lib/memo-views";
-import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
+import type { Memo } from "@/types/proto/api/memo_service_pb";
 
 export type AttachmentSection = "all" | "media" | "audio" | "documents" | "unused";
 export type InboxFilter = "all" | "unread" | "archived";
@@ -13,7 +12,6 @@ export interface MemoDetailSidebarDescriptor {
   parentStatus?: MemoParentStatus;
   onParentRetry?: () => void;
   from?: string;
-  hasExplicitOrigin?: boolean;
   commentCount?: number;
   readonly?: boolean;
   onEdit?: () => void;
@@ -35,8 +33,6 @@ interface AppSidebarContextValue {
   completeMobileClose: (open: boolean) => void;
   quickFindOpen: boolean;
   setQuickFindOpen: (open: boolean) => void;
-  memoScope: PrimaryMemoScope;
-  setMemoScope: (scope: PrimaryMemoScope) => void;
 }
 
 const AppSidebarContext = createContext<AppSidebarContextValue | null>(null);
@@ -50,7 +46,6 @@ export const AppSidebarProvider = ({ children }: { children: ReactNode }) => {
   const pendingMobileCloseActionRef = useRef<(() => void) | undefined>(undefined);
   const scheduledMobileCloseActionFrameRef = useRef<number | undefined>(undefined);
   const [quickFindOpen, setQuickFindOpen] = useState(false);
-  const [memoScope, setMemoScope] = useState<PrimaryMemoScope>("home");
 
   useEffect(() => {
     pendingMobileCloseActionRef.current = undefined;
@@ -116,10 +111,8 @@ export const AppSidebarProvider = ({ children }: { children: ReactNode }) => {
       completeMobileClose,
       quickFindOpen,
       setQuickFindOpen,
-      memoScope,
-      setMemoScope,
     }),
-    [attachmentSection, inboxFilter, memoDetail, setMemoDetail, mobileOpen, closeMobileThen, completeMobileClose, quickFindOpen, memoScope],
+    [attachmentSection, inboxFilter, memoDetail, setMemoDetail, mobileOpen, closeMobileThen, completeMobileClose, quickFindOpen],
   );
 
   return <AppSidebarContext.Provider value={value}>{children}</AppSidebarContext.Provider>;

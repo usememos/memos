@@ -156,14 +156,17 @@ func (d *DB) deleteReactionAsCreator(ctx context.Context, delete *store.DeleteRe
 		return errors.Wrap(err, "failed to begin authorized reaction delete transaction")
 	}
 	defer func() { _ = tx.Rollback() }()
+	actorIsAdmin := false
 	if delete.Policy != nil {
-		if err := validateMySQLReactionDeletePolicy(ctx, tx, &store.Reaction{
+		participation, err := validateMySQLReactionDeletePolicy(ctx, tx, &store.Reaction{
 			CreatorID: *delete.ActorUserID,
 			MemoID:    *delete.MemoID,
 			Policy:    delete.Policy,
-		}); err != nil {
+		})
+		if err != nil {
 			return err
 		}
+		actorIsAdmin = participation.Actor.Admin
 	}
 
 	var creatorID, memoID int32
@@ -173,7 +176,8 @@ func (d *DB) deleteReactionAsCreator(ctx context.Context, delete *store.DeleteRe
 		}
 		return errors.Wrap(err, "failed to read reaction for deletion")
 	}
-	if creatorID != *delete.ActorUserID || (delete.MemoID != nil && memoID != *delete.MemoID) {
+	// An instance administrator may withdraw any reaction on the named memo.
+	if (creatorID != *delete.ActorUserID && !actorIsAdmin) || (delete.MemoID != nil && memoID != *delete.MemoID) {
 		return store.ErrReactionPermissionDenied
 	}
 	if _, err := tx.ExecContext(ctx, "DELETE FROM reaction WHERE id = ?", *delete.ID); err != nil {

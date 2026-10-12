@@ -21,11 +21,11 @@ func validatePostgresMemoRelationEndpoints(ctx context.Context, tx *sql.Tx, muta
 		return nil
 	}
 
-	userStatuses, err := readPostgresUserStatuses(ctx, tx, mutation.MemoCreatorID)
+	actorUserID := mutation.ActorUserID()
+	actor, err := readPostgresMemoActor(ctx, tx, actorUserID)
 	if err != nil {
 		return err
 	}
-	actorActive := userStatuses[mutation.MemoCreatorID] == store.Normal
 
 	endpointIDs := postgresRelationAuthorizationEndpointIDs(mutation)
 	for _, endpointID := range endpointIDs {
@@ -37,8 +37,8 @@ func validatePostgresMemoRelationEndpoints(ctx context.Context, tx *sql.Tx, muta
 			return err
 		}
 		snapshot := &store.MemoRelationEndpointSnapshot{
-			ActorUserID:        mutation.MemoCreatorID,
-			ActorActive:        actorActive,
+			ActorUserID:        actorUserID,
+			Actor:              actor,
 			EndpointID:         state.id,
 			EndpointCreatorID:  state.creatorID,
 			EndpointRowStatus:  state.rowStatus,
@@ -47,7 +47,7 @@ func validatePostgresMemoRelationEndpoints(ctx context.Context, tx *sql.Tx, muta
 		}
 		if state.spaceID != nil {
 			snapshot.EndpointSpaceExists, snapshot.EndpointMemberActive, err = readPostgresMemoSpaceState(
-				ctx, tx, *state.spaceID, mutation.MemoCreatorID,
+				ctx, tx, *state.spaceID, actorUserID,
 			)
 			if err != nil {
 				return err

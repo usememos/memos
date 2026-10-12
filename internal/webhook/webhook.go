@@ -19,8 +19,6 @@ import (
 	"uuid"
 
 	"github.com/pkg/errors"
-
-	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 )
 
 var (
@@ -37,17 +35,17 @@ var (
 		},
 	}
 
-	asyncPostQueue = make(chan *WebhookRequestPayload, 128)
+	asyncPostQueue = make(chan *Request, 128)
 )
 
 func init() {
 	for range 4 {
 		go func() {
-			for payload := range asyncPostQueue {
-				if err := Post(payload); err != nil {
+			for request := range asyncPostQueue {
+				if err := Post(request); err != nil {
 					slog.Warn("Failed to dispatch webhook asynchronously",
-						slog.String("url", payload.URL),
-						slog.String("activityType", payload.ActivityType),
+						slog.String("url", request.URL),
+						slog.String("label", request.Label),
 						slog.Any("err", err))
 				}
 			}
@@ -99,17 +97,17 @@ func safeDialContext(ctx context.Context, network, addr string) (net.Conn, error
 	return nil, errors.Errorf("webhook: host %q resolved to no IP addresses", host)
 }
 
-type WebhookRequestPayload struct {
-	// The target URL for the webhook request.
-	URL string `json:"url"`
-	// The type of activity that triggered this webhook.
-	ActivityType string `json:"activityType"`
-	// The resource name of the creator. Format: users/{user}
-	Creator string `json:"creator"`
-	// The memo that triggered this webhook (if applicable).
-	Memo *v1pb.Memo `json:"memo"`
-	// Optional signing secret for HMAC-SHA256 signature. Not serialized to JSON.
-	SigningSecret string `json:"-"`
+// Request is one webhook delivery: Payload is JSON-encoded and posted to URL,
+// signed with SigningSecret when one is set.
+type Request struct {
+	// URL is the destination endpoint.
+	URL string
+	// Label identifies the delivery in logs, for example an activity type.
+	Label string
+	// SigningSecret enables Standard Webhooks HMAC-SHA256 signing when non-empty.
+	SigningSecret string
+	// Payload is the value encoded as the JSON request body.
+	Payload any
 }
 
 // resolveSigningKey returns the raw HMAC key for a signing secret. Secrets using
@@ -139,9 +137,9 @@ func GenerateSigningSecret() (string, error) {
 	return "whsec_" + base64.StdEncoding.EncodeToString(buf), nil
 }
 
-// Post posts the message to webhook endpoint.
-func Post(requestPayload *WebhookRequestPayload) error {
-	body, err := json.Marshal(requestPayload)
+// Post delivers the request synchronously and returns the receiver's verdict.
+func Post(requestPayload *Request) error {
+	body, err := json.Marshal(requestPayload.Payload)
 	if err != nil {
 		return errors.Wrapf(err, "failed to marshal webhook request to %s", requestPayload.URL)
 	}
@@ -202,11 +200,11 @@ func Post(requestPayload *WebhookRequestPayload) error {
 	return nil
 }
 
-// PostAsync posts the message to webhook endpoint asynchronously.
-// It enqueues the request for bounded asynchronous dispatch and does not wait for the response.
-func PostAsync(requestPayload *WebhookRequestPayload) {
+// PostAsync enqueues the request for bounded asynchronous delivery and does
+// not wait for the response.
+func PostAsync(requestPayload *Request) {
 	if requestPayload == nil {
-		slog.Warn("Dropped webhook dispatch because payload is nil")
+		slog.Warn("Dropped webhook dispatch because request is nil")
 		return
 	}
 	select {
@@ -214,6 +212,6 @@ func PostAsync(requestPayload *WebhookRequestPayload) {
 	default:
 		slog.Warn("Dropped webhook dispatch because the async queue is full",
 			slog.String("url", requestPayload.URL),
-			slog.String("activityType", requestPayload.ActivityType))
+			slog.String("label", requestPayload.Label))
 	}
 }

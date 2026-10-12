@@ -9,7 +9,7 @@ import (
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	"github.com/usememos/memos/internal/filter"
+	"github.com/usememos/memos/filter"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
@@ -67,16 +67,27 @@ func insertPostgresMemo(ctx context.Context, tx *sql.Tx, create *store.Memo) err
 }
 
 func validatePostgresMemoCreate(ctx context.Context, tx *sql.Tx, create *store.Memo) error {
-	var actorStatus store.RowStatus
-	err := tx.QueryRowContext(ctx, `SELECT row_status FROM "user" WHERE id = $1`, create.CreatorID).Scan(&actorStatus)
-	if errors.Is(err, sql.ErrNoRows) || (err == nil && actorStatus != store.Normal) {
-		return store.ErrMemoSpaceMembershipRequired
-	}
+	actor, err := readPostgresMemoActor(ctx, tx, create.CreatorID)
 	if err != nil {
 		return err
 	}
-	if create.SpaceID != nil {
+	if !actor.Active {
+		return store.ErrMemoSpaceMembershipRequired
+	}
+	if create.SpaceID == nil {
+		return nil
+	}
+	if !actor.Admin {
 		return validatePostgresMemoSpaceMember(ctx, tx, *create.SpaceID, create.CreatorID)
+	}
+	// An instance administrator places memos without membership; the target
+	// Space must still exist.
+	exists, err := postgresSpaceExists(ctx, tx, *create.SpaceID)
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return store.ErrMemoSpaceNotWritable
 	}
 	return nil
 }
@@ -273,6 +284,17 @@ func (d *DB) GetMemo(ctx context.Context, find *store.FindMemo) (*store.Memo, er
 	return memo, nil
 }
 
+// CountUserMemos counts the memos a user created, comments included, in every
+// row status and Space.
+func (d *DB) CountUserMemos(ctx context.Context, creatorID int32) (int64, error) {
+	stmt := `SELECT COUNT(*) FROM memo WHERE creator_id = $1`
+	var count int64
+	if err := d.db.QueryRowContext(ctx, stmt, creatorID).Scan(&count); err != nil {
+		return 0, errors.Wrap(err, "failed to count user memos")
+	}
+	return count, nil
+}
+
 func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
 	if update.Policy == nil {
 		return applyMemoUpdate(ctx, d.db, update)
@@ -282,7 +304,7 @@ func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
 		return err
 	}
 	defer func() { _ = tx.Rollback() }()
-	if err := validatePostgresMemoWritePolicy(ctx, tx, update.ID, update.Policy, update); err != nil {
+	if _, err := validatePostgresMemoWritePolicy(ctx, tx, update.ID, update.Policy, update); err != nil {
 		return err
 	}
 	if err := applyMemoUpdate(ctx, tx, update); err != nil {

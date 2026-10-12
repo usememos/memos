@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/usememos/memos/internal/profile"
-	"github.com/usememos/memos/internal/storage"
 	storepb "github.com/usememos/memos/proto/gen/store"
+	"github.com/usememos/memos/provider/storage"
 	"github.com/usememos/memos/store/cache"
 )
 

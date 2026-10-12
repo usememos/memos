@@ -18,20 +18,12 @@ export const useUserTheme = () => {
     loadTheme(theme);
   }, [userGeneralSetting?.theme]);
 
-  // Listen for system theme changes when using "system" theme
+  // Read the latest preference on each change, including local-only guest choices.
   useEffect(() => {
-    const theme = getThemeWithFallback(userGeneralSetting?.theme);
-
-    // Only set up listener if theme is "system"
-    if (theme !== "system") {
-      return;
-    }
-
-    // Set up listener for OS theme preference changes
-    const cleanup = setupSystemThemeListener(() => {
-      loadTheme(theme);
+    return setupSystemThemeListener(() => {
+      if (getThemeWithFallback(userGeneralSetting?.theme) === "system") {
+        loadTheme("system");
+      }
     });
-
-    return cleanup;
   }, [userGeneralSetting?.theme]);
 };

@@ -6,7 +6,7 @@ import { createPortal } from "react-dom";
 import { MapContainer, Marker, useMap, useMapEvents } from "react-leaflet";
 import { cn } from "@/lib/utils";
 import { BasemapLayer } from "./BasemapLayer";
-import { defaultMarkerIcon, MinimalAttributionControl, OpenStreetMapTileLayer } from "./map-utils";
+import { defaultMarkerIcon, MinimalAttributionControl } from "./map-utils";
 import type { MapPoint } from "./types";
 
 const toLatLng = (point: MapPoint): LatLng => new LatLng(point.lat, point.lng);
@@ -223,8 +223,7 @@ const LocationPicker = ({ readonly: readOnly = false, latlng, onChange = noopOnL
         attributionControl={false}
       >
         <MinimalAttributionControl />
-        {/* A read-only preview is a glance, not worth a WebGL renderer and a style download. */}
-        {readOnly ? <OpenStreetMapTileLayer /> : <BasemapLayer />}
+        <BasemapLayer />
         <LocationMarker position={markerPosition} readonly={readOnly} onChange={onChange} />
         <MapControls position={latlng} />
         <MapCleanup />

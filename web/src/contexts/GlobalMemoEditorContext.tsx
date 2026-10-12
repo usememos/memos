@@ -10,6 +10,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useSpaceContext } from "@/contexts/SpaceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useMediaQuery from "@/hooks/useMediaQuery";
+import { useMemoSuggestions } from "@/hooks/useMemoSuggestions";
 import { spaceScopedCacheKey } from "@/lib/resource-names";
 import { useTranslate } from "@/utils/i18n";
 
@@ -43,6 +44,7 @@ export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) 
   const t = useTranslate();
   const location = useLocation();
   const currentUserName = useCurrentUser()?.name;
+  const suggestions = useMemoSuggestions();
   const { selectedSpaceName, isSpaceReady } = useSpaceContext();
   const { isUserSettingsInitialized } = useAuth();
   const desktop = useMediaQuery("md");
@@ -172,6 +174,7 @@ export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) 
                 autoFocus
                 cacheKey={spaceScopedCacheKey("global-memo-editor", opened?.space)}
                 defaultSpace={opened?.space}
+                suggestions={suggestions}
                 placeholder={t("editor.any-thoughts")}
                 onConfirm={closeEditor}
                 onCancel={closeEditor}

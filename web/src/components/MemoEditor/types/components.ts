@@ -1,5 +1,7 @@
-import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
-import type { Location, Memo, Visibility } from "@/types/proto/api/v1/memo_service_pb";
+import type { MemoSuggestion } from "@/lib/memo-suggestions";
+import type { Attachment } from "@/types/proto/api/attachment_service_pb";
+import type { Location, Memo, Visibility } from "@/types/proto/api/memo_service_pb";
+import type { EditorFileOrigin } from "../Editor/extensions";
 import type { AudioRecorderStatus } from "../hooks/useAudioRecorder";
 import type { LocalFile } from "./attachment";
 
@@ -10,6 +12,8 @@ export interface MemoEditorProps {
   /** Existing memo to edit. When provided, the editor initializes from it without fetching. */
   memo?: Memo;
   parentMemoName?: string;
+  /** Context-derived suggestions for a new top-level memo. */
+  suggestions?: readonly MemoSuggestion[];
   /** Assigns a newly created top-level memo to this Space. Ignored for edits and comments. */
   defaultSpace?: string;
   /** Seeds a new memo once; restored draft metadata takes precedence. */
@@ -23,6 +27,12 @@ export interface MemoEditorProps {
    * and exits by calling this to dismiss the host rather than collapsing in place.
    */
   onFocusModeExit?: () => void;
+  /**
+   * Reports inline focus-mode changes. A host reacts to the editor taking over
+   * the viewport, e.g. the memo grid untraps its tile so the fixed focus-mode
+   * surface is not contained by a transformed ancestor.
+   */
+  onFocusModeChange?: (isFocusMode: boolean) => void;
   /**
    * Default `createTime` for a *new* memo (create mode only). When set, the
    * editor seeds both `createTime` and `updateTime` to this value and renders
@@ -41,7 +51,7 @@ export interface EditorContentProps {
   placeholder?: string;
   /** Invoked by the in-editor save shortcut (Cmd/Ctrl+Enter). */
   onSubmit: () => void;
-  onFiles: (files: File[], position: number) => void;
+  onFiles: (files: File[], origin: EditorFileOrigin) => void;
 }
 
 /**
@@ -64,12 +74,17 @@ export interface EditorToolbarProps {
   parentMemoName?: string;
   /** The Space that owns the memo being created or edited, if any. */
   space?: string;
+  /** Only unscoped, new top-level memos can choose a destination. */
+  canChooseSpace?: boolean;
   onAudioRecorderClick: () => void;
   viewToggles?: EditorViewToggles;
   onInsertImages: (files: File[]) => void;
 }
 
 export interface EditorMetadataProps {
+  onTranscribeAttachment?: (attachment: Attachment) => void;
+  transcribingAttachment?: string;
+  transcriptionDisabled?: boolean;
   memoName?: string;
   uploadingLocalFileURLs: ReadonlySet<string>;
   onInsertAttachments: (attachments: Attachment[]) => void;
@@ -109,12 +124,11 @@ export interface InsertMenuProps {
   onInsertImages: (files: File[]) => void;
 }
 
-export interface VisibilitySelectorProps {
+export interface AudienceMenuProps {
   value: Visibility;
   onChange: (visibility: Visibility) => void;
   /** The memo's actual placement; independent of the ambient collection scope. */
   space?: string;
-  onOpenChange?: (open: boolean) => void;
-  /** "compact" renders a 13px trigger that blends into dense surfaces like the memo detail rail. */
-  size?: "default" | "compact";
+  onSpaceChange?: (space?: string) => void;
+  disabled?: boolean;
 }

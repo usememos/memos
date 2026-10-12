@@ -8,6 +8,7 @@ import (
 	"errors"
 	"regexp"
 	"sync"
+	"sync/atomic"
 
 	"golang.org/x/text/cases"
 	msqlite "modernc.org/sqlite"
@@ -50,7 +51,15 @@ var (
 	registerRegexpErr  error
 	// regexpCache memoizes compiled patterns; keys are pattern strings.
 	regexpCache sync.Map
+	// regexpCacheSize counts cached patterns so a stream of distinct
+	// attacker-chosen patterns cannot grow the cache without bound.
+	regexpCacheSize atomic.Int64
 )
+
+// maxRegexpCacheEntries caps the compiled-pattern cache. When it is full the
+// cache is cleared rather than evicted entry by entry; recompiling a pattern
+// is cheap next to letting the cache grow unbounded.
+const maxRegexpCacheEntries = 256
 
 // ensureRegexpRegistered registers a Go-backed `regexp(pattern, value)` scalar
 // function so SQLite's `value REGEXP pattern` operator works (modernc.org/sqlite
@@ -99,6 +108,12 @@ func compileRegexp(pattern string) (*regexp.Regexp, error) {
 	if err != nil {
 		return nil, err
 	}
-	regexpCache.Store(pattern, re)
+	if regexpCacheSize.Load() >= maxRegexpCacheEntries {
+		regexpCache.Clear()
+		regexpCacheSize.Store(0)
+	}
+	if _, loaded := regexpCache.LoadOrStore(pattern, re); !loaded {
+		regexpCacheSize.Add(1)
+	}
 	return re, nil
 }

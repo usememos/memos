@@ -40,7 +40,7 @@ export const CalendarCell = memo(({ day, maxCount, tooltipText, onClick }: Calen
         {day.isToday && (
           <span
             aria-hidden="true"
-            className="absolute bottom-[3px] left-1/2 size-[3px] -translate-x-1/2 rounded-full bg-blue-600/80 dark:bg-blue-300/80"
+            className="absolute bottom-[3px] left-1/2 size-[3px] -translate-x-1/2 rounded-full bg-current opacity-70"
           />
         )}
       </span>

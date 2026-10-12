@@ -19,7 +19,7 @@ func placeholder(n int) string {
 
 func placeholders(n int) string {
 	list := []string{}
-	for i := 0; i < n; i++ {
+	for i := range n {
 		list = append(list, placeholder(i+1))
 	}
 	return strings.Join(list, ", ")

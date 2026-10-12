@@ -191,3 +191,17 @@ export function useMemoFilterContext() {
 
 // Alias for backwards compatibility during migration
 export const useMemoFilter = useMemoFilterContext;
+
+const NO_TERMS: string[] = [];
+
+/**
+ * The words of the active plain-text search, in the order the user typed them. Safe outside a
+ * provider (share previews, tests), where there is no search and therefore nothing to match.
+ */
+export function useContentSearchTerms(): string[] {
+  const filters = useContext(MemoFilterContext)?.filters;
+  return useMemo(() => {
+    const terms = (filters ?? []).filter((filter) => filter.factor === "contentSearch").map((filter) => filter.value);
+    return terms.length > 0 ? terms : NO_TERMS;
+  }, [filters]);
+}

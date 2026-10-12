@@ -3,6 +3,7 @@ package test
 import (
 	"context"
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -15,12 +16,12 @@ func TestUserStore(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
-	user, err := createTestingHostUser(ctx, ts)
+	user, err := createTestingUserWithRole(ctx, ts, "test", store.RoleUser)
 	require.NoError(t, err)
 	users, err := ts.ListUsers(ctx, &store.FindUser{})
 	require.NoError(t, err)
 	require.Equal(t, 1, len(users))
-	require.Equal(t, store.RoleAdmin, users[0].Role)
+	require.Equal(t, store.RoleUser, users[0].Role)
 	require.Equal(t, user, users[0])
 	userPatchNickname := "test_nickname_2"
 	userPatch := &store.UpdateUser{
@@ -47,7 +48,7 @@ func TestUserListByIDList(t *testing.T) {
 
 	// Create 5 users
 	var userIDs []int32
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		user, err := createTestingUserWithRole(ctx, ts, fmt.Sprintf("user_list_%d", i), store.RoleUser)
 		require.NoError(t, err)
 		userIDs = append(userIDs, user.ID)
@@ -185,7 +186,7 @@ func TestUserUpdateRowStatus(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
-	user, err := createTestingHostUser(ctx, ts)
+	user, err := createTestingUserWithRole(ctx, ts, "test", store.RoleUser)
 	require.NoError(t, err)
 	require.Equal(t, store.Normal, user.RowStatus)
 
@@ -265,7 +266,7 @@ func TestUserListWithLimit(t *testing.T) {
 	ts := NewTestingStore(ctx, t)
 
 	// Create 5 users
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		role := store.RoleUser
 		if i == 0 {
 			role = store.RoleAdmin
@@ -291,7 +292,7 @@ func createTestingUserWithRole(ctx context.Context, ts *store.Store, username st
 	userCreate := &store.User{
 		Username:    username,
 		Role:        role,
-		Email:       username + "@test.com",
+		Email:       testEmailForUsername(username),
 		Nickname:    username + "_nickname",
 		Description: username + "_description",
 	}
@@ -302,4 +303,14 @@ func createTestingUserWithRole(ctx context.Context, ts *store.Store, username st
 	userCreate.PasswordHash = string(passwordHash)
 	user, err := ts.CreateUser(ctx, userCreate)
 	return user, err
+}
+
+// testEmailForUsername derives a distinct, valid address for a fixture user.
+// Addresses are stored lowercased and are unique per instance, so usernames
+// that differ only by case need more than the username to stay distinct.
+func testEmailForUsername(username string) string {
+	if strings.ToLower(username) == username {
+		return username + "@test.com"
+	}
+	return fmt.Sprintf("%s-%x@test.com", strings.ToLower(username), username)
 }

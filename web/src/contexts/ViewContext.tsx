@@ -1,4 +1,6 @@
 import { createContext, type ReactNode, useContext, useState } from "react";
+import { useLocation } from "react-router-dom";
+import { ROUTES, resolveCollectionRoute } from "@/router/routes";
 
 export type MemoTimeBasis = "create_time" | "update_time";
 
@@ -34,7 +36,7 @@ const LOCAL_STORAGE_KEY = "memos-view-setting";
 
 const DEFAULT_VIEW_STATE: ViewState = { orderByTimeAsc: false, compactMode: false, linkPreview: true, maxColumns: 1 };
 
-export function ViewProvider({ children }: { children: ReactNode }) {
+export function ViewProvider({ children, enabled = true }: { children: ReactNode; enabled?: boolean }) {
   const getInitialState = (): ViewState => {
     try {
       const cached = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -60,7 +62,9 @@ export function ViewProvider({ children }: { children: ReactNode }) {
   };
 
   const [viewState, setViewState] = useState(getInitialState);
-  const timeBasis = viewState.timeBasis ?? "create_time";
+  // Keep the saved Timeline preferences while other views use their default presentation.
+  const activeState = enabled ? viewState : DEFAULT_VIEW_STATE;
+  const timeBasis = activeState.timeBasis ?? "create_time";
 
   const persistToStorage = (newState: ViewState) => {
     try {
@@ -70,9 +74,9 @@ export function ViewProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const updateState = (patch: Partial<ViewState> | ((prev: ViewState) => Partial<ViewState>)) => {
+  const updateState = (patch: Partial<ViewState>) => {
     setViewState((prev) => {
-      const newState = { ...prev, ...(typeof patch === "function" ? patch(prev) : patch) };
+      const newState = { ...prev, ...patch };
       persistToStorage(newState);
       return newState;
     });
@@ -87,11 +91,11 @@ export function ViewProvider({ children }: { children: ReactNode }) {
   return (
     <ViewContext.Provider
       value={{
-        orderByTimeAsc: viewState.orderByTimeAsc,
+        orderByTimeAsc: activeState.orderByTimeAsc,
         timeBasis,
-        compactMode: viewState.compactMode,
-        linkPreview: viewState.linkPreview,
-        maxColumns: viewState.maxColumns,
+        compactMode: activeState.compactMode,
+        linkPreview: activeState.linkPreview,
+        maxColumns: activeState.maxColumns,
         setOrderByTimeAsc,
         setTimeBasis,
         setCompactMode,
@@ -102,6 +106,15 @@ export function ViewProvider({ children }: { children: ReactNode }) {
       {children}
     </ViewContext.Provider>
   );
+}
+
+/** Timeline preferences also apply to its sidebar statistics and date filters. */
+export function TimelineViewProvider({ children }: { children: ReactNode }) {
+  const { pathname } = useLocation();
+  const route = resolveCollectionRoute(pathname);
+  const collectionPath = route.pathname.toLowerCase();
+  const enabled = route.isCollection && (collectionPath === ROUTES.HOME || collectionPath === ROUTES.EXPLORE);
+  return <ViewProvider enabled={enabled}>{children}</ViewProvider>;
 }
 
 export function useView() {

@@ -22,22 +22,31 @@ func TestMain(m *testing.M) {
 }
 
 func runAllDrivers() {
-	drivers := []string{"sqlite", "mysql", "postgres"}
+	// Each run names a driver and the extra environment it needs.
+	runs := []struct {
+		label string
+		env   []string
+	}{
+		{"sqlite", []string{"DRIVER=sqlite"}},
+		{"mysql", []string{"DRIVER=mysql"}},
+		{"postgres", []string{"DRIVER=postgres"}},
+	}
 	_, currentFile, _, _ := runtime.Caller(0)
 	projectRoot := filepath.Dir(filepath.Dir(filepath.Dir(currentFile)))
 
 	var failed []string
-	for _, driver := range drivers {
-		fmt.Printf("\n==================== %s ====================\n\n", driver)
+	for _, run := range runs {
+		fmt.Printf("\n==================== %s ====================\n\n", run.label)
 
 		cmd := exec.Command("go", "test", "-v", "-count=1", "./store/test/...")
 		cmd.Dir = projectRoot
-		cmd.Env = append(os.Environ(), "DRIVER="+driver)
+		env := append(os.Environ(), run.env...)
+		cmd.Env = env
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 
 		if err := cmd.Run(); err != nil {
-			failed = append(failed, driver)
+			failed = append(failed, run.label)
 		}
 	}
 

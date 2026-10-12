@@ -55,10 +55,13 @@ const formattingKeys: KeyBinding[] = [
   formattingKey("Mod-Alt-3", "heading3"),
 ];
 
+/** The gesture that handed files to the editor: a drop lands at a document position, a paste has none. */
+export type EditorFileOrigin = { source: "paste" } | { source: "drop"; position: number };
+
 export interface EditorExtensionsOptions {
   placeholder: string;
   onChange: (markdown: string) => void;
-  onFiles: (files: File[], position: number) => void;
+  onFiles: (files: File[], origin: EditorFileOrigin) => void;
   onUpdate: () => void;
   onSubmit: () => void;
   getTags: () => string[];
@@ -120,17 +123,17 @@ export function buildEditorExtensions({
     }),
     placeholderCompartment.of(cmPlaceholder(placeholder)),
     EditorView.domEventHandlers({
-      paste: (event, view) => {
+      paste: (event) => {
         const files = clipboardFiles(event);
         if (files.length === 0) return false;
-        onFiles(files, view.state.selection.main.head);
+        onFiles(files, { source: "paste" });
         return true;
       },
       drop: (event, view) => {
         const files = Array.from(event.dataTransfer?.files ?? []);
         if (files.length === 0) return false;
         const position = view.posAtCoords({ x: event.clientX, y: event.clientY }) ?? view.state.selection.main.head;
-        onFiles(files, position);
+        onFiles(files, { source: "drop", position });
         return true;
       },
     }),

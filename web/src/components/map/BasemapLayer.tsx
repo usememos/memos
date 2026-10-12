@@ -50,8 +50,8 @@ export function BasemapLayer({ onTileError }: Props) {
           layer = createPositronLayer(basemapStyle(darkRef.current));
           layer.addTo(map);
         } catch {
-          // The bridge cannot tear down a layer whose WebGL map never constructed, so drop its container here.
-          layer?.getContainer()?.remove();
+          // Unregister the failed layer as well as removing its container.
+          layer?.remove();
           layer = undefined;
           fail();
           return;

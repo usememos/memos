@@ -21,12 +21,11 @@ func validateMySQLMemoRelationEndpoints(ctx context.Context, tx *sql.Tx, mutatio
 		return nil
 	}
 
-	var actorStatus store.RowStatus
-	actorErr := tx.QueryRowContext(ctx, "SELECT row_status FROM user WHERE id = ?", mutation.MemoCreatorID).Scan(&actorStatus)
-	if actorErr != nil && !stderrors.Is(actorErr, sql.ErrNoRows) {
-		return actorErr
+	actorUserID := mutation.ActorUserID()
+	actor, err := readMySQLMemoActor(ctx, tx, actorUserID)
+	if err != nil {
+		return err
 	}
-	actorActive := actorErr == nil && actorStatus == store.Normal
 
 	endpointIDs := mysqlRelationAuthorizationEndpointIDs(mutation)
 	for _, endpointID := range endpointIDs {
@@ -38,8 +37,8 @@ func validateMySQLMemoRelationEndpoints(ctx context.Context, tx *sql.Tx, mutatio
 			return err
 		}
 		snapshot := &store.MemoRelationEndpointSnapshot{
-			ActorUserID:        mutation.MemoCreatorID,
-			ActorActive:        actorActive,
+			ActorUserID:        actorUserID,
+			Actor:              actor,
 			EndpointID:         state.id,
 			EndpointCreatorID:  state.creatorID,
 			EndpointRowStatus:  state.rowStatus,
@@ -51,8 +50,8 @@ func validateMySQLMemoRelationEndpoints(ctx context.Context, tx *sql.Tx, mutatio
 			if err != nil {
 				return err
 			}
-			if snapshot.EndpointSpaceExists {
-				snapshot.EndpointMemberActive, err = mysqlSpaceMemberActive(ctx, tx, *state.spaceID, mutation.MemoCreatorID)
+			if snapshot.EndpointSpaceExists && !actor.Admin {
+				snapshot.EndpointMemberActive, err = mysqlSpaceMemberActive(ctx, tx, *state.spaceID, actorUserID)
 				if err != nil {
 					return err
 				}

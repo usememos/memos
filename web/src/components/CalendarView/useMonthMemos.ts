@@ -5,11 +5,11 @@ import { memoServiceClient } from "@/connect";
 import { useView } from "@/contexts/ViewContext";
 import { memoKeys } from "@/hooks/useMemoQueries";
 import { getLocalMonthTimestampRange, withTimestampRange } from "@/lib/calendar-utils";
-import { State } from "@/types/proto/api/v1/common_pb";
-import { ListMemosRequestSchema, type Memo } from "@/types/proto/api/v1/memo_service_pb";
+import { State } from "@/types/proto/api/common_pb";
+import { ListMemosRequestSchema, type Memo } from "@/types/proto/api/memo_service_pb";
 import { type BuildCalendarMonthModelOptions, buildCalendarMonthModel } from "./dayModel";
 
-/** A realistic personal month fits one page; the loop below still drains any that do not. */
+/** A month usually fits one page; the loop below still drains any that do not. */
 const MONTH_PAGE_SIZE = 500;
 const NO_MEMOS: Memo[] = [];
 
