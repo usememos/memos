@@ -31,7 +31,7 @@ func (d *DB) UpsertReaction(ctx context.Context, upsert *store.Reaction) (*store
 		SELECT ?, memo.id, ?
 		FROM memo
 		WHERE memo.id = ?
-		FOR SHARE
+		LOCK IN SHARE MODE
 	`, upsert.CreatorID, upsert.ReactionType, upsert.MemoID)
 	if err != nil {
 		return nil, err
