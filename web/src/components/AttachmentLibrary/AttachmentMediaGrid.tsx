@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import VideoPoster from "@/components/VideoPoster";
 import type { AttachmentLibraryMediaItem, AttachmentLibraryMonthGroup } from "@/hooks/useAttachmentLibrary";
 import { cn } from "@/lib/utils";
-import type { User } from "@/types/proto/api/v1/user_service_pb";
+import type { User } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { formatMediaDuration } from "@/utils/media-metadata";
 import { AttachmentCreator, AttachmentMetadataLine, AttachmentOpenButton, AttachmentSourceChip } from "./AttachmentLibraryPrimitives";

@@ -109,7 +109,7 @@ const About = () => {
             <p className="mt-8 text-4xl leading-[1.15] tracking-tight wrap-anywhere text-foreground @min-[60rem]:text-[3.25rem]">
               {customProfile?.description || (
                 <>
-                  <span className="block">Capture first.</span> <span className="block">Keep it yours.</span>
+                  <span className="block">Your thoughts, your data,</span> <span className="block">shared on your terms.</span>
                 </>
               )}
             </p>

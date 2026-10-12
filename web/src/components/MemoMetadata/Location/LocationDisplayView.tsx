@@ -3,7 +3,7 @@ import { useState } from "react";
 import { METADATA_ROW_CLASSES, METADATA_ROW_TEXT_CLASSES, MetadataRowIconSlot } from "@/components/MemoMetadata/MetadataSection";
 import { LazyLocationPicker } from "@/components/map/LazyLocationPicker";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import type { Location } from "@/types/proto/api/v1/memo_service_pb";
+import type { Location } from "@/types/proto/api/memo_service_pb";
 import { getLocationCoordinatesText, getLocationDisplayText } from "./locationHelpers";
 
 interface LocationDisplayViewProps {

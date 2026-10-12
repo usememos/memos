@@ -5,8 +5,8 @@ import { describe, expect, it, vi } from "vitest";
 import { AttachmentDocumentRows } from "@/components/AttachmentLibrary/AttachmentFileRows";
 import AttachmentMediaGrid from "@/components/AttachmentLibrary/AttachmentMediaGrid";
 import type { AttachmentLibraryMonthGroup } from "@/hooks/useAttachmentLibrary";
-import { AttachmentSchema, MediaMetadataSchema, VideoMetadataSchema } from "@/types/proto/api/v1/attachment_service_pb";
-import { UserSchema } from "@/types/proto/api/v1/user_service_pb";
+import { AttachmentSchema, MediaMetadataSchema, VideoMetadataSchema } from "@/types/proto/api/attachment_service_pb";
+import { UserSchema } from "@/types/proto/api/user_service_pb";
 
 vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
 

@@ -42,8 +42,9 @@ var (
 	versionCmd = &cobra.Command{
 		Use:   "version",
 		Short: "Print the current Memos version",
-		Run: func(_ *cobra.Command, _ []string) {
-			fmt.Println(version.GetCurrentVersion())
+		Run: func(cmd *cobra.Command, _ []string) {
+			// Print the root's version so every form shares one source.
+			fmt.Fprintln(cmd.OutOrStdout(), cmd.Root().Version)
 		},
 	}
 )
@@ -60,7 +61,7 @@ func init() {
 	rootCmd.Flags().Int("port", 8081, "port of server")
 	rootCmd.Flags().String("unix-sock", "", "path to the unix socket, overrides --addr and --port")
 	rootCmd.Flags().String("data", "", "data directory")
-	rootCmd.Flags().String("driver", "sqlite", "database driver (sqlite, mysql, postgres, d1)")
+	rootCmd.Flags().String("driver", "sqlite", "database driver (sqlite, mysql, postgres)")
 	rootCmd.Flags().String("dsn", "", "database source name (DSN)")
 	rootCmd.Flags().String("instance-url", "", "canonical external URL of the Memos instance")
 	rootCmd.Flags().Bool("allow-private-webhooks", false, "allow webhooks to access any private/reserved IP address")
@@ -226,6 +227,10 @@ func printServerInfo(profile *profile.Profile, accessMode storepb.InstanceAccess
 }
 
 func main() {
+	if err := version.Validate(); err != nil {
+		slog.Error("invalid build metadata", slog.String("error", err.Error()))
+		os.Exit(1)
+	}
 	if err := rootCmd.Execute(); err != nil {
 		slog.Error("memos failed", slog.String("error", err.Error()))
 		os.Exit(1)

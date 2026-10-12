@@ -15,7 +15,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { identityProviderServiceClient } from "@/connect";
 import { useDialog } from "@/hooks/useDialog";
 import { handleError } from "@/lib/error";
-import { IdentityProvider } from "@/types/proto/api/v1/idp_service_pb";
+import { IdentityProvider } from "@/types/proto/api/idp_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import CreateIdentityProviderDialog from "../CreateIdentityProviderDialog";
 import LearnMore from "../LearnMore";

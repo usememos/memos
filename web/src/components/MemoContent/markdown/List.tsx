@@ -73,9 +73,7 @@ interface ListProps extends React.HTMLAttributes<HTMLUListElement | HTMLOListEle
 export const List = ({ ordered, children, className, node: _node, ...domProps }: ListProps) => {
   const Component = ordered ? "ol" : "ul";
   const isTaskList = className?.includes(TASK_LIST_CLASS);
-  // Task list indentation is handled by task item grid columns; regular lists
-  // use the shared token (padding + list style).
-  const listClass = isTaskList ? "my-0 mb-2 list-outside list-none" : ordered ? markdownStyles.orderedList : markdownStyles.bulletList;
+  const listClass = isTaskList ? markdownStyles.taskList : ordered ? markdownStyles.orderedList : markdownStyles.bulletList;
 
   return (
     <Component className={cn(listClass, className)} {...domProps}>

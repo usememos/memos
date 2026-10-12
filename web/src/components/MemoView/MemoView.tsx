@@ -20,7 +20,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { isMemoBlurred } from "@/lib/tag";
 import { cn } from "@/lib/utils";
-import { State } from "@/types/proto/api/v1/common_pb";
+import { State } from "@/types/proto/api/common_pb";
 import { lazyWithReload } from "@/utils/lazy";
 import { canManageMemo } from "@/utils/user";
 import { MemoBody, MemoCommentListView, MemoHeader } from "./components";

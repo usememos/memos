@@ -41,7 +41,7 @@ import { useMemoViews, userKeys } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
 import { getMemoViewId } from "@/lib/memo-views";
 import { cn } from "@/lib/utils";
-import { MemoView, MemoView_IconSchema, MemoViewSchema } from "@/types/proto/api/v1/user_service_pb";
+import { MemoView, MemoView_IconSchema, MemoViewSchema } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 const memoViewExamples = [

@@ -1,3 +1,4 @@
+import { markdownStyles } from "@/lib/markdownStyles";
 import { cn } from "@/lib/utils";
 import type { ReactMarkdownProps } from "./types";
 
@@ -10,7 +11,7 @@ interface ImageProps extends React.ImgHTMLAttributes<HTMLImageElement>, ReactMar
 export const Image = ({ className, alt, node: _node, height, width, style, ...props }: ImageProps) => {
   return (
     <img
-      className={cn("max-w-full my-2", !height && "h-auto", className)}
+      className={cn(markdownStyles.image, !height && "h-auto", className)}
       alt={alt}
       style={{ height: height ? `${height}px` : undefined, width: width ? `${width}px` : undefined, ...style }}
       {...props}

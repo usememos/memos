@@ -1,7 +1,7 @@
 import { uniqBy } from "lodash-es";
 import type { LucideIcon } from "lucide-react";
 import type { MemoFilter } from "@/contexts/MemoFilterContext";
-import type { Visibility } from "@/types/proto/api/v1/memo_service_pb";
+import type { Visibility } from "@/types/proto/api/memo_service_pb";
 import { getContextSuggestionCandidates } from "./context-suggestions";
 import { getTagSuggestionCandidates } from "./tag-suggestions";
 

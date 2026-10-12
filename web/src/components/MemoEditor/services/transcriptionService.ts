@@ -1,11 +1,11 @@
 import { create } from "@bufbuild/protobuf";
 import { Code, ConnectError } from "@connectrpc/connect";
 import { aiServiceClient } from "@/connect";
-import { TranscribeRequestSchema, TranscriptionAudioSchema } from "@/types/proto/api/v1/ai_service_pb";
-import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
+import { TranscribeRequestSchema, TranscriptionAudioSchema } from "@/types/proto/api/ai_service_pb";
+import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import { getAttachmentUrl } from "@/utils/attachment";
 
-// Mirrors maxTranscriptionAudioSizeBytes in server/api/v1/ai_service.go so an
+// Mirrors maxTranscriptionAudioSizeBytes in server/api/ai_service.go so an
 // oversized attachment is rejected before it is downloaded, with the server's error.
 const MAX_AUDIO_SIZE = 25 * 1024 * 1024;
 

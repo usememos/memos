@@ -57,7 +57,7 @@ func TestNewMCPServiceRegistersCuratedTools(t *testing.T) {
 	require.NotNil(t, operation)
 	require.Equal(t, "MemoService_ListMemos", operation.OperationID)
 	require.Equal(t, "GET", operation.Method)
-	require.Equal(t, "/api/v1/memos", operation.Path)
+	require.Equal(t, "/api/memos", operation.Path)
 }
 
 func TestNewMCPServiceUsesEmbeddedOpenAPISpec(t *testing.T) {
@@ -77,7 +77,7 @@ func TestEmbeddedOpenAPISpecMatchesGeneratedFile(t *testing.T) {
 
 func TestMCPToolHandlerForwardsArgumentsAndAuthorization(t *testing.T) {
 	echoServer := echo.New()
-	echoServer.GET("/api/v1/memos", func(c *echo.Context) error {
+	echoServer.GET("/api/memos", func(c *echo.Context) error {
 		require.Equal(t, "Bearer token", c.Request().Header.Get("Authorization"))
 		require.Equal(t, "7", c.QueryParam("pageSize"))
 		return c.JSON(http.StatusOK, map[string]any{
@@ -88,7 +88,7 @@ func TestMCPToolHandlerForwardsArgumentsAndAuthorization(t *testing.T) {
 	operation := &registeredOperation{
 		Operation: &openAPIOperation{
 			Method:     "GET",
-			Path:       "/api/v1/memos",
+			Path:       "/api/memos",
 			Parameters: []openAPIParameter{{Name: "pageSize", In: "query", Schema: jsonSchema{"type": "integer"}}},
 		},
 	}
@@ -159,7 +159,7 @@ func TestMCPToolCallForwardsClientAddress(t *testing.T) {
 			echoServer.Use(clientip.Middleware(resolver))
 
 			seen := ""
-			echoServer.GET("/api/v1/memos", func(c *echo.Context) error {
+			echoServer.GET("/api/memos", func(c *echo.Context) error {
 				seen = clientip.FromContext(c.Request().Context())
 				return c.JSON(http.StatusOK, map[string]any{"memos": []any{}})
 			})
@@ -214,7 +214,7 @@ func TestMCPToolCallBindsSpaceResourcesFromPath(t *testing.T) {
 				"invitation": "spaces/team/invitations/sam",
 			},
 			method:     http.MethodPost,
-			path:       "/api/v1/spaces/team/invitations/sam:accept",
+			path:       "/api/spaces/team/invitations/sam:accept",
 			body:       map[string]any{},
 			response:   map[string]any{"name": "spaces/team/members/sam", "role": "USER"},
 			structured: map[string]any{"name": "spaces/team/members/sam", "role": "USER"},
@@ -228,7 +228,7 @@ func TestMCPToolCallBindsSpaceResourcesFromPath(t *testing.T) {
 				"body":       map[string]any{},
 			},
 			method:     http.MethodPost,
-			path:       "/api/v1/spaces/team/invitations/sam:decline",
+			path:       "/api/spaces/team/invitations/sam:decline",
 			body:       map[string]any{},
 			response:   map[string]any{},
 			structured: map[string]any{},
@@ -242,7 +242,7 @@ func TestMCPToolCallBindsSpaceResourcesFromPath(t *testing.T) {
 				"body":   map[string]any{"role": "ADMIN"},
 			},
 			method:     http.MethodPatch,
-			path:       "/api/v1/spaces/team/members/sam",
+			path:       "/api/spaces/team/members/sam",
 			body:       map[string]any{"role": "ADMIN"},
 			response:   map[string]any{"name": "spaces/team/members/sam", "role": "ADMIN"},
 			structured: map[string]any{"name": "spaces/team/members/sam", "role": "ADMIN"},
@@ -255,7 +255,7 @@ func TestMCPToolCallBindsSpaceResourcesFromPath(t *testing.T) {
 				"body":  map[string]any{"description": "renamed"},
 			},
 			method:     http.MethodPatch,
-			path:       "/api/v1/spaces/team",
+			path:       "/api/spaces/team",
 			body:       map[string]any{"description": "renamed"},
 			response:   map[string]any{"name": "spaces/team", "title": "Team", "description": "renamed"},
 			structured: map[string]any{"name": "spaces/team", "title": "Team", "description": "renamed"},
@@ -268,7 +268,7 @@ func TestMCPToolCallBindsSpaceResourcesFromPath(t *testing.T) {
 				"body":  map[string]any{"invitee": "users/sam", "role": "USER"},
 			},
 			method:     http.MethodPost,
-			path:       "/api/v1/spaces/team/invitations",
+			path:       "/api/spaces/team/invitations",
 			body:       map[string]any{"invitee": "users/sam", "role": "USER"},
 			response:   map[string]any{"name": "spaces/team/invitations/sam"},
 			structured: map[string]any{"name": "spaces/team/invitations/sam"},
@@ -281,7 +281,7 @@ func TestMCPToolCallBindsSpaceResourcesFromPath(t *testing.T) {
 				"member": "spaces/team/members/sam",
 			},
 			method:     http.MethodDelete,
-			path:       "/api/v1/spaces/team/members/sam",
+			path:       "/api/spaces/team/members/sam",
 			response:   map[string]any{},
 			structured: map[string]any{},
 		},
@@ -291,7 +291,7 @@ func TestMCPToolCallBindsSpaceResourcesFromPath(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			echoServer := echo.New()
 			routeHits := 0
-			echoServer.Any("/api/v1/spaces/*", func(c *echo.Context) error {
+			echoServer.Any("/api/spaces/*", func(c *echo.Context) error {
 				routeHits++
 				require.Equal(t, test.method, c.Request().Method)
 				require.Equal(t, test.path, c.Request().URL.Path)
@@ -370,7 +370,7 @@ func TestMCPProtocolListsCuratedToolsOnly(t *testing.T) {
 
 func TestMCPToolCallReturnsObjectStructuredContent(t *testing.T) {
 	echoServer := echo.New()
-	echoServer.GET("/api/v1/memos", func(c *echo.Context) error {
+	echoServer.GET("/api/memos", func(c *echo.Context) error {
 		return c.JSON(http.StatusOK, map[string]any{
 			"memos": []any{map[string]any{"name": "memos/abc123"}},
 		})
@@ -403,7 +403,7 @@ func TestMCPToolCallReturnsObjectStructuredContent(t *testing.T) {
 func TestMCPToolCallAllowsGatewayToInferMemoUpdateMask(t *testing.T) {
 	echoServer := echo.New()
 	routeHits := 0
-	echoServer.PATCH("/api/v1/memos/:memo", func(c *echo.Context) error {
+	echoServer.PATCH("/api/memos/:memo", func(c *echo.Context) error {
 		routeHits++
 		require.Equal(t, "abc123", c.Param("memo"))
 		require.Empty(t, c.QueryParam("updateMask"))
@@ -468,7 +468,7 @@ func TestMCPToolCallBindsMemoFromPathForBodyStarOperations(t *testing.T) {
 		{
 			name:     "set attachments",
 			method:   http.MethodPatch,
-			path:     "/api/v1/memos/:memo/attachments",
+			path:     "/api/memos/:memo/attachments",
 			toolName: "memo_set_memo_attachments",
 			body:     map[string]any{"attachments": []any{}},
 			response: map[string]any{},
@@ -476,7 +476,7 @@ func TestMCPToolCallBindsMemoFromPathForBodyStarOperations(t *testing.T) {
 		{
 			name:     "set relations",
 			method:   http.MethodPatch,
-			path:     "/api/v1/memos/:memo/relations",
+			path:     "/api/memos/:memo/relations",
 			toolName: "memo_set_memo_relations",
 			body:     map[string]any{"relations": []any{}},
 			response: map[string]any{},
@@ -484,7 +484,7 @@ func TestMCPToolCallBindsMemoFromPathForBodyStarOperations(t *testing.T) {
 		{
 			name:     "upsert reaction",
 			method:   http.MethodPost,
-			path:     "/api/v1/memos/:memo/reactions",
+			path:     "/api/memos/:memo/reactions",
 			toolName: "memo_upsert_memo_reaction",
 			body: map[string]any{
 				"reaction": map[string]any{
@@ -539,11 +539,11 @@ func TestMCPToolCallBindsMemoFromPathForBodyStarOperations(t *testing.T) {
 func TestMCPToolCallRejectsInvalidArguments(t *testing.T) {
 	echoServer := echo.New()
 	routeHits := 0
-	echoServer.GET("/api/v1/memos", func(c *echo.Context) error {
+	echoServer.GET("/api/memos", func(c *echo.Context) error {
 		routeHits++
 		return c.JSON(http.StatusOK, map[string]any{"memos": []any{}})
 	})
-	echoServer.GET("/api/v1/memos/:memo", func(c *echo.Context) error {
+	echoServer.GET("/api/memos/:memo", func(c *echo.Context) error {
 		routeHits++
 		return c.JSON(http.StatusOK, map[string]any{"name": c.Param("memo")})
 	})
@@ -701,7 +701,7 @@ func postMCP(t *testing.T, echoServer *echo.Echo, payload map[string]any) map[st
 func TestMCPStatelessProtocol2026(t *testing.T) {
 	echoServer := echo.New()
 	var forwardedAuthorization string
-	echoServer.GET("/api/v1/memos", func(c *echo.Context) error {
+	echoServer.GET("/api/memos", func(c *echo.Context) error {
 		forwardedAuthorization = c.Request().Header.Get("Authorization")
 		return c.JSON(http.StatusOK, map[string]any{"memos": []any{}})
 	})
@@ -786,7 +786,7 @@ func TestMCPStatelessRejectsSessionMethods(t *testing.T) {
 func TestMCPRequestBodyLimitMatchesAPI(t *testing.T) {
 	echoServer := echo.New()
 	var receivedBytes int
-	echoServer.POST("/api/v1/attachments", func(c *echo.Context) error {
+	echoServer.POST("/api/attachments", func(c *echo.Context) error {
 		body := map[string]any{}
 		require.NoError(t, json.NewDecoder(c.Request().Body).Decode(&body))
 		content, ok := body["content"].(string)

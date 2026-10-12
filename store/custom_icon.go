@@ -19,7 +19,7 @@ func validateLucideIcon(name string) error {
 	if len(name) == 0 || len(name) > 128 {
 		return errors.New("icon name must contain 1 to 128 bytes")
 	}
-	for _, part := range strings.Split(name, "-") {
+	for part := range strings.SplitSeq(name, "-") {
 		if part == "" {
 			return errors.New("icon name must use lowercase kebab-case")
 		}

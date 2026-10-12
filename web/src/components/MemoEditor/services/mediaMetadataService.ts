@@ -6,7 +6,7 @@ import {
   MediaMetadataSchema,
   PhotoMetadataSchema,
   VideoMetadataSchema,
-} from "@/types/proto/api/v1/attachment_service_pb";
+} from "@/types/proto/api/attachment_service_pb";
 import { isImage } from "@/utils/attachment";
 
 const EXTRACTION_TIMEOUT_MS = 5_000;

@@ -5,7 +5,7 @@ import { toast } from "react-hot-toast";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { useAttachmentTranscription } from "@/components/MemoEditor/hooks/useAttachmentTranscription";
 import { transcriptionService } from "@/components/MemoEditor/services";
-import { AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
+import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
 
 vi.mock("react-hot-toast", () => ({ toast: { error: vi.fn(), success: vi.fn() } }));
 const audio = create(AttachmentSchema, { name: "attachments/voice", filename: "voice.wav", type: "audio/wav" });

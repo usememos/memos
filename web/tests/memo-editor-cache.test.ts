@@ -1,9 +1,9 @@
 import { create } from "@bufbuild/protobuf";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { cacheService } from "@/components/MemoEditor/services/cacheService";
-import { AttachmentSchema, MotionMediaFamily, MotionMediaRole, MotionMediaSchema } from "@/types/proto/api/v1/attachment_service_pb";
+import { AttachmentSchema, MotionMediaFamily, MotionMediaRole, MotionMediaSchema } from "@/types/proto/api/attachment_service_pb";
 
-import { LocationSchema, Visibility } from "@/types/proto/api/v1/memo_service_pb";
+import { LocationSchema, Visibility } from "@/types/proto/api/memo_service_pb";
 
 describe("memo editor cache", () => {
   beforeEach(() => {

@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { instanceServiceClient } from "@/connect";
-import { InstanceSetting, InstanceSetting_AccessSetting, InstanceSetting_Key } from "@/types/proto/api/v1/instance_service_pb";
+import { InstanceSetting, InstanceSetting_AccessSetting, InstanceSetting_Key } from "@/types/proto/api/instance_service_pb";
 
 // Query keys factory
 export const instanceKeys = {
@@ -61,7 +61,7 @@ export function useInstanceSettings(keys: InstanceSetting_Key[]) {
       const response = await instanceServiceClient.batchGetInstanceSettings({
         names: keys.map(buildInstanceSettingName),
       });
-      return response.settings;
+      return response.instanceSettings;
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
@@ -72,7 +72,7 @@ export function useUpdateInstanceSetting() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (setting: InstanceSetting) => instanceServiceClient.updateInstanceSetting({ setting }),
+    mutationFn: async (setting: InstanceSetting) => instanceServiceClient.updateInstanceSetting({ instanceSetting: setting }),
     onSuccess: async (setting) => {
       // Update the exact setting cache from the server response. Batch caches
       // are marked stale without refetching so an active setting query does not

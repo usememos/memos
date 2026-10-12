@@ -16,7 +16,7 @@ permissions:
   contents: read
 
 env:
-  GO_VERSION: "1.27.0"
+  GO_VERSION: "1.27.2"
   NODE_VERSION: "24"
   PNPM_VERSION: "11.0.1"
   ARTIFACT_RETENTION_DAYS: 60
@@ -52,7 +52,8 @@ jobs:
         run: |
           if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
             echo "tag=" >> "$GITHUB_OUTPUT"
-            echo "version=manual-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+            version="$(bash scripts/release_version.sh development-version)"
+            echo "version=$version" >> "$GITHUB_OUTPUT"
             echo "series=" >> "$GITHUB_OUTPUT"
             echo "is_prerelease=false" >> "$GITHUB_OUTPUT"
             exit 0

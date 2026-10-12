@@ -146,11 +146,12 @@ detect_previous_image() {
 }
 
 build_local_candidate() {
-  local commit_sha image_tag
+  local commit_sha build_version image_tag
   command -v pnpm >/dev/null 2>&1 || die "pnpm is required to build the local candidate"
 
-  commit_sha="$(git -C "$REPO_ROOT" rev-parse --short=12 HEAD)"
-  image_tag="memos-smoke:${commit_sha}-${run_id}"
+  commit_sha="$(git -C "$REPO_ROOT" rev-parse HEAD)"
+  build_version="$(bash "$SCRIPT_DIR/release_version.sh" development-version "$REPO_ROOT")"
+  image_tag="memos-smoke:${commit_sha:0:12}-${run_id}"
 
   mkdir -p "$(dirname "$frontend_index")"
   if [[ -f "$frontend_index" ]]; then
@@ -168,7 +169,7 @@ build_local_candidate() {
   log "Building candidate image $image_tag"
   docker build \
     --file "$REPO_ROOT/scripts/Dockerfile" \
-    --build-arg VERSION=smoke-local \
+    --build-arg VERSION="$build_version" \
     --build-arg COMMIT="$commit_sha" \
     --tag "$image_tag" \
     "$REPO_ROOT"
@@ -217,6 +218,16 @@ set_current_base_url() {
   current_base_url="http://127.0.0.1:$port"
 }
 
+# api_url prints the API root of the running container. Older releases serve the
+# API under /api/v1; current releases serve it under /api.
+api_url() {
+  if curl --fail --silent --output /dev/null --max-time 2 "$current_base_url/api/instance/profile"; then
+    printf '%s/api\n' "$current_base_url"
+  else
+    printf '%s/api/v1\n' "$current_base_url"
+  fi
+}
+
 start_container() {
   local container_name="$1"
   local image="$2"
@@ -256,7 +267,7 @@ create_admin() {
   response="$(curl --fail --silent --show-error \
     --header 'Content-Type: application/json' \
     --data "$payload" \
-    "$current_base_url/api/v1/users")"
+    "$(api_url)/users")"
   jq -e '.username == "smoke-admin" and .role == "ADMIN"' <<<"$response" >/dev/null
 }
 
@@ -266,7 +277,7 @@ sign_in() {
   curl --fail --silent --show-error \
     --header 'Content-Type: application/json' \
     --data "$payload" \
-    "$current_base_url/api/v1/auth/signin" | jq -er '.accessToken'
+    "$(api_url)/auth/signin" | jq -er '.accessToken'
 }
 
 create_memo() {
@@ -279,7 +290,7 @@ create_memo() {
     --header "Authorization: Bearer $token" \
     --header 'Content-Type: application/json' \
     --data "$payload" \
-    "$current_base_url/api/v1/memos?memoId=$memo_id")"
+    "$(api_url)/memos?memoId=$memo_id")"
   jq -e --arg name "memos/$memo_id" --arg content "$content" '.name == $name and .content == $content' <<<"$response" >/dev/null
 }
 
@@ -289,7 +300,7 @@ assert_memo() {
   local content="$3"
   curl --fail --silent --show-error \
     --header "Authorization: Bearer $token" \
-    "$current_base_url/api/v1/memos/$memo_id" |
+    "$(api_url)/memos/$memo_id" |
     jq -e --arg content "$content" '.content == $content' >/dev/null
 }
 

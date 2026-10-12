@@ -9,7 +9,7 @@ The core design principle: **tool calls execute in-process against the existing
 REST API.** The package owns no store or service logic of its own. Each tool is
 derived from an operation in the generated OpenAPI document
 (`proto/gen/openapi.yaml`, embedded via `proto.OpenAPIYAML()`), and a tool call
-is translated into the matching `/api/v1/...` HTTP request and run against the
+is translated into the matching `/api/...` HTTP request and run against the
 same Echo server that serves the public API. This keeps OpenAPI as the single
 source of truth and reuses the API's authentication and authorization as-is.
 
@@ -246,7 +246,7 @@ own encoding is part of the tool contract: whatever it emits is validated agains
 the output schema resolved from the same OpenAPI spec. grpc-gateway's stock
 marshaler emits `null` for unset message fields, which no schema declares as
 nullable — `RegisterGateway` therefore installs a marshaler that omits them
-(`newGatewayMarshaler` in `server/api/v1/v1.go`). That fixes
+(`newGatewayMarshaler` in `server/api/api.go`). That fixes
 [#6139](https://github.com/usememos/memos/issues/6139), where `"motionMedia": null`
 failed every tool call returning an attachment.
 
@@ -272,7 +272,7 @@ validate an error payload against the tool's success-only output schema:
 | --- | --- |
 | `service.go` | Constructs the MCP server, registers tools, builds the streamable HTTP handler, and binds the `/mcp` route. |
 | `catalog.go` | The curated operation allowlist, tool naming, input/output schema assembly, and method-derived annotations. |
-| `adapter.go` | Translates a tool call into an `/api/v1/...` request and runs it in-process against the Echo server. |
+| `adapter.go` | Translates a tool call into an `/api/...` request and runs it in-process against the Echo server. |
 | `openapi.go` | Parses the OpenAPI spec, builds the operation registry, and resolves `$ref` schemas into self-contained JSON Schema. |
 | `validation.go` | Validates tool-call arguments against the tool's input schema. |
 | `origin.go` | `Origin`-header check for browser DNS-rebinding safety. |

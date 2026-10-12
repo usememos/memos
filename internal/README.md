@@ -16,7 +16,7 @@ nothing from `store`, `core`, `server`, `provider`, `markdown`, `filter`, or
 | `random/` | UUIDs and random strings from a secure source |
 | `ratelimit/` | sliding-window rate limiter |
 | `testutil/` | test fixtures and the fake S3 server (the one package allowed to import `proto/gen`) |
-| `version/` | build version and version comparison |
+| `version/` | CalVer build metadata from release overrides or the embedded Git commit |
 | `webhook/` | signed webhook delivery with SSRF protection |
 
 Do not add `util`, `common`, `base`, or `helpers` packages. Name a package for

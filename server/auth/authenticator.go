@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"crypto/hmac"
 	"log/slog"
 	"strconv"
 	"strings"
@@ -37,23 +38,48 @@ func NewAuthenticator(store *store.Store, secret string) *Authenticator {
 }
 
 // AuthenticateByAccessTokenV2 validates a short-lived access token.
-// Returns claims without database query (stateless validation).
-func (a *Authenticator) AuthenticateByAccessTokenV2(accessToken string) (*UserClaims, error) {
+// Checks the user's current account state and password-bound session hash.
+func (a *Authenticator) AuthenticateByAccessTokenV2(ctx context.Context, accessToken string) (*UserClaims, error) {
+	result, err := a.resolveAccessToken(ctx, accessToken)
+	if err != nil {
+		return nil, err
+	}
+	if result == nil {
+		return nil, errors.New("invalid access token")
+	}
+	return result.claims, nil
+}
+
+// resolveAccessToken returns nil for invalid credentials and an error for store failures.
+func (a *Authenticator) resolveAccessToken(ctx context.Context, accessToken string) (*bearerAuth, error) {
 	claims, err := ParseAccessTokenV2(accessToken, []byte(a.secret))
 	if err != nil {
-		return nil, errors.Wrap(err, "invalid access token")
+		return nil, nil //nolint:nilerr // Invalid credentials permit fallback; only store failures are errors.
 	}
 
 	userID, err := parseInt32(claims.Subject)
 	if err != nil {
-		return nil, errors.Wrap(err, "invalid user ID in token")
+		return nil, nil //nolint:nilerr // Invalid credentials permit fallback; only store failures are errors.
+	}
+	user, err := a.store.GetUser(ctx, &store.FindUser{ID: &userID})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get access token user")
+	}
+	if user == nil || user.RowStatus == store.Archived {
+		return nil, nil
+	}
+	if !hmac.Equal([]byte(claims.AuthHash), []byte(accessTokenAuthHash(user.ID, user.PasswordHash, []byte(a.secret)))) {
+		return nil, nil
 	}
 
-	return &UserClaims{
-		UserID:   userID,
-		Username: claims.Username,
-		Role:     claims.Role,
-		Status:   claims.Status,
+	return &bearerAuth{
+		user: user,
+		claims: &UserClaims{
+			UserID:   userID,
+			Username: claims.Username,
+			Role:     claims.Role,
+			Status:   claims.Status,
+		},
 	}, nil
 }
 
@@ -126,7 +152,7 @@ func (a *Authenticator) AuthenticateByPAT(ctx context.Context, token string) (*s
 // AuthResult contains the result of an authentication attempt.
 type AuthResult struct {
 	User        *store.User // Set for PAT authentication
-	Claims      *UserClaims // Set for Access Token V2 (stateless)
+	Claims      *UserClaims // Set for Access Token V2
 	AccessToken string      // Non-empty if authenticated via JWT
 }
 
@@ -153,19 +179,7 @@ func (a *Authenticator) resolveBearer(ctx context.Context, token string) (*beare
 	}
 
 	if !strings.HasPrefix(token, PersonalAccessTokenPrefix) {
-		// Access Token V2 (stateless). An invalid token yields no identity and no
-		// error, so the caller can fall back to other credentials.
-		claims, err := a.AuthenticateByAccessTokenV2(token)
-		if err == nil && claims != nil {
-			user, err := a.store.GetUser(ctx, &store.FindUser{ID: &claims.UserID})
-			if err != nil {
-				return nil, err
-			}
-			if user != nil && user.RowStatus != store.Archived {
-				return &bearerAuth{user: user, claims: claims}, nil
-			}
-		}
-		return nil, nil
+		return a.resolveAccessToken(ctx, token)
 	}
 
 	// Personal Access Token.

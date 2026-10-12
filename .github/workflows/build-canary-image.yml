@@ -62,14 +62,12 @@ jobs:
           - linux/arm64
     steps:
       - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
 
-      - name: Resolve version from latest tag
+      - name: Resolve version from commit date
         id: version
         run: |
-          version="$(git describe --tags --abbrev=0 2>/dev/null || echo dev)"
-          echo "version=${version#v}" >> "$GITHUB_OUTPUT"
+          version="$(bash scripts/release_version.sh development-version)"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
 
       - name: Download frontend artifacts
         uses: actions/download-artifact@v7

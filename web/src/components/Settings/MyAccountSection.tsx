@@ -17,6 +17,7 @@ import UserAvatar from "../UserAvatar";
 import LinkedIdentitySection from "./LinkedIdentitySection";
 import SettingGroup from "./SettingGroup";
 import SettingSection from "./SettingSection";
+import UsageSection from "./UsageSection";
 import UserStatsSection from "./UserStatsSection";
 
 const MyAccountSection = () => {
@@ -69,6 +70,8 @@ const MyAccountSection = () => {
       </SettingGroup>
 
       <UserStatsSection />
+
+      <UsageSection />
 
       <LinkedIdentitySection />
 

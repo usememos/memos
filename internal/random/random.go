@@ -20,7 +20,7 @@ var alphabet = []rune("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTU
 func String(n int) (string, error) {
 	var sb strings.Builder
 	sb.Grow(n)
-	for i := 0; i < n; i++ {
+	for range n {
 		index, err := rand.Int(rand.Reader, big.NewInt(int64(len(alphabet))))
 		if err != nil {
 			return "", err

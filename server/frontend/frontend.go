@@ -85,8 +85,8 @@ func shouldSkipFrontendStatic(requestPath string) bool {
 	}
 	return hasPathPrefix(requestPath, "/api") ||
 		hasPathPrefix(requestPath, "/file") ||
-		requestPath == "/memos.api.v1" ||
-		strings.HasPrefix(requestPath, "/memos.api.v1.")
+		requestPath == "/memos.api" ||
+		strings.HasPrefix(requestPath, "/memos.api.")
 }
 
 func setFrontendCacheHeaders(c *echo.Context, requestPath string) {

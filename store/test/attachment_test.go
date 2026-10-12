@@ -562,7 +562,7 @@ func TestAttachmentListWithPagination(t *testing.T) {
 	ts := NewTestingStore(ctx, t)
 
 	// Create 5 attachments
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		_, err := ts.CreateAttachment(ctx, &store.Attachment{
 			UID:       shortuuid.New(),
 			CreatorID: 101,
@@ -642,7 +642,7 @@ func TestMemoMutationConcurrentUpdatesNoSQLiteBusy(t *testing.T) {
 	errs := make([]error, workers)
 	var wg sync.WaitGroup
 	content := "updated"
-	for i := 0; i < workers; i++ {
+	for i := range workers {
 		wg.Go(func() {
 			<-start
 			errs[i] = ts.ApplyMemoMutation(ctx, &store.MemoMutation{
@@ -681,7 +681,7 @@ func TestMemoMutationConcurrentUpdatesSameMemoNoSQLiteBusy(t *testing.T) {
 	errs := make([]error, workers)
 	var wg sync.WaitGroup
 	content := "updated"
-	for i := 0; i < workers; i++ {
+	for i := range workers {
 		wg.Go(func() {
 			<-start
 			errs[i] = ts.ApplyMemoMutation(ctx, &store.MemoMutation{
@@ -733,9 +733,14 @@ func TestAttachmentStorageUsage(t *testing.T) {
 	}
 	_, err = ts.CreateAttachment(ctx, &store.Attachment{UID: shortuuid.New(), CreatorID: 102, Filename: "other", Size: 123})
 	require.NoError(t, err)
+	// External links store no bytes, even when an import declared a size.
+	_, err = ts.CreateAttachment(ctx, &store.Attachment{
+		UID: shortuuid.New(), CreatorID: creator.ID, Filename: "link", Size: 456, StorageType: storepb.AttachmentStorageType_EXTERNAL, Reference: "https://example.com/file",
+	})
+	require.NoError(t, err)
 	size, err = ts.GetAttachmentStorageUsage(ctx, creator.ID)
 	require.NoError(t, err)
-	require.Equal(t, expected, size)
+	require.Equal(t, expected, size, "external links do not count")
 
 	memo, err := ts.CreateMemo(ctx, &store.Memo{UID: shortuuid.New(), CreatorID: creator.ID, Content: "memo", Visibility: store.Private})
 	require.NoError(t, err)

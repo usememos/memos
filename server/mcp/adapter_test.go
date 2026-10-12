@@ -90,7 +90,7 @@ func errorsIsJSONSyntax(err error) bool {
 func TestBuildAPIRequestMapsPathQueryAndBody(t *testing.T) {
 	operation := &openAPIOperation{
 		Method: "PATCH",
-		Path:   "/api/v1/memos/{memo}",
+		Path:   "/api/memos/{memo}",
 		Parameters: []openAPIParameter{
 			{Name: "memo", In: "path", Required: true, Schema: jsonSchema{"type": "string"}},
 			{Name: "updateMask", In: "query", Schema: jsonSchema{"type": "string"}},
@@ -111,7 +111,7 @@ func TestBuildAPIRequestMapsPathQueryAndBody(t *testing.T) {
 	req, err := buildAPIRequest(context.Background(), operation, arguments, "Bearer pat")
 	require.NoError(t, err)
 	require.Equal(t, "PATCH", req.Method)
-	require.Equal(t, "/api/v1/memos/abc123", req.URL.Path)
+	require.Equal(t, "/api/memos/abc123", req.URL.Path)
 	require.Equal(t, "content", req.URL.Query().Get("updateMask"))
 	require.Equal(t, "Bearer pat", req.Header.Get("Authorization"))
 
@@ -121,7 +121,7 @@ func TestBuildAPIRequestMapsPathQueryAndBody(t *testing.T) {
 }
 
 func TestBuildAPIRequestPresentsResolvedClientAddressAsPeer(t *testing.T) {
-	operation := &openAPIOperation{Method: "GET", Path: "/api/v1/memos"}
+	operation := &openAPIOperation{Method: "GET", Path: "/api/memos"}
 
 	req, err := buildAPIRequest(context.Background(), operation, map[string]any{}, "")
 	require.NoError(t, err)
@@ -142,7 +142,7 @@ func TestBuildAPIRequestOmitsOptionalOverriddenBody(t *testing.T) {
 	operation := &openAPIOperation{
 		OperationID: "SpaceService_AcceptSpaceInvitation",
 		Method:      "POST",
-		Path:        "/api/v1/spaces/{space}/invitations/{invitation}:accept",
+		Path:        "/api/spaces/{space}/invitations/{invitation}:accept",
 		Parameters: []openAPIParameter{
 			{Name: "space", In: "path", Required: true},
 			{Name: "invitation", In: "path", Required: true},
@@ -152,7 +152,7 @@ func TestBuildAPIRequestOmitsOptionalOverriddenBody(t *testing.T) {
 
 	req, err := buildAPIRequest(context.Background(), operation, map[string]any{"space": "team", "invitation": "sam"}, "")
 	require.NoError(t, err)
-	require.Equal(t, "/api/v1/spaces/team/invitations/sam:accept", req.URL.Path)
+	require.Equal(t, "/api/spaces/team/invitations/sam:accept", req.URL.Path)
 	body, err := io.ReadAll(req.Body)
 	require.NoError(t, err)
 	require.JSONEq(t, `{}`, string(body))
@@ -165,12 +165,12 @@ func TestBuildAPIRequestAcceptsResourceNamesForPathParameters(t *testing.T) {
 		value    string
 		wantPath string
 	}{
-		{name: "canonical memo name", path: "/api/v1/memos/{memo}", value: "memos/abc123", wantPath: "/api/v1/memos/abc123"},
-		{name: "bare memo id", path: "/api/v1/memos/{memo}", value: "abc123", wantPath: "/api/v1/memos/abc123"},
-		{name: "canonical name on nested route", path: "/api/v1/memos/{memo}/comments", value: "memos/abc123", wantPath: "/api/v1/memos/abc123/comments"},
-		{name: "canonical attachment name", path: "/api/v1/attachments/{attachment}", value: "attachments/att42", wantPath: "/api/v1/attachments/att42"},
-		{name: "foreign prefix left untouched", path: "/api/v1/memos/{memo}", value: "attachments/att42", wantPath: "/api/v1/memos/attachments%2Fatt42"},
-		{name: "multi-segment value left untouched", path: "/api/v1/memos/{memo}", value: "memos/abc/extra", wantPath: "/api/v1/memos/memos%2Fabc%2Fextra"},
+		{name: "canonical memo name", path: "/api/memos/{memo}", value: "memos/abc123", wantPath: "/api/memos/abc123"},
+		{name: "bare memo id", path: "/api/memos/{memo}", value: "abc123", wantPath: "/api/memos/abc123"},
+		{name: "canonical name on nested route", path: "/api/memos/{memo}/comments", value: "memos/abc123", wantPath: "/api/memos/abc123/comments"},
+		{name: "canonical attachment name", path: "/api/attachments/{attachment}", value: "attachments/att42", wantPath: "/api/attachments/att42"},
+		{name: "foreign prefix left untouched", path: "/api/memos/{memo}", value: "attachments/att42", wantPath: "/api/memos/attachments%2Fatt42"},
+		{name: "multi-segment value left untouched", path: "/api/memos/{memo}", value: "memos/abc/extra", wantPath: "/api/memos/memos%2Fabc%2Fextra"},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -197,63 +197,63 @@ func TestBuildAPIRequestAcceptsHierarchicalResourceNamesForPathParameters(t *tes
 	}{
 		{
 			name:       "canonical reaction name",
-			path:       "/api/v1/memos/{memo}/reactions/{reaction}",
+			path:       "/api/memos/{memo}/reactions/{reaction}",
 			parameters: []string{"memo", "reaction"},
 			arguments: map[string]any{
 				"memo":     "memos/abc123",
 				"reaction": "memos/abc123/reactions/reaction456",
 			},
-			wantPath: "/api/v1/memos/abc123/reactions/reaction456",
+			wantPath: "/api/memos/abc123/reactions/reaction456",
 		},
 		{
 			name:       "canonical nested name with bare parent id",
-			path:       "/api/v1/memos/{memo}/reactions/{reaction}",
+			path:       "/api/memos/{memo}/reactions/{reaction}",
 			parameters: []string{"memo", "reaction"},
 			arguments: map[string]any{
 				"memo":     "abc123",
 				"reaction": "memos/abc123/reactions/reaction456",
 			},
-			wantPath: "/api/v1/memos/abc123/reactions/reaction456",
+			wantPath: "/api/memos/abc123/reactions/reaction456",
 		},
 		{
 			name:       "parameter declaration order does not matter",
-			path:       "/api/v1/users/{user}/views/{view}",
+			path:       "/api/users/{user}/views/{view}",
 			parameters: []string{"view", "user"},
 			arguments: map[string]any{
 				"user": "users/user123",
 				"view": "users/user123/views/view456",
 			},
-			wantPath: "/api/v1/users/user123/views/view456",
+			wantPath: "/api/users/user123/views/view456",
 		},
 		{
 			name:       "canonical nested name on action route",
-			path:       "/api/v1/users/{user}/webhooks/{webhook}:getSigningSecret",
+			path:       "/api/users/{user}/webhooks/{webhook}:getSigningSecret",
 			parameters: []string{"user", "webhook"},
 			arguments: map[string]any{
 				"user":    "users/user123",
 				"webhook": "users/user123/webhooks/webhook456",
 			},
-			wantPath: "/api/v1/users/user123/webhooks/webhook456:getSigningSecret",
+			wantPath: "/api/users/user123/webhooks/webhook456:getSigningSecret",
 		},
 		{
 			name:       "mismatched parent is left untouched",
-			path:       "/api/v1/memos/{memo}/reactions/{reaction}",
+			path:       "/api/memos/{memo}/reactions/{reaction}",
 			parameters: []string{"memo", "reaction"},
 			arguments: map[string]any{
 				"memo":     "memos/abc123",
 				"reaction": "memos/other/reactions/reaction456",
 			},
-			wantPath: "/api/v1/memos/abc123/reactions/memos%2Fother%2Freactions%2Freaction456",
+			wantPath: "/api/memos/abc123/reactions/memos%2Fother%2Freactions%2Freaction456",
 		},
 		{
 			name:       "extra nested segment is left untouched",
-			path:       "/api/v1/memos/{memo}/reactions/{reaction}",
+			path:       "/api/memos/{memo}/reactions/{reaction}",
 			parameters: []string{"memo", "reaction"},
 			arguments: map[string]any{
 				"memo":     "memos/abc123",
 				"reaction": "memos/abc123/reactions/reaction456/extra",
 			},
-			wantPath: "/api/v1/memos/abc123/reactions/memos%2Fabc123%2Freactions%2Freaction456%2Fextra",
+			wantPath: "/api/memos/abc123/reactions/memos%2Fabc123%2Freactions%2Freaction456%2Fextra",
 		},
 	}
 
@@ -288,13 +288,13 @@ func TestBuildAPIRequestAcceptsCanonicalReactionNameForCuratedOperation(t *testi
 		"reaction": "memos/abc123/reactions/reaction456",
 	}, "")
 	require.NoError(t, err)
-	require.Equal(t, "/api/v1/memos/abc123/reactions/reaction456", req.URL.EscapedPath())
+	require.Equal(t, "/api/memos/abc123/reactions/reaction456", req.URL.EscapedPath())
 }
 
 func TestBuildAPIRequestRequiresPathParameters(t *testing.T) {
 	operation := &openAPIOperation{
 		Method:     "GET",
-		Path:       "/api/v1/memos/{memo}",
+		Path:       "/api/memos/{memo}",
 		Parameters: []openAPIParameter{{Name: "memo", In: "path", Required: true}},
 	}
 
@@ -305,7 +305,7 @@ func TestBuildAPIRequestRequiresPathParameters(t *testing.T) {
 func TestBuildAPIRequestRequiresRequestBody(t *testing.T) {
 	operation := &openAPIOperation{
 		Method:      "POST",
-		Path:        "/api/v1/memos",
+		Path:        "/api/memos",
 		RequestBody: &openAPIRequestBody{Required: true},
 	}
 
@@ -316,7 +316,7 @@ func TestBuildAPIRequestRequiresRequestBody(t *testing.T) {
 func TestBuildAPIRequestEscapesPathAndStringifiesPrimitiveQueryParameters(t *testing.T) {
 	operation := &openAPIOperation{
 		Method: "DELETE",
-		Path:   "/api/v1/memos/{memo}",
+		Path:   "/api/memos/{memo}",
 		Parameters: []openAPIParameter{
 			{Name: "memo", In: "path", Required: true, Schema: jsonSchema{"type": "string"}},
 			{Name: "force", In: "query", Schema: jsonSchema{"type": "boolean"}},
@@ -330,14 +330,14 @@ func TestBuildAPIRequestEscapesPathAndStringifiesPrimitiveQueryParameters(t *tes
 		"limit": 10,
 	}, "")
 	require.NoError(t, err)
-	require.Equal(t, "/api/v1/memos/abc%20123", req.URL.EscapedPath())
+	require.Equal(t, "/api/memos/abc%20123", req.URL.EscapedPath())
 	require.Equal(t, "true", req.URL.Query().Get("force"))
 	require.Equal(t, "10", req.URL.Query().Get("limit"))
 }
 
 func TestExecuteOperationReturnsObjectStructuredContent(t *testing.T) {
 	echoServer := echo.New()
-	echoServer.GET("/api/v1/memos", func(c *echo.Context) error {
+	echoServer.GET("/api/memos", func(c *echo.Context) error {
 		require.Equal(t, "Bearer token", c.Request().Header.Get("Authorization"))
 		return c.JSON(http.StatusOK, map[string]any{
 			"memos": []any{map[string]any{"name": "memos/abc123"}},
@@ -346,7 +346,7 @@ func TestExecuteOperationReturnsObjectStructuredContent(t *testing.T) {
 
 	operation := &openAPIOperation{
 		Method: "GET",
-		Path:   "/api/v1/memos",
+		Path:   "/api/memos",
 	}
 	adapter := newAPIAdapter(echoServer)
 
@@ -360,13 +360,13 @@ func TestExecuteOperationReturnsObjectStructuredContent(t *testing.T) {
 
 func TestExecuteOperationConvertsAPIErrorsToToolErrors(t *testing.T) {
 	echoServer := echo.New()
-	echoServer.GET("/api/v1/memos/:memo", func(c *echo.Context) error {
+	echoServer.GET("/api/memos/:memo", func(c *echo.Context) error {
 		return c.JSON(http.StatusNotFound, map[string]any{"message": "missing memo"})
 	})
 
 	operation := &openAPIOperation{
 		Method:     "GET",
-		Path:       "/api/v1/memos/{memo}",
+		Path:       "/api/memos/{memo}",
 		Parameters: []openAPIParameter{{Name: "memo", In: "path", Required: true}},
 	}
 	adapter := newAPIAdapter(echoServer)

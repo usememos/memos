@@ -1,5 +1,6 @@
 import { BinaryReader } from "@bufbuild/protobuf/wire";
 import { type Code, ConnectError } from "@connectrpc/connect";
+import { formatFileSize } from "@/utils/format";
 
 /** google.rpc.ErrorInfo, the mandatory detail on every server error (AIP-193). */
 export interface ErrorInfo {
@@ -10,6 +11,7 @@ export interface ErrorInfo {
 
 export const ERROR_REASON_RATE_LIMITED = "RATE_LIMITED";
 export const ERROR_REASON_CHALLENGE_REQUIRED = "CHALLENGE_REQUIRED";
+export const ERROR_REASON_QUOTA_EXCEEDED = "QUOTA_EXCEEDED";
 
 const ERROR_INFO_TYPE = "google.rpc.ErrorInfo";
 
@@ -78,6 +80,32 @@ export function getRetryAfterSeconds(error: unknown): number | undefined {
   return Number.isFinite(seconds) && seconds > 0 ? seconds : undefined;
 }
 
+/**
+ * Describes a QUOTA_EXCEEDED refusal in words, or returns undefined for any
+ * other error. A usage limit does not lift with time, so unlike a rate limit
+ * the message says what to change instead of when to retry.
+ */
+export function getQuotaExceededMessage(error: unknown): string | undefined {
+  const info = getErrorInfo(error);
+  if (info?.reason !== ERROR_REASON_QUOTA_EXCEEDED) {
+    return undefined;
+  }
+  const limit = Number(info.metadata.limit ?? "");
+  const usage = Number(info.metadata.usage ?? "");
+  switch (info.metadata.metric) {
+    case "MEMO_COUNT":
+      return `You have reached your limit of ${limit} memos. Delete memos to create new ones.`;
+    case "STORAGE_BYTES":
+      return `This upload would exceed your storage limit of ${formatFileSize(limit)}. You are using ${formatFileSize(usage)}.`;
+    case "UPLOAD_BYTES":
+      return `This file is larger than your limit of ${formatFileSize(limit)} per file.`;
+    case "MEMO_CONTENT_BYTES":
+      return `This memo is larger than your limit of ${formatFileSize(limit)} per memo. Shorten the content to save it.`;
+    default:
+      return "You have reached a usage limit.";
+  }
+}
+
 function formatWait(seconds: number): string {
   if (seconds < 60) return `${seconds}s`;
   const minutes = Math.ceil(seconds / 60);
@@ -96,6 +124,10 @@ export function getErrorMessage(error: unknown, fallback = "Unknown error"): str
     }
     if (hasErrorReason(error, ERROR_REASON_CHALLENGE_REQUIRED)) {
       return "Complete the verification challenge and try again.";
+    }
+    const limitMessage = getQuotaExceededMessage(error);
+    if (limitMessage !== undefined) {
+      return limitMessage;
     }
     return error.rawMessage || fallback;
   }

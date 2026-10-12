@@ -3,7 +3,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { createInitialState, EditorProvider, useEditorContext, useEditorSelector } from "@/components/MemoEditor/state";
 import AudienceMenu from "@/components/MemoEditor/Toolbar/AudienceMenu";
 import { EditorToolbar } from "@/components/MemoEditor/Toolbar/EditorToolbar";
-import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
+import { Visibility } from "@/types/proto/api/memo_service_pb";
 
 const spacesQuery = vi.hoisted(() => ({
   data: [

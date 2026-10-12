@@ -4,8 +4,8 @@ import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { describe, expect, it, vi } from "vitest";
 import MemoEditor from "@/components/MemoEditor";
 import { transcriptionService } from "@/components/MemoEditor/services";
-import { AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
-import { MemoSchema, Visibility } from "@/types/proto/api/v1/memo_service_pb";
+import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
+import { MemoSchema, Visibility } from "@/types/proto/api/memo_service_pb";
 
 vi.mock("@/hooks/useUserQueries", () => ({ useTagCounts: () => ({ data: {} }) }));
 vi.mock("@/hooks/useCurrentUser", () => ({ default: () => ({ name: "users/1" }) }));

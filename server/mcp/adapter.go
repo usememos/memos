@@ -161,12 +161,12 @@ func pathPlaceholderNames(path string) []string {
 // segments match the other arguments. Bare IDs pass through unchanged.
 func trimResourceNamePrefix(path, parameterName, value string, resolved map[string]string) string {
 	placeholder := "/{" + parameterName + "}"
-	index := strings.Index(path, placeholder)
-	if index < 0 {
+	before, _, found := strings.Cut(path, placeholder)
+	if !found {
 		return value
 	}
 
-	prefix, ok := resolvedResourceNamePrefix(path[:index], resolved)
+	prefix, ok := resolvedResourceNamePrefix(before, resolved)
 	if !ok || prefix == "" {
 		return value
 	}
@@ -184,7 +184,7 @@ func trimResourceNamePrefix(path, parameterName, value string, resolved map[stri
 // any id that is not a single bare segment, so every iteration removes one "{"
 // and the loop always terminates.
 func resolvedResourceNamePrefix(prefix string, resolved map[string]string) (string, bool) {
-	const apiPrefix = "/api/v1/"
+	const apiPrefix = "/api/"
 	prefix, ok := strings.CutPrefix(prefix, apiPrefix)
 	if !ok {
 		return "", false

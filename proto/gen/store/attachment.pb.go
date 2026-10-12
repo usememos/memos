@@ -629,8 +629,8 @@ type AttachmentPayload struct {
 	//
 	//	*AttachmentPayload_S3Object_
 	Payload       isAttachmentPayload_Payload `protobuf_oneof:"payload"`
-	MotionMedia   *MotionMedia                `protobuf:"bytes,10,opt,name=motion_media,json=motionMedia,proto3" json:"motion_media,omitempty"`
-	MediaMetadata *MediaMetadata              `protobuf:"bytes,11,opt,name=media_metadata,json=mediaMetadata,proto3" json:"media_metadata,omitempty"`
+	MotionMedia   *MotionMedia                `protobuf:"bytes,2,opt,name=motion_media,json=motionMedia,proto3" json:"motion_media,omitempty"`
+	MediaMetadata *MediaMetadata              `protobuf:"bytes,3,opt,name=media_metadata,json=mediaMetadata,proto3" json:"media_metadata,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -713,7 +713,7 @@ type AttachmentPayload_S3Object struct {
 	// key is the S3 object key.
 	Key string `protobuf:"bytes,2,opt,name=key,proto3" json:"key,omitempty"`
 	// storage_id identifies the configured storage containing this object.
-	StorageId     string `protobuf:"bytes,4,opt,name=storage_id,json=storageId,proto3" json:"storage_id,omitempty"`
+	StorageId     string `protobuf:"bytes,3,opt,name=storage_id,json=storageId,proto3" json:"storage_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -822,17 +822,16 @@ const file_store_attachment_proto_rawDesc = "" +
 	"\x10_altitude_meters\"T\n" +
 	"\rVideoMetadata\x12.\n" +
 	"\x10duration_seconds\x18\x01 \x01(\x01H\x00R\x0fdurationSeconds\x88\x01\x01B\x13\n" +
-	"\x11_duration_seconds\"\xfa\x02\n" +
+	"\x11_duration_seconds\"\xde\x02\n" +
 	"\x11AttachmentPayload\x12F\n" +
 	"\ts3_object\x18\x01 \x01(\v2'.memos.store.AttachmentPayload.S3ObjectH\x00R\bs3Object\x12;\n" +
-	"\fmotion_media\x18\n" +
-	" \x01(\v2\x18.memos.store.MotionMediaR\vmotionMedia\x12A\n" +
-	"\x0emedia_metadata\x18\v \x01(\v2\x1a.memos.store.MediaMetadataR\rmediaMetadata\x1a\x91\x01\n" +
+	"\fmotion_media\x18\x02 \x01(\v2\x18.memos.store.MotionMediaR\vmotionMedia\x12A\n" +
+	"\x0emedia_metadata\x18\x03 \x01(\v2\x1a.memos.store.MediaMetadataR\rmediaMetadata\x1av\n" +
 	"\bS3Object\x129\n" +
 	"\ts3_config\x18\x01 \x01(\v2\x1c.memos.store.StorageS3ConfigR\bs3Config\x12\x10\n" +
 	"\x03key\x18\x02 \x01(\tR\x03key\x12\x1d\n" +
 	"\n" +
-	"storage_id\x18\x04 \x01(\tR\tstorageIdJ\x04\b\x03\x10\x04R\x13last_presigned_timeB\t\n" +
+	"storage_id\x18\x03 \x01(\tR\tstorageIdB\t\n" +
 	"\apayload*a\n" +
 	"\x15AttachmentStorageType\x12'\n" +
 	"#ATTACHMENT_STORAGE_TYPE_UNSPECIFIED\x10\x00\x12\t\n" +

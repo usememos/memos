@@ -275,6 +275,17 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	return list, nil
 }
 
+// CountUserMemos counts the memos a user created, comments included, in every
+// row status and Space.
+func (d *DB) CountUserMemos(ctx context.Context, creatorID int32) (int64, error) {
+	stmt := `SELECT COUNT(*) FROM memo WHERE creator_id = ?`
+	var count int64
+	if err := d.db.QueryRowContext(ctx, stmt, creatorID).Scan(&count); err != nil {
+		return 0, errors.Wrap(err, "failed to count user memos")
+	}
+	return count, nil
+}
+
 func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
 	if update.Policy == nil {
 		return applyMemoUpdate(ctx, d.db, update)

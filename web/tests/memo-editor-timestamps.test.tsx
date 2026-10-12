@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { TimestampPopover } from "@/components/MemoEditor/components/TimestampPopover";
 import { memoService } from "@/components/MemoEditor/services/memoService";
 import { createInitialState, EditorProvider, useEditorContext } from "@/components/MemoEditor/state";
-import { type Memo, MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
+import { type Memo, MemoSchema } from "@/types/proto/api/memo_service_pb";
 
 const clients = vi.hoisted(() => ({ getMemo: vi.fn(), updateMemo: vi.fn() }));
 vi.mock("@/connect", () => ({

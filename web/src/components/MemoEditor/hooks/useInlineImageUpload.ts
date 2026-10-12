@@ -2,7 +2,7 @@ import { uniqBy } from "lodash-es";
 import { type RefObject, useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { v4 as uuidv4 } from "uuid";
-import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
+import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import { isImage } from "@/utils/attachment";
 import { useTranslate } from "@/utils/i18n";
 import { buildManagedAttachmentMarkdown, canInlineAttachment } from "@/utils/managed-attachment";

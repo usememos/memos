@@ -371,10 +371,7 @@ func (e *entry) retryAfter(rule Rule, now time.Time, cost int) time.Duration {
 		// previous one, has decayed: overlap < (budget + 1) / current.
 		ready = windowEnd.Add(decayTime(rule.Window, e.current, budget+1))
 	}
-	wait := ready.Sub(now)
-	if wait < 0 {
-		wait = 0
-	}
+	wait := max(ready.Sub(now), 0)
 	// Floor plus one second lands strictly after the boundary even when the
 	// wait is a whole number of seconds, and is never less than one.
 	return time.Duration(math.Floor(wait.Seconds()))*time.Second + time.Second

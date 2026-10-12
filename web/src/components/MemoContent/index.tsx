@@ -25,7 +25,7 @@ const MemoContent = (props: MemoContentProps) => {
         data-memo-name={props.memoName}
         className={cn(
           "relative w-full max-w-full wrap-break-word text-base leading-6",
-          "[&>*:last-child]:mb-0",
+          "[&>*:first-child]:mt-0 [&>*:last-child]:mb-0",
           "[&_.katex-display]:max-w-full",
           "[&_.katex-display]:overflow-x-auto",
           "[&_.katex-display]:overflow-y-hidden",

@@ -10,8 +10,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { getErrorMessage } from "@/lib/error";
 import { exportMemos, importStagedMemos, type StagedMemoImport, stageMemoImport } from "@/lib/memo-export";
-import type { MemoImportIssue, MemoImportReport } from "@/types/proto/api/v1/user_service_pb";
-import { ImportMemosRequest_ConflictPolicy } from "@/types/proto/api/v1/user_service_pb";
+import type { ImportMemosIssue, ImportMemosReport } from "@/types/proto/api/user_service_pb";
+import { ImportMemosRequest_ConflictPolicy } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import SettingGroup from "./SettingGroup";
 import { SettingList, SettingListItem, StatRow } from "./SettingList";
@@ -41,14 +41,14 @@ const POLICIES = [
 type ImportStage =
   | { kind: "idle" }
   | { kind: "review"; file: File; staged: StagedMemoImport; policy: ImportMemosRequest_ConflictPolicy }
-  | { kind: "done"; report: MemoImportReport };
+  | { kind: "done"; report: ImportMemosReport };
 
-const IssueList = ({ issues, tone }: { issues: MemoImportIssue[]; tone: "warning" | "failure" }) => {
+const IssueList = ({ issues, tone }: { issues: ImportMemosIssue[]; tone: "warning" | "failure" }) => {
   if (issues.length === 0) return null;
   return (
     <ul className={`flex flex-col gap-1 text-xs ${tone === "failure" ? "text-destructive" : "text-muted-foreground"}`}>
       {issues.map((issue, index) => (
-        <li key={`${tone}-${index}`}>{issue.memo ? `${issue.memo}: ${issue.message}` : issue.message}</li>
+        <li key={`${tone}-${index}`}>{issue.memoUid ? `${issue.memoUid}: ${issue.message}` : issue.message}</li>
       ))}
     </ul>
   );
@@ -153,8 +153,8 @@ const MemoExportSection = () => {
                   stage.staged.plan.exportTime ? dayjs(timestampDate(stage.staged.plan.exportTime)).format("YYYY-MM-DD HH:mm") : ""
                 }`}
               />
-              <StatRow label={t("setting.memo-export.review-memos")} value={String(stage.staged.plan.memos)} />
-              <StatRow label={t("setting.memo-export.review-attachments")} value={String(stage.staged.plan.attachments)} />
+              <StatRow label={t("setting.memo-export.review-memos")} value={String(stage.staged.plan.memoCount)} />
+              <StatRow label={t("setting.memo-export.review-attachments")} value={String(stage.staged.plan.attachmentCount)} />
               <StatRow label={t("setting.memo-export.review-new")} value={String(stage.staged.plan.new + stage.staged.plan.renamed)} />
               <StatRow label={t("setting.memo-export.review-existing")} value={String(stage.staged.plan.existing)} />
             </SettingList>
@@ -190,7 +190,9 @@ const MemoExportSection = () => {
                 {t("common.cancel")}
               </Button>
               <Button size="sm" disabled={busy} onClick={handleImport}>
-                {busy ? t("setting.memo-export.importing") : t("setting.memo-export.import-confirm", { count: stage.staged.plan.memos })}
+                {busy
+                  ? t("setting.memo-export.importing")
+                  : t("setting.memo-export.import-confirm", { count: stage.staged.plan.memoCount })}
               </Button>
             </div>
           </div>

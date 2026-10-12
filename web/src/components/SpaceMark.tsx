@@ -1,6 +1,6 @@
 import SpaceIcon from "@/components/SpaceIcon";
 import { cn } from "@/lib/utils";
-import type { Space_Icon } from "@/types/proto/api/v1/space_service_pb";
+import type { Space_Icon } from "@/types/proto/api/space_service_pb";
 
 const MARK_SCALE = {
   xl: { mark: "size-11 rounded-lg", icon: 24, emoji: "text-2xl" },

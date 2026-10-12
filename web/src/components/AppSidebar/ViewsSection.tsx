@@ -16,7 +16,7 @@ import { handleError } from "@/lib/error";
 import { getMemoViewId, isMemoCollectionRoute } from "@/lib/memo-views";
 import { cn } from "@/lib/utils";
 import { getCollectionHomePath, ROUTES } from "@/router/routes";
-import type { MemoView } from "@/types/proto/api/v1/user_service_pb";
+import type { MemoView } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import SidebarRow, {
   SIDEBAR_ROW_BOX_CLASSES,

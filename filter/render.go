@@ -185,7 +185,7 @@ func (r *renderer) renderComparison(cond *ComparisonCondition) (renderResult, er
 // accessorSpec maps a CEL timestamp accessor to per-dialect SQL date-part tokens
 // and the offset to subtract so the result matches CEL's base (e.g. CEL months
 // are 0-based but every dialect reports 1-based, so off=1). off is indexed
-// [sqlite, postgres, mysql]; D1 shares the SQLite entry.
+// [sqlite, postgres, mysql].
 type accessorSpec struct {
 	sqlite string // strftime format specifier
 	pg     string // EXTRACT field

@@ -1,8 +1,8 @@
 import { create } from "@bufbuild/protobuf";
 import { Code, ConnectError } from "@connectrpc/connect";
 import { attachmentServiceClient } from "@/connect";
-import type { Attachment, UploadAttachmentRequest } from "@/types/proto/api/v1/attachment_service_pb";
-import { AttachmentSchema, MotionMediaSchema, UploadAttachmentSpecSchema } from "@/types/proto/api/v1/attachment_service_pb";
+import type { Attachment, UploadAttachmentRequest } from "@/types/proto/api/attachment_service_pb";
+import { AttachmentSchema, MotionMediaSchema, UploadAttachmentSpecSchema } from "@/types/proto/api/attachment_service_pb";
 import type { LocalFile } from "../types/attachment";
 
 const DEFAULT_CHUNK_SIZE = 2 * 1024 * 1024;
@@ -60,12 +60,18 @@ export const uploadService = {
     }
   },
 
-  async uploadFiles(localFiles: LocalFile[]): Promise<Attachment[]> {
+  /**
+   * Uploads the files in parallel and returns their attachments in input order.
+   * onUploaded runs as each file finishes, so a caller can keep the files that
+   * did upload when another upload, or a later step, fails.
+   */
+  async uploadFiles(localFiles: LocalFile[], onUploaded?: (localFile: LocalFile, attachment: Attachment) => void): Promise<Attachment[]> {
     const attachments: Attachment[] = new Array(localFiles.length);
     let next = 0;
     const worker = async () => {
       for (let index = next++; index < localFiles.length; index = next++) {
         attachments[index] = await this.uploadFile(localFiles[index]);
+        onUploaded?.(localFiles[index], attachments[index]);
       }
     };
     await Promise.all(Array.from({ length: Math.min(MAX_CONCURRENT_UPLOADS, localFiles.length) }, worker));

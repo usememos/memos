@@ -54,6 +54,16 @@ previous_release_image() {
 
 if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
   case "${1:-}" in
+    development-version)
+      # format-local honors TZ; plain format uses the commit's original zone.
+      version="$(TZ=UTC git -C "${2:-.}" show -s --format=%cd --date=format-local:%y.%m HEAD)"
+      if ! parse_release_tag "$version"; then
+        echo "Cannot derive a calendar version from HEAD" >&2
+        exit 1
+      fi
+      printf '%s\n' "$version"
+      exit
+      ;;
     previous-tag)
       previous_release_tag "${2:?repository required}"
       exit

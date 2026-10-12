@@ -1,7 +1,7 @@
 import type { FC } from "react";
 import { useMemo } from "react";
 import MetadataSection, { METADATA_ROW_BOX_CLASSES, MetadataRowRemoveControl } from "@/components/MemoMetadata/MetadataSection";
-import type { MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
+import type { MemoRelation } from "@/types/proto/api/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import RelationRow from "./RelationRow";
 import { getEditorReferenceRelations } from "./relationHelpers";

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useUpdateUser } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
-import { User } from "@/types/proto/api/v1/user_service_pb";
+import { User } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 interface Props {

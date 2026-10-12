@@ -4,9 +4,9 @@
 
 <img src="./web/public/logo.webp" alt="" width="96" align="right">
 
-**Fast enough for every thought. Private enough for all of them.**
+**Your thoughts, your data, shared on your terms.**
 
-Memos is an open-source, self-hosted home for short-form thinking. Daily notes, links, work logs, and snippets flow into a chronological Markdown timeline—on infrastructure you control, without the overhead of an all-in-one workspace.
+Memos is a timeline for your notes, and it belongs to you. Write in Markdown, post in seconds, and choose who sees each memo: just you, the people you invite, or anyone with the link.
 
 **[Run with Docker](#quick-start)** · **[Try the live demo](https://demo.usememos.com/)** · [Read the docs](https://usememos.com/docs)
 
@@ -15,14 +15,14 @@ Memos is an open-source, self-hosted home for short-form thinking. Daily notes, 
 [![Docker pulls](https://img.shields.io/docker/pulls/neosmemo/memos?style=flat-square&logo=docker)](https://hub.docker.com/r/neosmemo/memos)
 [![MIT license](https://img.shields.io/github/license/usememos/memos?style=flat-square)](LICENSE)
 
-<img src="https://raw.githubusercontent.com/usememos/.github/refs/heads/main/assets/demo.png" alt="Memos Demo Screenshot" height="512" />
+<img src="https://raw.githubusercontent.com/usememos/.github/refs/heads/main/assets/demo.png" alt="The Memos timeline with a memo composer and recent memos" height="512" />
 
 ## Why Memos?
 
-- **Capture quickly** — Write in Markdown, attach media, and save without choosing a title, folder, or template.
-- **Organize lightly** — Revisit notes through the timeline, search, tags, and pins.
-- **Share selectively** — Keep memos private or publish only what you choose.
-- **Keep control** — Self-host Memos with [zero telemetry](https://usememos.com/features/data-ownership) and [MIT-licensed source](LICENSE).
+- **Write first** — Save a thought without choosing a title or folder. Memos are written in Markdown and can include images and files.
+- **Find it later** — Search, filter by tag, or look back through any day on the timeline. Pin what matters and save the filters you reuse as views.
+- **Yours to keep** — Self-host Memos with [zero telemetry](https://usememos.com/features/data-ownership), [MIT-licensed source](LICENSE), and a full export of your memos.
+- **Share when you choose** — New memos are private. Make one visible to signed-in users or public when you want to share it.
 
 [Explore all features →](https://usememos.com/features)
 
@@ -54,8 +54,6 @@ Save pages, selections, and images from your browser straight into Memos as sour
 
 <p>
   <a href="https://coderabbit.link/usememos" target="_blank" rel="noopener"><picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/usememos/.github/refs/heads/main/assets/sponsors/coderabbit/white-typemark.svg" /><img src="https://raw.githubusercontent.com/usememos/.github/refs/heads/main/assets/sponsors/coderabbit/orange-typemark.svg" alt="CodeRabbit — Cut code review time and bugs in half" height="40" align="middle" /></picture></a>
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <a href="https://ssdnodes.com/?utm_source=memos&utm_medium=sponsor" target="_blank" rel="noopener"><img src="https://raw.githubusercontent.com/usememos/.github/refs/heads/main/assets/sponsors/ssd-nodes.svg" alt="SSD Nodes — Affordable VPS hosting for self-hosters" height="72" align="middle" /></a>
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   <a href="https://www.testmuai.com/?utm_medium=sponsor&utm_source=memos" target="_blank" rel="noopener"><picture><source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/usememos/.github/refs/heads/main/assets/sponsors/testmuai/white.png" /><img src="https://raw.githubusercontent.com/usememos/.github/refs/heads/main/assets/sponsors/testmuai/black.png" alt="TestMu AI — The world’s first full-stack Agentic AI Quality Engineering platform" height="30" align="middle" /></picture></a>
 </p>

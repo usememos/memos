@@ -2,7 +2,7 @@ import { useQueries } from "@tanstack/react-query";
 import { createContext, type ReactNode, useContext, useMemo } from "react";
 import { userDetailQueryOptions, useUsersByUsernames } from "@/hooks/useUserQueries";
 import { extractUsernameFromName } from "@/lib/resource-names";
-import type { User } from "@/types/proto/api/v1/user_service_pb";
+import type { User } from "@/types/proto/api/user_service_pb";
 import { extractMentionUsernames } from "@/utils/mention-extraction";
 
 interface UserResolutionContextValue {

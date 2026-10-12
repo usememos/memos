@@ -6,8 +6,8 @@ import { type MemoTimeBasis, useView } from "@/contexts/ViewContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useAllUserStats, useUserStats } from "@/hooks/useUserQueries";
 import { mergeTagCounts } from "@/lib/tag";
-import { State } from "@/types/proto/api/v1/common_pb";
-import type { UserStats } from "@/types/proto/api/v1/user_service_pb";
+import { State } from "@/types/proto/api/common_pb";
+import type { UserStats } from "@/types/proto/api/user_service_pb";
 import type { StatisticsData } from "@/types/statistics";
 
 export interface FilteredMemoStats {
@@ -46,7 +46,7 @@ export const useFilteredMemoStats = (options: UseFilteredMemoStatsOptions = {}):
   // Legacy personal collections use backend per-user stats.
   const { data: userStats, isLoading: isLoadingUserStats } = useUserStats(userName, { enabled, filter });
   // Collection and Archived fetch grouped stats and aggregate them locally.
-  // ListAllUserStats AND's the request filter with the server's auth filter, so
+  // ListUserStats AND's the request filter with the server's auth filter, so
   // private memos are not included unless explicitly visible to the current user.
   const allUserStatsRequest =
     context === "collection" ? { state: State.NORMAL, filter } : context === "archived" ? { state: State.ARCHIVED, filter } : {};
@@ -62,7 +62,7 @@ export const useFilteredMemoStats = (options: UseFilteredMemoStatsOptions = {}):
 
     if (context === "collection" || context === "archived") {
       const displayDates: string[] = [];
-      tagCount = mergeTagCounts(...allUserStats.map((stats) => stats.tagCount));
+      tagCount = mergeTagCounts(...allUserStats.map((stats) => stats.tagCounts));
       for (const stats of allUserStats) {
         displayDates.push(
           ...timestampsForBasis(stats, timeBasis)
@@ -83,8 +83,8 @@ export const useFilteredMemoStats = (options: UseFilteredMemoStatsOptions = {}):
             .map(toDateString),
         );
       }
-      if (userStats.tagCount) {
-        tagCount = mergeTagCounts(userStats.tagCount);
+      if (userStats.tagCounts) {
+        tagCount = mergeTagCounts(userStats.tagCounts);
       }
     }
 

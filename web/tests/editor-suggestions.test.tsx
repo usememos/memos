@@ -6,7 +6,7 @@ import { EditorSuggestions, SuggestionsBar } from "@/components/MemoEditor/compo
 import { createInitialState, EditorProvider, useEditorContext } from "@/components/MemoEditor/state";
 import type { EditorController } from "@/components/MemoEditor/types/editorController";
 import { getMemoSuggestions, type MemoSuggestion } from "@/lib/memo-suggestions";
-import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
+import { Visibility } from "@/types/proto/api/memo_service_pb";
 
 vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
 vi.mock("@/hooks/useUserQueries", () => ({ useTagCounts: () => ({ data: {} }) }));

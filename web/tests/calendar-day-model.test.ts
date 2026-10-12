@@ -2,8 +2,8 @@ import { create, type MessageInitShape } from "@bufbuild/protobuf";
 import { timestampFromDate } from "@bufbuild/protobuf/wkt";
 import { describe, expect, it } from "vitest";
 import { buildCalendarMonthModel, getMemoThumbnail } from "@/components/CalendarView/dayModel";
-import { AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
-import { type Memo, MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
+import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
+import { type Memo, MemoSchema } from "@/types/proto/api/memo_service_pb";
 
 const memoAt = (hour: number, overrides: MessageInitShape<typeof MemoSchema> = {}): Memo =>
   create(MemoSchema, {

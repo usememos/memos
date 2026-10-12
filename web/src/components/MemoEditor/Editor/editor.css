@@ -68,31 +68,13 @@
   }
   & .cm-md-quote {
     color: var(--muted-foreground);
-    font-style: italic;
   }
   & .cm-md-mark {
     color: var(--muted-foreground);
   }
 
-  /* Heading lines (require a space after the hashes; headingDecorations.ts). */
-  & .cm-md-h1 {
-    font-size: 1.5em;
-    font-weight: 600;
-    line-height: 1.3;
-  }
-  & .cm-md-h2 {
-    font-size: 1.3em;
-    font-weight: 600;
-  }
-  & .cm-md-h3 {
-    font-size: 1.15em;
-    font-weight: 600;
-  }
-  & .cm-md-h4,
-  & .cm-md-h5,
-  & .cm-md-h6 {
-    font-weight: 600;
-  }
+  /* Heading lines get their type (size / weight) from headingTypeClass in
+     lib/markdownStyles.ts, shared with the read-only view; headingDecorations.ts. */
 
   /* #tag / @mention decorations. */
   & .cm-memo-tag,

@@ -17,7 +17,7 @@ export default defineConfig({
     host: "0.0.0.0",
     port: 3001,
     proxy: {
-      "^/api/v1/sse": {
+      "^/api/sse": {
         target: devProxyServer,
         xfwd: true,
         // SSE requires no response buffering and longer timeout.
@@ -27,7 +27,7 @@ export default defineConfig({
         target: devProxyServer,
         xfwd: true,
       },
-      "^/memos.api.v1": {
+      "^/memos.api": {
         target: devProxyServer,
         xfwd: true,
       },

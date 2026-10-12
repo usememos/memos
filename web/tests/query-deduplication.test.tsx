@@ -6,8 +6,8 @@ import { MentionResolutionProvider, useResolvedMentionUsernames, useResolvedUser
 import { useResolvedRelationMemos } from "@/components/MemoMetadata/Relation/useResolvedRelationMemos";
 import { memoKeys } from "@/hooks/useMemoQueries";
 import { useMemoViews, userKeys, useUser, useUsersByNames, useUsersByUsernames } from "@/hooks/useUserQueries";
-import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
-import type { User } from "@/types/proto/api/v1/user_service_pb";
+import type { Memo } from "@/types/proto/api/memo_service_pb";
+import type { User } from "@/types/proto/api/user_service_pb";
 
 const clients = vi.hoisted(() => ({
   batchGetUsers: vi.fn(),
@@ -148,7 +148,7 @@ describe("query deduplication", () => {
     });
 
     expect(clients.batchGetUsers).toHaveBeenCalledTimes(1);
-    expect(clients.batchGetUsers).toHaveBeenCalledWith({ usernames: ["bob", "alice"] });
+    expect(clients.batchGetUsers).toHaveBeenCalledWith({ names: ["users/bob", "users/alice"] });
     expect(clients.getUser).not.toHaveBeenCalled();
   });
 

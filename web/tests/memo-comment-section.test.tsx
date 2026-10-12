@@ -4,8 +4,8 @@ import { act, createRef } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import MemoCommentSection, { type MemoCommentSectionHandle } from "@/components/MemoCommentSection";
 import type { MemoEditorProps } from "@/components/MemoEditor/types";
-import { State } from "@/types/proto/api/v1/common_pb";
-import { MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
+import { State } from "@/types/proto/api/common_pb";
+import { MemoSchema } from "@/types/proto/api/memo_service_pb";
 
 const mocks = vi.hoisted(() => ({
   currentUser: { name: "users/alice" } as { name: string } | undefined,

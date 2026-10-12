@@ -4,8 +4,8 @@ import type { ReactNode } from "react";
 import { MemoryRouter, useLocation } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useMemoActionHandlers } from "@/components/MemoActionMenu/hooks";
-import { State } from "@/types/proto/api/v1/common_pb";
-import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
+import { State } from "@/types/proto/api/common_pb";
+import type { Memo } from "@/types/proto/api/memo_service_pb";
 
 const mocks = vi.hoisted(() => ({
   updateMemo: vi.fn(),

@@ -45,7 +45,7 @@ func TestMigrationRejectsUnsupportedSchema(t *testing.T) {
 		{name: "zero", schema: "0.0.0", message: "First upgrade to v0.25.3"},
 		{name: "missing-basic", missingBasic: true, message: "First upgrade to v0.25.3"},
 		{name: "invalid-month", schema: "26.13.1", message: "invalid database schema version"},
-		{name: "calver-newer", schema: "26.9.1", message: "cannot downgrade schema version"},
+		{name: "calver-newer", schema: "26.10.2", message: "cannot downgrade schema version"},
 		{name: "invalid", schema: "unknown", message: "invalid database schema version"},
 		{name: "incomplete", schema: "0.31", message: "invalid database schema version"},
 		{name: "prerelease", schema: "0.31.8-rc.1", message: "invalid database schema version"},

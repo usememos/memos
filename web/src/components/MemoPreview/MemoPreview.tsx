@@ -3,9 +3,9 @@ import { FileIcon } from "lucide-react";
 import { useMemo } from "react";
 import { extractMemoIdFromName } from "@/lib/resource-names";
 import { cn } from "@/lib/utils";
-import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
-import { MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
-import type { User } from "@/types/proto/api/v1/user_service_pb";
+import type { Attachment } from "@/types/proto/api/attachment_service_pb";
+import { MemoSchema } from "@/types/proto/api/memo_service_pb";
+import type { User } from "@/types/proto/api/user_service_pb";
 import { getAttachmentType, isMotionAttachment } from "@/utils/attachment";
 import { filterInlineManagedAttachments } from "@/utils/managed-attachment";
 import { buildAttachmentVisualItems, countLogicalAttachmentItems } from "@/utils/media-item";
@@ -142,14 +142,9 @@ const MemoPreview = ({
   return (
     <MemoViewContext.Provider value={STUB_CONTEXT}>
       <div
-        className={cn(
-          "pointer-events-none",
-          truncate ? "flex items-center gap-1.5 min-w-0 leading-tight" : "flex flex-col gap-1",
-          className,
-        )}
+        className={cn("pointer-events-none", truncate ? "flex items-center gap-2 min-w-0 leading-tight" : "flex flex-col gap-1", className)}
       >
         {showMeta && meta}
-        {showMeta && truncate && (hasContent || hasAttachments) && <div className="text-muted-foreground/50 shrink-0">·</div>}
         {contentNode}
         {hasAttachments &&
           (truncate ? (

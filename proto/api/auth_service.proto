@@ -1,0 +1,130 @@
+syntax = "proto3";
+
+package memos.api;
+
+import "api/user_service.proto";
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "gen/api";
+
+// AuthService manages sign-in sessions: it issues, refreshes, and revokes the tokens that authenticate API calls.
+service AuthService {
+  // SignIn authenticates a user with password or SSO credentials.
+  // On success, returns a short-lived access token and sets a refresh token in an HttpOnly cookie.
+  // Public. Attempts are rate limited. Archived users cannot sign in.
+  rpc SignIn(SignInRequest) returns (SignInResponse) {
+    option (google.api.http) = {
+      post: "/api/auth/signin"
+      body: "*"
+    };
+  }
+
+  // RefreshToken exchanges the refresh token for a new access token.
+  // The refresh token is read from the HttpOnly cookie and rotated: the old token is revoked and a new one with a
+  // fresh 30-day expiry is set in the cookie.
+  // Public, so it can be called after the access token has expired.
+  rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse) {
+    option (google.api.http) = {
+      post: "/api/auth/refresh"
+      body: "*"
+    };
+  }
+
+  // GetCurrentUser returns the authenticated user, similar to OIDC's /userinfo endpoint.
+  // When the caller is not signed in or the account is no longer active, clears the refresh token cookie and returns
+  // UNAUTHENTICATED.
+  rpc GetCurrentUser(GetCurrentUserRequest) returns (GetCurrentUserResponse) {
+    option (google.api.http) = {get: "/api/auth/me"};
+  }
+
+  // SignOut ends the current session.
+  // Revokes the refresh token from the cookie and clears the cookie.
+  rpc SignOut(SignOutRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {post: "/api/auth/signout"};
+  }
+}
+
+// Request message for AuthService.SignIn.
+message SignInRequest {
+  // The credentials to authenticate with. Provide exactly one.
+  oneof credentials {
+    // Username and password credentials.
+    PasswordCredentials password_credentials = 1;
+
+    // SSO credentials from an OAuth2 authorization code flow.
+    SsoCredentials sso_credentials = 2;
+  }
+
+  // PasswordCredentials are a username and password.
+  // Regular users cannot use them when the instance disallows password sign-in.
+  message PasswordCredentials {
+    // Required. The username to sign in with.
+    string username = 1 [(google.api.field_behavior) = REQUIRED];
+
+    // Required. The password to sign in with.
+    string password = 2 [(google.api.field_behavior) = REQUIRED];
+  }
+
+  // SsoCredentials are the result of an OAuth2 authorization code flow with an identity provider.
+  // A first sign-in creates a local user unless the instance disallows user registration.
+  message SsoCredentials {
+    // Required. The resource name of the identity provider.
+    // Format: identity-providers/{idp}
+    string identity_provider = 1 [
+      (google.api.field_behavior) = REQUIRED,
+      (google.api.resource_reference) = {type: "memos.api/IdentityProvider"}
+    ];
+
+    // Required. The authorization code returned by the identity provider.
+    string code = 2 [(google.api.field_behavior) = REQUIRED];
+
+    // Required. The redirect URI used in the authorization request.
+    string redirect_uri = 3 [(google.api.field_behavior) = REQUIRED];
+
+    // Optional. The PKCE code verifier (RFC 7636). Set it when the authorization request used a code challenge.
+    string code_verifier = 4 [(google.api.field_behavior) = OPTIONAL];
+  }
+}
+
+// Response message for AuthService.SignIn.
+message SignInResponse {
+  // The signed-in user.
+  User user = 1;
+
+  // The short-lived access token for API requests.
+  // Keep it in memory only, not in localStorage.
+  string access_token = 2;
+
+  // When the access token expires.
+  // Call RefreshToken before this time.
+  google.protobuf.Timestamp access_token_expire_time = 3;
+}
+
+// Request message for AuthService.RefreshToken.
+// It has no fields: the refresh token is read from the HttpOnly cookie.
+message RefreshTokenRequest {}
+
+// Response message for AuthService.RefreshToken.
+message RefreshTokenResponse {
+  // The new short-lived access token.
+  string access_token = 1;
+
+  // When the new access token expires.
+  google.protobuf.Timestamp access_token_expire_time = 2;
+}
+
+// Request message for AuthService.GetCurrentUser.
+message GetCurrentUserRequest {}
+
+// Response message for AuthService.GetCurrentUser.
+message GetCurrentUserResponse {
+  // The authenticated user.
+  User user = 1;
+}
+
+// Request message for AuthService.SignOut.
+message SignOutRequest {}
