@@ -80,19 +80,17 @@ const IdentityProviderButtons = ({ identityProviderList, redirectTarget, autoSig
 
   return (
     <div className="flex w-full flex-col gap-2">
-      {pendingProvider && (
-        <p className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-          <LoaderIcon className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
-          {t("auth.redirecting-to-provider", { provider: pendingProvider.title })}
-        </p>
-      )}
       {identityProviderList.map((identityProvider) => (
         <Button
           key={identityProvider.name}
           variant="outline"
           disabled={Boolean(pendingProvider)}
+          aria-busy={pendingProvider?.name === identityProvider.name}
           onClick={() => void handleSignInWithIdentityProvider(identityProvider)}
         >
+          {pendingProvider?.name === identityProvider.name && (
+            <LoaderIcon className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
+          )}
           {t("auth.continue-with", { provider: identityProvider.title })}
         </Button>
       ))}

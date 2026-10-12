@@ -67,7 +67,11 @@ describe("automatic SSO auth pages", () => {
     expect(router.state.historyAction).toBe("REPLACE");
     expect(new URLSearchParams(router.state.location.search).get("auto_sign_in")).toBe("false");
     expect(new URLSearchParams(router.state.location.search).get("reason")).toBe("protected-memo");
-    expect(screen.getByText("auth.redirecting-to-provider: Company SSO")).toBeInTheDocument();
+    const button = screen.getByRole("button", { name: "auth.continue-with: Company SSO" });
+    expect(button).toBeDisabled();
+    expect(button).toHaveAttribute("aria-busy", "true");
+    expect(button.querySelector("svg")).toBeInTheDocument();
+    expect(screen.queryByText("auth.redirecting-to-provider: Company SSO")).not.toBeInTheDocument();
   });
   it.each([
     {
@@ -152,12 +156,28 @@ describe("automatic SSO auth pages", () => {
     expect(signInWithSSO).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", { name: "auth.continue-with: Company SSO" }));
     expect(signInWithSSO).toHaveBeenCalledWith(provider, "/memos/example");
+    expect(screen.getByRole("button", { name: "auth.continue-with: Company SSO" })).toHaveAttribute("aria-busy", "true");
+  });
+  it("shows loading only on the selected provider while preventing duplicate attempts", () => {
+    const otherProvider = create(IdentityProviderSchema, { ...provider, name: "identityProviders/other", title: "Other SSO" });
+    renderPage("/auth", <IdentityProviderButtons identityProviderList={[provider, otherProvider]} />);
+    const button = screen.getByRole("button", { name: "auth.continue-with: Company SSO" });
+    const otherButton = screen.getByRole("button", { name: "auth.continue-with: Other SSO" });
+    fireEvent.click(button);
+    expect(button).toHaveAttribute("aria-busy", "true");
+    expect(otherButton).toHaveAttribute("aria-busy", "false");
+    expect(otherButton.querySelector("svg")).not.toBeInTheDocument();
+    expect(otherButton).toBeDisabled();
+    fireEvent.click(otherButton);
+    expect(signInWithSSO).toHaveBeenCalledOnce();
   });
   it("returns to manual controls after initiation fails without automatically retrying", async () => {
     vi.mocked(signInWithSSO).mockRejectedValueOnce(new Error("Storage unavailable"));
     renderPage();
     const button = await screen.findByRole("button", { name: "auth.continue-with: Company SSO" });
     await waitFor(() => expect(button).toBeEnabled());
+    expect(button).toHaveAttribute("aria-busy", "false");
+    expect(button.querySelector("svg")).not.toBeInTheDocument();
     expect(signInWithSSO).toHaveBeenCalledOnce();
     fireEvent.click(button);
     expect(signInWithSSO).toHaveBeenCalledTimes(2);
@@ -169,6 +189,7 @@ describe("automatic SSO auth pages", () => {
       window.dispatchEvent(new PageTransitionEvent("pageshow", { persisted: true }));
     });
     expect(screen.getByRole("button", { name: "auth.continue-with: Company SSO" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "auth.continue-with: Company SSO" })).toHaveAttribute("aria-busy", "false");
     expect(signInWithSSO).toHaveBeenCalledOnce();
   });
 });
