@@ -35,7 +35,7 @@ func TestUploadAttachmentTransports(t *testing.T) {
 	svc, ctx := newUploadTestService(t)
 	user, err := svc.fetchCurrentUser(ctx)
 	require.NoError(t, err)
-	token, _, err := auth.GenerateAccessTokenV2(user.ID, user.Username, string(user.Role), string(user.RowStatus), []byte(svc.Secret))
+	token, _, err := auth.GenerateAccessTokenV2(user.ID, user.Username, string(user.Role), string(user.RowStatus), user.PasswordHash, []byte(svc.Secret))
 	require.NoError(t, err)
 	e := echo.New()
 	require.NoError(t, svc.RegisterGateway(context.Background(), e))

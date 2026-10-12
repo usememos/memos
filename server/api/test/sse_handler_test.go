@@ -30,6 +30,7 @@ func TestSSEHandler_Authentication(t *testing.T) {
 		user.Username,
 		string(user.Role),
 		string(user.RowStatus),
+		user.PasswordHash,
 		[]byte(ts.Secret),
 	)
 	require.NoError(t, err)

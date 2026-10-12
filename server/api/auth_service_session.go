@@ -54,6 +54,7 @@ func (s *APIService) doSignIn(ctx context.Context, user *store.User) (string, ti
 		user.Username,
 		string(user.Role),
 		string(user.RowStatus),
+		user.PasswordHash,
 		[]byte(s.Secret),
 	)
 	if err != nil {
@@ -170,6 +171,7 @@ func (s *APIService) RefreshToken(ctx context.Context, _ *apipb.RefreshTokenRequ
 		user.Username,
 		string(user.Role),
 		string(user.RowStatus),
+		user.PasswordHash,
 		[]byte(s.Secret),
 	)
 	if err != nil {

@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -32,13 +33,14 @@ func TestAuthenticatorAccessTokenV2(t *testing.T) {
 			user.Username,
 			string(user.Role),
 			string(user.RowStatus),
+			user.PasswordHash,
 			[]byte(ts.Secret),
 		)
 		require.NoError(t, err)
 
 		// Authenticate
 		authenticator := auth.NewAuthenticator(ts.Store, ts.Secret)
-		claims, err := authenticator.AuthenticateByAccessTokenV2(token)
+		claims, err := authenticator.AuthenticateByAccessTokenV2(ctx, token)
 		require.NoError(t, err)
 		assert.NotNil(t, claims)
 		assert.Equal(t, user.ID, claims.UserID)
@@ -52,7 +54,7 @@ func TestAuthenticatorAccessTokenV2(t *testing.T) {
 		defer ts.Cleanup()
 
 		authenticator := auth.NewAuthenticator(ts.Store, ts.Secret)
-		_, err := authenticator.AuthenticateByAccessTokenV2("invalid-token")
+		_, err := authenticator.AuthenticateByAccessTokenV2(ctx, "invalid-token")
 		assert.Error(t, err)
 	})
 
@@ -69,13 +71,14 @@ func TestAuthenticatorAccessTokenV2(t *testing.T) {
 			user.Username,
 			string(user.Role),
 			string(user.RowStatus),
+			user.PasswordHash,
 			[]byte("secret-1"),
 		)
 		require.NoError(t, err)
 
 		// Try to authenticate with different secret
 		authenticator := auth.NewAuthenticator(ts.Store, "secret-2")
-		_, err = authenticator.AuthenticateByAccessTokenV2(token)
+		_, err = authenticator.AuthenticateByAccessTokenV2(ctx, token)
 		assert.Error(t, err)
 	})
 
@@ -90,6 +93,7 @@ func TestAuthenticatorAccessTokenV2(t *testing.T) {
 			user.Username,
 			string(user.Role),
 			string(user.RowStatus),
+			user.PasswordHash,
 			[]byte(ts.Secret),
 		)
 		require.NoError(t, err)
@@ -104,6 +108,41 @@ func TestAuthenticatorAccessTokenV2(t *testing.T) {
 		authenticator := auth.NewAuthenticator(ts.Store, ts.Secret)
 		result := authenticator.Authenticate(ctx, "Bearer "+token)
 		assert.Nil(t, result)
+	})
+
+	t.Run("rejects missing or mismatched password binding", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+		user, err := ts.CreateRegularUser(ctx, "password-binding")
+		require.NoError(t, err)
+		token, _, err := auth.GenerateAccessTokenV2(user.ID, user.Username, string(user.Role), string(user.RowStatus), user.PasswordHash, []byte(ts.Secret))
+		require.NoError(t, err)
+		claims, err := auth.ParseAccessTokenV2(token, []byte(ts.Secret))
+		require.NoError(t, err)
+		authenticator := auth.NewAuthenticator(ts.Store, ts.Secret)
+		for _, authHash := range []string{"", "wrong-password-binding"} {
+			claims.AuthHash = authHash
+			jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+			jwtToken.Header["kid"] = auth.KeyID
+			unboundToken, err := jwtToken.SignedString([]byte(ts.Secret))
+			require.NoError(t, err)
+			_, err = authenticator.AuthenticateByAccessTokenV2(ctx, unboundToken)
+			require.Error(t, err)
+			require.Nil(t, authenticator.Authenticate(ctx, "Bearer "+unboundToken))
+		}
+	})
+
+	t.Run("profile changes preserve access tokens", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+		user, err := ts.CreateRegularUser(ctx, "profile-change")
+		require.NoError(t, err)
+		token, _, err := auth.GenerateAccessTokenV2(user.ID, user.Username, string(user.Role), string(user.RowStatus), user.PasswordHash, []byte(ts.Secret))
+		require.NoError(t, err)
+		nickname := "New display name"
+		_, err = ts.Store.UpdateUser(ctx, &store.UpdateUser{ID: user.ID, Nickname: &nickname})
+		require.NoError(t, err)
+		require.NotNil(t, auth.NewAuthenticator(ts.Store, ts.Secret).Authenticate(ctx, "Bearer "+token))
 	})
 }
 

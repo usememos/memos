@@ -22,6 +22,9 @@ Add entries under a `## Unreleased` heading. After the release ships, rename it 
 
 ### Breaking
 
+- Access tokens are now bound to the user's password hash and become invalid immediately after a password change or
+  an administrator password reset. Pre-upgrade access tokens are also rejected; clients must refresh them or sign in
+  again. The browser session that changes its own password can still refresh; other refresh sessions are revoked.
 - Memo content size now uses the `MEMO_CONTENT_BYTES` usage limit, including creates, edits, comments, and imports.
   The default is 8 KiB when the usage limits setting is absent. `MemoRelatedSetting.content_length_limit` is removed;
   old values are not migrated. Exceeding the content limit returns `RESOURCE_EXHAUSTED`
