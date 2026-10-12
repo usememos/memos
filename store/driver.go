@@ -77,6 +77,9 @@ type Driver interface {
 	UpsertUserSetting(ctx context.Context, upsert *UserSetting) (*UserSetting, error)
 	ListUserSettings(ctx context.Context, find *FindUserSetting) ([]*UserSetting, error)
 	DeleteUserSettings(ctx context.Context, delete *DeleteUserSetting) error
+	// GetUserByPATHash returns the token matching tokenHash with its owner ID, or
+	// (nil, nil) when no stored token matches. An error means the lookup itself
+	// failed, including a stored row that cannot be decoded.
 	GetUserByPATHash(ctx context.Context, tokenHash string) (*PATQueryResult, error)
 
 	// IdentityProvider model related methods.

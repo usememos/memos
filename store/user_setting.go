@@ -126,20 +126,24 @@ func (s *Store) DeleteUserSettings(ctx context.Context, delete *DeleteUserSettin
 	return nil
 }
 
-// GetUserByPATHash finds a user by PAT hash.
+// GetUserByPATHash finds the user owning the personal access token with the
+// given hash. It returns (nil, nil) when no token matches or its user no longer
+// exists, and an error only when the lookup itself fails.
 func (s *Store) GetUserByPATHash(ctx context.Context, tokenHash string) (*PATQueryResult, error) {
 	result, err := s.driver.GetUserByPATHash(ctx, tokenHash)
 	if err != nil {
 		return nil, err
 	}
+	if result == nil {
+		return nil, nil
+	}
 
-	// Fetch user info
 	user, err := s.GetUser(ctx, &FindUser{ID: &result.UserID})
 	if err != nil {
 		return nil, err
 	}
 	if user == nil {
-		return nil, errors.New("user not found for PAT")
+		return nil, nil
 	}
 	result.User = user
 
