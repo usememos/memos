@@ -441,21 +441,16 @@
       "summary-column": "Summary"
     },
     "memo": {
-      "content-length-limit": "Content length limit (Byte)",
       "label": "Memo",
       "reactions": "Reactions",
       "reactions-required": "Reactions list must not be empty",
       "add-reaction": "Add reaction",
       "configured-reactions": "Configured reactions",
-      "content-length-limit-description": "Maximum memo body size accepted by the server.",
       "double-click-edit-description": "Allow users to open memo editing by double-clicking a memo.",
-      "editing-description": "Control memo editing behaviour and server-side content limits.",
       "editing-title": "Editing",
       "reaction-placeholder": "e.g. 👍",
       "reactions-description": "Define the reaction options users can apply to memos.",
-      "remove-reaction": "Remove reaction",
-      "content-length-limit-error": "Content length limit must be a whole number between {{min}} and {{max}} bytes.",
-      "content-length-limit-minimum": "Minimum: {{min}} bytes"
+      "remove-reaction": "Remove reaction"
     },
     "my-account": {
       "label": "My Account"
@@ -608,9 +603,12 @@
       "all-users-placeholder": "All users: {{value}}",
       "all-users-title": "Limits for all users",
       "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
+      "content-size": "Memo content (KiB)",
+      "content-size-column": "Memo content",
+      "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
-      "invalid": "Enter a whole number of memos, or a size in MiB.",
+      "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
       "label": "Usage limits",
       "memos": "Memos",
       "memos-description": "Includes comments and archived memos.",

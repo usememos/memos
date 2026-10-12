@@ -441,21 +441,16 @@
       "summary-column": "Resumen"
     },
     "memo": {
-      "content-length-limit": "Límite de longitud de contenido (Bytes)",
       "label": "Memo",
       "reactions": "Reacciones",
       "reactions-required": "La lista de reacciones no debe estar vacía.",
       "add-reaction": "Añadir reacción",
       "configured-reactions": "Reacciones configuradas",
-      "content-length-limit-description": "Tamaño máximo del cuerpo de la nota aceptado por el servidor.",
       "double-click-edit-description": "Permita a los usuarios abrir la edición de notas haciendo doble clic en una nota.",
-      "editing-description": "Controle el comportamiento de edición de notas y los límites de contenido del lado del servidor.",
       "editing-title": "Edición",
       "reaction-placeholder": "p.ej. 👍",
       "reactions-description": "Defina las opciones de reacción que los usuarios pueden aplicar a las notas.",
-      "remove-reaction": "Eliminar reacción",
-      "content-length-limit-error": "El límite de longitud del contenido debe ser un número entero entre{{min}}y{{max}}bytes.",
-      "content-length-limit-minimum": "Mínimo: {{min}} bytes"
+      "remove-reaction": "Eliminar reacción"
     },
     "my-account": {
       "label": "Mi cuenta"
@@ -608,9 +603,12 @@
       "all-users-placeholder": "All users: {{value}}",
       "all-users-title": "Limits for all users",
       "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
+      "content-size": "Memo content (KiB)",
+      "content-size-column": "Memo content",
+      "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
-      "invalid": "Enter a whole number of memos, or a size in MiB.",
+      "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
       "label": "Usage limits",
       "memos": "Memos",
       "memos-description": "Includes comments and archived memos.",

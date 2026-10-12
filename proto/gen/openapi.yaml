@@ -4191,18 +4191,14 @@ components:
         InstanceSetting_MemoRelatedSetting:
             type: object
             properties:
-                contentLengthLimit:
-                    type: integer
-                    description: The maximum memo content length in bytes. Default and minimum is 8192.
-                    format: int32
+                enableDoubleClickEdit:
+                    type: boolean
+                    description: Whether double-clicking a memo opens it for editing.
                 reactions:
                     type: array
                     items:
                         type: string
                     description: The reactions users can choose from. Defaults to a built-in emoji set when empty.
-                enableDoubleClickEdit:
-                    type: boolean
-                    description: Whether double-clicking a memo opens it for editing.
             description: MemoRelatedSetting is the memo-related instance configuration.
         InstanceSetting_NotificationSetting:
             type: object
@@ -5559,7 +5555,8 @@ components:
                 metric:
                     enum:
                         - METRIC_UNSPECIFIED
-                        - MEMOS
+                        - MEMO_COUNT
+                        - MEMO_CONTENT_BYTES
                         - STORAGE_BYTES
                         - UPLOAD_BYTES
                     type: string
@@ -5948,7 +5945,7 @@ components:
                     description: |-
                         The total size in bytes of the user's uploads, including uploads not
                          attached to a memo. External links do not count.
-                memosLimit:
+                memoCountLimit:
                     allOf:
                         - $ref: '#/components/schemas/UserUsage_EffectiveLimit'
                     description: The limit on memo_count.
@@ -5960,6 +5957,10 @@ components:
                     allOf:
                         - $ref: '#/components/schemas/UserUsage_EffectiveLimit'
                     description: The limit on the size of one uploaded file.
+                memoContentBytesLimit:
+                    allOf:
+                        - $ref: '#/components/schemas/UserUsage_EffectiveLimit'
+                    description: The limit on the UTF-8 size in bytes of one memo's content.
             description: UserUsage is a user's usage and the usage limits in effect for the user.
         UserUsage_EffectiveLimit:
             type: object

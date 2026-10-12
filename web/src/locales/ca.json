@@ -441,21 +441,16 @@
       "summary-column": "Resum"
     },
     "memo": {
-      "content-length-limit": "Límit de longitud del contingut (Bytes)",
       "label": "Nota",
       "reactions": "Reaccions",
       "reactions-required": "La llista de reaccions no ha d'estar buida",
       "add-reaction": "Afegeix reacció",
       "configured-reactions": "Reaccions configurades",
-      "content-length-limit-description": "Mida màxima del cos de la nota acceptada pel servidor.",
       "double-click-edit-description": "Permet als usuaris obrir l'edició de notes fent doble clic en una nota.",
-      "editing-description": "Controleu el comportament d'edició de notes i els límits de contingut del servidor.",
       "editing-title": "Edició",
       "reaction-placeholder": "p. ex. 👍",
       "reactions-description": "Definiu les opcions de reacció que els usuaris poden aplicar a les notes.",
-      "remove-reaction": "Elimina la reacció",
-      "content-length-limit-error": "El límit de longitud del contingut ha de ser un nombre enter entre {{min}} i {{max}} bytes.",
-      "content-length-limit-minimum": "Mínim: {{min}} bytes"
+      "remove-reaction": "Elimina la reacció"
     },
     "my-account": {
       "label": "El meu compte"
@@ -608,9 +603,12 @@
       "all-users-placeholder": "All users: {{value}}",
       "all-users-title": "Limits for all users",
       "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
+      "content-size": "Memo content (KiB)",
+      "content-size-column": "Memo content",
+      "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
-      "invalid": "Enter a whole number of memos, or a size in MiB.",
+      "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
       "label": "Usage limits",
       "memos": "Memos",
       "memos-description": "Includes comments and archived memos.",

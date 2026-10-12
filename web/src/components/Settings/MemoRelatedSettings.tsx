@@ -20,35 +20,15 @@ import { SettingList, SettingListItem, SettingPanel } from "./SettingList";
 import SettingSection from "./SettingSection";
 import useInstanceSettingUpdater, { buildInstanceSettingName } from "./useInstanceSettingUpdater";
 
-const MIN_CONTENT_LENGTH_LIMIT = 8 * 1024;
-const MAX_CONTENT_LENGTH_LIMIT = 2_147_483_647;
-
-const parseContentLengthLimit = (value: string): number | undefined => {
-  if (value.trim() === "") {
-    return undefined;
-  }
-
-  const parsed = Number(value);
-  if (!Number.isFinite(parsed) || !Number.isInteger(parsed)) {
-    return undefined;
-  }
-  if (parsed < MIN_CONTENT_LENGTH_LIMIT || parsed > MAX_CONTENT_LENGTH_LIMIT) {
-    return undefined;
-  }
-  return parsed;
-};
-
 const MemoRelatedSettings = () => {
   const t = useTranslate();
   const saveInstanceSetting = useInstanceSettingUpdater();
   const { memoRelatedSetting: originalSetting } = useInstance();
   const [memoRelatedSetting, setMemoRelatedSetting] = useState<InstanceSetting_MemoRelatedSetting>(originalSetting);
-  const [contentLengthLimitInput, setContentLengthLimitInput] = useState(String(originalSetting.contentLengthLimit));
   const [editingReaction, setEditingReaction] = useState<string>("");
 
   useEffect(() => {
     setMemoRelatedSetting(originalSetting);
-    setContentLengthLimitInput(String(originalSetting.contentLengthLimit));
   }, [originalSetting]);
 
   const updatePartialSetting = (partial: Partial<InstanceSetting_MemoRelatedSetting>) => {
@@ -70,26 +50,10 @@ const MemoRelatedSettings = () => {
   };
 
   const handleUpdateSetting = async () => {
-    const contentLengthLimit = parseContentLengthLimit(contentLengthLimitInput);
-    if (contentLengthLimit === undefined) {
-      toast.error(
-        t("setting.memo.content-length-limit-error", {
-          min: MIN_CONTENT_LENGTH_LIMIT,
-          max: MAX_CONTENT_LENGTH_LIMIT,
-        }),
-      );
-      return;
-    }
-
     if (memoRelatedSetting.reactions.length === 0) {
       toast.error(t("setting.memo.reactions-required"));
       return;
     }
-
-    const updatedMemoRelatedSetting = create(InstanceSetting_MemoRelatedSettingSchema, {
-      ...memoRelatedSetting,
-      contentLengthLimit,
-    });
 
     await saveInstanceSetting({
       key: InstanceSetting_Key.MEMO_RELATED,
@@ -97,7 +61,7 @@ const MemoRelatedSettings = () => {
         name: buildInstanceSettingName(InstanceSetting_Key.MEMO_RELATED),
         value: {
           case: "memoRelatedSetting",
-          value: updatedMemoRelatedSetting,
+          value: memoRelatedSetting,
         },
       }),
       errorContext: "Update memo-related settings",
@@ -106,7 +70,7 @@ const MemoRelatedSettings = () => {
 
   return (
     <SettingSection title={t("setting.memo.label")}>
-      <SettingGroup title={t("setting.memo.editing-title")} description={t("setting.memo.editing-description")}>
+      <SettingGroup title={t("setting.memo.editing-title")}>
         <SettingList>
           <SettingListItem
             label={t("setting.system.enable-double-click-to-edit")}
@@ -116,25 +80,6 @@ const MemoRelatedSettings = () => {
               checked={memoRelatedSetting.enableDoubleClickEdit}
               onCheckedChange={(checked) => updatePartialSetting({ enableDoubleClickEdit: checked })}
             />
-          </SettingListItem>
-
-          <SettingListItem label={t("setting.memo.content-length-limit")} description={t("setting.memo.content-length-limit-description")}>
-            <div className="flex items-center gap-2">
-              <Input
-                className="w-28 font-mono"
-                type="number"
-                min={MIN_CONTENT_LENGTH_LIMIT}
-                max={MAX_CONTENT_LENGTH_LIMIT}
-                step={1}
-                required
-                aria-label={t("setting.memo.content-length-limit")}
-                value={contentLengthLimitInput}
-                onChange={(event) => setContentLengthLimitInput(event.target.value)}
-              />
-              <span className="text-xs text-muted-foreground">
-                {t("setting.memo.content-length-limit-minimum", { min: MIN_CONTENT_LENGTH_LIMIT })}
-              </span>
-            </div>
           </SettingListItem>
         </SettingList>
       </SettingGroup>
@@ -184,10 +129,7 @@ const MemoRelatedSettings = () => {
       </SettingGroup>
 
       <div className="w-full flex justify-end">
-        <Button
-          disabled={isEqual(memoRelatedSetting, originalSetting) && contentLengthLimitInput === String(originalSetting.contentLengthLimit)}
-          onClick={handleUpdateSetting}
-        >
+        <Button disabled={isEqual(memoRelatedSetting, originalSetting)} onClick={handleUpdateSetting}>
           {t("common.save")}
         </Button>
       </div>

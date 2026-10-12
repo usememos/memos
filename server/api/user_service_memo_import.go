@@ -18,6 +18,7 @@ import (
 
 	"github.com/usememos/memos/core/memoexport"
 	"github.com/usememos/memos/core/memopayload"
+	"github.com/usememos/memos/core/usagelimit"
 	"github.com/usememos/memos/internal/ratelimit"
 	apipb "github.com/usememos/memos/proto/gen/api"
 	storepb "github.com/usememos/memos/proto/gen/store"
@@ -109,8 +110,7 @@ type memoImporter struct {
 	policy  apipb.ImportMemosRequest_ConflictPolicy
 	report  *apipb.ImportMemosReport
 
-	storageSetting     *storepb.InstanceStorageSetting
-	contentLengthLimit int
+	storageSetting *storepb.InstanceStorageSetting
 	// existing holds the instance memos whose UIDs the archive uses, keyed by
 	// UID, loaded once before any write.
 	existing map[string]*store.Memo
@@ -140,26 +140,21 @@ func (s *APIService) ImportMemoExport(ctx context.Context, user *store.User, arc
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get instance storage setting")
 	}
-	contentLengthLimit, err := s.getContentLengthLimit(ctx)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to get content length limit")
-	}
 	existing, err := s.findMemosByUID(ctx, archive, false)
 	if err != nil {
 		return nil, err
 	}
 	importer := &memoImporter{
-		service:            s,
-		ctx:                ctx,
-		user:               user,
-		archive:            archive,
-		policy:             policy,
-		report:             &apipb.ImportMemosReport{Warnings: archiveIssues(archive.Warnings)},
-		storageSetting:     storageSetting,
-		contentLengthLimit: contentLengthLimit,
-		existing:           existing,
-		resolved:           make(map[string]*store.Memo, len(archive.Memos)),
-		spaces:             make(map[string]*int32),
+		service:        s,
+		ctx:            ctx,
+		user:           user,
+		archive:        archive,
+		policy:         policy,
+		report:         &apipb.ImportMemosReport{Warnings: archiveIssues(archive.Warnings)},
+		storageSetting: storageSetting,
+		existing:       existing,
+		resolved:       make(map[string]*store.Memo, len(archive.Memos)),
+		spaces:         make(map[string]*int32),
 	}
 	for _, record := range archive.Memos {
 		if err := ctx.Err(); err != nil {
@@ -197,8 +192,8 @@ func (i *memoImporter) importMemo(record *memoexport.Memo) error {
 	if err != nil {
 		return err
 	}
-	if len(content) > i.contentLengthLimit {
-		return errors.Errorf("content too long (max %d bytes)", i.contentLengthLimit)
+	if err := usagelimit.CheckMemoContentSize(i.ctx, i.service.Store, i.user.ID, int64(len(content))); err != nil {
+		return err
 	}
 	targetUID := record.UID
 	if existing := i.existing[record.UID]; existing != nil {

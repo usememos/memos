@@ -1,5 +1,5 @@
 // Package usagelimit resolves the usage limits that apply to a user and
-// decides whether creating a memo or uploading a file stays within them.
+// decides whether creating or editing a memo, or uploading a file, stays within them.
 //
 // A usage limit sets one value for one metric, for every user (a default) or
 // for one user. For each metric, the user's own limit applies if there is
@@ -23,9 +23,10 @@ type Metric = storepb.InstanceUsageLimitsSetting_Metric
 
 // The metrics a usage limit can set.
 const (
-	MetricMemos        = storepb.InstanceUsageLimitsSetting_MEMOS
-	MetricStorageBytes = storepb.InstanceUsageLimitsSetting_STORAGE_BYTES
-	MetricUploadBytes  = storepb.InstanceUsageLimitsSetting_UPLOAD_BYTES
+	MetricMemoCount        = storepb.InstanceUsageLimitsSetting_MEMO_COUNT
+	MetricStorageBytes     = storepb.InstanceUsageLimitsSetting_STORAGE_BYTES
+	MetricUploadBytes      = storepb.InstanceUsageLimitsSetting_UPLOAD_BYTES
+	MetricMemoContentBytes = storepb.InstanceUsageLimitsSetting_MEMO_CONTENT_BYTES
 )
 
 // Store is the data the checks read. *store.Store implements it.
@@ -51,9 +52,10 @@ func (l Limit) Limited() bool {
 
 // Effective is the limit in effect for each metric of one user.
 type Effective struct {
-	Memos        Limit
-	StorageBytes Limit
-	UploadBytes  Limit
+	MemoCount        Limit
+	StorageBytes     Limit
+	UploadBytes      Limit
+	MemoContentBytes Limit
 }
 
 // Resolve returns the limits in effect for userID: for each metric, the user's
@@ -61,30 +63,41 @@ type Effective struct {
 func Resolve(setting *storepb.InstanceUsageLimitsSetting, userID int32) Effective {
 	var effective Effective
 	for _, limit := range setting.GetLimits() {
-		if limit.UserId != 0 && limit.UserId != userID {
+		if limit == nil {
 			continue
 		}
-		target := effective.get(limit.Metric)
-		if target == nil {
+		selected := effective.get(limit.Metric)
+		if selected == nil {
 			continue
 		}
-		// A user's own limit replaces the default, whatever the order.
-		if limit.UserId == 0 && target.Source != "" {
+		switch target := limit.Target.(type) {
+		case *storepb.InstanceUsageLimitsSetting_UsageLimit_AllUsers:
+			// A user's own limit replaces the default, whatever the order.
+			if target == nil || target.AllUsers == nil || selected.Source != "" {
+				continue
+			}
+		case *storepb.InstanceUsageLimitsSetting_UsageLimit_UserId:
+			if target == nil || target.UserId <= 0 || target.UserId != userID {
+				continue
+			}
+		default:
 			continue
 		}
-		*target = Limit{Value: limit.Value, Source: limit.Uid}
+		*selected = Limit{Value: limit.Value, Source: limit.Uid}
 	}
 	return effective
 }
 
 func (e *Effective) get(metric Metric) *Limit {
 	switch metric {
-	case MetricMemos:
-		return &e.Memos
+	case MetricMemoCount:
+		return &e.MemoCount
 	case MetricStorageBytes:
 		return &e.StorageBytes
 	case MetricUploadBytes:
 		return &e.UploadBytes
+	case MetricMemoContentBytes:
+		return &e.MemoContentBytes
 	default:
 		return nil
 	}
@@ -96,7 +109,8 @@ type Refusal struct {
 	// Limit is the value of the usage limit that applied.
 	Limit int64
 	// Usage is the current usage: the memo count, the stored bytes, or for
-	// UPLOAD_BYTES the size of the refused file.
+	// UPLOAD_BYTES the size of the refused file, or for MEMO_CONTENT_BYTES the
+	// size of the refused memo content.
 	Usage int64
 	// Source is the ID of the usage limit that applied.
 	Source string
@@ -131,15 +145,15 @@ func CheckMemoCreate(ctx context.Context, s Store, userID int32) error {
 	if err != nil {
 		return err
 	}
-	if !effective.Memos.Limited() {
+	if !effective.MemoCount.Limited() {
 		return nil
 	}
 	count, err := s.CountUserMemos(ctx, userID)
 	if err != nil {
 		return errors.Wrap(err, "failed to count memos")
 	}
-	if count >= effective.Memos.Value {
-		return &Refusal{Metric: MetricMemos, Limit: effective.Memos.Value, Usage: count, Source: effective.Memos.Source}
+	if count >= effective.MemoCount.Value {
+		return &Refusal{Metric: MetricMemoCount, Limit: effective.MemoCount.Value, Usage: count, Source: effective.MemoCount.Source}
 	}
 	return nil
 }
@@ -152,6 +166,19 @@ func CheckFileSize(ctx context.Context, s Store, userID int32, size int64) error
 		return err
 	}
 	return effective.checkFileSize(size)
+}
+
+// CheckMemoContentSize returns a *Refusal when content of size bytes is larger
+// than the per-memo content limit of userID. It runs no count or sum query.
+func CheckMemoContentSize(ctx context.Context, s Store, userID int32, size int64) error {
+	effective, err := EffectiveFor(ctx, s, userID)
+	if err != nil {
+		return err
+	}
+	if content := effective.MemoContentBytes; content.Limited() && size > content.Value {
+		return &Refusal{Metric: MetricMemoContentBytes, Limit: content.Value, Usage: size, Source: content.Source}
+	}
+	return nil
 }
 
 func (e Effective) checkFileSize(size int64) error {

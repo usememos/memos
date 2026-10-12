@@ -441,21 +441,16 @@
       "summary-column": "Краткое содержание"
     },
     "memo": {
-      "content-length-limit": "Макс. длина заметки (байт)",
       "label": "Заметки",
       "reactions": "Реакции",
       "reactions-required": "Список реакций не должен быть пустым.",
       "add-reaction": "Добавить реакцию",
       "configured-reactions": "Настроенные реакции",
-      "content-length-limit-description": "Максимальный размер тела заметки, принимаемый сервером.",
       "double-click-edit-description": "Разрешить пользователям открывать редактирование заметки, дважды щелкнув заметку.",
-      "editing-description": "Управляйте поведением при редактировании заметок и ограничениями содержимого на стороне сервера.",
       "editing-title": "Редактирование",
       "reaction-placeholder": "например 👍",
       "reactions-description": "Определите параметры реакции, которые пользователи могут применять к заметкам.",
-      "remove-reaction": "Удалить реакцию",
-      "content-length-limit-error": "Ограничение длины содержимого должно быть целым числом от {{min}} до {{max}} байт.",
-      "content-length-limit-minimum": "Минимум: {{min}} байт"
+      "remove-reaction": "Удалить реакцию"
     },
     "my-account": {
       "label": "Мой аккаунт"
@@ -608,9 +603,12 @@
       "all-users-placeholder": "All users: {{value}}",
       "all-users-title": "Limits for all users",
       "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
+      "content-size": "Memo content (KiB)",
+      "content-size-column": "Memo content",
+      "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
-      "invalid": "Enter a whole number of memos, or a size in MiB.",
+      "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
       "label": "Usage limits",
       "memos": "Memos",
       "memos-description": "Includes comments and archived memos.",

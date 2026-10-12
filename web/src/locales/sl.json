@@ -441,21 +441,16 @@
       "summary-column": "Povzetek"
     },
     "memo": {
-      "content-length-limit": "Omejitev dolžine vsebine (bajt)",
       "label": "Beležka",
       "reactions": "Odzivi",
       "reactions-required": "Seznam reakcij ne sme biti prazen",
       "add-reaction": "Dodajte reakcijo",
       "configured-reactions": "Konfigurirane reakcije",
-      "content-length-limit-description": "Največja velikost telesa beležke, ki jo sprejme strežnik.",
       "double-click-edit-description": "Omogočite uporabnikom, da odprejo urejanje beležke tako, da dvokliknejo beležko.",
-      "editing-description": "Nadzorujte vedenje urejanja beležk in omejitve vsebine na strani strežnika.",
       "editing-title": "Urejanje",
       "reaction-placeholder": "npr. 👍",
       "reactions-description": "Določite možnosti odziva, ki jih lahko uporabniki uporabijo za beležke.",
-      "remove-reaction": "Odstrani reakcijo",
-      "content-length-limit-error": "Omejitev dolžine vsebine mora biti celo število med {{min}} in {{max}} bajti.",
-      "content-length-limit-minimum": "Najmanj: {{min}} bajtov"
+      "remove-reaction": "Odstrani reakcijo"
     },
     "my-account": {
       "label": "Moj račun"
@@ -608,9 +603,12 @@
       "all-users-placeholder": "All users: {{value}}",
       "all-users-title": "Limits for all users",
       "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
+      "content-size": "Memo content (KiB)",
+      "content-size-column": "Memo content",
+      "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
-      "invalid": "Enter a whole number of memos, or a size in MiB.",
+      "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
       "label": "Usage limits",
       "memos": "Memos",
       "memos-description": "Includes comments and archived memos.",

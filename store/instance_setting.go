@@ -262,9 +262,6 @@ func (s *Store) AllowsAnonymousAccess(ctx context.Context) (bool, error) {
 	return setting.AccessMode == storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC, nil
 }
 
-// DefaultContentLengthLimit is the default limit of content length in bytes. 8KB.
-const DefaultContentLengthLimit = 8 * 1024
-
 // DefaultReactions is the default reactions for memo related setting.
 var DefaultReactions = []string{"👍", "👎", "❤️", "🎉", "😄", "😕", "😢", "😡"}
 
@@ -279,9 +276,6 @@ func (s *Store) GetInstanceMemoRelatedSetting(ctx context.Context) (*storepb.Ins
 	instanceMemoRelatedSetting := &storepb.InstanceMemoRelatedSetting{}
 	if instanceSetting != nil {
 		instanceMemoRelatedSetting = instanceSetting.GetMemoRelatedSetting()
-	}
-	if instanceMemoRelatedSetting.ContentLengthLimit < DefaultContentLengthLimit {
-		instanceMemoRelatedSetting.ContentLengthLimit = DefaultContentLengthLimit
 	}
 	if len(instanceMemoRelatedSetting.Reactions) == 0 {
 		instanceMemoRelatedSetting.Reactions = append(instanceMemoRelatedSetting.Reactions, DefaultReactions...)

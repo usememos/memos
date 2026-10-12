@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import InviteSpaceMemberDialog from "@/components/Settings/InviteSpaceMemberDialog";
 import { State } from "@/types/proto/api/common_pb";
 import { type Space, SpaceMember_Role } from "@/types/proto/api/space_service_pb";
-import type { User } from "@/types/proto/api/user_service_pb";
+import { type User, User_Role } from "@/types/proto/api/user_service_pb";
 
 const state = vi.hoisted(() => ({
   candidate: undefined as User | undefined,
@@ -90,7 +90,7 @@ const alice: User = {
   avatarUrl: "",
   description: "",
   password: "",
-  role: 3,
+  role: User_Role.USER,
   state: State.NORMAL,
 };
 

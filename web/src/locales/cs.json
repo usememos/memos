@@ -441,21 +441,16 @@
       "summary-column": "Shrnutí"
     },
     "memo": {
-      "content-length-limit": "Omezení velikosti obsahu (bajty)",
       "label": "Poznámky",
       "reactions": "Reakce",
       "reactions-required": "Seznam reakcí nesmí být prázdný",
       "add-reaction": "Přidejte reakci",
       "configured-reactions": "Nastavené reakce",
-      "content-length-limit-description": "Maximální velikost těla poznámky akceptovaná serverem.",
       "double-click-edit-description": "Umožněte uživatelům otevřít úpravy poznámek dvojitým kliknutím na poznámku.",
-      "editing-description": "Ovládejte chování při úpravách poznámek a omezení obsahu na straně serveru.",
       "editing-title": "Editace",
       "reaction-placeholder": "např. 👍",
       "reactions-description": "Definujte možnosti reakce, které mohou uživatelé použít na poznámky.",
-      "remove-reaction": "Odstraňte reakci",
-      "content-length-limit-error": "Limit délky obsahu musí být celé číslo mezi {{min}} a {{max}} bajty.",
-      "content-length-limit-minimum": "Minimálně: {{min}} bajtů"
+      "remove-reaction": "Odstraňte reakci"
     },
     "my-account": {
       "label": "Můj účet"
@@ -608,9 +603,12 @@
       "all-users-placeholder": "All users: {{value}}",
       "all-users-title": "Limits for all users",
       "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
+      "content-size": "Memo content (KiB)",
+      "content-size-column": "Memo content",
+      "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
-      "invalid": "Enter a whole number of memos, or a size in MiB.",
+      "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
       "label": "Usage limits",
       "memos": "Memos",
       "memos-description": "Includes comments and archived memos.",

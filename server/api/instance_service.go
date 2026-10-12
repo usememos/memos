@@ -215,7 +215,6 @@ func (s *APIService) UpdateInstanceSetting(ctx context.Context, request *apipb.U
 		return nil, status.Errorf(codes.FailedPrecondition, "instance setting %q is configured by the deployment", settingKeyString)
 	}
 
-	applyInstanceSettingDefaults(request.InstanceSetting)
 	// TODO: Apply update_mask if specified
 	_ = request.UpdateMask
 

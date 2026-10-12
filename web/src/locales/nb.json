@@ -441,21 +441,16 @@
       "summary-column": "Sammendrag"
     },
     "memo": {
-      "content-length-limit": "Maksimal innholdslengde (Byte)",
       "label": "Memo",
       "reactions": "Reaksjoner",
       "reactions-required": "Reaksjonslisten må ikke være tom",
       "add-reaction": "Legg til reaksjon",
       "configured-reactions": "Konfigurerte reaksjoner",
-      "content-length-limit-description": "Maksimal memo-kroppsstørrelse akseptert av serveren.",
       "double-click-edit-description": "Tillat brukere å åpne notatredigering ved å dobbeltklikke på et memo.",
-      "editing-description": "Kontroller atferden for memoredigering og innholdsgrenser på serversiden.",
       "editing-title": "Redigering",
       "reaction-placeholder": "f.eks. 👍",
       "reactions-description": "Definer reaksjonsalternativene brukere kan bruke på notater.",
-      "remove-reaction": "Fjern reaksjonen",
-      "content-length-limit-error": "Innholdslengdegrensen må være et heltall mellom {{min}} og {{max}} byte.",
-      "content-length-limit-minimum": "Minimum: {{min}} byte"
+      "remove-reaction": "Fjern reaksjonen"
     },
     "my-account": {
       "label": "Min konto"
@@ -608,9 +603,12 @@
       "all-users-placeholder": "All users: {{value}}",
       "all-users-title": "Limits for all users",
       "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
+      "content-size": "Memo content (KiB)",
+      "content-size-column": "Memo content",
+      "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
-      "invalid": "Enter a whole number of memos, or a size in MiB.",
+      "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
       "label": "Usage limits",
       "memos": "Memos",
       "memos-description": "Includes comments and archived memos.",

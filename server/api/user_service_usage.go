@@ -49,11 +49,12 @@ func (s *APIService) GetUserUsage(ctx context.Context, request *apipb.GetUserUsa
 		return nil, status.Errorf(codes.Internal, "failed to get usage: %v", err)
 	}
 	return &apipb.UserUsage{
-		Name:              BuildUserName(user.Username) + "/usage",
-		MemoCount:         usage.MemoCount,
-		StorageBytes:      usage.StorageBytes,
-		MemosLimit:        convertEffectiveLimitToProto(usage.Limits.Memos),
-		StorageBytesLimit: convertEffectiveLimitToProto(usage.Limits.StorageBytes),
-		UploadBytesLimit:  convertEffectiveLimitToProto(usage.Limits.UploadBytes),
+		Name:                  BuildUserName(user.Username) + "/usage",
+		MemoCount:             usage.MemoCount,
+		StorageBytes:          usage.StorageBytes,
+		MemoCountLimit:        convertEffectiveLimitToProto(usage.Limits.MemoCount),
+		StorageBytesLimit:     convertEffectiveLimitToProto(usage.Limits.StorageBytes),
+		UploadBytesLimit:      convertEffectiveLimitToProto(usage.Limits.UploadBytes),
+		MemoContentBytesLimit: convertEffectiveLimitToProto(usage.Limits.MemoContentBytes),
 	}, nil
 }

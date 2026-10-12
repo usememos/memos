@@ -348,9 +348,9 @@ message User {
   enum Role {
     ROLE_UNSPECIFIED = 0;
     // An administrator of the instance.
-    ADMIN = 2;
+    ADMIN = 1;
     // A regular user.
-    USER = 3;
+    USER = 2;
   }
 }
 
@@ -494,9 +494,9 @@ message UserSetting {
     // General user preferences.
     GENERAL = 1;
     // The user's webhooks.
-    WEBHOOKS = 4;
+    WEBHOOKS = 2;
     // Per-user tag metadata.
-    TAGS = 5;
+    TAGS = 3;
   }
 
   // GeneralSetting holds general user preferences.
@@ -706,13 +706,16 @@ message UserUsage {
   int64 storage_bytes = 3;
 
   // The limit on memo_count.
-  EffectiveLimit memos_limit = 4;
+  EffectiveLimit memo_count_limit = 4;
 
   // The limit on storage_bytes.
   EffectiveLimit storage_bytes_limit = 5;
 
   // The limit on the size of one uploaded file.
   EffectiveLimit upload_bytes_limit = 6;
+
+  // The limit on the UTF-8 size in bytes of one memo's content.
+  EffectiveLimit memo_content_bytes_limit = 7;
 
   // EffectiveLimit is the limit in effect for one metric, and where it comes
   // from.

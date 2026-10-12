@@ -68,7 +68,7 @@ describe("UsageSection", () => {
     mocks.getUserUsage.mockResolvedValue(
       create(UserUsageSchema, {
         memoCount: 5n,
-        memosLimit: effective(0n),
+        memoCountLimit: effective(0n),
         storageBytesLimit: effective(0n),
         uploadBytesLimit: effective(0n),
       }),
@@ -83,7 +83,7 @@ describe("UsageSection", () => {
       create(UserUsageSchema, {
         memoCount: 12n,
         storageBytes: 512n * MIB,
-        memosLimit: effective(1000n, "usageLimits/default-memos"),
+        memoCountLimit: effective(1000n, "usageLimits/default-memos"),
         storageBytesLimit: effective(1024n * MIB, "usageLimits/alice-storage"),
         uploadBytesLimit: effective(0n),
       }),
@@ -119,8 +119,9 @@ describe("UsageLimitsSection", () => {
   it("shows one table: all users first, then users with their own limits", async () => {
     mocks.listUsageLimits.mockResolvedValue({
       usageLimits: [
-        limit("default-memos", UsageLimit_Metric.MEMOS, 100n),
-        limit("bob-memos", UsageLimit_Metric.MEMOS, 0n, "users/bob"),
+        limit("default-memos", UsageLimit_Metric.MEMO_COUNT, 100n),
+        limit("default-content", UsageLimit_Metric.MEMO_CONTENT_BYTES, 8192n),
+        limit("bob-memos", UsageLimit_Metric.MEMO_COUNT, 0n, "users/bob"),
         limit("bob-storage", UsageLimit_Metric.STORAGE_BYTES, 5n * 1024n * MIB, "users/bob"),
       ],
       nextPageToken: "",
@@ -134,8 +135,8 @@ describe("UsageLimitsSection", () => {
         .getAllByRole("cell")
         .map((cell) => cell.textContent);
     expect(rows).toHaveLength(2);
-    expect(text(rows[0])).toEqual(["All usersEveryone, admins included", "100", "Unlimited", "Unlimited", ""]);
-    expect(text(rows[1])).toEqual(["bob@bob", "Unlimited", "5.0 GB", "Unlimited", ""]);
+    expect(text(rows[0])).toEqual(["All usersEveryone, admins included", "100", "8.0 KB", "Unlimited", "Unlimited", ""]);
+    expect(text(rows[1])).toEqual(["bob@bob", "Unlimited", "8.0 KB", "5.0 GB", "Unlimited", ""]);
     expect(bobCell.closest("tr")).toBe(rows[1]);
     // Users without their own limits get no row.
     expect(screen.queryByText("Alice")).not.toBeInTheDocument();
@@ -144,7 +145,7 @@ describe("UsageLimitsSection", () => {
   it("removes all of a user's own limits", async () => {
     mocks.listUsageLimits.mockResolvedValue({
       usageLimits: [
-        limit("bob-memos", UsageLimit_Metric.MEMOS, 0n, "users/bob"),
+        limit("bob-memos", UsageLimit_Metric.MEMO_COUNT, 0n, "users/bob"),
         limit("bob-storage", UsageLimit_Metric.STORAGE_BYTES, 5n * 1024n * MIB, "users/bob"),
       ],
       nextPageToken: "",
@@ -166,7 +167,8 @@ describe("UsageLimitDialog", () => {
   it("creates, updates and removes the limits for all users", async () => {
     mocks.listUsageLimits.mockResolvedValue({
       usageLimits: [
-        limit("default-memos", UsageLimit_Metric.MEMOS, 100n),
+        limit("default-memos", UsageLimit_Metric.MEMO_COUNT, 100n),
+        limit("default-content", UsageLimit_Metric.MEMO_CONTENT_BYTES, 8192n),
         limit("default-storage", UsageLimit_Metric.STORAGE_BYTES, 1024n * MIB),
       ],
       nextPageToken: "",
@@ -177,6 +179,9 @@ describe("UsageLimitDialog", () => {
     const memos = screen.getByRole("textbox", { name: "Memos" });
     await waitFor(() => expect(memos).toHaveValue("100"));
     expect(screen.getByRole("textbox", { name: "Storage (MiB)" })).toHaveValue("1024");
+    const content = screen.getByRole("textbox", { name: "Memo content (KiB)" });
+    expect(content).toHaveValue("8");
+    fireEvent.change(content, { target: { value: "4" } });
     expect(screen.getByRole("textbox", { name: "Largest file (MiB)" })).toHaveAttribute("placeholder", "Unlimited");
 
     fireEvent.change(memos, { target: { value: "200" } });
@@ -189,6 +194,9 @@ describe("UsageLimitDialog", () => {
       expect.objectContaining({ usageLimit: expect.objectContaining({ name: "usageLimits/default-memos", value: 200n }) }),
     );
     expect(mocks.deleteUsageLimit).toHaveBeenCalledWith({ name: "usageLimits/default-storage" });
+    expect(mocks.updateUsageLimit).toHaveBeenCalledWith(
+      expect.objectContaining({ usageLimit: expect.objectContaining({ name: "usageLimits/default-content", value: 4096n }) }),
+    );
     expect(mocks.createUsageLimit).toHaveBeenCalledWith({
       usageLimit: expect.objectContaining({ metric: UsageLimit_Metric.UPLOAD_BYTES, user: "", value: 10n * MIB }),
     });
@@ -197,7 +205,7 @@ describe("UsageLimitDialog", () => {
   it("edits a user's own limits, with the all-users limits as placeholders", async () => {
     mocks.listUsageLimits.mockResolvedValue({
       usageLimits: [
-        limit("default-memos", UsageLimit_Metric.MEMOS, 100n),
+        limit("default-memos", UsageLimit_Metric.MEMO_COUNT, 100n),
         limit("bob-storage", UsageLimit_Metric.STORAGE_BYTES, 5n * 1024n * MIB, "users/bob"),
         limit("bob-file-size", UsageLimit_Metric.UPLOAD_BYTES, 0n, "users/bob"),
       ],
@@ -222,7 +230,7 @@ describe("UsageLimitDialog", () => {
 
     await waitFor(() => expect(mocks.deleteUsageLimit).toHaveBeenCalledWith({ name: "usageLimits/bob-storage" }));
     expect(mocks.createUsageLimit).toHaveBeenCalledWith({
-      usageLimit: expect.objectContaining({ metric: UsageLimit_Metric.MEMOS, user: "users/bob", value: 50n }),
+      usageLimit: expect.objectContaining({ metric: UsageLimit_Metric.MEMO_COUNT, user: "users/bob", value: 50n }),
     });
     expect(mocks.updateUsageLimit).not.toHaveBeenCalled();
   });

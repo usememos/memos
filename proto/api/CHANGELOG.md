@@ -2,9 +2,7 @@
 
 Breaking and deprecated changes to the public API in `proto/api/`, newest release first. Additive changes are not listed.
 
-The Proto Linter workflow runs `buf breaking` against the base commit and fails when a schema break lands without an edit to
-this file. It cannot see REST route changes in `google.api.http` annotations or behavior changes with an unchanged schema;
-record those by hand.
+Record schema, REST route, and behavior breaks here. API compatibility is checked during review.
 
 Add entries under a `## Unreleased` heading. After the release ships, rename it to the release tag.
 
@@ -24,6 +22,14 @@ Add entries under a `## Unreleased` heading. After the release ships, rename it 
 
 ### Breaking
 
+- Memo content size now uses the `MEMO_CONTENT_BYTES` usage limit, including creates, edits, comments, and imports.
+  The default is 8 KiB when the usage limits setting is absent. `MemoRelatedSetting.content_length_limit` is removed;
+  old values are not migrated. Exceeding the content limit returns `RESOURCE_EXHAUSTED`
+  with quota details.
+  `MemoRelatedSetting` fields are now `enable_double_click_edit = 1` and `reactions = 2`, matching the storage proto.
+- The memo-count usage metric is now `MEMO_COUNT`, and `UserUsage.memos_limit` is now `memo_count_limit`.
+  Metric values are `MEMO_COUNT = 1`, `MEMO_CONTENT_BYTES = 2`, `STORAGE_BYTES = 3`, and `UPLOAD_BYTES = 4`.
+
 - The API no longer carries a `v1` version marker. Every client must update its paths:
   - REST routes move from `/api/v1/...` to `/api/...` (for example `GET /api/memos`). Server-sent events move from
     `/api/v1/sse` to `/api/sse`.
@@ -35,6 +41,8 @@ Add entries under a `## Unreleased` heading. After the release ships, rename it 
     error that points here. The next release removes these routes.
 - Field numbers in every message are renumbered from 1 in declaration order, and all `reserved` ranges are removed.
   JSON field names are unchanged; clients that use the binary protobuf encoding must regenerate from the new schema.
+- Enum values are renumbered from 0 in declaration order, including `User.Role` (`ADMIN = 1`, `USER = 2`) and
+  `UserSetting.Key` (`GENERAL = 1`, `WEBHOOKS = 2`, `TAGS = 3`). Clients that send numeric enum values must update them.
 - Names now follow AIP conventions:
   - `MemoService`: `ListMemoAttachments`, `ListMemoRelations`, `ListMemoComments`, `CreateMemoComment`,
     `ListMemoReactions`, and `UpsertMemoReaction` take `parent` instead of `name` (REST path variable

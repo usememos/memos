@@ -59,15 +59,15 @@ func (s *APIService) ListUsageLimits(ctx context.Context, request *apipb.ListUsa
 		return nil, err
 	}
 	limits = slices.DeleteFunc(limits, func(limit *storepb.InstanceUsageLimitsSetting_UsageLimit) bool {
-		return (filter.userID != nil && limit.UserId != *filter.userID) || (filter.metric != nil && limit.Metric != *filter.metric)
+		return (filter.userID != nil && limit.GetUserId() != *filter.userID) || (filter.metric != nil && limit.Metric != *filter.metric)
 	})
 	// Defaults first, then by user and metric, so pages are stable.
 	slices.SortStableFunc(limits, func(a, b *storepb.InstanceUsageLimitsSetting_UsageLimit) int {
-		if a.UserId != b.UserId {
-			if a.UserId == 0 || b.UserId == 0 {
-				return int(min(a.UserId, 1)) - int(min(b.UserId, 1))
+		if a.GetUserId() != b.GetUserId() {
+			if a.GetUserId() == 0 || b.GetUserId() == 0 {
+				return int(min(a.GetUserId(), 1)) - int(min(b.GetUserId(), 1))
 			}
-			return strings.Compare(usernames[a.UserId], usernames[b.UserId])
+			return strings.Compare(usernames[a.GetUserId()], usernames[b.GetUserId()])
 		}
 		return int(a.Metric) - int(b.Metric)
 	})
@@ -76,7 +76,7 @@ func (s *APIService) ListUsageLimits(ctx context.Context, request *apipb.ListUsa
 	if offset < len(limits) {
 		end := min(offset+limit, len(limits))
 		for _, item := range limits[offset:end] {
-			response.UsageLimits = append(response.UsageLimits, convertUsageLimitFromStore(item, usernames[item.UserId]))
+			response.UsageLimits = append(response.UsageLimits, convertUsageLimitFromStore(item, usernames[item.GetUserId()]))
 		}
 		if end < len(limits) {
 			response.NextPageToken, err = getPageToken(limit, end)
@@ -103,7 +103,7 @@ func (s *APIService) GetUsageLimit(ctx context.Context, request *apipb.GetUsageL
 	}
 	for _, limit := range limits {
 		if limit.Uid == uid {
-			return convertUsageLimitFromStore(limit, usernames[limit.UserId]), nil
+			return convertUsageLimitFromStore(limit, usernames[limit.GetUserId()]), nil
 		}
 	}
 	return nil, status.Errorf(codes.NotFound, "usage limit not found")
@@ -123,7 +123,7 @@ func (s *APIService) CreateUsageLimit(ctx context.Context, request *apipb.Create
 	}
 	metric := storepb.InstanceUsageLimitsSetting_Metric(request.UsageLimit.Metric)
 	if !store.IsValidUsageLimitMetric(metric) {
-		return nil, status.Errorf(codes.InvalidArgument, "metric must be MEMOS, STORAGE_BYTES, or UPLOAD_BYTES")
+		return nil, status.Errorf(codes.InvalidArgument, "metric must be MEMO_COUNT, STORAGE_BYTES, UPLOAD_BYTES, or MEMO_CONTENT_BYTES")
 	}
 	if request.UsageLimit.Value < 0 {
 		return nil, status.Errorf(codes.InvalidArgument, "value must not be negative")
@@ -139,10 +139,11 @@ func (s *APIService) CreateUsageLimit(ctx context.Context, request *apipb.Create
 		Uid:    uid,
 		Metric: metric,
 		Value:  request.UsageLimit.Value,
+		Target: &storepb.InstanceUsageLimitsSetting_UsageLimit_AllUsers{AllUsers: &emptypb.Empty{}},
 	}
 	username := ""
 	if user != nil {
-		create.UserId = user.ID
+		create.Target = &storepb.InstanceUsageLimitsSetting_UsageLimit_UserId{UserId: user.ID}
 		username = user.Username
 	}
 	created, err := s.Store.CreateUsageLimit(ctx, create)
@@ -185,14 +186,14 @@ func (s *APIService) UpdateUsageLimit(ctx context.Context, request *apipb.Update
 	if request.UsageLimit.Metric != apipb.UsageLimit_METRIC_UNSPECIFIED && storepb.InstanceUsageLimitsSetting_Metric(request.UsageLimit.Metric) != current.Metric {
 		return nil, status.Errorf(codes.InvalidArgument, "metric is immutable")
 	}
-	if request.UsageLimit.User != "" && request.UsageLimit.User != usageLimitUserName(usernames[current.UserId]) {
+	if request.UsageLimit.User != "" && request.UsageLimit.User != usageLimitUserName(usernames[current.GetUserId()]) {
 		return nil, status.Errorf(codes.InvalidArgument, "user is immutable")
 	}
 	updated, err := s.Store.UpdateUsageLimit(ctx, uid, request.UsageLimit.Value)
 	if err != nil {
 		return nil, usageLimitStoreError(err)
 	}
-	return convertUsageLimitFromStore(updated, usernames[updated.UserId]), nil
+	return convertUsageLimitFromStore(updated, usernames[updated.GetUserId()]), nil
 }
 
 // DeleteUsageLimit deletes a usage limit. Admin only.
@@ -233,8 +234,8 @@ func (s *APIService) listVisibleUsageLimits(ctx context.Context) ([]*storepb.Ins
 	}
 	userIDs := []int32{}
 	for _, limit := range setting.GetLimits() {
-		if limit.UserId != 0 && !slices.Contains(userIDs, limit.UserId) {
-			userIDs = append(userIDs, limit.UserId)
+		if limit.GetUserId() != 0 && !slices.Contains(userIDs, limit.GetUserId()) {
+			userIDs = append(userIDs, limit.GetUserId())
 		}
 	}
 	usernames := map[int32]string{}
@@ -249,7 +250,7 @@ func (s *APIService) listVisibleUsageLimits(ctx context.Context) ([]*storepb.Ins
 	}
 	limits := make([]*storepb.InstanceUsageLimitsSetting_UsageLimit, 0, len(setting.GetLimits()))
 	for _, limit := range setting.GetLimits() {
-		if _, ok := usernames[limit.UserId]; limit.UserId != 0 && !ok {
+		if _, ok := usernames[limit.GetUserId()]; limit.GetUserId() != 0 && !ok {
 			continue
 		}
 		limits = append(limits, limit)
@@ -306,21 +307,26 @@ func (s *APIService) checkMemoQuota(ctx context.Context, user *store.User) error
 	return usageLimitCheckError(user.Username, usagelimit.CheckMemoCreate(ctx, s.Store, user.ID))
 }
 
+// checkMemoContentQuota refuses content larger than the memo owner's limit.
+func (s *APIService) checkMemoContentQuota(ctx context.Context, userID int32, content string) error {
+	return s.userQuotaError(ctx, userID, usagelimit.CheckMemoContentSize(ctx, s.Store, userID, int64(len(content))))
+}
+
 // checkUploadQuota refuses an upload of size bytes that would break the
 // per-file or storage limit of the user.
 func (s *APIService) checkUploadQuota(ctx context.Context, userID int32, size int64) error {
-	return s.uploadQuotaError(ctx, userID, usagelimit.CheckUpload(ctx, s.Store, userID, size))
+	return s.userQuotaError(ctx, userID, usagelimit.CheckUpload(ctx, s.Store, userID, size))
 }
 
 // checkFileSizeQuota refuses a file of size bytes that is larger than the
 // per-file limit of the user. It runs no count or sum query.
 func (s *APIService) checkFileSizeQuota(ctx context.Context, userID int32, size int64) error {
-	return s.uploadQuotaError(ctx, userID, usagelimit.CheckFileSize(ctx, s.Store, userID, size))
+	return s.userQuotaError(ctx, userID, usagelimit.CheckFileSize(ctx, s.Store, userID, size))
 }
 
-// uploadQuotaError maps an upload check result to a service error, naming the
+// userQuotaError maps a usage limit check result to a service error, naming the
 // user in a refusal.
-func (s *APIService) uploadQuotaError(ctx context.Context, userID int32, err error) error {
+func (s *APIService) userQuotaError(ctx context.Context, userID int32, err error) error {
 	if err == nil {
 		return nil
 	}

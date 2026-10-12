@@ -441,21 +441,16 @@
       "summary-column": "Riepilogo"
     },
     "memo": {
-      "content-length-limit": "Massima lunghezza contenuto (byte)",
       "label": "Memo",
       "reactions": "Reazioni",
       "reactions-required": "L'elenco delle reazioni non deve essere vuoto",
       "add-reaction": "Aggiungi reazione",
       "configured-reactions": "Reazioni configurate",
-      "content-length-limit-description": "Dimensione massima del corpo del promemoria accettata dal server.",
       "double-click-edit-description": "Consenti agli utenti di aprire la modifica dei promemoria facendo doppio clic su un promemoria.",
-      "editing-description": "Controlla il comportamento di modifica dei promemoria e i limiti dei contenuti lato server.",
       "editing-title": "Modifica",
       "reaction-placeholder": "per esempio. 👍",
       "reactions-description": "Definire le opzioni di reazione che gli utenti possono applicare ai promemoria.",
-      "remove-reaction": "Rimuovi la reazione",
-      "content-length-limit-error": "Il limite di lunghezza del contenuto deve essere un numero intero compreso tra {{min}} e {{max}} byte.",
-      "content-length-limit-minimum": "Minimo: {{min}} byte"
+      "remove-reaction": "Rimuovi la reazione"
     },
     "my-account": {
       "label": "Il mio account"
@@ -608,9 +603,12 @@
       "all-users-placeholder": "All users: {{value}}",
       "all-users-title": "Limits for all users",
       "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
+      "content-size": "Memo content (KiB)",
+      "content-size-column": "Memo content",
+      "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
-      "invalid": "Enter a whole number of memos, or a size in MiB.",
+      "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
       "label": "Usage limits",
       "memos": "Memos",
       "memos-description": "Includes comments and archived memos.",

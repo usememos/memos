@@ -524,19 +524,14 @@
     "memo": {
       "add-reaction": "Pridajte reakciu",
       "configured-reactions": "Nastavené reakcie",
-      "content-length-limit": "Limit dĺžky obsahu (bajty)",
-      "content-length-limit-description": "Maximálna veľkosť tela poznámky akceptovaná serverom.",
       "double-click-edit-description": "Umožnite používateľom otvoriť úpravu poznámky dvojitým kliknutím na poznámku.",
-      "editing-description": "Ovládajte správanie pri úprave poznámok a limity obsahu na strane servera.",
       "editing-title": "Úprava",
       "label": "Memo",
       "reaction-placeholder": "napr. 👍",
       "reactions-description": "Definujte možnosti reakcie, ktoré môžu používatelia použiť na poznámky.",
       "remove-reaction": "Odstráňte reakciu",
       "reactions": "Reactions",
-      "reactions-required": "Zoznam Reactions nesmie byť prázdny",
-      "content-length-limit-error": "Limit dĺžky obsahu musí byť celé číslo medzi {{min}} a {{max}} bajtmi.",
-      "content-length-limit-minimum": "Minimálne: {{min}} bajtov"
+      "reactions-required": "Zoznam Reactions nesmie byť prázdny"
     },
     "my-account": {
       "label": "Môj účet"
@@ -724,9 +719,12 @@
       "all-users-placeholder": "All users: {{value}}",
       "all-users-title": "Limits for all users",
       "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
+      "content-size": "Memo content (KiB)",
+      "content-size-column": "Memo content",
+      "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
-      "invalid": "Enter a whole number of memos, or a size in MiB.",
+      "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
       "label": "Usage limits",
       "memos": "Memos",
       "memos-description": "Includes comments and archived memos.",

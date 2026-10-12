@@ -20,7 +20,6 @@ import (
 	"github.com/usememos/memos/core/memoexport"
 	"github.com/usememos/memos/internal/ratelimit"
 	apipb "github.com/usememos/memos/proto/gen/api"
-	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/api"
 	"github.com/usememos/memos/store"
 )
@@ -612,9 +611,7 @@ func TestImportMemosFailureKeepsPreexistingAttachment(t *testing.T) {
 	defer ts.Cleanup()
 	t.Cleanup(ts.Service.CloseUploads)
 	ctx := context.Background()
-	_, err := ts.Store.CreateUsageLimit(ctx, &storepb.InstanceUsageLimitsSetting_UsageLimit{
-		Uid: "default-upload", Metric: storepb.InstanceUsageLimitsSetting_UPLOAD_BYTES, Value: 1 << 20,
-	})
+	_, err := ts.Store.UpdateUsageLimit(ctx, "default-upload", 1<<20)
 	require.NoError(t, err)
 	user, err := ts.CreateRegularUser(ctx, "keeper")
 	require.NoError(t, err)

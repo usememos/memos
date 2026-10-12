@@ -385,12 +385,8 @@ func (s *APIService) UpdateMemo(ctx context.Context, request *apipb.UpdateMemoRe
 		}
 		if path == "content" {
 			contentUpdated = true
-			contentLengthLimit, err := s.getContentLengthLimit(ctx)
-			if err != nil {
-				return nil, status.Errorf(codes.Internal, "failed to get content length limit")
-			}
-			if len(request.Memo.Content) > contentLengthLimit {
-				return nil, status.Errorf(codes.InvalidArgument, "content too long (max %d bytes)", contentLengthLimit)
+			if err := s.checkMemoContentQuota(ctx, memo.CreatorID, request.Memo.Content); err != nil {
+				return nil, err
 			}
 			nextMemo.Content = request.Memo.Content
 			if err := memopayload.RebuildMemoPayload(ctx, &nextMemo, s.MarkdownService); err != nil {
@@ -561,14 +557,6 @@ func (s *APIService) DeleteMemo(ctx context.Context, request *apipb.DeleteMemoRe
 	}
 
 	return &emptypb.Empty{}, nil
-}
-
-func (s *APIService) getContentLengthLimit(ctx context.Context) (int, error) {
-	instanceMemoRelatedSetting, err := s.Store.GetInstanceMemoRelatedSetting(ctx)
-	if err != nil {
-		return 0, status.Errorf(codes.Internal, "failed to get instance memo related setting")
-	}
-	return int(instanceMemoRelatedSetting.ContentLengthLimit), nil
 }
 
 // DispatchMemoCreatedWebhook dispatches webhook when memo is created.

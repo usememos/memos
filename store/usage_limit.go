@@ -9,6 +9,7 @@ import (
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	storepb "github.com/usememos/memos/proto/gen/store"
@@ -17,6 +18,22 @@ import (
 // MaxUsageLimits is the most usage limits an instance can hold. All limits
 // share one system_setting row, so the cap also bounds that row's size.
 const MaxUsageLimits = 1000
+
+// DefaultUploadBytes is the default per-file upload limit in bytes. 32 MiB.
+const DefaultUploadBytes int64 = 32 << 20
+
+// DefaultMemoContentBytes is the default per-memo content limit in bytes. 8 KiB.
+const DefaultMemoContentBytes int64 = 8 << 10
+
+func newDefaultInstanceUsageLimitsSetting() *storepb.InstanceUsageLimitsSetting {
+	return &storepb.InstanceUsageLimitsSetting{Limits: []*storepb.InstanceUsageLimitsSetting_UsageLimit{{
+		Uid: "default-upload", Metric: storepb.InstanceUsageLimitsSetting_UPLOAD_BYTES, Value: DefaultUploadBytes,
+		Target: &storepb.InstanceUsageLimitsSetting_UsageLimit_AllUsers{AllUsers: &emptypb.Empty{}},
+	}, {
+		Uid: "default-memo-content", Metric: storepb.InstanceUsageLimitsSetting_MEMO_CONTENT_BYTES, Value: DefaultMemoContentBytes,
+		Target: &storepb.InstanceUsageLimitsSetting_UsageLimit_AllUsers{AllUsers: &emptypb.Empty{}},
+	}}}
+}
 
 // usageLimitWriteAttempts bounds the read, modify, and conditional write cycle
 // when other writers keep changing the usage limits row.
@@ -47,7 +64,8 @@ var (
 // ValidateInstanceUsageLimitsSetting checks the rules every stored list of
 // usage limits meets, whether it comes from the API or from a deployment file:
 // at most MaxUsageLimits entries, valid and unique IDs, known metrics,
-// non-negative values and user IDs, and at most one limit per metric and user.
+// non-negative values, an explicit all-users target or a positive user ID,
+// and at most one limit per metric and target.
 func ValidateInstanceUsageLimitsSetting(setting *storepb.InstanceUsageLimitsSetting) error {
 	limits := setting.GetLimits()
 	if len(limits) > MaxUsageLimits {
@@ -67,10 +85,19 @@ func ValidateInstanceUsageLimitsSetting(setting *storepb.InstanceUsageLimitsSett
 			return errors.Wrapf(ErrInvalidUsageLimit, "limits[%d].uid %q must be lowercase kebab case, start with a letter, and have at most %d characters", i, limit.Uid, maxUsageLimitUIDLength)
 		}
 		if !IsValidUsageLimitMetric(limit.Metric) {
-			return errors.Wrapf(ErrInvalidUsageLimit, "limits[%d].metric must be MEMOS, STORAGE_BYTES, or UPLOAD_BYTES", i)
+			return errors.Wrapf(ErrInvalidUsageLimit, "limits[%d].metric must be MEMO_COUNT, STORAGE_BYTES, UPLOAD_BYTES, or MEMO_CONTENT_BYTES", i)
 		}
-		if limit.UserId < 0 {
-			return errors.Wrapf(ErrInvalidUsageLimit, "limits[%d].userId must not be negative", i)
+		switch target := limit.Target.(type) {
+		case *storepb.InstanceUsageLimitsSetting_UsageLimit_AllUsers:
+			if target == nil || target.AllUsers == nil {
+				return errors.Wrapf(ErrInvalidUsageLimit, "limits[%d].allUsers must be populated", i)
+			}
+		case *storepb.InstanceUsageLimitsSetting_UsageLimit_UserId:
+			if target == nil || target.UserId <= 0 {
+				return errors.Wrapf(ErrInvalidUsageLimit, "limits[%d].userId must be positive", i)
+			}
+		default:
+			return errors.Wrapf(ErrInvalidUsageLimit, "limits[%d].target must be allUsers or userId", i)
 		}
 		if limit.Value < 0 {
 			return errors.Wrapf(ErrInvalidUsageLimit, "limits[%d].value must not be negative", i)
@@ -79,9 +106,9 @@ func ValidateInstanceUsageLimitsSetting(setting *storepb.InstanceUsageLimitsSett
 			return errors.Wrapf(ErrUsageLimitAlreadyExists, "usage limit ID %q is used more than once", limit.Uid)
 		}
 		uids[limit.Uid] = struct{}{}
-		key := target{metric: limit.Metric, userID: limit.UserId}
+		key := target{metric: limit.Metric, userID: limit.GetUserId()}
 		if _, ok := targets[key]; ok {
-			return errors.Wrapf(ErrUsageLimitAlreadyExists, "more than one %s limit for user ID %d", limit.Metric, limit.UserId)
+			return errors.Wrapf(ErrUsageLimitAlreadyExists, "more than one %s limit for user ID %d", limit.Metric, limit.GetUserId())
 		}
 		targets[key] = struct{}{}
 	}
@@ -91,9 +118,10 @@ func ValidateInstanceUsageLimitsSetting(setting *storepb.InstanceUsageLimitsSett
 // IsValidUsageLimitMetric reports whether metric is one that limits can be set for.
 func IsValidUsageLimitMetric(metric storepb.InstanceUsageLimitsSetting_Metric) bool {
 	switch metric {
-	case storepb.InstanceUsageLimitsSetting_MEMOS,
+	case storepb.InstanceUsageLimitsSetting_MEMO_COUNT,
 		storepb.InstanceUsageLimitsSetting_STORAGE_BYTES,
-		storepb.InstanceUsageLimitsSetting_UPLOAD_BYTES:
+		storepb.InstanceUsageLimitsSetting_UPLOAD_BYTES,
+		storepb.InstanceUsageLimitsSetting_MEMO_CONTENT_BYTES:
 		return true
 	default:
 		return false
@@ -103,7 +131,9 @@ func IsValidUsageLimitMetric(metric storepb.InstanceUsageLimitsSetting_Metric) b
 // GetInstanceUsageLimitsSetting returns every usage limit. A deployment file
 // takes precedence over the database. The database row is read directly,
 // without the instance setting cache, so a change made through any replica
-// applies at the next check on every replica.
+// applies at the next check on every replica. An absent setting defaults to
+// a 32 MiB per-file limit and an 8 KiB per-memo content limit. Existing settings,
+// including empty lists, are preserved.
 func (s *Store) GetInstanceUsageLimitsSetting(ctx context.Context) (*storepb.InstanceUsageLimitsSetting, error) {
 	instanceSetting := s.getDeploymentInstanceSetting(storepb.InstanceSettingKey_USAGE_LIMITS)
 	if instanceSetting == nil {
@@ -114,21 +144,27 @@ func (s *Store) GetInstanceUsageLimitsSetting(ctx context.Context) (*storepb.Ins
 		}
 	}
 	if setting := instanceSetting.GetUsageLimitsSetting(); setting != nil {
+		if err := ValidateInstanceUsageLimitsSetting(setting); err != nil {
+			return nil, errors.Wrap(err, "invalid usage limits setting")
+		}
 		return setting, nil
 	}
-	return &storepb.InstanceUsageLimitsSetting{}, nil
+	return newDefaultInstanceUsageLimitsSetting(), nil
 }
 
-// CreateUsageLimit adds a usage limit. create.Uid, Metric, UserId, and Value
+// CreateUsageLimit adds a usage limit. create.Uid, Metric, Target, and Value
 // must be set; the create and update times are set here.
 func (s *Store) CreateUsageLimit(ctx context.Context, create *storepb.InstanceUsageLimitsSetting_UsageLimit) (*storepb.InstanceUsageLimitsSetting_UsageLimit, error) {
+	if err := ValidateInstanceUsageLimitsSetting(&storepb.InstanceUsageLimitsSetting{Limits: []*storepb.InstanceUsageLimitsSetting_UsageLimit{create}}); err != nil {
+		return nil, err
+	}
 	var created *storepb.InstanceUsageLimitsSetting_UsageLimit
 	err := s.mutateUsageLimits(ctx, func(limits []*storepb.InstanceUsageLimitsSetting_UsageLimit) ([]*storepb.InstanceUsageLimitsSetting_UsageLimit, bool, error) {
 		for _, limit := range limits {
 			if limit.Uid == create.Uid {
 				return nil, false, errors.Wrapf(ErrUsageLimitAlreadyExists, "usage limit ID %q already exists", create.Uid)
 			}
-			if limit.Metric == create.Metric && limit.UserId == create.UserId {
+			if limit.Metric == create.Metric && limit.GetUserId() == create.GetUserId() {
 				return nil, false, errors.Wrapf(ErrUsageLimitAlreadyExists, "usage limit %q already sets %s for this user", limit.Uid, limit.Metric)
 			}
 		}
@@ -186,7 +222,7 @@ func (s *Store) DeleteUsageLimitsForUser(ctx context.Context, userID int32) erro
 	}
 	return s.mutateUsageLimits(ctx, func(limits []*storepb.InstanceUsageLimitsSetting_UsageLimit) ([]*storepb.InstanceUsageLimitsSetting_UsageLimit, bool, error) {
 		before := len(limits)
-		next := slices.DeleteFunc(limits, func(limit *storepb.InstanceUsageLimitsSetting_UsageLimit) bool { return limit.UserId == userID })
+		next := slices.DeleteFunc(limits, func(limit *storepb.InstanceUsageLimitsSetting_UsageLimit) bool { return limit.GetUserId() == userID })
 		return next, len(next) != before, nil
 	})
 }
@@ -218,6 +254,11 @@ func (s *Store) mutateUsageLimits(ctx context.Context, mutate usageLimitsMutatio
 			if err := protojsonUnmarshaler.Unmarshal([]byte(oldValue), current); err != nil {
 				return errors.Wrap(err, "failed to parse stored usage limits")
 			}
+		} else {
+			current = newDefaultInstanceUsageLimitsSetting()
+		}
+		if err := ValidateInstanceUsageLimitsSetting(current); err != nil {
+			return errors.Wrap(err, "invalid stored usage limits")
 		}
 
 		next, changed, err := mutate(current.Limits)
@@ -263,8 +304,8 @@ func (s *Store) mutateUsageLimits(ctx context.Context, mutate usageLimitsMutatio
 func (s *Store) pruneUsageLimitsOfMissingUsers(ctx context.Context, limits []*storepb.InstanceUsageLimitsSetting_UsageLimit) ([]*storepb.InstanceUsageLimitsSetting_UsageLimit, error) {
 	userIDs := []int32{}
 	for _, limit := range limits {
-		if limit.UserId != 0 && !slices.Contains(userIDs, limit.UserId) {
-			userIDs = append(userIDs, limit.UserId)
+		if limit.GetUserId() != 0 && !slices.Contains(userIDs, limit.GetUserId()) {
+			userIDs = append(userIDs, limit.GetUserId())
 		}
 	}
 	if len(userIDs) == 0 {
@@ -279,10 +320,10 @@ func (s *Store) pruneUsageLimitsOfMissingUsers(ctx context.Context, limits []*st
 		existing[user.ID] = struct{}{}
 	}
 	return slices.DeleteFunc(limits, func(limit *storepb.InstanceUsageLimitsSetting_UsageLimit) bool {
-		if limit.UserId == 0 {
+		if limit.GetUserId() == 0 {
 			return false
 		}
-		_, ok := existing[limit.UserId]
+		_, ok := existing[limit.GetUserId()]
 		return !ok
 	}), nil
 }

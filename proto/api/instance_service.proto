@@ -371,14 +371,11 @@ message InstanceSetting {
 
   // MemoRelatedSetting is the memo-related instance configuration.
   message MemoRelatedSetting {
-    // The maximum memo content length in bytes. Default and minimum is 8192.
-    int32 content_length_limit = 1;
+    // Whether double-clicking a memo opens it for editing.
+    bool enable_double_click_edit = 1;
 
     // The reactions users can choose from. Defaults to a built-in emoji set when empty.
     repeated string reactions = 2;
-
-    // Whether double-clicking a memo opens it for editing.
-    bool enable_double_click_edit = 3;
   }
 
   // TagsSetting is the instance-wide tag metadata configuration.
@@ -611,12 +608,14 @@ message UsageLimit {
     METRIC_UNSPECIFIED = 0;
     // The number of memos the user created, including comments, archived
     // memos, and memos in Spaces.
-    MEMOS = 1;
+    MEMO_COUNT = 1;
+    // The UTF-8 size in bytes of one memo's content.
+    MEMO_CONTENT_BYTES = 2;
     // The total size in bytes of the user's uploads, including uploads not
     // attached to a memo. External links do not count.
-    STORAGE_BYTES = 2;
+    STORAGE_BYTES = 3;
     // The size in bytes of one uploaded file.
-    UPLOAD_BYTES = 3;
+    UPLOAD_BYTES = 4;
   }
 }
 

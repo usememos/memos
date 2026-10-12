@@ -265,7 +265,6 @@ func convertInstanceMemoRelatedSettingFromStore(setting *storepb.InstanceMemoRel
 		return nil
 	}
 	return &apipb.InstanceSetting_MemoRelatedSetting{
-		ContentLengthLimit:    setting.ContentLengthLimit,
 		EnableDoubleClickEdit: setting.EnableDoubleClickEdit,
 		Reactions:             setting.Reactions,
 	}
@@ -276,7 +275,6 @@ func convertInstanceMemoRelatedSettingToStore(setting *apipb.InstanceSetting_Mem
 		return nil
 	}
 	return &storepb.InstanceMemoRelatedSetting{
-		ContentLengthLimit:    setting.ContentLengthLimit,
 		EnableDoubleClickEdit: setting.EnableDoubleClickEdit,
 		Reactions:             setting.Reactions,
 	}

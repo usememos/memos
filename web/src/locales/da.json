@@ -524,19 +524,14 @@
     "memo": {
       "add-reaction": "Tilføj reaktion",
       "configured-reactions": "Konfigurerede reaktioner",
-      "content-length-limit": "Indholdslængdegrænse (Byte)",
-      "content-length-limit-description": "Maksimal memo-tekststørrelse accepteret af serveren.",
       "double-click-edit-description": "Tillad brugere at åbne notatredigering ved at dobbeltklikke på et memo.",
-      "editing-description": "Kontroller memoredigeringsadfærd og indholdsgrænser på serversiden.",
       "editing-title": "Redigering",
       "label": "Memo",
       "reaction-placeholder": "f.eks. 👍",
       "reactions-description": "Definer de reaktionsmuligheder, som brugere kan anvende på notater.",
       "remove-reaction": "Fjern reaktion",
       "reactions": "Reactions",
-      "reactions-required": "Reactions-listen må ikke være tom",
-      "content-length-limit-error": "Indholdslængdegrænsen skal være et helt tal mellem {{min}} og {{max}} bytes.",
-      "content-length-limit-minimum": "Minimum: {{min}} bytes"
+      "reactions-required": "Reactions-listen må ikke være tom"
     },
     "my-account": {
       "label": "Min konto"
@@ -724,9 +719,12 @@
       "all-users-placeholder": "All users: {{value}}",
       "all-users-title": "Limits for all users",
       "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
+      "content-size": "Memo content (KiB)",
+      "content-size-column": "Memo content",
+      "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
-      "invalid": "Enter a whole number of memos, or a size in MiB.",
+      "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
       "label": "Usage limits",
       "memos": "Memos",
       "memos-description": "Includes comments and archived memos.",

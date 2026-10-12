@@ -104,12 +104,14 @@ func newQuotaExceededError(username string, refusal *usagelimit.Refusal) error {
 
 func quotaExceededDescription(refusal *usagelimit.Refusal) string {
 	switch refusal.Metric {
-	case usagelimit.MetricMemos:
+	case usagelimit.MetricMemoCount:
 		return "You have reached the limit of " + strconv.FormatInt(refusal.Limit, 10) + " memos."
 	case usagelimit.MetricStorageBytes:
 		return "This upload would exceed your storage limit of " + strconv.FormatInt(refusal.Limit, 10) + " bytes."
 	case usagelimit.MetricUploadBytes:
 		return "The file is larger than the limit of " + strconv.FormatInt(refusal.Limit, 10) + " bytes per file."
+	case usagelimit.MetricMemoContentBytes:
+		return "The content is larger than the limit of " + strconv.FormatInt(refusal.Limit, 10) + " bytes per memo."
 	default:
 		return "A usage limit was reached."
 	}

@@ -250,7 +250,6 @@ func TestInstanceSettingMemoRelatedSetting(t *testing.T) {
 	memoSetting, err := ts.GetInstanceMemoRelatedSetting(ctx)
 	require.NoError(t, err)
 	require.NotNil(t, memoSetting)
-	require.GreaterOrEqual(t, memoSetting.ContentLengthLimit, int32(store.DefaultContentLengthLimit))
 	require.NotEmpty(t, memoSetting.Reactions)
 
 	// Set custom memo related setting
@@ -259,8 +258,7 @@ func TestInstanceSettingMemoRelatedSetting(t *testing.T) {
 		Key: storepb.InstanceSettingKey_MEMO_RELATED,
 		Value: &storepb.InstanceSetting_MemoRelatedSetting{
 			MemoRelatedSetting: &storepb.InstanceMemoRelatedSetting{
-				ContentLengthLimit: 16384,
-				Reactions:          customReactions,
+				Reactions: customReactions,
 			},
 		},
 	})
@@ -269,7 +267,6 @@ func TestInstanceSettingMemoRelatedSetting(t *testing.T) {
 	// Verify
 	memoSetting, err = ts.GetInstanceMemoRelatedSetting(ctx)
 	require.NoError(t, err)
-	require.Equal(t, int32(16384), memoSetting.ContentLengthLimit)
 	require.Equal(t, customReactions, memoSetting.Reactions)
 
 	ts.Close()
@@ -628,8 +625,7 @@ func TestInstanceSettingEdgeCases(t *testing.T) {
 		Key: storepb.InstanceSettingKey_MEMO_RELATED,
 		Value: &storepb.InstanceSetting_MemoRelatedSetting{
 			MemoRelatedSetting: &storepb.InstanceMemoRelatedSetting{
-				ContentLengthLimit: 1000,
-				Reactions:          unicodeReactions,
+				Reactions: unicodeReactions,
 			},
 		},
 	})

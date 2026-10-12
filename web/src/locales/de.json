@@ -441,21 +441,16 @@
       "summary-column": "Zusammenfassung"
     },
     "memo": {
-      "content-length-limit": "Limitierung der Inhaltslänge (Byte)",
       "label": "Notiz",
       "reactions": "Reaktionen",
       "reactions-required": "Die Reaktionsliste darf nicht leer sein",
       "add-reaction": "Reaktion hinzufügen",
       "configured-reactions": "Konfigurierte Reaktionen",
-      "content-length-limit-description": "Maximale vom Server akzeptierte Größe des Memokörpers.",
       "double-click-edit-description": "Ermöglichen Sie Benutzern, die Memobearbeitung zu öffnen, indem sie auf ein Memo doppelklicken.",
-      "editing-description": "Steuern Sie das Bearbeitungsverhalten von Memos und serverseitige Inhaltsbeschränkungen.",
       "editing-title": "Bearbeitung",
       "reaction-placeholder": "z.B. 👍",
       "reactions-description": "Definieren Sie die Reaktionsoptionen, die Benutzer auf Memos anwenden können.",
-      "remove-reaction": "Reaktion entfernen",
-      "content-length-limit-error": "Die maximale Inhaltslänge muss eine ganze Zahl zwischen {{min}} und {{max}} Bytes sein.",
-      "content-length-limit-minimum": "Minimum: {{min}} Bytes"
+      "remove-reaction": "Reaktion entfernen"
     },
     "my-account": {
       "label": "Mein Konto"
@@ -608,9 +603,12 @@
       "all-users-placeholder": "All users: {{value}}",
       "all-users-title": "Limits for all users",
       "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
+      "content-size": "Memo content (KiB)",
+      "content-size-column": "Memo content",
+      "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
-      "invalid": "Enter a whole number of memos, or a size in MiB.",
+      "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
       "label": "Usage limits",
       "memos": "Memos",
       "memos-description": "Includes comments and archived memos.",

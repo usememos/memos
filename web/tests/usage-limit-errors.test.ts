@@ -21,7 +21,7 @@ function quotaError(metadata: Record<string, string>): ConnectError {
 
 describe("usage limit refusals", () => {
   it("names the memo limit", () => {
-    const error = quotaError({ metric: "MEMOS", limit: "1000", usage: "1000", usage_limit: "usageLimits/default-memos" });
+    const error = quotaError({ metric: "MEMO_COUNT", limit: "1000", usage: "1000", usage_limit: "usageLimits/default-memos" });
     expect(getErrorMessage(error)).toBe("You have reached your limit of 1000 memos. Delete memos to create new ones.");
   });
 
@@ -35,8 +35,15 @@ describe("usage limit refusals", () => {
     expect(getErrorMessage(error)).toBe("This file is larger than your limit of 10.0 MB per file.");
   });
 
+  it("names the content limit and reaches the editor's error message", () => {
+    const error = quotaError({ metric: "MEMO_CONTENT_BYTES", limit: "8192", usage: "8193" });
+    const message = "This memo is larger than your limit of 8.0 KB per memo. Shorten the content to save it.";
+    expect(getErrorMessage(error)).toBe(message);
+    expect(errorService.getErrorMessage(error)).toBe(message);
+  });
+
   it("is not a rate limit, so it carries no wait", () => {
-    const error = quotaError({ metric: "MEMOS", limit: "1", usage: "1" });
+    const error = quotaError({ metric: "MEMO_COUNT", limit: "1", usage: "1" });
     expect(getRetryAfterSeconds(error)).toBeUndefined();
   });
 

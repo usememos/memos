@@ -18,7 +18,6 @@ import (
 
 	"github.com/usememos/memos/internal/testutil"
 	apipb "github.com/usememos/memos/proto/gen/api"
-	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
 
@@ -98,6 +97,17 @@ func TestUploadAttachmentChunksAndRetries(t *testing.T) {
 	require.Equal(t, codes.NotFound, status.Code(err))
 }
 
+func TestUploadAttachmentDefaultFileSizeLimit(t *testing.T) {
+	svc, ctx := newUploadTestService(t)
+	_, err := svc.UploadAttachment(ctx, &apipb.UploadAttachmentRequest{Upload: uploadSpec("large.bin", 32*MebiByte+1)})
+	require.Equal(t, codes.ResourceExhausted, status.Code(err))
+	require.Empty(t, svc.attachmentUploads.entries, "the refused upload creates no session")
+	files, err := filepath.Glob(filepath.Join(svc.Profile.Data, attachmentUploadTempPrefix+"*"))
+	require.NoError(t, err)
+	require.Empty(t, files, "the refused upload creates no temporary file")
+	startTestUpload(ctx, t, svc, 32*MebiByte)
+}
+
 func TestUploadAttachmentSingleCall(t *testing.T) {
 	svc, ctx := newUploadTestService(t)
 	spec := uploadSpec("note.txt", 3)
@@ -149,9 +159,7 @@ func TestUploadAttachmentValidation(t *testing.T) {
 	}
 	_, err = svc.UploadAttachment(ctx, &apipb.UploadAttachmentRequest{Upload: uploadSpec("file", 3), WriteOffset: 1, Data: []byte("abc")})
 	require.Equal(t, codes.OutOfRange, status.Code(err))
-	_, err = svc.Store.CreateUsageLimit(ctx, &storepb.InstanceUsageLimitsSetting_UsageLimit{
-		Uid: "default-upload", Metric: storepb.InstanceUsageLimitsSetting_UPLOAD_BYTES, Value: 1 << 30,
-	})
+	_, err = svc.Store.UpdateUsageLimit(ctx, "default-upload", 1<<30)
 	require.NoError(t, err)
 	_, err = svc.UploadAttachment(ctx, &apipb.UploadAttachmentRequest{Upload: uploadSpec("file", 1<<60)})
 	require.Equal(t, codes.ResourceExhausted, status.Code(err))
@@ -240,9 +248,7 @@ func TestUploadAttachmentRechecksMemoAndSize(t *testing.T) {
 
 	// A per-file limit set after the upload started applies at finish.
 	id := startTestUpload(ctx, t, svc, 2*MebiByte)
-	_, err = svc.Store.CreateUsageLimit(ctx, &storepb.InstanceUsageLimitsSetting_UsageLimit{
-		Uid: "default-upload", Metric: storepb.InstanceUsageLimitsSetting_UPLOAD_BYTES, Value: MebiByte,
-	})
+	_, err = svc.Store.UpdateUsageLimit(ctx, "default-upload", MebiByte)
 	require.NoError(t, err)
 	_, err = svc.UploadAttachment(ctx, &apipb.UploadAttachmentRequest{Upload: uploadID(id), Data: make([]byte, 2*MebiByte), FinishWrite: true})
 	require.Equal(t, codes.ResourceExhausted, status.Code(err))
@@ -292,11 +298,12 @@ func TestUploadAttachmentExpiryAndLimits(t *testing.T) {
 
 func TestUploadAttachmentAboveLegacyRequestLimit(t *testing.T) {
 	svc, ctx := newUploadTestService(t)
+	_, err := svc.Store.UpdateUsageLimit(ctx, "default-upload", 0)
+	require.NoError(t, err)
 	const size = 300 * MebiByte
 	id := startTestUpload(ctx, t, svc, size)
 	chunk := bytes.Repeat([]byte{0x5a}, uploadChunkSize)
 	var response *apipb.UploadAttachmentResponse
-	var err error
 	for offset := int64(0); offset < size; offset += int64(len(chunk)) {
 		response, err = svc.UploadAttachment(ctx, &apipb.UploadAttachmentRequest{
 			Upload: uploadID(id), WriteOffset: offset, Data: chunk, FinishWrite: offset+int64(len(chunk)) == size,

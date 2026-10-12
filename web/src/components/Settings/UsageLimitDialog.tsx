@@ -101,7 +101,12 @@ function UsageLimitDialog({ open, onOpenChange, target, candidates }: Props) {
   };
 
   const fields = [
-    { metric: UsageLimit_Metric.MEMOS, label: t("setting.usage-limits.memos"), help: t("setting.usage-limits.memos-description") },
+    { metric: UsageLimit_Metric.MEMO_COUNT, label: t("setting.usage-limits.memos"), help: t("setting.usage-limits.memos-description") },
+    {
+      metric: UsageLimit_Metric.MEMO_CONTENT_BYTES,
+      label: t("setting.usage-limits.content-size"),
+      help: t("setting.usage-limits.content-size-description"),
+    },
     {
       metric: UsageLimit_Metric.STORAGE_BYTES,
       label: t("setting.usage-limits.storage"),
@@ -155,9 +160,14 @@ function UsageLimitDialog({ open, onOpenChange, target, candidates }: Props) {
                   placeholder={placeholder(metric)}
                   value={inputs[metric]}
                   aria-invalid={isInvalid(metric)}
+                  aria-describedby={message ? `usage-limit-help-${metric}` : undefined}
                   onChange={(event) => setInputs((current) => ({ ...current, [metric]: event.target.value }))}
                 />
-                {message && <p className="text-xs text-muted-foreground">{message}</p>}
+                {message && (
+                  <p id={`usage-limit-help-${metric}`} className="text-xs text-muted-foreground">
+                    {message}
+                  </p>
+                )}
               </div>
             );
           })}

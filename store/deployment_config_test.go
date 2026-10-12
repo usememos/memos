@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/usememos/memos/internal/profile"
 	storepb "github.com/usememos/memos/proto/gen/store"
@@ -223,8 +224,7 @@ func TestLoadDeploymentConfigurationSupportsEveryProvisionableSettingGroup(t *te
 		"memos-instance-setting-memo-related.json": {
 			Key: storepb.InstanceSettingKey_MEMO_RELATED,
 			Value: &storepb.InstanceSetting_MemoRelatedSetting{MemoRelatedSetting: &storepb.InstanceMemoRelatedSetting{
-				ContentLengthLimit: store.DefaultContentLengthLimit,
-				Reactions:          []string{"👍"},
+				Reactions: []string{"👍"},
 			}},
 		},
 		"memos-instance-setting-notification.json": {
@@ -282,6 +282,76 @@ func TestLoadDeploymentConfigurationRejectsInvalidSettingResources(t *testing.T)
 			err := stores.LoadDeploymentConfigurationDir(context.Background(), dir)
 			require.Error(t, err)
 			assert.ErrorContains(t, err, test.errorString)
+		})
+	}
+}
+
+func TestLoadDeploymentUsageLimitsPreservesStoreTargets(t *testing.T) {
+	ctx := context.Background()
+	stores := newDeploymentConfigurationTestStore(t)
+	alice, err := stores.CreateUser(ctx, &store.User{Username: "alice", Role: store.RoleUser, PasswordHash: "hash"})
+	require.NoError(t, err)
+	dir := t.TempDir()
+	path := filepath.Join(dir, "memos-instance-setting-usage-limits.json")
+	input := &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_USAGE_LIMITS,
+		Value: &storepb.InstanceSetting_UsageLimitsSetting{UsageLimitsSetting: &storepb.InstanceUsageLimitsSetting{
+			Limits: []*storepb.InstanceUsageLimitsSetting_UsageLimit{
+				{
+					Uid: "default-upload", Metric: storepb.InstanceUsageLimitsSetting_UPLOAD_BYTES, Value: 32 << 20,
+					Target: &storepb.InstanceUsageLimitsSetting_UsageLimit_AllUsers{AllUsers: &emptypb.Empty{}},
+				},
+				{
+					Uid: "alice-upload", Metric: storepb.InstanceUsageLimitsSetting_UPLOAD_BYTES, Value: 0,
+					Target: &storepb.InstanceUsageLimitsSetting_UsageLimit_UserId{UserId: alice.ID},
+				},
+			},
+		}},
+	}
+	writeDeploymentMessage(t, path, input)
+	require.NoError(t, stores.LoadDeploymentConfigurationDir(ctx, dir))
+	setting, err := stores.GetInstanceUsageLimitsSetting(ctx)
+	require.NoError(t, err)
+	require.True(t, proto.Equal(input.GetUsageLimitsSetting(), setting), "configuration uses the stored schema without converting targets")
+
+	_, err = stores.UpdateUser(ctx, &store.UpdateUser{ID: alice.ID, Username: new("alice-renamed")})
+	require.NoError(t, err)
+	require.NoError(t, stores.LoadDeploymentConfigurationDir(ctx, dir), "a rename does not require editing the configuration")
+	setting, err = stores.GetInstanceUsageLimitsSetting(ctx)
+	require.NoError(t, err)
+	require.True(t, proto.Equal(input.GetUsageLimitsSetting(), setting))
+}
+
+func TestLoadDeploymentUsageLimitsRejectsInvalidTargets(t *testing.T) {
+	for name, limits := range map[string]string{
+		"missing target":      `[{"uid":"bad-user","metric":"UPLOAD_BYTES","value":"1"}]`,
+		"zero user ID":        `[{"uid":"bad-user","metric":"UPLOAD_BYTES","userId":0,"value":"1"}]`,
+		"negative user ID":    `[{"uid":"bad-user","metric":"UPLOAD_BYTES","userId":-1,"value":"1"}]`,
+		"null all users":      `[{"uid":"bad-user","metric":"UPLOAD_BYTES","allUsers":null,"value":"1"}]`,
+		"both targets":        `[{"uid":"bad-user","metric":"UPLOAD_BYTES","allUsers":{},"userId":1,"value":"1"}]`,
+		"user resource name":  `[{"uid":"bad-user","metric":"UPLOAD_BYTES","user":"users/alice","value":"1"}]`,
+		"duplicate user":      `[{"uid":"first","metric":"UPLOAD_BYTES","userId":1,"value":"1"},{"uid":"second","metric":"UPLOAD_BYTES","userId":1,"value":"0"}]`,
+		"duplicate all users": `[{"uid":"first","metric":"UPLOAD_BYTES","allUsers":{},"value":"1"},{"uid":"second","metric":"UPLOAD_BYTES","allUsers":{},"value":"0"}]`,
+	} {
+		t.Run(name, func(t *testing.T) {
+			ctx := context.Background()
+			stores := newDeploymentConfigurationTestStore(t)
+			dir := t.TempDir()
+			path := filepath.Join(dir, "memos-instance-setting-usage-limits.json")
+			valid := `{"key":"USAGE_LIMITS","usageLimitsSetting":{"limits":[{"uid":"default-upload","metric":"UPLOAD_BYTES","allUsers":{},"value":"33554432"}]}}`
+			require.NoError(t, os.WriteFile(path, []byte(valid), 0600))
+			require.NoError(t, stores.LoadDeploymentConfigurationDir(ctx, dir))
+			previous, err := stores.GetInstanceUsageLimitsSetting(ctx)
+			require.NoError(t, err)
+
+			content := `{"key":"USAGE_LIMITS","usageLimitsSetting":{"limits":` + limits + `}}`
+			require.NoError(t, os.WriteFile(path, []byte(content), 0600))
+			err = stores.LoadDeploymentConfigurationDir(ctx, dir)
+			require.Error(t, err)
+			require.ErrorContains(t, err, "memos-instance-setting-usage-limits.json")
+			setting, err := stores.GetInstanceUsageLimitsSetting(ctx)
+			require.NoError(t, err)
+			require.True(t, proto.Equal(previous, setting), "an invalid reload preserves the active configuration")
 		})
 	}
 }

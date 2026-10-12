@@ -62,12 +62,8 @@ func (s *APIService) prepareMemoCreate(ctx context.Context, user *store.User, in
 		memo.UpdatedTs = input.UpdateTime.AsTime().Unix()
 	}
 
-	contentLengthLimit, err := s.getContentLengthLimit(ctx)
-	if err != nil {
-		return nil, status.Error(codes.Internal, "failed to get content length limit")
-	}
-	if len(memo.Content) > contentLengthLimit {
-		return nil, status.Errorf(codes.InvalidArgument, "content too long (max %d bytes)", contentLengthLimit)
+	if err := s.checkMemoContentQuota(ctx, user.ID, memo.Content); err != nil {
+		return nil, err
 	}
 	if err := memopayload.RebuildMemoPayload(ctx, memo, s.MarkdownService); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to rebuild memo payload: %v", err)

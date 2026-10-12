@@ -524,19 +524,14 @@
     "memo": {
       "add-reaction": "Προσθέστε την αντίδραση",
       "configured-reactions": "Διαμορφωμένες αντιδράσεις",
-      "content-length-limit": "Όριο μήκους περιεχομένου (Byte)",
-      "content-length-limit-description": "Μέγιστο μέγεθος σώματος σημειώματος αποδεκτό από τον διακομιστή.",
       "double-click-edit-description": "Επιτρέψτε στους χρήστες να ανοίξουν την επεξεργασία σημειώσεων κάνοντας διπλό κλικ σε ένα σημείωμα.",
-      "editing-description": "Ελέγξτε τη συμπεριφορά επεξεργασίας σημειώσεων και τα όρια περιεχομένου από την πλευρά του διακομιστή.",
       "editing-title": "Επεξεργασία",
       "label": "Σημείωμα",
       "reaction-placeholder": "π.χ. 👍",
       "reactions-description": "Καθορίστε τις επιλογές αντίδρασης που μπορούν να εφαρμόσουν οι χρήστες σε σημειώσεις.",
       "remove-reaction": "Αφαιρέστε την αντίδραση",
       "reactions": "Reactions",
-      "reactions-required": "Η λίστα Reactions δεν πρέπει να είναι κενή",
-      "content-length-limit-error": "Το όριο μήκους περιεχομένου πρέπει να είναι ακέραιος αριθμός μεταξύ {{min}} και {{max}} byte.",
-      "content-length-limit-minimum": "Ελάχιστο: {{min}} byte"
+      "reactions-required": "Η λίστα Reactions δεν πρέπει να είναι κενή"
     },
     "my-account": {
       "label": "Ο λογαριασμός μου"
@@ -724,9 +719,12 @@
       "all-users-placeholder": "All users: {{value}}",
       "all-users-title": "Limits for all users",
       "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
+      "content-size": "Memo content (KiB)",
+      "content-size-column": "Memo content",
+      "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
-      "invalid": "Enter a whole number of memos, or a size in MiB.",
+      "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
       "label": "Usage limits",
       "memos": "Memos",
       "memos-description": "Includes comments and archived memos.",

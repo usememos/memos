@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package memos.store;
 
+import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 import "google/type/color.proto";
 
@@ -54,23 +55,23 @@ message InstanceBasicSetting {
 
 message InstanceGeneralSetting {
   // disallow_user_registration disallows user registration.
-  bool disallow_user_registration = 2;
+  bool disallow_user_registration = 1;
   // disallow_password_auth disallows password authentication.
-  bool disallow_password_auth = 3;
+  bool disallow_password_auth = 2;
   // additional_script is the additional script.
-  string additional_script = 4;
+  string additional_script = 3;
   // additional_style is the additional style.
-  string additional_style = 5;
+  string additional_style = 4;
   // custom_profile is the custom profile.
-  InstanceCustomProfile custom_profile = 6;
+  InstanceCustomProfile custom_profile = 5;
   // week_start_day_offset is the week start day offset from Sunday.
   // 0: Sunday, 1: Monday, 2: Tuesday, 3: Wednesday, 4: Thursday, 5: Friday, 6: Saturday
   // Default is Sunday.
-  int32 week_start_day_offset = 7;
+  int32 week_start_day_offset = 6;
   // disallow_change_username disallows changing username.
-  bool disallow_change_username = 8;
+  bool disallow_change_username = 7;
   // disallow_change_nickname disallows changing nickname.
-  bool disallow_change_nickname = 9;
+  bool disallow_change_nickname = 8;
 }
 
 message InstanceCustomProfile {
@@ -98,7 +99,7 @@ message Storage {
   StorageType type = 3;
 
   oneof config {
-    StorageS3Config s3_config = 10;
+    StorageS3Config s3_config = 4;
   }
 }
 
@@ -142,14 +143,10 @@ message StorageS3Config {
 }
 
 message InstanceMemoRelatedSetting {
-  reserved 2;
-  reserved "display_with_update_time";
-  // content_length_limit is the limit of content length. Unit is byte.
-  int32 content_length_limit = 3;
   // enable_double_click_edit enables editing on double click.
-  bool enable_double_click_edit = 4;
+  bool enable_double_click_edit = 1;
   // reactions is the list of reactions.
-  repeated string reactions = 7;
+  repeated string reactions = 2;
 }
 
 message InstanceTagMetadata {
@@ -250,7 +247,7 @@ message InstanceAccessSetting {
 }
 
 // InstanceUsageLimitsSetting holds every usage limit of the instance. A limit
-// applies to one user, or to every user when user_id is 0. For each metric, a
+// applies to one user, or independently to every user. For each metric, a
 // user's own limit replaces the default.
 message InstanceUsageLimitsSetting {
   repeated UsageLimit limits = 1;
@@ -259,22 +256,29 @@ message InstanceUsageLimitsSetting {
     // uid is the {usage_limit} segment of the usageLimits/{usage_limit} name.
     string uid = 1;
     Metric metric = 2;
-    // user_id is the user the limit applies to. 0 means every user.
-    int32 user_id = 3;
+    // Exactly one target must be set.
+    oneof target {
+      // The default limit applied independently to every user.
+      google.protobuf.Empty all_users = 3;
+      // The user this limit applies to. Must be positive.
+      int32 user_id = 4;
+    }
     // value is the limit. 0 means unlimited.
-    int64 value = 4;
-    google.protobuf.Timestamp create_time = 5;
-    google.protobuf.Timestamp update_time = 6;
+    int64 value = 5;
+    google.protobuf.Timestamp create_time = 6;
+    google.protobuf.Timestamp update_time = 7;
   }
 
   enum Metric {
     METRIC_UNSPECIFIED = 0;
-    // MEMOS limits the number of memos a user created, comments included.
-    MEMOS = 1;
+    // MEMO_COUNT limits the number of memos a user created, comments included.
+    MEMO_COUNT = 1;
+    // MEMO_CONTENT_BYTES limits the UTF-8 size of one memo's content.
+    MEMO_CONTENT_BYTES = 2;
     // STORAGE_BYTES limits the total size of a user's uploads. External links
     // do not count.
-    STORAGE_BYTES = 2;
+    STORAGE_BYTES = 3;
     // UPLOAD_BYTES limits the size of one uploaded file.
-    UPLOAD_BYTES = 3;
+    UPLOAD_BYTES = 4;
   }
 }

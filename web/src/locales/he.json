@@ -557,19 +557,14 @@
     "memo": {
       "add-reaction": "הוסף תגובה",
       "configured-reactions": "תגובות שהוגדרו",
-      "content-length-limit": "מגבלת אורך תוכן (בתים)",
-      "content-length-limit-description": "גודל גוף הפתק המרבי שהשרת מקבל.",
       "double-click-edit-description": "אפשרו למשתמשים לפתוח עריכת פתק בלחיצה כפולה על פתק.",
-      "editing-description": "שליטה בהתנהגות עריכת הפתקים ובמגבלות התוכן בצד השרת.",
       "editing-title": "עריכה",
       "label": "פתק",
       "reaction-placeholder": "לדוגמה 👍",
       "reactions-description": "הגדירו את אפשרויות התגובה שמשתמשים יכולים להחיל על פתקים.",
       "remove-reaction": "הסר תגובה",
       "reactions": "תגובות",
-      "reactions-required": "רשימת התגובות לא יכולה להיות ריקה",
-      "content-length-limit-error": "מגבלת אורך התוכן חייבת להיות מספר שלם בין {{min}} ל-{{max}} בתים.",
-      "content-length-limit-minimum": "מינימום: {{min}} בתים"
+      "reactions-required": "רשימת התגובות לא יכולה להיות ריקה"
     },
     "my-account": {
       "label": "החשבון שלי"
@@ -757,9 +752,12 @@
       "all-users-placeholder": "All users: {{value}}",
       "all-users-title": "Limits for all users",
       "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
+      "content-size": "Memo content (KiB)",
+      "content-size-column": "Memo content",
+      "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
-      "invalid": "Enter a whole number of memos, or a size in MiB.",
+      "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
       "label": "Usage limits",
       "memos": "Memos",
       "memos-description": "Includes comments and archived memos.",

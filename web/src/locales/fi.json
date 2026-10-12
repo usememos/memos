@@ -524,19 +524,14 @@
     "memo": {
       "add-reaction": "Lisää reaktio",
       "configured-reactions": "Konfiguroidut reaktiot",
-      "content-length-limit": "Sisällön pituusrajoitus (tavu)",
-      "content-length-limit-description": "Palvelimen hyväksymä muistion rungon enimmäiskoko.",
       "double-click-edit-description": "Salli käyttäjien avata muistion muokkaus kaksoisnapsauttamalla muistiota.",
-      "editing-description": "Hallitse muistioiden muokkauskäyttäytymistä ja palvelinpuolen sisältörajoituksia.",
       "editing-title": "Muokkaus",
       "label": "Muistio",
       "reaction-placeholder": "esim. 👍",
       "reactions-description": "Määritä reaktiovaihtoehdot, joita käyttäjät voivat soveltaa muistioihin.",
       "remove-reaction": "Poista reaktio",
       "reactions": "Reactions",
-      "reactions-required": "Reactions-luettelo ei saa olla tyhjä",
-      "content-length-limit-error": "Sisällön pituusrajan on oltava kokonaisluku väliltä {{min}} ja {{max}} tavua.",
-      "content-length-limit-minimum": "Vähintään: {{min}} tavua"
+      "reactions-required": "Reactions-luettelo ei saa olla tyhjä"
     },
     "my-account": {
       "label": "Oma tili"
@@ -724,9 +719,12 @@
       "all-users-placeholder": "All users: {{value}}",
       "all-users-title": "Limits for all users",
       "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
+      "content-size": "Memo content (KiB)",
+      "content-size-column": "Memo content",
+      "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
-      "invalid": "Enter a whole number of memos, or a size in MiB.",
+      "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
       "label": "Usage limits",
       "memos": "Memos",
       "memos-description": "Includes comments and archived memos.",

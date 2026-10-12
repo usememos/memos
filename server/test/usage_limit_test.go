@@ -39,7 +39,7 @@ func TestUsageLimitRefusalOnBothTransports(t *testing.T) {
 	}
 
 	status, body := inst.do(t, http.MethodPost, "/api/usageLimits?usageLimitId=default-memos", token, map[string]any{
-		"metric": "MEMOS",
+		"metric": "MEMO_COUNT",
 		"value":  "1",
 	})
 	require.Equal(t, http.StatusOK, status, "creating a usage limit should succeed: %s", body)
@@ -54,8 +54,14 @@ func TestUsageLimitRefusalOnBothTransports(t *testing.T) {
 		} `json:"usageLimits"`
 	}
 	require.NoError(t, json.Unmarshal(body, &listed))
-	require.Len(t, listed.UsageLimits, 1)
+	require.Len(t, listed.UsageLimits, 3)
 	require.Equal(t, "usageLimits/default-memos", listed.UsageLimits[0].Name)
+	require.Equal(t, "usageLimits/default-memo-content", listed.UsageLimits[1].Name)
+	require.Equal(t, "MEMO_CONTENT_BYTES", listed.UsageLimits[1].Metric)
+	require.Equal(t, "8192", listed.UsageLimits[1].Value)
+	require.Equal(t, "usageLimits/default-upload", listed.UsageLimits[2].Name)
+	require.Equal(t, "UPLOAD_BYTES", listed.UsageLimits[2].Metric)
+	require.Equal(t, "33554432", listed.UsageLimits[2].Value)
 
 	inst.createMemo(t, token, "first", "the only memo the limit allows")
 
@@ -63,18 +69,18 @@ func TestUsageLimitRefusalOnBothTransports(t *testing.T) {
 	status, body = inst.do(t, http.MethodGet, "/api/"+userName+"/usage", token, nil)
 	require.Equal(t, http.StatusOK, status, "%s", body)
 	var usage struct {
-		Name       string `json:"name"`
-		MemoCount  string `json:"memoCount"`
-		MemosLimit struct {
+		Name           string `json:"name"`
+		MemoCount      string `json:"memoCount"`
+		MemoCountLimit struct {
 			Value      string `json:"value"`
 			UsageLimit string `json:"usageLimit"`
-		} `json:"memosLimit"`
+		} `json:"memoCountLimit"`
 	}
 	require.NoError(t, json.Unmarshal(body, &usage))
 	require.Equal(t, userName+"/usage", usage.Name)
 	require.Equal(t, "1", usage.MemoCount)
-	require.Equal(t, "1", usage.MemosLimit.Value)
-	require.Equal(t, "usageLimits/default-memos", usage.MemosLimit.UsageLimit)
+	require.Equal(t, "1", usage.MemoCountLimit.Value)
+	require.Equal(t, "usageLimits/default-memos", usage.MemoCountLimit.UsageLimit)
 
 	requireNoWaitHeaders := func(resp *http.Response) {
 		t.Helper()
@@ -111,7 +117,7 @@ func TestUsageLimitRefusalOnBothTransports(t *testing.T) {
 		case "type.googleapis.com/google.rpc.ErrorInfo":
 			require.Equal(t, "QUOTA_EXCEEDED", detail.Reason)
 			require.Equal(t, "memos.api", detail.Domain)
-			require.Equal(t, map[string]string{"metric": "MEMOS", "limit": "1", "usage": "1", "usage_limit": "usageLimits/default-memos"}, detail.Metadata)
+			require.Equal(t, map[string]string{"metric": "MEMO_COUNT", "limit": "1", "usage": "1", "usage_limit": "usageLimits/default-memos"}, detail.Metadata)
 		case "type.googleapis.com/google.rpc.QuotaFailure":
 			require.Len(t, detail.Violations, 1)
 			require.Equal(t, userName, detail.Violations[0].Subject)

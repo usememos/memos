@@ -441,21 +441,16 @@
       "summary-column": "Összegzés"
     },
     "memo": {
-      "content-length-limit": "Tartalom hosszának korlátja (bájt)",
       "label": "Jegyzet",
       "reactions": "Reakciók",
       "reactions-required": "A reakciólista nem lehet üres",
       "add-reaction": "Adja hozzá a reakciót",
       "configured-reactions": "Konfigurált reakciók",
-      "content-length-limit-description": "A kiszolgáló által elfogadott maximális emlékeztető törzsméret.",
       "double-click-edit-description": "Lehetővé teszi a felhasználók számára, hogy a jegyzetre duplán kattintva nyissa meg a jegyzetszerkesztést.",
-      "editing-description": "Szabályozza a jegyzetszerkesztési viselkedést és a szerveroldali tartalomkorlátokat.",
       "editing-title": "Szerkesztés",
       "reaction-placeholder": "például 👍",
       "reactions-description": "Határozza meg azokat a reakciólehetőségeket, amelyeket a felhasználók a jegyzetekre alkalmazhatnak.",
-      "remove-reaction": "Távolítsa el a reakciót",
-      "content-length-limit-error": "A tartalom hosszkorlátjának {{min}} és {{max}} bájt közötti egész számnak kell lennie.",
-      "content-length-limit-minimum": "Minimum: {{min}} bájt"
+      "remove-reaction": "Távolítsa el a reakciót"
     },
     "my-account": {
       "label": "Fiókom"
@@ -608,9 +603,12 @@
       "all-users-placeholder": "All users: {{value}}",
       "all-users-title": "Limits for all users",
       "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
+      "content-size": "Memo content (KiB)",
+      "content-size-column": "Memo content",
+      "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
-      "invalid": "Enter a whole number of memos, or a size in MiB.",
+      "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
       "label": "Usage limits",
       "memos": "Memos",
       "memos-description": "Includes comments and archived memos.",

@@ -322,27 +322,31 @@ const (
 	UsageLimit_METRIC_UNSPECIFIED UsageLimit_Metric = 0
 	// The number of memos the user created, including comments, archived
 	// memos, and memos in Spaces.
-	UsageLimit_MEMOS UsageLimit_Metric = 1
+	UsageLimit_MEMO_COUNT UsageLimit_Metric = 1
+	// The UTF-8 size in bytes of one memo's content.
+	UsageLimit_MEMO_CONTENT_BYTES UsageLimit_Metric = 2
 	// The total size in bytes of the user's uploads, including uploads not
 	// attached to a memo. External links do not count.
-	UsageLimit_STORAGE_BYTES UsageLimit_Metric = 2
+	UsageLimit_STORAGE_BYTES UsageLimit_Metric = 3
 	// The size in bytes of one uploaded file.
-	UsageLimit_UPLOAD_BYTES UsageLimit_Metric = 3
+	UsageLimit_UPLOAD_BYTES UsageLimit_Metric = 4
 )
 
 // Enum value maps for UsageLimit_Metric.
 var (
 	UsageLimit_Metric_name = map[int32]string{
 		0: "METRIC_UNSPECIFIED",
-		1: "MEMOS",
-		2: "STORAGE_BYTES",
-		3: "UPLOAD_BYTES",
+		1: "MEMO_COUNT",
+		2: "MEMO_CONTENT_BYTES",
+		3: "STORAGE_BYTES",
+		4: "UPLOAD_BYTES",
 	}
 	UsageLimit_Metric_value = map[string]int32{
 		"METRIC_UNSPECIFIED": 0,
-		"MEMOS":              1,
-		"STORAGE_BYTES":      2,
-		"UPLOAD_BYTES":       3,
+		"MEMO_COUNT":         1,
+		"MEMO_CONTENT_BYTES": 2,
+		"STORAGE_BYTES":      3,
+		"UPLOAD_BYTES":       4,
 	}
 )
 
@@ -1832,14 +1836,12 @@ func (*InstanceSetting_Storage_S3Config_) isInstanceSetting_Storage_Config() {}
 // MemoRelatedSetting is the memo-related instance configuration.
 type InstanceSetting_MemoRelatedSetting struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The maximum memo content length in bytes. Default and minimum is 8192.
-	ContentLengthLimit int32 `protobuf:"varint,1,opt,name=content_length_limit,json=contentLengthLimit,proto3" json:"content_length_limit,omitempty"`
-	// The reactions users can choose from. Defaults to a built-in emoji set when empty.
-	Reactions []string `protobuf:"bytes,2,rep,name=reactions,proto3" json:"reactions,omitempty"`
 	// Whether double-clicking a memo opens it for editing.
-	EnableDoubleClickEdit bool `protobuf:"varint,3,opt,name=enable_double_click_edit,json=enableDoubleClickEdit,proto3" json:"enable_double_click_edit,omitempty"`
-	unknownFields         protoimpl.UnknownFields
-	sizeCache             protoimpl.SizeCache
+	EnableDoubleClickEdit bool `protobuf:"varint,1,opt,name=enable_double_click_edit,json=enableDoubleClickEdit,proto3" json:"enable_double_click_edit,omitempty"`
+	// The reactions users can choose from. Defaults to a built-in emoji set when empty.
+	Reactions     []string `protobuf:"bytes,2,rep,name=reactions,proto3" json:"reactions,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *InstanceSetting_MemoRelatedSetting) Reset() {
@@ -1872,11 +1874,11 @@ func (*InstanceSetting_MemoRelatedSetting) Descriptor() ([]byte, []int) {
 	return file_api_instance_service_proto_rawDescGZIP(), []int{2, 3}
 }
 
-func (x *InstanceSetting_MemoRelatedSetting) GetContentLengthLimit() int32 {
+func (x *InstanceSetting_MemoRelatedSetting) GetEnableDoubleClickEdit() bool {
 	if x != nil {
-		return x.ContentLengthLimit
+		return x.EnableDoubleClickEdit
 	}
-	return 0
+	return false
 }
 
 func (x *InstanceSetting_MemoRelatedSetting) GetReactions() []string {
@@ -1884,13 +1886,6 @@ func (x *InstanceSetting_MemoRelatedSetting) GetReactions() []string {
 		return x.Reactions
 	}
 	return nil
-}
-
-func (x *InstanceSetting_MemoRelatedSetting) GetEnableDoubleClickEdit() bool {
-	if x != nil {
-		return x.EnableDoubleClickEdit
-	}
-	return false
 }
 
 // TagsSetting is the instance-wide tag metadata configuration.
@@ -2795,7 +2790,7 @@ const file_api_instance_service_proto_rawDesc = "" +
 	"\tChallenge\x12\x1a\n" +
 	"\bprovider\x18\x01 \x01(\tR\bprovider\x12\x19\n" +
 	"\bsite_key\x18\x02 \x01(\tR\asiteKey\"\x1b\n" +
-	"\x19GetInstanceProfileRequest\"\xc0!\n" +
+	"\x19GetInstanceProfileRequest\"\x8d!\n" +
 	"\x0fInstanceSetting\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12T\n" +
 	"\x0fgeneral_setting\x18\x02 \x01(\v2).memos.api.InstanceSetting.GeneralSettingH\x00R\x0egeneralSetting\x12T\n" +
@@ -2851,11 +2846,10 @@ const file_api_instance_service_proto_rawDesc = "" +
 	"\x11access_key_secret\x18\x05 \x01(\tB\x03\xe0A\x04R\x0faccessKeySecret\x12$\n" +
 	"\x0euse_path_style\x18\x06 \x01(\bR\fusePathStyle\x127\n" +
 	"\x18insecure_skip_tls_verify\x18\a \x01(\bR\x15insecureSkipTlsVerifyB\b\n" +
-	"\x06config\x1a\x9d\x01\n" +
-	"\x12MemoRelatedSetting\x120\n" +
-	"\x14content_length_limit\x18\x01 \x01(\x05R\x12contentLengthLimit\x12\x1c\n" +
-	"\treactions\x18\x02 \x03(\tR\treactions\x127\n" +
-	"\x18enable_double_click_edit\x18\x03 \x01(\bR\x15enableDoubleClickEdit\x1a\xb4\x01\n" +
+	"\x06config\x1ak\n" +
+	"\x12MemoRelatedSetting\x127\n" +
+	"\x18enable_double_click_edit\x18\x01 \x01(\bR\x15enableDoubleClickEdit\x12\x1c\n" +
+	"\treactions\x18\x02 \x03(\tR\treactions\x1a\xb4\x01\n" +
 	"\vTagsSetting\x12D\n" +
 	"\x04tags\x18\x01 \x03(\v20.memos.api.InstanceSetting.TagsSetting.TagsEntryR\x04tags\x1a_\n" +
 	"\tTagsEntry\x12\x10\n" +
@@ -2946,7 +2940,7 @@ const file_api_instance_service_proto_rawDesc = "" +
 	"\x06driver\x18\x01 \x01(\tR\x06driver\x12\x1d\n" +
 	"\n" +
 	"size_bytes\x18\x02 \x01(\x03R\tsizeBytes\"\x19\n" +
-	"\x17GetInstanceStatsRequest\"\xd2\x03\n" +
+	"\x17GetInstanceStatsRequest\"\xef\x03\n" +
 	"\n" +
 	"UsageLimit\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12<\n" +
@@ -2957,12 +2951,14 @@ const file_api_instance_service_proto_rawDesc = "" +
 	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime\x12@\n" +
 	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\"P\n" +
+	"updateTime\"m\n" +
 	"\x06Metric\x12\x16\n" +
-	"\x12METRIC_UNSPECIFIED\x10\x00\x12\t\n" +
-	"\x05MEMOS\x10\x01\x12\x11\n" +
-	"\rSTORAGE_BYTES\x10\x02\x12\x10\n" +
-	"\fUPLOAD_BYTES\x10\x03:M\xeaAJ\n" +
+	"\x12METRIC_UNSPECIFIED\x10\x00\x12\x0e\n" +
+	"\n" +
+	"MEMO_COUNT\x10\x01\x12\x16\n" +
+	"\x12MEMO_CONTENT_BYTES\x10\x02\x12\x11\n" +
+	"\rSTORAGE_BYTES\x10\x03\x12\x10\n" +
+	"\fUPLOAD_BYTES\x10\x04:M\xeaAJ\n" +
 	"\x14memos.api/UsageLimit\x12\x19usageLimits/{usage_limit}*\vusageLimits2\n" +
 	"usageLimit\"{\n" +
 	"\x16ListUsageLimitsRequest\x12 \n" +

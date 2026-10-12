@@ -441,21 +441,16 @@
       "summary-column": "まとめ"
     },
     "memo": {
-      "content-length-limit": "内容の最大長（バイト）",
       "label": "メモ",
       "reactions": "リアクション",
       "reactions-required": "リアクションリストは空にできません",
       "add-reaction": "リアクションを追加",
       "configured-reactions": "設定された反応",
-      "content-length-limit-description": "サーバーが受け入れるメモ本体の最大サイズ。",
       "double-click-edit-description": "ユーザーがメモをダブルクリックしてメモ編集を開くことができるようにします。",
-      "editing-description": "メモの編集動作とサーバー側のコンテンツ制限を制御します。",
       "editing-title": "編集",
       "reaction-placeholder": "例えば 👍",
       "reactions-description": "ユーザーがメモに適用できる反応オプションを定義します。",
-      "remove-reaction": "反応を取り除く",
-      "content-length-limit-error": "コンテンツの長さ制限は、{{min}}バイトから{{max}}バイトまでの整数である必要があります。",
-      "content-length-limit-minimum": "最小サイズ: {{min}} バイト"
+      "remove-reaction": "反応を取り除く"
     },
     "my-account": {
       "label": "アカウント設定"
@@ -608,9 +603,12 @@
       "all-users-placeholder": "All users: {{value}}",
       "all-users-title": "Limits for all users",
       "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
+      "content-size": "Memo content (KiB)",
+      "content-size-column": "Memo content",
+      "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
-      "invalid": "Enter a whole number of memos, or a size in MiB.",
+      "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
       "label": "Usage limits",
       "memos": "Memos",
       "memos-description": "Includes comments and archived memos.",

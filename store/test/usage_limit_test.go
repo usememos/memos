@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/types/known/emptypb"
 
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
@@ -17,7 +18,14 @@ import (
 )
 
 func usageLimit(uid string, metric storepb.InstanceUsageLimitsSetting_Metric, userID int32, value int64) *storepb.InstanceUsageLimitsSetting_UsageLimit {
-	return &storepb.InstanceUsageLimitsSetting_UsageLimit{Uid: uid, Metric: metric, UserId: userID, Value: value}
+	limit := &storepb.InstanceUsageLimitsSetting_UsageLimit{
+		Uid: uid, Metric: metric, Value: value,
+		Target: &storepb.InstanceUsageLimitsSetting_UsageLimit_AllUsers{AllUsers: &emptypb.Empty{}},
+	}
+	if userID != 0 {
+		limit.Target = &storepb.InstanceUsageLimitsSetting_UsageLimit_UserId{UserId: userID}
+	}
+	return limit
 }
 
 func storedUsageLimitUIDs(ctx context.Context, t *testing.T, ts *store.Store) []string {
@@ -116,25 +124,27 @@ func TestUsageLimitLifecycle(t *testing.T) {
 
 	setting, err := ts.GetInstanceUsageLimitsSetting(ctx)
 	require.NoError(t, err)
-	require.Empty(t, setting.Limits, "an instance starts with no usage limits")
+	require.Len(t, setting.Limits, 2)
+	require.Equal(t, "default-upload", setting.Limits[0].Uid)
+	require.Equal(t, store.DefaultUploadBytes, setting.Limits[0].Value)
 
-	created, err := ts.CreateUsageLimit(ctx, usageLimit("default-memos", storepb.InstanceUsageLimitsSetting_MEMOS, 0, 1000))
+	created, err := ts.CreateUsageLimit(ctx, usageLimit("default-memos", storepb.InstanceUsageLimitsSetting_MEMO_COUNT, 0, 1000))
 	require.NoError(t, err)
 	require.NotNil(t, created.CreateTime)
 	require.Equal(t, created.CreateTime.AsTime(), created.UpdateTime.AsTime())
 	_, err = ts.CreateUsageLimit(ctx, usageLimit("alice-storage", storepb.InstanceUsageLimitsSetting_STORAGE_BYTES, alice.ID, 5<<30))
 	require.NoError(t, err)
-	require.Equal(t, []string{"default-memos", "alice-storage"}, storedUsageLimitUIDs(ctx, t, ts))
+	require.Equal(t, []string{"default-upload", "default-memo-content", "default-memos", "alice-storage"}, storedUsageLimitUIDs(ctx, t, ts))
 
 	_, err = ts.CreateUsageLimit(ctx, usageLimit("default-memos", storepb.InstanceUsageLimitsSetting_STORAGE_BYTES, 0, 1))
 	require.ErrorIs(t, err, store.ErrUsageLimitAlreadyExists, "IDs are unique")
-	_, err = ts.CreateUsageLimit(ctx, usageLimit("other-memos", storepb.InstanceUsageLimitsSetting_MEMOS, 0, 1))
+	_, err = ts.CreateUsageLimit(ctx, usageLimit("other-memos", storepb.InstanceUsageLimitsSetting_MEMO_COUNT, 0, 1))
 	require.ErrorIs(t, err, store.ErrUsageLimitAlreadyExists, "one default per metric")
 	_, err = ts.CreateUsageLimit(ctx, usageLimit("alice-storage-2", storepb.InstanceUsageLimitsSetting_STORAGE_BYTES, alice.ID, 1))
 	require.ErrorIs(t, err, store.ErrUsageLimitAlreadyExists, "one limit per metric and user")
-	_, err = ts.CreateUsageLimit(ctx, usageLimit("negative", storepb.InstanceUsageLimitsSetting_UPLOAD_BYTES, 0, -1))
+	_, err = ts.CreateUsageLimit(ctx, usageLimit("negative", storepb.InstanceUsageLimitsSetting_UPLOAD_BYTES, alice.ID, -1))
 	require.ErrorIs(t, err, store.ErrInvalidUsageLimit)
-	_, err = ts.CreateUsageLimit(ctx, usageLimit("Bad_ID", storepb.InstanceUsageLimitsSetting_UPLOAD_BYTES, 0, 1))
+	_, err = ts.CreateUsageLimit(ctx, usageLimit("Bad_ID", storepb.InstanceUsageLimitsSetting_UPLOAD_BYTES, alice.ID, 1))
 	require.ErrorIs(t, err, store.ErrInvalidUsageLimit)
 	_, err = ts.CreateUsageLimit(ctx, usageLimit("no-metric", storepb.InstanceUsageLimitsSetting_METRIC_UNSPECIFIED, 0, 1))
 	require.ErrorIs(t, err, store.ErrInvalidUsageLimit)
@@ -148,13 +158,50 @@ func TestUsageLimitLifecycle(t *testing.T) {
 
 	require.NoError(t, ts.DeleteUsageLimit(ctx, "alice-storage"))
 	require.ErrorIs(t, ts.DeleteUsageLimit(ctx, "alice-storage"), store.ErrUsageLimitNotFound)
-	require.Equal(t, []string{"default-memos"}, storedUsageLimitUIDs(ctx, t, ts))
+	require.Equal(t, []string{"default-upload", "default-memo-content", "default-memos"}, storedUsageLimitUIDs(ctx, t, ts))
 
 	// The row is store only: the generic setting reads see it, but its key has
 	// no API counterpart, and it round-trips through the raw conversion.
 	stored, err := ts.GetStoredInstanceSetting(ctx, &store.FindInstanceSetting{Name: storepb.InstanceSettingKey_USAGE_LIMITS.String()})
 	require.NoError(t, err)
-	require.Equal(t, int64(2000), stored.GetUsageLimitsSetting().Limits[0].Value)
+	require.Equal(t, int64(2000), stored.GetUsageLimitsSetting().Limits[2].Value)
+}
+
+func TestUsageLimitDefaultSetting(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	defer ts.Close()
+
+	setting, err := ts.GetInstanceUsageLimitsSetting(ctx)
+	require.NoError(t, err)
+	require.Len(t, setting.Limits, 2)
+	require.Equal(t, storepb.InstanceUsageLimitsSetting_UPLOAD_BYTES, setting.Limits[0].Metric)
+	require.NotNil(t, setting.Limits[0].GetAllUsers())
+	require.Equal(t, store.DefaultUploadBytes, setting.Limits[0].Value)
+	require.Equal(t, store.DefaultMemoContentBytes, setting.Limits[1].Value)
+	require.Equal(t, storepb.InstanceUsageLimitsSetting_MEMO_CONTENT_BYTES, setting.Limits[1].Metric)
+	stored, err := ts.GetStoredInstanceSetting(ctx, &store.FindInstanceSetting{Name: storepb.InstanceSettingKey_USAGE_LIMITS.String()})
+	require.NoError(t, err)
+	require.Nil(t, stored, "reading defaults does not persist a setting")
+
+	setting.Limits[0].Value = 1
+	setting, err = ts.GetInstanceUsageLimitsSetting(ctx)
+	require.NoError(t, err)
+	require.Equal(t, store.DefaultUploadBytes, setting.Limits[0].Value, "each read returns fresh defaults")
+
+	updated, err := ts.UpdateUsageLimit(ctx, "default-upload", 0)
+	require.NoError(t, err)
+	require.Zero(t, updated.Value)
+	setting, err = ts.GetInstanceUsageLimitsSetting(ctx)
+	require.NoError(t, err)
+	require.Zero(t, setting.Limits[0].Value, "an explicit zero remains unlimited")
+
+	require.NoError(t, ts.DeleteUsageLimit(ctx, "default-upload"))
+	require.NoError(t, ts.DeleteUsageLimit(ctx, "default-memo-content"))
+	setting, err = ts.GetInstanceUsageLimitsSetting(ctx)
+	require.NoError(t, err)
+	require.Empty(t, setting.Limits, "a stored empty setting does not restore defaults")
 }
 
 func TestUsageLimitCap(t *testing.T) {
@@ -167,11 +214,54 @@ func TestUsageLimitCap(t *testing.T) {
 	for i := range store.MaxUsageLimits {
 		// Writes prune limits of missing users, so the cap is checked on the
 		// validator that every write runs.
-		limits = append(limits, usageLimit(fmt.Sprintf("limit-%d", i), storepb.InstanceUsageLimitsSetting_MEMOS, int32(i), 1))
+		limits = append(limits, usageLimit(fmt.Sprintf("limit-%d", i), storepb.InstanceUsageLimitsSetting_MEMO_COUNT, int32(i), 1))
 	}
 	require.NoError(t, store.ValidateInstanceUsageLimitsSetting(&storepb.InstanceUsageLimitsSetting{Limits: limits}))
 	limits = append(limits, usageLimit("one-too-many", storepb.InstanceUsageLimitsSetting_STORAGE_BYTES, 0, 1))
 	require.ErrorIs(t, store.ValidateInstanceUsageLimitsSetting(&storepb.InstanceUsageLimitsSetting{Limits: limits}), store.ErrInvalidUsageLimit)
+}
+
+func TestUsageLimitTargetValidation(t *testing.T) {
+	for name, target := range map[string]*storepb.InstanceUsageLimitsSetting_UsageLimit{
+		"missing target": {Uid: "invalid-target", Metric: storepb.InstanceUsageLimitsSetting_MEMO_COUNT, Value: 1},
+		"zero user": {Uid: "invalid-target", Metric: storepb.InstanceUsageLimitsSetting_MEMO_COUNT, Value: 1,
+			Target: &storepb.InstanceUsageLimitsSetting_UsageLimit_UserId{UserId: 0}},
+		"negative user": usageLimit("invalid-target", storepb.InstanceUsageLimitsSetting_MEMO_COUNT, -1, 1),
+		"nil all users": {Uid: "invalid-target", Metric: storepb.InstanceUsageLimitsSetting_MEMO_COUNT, Target: &storepb.InstanceUsageLimitsSetting_UsageLimit_AllUsers{}},
+	} {
+		t.Run(name, func(t *testing.T) {
+			err := store.ValidateInstanceUsageLimitsSetting(&storepb.InstanceUsageLimitsSetting{Limits: []*storepb.InstanceUsageLimitsSetting_UsageLimit{target}})
+			require.ErrorIs(t, err, store.ErrInvalidUsageLimit)
+		})
+	}
+	for name, userID := range map[string]int32{"duplicate default": 0, "duplicate user": 7} {
+		t.Run(name, func(t *testing.T) {
+			err := store.ValidateInstanceUsageLimitsSetting(&storepb.InstanceUsageLimitsSetting{Limits: []*storepb.InstanceUsageLimitsSetting_UsageLimit{
+				usageLimit("first", storepb.InstanceUsageLimitsSetting_MEMO_COUNT, userID, 1),
+				usageLimit("second", storepb.InstanceUsageLimitsSetting_MEMO_COUNT, userID, 0),
+			}})
+			require.ErrorIs(t, err, store.ErrUsageLimitAlreadyExists)
+		})
+	}
+}
+
+func TestUsageLimitsRejectMissingTarget(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	defer ts.Close()
+	invalid := &storepb.InstanceUsageLimitsSetting_UsageLimit{Uid: "missing-target", Metric: storepb.InstanceUsageLimitsSetting_MEMO_COUNT, Value: 1}
+	_, err := ts.CreateUsageLimit(ctx, invalid)
+	require.ErrorIs(t, err, store.ErrInvalidUsageLimit)
+	_, err = ts.GetDriver().UpsertInstanceSetting(ctx, &store.InstanceSetting{
+		Name:  storepb.InstanceSettingKey_USAGE_LIMITS.String(),
+		Value: `{"limits":[{"uid":"missing-target","metric":"MEMO_COUNT","value":"1"}]}`,
+	})
+	require.NoError(t, err)
+	_, err = ts.GetInstanceUsageLimitsSetting(ctx)
+	require.ErrorIs(t, err, store.ErrInvalidUsageLimit, "a missing target fails closed instead of removing a limit")
+	_, err = ts.UpdateUsageLimit(ctx, "missing-target", 2)
+	require.ErrorIs(t, err, store.ErrInvalidUsageLimit)
 }
 
 func TestDeleteUserRemovesUsageLimits(t *testing.T) {
@@ -186,8 +276,8 @@ func TestDeleteUserRemovesUsageLimits(t *testing.T) {
 	for _, limit := range []*storepb.InstanceUsageLimitsSetting_UsageLimit{
 		usageLimit("default-storage", storepb.InstanceUsageLimitsSetting_STORAGE_BYTES, 0, 1<<30),
 		usageLimit("alice-storage", storepb.InstanceUsageLimitsSetting_STORAGE_BYTES, alice.ID, 5<<30),
-		usageLimit("alice-memos", storepb.InstanceUsageLimitsSetting_MEMOS, alice.ID, 10),
-		usageLimit("bob-memos", storepb.InstanceUsageLimitsSetting_MEMOS, bob.ID, 20),
+		usageLimit("alice-memos", storepb.InstanceUsageLimitsSetting_MEMO_COUNT, alice.ID, 10),
+		usageLimit("bob-memos", storepb.InstanceUsageLimitsSetting_MEMO_COUNT, bob.ID, 20),
 	} {
 		_, err := ts.CreateUsageLimit(ctx, limit)
 		require.NoError(t, err)
@@ -195,7 +285,7 @@ func TestDeleteUserRemovesUsageLimits(t *testing.T) {
 
 	_, err = ts.DeleteUser(ctx, &store.DeleteUser{ID: alice.ID})
 	require.NoError(t, err)
-	require.Equal(t, []string{"default-storage", "bob-memos"}, storedUsageLimitUIDs(ctx, t, ts))
+	require.Equal(t, []string{"default-upload", "default-memo-content", "default-storage", "bob-memos"}, storedUsageLimitUIDs(ctx, t, ts))
 }
 
 func TestUsageLimitWritesPruneMissingUsers(t *testing.T) {
@@ -209,11 +299,11 @@ func TestUsageLimitWritesPruneMissingUsers(t *testing.T) {
 	// An entry for a user that no longer exists, as a failed cleanup would leave.
 	_, err = ts.GetDriver().UpsertInstanceSetting(ctx, &store.InstanceSetting{
 		Name:  storepb.InstanceSettingKey_USAGE_LIMITS.String(),
-		Value: `{"limits":[{"uid":"ghost-memos","metric":"MEMOS","userId":99999,"value":"1"}]}`,
+		Value: `{"limits":[{"uid":"ghost-memos","metric":"MEMO_COUNT","userId":99999,"value":"1"}]}`,
 	})
 	require.NoError(t, err)
 
-	_, err = ts.CreateUsageLimit(ctx, usageLimit("alice-memos", storepb.InstanceUsageLimitsSetting_MEMOS, alice.ID, 5))
+	_, err = ts.CreateUsageLimit(ctx, usageLimit("alice-memos", storepb.InstanceUsageLimitsSetting_MEMO_COUNT, alice.ID, 5))
 	require.NoError(t, err)
 	require.Equal(t, []string{"alice-memos"}, storedUsageLimitUIDs(ctx, t, ts))
 }
@@ -223,32 +313,38 @@ func TestUsageLimitsDeploymentFile(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	defer ts.Close()
-	_, err := ts.CreateUsageLimit(ctx, usageLimit("stored-memos", storepb.InstanceUsageLimitsSetting_MEMOS, 0, 10))
+	alice, err := ts.CreateUser(ctx, &store.User{Username: "alice", Role: store.RoleUser, PasswordHash: "hash"})
+	require.NoError(t, err)
+	_, err = ts.CreateUsageLimit(ctx, usageLimit("stored-memos", storepb.InstanceUsageLimitsSetting_MEMO_COUNT, 0, 10))
 	require.NoError(t, err)
 
 	dir := t.TempDir()
 	path := filepath.Join(dir, "memos-instance-setting-usage-limits.json")
 	require.NoError(t, os.WriteFile(path, []byte(`{"key":"USAGE_LIMITS","usageLimitsSetting":{"limits":[
-		{"uid":"default-storage","metric":"STORAGE_BYTES","value":"1073741824"},
-		{"uid":"alice-storage","metric":"STORAGE_BYTES","userId":7,"value":"5368709120"}
+		{"uid":"default-storage","metric":"STORAGE_BYTES","allUsers":{},"value":"1073741824"},
+		{"uid":"alice-storage","metric":"STORAGE_BYTES","userId":`+fmt.Sprint(alice.ID)+`,"value":"5368709120"}
 	]}}`), 0o600))
 	require.NoError(t, ts.LoadDeploymentConfigurationDir(ctx, dir))
 
 	require.Equal(t, []string{"default-storage", "alice-storage"}, storedUsageLimitUIDs(ctx, t, ts), "the file shadows the stored row")
+	effective, err := ts.GetInstanceUsageLimitsSetting(ctx)
+	require.NoError(t, err)
+	require.NotNil(t, effective.Limits[0].GetAllUsers())
+	require.Equal(t, alice.ID, effective.Limits[1].GetUserId())
 	_, err = ts.CreateUsageLimit(ctx, usageLimit("new-memos", storepb.InstanceUsageLimitsSetting_UPLOAD_BYTES, 0, 1))
 	require.ErrorIs(t, err, store.ErrUsageLimitsDeploymentConfigured)
 	require.ErrorIs(t, ts.DeleteUsageLimit(ctx, "default-storage"), store.ErrUsageLimitsDeploymentConfigured)
-	require.NoError(t, ts.DeleteUsageLimitsForUser(ctx, 7), "user deletion cleanup skips file-provided limits")
+	require.NoError(t, ts.DeleteUsageLimitsForUser(ctx, alice.ID), "user deletion cleanup skips file-provided limits")
 
 	stored, err := ts.GetStoredInstanceSetting(ctx, &store.FindInstanceSetting{Name: storepb.InstanceSettingKey_USAGE_LIMITS.String()})
 	require.NoError(t, err)
-	require.Equal(t, "stored-memos", stored.GetUsageLimitsSetting().Limits[0].Uid, "the stored row is unchanged")
+	require.Equal(t, "stored-memos", stored.GetUsageLimitsSetting().Limits[2].Uid, "the stored row is unchanged")
 
 	for name, content := range map[string]string{
 		"missing value":  `{"key":"USAGE_LIMITS"}`,
-		"negative value": `{"key":"USAGE_LIMITS","usageLimitsSetting":{"limits":[{"uid":"bad","metric":"MEMOS","value":"-1"}]}}`,
-		"duplicate pair": `{"key":"USAGE_LIMITS","usageLimitsSetting":{"limits":[{"uid":"a","metric":"MEMOS","value":"1"},{"uid":"b","metric":"MEMOS","value":"2"}]}}`,
-		"unknown field":  `{"key":"USAGE_LIMITS","usageLimitsSetting":{"limits":[{"uid":"a","metric":"MEMOS","value":"1","plan":"pro"}]}}`,
+		"negative value": `{"key":"USAGE_LIMITS","usageLimitsSetting":{"limits":[{"uid":"bad","metric":"MEMO_COUNT","allUsers":{},"value":"-1"}]}}`,
+		"duplicate pair": `{"key":"USAGE_LIMITS","usageLimitsSetting":{"limits":[{"uid":"a","metric":"MEMO_COUNT","allUsers":{},"value":"1"},{"uid":"b","metric":"MEMO_COUNT","allUsers":{},"value":"2"}]}}`,
+		"unknown field":  `{"key":"USAGE_LIMITS","usageLimitsSetting":{"limits":[{"uid":"a","metric":"MEMO_COUNT","value":"1","plan":"pro"}]}}`,
 	} {
 		invalidDir := t.TempDir()
 		require.NoError(t, os.WriteFile(filepath.Join(invalidDir, "memos-instance-setting-usage-limits.json"), []byte(content), 0o600))
@@ -277,9 +373,9 @@ func TestUsageLimitsAcrossReplicas(t *testing.T) {
 	// Warm the second replica's settings cache; usage limit reads must bypass it.
 	_, err := second.GetInstanceUsageLimitsSetting(ctx)
 	require.NoError(t, err)
-	_, err = first.CreateUsageLimit(ctx, usageLimit("default-memos", storepb.InstanceUsageLimitsSetting_MEMOS, 0, 3))
+	_, err = first.CreateUsageLimit(ctx, usageLimit("default-memos", storepb.InstanceUsageLimitsSetting_MEMO_COUNT, 0, 3))
 	require.NoError(t, err)
-	require.Equal(t, []string{"default-memos"}, storedUsageLimitUIDs(ctx, t, second))
+	require.Equal(t, []string{"default-upload", "default-memo-content", "default-memos"}, storedUsageLimitUIDs(ctx, t, second))
 
 	users := make([]*store.User, 6)
 	for i := range users {
@@ -322,7 +418,7 @@ func TestUsageLimitsAcrossReplicas(t *testing.T) {
 		}
 		uid := fmt.Sprintf("memos-user-%d", i)
 		wg.Go(func() {
-			_, err := replica.CreateUsageLimit(ctx, usageLimit(uid, storepb.InstanceUsageLimitsSetting_MEMOS, user.ID, 5))
+			_, err := replica.CreateUsageLimit(ctx, usageLimit(uid, storepb.InstanceUsageLimitsSetting_MEMO_COUNT, user.ID, 5))
 			if err == nil {
 				mu.Lock()
 				created = append(created, uid)
@@ -340,7 +436,7 @@ func TestUsageLimitsAcrossReplicas(t *testing.T) {
 	for _, uid := range created {
 		require.Contains(t, stored, uid)
 	}
-	require.Len(t, stored, 2+len(created))
+	require.Len(t, stored, 4+len(created))
 }
 
 // isExpectedUsageLimitRace reports the errors a losing concurrent writer may

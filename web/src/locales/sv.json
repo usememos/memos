@@ -441,21 +441,16 @@
       "summary-column": "Sammanfattning"
     },
     "memo": {
-      "content-length-limit": "Innehållslängdsgräns (Byte)",
       "label": "Anteckning",
       "reactions": "Reaktioner",
       "reactions-required": "Reaktionslistan får inte vara tom",
       "add-reaction": "Lägg till reaktion",
       "configured-reactions": "Konfigurerade reaktioner",
-      "content-length-limit-description": "Maximal memostorlek accepteras av servern.",
       "double-click-edit-description": "Tillåt användare att öppna memoredigering genom att dubbelklicka på ett memo.",
-      "editing-description": "Kontrollera memoredigeringsbeteende och innehållsgränser på serversidan.",
       "editing-title": "Redigering",
       "reaction-placeholder": "till exempel 👍",
       "reactions-description": "Definiera reaktionsalternativen som användare kan tillämpa på anteckningar.",
-      "remove-reaction": "Ta bort reaktionen",
-      "content-length-limit-error": "Innehållslängdsgränsen måste vara ett heltal mellan {{min}} och {{max}} byte.",
-      "content-length-limit-minimum": "Minimum: {{min}} byte"
+      "remove-reaction": "Ta bort reaktionen"
     },
     "my-account": {
       "label": "Mitt konto"
@@ -608,9 +603,12 @@
       "all-users-placeholder": "All users: {{value}}",
       "all-users-title": "Limits for all users",
       "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
+      "content-size": "Memo content (KiB)",
+      "content-size-column": "Memo content",
+      "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
-      "invalid": "Enter a whole number of memos, or a size in MiB.",
+      "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
       "label": "Usage limits",
       "memos": "Memos",
       "memos-description": "Includes comments and archived memos.",

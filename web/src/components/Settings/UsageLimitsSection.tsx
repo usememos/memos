@@ -125,7 +125,12 @@ const UsageLimitsSection = () => {
                 </div>
               ),
           },
-          { key: "memos", header: t("setting.usage-limits.memos"), render: renderLimit(UsageLimit_Metric.MEMOS) },
+          { key: "memos", header: t("setting.usage-limits.memos"), render: renderLimit(UsageLimit_Metric.MEMO_COUNT) },
+          {
+            key: "contentSize",
+            header: t("setting.usage-limits.content-size-column"),
+            render: renderLimit(UsageLimit_Metric.MEMO_CONTENT_BYTES),
+          },
           { key: "storage", header: t("setting.usage-limits.storage-column"), render: renderLimit(UsageLimit_Metric.STORAGE_BYTES) },
           { key: "fileSize", header: t("setting.usage-limits.file-size-column"), render: renderLimit(UsageLimit_Metric.UPLOAD_BYTES) },
           {

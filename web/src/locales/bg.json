@@ -524,19 +524,14 @@
     "memo": {
       "add-reaction": "Добавете реакция",
       "configured-reactions": "Конфигурирани реакции",
-      "content-length-limit": "Ограничение за дължина на съдържанието (байтове)",
-      "content-length-limit-description": "Максимален размер на тялото на бележката, приет от сървъра.",
       "double-click-edit-description": "Позволете на потребителите да отварят редактиране на бележки чрез двукратно щракване върху бележка.",
-      "editing-description": "Контролирайте поведението при редактиране на бележки и ограниченията на съдържанието от страна на сървъра.",
       "editing-title": "Редактиране",
       "label": "Бележка",
       "reaction-placeholder": "напр. 👍",
       "reactions-description": "Определете опциите за реакция, които потребителите могат да прилагат към бележките.",
       "remove-reaction": "Премахнете реакцията",
       "reactions": "Reactions",
-      "reactions-required": "Списъкът Reactions не трябва да е празен",
-      "content-length-limit-error": "Ограничението за дължина на съдържанието трябва да е цяло число между {{min}} и {{max}} байта.",
-      "content-length-limit-minimum": "Минимум: {{min}} байта"
+      "reactions-required": "Списъкът Reactions не трябва да е празен"
     },
     "my-account": {
       "label": "Моят акаунт"
@@ -724,9 +719,12 @@
       "all-users-placeholder": "All users: {{value}}",
       "all-users-title": "Limits for all users",
       "description": "Keep this instance fast and reliable by capping what each user can store. All users applies to everyone, and a user's own limits replace it. Gray values come from All users.",
+      "content-size": "Memo content (KiB)",
+      "content-size-column": "Memo content",
+      "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
       "file-size": "Largest file (MiB)",
       "file-size-column": "Largest file",
-      "invalid": "Enter a whole number of memos, or a size in MiB.",
+      "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
       "label": "Usage limits",
       "memos": "Memos",
       "memos-description": "Includes comments and archived memos.",

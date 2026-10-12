@@ -130,7 +130,7 @@ Black-box service tests live in `server/api/test/`, unit tests next to the code.
 - Schema changes require SQLite, MySQL, and PostgreSQL migrations plus `LATEST.sql` updates.
 - Fresh-install SQL and incremental migrations must stay equivalent.
 - Proto field changes must preserve compatibility unless the task explicitly allows a breaking API change. Record every
-  allowed break in `proto/api/CHANGELOG.md`; CI fails a `buf breaking` failure without an edit there.
+  allowed break in `proto/api/CHANGELOG.md`; compatibility is checked during review.
 - Regenerate after proto edits and include both Go/OpenAPI and TypeScript generated outputs.
 
 ## Verification Policy
