@@ -30,6 +30,9 @@ on:
       - "scripts/install*"
       - ".github/workflows/release.yml"
       - ".github/workflows/upgrade-smoke.yml"
+permissions:
+  contents: read
+
 
 concurrency:
   # Keep this distinct from a caller's concurrency group when the workflow is

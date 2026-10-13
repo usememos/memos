@@ -11,6 +11,9 @@ on:
       - "**.go"
       - ".golangci.yaml"
       - ".github/workflows/backend-tests.yml"
+permissions:
+  contents: read
+
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
