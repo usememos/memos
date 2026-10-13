@@ -50,4 +50,5 @@ export function findIslands(editor: Editor, root: HTMLElement, linkPreviewEnable
 
 /** Whether two passes produced the same islands, so React can skip a render. */
 export const sameIslands = (a: readonly Island[], b: readonly Island[]): boolean =>
-  a.length === b.length && a.every((island, index) => island.key === b[index].key && island.target === b[index].target);
+  a.length === b.length &&
+  a.every((island, index) => island.key === b[index].key && island.target === b[index].target && island.href === b[index].href);
