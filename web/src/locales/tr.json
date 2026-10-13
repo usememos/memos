@@ -177,9 +177,7 @@
     "exit-focus-mode": "Odak modundan çık",
     "focus-mode": "Odak modu",
     "comment": "Yorum yap",
-    "formatting-toolbar": "Biçimlendirme araç çubuğu",
     "format": {
-      "heading": "Başlık",
       "paragraph": "Paragraf",
       "heading-1": "Başlık 1",
       "heading-2": "Başlık 2",
@@ -191,8 +189,7 @@
       "bullet-list": "Madde işaretli liste",
       "ordered-list": "Numaralı liste",
       "task-list": "Yapılacaklar listesi",
-      "link": "Bağlantı",
-      "more": "Diğer biçimlendirme seçenekleri"
+      "link": "Bağlantı"
     },
     "insert-menu": {
       "add-attachment": "Ek ekle",
@@ -235,6 +232,32 @@
       "transcribe-error": "Ses metne dönüştürülemedi",
       "transcribe-success": "Transkripsiyon eklendi",
       "transcribing": "Metne dönüştürülüyor..."
+    },
+    "blocks": {
+      "task": "Görev",
+      "quote": "Alıntı",
+      "table": "Tablo",
+      "divider": "Ayırıcı",
+      "no-results": "Sonuç yok",
+      "commands": "Komutlar",
+      "loading": "Yükleniyor…",
+      "duplicate": "Çoğalt",
+      "inline-code": "Kod",
+      "link-placeholder": "Bağlantı yapıştırın veya yazın…",
+      "remove-link": "Bağlantıyı kaldır",
+      "slash-hint": "Komutlar için \"/\" yazın",
+      "block-menu": "Blok menüsünü aç",
+      "list-hint": "Liste",
+      "plain-text": "metin",
+      "add-row-above": "Üste satır ekle",
+      "add-row-below": "Alta satır ekle",
+      "add-column-left": "Sola sütun ekle",
+      "add-column-right": "Sağa sütun ekle",
+      "delete-row": "Satırı sil",
+      "delete-column": "Sütunu sil",
+      "align-left": "Sola hizala",
+      "align-center": "Ortala",
+      "align-right": "Sağa hizala"
     }
   },
   "inbox": {

@@ -183,7 +183,6 @@
     "format": {
       "code-block": "कोड ब्लॉक",
       "link": "लिंक",
-      "heading": "हेडिंग",
       "paragraph": "पैराग्राफ़",
       "heading-1": "हेडिंग 1",
       "heading-2": "हेडिंग 2",
@@ -193,11 +192,9 @@
       "strikethrough": "स्ट्राइकथ्रू",
       "bullet-list": "बुलेट लिस्ट",
       "ordered-list": "नंबर वाली लिस्ट",
-      "task-list": "टू-डू लिस्ट",
-      "more": "और फ़ॉर्मेटिंग"
+      "task-list": "टू-डू लिस्ट"
     },
     "comment": "कमेंट",
-    "formatting-toolbar": "फ़ॉर्मेटिंग टूलबार",
     "new-memo": "नया मेमो",
     "saved": "सेव किया गया",
     "validation": {
@@ -209,6 +206,32 @@
       "save-in-progress": "सेव हो रहा है",
       "unsupported-attachment-image-url": "अनसपोर्टेड अटैचमेंट इमेज URL: {{url}}",
       "wait-for-upload": "अपलोड पूरा होने का इंतज़ार करें"
+    },
+    "blocks": {
+      "task": "टास्क",
+      "quote": "कोट",
+      "table": "टेबल",
+      "divider": "डिवाइडर",
+      "no-results": "कोई परिणाम नहीं",
+      "commands": "कमांड",
+      "loading": "लोड हो रहा है…",
+      "duplicate": "डुप्लिकेट करें",
+      "inline-code": "कोड",
+      "link-placeholder": "लिंक पेस्ट करें या टाइप करें…",
+      "remove-link": "लिंक हटाएँ",
+      "slash-hint": "कमांड के लिए '/' टाइप करें",
+      "block-menu": "ब्लॉक मेन्यू खोलें",
+      "list-hint": "लिस्ट",
+      "plain-text": "टेक्स्ट",
+      "add-row-above": "ऊपर पंक्ति जोड़ें",
+      "add-row-below": "नीचे पंक्ति जोड़ें",
+      "add-column-left": "बाईं ओर कॉलम जोड़ें",
+      "add-column-right": "दाईं ओर कॉलम जोड़ें",
+      "delete-row": "पंक्ति हटाएँ",
+      "delete-column": "कॉलम हटाएँ",
+      "align-left": "बाएँ संरेखित करें",
+      "align-center": "बीच में संरेखित करें",
+      "align-right": "दाएँ संरेखित करें"
     }
   },
   "inbox": {

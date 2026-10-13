@@ -183,7 +183,6 @@
     "format": {
       "code-block": "Quellcode-Block",
       "link": "Link",
-      "heading": "Überschrift",
       "paragraph": "Absatz",
       "heading-1": "Überschrift 1",
       "heading-2": "Überschrift 2",
@@ -193,11 +192,9 @@
       "strikethrough": "Durchgestrichen",
       "bullet-list": "Stichpunktliste",
       "ordered-list": "Nummerierte Liste",
-      "task-list": "Aufgabenliste",
-      "more": "Weitere Formatierung"
+      "task-list": "Aufgabenliste"
     },
     "comment": "Kommentar",
-    "formatting-toolbar": "Formatierungsleiste",
     "new-memo": "Neues Memo",
     "saved": "Gespeichert",
     "validation": {
@@ -209,6 +206,32 @@
       "save-in-progress": "Speichern läuft",
       "unsupported-attachment-image-url": "Nicht unterstützte URL für Anhangsbild: {{url}}",
       "wait-for-upload": "Warten, bis der Upload abgeschlossen ist"
+    },
+    "blocks": {
+      "task": "Aufgabe",
+      "quote": "Zitat",
+      "table": "Tabelle",
+      "divider": "Trennlinie",
+      "no-results": "Keine Ergebnisse",
+      "commands": "Befehle",
+      "loading": "Wird geladen…",
+      "duplicate": "Duplizieren",
+      "inline-code": "Code",
+      "link-placeholder": "Link einfügen oder eingeben…",
+      "remove-link": "Link entfernen",
+      "slash-hint": "„/“ für Befehle eingeben",
+      "block-menu": "Blockmenü öffnen",
+      "list-hint": "Liste",
+      "plain-text": "Text",
+      "add-row-above": "Zeile oberhalb einfügen",
+      "add-row-below": "Zeile unterhalb einfügen",
+      "add-column-left": "Spalte links einfügen",
+      "add-column-right": "Spalte rechts einfügen",
+      "delete-row": "Zeile löschen",
+      "delete-column": "Spalte löschen",
+      "align-left": "Linksbündig",
+      "align-center": "Zentriert",
+      "align-right": "Rechtsbündig"
     }
   },
   "inbox": {

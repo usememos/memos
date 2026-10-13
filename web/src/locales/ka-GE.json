@@ -183,7 +183,6 @@
     "format": {
       "code-block": "კოდის ბლოკი",
       "link": "ლინკი",
-      "heading": "სათაური",
       "paragraph": "აბზაცი",
       "heading-1": "სათაური 1",
       "heading-2": "სათაური 2",
@@ -193,11 +192,9 @@
       "strikethrough": "გადახაზვა",
       "bullet-list": "პუნქტების სია",
       "ordered-list": "დანომრილი სია",
-      "task-list": "დავალებების სია",
-      "more": "დამატებითი ფორმატირება"
+      "task-list": "დავალებების სია"
     },
     "comment": "კომენტარი",
-    "formatting-toolbar": "ფორმატირების ხელსაწყოთა პანელი",
     "new-memo": "ახალი მემო",
     "saved": "შენახულია",
     "validation": {
@@ -209,6 +206,32 @@
       "save-in-progress": "შენახვა მიმდინარეობს",
       "unsupported-attachment-image-url": "დანართის სურათის URL, რომელიც არ არის მხარდაჭერილი: {{url}}",
       "wait-for-upload": "დაელოდეთ ატვირთვის დასრულებას"
+    },
+    "blocks": {
+      "task": "დავალება",
+      "quote": "ციტატა",
+      "table": "ცხრილი",
+      "divider": "გამყოფი",
+      "no-results": "შედეგები არ არის",
+      "commands": "ბრძანებები",
+      "loading": "იტვირთება…",
+      "duplicate": "დუბლირება",
+      "inline-code": "კოდი",
+      "link-placeholder": "ჩასვით ან აკრიფეთ ლინკი…",
+      "remove-link": "ლინკის წაშლა",
+      "slash-hint": "ბრძანებებისთვის აკრიფეთ „/“",
+      "block-menu": "ბლოკის მენიუს გახსნა",
+      "list-hint": "სია",
+      "plain-text": "ტექსტი",
+      "add-row-above": "მწკრივის დამატება ზემოთ",
+      "add-row-below": "მწკრივის დამატება ქვემოთ",
+      "add-column-left": "სვეტის დამატება მარცხნივ",
+      "add-column-right": "სვეტის დამატება მარჯვნივ",
+      "delete-row": "მწკრივის წაშლა",
+      "delete-column": "სვეტის წაშლა",
+      "align-left": "მარცხნივ სწორება",
+      "align-center": "ცენტრში სწორება",
+      "align-right": "მარჯვნივ სწორება"
     }
   },
   "inbox": {

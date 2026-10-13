@@ -221,7 +221,6 @@
     "format": {
       "code-block": "Koda bloks",
       "link": "Saite",
-      "heading": "Virsraksts",
       "paragraph": "Rindkopa",
       "heading-1": "1. virsraksts",
       "heading-2": "2. virsraksts",
@@ -231,11 +230,9 @@
       "strikethrough": "Pārsvītrojums",
       "bullet-list": "Aizzīmju saraksts",
       "ordered-list": "Numurēts saraksts",
-      "task-list": "Uzdevumu saraksts",
-      "more": "Papildu formatējums"
+      "task-list": "Uzdevumu saraksts"
     },
     "comment": "Komentārs",
-    "formatting-toolbar": "Formatēšanas rīkjosla",
     "new-memo": "Jauna piezīme",
     "saved": "Saglabāts",
     "validation": {
@@ -247,6 +244,32 @@
       "save-in-progress": "Notiek saglabāšana",
       "unsupported-attachment-image-url": "Neatbalstīts pielikuma attēla URL: {{url}}",
       "wait-for-upload": "Pagaidiet, līdz augšupielāde ir pabeigta"
+    },
+    "blocks": {
+      "task": "Uzdevums",
+      "quote": "Citāts",
+      "table": "Tabula",
+      "divider": "Atdalītājs",
+      "no-results": "Nav rezultātu",
+      "commands": "Komandas",
+      "loading": "Ielādē…",
+      "duplicate": "Dublēt",
+      "inline-code": "Kods",
+      "link-placeholder": "Ielīmējiet vai ierakstiet saiti…",
+      "remove-link": "Noņemt saiti",
+      "slash-hint": "Ierakstiet “/”, lai skatītu komandas",
+      "block-menu": "Atvērt bloka izvēlni",
+      "list-hint": "Saraksts",
+      "plain-text": "teksts",
+      "add-row-above": "Pievienot rindu augšā",
+      "add-row-below": "Pievienot rindu apakšā",
+      "add-column-left": "Pievienot kolonnu pa kreisi",
+      "add-column-right": "Pievienot kolonnu pa labi",
+      "delete-row": "Dzēst rindu",
+      "delete-column": "Dzēst kolonnu",
+      "align-left": "Līdzināt pa kreisi",
+      "align-center": "Centrēt",
+      "align-right": "Līdzināt pa labi"
     }
   },
   "inbox": {

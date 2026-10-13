@@ -183,7 +183,6 @@
     "format": {
       "code-block": "Blok kódu",
       "link": "Odkaz",
-      "heading": "Nadpis",
       "paragraph": "Odstavec",
       "heading-1": "Nadpis 1",
       "heading-2": "Nadpis 2",
@@ -193,11 +192,9 @@
       "strikethrough": "Přeškrtnuté",
       "bullet-list": "Odrážka seznam",
       "ordered-list": "Číslovaný seznam",
-      "task-list": "Seznam úkolů",
-      "more": "Další formátování"
+      "task-list": "Seznam úkolů"
     },
     "comment": "Komentář",
-    "formatting-toolbar": "Panel nástrojů Formátování",
     "new-memo": "Nová poznámka",
     "saved": "Uloženo",
     "validation": {
@@ -209,6 +206,32 @@
       "save-in-progress": "Probíhá ukládání",
       "unsupported-attachment-image-url": "Nepodporovaná adresa URL obrázku přílohy: {{url}}",
       "wait-for-upload": "Počkejte na dokončení nahrávání"
+    },
+    "blocks": {
+      "task": "Úkol",
+      "quote": "Citace",
+      "table": "Tabulka",
+      "divider": "Oddělovač",
+      "no-results": "Žádné výsledky",
+      "commands": "Příkazy",
+      "loading": "Načítání…",
+      "duplicate": "Duplikovat",
+      "inline-code": "Kód",
+      "link-placeholder": "Vložte nebo zadejte odkaz…",
+      "remove-link": "Odstranit odkaz",
+      "slash-hint": "Napište „/“ pro příkazy",
+      "block-menu": "Otevřít nabídku bloku",
+      "list-hint": "Seznam",
+      "plain-text": "text",
+      "add-row-above": "Přidat řádek nad",
+      "add-row-below": "Přidat řádek pod",
+      "add-column-left": "Přidat sloupec vlevo",
+      "add-column-right": "Přidat sloupec vpravo",
+      "delete-row": "Smazat řádek",
+      "delete-column": "Smazat sloupec",
+      "align-left": "Zarovnat vlevo",
+      "align-center": "Zarovnat na střed",
+      "align-right": "Zarovnat vpravo"
     }
   },
   "inbox": {

@@ -43,7 +43,7 @@ export const useMemoInit = ({
     } else {
       const cachedDraft = cacheService.loadDraft(key);
       if (cachedDraft.content) {
-        dispatch(actions.setContent(cachedDraft.content));
+        dispatch(actions.updateContent(cachedDraft.content));
       }
       if (cachedDraft.attachments.length > 0) {
         dispatch(actions.setMetadata({ attachments: cachedDraft.attachments }));
@@ -66,7 +66,7 @@ export const useMemoInit = ({
     if (autoFocus || cachedCursor !== undefined) {
       restoreCursorTimer = setTimeout(() => {
         if (cachedCursor !== undefined) {
-          editorRef.current?.setCursor(cachedCursor);
+          editorRef.current?.setSelection(cachedCursor);
         }
         if (typeof autoFocus === "function" ? autoFocus() : autoFocus) {
           editorRef.current?.focus();

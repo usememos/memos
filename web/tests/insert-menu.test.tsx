@@ -23,8 +23,6 @@ beforeAll(() => {
 
 const viewToggles = {
   onToggleFocusMode: vi.fn(),
-  isFormattingToolbarVisible: false,
-  onToggleFormattingToolbar: vi.fn(),
 };
 
 /** `hosted` mirrors an editor whose presentation belongs to a host (the global composer). */
@@ -56,7 +54,6 @@ describe("InsertMenu", () => {
       "editor.insert-menu.link-memo",
       "editor.insert-menu.add-location",
       "editor.focus-mode",
-      "editor.formatting-toolbar",
     ]);
   });
 
@@ -67,7 +64,6 @@ describe("InsertMenu", () => {
 
     const labels = screen.getAllByRole("menuitem").map((item) => item.textContent);
     expect(labels).not.toContain("editor.focus-mode");
-    expect(labels).not.toContain("editor.formatting-toolbar");
     expect(screen.queryByRole("separator")).not.toBeInTheDocument();
   });
 

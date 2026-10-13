@@ -183,7 +183,6 @@
     "format": {
       "code-block": "Блок коду",
       "link": "Посилання",
-      "heading": "Заголовок",
       "paragraph": "Абзац",
       "heading-1": "Заголовок 1",
       "heading-2": "Заголовок 2",
@@ -193,11 +192,9 @@
       "strikethrough": "Закреслений текст",
       "bullet-list": "Маркований список список",
       "ordered-list": "Нумерований список",
-      "task-list": "Список справ",
-      "more": "Додаткове форматування"
+      "task-list": "Список справ"
     },
     "comment": "Коментар",
-    "formatting-toolbar": "Панель інструментів форматування",
     "new-memo": "Нова нотатка",
     "saved": "Збережено",
     "validation": {
@@ -209,6 +206,32 @@
       "save-in-progress": "Виконується збереження",
       "unsupported-attachment-image-url": "Непідтримувана URL-адреса вкладеного зображення: {{url}}",
       "wait-for-upload": "Зачекайте завершення завантаження"
+    },
+    "blocks": {
+      "task": "Завдання",
+      "quote": "Цитата",
+      "table": "Таблиця",
+      "divider": "Роздільник",
+      "no-results": "Нічого не знайдено",
+      "commands": "Команди",
+      "loading": "Завантаження…",
+      "duplicate": "Дублювати",
+      "inline-code": "Код",
+      "link-placeholder": "Вставте або введіть посилання…",
+      "remove-link": "Видалити посилання",
+      "slash-hint": "Введіть «/» для виклику команд",
+      "block-menu": "Відкрити меню блоку",
+      "list-hint": "Список",
+      "plain-text": "текст",
+      "add-row-above": "Додати рядок вище",
+      "add-row-below": "Додати рядок нижче",
+      "add-column-left": "Додати стовпець ліворуч",
+      "add-column-right": "Додати стовпець праворуч",
+      "delete-row": "Видалити рядок",
+      "delete-column": "Видалити стовпець",
+      "align-left": "Вирівняти ліворуч",
+      "align-center": "Вирівняти по центру",
+      "align-right": "Вирівняти праворуч"
     }
   },
   "inbox": {

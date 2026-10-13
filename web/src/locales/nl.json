@@ -183,7 +183,6 @@
     "format": {
       "code-block": "Codeblok",
       "link": "Link",
-      "heading": "Koptekst",
       "paragraph": "Alinea",
       "heading-1": "Koptekst 1",
       "heading-2": "Koptekst 2",
@@ -193,11 +192,9 @@
       "strikethrough": "Doorhalen",
       "bullet-list": "Opsommingstekens",
       "ordered-list": "Genummerde lijst",
-      "task-list": "Takenlijst",
-      "more": "Meer opmaakopties"
+      "task-list": "Takenlijst"
     },
     "comment": "Opmerking",
-    "formatting-toolbar": "Opmaakwerkbalk",
     "new-memo": "Nieuwe memo",
     "saved": "Opgeslagen",
     "validation": {
@@ -209,6 +206,32 @@
       "save-in-progress": "Opslaan bezig",
       "unsupported-attachment-image-url": "Niet-ondersteunde URL voor bijlageafbeelding: {{url}}",
       "wait-for-upload": "Wachten tot de upload is voltooid"
+    },
+    "blocks": {
+      "task": "Taak",
+      "quote": "Citaat",
+      "table": "Tabel",
+      "divider": "Scheidingslijn",
+      "no-results": "Geen resultaten",
+      "commands": "Opdrachten",
+      "loading": "Laden…",
+      "duplicate": "Dupliceren",
+      "inline-code": "Code",
+      "link-placeholder": "Plak of typ een link…",
+      "remove-link": "Link verwijderen",
+      "slash-hint": "Typ '/' voor opdrachten",
+      "block-menu": "Blokmenu openen",
+      "list-hint": "Lijst",
+      "plain-text": "tekst",
+      "add-row-above": "Rij boven invoegen",
+      "add-row-below": "Rij onder invoegen",
+      "add-column-left": "Kolom links invoegen",
+      "add-column-right": "Kolom rechts invoegen",
+      "delete-row": "Rij verwijderen",
+      "delete-column": "Kolom verwijderen",
+      "align-left": "Links uitlijnen",
+      "align-center": "Centreren",
+      "align-right": "Rechts uitlijnen"
     }
   },
   "inbox": {

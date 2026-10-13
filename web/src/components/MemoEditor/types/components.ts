@@ -1,6 +1,7 @@
 import type { MemoSuggestion } from "@/lib/memo-suggestions";
 import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import type { Location, Memo, Visibility } from "@/types/proto/api/memo_service_pb";
+import type { UserSetting_TagsSetting } from "@/types/proto/api/user_service_pb";
 import type { EditorFileOrigin } from "../Editor/extensions";
 import type { AudioRecorderStatus } from "../hooks/useAudioRecorder";
 import type { LocalFile } from "./attachment";
@@ -52,18 +53,16 @@ export interface EditorContentProps {
   /** Invoked by the in-editor save shortcut (Cmd/Ctrl+Enter). */
   onSubmit: () => void;
   onFiles: (files: File[], origin: EditorFileOrigin) => void;
+  /** The user's tag settings, for tags in their custom colors. */
+  tagsSetting?: UserSetting_TagsSetting;
 }
 
 /**
  * The ＋ menu's view toggles. They change how the editor presents itself
- * inline, so a hosted editor omits the whole group and both items disappear
- * together — there is no way to offer one without the other.
+ * inline, so a hosted editor omits the whole group.
  */
 export interface EditorViewToggles {
   onToggleFocusMode: () => void;
-  /** Whether the formatting toolbar is shown in normal mode (persisted preference). */
-  isFormattingToolbarVisible: boolean;
-  onToggleFormattingToolbar: () => void;
 }
 
 export interface EditorToolbarProps {
@@ -108,9 +107,9 @@ export interface FocusModeOverlayProps {
 }
 
 export interface FocusModeExitButtonProps {
-  isActive: boolean;
-  onToggle: () => void;
-  title: string;
+  /** "minimize" collapses inline focus mode back into the page; "close" dismisses a host-owned frame. */
+  action: "minimize" | "close";
+  onExit: () => void;
 }
 
 export interface InsertMenuProps {

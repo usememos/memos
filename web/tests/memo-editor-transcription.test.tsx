@@ -7,7 +7,7 @@ import { transcriptionService } from "@/components/MemoEditor/services";
 import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
 import { MemoSchema, Visibility } from "@/types/proto/api/memo_service_pb";
 
-vi.mock("@/hooks/useUserQueries", () => ({ useTagCounts: () => ({ data: {} }) }));
+vi.mock("@/hooks/useUserQueries", () => ({ useTagCounts: () => ({ data: {} }), useUsersByUsernames: () => ({ data: undefined }) }));
 vi.mock("@/hooks/useCurrentUser", () => ({ default: () => ({ name: "users/1" }) }));
 vi.mock("@/contexts/AuthContext", () => ({ useAuth: () => ({ userGeneralSetting: {} }) }));
 vi.mock("@/contexts/InstanceContext", () => ({
@@ -48,15 +48,15 @@ describe("existing memo audio transcription", () => {
         <MemoEditor memo={memo} />
       </QueryClientProvider>,
     );
-    await waitFor(() => expect(container.querySelector(".cm-content")?.textContent).toBe(memo.content));
+    await waitFor(() => expect(container.querySelector(".memo-editor-root")?.textContent).toBe(memo.content));
     fireEvent.click(screen.getByRole("button", { name: "Transcribe" }));
     expect(screen.getByRole("button", { name: "Update" })).toBeDisabled();
     await act(async () => {
       pending.resolve("Recognized meeting discussion");
       await pending.promise;
     });
-    await waitFor(() => expect(container.querySelector(".cm-content")?.textContent).toContain("Recognized meeting discussion"));
-    expect(container.querySelector(".cm-content")?.textContent).toContain(memo.content);
+    await waitFor(() => expect(container.querySelector(".memo-editor-root")?.textContent).toContain("Recognized meeting discussion"));
+    expect(container.querySelector(".memo-editor-root")?.textContent).toContain(memo.content);
     expect(screen.getByText("voice.wav")).toBeInTheDocument();
     expect(clients.updateMemo).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", { name: "Update" }));

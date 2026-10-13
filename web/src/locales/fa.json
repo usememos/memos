@@ -183,7 +183,6 @@
     "format": {
       "code-block": "بلوک کد",
       "link": "پیوست",
-      "heading": "عنوان",
       "paragraph": "پاراگراف",
       "heading-1": "عنوان 1",
       "heading-2": "عنوان 2",
@@ -193,11 +192,9 @@
       "strikethrough": "خط‌خورده",
       "bullet-list": "فهرست نشانه‌دار",
       "ordered-list": "فهرست شماره‌دار",
-      "task-list": "فهرست کارها",
-      "more": "قالب‌بندی بیشتر"
+      "task-list": "فهرست کارها"
     },
     "comment": "نظر",
-    "formatting-toolbar": "نوار ابزار قالب‌بندی",
     "new-memo": "یادداشت جدید",
     "saved": "ذخیره شد",
     "validation": {
@@ -209,6 +206,32 @@
       "save-in-progress": "در حال ذخیره در حال انجام است",
       "unsupported-attachment-image-url": "آدرس تصویر پیوست پشتیبانی نشده: {{url}}",
       "wait-for-upload": "منتظر بمانید تا آپلود کامل شود"
+    },
+    "blocks": {
+      "task": "کار",
+      "quote": "نقل‌قول",
+      "table": "جدول",
+      "divider": "جداکننده",
+      "no-results": "نتیجه‌ای یافت نشد",
+      "commands": "فرمان‌ها",
+      "loading": "در حال بارگذاری…",
+      "duplicate": "تکثیر",
+      "inline-code": "کد",
+      "link-placeholder": "پیوندی را بچسبانید یا تایپ کنید…",
+      "remove-link": "حذف پیوند",
+      "slash-hint": "برای فرمان‌ها «/» را تایپ کنید",
+      "block-menu": "باز کردن منوی بلوک",
+      "list-hint": "فهرست",
+      "plain-text": "متن",
+      "add-row-above": "افزودن ردیف در بالا",
+      "add-row-below": "افزودن ردیف در پایین",
+      "add-column-left": "افزودن ستون در چپ",
+      "add-column-right": "افزودن ستون در راست",
+      "delete-row": "حذف ردیف",
+      "delete-column": "حذف ستون",
+      "align-left": "تراز به چپ",
+      "align-center": "تراز به وسط",
+      "align-right": "تراز به راست"
     }
   },
   "inbox": {

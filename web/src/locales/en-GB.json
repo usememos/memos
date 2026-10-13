@@ -181,9 +181,7 @@
       "transcribing": "Transcribing..."
     },
     "comment": "Comment",
-    "formatting-toolbar": "Formatting toolbar",
     "format": {
-      "heading": "Heading",
       "paragraph": "Paragraph",
       "heading-1": "Heading 1",
       "heading-2": "Heading 2",
@@ -195,8 +193,7 @@
       "bullet-list": "Bullet list",
       "ordered-list": "Numbered list",
       "task-list": "To-do list",
-      "link": "Link",
-      "more": "More formatting"
+      "link": "Link"
     },
     "new-memo": "New memo",
     "saved": "Saved",
@@ -209,6 +206,32 @@
       "save-in-progress": "Save in progress",
       "unsupported-attachment-image-url": "Unsupported attachment image URL: {{url}}",
       "wait-for-upload": "Wait for upload to complete"
+    },
+    "blocks": {
+      "task": "Task",
+      "quote": "Quote",
+      "table": "Table",
+      "divider": "Divider",
+      "no-results": "No results",
+      "commands": "Commands",
+      "loading": "Loading…",
+      "duplicate": "Duplicate",
+      "inline-code": "Code",
+      "link-placeholder": "Paste or type a link…",
+      "remove-link": "Remove link",
+      "slash-hint": "Type '/' for commands",
+      "block-menu": "Open block menu",
+      "list-hint": "List",
+      "plain-text": "text",
+      "add-row-above": "Add row above",
+      "add-row-below": "Add row below",
+      "add-column-left": "Add column left",
+      "add-column-right": "Add column right",
+      "delete-row": "Delete row",
+      "delete-column": "Delete column",
+      "align-left": "Align left",
+      "align-center": "Align centre",
+      "align-right": "Align right"
     }
   },
   "inbox": {

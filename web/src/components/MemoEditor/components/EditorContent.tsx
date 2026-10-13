@@ -6,26 +6,21 @@ import type { EditorController } from "../types/editorController";
 
 // Imported eagerly (not React.lazy): the editor is the always-present compose
 // box on the home route, which is already code-split — so deferring the
-// CodeMirror bundle separately bought nothing and made the editor paint empty
+// editor bundle separately bought nothing and made the editor paint empty
 // for a beat before its placeholder appeared (a visible flicker on load).
 
 /**
- * Hosts the CodeMirror Editor behind the EditorController contract. The
- * editor serializes into state.content on every change and exposes its
- * formatting capability for the focus-mode toolbar.
+ * Hosts the Markdown Editor behind the EditorController contract. The
+ * editor writes into state.content on every change.
  */
-export const EditorContent = forwardRef<EditorController, EditorContentProps>(({ placeholder, onSubmit, onFiles }, ref) => {
+export const EditorContent = forwardRef<EditorController, EditorContentProps>(({ placeholder, onSubmit, onFiles, tagsSetting }, ref) => {
   const { actions, dispatch } = useEditorContext();
   const content = useEditorSelector((s) => s.content);
-  const contentSource = useEditorSelector((s) => s.contentSource);
   const isFocusMode = useEditorSelector((s) => s.ui.isFocusMode);
+  const attachments = useEditorSelector((s) => s.metadata.attachments);
 
   const handleContentChange = (content: string) => {
     dispatch(actions.updateContent(content));
-  };
-
-  const handleExternalContentApplied = (content: string) => {
-    dispatch(actions.setContent(content));
   };
 
   return (
@@ -33,12 +28,12 @@ export const EditorContent = forwardRef<EditorController, EditorContentProps>(({
       <Editor
         ref={ref}
         className="memo-editor-content"
-        initialContent={content}
-        contentIsExternal={contentSource === "external"}
+        value={content}
         placeholder={placeholder || ""}
         isFocusMode={isFocusMode}
+        attachments={attachments}
+        tagsSetting={tagsSetting}
         onContentChange={handleContentChange}
-        onExternalContentApplied={handleExternalContentApplied}
         onFiles={onFiles}
         onSubmit={onSubmit}
       />

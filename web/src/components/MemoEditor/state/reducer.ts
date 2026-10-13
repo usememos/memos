@@ -7,19 +7,17 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
       return {
         ...state,
         content: action.payload.content,
-        contentSource: "external",
         metadata: action.payload.metadata,
         timestamps: action.payload.timestamps,
       };
 
     case "UPDATE_CONTENT": {
-      if (state.content === action.payload.content && state.contentSource === action.payload.source) {
+      if (state.content === action.payload.content) {
         return state;
       }
       return {
         ...state,
         content: action.payload.content,
-        contentSource: action.payload.source,
       };
     }
 

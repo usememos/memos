@@ -1,16 +1,5 @@
 import { uniqBy } from "lodash-es";
-import {
-  CheckIcon,
-  ImageIcon,
-  LinkIcon,
-  LoaderIcon,
-  MapPinIcon,
-  Maximize2Icon,
-  MicIcon,
-  PaperclipIcon,
-  PlusIcon,
-  TypeIcon,
-} from "lucide-react";
+import { ImageIcon, LinkIcon, LoaderIcon, MapPinIcon, Maximize2Icon, MicIcon, PaperclipIcon, PlusIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LinkMemoDialog, LocationDialog } from "@/components/MemoMetadata";
 import type { MapPoint } from "@/components/map/types";
@@ -168,19 +157,13 @@ const InsertMenu = (props: InsertMenuProps) => {
               {item.label}
             </DropdownMenuItem>
           ))}
-          {/* View toggles: focus mode + formatting-toolbar visibility. Absent
-              when a host owns the editor's presentation — neither applies there. */}
+          {/* View toggle: focus mode. Absent when a host owns the editor's presentation. */}
           {viewToggles && (
             <>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={viewToggles.onToggleFocusMode}>
                 <Maximize2Icon />
                 {t("editor.focus-mode")}
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={viewToggles.onToggleFormattingToolbar}>
-                <TypeIcon />
-                {t("editor.formatting-toolbar")}
-                {viewToggles.isFormattingToolbarVisible && <CheckIcon className="ms-auto size-3.5" />}
               </DropdownMenuItem>
             </>
           )}

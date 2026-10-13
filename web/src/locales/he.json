@@ -221,9 +221,7 @@
     "any-thoughts": "יש מחשבות...",
     "exit-focus-mode": "יציאה ממצב מיקוד",
     "focus-mode": "מצב מיקוד",
-    "formatting-toolbar": "סרגל עיצוב",
     "format": {
-      "heading": "כותרת",
       "paragraph": "פסקה",
       "heading-1": "כותרת 1",
       "heading-2": "כותרת 2",
@@ -235,8 +233,7 @@
       "bullet-list": "רשימת תבליטים",
       "ordered-list": "רשימה ממוספרת",
       "task-list": "רשימת משימות",
-      "link": "קישור",
-      "more": "אפשרויות עיצוב נוספות"
+      "link": "קישור"
     },
     "insert-menu": {
       "add-attachment": "הוסף קובץ מצורף",
@@ -280,7 +277,33 @@
     },
     "comment": "תגובה",
     "new-memo": "תזכיר חדש",
-    "saved": "נשמר"
+    "saved": "נשמר",
+    "blocks": {
+      "task": "משימה",
+      "quote": "ציטוט",
+      "table": "טבלה",
+      "divider": "קו מפריד",
+      "no-results": "אין תוצאות",
+      "commands": "פקודות",
+      "loading": "טוען…",
+      "duplicate": "שכפל",
+      "inline-code": "קוד",
+      "link-placeholder": "הדבק או הקלד קישור…",
+      "remove-link": "הסר קישור",
+      "slash-hint": "הקלד \"/\" לפקודות",
+      "block-menu": "פתח תפריט בלוק",
+      "list-hint": "רשימה",
+      "plain-text": "טקסט",
+      "add-row-above": "הוסף שורה מעל",
+      "add-row-below": "הוסף שורה מתחת",
+      "add-column-left": "הוסף עמודה משמאל",
+      "add-column-right": "הוסף עמודה מימין",
+      "delete-row": "מחק שורה",
+      "delete-column": "מחק עמודה",
+      "align-left": "יישר לשמאל",
+      "align-center": "מרכז",
+      "align-right": "יישר לימין"
+    }
   },
   "inbox": {
     "failed-to-load": "טעינת פריט מתיבת הדואר הנכנס נכשלה",

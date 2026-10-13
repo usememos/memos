@@ -150,7 +150,6 @@
     "any-thoughts": "今思ったことは...",
     "exit-focus-mode": "フォーカスを終了",
     "focus-mode": "フォーカスモード",
-    "formatting-toolbar": "書式ツールバー",
     "no-changes-detected": "変更はありません",
     "save": "保存",
     "insert-menu": {
@@ -182,7 +181,6 @@
       "trigger": "音声を録音する"
     },
     "format": {
-      "heading": "見出し",
       "paragraph": "段落",
       "heading-1": "見出し1",
       "heading-2": "見出し2",
@@ -194,8 +192,7 @@
       "bullet-list": "箇条書きリスト",
       "ordered-list": "番号付きリスト",
       "task-list": "タスクリスト",
-      "link": "リンク",
-      "more": "その他の書式"
+      "link": "リンク"
     },
     "comment": "コメント",
     "new-memo": "新しいメモ",
@@ -209,6 +206,32 @@
       "save-in-progress": "保存処理中",
       "unsupported-attachment-image-url": "サポートされていない添付ファイル画像のURL: {{url}}",
       "wait-for-upload": "アップロードが完了するまでお待ちください"
+    },
+    "blocks": {
+      "task": "タスク",
+      "quote": "引用",
+      "table": "表",
+      "divider": "区切り線",
+      "no-results": "結果がありません",
+      "commands": "コマンド",
+      "loading": "読み込み中…",
+      "duplicate": "複製",
+      "inline-code": "コード",
+      "link-placeholder": "リンクを貼り付けまたは入力…",
+      "remove-link": "リンクを削除",
+      "slash-hint": "「/」でコマンドを表示",
+      "block-menu": "ブロックメニューを開く",
+      "list-hint": "リスト",
+      "plain-text": "テキスト",
+      "add-row-above": "上に行を追加",
+      "add-row-below": "下に行を追加",
+      "add-column-left": "左に列を追加",
+      "add-column-right": "右に列を追加",
+      "delete-row": "行を削除",
+      "delete-column": "列を削除",
+      "align-left": "左揃え",
+      "align-center": "中央揃え",
+      "align-right": "右揃え"
     }
   },
   "inbox": {

@@ -183,7 +183,6 @@
     "format": {
       "code-block": "Kodblock",
       "link": "Länk",
-      "heading": "Rubrik",
       "paragraph": "Stycke",
       "heading-1": "Rubrik 1",
       "heading-2": "Rubrik 2",
@@ -193,11 +192,9 @@
       "strikethrough": "Genomstruken",
       "bullet-list": "Punkt lista",
       "ordered-list": "Numrerad lista",
-      "task-list": "Att-göra-lista",
-      "more": "Mer formatering"
+      "task-list": "Att-göra-lista"
     },
     "comment": "Kommentar",
-    "formatting-toolbar": "Formateringsverktygsfältet",
     "new-memo": "Nytt memo",
     "saved": "Sparat",
     "validation": {
@@ -209,6 +206,32 @@
       "save-in-progress": "Spara pågår",
       "unsupported-attachment-image-url": "Bild-URL för bilaga som inte stöds: {{url}}",
       "wait-for-upload": "Vänta tills uppladdningen är klar"
+    },
+    "blocks": {
+      "task": "Uppgift",
+      "quote": "Citat",
+      "table": "Tabell",
+      "divider": "Avdelare",
+      "no-results": "Inga resultat",
+      "commands": "Kommandon",
+      "loading": "Läser in…",
+      "duplicate": "Duplicera",
+      "inline-code": "Kod",
+      "link-placeholder": "Klistra in eller skriv en länk…",
+      "remove-link": "Ta bort länk",
+      "slash-hint": "Skriv ”/” för kommandon",
+      "block-menu": "Öppna blockmeny",
+      "list-hint": "Lista",
+      "plain-text": "text",
+      "add-row-above": "Lägg till rad ovanför",
+      "add-row-below": "Lägg till rad nedanför",
+      "add-column-left": "Lägg till kolumn till vänster",
+      "add-column-right": "Lägg till kolumn till höger",
+      "delete-row": "Radera rad",
+      "delete-column": "Radera kolumn",
+      "align-left": "Vänsterjustera",
+      "align-center": "Centrera",
+      "align-right": "Högerjustera"
     }
   },
   "inbox": {

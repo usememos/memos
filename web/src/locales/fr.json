@@ -183,7 +183,6 @@
     "format": {
       "code-block": "Bloc de code",
       "link": "Lien",
-      "heading": "Titre",
       "paragraph": "Paragraphe",
       "heading-1": "Titre 1",
       "heading-2": "Titre 2",
@@ -193,11 +192,9 @@
       "strikethrough": "Barré",
       "bullet-list": "Liste à puces",
       "ordered-list": "Liste numérotée",
-      "task-list": "Liste de tâches",
-      "more": "Options de mise en forme supplémentaires"
+      "task-list": "Liste de tâches"
     },
     "comment": "Commentaire",
-    "formatting-toolbar": "Barre d'outils de mise en forme",
     "new-memo": "Nouvelle note",
     "saved": "Enregistrée",
     "validation": {
@@ -209,6 +206,32 @@
       "save-in-progress": "Enregistrement en cours",
       "unsupported-attachment-image-url": "URL d'image de pièce jointe non prise en charge : {{url}}",
       "wait-for-upload": "Veuillez patienter jusqu'à la fin du chargement"
+    },
+    "blocks": {
+      "task": "Tâche",
+      "quote": "Citation",
+      "table": "Tableau",
+      "divider": "Séparateur",
+      "no-results": "Aucun résultat",
+      "commands": "Commandes",
+      "loading": "Chargement…",
+      "duplicate": "Dupliquer",
+      "inline-code": "Code",
+      "link-placeholder": "Collez ou saisissez un lien…",
+      "remove-link": "Supprimer le lien",
+      "slash-hint": "Tapez « / » pour les commandes",
+      "block-menu": "Ouvrir le menu du bloc",
+      "list-hint": "Liste",
+      "plain-text": "texte",
+      "add-row-above": "Ajouter une ligne au-dessus",
+      "add-row-below": "Ajouter une ligne en dessous",
+      "add-column-left": "Ajouter une colonne à gauche",
+      "add-column-right": "Ajouter une colonne à droite",
+      "delete-row": "Supprimer la ligne",
+      "delete-column": "Supprimer la colonne",
+      "align-left": "Aligner à gauche",
+      "align-center": "Centrer",
+      "align-right": "Aligner à droite"
     }
   },
   "inbox": {

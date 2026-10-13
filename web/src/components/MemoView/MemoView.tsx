@@ -73,9 +73,9 @@ const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
   const editorHostRef = useRef<HTMLDivElement>(null);
 
   const focusMountedEditor = useCallback(() => {
-    const codeMirrorContent = editorHostRef.current?.querySelector<HTMLElement>('.cm-content[contenteditable="true"]');
+    const editorRoot = editorHostRef.current?.querySelector<HTMLElement>('.memo-editor-root[contenteditable="true"]');
     const fallbackInput = editorHostRef.current?.querySelector<HTMLElement>("textarea, input");
-    (codeMirrorContent ?? fallbackInput)?.focus();
+    (editorRoot ?? fallbackInput)?.focus();
   }, []);
 
   const openEditor = useCallback(() => {

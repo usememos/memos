@@ -221,7 +221,6 @@
     "format": {
       "code-block": "Блок кода",
       "link": "Линк",
-      "heading": "Наслов",
       "paragraph": "Пасус",
       "heading-1": "Наслов 1",
       "heading-2": "Наслов 2",
@@ -231,11 +230,9 @@
       "strikethrough": "Прецртано",
       "bullet-list": "Табла листа",
       "ordered-list": "Нумерисана листа",
-      "task-list": "Листа обавеза",
-      "more": "Више форматирања"
+      "task-list": "Листа обавеза"
     },
     "comment": "Коментар",
-    "formatting-toolbar": "Трака са алаткама за форматирање",
     "new-memo": "Нова белешка",
     "saved": "Сачувано",
     "validation": {
@@ -247,6 +244,32 @@
       "save-in-progress": "Чување у току",
       "unsupported-attachment-image-url": "Неподржана URL адреса слике прилога: {{url}}",
       "wait-for-upload": "Сачекај да се отпремање заврши"
+    },
+    "blocks": {
+      "task": "Задатак",
+      "quote": "Цитат",
+      "table": "Табела",
+      "divider": "Разделник",
+      "no-results": "Нема резултата",
+      "commands": "Команде",
+      "loading": "Учитавање…",
+      "duplicate": "Дуплирај",
+      "inline-code": "Код",
+      "link-placeholder": "Налепите или унесите линк…",
+      "remove-link": "Уклони линк",
+      "slash-hint": "Унесите „/“ за команде",
+      "block-menu": "Отвори мени блока",
+      "list-hint": "Листа",
+      "plain-text": "текст",
+      "add-row-above": "Додај ред изнад",
+      "add-row-below": "Додај ред испод",
+      "add-column-left": "Додај колону лево",
+      "add-column-right": "Додај колону десно",
+      "delete-row": "Избриши ред",
+      "delete-column": "Избриши колону",
+      "align-left": "Поравнај лево",
+      "align-center": "Поравнај по средини",
+      "align-right": "Поравнај десно"
     }
   },
   "inbox": {

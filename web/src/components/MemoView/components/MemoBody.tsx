@@ -5,6 +5,7 @@ import { AttachmentGallery, MemoMetadataRows } from "@/components/MemoMetadata";
 import { separateAttachments } from "@/components/MemoMetadata/Attachment/attachmentHelpers";
 import { isReferenceRelation } from "@/components/MemoMetadata/Relation/relationHelpers";
 import { Button } from "@/components/ui/button";
+import { useUpdateMemo } from "@/hooks/useMemoQueries";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { filterInlineManagedAttachments } from "@/utils/managed-attachment";
@@ -30,6 +31,9 @@ const MemoBody: React.FC<MemoBodyProps> = ({ compact }) => {
   const { memo, parentPage, showBlurredContent, blurred, readonly, openEditor, openPreview, toggleBlurVisibility } = useMemoViewContext();
 
   const { handleMemoContentClick, handleMemoContentDoubleClick } = useMemoHandlers({ readonly, openEditor, openPreview });
+  const { mutate: updateMemo } = useUpdateMemo();
+  const handleTaskToggle = (content: string) =>
+    updateMemo({ update: { name: memo.name, content }, updateMask: ["content", "update_time"] });
 
   const referencedMemos = memo.relations.filter(isReferenceRelation);
   // Memoized so AttachmentListView's own useMemo chain keeps its cache across body renders.
@@ -58,6 +62,7 @@ const MemoBody: React.FC<MemoBodyProps> = ({ compact }) => {
               attachments={memo.attachments}
               onClick={handleMemoContentClick}
               onDoubleClick={handleMemoContentDoubleClick}
+              onTaskToggle={readonly ? undefined : handleTaskToggle}
               compact={Boolean(compact)}
             />
             <AttachmentGallery visual={visual} onImagePreview={openPreview} />

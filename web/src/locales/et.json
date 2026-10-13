@@ -221,7 +221,6 @@
     "format": {
       "code-block": "Koodiplokk",
       "link": "Link",
-      "heading": "Pealkiri",
       "paragraph": "Lõik",
       "heading-1": "Pealkiri 1",
       "heading-2": "Pealkiri 2",
@@ -231,11 +230,9 @@
       "strikethrough": "Läbikriipsutatud kiri",
       "bullet-list": "Täpploend",
       "ordered-list": "Numberloend",
-      "task-list": "Ülesannete loend",
-      "more": "Rohkem vormindust"
+      "task-list": "Ülesannete loend"
     },
     "comment": "Kommentaar",
-    "formatting-toolbar": "Vormindamise tööriistariba",
     "new-memo": "Uus memo",
     "saved": "Salvestatud",
     "validation": {
@@ -247,6 +244,32 @@
       "save-in-progress": "Salvestamine pooleli",
       "unsupported-attachment-image-url": "Toetamata manuse pildi URL: {{url}}",
       "wait-for-upload": "Oota üleslaadimise lõppemist"
+    },
+    "blocks": {
+      "task": "Ülesanne",
+      "quote": "Tsitaat",
+      "table": "Tabel",
+      "divider": "Eraldaja",
+      "no-results": "Tulemusi pole",
+      "commands": "Käsud",
+      "loading": "Laadimine…",
+      "duplicate": "Dubleeri",
+      "inline-code": "Kood",
+      "link-placeholder": "Kleebi või sisesta link…",
+      "remove-link": "Eemalda link",
+      "slash-hint": "Käskude jaoks sisesta „/“",
+      "block-menu": "Ava ploki menüü",
+      "list-hint": "Loend",
+      "plain-text": "tekst",
+      "add-row-above": "Lisa rida ülespoole",
+      "add-row-below": "Lisa rida allapoole",
+      "add-column-left": "Lisa veerg vasakule",
+      "add-column-right": "Lisa veerg paremale",
+      "delete-row": "Kustuta rida",
+      "delete-column": "Kustuta veerg",
+      "align-left": "Joonda vasakule",
+      "align-center": "Joonda keskele",
+      "align-right": "Joonda paremale"
     }
   },
   "inbox": {

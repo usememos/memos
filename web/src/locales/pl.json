@@ -151,7 +151,6 @@
     "exit-focus-mode": "Wyjdź z Trybu Skupienia",
     "focus-mode": "Tryb Skupienia",
     "format": {
-      "heading": "Nagłówek",
       "paragraph": "Akapit",
       "heading-1": "Nagłówek 1",
       "heading-2": "Nagłówek 2",
@@ -162,7 +161,6 @@
       "ordered-list": "Lista numerowana",
       "task-list": "Lista zadań",
       "link": "Link",
-      "more": "Więcej",
       "code-block": "Blok kodu",
       "strikethrough": "Przekreślenie"
     },
@@ -197,7 +195,6 @@
       "transcribing": "Transkrypcja..."
     },
     "comment": "Komentarz",
-    "formatting-toolbar": "Pasek narzędzi formatowania",
     "new-memo": "Nowa notatka",
     "saved": "Zapisano",
     "validation": {
@@ -209,6 +206,32 @@
       "save-in-progress": "Zapisywanie w toku",
       "unsupported-attachment-image-url": "Nieobsługiwany adres URL obrazu w załączniku: {{url}}",
       "wait-for-upload": "Poczekaj na zakończenie przesyłania"
+    },
+    "blocks": {
+      "task": "Zadanie",
+      "quote": "Cytat",
+      "table": "Tabela",
+      "divider": "Separator",
+      "no-results": "Brak wyników",
+      "commands": "Polecenia",
+      "loading": "Wczytywanie…",
+      "duplicate": "Duplikuj",
+      "inline-code": "Kod",
+      "link-placeholder": "Wklej lub wpisz link…",
+      "remove-link": "Usuń link",
+      "slash-hint": "Wpisz „/”, aby wyświetlić polecenia",
+      "block-menu": "Otwórz menu bloku",
+      "list-hint": "Lista",
+      "plain-text": "tekst",
+      "add-row-above": "Dodaj wiersz powyżej",
+      "add-row-below": "Dodaj wiersz poniżej",
+      "add-column-left": "Dodaj kolumnę po lewej",
+      "add-column-right": "Dodaj kolumnę po prawej",
+      "delete-row": "Usuń wiersz",
+      "delete-column": "Usuń kolumnę",
+      "align-left": "Wyrównaj do lewej",
+      "align-center": "Wyśrodkuj",
+      "align-right": "Wyrównaj do prawej"
     }
   },
   "inbox": {
