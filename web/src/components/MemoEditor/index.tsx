@@ -1,5 +1,7 @@
+import { isEqual } from "lodash-es";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
 import { useLocalStorage } from "@/hooks";
@@ -25,7 +27,7 @@ import {
   useMemoInit,
   useMemoSave,
 } from "./hooks";
-import { cacheService, errorService, transcriptionService } from "./services";
+import { cacheService, errorService, memoService, transcriptionService } from "./services";
 import { EditorProvider, useEditorContext, useEditorSelector } from "./state";
 import { EditorToolbar, FormattingToolbar } from "./Toolbar";
 import type { EditorViewToggles, MemoEditorProps } from "./types";
@@ -75,6 +77,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   const { aiSetting, fetchSetting } = useInstance();
   const [isAudioRecorderOpen, setIsAudioRecorderOpen] = useState(false);
   const [isTranscribingAudio, setIsTranscribingAudio] = useState(false);
+  const [confirmDiscardOpen, setConfirmDiscardOpen] = useState(false);
   const { createBlobUrl } = useBlobUrls();
   const saveMediaMetadata = userGeneralSetting?.saveMediaMetadata ?? false;
   const inlineImageUpload = useInlineImageUpload(editorRef);
@@ -254,6 +257,19 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
     onCancel?.();
   }, [onCancel, rememberCursor]);
 
+  // Escape is easy to hit by accident, so ask first when it would throw away an edit.
+  const handleEscapeCancel = () => {
+    const { content, metadata, timestamps, localFiles } = getState();
+    const changed = !memo || !isEqual({ content, metadata, timestamps }, memoService.fromMemo(memo));
+    if (changed || localFiles.length > 0) {
+      // Open after this keydown finishes: opened synchronously, the dialog's own
+      // Escape-to-close listener receives the same event and closes it at once.
+      setTimeout(() => setConfirmDiscardOpen(true));
+    } else {
+      handleCancel();
+    }
+  };
+
   const handleToggleFormattingToolbar = useCallback(() => {
     setFormattingToolbarVisible((visible) => !visible);
   }, [setFormattingToolbarVisible]);
@@ -382,7 +398,13 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
         )}
 
         {/* Editor content grows to fill available space in focus mode */}
-        <EditorContent ref={editorRef} placeholder={placeholder} onSubmit={handleSave} onFiles={handleEditorFiles} />
+        <EditorContent
+          ref={editorRef}
+          placeholder={placeholder}
+          onSubmit={handleSave}
+          onCancel={memoName && onCancel && !isSaving ? handleEscapeCancel : undefined}
+          onFiles={handleEditorFiles}
+        />
 
         {isAudioRecorderOpen && (audioRecorder.isBusy || isTranscribingAudio) && (
           <AudioRecorderPanel
@@ -423,6 +445,17 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
           />
         </div>
       </div>
+
+      <ConfirmDialog
+        open={confirmDiscardOpen}
+        onOpenChange={setConfirmDiscardOpen}
+        title={t("editor.discard-changes")}
+        description={t("editor.discard-changes-description")}
+        confirmLabel={t("editor.discard")}
+        cancelLabel={t("common.cancel")}
+        onConfirm={handleCancel}
+        confirmVariant="destructive"
+      />
     </>
   );
 };

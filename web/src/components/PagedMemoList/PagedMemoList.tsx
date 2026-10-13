@@ -8,6 +8,7 @@ import { isSearchFilter, useMemoFilterContext } from "@/contexts/MemoFilterConte
 import { useNewMemo } from "@/contexts/NewMemoContext";
 import { useView } from "@/contexts/ViewContext";
 import { useDelayedFlag } from "@/hooks/useDelayedFlag";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { useInfiniteMemos } from "@/hooks/useMemoQueries";
 import { hoistMemoToFront } from "@/hooks/useMemoSorting";
 import { combineCELFilters } from "@/lib/cel-filter";
@@ -146,6 +147,24 @@ const PagedMemoList = (props: Props) => {
     return () => observer.disconnect();
   }, []);
   const useGrid = multiColumn && (fitsGridWidth ?? true);
+
+  // The focused card is the selection: j/k move focus through cards in list order (the grid
+  // keeps DOM order and only translates tiles), and each card handles its own o/e/p.
+  const moveSelection = (step: 1 | -1) => {
+    const cards = Array.from(layoutMeasureRef.current?.querySelectorAll<HTMLElement>("article[data-memo-card]") ?? []);
+    if (cards.length === 0) return;
+    const current = cards.findIndex((card) => card.contains(document.activeElement));
+    // Pressing forward from the last loaded card paginates instead of dead-ending; the new
+    // cards render into place and the next j press continues from there.
+    if (step === 1 && current === cards.length - 1 && canPaginate && hasNextPage && !isFetchingNextPage) {
+      void fetchNextPage();
+      return;
+    }
+    const next = cards[current === -1 ? 0 : Math.min(Math.max(current + step, 0), cards.length - 1)];
+    next.focus({ preventScroll: true });
+    next.scrollIntoView?.({ block: "nearest" });
+  };
+  useKeyboardShortcuts({ "memo.next": () => moveSelection(1), "memo.previous": () => moveSelection(-1) });
   // Grid tiles are always bounded/compact; the narrow-width fallback behaves exactly like
   // maxColumns = 1, so it respects the user's own compact setting. Centralized here so the
   // pages don't each repeat the policy.
