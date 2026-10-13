@@ -2,6 +2,7 @@ import {
   Heading1Icon,
   Heading2Icon,
   Heading3Icon,
+  LinkIcon,
   type LucideIcon,
   Minimize2Icon,
   MoreHorizontalIcon,
@@ -25,6 +26,8 @@ import type { EditorController } from "../types";
 
 interface FormattingToolbarProps {
   controllerRef: RefObject<EditorController | null>;
+  /** Opens the external Markdown-link dialog while preserving the editor selection. */
+  onOpenLink?: () => void;
   /**
    * Trailing dismiss button for the frame the editor sits in: "minimize" collapses
    * focus mode back into the page, "close" dismisses a host-owned frame. Omitted on
@@ -63,7 +66,7 @@ const preventFocusSteal: MouseEventHandler<HTMLButtonElement> = (event) => event
  * stay inline. When the editor sits in a frame, the button that dismisses it is
  * pushed to the far edge.
  */
-export function FormattingToolbar({ controllerRef, exit, className }: FormattingToolbarProps) {
+export function FormattingToolbar({ controllerRef, onOpenLink, exit, className }: FormattingToolbarProps) {
   const t = useTranslate();
   const rootRef = useRef<HTMLDivElement>(null);
   const width = useElementWidth(rootRef);
@@ -134,6 +137,13 @@ export function FormattingToolbar({ controllerRef, exit, className }: Formatting
         </DropdownMenu>
       ) : (
         blockButtons.map((button) => <SegmentButton key={button.label} {...button} onMouseDown={preventFocusSteal} />)
+      )}
+
+      {onOpenLink && (
+        <>
+          <Divider />
+          <SegmentButton Icon={LinkIcon} label={t("editor.format.link")} onClick={onOpenLink} onMouseDown={preventFocusSteal} />
+        </>
       )}
 
       {exit && (

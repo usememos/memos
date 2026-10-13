@@ -47,11 +47,11 @@ function makeController(opts: { active?: Partial<ActiveFormatState> } = {}) {
   return { controller, run };
 }
 
-function renderToolbar(controller: EditorController, action: "minimize" | "close" = "minimize") {
+function renderToolbar(controller: EditorController, action: "minimize" | "close" = "minimize", onOpenLink?: () => void) {
   const ref = createRef<EditorController>();
   ref.current = controller;
   const onExit = vi.fn();
-  render(<FormattingToolbar controllerRef={ref} exit={{ action, onExit }} />);
+  render(<FormattingToolbar controllerRef={ref} exit={{ action, onExit }} onOpenLink={onOpenLink} />);
   return { onExit };
 }
 
@@ -69,6 +69,17 @@ describe("FormattingToolbar", () => {
     fireEvent.click(screen.getByRole("button", { name: "editor.format.heading" }));
     fireEvent.click(screen.getByRole("menuitem", { name: "editor.format.heading-2" }));
     expect(run).toHaveBeenCalledWith("heading2");
+  });
+
+  it("opens the external-link dialog without invoking the formatting toggle", () => {
+    const { controller, run } = makeController();
+    const onOpenLink = vi.fn();
+    renderToolbar(controller, "minimize", onOpenLink);
+
+    fireEvent.click(screen.getByRole("button", { name: "editor.format.link" }));
+
+    expect(onOpenLink).toHaveBeenCalledTimes(1);
+    expect(run).not.toHaveBeenCalled();
   });
 
   it("reflects active marks via aria-pressed", () => {

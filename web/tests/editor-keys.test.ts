@@ -2,11 +2,11 @@ import { EditorState } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { MemoMarkdownRenderer } from "@/components/MemoContent/MemoMarkdownRenderer";
 import { buildEditorExtensions } from "@/components/MemoEditor/Editor/extensions";
 
-function makeView(doc: string, onSubmit: () => void = () => {}) {
+function makeView(doc: string, onSubmit: () => void = () => {}, onOpenLink?: () => void) {
   return new EditorView({
     state: EditorState.create({
       doc,
@@ -16,6 +16,7 @@ function makeView(doc: string, onSubmit: () => void = () => {}) {
         onFiles: () => {},
         onUpdate: () => {},
         onSubmit,
+        onOpenLink,
         getTags: () => [],
       }),
     }),
@@ -124,6 +125,31 @@ describe("editor key bindings", () => {
 
     expect(view.state.doc.toString()).toBe("*plain*");
     expect(view.state.selection.main).toMatchObject({ from: 1, to: 6 });
+    view.destroy();
+  });
+
+  it("opens the link dialog with Mod-K without changing the selected text", () => {
+    const onOpenLink = vi.fn();
+    const view = makeView("linked text", () => {}, onOpenLink);
+    view.dispatch({ selection: { anchor: 0, head: 6 } });
+
+    press(view, "k", mod());
+
+    expect(onOpenLink).toHaveBeenCalledOnce();
+    expect(view.state.doc.toString()).toBe("linked text");
+    expect(view.state.selection.main).toMatchObject({ from: 0, to: 6 });
+    view.destroy();
+  });
+
+  it("toggles blockquotes with Mod-Shift-.", () => {
+    const view = makeView("first\nsecond");
+    view.dispatch({ selection: { anchor: 0, head: 12 } });
+
+    press(view, ".", mod({ shiftKey: true }));
+    expect(view.state.doc.toString()).toBe("> first\n> second");
+
+    press(view, ".", mod({ shiftKey: true }));
+    expect(view.state.doc.toString()).toBe("first\nsecond");
     view.destroy();
   });
 

@@ -51,6 +51,8 @@ export interface EditorContentProps {
   placeholder?: string;
   /** Invoked by the in-editor save shortcut (Cmd/Ctrl+Enter). */
   onSubmit: () => void;
+  /** Opens the external Markdown-link dialog while preserving the current selection. */
+  onOpenLink?: () => void;
   onFiles: (files: File[], origin: EditorFileOrigin) => void;
 }
 
