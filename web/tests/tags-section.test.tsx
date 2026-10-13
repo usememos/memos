@@ -100,4 +100,26 @@ describe("TagsSection", () => {
     expect(path).not.toContainElement(count);
     expect(count).toHaveClass(...SIDEBAR_ROW_COUNT_RAIL_CLASSES.split(" "));
   });
+
+  it("allows multiple tags to narrow the memo list together", () => {
+    render(
+      <MemoryRouter>
+        <MemoFilterProvider>
+          <TagsSection tagCount={{ work: 2, release: 1 }} scope="home" />
+        </MemoFilterProvider>
+      </MemoryRouter>,
+    );
+
+    const work = screen.getByRole("button", { name: "#work, setting.tags.used-count" });
+    const release = screen.getByRole("button", { name: "#release, setting.tags.used-count" });
+    fireEvent.click(work);
+    fireEvent.click(release);
+
+    expect(work).toHaveAttribute("data-checked");
+    expect(release).toHaveAttribute("data-checked");
+
+    fireEvent.click(work);
+    expect(work).not.toHaveAttribute("data-checked");
+    expect(release).toHaveAttribute("data-checked");
+  });
 });

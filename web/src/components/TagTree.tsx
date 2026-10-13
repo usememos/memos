@@ -27,6 +27,8 @@ interface TagTreeNode {
 
 interface Props {
   tagAmounts: [tag: string, amount: number][];
+  activeTags?: ReadonlySet<string>;
+  /** @deprecated Use `activeTags` to represent every selected tag. */
   activeTag?: string;
   /** Identifies whose tags these are, so expansion persists per tenant rather than per browser. */
   scope: string;
@@ -107,17 +109,17 @@ const Chevron = ({ open, className }: { open: boolean; className?: string }) => 
 interface TagItemProps {
   tag: TagTreeNode;
   depth: number;
-  activeTag?: string;
+  activeTags: ReadonlySet<string>;
   expanded: ReadonlySet<string>;
   onTagClick: (tag: string) => void;
   onToggle: (path: string) => void;
 }
 
-const TagItem = ({ tag, depth, activeTag, expanded, onTagClick, onToggle }: TagItemProps) => {
+const TagItem = ({ tag, depth, activeTags, expanded, onTagClick, onToggle }: TagItemProps) => {
   const t = useTranslate();
   const isTag = tag.amount !== undefined;
-  const isActive = activeTag === tag.text;
-  const isAncestorOfActiveTag = activeTag?.startsWith(`${tag.text}/`) ?? false;
+  const isActive = activeTags.has(tag.text);
+  const isAncestorOfActiveTag = [...activeTags].some((activeTag) => activeTag.startsWith(`${tag.text}/`));
   const hasSubTags = tag.subTags.length > 0;
   const open = hasSubTags && expanded.has(tag.text);
   const { ref: labelRef, title } = useOverflowTitle<HTMLSpanElement>(isTag ? `#${tag.text}` : tag.text);
@@ -200,7 +202,7 @@ const TagItem = ({ tag, depth, activeTag, expanded, onTagClick, onToggle }: TagI
               key={subTag.text}
               tag={subTag}
               depth={depth + 1}
-              activeTag={activeTag}
+              activeTags={activeTags}
               expanded={expanded}
               onTagClick={onTagClick}
               onToggle={onToggle}
@@ -212,9 +214,15 @@ const TagItem = ({ tag, depth, activeTag, expanded, onTagClick, onToggle }: TagI
   );
 };
 
-const TagTree = ({ tagAmounts, activeTag, scope, onTagClick }: Props) => {
+const TagTree = ({ tagAmounts, activeTags, activeTag, scope, onTagClick }: Props) => {
   const t = useTranslate();
   const tags = useMemo(() => buildTagTree(tagAmounts), [tagAmounts]);
+  const selectedTagKey = useMemo(
+    () => JSON.stringify([...new Set([...(activeTags ?? []), ...(activeTag ? [activeTag] : [])])].sort()),
+    [activeTag, activeTags],
+  );
+  const selectedTags = useMemo(() => JSON.parse(selectedTagKey) as string[], [selectedTagKey]);
+  const selectedTagSet = useMemo(() => new Set(selectedTags), [selectedTags]);
   // Scoped per tenant: the paths are one account's tag names, so another user's profile tree
   // must not decide what your own library shows.
   const [state, setState] = useLocalStorage<TagTreeExpansion>(`tag-tree-expanded:${scope}`, EMPTY_EXPANSION);
@@ -228,20 +236,20 @@ const TagTree = ({ tagAmounts, activeTag, scope, onTagClick }: Props) => {
     });
   };
 
-  // Reveal the active tag when a filter arrives from elsewhere (URL, memo content). `revealedFor`
-  // is persisted so this happens once per selection: collapsing afterwards sticks even though the
-  // effect runs again on every mount, and re-picking the same tag later reveals it again.
+  // Reveal selected tags when filters arrive from elsewhere (URL, memo content). `revealedFor`
+  // is persisted so this happens once per selection: collapsing afterwards sticks, and re-picking
+  // a tag after changing the selection reveals its parent path again.
   useEffect(() => {
     setState((current) => {
-      if (!activeTag) return current?.revealedFor === undefined ? current : { ...current, revealedFor: undefined };
-      if (current?.revealedFor === activeTag) return current;
+      if (selectedTags.length === 0) return current?.revealedFor === undefined ? current : { ...current, revealedFor: undefined };
+      if (current?.revealedFor === selectedTagKey) return current;
 
-      const parents = parentPathsOf(activeTag);
+      const parents = selectedTags.flatMap(parentPathsOf);
       const paths = current?.expanded ?? [];
       const missing = parents.some((path) => !paths.includes(path));
-      return { expanded: missing ? [...new Set([...paths, ...parents])] : paths, revealedFor: activeTag };
+      return { expanded: missing ? [...new Set([...paths, ...parents])] : paths, revealedFor: selectedTagKey };
     });
-  }, [activeTag, setState]);
+  }, [selectedTagKey, selectedTags, setState]);
 
   return (
     <div className="relative flex h-auto w-full flex-col items-stretch gap-0.5" role="tree" aria-label={t("common.tags")}>
@@ -250,7 +258,7 @@ const TagTree = ({ tagAmounts, activeTag, scope, onTagClick }: Props) => {
           key={tag.text}
           tag={tag}
           depth={0}
-          activeTag={activeTag}
+          activeTags={selectedTagSet}
           expanded={expanded}
           onTagClick={onTagClick}
           onToggle={handleToggle}
