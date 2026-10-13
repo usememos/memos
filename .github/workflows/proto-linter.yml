@@ -21,14 +21,13 @@ jobs:
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
 
       - name: Setup buf
-        uses: bufbuild/buf-setup-action@v1
+        uses: bufbuild/buf-action@85aebf73123b5c15fd5528aaecbf9129cddf7fa7 # v1.6.0
         with:
+          setup_only: true
           github_token: ${{ github.token }}
 
       - name: Run buf lint
-        uses: bufbuild/buf-lint-action@v1
-        with:
-          input: proto
+        run: buf lint proto
 
       - name: Check buf format
         run: |
