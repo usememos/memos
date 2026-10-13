@@ -12,8 +12,6 @@ interface TaskInfo {
   checked: boolean;
 }
 
-export const ORIGINAL_HEADING_ID_ATTRIBUTE = "data-original-heading-id";
-
 // Extract all task list items from markdown using AST parsing
 // This correctly ignores task-like patterns inside code blocks
 function extractTasksFromAst(markdown: string): TaskInfo[] {
@@ -35,41 +33,6 @@ function extractTasksFromAst(markdown: string): TaskInfo[] {
   });
 
   return tasks;
-}
-
-export function toggleTaskAtLine(markdown: string, lineNumber: number, checked: boolean): string {
-  const lines = markdown.split("\n");
-
-  if (lineNumber < 0 || lineNumber >= lines.length) {
-    return markdown;
-  }
-
-  const line = lines[lineNumber];
-
-  // Match bullet and numbered tasks, retaining any trailing carriage return.
-  const taskPattern = /^(\s*(?:[-*+]|\d+[.)])\s+)\[([ xX])\](\s+.*)$/s;
-  const match = line.match(taskPattern);
-
-  if (!match) {
-    return markdown;
-  }
-
-  const [, prefix, , suffix] = match;
-  const newCheckmark = checked ? "x" : " ";
-  lines[lineNumber] = `${prefix}[${newCheckmark}]${suffix}`;
-
-  return lines.join("\n");
-}
-
-export function toggleTaskAtIndex(markdown: string, taskIndex: number, checked: boolean): string {
-  const tasks = extractTasksFromAst(markdown);
-
-  if (taskIndex < 0 || taskIndex >= tasks.length) {
-    return markdown;
-  }
-
-  const task = tasks[taskIndex];
-  return toggleTaskAtLine(markdown, task.lineNumber, checked);
 }
 
 export function getTaskLineNumber(markdown: string, taskIndex: number): number {
@@ -130,12 +93,6 @@ export function findAnchorTarget(root: ParentNode, fragment: string): Element | 
 
   const direct = root.querySelector(`#${CSS.escape(fragment)}`);
   if (direct) return direct;
-
-  // Reserved page anchors can force an author-supplied heading id to be suffixed. Keep
-  // historical links working by resolving the original id recorded by the heading plugin.
-  for (const heading of root.querySelectorAll(`[${ORIGINAL_HEADING_ID_ATTRIBUTE}]`)) {
-    if (heading.getAttribute(ORIGINAL_HEADING_ID_ATTRIBUTE) === fragment) return heading;
-  }
 
   const slugCounts = new Map<string, number>();
   for (const heading of root.querySelectorAll("h1, h2, h3, h4, h5, h6")) {

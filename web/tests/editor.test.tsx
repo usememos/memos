@@ -1,143 +1,115 @@
-import { fireEvent, render, waitFor } from "@testing-library/react";
+import { create } from "@bufbuild/protobuf";
+import { render, waitFor } from "@testing-library/react";
 import { createRef } from "react";
 import { describe, expect, it, vi } from "vitest";
 import Editor from "@/components/MemoEditor/Editor";
 import type { EditorController } from "@/components/MemoEditor/types/editorController";
+import { UserSetting_TagsSettingSchema } from "@/types/proto/api/user_service_pb";
+import { ColorSchema } from "@/types/proto/google/type/color_pb";
 
 const queries = vi.hoisted(() => ({
   useTagCounts: vi.fn(() => ({ data: {} })),
+  users: new Map<string, unknown>(),
 }));
 
 vi.mock("@/hooks/useUserQueries", () => ({
   useTagCounts: queries.useTagCounts,
+  useUsersByUsernames: (usernames: string[]) => ({
+    data: usernames.length ? new Map(usernames.map((username) => [username, queries.users.get(username)])) : undefined,
+  }),
 }));
+
+const baseProps = {
+  className: "x",
+  placeholder: "memo",
+  onContentChange: () => {},
+  onFiles: () => {},
+  onSubmit: () => {},
+};
 
 describe("Editor", () => {
   it("scopes tag autocomplete stats to the current user", () => {
-    render(<Editor className="x" initialContent="" placeholder="memo" onContentChange={vi.fn()} onFiles={vi.fn()} onSubmit={vi.fn()} />);
+    render(<Editor {...baseProps} value="" />);
 
     expect(queries.useTagCounts).toHaveBeenCalledWith(true);
   });
 
   it("loads markdown and serializes it back verbatim", () => {
     const ref = createRef<EditorController>();
-    render(
-      <Editor
-        ref={ref}
-        className="x"
-        initialContent={"# Title\n\n- a\n  1. b"}
-        placeholder="memo"
-        onContentChange={vi.fn()}
-        onFiles={vi.fn()}
-        onSubmit={vi.fn()}
-      />,
-    );
+    render(<Editor {...baseProps} ref={ref} value={"# Title\n\n- a\n  1. b"} />);
     expect(ref.current?.getMarkdown()).toBe("# Title\n\n- a\n  1. b");
   });
 
-  it("emits changes through onContentChange", () => {
+  it("emits edits through onContentChange", async () => {
     const ref = createRef<EditorController>();
-    const onChange = vi.fn();
-    render(
-      <Editor
-        ref={ref}
-        className="x"
-        initialContent=""
-        placeholder="memo"
-        onContentChange={onChange}
-        onFiles={vi.fn()}
-        onSubmit={vi.fn()}
-      />,
-    );
-    ref.current?.setMarkdown("hello");
-    expect(onChange).toHaveBeenCalledWith("hello");
+    const onContentChange = vi.fn();
+    render(<Editor {...baseProps} ref={ref} value="alpha" onContentChange={onContentChange} />);
+    ref.current?.setSelection({ anchor: { block: 0, offset: 5 }, focus: { block: 0, offset: 5 } });
+    ref.current?.insertMarkdown("beta");
+    await waitFor(() => expect(onContentChange).toHaveBeenLastCalledWith("alpha\n\nbeta"));
   });
 
-  it("does not replace newer editor text with a stale local echo", () => {
+  it("applies a new value from outside the editor", () => {
     const ref = createRef<EditorController>();
-    const props = {
-      ref,
-      className: "x",
-      placeholder: "memo",
-      onContentChange: vi.fn(),
-      onFiles: vi.fn(),
-      onSubmit: vi.fn(),
-    };
-    const { rerender } = render(<Editor {...props} initialContent="" />);
-
-    ref.current?.setMarkdown("H");
-    ref.current?.setMarkdown("Hello");
-    rerender(<Editor {...props} initialContent="H" contentIsExternal={false} />);
-
-    expect(ref.current?.getMarkdown()).toBe("Hello");
-  });
-
-  it("defers external content until an IME composition ends", async () => {
-    const ref = createRef<EditorController>();
-    const onChange = vi.fn();
-    const onExternalContentApplied = vi.fn();
-    const props = {
-      ref,
-      className: "x",
-      placeholder: "memo",
-      onContentChange: onChange,
-      onExternalContentApplied,
-      onFiles: vi.fn(),
-      onSubmit: vi.fn(),
-      contentIsExternal: true,
-    };
-    const { container, rerender } = render(<Editor {...props} initialContent="" />);
-    const content = container.querySelector<HTMLElement>(".cm-content");
-    expect(content).not.toBeNull();
-
-    fireEvent.compositionStart(content!);
-    rerender(<Editor {...props} initialContent="server value" />);
+    const { rerender } = render(<Editor {...baseProps} ref={ref} value="draft" />);
+    rerender(<Editor {...baseProps} ref={ref} value="" />);
     expect(ref.current?.getMarkdown()).toBe("");
+  });
 
-    // A final IME transaction can arrive after the external value entered the
-    // store. The deferred external value must still win at compositionend.
-    ref.current?.setMarkdown("local composition value");
-    expect(onChange).toHaveBeenLastCalledWith("local composition value");
-    fireEvent.compositionEnd(content!);
+  it("does not replace newer editor text with a stale local echo", async () => {
+    const ref = createRef<EditorController>();
+    const emitted: string[] = [];
+    const props = { ...baseProps, ref, onContentChange: (markdown: string) => emitted.push(markdown) };
+    const { rerender } = render(<Editor {...props} value="H" />);
 
-    await waitFor(() => expect(ref.current?.getMarkdown()).toBe("server value"));
-    expect(onExternalContentApplied).toHaveBeenLastCalledWith("server value");
-    expect(onChange).not.toHaveBeenCalledWith("server value");
+    ref.current?.insertMarkdown("first");
+    await waitFor(() => expect(emitted).toHaveLength(1));
+    ref.current?.insertMarkdown("second");
+    await waitFor(() => expect(emitted).toHaveLength(2));
+    rerender(<Editor {...props} value={emitted[0]} />);
+
+    expect(ref.current?.getMarkdown()).toBe(emitted[1]);
   });
 
   it("enables native text assistance for prose input", () => {
-    const props = {
-      className: "x",
-      initialContent: "",
-      placeholder: "memo",
-      onContentChange: vi.fn(),
-      onFiles: vi.fn(),
-      onSubmit: vi.fn(),
-    };
-    const { container } = render(<Editor {...props} />);
+    const { container } = render(<Editor {...baseProps} value="" />);
 
-    const content = container.querySelector(".cm-content");
-    expect(content).toHaveAttribute("autocorrect", "on");
-    expect(content).toHaveAttribute("autocapitalize", "on");
-    expect(content).toHaveAttribute("spellcheck", "true");
+    const root = container.querySelector(".memo-editor-root");
+    expect(root).toHaveAttribute("autocorrect", "on");
+    expect(root).toHaveAttribute("autocapitalize", "on");
+    expect(root).toHaveAttribute("spellcheck", "true");
   });
 
-  it("reconfigures the placeholder when its translation changes", () => {
-    const props = {
-      className: "x",
-      initialContent: "",
-      onContentChange: vi.fn(),
-      onFiles: vi.fn(),
-      onSubmit: vi.fn(),
-    };
-    const { container, rerender } = render(<Editor {...props} placeholder="Any thoughts?" />);
+  it("updates the placeholder when its translation changes", () => {
+    const { container, rerender } = render(<Editor {...baseProps} value="" placeholder="Any thoughts?" />);
+    const root = container.querySelector<HTMLElement>(".memo-editor-root");
+    expect(root?.style.getPropertyValue("--mbe-placeholder")).toBe('"Any thoughts?"');
 
-    expect(container.querySelector(".cm-content")).toHaveAttribute("aria-placeholder", "Any thoughts?");
-    expect(container.querySelector(".cm-placeholder")).toHaveTextContent("Any thoughts?");
+    rerender(<Editor {...baseProps} value="" placeholder="有什么想法？" />);
+    expect(root?.style.getPropertyValue("--mbe-placeholder")).toBe('"有什么想法？"');
+  });
 
-    rerender(<Editor {...props} placeholder="有什么想法？" />);
+  it("draws tags as the memo view does, in their custom colors", async () => {
+    const tagsSetting = create(UserSetting_TagsSettingSchema, {
+      tags: { work: { backgroundColor: create(ColorSchema, { red: 1, green: 0, blue: 0 }) } },
+    });
+    const { container, rerender } = render(<Editor {...baseProps} value="#work and #life" />);
+    const tag = (name: string) => container.querySelector<HTMLElement>(`.mbe-tag[data-tag="${name}"]`);
+    expect(tag("life")).toHaveClass("rounded-full", "border-primary");
+    expect(tag("work")).not.toHaveAttribute("style");
 
-    expect(container.querySelector(".cm-content")).toHaveAttribute("aria-placeholder", "有什么想法？");
-    expect(container.querySelector(".cm-placeholder")).toHaveTextContent("有什么想法？");
+    rerender(<Editor {...baseProps} value="#work and #life" tagsSetting={tagsSetting} />);
+    await waitFor(() => expect(tag("work")?.getAttribute("style")).toContain("color-mix"));
+    expect(tag("work")).not.toHaveClass("border-primary");
+  });
+
+  it("draws mentions of people who exist as the memo view does", async () => {
+    queries.users = new Map([["alice", { name: "users/alice" }]]);
+    const { container } = render(<Editor {...baseProps} value="Hi @alice and @nobody" />);
+    const mention = (name: string) => container.querySelector<HTMLElement>(`.mbe-mention[data-mention="${name}"]`);
+    await waitFor(() => expect(mention("alice")).toHaveAttribute("data-resolved"), { timeout: 2000 });
+    expect(mention("alice")).toHaveClass("text-primary");
+    expect(mention("nobody")).not.toHaveAttribute("data-resolved");
+    expect(mention("nobody")).not.toHaveClass("text-primary");
   });
 });

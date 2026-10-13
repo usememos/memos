@@ -229,9 +229,7 @@
     "any-thoughts": "任何想法...",
     "exit-focus-mode": "退出專注模式",
     "focus-mode": "專注模式",
-    "formatting-toolbar": "格式工具列",
     "format": {
-      "heading": "標題",
       "paragraph": "段落",
       "heading-1": "標題 1",
       "heading-2": "標題 2",
@@ -243,8 +241,7 @@
       "bullet-list": "項目符號清單",
       "ordered-list": "編號清單",
       "task-list": "待辦清單",
-      "link": "連結",
-      "more": "更多格式"
+      "link": "連結"
     },
     "insert-menu": {
       "add-attachment": "新增附件",
@@ -288,7 +285,33 @@
       "trigger": "錄製音訊"
     },
     "comment": "評論",
-    "saved": "已儲存"
+    "saved": "已儲存",
+    "blocks": {
+      "task": "任務",
+      "quote": "引用",
+      "table": "表格",
+      "divider": "分隔線",
+      "no-results": "沒有結果",
+      "commands": "指令",
+      "loading": "載入中…",
+      "duplicate": "建立副本",
+      "inline-code": "程式碼",
+      "link-placeholder": "貼上或輸入連結…",
+      "remove-link": "移除連結",
+      "slash-hint": "輸入「/」叫出指令",
+      "block-menu": "開啟區塊選單",
+      "list-hint": "清單",
+      "plain-text": "文字",
+      "add-row-above": "在上方插入列",
+      "add-row-below": "在下方插入列",
+      "add-column-left": "在左側插入欄",
+      "add-column-right": "在右側插入欄",
+      "delete-row": "刪除列",
+      "delete-column": "刪除欄",
+      "align-left": "靠左對齊",
+      "align-center": "置中對齊",
+      "align-right": "靠右對齊"
+    }
   },
   "inbox": {
     "failed-to-load": "載入失敗",

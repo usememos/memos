@@ -183,7 +183,6 @@
     "format": {
       "code-block": "Kodeblokk",
       "link": "Link",
-      "heading": "Overskrift",
       "paragraph": "Avsnitt",
       "heading-1": "Overskrift 1",
       "heading-2": "Overskrift 2",
@@ -193,11 +192,9 @@
       "strikethrough": "Gjennomstreking",
       "bullet-list": "Punkttegn liste",
       "ordered-list": "Nummerert liste",
-      "task-list": "Gjøremålsliste",
-      "more": "Mer formatering"
+      "task-list": "Gjøremålsliste"
     },
     "comment": "Kommentar",
-    "formatting-toolbar": "Formateringsverktøylinje",
     "new-memo": "Nytt notat",
     "saved": "Lagret",
     "validation": {
@@ -209,6 +206,32 @@
       "save-in-progress": "Lagring pågår",
       "unsupported-attachment-image-url": "Ustøttet vedleggsbilde-URL: {{url}}",
       "wait-for-upload": "Vent til opplastingen er fullført"
+    },
+    "blocks": {
+      "task": "Gjøremål",
+      "quote": "Sitat",
+      "table": "Tabell",
+      "divider": "Skillelinje",
+      "no-results": "Ingen resultater",
+      "commands": "Kommandoer",
+      "loading": "Laster inn…",
+      "duplicate": "Dupliser",
+      "inline-code": "Kode",
+      "link-placeholder": "Lim inn eller skriv en link…",
+      "remove-link": "Fjern link",
+      "slash-hint": "Skriv «/» for kommandoer",
+      "block-menu": "Åpne blokkmeny",
+      "list-hint": "Liste",
+      "plain-text": "tekst",
+      "add-row-above": "Legg til rad over",
+      "add-row-below": "Legg til rad under",
+      "add-column-left": "Legg til kolonne til venstre",
+      "add-column-right": "Legg til kolonne til høyre",
+      "delete-row": "Slett rad",
+      "delete-column": "Slett kolonne",
+      "align-left": "Venstrejuster",
+      "align-center": "Midtstill",
+      "align-right": "Høyrejuster"
     }
   },
   "inbox": {

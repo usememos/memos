@@ -183,7 +183,6 @@
     "format": {
       "code-block": "บล็อกโค้ด",
       "link": "ลิงก์",
-      "heading": "หัวข้อ",
       "paragraph": "ย่อหน้า",
       "heading-1": "หัวข้อ 1",
       "heading-2": "หัวข้อ 2",
@@ -193,11 +192,9 @@
       "strikethrough": "ขีดฆ่า",
       "bullet-list": "รายการแบบมีจุดนำหน้า",
       "ordered-list": "รายการแบบมีหมายเลข",
-      "task-list": "รายการสิ่งที่ต้องทำ",
-      "more": "การจัดรูปแบบเพิ่มเติม"
+      "task-list": "รายการสิ่งที่ต้องทำ"
     },
     "comment": "ความคิดเห็น",
-    "formatting-toolbar": "แถบเครื่องมือจัดรูปแบบ",
     "new-memo": "บันทึกใหม่",
     "saved": "บันทึกแล้ว",
     "validation": {
@@ -209,6 +206,32 @@
       "save-in-progress": "กำลังบันทึก",
       "unsupported-attachment-image-url": "URL รูปภาพไฟล์แนบไม่รองรับ: {{url}}",
       "wait-for-upload": "รอจนกว่าการอัปโหลดจะเสร็จสมบูรณ์"
+    },
+    "blocks": {
+      "task": "งาน",
+      "quote": "คำพูดอ้างอิง",
+      "table": "ตาราง",
+      "divider": "เส้นคั่น",
+      "no-results": "ไม่พบผลลัพธ์",
+      "commands": "คำสั่ง",
+      "loading": "กำลังโหลด…",
+      "duplicate": "ทำสำเนา",
+      "inline-code": "โค้ด",
+      "link-placeholder": "วางหรือพิมพ์ลิงก์…",
+      "remove-link": "ลบลิงก์",
+      "slash-hint": "พิมพ์ \"/\" เพื่อดูคำสั่ง",
+      "block-menu": "เปิดเมนูบล็อก",
+      "list-hint": "รายการ",
+      "plain-text": "ข้อความ",
+      "add-row-above": "เพิ่มแถวด้านบน",
+      "add-row-below": "เพิ่มแถวด้านล่าง",
+      "add-column-left": "เพิ่มคอลัมน์ทางซ้าย",
+      "add-column-right": "เพิ่มคอลัมน์ทางขวา",
+      "delete-row": "ลบแถว",
+      "delete-column": "ลบคอลัมน์",
+      "align-left": "จัดชิดซ้าย",
+      "align-center": "จัดกึ่งกลาง",
+      "align-right": "จัดชิดขวา"
     }
   },
   "inbox": {

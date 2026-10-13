@@ -221,7 +221,6 @@
     "format": {
       "code-block": "Kodo blokas",
       "link": "Nuoroda",
-      "heading": "Antraštė",
       "paragraph": "Pastraipa",
       "heading-1": "1 antraštė",
       "heading-2": "2 antraštė",
@@ -231,11 +230,9 @@
       "strikethrough": "Perbrauktas",
       "bullet-list": "Ženklelių sąrašas",
       "ordered-list": "Numeruotas sąrašas",
-      "task-list": "Darbų sąrašas",
-      "more": "Daugiau formatavimo"
+      "task-list": "Darbų sąrašas"
     },
     "comment": "Komentaras",
-    "formatting-toolbar": "Formatavimo įrankių juosta",
     "new-memo": "Naujas priminimas",
     "saved": "Išsaugota",
     "validation": {
@@ -247,6 +244,32 @@
       "save-in-progress": "Vykdomas išsaugojimas",
       "unsupported-attachment-image-url": "Nepalaikomas priedo vaizdo URL: {{url}}",
       "wait-for-upload": "Palaukite, kol įkėlimas bus baigtas"
+    },
+    "blocks": {
+      "task": "Užduotis",
+      "quote": "Citata",
+      "table": "Lentelė",
+      "divider": "Skirtukas",
+      "no-results": "Rezultatų nėra",
+      "commands": "Komandos",
+      "loading": "Įkeliama…",
+      "duplicate": "Dubliuoti",
+      "inline-code": "Kodas",
+      "link-placeholder": "Įklijuokite arba įveskite nuorodą…",
+      "remove-link": "Pašalinti nuorodą",
+      "slash-hint": "Įveskite „/“, kad matytumėte komandas",
+      "block-menu": "Atidaryti bloko meniu",
+      "list-hint": "Sąrašas",
+      "plain-text": "tekstas",
+      "add-row-above": "Pridėti eilutę viršuje",
+      "add-row-below": "Pridėti eilutę apačioje",
+      "add-column-left": "Pridėti stulpelį kairėje",
+      "add-column-right": "Pridėti stulpelį dešinėje",
+      "delete-row": "Ištrinti eilutę",
+      "delete-column": "Ištrinti stulpelį",
+      "align-left": "Lygiuoti kairėje",
+      "align-center": "Lygiuoti centre",
+      "align-right": "Lygiuoti dešinėje"
     }
   },
   "inbox": {

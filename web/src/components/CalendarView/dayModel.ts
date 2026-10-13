@@ -4,15 +4,14 @@ import type { Root, RootContent } from "mdast";
 import { fromMarkdown } from "mdast-util-from-markdown";
 import { gfmFromMarkdown } from "mdast-util-gfm";
 import { gfm } from "micromark-extension-gfm";
-import { defaultUrlTransform } from "react-markdown";
 import rehypeSanitize from "rehype-sanitize";
 import remarkRehype from "remark-rehype";
 import { unified } from "unified";
 import { visit } from "unist-util-visit";
-import { SANITIZE_SCHEMA } from "@/components/MemoContent/constants";
 import type { MemoTimeBasis } from "@/contexts/ViewContext";
 import { getMemoSortTime } from "@/hooks/useMemoSorting";
 import { ISO_DATE_FORMAT } from "@/lib/calendar-utils";
+import { SANITIZE_SCHEMA } from "@/lib/html-sanitize-schema";
 import type { Memo } from "@/types/proto/api/memo_service_pb";
 import { getAttachmentThumbnailUrl, getAttachmentUrl, isImage } from "@/utils/attachment";
 import { classifyManagedAttachmentImageURL, extractAttachmentUIDFromName } from "@/utils/managed-attachment";
@@ -93,7 +92,8 @@ const getImageCandidates = (memo: Memo, tree: Root): string[] => {
   const html = imageProcessor.runSync(tree) as HtmlRoot;
   visit(html, "element", (node: Element) => {
     if (node.tagName !== "img" || typeof node.properties.src !== "string") return;
-    const source = defaultUrlTransform(node.properties.src);
+    // The sanitizer above already dropped any src that is not relative or https.
+    const source = node.properties.src;
     if (!source) return;
     const classified = classifyManagedAttachmentImageURL(source);
     if (classified.kind === "invalid") return;

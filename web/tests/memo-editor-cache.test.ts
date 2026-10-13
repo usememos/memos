@@ -128,9 +128,10 @@ describe("memo editor cache", () => {
   it("keeps the cursor for the next editor mount", () => {
     const key = cacheService.key("users/steven", "global-memo-editor");
 
-    cacheService.saveCursor(key, 9);
+    const selection = { anchor: { block: 1, offset: 9 }, focus: { block: 1, offset: 9 } };
+    cacheService.saveCursor(key, selection);
 
-    expect(cacheService.loadCursor(key)).toBe(9);
+    expect(cacheService.loadCursor(key)).toEqual(selection);
     cacheService.clear(key);
     expect(cacheService.loadCursor(key)).toBeUndefined();
   });

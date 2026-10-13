@@ -2,7 +2,7 @@
 
 ## Overview
 
-MemoEditor is a three-layer component. At its core is a single editor — `Editor/`, a CodeMirror 6 "decorated source" editor. It stores the memo as **raw markdown, verbatim** (no parse/serialize round-trip) and styles that source in place with CodeMirror decorations: the markers (`#`, `*`, `` ` ``, list bullets, fences) stay visible but de-emphasized while the styled text leads. There is one editor and one storage format; everything above the editor boundary talks markdown through the `EditorController` contract.
+MemoEditor is a three-layer component. At its core is a single editor — `Editor/`, built on [`@usememos/editor`](https://github.com/usememos/editor), a block editor whose storage format is standard Markdown. Markdown goes in and comes out: blocks the user did not edit are saved byte for byte, and edited blocks are written in a normalized style. The memo view (`components/MemoContent`) is the same editor, read-only, so a memo looks the same while editing and after saving. Everything above the editor boundary talks markdown through the `EditorController` contract.
 
 ## Architecture
 
@@ -42,23 +42,15 @@ MemoEditor/
 ├── hooks/                  # React hooks (utilities)
 │   ├── useMemoSave.ts      # Save transaction, cache invalidation, and reset
 │   └── useFocusMode.ts     # Scroll lock and layout-stable focus presentation
-├── Editor/                 # The CodeMirror 6 decorated-source editor
-│   ├── index.tsx               # React wrapper: mounts the EditorView, owns the
-│   │                           #   controller refs, syncs initialContent in/out
-│   ├── extensions.ts           # buildEditorExtensions(): assembles the CM extension set
-│   ├── theme.ts                # Syntax-highlight style + editor theme (CSS-var colors)
-│   ├── tagMentionDecorations.ts# ViewPlugin that decorates #tag / @mention spans
-│   ├── markdownTagRanges.ts    # Markdown syntax-tree adapter for the shared tag scanner
-│   ├── tagAutocomplete.ts      # CM autocompletion source for #tag
-│   ├── uploadAnchors.ts        # Widget decorations holding a slot per in-flight upload
-│   ├── formatting.ts           # FormattingController impl (toggle marks, headings, lists)
-│   ├── controller.ts           # EditorController impl over an EditorView
-│   └── ...                     # Heading/list/viewport decorations, editor.css
-├── formatting/
-│   └── commands.ts         # Backend-agnostic catalog of formatting verbs
-├── Toolbar/                # EditorToolbar, FormattingToolbar, InsertMenu, AudienceMenu
+├── Editor/                 # The composer, on @usememos/editor
+│   ├── index.tsx               # React wrapper around <MarkdownEditor>; hands out the controller
+│   ├── extensions.ts           # buildEditorExtensions(): memo syntax, #tag autocomplete, file paste/drop
+│   ├── uploadAnchors.ts        # Widget rendering for in-flight upload placeholders
+│   ├── controller.ts           # EditorController over the editor
+│   └── editor.css              # Composer sizing and upload-anchor styles
+├── Toolbar/                # EditorToolbar, InsertMenu, AudienceMenu
 ├── constants.ts
-└── types/                  # EditorController / FormattingController, component props,
+└── types/                  # EditorController, component props,
                             #   attachment and insert-menu types
 ```
 
@@ -72,34 +64,27 @@ A reducer (`state/reducer.ts`) drives an **external store**, not a `useReducer` 
 
 ### The editor contract
 
-`types/editorController.ts` defines `EditorController` — document access (`getMarkdown`, `setMarkdown`, `insertMarkdown`), cursor and focus (`focus`, `hasFocus`, `isEmpty`, `getCursor`, `setCursor`, `scrollToCursor`, `selectAll`), the upload-anchor group below, plus an optional `formatting` capability. Callers outside the editor implementation use this interface exclusively and never reach into CodeMirror internals.
+`types/editorController.ts` defines `EditorController` — document access (`getMarkdown`, `setMarkdown`, `insertMarkdown`), selection and focus (`focus`, `hasFocus`, `isEmpty`, `getSelection`, `setSelection`, `selectAll`), the upload-anchor group below, and `toggleTaskList`. Callers outside the editor implementation use this interface exclusively and never reach into the editor's own API.
 
-`Editor/controller.ts` implements `EditorController` over a CodeMirror `EditorView`: `getMarkdown` is just `view.state.doc.toString()`, `setMarkdown` replaces the whole document, and `insertMarkdown` block-pads the insertion so it lands as its own block.
+`Editor/controller.ts` implements `EditorController` over the editor instance. Every method reads the live editor when called, so calls before mount or after destroy do nothing. `insertMarkdown` inserts after the caret's block (or in place of an empty paragraph) without consuming selected text. Selections are the editor's `SelectionJSON` (block index and offset), which survives remounting the same Markdown, so `cacheService` can restore the caret.
 
-`createUploadAnchor`/`updateUploadAnchor`/`resolveUploadAnchor`/`cancelUploadAnchor` drive `Editor/uploadAnchors.ts`, a `StateField` of widget decorations that hold a place in the document while an attachment uploads and carry its progress, failure message, and retry/keep affordances. `resolveUploadAnchor` replaces the anchor with the finished markdown (block-padded the same way `insertMarkdown` is); resolving with empty markdown cancels instead, as does `cancelUploadAnchor`.
+`createUploadAnchor`/`updateUploadAnchor`/`resolveUploadAnchor`/`cancelUploadAnchor` drive editor widgets (`editor.addWidget`) that hold a place after a block while an attachment uploads and carry its progress, failure message, and retry/keep affordances. Widgets are never saved and are not part of undo history. `resolveUploadAnchor` inserts the finished markdown after the widget's block; resolving with empty markdown cancels instead, as does `cancelUploadAnchor`.
 
-`FormattingController` (same file in `types/`) is the rich-formatting surface the focus-mode `FormattingToolbar` drives: `run(commandId, ctx?)`, `getActiveFormats()`, and `subscribe(listener)`. `Editor/formatting.ts` implements it by editing the markdown source directly — toggling inline marks (`**` and `*`) and single-backtick code delimiters, line prefixes (`-`, `1.`, and `- [ ]`, each followed by a space), and ATX heading prefixes (`#`…) — and by reading active state from the Lezer syntax tree at the caret.
+### Formatting
 
-### Formatting command catalog
-
-`formatting/commands.ts` is the single, editor-agnostic catalog of formatting verbs (`EDITOR_COMMANDS`, `EditorCommandId`, `ActiveFormatState`, `isCommandActive`). It is metadata only — labels (i18n keys), icons, and grouping — with no dependency on any concrete editor. The toolbar and the active-state highlighting derive everything from this catalog; `Editor/formatting.ts` supplies how each verb is applied to the live CodeMirror document. To add a verb, add one entry here (and its field on `ActiveFormatState`).
+Formatting is the editor's own: its toolbar appears over selected text (bold, italic, strikethrough, code, link), the slash menu and Markdown shortcuts change block types, and its keys cover the rest. Memos adds no formatting toolbar. The one formatting call memos makes itself is `toggleTaskList()`, for the checklist suggestion chip.
 
 ### Editor extensions
 
-`Editor/extensions.ts` exports `buildEditorExtensions()`, which composes the CodeMirror extension set: `@codemirror/lang-markdown` (with GFM), line wrapping, a reconfigurable placeholder, the editor theme, the `#tag`/`@mention` decoration plugin, the `#tag` autocomplete, and an update listener that pushes document changes back to the reducer via `onChange`. It also binds the save shortcut: `Meta-Enter` and `Ctrl-Enter` both call `onSubmit`, bound explicitly rather than through the platform-dependent `Mod-` so either works everywhere, and ordered ahead of `defaultKeymap`'s own `Mod-Enter` (`insertBlankLine`) so saving never also edits the document. Native CodeMirror paste/drop handlers intercept file payloads before its text insertion behavior: pasted files join the attachment list (a paste carries no placement gesture, so it never writes into the text), while dropped images are inserted inline at the drop point and other dropped files are attached. Ordinary markdown text paste/drop remains CodeMirror-owned.
+`lib/memo-markdown.ts` holds what the composer and the memo view share: the memo Markdown dialect (`breaks: true`, `setext: false`); `memoExtensions()` (math rendered with KaTeX loaded on demand, footnotes, `#tags` and `@mentions`, code highlighted with highlight.js, ```` ```mermaid ```` diagrams, and raw HTML through the sanitizer in `lib/sanitized-html.ts`); the URL policy for links and images (`memoResolveUrl`); the theme in the app's CSS variables; the translated UI labels; and the tag and mention collectors. Whatever the editor renders shows its source at the caret while editing.
 
-The app formatting keymap sits ahead of CodeMirror's generic `defaultKeymap`: `Mod-B`/`Mod-I` toggle bold/italic, `Mod-Shift-S` toggles strikethrough, `Mod-E` toggles inline code, `Mod-Alt-C` toggles a code block, `Mod-Alt-0` restores paragraph text, `Mod-Alt-1` through `Mod-Alt-3` select heading levels, and `Mod-Shift-7` through `Mod-Shift-9` toggle ordered, bullet, and task lists. CodeMirror's Markdown keymap remains enabled separately for structural `Enter` and `Backspace` behavior.
+`Editor/extensions.ts` adds what only the composer needs: the `#tag` autocomplete (`suggestion()` with `matchToken(scanTags)`, so the popup opens exactly where tags are highlighted; not inside code or links, and not for a bare `#` at the start of a line, which may be a heading) with items from `useTagCounts`, and a `fileHandler()`: pasted files join the attachment list, dropped images are inserted inline where they land and other dropped files are attached.
 
-`Editor/theme.ts` defines the decorated-source look: a `HighlightStyle` over the Lezer markdown highlight tags (headings, strong, emphasis, code, links, quotes, markers) and an `EditorView.theme`. Colors come from CSS custom properties so light/dark themes just work. This is the editor's own styling — the read-only memo view styles itself separately via `@/lib/markdownStyles`.
+Keys are the editor's own (see its README): Mod+B/I/E, Mod+Shift+S, Mod+Alt+0–3, Mod+Alt+C, Mod+Shift+7–9, Tab/Shift+Tab, and Mod+Enter / Ctrl+Enter to save. The first Escape selects the caret's block; a second Escape leaves the editor.
 
 ### Tags and mentions
 
-`#tag` autocomplete, decoration, and read-only rendering all use the shared scanner in `@/utils/tag-grammar`. The scanner owns tag syntax and Unicode/emoji recognition; each surface supplies only its Markdown context:
-
-- `Editor/markdownTagRanges.ts` adapts the CodeMirror syntax tree into literal-source ranges, excluding links, code, math, raw HTML syntax, escapes, and entities before calling the shared scanner.
-- `Editor/tagMentionDecorations.ts` decorates the tag matches returned by that adapter; mention recognition remains separate.
-- `Editor/tagAutocomplete.ts` scans the raw input at the cursor and offers known tags from `useTagCounts`, including inside code, links, and escapes. Bare `#` offers all tags except at an opening heading marker (manual completion still works there). Nested paths match by prefix, path segment, or substring, including an unfinished child after `/`.
-- `@/utils/remark-plugins/remark-tag` is the read-only renderer's Markdown AST adapter to the same scanner.
+Highlighting, autocomplete, `EditorController.getTags()` and the memo view all use the editor's scanners (`scanTags`, `scanMentions`), which skip code, links, images and extension tokens, so what is highlighted is what counts. `extractMentionUsernames` in `lib/memo-markdown.ts` reads mentions the same way to decide which users to resolve.
 
 ### Services
 
@@ -133,10 +118,10 @@ eligibility/application in `EditorSuggestions`.
 
 Every instance is one of two things, and `onFocusModeExit` is the switch:
 
-- **Inline** (prop omitted) — the editor sits in page flow (Home composer, memo edit, comments) and owns its presentation. The ＋ menu offers the view toggles: focus mode expands the editor over the page and the formatting toolbar's trailing button minimizes it back in place, while the formatting-toolbar preference governs the normal-mode layout.
-- **Hosted** (prop supplied) — a host presents the editor full-screen and owns that frame; `contexts/GlobalMemoEditorContext.tsx` is the one today. The editor mounts straight into focus mode and exits by calling back to dismiss the host, so the formatting toolbar's trailing button reads as Close rather than minimize. The ＋ menu's view toggles are absent: focus mode is not the editor's to leave, and it already forces the formatting toolbar on.
+- **Inline** (prop omitted) — the editor sits in page flow (Home composer, memo edit, comments) and owns its presentation. The ＋ menu offers focus mode, which expands the editor over the page; the exit button in its top row minimizes it back in place.
+- **Hosted** (prop supplied) — a host presents the editor full-screen and owns that frame; `contexts/GlobalMemoEditorContext.tsx` is the one today. The editor mounts straight into focus mode and exits by calling back to dismiss the host, so the exit button reads as Close rather than minimize. The ＋ menu's view toggle is absent: focus mode is not the editor's to leave.
 
-Those toggles travel as a single optional `viewToggles` object (`types/components.ts`) down `EditorToolbar` → `InsertMenu`, so they can only appear or disappear together.
+The toggle travels as an optional `viewToggles` object (`types/components.ts`) down `EditorToolbar` → `InsertMenu`.
 
 ### Destination and visibility
 

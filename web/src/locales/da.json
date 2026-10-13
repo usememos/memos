@@ -221,7 +221,6 @@
     "format": {
       "code-block": "Kodeblok",
       "link": "Forbindelse",
-      "heading": "Overskrift",
       "paragraph": "Afsnit",
       "heading-1": "Overskrift 1",
       "heading-2": "Overskrift 2",
@@ -231,11 +230,9 @@
       "strikethrough": "Gennemstreget",
       "bullet-list": "Punkttegn liste",
       "ordered-list": "Nummereret liste",
-      "task-list": "Opgaveliste",
-      "more": "Mere formatering"
+      "task-list": "Opgaveliste"
     },
     "comment": "Kommentar",
-    "formatting-toolbar": "Formateringsværktøjslinje",
     "new-memo": "Nyt notat",
     "saved": "Gemt",
     "validation": {
@@ -247,6 +244,32 @@
       "save-in-progress": "Gemning i gang",
       "unsupported-attachment-image-url": "Ikke-understøttet URL til vedhæftet billede: {{url}}",
       "wait-for-upload": "Vent på, at uploaden er fuldført"
+    },
+    "blocks": {
+      "task": "Opgave",
+      "quote": "Citat",
+      "table": "Tabel",
+      "divider": "Skillelinje",
+      "no-results": "Ingen resultater",
+      "commands": "Kommandoer",
+      "loading": "Indlæser…",
+      "duplicate": "Dupliker",
+      "inline-code": "Kode",
+      "link-placeholder": "Indsæt eller skriv et link…",
+      "remove-link": "Fjern link",
+      "slash-hint": "Skriv \"/\" for kommandoer",
+      "block-menu": "Åbn blokmenu",
+      "list-hint": "Liste",
+      "plain-text": "tekst",
+      "add-row-above": "Tilføj række over",
+      "add-row-below": "Tilføj række under",
+      "add-column-left": "Tilføj kolonne til venstre",
+      "add-column-right": "Tilføj kolonne til højre",
+      "delete-row": "Slet række",
+      "delete-column": "Slet kolonne",
+      "align-left": "Venstrejuster",
+      "align-center": "Centrer",
+      "align-right": "Højrejuster"
     }
   },
   "inbox": {

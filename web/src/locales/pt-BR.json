@@ -183,7 +183,6 @@
     "format": {
       "code-block": "Bloco de código",
       "link": "Link",
-      "heading": "Título",
       "paragraph": "Parágrafo",
       "heading-1": "Título 1",
       "heading-2": "Título 2",
@@ -193,11 +192,9 @@
       "strikethrough": "Tachado",
       "bullet-list": "Lista com marcadores",
       "ordered-list": "Lista numerada",
-      "task-list": "Lista de tarefas",
-      "more": "Mais formatação"
+      "task-list": "Lista de tarefas"
     },
     "comment": "Comentário",
-    "formatting-toolbar": "Barra de ferramentas de formatação",
     "new-memo": "Novo memorando",
     "saved": "Salvo",
     "validation": {
@@ -209,6 +206,32 @@
       "save-in-progress": "Salvando em andamento",
       "unsupported-attachment-image-url": "URL de imagem de anexo não suportada: {{url}}",
       "wait-for-upload": "Aguardar a conclusão do upload"
+    },
+    "blocks": {
+      "task": "Tarefa",
+      "quote": "Citação",
+      "table": "Tabela",
+      "divider": "Divisor",
+      "no-results": "Nenhum resultado",
+      "commands": "Comandos",
+      "loading": "Carregando…",
+      "duplicate": "Duplicar",
+      "inline-code": "Código",
+      "link-placeholder": "Cole ou digite um link…",
+      "remove-link": "Remover link",
+      "slash-hint": "Digite \"/\" para ver os comandos",
+      "block-menu": "Abrir menu do bloco",
+      "list-hint": "Lista",
+      "plain-text": "texto",
+      "add-row-above": "Adicionar linha acima",
+      "add-row-below": "Adicionar linha abaixo",
+      "add-column-left": "Adicionar coluna à esquerda",
+      "add-column-right": "Adicionar coluna à direita",
+      "delete-row": "Excluir linha",
+      "delete-column": "Excluir coluna",
+      "align-left": "Alinhar à esquerda",
+      "align-center": "Centralizar",
+      "align-right": "Alinhar à direita"
     }
   },
   "inbox": {

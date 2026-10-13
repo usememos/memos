@@ -25,8 +25,12 @@ vi.mock("@/components/MemoContent/MentionResolutionContext", () => ({
   useResolvedMentionUsernames: () => new Set<string>(),
 }));
 
-vi.mock("@/components/MemoContent/MemoMarkdownRenderer", () => ({
-  MemoMarkdownRenderer: ({ content }: { content: string }) => <div>{content}</div>,
+vi.mock("@/components/MemoContent", () => ({
+  default: ({ content }: { content: string }) => <div>{content}</div>,
+}));
+
+vi.mock("@/hooks/useMemoQueries", () => ({
+  useUpdateMemo: () => ({ mutate: vi.fn() }),
 }));
 
 vi.mock("@/components/MemoMetadata", () => ({

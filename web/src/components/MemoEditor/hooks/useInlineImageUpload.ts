@@ -9,7 +9,7 @@ import { buildManagedAttachmentMarkdown, canInlineAttachment } from "@/utils/man
 import { errorService, uploadService } from "../services";
 import { useEditorContext } from "../state";
 import type { LocalFile } from "../types/attachment";
-import type { EditorController } from "../types/editorController";
+import type { EditorController, EditorPosition } from "../types/editorController";
 
 interface UploadEntry {
   localFile: LocalFile;
@@ -202,7 +202,7 @@ export const useInlineImageUpload = (editorRef: RefObject<EditorController | nul
   runJobRef.current = runJob;
 
   const insertLocalImages = useCallback(
-    (localFiles: LocalFile[], position?: number) => {
+    (localFiles: LocalFile[], position?: EditorPosition | null) => {
       if (getState().ui.isLoading.saving) return;
       const editor = editorRef.current;
       const job = createJob(localFiles);

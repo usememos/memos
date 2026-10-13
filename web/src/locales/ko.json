@@ -183,7 +183,6 @@
     "format": {
       "code-block": "코드 블록",
       "link": "링크",
-      "heading": "제목",
       "paragraph": "단락",
       "heading-1": "제목 1",
       "heading-2": "제목 2",
@@ -193,11 +192,9 @@
       "strikethrough": "취소선",
       "bullet-list": "글머리 기호 목록",
       "ordered-list": "번호 매기기 목록",
-      "task-list": "할 일 목록",
-      "more": "추가 서식 지정"
+      "task-list": "할 일 목록"
     },
     "comment": "댓글",
-    "formatting-toolbar": "서식 도구 모음",
     "new-memo": "새 메모",
     "saved": "저장됨",
     "validation": {
@@ -209,6 +206,32 @@
       "save-in-progress": "저장 중",
       "unsupported-attachment-image-url": "지원되지 않는 첨부 이미지 URL: {{url}}",
       "wait-for-upload": "업로드가 완료될 때까지 기다리세요"
+    },
+    "blocks": {
+      "task": "할 일",
+      "quote": "인용",
+      "table": "표",
+      "divider": "구분선",
+      "no-results": "결과 없음",
+      "commands": "명령어",
+      "loading": "불러오는 중…",
+      "duplicate": "복제",
+      "inline-code": "코드",
+      "link-placeholder": "링크를 붙여넣거나 입력하세요…",
+      "remove-link": "링크 제거",
+      "slash-hint": "'/'를 입력해 명령어 보기",
+      "block-menu": "블록 메뉴 열기",
+      "list-hint": "목록",
+      "plain-text": "텍스트",
+      "add-row-above": "위에 행 추가",
+      "add-row-below": "아래에 행 추가",
+      "add-column-left": "왼쪽에 열 추가",
+      "add-column-right": "오른쪽에 열 추가",
+      "delete-row": "행 삭제",
+      "delete-column": "열 삭제",
+      "align-left": "왼쪽 정렬",
+      "align-center": "가운데 정렬",
+      "align-right": "오른쪽 정렬"
     }
   },
   "inbox": {

@@ -183,7 +183,6 @@
     "format": {
       "code-block": "कोड ब्लॉक",
       "link": "लिंक",
-      "heading": "शीर्षक",
       "paragraph": "परिच्छेद",
       "heading-1": "शीर्षक १",
       "heading-2": "शीर्षक २",
@@ -193,11 +192,9 @@
       "strikethrough": "मध्यरेषांकित",
       "bullet-list": "बुलेट यादी",
       "ordered-list": "क्रमांकित यादी",
-      "task-list": "कामांची यादी",
-      "more": "अधिक स्वरूपन"
+      "task-list": "कामांची यादी"
     },
     "comment": "टिप्पणी",
-    "formatting-toolbar": "फॉरमॅटिंग टूलबार",
     "new-memo": "नवीन मेमो",
     "saved": "जतन केले",
     "validation": {
@@ -209,6 +206,32 @@
       "save-in-progress": "जतन करण्याची प्रक्रिया सुरू आहे",
       "unsupported-attachment-image-url": "असमर्थित संलग्नक प्रतिमेचा URL: {{url}}",
       "wait-for-upload": "अपलोड पूर्ण होण्याची प्रतीक्षा करा"
+    },
+    "blocks": {
+      "task": "काम",
+      "quote": "अवतरण",
+      "table": "सारणी",
+      "divider": "विभाजक",
+      "no-results": "कोणतेही परिणाम नाहीत",
+      "commands": "आदेश",
+      "loading": "लोड होत आहे…",
+      "duplicate": "डुप्लिकेट करा",
+      "inline-code": "कोड",
+      "link-placeholder": "लिंक पेस्ट करा किंवा टाइप करा…",
+      "remove-link": "लिंक काढा",
+      "slash-hint": "आदेशांसाठी '/' टाइप करा",
+      "block-menu": "ब्लॉक मेनू उघडा",
+      "list-hint": "यादी",
+      "plain-text": "मजकूर",
+      "add-row-above": "वर ओळ जोडा",
+      "add-row-below": "खाली ओळ जोडा",
+      "add-column-left": "डावीकडे स्तंभ जोडा",
+      "add-column-right": "उजवीकडे स्तंभ जोडा",
+      "delete-row": "ओळ हटवा",
+      "delete-column": "स्तंभ हटवा",
+      "align-left": "डावीकडे संरेखित करा",
+      "align-center": "मध्यभागी संरेखित करा",
+      "align-right": "उजवीकडे संरेखित करा"
     }
   },
   "inbox": {

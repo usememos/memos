@@ -1,113 +1,139 @@
-import { isolateHistory } from "@codemirror/commands";
-import { ensureSyntaxTree, syntaxTree } from "@codemirror/language";
-import { EditorSelection, type EditorState } from "@codemirror/state";
-import { EditorView } from "@codemirror/view";
+import { type Block, containerContent, type Editor, getBlock, inlineText, type Position, type Widget } from "@usememos/editor";
+import { collectTags } from "@/lib/memo-markdown";
 import { isCompleteTagValue } from "@/utils/tag-grammar";
-import type { EditorController, FormattingController } from "../types/editorController";
-import { findMarkdownTagMatches } from "./markdownTagRanges";
-import {
-  cancelUploadAnchor,
-  createUploadAnchor,
-  getUploadAnchorPosition,
-  removeUploadAnchorEffect,
-  setUploadAnchor,
-} from "./uploadAnchors";
+import type { EditorController } from "../types/editorController";
+import { renderUploadAnchor } from "./uploadAnchors";
 
-const isEmptyDoc = (state: EditorState) => state.doc.toString().trim() === "";
+/** The live editor, or null before it mounts and after it is destroyed. */
+type EditorGetter = () => Editor | null;
 
-/** Block padding for insertMarkdown: ensure the inserted text is its own block. */
-function blockPad(before: string, after: string): { prefix: string; suffix: string } {
-  const prefix = before.length === 0 || before.endsWith("\n\n") ? "" : before.endsWith("\n") ? "\n" : "\n\n";
-  const suffix = after.length === 0 || after.startsWith("\n\n") ? "" : after.startsWith("\n") ? "\n" : "\n\n";
-  return { prefix, suffix };
-}
+const live = (getEditor: EditorGetter): Editor | null => {
+  const editor = getEditor();
+  return editor && !editor.isDestroyed ? editor : null;
+};
 
-export function createController(view: EditorView, formatting: FormattingController): EditorController {
-  const currentTags = () => findMarkdownTagMatches(view.state, 0, view.state.doc.length).map((match) => match.value);
+/** The text of the block (or table cell) holding `position`. */
+const textAt = (editor: Editor, position: Position): string => {
+  const content = containerContent(getBlock(editor.state.doc, position.blockId), position.cell);
+  return content ? inlineText(content) : "";
+};
+
+/** An empty paragraph, which an inserted block should replace rather than follow. */
+const isEmptyParagraph = (block: Block): boolean => block.type === "paragraph" && inlineText(block.content) === "";
+
+/**
+ * Inserts Markdown as its own blocks at `position`. In an empty paragraph it
+ * takes the paragraph's place, as a paste would, so no empty line is left
+ * above the inserted content.
+ */
+const insertBlocks = (editor: Editor, markdown: string, position: Position): void => {
+  if (isEmptyParagraph(getBlock(editor.state.doc, position.blockId))) {
+    editor.setSelection({ anchor: position, focus: position });
+    editor.commands.insertMarkdown(markdown, { block: true });
+  } else {
+    editor.commands.insertMarkdown(markdown, { at: position, block: true });
+  }
+};
+
+/**
+ * EditorController over a @usememos/editor instance. Every method reads the
+ * live editor when called, so the controller can be handed out before the
+ * editor mounts, and calls after it is destroyed do nothing. The editor does
+ * not emit a change for a replaced document, so `onReplace` reports it.
+ */
+export function createController(getEditor: EditorGetter, onReplace: (markdown: string) => void): EditorController {
+  const anchors = new Map<string, Widget>();
+  const currentTags = (editor: Editor) => collectTags(editor.state.doc.blocks);
+
+  const takeAnchor = (id: string): Widget | undefined => {
+    const widget = anchors.get(id);
+    anchors.delete(id);
+    return widget && !widget.isRemoved ? widget : undefined;
+  };
+
   return {
-    focus: () => view.focus(),
-    hasFocus: () => view.hasFocus,
-    isEmpty: () => isEmptyDoc(view.state),
-    getMarkdown: () => view.state.doc.toString(),
-    getTags: currentTags,
-    hasChecklist: () => {
-      let found = false;
-      const tree = ensureSyntaxTree(view.state, view.state.doc.length) ?? syntaxTree(view.state);
-      tree.iterate({
-        enter: (node) => {
-          if (node.name === "Task") found = true;
-          if (found) return false;
-        },
-      });
-      return found;
-    },
-    insertTag: (tag) => {
-      if (!isCompleteTagValue(tag) || view.compositionStarted || currentTags().includes(tag)) return false;
-      const { doc, selection } = view.state;
-      const { head } = selection.main;
-      // Like insertMarkdown, keep highlighted text and insert at the active end.
-      // Honor the chosen Markdown context, including code, instead of relocating it.
-      const prefix = head > 0 && !/\s/.test(doc.sliceString(head - 1, head)) ? " " : "";
-      const hasFollowingSpace = /^[ \t]$/.test(doc.sliceString(head, head + 1));
-      const insert = `${prefix}#${tag}${hasFollowingSpace ? "" : " "}`;
-      view.dispatch({
-        changes: { from: head, insert },
-        // Exactly one space follows the tag, inserted or reused; the caret lands after it.
-        selection: { anchor: head + prefix.length + tag.length + 2 },
-        annotations: isolateHistory.of("full"),
-        userEvent: "input",
-        scrollIntoView: true,
-      });
-      view.focus();
-      return true;
-    },
+    focus: () => live(getEditor)?.focus(),
+    hasFocus: () => live(getEditor)?.hasFocus() ?? false,
+    isEmpty: () => (live(getEditor)?.getMarkdown() ?? "").trim() === "",
+    getMarkdown: () => getEditor()?.getMarkdown() ?? "",
     setMarkdown: (markdown) => {
-      view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: markdown } });
+      const editor = live(getEditor);
+      if (!editor) return;
+      editor.setMarkdown(markdown);
+      onReplace(markdown);
     },
     insertMarkdown: (markdown) => {
-      if (!markdown) return;
+      const editor = live(getEditor);
+      if (!editor || !markdown) return;
       // Insert at the caret without consuming the selection: callers live outside
-      // the editor (attachment list, audio recorder), and CodeMirror keeps its
-      // selection across blur, so replacing the range would delete text the user
-      // merely had highlighted.
-      const { head } = view.state.selection.main;
-      const doc = view.state.doc.toString();
-      const { prefix, suffix } = blockPad(doc.slice(0, head), doc.slice(head));
-      const insert = prefix + markdown + suffix;
-      view.dispatch({ changes: { from: head, insert }, selection: { anchor: head + insert.length }, scrollIntoView: true });
-      view.focus();
+      // the editor (attachment list, audio recorder), and replacing the range
+      // would delete text the user merely had highlighted.
+      insertBlocks(editor, markdown, editor.getSelection().focus);
+      editor.commands.focus();
+      editor.commands.scrollIntoView();
     },
-    createUploadAnchor: (descriptor, position) => createUploadAnchor(view, descriptor, position),
-    updateUploadAnchor: (descriptor) => setUploadAnchor(view, descriptor),
-    resolveUploadAnchor: (id, markdown) => {
-      const position = getUploadAnchorPosition(view.state, id);
-      if (position === undefined) return;
-      if (!markdown) {
-        cancelUploadAnchor(view, id);
-        return;
+    getTags: () => {
+      const editor = live(getEditor);
+      return editor ? currentTags(editor) : [];
+    },
+    hasChecklist: () => live(getEditor)?.state.doc.blocks.some((block) => block.type === "listItem" && block.listType === "task") ?? false,
+    insertTag: (tag) => {
+      const editor = live(getEditor);
+      if (!editor || !isCompleteTagValue(tag) || editor.isComposing || currentTags(editor).includes(tag)) return false;
+      // Like insertMarkdown, keep highlighted text and insert at the active end.
+      // Honor the chosen Markdown context, including code, instead of relocating it.
+      const head = editor.getSelection().focus;
+      const text = textAt(editor, head);
+      const prefix = head.offset > 0 && !/\s/.test(text[head.offset - 1] ?? "") ? " " : "";
+      const hasFollowingSpace = /^[ \t]$/.test(text[head.offset] ?? "");
+      editor.setSelection({ anchor: head, focus: head });
+      editor.commands.insertText(`${prefix}#${tag}${hasFollowingSpace ? "" : " "}`);
+      if (hasFollowingSpace) {
+        // Exactly one space follows the tag, inserted or reused; the caret lands after it.
+        const after = editor.getSelection().focus;
+        const next = { ...after, offset: after.offset + 1 };
+        editor.setSelection({ anchor: next, focus: next });
       }
-      const doc = view.state.doc.toString();
-      const { prefix, suffix } = blockPad(doc.slice(0, position), doc.slice(position));
-      const insert = prefix + markdown + suffix;
-      view.dispatch({
-        changes: { from: position, insert },
-        effects: removeUploadAnchorEffect(id),
-        selection: { anchor: position + insert.length },
-        scrollIntoView: true,
-      });
-      view.focus();
+      editor.commands.focus();
+      editor.commands.scrollIntoView();
+      return true;
     },
-    cancelUploadAnchor: (id) => cancelUploadAnchor(view, id),
-    getCursor: () => view.state.selection.main.head,
-    setCursor: (position: number) => {
-      const cursor = Math.min(Math.max(position, 0), view.state.doc.length);
-      view.dispatch({
-        selection: EditorSelection.cursor(cursor),
-        scrollIntoView: true,
-      });
+    createUploadAnchor: (descriptor, position) => {
+      const editor = live(getEditor);
+      if (!editor) return;
+      takeAnchor(descriptor.id)?.remove();
+      const at = position ?? editor.getSelection().focus;
+      anchors.set(descriptor.id, editor.addWidget({ at, render: renderUploadAnchor(descriptor) }));
     },
-    scrollToCursor: () => view.dispatch({ effects: EditorView.scrollIntoView(view.state.selection.main.head) }),
-    selectAll: () => view.dispatch({ selection: EditorSelection.range(0, view.state.doc.length) }),
-    formatting,
+    updateUploadAnchor: (descriptor) => {
+      const widget = anchors.get(descriptor.id);
+      if (widget && !widget.isRemoved) widget.update(renderUploadAnchor(descriptor));
+    },
+    resolveUploadAnchor: (id, markdown) => {
+      const editor = live(getEditor);
+      const widget = takeAnchor(id);
+      if (!editor || !widget) return;
+      if (markdown) {
+        const block = editor.state.doc.blocks.find((candidate) => candidate.id === widget.blockId);
+        if (block && isEmptyParagraph(block)) {
+          insertBlocks(editor, markdown, { blockId: block.id, offset: 0 });
+        } else {
+          editor.commands.insertMarkdown(markdown, { at: widget, block: true });
+        }
+        editor.commands.focus();
+        editor.commands.scrollIntoView();
+      }
+      widget.remove();
+    },
+    cancelUploadAnchor: (id) => takeAnchor(id)?.remove(),
+    getSelection: () => live(getEditor)?.selectionToJSON(),
+    setSelection: (selection) => {
+      const editor = live(getEditor);
+      if (!editor) return;
+      editor.setSelection(selection);
+      editor.commands.scrollIntoView();
+    },
+    selectAll: () => live(getEditor)?.commands.selectAll(),
+    toggleTaskList: () => live(getEditor)?.commands.toggleTaskList() ?? false,
   };
 }

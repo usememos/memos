@@ -56,13 +56,14 @@ describe("useMemoInit", () => {
     vi.useFakeTimers();
     const key = cacheService.key("users/steven", "restored-draft");
     cacheService.saveNow(key, { content: "An unfinished memo", attachments: [] });
-    cacheService.saveCursor(key, 5);
+    const selection = { anchor: { block: 0, offset: 5 }, focus: { block: 0, offset: 5 } };
+    cacheService.saveCursor(key, selection);
     const focus = vi.fn();
-    const setCursor = vi.fn();
-    editorRef.current = { focus, setCursor } as unknown as EditorController;
+    const setSelection = vi.fn();
+    editorRef.current = { focus, setSelection } as unknown as EditorController;
     const autoFocus = vi.fn(() => {
       expect(getEditorState().content).toBe("An unfinished memo");
-      expect(setCursor).toHaveBeenCalledWith(5);
+      expect(setSelection).toHaveBeenCalledWith(selection);
       return allowed;
     });
 

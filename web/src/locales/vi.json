@@ -183,7 +183,6 @@
     "format": {
       "code-block": "Khối mã",
       "link": "Liên kết",
-      "heading": "Tiêu đề",
       "paragraph": "Đoạn văn",
       "heading-1": "Tiêu đề 1",
       "heading-2": "Tiêu đề 2",
@@ -193,11 +192,9 @@
       "strikethrough": "Gạch ngang",
       "bullet-list": "Danh sách gạch đầu dòng",
       "ordered-list": "Danh sách đánh số",
-      "task-list": "Danh sách việc cần làm",
-      "more": "Định dạng khác"
+      "task-list": "Danh sách việc cần làm"
     },
     "comment": "Bình luận",
-    "formatting-toolbar": "Thanh công cụ định dạng",
     "new-memo": "Ghi chú mới",
     "saved": "Đã lưu",
     "validation": {
@@ -209,6 +206,32 @@
       "save-in-progress": "Đang lưu",
       "unsupported-attachment-image-url": "URL ảnh đính kèm không được hỗ trợ: {{url}}",
       "wait-for-upload": "Chờ quá trình tải lên hoàn tất"
+    },
+    "blocks": {
+      "task": "Việc cần làm",
+      "quote": "Trích dẫn",
+      "table": "Bảng",
+      "divider": "Đường phân cách",
+      "no-results": "Không có kết quả",
+      "commands": "Lệnh",
+      "loading": "Đang tải…",
+      "duplicate": "Nhân bản",
+      "inline-code": "Mã",
+      "link-placeholder": "Dán hoặc nhập liên kết…",
+      "remove-link": "Xóa liên kết",
+      "slash-hint": "Nhập \"/\" để xem lệnh",
+      "block-menu": "Mở menu khối",
+      "list-hint": "Danh sách",
+      "plain-text": "văn bản",
+      "add-row-above": "Thêm hàng phía trên",
+      "add-row-below": "Thêm hàng phía dưới",
+      "add-column-left": "Thêm cột bên trái",
+      "add-column-right": "Thêm cột bên phải",
+      "delete-row": "Xóa hàng",
+      "delete-column": "Xóa cột",
+      "align-left": "Căn trái",
+      "align-center": "Căn giữa",
+      "align-right": "Căn phải"
     }
   },
   "inbox": {

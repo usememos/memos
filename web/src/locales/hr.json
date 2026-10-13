@@ -183,7 +183,6 @@
     "format": {
       "code-block": "Blok koda",
       "link": "Link",
-      "heading": "Naslov",
       "paragraph": "Odlomak",
       "heading-1": "Naslov 1",
       "heading-2": "Naslov 2",
@@ -193,11 +192,9 @@
       "strikethrough": "Precrtano",
       "bullet-list": "Grafička oznaka popis",
       "ordered-list": "Numerirani popis",
-      "task-list": "Popis obaveza",
-      "more": "Više formatiranja"
+      "task-list": "Popis obaveza"
     },
     "comment": "Komentar",
-    "formatting-toolbar": "Alatna traka za oblikovanje",
     "new-memo": "Novi podsjetnik",
     "saved": "Spremljeno",
     "validation": {
@@ -209,6 +206,32 @@
       "save-in-progress": "Spremanje u tijeku",
       "unsupported-attachment-image-url": "Nepodržani URL slike privitka: {{url}}",
       "wait-for-upload": "Pričekajte da se prijenos dovrši"
+    },
+    "blocks": {
+      "task": "Zadatak",
+      "quote": "Citat",
+      "table": "Tablica",
+      "divider": "Razdjelnik",
+      "no-results": "Nema rezultata",
+      "commands": "Naredbe",
+      "loading": "Učitavanje…",
+      "duplicate": "Dupliciraj",
+      "inline-code": "Kod",
+      "link-placeholder": "Zalijepi ili upiši link…",
+      "remove-link": "Ukloni link",
+      "slash-hint": "Upiši „/” za naredbe",
+      "block-menu": "Otvori izbornik bloka",
+      "list-hint": "Popis",
+      "plain-text": "tekst",
+      "add-row-above": "Dodaj redak iznad",
+      "add-row-below": "Dodaj redak ispod",
+      "add-column-left": "Dodaj stupac lijevo",
+      "add-column-right": "Dodaj stupac desno",
+      "delete-row": "Obriši redak",
+      "delete-column": "Obriši stupac",
+      "align-left": "Poravnaj lijevo",
+      "align-center": "Poravnaj po sredini",
+      "align-right": "Poravnaj desno"
     }
   },
   "inbox": {

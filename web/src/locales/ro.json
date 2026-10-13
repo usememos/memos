@@ -221,7 +221,6 @@
     "format": {
       "code-block": "Bloc de cod",
       "link": "Legătură",
-      "heading": "Titlu",
       "paragraph": "Paragraf",
       "heading-1": "Titlu 1",
       "heading-2": "Titlu 2",
@@ -231,11 +230,9 @@
       "strikethrough": "Tăiat cu o linie",
       "bullet-list": "Marcator listă",
       "ordered-list": "Listă numerotată",
-      "task-list": "Listă de activități",
-      "more": "Mai multe formatări"
+      "task-list": "Listă de activități"
     },
     "comment": "Comentariu",
-    "formatting-toolbar": "Bara de instrumente de formatare",
     "new-memo": "Memo nou",
     "saved": "Salvat",
     "validation": {
@@ -247,6 +244,32 @@
       "save-in-progress": "Salvare în curs",
       "unsupported-attachment-image-url": "Adresa URL a imaginii atașate neacceptată: {{url}}",
       "wait-for-upload": "Așteptați finalizarea încărcării"
+    },
+    "blocks": {
+      "task": "Sarcină",
+      "quote": "Citat",
+      "table": "Tabel",
+      "divider": "Separator",
+      "no-results": "Niciun rezultat",
+      "commands": "Comenzi",
+      "loading": "Se încarcă…",
+      "duplicate": "Duplică",
+      "inline-code": "Cod",
+      "link-placeholder": "Lipește sau tastează un link…",
+      "remove-link": "Elimină linkul",
+      "slash-hint": "Tastează „/” pentru comenzi",
+      "block-menu": "Deschide meniul blocului",
+      "list-hint": "Listă",
+      "plain-text": "text",
+      "add-row-above": "Adaugă rând deasupra",
+      "add-row-below": "Adaugă rând dedesubt",
+      "add-column-left": "Adaugă coloană la stânga",
+      "add-column-right": "Adaugă coloană la dreapta",
+      "delete-row": "Șterge rândul",
+      "delete-column": "Șterge coloana",
+      "align-left": "Aliniază la stânga",
+      "align-center": "Centrează",
+      "align-right": "Aliniază la dreapta"
     }
   },
   "inbox": {

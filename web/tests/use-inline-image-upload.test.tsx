@@ -56,10 +56,11 @@ describe("useInlineImageUpload", () => {
     const editorRef = { current: controller } as RefObject<EditorController>;
     const { result } = renderHook(() => useInlineImageUpload(editorRef), { wrapper });
 
-    act(() => result.current.insertLocalImages([localImage("first.png"), localImage("second.png")], 7));
+    const position = { blockId: "b1", offset: 7 };
+    act(() => result.current.insertLocalImages([localImage("first.png"), localImage("second.png")], position));
 
     await waitFor(() => expect(controller.resolveUploadAnchor).toHaveBeenCalledTimes(1));
-    expect(controller.createUploadAnchor).toHaveBeenCalledWith(expect.any(Object), 7);
+    expect(controller.createUploadAnchor).toHaveBeenCalledWith(expect.any(Object), position);
     expect(controller.resolveUploadAnchor).toHaveBeenCalledWith(
       expect.any(String),
       "![first](/file/attachments/first)\n\n![second](/file/attachments/second)",

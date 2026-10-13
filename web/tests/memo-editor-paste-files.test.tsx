@@ -8,7 +8,7 @@ vi.mock("@/utils/i18n", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/utils/i18n")>()),
   useTranslate: () => (key: string) => key,
 }));
-vi.mock("@/hooks/useUserQueries", () => ({ useTagCounts: () => ({ data: {} }) }));
+vi.mock("@/hooks/useUserQueries", () => ({ useTagCounts: () => ({ data: {} }), useUsersByUsernames: () => ({ data: undefined }) }));
 vi.mock("@/hooks/useCurrentUser", () => ({ default: () => ({ name: "users/1" }) }));
 vi.mock("@/contexts/AuthContext", () => ({ useAuth: () => ({ userGeneralSetting: {} }) }));
 vi.mock("@/contexts/InstanceContext", () => ({
@@ -32,7 +32,7 @@ URL.revokeObjectURL = () => {};
 const paste = (target: Element, files: File[]) => {
   const event = new Event("paste", { bubbles: true, cancelable: true });
   Object.defineProperty(event, "clipboardData", {
-    value: { items: files.map((file) => ({ kind: "file", getAsFile: () => file })) },
+    value: { files, items: files.map((file) => ({ kind: "file", getAsFile: () => file })), getData: () => "" },
   });
   target.dispatchEvent(event);
   return event;
@@ -45,7 +45,7 @@ const mount = () => {
       <MemoEditor cacheKey="paste-test" />
     </QueryClientProvider>,
   );
-  const content = result.container.querySelector<HTMLElement>(".cm-content");
+  const content = result.container.querySelector<HTMLElement>(".memo-editor-root");
   expect(content).not.toBeNull();
   return { ...result, content: content! };
 };

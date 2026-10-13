@@ -3,11 +3,12 @@ import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
 
 import { type Location, LocationSchema, Visibility } from "@/types/proto/api/memo_service_pb";
+import type { EditorSelection } from "../types/editorController";
 
 export const CACHE_DEBOUNCE_DELAY = 500;
 
 const pendingSaves = new Map<string, number>();
-const cursors = new Map<string, number>();
+const cursors = new Map<string, EditorSelection>();
 const STRUCTURED_CACHE_ENTRY_KIND = "memos.editor-cache";
 const STRUCTURED_CACHE_ENTRY_VERSION = 3;
 
@@ -134,11 +135,11 @@ export const cacheService = {
     return raw ? deserializeDraft(raw) : { content: "", attachments: [] };
   },
 
-  saveCursor(key: string, cursor: number): void {
+  saveCursor(key: string, cursor: EditorSelection): void {
     cursors.set(key, cursor);
   },
 
-  loadCursor(key: string): number | undefined {
+  loadCursor(key: string): EditorSelection | undefined {
     return cursors.get(key);
   },
 

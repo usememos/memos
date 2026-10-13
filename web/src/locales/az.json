@@ -248,9 +248,7 @@
     "exit-focus-mode": "Fokus rejimindən çıx",
     "focus-mode": "Fokus rejimi",
     "comment": "Şərh",
-    "formatting-toolbar": "Formatlama paneli",
     "format": {
-      "heading": "Başlıq",
       "paragraph": "Abzas",
       "heading-1": "Başlıq 1",
       "heading-2": "Başlıq 2",
@@ -262,8 +260,7 @@
       "bullet-list": "Nişanlı siyahı",
       "ordered-list": "Nömrəli siyahı",
       "task-list": "Tapşırıq siyahısı",
-      "link": "Keçid",
-      "more": "Digər formatlama"
+      "link": "Keçid"
     },
     "insert-menu": {
       "add-attachment": "Qoşma əlavə et",
@@ -306,6 +303,32 @@
       "transcribe-success": "Transkripsiya əlavə edildi",
       "transcribing": "Mətnə çevrilir...",
       "trigger": "Audio yaz"
+    },
+    "blocks": {
+      "task": "Tapşırıq",
+      "quote": "Sitat",
+      "table": "Cədvəl",
+      "divider": "Ayırıcı",
+      "no-results": "Nəticə yoxdur",
+      "commands": "Əmrlər",
+      "loading": "Yüklənir…",
+      "duplicate": "Dublikat et",
+      "inline-code": "Kod",
+      "link-placeholder": "Keçidi yapışdırın və ya yazın…",
+      "remove-link": "Keçidi sil",
+      "slash-hint": "Əmrlər üçün \"/\" yazın",
+      "block-menu": "Blok menyusunu aç",
+      "list-hint": "Siyahı",
+      "plain-text": "mətn",
+      "add-row-above": "Yuxarıya sətir əlavə et",
+      "add-row-below": "Aşağıya sətir əlavə et",
+      "add-column-left": "Sola sütun əlavə et",
+      "add-column-right": "Sağa sütun əlavə et",
+      "delete-row": "Sətri sil",
+      "delete-column": "Sütunu sil",
+      "align-left": "Sola düzləndir",
+      "align-center": "Mərkəzə düzləndir",
+      "align-right": "Sağa düzləndir"
     }
   },
   "inbox": {

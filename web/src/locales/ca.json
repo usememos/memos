@@ -183,7 +183,6 @@
     "format": {
       "code-block": "Bloc de codi",
       "link": "Enllaç",
-      "heading": "Encapçalament",
       "paragraph": "Paràgraf",
       "heading-1": "Encapçalament 1",
       "heading-2": "Encapçalament 2",
@@ -193,11 +192,9 @@
       "strikethrough": "Ratllat",
       "bullet-list": "Vinyeta llista",
       "ordered-list": "Llista numerada",
-      "task-list": "Llista de tasques pendents",
-      "more": "Més format"
+      "task-list": "Llista de tasques pendents"
     },
     "comment": "Comentari",
-    "formatting-toolbar": "Barra d'eines de format",
     "new-memo": "Nova nota",
     "saved": "Desada",
     "validation": {
@@ -209,6 +206,32 @@
       "save-in-progress": "Desa en curs",
       "unsupported-attachment-image-url": "URL d'imatge adjunta no compatible: {{url}}",
       "wait-for-upload": "Espera que es completi la càrrega"
+    },
+    "blocks": {
+      "task": "Tasca",
+      "quote": "Cita",
+      "table": "Taula",
+      "divider": "Separador",
+      "no-results": "Cap resultat",
+      "commands": "Ordres",
+      "loading": "S'està carregant…",
+      "duplicate": "Duplica",
+      "inline-code": "Codi",
+      "link-placeholder": "Enganxa o escriu un enllaç…",
+      "remove-link": "Elimina l'enllaç",
+      "slash-hint": "Escriu «/» per veure les ordres",
+      "block-menu": "Obre el menú del bloc",
+      "list-hint": "Llista",
+      "plain-text": "text",
+      "add-row-above": "Afegeix una fila a sobre",
+      "add-row-below": "Afegeix una fila a sota",
+      "add-column-left": "Afegeix una columna a l'esquerra",
+      "add-column-right": "Afegeix una columna a la dreta",
+      "delete-row": "Esborra la fila",
+      "delete-column": "Esborra la columna",
+      "align-left": "Alinea a l'esquerra",
+      "align-center": "Centra",
+      "align-right": "Alinea a la dreta"
     }
   },
   "inbox": {

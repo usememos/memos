@@ -221,7 +221,6 @@
     "format": {
       "code-block": "Кодов блок",
       "link": "Връзка",
-      "heading": "Заглавие",
       "paragraph": "Абзац",
       "heading-1": "Заглавие 1",
       "heading-2": "Заглавие 2",
@@ -231,11 +230,9 @@
       "strikethrough": "Зачеркнато",
       "bullet-list": "Водещ символ списък",
       "ordered-list": "Номериран списък",
-      "task-list": "Списък със задачи",
-      "more": "Допълнително форматиране"
+      "task-list": "Списък със задачи"
     },
     "comment": "Коментар",
-    "formatting-toolbar": "Лента с инструменти за форматиране",
     "new-memo": "Нова бележка",
     "saved": "Запазена",
     "validation": {
@@ -247,6 +244,32 @@
       "save-in-progress": "Запазването е в процес",
       "unsupported-attachment-image-url": "Неподдържан URL адрес на прикаченото изображение: {{url}}",
       "wait-for-upload": "Изчакайте качването да завърши"
+    },
+    "blocks": {
+      "task": "Задача",
+      "quote": "Цитат",
+      "table": "Таблица",
+      "divider": "Разделител",
+      "no-results": "Няма резултати",
+      "commands": "Команди",
+      "loading": "Зареждане…",
+      "duplicate": "Дублиране",
+      "inline-code": "Код",
+      "link-placeholder": "Поставете или въведете връзка…",
+      "remove-link": "Премахване на връзката",
+      "slash-hint": "Въведете „/“ за команди",
+      "block-menu": "Отваряне на менюто на блока",
+      "list-hint": "Списък",
+      "plain-text": "текст",
+      "add-row-above": "Добавяне на ред отгоре",
+      "add-row-below": "Добавяне на ред отдолу",
+      "add-column-left": "Добавяне на колона вляво",
+      "add-column-right": "Добавяне на колона вдясно",
+      "delete-row": "Изтриване на реда",
+      "delete-column": "Изтриване на колоната",
+      "align-left": "Подравняване вляво",
+      "align-center": "Центриране",
+      "align-right": "Подравняване вдясно"
     }
   },
   "inbox": {

@@ -182,7 +182,6 @@
     },
     "format": {
       "code-block": "كتلة كود",
-      "heading": "عنوان",
       "paragraph": "فقرة",
       "heading-1": "عنوان 1",
       "heading-2": "عنوان 2",
@@ -193,11 +192,9 @@
       "bullet-list": "قائمة نقطية",
       "ordered-list": "قائمة مرقمة",
       "task-list": "قائمة مهام",
-      "link": "رابط",
-      "more": "المزيد من خيارات التنسيق"
+      "link": "رابط"
     },
     "comment": "تعليق",
-    "formatting-toolbar": "شريط أدوات التنسيق",
     "new-memo": "مذكرة جديدة",
     "saved": "تم الحفظ",
     "validation": {
@@ -209,6 +206,32 @@
       "save-in-progress": "جارٍ الحفظ",
       "unsupported-attachment-image-url": "رابط صورة المرفق غير مدعوم: {{url}}",
       "wait-for-upload": "انتظر حتى يكتمل التحميل"
+    },
+    "blocks": {
+      "task": "مهمة",
+      "quote": "اقتباس",
+      "table": "جدول",
+      "divider": "فاصل",
+      "no-results": "لا توجد نتائج",
+      "commands": "الأوامر",
+      "loading": "جارٍ التحميل…",
+      "duplicate": "تكرار",
+      "inline-code": "كود",
+      "link-placeholder": "الصق رابطًا أو اكتبه…",
+      "remove-link": "إزالة الرابط",
+      "slash-hint": "اكتب \"/\" لعرض الأوامر",
+      "block-menu": "فتح قائمة الكتلة",
+      "list-hint": "قائمة",
+      "plain-text": "نص",
+      "add-row-above": "إضافة صف أعلاه",
+      "add-row-below": "إضافة صف أدناه",
+      "add-column-left": "إضافة عمود إلى اليسار",
+      "add-column-right": "إضافة عمود إلى اليمين",
+      "delete-row": "حذف الصف",
+      "delete-column": "حذف العمود",
+      "align-left": "محاذاة لليسار",
+      "align-center": "توسيط",
+      "align-right": "محاذاة لليمين"
     }
   },
   "inbox": {

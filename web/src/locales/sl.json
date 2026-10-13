@@ -183,7 +183,6 @@
     "format": {
       "code-block": "Kodni blok",
       "link": "Povezava",
-      "heading": "Naslov",
       "paragraph": "Odstavek",
       "heading-1": "Naslov 1",
       "heading-2": "Naslov 2",
@@ -193,11 +192,9 @@
       "strikethrough": "Prečrtano",
       "bullet-list": "Označena črka seznam",
       "ordered-list": "Oštevilčen seznam",
-      "task-list": "Seznam opravil",
-      "more": "Več oblikovanja"
+      "task-list": "Seznam opravil"
     },
     "comment": "Komentar",
-    "formatting-toolbar": "Orodna vrstica za oblikovanje",
     "new-memo": "Nov zapisek",
     "saved": "Shranjeno",
     "validation": {
@@ -209,6 +206,32 @@
       "save-in-progress": "Shranjevanje v teku",
       "unsupported-attachment-image-url": "URL nepodprte slike priloge: {{url}}",
       "wait-for-upload": "Počakajte, da se nalaganje zaključi"
+    },
+    "blocks": {
+      "task": "Opravilo",
+      "quote": "Citat",
+      "table": "Tabela",
+      "divider": "Ločilo",
+      "no-results": "Ni rezultatov",
+      "commands": "Ukazi",
+      "loading": "Nalaganje…",
+      "duplicate": "Podvoji",
+      "inline-code": "Koda",
+      "link-placeholder": "Prilepi ali vnesi povezavo…",
+      "remove-link": "Odstrani povezavo",
+      "slash-hint": "Vnesi »/« za ukaze",
+      "block-menu": "Odpri meni bloka",
+      "list-hint": "Seznam",
+      "plain-text": "besedilo",
+      "add-row-above": "Dodaj vrstico zgoraj",
+      "add-row-below": "Dodaj vrstico spodaj",
+      "add-column-left": "Dodaj stolpec levo",
+      "add-column-right": "Dodaj stolpec desno",
+      "delete-row": "Izbriši vrstico",
+      "delete-column": "Izbriši stolpec",
+      "align-left": "Poravnaj levo",
+      "align-center": "Poravnaj na sredino",
+      "align-right": "Poravnaj desno"
     }
   },
   "inbox": {

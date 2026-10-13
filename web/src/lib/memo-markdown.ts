@@ -1,0 +1,385 @@
+import {
+  type Block,
+  type Doc,
+  defaultResolveUrl,
+  type Extension,
+  footnotes,
+  isPlainTextBlock,
+  isTextBlock,
+  type Labels,
+  type MarkdownOptions,
+  math,
+  mentions,
+  parseMarkdown,
+  type ResolveUrl,
+  type Span,
+  type SyntaxView,
+  scanMentions,
+  scanTags,
+  type TagScanner,
+  type TagsOptions,
+  type Theme,
+  tags,
+} from "@usememos/editor";
+import { ensureHighlightTheme, highlightLoadedCode, loadHighlighter } from "@/lib/code-highlight";
+import { colorToHex } from "@/lib/color";
+import { headingTypeClass, markdownStyles, mentionStyles, tagStyles } from "@/lib/markdownStyles";
+import { findTagMetadata } from "@/lib/tag";
+import { cn } from "@/lib/utils";
+import type { Attachment } from "@/types/proto/api/attachment_service_pb";
+import type { UserSetting_TagsSetting } from "@/types/proto/api/user_service_pb";
+import type { useTranslate } from "@/utils/i18n";
+import { resolveManagedAttachmentImageSource } from "@/utils/managed-attachment";
+
+/**
+ * The memo Markdown dialect, shared by the composer and the read-only memo view
+ * so a memo reads the same while editing and after saving: a single newline is
+ * a line break, and setext headings are off, so a line
+ * followed by `---` stays a paragraph and a divider.
+ */
+export const MEMO_MARKDOWN: MarkdownOptions = { breaks: true, setext: false };
+
+type KatexModule = typeof import("katex").default;
+
+let katexModule: KatexModule | null = null;
+let katexPromise: Promise<KatexModule> | null = null;
+
+/** Loads KaTeX and its stylesheet once. */
+const loadKatex = (): Promise<KatexModule> => {
+  katexPromise ??= Promise.all([import("katex"), import("katex/dist/katex.min.css")]).then(([module]) => {
+    katexModule = module.default;
+    return katexModule;
+  });
+  return katexPromise;
+};
+
+/** Renders TeX with KaTeX, loading it the first time; the editor shows the source meanwhile. */
+const renderMath = (tex: string, element: HTMLElement, { displayMode }: { readonly displayMode: boolean }) => {
+  const render = (katex: KatexModule) => katex.render(tex, element, { displayMode, throwOnError: false, strict: false });
+  if (katexModule) return render(katexModule);
+  return loadKatex().then(render);
+};
+
+/** Editors whose code needs highlighting again once a language finishes loading. */
+const highlightedEditors = new Set<import("@usememos/editor").Editor>();
+/** Languages loading now, so each load redecorates the editors once, however many blocks wait for it. */
+const loadingLanguages = new Set<string>();
+
+/** highlight.js output as decorations: one range per highlighted span, classes and all. */
+function highlightRanges(html: string): { from: number; to: number; class: string }[] {
+  const template = document.createElement("template");
+  template.innerHTML = html;
+  const ranges: { from: number; to: number; class: string }[] = [];
+  let offset = 0;
+  const walk = (node: Node) => {
+    for (const child of node.childNodes) {
+      if (child.nodeType === Node.TEXT_NODE) {
+        offset += child.textContent?.length ?? 0;
+      } else if (child instanceof Element) {
+        const from = offset;
+        walk(child);
+        if (child.className && offset > from) ranges.push({ from, to: offset, class: child.className });
+      }
+    }
+  };
+  walk(template.content);
+  return ranges;
+}
+
+/**
+ * Syntax highlighting for code blocks with highlight.js, while editing and when read-only.
+ * A language loads the first time it is needed; the editors then highlight again.
+ */
+const codeHighlight = (): Extension => ({
+  name: "codeHighlight",
+  onCreate: ({ editor }) => {
+    highlightedEditors.add(editor);
+    return () => highlightedEditors.delete(editor);
+  },
+  codeDecorations: ({ text, language }) => {
+    if (!language.trim() || !text) return [];
+    void ensureHighlightTheme(document.documentElement.style.colorScheme === "dark");
+    const html = highlightLoadedCode(text, language);
+    if (html === undefined) {
+      const key = language.trim().toLowerCase();
+      if (!loadingLanguages.has(key)) {
+        loadingLanguages.add(key);
+        void loadHighlighter(language)
+          .then(
+            () => highlightedEditors.forEach((editor) => editor.redecorate()),
+            () => undefined,
+          )
+          .finally(() => loadingLanguages.delete(key));
+      }
+      return [];
+    }
+    return highlightRanges(html);
+  },
+});
+
+/** Mermaid diagrams for ```mermaid code blocks. The code shows until the diagram is drawn, and stays if it fails. */
+const renderMermaid: SyntaxView = (source, element) => {
+  const pre = document.createElement("pre");
+  pre.textContent = source;
+  element.appendChild(pre);
+  return (async () => {
+    const { default: mermaid } = await import("mermaid");
+    await document.fonts?.ready;
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: document.documentElement.style.colorScheme === "dark" ? "dark" : "default",
+      securityLevel: "strict",
+      fontFamily: getComputedStyle(document.body).fontFamily || "sans-serif",
+      suppressErrorRendering: true,
+    });
+    try {
+      const { svg } = await mermaid.render(`mermaid-${Math.random().toString(36).slice(2)}`, source);
+      element.classList.add("mermaid-diagram");
+      element.innerHTML = svg;
+    } catch {
+      return false;
+    }
+  })();
+};
+
+type HtmlRenderer = typeof import("@/lib/sanitized-html").renderSanitizedHtml;
+let htmlRenderer: HtmlRenderer | null = null;
+let htmlRendererPromise: Promise<HtmlRenderer> | null = null;
+
+/** Raw HTML (`<details>`, `<kbd>`, trusted embeds) through memos' sanitizer, loaded the first time it is needed. */
+const renderHtml: SyntaxView = (source, element, kind) => {
+  if (htmlRenderer) return htmlRenderer(source, element, kind);
+  htmlRendererPromise ??= import("@/lib/sanitized-html").then((module) => {
+    htmlRenderer = module.renderSanitizedHtml;
+    return htmlRenderer;
+  });
+  return htmlRendererPromise.then((render) => render(source, element, kind));
+};
+
+/**
+ * A tag's custom color from the user's tag settings, as a style attribute, or undefined
+ * for the theme color. Text uses a darkened variant (60% color + black) for contrast.
+ */
+function tagColorStyle(tag: string, tagsSetting: UserSetting_TagsSetting | undefined): string | undefined {
+  const metadata = tagsSetting ? findTagMetadata(tag, tagsSetting) : undefined;
+  const bgHex = colorToHex(metadata?.backgroundColor);
+  if (!bgHex) return undefined;
+  return `border-color: ${bgHex}; color: color-mix(in srgb, ${bgHex} 60%, black); background-color: color-mix(in srgb, ${bgHex} 15%, transparent)`;
+}
+
+// `mbe-tag` is the editor's own class; the memo view finds tags by it.
+const TAG_CLASS = cn("mbe-tag", tagStyles.base);
+const DEFAULT_TAG_CLASS = cn(TAG_CLASS, tagStyles.defaultColor);
+
+/**
+ * How a #tag looks wherever a memo is shown, in the composer and the memo view alike:
+ * a pill in the theme color, or in the color the user gave the tag. `getTagsSetting`
+ * is read when a block is decorated; call `editor.redecorate()` when it changes.
+ */
+export const memoTagOptions = (getTagsSetting: () => UserSetting_TagsSetting | undefined): Pick<TagsOptions, "class" | "attributes"> => ({
+  class: (match) => (tagColorStyle(match.slice(1), getTagsSetting()) ? TAG_CLASS : DEFAULT_TAG_CLASS),
+  attributes: (match): Record<string, string> => {
+    const tag = match.slice(1);
+    const style = tagColorStyle(tag, getTagsSetting());
+    return style ? { "data-tag": tag, style } : { "data-tag": tag };
+  },
+});
+
+const RESOLVED_MENTION_CLASS = cn("mbe-mention", mentionStyles.base);
+
+/**
+ * How an @mention looks wherever a memo is shown: in the primary color when the person
+ * exists, as plain text otherwise. `isResolved` is read when a block is decorated; call
+ * `editor.redecorate()` when it changes.
+ */
+export const memoMentionOptions = (isResolved: (username: string) => boolean): Pick<TagsOptions, "class" | "attributes"> => ({
+  class: (match) => (isResolved(match.slice(1)) ? RESOLVED_MENTION_CLASS : "mbe-mention"),
+  attributes: (match): Record<string, string> => {
+    const username = match.slice(1);
+    return isResolved(username)
+      ? { "data-mention": username, "data-resolved": "", title: match }
+      : { "data-mention": username, title: match };
+  },
+});
+
+interface MemoExtensionOptions {
+  /** `tags()` class and attributes, for the memo view's pills and colors. */
+  readonly tags?: Pick<TagsOptions, "class" | "attributes">;
+  /** `mentions()` class and attributes, for links to the people who exist. */
+  readonly mentions?: Pick<TagsOptions, "class" | "attributes">;
+}
+
+/**
+ * The extensions every memo surface reads with, the composer and the memo view
+ * alike: math (KaTeX, loaded on demand), footnotes, #tags and @mentions,
+ * highlighted code, Mermaid diagrams and sanitized raw HTML. Everything the
+ * editor renders shows its source at the caret while editing.
+ */
+export const memoExtensions = (options: MemoExtensionOptions = {}): Extension[] => [
+  math({ render: renderMath }),
+  footnotes(),
+  tags(options.tags),
+  mentions(options.mentions),
+  codeHighlight(),
+  { name: "memoViews", views: { "code:mermaid": renderMermaid, html: renderHtml } },
+];
+
+/** Images load from relative URLs and https only, as memos' sanitizer allowed; anything else is dropped. */
+const isAllowedImageSource = (src: string): boolean => !/^[a-z][a-z0-9+.-]*:/i.test(src) || /^https:/i.test(src);
+
+/**
+ * memos' URL policy: managed attachment images resolve to their served URL and load
+ * from relative or https URLs only; links also allow `sms:`, which hands off to
+ * another app, beyond the editor's defaults.
+ */
+export const memoResolveUrl =
+  (attachments: readonly Attachment[] = []): ResolveUrl =>
+  (url, kind) => {
+    if (kind === "image") {
+      const resolved = resolveManagedAttachmentImageSource(url, [...attachments]) ?? url;
+      return isAllowedImageSource(resolved) ? resolved : null;
+    }
+    return /^sms:/i.test(url.trim()) ? url.trim() : defaultResolveUrl(url, kind);
+  };
+
+/**
+ * The editor's look in memos' palette. Every color is one of the app's own CSS
+ * variables, for both schemes, so the active memos theme decides; `inherit`
+ * follows the `color-scheme` memos sets on the document.
+ */
+export const MEMO_EDITOR_THEME: Theme = (() => {
+  const colors = {
+    text: "var(--foreground)",
+    muted: "var(--muted-foreground)",
+    background: "transparent",
+    accent: "var(--primary)",
+    link: "var(--primary)",
+    codeBackground: "var(--muted)",
+    border: "var(--border)",
+    popupBackground: "var(--popover)",
+    popupBorder: "var(--border)",
+    hover: "var(--accent)",
+    danger: "var(--destructive)",
+  };
+  return {
+    colorScheme: "inherit",
+    tokens: {
+      light: colors,
+      dark: colors,
+      font: "inherit",
+      mono: "var(--font-mono, ui-monospace, monospace)",
+      fontSize: 16,
+      lineHeight: 24,
+      radius: "calc(var(--radius) - 2px)",
+      blockGap: 8,
+    },
+    classes: {
+      heading: {
+        1: headingTypeClass(1),
+        2: headingTypeClass(2),
+        3: headingTypeClass(3),
+        4: headingTypeClass(4),
+        5: headingTypeClass(5),
+        6: headingTypeClass(6),
+      },
+      code: markdownStyles.inlineCode,
+      link: markdownStyles.link,
+      image: markdownStyles.image,
+    },
+  };
+})();
+
+/** The editor's UI strings in the user's language. */
+export const memoEditorLabels = (t: ReturnType<typeof useTranslate>): Partial<Labels> => ({
+  text: t("editor.format.paragraph"),
+  heading1: t("editor.format.heading-1"),
+  heading2: t("editor.format.heading-2"),
+  heading3: t("editor.format.heading-3"),
+  bulletList: t("editor.format.bullet-list"),
+  numberedList: t("editor.format.ordered-list"),
+  todoList: t("editor.format.task-list"),
+  task: t("editor.blocks.task"),
+  quote: t("editor.blocks.quote"),
+  code: t("editor.format.code-block"),
+  table: t("editor.blocks.table"),
+  divider: t("editor.blocks.divider"),
+  noResults: t("editor.blocks.no-results"),
+  suggestions: t("editor.suggestions"),
+  commands: t("editor.blocks.commands"),
+  loading: t("editor.blocks.loading"),
+  duplicate: t("editor.blocks.duplicate"),
+  delete: t("common.delete"),
+  bold: t("editor.format.bold"),
+  italic: t("editor.format.italic"),
+  strike: t("editor.format.strikethrough"),
+  inlineCode: t("editor.blocks.inline-code"),
+  link: t("editor.format.link"),
+  linkPlaceholder: t("editor.blocks.link-placeholder"),
+  removeLink: t("editor.blocks.remove-link"),
+  slashHint: t("editor.blocks.slash-hint"),
+  blockHandle: t("editor.blocks.block-menu"),
+  listHint: t("editor.blocks.list-hint"),
+  quoteHint: t("editor.blocks.quote"),
+  language: t("common.language"),
+  plainText: t("editor.blocks.plain-text"),
+  copyCode: t("common.copy"),
+  copied: t("message.copied"),
+  addRowAbove: t("editor.blocks.add-row-above"),
+  addRowBelow: t("editor.blocks.add-row-below"),
+  addColumnLeft: t("editor.blocks.add-column-left"),
+  addColumnRight: t("editor.blocks.add-column-right"),
+  deleteRow: t("editor.blocks.delete-row"),
+  deleteColumn: t("editor.blocks.delete-column"),
+  alignLeft: t("editor.blocks.align-left"),
+  alignCenter: t("editor.blocks.align-center"),
+  alignRight: t("editor.blocks.align-right"),
+  tableSection: t("editor.blocks.table"),
+});
+
+/** Whether a span is literal text for tags: not code, raw HTML, a link, an image, or an extension token. */
+const isLiteralSpan = (span: Span): boolean =>
+  Boolean(span.link || span.image || span.token || span.marks.includes("code") || span.marks.includes("html"));
+
+/** The inline containers of a block: its content, or every table cell. */
+function* blockContainers(block: Block): Generator<readonly Span[]> {
+  if (block.type === "table") {
+    for (const row of block.rows) for (const cell of row) yield cell;
+    return;
+  }
+  if (isTextBlock(block) && !isPlainTextBlock(block)) yield block.content;
+}
+
+/**
+ * Matches of `scan` in a document, without the trigger, in order and without
+ * duplicates. Each run of text with one format is scanned on its own, as the
+ * editor's `tags()` and `mentions()` highlighting does, so code, links and
+ * other literal text never count.
+ */
+const collectMatches = (blocks: readonly Block[], scan: TagScanner): string[] => {
+  const found = new Set<string>();
+  for (const block of blocks) {
+    for (const content of blockContainers(block)) {
+      for (const span of content) {
+        if (isLiteralSpan(span)) continue;
+        for (const range of scan(span.text, 0, span.text.length)) found.add(span.text.slice(range.from + 1, range.to));
+      }
+    }
+  }
+  return [...found];
+};
+
+/** Tags written in a document, as highlighted: `#work/project` gives `work/project`. */
+export const collectTags = (blocks: readonly Block[]): string[] => collectMatches(blocks, scanTags);
+
+// The syntax the memo extensions add (math, footnotes, and the escapes of tags and mentions), for parsing outside an editor.
+const MEMO_SYNTAX = memoExtensions().flatMap((extension) => (extension.markdown ? [extension.markdown] : []));
+
+/** Parses a memo the way the composer and the memo view read it. */
+export const parseMemoMarkdown = (markdown: string): Doc => parseMarkdown(markdown, { ...MEMO_MARKDOWN, syntax: MEMO_SYNTAX });
+
+/**
+ * Usernames a memo mentions, as the memo view highlights them: `@name` outside code,
+ * links and other literal text. Only these need resolving to profile links.
+ */
+export const extractMentionUsernames = (markdown: string): string[] =>
+  markdown.includes("@") ? collectMatches(parseMemoMarkdown(markdown).blocks, scanMentions) : [];

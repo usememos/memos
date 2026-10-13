@@ -182,7 +182,6 @@
     },
     "format": {
       "code-block": "Kódblokk",
-      "heading": "Címsor",
       "paragraph": "Bekezdés",
       "heading-1": "1. címsor",
       "heading-2": "2. címsor",
@@ -193,11 +192,9 @@
       "bullet-list": "Felsorolás",
       "ordered-list": "Számozott lista",
       "task-list": "Tennivalók",
-      "link": "Link",
-      "more": "További formázás"
+      "link": "Link"
     },
     "comment": "Megjegyzés",
-    "formatting-toolbar": "Formázási eszköztár",
     "new-memo": "Új feljegyzés",
     "saved": "Mentve",
     "validation": {
@@ -209,6 +206,32 @@
       "save-in-progress": "Mentés folyamatban",
       "unsupported-attachment-image-url": "Nem támogatott mellékletkép URL: {{url}}",
       "wait-for-upload": "Várja meg a feltöltés befejezését"
+    },
+    "blocks": {
+      "task": "Feladat",
+      "quote": "Idézet",
+      "table": "Táblázat",
+      "divider": "Elválasztó",
+      "no-results": "Nincs találat",
+      "commands": "Parancsok",
+      "loading": "Betöltés…",
+      "duplicate": "Duplikálás",
+      "inline-code": "Kód",
+      "link-placeholder": "Illessz be vagy írj be egy linket…",
+      "remove-link": "Link eltávolítása",
+      "slash-hint": "Írd be a „/” karaktert a parancsokhoz",
+      "block-menu": "Blokkmenü megnyitása",
+      "list-hint": "Lista",
+      "plain-text": "szöveg",
+      "add-row-above": "Sor beszúrása fölé",
+      "add-row-below": "Sor beszúrása alá",
+      "add-column-left": "Oszlop beszúrása balra",
+      "add-column-right": "Oszlop beszúrása jobbra",
+      "delete-row": "Sor törlése",
+      "delete-column": "Oszlop törlése",
+      "align-left": "Balra igazítás",
+      "align-center": "Középre igazítás",
+      "align-right": "Jobbra igazítás"
     }
   },
   "inbox": {

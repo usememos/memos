@@ -181,9 +181,7 @@
     "any-thoughts": "此刻的想法...",
     "exit-focus-mode": "退出聚焦模式",
     "focus-mode": "聚焦模式",
-    "formatting-toolbar": "格式工具栏",
     "format": {
-      "heading": "标题",
       "paragraph": "正文",
       "heading-1": "一级标题",
       "heading-2": "二级标题",
@@ -195,8 +193,7 @@
       "bullet-list": "无序列表",
       "ordered-list": "有序列表",
       "task-list": "任务列表",
-      "link": "链接",
-      "more": "更多格式"
+      "link": "链接"
     },
     "new-memo": "新建备忘录",
     "no-changes-detected": "未检测到更改",
@@ -240,7 +237,33 @@
       "trigger": "录制音频"
     },
     "comment": "评论",
-    "saved": "已保存"
+    "saved": "已保存",
+    "blocks": {
+      "task": "任务",
+      "quote": "引用",
+      "table": "表格",
+      "divider": "分割线",
+      "no-results": "无结果",
+      "commands": "命令",
+      "loading": "加载中…",
+      "duplicate": "创建副本",
+      "inline-code": "代码",
+      "link-placeholder": "粘贴或输入链接…",
+      "remove-link": "移除链接",
+      "slash-hint": "输入“/”调出命令",
+      "block-menu": "打开块菜单",
+      "list-hint": "列表",
+      "plain-text": "文本",
+      "add-row-above": "在上方插入行",
+      "add-row-below": "在下方插入行",
+      "add-column-left": "在左侧插入列",
+      "add-column-right": "在右侧插入列",
+      "delete-row": "删除行",
+      "delete-column": "删除列",
+      "align-left": "左对齐",
+      "align-center": "居中对齐",
+      "align-right": "右对齐"
+    }
   },
   "inbox": {
     "failed-to-load": "加载失败",

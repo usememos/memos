@@ -1,10 +1,16 @@
+import type { Position, SelectionJSON } from "@usememos/editor";
 import type { UploadAnchorDescriptor } from "../Editor/uploadAnchors";
-import type { ActiveFormatState, EditorCommandContext, EditorCommandId } from "../formatting/commands";
+
+/** A place in the document, such as where files were dropped. Valid until the document changes. */
+export type EditorPosition = Position;
+
+/** A selection that survives reloading the same Markdown, for restoring the caret across mounts. */
+export type EditorSelection = SelectionJSON;
 
 /**
  * The contract the memo editor (Editor) implements. Everything outside the
  * editor implementation talks markdown through this interface and never reaches
- * for the editor's internal CodeMirror/DOM APIs.
+ * for the editor's internal APIs.
  */
 export interface EditorController {
   focus(): void;
@@ -15,42 +21,24 @@ export interface EditorController {
   getMarkdown(): string;
   /** Replace the whole document from a markdown string. */
   setMarkdown(markdown: string): void;
-  /** Insert markdown at the cursor as its own block. */
+  /** Insert markdown at the caret as its own block, keeping any selected text. */
   insertMarkdown(markdown: string): void;
   /** Actual Markdown tags, excluding code, URLs, and other literal contexts. */
   getTags(): string[];
-  /** Whether the document contains a parsed Markdown checklist, checked or unchecked. */
+  /** Whether the document contains a Markdown checklist item, checked or unchecked. */
   hasChecklist(): boolean;
   /** Insert a tag at the caret without replacing selected text, then advance the caret. Returns whether it was inserted. */
   insertTag(tag: string): boolean;
-  createUploadAnchor(descriptor: UploadAnchorDescriptor, position?: number): void;
+  /** Shows an upload placeholder after the block at `position` (default: the caret's block). */
+  createUploadAnchor(descriptor: UploadAnchorDescriptor, position?: EditorPosition | null): void;
   updateUploadAnchor(descriptor: UploadAnchorDescriptor): void;
+  /** Replaces the placeholder with `markdown`, as blocks after its block. Empty markdown cancels it. */
   resolveUploadAnchor(id: string, markdown: string): void;
   cancelUploadAnchor(id: string): void;
-  getCursor(): number;
-  setCursor(position: number): void;
-  scrollToCursor(): void;
+  getSelection(): EditorSelection | undefined;
+  setSelection(selection: EditorSelection): void;
   /** Select the entire document (used by tests and select-all flows). */
   selectAll(): void;
-  /**
-   * Rich-formatting capability driving the focus-mode FormattingToolbar.
-   * Editor always sets it; the field is optional so the contract stays
-   * decoupled from any one editor implementation.
-   */
-  formatting?: FormattingController;
-}
-
-/**
- * Rich-formatting surface, backed by the editor command catalog
- * (formatting/commands.ts). `getActiveFormats` is the sanctioned, typed place
- * editor state crosses the boundary — the editor's internal node/mark names
- * never leak out as stringly-typed `isActive(name)` calls.
- */
-export interface FormattingController {
-  /** Run a catalog command (e.g. "bold", "heading2", "link"). */
-  run(command: EditorCommandId, ctx?: EditorCommandContext): void;
-  /** Snapshot of which marks/blocks are active at the current selection. */
-  getActiveFormats(): ActiveFormatState;
-  /** Register a listener fired on every transaction/selection change. Returns an unsubscribe. */
-  subscribe(listener: () => void): () => void;
+  /** Turns the blocks the selection touches into task items, keeping their text. Returns whether anything changed. */
+  toggleTaskList(): boolean;
 }

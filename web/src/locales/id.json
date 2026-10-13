@@ -183,7 +183,6 @@
     "format": {
       "code-block": "Blok Kode",
       "link": "Tautan",
-      "heading": "Judul",
       "paragraph": "Paragraf",
       "heading-1": "Judul 1",
       "heading-2": "Judul 2",
@@ -193,11 +192,9 @@
       "strikethrough": "Garis tengah",
       "bullet-list": "Daftar poin",
       "ordered-list": "Daftar bernomor",
-      "task-list": "Daftar tugas",
-      "more": "Pemformatan lainnya"
+      "task-list": "Daftar tugas"
     },
     "comment": "Komentar",
-    "formatting-toolbar": "Toolbar pemformatan",
     "new-memo": "Memo baru",
     "saved": "Tersimpan",
     "validation": {
@@ -209,6 +206,32 @@
       "save-in-progress": "Penyimpanan sedang berlangsung",
       "unsupported-attachment-image-url": "URL gambar lampiran tidak didukung: {{url}}",
       "wait-for-upload": "Tunggu hingga unggahan selesai"
+    },
+    "blocks": {
+      "task": "Tugas",
+      "quote": "Kutipan",
+      "table": "Tabel",
+      "divider": "Pemisah",
+      "no-results": "Tidak ada hasil",
+      "commands": "Perintah",
+      "loading": "Memuat…",
+      "duplicate": "Duplikat",
+      "inline-code": "Kode",
+      "link-placeholder": "Tempel atau ketik tautan…",
+      "remove-link": "Hapus tautan",
+      "slash-hint": "Ketik \"/\" untuk perintah",
+      "block-menu": "Buka menu blok",
+      "list-hint": "Daftar",
+      "plain-text": "teks",
+      "add-row-above": "Tambah baris di atas",
+      "add-row-below": "Tambah baris di bawah",
+      "add-column-left": "Tambah kolom di kiri",
+      "add-column-right": "Tambah kolom di kanan",
+      "delete-row": "Hapus baris",
+      "delete-column": "Hapus kolom",
+      "align-left": "Rata kiri",
+      "align-center": "Rata tengah",
+      "align-right": "Rata kanan"
     }
   },
   "inbox": {

@@ -1,6 +1,6 @@
 import { isEqual } from "lodash-es";
 import { ListTodoIcon, ZapIcon } from "lucide-react";
-import { type RefObject, useId, useLayoutEffect, useState } from "react";
+import { type RefObject, useEffect, useId, useState } from "react";
 import { buttonVariants } from "@/components/ui/button";
 import { MAX_MEMO_SUGGESTIONS, type MemoSuggestion, type SuggestionItem } from "@/lib/memo-suggestions";
 import { cn } from "@/lib/utils";
@@ -70,9 +70,9 @@ export function EditorSuggestions({
   const [hasChecklist, setHasChecklist] = useState(false);
   const needsTags = suggestions.some((suggestion) => suggestion.kind === "tag");
   const needsChecklist = suggestions.some((suggestion) => suggestion.kind === "checklist");
-  // Read after the editor has applied restored/external content in its layout effect.
+  // Read after the editor has applied restored/external content in its own effect.
   // The document scans only pay off when a tag or checklist suggestion exists.
-  useLayoutEffect(() => {
+  useEffect(() => {
     const controller = controllerRef.current;
     if ((!needsTags && !needsChecklist) || !controller || controller.getMarkdown() !== content) return;
     if (needsTags) {
@@ -121,10 +121,8 @@ export function EditorSuggestions({
         applied = controller.insertTag(suggestion.tag);
         break;
       case "checklist": {
-        if (controller.hasChecklist() || !controller.formatting) return;
-        const before = controller.getMarkdown();
-        controller.formatting.run("taskList");
-        applied = before !== controller.getMarkdown();
+        if (controller.hasChecklist()) return;
+        applied = controller.toggleTaskList();
         controller.focus();
         break;
       }

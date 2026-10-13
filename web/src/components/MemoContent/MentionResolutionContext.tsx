@@ -1,9 +1,9 @@
 import { useQueries } from "@tanstack/react-query";
 import { createContext, type ReactNode, useContext, useMemo } from "react";
 import { userDetailQueryOptions, useUsersByUsernames } from "@/hooks/useUserQueries";
+import { extractMentionUsernames } from "@/lib/memo-markdown";
 import { extractUsernameFromName } from "@/lib/resource-names";
 import type { User } from "@/types/proto/api/user_service_pb";
-import { extractMentionUsernames } from "@/utils/mention-extraction";
 
 interface UserResolutionContextValue {
   mentionUsernamesByContent: ReadonlyMap<string, string[]>;

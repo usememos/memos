@@ -221,7 +221,6 @@
     "format": {
       "code-block": "Koodilohko",
       "link": "Linkki",
-      "heading": "Otsikko",
       "paragraph": "Kappale",
       "heading-1": "Otsikko 1",
       "heading-2": "Otsikko 2",
@@ -231,11 +230,9 @@
       "strikethrough": "Yliviivaus",
       "bullet-list": "Luettelomerkkiluettelo",
       "ordered-list": "Numeroitu luettelo",
-      "task-list": "Tehtävälista",
-      "more": "Lisää muotoiluja"
+      "task-list": "Tehtävälista"
     },
     "comment": "Kommentti",
-    "formatting-toolbar": "Muotoilupalkki",
     "new-memo": "Uusi muistio",
     "saved": "Tallennettu",
     "validation": {
@@ -247,6 +244,32 @@
       "save-in-progress": "Tallennus käynnissä",
       "unsupported-attachment-image-url": "Liitteenä olevan kuvan URL-osoitetta ei tueta: {{url}}",
       "wait-for-upload": "Odota latauksen valmistumista"
+    },
+    "blocks": {
+      "task": "Tehtävä",
+      "quote": "Lainaus",
+      "table": "Taulukko",
+      "divider": "Erotin",
+      "no-results": "Ei tuloksia",
+      "commands": "Komennot",
+      "loading": "Ladataan…",
+      "duplicate": "Monista",
+      "inline-code": "Koodi",
+      "link-placeholder": "Liitä tai kirjoita linkki…",
+      "remove-link": "Poista linkki",
+      "slash-hint": "Kirjoita ”/” nähdäksesi komennot",
+      "block-menu": "Avaa lohkovalikko",
+      "list-hint": "Luettelo",
+      "plain-text": "teksti",
+      "add-row-above": "Lisää rivi yläpuolelle",
+      "add-row-below": "Lisää rivi alapuolelle",
+      "add-column-left": "Lisää sarake vasemmalle",
+      "add-column-right": "Lisää sarake oikealle",
+      "delete-row": "Poista rivi",
+      "delete-column": "Poista sarake",
+      "align-left": "Tasaa vasemmalle",
+      "align-center": "Keskitä",
+      "align-right": "Tasaa oikealle"
     }
   },
   "inbox": {

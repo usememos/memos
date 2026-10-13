@@ -1,156 +1,77 @@
-import { defaultKeymap, history, historyKeymap, indentWithTab } from "@codemirror/commands";
-import { markdown } from "@codemirror/lang-markdown";
-import { indentUnit } from "@codemirror/language";
-import { Compartment, type Extension } from "@codemirror/state";
-import { placeholder as cmPlaceholder, dropCursor, EditorView, type KeyBinding, keymap } from "@codemirror/view";
-import { runFormattingCommand } from "@/components/MemoEditor/Editor/formatting";
-import type { EditorCommandId } from "@/components/MemoEditor/formatting/commands";
-import { memoMarkdownExtensions } from "@/utils/memo-markdown-extension";
-import { headingDecorations } from "./headingDecorations";
-import { liftListItem, sinkListItem } from "./listIndent";
-import { tagAutocomplete } from "./tagAutocomplete";
-import { tagMentionDecorations } from "./tagMentionDecorations";
-import { memoEditorTheme } from "./theme";
-import { uploadAnchorField } from "./uploadAnchors";
-
-// Key bindings layered below the autocomplete keymap so its completion-specific
-// keys win while the popup is open. On a list item, Tab/Shift-Tab nest /
-// outdent it (marker-aware, CommonMark-valid); elsewhere they fall through to
-// indentWithTab's plain indent. Escape blurs the editor so keyboard users keep
-// an escape hatch out of the otherwise Tab-trapping editor.
-const editorKeys: KeyBinding[] = [
-  {
-    key: "Escape",
-    run: (view) => {
-      view.contentDOM.blur();
-      return true;
-    },
-  },
-  { key: "Tab", run: sinkListItem },
-  { key: "Shift-Tab", run: liftListItem },
-];
-
-const formattingKey = (key: string, command: EditorCommandId): KeyBinding => ({
-  key,
-  run: (view) => {
-    runFormattingCommand(view, command);
-    return true;
-  },
-});
-
-// Familiar cross-platform Markdown formatting keys. These stay separate from
-// CodeMirror's Markdown keymap, which only handles structural Enter/Backspace.
-const formattingKeys: KeyBinding[] = [
-  formattingKey("Mod-b", "bold"),
-  formattingKey("Mod-i", "italic"),
-  formattingKey("Shift-Mod-s", "strikethrough"),
-  formattingKey("Mod-e", "code"),
-  formattingKey("Mod-Alt-c", "codeBlock"),
-  formattingKey("Mod-Alt-0", "paragraph"),
-  formattingKey("Shift-Mod-7", "orderedList"),
-  formattingKey("Shift-Mod-8", "bulletList"),
-  formattingKey("Shift-Mod-9", "taskList"),
-  formattingKey("Mod-Alt-1", "heading1"),
-  formattingKey("Mod-Alt-2", "heading2"),
-  formattingKey("Mod-Alt-3", "heading3"),
-];
+import { type Extension, fileHandler, matchToken, type SuggestionAllowContext, scanTags, suggestion } from "@usememos/editor";
+import { memoExtensions, memoMentionOptions, memoTagOptions } from "@/lib/memo-markdown";
+import type { UserSetting_TagsSetting } from "@/types/proto/api/user_service_pb";
+import type { EditorPosition } from "../types/editorController";
 
 /** The gesture that handed files to the editor: a drop lands at a document position, a paste has none. */
-export type EditorFileOrigin = { source: "paste" } | { source: "drop"; position: number };
+export type EditorFileOrigin = { source: "paste" } | { source: "drop"; position: EditorPosition | null };
 
 export interface EditorExtensionsOptions {
-  placeholder: string;
-  onChange: (markdown: string) => void;
-  onFiles: (files: File[], origin: EditorFileOrigin) => void;
-  onUpdate: () => void;
-  onSubmit: () => void;
+  /** Known tags, read when the popup asks for items. */
   getTags: () => string[];
+  onFiles: (files: File[], origin: EditorFileOrigin) => void;
+  /** The user's tag settings, read when tags are drawn, for their custom colors. */
+  getTagsSetting: () => UserSetting_TagsSetting | undefined;
+  /** Whether a mentioned username belongs to a user, read when mentions are drawn. */
+  isMentionResolved: (username: string) => boolean;
 }
 
-export const placeholderCompartment = new Compartment();
+/**
+ * Ranks a candidate tag against the typed text (both already lower-cased).
+ * Lower sorts first; `undefined` means the candidate does not match.
+ *
+ * Nested tags are paths, so a match inside the path counts: typing `mem` has to
+ * reach `software/hosted/Memos`, which a full-path prefix test cannot do. The
+ * tiers keep that from turning into noise — a segment start outranks an
+ * incidental hit in the middle of a word.
+ */
+export const matchRank = (tag: string, typed: string): number | undefined => {
+  const index = tag.indexOf(typed);
+  if (index < 0) return undefined;
+  if (index === 0) return 0; // Full-path prefix.
+  if (tag[index - 1] === "/") return 1; // Path-segment start.
+  return 2; // Anywhere else.
+};
 
-function clipboardFiles(event: ClipboardEvent): File[] {
-  const clipboard = event.clipboardData;
-  if (!clipboard) return [];
+/** Known tags matching `query`, best first; incoming order is kept within a tier. */
+export const rankTags = (tags: readonly string[], query: string): string[] => {
+  const typed = query.toLowerCase();
+  return tags
+    .map((tag) => ({ tag, rank: matchRank(tag.toLowerCase(), typed) }))
+    .filter((candidate): candidate is { tag: string; rank: number } => candidate.rank !== undefined)
+    .sort((a, b) => a.rank - b.rank)
+    .map(({ tag }) => tag);
+};
 
-  const itemFiles = Array.from(clipboard.items)
-    .filter((item) => item.kind === "file")
-    .map((item) => item.getAsFile())
-    .filter((file): file is File => file !== null);
-  return itemFiles.length > 0 ? itemFiles : Array.from(clipboard.files);
-}
+/**
+ * Where the tag popup may open. Not inside code or links, where `#` is literal,
+ * and not for a bare `#` at the start of a line, which is more likely the start
+ * of a heading. Ctrl+Space still opens it there.
+ */
+export const allowTagSuggestion = ({ excluded, explicit, query, textBefore }: SuggestionAllowContext): boolean => {
+  if (excluded) return false;
+  if (explicit) return true;
+  return !(query === "" && /(^|\n)[ \t]*$/.test(textBefore));
+};
 
-export function buildEditorExtensions({
-  placeholder,
-  onChange,
-  onFiles,
-  onUpdate,
-  onSubmit,
-  getTags,
-}: EditorExtensionsOptions): Extension[] {
-  // Submitting must outrank defaultKeymap's own Mod-Enter (insertBlankLine): the save
-  // shortcut ends the memo, it must not also edit the document. Meta and Ctrl are bound
-  // explicitly (not via the platform-dependent Mod-) so Cmd+Enter and Ctrl+Enter both
-  // submit everywhere, matching the historical window-level shortcut.
-  const submit = () => {
-    onSubmit();
-    return true;
-  };
-  const submitKeys: KeyBinding[] = [
-    { key: "Meta-Enter", run: submit },
-    { key: "Ctrl-Enter", run: submit },
-  ];
-
+export function buildEditorExtensions({ getTags, onFiles, getTagsSetting, isMentionResolved }: EditorExtensionsOptions): Extension[] {
   return [
-    // Core editing behavior. These are the pieces from CM6 setup that this memo
-    // editor uses, without enabling multi-cursor selection.
-    history(),
-    dropCursor(),
-    // Indent with spaces (markdown), matching the 2-space bullet nesting.
-    indentUnit.of("  "),
-    markdown({ extensions: memoMarkdownExtensions }),
-    ...memoEditorTheme,
-    EditorView.lineWrapping,
-    // CodeMirror disables native text assistance because it is primarily a code
-    // editor. Memos is a prose editor, so restore the browser behavior used by
-    // the textarea editor before v0.30. Autocorrect also keeps Windows TSF input
-    // out of Chrome's autocorrect-suppression path, which has dropped committed
-    // text from the emoji picker.
-    EditorView.contentAttributes.of({
-      autocorrect: "on",
-      autocapitalize: "on",
-      spellcheck: "true",
+    // Tags and mentions look the same as in the memo view.
+    ...memoExtensions({ tags: memoTagOptions(getTagsSetting), mentions: memoMentionOptions(isMentionResolved) }),
+    // The popup opens exactly where tags are highlighted: the matcher is built
+    // from the same scanner as tags(). A pick writes "#work/planning ".
+    suggestion({
+      name: "tags",
+      trigger: ["#", "＃"],
+      match: matchToken(scanTags),
+      allow: allowTagSuggestion,
+      items: ({ query }) => rankTags(getTags(), query).map((tag) => ({ id: tag, label: `#${tag}`, value: tag })),
     }),
-    placeholderCompartment.of(cmPlaceholder(placeholder)),
-    EditorView.domEventHandlers({
-      paste: (event) => {
-        const files = clipboardFiles(event);
-        if (files.length === 0) return false;
-        onFiles(files, { source: "paste" });
-        return true;
-      },
-      drop: (event, view) => {
-        const files = Array.from(event.dataTransfer?.files ?? []);
-        if (files.length === 0) return false;
-        const position = view.posAtCoords({ x: event.clientX, y: event.clientY }) ?? view.state.selection.main.head;
-        onFiles(files, { source: "drop", position });
-        return true;
-      },
-    }),
-    tagMentionDecorations,
-    headingDecorations,
-    uploadAnchorField,
-    // tagAutocomplete must precede the editing keymap so the completion popup's
-    // Enter/Escape/arrow bindings win while it is open.
-    tagAutocomplete(getTags),
-    // Formatting keys precede defaultKeymap so the conventional Mod-I italic
-    // shortcut wins over CodeMirror's generic selectParentSyntax binding.
-    keymap.of([...submitKeys, ...editorKeys, ...formattingKeys, indentWithTab, ...defaultKeymap, ...historyKeymap]),
-    EditorView.updateListener.of((u) => {
-      if (u.docChanged) onChange(u.state.doc.toString());
-      // Toolbar active-state depends only on the doc and selection; skip the
-      // getActiveFormats tree walk on focus/viewport/measure-only updates.
-      if (u.docChanged || u.selectionSet) onUpdate();
+    // Pasted files join the attachment list (a paste carries no placement
+    // gesture); dropped files land where they were dropped.
+    fileHandler({
+      onPaste: ({ files }) => onFiles(files, { source: "paste" }),
+      onDrop: ({ files, position }) => onFiles(files, { source: "drop", position }),
     }),
   ];
 }
