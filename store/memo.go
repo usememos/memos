@@ -93,6 +93,8 @@ type FindMemo struct {
 	// FolderPathPrefix, when set, matches memos whose FolderPath equals this value
 	// or is nested under it (i.e. FolderPath == prefix OR FolderPath LIKE prefix + "/%").
 	FolderPathPrefix *string
+	// FolderPathList matches memos whose FolderPath is exactly one of these values.
+	FolderPathList []string
 	// VisibleWorkspaceIDs restricts a cross-workspace listing to the knowledge bases
 	// the caller has been granted, which is the outer gate of the access model. PUBLIC
 	// documents are exempt: they are readable by anyone, including anonymous visitors,

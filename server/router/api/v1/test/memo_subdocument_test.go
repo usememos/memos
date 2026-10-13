@@ -414,3 +414,50 @@ func TestSubDocumentWriteTouchesParent(t *testing.T) {
 	require.NoError(t, err)
 	require.Greater(t, parentUpdatedTs(), before, "removing a sub-document updates its parent")
 }
+
+func TestListMemosIncludeSubDocs(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	userCtx, workspace, parent := subDocTestFixture(ctx, t, ts)
+	parentUID := memoUIDFromName(t, parent.Name)
+
+	subDoc, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{FolderPath: v1.SubDocFolderPath(parentUID), Title: "Appendix", Content: "long tail"},
+	})
+	require.NoError(t, err)
+	// A plain comment shares the relation but must never come back as a sub-document.
+	_, err = ts.Service.CreateMemoComment(userCtx, &apiv1.CreateMemoCommentRequest{
+		Name:    parent.Name,
+		Comment: &apiv1.Memo{Content: "a remark", Visibility: apiv1.Visibility_PROTECTED},
+	})
+	require.NoError(t, err)
+	// A second parent the filter leaves out: its sub-document must not ride along.
+	other, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{Workspace: workspace.Name, Title: "Other Doc", Content: "unrelated", Visibility: apiv1.Visibility_PROTECTED},
+	})
+	require.NoError(t, err)
+	_, err = ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{FolderPath: v1.SubDocFolderPath(memoUIDFromName(t, other.Name)), Title: "Hidden", Content: "x"},
+	})
+	require.NoError(t, err)
+
+	listed, err := ts.Service.ListMemos(userCtx, &apiv1.ListMemosRequest{
+		Workspace:      workspace.Name,
+		Filter:         `content.contains("main line")`,
+		IncludeSubDocs: true,
+	})
+	require.NoError(t, err)
+	require.True(t, listed.SubDocsIncluded)
+	require.Len(t, listed.Memos, 1)
+	require.Equal(t, parent.Name, listed.Memos[0].Name, "sub-documents stay out of the document list itself")
+	require.Len(t, listed.SubDocs, 1, "only the selected parent's sub-documents, and no comments")
+	require.Equal(t, subDoc.Name, listed.SubDocs[0].Name)
+	require.Equal(t, parent.Name, listed.SubDocs[0].GetParent())
+
+	plain, err := ts.Service.ListMemos(userCtx, &apiv1.ListMemosRequest{Workspace: workspace.Name})
+	require.NoError(t, err)
+	require.False(t, plain.SubDocsIncluded)
+	require.Empty(t, plain.SubDocs)
+}

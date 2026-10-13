@@ -115,6 +115,14 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		where = append(where, "(`memo`.`folder_path` = ? OR `memo`.`folder_path` LIKE ?)")
 		args = append(args, *v, *v+"/%")
 	}
+	if v := find.FolderPathList; len(v) != 0 {
+		placeholders := make([]string, len(v))
+		for i, folderPath := range v {
+			placeholders[i] = "?"
+			args = append(args, folderPath)
+		}
+		where = append(where, fmt.Sprintf("`memo`.`folder_path` IN (%s)", strings.Join(placeholders, ",")))
+	}
 	if find.VisibleWorkspaceIDs != nil {
 		if len(find.VisibleWorkspaceIDs) == 0 {
 			where = append(where, "`memo`.`visibility` = 'PUBLIC'")

@@ -594,6 +594,11 @@ message ListMemosRequest {
   // Optional. Restrict results to memos in this workspace.
   // Format: workspaces/{workspace}
   string workspace = 7 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. If true, the response also carries the sub-documents of every
+  // memo on this page in `sub_docs`. Sub-documents follow their parent: the
+  // filter selects the parents, never the sub-documents themselves.
+  bool include_sub_docs = 8 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message ListMemosResponse {
@@ -603,6 +608,13 @@ message ListMemosResponse {
   // A token that can be sent as `page_token` to retrieve the next page.
   // If this field is omitted, there are no subsequent pages.
   string next_page_token = 2;
+
+  // The sub-documents of the memos in `memos`, when `include_sub_docs` was set.
+  repeated Memo sub_docs = 3;
+
+  // True when `include_sub_docs` was honoured. A server that predates the field
+  // leaves it false, so a client can tell "no sub-documents" from "not asked".
+  bool sub_docs_included = 4;
 }
 
 message GetMemoRequest {

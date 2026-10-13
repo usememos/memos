@@ -549,14 +549,11 @@ func liveMemos(ctx context.Context, client *Client, ws *WorkspaceConfig) (map[st
 	if err != nil {
 		return nil, err
 	}
-	current, err := client.ListAllMemos(ctx, ws.Workspace, scopedFilter(scope, ws.Filter))
+	docs, subDocs, err := listInScope(ctx, client, ws, scopedFilter(scope, ws.Filter))
 	if err != nil {
 		return nil, err
 	}
-	memos, err := withSubDocs(ctx, client, inScopeMemos(ws, current))
-	if err != nil {
-		return nil, err
-	}
+	memos := append(docs, subDocs...)
 	live := make(map[string]*v1pb.Memo, len(memos))
 	for _, m := range memos {
 		live[uidFromName(m.GetName())] = m

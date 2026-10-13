@@ -51,14 +51,11 @@ func Status(ctx context.Context, root string, cfg *Config, ws *WorkspaceConfig, 
 
 	// Full current server listing (scoped to own memos in the workspace):
 	// used for both remote-new/updated and remote-deleted detection.
-	current, err := client.ListAllMemos(ctx, ws.Workspace, scopedFilter(scope, ws.Filter))
+	serverDocs, serverSubDocs, err := listInScope(ctx, client, ws, scopedFilter(scope, ws.Filter))
 	if err != nil {
 		return nil, err
 	}
-	current, err = withSubDocs(ctx, client, inScopeMemos(ws, current))
-	if err != nil {
-		return nil, err
-	}
+	current := append(serverDocs, serverSubDocs...)
 	serverByUID := make(map[string]string, len(current)) // uid -> canonical server hash
 	alive := make(map[string]bool, len(current))
 	for _, m := range current {

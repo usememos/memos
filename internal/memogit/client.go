@@ -162,7 +162,20 @@ func (c *Client) DefaultWorkspace(ctx context.Context) (*v1pb.Workspace, error) 
 // including any creator scoping); workspace is a resource name
 // ("workspaces/{uid}").
 func (c *Client) ListAllMemos(ctx context.Context, workspace, filter string) ([]*v1pb.Memo, error) {
-	var out []*v1pb.Memo
+	docs, _, _, err := c.listAllMemos(ctx, workspace, filter, false)
+	return docs, err
+}
+
+// ListAllMemosWithSubDocs is ListAllMemos that also returns the sub-documents
+// of every listed document, in the same round trips. ok is false when the
+// server predates include_sub_docs: subDocs is then empty, which must not be
+// read as "these documents have no sub-documents".
+func (c *Client) ListAllMemosWithSubDocs(ctx context.Context, workspace, filter string) (docs, subDocs []*v1pb.Memo, ok bool, err error) {
+	return c.listAllMemos(ctx, workspace, filter, true)
+}
+
+func (c *Client) listAllMemos(ctx context.Context, workspace, filter string, includeSubDocs bool) (docs, subDocs []*v1pb.Memo, ok bool, err error) {
+	ok = includeSubDocs
 	pageToken := ""
 	for {
 		req := &v1pb.ListMemosRequest{
@@ -170,21 +183,24 @@ func (c *Client) ListAllMemos(ctx context.Context, workspace, filter string) ([]
 			PageToken: pageToken,
 			State:     v1pb.State_NORMAL,
 			// Oldest first keeps clone output deterministic and git-friendly.
-			OrderBy:   "create_time asc",
-			Filter:    filter,
-			Workspace: workspace,
+			OrderBy:        "create_time asc",
+			Filter:         filter,
+			Workspace:      workspace,
+			IncludeSubDocs: includeSubDocs,
 		}
 		resp, err := c.memo.ListMemos(ctx, connect.NewRequest(req))
 		if err != nil {
-			return nil, fmt.Errorf("list memos: %w", err)
+			return nil, nil, false, fmt.Errorf("list memos: %w", err)
 		}
-		out = append(out, resp.Msg.GetMemos()...)
+		docs = append(docs, resp.Msg.GetMemos()...)
+		subDocs = append(subDocs, resp.Msg.GetSubDocs()...)
+		ok = ok && resp.Msg.GetSubDocsIncluded()
 		pageToken = resp.Msg.GetNextPageToken()
 		if pageToken == "" {
 			break
 		}
 	}
-	return out, nil
+	return docs, subDocs, ok, nil
 }
 
 // ListMemoComments fetches a document's child memos — its comments and its

@@ -948,6 +948,14 @@ paths:
                      Format: workspaces/{workspace}
                   schema:
                     type: string
+                - name: includeSubDocs
+                  in: query
+                  description: |-
+                    Optional. If true, the response also carries the sub-documents of every
+                     memo on this page in `sub_docs`. Sub-documents follow their parent: the
+                     filter selects the parents, never the sub-documents themselves.
+                  schema:
+                    type: boolean
             responses:
                 "200":
                     description: OK
@@ -5471,6 +5479,16 @@ components:
                     description: |-
                         A token that can be sent as `page_token` to retrieve the next page.
                          If this field is omitted, there are no subsequent pages.
+                subDocs:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Memo'
+                    description: The sub-documents of the memos in `memos`, when `include_sub_docs` was set.
+                subDocsIncluded:
+                    type: boolean
+                    description: |-
+                        True when `include_sub_docs` was honoured. A server that predates the field
+                         leaves it false, so a client can tell "no sub-documents" from "not asked".
         ListPersonalAccessTokensResponse:
             type: object
             properties:

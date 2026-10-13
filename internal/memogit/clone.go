@@ -88,20 +88,14 @@ func Clone(ctx context.Context, root string, cfg *Config, workspaceTitle, filter
 	if scope.Admin {
 		fmt.Fprintln(out, "  (admin: the checkout covers every document in the workspace, not only your own)")
 	}
-	memos, err := client.ListAllMemos(ctx, wsCfg.Workspace, scopedFilter(scope, wsCfg.Filter))
+	// Sub-documents come along with their parents, or a fresh checkout would
+	// lack every one of them until its first full pull.
+	inScope, subDocs, err := listInScope(ctx, client, wsCfg, scopedFilter(scope, wsCfg.Filter))
 	if err != nil {
 		return err
 	}
-
-	// The listing never contains sub-documents (they are child memos), so they
-	// are fetched from their parents — or a fresh checkout would lack every one
-	// of them until its first full pull.
-	inScope := inScopeMemos(wsCfg, memos)
 	warnEmptyFolders(wsCfg, inScope, out)
-	memos, err = withSubDocs(ctx, client, inScope)
-	if err != nil {
-		return err
-	}
+	memos := append(inScope, subDocs...)
 
 	state := NewState(cfg.Server)
 	if err := checkPathCollisions(wsCfg, memos, out); err != nil {

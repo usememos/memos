@@ -442,10 +442,23 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 
 	if len(memos) == 0 {
 		response := &v1pb.ListMemosResponse{
-			Memos:         memoMessages,
-			NextPageToken: nextPageToken,
+			Memos:           memoMessages,
+			NextPageToken:   nextPageToken,
+			SubDocsIncluded: request.IncludeSubDocs,
 		}
 		return response, nil
+	}
+
+	// Sub-documents ride along with the page they belong to, so they are loaded,
+	// converted and paginated with their parents. Everything below works on one
+	// slice; the first pageSize entries are the page itself.
+	pageSize := len(memos)
+	if request.IncludeSubDocs {
+		subDocs, err := s.listSubDocsOf(ctx, memos, memoFind)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to list sub-documents: %v", err)
+		}
+		memos = append(memos[:pageSize:pageSize], subDocs...)
 	}
 
 	reactionMap := make(map[string][]*store.Reaction)
@@ -493,7 +506,8 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list memo creators: %v", err)
 	}
-	for _, memo := range memos {
+	var subDocMessages []*v1pb.Memo
+	for i, memo := range memos {
 		memoName := fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID)
 		reactions := reactionMap[memoName]
 		attachments := attachmentMap[memo.ID]
@@ -512,12 +526,18 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 			return nil, errors.Wrap(err, "failed to convert memo")
 		}
 
-		memoMessages = append(memoMessages, memoMessage)
+		if i < pageSize {
+			memoMessages = append(memoMessages, memoMessage)
+		} else {
+			subDocMessages = append(subDocMessages, memoMessage)
+		}
 	}
 
 	response := &v1pb.ListMemosResponse{
-		Memos:         memoMessages,
-		NextPageToken: nextPageToken,
+		Memos:           memoMessages,
+		NextPageToken:   nextPageToken,
+		SubDocs:         subDocMessages,
+		SubDocsIncluded: request.IncludeSubDocs,
 	}
 	return response, nil
 }

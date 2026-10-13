@@ -36,6 +36,11 @@ type memogitHarness struct {
 
 func newMemogitHarness(t *testing.T) *memogitHarness {
 	t.Helper()
+	// The environment overrides config.yaml, so a developer's own server or
+	// token would otherwise send every reload of the config to the wrong place.
+	for _, name := range []string{memogit.EnvToucanServer, memogit.EnvToucanToken, memogit.EnvServer, memogit.EnvToken} {
+		t.Setenv(name, "")
+	}
 	ctx := context.Background()
 	ts := NewTestService(t)
 	t.Cleanup(ts.Cleanup)
@@ -88,7 +93,7 @@ func (h *memogitHarness) get(name string) *apiv1.Memo {
 
 func (h *memogitHarness) clone() {
 	h.t.Helper()
-	require.NoError(h.t, memogit.Clone(context.Background(), h.root, h.cfg, "KB", "", "", false, true, &h.out), h.out.String())
+	require.NoError(h.t, memogit.Clone(context.Background(), h.root, h.cfg, "KB", "", "", false, true, nil, &h.out), h.out.String())
 }
 
 func (h *memogitHarness) ws() *memogit.WorkspaceConfig {

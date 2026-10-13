@@ -123,25 +123,51 @@ func localRelPathOf(ws *WorkspaceConfig, parents parentIndex, m *v1pb.Memo) stri
 	return ws.LocalRelPath(m.GetFolderPath(), m.GetTitle(), docTypeString(m))
 }
 
-// withSubDocs returns the given documents followed by all their sub-documents:
-// the full set of live memos a checkout mirrors. Anything that decides "is this
-// tracked document still on the server?" must use it — the plain listing never
-// contains sub-documents, so checking against it alone reads every one of them
-// as deleted (pull would remove them, push would skip them as orphans).
-func withSubDocs(ctx context.Context, client *Client, docs []*v1pb.Memo) ([]*v1pb.Memo, error) {
-	subDocs, err := fetchSubDocs(ctx, client, docs)
+// listInScope lists the documents matching filter that belong to this
+// checkout, together with their sub-documents: the full set of live memos a
+// checkout mirrors. Anything that decides "is this tracked document still on
+// the server?" must look at both — the plain listing never contains
+// sub-documents, so checking against it alone reads every one of them as
+// deleted (pull would remove them, push would skip them as orphans).
+//
+// Scope follows the parent rather than being re-derived: a sub-document's
+// server folder path is the reserved "_sub/<uid>", which matches no sparse or
+// folders prefix, so it is kept exactly when its parent is.
+func listInScope(ctx context.Context, client *Client, ws *WorkspaceConfig, filter string) (docs, subDocs []*v1pb.Memo, err error) {
+	all, subDocs, ok, err := client.ListAllMemosWithSubDocs(ctx, ws.Workspace, filter)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return append(append([]*v1pb.Memo(nil), docs...), subDocs...), nil
+	docs = inScopeMemos(ws, all)
+	if !ok {
+		// An older server ignores include_sub_docs; ask parent by parent.
+		subDocs, err = fetchSubDocs(ctx, client, docs)
+		if err != nil {
+			return nil, nil, err
+		}
+		return docs, subDocs, nil
+	}
+	return docs, subDocsOf(docs, subDocs), nil
 }
 
-// fetchSubDocs returns the sub-documents of every given parent.
-//
-// They cannot come from the memo listing: sub-documents are child memos, and
-// the listing excludes those. What makes the incremental sync work anyway is
-// that writing a sub-document bumps its parent's update_time, so a parent whose
-// sub-document changed is always in the listing this walks.
+// subDocsOf keeps the sub-documents whose parent is one of docs.
+func subDocsOf(docs, subDocs []*v1pb.Memo) []*v1pb.Memo {
+	parents := make(map[string]bool, len(docs))
+	for _, d := range docs {
+		parents[uidFromName(d.GetName())] = true
+	}
+	kept := subDocs[:0:0]
+	for _, sd := range subDocs {
+		if parentUID, ok := ParentUIDFromSubDocFolder(sd.GetFolderPath()); ok && parents[parentUID] {
+			kept = append(kept, sd)
+		}
+	}
+	return kept
+}
+
+// fetchSubDocs returns the sub-documents of every given parent, one request per
+// parent. It is listInScope's fallback for a server whose listing cannot carry
+// sub-documents (one that predates include_sub_docs).
 func fetchSubDocs(ctx context.Context, client *Client, parents []*v1pb.Memo) ([]*v1pb.Memo, error) {
 	var subDocs []*v1pb.Memo
 	for _, parent := range parents {

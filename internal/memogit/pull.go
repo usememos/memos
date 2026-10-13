@@ -59,21 +59,10 @@ func Pull(ctx context.Context, root string, cfg *Config, ws *WorkspaceConfig, ou
 	filter := andFilter(scopedFilter(scope, ws.Filter), fmt.Sprintf("updated_ts > timestamp(%d)", sinceUnix))
 	fmt.Fprintf(out, "Pulling changes since %s (workspace %q) ...\n", state.LastSync.Format(time.RFC3339), ws.Title)
 
-	memos, err := client.ListAllMemos(ctx, ws.Workspace, filter)
-	if err != nil {
-		return nil, err
-	}
-	memos = inScopeMemos(ws, memos)
-
-	// Sub-documents are child memos, so the listing above leaves them out — they
-	// have to be walked per parent. Writing one bumps its parent's update_time,
-	// which is what puts that parent in this incremental listing in the first
-	// place, so a sub-document edited on its own is never missed.
-	//
-	// Scope follows the parent rather than being re-derived: a sub-document's
-	// server folder path is the reserved "_sub/<uid>", which matches no sparse
-	// prefix, so running it through inScopeMemos would drop every one of them.
-	subDocs, err := fetchSubDocs(ctx, client, memos)
+	// Sub-documents come with their parents. Writing one bumps its parent's
+	// update_time, which is what puts that parent in this incremental listing in
+	// the first place, so a sub-document edited on its own is never missed.
+	memos, subDocs, err := listInScope(ctx, client, ws, filter)
 	if err != nil {
 		return nil, err
 	}
@@ -254,23 +243,19 @@ func syncWorkspaceTitle(ctx context.Context, client *Client, root string, cfg *C
 //     last_sync, so a memo whose last update predates the watermark is invisible
 //     to it forever; the full listing is the ground truth that closes that gap.
 func reconcileFullListing(ctx context.Context, client *Client, ws *WorkspaceConfig, scope syncScope, contentRoot string, state *State, res *PullResult, out io.Writer, warn *attachmentWarner) error {
-	current, err := client.ListAllMemos(ctx, ws.Workspace, scopedFilter(scope, ws.Filter))
-	if err != nil {
-		return err
-	}
 	// Sparse checkout: a memo that left the mapped folder is no longer "alive"
 	// here, so it is reconciled as a local removal below.
-	inScope := inScopeMemos(ws, current)
+	//
 	// Sub-documents must be in this listing too, and for a sharper reason than in
 	// the incremental pass: everything tracked but absent from it is treated as
 	// deleted on the server and removed locally. Leaving them out would delete
 	// every sub-document from the checkout on the first reconcile.
-	live, err := withSubDocs(ctx, client, inScope)
+	inScope, subDocs, err := listInScope(ctx, client, ws, scopedFilter(scope, ws.Filter))
 	if err != nil {
 		return err
 	}
 	parents := newParentIndex(ws, state, inScope)
-	return reconcileAgainst(ctx, client, ws, parents, contentRoot, live, state, res, out, warn)
+	return reconcileAgainst(ctx, client, ws, parents, contentRoot, append(inScope, subDocs...), state, res, out, warn)
 }
 
 // reconcileAgainst is reconcileFullListing's logic over an already-fetched

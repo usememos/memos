@@ -200,6 +200,29 @@ func (s *APIV1Service) listChildMemos(ctx context.Context, parentID int32) ([]*s
 	return children, nil
 }
 
+// listSubDocsOf returns the sub-documents of every given parent in one query,
+// for a listing asked to include them. The folder path alone identifies them
+// (see the top of this file), so no relation walk is needed. They take the
+// listing's row status and anonymous visibility narrowing; anything further is
+// already decided by the parent having made it into the listing, exactly as
+// ListMemoComments lets any reader of a document see its children.
+func (s *APIV1Service) listSubDocsOf(ctx context.Context, parents []*store.Memo, listing *store.FindMemo) ([]*store.Memo, error) {
+	folderPaths := make([]string, 0, len(parents))
+	for _, parent := range parents {
+		folderPaths = append(folderPaths, SubDocFolderPath(parent.UID))
+	}
+	subDocs, err := s.Store.ListMemos(ctx, &store.FindMemo{
+		FolderPathList: folderPaths,
+		RowStatus:      listing.RowStatus,
+		VisibilityList: listing.VisibilityList,
+		OrderByTimeAsc: true,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to list sub-documents")
+	}
+	return subDocs, nil
+}
+
 // subDocIDsOf returns the memo IDs of a document's sub-documents, for the
 // reference guards that must treat a parent and its sub-documents as one
 // document rather than as documents referencing each other.
