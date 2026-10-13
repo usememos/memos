@@ -634,3 +634,55 @@ func (reader *countingReadCloser) Read(buffer []byte) (int, error) {
 func (*countingReadCloser) Close() error {
 	return nil
 }
+
+func TestIsInternalIP(t *testing.T) {
+	tests := []struct {
+		name     string
+		ip       string
+		internal bool
+	}{
+		{name: "loopback", ip: "127.0.0.1", internal: true},
+		{name: "private 10", ip: "10.0.0.1", internal: true},
+		{name: "private 172", ip: "172.16.0.1", internal: true},
+		{name: "private 192", ip: "192.168.1.1", internal: true},
+		{name: "link local imds", ip: "169.254.169.254", internal: true},
+		{name: "unspecified", ip: "0.0.0.0", internal: true},
+		{name: "cgnat lower bound", ip: "100.64.0.1", internal: true},
+		{name: "cgnat alibaba metadata", ip: "100.100.100.200", internal: true},
+		{name: "cgnat upper bound", ip: "100.127.255.255", internal: true},
+		{name: "mapped ipv6 cgnat", ip: "::ffff:100.100.100.200", internal: true},
+		{name: "ipv6 loopback", ip: "::1", internal: true},
+		{name: "below cgnat", ip: "100.63.255.255", internal: false},
+		{name: "above cgnat", ip: "100.128.0.0", internal: false},
+		{name: "public dns", ip: "8.8.8.8", internal: false},
+		{name: "public example", ip: "93.184.216.34", internal: false},
+		{name: "ipv6 public", ip: "2606:4700:4700::1111", internal: false},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			require.Equal(t, test.internal, isInternalIP(net.ParseIP(test.ip)))
+		})
+	}
+}
+
+func TestHTMLMetaFetcherGetRejectsResolvedCGNAT(t *testing.T) {
+	originalLookupIPAddr := lookupIPAddr
+	originalDialContext := dialContext
+	t.Cleanup(func() {
+		lookupIPAddr = originalLookupIPAddr
+		dialContext = originalDialContext
+	})
+
+	lookupIPAddr = func(context.Context, string) ([]net.IPAddr, error) {
+		return []net.IPAddr{{IP: net.ParseIP("100.100.100.200")}}, nil
+	}
+	var dialed atomic.Bool
+	dialContext = func(context.Context, string, string) (net.Conn, error) {
+		dialed.Store(true)
+		return nil, errors.New("unexpected dial")
+	}
+
+	_, err := NewHTMLMetaFetcher().Get(context.Background(), "http://rebind.example/page")
+	require.ErrorIs(t, err, ErrInternalIP)
+	require.False(t, dialed.Load())
+}
