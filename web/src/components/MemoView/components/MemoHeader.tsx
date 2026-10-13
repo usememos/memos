@@ -1,3 +1,4 @@
+import { MessageCircleIcon } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import RelativeTime from "@/components/RelativeTime";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -5,6 +6,7 @@ import { FOCUS_VISIBLE_OUTLINE_CLASSES } from "@/components/ui/focus";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useNewMemo } from "@/contexts/NewMemoContext";
 import i18n from "@/i18n";
+import { MEMO_COMMENTS_ANCHOR_ID } from "@/lib/memo-comments";
 import { cn } from "@/lib/utils";
 import { getCreatorHomePath } from "@/router/routes";
 import { Visibility } from "@/types/proto/api/memo_service_pb";
@@ -30,6 +32,7 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showC
   const { memo, creator, currentUser, parentPage, isArchived, readonly, openEditor } = useMemoViewContext();
   const location = useLocation();
   const { createTime, updateTime, displayTime: memoDisplayTime, isDisplayingUpdatedTime, relativeTimeFormat } = useMemoViewDerived();
+  const { isInMemoDetailPage } = useMemoViewDerived();
   const { newMemoName } = useNewMemo();
   const visibilityOption = getVisibilityOption(memo.visibility);
 
@@ -86,6 +89,25 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showC
           <span className="flex sm:hidden sm:group-hover:flex sm:group-focus-within:flex sm:has-[[data-popup-open]]:flex">
             <ReactionSelector memo={memo} trigger={<Button variant="quiet" size="icon-sm" />} />
           </span>
+        )}
+
+        {currentUser && !isArchived && !isInMemoDetailPage && (
+          <Tooltip>
+            <TooltipTrigger
+              render={
+                <Link
+                  to={`/${memo.name}#${MEMO_COMMENTS_ANCHOR_ID}`}
+                  state={{ ...createMemoNavigationState(parentPage), composeComment: true }}
+                  viewTransition
+                  aria-label={t("memo.comment.write-a-comment")}
+                  className={MEMO_HEADER_ACTION_CLASSES}
+                />
+              }
+            >
+              <MessageCircleIcon className="size-4" />
+            </TooltipTrigger>
+            <TooltipContent>{t("memo.comment.write-a-comment")}</TooltipContent>
+          </Tooltip>
         )}
 
         {showVisibility && memo.visibility !== Visibility.PRIVATE && (

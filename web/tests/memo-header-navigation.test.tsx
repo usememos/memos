@@ -132,6 +132,35 @@ describe("MemoHeader navigation", () => {
     expect(screen.getByTestId("location")).toHaveTextContent('/memos/123|{"from":"/explore?filter=tagSearch%3Awork"}');
   });
 
+  it("links the comment button to the memo's comment editor and keeps the origin", () => {
+    state.currentUser = { name: "users/alice" };
+
+    render(
+      <MemoryRouter initialEntries={["/explore?filter=tagSearch%3Awork"]}>
+        <MemoHeader />
+        <LocationProbe />
+      </MemoryRouter>,
+    );
+
+    const comment = screen.getByRole("link", { name: "memo.comment.write-a-comment" });
+    expect(comment).toHaveAttribute("href", "/memos/123#memo-comments");
+
+    fireEvent.click(comment);
+    expect(screen.getByTestId("location")).toHaveTextContent(
+      '/memos/123|{"from":"/explore?filter=tagSearch%3Awork","composeComment":true}',
+    );
+  });
+
+  it("hides the comment button from signed-out visitors", () => {
+    render(
+      <MemoryRouter>
+        <MemoHeader />
+      </MemoryRouter>,
+    );
+
+    expect(screen.queryByRole("link", { name: "memo.comment.write-a-comment" })).not.toBeInTheDocument();
+  });
+
   it("shows the time as plain text on the memo's own page", () => {
     render(
       <MemoryRouter initialEntries={["/memos/123"]}>

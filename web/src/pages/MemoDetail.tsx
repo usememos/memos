@@ -7,7 +7,7 @@ import { MentionResolutionProvider } from "@/components/MemoContent/MentionResol
 import MemoParentPlaceholder, { type MemoParentStatus } from "@/components/MemoParentPlaceholder";
 import MemoView, { type MemoViewHandle } from "@/components/MemoView";
 import { computeCommentAmount } from "@/components/MemoView/MemoViewContext";
-import { createMemoNavigationState, resolveMemoDetailOrigin } from "@/components/MemoView/navigation";
+import { createMemoNavigationState, type MemoNavigationState, resolveMemoDetailOrigin } from "@/components/MemoView/navigation";
 import { useAppSidebar } from "@/contexts/AppSidebarContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
@@ -189,6 +189,9 @@ const MemoDetail = () => {
     if (commentSection && (fragment === MEMO_COMMENTS_ANCHOR_ID || fragment === LEGACY_MEMO_COMMENTS_ANCHOR_ID)) {
       scrolledHashRef.current = scrollKey;
       commentSection.scrollIntoView();
+      if ((locationState as MemoNavigationState | null)?.composeComment) {
+        void commentSection.openEditor();
+      }
       return;
     }
 
@@ -198,7 +201,7 @@ const MemoDetail = () => {
     if (!el) return;
     scrolledHashRef.current = scrollKey;
     el.scrollIntoView({ behavior: "smooth", block: "center" });
-  }, [hash, memo, memoName, comments]);
+  }, [hash, memo, memoName, comments, locationState]);
 
   // Keep the query mounted while revalidating a cached denial. Redirecting
   // earlier would abort the request that could confirm restored access.
