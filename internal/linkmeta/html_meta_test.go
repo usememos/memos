@@ -664,3 +664,25 @@ func TestIsInternalIP(t *testing.T) {
 		})
 	}
 }
+
+func TestHTMLMetaFetcherGetRejectsResolvedCGNAT(t *testing.T) {
+	originalLookupIPAddr := lookupIPAddr
+	originalDialContext := dialContext
+	t.Cleanup(func() {
+		lookupIPAddr = originalLookupIPAddr
+		dialContext = originalDialContext
+	})
+
+	lookupIPAddr = func(context.Context, string) ([]net.IPAddr, error) {
+		return []net.IPAddr{{IP: net.ParseIP("100.100.100.200")}}, nil
+	}
+	var dialed atomic.Bool
+	dialContext = func(context.Context, string, string) (net.Conn, error) {
+		dialed.Store(true)
+		return nil, errors.New("unexpected dial")
+	}
+
+	_, err := NewHTMLMetaFetcher().Get(context.Background(), "http://rebind.example/page")
+	require.ErrorIs(t, err, ErrInternalIP)
+	require.False(t, dialed.Load())
+}
