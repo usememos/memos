@@ -2,6 +2,12 @@
 
 # Memos
 
+<p>
+  <a href="README.md"><strong>English</strong></a> ·
+  <a href="README.ru.md">Русский</a>
+</p>
+
+
 <img src="./web/public/logo.webp" alt="" width="96" align="right">
 
 **Your thoughts, your data, shared on your terms.**
