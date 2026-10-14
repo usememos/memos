@@ -32,7 +32,7 @@ jobs:
           github_token: ${{ github.token }}
 
       - name: Run buf lint
-        run: buf lint proto
+        run: buf lint proto --error-format github-actions
 
       - name: Check buf format
         run: |
