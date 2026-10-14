@@ -190,6 +190,9 @@
     "focus-mode": "Fokustilstand",
     "insert-menu": {
       "add-location": "Tilføj placering",
+      "location-permission-denied": "Adgang til placering blev afvist. Tillad det i browserindstillingerne, og prøv igen.",
+      "location-requires-https": "Din aktuelle placering kræver en sikker HTTPS-forbindelse.",
+      "location-unavailable": "Kunne ikke hente din aktuelle placering. Prøv igen, eller vælg den manuelt.",
       "link-memo": "Link memo",
       "retry-image-upload": "Prøv igen",
       "add-attachment": "Tilføj vedhæftet fil",

@@ -190,6 +190,9 @@
     "focus-mode": "Fokusa režīms",
     "insert-menu": {
       "add-location": "Pievienot atrašanās vietu",
+      "location-permission-denied": "Piekļuve atrašanās vietai tika liegta. Atļaujiet to pārlūkprogrammas iestatījumos un mēģiniet vēlreiz.",
+      "location-requires-https": "Jūsu pašreizējai atrašanās vietai nepieciešams drošs HTTPS savienojums.",
+      "location-unavailable": "Neizdevās iegūt jūsu pašreizējo atrašanās vietu. Mēģiniet vēlreiz vai izvēlieties to manuāli.",
       "link-memo": "Saites piezīme",
       "retry-image-upload": "Mēģiniet vēlreiz",
       "add-attachment": "Pievienot pielikumu",

@@ -154,6 +154,9 @@
     "save": "حفظ",
     "insert-menu": {
       "add-location": "أضف الموقع",
+      "location-permission-denied": "تم رفض الوصول إلى الموقع. اسمح به في إعدادات المتصفح ثم حاول مرة أخرى.",
+      "location-requires-https": "يتطلب موقعك الحالي اتصال HTTPS آمنًا.",
+      "location-unavailable": "تعذر الحصول على موقعك الحالي. حاول مرة أخرى أو اختره يدويًا.",
       "link-memo": "مذكرة الارتباط",
       "image-upload-stopped": "توقف تحميل الصورة {{completed}}/{{total}}",
       "insert-image": "إدراج الصورة",

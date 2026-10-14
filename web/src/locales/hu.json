@@ -152,6 +152,9 @@
     "focus-mode": "Fókusz mód",
     "insert-menu": {
       "add-location": "Hely hozzáadása",
+      "location-permission-denied": "A helyhozzáférést megtagadták. Engedélyezze a böngésző beállításaiban, majd próbálja újra.",
+      "location-requires-https": "Az aktuális tartózkodási helye biztonságos HTTPS-kapcsolatot igényel.",
+      "location-unavailable": "Nem sikerült lekérni az aktuális tartózkodási helyét. Próbálja újra, vagy válassza ki kézzel.",
       "link-memo": "Linkjegyzet",
       "retry-image-upload": "Próbálja újra",
       "add-attachment": "Melléklet hozzáadása",

@@ -154,6 +154,9 @@
     "save": "ذخیره",
     "insert-menu": {
       "add-location": "اضافه کردن مکان",
+      "location-permission-denied": "دسترسی به موقعیت مکانی رد شد. آن را در تنظیمات مرورگر اجازه دهید و دوباره تلاش کنید.",
+      "location-requires-https": "موقعیت مکانی فعلی شما به اتصال امن HTTPS نیاز دارد.",
+      "location-unavailable": "دریافت موقعیت مکانی فعلی شما ممکن نشد. دوباره تلاش کنید یا آن را دستی انتخاب کنید.",
       "link-memo": "پیوند یادداشت",
       "image-upload-stopped": "آپلود تصویر متوقف شد {{completed}}/{{total}}",
       "insert-image": "درج تصویر",

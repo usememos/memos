@@ -152,6 +152,9 @@
     "focus-mode": "Modo Sen distraccións",
     "insert-menu": {
       "add-location": "Engadir localización",
+      "location-permission-denied": "Denegouse o acceso á localización. Permíteo na configuración do navegador e ténteo de novo.",
+      "location-requires-https": "A túa localización actual require unha conexión HTTPS segura.",
+      "location-unavailable": "Non se puido obter a túa localización actual. Téntao de novo ou escóllea manualmente.",
       "link-memo": "Nota de ligazón",
       "retry-image-upload": "Volve tentar",
       "add-attachment": "Engadir anexo",

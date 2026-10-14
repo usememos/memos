@@ -152,6 +152,9 @@
     "focus-mode": "Fokusmodus",
     "insert-menu": {
       "add-location": "Legg til plassering",
+      "location-permission-denied": "Tilgang til posisjonen ble avslått. Tillat det i nettleserinnstillingene og prøv igjen.",
+      "location-requires-https": "Din nåværende posisjon krever en sikker HTTPS-forbindelse.",
+      "location-unavailable": "Kunne ikke hente din nåværende posisjon. Prøv igjen eller velg den manuelt.",
       "link-memo": "Koblingsnotat",
       "retry-image-upload": "Prøv på nytt",
       "add-attachment": "Legg til vedlegg",

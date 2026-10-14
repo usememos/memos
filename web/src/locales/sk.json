@@ -190,6 +190,9 @@
     "focus-mode": "Režim zaostrenia",
     "insert-menu": {
       "add-location": "Pridať polohu",
+      "location-permission-denied": "Prístup k polohe bol zamietnutý. Povoľte ho v nastaveniach prehliadača a skúste to znova.",
+      "location-requires-https": "Vaša aktuálna poloha vyžaduje zabezpečené pripojenie HTTPS.",
+      "location-unavailable": "Aktuálnu polohu sa nepodarilo získať. Skúste to znova alebo ju vyberte ručne.",
       "link-memo": "Odkaz na poznámku",
       "retry-image-upload": "Skúste to znova",
       "add-attachment": "Pridať prílohu",

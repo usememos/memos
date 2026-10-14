@@ -152,6 +152,9 @@
     "focus-mode": "Način osredotočanja",
     "insert-menu": {
       "add-location": "Dodajte lokacijo",
+      "location-permission-denied": "Dostop do lokacije je bil zavrnjen. Dovolite ga v nastavitvah brskalnika in poskusite znova.",
+      "location-requires-https": "Vaša trenutna lokacija zahteva varno povezavo HTTPS.",
+      "location-unavailable": "Trenutne lokacije ni bilo mogoče pridobiti. Poskusite znova ali jo izberite ročno.",
       "link-memo": "Beležka povezave",
       "retry-image-upload": "Poskusite znova",
       "add-attachment": "Dodaj prilogo",

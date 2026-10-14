@@ -154,6 +154,9 @@
     "save": "Lưu",
     "insert-menu": {
       "add-location": "Thêm vị trí",
+      "location-permission-denied": "Quyền truy cập vị trí đã bị từ chối. Hãy cho phép trong cài đặt trình duyệt rồi thử lại.",
+      "location-requires-https": "Vị trí hiện tại của bạn yêu cầu kết nối HTTPS an toàn.",
+      "location-unavailable": "Không thể lấy vị trí hiện tại của bạn. Hãy thử lại hoặc chọn thủ công.",
       "link-memo": "Liên kết bản ghi nhớ",
       "add-attachment": "Thêm tệp đính kèm",
       "image-upload-failed": "Một số hình ảnh không thể tải lên. Hãy thử lại hoặc giữ các tệp đã tải lên dưới dạng tệp đính kèm.",

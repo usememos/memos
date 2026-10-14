@@ -152,6 +152,9 @@
     "focus-mode": "Modalità Focus",
     "insert-menu": {
       "add-location": "Aggiungi posizione",
+      "location-permission-denied": "L'accesso alla posizione è stato negato. Consentilo nelle impostazioni del browser e riprova.",
+      "location-requires-https": "La tua posizione attuale richiede una connessione HTTPS sicura.",
+      "location-unavailable": "Impossibile ottenere la tua posizione attuale. Riprova o selezionala manualmente.",
       "link-memo": "Collegamento promemoria",
       "retry-image-upload": "Riprova",
       "add-attachment": "Aggiungi allegato",
