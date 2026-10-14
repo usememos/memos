@@ -1,6 +1,9 @@
+import { create } from "@bufbuild/protobuf";
 import { describe, expect, it } from "vitest";
 import { isTrustedIframeSrc } from "@/lib/html-sanitize-schema";
+import { memoResolveUrl } from "@/lib/memo-markdown";
 import { renderSanitizedHtml } from "@/lib/sanitized-html";
+import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
 
 const renderHtml = (source: string): string => {
   const element = document.createElement("div");
@@ -68,5 +71,21 @@ describe("trusted iframe providers", () => {
     expect(isTrustedIframeSrc("https://app.diagrams.net/?embed=1")).toBe(true);
     expect(isTrustedIframeSrc("https://www.draw.io/?embed=1")).toBe(true);
     expect(isTrustedIframeSrc("https://evil.example/embed/abc123")).toBe(false);
+  });
+});
+
+describe("image URL policy", () => {
+  const resolve = memoResolveUrl([create(AttachmentSchema, { name: "attachments/photo", filename: "photo.png", type: "image/png" })]);
+
+  it("loads images the memo names from relative or https URLs only", () => {
+    expect(resolve("/assets/a.png", "image")).toBe("/assets/a.png");
+    expect(resolve("https://img.example/a.png", "image")).toBe("https://img.example/a.png");
+    expect(resolve("http://tracker.example/a.png", "image")).toBeNull();
+    expect(resolve("javascript:alert(1)", "image")).toBeNull();
+  });
+
+  it("resolves a managed attachment image to the instance's own URL, even over plain http", () => {
+    expect(window.location.protocol).toBe("http:");
+    expect(resolve("/file/attachments/photo", "image")).toBe(`${window.location.origin}/file/attachments/photo/photo.png`);
   });
 });

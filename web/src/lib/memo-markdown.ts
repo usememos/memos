@@ -228,16 +228,16 @@ export const memoExtensions = (options: MemoExtensionOptions = {}): Extension[] 
 const isAllowedImageSource = (src: string): boolean => !/^[a-z][a-z0-9+.-]*:/i.test(src) || /^https:/i.test(src);
 
 /**
- * memos' URL policy: managed attachment images resolve to their served URL and load
- * from relative or https URLs only; links also allow `sms:`, which hands off to
- * another app, beyond the editor's defaults.
+ * memos' URL policy: images the memo names load from relative or https URLs only, and
+ * managed attachment images then resolve to their served URL, which is the instance's
+ * own origin and may be plain http. Links also allow `sms:`, which hands off to another
+ * app, beyond the editor's defaults.
  */
 export const memoResolveUrl =
   (attachments: readonly Attachment[] = []): ResolveUrl =>
   (url, kind) => {
     if (kind === "image") {
-      const resolved = resolveManagedAttachmentImageSource(url, [...attachments]) ?? url;
-      return isAllowedImageSource(resolved) ? resolved : null;
+      return isAllowedImageSource(url) ? (resolveManagedAttachmentImageSource(url, [...attachments]) ?? url) : null;
     }
     return /^sms:/i.test(url.trim()) ? url.trim() : defaultResolveUrl(url, kind);
   };

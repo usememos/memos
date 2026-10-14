@@ -8,9 +8,16 @@
     max-height: 50vh;
     overflow-y: auto;
   }
+  /* Focus mode fills the frame, and so does the editable root: a click anywhere
+     below the text lands in the editor, which puts the caret at the end. */
   &[data-focus-mode] .memo-editor-scroller {
+    display: flex;
+    flex-direction: column;
     height: 100%;
     max-height: none;
+  }
+  &[data-focus-mode] .memo-editor-root {
+    flex: 1 0 auto;
   }
   & .memo-editor-root {
     caret-color: var(--foreground);
