@@ -1,5 +1,5 @@
 import { CornerDownLeftIcon, SearchIcon } from "lucide-react";
-import { type ChangeEvent, type FormEvent, type KeyboardEvent, useEffect, useId, useState } from "react";
+import { type ChangeEvent, type FormEvent, type KeyboardEvent as ReactKeyboardEvent, useEffect, useId, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
@@ -16,6 +16,7 @@ import { extractSpaceUidFromName, formatSpaceUidForDisplay } from "@/lib/space-d
 import { cn } from "@/lib/utils";
 import { getCollectionCreator, withCollectionCreator } from "@/router/routes";
 import { useTranslate } from "@/utils/i18n";
+import { primaryModifierShortcut } from "@/utils/platform";
 import { getRouteActionPolicy, getSidebarRouteKind } from "./routes";
 
 export type QuickFindMode = "text" | "cel";
@@ -78,6 +79,14 @@ const getScopeLabel = (pathname: string, t: ReturnType<typeof useTranslate>) => 
   return t("common.memos");
 };
 
+const QUICK_FIND_SHORTCUT_KEY = "k";
+
+/** The toggle shortcut as rendered in UI hints: "⌘K" on Apple platforms, "Ctrl+K" elsewhere. */
+export const quickFindShortcutLabel = () => primaryModifierShortcut(QUICK_FIND_SHORTCUT_KEY);
+
+/** The same chord in `aria-keyshortcuts` syntax. Both modifiers are accepted everywhere. */
+export const QUICK_FIND_SHORTCUT_ARIA = "Meta+K Control+K";
+
 const QuickFindDialog = () => {
   const t = useTranslate();
   const location = useLocation();
@@ -112,6 +121,19 @@ const QuickFindDialog = () => {
     setQuery(active.query);
   }, [filters, quickFindOpen]);
 
+  useEffect(() => {
+    const handleGlobalKeyDown = (event: KeyboardEvent) => {
+      if (event.repeat || event.altKey || event.shiftKey) return;
+      if (!(event.ctrlKey || event.metaKey) || event.key.toLowerCase() !== QUICK_FIND_SHORTCUT_KEY) return;
+      if (event.defaultPrevented) return;
+      if (!quickFindOpen && document.querySelector('[role="dialog"], [role="alertdialog"]')) return;
+      event.preventDefault();
+      setQuickFindOpen((open) => !open);
+    };
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
+  }, [quickFindOpen, setQuickFindOpen]);
+
   const submitQuery = () => {
     const submission = resolveQuickFindSubmission(location.pathname, query, filters, mode, location.search);
 
@@ -130,7 +152,7 @@ const QuickFindDialog = () => {
     submitQuery();
   };
 
-  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleKeyDown = (event: ReactKeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     // Shift+Enter inserts a newline in an expression; every other Enter submits.
     if (event.key !== "Enter" || (mode === "cel" && event.shiftKey)) return;
     // Enter that commits an IME composition must not also submit the search.
