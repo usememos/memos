@@ -92,7 +92,7 @@ describe("memo view", () => {
     expect(link?.querySelector("a")).toBeNull();
     fireEvent.error(image);
     expect(screen.queryByRole("img", { name: "YouTube" })).not.toBeInTheDocument();
-    expect(link).toHaveTextContent("YouTube · https://youtu.be/dQw4w9WgXcQ?t=30");
+    expect(link).toBeInTheDocument();
   });
 
   it("keeps ordinary and invalid YouTube links as text", () => {

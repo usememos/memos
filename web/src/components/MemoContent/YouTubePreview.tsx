@@ -27,7 +27,7 @@ export function getYouTubeVideoId(input: string): string | undefined {
 }
 
 /** Thumbnail content mounted inside the original Markdown link. */
-export function YouTubePreview({ url, videoId }: { url: string; videoId: string }) {
+export function YouTubePreview({ videoId }: { videoId: string }) {
   const [imageFailed, setImageFailed] = useState(false);
 
   return (
@@ -43,7 +43,6 @@ export function YouTubePreview({ url, videoId }: { url: string; videoId: string 
           onError={() => setImageFailed(true)}
         />
       )}
-      <span className="block truncate px-3 py-2 text-sm">YouTube · {url}</span>
     </span>
   );
 }

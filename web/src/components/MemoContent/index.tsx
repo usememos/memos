@@ -193,7 +193,7 @@ const MemoContent = (props: MemoContentProps) => {
         {islands.map((island) =>
           createPortal(
             island.videoId ? (
-              <YouTubePreview key={island.videoId} url={island.href} videoId={island.videoId} />
+              <YouTubePreview key={island.videoId} videoId={island.videoId} />
             ) : (
               <LinkPreview href={island.href} />
             ),
