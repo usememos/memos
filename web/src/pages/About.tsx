@@ -1,4 +1,6 @@
 import { BookOpenIcon, CodeXmlIcon, ExternalLinkIcon, GitForkIcon, GlobeIcon, HeartIcon, ScissorsIcon } from "lucide-react";
+import MemoContent from "@/components/MemoContent";
+import { MemoViewContext, READONLY_STUB_MEMO_VIEW_CONTEXT } from "@/components/MemoView/MemoViewContext";
 import { Badge } from "@/components/ui/badge";
 import { useInstance } from "@/contexts/InstanceContext";
 import {
@@ -47,6 +49,7 @@ const About = () => {
   const customProfile = generalSetting.customProfile;
   const instanceTitle = customProfile?.title || DEFAULT_TITLE;
   const instanceLogo = customProfile?.logoUrl || DEFAULT_LOGO;
+  const aboutContent = customProfile?.aboutContent?.trim() ?? "";
   const isCustomBranded = instanceTitle !== DEFAULT_TITLE;
 
   const releaseTag = getReleaseTag(profile.version);
@@ -113,6 +116,13 @@ const About = () => {
                 </>
               )}
             </p>
+            {aboutContent && (
+              <section className="mt-8 min-w-0">
+                <MemoViewContext.Provider value={READONLY_STUB_MEMO_VIEW_CONTEXT}>
+                  <MemoContent content={aboutContent} />
+                </MemoViewContext.Provider>
+              </section>
+            )}
             <p className="mt-6 max-w-md text-base leading-relaxed text-muted-foreground @min-[60rem]:text-lg">{t("about.description")}</p>
 
             {buildRows.length > 0 && (
