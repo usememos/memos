@@ -140,6 +140,10 @@ func (s *APIService) getInstanceSettingByName(ctx context.Context, name string, 
 		var setting *storepb.InstanceAccessSetting
 		setting, err = s.Store.GetInstanceAccessSetting(ctx)
 		instanceSetting = &storepb.InstanceSetting{Key: instanceSettingKey, Value: &storepb.InstanceSetting_AccessSetting{AccessSetting: setting}}
+	case storepb.InstanceSettingKey_USAGE_LIMITS:
+		var setting *storepb.InstanceUsageLimitsSetting
+		setting, err = s.Store.GetInstanceUsageLimitsSetting(ctx)
+		instanceSetting = &storepb.InstanceSetting{Key: instanceSettingKey, Value: &storepb.InstanceSetting_UsageLimitsSetting{UsageLimitsSetting: setting}}
 	default:
 		return nil, status.Errorf(codes.InvalidArgument, "unsupported instance setting key: %v", instanceSettingKey)
 	}
@@ -147,9 +151,11 @@ func (s *APIService) getInstanceSettingByName(ctx context.Context, name string, 
 		return nil, status.Errorf(codes.Internal, "failed to get instance setting: %v", err)
 	}
 
-	// Storage and notification settings contain credentials; restrict to admins only.
+	// Storage and notification settings contain credentials, and usage limits
+	// name users; restrict them to admins.
 	if instanceSetting.Key == storepb.InstanceSettingKey_STORAGE ||
-		instanceSetting.Key == storepb.InstanceSettingKey_NOTIFICATION {
+		instanceSetting.Key == storepb.InstanceSettingKey_NOTIFICATION ||
+		instanceSetting.Key == storepb.InstanceSettingKey_USAGE_LIMITS {
 		user, err := caller.currentUser(ctx, s)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
@@ -173,7 +179,10 @@ func (s *APIService) getInstanceSettingByName(ctx context.Context, name string, 
 		isAdminCaller = user.Role == store.RoleAdmin
 	}
 
-	result := convertInstanceSettingFromStore(instanceSetting)
+	result, err := s.convertInstanceSettingResponse(ctx, instanceSetting)
+	if err != nil {
+		return nil, err
+	}
 	if instanceSetting.Key == storepb.InstanceSettingKey_AI && !isAdminCaller {
 		// Non-admin callers only need transcription.provider_id to gate the
 		// editor's Transcribe button. Model / language / prompt are
@@ -207,10 +216,6 @@ func (s *APIService) UpdateInstanceSetting(ctx context.Context, request *apipb.U
 		return nil, status.Errorf(codes.InvalidArgument, "invalid instance setting name: %v", err)
 	}
 	settingKey := storepb.InstanceSettingKey(storepb.InstanceSettingKey_value[settingKeyString])
-	if settingKey == storepb.InstanceSettingKey_USAGE_LIMITS {
-		// Usage limits are store only; the usageLimits RPCs are their only API.
-		return nil, status.Errorf(codes.InvalidArgument, "unsupported instance setting key: %v", settingKey)
-	}
 	if s.Store.IsInstanceSettingDeploymentConfigured(settingKey) {
 		return nil, status.Errorf(codes.FailedPrecondition, "instance setting %q is configured by the deployment", settingKeyString)
 	}
@@ -223,6 +228,13 @@ func (s *APIService) UpdateInstanceSetting(ctx context.Context, request *apipb.U
 	}
 
 	updateSetting := convertInstanceSettingToStore(request.InstanceSetting)
+	if updateSetting.Key == storepb.InstanceSettingKey_USAGE_LIMITS {
+		usageLimits, err := s.convertUsageLimitsSettingToStore(ctx, request.InstanceSetting.GetUsageLimitsSetting())
+		if err != nil {
+			return nil, err
+		}
+		updateSetting.Value = &storepb.InstanceSetting_UsageLimitsSetting{UsageLimitsSetting: usageLimits}
+	}
 
 	// Preserve write-only credential fields when the caller sends an empty value.
 	// An empty string means "no change", not "clear the credential".
@@ -269,10 +281,13 @@ func (s *APIService) UpdateInstanceSetting(ctx context.Context, request *apipb.U
 		if errors.Is(err, store.ErrUnsafeAuthenticationConfiguration) {
 			return nil, status.Error(codes.FailedPrecondition, err.Error())
 		}
+		if errors.Is(err, store.ErrInvalidUsageLimits) {
+			return nil, status.Error(codes.InvalidArgument, err.Error())
+		}
 		return nil, status.Errorf(codes.Internal, "failed to upsert instance setting: %v", err)
 	}
 
-	return convertInstanceSettingFromStore(instanceSetting), nil
+	return s.convertInstanceSettingResponse(ctx, instanceSetting)
 }
 
 // challengeProfile describes the configured challenge so the web app can

@@ -2,8 +2,6 @@ syntax = "proto3";
 
 package memos.store;
 
-import "google/protobuf/empty.proto";
-import "google/protobuf/timestamp.proto";
 import "google/type/color.proto";
 
 option go_package = "gen/store";
@@ -26,8 +24,8 @@ enum InstanceSettingKey {
   AI = 7;
   // ACCESS is the key for instance access policy settings.
   ACCESS = 8;
-  // USAGE_LIMITS is the key for per-user usage limits. Store only; exposed
-  // through the usageLimits API, never through the instance settings API.
+  // USAGE_LIMITS is the key for the ordered usage limits list, read and
+  // replaced whole through the instance settings API.
   USAGE_LIMITS = 9;
 }
 
@@ -246,39 +244,27 @@ message InstanceAccessSetting {
   InstanceAccessMode access_mode = 1;
 }
 
-// InstanceUsageLimitsSetting holds every usage limit of the instance. A limit
-// applies to one user, or independently to every user. For each metric, a
-// user's own limit replaces the default.
+// InstanceUsageLimitsSetting is an ordered list of limit sets. The first
+// entry that names a user is that user's limit set, whole. The last entry
+// has all_users set and is the default. An unset value is unlimited, as is 0.
 message InstanceUsageLimitsSetting {
   repeated UsageLimit limits = 1;
 
   message UsageLimit {
-    // uid is the {usage_limit} segment of the usageLimits/{usage_limit} name.
-    string uid = 1;
-    Metric metric = 2;
-    // Exactly one target must be set.
-    oneof target {
-      // The default limit applied independently to every user.
-      google.protobuf.Empty all_users = 3;
-      // The user this limit applies to. Must be positive.
-      int32 user_id = 4;
-    }
-    // value is the limit. 0 means unlimited.
-    int64 value = 5;
-    google.protobuf.Timestamp create_time = 6;
-    google.protobuf.Timestamp update_time = 7;
-  }
-
-  enum Metric {
-    METRIC_UNSPECIFIED = 0;
-    // MEMO_COUNT limits the number of memos a user created, comments included.
-    MEMO_COUNT = 1;
-    // MEMO_CONTENT_BYTES limits the UTF-8 size of one memo's content.
-    MEMO_CONTENT_BYTES = 2;
-    // STORAGE_BYTES limits the total size of a user's uploads. External links
+    // The users this entry applies to. Positive IDs, not repeated.
+    repeated int32 user_ids = 1;
+    // Field 2 is kept for labels: users holding any listed label would match.
+    // all_users makes the entry the default. Exactly one entry has it, and it
+    // is the last entry. An entry has user_ids or all_users, never both.
+    bool all_users = 3;
+    // memo_count limits the number of memos a user created, comments included.
+    optional int64 memo_count = 4;
+    // memo_content_bytes limits the UTF-8 size of one memo's content.
+    optional int64 memo_content_bytes = 5;
+    // storage_bytes limits the total size of a user's uploads. External links
     // do not count.
-    STORAGE_BYTES = 3;
-    // UPLOAD_BYTES limits the size of one uploaded file.
-    UPLOAD_BYTES = 4;
+    optional int64 storage_bytes = 6;
+    // upload_bytes limits the size of one uploaded file.
+    optional int64 upload_bytes = 7;
   }
 }

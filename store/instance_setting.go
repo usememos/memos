@@ -50,6 +50,11 @@ func (s *Store) UpsertInstanceSetting(ctx context.Context, upsert *storepb.Insta
 		valueBytes, err = protojson.Marshal(upsert.GetAiSetting())
 	} else if upsert.Key == storepb.InstanceSettingKey_ACCESS {
 		valueBytes, err = protojson.Marshal(upsert.GetAccessSetting())
+	} else if upsert.Key == storepb.InstanceSettingKey_USAGE_LIMITS {
+		if err := ValidateInstanceUsageLimitsSetting(upsert.GetUsageLimitsSetting()); err != nil {
+			return nil, err
+		}
+		valueBytes, err = protojson.Marshal(upsert.GetUsageLimitsSetting())
 	} else {
 		return nil, errors.Errorf("unsupported instance setting key: %v", upsert.Key)
 	}

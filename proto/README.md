@@ -18,6 +18,6 @@ buf format -w
 
 ## Deployment settings
 
-Instance setting JSON files use the same `store.InstanceSetting` schema as storage. Usage limits explicitly set
-`allUsers: {}` for an all-users default or `userId: <positive integer>` for a user. A reload with invalid configuration
-leaves the active configuration intact.
+Instance setting JSON files use the same `store.InstanceSetting` schema as storage. A usage limits file is the ordered
+entry list; the last entry sets `allUsers: true`, every other entry lists positive `userIds`. A reload with invalid
+configuration leaves the active configuration intact.

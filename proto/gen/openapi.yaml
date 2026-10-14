@@ -1927,180 +1927,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/usageLimits:
-        get:
-            tags:
-                - InstanceService
-            description: |-
-                ListUsageLimits lists the usage limits: the defaults for every user and the
-                 limits for single users. Admin only.
-            operationId: InstanceService_ListUsageLimits
-            parameters:
-                - name: pageSize
-                  in: query
-                  description: |-
-                    Optional. The maximum number of usage limits to return. If unspecified, at
-                     most 50 are returned. The maximum value is 1000; values above 1000 are
-                     coerced to 1000.
-                  schema:
-                    type: integer
-                    format: int32
-                - name: pageToken
-                  in: query
-                  description: |-
-                    Optional. A page token from a previous call. Provide it to retrieve the
-                     next page.
-                  schema:
-                    type: string
-                - name: filter
-                  in: query
-                  description: |-
-                    Optional. A CEL filter on `user` and `metric`, combined with `&&`.
-                     `user == ""` selects the defaults for every user.
-                     Example: "user == 'users/steven' && metric == 'STORAGE_BYTES'"
-                  schema:
-                    type: string
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/ListUsageLimitsResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-        post:
-            tags:
-                - InstanceService
-            description: |-
-                CreateUsageLimit creates a usage limit. Admin only. There is at most one
-                 limit per metric and user, and one default per metric. Fails with
-                 FAILED_PRECONDITION when the usage limits are configured by the deployment.
-            operationId: InstanceService_CreateUsageLimit
-            parameters:
-                - name: usageLimitId
-                  in: query
-                  description: |-
-                    Optional. The ID to use for the usage limit, which becomes the final
-                     segment of its name. Lowercase letters, digits and hyphens, at most 32
-                     characters, starting with a letter. Generated when empty.
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/UsageLimit'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/UsageLimit'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /api/usageLimits/{usageLimit}:
-        get:
-            tags:
-                - InstanceService
-            description: GetUsageLimit gets a usage limit. Admin only.
-            operationId: InstanceService_GetUsageLimit
-            parameters:
-                - name: usageLimit
-                  in: path
-                  description: The usageLimit id.
-                  required: true
-                  schema:
-                    type: string
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/UsageLimit'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-        delete:
-            tags:
-                - InstanceService
-            description: |-
-                DeleteUsageLimit deletes a usage limit. Admin only. Deleting a user's limit
-                 returns the user to the default; deleting a default makes the metric
-                 unlimited for users without their own limit.
-            operationId: InstanceService_DeleteUsageLimit
-            parameters:
-                - name: usageLimit
-                  in: path
-                  description: The usageLimit id.
-                  required: true
-                  schema:
-                    type: string
-            responses:
-                "200":
-                    description: OK
-                    content: {}
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-        patch:
-            tags:
-                - InstanceService
-            description: |-
-                UpdateUsageLimit updates the value of a usage limit. Admin only. The metric
-                 and user cannot change.
-            operationId: InstanceService_UpdateUsageLimit
-            parameters:
-                - name: usageLimit
-                  in: path
-                  description: The usageLimit id.
-                  required: true
-                  schema:
-                    type: string
-                - name: updateMask
-                  in: query
-                  description: |-
-                    Optional. The fields to update. Only `value` is supported, which is also
-                     the default.
-                  schema:
-                    type: string
-                    format: field-mask
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/UsageLimit'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/UsageLimit'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
     /api/users:
         get:
             tags:
@@ -4093,6 +3919,10 @@ components:
                     allOf:
                         - $ref: '#/components/schemas/InstanceSetting_AccessSetting'
                     description: The value of the ACCESS setting.
+                usageLimitsSetting:
+                    allOf:
+                        - $ref: '#/components/schemas/InstanceSetting_UsageLimitsSetting'
+                    description: The value of the USAGE_LIMITS setting.
             description: InstanceSetting is one group of instance-wide settings, selected by its key.
         InstanceSetting_AIProviderConfig:
             type: object
@@ -4309,6 +4139,21 @@ components:
                     type: string
                     description: A default spelling and vocabulary hint passed to the provider. Hidden from non-admins.
             description: TranscriptionConfig is the speech-to-text feature configuration.
+        InstanceSetting_UsageLimitsSetting:
+            type: object
+            properties:
+                limits:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/UsageLimitsSetting_UsageLimit'
+                    description: |-
+                        The entries, in the order they are checked. At most 100, naming at most
+                         1,000 users in all.
+            description: |-
+                UsageLimitsSetting is an ordered list of limit sets. The first entry that
+                 names a user is that user's limit set, whole. The last entry has all_users
+                 set and is the default. The setting is read and replaced whole. Admins
+                 are limited like everyone else.
         InstanceStats:
             type: object
             properties:
@@ -4526,18 +4371,6 @@ components:
                     type: string
                     description: A token to retrieve the next page. Empty when there are no more pages.
             description: Response message for SpaceService.ListSpaces.
-        ListUsageLimitsResponse:
-            type: object
-            properties:
-                usageLimits:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/UsageLimit'
-                    description: The usage limits, defaults first, then by user and metric.
-                nextPageToken:
-                    type: string
-                    description: A token to retrieve the next page. Empty when there are no more pages.
-            description: Response message for InstanceService.ListUsageLimits.
         ListUserNotificationsResponse:
             type: object
             properties:
@@ -5541,48 +5374,40 @@ components:
                         - $ref: '#/components/schemas/Reaction'
                     description: Required. The reaction to upsert. Only reaction_type is used.
             description: Request message for MemoService.UpsertMemoReaction.
-        UsageLimit:
-            required:
-                - metric
-                - value
+        UsageLimitsSetting_UsageLimit:
             type: object
             properties:
-                name:
-                    type: string
+                users:
+                    type: array
+                    items:
+                        type: string
                     description: |-
-                        Identifier. The resource name of the usage limit.
-                         Format: usageLimits/{usage_limit}
-                metric:
-                    enum:
-                        - METRIC_UNSPECIFIED
-                        - MEMO_COUNT
-                        - MEMO_CONTENT_BYTES
-                        - STORAGE_BYTES
-                        - UPLOAD_BYTES
-                    type: string
-                    description: Required. Immutable. What is limited.
-                    format: enum
-                user:
-                    type: string
-                    description: |-
-                        Optional. Immutable. The user the limit applies to. Empty means every user.
+                        The users the entry applies to. Not repeated within an entry.
                          Format: users/{user}
-                value:
+                allUsers:
+                    type: boolean
+                    description: |-
+                        Whether the entry applies to every user. Exactly one entry has it, and
+                         it is the last entry. An entry has users or all_users, never both.
+                memoCount:
                     type: string
-                    description: Required. The limit. Must not be negative. 0 means unlimited.
-                createTime:
-                    readOnly: true
+                    description: |-
+                        The number of memos the user may have created, comments and archived
+                         memos included.
+                memoContentBytes:
                     type: string
-                    description: Output only. The creation time.
-                    format: date-time
-                updateTime:
-                    readOnly: true
+                    description: The UTF-8 size in bytes of one memo's content.
+                storageBytes:
                     type: string
-                    description: Output only. The last update time.
-                    format: date-time
+                    description: |-
+                        The total size in bytes of the user's uploads. External links do not
+                         count.
+                uploadBytes:
+                    type: string
+                    description: The size in bytes of one uploaded file.
             description: |-
-                UsageLimit sets one limit for every user, or for one user. When both exist
-                 for the same metric, the limit for the user applies to that user.
+                UsageLimit is one entry: who it applies to and the limit for each
+                 metric. An unset limit is unlimited, as is 0.
         User:
             required:
                 - username
@@ -5945,38 +5770,35 @@ components:
                     description: |-
                         The total size in bytes of the user's uploads, including uploads not
                          attached to a memo. External links do not count.
-                memoCountLimit:
+                limits:
                     allOf:
-                        - $ref: '#/components/schemas/UserUsage_EffectiveLimit'
-                    description: The limit on memo_count.
-                storageBytesLimit:
-                    allOf:
-                        - $ref: '#/components/schemas/UserUsage_EffectiveLimit'
-                    description: The limit on storage_bytes.
-                uploadBytesLimit:
-                    allOf:
-                        - $ref: '#/components/schemas/UserUsage_EffectiveLimit'
-                    description: The limit on the size of one uploaded file.
-                memoContentBytesLimit:
-                    allOf:
-                        - $ref: '#/components/schemas/UserUsage_EffectiveLimit'
-                    description: The limit on the UTF-8 size in bytes of one memo's content.
-            description: UserUsage is a user's usage and the usage limits in effect for the user.
-        UserUsage_EffectiveLimit:
+                        - $ref: '#/components/schemas/UserUsage_Limits'
+                    description: |-
+                        The limit set in effect: the first USAGE_LIMITS entry that names the
+                         user, or the default. An unset limit is unlimited.
+                limitIndex:
+                    type: integer
+                    description: |-
+                        The position of the entry in effect in the USAGE_LIMITS setting, starting
+                         at 0. The default is the last entry.
+                    format: int32
+            description: UserUsage is a user's usage and the limit set in effect for the user.
+        UserUsage_Limits:
             type: object
             properties:
-                value:
+                memoCount:
                     type: string
-                    description: The limit. 0 means unlimited.
-                usageLimit:
+                    description: The number of memos the user may have created.
+                memoContentBytes:
                     type: string
-                    description: |-
-                        The usage limit the value comes from: the user's own limit, or else the
-                         default. Empty when no usage limit applies.
-                         Format: usageLimits/{usage_limit}
-            description: |-
-                EffectiveLimit is the limit in effect for one metric, and where it comes
-                 from.
+                    description: The UTF-8 size in bytes of one memo's content.
+                storageBytes:
+                    type: string
+                    description: The total size in bytes of the user's uploads.
+                uploadBytes:
+                    type: string
+                    description: The size in bytes of one uploaded file.
+            description: Limits is the limit for each metric. An unset limit is unlimited, as is 0.
         UserWebhook:
             type: object
             properties:
