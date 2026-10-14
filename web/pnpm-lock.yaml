@@ -36,8 +36,8 @@ importers:
         specifier: ^5.100.9
         version: 5.100.9(@tanstack/react-query@5.100.9(react@19.2.6))(react@19.2.6)
       '@usememos/editor':
-        specifier: 26.10.7
-        version: 26.10.7(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        specifier: 26.10.9
+        version: 26.10.9(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -1135,8 +1135,8 @@ packages:
   '@upsetjs/venn.js@2.0.0':
     resolution: {integrity: sha512-WbBhLrooyePuQ1VZxrJjtLvTc4NVfpOyKx0sKqioq9bX1C1m7Jgykkn8gLrtwumBioXIqam8DLxp88Adbue6Hw==}
 
-  '@usememos/editor@26.10.7':
-    resolution: {integrity: sha512-PNnOLcVFPLn7yRmhgMmW/JemrOZlp6wvoDMQbuZ3r+Tz66Hz73O/LOKfSqyF3+WZm9X/cXBOV3O8bcTSLyfXUw==}
+  '@usememos/editor@26.10.9':
+    resolution: {integrity: sha512-H80gUE9KyjsQuPu/h6M5dOXeevNdWB4XUMEJQ90sY4uwwCeXLq+Gu3/k3Bn0Rq1nrJtHJgCwxDyGG0ZWoYDtWg==}
     peerDependencies:
       react: '>=18'
       react-dom: '>=18'
@@ -3262,7 +3262,7 @@ snapshots:
       d3-selection: 3.0.0
       d3-transition: 3.0.1(d3-selection@3.0.0)
 
-  '@usememos/editor@26.10.7(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
+  '@usememos/editor@26.10.9(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     optionalDependencies:
       react: 19.2.6
       react-dom: 19.2.6(react@19.2.6)
