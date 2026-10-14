@@ -220,6 +220,14 @@ describe("SpaceSwitcher", () => {
     expect(state.selectSpace).toHaveBeenCalledWith(state.spaces[0]);
   });
 
+  it("positions the popup with the fixed strategy because the sidebar is position: fixed", async () => {
+    renderAt("/", "header");
+    openSwitcher();
+    const popup = await screen.findByRole("dialog");
+    const positioner = popup.parentElement as HTMLElement;
+    await waitFor(() => expect(positioner.style.position).toBe("fixed"));
+  });
+
   it("gives guests on Explore only the account panel, with no single-choice Browse control", () => {
     state.currentUser = undefined;
     renderAt("/explore");
