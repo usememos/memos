@@ -1,0 +1,34 @@
+name: AppPort bridge
+
+on:
+  pull_request:
+    paths:
+      - "appport-bridge/**"
+      - ".github/workflows/appport-bridge.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  consumer-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build Memos backend
+        run: go build -o "$RUNNER_TEMP/memos" ./cmd/memos
+      - name: Install bridge (published @appport packages, exact pins)
+        working-directory: appport-bridge
+        run: npm ci
+      - name: Independent consumer test against a real Memos server
+        working-directory: appport-bridge
+        env:
+          MEMOS_BIN: ${{ runner.temp }}/memos
+        run: npm test
