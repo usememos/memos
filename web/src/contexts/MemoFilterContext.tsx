@@ -74,7 +74,13 @@ const MemoFilterContext = createContext<MemoFilterContextValue | null>(null);
 
 export function MemoFilterProvider({ children }: { children: ReactNode }) {
   const [searchParams, setSearchParams] = useSearchParams();
-  const locationStateRef = useRef(useLocation().state);
+  const location = useLocation();
+  const locationStateRef = useRef(location.state);
+  locationStateRef.current = location.state;
+  const searchParamsRef = useRef(searchParams);
+  searchParamsRef.current = searchParams;
+  const setSearchParamsRef = useRef(setSearchParams);
+  setSearchParamsRef.current = setSearchParams;
   const skipStoreSyncRef = useRef(false);
   const lastSyncedUrlRef = useRef("");
   const lastSyncedStoreRef = useRef("");
@@ -83,7 +89,7 @@ export function MemoFilterProvider({ children }: { children: ReactNode }) {
   const [filters, setFiltersState] = useState<MemoFilter[]>(() => {
     return parseFilterQuery(searchParams.get("filter"));
   });
-  const [memoView, setMemoViewState] = useState<string | undefined>(undefined);
+  const memoView = searchParams.get("view") || undefined;
 
   // Sync URL to state when URL changes externally
   useEffect(() => {
@@ -137,14 +143,20 @@ export function MemoFilterProvider({ children }: { children: ReactNode }) {
     setFiltersState((prev) => prev.filter((f) => f.factor !== factor));
   }, []);
 
-  const clearAllFilters = useCallback(() => {
-    setFiltersState([]);
-    setMemoViewState(undefined);
+  const setMemoView = useCallback((newMemoView?: string) => {
+    const newParams = new URLSearchParams(searchParamsRef.current);
+    if (newMemoView) {
+      newParams.set("view", newMemoView);
+    } else {
+      newParams.delete("view");
+    }
+    setSearchParamsRef.current(newParams, { replace: true, state: locationStateRef.current });
   }, []);
 
-  const setMemoView = useCallback((newMemoView?: string) => {
-    setMemoViewState(newMemoView);
-  }, []);
+  const clearAllFilters = useCallback(() => {
+    setFiltersState([]);
+    setMemoView(undefined);
+  }, [setMemoView]);
 
   const hasFilter = useCallback((filter: MemoFilter) => filters.some((f) => getMemoFilterKey(f) === getMemoFilterKey(filter)), [filters]);
 
