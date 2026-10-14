@@ -40,9 +40,9 @@ docker run -d \
 
 Other install options are in the [deployment guide](https://usememos.com/docs/deploy).
 
-Releases use `YY.MM`, with optional point releases such as `26.09.1` and release
-candidates such as `26.09-rc.1`. Calendar release tags have no `v` prefix. The Docker `stable` tag follows stable releases;
-`canary` follows development builds. If upgrading from a release before v0.31.0,
+Releases use `YY.MM.N`: each month starts at `26.10.0`, point releases follow as `26.10.1`, and release candidates are
+`26.10.0-rc.1`. Calendar release tags have no `v` prefix. The Docker `26.10` tag follows the newest stable release of its
+month, `stable` follows stable releases, and `canary` follows development builds. If upgrading from a release before v0.31.0,
 run [v0.31.0](https://github.com/usememos/memos/releases/tag/v0.31.0) successfully.
 See the [upgrade requirements](store/migration/README.md) for earlier versions.
 

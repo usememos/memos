@@ -142,9 +142,9 @@ Black-box service tests live in `server/api/test/`, unit tests next to the code.
 
 ## CI Reference
 
-- Releases are cut by pushing a `YY.MM[.N][-rc.N]` tag. To cut, promote, or check a release, follow
+- Releases are cut by pushing a `YY.MM.N[-rc.K]` tag. To cut, promote, or check a release, follow
   `.agents/skills/release/SKILL.md`.
-- Development builds use the HEAD committer date in UTC as `YY.MM`; release builds inject the CalVer tag.
+- Development builds use the HEAD committer date in UTC as `YY.MM.D-dev.<sha7>`; release builds inject the CalVer tag.
 - `go build` embeds Git metadata automatically; `go run` needs `-buildvcs=true`. Builds without Git metadata must inject
   `github.com/usememos/memos/internal/version.Version` through `-ldflags`.
 - Docker excludes `.git`; pass `--build-arg VERSION="$(bash scripts/release_version.sh development-version)"` and
