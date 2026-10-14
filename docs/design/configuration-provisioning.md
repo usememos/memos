@@ -544,3 +544,13 @@ The implementation requires tests for:
 - [GitLab OpenID Connect configuration](https://docs.gitlab.com/administration/auth/oidc/)
 - [Keycloak startup import](https://www.keycloak.org/server/importExport)
 - [Grafana provisioning](https://grafana.com/docs/grafana/latest/administration/provisioning/)
+
+## Amendments
+
+### 2026-10-14: usage limits
+
+- `USAGE_LIMITS` is a deployment-configurable key, provided as `memos-instance-setting-usage-limits.json`. The file is the ordered entry list: every
+  entry lists positive `userIds` except the last, which sets `allUsers: true`. While the file is mounted, `UpdateInstanceSetting` for the key returns
+  `FAILED_PRECONDITION`.
+- `STORAGE` no longer carries an upload size limit. The per-file cap is the `UPLOAD_BYTES` usage limit, and an absent `USAGE_LIMITS` setting means
+  the built-in defaults of 8 KiB per memo and 32 MiB per file. See [User usage limits](user-usage-limits.md).
