@@ -14,14 +14,16 @@ PopoverTrigger.displayName = "PopoverTrigger";
 
 const PopoverContent = React.forwardRef<
   HTMLDivElement,
-  PopoverPrimitive.Popup.Props & Pick<PopoverPrimitive.Positioner.Props, "anchor" | "align" | "alignOffset" | "side" | "sideOffset">
->(({ className, anchor, align = "center", alignOffset, side, sideOffset = 4, ...props }, ref) => {
+  PopoverPrimitive.Popup.Props &
+    Pick<PopoverPrimitive.Positioner.Props, "anchor" | "align" | "alignOffset" | "positionMethod" | "side" | "sideOffset">
+>(({ className, anchor, align = "center", alignOffset, positionMethod, side, sideOffset = 4, ...props }, ref) => {
   return (
     <PopoverPrimitive.Portal>
       <PopoverPrimitive.Positioner
         anchor={anchor}
         align={align}
         alignOffset={alignOffset}
+        positionMethod={positionMethod}
         side={side}
         sideOffset={sideOffset}
         className="isolate z-dropdown"

@@ -131,6 +131,17 @@ describe("User menu panel", () => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
+  it.each([/setting.preference.theme/, /common.language/])("keeps the %s submenu fixed after positioning", async (row) => {
+    renderMenu();
+    fireEvent.click(screen.getByRole("button", { name: row }));
+    const menu = await screen.findByRole("menu");
+    const positioner = menu.parentElement as HTMLElement;
+    await waitFor(() => {
+      expect(positioner.style.opacity).not.toBe("0");
+      expect(positioner.style.position).toBe("fixed");
+    });
+  });
+
   it.each([
     {
       row: /setting.preference.theme/,
