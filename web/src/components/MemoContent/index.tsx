@@ -30,6 +30,7 @@ import { useResolvedMentionUsernames } from "./MentionResolutionContext";
 import type { MemoContentProps } from "./types";
 import { useSearchMatchHighlight } from "./useSearchMatchHighlight";
 import { useTagNavigation } from "./useTagNavigation";
+import { YouTubePreview } from "./YouTubePreview";
 
 // A memo with a Mermaid diagram draws it in the page's color scheme; the editor keeps drawn
 // diagrams, so a new scheme needs a new editor to draw them again.
@@ -189,7 +190,17 @@ const MemoContent = (props: MemoContentProps) => {
           onLinkClick={handleLinkClick}
           className="memo-content-root"
         />
-        {islands.map((island) => createPortal(<LinkPreview href={island.href} />, island.target, island.key))}
+        {islands.map((island) =>
+          createPortal(
+            island.videoId ? (
+              <YouTubePreview key={island.videoId} url={island.href} videoId={island.videoId} />
+            ) : (
+              <LinkPreview href={island.href} />
+            ),
+            island.target,
+            island.key,
+          ),
+        )}
       </div>
     </div>
   );

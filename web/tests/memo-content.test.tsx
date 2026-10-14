@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import MemoContent from "@/components/MemoContent";
+import { getYouTubeVideoId } from "@/components/MemoContent/YouTubePreview";
 import { highlightLoadedCode, loadHighlighter } from "@/lib/code-highlight";
 
 const state = vi.hoisted(() => ({
@@ -53,6 +54,53 @@ beforeEach(() => {
 });
 
 describe("memo view", () => {
+  it("previews a standalone YouTube marker stored as escaped text by the editor", async () => {
+    state.linkPreview = false;
+    const content = "\\[YOUTUBE\\](https://youtu.be/aBu09M0Cov4?si=kmIrzeuCi1xVBSUH)\n";
+    const { rerender } = renderMemo(content);
+    const image = await screen.findByRole("img", { name: "YouTube" });
+    expect(image).toHaveAttribute("src", "https://i.ytimg.com/vi/aBu09M0Cov4/hqdefault.jpg");
+    expect(image.closest("a")).toHaveAttribute("href", "https://youtu.be/aBu09M0Cov4?si=kmIrzeuCi1xVBSUH");
+    expect(image.closest("a")).toHaveAttribute("target", "_blank");
+    expect(screen.queryByText("[YOUTUBE](")).not.toBeInTheDocument();
+
+    rerender(
+      <MemoryRouter>
+        <MemoContent content={"\\[YOUTUBE\\](https://youtu.be/dQw4w9WgXcQ)\n"} memoName="memos/1" />
+      </MemoryRouter>,
+    );
+    await waitFor(() =>
+      expect(screen.getByRole("img", { name: "YouTube" })).toHaveAttribute("src", "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg"),
+    );
+  });
+
+  it("keeps literal markers in code and unsupported URLs as text", () => {
+    renderMemo(
+      "`[YOUTUBE](https://youtu.be/aBu09M0Cov4)`\n\n\\[YOUTUBE\\](https://example.com/video)\n\n```\n[YOUTUBE](https://youtu.be/aBu09M0Cov4)\n```",
+    );
+    expect(screen.queryByRole("img", { name: "YouTube" })).not.toBeInTheDocument();
+  });
+
+  it("shows explicit YouTube thumbnails with automatic previews disabled and preserves the link", async () => {
+    state.linkPreview = false;
+    renderMemo("Watch [YOUTUBE](https://youtu.be/dQw4w9WgXcQ?t=30) today");
+    const image = await screen.findByRole("img", { name: "YouTube" });
+    expect(image).toHaveAttribute("src", "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg");
+    const link = image.closest("a");
+    expect(link).toHaveAttribute("href", "https://youtu.be/dQw4w9WgXcQ?t=30");
+    expect(link).toHaveAttribute("target", "_blank");
+    expect(link?.querySelector("a")).toBeNull();
+    fireEvent.error(image);
+    expect(screen.queryByRole("img", { name: "YouTube" })).not.toBeInTheDocument();
+    expect(link).toHaveTextContent("YouTube · https://youtu.be/dQw4w9WgXcQ?t=30");
+  });
+
+  it("keeps ordinary and invalid YouTube links as text", () => {
+    renderMemo("[Video](https://youtu.be/dQw4w9WgXcQ) [YOUTUBE](https://example.com/watch?v=dQw4w9WgXcQ)");
+    expect(screen.queryByRole("img", { name: "YouTube" })).not.toBeInTheDocument();
+    expect(screen.getByText("YOUTUBE")).toBeInTheDocument();
+  });
+
   it("shows the memo read-only", () => {
     const { container } = renderMemo("# Title\n\nSome **bold** text");
     const root = container.querySelector(".memo-content-root");
@@ -74,6 +122,29 @@ describe("memo view", () => {
   it("keeps tasks locked for readers", () => {
     const { container } = renderMemo("- [ ] First");
     expect(container.querySelector("input.mbe-checkbox")).toBeDisabled();
+  });
+});
+
+describe("YouTube video URLs", () => {
+  it.each([
+    "https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=playlist",
+    "https://youtu.be/dQw4w9WgXcQ?t=30",
+    "https://m.youtube.com/shorts/dQw4w9WgXcQ",
+    "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "https://youtube.com/live/dQw4w9WgXcQ",
+  ])("extracts the ID from %s", (url) => {
+    expect(getYouTubeVideoId(url)).toBe("dQw4w9WgXcQ");
+  });
+
+  it.each([
+    "https://youtube.com.evil.example/watch?v=dQw4w9WgXcQ",
+    "https://youtube.com/watch?v=invalid",
+    "https://youtu.be/dQw4w9WgXcQ/extra",
+    "https://youtube.com/shorts/dQw4w9WgXcQ/extra",
+    "javascript:alert(1)",
+    "not a URL",
+  ])("rejects %s", (url) => {
+    expect(getYouTubeVideoId(url)).toBeUndefined();
   });
 });
 
