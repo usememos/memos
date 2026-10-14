@@ -2,10 +2,12 @@
 
 set -euo pipefail
 
-# Application releases use YY.MM[.N][-rc.N]. Database migration sequences are separate.
+# Application releases use YY.MM.N[-rc.K]; .agents/skills/release/SKILL.md says
+# how N and K are chosen. Bare YY.MM is only an image tag that follows the newest
+# stable of its month. Database migration sequences are separate.
 parse_release_tag() {
   local tag="$1"
-  if [[ ! "$tag" =~ ^([1-9][0-9]\.(0[1-9]|1[0-2]))(\.([1-9][0-9]*))?(-rc\.([1-9][0-9]*))?$ ]]; then
+  if [[ ! "$tag" =~ ^([1-9][0-9]\.(0[1-9]|1[0-2]))\.(0|[1-9][0-9]*)(-rc\.([1-9][0-9]*))?$ ]]; then
     return 1
   fi
   RELEASE_VERSION="$tag"
@@ -14,6 +16,21 @@ parse_release_tag() {
   if [[ -n "${BASH_REMATCH[5]}" ]]; then
     RELEASE_IS_PRERELEASE=true
   fi
+}
+
+# development_version prints YY.MM.D-dev.<sha7> for HEAD from its committer date
+# in UTC, matching internal/version. format-local honors TZ; plain format uses
+# the commit's original zone.
+development_version() {
+  local repo="$1" head month day sha version
+  head="$(TZ=UTC git -C "$repo" show -s --format='%cd %H' --date='format-local:%y.%m %d' HEAD)"
+  read -r month day sha <<<"$head"
+  version="$month.${day#0}"
+  if ! parse_release_tag "$version"; then
+    echo "Cannot derive a calendar version from HEAD" >&2
+    return 1
+  fi
+  printf '%s-dev.%s\n' "$version" "${sha:0:7}"
 }
 
 # previous_release_tag prints the newest stable release tag that is an ancestor
@@ -55,13 +72,7 @@ previous_release_image() {
 if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
   case "${1:-}" in
     development-version)
-      # format-local honors TZ; plain format uses the commit's original zone.
-      version="$(TZ=UTC git -C "${2:-.}" show -s --format=%cd --date=format-local:%y.%m HEAD)"
-      if ! parse_release_tag "$version"; then
-        echo "Cannot derive a calendar version from HEAD" >&2
-        exit 1
-      fi
-      printf '%s\n' "$version"
+      development_version "${2:-.}"
       exit
       ;;
     previous-tag)
@@ -86,10 +97,7 @@ if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
     image-tags)
       printf '%s\n' "$RELEASE_VERSION"
       if [[ "$RELEASE_IS_PRERELEASE" == false ]]; then
-        if [[ "$RELEASE_SERIES" != "$RELEASE_VERSION" ]]; then
-          printf '%s\n' "$RELEASE_SERIES"
-        fi
-        printf 'stable\n'
+        printf '%s\nstable\n' "$RELEASE_SERIES"
       fi
       ;;
     *) echo "Unknown release command: ${1:-}" >&2; exit 1 ;;

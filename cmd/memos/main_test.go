@@ -41,7 +41,7 @@ func TestVersionFormsPrintTheSameString(t *testing.T) {
 	// Test binaries do not carry VCS metadata. Supply a version so Cobra takes
 	// its version path rather than running the server.
 	originalVersion := rootCmd.Version
-	rootCmd.Version = "26.09"
+	rootCmd.Version = "26.10.0"
 	t.Cleanup(func() { rootCmd.Version = originalVersion })
 
 	// Cobra handles the version flag before RunE, and the version subcommand has
