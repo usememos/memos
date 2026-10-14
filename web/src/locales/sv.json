@@ -229,9 +229,17 @@
       "add-column-right": "Lägg till kolumn till höger",
       "delete-row": "Radera rad",
       "delete-column": "Radera kolumn",
-      "align-left": "Vänsterjustera",
-      "align-center": "Centrera",
-      "align-right": "Högerjustera"
+      "align": "Justering",
+      "align-left": "Vänster",
+      "align-center": "Centrerat",
+      "align-right": "Höger",
+      "text-style": "Textstil",
+      "image": "Bild",
+      "reset-image-size": "Återställ storlek",
+      "alt-text": "Alternativtext",
+      "alt-text-placeholder": "Beskriv bilden…",
+      "image-unavailable": "Bilden är inte tillgänglig",
+      "resize-image": "Ändra bildstorlek"
     }
   },
   "inbox": {

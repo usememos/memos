@@ -229,9 +229,17 @@
       "add-column-right": "Dodaj stolpec desno",
       "delete-row": "Izbriši vrstico",
       "delete-column": "Izbriši stolpec",
-      "align-left": "Poravnaj levo",
-      "align-center": "Poravnaj na sredino",
-      "align-right": "Poravnaj desno"
+      "align": "Poravnava",
+      "align-left": "Levo",
+      "align-center": "Sredina",
+      "align-right": "Desno",
+      "text-style": "Slog besedila",
+      "image": "Slika",
+      "reset-image-size": "Ponastavi velikost",
+      "alt-text": "Nadomestno besedilo",
+      "alt-text-placeholder": "Opiši sliko…",
+      "image-unavailable": "Slika ni na voljo",
+      "resize-image": "Spremeni velikost slike"
     }
   },
   "inbox": {

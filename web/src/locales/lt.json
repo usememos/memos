@@ -267,9 +267,17 @@
       "add-column-right": "Pridėti stulpelį dešinėje",
       "delete-row": "Ištrinti eilutę",
       "delete-column": "Ištrinti stulpelį",
-      "align-left": "Lygiuoti kairėje",
-      "align-center": "Lygiuoti centre",
-      "align-right": "Lygiuoti dešinėje"
+      "align": "Lygiavimas",
+      "align-left": "Kairėje",
+      "align-center": "Centre",
+      "align-right": "Dešinėje",
+      "text-style": "Teksto stilius",
+      "image": "Paveikslėlis",
+      "reset-image-size": "Atkurti dydį",
+      "alt-text": "Alternatyvusis tekstas",
+      "alt-text-placeholder": "Aprašykite paveikslėlį…",
+      "image-unavailable": "Paveikslėlis nepasiekiamas",
+      "resize-image": "Keisti paveikslėlio dydį"
     }
   },
   "inbox": {

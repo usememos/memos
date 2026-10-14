@@ -267,9 +267,17 @@
       "add-column-right": "Προσθήκη στήλης δεξιά",
       "delete-row": "Διαγραφή γραμμής",
       "delete-column": "Διαγραφή στήλης",
-      "align-left": "Στοίχιση αριστερά",
-      "align-center": "Στοίχιση στο κέντρο",
-      "align-right": "Στοίχιση δεξιά"
+      "align": "Στοίχιση",
+      "align-left": "Αριστερά",
+      "align-center": "Κέντρο",
+      "align-right": "Δεξιά",
+      "text-style": "Στυλ κειμένου",
+      "image": "Εικόνα",
+      "reset-image-size": "Επαναφορά μεγέθους",
+      "alt-text": "Εναλλακτικό κείμενο",
+      "alt-text-placeholder": "Περιγράψτε την εικόνα…",
+      "image-unavailable": "Η εικόνα δεν είναι διαθέσιμη",
+      "resize-image": "Αλλαγή μεγέθους εικόνας"
     }
   },
   "inbox": {

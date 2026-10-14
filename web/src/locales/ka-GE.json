@@ -229,9 +229,17 @@
       "add-column-right": "სვეტის დამატება მარჯვნივ",
       "delete-row": "მწკრივის წაშლა",
       "delete-column": "სვეტის წაშლა",
-      "align-left": "მარცხნივ სწორება",
-      "align-center": "ცენტრში სწორება",
-      "align-right": "მარჯვნივ სწორება"
+      "align": "სწორება",
+      "align-left": "მარცხნივ",
+      "align-center": "ცენტრში",
+      "align-right": "მარჯვნივ",
+      "text-style": "ტექსტის სტილი",
+      "image": "სურათი",
+      "reset-image-size": "ზომის აღდგენა",
+      "alt-text": "ალტერნატიული ტექსტი",
+      "alt-text-placeholder": "აღწერეთ სურათი…",
+      "image-unavailable": "სურათი მიუწვდომელია",
+      "resize-image": "სურათის ზომის შეცვლა"
     }
   },
   "inbox": {

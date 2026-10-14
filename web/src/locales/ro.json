@@ -267,9 +267,17 @@
       "add-column-right": "Adaugă coloană la dreapta",
       "delete-row": "Șterge rândul",
       "delete-column": "Șterge coloana",
-      "align-left": "Aliniază la stânga",
-      "align-center": "Centrează",
-      "align-right": "Aliniază la dreapta"
+      "align": "Aliniere",
+      "align-left": "Stânga",
+      "align-center": "Centru",
+      "align-right": "Dreapta",
+      "text-style": "Stil text",
+      "image": "Imagine",
+      "reset-image-size": "Resetează dimensiunea",
+      "alt-text": "Text alternativ",
+      "alt-text-placeholder": "Descrie imaginea…",
+      "image-unavailable": "Imagine indisponibilă",
+      "resize-image": "Redimensionează imaginea"
     }
   },
   "inbox": {

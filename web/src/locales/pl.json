@@ -229,9 +229,17 @@
       "add-column-right": "Dodaj kolumnę po prawej",
       "delete-row": "Usuń wiersz",
       "delete-column": "Usuń kolumnę",
-      "align-left": "Wyrównaj do lewej",
-      "align-center": "Wyśrodkuj",
-      "align-right": "Wyrównaj do prawej"
+      "align": "Wyrównanie",
+      "align-left": "Do lewej",
+      "align-center": "Do środka",
+      "align-right": "Do prawej",
+      "text-style": "Styl tekstu",
+      "image": "Obraz",
+      "reset-image-size": "Przywróć rozmiar",
+      "alt-text": "Tekst alternatywny",
+      "alt-text-placeholder": "Opisz obraz…",
+      "image-unavailable": "Obraz niedostępny",
+      "resize-image": "Zmień rozmiar obrazu"
     }
   },
   "inbox": {

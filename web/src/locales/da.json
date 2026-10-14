@@ -267,9 +267,17 @@
       "add-column-right": "Tilføj kolonne til højre",
       "delete-row": "Slet række",
       "delete-column": "Slet kolonne",
-      "align-left": "Venstrejuster",
-      "align-center": "Centrer",
-      "align-right": "Højrejuster"
+      "align": "Justering",
+      "align-left": "Venstre",
+      "align-center": "Centreret",
+      "align-right": "Højre",
+      "text-style": "Tekststil",
+      "image": "Billede",
+      "reset-image-size": "Nulstil størrelse",
+      "alt-text": "Alternativ tekst",
+      "alt-text-placeholder": "Beskriv billedet…",
+      "image-unavailable": "Billedet er ikke tilgængeligt",
+      "resize-image": "Tilpas billedets størrelse"
     }
   },
   "inbox": {

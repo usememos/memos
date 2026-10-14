@@ -229,9 +229,17 @@
       "add-column-right": "오른쪽에 열 추가",
       "delete-row": "행 삭제",
       "delete-column": "열 삭제",
-      "align-left": "왼쪽 정렬",
-      "align-center": "가운데 정렬",
-      "align-right": "오른쪽 정렬"
+      "align": "정렬",
+      "align-left": "왼쪽",
+      "align-center": "가운데",
+      "align-right": "오른쪽",
+      "text-style": "텍스트 스타일",
+      "image": "이미지",
+      "reset-image-size": "크기 초기화",
+      "alt-text": "대체 텍스트",
+      "alt-text-placeholder": "이미지 설명 입력…",
+      "image-unavailable": "이미지를 사용할 수 없음",
+      "resize-image": "이미지 크기 조절"
     }
   },
   "inbox": {

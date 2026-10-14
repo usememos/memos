@@ -229,9 +229,17 @@
       "add-column-right": "Engadir columna á dereita",
       "delete-row": "Eliminar fila",
       "delete-column": "Eliminar columna",
-      "align-left": "Aliñar á esquerda",
-      "align-center": "Centrar",
-      "align-right": "Aliñar á dereita"
+      "align": "Aliñar",
+      "align-left": "Esquerda",
+      "align-center": "Centro",
+      "align-right": "Dereita",
+      "text-style": "Estilo de texto",
+      "image": "Imaxe",
+      "reset-image-size": "Restablecer o tamaño",
+      "alt-text": "Texto alternativo",
+      "alt-text-placeholder": "Describe a imaxe…",
+      "image-unavailable": "Imaxe non dispoñible",
+      "resize-image": "Cambiar o tamaño da imaxe"
     }
   },
   "inbox": {

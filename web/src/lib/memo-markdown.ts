@@ -284,7 +284,8 @@ export const MEMO_EDITOR_THEME: Theme = (() => {
       },
       code: markdownStyles.inlineCode,
       link: markdownStyles.link,
-      image: markdownStyles.image,
+      // The editor sizes and spaces its images; raw HTML images keep markdownStyles.image.
+      image: "rounded-lg",
     },
   };
 })();
@@ -314,6 +315,8 @@ export const memoEditorLabels = (t: ReturnType<typeof useTranslate>): Partial<La
   strike: t("editor.format.strikethrough"),
   inlineCode: t("editor.blocks.inline-code"),
   link: t("editor.format.link"),
+  textStyle: t("editor.blocks.text-style"),
+  list: t("editor.blocks.list-hint"),
   linkPlaceholder: t("editor.blocks.link-placeholder"),
   removeLink: t("editor.blocks.remove-link"),
   slashHint: t("editor.blocks.slash-hint"),
@@ -330,10 +333,17 @@ export const memoEditorLabels = (t: ReturnType<typeof useTranslate>): Partial<La
   addColumnRight: t("editor.blocks.add-column-right"),
   deleteRow: t("editor.blocks.delete-row"),
   deleteColumn: t("editor.blocks.delete-column"),
+  align: t("editor.blocks.align"),
   alignLeft: t("editor.blocks.align-left"),
   alignCenter: t("editor.blocks.align-center"),
   alignRight: t("editor.blocks.align-right"),
   tableSection: t("editor.blocks.table"),
+  imageSection: t("editor.blocks.image"),
+  resetImageSize: t("editor.blocks.reset-image-size"),
+  altText: t("editor.blocks.alt-text"),
+  altTextPlaceholder: t("editor.blocks.alt-text-placeholder"),
+  imageUnavailable: t("editor.blocks.image-unavailable"),
+  resizeImage: t("editor.blocks.resize-image"),
 });
 
 /** Whether a span is literal text for tags: not code, raw HTML, a link, an image, or an extension token. */

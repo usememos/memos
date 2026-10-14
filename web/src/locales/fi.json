@@ -267,9 +267,17 @@
       "add-column-right": "Lisää sarake oikealle",
       "delete-row": "Poista rivi",
       "delete-column": "Poista sarake",
-      "align-left": "Tasaa vasemmalle",
-      "align-center": "Keskitä",
-      "align-right": "Tasaa oikealle"
+      "align": "Tasaus",
+      "align-left": "Vasen",
+      "align-center": "Keskitetty",
+      "align-right": "Oikea",
+      "text-style": "Tekstityyli",
+      "image": "Kuva",
+      "reset-image-size": "Palauta koko",
+      "alt-text": "Vaihtoehtoinen teksti",
+      "alt-text-placeholder": "Kuvaile kuvaa…",
+      "image-unavailable": "Kuva ei ole saatavilla",
+      "resize-image": "Muuta kuvan kokoa"
     }
   },
   "inbox": {

@@ -267,9 +267,17 @@
       "add-column-right": "Pridať stĺpec vpravo",
       "delete-row": "Odstrániť riadok",
       "delete-column": "Odstrániť stĺpec",
-      "align-left": "Zarovnať doľava",
-      "align-center": "Zarovnať na stred",
-      "align-right": "Zarovnať doprava"
+      "align": "Zarovnanie",
+      "align-left": "Vľavo",
+      "align-center": "Na stred",
+      "align-right": "Vpravo",
+      "text-style": "Štýl textu",
+      "image": "Obrázok",
+      "reset-image-size": "Obnoviť veľkosť",
+      "alt-text": "Alternatívny text",
+      "alt-text-placeholder": "Opíšte obrázok…",
+      "image-unavailable": "Obrázok nie je k dispozícii",
+      "resize-image": "Zmeniť veľkosť obrázka"
     }
   },
   "inbox": {

@@ -229,9 +229,17 @@
       "add-column-right": "Afegeix una columna a la dreta",
       "delete-row": "Esborra la fila",
       "delete-column": "Esborra la columna",
-      "align-left": "Alinea a l'esquerra",
-      "align-center": "Centra",
-      "align-right": "Alinea a la dreta"
+      "align": "Alineació",
+      "align-left": "Esquerra",
+      "align-center": "Centre",
+      "align-right": "Dreta",
+      "text-style": "Estil de text",
+      "image": "Imatge",
+      "reset-image-size": "Restableix la mida",
+      "alt-text": "Text alternatiu",
+      "alt-text-placeholder": "Descriu la imatge…",
+      "image-unavailable": "Imatge no disponible",
+      "resize-image": "Canvia la mida de la imatge"
     }
   },
   "inbox": {

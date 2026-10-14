@@ -229,9 +229,17 @@
       "add-column-right": "Kolom rechts invoegen",
       "delete-row": "Rij verwijderen",
       "delete-column": "Kolom verwijderen",
-      "align-left": "Links uitlijnen",
-      "align-center": "Centreren",
-      "align-right": "Rechts uitlijnen"
+      "align": "Uitlijnen",
+      "align-left": "Links",
+      "align-center": "Midden",
+      "align-right": "Rechts",
+      "text-style": "Tekststijl",
+      "image": "Afbeelding",
+      "reset-image-size": "Grootte herstellen",
+      "alt-text": "Alternatieve tekst",
+      "alt-text-placeholder": "Beschrijf de afbeelding…",
+      "image-unavailable": "Afbeelding niet beschikbaar",
+      "resize-image": "Afbeeldingsgrootte wijzigen"
     }
   },
   "inbox": {

@@ -229,9 +229,17 @@
       "add-column-right": "เพิ่มคอลัมน์ทางขวา",
       "delete-row": "ลบแถว",
       "delete-column": "ลบคอลัมน์",
-      "align-left": "จัดชิดซ้าย",
-      "align-center": "จัดกึ่งกลาง",
-      "align-right": "จัดชิดขวา"
+      "align": "จัดแนว",
+      "align-left": "ซ้าย",
+      "align-center": "กึ่งกลาง",
+      "align-right": "ขวา",
+      "text-style": "รูปแบบข้อความ",
+      "image": "รูปภาพ",
+      "reset-image-size": "รีเซ็ตขนาด",
+      "alt-text": "ข้อความแสดงแทน",
+      "alt-text-placeholder": "อธิบายรูปภาพ…",
+      "image-unavailable": "รูปภาพไม่พร้อมใช้งาน",
+      "resize-image": "ปรับขนาดรูปภาพ"
     }
   },
   "inbox": {

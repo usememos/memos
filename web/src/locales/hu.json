@@ -229,9 +229,17 @@
       "add-column-right": "Oszlop beszúrása jobbra",
       "delete-row": "Sor törlése",
       "delete-column": "Oszlop törlése",
-      "align-left": "Balra igazítás",
-      "align-center": "Középre igazítás",
-      "align-right": "Jobbra igazítás"
+      "align": "Igazítás",
+      "align-left": "Balra",
+      "align-center": "Középre",
+      "align-right": "Jobbra",
+      "text-style": "Szövegstílus",
+      "image": "Kép",
+      "reset-image-size": "Méret visszaállítása",
+      "alt-text": "Helyettesítő szöveg",
+      "alt-text-placeholder": "Írd le a képet…",
+      "image-unavailable": "A kép nem érhető el",
+      "resize-image": "Kép átméretezése"
     }
   },
   "inbox": {

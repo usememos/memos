@@ -267,9 +267,17 @@
       "add-column-right": "Pievienot kolonnu pa labi",
       "delete-row": "Dzēst rindu",
       "delete-column": "Dzēst kolonnu",
-      "align-left": "Līdzināt pa kreisi",
-      "align-center": "Centrēt",
-      "align-right": "Līdzināt pa labi"
+      "align": "Līdzināšana",
+      "align-left": "Pa kreisi",
+      "align-center": "Centrā",
+      "align-right": "Pa labi",
+      "text-style": "Teksta stils",
+      "image": "Attēls",
+      "reset-image-size": "Atiestatīt izmēru",
+      "alt-text": "Alternatīvais teksts",
+      "alt-text-placeholder": "Aprakstiet attēlu…",
+      "image-unavailable": "Attēls nav pieejams",
+      "resize-image": "Mainīt attēla izmēru"
     }
   },
   "inbox": {

@@ -267,9 +267,17 @@
       "add-column-right": "Додај колону десно",
       "delete-row": "Избриши ред",
       "delete-column": "Избриши колону",
-      "align-left": "Поравнај лево",
-      "align-center": "Поравнај по средини",
-      "align-right": "Поравнај десно"
+      "align": "Поравнање",
+      "align-left": "Лево",
+      "align-center": "Средина",
+      "align-right": "Десно",
+      "text-style": "Стил текста",
+      "image": "Слика",
+      "reset-image-size": "Врати величину",
+      "alt-text": "Алтернативни текст",
+      "alt-text-placeholder": "Опишите слику…",
+      "image-unavailable": "Слика није доступна",
+      "resize-image": "Промени величину слике"
     }
   },
   "inbox": {

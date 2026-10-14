@@ -229,9 +229,17 @@
       "add-column-right": "Tambah kolom di kanan",
       "delete-row": "Hapus baris",
       "delete-column": "Hapus kolom",
-      "align-left": "Rata kiri",
-      "align-center": "Rata tengah",
-      "align-right": "Rata kanan"
+      "align": "Perataan",
+      "align-left": "Kiri",
+      "align-center": "Tengah",
+      "align-right": "Kanan",
+      "text-style": "Gaya teks",
+      "image": "Gambar",
+      "reset-image-size": "Atur ulang ukuran",
+      "alt-text": "Teks alternatif",
+      "alt-text-placeholder": "Jelaskan gambar…",
+      "image-unavailable": "Gambar tidak tersedia",
+      "resize-image": "Ubah ukuran gambar"
     }
   },
   "inbox": {

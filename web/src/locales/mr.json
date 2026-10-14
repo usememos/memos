@@ -229,9 +229,17 @@
       "add-column-right": "उजवीकडे स्तंभ जोडा",
       "delete-row": "ओळ हटवा",
       "delete-column": "स्तंभ हटवा",
-      "align-left": "डावीकडे संरेखित करा",
-      "align-center": "मध्यभागी संरेखित करा",
-      "align-right": "उजवीकडे संरेखित करा"
+      "align": "संरेखन",
+      "align-left": "डावीकडे",
+      "align-center": "मध्यभागी",
+      "align-right": "उजवीकडे",
+      "text-style": "मजकूर शैली",
+      "image": "प्रतिमा",
+      "reset-image-size": "आकार रीसेट करा",
+      "alt-text": "पर्यायी मजकूर",
+      "alt-text-placeholder": "प्रतिमेचे वर्णन करा…",
+      "image-unavailable": "प्रतिमा उपलब्ध नाही",
+      "resize-image": "प्रतिमेचा आकार बदला"
     }
   },
   "inbox": {

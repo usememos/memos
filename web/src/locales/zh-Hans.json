@@ -260,9 +260,17 @@
       "add-column-right": "在右侧插入列",
       "delete-row": "删除行",
       "delete-column": "删除列",
-      "align-left": "左对齐",
-      "align-center": "居中对齐",
-      "align-right": "右对齐"
+      "align": "对齐",
+      "align-left": "靠左",
+      "align-center": "居中",
+      "align-right": "靠右",
+      "text-style": "文本样式",
+      "image": "图片",
+      "reset-image-size": "重置尺寸",
+      "alt-text": "替代文本",
+      "alt-text-placeholder": "描述这张图片…",
+      "image-unavailable": "图片无法显示",
+      "resize-image": "调整图片大小"
     }
   },
   "inbox": {

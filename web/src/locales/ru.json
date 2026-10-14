@@ -229,9 +229,17 @@
       "add-column-right": "Добавить столбец справа",
       "delete-row": "Удалить строку",
       "delete-column": "Удалить столбец",
-      "align-left": "Выровнять по левому краю",
-      "align-center": "Выровнять по центру",
-      "align-right": "Выровнять по правому краю"
+      "align": "Выравнивание",
+      "align-left": "По левому краю",
+      "align-center": "По центру",
+      "align-right": "По правому краю",
+      "text-style": "Стиль текста",
+      "image": "Изображение",
+      "reset-image-size": "Сбросить размер",
+      "alt-text": "Альтернативный текст",
+      "alt-text-placeholder": "Опишите изображение…",
+      "image-unavailable": "Изображение недоступно",
+      "resize-image": "Изменить размер изображения"
     }
   },
   "inbox": {

@@ -229,9 +229,17 @@
       "add-column-right": "افزودن ستون در راست",
       "delete-row": "حذف ردیف",
       "delete-column": "حذف ستون",
-      "align-left": "تراز به چپ",
-      "align-center": "تراز به وسط",
-      "align-right": "تراز به راست"
+      "align": "تراز",
+      "align-left": "چپ",
+      "align-center": "وسط",
+      "align-right": "راست",
+      "text-style": "سبک متن",
+      "image": "تصویر",
+      "reset-image-size": "بازنشانی اندازه",
+      "alt-text": "متن جایگزین",
+      "alt-text-placeholder": "تصویر را توصیف کنید…",
+      "image-unavailable": "تصویر در دسترس نیست",
+      "resize-image": "تغییر اندازه تصویر"
     }
   },
   "inbox": {

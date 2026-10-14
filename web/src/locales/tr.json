@@ -255,9 +255,17 @@
       "add-column-right": "Sağa sütun ekle",
       "delete-row": "Satırı sil",
       "delete-column": "Sütunu sil",
-      "align-left": "Sola hizala",
-      "align-center": "Ortala",
-      "align-right": "Sağa hizala"
+      "align": "Hizala",
+      "align-left": "Sol",
+      "align-center": "Orta",
+      "align-right": "Sağ",
+      "text-style": "Metin stili",
+      "image": "Görsel",
+      "reset-image-size": "Boyutu sıfırla",
+      "alt-text": "Alternatif metin",
+      "alt-text-placeholder": "Görseli açıklayın…",
+      "image-unavailable": "Görsel kullanılamıyor",
+      "resize-image": "Görseli yeniden boyutlandır"
     }
   },
   "inbox": {

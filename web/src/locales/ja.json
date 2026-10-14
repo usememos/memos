@@ -229,9 +229,17 @@
       "add-column-right": "右に列を追加",
       "delete-row": "行を削除",
       "delete-column": "列を削除",
-      "align-left": "左揃え",
-      "align-center": "中央揃え",
-      "align-right": "右揃え"
+      "align": "配置",
+      "align-left": "左",
+      "align-center": "中央",
+      "align-right": "右",
+      "text-style": "テキストスタイル",
+      "image": "画像",
+      "reset-image-size": "サイズをリセット",
+      "alt-text": "代替テキスト",
+      "alt-text-placeholder": "画像の説明を入力…",
+      "image-unavailable": "画像を表示できません",
+      "resize-image": "画像のサイズを変更"
     }
   },
   "inbox": {

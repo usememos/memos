@@ -267,9 +267,17 @@
       "add-column-right": "Lisa veerg paremale",
       "delete-row": "Kustuta rida",
       "delete-column": "Kustuta veerg",
-      "align-left": "Joonda vasakule",
-      "align-center": "Joonda keskele",
-      "align-right": "Joonda paremale"
+      "align": "Joondus",
+      "align-left": "Vasak",
+      "align-center": "Keskel",
+      "align-right": "Parem",
+      "text-style": "Teksti stiil",
+      "image": "Pilt",
+      "reset-image-size": "Lähtesta suurus",
+      "alt-text": "Alternatiivtekst",
+      "alt-text-placeholder": "Kirjelda pilti…",
+      "image-unavailable": "Pilt pole saadaval",
+      "resize-image": "Muuda pildi suurust"
     }
   },
   "inbox": {

@@ -229,9 +229,17 @@
       "add-column-right": "Spalte rechts einfügen",
       "delete-row": "Zeile löschen",
       "delete-column": "Spalte löschen",
-      "align-left": "Linksbündig",
+      "align": "Ausrichtung",
+      "align-left": "Links",
       "align-center": "Zentriert",
-      "align-right": "Rechtsbündig"
+      "align-right": "Rechts",
+      "text-style": "Textstil",
+      "image": "Bild",
+      "reset-image-size": "Größe zurücksetzen",
+      "alt-text": "Alternativtext",
+      "alt-text-placeholder": "Bild beschreiben…",
+      "image-unavailable": "Bild nicht verfügbar",
+      "resize-image": "Bildgröße ändern"
     }
   },
   "inbox": {

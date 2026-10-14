@@ -229,9 +229,17 @@
       "add-column-right": "Додати стовпець праворуч",
       "delete-row": "Видалити рядок",
       "delete-column": "Видалити стовпець",
-      "align-left": "Вирівняти ліворуч",
-      "align-center": "Вирівняти по центру",
-      "align-right": "Вирівняти праворуч"
+      "align": "Вирівнювання",
+      "align-left": "Ліворуч",
+      "align-center": "По центру",
+      "align-right": "Праворуч",
+      "text-style": "Стиль тексту",
+      "image": "Зображення",
+      "reset-image-size": "Скинути розмір",
+      "alt-text": "Альтернативний текст",
+      "alt-text-placeholder": "Опишіть зображення…",
+      "image-unavailable": "Зображення недоступне",
+      "resize-image": "Змінити розмір зображення"
     }
   },
   "inbox": {

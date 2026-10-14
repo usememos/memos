@@ -229,9 +229,17 @@
       "add-column-right": "Legg til kolonne til høyre",
       "delete-row": "Slett rad",
       "delete-column": "Slett kolonne",
-      "align-left": "Venstrejuster",
-      "align-center": "Midtstill",
-      "align-right": "Høyrejuster"
+      "align": "Justering",
+      "align-left": "Venstre",
+      "align-center": "Midtstilt",
+      "align-right": "Høyre",
+      "text-style": "Tekststil",
+      "image": "Bilde",
+      "reset-image-size": "Tilbakestill størrelse",
+      "alt-text": "Alternativ tekst",
+      "alt-text-placeholder": "Beskriv bildet…",
+      "image-unavailable": "Bildet er ikke tilgjengelig",
+      "resize-image": "Endre bildestørrelse"
     }
   },
   "inbox": {

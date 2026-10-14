@@ -305,9 +305,17 @@
       "add-column-right": "Legg til kolonne til høgre",
       "delete-row": "Slett rad",
       "delete-column": "Slett kolonne",
-      "align-left": "Venstrejuster",
-      "align-center": "Midtstill",
-      "align-right": "Høgrejuster"
+      "align": "Justering",
+      "align-left": "Venstre",
+      "align-center": "Midtstilt",
+      "align-right": "Høgre",
+      "text-style": "Tekststil",
+      "image": "Bilete",
+      "reset-image-size": "Tilbakestill storleik",
+      "alt-text": "Alternativ tekst",
+      "alt-text-placeholder": "Skildre biletet…",
+      "image-unavailable": "Biletet er ikkje tilgjengeleg",
+      "resize-image": "Endre biletstorleik"
     }
   },
   "inbox": {

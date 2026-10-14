@@ -326,9 +326,17 @@
       "add-column-right": "Sağa sütun əlavə et",
       "delete-row": "Sətri sil",
       "delete-column": "Sütunu sil",
-      "align-left": "Sola düzləndir",
-      "align-center": "Mərkəzə düzləndir",
-      "align-right": "Sağa düzləndir"
+      "align": "Düzləndirmə",
+      "align-left": "Sol",
+      "align-center": "Mərkəz",
+      "align-right": "Sağ",
+      "text-style": "Mətn üslubu",
+      "image": "Şəkil",
+      "reset-image-size": "Ölçünü sıfırla",
+      "alt-text": "Alternativ mətn",
+      "alt-text-placeholder": "Şəkli təsvir edin…",
+      "image-unavailable": "Şəkil əlçatan deyil",
+      "resize-image": "Şəklin ölçüsünü dəyiş"
     }
   },
   "inbox": {

@@ -229,9 +229,17 @@
       "add-column-right": "Thêm cột bên phải",
       "delete-row": "Xóa hàng",
       "delete-column": "Xóa cột",
-      "align-left": "Căn trái",
-      "align-center": "Căn giữa",
-      "align-right": "Căn phải"
+      "align": "Căn chỉnh",
+      "align-left": "Trái",
+      "align-center": "Giữa",
+      "align-right": "Phải",
+      "text-style": "Kiểu văn bản",
+      "image": "Hình ảnh",
+      "reset-image-size": "Đặt lại kích thước",
+      "alt-text": "Văn bản thay thế",
+      "alt-text-placeholder": "Mô tả hình ảnh…",
+      "image-unavailable": "Hình ảnh không khả dụng",
+      "resize-image": "Đổi kích thước hình ảnh"
     }
   },
   "inbox": {

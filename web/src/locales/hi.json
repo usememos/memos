@@ -229,9 +229,17 @@
       "add-column-right": "दाईं ओर कॉलम जोड़ें",
       "delete-row": "पंक्ति हटाएँ",
       "delete-column": "कॉलम हटाएँ",
-      "align-left": "बाएँ संरेखित करें",
-      "align-center": "बीच में संरेखित करें",
-      "align-right": "दाएँ संरेखित करें"
+      "align": "संरेखण",
+      "align-left": "बाएँ",
+      "align-center": "बीच में",
+      "align-right": "दाएँ",
+      "text-style": "टेक्स्ट शैली",
+      "image": "इमेज",
+      "reset-image-size": "आकार रीसेट करें",
+      "alt-text": "वैकल्पिक टेक्स्ट",
+      "alt-text-placeholder": "इमेज का वर्णन करें…",
+      "image-unavailable": "इमेज उपलब्ध नहीं है",
+      "resize-image": "इमेज का आकार बदलें"
     }
   },
   "inbox": {

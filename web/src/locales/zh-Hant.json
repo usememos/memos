@@ -308,9 +308,17 @@
       "add-column-right": "在右側插入欄",
       "delete-row": "刪除列",
       "delete-column": "刪除欄",
-      "align-left": "靠左對齊",
-      "align-center": "置中對齊",
-      "align-right": "靠右對齊"
+      "align": "對齊",
+      "align-left": "靠左",
+      "align-center": "置中",
+      "align-right": "靠右",
+      "text-style": "文字樣式",
+      "image": "圖片",
+      "reset-image-size": "重設尺寸",
+      "alt-text": "替代文字",
+      "alt-text-placeholder": "描述這張圖片…",
+      "image-unavailable": "圖片無法顯示",
+      "resize-image": "調整圖片大小"
     }
   },
   "inbox": {

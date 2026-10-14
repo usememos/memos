@@ -326,9 +326,17 @@
       "add-column-right": "Add column right",
       "delete-row": "Delete row",
       "delete-column": "Delete column",
-      "align-left": "Align left",
-      "align-center": "Align center",
-      "align-right": "Align right"
+      "align": "Align",
+      "align-left": "Left",
+      "align-center": "Center",
+      "align-right": "Right",
+      "text-style": "Text style",
+      "image": "Image",
+      "reset-image-size": "Reset size",
+      "alt-text": "Alt text",
+      "alt-text-placeholder": "Describe the image…",
+      "image-unavailable": "Image unavailable",
+      "resize-image": "Resize image"
     }
   },
   "inbox": {

@@ -300,9 +300,17 @@
       "add-column-right": "הוסף עמודה מימין",
       "delete-row": "מחק שורה",
       "delete-column": "מחק עמודה",
-      "align-left": "יישר לשמאל",
+      "align": "יישור",
+      "align-left": "שמאל",
       "align-center": "מרכז",
-      "align-right": "יישר לימין"
+      "align-right": "ימין",
+      "text-style": "סגנון טקסט",
+      "image": "תמונה",
+      "reset-image-size": "איפוס גודל",
+      "alt-text": "טקסט חלופי",
+      "alt-text-placeholder": "תאר את התמונה…",
+      "image-unavailable": "התמונה אינה זמינה",
+      "resize-image": "שינוי גודל התמונה"
     }
   },
   "inbox": {

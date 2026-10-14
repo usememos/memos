@@ -267,9 +267,17 @@
       "add-column-right": "Добавяне на колона вдясно",
       "delete-row": "Изтриване на реда",
       "delete-column": "Изтриване на колоната",
-      "align-left": "Подравняване вляво",
-      "align-center": "Центриране",
-      "align-right": "Подравняване вдясно"
+      "align": "Подравняване",
+      "align-left": "Вляво",
+      "align-center": "Центрирано",
+      "align-right": "Вдясно",
+      "text-style": "Стил на текста",
+      "image": "Изображение",
+      "reset-image-size": "Нулиране на размера",
+      "alt-text": "Алтернативен текст",
+      "alt-text-placeholder": "Опишете изображението…",
+      "image-unavailable": "Изображението не е налично",
+      "resize-image": "Преоразмеряване на изображението"
     }
   },
   "inbox": {

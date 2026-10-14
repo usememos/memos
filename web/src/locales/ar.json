@@ -229,9 +229,17 @@
       "add-column-right": "إضافة عمود إلى اليمين",
       "delete-row": "حذف الصف",
       "delete-column": "حذف العمود",
-      "align-left": "محاذاة لليسار",
-      "align-center": "توسيط",
-      "align-right": "محاذاة لليمين"
+      "align": "محاذاة",
+      "align-left": "يسار",
+      "align-center": "وسط",
+      "align-right": "يمين",
+      "text-style": "نمط النص",
+      "image": "صورة",
+      "reset-image-size": "إعادة تعيين الحجم",
+      "alt-text": "نص بديل",
+      "alt-text-placeholder": "صِف الصورة…",
+      "image-unavailable": "الصورة غير متاحة",
+      "resize-image": "تغيير حجم الصورة"
     }
   },
   "inbox": {
