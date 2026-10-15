@@ -74,8 +74,8 @@ func newRateLimitError(scope ratelimit.Scope, decision ratelimit.Decision) error
 
 // newQuotaExceededError builds the refusal for an action that would exceed a
 // usage limit: RESOURCE_EXHAUSTED with an ErrorInfo carrying the metric, the
-// limit, the usage and the usage limit that applied, and a QuotaFailure naming
-// the user. It carries no RetryInfo, because waiting does not help.
+// limit and the usage, and a QuotaFailure naming the user. It carries no
+// RetryInfo, because waiting does not help.
 func newQuotaExceededError(username string, refusal *usagelimit.Refusal) error {
 	st := status.New(codes.ResourceExhausted, quotaExceededMessage)
 	detailed, err := st.WithDetails(
@@ -83,10 +83,9 @@ func newQuotaExceededError(username string, refusal *usagelimit.Refusal) error {
 			Reason: reasonQuotaExceeded,
 			Domain: errorInfoDomain,
 			Metadata: map[string]string{
-				"metric":      refusal.Metric.String(),
-				"limit":       strconv.FormatInt(refusal.Limit, 10),
-				"usage":       strconv.FormatInt(refusal.Usage, 10),
-				"usage_limit": UsageLimitNamePrefix + refusal.Source,
+				"metric": string(refusal.Metric),
+				"limit":  strconv.FormatInt(refusal.Limit, 10),
+				"usage":  strconv.FormatInt(refusal.Usage, 10),
 			},
 		},
 		&errdetails.QuotaFailure{

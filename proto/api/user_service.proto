@@ -684,7 +684,7 @@ message GetUserStatsRequest {
   string filter = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 
-// UserUsage is a user's usage and the usage limits in effect for the user.
+// UserUsage is a user's usage and the limit set in effect for the user.
 message UserUsage {
   option (google.api.resource) = {
     type: "memos.api/UserUsage"
@@ -705,28 +705,27 @@ message UserUsage {
   // attached to a memo. External links do not count.
   int64 storage_bytes = 3;
 
-  // The limit on memo_count.
-  EffectiveLimit memo_count_limit = 4;
+  // The limit set in effect: the first USAGE_LIMITS entry that names the
+  // user, or the default. An unset limit is unlimited.
+  Limits limits = 4;
 
-  // The limit on storage_bytes.
-  EffectiveLimit storage_bytes_limit = 5;
+  // The position of the entry in effect in the USAGE_LIMITS setting, starting
+  // at 0. The default is the last entry.
+  int32 limit_index = 5;
 
-  // The limit on the size of one uploaded file.
-  EffectiveLimit upload_bytes_limit = 6;
+  // Limits is the limit for each metric. An unset limit is unlimited, as is 0.
+  message Limits {
+    // The number of memos the user may have created.
+    optional int64 memo_count = 1;
 
-  // The limit on the UTF-8 size in bytes of one memo's content.
-  EffectiveLimit memo_content_bytes_limit = 7;
+    // The UTF-8 size in bytes of one memo's content.
+    optional int64 memo_content_bytes = 2;
 
-  // EffectiveLimit is the limit in effect for one metric, and where it comes
-  // from.
-  message EffectiveLimit {
-    // The limit. 0 means unlimited.
-    int64 value = 1;
+    // The total size in bytes of the user's uploads.
+    optional int64 storage_bytes = 3;
 
-    // The usage limit the value comes from: the user's own limit, or else the
-    // default. Empty when no usage limit applies.
-    // Format: usageLimits/{usage_limit}
-    string usage_limit = 2 [(google.api.resource_reference) = {type: "memos.api/UsageLimit"}];
+    // The size in bytes of one uploaded file.
+    optional int64 upload_bytes = 4;
   }
 }
 

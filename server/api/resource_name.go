@@ -27,7 +27,6 @@ const (
 	SpaceNamePrefix            = "spaces/"
 	SpaceMemberNamePrefix      = "members/"
 	SpaceInvitationNamePrefix  = "invitations/"
-	UsageLimitNamePrefix       = "usageLimits/"
 )
 
 // GetNameParentTokens returns the tokens from a resource name.
@@ -166,16 +165,6 @@ func ExtractInboxIDFromName(name string) (int32, error) {
 
 func ExtractIdentityProviderUIDFromName(name string) (string, error) {
 	tokens, err := GetNameParentTokens(name, IdentityProviderNamePrefix)
-	if err != nil {
-		return "", err
-	}
-	return tokens[0], nil
-}
-
-// ExtractUsageLimitIDFromName returns the usage limit ID from a resource name.
-// e.g., "usageLimits/default-memos" -> "default-memos".
-func ExtractUsageLimitIDFromName(name string) (string, error) {
-	tokens, err := GetNameParentTokens(name, UsageLimitNamePrefix)
 	if err != nil {
 		return "", err
 	}

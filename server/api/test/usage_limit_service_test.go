@@ -19,14 +19,36 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-func createUsageLimit(ctx context.Context, t *testing.T, ts *TestService, id string, metric apipb.UsageLimit_Metric, user string, value int64) *apipb.UsageLimit {
+type usageLimitEntry = apipb.InstanceSetting_UsageLimitsSetting_UsageLimit
+
+const usageLimitsSettingName = "instance/settings/USAGE_LIMITS"
+
+func usageLimitsSetting(limits ...*usageLimitEntry) *apipb.InstanceSetting {
+	return &apipb.InstanceSetting{
+		Name:  usageLimitsSettingName,
+		Value: &apipb.InstanceSetting_UsageLimitsSetting_{UsageLimitsSetting: &apipb.InstanceSetting_UsageLimitsSetting{Limits: limits}},
+	}
+}
+
+// setUsageLimits replaces the usage limits through the API as ctx's user.
+func setUsageLimits(ctx context.Context, t *testing.T, ts *TestService, limits ...*usageLimitEntry) *apipb.InstanceSetting_UsageLimitsSetting {
 	t.Helper()
-	limit, err := ts.Service.CreateUsageLimit(ctx, &apipb.CreateUsageLimitRequest{
-		UsageLimitId: id,
-		UsageLimit:   &apipb.UsageLimit{Metric: metric, User: user, Value: value},
+	setting, err := ts.Service.UpdateInstanceSetting(ctx, &apipb.UpdateInstanceSettingRequest{InstanceSetting: usageLimitsSetting(limits...)})
+	require.NoError(t, err)
+	return setting.GetUsageLimitsSetting()
+}
+
+// setDefaultUploadLimit stores one all-users entry with the given per-file
+// limit directly in the store, for tests of other services.
+func setDefaultUploadLimit(ctx context.Context, t *testing.T, s *store.Store, uploadBytes int64) {
+	t.Helper()
+	_, err := s.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_USAGE_LIMITS,
+		Value: &storepb.InstanceSetting_UsageLimitsSetting{UsageLimitsSetting: &storepb.InstanceUsageLimitsSetting{
+			Limits: []*storepb.InstanceUsageLimitsSetting_UsageLimit{{AllUsers: true, UploadBytes: &uploadBytes}},
+		}},
 	})
 	require.NoError(t, err)
-	return limit
 }
 
 // requireQuotaExceeded checks the usage limit error contract and returns the
@@ -60,7 +82,7 @@ func requireQuotaExceeded(t *testing.T, err error, metric, subject string) map[s
 	return info.Metadata
 }
 
-func TestUsageLimitServicePermissions(t *testing.T) {
+func TestUsageLimitsSettingPermissions(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
@@ -69,7 +91,6 @@ func TestUsageLimitServicePermissions(t *testing.T) {
 	user, err := ts.CreateRegularUser(ctx, "limits-user")
 	require.NoError(t, err)
 	adminCtx := ts.CreateUserContext(ctx, admin.ID)
-	limit := createUsageLimit(adminCtx, t, ts, "default-memos", apipb.UsageLimit_MEMO_COUNT, "", 10)
 
 	for _, caller := range []struct {
 		ctx  context.Context
@@ -78,29 +99,23 @@ func TestUsageLimitServicePermissions(t *testing.T) {
 		{ctx: ts.CreateUserContext(ctx, user.ID), code: codes.PermissionDenied},
 		{ctx: ctx, code: codes.Unauthenticated},
 	} {
-		_, err := ts.Service.ListUsageLimits(caller.ctx, &apipb.ListUsageLimitsRequest{})
-		require.Equal(t, caller.code, status.Code(err))
-		_, err = ts.Service.GetUsageLimit(caller.ctx, &apipb.GetUsageLimitRequest{Name: limit.Name})
-		require.Equal(t, caller.code, status.Code(err))
-		_, err = ts.Service.CreateUsageLimit(caller.ctx, &apipb.CreateUsageLimitRequest{UsageLimit: &apipb.UsageLimit{Metric: apipb.UsageLimit_STORAGE_BYTES, Value: 1}})
-		require.Equal(t, caller.code, status.Code(err))
-		_, err = ts.Service.UpdateUsageLimit(caller.ctx, &apipb.UpdateUsageLimitRequest{UsageLimit: &apipb.UsageLimit{Name: limit.Name, Value: 1}})
-		require.Equal(t, caller.code, status.Code(err))
-		_, err = ts.Service.DeleteUsageLimit(caller.ctx, &apipb.DeleteUsageLimitRequest{Name: limit.Name})
+		_, err := ts.Service.GetInstanceSetting(caller.ctx, &apipb.GetInstanceSettingRequest{Name: usageLimitsSettingName})
+		require.Equal(t, caller.code, status.Code(err), "the entries name users, so only admins read them")
+		_, err = ts.Service.UpdateInstanceSetting(caller.ctx, &apipb.UpdateInstanceSettingRequest{InstanceSetting: usageLimitsSetting(&usageLimitEntry{AllUsers: true})})
 		require.Equal(t, caller.code, status.Code(err))
 	}
 
-	// The row never leaks through the instance settings API.
-	_, err = ts.Service.GetInstanceSetting(adminCtx, &apipb.GetInstanceSettingRequest{Name: "instance/settings/USAGE_LIMITS"})
-	require.Equal(t, codes.InvalidArgument, status.Code(err))
-	_, err = ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{InstanceSetting: &apipb.InstanceSetting{Name: "instance/settings/USAGE_LIMITS"}})
-	require.Equal(t, codes.InvalidArgument, status.Code(err))
-	got, err := ts.Service.GetUsageLimit(adminCtx, &apipb.GetUsageLimitRequest{Name: limit.Name})
+	setting, err := ts.Service.GetInstanceSetting(adminCtx, &apipb.GetInstanceSettingRequest{Name: usageLimitsSettingName})
 	require.NoError(t, err)
-	require.Equal(t, int64(10), got.Value, "a refused settings update leaves the limits unchanged")
+	limits := setting.GetUsageLimitsSetting().Limits
+	require.Len(t, limits, 1, "the built-in default is the only entry")
+	require.True(t, limits[0].AllUsers)
+	require.Equal(t, store.DefaultUploadBytes, limits[0].GetUploadBytes())
+	require.Equal(t, store.DefaultMemoContentBytes, limits[0].GetMemoContentBytes())
+	require.Nil(t, limits[0].MemoCount)
 }
 
-func TestUsageLimitServiceCRUD(t *testing.T) {
+func TestUsageLimitsSettingUpdate(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
@@ -108,124 +123,77 @@ func TestUsageLimitServiceCRUD(t *testing.T) {
 	require.NoError(t, err)
 	alice, err := ts.CreateRegularUser(ctx, "crud-alice")
 	require.NoError(t, err)
-	adminCtx := ts.CreateUserContext(ctx, admin.ID)
-	aliceName := api.BuildUserName(alice.Username)
-
-	defaults, err := ts.Service.ListUsageLimits(adminCtx, &apipb.ListUsageLimitsRequest{})
+	bob, err := ts.CreateRegularUser(ctx, "crud-bob")
 	require.NoError(t, err)
-	require.Len(t, defaults.UsageLimits, 2)
-	require.Equal(t, "usageLimits/default-memo-content", defaults.UsageLimits[0].Name)
-	require.Equal(t, apipb.UsageLimit_MEMO_CONTENT_BYTES, defaults.UsageLimits[0].Metric)
-	require.Equal(t, store.DefaultMemoContentBytes, defaults.UsageLimits[0].Value)
-	require.Empty(t, defaults.UsageLimits[0].User)
-	require.Equal(t, "usageLimits/default-upload", defaults.UsageLimits[1].Name)
-	require.Equal(t, apipb.UsageLimit_UPLOAD_BYTES, defaults.UsageLimits[1].Metric)
-	require.Equal(t, store.DefaultUploadBytes, defaults.UsageLimits[1].Value)
-	require.Empty(t, defaults.UsageLimits[1].User)
+	adminCtx := ts.CreateUserContext(ctx, admin.ID)
+	aliceName, bobName := api.BuildUserName(alice.Username), api.BuildUserName(bob.Username)
 
-	defaultStorage := createUsageLimit(adminCtx, t, ts, "default-storage", apipb.UsageLimit_STORAGE_BYTES, "", 1<<30)
-	require.Equal(t, "usageLimits/default-storage", defaultStorage.Name)
-	require.Empty(t, defaultStorage.User)
-	require.NotNil(t, defaultStorage.CreateTime)
-	aliceStorage := createUsageLimit(adminCtx, t, ts, "", apipb.UsageLimit_STORAGE_BYTES, aliceName, 5<<30)
-	require.Regexp(t, `^usageLimits/limit-[a-z2-7]{12}$`, aliceStorage.Name, "an ID is generated when none is given")
-	require.Equal(t, aliceName, aliceStorage.User)
-	createUsageLimit(adminCtx, t, ts, "default-memos", apipb.UsageLimit_MEMO_COUNT, "", 1000)
+	saved := setUsageLimits(adminCtx, t, ts,
+		&usageLimitEntry{Users: []string{aliceName, bobName}, StorageBytes: new(int64(5 << 30))},
+		&usageLimitEntry{Users: []string{aliceName}, MemoCount: new(int64(0))},
+		&usageLimitEntry{AllUsers: true, StorageBytes: new(int64(1 << 30)), MemoCount: new(int64(1000))},
+	)
+	require.Len(t, saved.Limits, 3)
+	require.Equal(t, []string{aliceName, bobName}, saved.Limits[0].Users)
+	require.Equal(t, int64(5<<30), saved.Limits[0].GetStorageBytes())
+	require.Nil(t, saved.Limits[0].MemoCount, "unset stays unset")
+	require.Zero(t, saved.Limits[1].GetMemoCount())
+	require.NotNil(t, saved.Limits[1].MemoCount, "an explicit zero stays explicit")
+	got, err := ts.Service.GetInstanceSetting(adminCtx, &apipb.GetInstanceSettingRequest{Name: usageLimitsSettingName})
+	require.NoError(t, err)
+	require.Equal(t, saved.String(), got.GetUsageLimitsSetting().String(), "the update response is what a read returns")
 
-	for name, request := range map[string]*apipb.CreateUsageLimitRequest{
-		"negative value": {UsageLimit: &apipb.UsageLimit{Metric: apipb.UsageLimit_MEMO_COUNT, User: aliceName, Value: -1}},
-		"no metric":      {UsageLimit: &apipb.UsageLimit{User: aliceName, Value: 1}},
-		"bad user name":  {UsageLimit: &apipb.UsageLimit{Metric: apipb.UsageLimit_MEMO_COUNT, User: "people/alice", Value: 1}},
-		"bad ID":         {UsageLimitId: "Alice_Memos", UsageLimit: &apipb.UsageLimit{Metric: apipb.UsageLimit_MEMO_COUNT, Value: 1}},
-		"long ID":        {UsageLimitId: "a-very-long-usage-limit-identifier-x", UsageLimit: &apipb.UsageLimit{Metric: apipb.UsageLimit_MEMO_COUNT, Value: 1}},
-		"missing limit":  {},
+	// Resolution follows the order: Alice's first entry is the pair, which has
+	// no memo limit, so her later memo entry is never reached.
+	usage, err := ts.Service.GetUserUsage(adminCtx, &apipb.GetUserUsageRequest{Name: aliceName + "/usage"})
+	require.NoError(t, err)
+	require.Equal(t, int32(0), usage.LimitIndex)
+	require.Equal(t, int64(5<<30), usage.Limits.GetStorageBytes())
+	require.Nil(t, usage.Limits.MemoCount)
+	usage, err = ts.Service.GetUserUsage(adminCtx, &apipb.GetUserUsageRequest{Name: api.BuildUserName(admin.Username) + "/usage"})
+	require.NoError(t, err)
+	require.Equal(t, int32(2), usage.LimitIndex, "admins fall through to the default like everyone else")
+	require.Equal(t, int64(1000), usage.Limits.GetMemoCount())
+
+	for name, request := range map[string]*apipb.InstanceSetting{
+		"missing setting":     {Name: usageLimitsSettingName},
+		"empty list":          usageLimitsSetting(),
+		"no all-users entry":  usageLimitsSetting(&usageLimitEntry{Users: []string{aliceName}}),
+		"all users not last":  usageLimitsSetting(&usageLimitEntry{AllUsers: true}, &usageLimitEntry{Users: []string{aliceName}}),
+		"users and all users": usageLimitsSetting(&usageLimitEntry{AllUsers: true, Users: []string{aliceName}}),
+		"entry without users": usageLimitsSetting(&usageLimitEntry{}, &usageLimitEntry{AllUsers: true}),
+		"repeated user":       usageLimitsSetting(&usageLimitEntry{Users: []string{aliceName, aliceName}}, &usageLimitEntry{AllUsers: true}),
+		"negative value":      usageLimitsSetting(&usageLimitEntry{AllUsers: true, MemoCount: new(int64(-1))}),
+		"bad user name":       usageLimitsSetting(&usageLimitEntry{Users: []string{"people/alice"}}, &usageLimitEntry{AllUsers: true}),
 	} {
-		_, err := ts.Service.CreateUsageLimit(adminCtx, request)
+		_, err := ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{InstanceSetting: request})
 		require.Equal(t, codes.InvalidArgument, status.Code(err), name)
 	}
-	_, err = ts.Service.CreateUsageLimit(adminCtx, &apipb.CreateUsageLimitRequest{UsageLimit: &apipb.UsageLimit{Metric: apipb.UsageLimit_MEMO_COUNT, User: "users/nobody", Value: 1}})
-	require.Equal(t, codes.NotFound, status.Code(err))
-	_, err = ts.Service.CreateUsageLimit(adminCtx, &apipb.CreateUsageLimitRequest{UsageLimit: &apipb.UsageLimit{Metric: apipb.UsageLimit_STORAGE_BYTES, User: aliceName, Value: 1}})
-	require.Equal(t, codes.AlreadyExists, status.Code(err), "one limit per metric and user")
-	_, err = ts.Service.CreateUsageLimit(adminCtx, &apipb.CreateUsageLimitRequest{UsageLimitId: "default-storage", UsageLimit: &apipb.UsageLimit{Metric: apipb.UsageLimit_UPLOAD_BYTES, Value: 1}})
-	require.Equal(t, codes.AlreadyExists, status.Code(err), "IDs are unique")
-
-	// Update: only value changes; metric and user are immutable.
-	updated, err := ts.Service.UpdateUsageLimit(adminCtx, &apipb.UpdateUsageLimitRequest{
-		UsageLimit: &apipb.UsageLimit{Name: aliceStorage.Name, Value: 6 << 30, Metric: apipb.UsageLimit_STORAGE_BYTES, User: aliceName},
-		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"value"}},
+	_, err = ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{
+		InstanceSetting: usageLimitsSetting(&usageLimitEntry{Users: []string{"users/nobody"}}, &usageLimitEntry{AllUsers: true}),
 	})
-	require.NoError(t, err)
-	require.Equal(t, int64(6<<30), updated.Value)
-	_, err = ts.Service.UpdateUsageLimit(adminCtx, &apipb.UpdateUsageLimitRequest{UsageLimit: &apipb.UsageLimit{Name: aliceStorage.Name, Value: 1, Metric: apipb.UsageLimit_MEMO_COUNT}})
-	require.Equal(t, codes.InvalidArgument, status.Code(err))
-	_, err = ts.Service.UpdateUsageLimit(adminCtx, &apipb.UpdateUsageLimitRequest{UsageLimit: &apipb.UsageLimit{Name: defaultStorage.Name, Value: 1, User: aliceName}})
-	require.Equal(t, codes.InvalidArgument, status.Code(err))
-	_, err = ts.Service.UpdateUsageLimit(adminCtx, &apipb.UpdateUsageLimitRequest{
-		UsageLimit: &apipb.UsageLimit{Name: defaultStorage.Name, Value: 1},
-		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"metric"}},
-	})
-	require.Equal(t, codes.InvalidArgument, status.Code(err))
-	_, err = ts.Service.UpdateUsageLimit(adminCtx, &apipb.UpdateUsageLimitRequest{UsageLimit: &apipb.UsageLimit{Name: defaultStorage.Name, Value: -1}})
-	require.Equal(t, codes.InvalidArgument, status.Code(err))
-	_, err = ts.Service.UpdateUsageLimit(adminCtx, &apipb.UpdateUsageLimitRequest{UsageLimit: &apipb.UsageLimit{Name: "usageLimits/missing", Value: 1}})
 	require.Equal(t, codes.NotFound, status.Code(err))
+	got, err = ts.Service.GetInstanceSetting(adminCtx, &apipb.GetInstanceSettingRequest{Name: usageLimitsSettingName})
+	require.NoError(t, err)
+	require.Equal(t, saved.String(), got.GetUsageLimitsSetting().String(), "a refused update leaves the limits unchanged")
 
-	// List, filter and page. Defaults come first.
-	list, err := ts.Service.ListUsageLimits(adminCtx, &apipb.ListUsageLimitsRequest{})
-	require.NoError(t, err)
-	require.Len(t, list.UsageLimits, 5)
-	require.Empty(t, list.UsageLimits[0].User)
-	require.Empty(t, list.UsageLimits[1].User)
-	require.Empty(t, list.UsageLimits[2].User)
-	require.Empty(t, list.UsageLimits[3].User)
-	require.Equal(t, aliceName, list.UsageLimits[4].User)
-	filtered, err := ts.Service.ListUsageLimits(adminCtx, &apipb.ListUsageLimitsRequest{Filter: `user == "` + aliceName + `"`})
-	require.NoError(t, err)
-	require.Len(t, filtered.UsageLimits, 1)
-	filtered, err = ts.Service.ListUsageLimits(adminCtx, &apipb.ListUsageLimitsRequest{Filter: `user == "" && metric == "STORAGE_BYTES"`})
-	require.NoError(t, err)
-	require.Len(t, filtered.UsageLimits, 1)
-	require.Equal(t, defaultStorage.Name, filtered.UsageLimits[0].Name)
-	_, err = ts.Service.ListUsageLimits(adminCtx, &apipb.ListUsageLimitsRequest{Filter: `metric == "PLANS"`})
-	require.Equal(t, codes.InvalidArgument, status.Code(err))
-	_, err = ts.Service.ListUsageLimits(adminCtx, &apipb.ListUsageLimitsRequest{Filter: `user != ""`})
-	require.Equal(t, codes.InvalidArgument, status.Code(err))
-	page, err := ts.Service.ListUsageLimits(adminCtx, &apipb.ListUsageLimitsRequest{PageSize: 2})
-	require.NoError(t, err)
-	require.Len(t, page.UsageLimits, 2)
-	require.NotEmpty(t, page.NextPageToken)
-	page, err = ts.Service.ListUsageLimits(adminCtx, &apipb.ListUsageLimitsRequest{PageToken: page.NextPageToken})
-	require.NoError(t, err)
-	require.Len(t, page.UsageLimits, 2)
-	require.NotEmpty(t, page.NextPageToken)
-	page, err = ts.Service.ListUsageLimits(adminCtx, &apipb.ListUsageLimitsRequest{PageToken: page.NextPageToken})
-	require.NoError(t, err)
-	require.Len(t, page.UsageLimits, 1)
-	require.Empty(t, page.NextPageToken)
-
-	// Renaming a user keeps their limits; deleting the user removes them.
+	// Renaming a user keeps their entries; deleting the user removes them.
 	renamed := "crud-alice-renamed"
 	_, err = ts.Store.UpdateUser(ctx, &store.UpdateUser{ID: alice.ID, Username: &renamed})
 	require.NoError(t, err)
-	got, err := ts.Service.GetUsageLimit(adminCtx, &apipb.GetUsageLimitRequest{Name: aliceStorage.Name})
+	got, err = ts.Service.GetInstanceSetting(adminCtx, &apipb.GetInstanceSettingRequest{Name: usageLimitsSettingName})
 	require.NoError(t, err)
-	require.Equal(t, api.BuildUserName(renamed), got.User)
+	require.Equal(t, []string{api.BuildUserName(renamed), bobName}, got.GetUsageLimitsSetting().Limits[0].Users)
 	_, err = ts.Store.DeleteUser(ctx, &store.DeleteUser{ID: alice.ID})
 	require.NoError(t, err)
-	_, err = ts.Service.GetUsageLimit(adminCtx, &apipb.GetUsageLimitRequest{Name: aliceStorage.Name})
-	require.Equal(t, codes.NotFound, status.Code(err))
-
-	_, err = ts.Service.DeleteUsageLimit(adminCtx, &apipb.DeleteUsageLimitRequest{Name: defaultStorage.Name})
+	got, err = ts.Service.GetInstanceSetting(adminCtx, &apipb.GetInstanceSettingRequest{Name: usageLimitsSettingName})
 	require.NoError(t, err)
-	_, err = ts.Service.DeleteUsageLimit(adminCtx, &apipb.DeleteUsageLimitRequest{Name: defaultStorage.Name})
-	require.Equal(t, codes.NotFound, status.Code(err))
-	list, err = ts.Service.ListUsageLimits(adminCtx, &apipb.ListUsageLimitsRequest{})
-	require.NoError(t, err)
-	require.Len(t, list.UsageLimits, 3)
+	require.Len(t, got.GetUsageLimitsSetting().Limits, 2)
+	require.Equal(t, []string{bobName}, got.GetUsageLimitsSetting().Limits[0].Users)
+	require.True(t, got.GetUsageLimitsSetting().Limits[1].AllUsers)
 }
 
-func TestUsageLimitServiceDeploymentFile(t *testing.T) {
+func TestUsageLimitsDeploymentFile(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
@@ -235,17 +203,14 @@ func TestUsageLimitServiceDeploymentFile(t *testing.T) {
 
 	dir := t.TempDir()
 	require.NoError(t, os.WriteFile(filepath.Join(dir, "memos-instance-setting-usage-limits.json"),
-		[]byte(`{"key":"USAGE_LIMITS","usageLimitsSetting":{"limits":[{"uid":"default-memos","metric":"MEMO_COUNT","allUsers":{},"value":"1"}]}}`), 0o600))
+		[]byte(`{"key":"USAGE_LIMITS","usageLimitsSetting":{"limits":[{"allUsers":true,"memoCount":"1"}]}}`), 0o600))
 	require.NoError(t, ts.Store.LoadDeploymentConfigurationDir(ctx, dir))
 
-	list, err := ts.Service.ListUsageLimits(adminCtx, &apipb.ListUsageLimitsRequest{})
+	got, err := ts.Service.GetInstanceSetting(adminCtx, &apipb.GetInstanceSettingRequest{Name: usageLimitsSettingName})
 	require.NoError(t, err)
-	require.Len(t, list.UsageLimits, 1)
-	_, err = ts.Service.CreateUsageLimit(adminCtx, &apipb.CreateUsageLimitRequest{UsageLimit: &apipb.UsageLimit{Metric: apipb.UsageLimit_STORAGE_BYTES, Value: 1}})
-	require.Equal(t, codes.FailedPrecondition, status.Code(err))
-	_, err = ts.Service.UpdateUsageLimit(adminCtx, &apipb.UpdateUsageLimitRequest{UsageLimit: &apipb.UsageLimit{Name: "usageLimits/default-memos", Value: 5}})
-	require.Equal(t, codes.FailedPrecondition, status.Code(err))
-	_, err = ts.Service.DeleteUsageLimit(adminCtx, &apipb.DeleteUsageLimitRequest{Name: "usageLimits/default-memos"})
+	require.Len(t, got.GetUsageLimitsSetting().Limits, 1)
+	require.Equal(t, int64(1), got.GetUsageLimitsSetting().Limits[0].GetMemoCount())
+	_, err = ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{InstanceSetting: usageLimitsSetting(&usageLimitEntry{AllUsers: true})})
 	require.Equal(t, codes.FailedPrecondition, status.Code(err))
 
 	// The file-provided limit is enforced.
@@ -265,34 +230,34 @@ func TestMemoLimitEnforcement(t *testing.T) {
 	require.NoError(t, err)
 	adminCtx := ts.CreateUserContext(ctx, admin.ID)
 	userCtx := ts.CreateUserContext(ctx, user.ID)
+	userName := api.BuildUserName(user.Username)
 	createMemo := func(ctx context.Context, content string) (*apipb.Memo, error) {
 		return ts.Service.CreateMemo(ctx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{Content: content, Visibility: apipb.Visibility_PUBLIC}})
 	}
 
-	// With no limits, nothing changes.
+	// With the built-in default, memos are not counted.
 	first, err := createMemo(userCtx, "first")
 	require.NoError(t, err)
-	usage, err := ts.Service.GetUserUsage(userCtx, &apipb.GetUserUsageRequest{Name: api.BuildUserName(user.Username) + "/usage"})
+	usage, err := ts.Service.GetUserUsage(userCtx, &apipb.GetUserUsageRequest{Name: userName + "/usage"})
 	require.NoError(t, err)
 	require.Equal(t, int64(1), usage.MemoCount)
-	require.Zero(t, usage.MemoCountLimit.Value)
-	require.Empty(t, usage.MemoCountLimit.UsageLimit)
-	require.Equal(t, store.DefaultUploadBytes, usage.UploadBytesLimit.Value)
-	require.Equal(t, "usageLimits/default-upload", usage.UploadBytesLimit.UsageLimit)
+	require.Nil(t, usage.Limits.MemoCount)
+	require.Equal(t, store.DefaultUploadBytes, usage.Limits.GetUploadBytes())
+	require.Equal(t, int32(0), usage.LimitIndex)
 
-	createUsageLimit(adminCtx, t, ts, "default-memos", apipb.UsageLimit_MEMO_COUNT, "", 2)
+	setUsageLimits(adminCtx, t, ts, &usageLimitEntry{AllUsers: true, MemoCount: new(int64(2))})
 	second, err := createMemo(userCtx, "second")
 	require.NoError(t, err)
 	_, err = createMemo(userCtx, "third")
-	metadata := requireQuotaExceeded(t, err, "MEMO_COUNT", api.BuildUserName(user.Username))
-	require.Equal(t, map[string]string{"metric": "MEMO_COUNT", "limit": "2", "usage": "2", "usage_limit": "usageLimits/default-memos"}, metadata)
+	metadata := requireQuotaExceeded(t, err, "MEMO_COUNT", userName)
+	require.Equal(t, map[string]string{"metric": "MEMO_COUNT", "limit": "2", "usage": "2"}, metadata)
 	count, err := ts.Store.CountUserMemos(ctx, user.ID)
 	require.NoError(t, err)
 	require.Equal(t, int64(2), count, "a refused create writes no memo")
 
 	// A comment is a memo row: it is refused at the limit and writes nothing.
 	_, err = ts.Service.CreateMemoComment(userCtx, &apipb.CreateMemoCommentRequest{Parent: first.Name, Comment: &apipb.Memo{Content: "a comment", Visibility: apipb.Visibility_PUBLIC}})
-	requireQuotaExceeded(t, err, "MEMO_COUNT", api.BuildUserName(user.Username))
+	requireQuotaExceeded(t, err, "MEMO_COUNT", userName)
 	count, err = ts.Store.CountUserMemos(ctx, user.ID)
 	require.NoError(t, err)
 	require.Equal(t, int64(2), count)
@@ -309,8 +274,12 @@ func TestMemoLimitEnforcement(t *testing.T) {
 	_, err = createMemo(userCtx, "fits again")
 	require.NoError(t, err)
 
-	// A user's own limit replaces the default, and admins are limited too.
-	createUsageLimit(adminCtx, t, ts, "user-memos", apipb.UsageLimit_MEMO_COUNT, api.BuildUserName(user.Username), 0)
+	// An entry naming the user comes first and is the whole limit set, so an
+	// explicit zero makes the user unlimited. Admins are limited too.
+	setUsageLimits(adminCtx, t, ts,
+		&usageLimitEntry{Users: []string{userName}, MemoCount: new(int64(0))},
+		&usageLimitEntry{AllUsers: true, MemoCount: new(int64(2))},
+	)
 	_, err = createMemo(userCtx, "unlimited now")
 	require.NoError(t, err)
 	_, err = createMemo(adminCtx, "admin one")
@@ -320,18 +289,14 @@ func TestMemoLimitEnforcement(t *testing.T) {
 	_, err = createMemo(adminCtx, "admin three")
 	requireQuotaExceeded(t, err, "MEMO_COUNT", api.BuildUserName(admin.Username))
 
-	usage, err = ts.Service.GetUserUsage(userCtx, &apipb.GetUserUsageRequest{Name: api.BuildUserName(user.Username) + "/usage"})
+	usage, err = ts.Service.GetUserUsage(userCtx, &apipb.GetUserUsageRequest{Name: userName + "/usage"})
 	require.NoError(t, err)
-	require.Equal(t, "usageLimits/user-memos", usage.MemoCountLimit.UsageLimit)
-	require.Zero(t, usage.MemoCountLimit.Value)
+	require.Equal(t, int32(0), usage.LimitIndex)
+	require.Zero(t, usage.Limits.GetMemoCount())
+	require.NotNil(t, usage.Limits.MemoCount)
 
-	// Deleting every limit restores the previous behavior.
-	limits, err := ts.Service.ListUsageLimits(adminCtx, &apipb.ListUsageLimitsRequest{})
-	require.NoError(t, err)
-	for _, limit := range limits.UsageLimits {
-		_, err := ts.Service.DeleteUsageLimit(adminCtx, &apipb.DeleteUsageLimitRequest{Name: limit.Name})
-		require.NoError(t, err)
-	}
+	// A default without a memo limit restores the previous behavior.
+	setUsageLimits(adminCtx, t, ts, &usageLimitEntry{AllUsers: true})
 	_, err = createMemo(adminCtx, "admin three")
 	require.NoError(t, err)
 }
@@ -351,8 +316,7 @@ func TestMemoContentLimitEnforcement(t *testing.T) {
 
 	usage, err := ts.Service.GetUserUsage(userCtx, &apipb.GetUserUsageRequest{Name: subject + "/usage"})
 	require.NoError(t, err)
-	require.Equal(t, store.DefaultMemoContentBytes, usage.MemoContentBytesLimit.Value)
-	require.Equal(t, "usageLimits/default-memo-content", usage.MemoContentBytesLimit.UsageLimit)
+	require.Equal(t, store.DefaultMemoContentBytes, usage.Limits.GetMemoContentBytes())
 	create := func(content string) (*apipb.Memo, error) {
 		return ts.Service.CreateMemo(userCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{Content: content, Visibility: apipb.Visibility_PRIVATE}})
 	}
@@ -360,8 +324,7 @@ func TestMemoContentLimitEnforcement(t *testing.T) {
 	require.NoError(t, err)
 	_, err = create(strings.Repeat("a", 8193))
 	metadata := requireQuotaExceeded(t, err, "MEMO_CONTENT_BYTES", subject)
-	require.Equal(t, "8193", metadata["usage"])
-	require.Equal(t, "usageLimits/default-memo-content", metadata["usage_limit"])
+	require.Equal(t, map[string]string{"metric": "MEMO_CONTENT_BYTES", "limit": "8192", "usage": "8193"}, metadata)
 	_, err = ts.Service.UpdateMemo(userCtx, &apipb.UpdateMemoRequest{
 		Memo:       &apipb.Memo{Name: memo.Name, Content: strings.Repeat("a", 8193)},
 		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"content"}},
@@ -373,7 +336,10 @@ func TestMemoContentLimitEnforcement(t *testing.T) {
 	_, err = ts.Service.CreateMemoComment(userCtx, &apipb.CreateMemoCommentRequest{Parent: memo.Name, Comment: &apipb.Memo{Content: strings.Repeat("a", 8193), Visibility: apipb.Visibility_PRIVATE}})
 	requireQuotaExceeded(t, err, "MEMO_CONTENT_BYTES", subject)
 
-	own := createUsageLimit(adminCtx, t, ts, "user-content", apipb.UsageLimit_MEMO_CONTENT_BYTES, subject, 6)
+	setUsageLimits(adminCtx, t, ts,
+		&usageLimitEntry{Users: []string{subject}, MemoContentBytes: new(int64(6))},
+		&usageLimitEntry{AllUsers: true, MemoContentBytes: new(int64(8192))},
+	)
 	unicodeMemo, err := create("中文")
 	require.NoError(t, err)
 	_, err = create("中文字")
@@ -385,7 +351,6 @@ func TestMemoContentLimitEnforcement(t *testing.T) {
 	})
 	metadata = requireQuotaExceeded(t, err, "MEMO_CONTENT_BYTES", subject)
 	require.Equal(t, "6", metadata["limit"])
-	require.Equal(t, "usageLimits/user-content", metadata["usage_limit"])
 
 	archive := buildImportArchive(t, user.Username, nil)
 	importArchive := func() *apipb.ImportMemosReport {
@@ -399,8 +364,10 @@ func TestMemoContentLimitEnforcement(t *testing.T) {
 	report := importArchive()
 	require.Equal(t, int32(1), report.Failed)
 	require.Zero(t, report.Created)
-	_, err = ts.Service.UpdateUsageLimit(adminCtx, &apipb.UpdateUsageLimitRequest{UsageLimit: &apipb.UsageLimit{Name: own.Name, Value: 0}})
-	require.NoError(t, err)
+	setUsageLimits(adminCtx, t, ts,
+		&usageLimitEntry{Users: []string{subject}, MemoContentBytes: new(int64(0))},
+		&usageLimitEntry{AllUsers: true, MemoContentBytes: new(int64(8192))},
+	)
 	_, err = create(strings.Repeat("a", 65536))
 	require.NoError(t, err, "explicit zero disables the content limit")
 	report = importArchive()
@@ -439,9 +406,7 @@ func TestUploadLimitEnforcement(t *testing.T) {
 		return err
 	}
 
-	createUsageLimit(adminCtx, t, ts, "default-storage", apipb.UsageLimit_STORAGE_BYTES, "", 100)
-	_, err = ts.Service.UpdateUsageLimit(adminCtx, &apipb.UpdateUsageLimitRequest{UsageLimit: &apipb.UsageLimit{Name: "usageLimits/default-upload", Value: 60}})
-	require.NoError(t, err)
+	setUsageLimits(adminCtx, t, ts, &usageLimitEntry{AllUsers: true, StorageBytes: new(int64(100)), UploadBytes: new(int64(60))})
 
 	require.NoError(t, create(60))
 	metadata := requireQuotaExceeded(t, create(61), "UPLOAD_BYTES", subject)
@@ -460,12 +425,11 @@ func TestUploadLimitEnforcement(t *testing.T) {
 	usage, err := ts.Service.GetUserUsage(userCtx, &apipb.GetUserUsageRequest{Name: subject + "/usage"})
 	require.NoError(t, err)
 	require.Equal(t, int64(100), usage.StorageBytes)
-	require.Equal(t, "usageLimits/default-storage", usage.StorageBytesLimit.UsageLimit)
-	require.Equal(t, int64(60), usage.UploadBytesLimit.Value)
+	require.Equal(t, int64(100), usage.Limits.GetStorageBytes())
+	require.Equal(t, int64(60), usage.Limits.GetUploadBytes())
 
 	// A chunked upload is refused at start before any session or file exists.
-	_, err = ts.Service.UpdateUsageLimit(adminCtx, &apipb.UpdateUsageLimitRequest{UsageLimit: &apipb.UsageLimit{Name: "usageLimits/default-storage", Value: 200}})
-	require.NoError(t, err)
+	setUsageLimits(adminCtx, t, ts, &usageLimitEntry{AllUsers: true, StorageBytes: new(int64(200)), UploadBytes: new(int64(60))})
 	_, err = ts.Service.UploadAttachment(userCtx, &apipb.UploadAttachmentRequest{Upload: &apipb.UploadAttachmentRequest_Spec{Spec: &apipb.UploadAttachmentSpec{
 		Attachment: &apipb.Attachment{Filename: "big.bin", Type: "application/octet-stream"}, TotalSize: 120,
 	}}})
@@ -490,19 +454,18 @@ func TestUploadLimitEnforcement(t *testing.T) {
 	})
 	require.Equal(t, codes.NotFound, status.Code(err), "a refused upload is revoked")
 
-	// A user's own per-file limit replaces the default in either direction.
-	_, err = ts.Service.UpdateUsageLimit(adminCtx, &apipb.UpdateUsageLimitRequest{UsageLimit: &apipb.UsageLimit{Name: "usageLimits/default-storage", Value: 0}})
-	require.NoError(t, err)
-	createUsageLimit(adminCtx, t, ts, "user-upload", apipb.UsageLimit_UPLOAD_BYTES, subject, 1<<20)
+	// An entry naming the user is the whole limit set: a bigger per-file limit
+	// and no storage limit, whatever the default says.
+	setUsageLimits(adminCtx, t, ts,
+		&usageLimitEntry{Users: []string{subject}, UploadBytes: new(int64(1 << 20))},
+		&usageLimitEntry{AllUsers: true, StorageBytes: new(int64(200)), UploadBytes: new(int64(60))},
+	)
 	require.NoError(t, create(1<<20))
 	metadata = requireQuotaExceeded(t, create(1<<20+1), "UPLOAD_BYTES", subject)
-	require.Equal(t, "usageLimits/user-upload", metadata["usage_limit"])
+	require.Equal(t, "1048576", metadata["limit"])
 
 	// Without any per-file limit, a file of any size is accepted.
-	_, err = ts.Service.DeleteUsageLimit(adminCtx, &apipb.DeleteUsageLimitRequest{Name: "usageLimits/user-upload"})
-	require.NoError(t, err)
-	_, err = ts.Service.DeleteUsageLimit(adminCtx, &apipb.DeleteUsageLimitRequest{Name: "usageLimits/default-upload"})
-	require.NoError(t, err)
+	setUsageLimits(adminCtx, t, ts, &usageLimitEntry{AllUsers: true})
 	require.NoError(t, create(33<<20))
 }
 

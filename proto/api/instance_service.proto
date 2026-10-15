@@ -59,47 +59,6 @@ service InstanceService {
   rpc GetInstanceStats(GetInstanceStatsRequest) returns (InstanceStats) {
     option (google.api.http) = {get: "/api/instance/stats"};
   }
-
-  // ListUsageLimits lists the usage limits: the defaults for every user and the
-  // limits for single users. Admin only.
-  rpc ListUsageLimits(ListUsageLimitsRequest) returns (ListUsageLimitsResponse) {
-    option (google.api.http) = {get: "/api/usageLimits"};
-  }
-
-  // GetUsageLimit gets a usage limit. Admin only.
-  rpc GetUsageLimit(GetUsageLimitRequest) returns (UsageLimit) {
-    option (google.api.http) = {get: "/api/{name=usageLimits/*}"};
-    option (google.api.method_signature) = "name";
-  }
-
-  // CreateUsageLimit creates a usage limit. Admin only. There is at most one
-  // limit per metric and user, and one default per metric. Fails with
-  // FAILED_PRECONDITION when the usage limits are configured by the deployment.
-  rpc CreateUsageLimit(CreateUsageLimitRequest) returns (UsageLimit) {
-    option (google.api.http) = {
-      post: "/api/usageLimits"
-      body: "usage_limit"
-    };
-    option (google.api.method_signature) = "usage_limit,usage_limit_id";
-  }
-
-  // UpdateUsageLimit updates the value of a usage limit. Admin only. The metric
-  // and user cannot change.
-  rpc UpdateUsageLimit(UpdateUsageLimitRequest) returns (UsageLimit) {
-    option (google.api.http) = {
-      patch: "/api/{usage_limit.name=usageLimits/*}"
-      body: "usage_limit"
-    };
-    option (google.api.method_signature) = "usage_limit,update_mask";
-  }
-
-  // DeleteUsageLimit deletes a usage limit. Admin only. Deleting a user's limit
-  // returns the user to the default; deleting a default makes the metric
-  // unlimited for users without their own limit.
-  rpc DeleteUsageLimit(DeleteUsageLimitRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {delete: "/api/{name=usageLimits/*}"};
-    option (google.api.method_signature) = "name";
-  }
 }
 
 // InstanceAccessMode controls whether unauthenticated users may access instance content.
@@ -185,6 +144,8 @@ message InstanceSetting {
     AISetting ai_setting = 7;
     // The value of the ACCESS setting.
     AccessSetting access_setting = 8;
+    // The value of the USAGE_LIMITS setting.
+    UsageLimitsSetting usage_limits_setting = 9;
   }
 
   // Key identifies an instance setting.
@@ -204,6 +165,8 @@ message InstanceSetting {
     AI = 6;
     // Instance access policy settings.
     ACCESS = 7;
+    // Usage limits.
+    USAGE_LIMITS = 8;
   }
 
   // StorageType is the backend of a configured storage.
@@ -495,6 +458,42 @@ message InstanceSetting {
     // Whether unauthenticated users may access instance content. Must be PRIVATE or PUBLIC on update.
     InstanceAccessMode access_mode = 1;
   }
+
+  // UsageLimitsSetting is an ordered list of limit sets. The first entry that
+  // names a user is that user's limit set, whole. The last entry has all_users
+  // set and is the default. The setting is read and replaced whole. Admins
+  // are limited like everyone else.
+  message UsageLimitsSetting {
+    // The entries, in the order they are checked. At most 100, naming at most
+    // 1,000 users in all.
+    repeated UsageLimit limits = 1;
+
+    // UsageLimit is one entry: who it applies to and the limit for each
+    // metric. An unset limit is unlimited, as is 0.
+    message UsageLimit {
+      // The users the entry applies to. Not repeated within an entry.
+      // Format: users/{user}
+      repeated string users = 1 [(google.api.resource_reference) = {type: "memos.api/User"}];
+
+      // Whether the entry applies to every user. Exactly one entry has it, and
+      // it is the last entry. An entry has users or all_users, never both.
+      bool all_users = 3;
+
+      // The number of memos the user may have created, comments and archived
+      // memos included.
+      optional int64 memo_count = 4;
+
+      // The UTF-8 size in bytes of one memo's content.
+      optional int64 memo_content_bytes = 5;
+
+      // The total size in bytes of the user's uploads. External links do not
+      // count.
+      optional int64 storage_bytes = 6;
+
+      // The size in bytes of one uploaded file.
+      optional int64 upload_bytes = 7;
+    }
+  }
 }
 
 // Request message for InstanceService.GetInstanceSetting.
@@ -565,123 +564,3 @@ message InstanceStats {
 
 // Request message for InstanceService.GetInstanceStats.
 message GetInstanceStatsRequest {}
-
-// UsageLimit sets one limit for every user, or for one user. When both exist
-// for the same metric, the limit for the user applies to that user.
-message UsageLimit {
-  option (google.api.resource) = {
-    type: "memos.api/UsageLimit"
-    pattern: "usageLimits/{usage_limit}"
-    singular: "usageLimit"
-    plural: "usageLimits"
-  };
-
-  // Identifier. The resource name of the usage limit.
-  // Format: usageLimits/{usage_limit}
-  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
-
-  // Required. Immutable. What is limited.
-  Metric metric = 2 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.field_behavior) = IMMUTABLE
-  ];
-
-  // Optional. Immutable. The user the limit applies to. Empty means every user.
-  // Format: users/{user}
-  string user = 3 [
-    (google.api.field_behavior) = OPTIONAL,
-    (google.api.field_behavior) = IMMUTABLE,
-    (google.api.resource_reference) = {type: "memos.api/User"}
-  ];
-
-  // Required. The limit. Must not be negative. 0 means unlimited.
-  int64 value = 4 [(google.api.field_behavior) = REQUIRED];
-
-  // Output only. The creation time.
-  google.protobuf.Timestamp create_time = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
-
-  // Output only. The last update time.
-  google.protobuf.Timestamp update_time = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
-
-  // Metric is what a usage limit counts.
-  enum Metric {
-    METRIC_UNSPECIFIED = 0;
-    // The number of memos the user created, including comments, archived
-    // memos, and memos in Spaces.
-    MEMO_COUNT = 1;
-    // The UTF-8 size in bytes of one memo's content.
-    MEMO_CONTENT_BYTES = 2;
-    // The total size in bytes of the user's uploads, including uploads not
-    // attached to a memo. External links do not count.
-    STORAGE_BYTES = 3;
-    // The size in bytes of one uploaded file.
-    UPLOAD_BYTES = 4;
-  }
-}
-
-// Request message for InstanceService.ListUsageLimits.
-message ListUsageLimitsRequest {
-  // Optional. The maximum number of usage limits to return. If unspecified, at
-  // most 50 are returned. The maximum value is 1000; values above 1000 are
-  // coerced to 1000.
-  int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
-
-  // Optional. A page token from a previous call. Provide it to retrieve the
-  // next page.
-  string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
-
-  // Optional. A CEL filter on `user` and `metric`, combined with `&&`.
-  // `user == ""` selects the defaults for every user.
-  // Example: "user == 'users/steven' && metric == 'STORAGE_BYTES'"
-  string filter = 3 [(google.api.field_behavior) = OPTIONAL];
-}
-
-// Response message for InstanceService.ListUsageLimits.
-message ListUsageLimitsResponse {
-  // The usage limits, defaults first, then by user and metric.
-  repeated UsageLimit usage_limits = 1;
-
-  // A token to retrieve the next page. Empty when there are no more pages.
-  string next_page_token = 2;
-}
-
-// Request message for InstanceService.GetUsageLimit.
-message GetUsageLimitRequest {
-  // Required. The resource name of the usage limit.
-  // Format: usageLimits/{usage_limit}
-  string name = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/UsageLimit"}
-  ];
-}
-
-// Request message for InstanceService.CreateUsageLimit.
-message CreateUsageLimitRequest {
-  // Required. The usage limit to create.
-  UsageLimit usage_limit = 1 [(google.api.field_behavior) = REQUIRED];
-
-  // Optional. The ID to use for the usage limit, which becomes the final
-  // segment of its name. Lowercase letters, digits and hyphens, at most 32
-  // characters, starting with a letter. Generated when empty.
-  string usage_limit_id = 2 [(google.api.field_behavior) = OPTIONAL];
-}
-
-// Request message for InstanceService.UpdateUsageLimit.
-message UpdateUsageLimitRequest {
-  // Required. The usage limit with its new value.
-  UsageLimit usage_limit = 1 [(google.api.field_behavior) = REQUIRED];
-
-  // Optional. The fields to update. Only `value` is supported, which is also
-  // the default.
-  google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = OPTIONAL];
-}
-
-// Request message for InstanceService.DeleteUsageLimit.
-message DeleteUsageLimitRequest {
-  // Required. The resource name of the usage limit.
-  // Format: usageLimits/{usage_limit}
-  string name = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/UsageLimit"}
-  ];
-}

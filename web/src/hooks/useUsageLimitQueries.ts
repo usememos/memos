@@ -1,85 +1,42 @@
 import { create } from "@bufbuild/protobuf";
-import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { instanceServiceClient } from "@/connect";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useInstanceSetting, useUpdateInstanceSetting } from "@/hooks/useInstanceQueries";
 import { userKeys } from "@/hooks/useUserQueries";
-import { type UsageLimit, UsageLimit_Metric, UsageLimitSchema } from "@/types/proto/api/instance_service_pb";
+import { buildInstanceSettingName } from "@/lib/resource-names";
+import {
+  InstanceSetting_Key,
+  type InstanceSetting_UsageLimitsSetting_UsageLimit,
+  InstanceSettingSchema,
+} from "@/types/proto/api/instance_service_pb";
 
-export const usageLimitKeys = {
-  all: ["usageLimits"] as const,
-  list: () => [...usageLimitKeys.all, "list"] as const,
-};
-
-/** The metrics an admin can limit, in display order. */
-export const USAGE_LIMIT_METRICS = [
-  UsageLimit_Metric.MEMO_COUNT,
-  UsageLimit_Metric.MEMO_CONTENT_BYTES,
-  UsageLimit_Metric.STORAGE_BYTES,
-  UsageLimit_Metric.UPLOAD_BYTES,
-] as const;
-
-/** Lists every usage limit. Admin only on the server side. */
-export function useUsageLimits(options?: { enabled?: boolean }) {
-  return useQuery({
-    queryKey: usageLimitKeys.list(),
-    queryFn: async () => {
-      const limits: UsageLimit[] = [];
-      let pageToken = "";
-      do {
-        const response = await instanceServiceClient.listUsageLimits({ pageSize: 1000, pageToken });
-        limits.push(...response.usageLimits);
-        pageToken = response.nextPageToken;
-      } while (pageToken);
-      return limits;
-    },
-    enabled: options?.enabled ?? true,
-  });
-}
-
-/** Finds the limit for metric that applies to user, or the default when user is empty. */
-export function findUsageLimit(limits: UsageLimit[] | undefined, metric: UsageLimit_Metric, user = ""): UsageLimit | undefined {
-  return limits?.find((limit) => limit.metric === metric && limit.user === user);
-}
-
-export interface SetUsageLimitRequest {
-  metric: UsageLimit_Metric;
-  /** The user, as users/{user}. Empty sets the default for every user. */
-  user?: string;
-  /** The new value, 0 for unlimited, or undefined to remove the limit. */
-  value: bigint | undefined;
-  /** The limit that exists now for this metric and user, if any. */
-  existing?: UsageLimit;
-}
+export type UsageLimitEntry = InstanceSetting_UsageLimitsSetting_UsageLimit;
 
 /**
- * Creates, updates, or deletes the one usage limit for a metric and user, so
- * that forms can treat each metric as a single value.
+ * The usage limits, in the order they are checked. The server returns the
+ * built-in default when nothing is stored, so the list always ends with the
+ * all-users entry. Admin only on the server side.
  */
-export function useSetUsageLimit() {
+export function useUsageLimits() {
+  const query = useInstanceSetting(InstanceSetting_Key.USAGE_LIMITS);
+  const limits = query.data?.value.case === "usageLimitsSetting" ? query.data.value.value.limits : undefined;
+  return { ...query, limits };
+}
+
+/** Replaces the whole usage limits list. */
+export function useSaveUsageLimits() {
   const queryClient = useQueryClient();
+  const updateSetting = useUpdateInstanceSetting();
   return useMutation({
-    mutationFn: async ({ metric, user = "", value, existing }: SetUsageLimitRequest) => {
-      if (value === undefined) {
-        if (existing) {
-          await instanceServiceClient.deleteUsageLimit({ name: existing.name });
-        }
-        return;
-      }
-      if (existing) {
-        if (existing.value === value) return;
-        await instanceServiceClient.updateUsageLimit({
-          usageLimit: create(UsageLimitSchema, { name: existing.name, value }),
-          updateMask: create(FieldMaskSchema, { paths: ["value"] }),
-        });
-        return;
-      }
-      await instanceServiceClient.createUsageLimit({ usageLimit: create(UsageLimitSchema, { metric, user, value }) });
+    mutationFn: async (limits: UsageLimitEntry[]) => {
+      await updateSetting.mutateAsync(
+        create(InstanceSettingSchema, {
+          name: buildInstanceSettingName(InstanceSetting_Key.USAGE_LIMITS),
+          value: { case: "usageLimitsSetting", value: { limits } },
+        }),
+      );
     },
     onSettled: async () => {
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: usageLimitKeys.all }),
-        queryClient.invalidateQueries({ queryKey: userKeys.stats() }),
-      ]);
+      await queryClient.invalidateQueries({ queryKey: userKeys.stats() });
     },
   });
 }

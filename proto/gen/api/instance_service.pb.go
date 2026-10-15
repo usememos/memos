@@ -98,6 +98,8 @@ const (
 	InstanceSetting_AI InstanceSetting_Key = 6
 	// Instance access policy settings.
 	InstanceSetting_ACCESS InstanceSetting_Key = 7
+	// Usage limits.
+	InstanceSetting_USAGE_LIMITS InstanceSetting_Key = 8
 )
 
 // Enum value maps for InstanceSetting_Key.
@@ -111,6 +113,7 @@ var (
 		5: "NOTIFICATION",
 		6: "AI",
 		7: "ACCESS",
+		8: "USAGE_LIMITS",
 	}
 	InstanceSetting_Key_value = map[string]int32{
 		"KEY_UNSPECIFIED": 0,
@@ -121,6 +124,7 @@ var (
 		"NOTIFICATION":    5,
 		"AI":              6,
 		"ACCESS":          7,
+		"USAGE_LIMITS":    8,
 	}
 )
 
@@ -315,68 +319,6 @@ func (InstanceSetting_StorageSetting_StorageType) EnumDescriptor() ([]byte, []in
 	return file_api_instance_service_proto_rawDescGZIP(), []int{2, 1, 0}
 }
 
-// Metric is what a usage limit counts.
-type UsageLimit_Metric int32
-
-const (
-	UsageLimit_METRIC_UNSPECIFIED UsageLimit_Metric = 0
-	// The number of memos the user created, including comments, archived
-	// memos, and memos in Spaces.
-	UsageLimit_MEMO_COUNT UsageLimit_Metric = 1
-	// The UTF-8 size in bytes of one memo's content.
-	UsageLimit_MEMO_CONTENT_BYTES UsageLimit_Metric = 2
-	// The total size in bytes of the user's uploads, including uploads not
-	// attached to a memo. External links do not count.
-	UsageLimit_STORAGE_BYTES UsageLimit_Metric = 3
-	// The size in bytes of one uploaded file.
-	UsageLimit_UPLOAD_BYTES UsageLimit_Metric = 4
-)
-
-// Enum value maps for UsageLimit_Metric.
-var (
-	UsageLimit_Metric_name = map[int32]string{
-		0: "METRIC_UNSPECIFIED",
-		1: "MEMO_COUNT",
-		2: "MEMO_CONTENT_BYTES",
-		3: "STORAGE_BYTES",
-		4: "UPLOAD_BYTES",
-	}
-	UsageLimit_Metric_value = map[string]int32{
-		"METRIC_UNSPECIFIED": 0,
-		"MEMO_COUNT":         1,
-		"MEMO_CONTENT_BYTES": 2,
-		"STORAGE_BYTES":      3,
-		"UPLOAD_BYTES":       4,
-	}
-)
-
-func (x UsageLimit_Metric) Enum() *UsageLimit_Metric {
-	p := new(UsageLimit_Metric)
-	*p = x
-	return p
-}
-
-func (x UsageLimit_Metric) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
-}
-
-func (UsageLimit_Metric) Descriptor() protoreflect.EnumDescriptor {
-	return file_api_instance_service_proto_enumTypes[5].Descriptor()
-}
-
-func (UsageLimit_Metric) Type() protoreflect.EnumType {
-	return &file_api_instance_service_proto_enumTypes[5]
-}
-
-func (x UsageLimit_Metric) Number() protoreflect.EnumNumber {
-	return protoreflect.EnumNumber(x)
-}
-
-// Deprecated: Use UsageLimit_Metric.Descriptor instead.
-func (UsageLimit_Metric) EnumDescriptor() ([]byte, []int) {
-	return file_api_instance_service_proto_rawDescGZIP(), []int{10, 0}
-}
-
 // InstanceProfile is the basic information about the instance.
 type InstanceProfile struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -545,6 +487,7 @@ type InstanceSetting struct {
 	//	*InstanceSetting_NotificationSetting_
 	//	*InstanceSetting_AiSetting
 	//	*InstanceSetting_AccessSetting_
+	//	*InstanceSetting_UsageLimitsSetting_
 	Value         isInstanceSetting_Value `protobuf_oneof:"value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -657,6 +600,15 @@ func (x *InstanceSetting) GetAccessSetting() *InstanceSetting_AccessSetting {
 	return nil
 }
 
+func (x *InstanceSetting) GetUsageLimitsSetting() *InstanceSetting_UsageLimitsSetting {
+	if x != nil {
+		if x, ok := x.Value.(*InstanceSetting_UsageLimitsSetting_); ok {
+			return x.UsageLimitsSetting
+		}
+	}
+	return nil
+}
+
 type isInstanceSetting_Value interface {
 	isInstanceSetting_Value()
 }
@@ -696,6 +648,11 @@ type InstanceSetting_AccessSetting_ struct {
 	AccessSetting *InstanceSetting_AccessSetting `protobuf:"bytes,8,opt,name=access_setting,json=accessSetting,proto3,oneof"`
 }
 
+type InstanceSetting_UsageLimitsSetting_ struct {
+	// The value of the USAGE_LIMITS setting.
+	UsageLimitsSetting *InstanceSetting_UsageLimitsSetting `protobuf:"bytes,9,opt,name=usage_limits_setting,json=usageLimitsSetting,proto3,oneof"`
+}
+
 func (*InstanceSetting_GeneralSetting_) isInstanceSetting_Value() {}
 
 func (*InstanceSetting_StorageSetting_) isInstanceSetting_Value() {}
@@ -709,6 +666,8 @@ func (*InstanceSetting_NotificationSetting_) isInstanceSetting_Value() {}
 func (*InstanceSetting_AiSetting) isInstanceSetting_Value() {}
 
 func (*InstanceSetting_AccessSetting_) isInstanceSetting_Value() {}
+
+func (*InstanceSetting_UsageLimitsSetting_) isInstanceSetting_Value() {}
 
 // Request message for InstanceService.GetInstanceSetting.
 type GetInstanceSettingRequest struct {
@@ -1062,431 +1021,6 @@ func (*GetInstanceStatsRequest) Descriptor() ([]byte, []int) {
 	return file_api_instance_service_proto_rawDescGZIP(), []int{9}
 }
 
-// UsageLimit sets one limit for every user, or for one user. When both exist
-// for the same metric, the limit for the user applies to that user.
-type UsageLimit struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Identifier. The resource name of the usage limit.
-	// Format: usageLimits/{usage_limit}
-	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Required. Immutable. What is limited.
-	Metric UsageLimit_Metric `protobuf:"varint,2,opt,name=metric,proto3,enum=memos.api.UsageLimit_Metric" json:"metric,omitempty"`
-	// Optional. Immutable. The user the limit applies to. Empty means every user.
-	// Format: users/{user}
-	User string `protobuf:"bytes,3,opt,name=user,proto3" json:"user,omitempty"`
-	// Required. The limit. Must not be negative. 0 means unlimited.
-	Value int64 `protobuf:"varint,4,opt,name=value,proto3" json:"value,omitempty"`
-	// Output only. The creation time.
-	CreateTime *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
-	// Output only. The last update time.
-	UpdateTime    *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *UsageLimit) Reset() {
-	*x = UsageLimit{}
-	mi := &file_api_instance_service_proto_msgTypes[10]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *UsageLimit) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*UsageLimit) ProtoMessage() {}
-
-func (x *UsageLimit) ProtoReflect() protoreflect.Message {
-	mi := &file_api_instance_service_proto_msgTypes[10]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use UsageLimit.ProtoReflect.Descriptor instead.
-func (*UsageLimit) Descriptor() ([]byte, []int) {
-	return file_api_instance_service_proto_rawDescGZIP(), []int{10}
-}
-
-func (x *UsageLimit) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
-func (x *UsageLimit) GetMetric() UsageLimit_Metric {
-	if x != nil {
-		return x.Metric
-	}
-	return UsageLimit_METRIC_UNSPECIFIED
-}
-
-func (x *UsageLimit) GetUser() string {
-	if x != nil {
-		return x.User
-	}
-	return ""
-}
-
-func (x *UsageLimit) GetValue() int64 {
-	if x != nil {
-		return x.Value
-	}
-	return 0
-}
-
-func (x *UsageLimit) GetCreateTime() *timestamppb.Timestamp {
-	if x != nil {
-		return x.CreateTime
-	}
-	return nil
-}
-
-func (x *UsageLimit) GetUpdateTime() *timestamppb.Timestamp {
-	if x != nil {
-		return x.UpdateTime
-	}
-	return nil
-}
-
-// Request message for InstanceService.ListUsageLimits.
-type ListUsageLimitsRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Optional. The maximum number of usage limits to return. If unspecified, at
-	// most 50 are returned. The maximum value is 1000; values above 1000 are
-	// coerced to 1000.
-	PageSize int32 `protobuf:"varint,1,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// Optional. A page token from a previous call. Provide it to retrieve the
-	// next page.
-	PageToken string `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
-	// Optional. A CEL filter on `user` and `metric`, combined with `&&`.
-	// `user == ""` selects the defaults for every user.
-	// Example: "user == 'users/steven' && metric == 'STORAGE_BYTES'"
-	Filter        string `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ListUsageLimitsRequest) Reset() {
-	*x = ListUsageLimitsRequest{}
-	mi := &file_api_instance_service_proto_msgTypes[11]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ListUsageLimitsRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ListUsageLimitsRequest) ProtoMessage() {}
-
-func (x *ListUsageLimitsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_instance_service_proto_msgTypes[11]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ListUsageLimitsRequest.ProtoReflect.Descriptor instead.
-func (*ListUsageLimitsRequest) Descriptor() ([]byte, []int) {
-	return file_api_instance_service_proto_rawDescGZIP(), []int{11}
-}
-
-func (x *ListUsageLimitsRequest) GetPageSize() int32 {
-	if x != nil {
-		return x.PageSize
-	}
-	return 0
-}
-
-func (x *ListUsageLimitsRequest) GetPageToken() string {
-	if x != nil {
-		return x.PageToken
-	}
-	return ""
-}
-
-func (x *ListUsageLimitsRequest) GetFilter() string {
-	if x != nil {
-		return x.Filter
-	}
-	return ""
-}
-
-// Response message for InstanceService.ListUsageLimits.
-type ListUsageLimitsResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// The usage limits, defaults first, then by user and metric.
-	UsageLimits []*UsageLimit `protobuf:"bytes,1,rep,name=usage_limits,json=usageLimits,proto3" json:"usage_limits,omitempty"`
-	// A token to retrieve the next page. Empty when there are no more pages.
-	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ListUsageLimitsResponse) Reset() {
-	*x = ListUsageLimitsResponse{}
-	mi := &file_api_instance_service_proto_msgTypes[12]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ListUsageLimitsResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ListUsageLimitsResponse) ProtoMessage() {}
-
-func (x *ListUsageLimitsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_instance_service_proto_msgTypes[12]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ListUsageLimitsResponse.ProtoReflect.Descriptor instead.
-func (*ListUsageLimitsResponse) Descriptor() ([]byte, []int) {
-	return file_api_instance_service_proto_rawDescGZIP(), []int{12}
-}
-
-func (x *ListUsageLimitsResponse) GetUsageLimits() []*UsageLimit {
-	if x != nil {
-		return x.UsageLimits
-	}
-	return nil
-}
-
-func (x *ListUsageLimitsResponse) GetNextPageToken() string {
-	if x != nil {
-		return x.NextPageToken
-	}
-	return ""
-}
-
-// Request message for InstanceService.GetUsageLimit.
-type GetUsageLimitRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The resource name of the usage limit.
-	// Format: usageLimits/{usage_limit}
-	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GetUsageLimitRequest) Reset() {
-	*x = GetUsageLimitRequest{}
-	mi := &file_api_instance_service_proto_msgTypes[13]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GetUsageLimitRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetUsageLimitRequest) ProtoMessage() {}
-
-func (x *GetUsageLimitRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_instance_service_proto_msgTypes[13]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetUsageLimitRequest.ProtoReflect.Descriptor instead.
-func (*GetUsageLimitRequest) Descriptor() ([]byte, []int) {
-	return file_api_instance_service_proto_rawDescGZIP(), []int{13}
-}
-
-func (x *GetUsageLimitRequest) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
-// Request message for InstanceService.CreateUsageLimit.
-type CreateUsageLimitRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The usage limit to create.
-	UsageLimit *UsageLimit `protobuf:"bytes,1,opt,name=usage_limit,json=usageLimit,proto3" json:"usage_limit,omitempty"`
-	// Optional. The ID to use for the usage limit, which becomes the final
-	// segment of its name. Lowercase letters, digits and hyphens, at most 32
-	// characters, starting with a letter. Generated when empty.
-	UsageLimitId  string `protobuf:"bytes,2,opt,name=usage_limit_id,json=usageLimitId,proto3" json:"usage_limit_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *CreateUsageLimitRequest) Reset() {
-	*x = CreateUsageLimitRequest{}
-	mi := &file_api_instance_service_proto_msgTypes[14]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *CreateUsageLimitRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*CreateUsageLimitRequest) ProtoMessage() {}
-
-func (x *CreateUsageLimitRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_instance_service_proto_msgTypes[14]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use CreateUsageLimitRequest.ProtoReflect.Descriptor instead.
-func (*CreateUsageLimitRequest) Descriptor() ([]byte, []int) {
-	return file_api_instance_service_proto_rawDescGZIP(), []int{14}
-}
-
-func (x *CreateUsageLimitRequest) GetUsageLimit() *UsageLimit {
-	if x != nil {
-		return x.UsageLimit
-	}
-	return nil
-}
-
-func (x *CreateUsageLimitRequest) GetUsageLimitId() string {
-	if x != nil {
-		return x.UsageLimitId
-	}
-	return ""
-}
-
-// Request message for InstanceService.UpdateUsageLimit.
-type UpdateUsageLimitRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The usage limit with its new value.
-	UsageLimit *UsageLimit `protobuf:"bytes,1,opt,name=usage_limit,json=usageLimit,proto3" json:"usage_limit,omitempty"`
-	// Optional. The fields to update. Only `value` is supported, which is also
-	// the default.
-	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *UpdateUsageLimitRequest) Reset() {
-	*x = UpdateUsageLimitRequest{}
-	mi := &file_api_instance_service_proto_msgTypes[15]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *UpdateUsageLimitRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*UpdateUsageLimitRequest) ProtoMessage() {}
-
-func (x *UpdateUsageLimitRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_instance_service_proto_msgTypes[15]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use UpdateUsageLimitRequest.ProtoReflect.Descriptor instead.
-func (*UpdateUsageLimitRequest) Descriptor() ([]byte, []int) {
-	return file_api_instance_service_proto_rawDescGZIP(), []int{15}
-}
-
-func (x *UpdateUsageLimitRequest) GetUsageLimit() *UsageLimit {
-	if x != nil {
-		return x.UsageLimit
-	}
-	return nil
-}
-
-func (x *UpdateUsageLimitRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
-	if x != nil {
-		return x.UpdateMask
-	}
-	return nil
-}
-
-// Request message for InstanceService.DeleteUsageLimit.
-type DeleteUsageLimitRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The resource name of the usage limit.
-	// Format: usageLimits/{usage_limit}
-	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *DeleteUsageLimitRequest) Reset() {
-	*x = DeleteUsageLimitRequest{}
-	mi := &file_api_instance_service_proto_msgTypes[16]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *DeleteUsageLimitRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*DeleteUsageLimitRequest) ProtoMessage() {}
-
-func (x *DeleteUsageLimitRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_instance_service_proto_msgTypes[16]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use DeleteUsageLimitRequest.ProtoReflect.Descriptor instead.
-func (*DeleteUsageLimitRequest) Descriptor() ([]byte, []int) {
-	return file_api_instance_service_proto_rawDescGZIP(), []int{16}
-}
-
-func (x *DeleteUsageLimitRequest) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
 // Challenge describes a proof-of-humanity challenge widget.
 type InstanceProfile_Challenge struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1500,7 +1034,7 @@ type InstanceProfile_Challenge struct {
 
 func (x *InstanceProfile_Challenge) Reset() {
 	*x = InstanceProfile_Challenge{}
-	mi := &file_api_instance_service_proto_msgTypes[17]
+	mi := &file_api_instance_service_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1512,7 +1046,7 @@ func (x *InstanceProfile_Challenge) String() string {
 func (*InstanceProfile_Challenge) ProtoMessage() {}
 
 func (x *InstanceProfile_Challenge) ProtoReflect() protoreflect.Message {
-	mi := &file_api_instance_service_proto_msgTypes[17]
+	mi := &file_api_instance_service_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1569,7 +1103,7 @@ type InstanceSetting_GeneralSetting struct {
 
 func (x *InstanceSetting_GeneralSetting) Reset() {
 	*x = InstanceSetting_GeneralSetting{}
-	mi := &file_api_instance_service_proto_msgTypes[18]
+	mi := &file_api_instance_service_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1581,7 +1115,7 @@ func (x *InstanceSetting_GeneralSetting) String() string {
 func (*InstanceSetting_GeneralSetting) ProtoMessage() {}
 
 func (x *InstanceSetting_GeneralSetting) ProtoReflect() protoreflect.Message {
-	mi := &file_api_instance_service_proto_msgTypes[18]
+	mi := &file_api_instance_service_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1673,7 +1207,7 @@ type InstanceSetting_StorageSetting struct {
 
 func (x *InstanceSetting_StorageSetting) Reset() {
 	*x = InstanceSetting_StorageSetting{}
-	mi := &file_api_instance_service_proto_msgTypes[19]
+	mi := &file_api_instance_service_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1685,7 +1219,7 @@ func (x *InstanceSetting_StorageSetting) String() string {
 func (*InstanceSetting_StorageSetting) ProtoMessage() {}
 
 func (x *InstanceSetting_StorageSetting) ProtoReflect() protoreflect.Message {
-	mi := &file_api_instance_service_proto_msgTypes[19]
+	mi := &file_api_instance_service_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1757,7 +1291,7 @@ type InstanceSetting_Storage struct {
 
 func (x *InstanceSetting_Storage) Reset() {
 	*x = InstanceSetting_Storage{}
-	mi := &file_api_instance_service_proto_msgTypes[20]
+	mi := &file_api_instance_service_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1769,7 +1303,7 @@ func (x *InstanceSetting_Storage) String() string {
 func (*InstanceSetting_Storage) ProtoMessage() {}
 
 func (x *InstanceSetting_Storage) ProtoReflect() protoreflect.Message {
-	mi := &file_api_instance_service_proto_msgTypes[20]
+	mi := &file_api_instance_service_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1846,7 +1380,7 @@ type InstanceSetting_MemoRelatedSetting struct {
 
 func (x *InstanceSetting_MemoRelatedSetting) Reset() {
 	*x = InstanceSetting_MemoRelatedSetting{}
-	mi := &file_api_instance_service_proto_msgTypes[21]
+	mi := &file_api_instance_service_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1858,7 +1392,7 @@ func (x *InstanceSetting_MemoRelatedSetting) String() string {
 func (*InstanceSetting_MemoRelatedSetting) ProtoMessage() {}
 
 func (x *InstanceSetting_MemoRelatedSetting) ProtoReflect() protoreflect.Message {
-	mi := &file_api_instance_service_proto_msgTypes[21]
+	mi := &file_api_instance_service_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1903,7 +1437,7 @@ type InstanceSetting_TagsSetting struct {
 
 func (x *InstanceSetting_TagsSetting) Reset() {
 	*x = InstanceSetting_TagsSetting{}
-	mi := &file_api_instance_service_proto_msgTypes[22]
+	mi := &file_api_instance_service_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1915,7 +1449,7 @@ func (x *InstanceSetting_TagsSetting) String() string {
 func (*InstanceSetting_TagsSetting) ProtoMessage() {}
 
 func (x *InstanceSetting_TagsSetting) ProtoReflect() protoreflect.Message {
-	mi := &file_api_instance_service_proto_msgTypes[22]
+	mi := &file_api_instance_service_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1951,7 +1485,7 @@ type InstanceSetting_TagMetadata struct {
 
 func (x *InstanceSetting_TagMetadata) Reset() {
 	*x = InstanceSetting_TagMetadata{}
-	mi := &file_api_instance_service_proto_msgTypes[23]
+	mi := &file_api_instance_service_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1963,7 +1497,7 @@ func (x *InstanceSetting_TagMetadata) String() string {
 func (*InstanceSetting_TagMetadata) ProtoMessage() {}
 
 func (x *InstanceSetting_TagMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_api_instance_service_proto_msgTypes[23]
+	mi := &file_api_instance_service_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2004,7 +1538,7 @@ type InstanceSetting_NotificationSetting struct {
 
 func (x *InstanceSetting_NotificationSetting) Reset() {
 	*x = InstanceSetting_NotificationSetting{}
-	mi := &file_api_instance_service_proto_msgTypes[24]
+	mi := &file_api_instance_service_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2016,7 +1550,7 @@ func (x *InstanceSetting_NotificationSetting) String() string {
 func (*InstanceSetting_NotificationSetting) ProtoMessage() {}
 
 func (x *InstanceSetting_NotificationSetting) ProtoReflect() protoreflect.Message {
-	mi := &file_api_instance_service_proto_msgTypes[24]
+	mi := &file_api_instance_service_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2054,7 +1588,7 @@ type InstanceSetting_AISetting struct {
 
 func (x *InstanceSetting_AISetting) Reset() {
 	*x = InstanceSetting_AISetting{}
-	mi := &file_api_instance_service_proto_msgTypes[25]
+	mi := &file_api_instance_service_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2066,7 +1600,7 @@ func (x *InstanceSetting_AISetting) String() string {
 func (*InstanceSetting_AISetting) ProtoMessage() {}
 
 func (x *InstanceSetting_AISetting) ProtoReflect() protoreflect.Message {
-	mi := &file_api_instance_service_proto_msgTypes[25]
+	mi := &file_api_instance_service_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2119,7 +1653,7 @@ type InstanceSetting_AIProviderConfig struct {
 
 func (x *InstanceSetting_AIProviderConfig) Reset() {
 	*x = InstanceSetting_AIProviderConfig{}
-	mi := &file_api_instance_service_proto_msgTypes[26]
+	mi := &file_api_instance_service_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2131,7 +1665,7 @@ func (x *InstanceSetting_AIProviderConfig) String() string {
 func (*InstanceSetting_AIProviderConfig) ProtoMessage() {}
 
 func (x *InstanceSetting_AIProviderConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_api_instance_service_proto_msgTypes[26]
+	mi := &file_api_instance_service_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2216,7 +1750,7 @@ type InstanceSetting_TranscriptionConfig struct {
 
 func (x *InstanceSetting_TranscriptionConfig) Reset() {
 	*x = InstanceSetting_TranscriptionConfig{}
-	mi := &file_api_instance_service_proto_msgTypes[27]
+	mi := &file_api_instance_service_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2228,7 +1762,7 @@ func (x *InstanceSetting_TranscriptionConfig) String() string {
 func (*InstanceSetting_TranscriptionConfig) ProtoMessage() {}
 
 func (x *InstanceSetting_TranscriptionConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_api_instance_service_proto_msgTypes[27]
+	mi := &file_api_instance_service_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2283,7 +1817,7 @@ type InstanceSetting_AccessSetting struct {
 
 func (x *InstanceSetting_AccessSetting) Reset() {
 	*x = InstanceSetting_AccessSetting{}
-	mi := &file_api_instance_service_proto_msgTypes[28]
+	mi := &file_api_instance_service_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2295,7 +1829,7 @@ func (x *InstanceSetting_AccessSetting) String() string {
 func (*InstanceSetting_AccessSetting) ProtoMessage() {}
 
 func (x *InstanceSetting_AccessSetting) ProtoReflect() protoreflect.Message {
-	mi := &file_api_instance_service_proto_msgTypes[28]
+	mi := &file_api_instance_service_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2318,6 +1852,56 @@ func (x *InstanceSetting_AccessSetting) GetAccessMode() InstanceAccessMode {
 	return InstanceAccessMode_INSTANCE_ACCESS_MODE_UNSPECIFIED
 }
 
+// UsageLimitsSetting is an ordered list of limit sets. The first entry that
+// names a user is that user's limit set, whole. The last entry has all_users
+// set and is the default. The setting is read and replaced whole. Admins
+// are limited like everyone else.
+type InstanceSetting_UsageLimitsSetting struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The entries, in the order they are checked. At most 100, naming at most
+	// 1,000 users in all.
+	Limits        []*InstanceSetting_UsageLimitsSetting_UsageLimit `protobuf:"bytes,1,rep,name=limits,proto3" json:"limits,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *InstanceSetting_UsageLimitsSetting) Reset() {
+	*x = InstanceSetting_UsageLimitsSetting{}
+	mi := &file_api_instance_service_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *InstanceSetting_UsageLimitsSetting) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*InstanceSetting_UsageLimitsSetting) ProtoMessage() {}
+
+func (x *InstanceSetting_UsageLimitsSetting) ProtoReflect() protoreflect.Message {
+	mi := &file_api_instance_service_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use InstanceSetting_UsageLimitsSetting.ProtoReflect.Descriptor instead.
+func (*InstanceSetting_UsageLimitsSetting) Descriptor() ([]byte, []int) {
+	return file_api_instance_service_proto_rawDescGZIP(), []int{2, 11}
+}
+
+func (x *InstanceSetting_UsageLimitsSetting) GetLimits() []*InstanceSetting_UsageLimitsSetting_UsageLimit {
+	if x != nil {
+		return x.Limits
+	}
+	return nil
+}
+
 // CustomProfile is the instance branding.
 type InstanceSetting_GeneralSetting_CustomProfile struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -2333,7 +1917,7 @@ type InstanceSetting_GeneralSetting_CustomProfile struct {
 
 func (x *InstanceSetting_GeneralSetting_CustomProfile) Reset() {
 	*x = InstanceSetting_GeneralSetting_CustomProfile{}
-	mi := &file_api_instance_service_proto_msgTypes[29]
+	mi := &file_api_instance_service_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2345,7 +1929,7 @@ func (x *InstanceSetting_GeneralSetting_CustomProfile) String() string {
 func (*InstanceSetting_GeneralSetting_CustomProfile) ProtoMessage() {}
 
 func (x *InstanceSetting_GeneralSetting_CustomProfile) ProtoReflect() protoreflect.Message {
-	mi := &file_api_instance_service_proto_msgTypes[29]
+	mi := &file_api_instance_service_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2408,7 +1992,7 @@ type InstanceSetting_StorageSetting_S3Config struct {
 
 func (x *InstanceSetting_StorageSetting_S3Config) Reset() {
 	*x = InstanceSetting_StorageSetting_S3Config{}
-	mi := &file_api_instance_service_proto_msgTypes[30]
+	mi := &file_api_instance_service_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2420,7 +2004,7 @@ func (x *InstanceSetting_StorageSetting_S3Config) String() string {
 func (*InstanceSetting_StorageSetting_S3Config) ProtoMessage() {}
 
 func (x *InstanceSetting_StorageSetting_S3Config) ProtoReflect() protoreflect.Message {
-	mi := &file_api_instance_service_proto_msgTypes[30]
+	mi := &file_api_instance_service_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2511,7 +2095,7 @@ type InstanceSetting_Storage_S3Config struct {
 
 func (x *InstanceSetting_Storage_S3Config) Reset() {
 	*x = InstanceSetting_Storage_S3Config{}
-	mi := &file_api_instance_service_proto_msgTypes[31]
+	mi := &file_api_instance_service_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2523,7 +2107,7 @@ func (x *InstanceSetting_Storage_S3Config) String() string {
 func (*InstanceSetting_Storage_S3Config) ProtoMessage() {}
 
 func (x *InstanceSetting_Storage_S3Config) ProtoReflect() protoreflect.Message {
-	mi := &file_api_instance_service_proto_msgTypes[31]
+	mi := &file_api_instance_service_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2618,7 +2202,7 @@ type InstanceSetting_NotificationSetting_EmailSetting struct {
 
 func (x *InstanceSetting_NotificationSetting_EmailSetting) Reset() {
 	*x = InstanceSetting_NotificationSetting_EmailSetting{}
-	mi := &file_api_instance_service_proto_msgTypes[33]
+	mi := &file_api_instance_service_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2630,7 +2214,7 @@ func (x *InstanceSetting_NotificationSetting_EmailSetting) String() string {
 func (*InstanceSetting_NotificationSetting_EmailSetting) ProtoMessage() {}
 
 func (x *InstanceSetting_NotificationSetting_EmailSetting) ProtoReflect() protoreflect.Message {
-	mi := &file_api_instance_service_proto_msgTypes[33]
+	mi := &file_api_instance_service_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2716,6 +2300,102 @@ func (x *InstanceSetting_NotificationSetting_EmailSetting) GetReplyTo() string {
 	return ""
 }
 
+// UsageLimit is one entry: who it applies to and the limit for each
+// metric. An unset limit is unlimited, as is 0.
+type InstanceSetting_UsageLimitsSetting_UsageLimit struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The users the entry applies to. Not repeated within an entry.
+	// Format: users/{user}
+	Users []string `protobuf:"bytes,1,rep,name=users,proto3" json:"users,omitempty"`
+	// Whether the entry applies to every user. Exactly one entry has it, and
+	// it is the last entry. An entry has users or all_users, never both.
+	AllUsers bool `protobuf:"varint,3,opt,name=all_users,json=allUsers,proto3" json:"all_users,omitempty"`
+	// The number of memos the user may have created, comments and archived
+	// memos included.
+	MemoCount *int64 `protobuf:"varint,4,opt,name=memo_count,json=memoCount,proto3,oneof" json:"memo_count,omitempty"`
+	// The UTF-8 size in bytes of one memo's content.
+	MemoContentBytes *int64 `protobuf:"varint,5,opt,name=memo_content_bytes,json=memoContentBytes,proto3,oneof" json:"memo_content_bytes,omitempty"`
+	// The total size in bytes of the user's uploads. External links do not
+	// count.
+	StorageBytes *int64 `protobuf:"varint,6,opt,name=storage_bytes,json=storageBytes,proto3,oneof" json:"storage_bytes,omitempty"`
+	// The size in bytes of one uploaded file.
+	UploadBytes   *int64 `protobuf:"varint,7,opt,name=upload_bytes,json=uploadBytes,proto3,oneof" json:"upload_bytes,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *InstanceSetting_UsageLimitsSetting_UsageLimit) Reset() {
+	*x = InstanceSetting_UsageLimitsSetting_UsageLimit{}
+	mi := &file_api_instance_service_proto_msgTypes[28]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *InstanceSetting_UsageLimitsSetting_UsageLimit) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*InstanceSetting_UsageLimitsSetting_UsageLimit) ProtoMessage() {}
+
+func (x *InstanceSetting_UsageLimitsSetting_UsageLimit) ProtoReflect() protoreflect.Message {
+	mi := &file_api_instance_service_proto_msgTypes[28]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use InstanceSetting_UsageLimitsSetting_UsageLimit.ProtoReflect.Descriptor instead.
+func (*InstanceSetting_UsageLimitsSetting_UsageLimit) Descriptor() ([]byte, []int) {
+	return file_api_instance_service_proto_rawDescGZIP(), []int{2, 11, 0}
+}
+
+func (x *InstanceSetting_UsageLimitsSetting_UsageLimit) GetUsers() []string {
+	if x != nil {
+		return x.Users
+	}
+	return nil
+}
+
+func (x *InstanceSetting_UsageLimitsSetting_UsageLimit) GetAllUsers() bool {
+	if x != nil {
+		return x.AllUsers
+	}
+	return false
+}
+
+func (x *InstanceSetting_UsageLimitsSetting_UsageLimit) GetMemoCount() int64 {
+	if x != nil && x.MemoCount != nil {
+		return *x.MemoCount
+	}
+	return 0
+}
+
+func (x *InstanceSetting_UsageLimitsSetting_UsageLimit) GetMemoContentBytes() int64 {
+	if x != nil && x.MemoContentBytes != nil {
+		return *x.MemoContentBytes
+	}
+	return 0
+}
+
+func (x *InstanceSetting_UsageLimitsSetting_UsageLimit) GetStorageBytes() int64 {
+	if x != nil && x.StorageBytes != nil {
+		return *x.StorageBytes
+	}
+	return 0
+}
+
+func (x *InstanceSetting_UsageLimitsSetting_UsageLimit) GetUploadBytes() int64 {
+	if x != nil && x.UploadBytes != nil {
+		return *x.UploadBytes
+	}
+	return 0
+}
+
 // DatabaseStats is the database size statistics.
 type InstanceStats_DatabaseStats struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -2729,7 +2409,7 @@ type InstanceStats_DatabaseStats struct {
 
 func (x *InstanceStats_DatabaseStats) Reset() {
 	*x = InstanceStats_DatabaseStats{}
-	mi := &file_api_instance_service_proto_msgTypes[34]
+	mi := &file_api_instance_service_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2741,7 +2421,7 @@ func (x *InstanceStats_DatabaseStats) String() string {
 func (*InstanceStats_DatabaseStats) ProtoMessage() {}
 
 func (x *InstanceStats_DatabaseStats) ProtoReflect() protoreflect.Message {
-	mi := &file_api_instance_service_proto_msgTypes[34]
+	mi := &file_api_instance_service_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2790,7 +2470,7 @@ const file_api_instance_service_proto_rawDesc = "" +
 	"\tChallenge\x12\x1a\n" +
 	"\bprovider\x18\x01 \x01(\tR\bprovider\x12\x19\n" +
 	"\bsite_key\x18\x02 \x01(\tR\asiteKey\"\x1b\n" +
-	"\x19GetInstanceProfileRequest\"\x8d!\n" +
+	"\x19GetInstanceProfileRequest\"\xb5%\n" +
 	"\x0fInstanceSetting\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12T\n" +
 	"\x0fgeneral_setting\x18\x02 \x01(\v2).memos.api.InstanceSetting.GeneralSettingH\x00R\x0egeneralSetting\x12T\n" +
@@ -2800,7 +2480,8 @@ const file_api_instance_service_proto_rawDesc = "" +
 	"\x14notification_setting\x18\x06 \x01(\v2..memos.api.InstanceSetting.NotificationSettingH\x00R\x13notificationSetting\x12E\n" +
 	"\n" +
 	"ai_setting\x18\a \x01(\v2$.memos.api.InstanceSetting.AISettingH\x00R\taiSetting\x12Q\n" +
-	"\x0eaccess_setting\x18\b \x01(\v2(.memos.api.InstanceSetting.AccessSettingH\x00R\raccessSetting\x1a\xc7\x04\n" +
+	"\x0eaccess_setting\x18\b \x01(\v2(.memos.api.InstanceSetting.AccessSettingH\x00R\raccessSetting\x12a\n" +
+	"\x14usage_limits_setting\x18\t \x01(\v2-.memos.api.InstanceSetting.UsageLimitsSettingH\x00R\x12usageLimitsSetting\x1a\xc7\x04\n" +
 	"\x0eGeneralSetting\x12^\n" +
 	"\x0ecustom_profile\x18\x01 \x01(\v27.memos.api.InstanceSetting.GeneralSetting.CustomProfileR\rcustomProfile\x12<\n" +
 	"\x1adisallow_user_registration\x18\x02 \x01(\bR\x18disallowUserRegistration\x124\n" +
@@ -2893,7 +2574,23 @@ const file_api_instance_service_proto_rawDesc = "" +
 	"\x06prompt\x18\x04 \x01(\tR\x06prompt\x1aO\n" +
 	"\rAccessSetting\x12>\n" +
 	"\vaccess_mode\x18\x01 \x01(\x0e2\x1d.memos.api.InstanceAccessModeR\n" +
-	"accessMode\"v\n" +
+	"accessMode\x1a\xaf\x03\n" +
+	"\x12UsageLimitsSetting\x12P\n" +
+	"\x06limits\x18\x01 \x03(\v28.memos.api.InstanceSetting.UsageLimitsSetting.UsageLimitR\x06limits\x1a\xc6\x02\n" +
+	"\n" +
+	"UsageLimit\x12)\n" +
+	"\x05users\x18\x01 \x03(\tB\x13\xfaA\x10\n" +
+	"\x0ememos.api/UserR\x05users\x12\x1b\n" +
+	"\tall_users\x18\x03 \x01(\bR\ballUsers\x12\"\n" +
+	"\n" +
+	"memo_count\x18\x04 \x01(\x03H\x00R\tmemoCount\x88\x01\x01\x121\n" +
+	"\x12memo_content_bytes\x18\x05 \x01(\x03H\x01R\x10memoContentBytes\x88\x01\x01\x12(\n" +
+	"\rstorage_bytes\x18\x06 \x01(\x03H\x02R\fstorageBytes\x88\x01\x01\x12&\n" +
+	"\fupload_bytes\x18\a \x01(\x03H\x03R\vuploadBytes\x88\x01\x01B\r\n" +
+	"\v_memo_countB\x15\n" +
+	"\x13_memo_content_bytesB\x10\n" +
+	"\x0e_storage_bytesB\x0f\n" +
+	"\r_upload_bytes\"\x88\x01\n" +
 	"\x03Key\x12\x13\n" +
 	"\x0fKEY_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aGENERAL\x10\x01\x12\v\n" +
@@ -2903,7 +2600,8 @@ const file_api_instance_service_proto_rawDesc = "" +
 	"\fNOTIFICATION\x10\x05\x12\x06\n" +
 	"\x02AI\x10\x06\x12\n" +
 	"\n" +
-	"\x06ACCESS\x10\a\"L\n" +
+	"\x06ACCESS\x10\a\x12\x10\n" +
+	"\fUSAGE_LIMITS\x10\b\"L\n" +
 	"\vStorageType\x12\x1c\n" +
 	"\x18STORAGE_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDATABASE\x10\x01\x12\t\n" +
@@ -2940,66 +2638,18 @@ const file_api_instance_service_proto_rawDesc = "" +
 	"\x06driver\x18\x01 \x01(\tR\x06driver\x12\x1d\n" +
 	"\n" +
 	"size_bytes\x18\x02 \x01(\x03R\tsizeBytes\"\x19\n" +
-	"\x17GetInstanceStatsRequest\"\xef\x03\n" +
-	"\n" +
-	"UsageLimit\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12<\n" +
-	"\x06metric\x18\x02 \x01(\x0e2\x1c.memos.api.UsageLimit.MetricB\x06\xe0A\x02\xe0A\x05R\x06metric\x12-\n" +
-	"\x04user\x18\x03 \x01(\tB\x19\xe0A\x01\xe0A\x05\xfaA\x10\n" +
-	"\x0ememos.api/UserR\x04user\x12\x19\n" +
-	"\x05value\x18\x04 \x01(\x03B\x03\xe0A\x02R\x05value\x12@\n" +
-	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime\x12@\n" +
-	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\"m\n" +
-	"\x06Metric\x12\x16\n" +
-	"\x12METRIC_UNSPECIFIED\x10\x00\x12\x0e\n" +
-	"\n" +
-	"MEMO_COUNT\x10\x01\x12\x16\n" +
-	"\x12MEMO_CONTENT_BYTES\x10\x02\x12\x11\n" +
-	"\rSTORAGE_BYTES\x10\x03\x12\x10\n" +
-	"\fUPLOAD_BYTES\x10\x04:M\xeaAJ\n" +
-	"\x14memos.api/UsageLimit\x12\x19usageLimits/{usage_limit}*\vusageLimits2\n" +
-	"usageLimit\"{\n" +
-	"\x16ListUsageLimitsRequest\x12 \n" +
-	"\tpage_size\x18\x01 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
-	"\n" +
-	"page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
-	"\x06filter\x18\x03 \x01(\tB\x03\xe0A\x01R\x06filter\"{\n" +
-	"\x17ListUsageLimitsResponse\x128\n" +
-	"\fusage_limits\x18\x01 \x03(\v2\x15.memos.api.UsageLimitR\vusageLimits\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"H\n" +
-	"\x14GetUsageLimitRequest\x120\n" +
-	"\x04name\x18\x01 \x01(\tB\x1c\xe0A\x02\xfaA\x16\n" +
-	"\x14memos.api/UsageLimitR\x04name\"\x81\x01\n" +
-	"\x17CreateUsageLimitRequest\x12;\n" +
-	"\vusage_limit\x18\x01 \x01(\v2\x15.memos.api.UsageLimitB\x03\xe0A\x02R\n" +
-	"usageLimit\x12)\n" +
-	"\x0eusage_limit_id\x18\x02 \x01(\tB\x03\xe0A\x01R\fusageLimitId\"\x98\x01\n" +
-	"\x17UpdateUsageLimitRequest\x12;\n" +
-	"\vusage_limit\x18\x01 \x01(\v2\x15.memos.api.UsageLimitB\x03\xe0A\x02R\n" +
-	"usageLimit\x12@\n" +
-	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
-	"updateMask\"K\n" +
-	"\x17DeleteUsageLimitRequest\x120\n" +
-	"\x04name\x18\x01 \x01(\tB\x1c\xe0A\x02\xfaA\x16\n" +
-	"\x14memos.api/UsageLimitR\x04name*}\n" +
+	"\x17GetInstanceStatsRequest*}\n" +
 	"\x12InstanceAccessMode\x12$\n" +
 	" INSTANCE_ACCESS_MODE_UNSPECIFIED\x10\x00\x12 \n" +
 	"\x1cINSTANCE_ACCESS_MODE_PRIVATE\x10\x01\x12\x1f\n" +
-	"\x1bINSTANCE_ACCESS_MODE_PUBLIC\x10\x022\xa2\f\n" +
+	"\x1bINSTANCE_ACCESS_MODE_PUBLIC\x10\x022\x87\a\n" +
 	"\x0fInstanceService\x12u\n" +
 	"\x12GetInstanceProfile\x12$.memos.api.GetInstanceProfileRequest\x1a\x1a.memos.api.InstanceProfile\"\x1d\x82\xd3\xe4\x93\x02\x17\x12\x15/api/instance/profile\x12\x86\x01\n" +
 	"\x12GetInstanceSetting\x12$.memos.api.GetInstanceSettingRequest\x1a\x1a.memos.api.InstanceSetting\".\xdaA\x04name\x82\xd3\xe4\x93\x02!\x12\x1f/api/{name=instance/settings/*}\x12\x9f\x01\n" +
 	"\x18BatchGetInstanceSettings\x12*.memos.api.BatchGetInstanceSettingsRequest\x1a+.memos.api.BatchGetInstanceSettingsResponse\"*\x82\xd3\xe4\x93\x02$:\x01*\"\x1f/api/instance/settings:batchGet\x12\xc7\x01\n" +
 	"\x15UpdateInstanceSetting\x12'.memos.api.UpdateInstanceSettingRequest\x1a\x1a.memos.api.InstanceSetting\"i\xdaA\x1cinstance_setting,update_mask\x82\xd3\xe4\x93\x02D:\x10instance_setting20/api/{instance_setting.name=instance/settings/*}\x12\x98\x01\n" +
 	"\x18TestInstanceEmailSetting\x12*.memos.api.TestInstanceEmailSettingRequest\x1a\x16.google.protobuf.Empty\"8\x82\xd3\xe4\x93\x022:\x01*\"-/api/instance/settings/notification:testEmail\x12m\n" +
-	"\x10GetInstanceStats\x12\".memos.api.GetInstanceStatsRequest\x1a\x18.memos.api.InstanceStats\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/api/instance/stats\x12r\n" +
-	"\x0fListUsageLimits\x12!.memos.api.ListUsageLimitsRequest\x1a\".memos.api.ListUsageLimitsResponse\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/api/usageLimits\x12q\n" +
-	"\rGetUsageLimit\x12\x1f.memos.api.GetUsageLimitRequest\x1a\x15.memos.api.UsageLimit\"(\xdaA\x04name\x82\xd3\xe4\x93\x02\x1b\x12\x19/api/{name=usageLimits/*}\x12\x91\x01\n" +
-	"\x10CreateUsageLimit\x12\".memos.api.CreateUsageLimitRequest\x1a\x15.memos.api.UsageLimit\"B\xdaA\x1ausage_limit,usage_limit_id\x82\xd3\xe4\x93\x02\x1f:\vusage_limit\"\x10/api/usageLimits\x12\xa3\x01\n" +
-	"\x10UpdateUsageLimit\x12\".memos.api.UpdateUsageLimitRequest\x1a\x15.memos.api.UsageLimit\"T\xdaA\x17usage_limit,update_mask\x82\xd3\xe4\x93\x024:\vusage_limit2%/api/{usage_limit.name=usageLimits/*}\x12x\n" +
-	"\x10DeleteUsageLimit\x12\".memos.api.DeleteUsageLimitRequest\x1a\x16.google.protobuf.Empty\"(\xdaA\x04name\x82\xd3\xe4\x93\x02\x1b*\x19/api/{name=usageLimits/*}B\x93\x01\n" +
+	"\x10GetInstanceStats\x12\".memos.api.GetInstanceStatsRequest\x1a\x18.memos.api.InstanceStats\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/api/instance/statsB\x93\x01\n" +
 	"\rcom.memos.apiB\x14InstanceServiceProtoP\x01Z'github.com/usememos/memos/proto/gen/api\xa2\x02\x03MAX\xaa\x02\tMemos.Api\xca\x02\tMemos\\Api\xe2\x02\x15Memos\\Api\\GPBMetadata\xea\x02\n" +
 	"Memos::Apib\x06proto3"
 
@@ -3015,121 +2665,100 @@ func file_api_instance_service_proto_rawDescGZIP() []byte {
 	return file_api_instance_service_proto_rawDescData
 }
 
-var file_api_instance_service_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
-var file_api_instance_service_proto_msgTypes = make([]protoimpl.MessageInfo, 35)
+var file_api_instance_service_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
+var file_api_instance_service_proto_msgTypes = make([]protoimpl.MessageInfo, 30)
 var file_api_instance_service_proto_goTypes = []any{
 	(InstanceAccessMode)(0),                                  // 0: memos.api.InstanceAccessMode
 	(InstanceSetting_Key)(0),                                 // 1: memos.api.InstanceSetting.Key
 	(InstanceSetting_StorageType)(0),                         // 2: memos.api.InstanceSetting.StorageType
 	(InstanceSetting_AIProviderType)(0),                      // 3: memos.api.InstanceSetting.AIProviderType
 	(InstanceSetting_StorageSetting_StorageType)(0),          // 4: memos.api.InstanceSetting.StorageSetting.StorageType
-	(UsageLimit_Metric)(0),                                   // 5: memos.api.UsageLimit.Metric
-	(*InstanceProfile)(nil),                                  // 6: memos.api.InstanceProfile
-	(*GetInstanceProfileRequest)(nil),                        // 7: memos.api.GetInstanceProfileRequest
-	(*InstanceSetting)(nil),                                  // 8: memos.api.InstanceSetting
-	(*GetInstanceSettingRequest)(nil),                        // 9: memos.api.GetInstanceSettingRequest
-	(*BatchGetInstanceSettingsRequest)(nil),                  // 10: memos.api.BatchGetInstanceSettingsRequest
-	(*BatchGetInstanceSettingsResponse)(nil),                 // 11: memos.api.BatchGetInstanceSettingsResponse
-	(*UpdateInstanceSettingRequest)(nil),                     // 12: memos.api.UpdateInstanceSettingRequest
-	(*TestInstanceEmailSettingRequest)(nil),                  // 13: memos.api.TestInstanceEmailSettingRequest
-	(*InstanceStats)(nil),                                    // 14: memos.api.InstanceStats
-	(*GetInstanceStatsRequest)(nil),                          // 15: memos.api.GetInstanceStatsRequest
-	(*UsageLimit)(nil),                                       // 16: memos.api.UsageLimit
-	(*ListUsageLimitsRequest)(nil),                           // 17: memos.api.ListUsageLimitsRequest
-	(*ListUsageLimitsResponse)(nil),                          // 18: memos.api.ListUsageLimitsResponse
-	(*GetUsageLimitRequest)(nil),                             // 19: memos.api.GetUsageLimitRequest
-	(*CreateUsageLimitRequest)(nil),                          // 20: memos.api.CreateUsageLimitRequest
-	(*UpdateUsageLimitRequest)(nil),                          // 21: memos.api.UpdateUsageLimitRequest
-	(*DeleteUsageLimitRequest)(nil),                          // 22: memos.api.DeleteUsageLimitRequest
-	(*InstanceProfile_Challenge)(nil),                        // 23: memos.api.InstanceProfile.Challenge
-	(*InstanceSetting_GeneralSetting)(nil),                   // 24: memos.api.InstanceSetting.GeneralSetting
-	(*InstanceSetting_StorageSetting)(nil),                   // 25: memos.api.InstanceSetting.StorageSetting
-	(*InstanceSetting_Storage)(nil),                          // 26: memos.api.InstanceSetting.Storage
-	(*InstanceSetting_MemoRelatedSetting)(nil),               // 27: memos.api.InstanceSetting.MemoRelatedSetting
-	(*InstanceSetting_TagsSetting)(nil),                      // 28: memos.api.InstanceSetting.TagsSetting
-	(*InstanceSetting_TagMetadata)(nil),                      // 29: memos.api.InstanceSetting.TagMetadata
-	(*InstanceSetting_NotificationSetting)(nil),              // 30: memos.api.InstanceSetting.NotificationSetting
-	(*InstanceSetting_AISetting)(nil),                        // 31: memos.api.InstanceSetting.AISetting
-	(*InstanceSetting_AIProviderConfig)(nil),                 // 32: memos.api.InstanceSetting.AIProviderConfig
-	(*InstanceSetting_TranscriptionConfig)(nil),              // 33: memos.api.InstanceSetting.TranscriptionConfig
-	(*InstanceSetting_AccessSetting)(nil),                    // 34: memos.api.InstanceSetting.AccessSetting
-	(*InstanceSetting_GeneralSetting_CustomProfile)(nil),     // 35: memos.api.InstanceSetting.GeneralSetting.CustomProfile
-	(*InstanceSetting_StorageSetting_S3Config)(nil),          // 36: memos.api.InstanceSetting.StorageSetting.S3Config
-	(*InstanceSetting_Storage_S3Config)(nil),                 // 37: memos.api.InstanceSetting.Storage.S3Config
-	nil,                                                      // 38: memos.api.InstanceSetting.TagsSetting.TagsEntry
-	(*InstanceSetting_NotificationSetting_EmailSetting)(nil), // 39: memos.api.InstanceSetting.NotificationSetting.EmailSetting
-	(*InstanceStats_DatabaseStats)(nil),                      // 40: memos.api.InstanceStats.DatabaseStats
-	(*User)(nil),                                             // 41: memos.api.User
-	(*fieldmaskpb.FieldMask)(nil),                            // 42: google.protobuf.FieldMask
-	(*timestamppb.Timestamp)(nil),                            // 43: google.protobuf.Timestamp
-	(*color.Color)(nil),                                      // 44: google.type.Color
-	(*emptypb.Empty)(nil),                                    // 45: google.protobuf.Empty
+	(*InstanceProfile)(nil),                                  // 5: memos.api.InstanceProfile
+	(*GetInstanceProfileRequest)(nil),                        // 6: memos.api.GetInstanceProfileRequest
+	(*InstanceSetting)(nil),                                  // 7: memos.api.InstanceSetting
+	(*GetInstanceSettingRequest)(nil),                        // 8: memos.api.GetInstanceSettingRequest
+	(*BatchGetInstanceSettingsRequest)(nil),                  // 9: memos.api.BatchGetInstanceSettingsRequest
+	(*BatchGetInstanceSettingsResponse)(nil),                 // 10: memos.api.BatchGetInstanceSettingsResponse
+	(*UpdateInstanceSettingRequest)(nil),                     // 11: memos.api.UpdateInstanceSettingRequest
+	(*TestInstanceEmailSettingRequest)(nil),                  // 12: memos.api.TestInstanceEmailSettingRequest
+	(*InstanceStats)(nil),                                    // 13: memos.api.InstanceStats
+	(*GetInstanceStatsRequest)(nil),                          // 14: memos.api.GetInstanceStatsRequest
+	(*InstanceProfile_Challenge)(nil),                        // 15: memos.api.InstanceProfile.Challenge
+	(*InstanceSetting_GeneralSetting)(nil),                   // 16: memos.api.InstanceSetting.GeneralSetting
+	(*InstanceSetting_StorageSetting)(nil),                   // 17: memos.api.InstanceSetting.StorageSetting
+	(*InstanceSetting_Storage)(nil),                          // 18: memos.api.InstanceSetting.Storage
+	(*InstanceSetting_MemoRelatedSetting)(nil),               // 19: memos.api.InstanceSetting.MemoRelatedSetting
+	(*InstanceSetting_TagsSetting)(nil),                      // 20: memos.api.InstanceSetting.TagsSetting
+	(*InstanceSetting_TagMetadata)(nil),                      // 21: memos.api.InstanceSetting.TagMetadata
+	(*InstanceSetting_NotificationSetting)(nil),              // 22: memos.api.InstanceSetting.NotificationSetting
+	(*InstanceSetting_AISetting)(nil),                        // 23: memos.api.InstanceSetting.AISetting
+	(*InstanceSetting_AIProviderConfig)(nil),                 // 24: memos.api.InstanceSetting.AIProviderConfig
+	(*InstanceSetting_TranscriptionConfig)(nil),              // 25: memos.api.InstanceSetting.TranscriptionConfig
+	(*InstanceSetting_AccessSetting)(nil),                    // 26: memos.api.InstanceSetting.AccessSetting
+	(*InstanceSetting_UsageLimitsSetting)(nil),               // 27: memos.api.InstanceSetting.UsageLimitsSetting
+	(*InstanceSetting_GeneralSetting_CustomProfile)(nil),     // 28: memos.api.InstanceSetting.GeneralSetting.CustomProfile
+	(*InstanceSetting_StorageSetting_S3Config)(nil),          // 29: memos.api.InstanceSetting.StorageSetting.S3Config
+	(*InstanceSetting_Storage_S3Config)(nil),                 // 30: memos.api.InstanceSetting.Storage.S3Config
+	nil,                                                      // 31: memos.api.InstanceSetting.TagsSetting.TagsEntry
+	(*InstanceSetting_NotificationSetting_EmailSetting)(nil), // 32: memos.api.InstanceSetting.NotificationSetting.EmailSetting
+	(*InstanceSetting_UsageLimitsSetting_UsageLimit)(nil),    // 33: memos.api.InstanceSetting.UsageLimitsSetting.UsageLimit
+	(*InstanceStats_DatabaseStats)(nil),                      // 34: memos.api.InstanceStats.DatabaseStats
+	(*User)(nil),                                             // 35: memos.api.User
+	(*fieldmaskpb.FieldMask)(nil),                            // 36: google.protobuf.FieldMask
+	(*timestamppb.Timestamp)(nil),                            // 37: google.protobuf.Timestamp
+	(*color.Color)(nil),                                      // 38: google.type.Color
+	(*emptypb.Empty)(nil),                                    // 39: google.protobuf.Empty
 }
 var file_api_instance_service_proto_depIdxs = []int32{
 	0,  // 0: memos.api.InstanceProfile.access_mode:type_name -> memos.api.InstanceAccessMode
-	41, // 1: memos.api.InstanceProfile.admin:type_name -> memos.api.User
-	23, // 2: memos.api.InstanceProfile.challenge:type_name -> memos.api.InstanceProfile.Challenge
-	24, // 3: memos.api.InstanceSetting.general_setting:type_name -> memos.api.InstanceSetting.GeneralSetting
-	25, // 4: memos.api.InstanceSetting.storage_setting:type_name -> memos.api.InstanceSetting.StorageSetting
-	27, // 5: memos.api.InstanceSetting.memo_related_setting:type_name -> memos.api.InstanceSetting.MemoRelatedSetting
-	28, // 6: memos.api.InstanceSetting.tags_setting:type_name -> memos.api.InstanceSetting.TagsSetting
-	30, // 7: memos.api.InstanceSetting.notification_setting:type_name -> memos.api.InstanceSetting.NotificationSetting
-	31, // 8: memos.api.InstanceSetting.ai_setting:type_name -> memos.api.InstanceSetting.AISetting
-	34, // 9: memos.api.InstanceSetting.access_setting:type_name -> memos.api.InstanceSetting.AccessSetting
-	8,  // 10: memos.api.BatchGetInstanceSettingsResponse.instance_settings:type_name -> memos.api.InstanceSetting
-	8,  // 11: memos.api.UpdateInstanceSettingRequest.instance_setting:type_name -> memos.api.InstanceSetting
-	42, // 12: memos.api.UpdateInstanceSettingRequest.update_mask:type_name -> google.protobuf.FieldMask
-	39, // 13: memos.api.TestInstanceEmailSettingRequest.email:type_name -> memos.api.InstanceSetting.NotificationSetting.EmailSetting
-	40, // 14: memos.api.InstanceStats.database:type_name -> memos.api.InstanceStats.DatabaseStats
-	43, // 15: memos.api.InstanceStats.generated_time:type_name -> google.protobuf.Timestamp
-	5,  // 16: memos.api.UsageLimit.metric:type_name -> memos.api.UsageLimit.Metric
-	43, // 17: memos.api.UsageLimit.create_time:type_name -> google.protobuf.Timestamp
-	43, // 18: memos.api.UsageLimit.update_time:type_name -> google.protobuf.Timestamp
-	16, // 19: memos.api.ListUsageLimitsResponse.usage_limits:type_name -> memos.api.UsageLimit
-	16, // 20: memos.api.CreateUsageLimitRequest.usage_limit:type_name -> memos.api.UsageLimit
-	16, // 21: memos.api.UpdateUsageLimitRequest.usage_limit:type_name -> memos.api.UsageLimit
-	42, // 22: memos.api.UpdateUsageLimitRequest.update_mask:type_name -> google.protobuf.FieldMask
-	35, // 23: memos.api.InstanceSetting.GeneralSetting.custom_profile:type_name -> memos.api.InstanceSetting.GeneralSetting.CustomProfile
-	26, // 24: memos.api.InstanceSetting.StorageSetting.storages:type_name -> memos.api.InstanceSetting.Storage
-	4,  // 25: memos.api.InstanceSetting.StorageSetting.storage_type:type_name -> memos.api.InstanceSetting.StorageSetting.StorageType
-	36, // 26: memos.api.InstanceSetting.StorageSetting.s3_config:type_name -> memos.api.InstanceSetting.StorageSetting.S3Config
-	2,  // 27: memos.api.InstanceSetting.Storage.type:type_name -> memos.api.InstanceSetting.StorageType
-	37, // 28: memos.api.InstanceSetting.Storage.s3_config:type_name -> memos.api.InstanceSetting.Storage.S3Config
-	38, // 29: memos.api.InstanceSetting.TagsSetting.tags:type_name -> memos.api.InstanceSetting.TagsSetting.TagsEntry
-	44, // 30: memos.api.InstanceSetting.TagMetadata.background_color:type_name -> google.type.Color
-	39, // 31: memos.api.InstanceSetting.NotificationSetting.email:type_name -> memos.api.InstanceSetting.NotificationSetting.EmailSetting
-	32, // 32: memos.api.InstanceSetting.AISetting.providers:type_name -> memos.api.InstanceSetting.AIProviderConfig
-	33, // 33: memos.api.InstanceSetting.AISetting.transcription:type_name -> memos.api.InstanceSetting.TranscriptionConfig
-	3,  // 34: memos.api.InstanceSetting.AIProviderConfig.type:type_name -> memos.api.InstanceSetting.AIProviderType
-	0,  // 35: memos.api.InstanceSetting.AccessSetting.access_mode:type_name -> memos.api.InstanceAccessMode
-	29, // 36: memos.api.InstanceSetting.TagsSetting.TagsEntry.value:type_name -> memos.api.InstanceSetting.TagMetadata
-	7,  // 37: memos.api.InstanceService.GetInstanceProfile:input_type -> memos.api.GetInstanceProfileRequest
-	9,  // 38: memos.api.InstanceService.GetInstanceSetting:input_type -> memos.api.GetInstanceSettingRequest
-	10, // 39: memos.api.InstanceService.BatchGetInstanceSettings:input_type -> memos.api.BatchGetInstanceSettingsRequest
-	12, // 40: memos.api.InstanceService.UpdateInstanceSetting:input_type -> memos.api.UpdateInstanceSettingRequest
-	13, // 41: memos.api.InstanceService.TestInstanceEmailSetting:input_type -> memos.api.TestInstanceEmailSettingRequest
-	15, // 42: memos.api.InstanceService.GetInstanceStats:input_type -> memos.api.GetInstanceStatsRequest
-	17, // 43: memos.api.InstanceService.ListUsageLimits:input_type -> memos.api.ListUsageLimitsRequest
-	19, // 44: memos.api.InstanceService.GetUsageLimit:input_type -> memos.api.GetUsageLimitRequest
-	20, // 45: memos.api.InstanceService.CreateUsageLimit:input_type -> memos.api.CreateUsageLimitRequest
-	21, // 46: memos.api.InstanceService.UpdateUsageLimit:input_type -> memos.api.UpdateUsageLimitRequest
-	22, // 47: memos.api.InstanceService.DeleteUsageLimit:input_type -> memos.api.DeleteUsageLimitRequest
-	6,  // 48: memos.api.InstanceService.GetInstanceProfile:output_type -> memos.api.InstanceProfile
-	8,  // 49: memos.api.InstanceService.GetInstanceSetting:output_type -> memos.api.InstanceSetting
-	11, // 50: memos.api.InstanceService.BatchGetInstanceSettings:output_type -> memos.api.BatchGetInstanceSettingsResponse
-	8,  // 51: memos.api.InstanceService.UpdateInstanceSetting:output_type -> memos.api.InstanceSetting
-	45, // 52: memos.api.InstanceService.TestInstanceEmailSetting:output_type -> google.protobuf.Empty
-	14, // 53: memos.api.InstanceService.GetInstanceStats:output_type -> memos.api.InstanceStats
-	18, // 54: memos.api.InstanceService.ListUsageLimits:output_type -> memos.api.ListUsageLimitsResponse
-	16, // 55: memos.api.InstanceService.GetUsageLimit:output_type -> memos.api.UsageLimit
-	16, // 56: memos.api.InstanceService.CreateUsageLimit:output_type -> memos.api.UsageLimit
-	16, // 57: memos.api.InstanceService.UpdateUsageLimit:output_type -> memos.api.UsageLimit
-	45, // 58: memos.api.InstanceService.DeleteUsageLimit:output_type -> google.protobuf.Empty
-	48, // [48:59] is the sub-list for method output_type
-	37, // [37:48] is the sub-list for method input_type
-	37, // [37:37] is the sub-list for extension type_name
-	37, // [37:37] is the sub-list for extension extendee
-	0,  // [0:37] is the sub-list for field type_name
+	35, // 1: memos.api.InstanceProfile.admin:type_name -> memos.api.User
+	15, // 2: memos.api.InstanceProfile.challenge:type_name -> memos.api.InstanceProfile.Challenge
+	16, // 3: memos.api.InstanceSetting.general_setting:type_name -> memos.api.InstanceSetting.GeneralSetting
+	17, // 4: memos.api.InstanceSetting.storage_setting:type_name -> memos.api.InstanceSetting.StorageSetting
+	19, // 5: memos.api.InstanceSetting.memo_related_setting:type_name -> memos.api.InstanceSetting.MemoRelatedSetting
+	20, // 6: memos.api.InstanceSetting.tags_setting:type_name -> memos.api.InstanceSetting.TagsSetting
+	22, // 7: memos.api.InstanceSetting.notification_setting:type_name -> memos.api.InstanceSetting.NotificationSetting
+	23, // 8: memos.api.InstanceSetting.ai_setting:type_name -> memos.api.InstanceSetting.AISetting
+	26, // 9: memos.api.InstanceSetting.access_setting:type_name -> memos.api.InstanceSetting.AccessSetting
+	27, // 10: memos.api.InstanceSetting.usage_limits_setting:type_name -> memos.api.InstanceSetting.UsageLimitsSetting
+	7,  // 11: memos.api.BatchGetInstanceSettingsResponse.instance_settings:type_name -> memos.api.InstanceSetting
+	7,  // 12: memos.api.UpdateInstanceSettingRequest.instance_setting:type_name -> memos.api.InstanceSetting
+	36, // 13: memos.api.UpdateInstanceSettingRequest.update_mask:type_name -> google.protobuf.FieldMask
+	32, // 14: memos.api.TestInstanceEmailSettingRequest.email:type_name -> memos.api.InstanceSetting.NotificationSetting.EmailSetting
+	34, // 15: memos.api.InstanceStats.database:type_name -> memos.api.InstanceStats.DatabaseStats
+	37, // 16: memos.api.InstanceStats.generated_time:type_name -> google.protobuf.Timestamp
+	28, // 17: memos.api.InstanceSetting.GeneralSetting.custom_profile:type_name -> memos.api.InstanceSetting.GeneralSetting.CustomProfile
+	18, // 18: memos.api.InstanceSetting.StorageSetting.storages:type_name -> memos.api.InstanceSetting.Storage
+	4,  // 19: memos.api.InstanceSetting.StorageSetting.storage_type:type_name -> memos.api.InstanceSetting.StorageSetting.StorageType
+	29, // 20: memos.api.InstanceSetting.StorageSetting.s3_config:type_name -> memos.api.InstanceSetting.StorageSetting.S3Config
+	2,  // 21: memos.api.InstanceSetting.Storage.type:type_name -> memos.api.InstanceSetting.StorageType
+	30, // 22: memos.api.InstanceSetting.Storage.s3_config:type_name -> memos.api.InstanceSetting.Storage.S3Config
+	31, // 23: memos.api.InstanceSetting.TagsSetting.tags:type_name -> memos.api.InstanceSetting.TagsSetting.TagsEntry
+	38, // 24: memos.api.InstanceSetting.TagMetadata.background_color:type_name -> google.type.Color
+	32, // 25: memos.api.InstanceSetting.NotificationSetting.email:type_name -> memos.api.InstanceSetting.NotificationSetting.EmailSetting
+	24, // 26: memos.api.InstanceSetting.AISetting.providers:type_name -> memos.api.InstanceSetting.AIProviderConfig
+	25, // 27: memos.api.InstanceSetting.AISetting.transcription:type_name -> memos.api.InstanceSetting.TranscriptionConfig
+	3,  // 28: memos.api.InstanceSetting.AIProviderConfig.type:type_name -> memos.api.InstanceSetting.AIProviderType
+	0,  // 29: memos.api.InstanceSetting.AccessSetting.access_mode:type_name -> memos.api.InstanceAccessMode
+	33, // 30: memos.api.InstanceSetting.UsageLimitsSetting.limits:type_name -> memos.api.InstanceSetting.UsageLimitsSetting.UsageLimit
+	21, // 31: memos.api.InstanceSetting.TagsSetting.TagsEntry.value:type_name -> memos.api.InstanceSetting.TagMetadata
+	6,  // 32: memos.api.InstanceService.GetInstanceProfile:input_type -> memos.api.GetInstanceProfileRequest
+	8,  // 33: memos.api.InstanceService.GetInstanceSetting:input_type -> memos.api.GetInstanceSettingRequest
+	9,  // 34: memos.api.InstanceService.BatchGetInstanceSettings:input_type -> memos.api.BatchGetInstanceSettingsRequest
+	11, // 35: memos.api.InstanceService.UpdateInstanceSetting:input_type -> memos.api.UpdateInstanceSettingRequest
+	12, // 36: memos.api.InstanceService.TestInstanceEmailSetting:input_type -> memos.api.TestInstanceEmailSettingRequest
+	14, // 37: memos.api.InstanceService.GetInstanceStats:input_type -> memos.api.GetInstanceStatsRequest
+	5,  // 38: memos.api.InstanceService.GetInstanceProfile:output_type -> memos.api.InstanceProfile
+	7,  // 39: memos.api.InstanceService.GetInstanceSetting:output_type -> memos.api.InstanceSetting
+	10, // 40: memos.api.InstanceService.BatchGetInstanceSettings:output_type -> memos.api.BatchGetInstanceSettingsResponse
+	7,  // 41: memos.api.InstanceService.UpdateInstanceSetting:output_type -> memos.api.InstanceSetting
+	39, // 42: memos.api.InstanceService.TestInstanceEmailSetting:output_type -> google.protobuf.Empty
+	13, // 43: memos.api.InstanceService.GetInstanceStats:output_type -> memos.api.InstanceStats
+	38, // [38:44] is the sub-list for method output_type
+	32, // [32:38] is the sub-list for method input_type
+	32, // [32:32] is the sub-list for extension type_name
+	32, // [32:32] is the sub-list for extension extendee
+	0,  // [0:32] is the sub-list for field type_name
 }
 
 func init() { file_api_instance_service_proto_init() }
@@ -3146,17 +2775,19 @@ func file_api_instance_service_proto_init() {
 		(*InstanceSetting_NotificationSetting_)(nil),
 		(*InstanceSetting_AiSetting)(nil),
 		(*InstanceSetting_AccessSetting_)(nil),
+		(*InstanceSetting_UsageLimitsSetting_)(nil),
 	}
-	file_api_instance_service_proto_msgTypes[20].OneofWrappers = []any{
+	file_api_instance_service_proto_msgTypes[13].OneofWrappers = []any{
 		(*InstanceSetting_Storage_S3Config_)(nil),
 	}
+	file_api_instance_service_proto_msgTypes[28].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_instance_service_proto_rawDesc), len(file_api_instance_service_proto_rawDesc)),
-			NumEnums:      6,
-			NumMessages:   35,
+			NumEnums:      5,
+			NumMessages:   30,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

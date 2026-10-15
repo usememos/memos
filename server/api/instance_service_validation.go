@@ -29,6 +29,11 @@ func validateInstanceSetting(setting *apipb.InstanceSetting) error {
 		return validateInstanceTagsSetting(setting.GetTagsSetting())
 	case storepb.InstanceSettingKey_ACCESS.String():
 		return validateInstanceAccessSetting(setting.GetAccessSetting())
+	case storepb.InstanceSettingKey_USAGE_LIMITS.String():
+		if setting.GetUsageLimitsSetting() == nil {
+			return errors.New("usage limits setting is required")
+		}
+		return nil
 	default:
 		return nil
 	}

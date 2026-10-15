@@ -6,8 +6,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import UsageLimitDialog from "@/components/Settings/UsageLimitDialog";
 import UsageLimitsSection from "@/components/Settings/UsageLimitsSection";
 import UsageSection from "@/components/Settings/UsageSection";
-import { UsageLimit_Metric, UsageLimitSchema } from "@/types/proto/api/instance_service_pb";
-import { UserSchema, UserUsage_EffectiveLimitSchema, UserUsageSchema } from "@/types/proto/api/user_service_pb";
+import { newUsageLimitEntry } from "@/components/Settings/usageLimitValues";
+import type { UsageLimitEntry } from "@/hooks/useUsageLimitQueries";
+import { InstanceSettingSchema } from "@/types/proto/api/instance_service_pb";
+import { UserSchema, UserUsageSchema } from "@/types/proto/api/user_service_pb";
 import english from "../src/locales/en.json";
 
 const MIB = 1024n * 1024n;
@@ -15,20 +17,13 @@ const MIB = 1024n * 1024n;
 const mocks = vi.hoisted(() => ({
   getUserUsage: vi.fn(),
   listUsers: vi.fn(),
-  listUsageLimits: vi.fn(),
-  createUsageLimit: vi.fn(),
-  updateUsageLimit: vi.fn(),
-  deleteUsageLimit: vi.fn(),
+  getInstanceSetting: vi.fn(),
+  updateInstanceSetting: vi.fn(),
 }));
 
 vi.mock("@/connect", () => ({
   userServiceClient: { getUserUsage: mocks.getUserUsage, listUsers: mocks.listUsers },
-  instanceServiceClient: {
-    listUsageLimits: mocks.listUsageLimits,
-    createUsageLimit: mocks.createUsageLimit,
-    updateUsageLimit: mocks.updateUsageLimit,
-    deleteUsageLimit: mocks.deleteUsageLimit,
-  },
+  instanceServiceClient: { getInstanceSetting: mocks.getInstanceSetting, updateInstanceSetting: mocks.updateInstanceSetting },
 }));
 vi.mock("@/hooks/useCurrentUser", () => ({ default: () => ({ name: "users/alice" }) }));
 vi.mock("react-hot-toast", () => ({ toast: { error: vi.fn(), success: vi.fn() } }));
@@ -46,46 +41,36 @@ const wrapper = ({ children }: PropsWithChildren) => (
   </QueryClientProvider>
 );
 
-const limit = (id: string, metric: UsageLimit_Metric, value: bigint, user = "") =>
-  create(UsageLimitSchema, { name: `usageLimits/${id}`, metric, value, user });
+const settingOf = (limits: UsageLimitEntry[]) =>
+  create(InstanceSettingSchema, { name: "instance/settings/USAGE_LIMITS", value: { case: "usageLimitsSetting", value: { limits } } });
 
 const alice = create(UserSchema, { name: "users/alice", username: "alice", displayName: "Alice" });
 const bob = create(UserSchema, { name: "users/bob", username: "bob" });
 const carol = create(UserSchema, { name: "users/carol", username: "carol" });
 
-const effective = (value: bigint, usageLimit = "") => create(UserUsage_EffectiveLimitSchema, { value, usageLimit });
+const defaults = newUsageLimitEntry({ allUsers: true, memoCount: 100n, memoContentBytes: 8192n, storageBytes: 1024n * MIB });
 
 beforeEach(() => {
   for (const mock of Object.values(mocks)) mock.mockReset();
-  mocks.createUsageLimit.mockResolvedValue({});
-  mocks.updateUsageLimit.mockResolvedValue({});
-  mocks.deleteUsageLimit.mockResolvedValue({});
   mocks.listUsers.mockResolvedValue({ users: [alice, bob, carol], nextPageToken: "" });
+  mocks.updateInstanceSetting.mockImplementation(async ({ instanceSetting }) => instanceSetting);
 });
 
 describe("UsageSection", () => {
   it("is hidden when no limit applies", async () => {
-    mocks.getUserUsage.mockResolvedValue(
-      create(UserUsageSchema, {
-        memoCount: 5n,
-        memoCountLimit: effective(0n),
-        storageBytesLimit: effective(0n),
-        uploadBytesLimit: effective(0n),
-      }),
-    );
+    mocks.getUserUsage.mockResolvedValue(create(UserUsageSchema, { memoCount: 5n, limits: { memoCount: 0n } }));
     const { container } = render(<UsageSection />, { wrapper });
     await waitFor(() => expect(mocks.getUserUsage).toHaveBeenCalledWith({ name: "users/alice/usage" }));
     expect(container).toBeEmptyDOMElement();
   });
 
-  it("shows usage against the limits in effect", async () => {
+  it("shows usage against the limit set in effect", async () => {
     mocks.getUserUsage.mockResolvedValue(
       create(UserUsageSchema, {
         memoCount: 12n,
         storageBytes: 512n * MIB,
-        memoCountLimit: effective(1000n, "usageLimits/default-memos"),
-        storageBytesLimit: effective(1024n * MIB, "usageLimits/alice-storage"),
-        uploadBytesLimit: effective(0n),
+        limits: { memoCount: 1000n, storageBytes: 1024n * MIB },
+        limitIndex: 1,
       }),
     );
     render(<UsageSection />, { wrapper });
@@ -111,148 +96,224 @@ const chooseOption = async (select: string, option: string) => {
 };
 
 const openRowMenu = async (name: string, item: string) => {
-  fireEvent.click(await screen.findByRole("button", { name: `Actions for ${name}` }));
+  fireEvent.click(await screen.findByRole("button", { name: `Actions for entry ${name}` }));
   fireEvent.click(await screen.findByRole("menuitem", { name: item }));
 };
 
+const savedLimits = () =>
+  (mocks.updateInstanceSetting.mock.calls[0][0].instanceSetting.value.value as { limits: UsageLimitEntry[] }).limits;
+
 describe("UsageLimitsSection", () => {
-  it("shows one table: all users first, then users with their own limits", async () => {
-    mocks.listUsageLimits.mockResolvedValue({
-      usageLimits: [
-        limit("default-memos", UsageLimit_Metric.MEMO_COUNT, 100n),
-        limit("default-content", UsageLimit_Metric.MEMO_CONTENT_BYTES, 8192n),
-        limit("bob-memos", UsageLimit_Metric.MEMO_COUNT, 0n, "users/bob"),
-        limit("bob-storage", UsageLimit_Metric.STORAGE_BYTES, 5n * 1024n * MIB, "users/bob"),
-      ],
-      nextPageToken: "",
-    });
+  it("shows the entries in the order they are checked, the default last", async () => {
+    mocks.getInstanceSetting.mockResolvedValue(
+      settingOf([
+        newUsageLimitEntry({ users: ["users/bob"], storageBytes: 5n * 1024n * MIB }),
+        newUsageLimitEntry({ users: ["users/bob", "users/carol"], memoCount: 0n, memoContentBytes: 8192n }),
+        defaults,
+      ]),
+    );
     render(<UsageLimitsSection />, { wrapper });
 
-    const bobCell = await screen.findByText("@bob");
+    expect(await screen.findByText(/checked from top to bottom/)).toBeInTheDocument();
+    await screen.findByText("carol");
     const rows = screen.getAllByRole("row").slice(1);
     const text = (row: HTMLElement) =>
       within(row)
         .getAllByRole("cell")
         .map((cell) => cell.textContent);
-    expect(rows).toHaveLength(2);
-    expect(text(rows[0])).toEqual(["All usersEveryone, admins included", "100", "8.0 KB", "Unlimited", "Unlimited", ""]);
-    expect(text(rows[1])).toEqual(["bob@bob", "Unlimited", "8.0 KB", "5.0 GB", "Unlimited", ""]);
-    expect(bobCell.closest("tr")).toBe(rows[1]);
-    // Users without their own limits get no row.
-    expect(screen.queryByText("Alice")).not.toBeInTheDocument();
+    expect(rows).toHaveLength(3);
+    expect(text(rows[0])).toEqual(["1", "bob", "Unlimited", "Unlimited", "5.0 GB", "Unlimited", ""]);
+    expect(text(rows[1])).toEqual(["2", "bobcarol", "Unlimited", "8.0 KB", "Unlimited", "Unlimited", ""]);
+    expect(text(rows[2])).toEqual([
+      "3",
+      "All usersEveryone not named above. This is the default.",
+      "100",
+      "8.0 KB",
+      "1.0 GB",
+      "Unlimited",
+      "",
+    ]);
+    expect(screen.queryByText("Never applies")).not.toBeInTheDocument();
   });
 
-  it("removes all of a user's own limits", async () => {
-    mocks.listUsageLimits.mockResolvedValue({
-      usageLimits: [
-        limit("bob-memos", UsageLimit_Metric.MEMO_COUNT, 0n, "users/bob"),
-        limit("bob-storage", UsageLimit_Metric.STORAGE_BYTES, 5n * 1024n * MIB, "users/bob"),
-      ],
-      nextPageToken: "",
-    });
+  it("flags an entry that an earlier entry shadows completely", async () => {
+    mocks.getInstanceSetting.mockResolvedValue(
+      settingOf([
+        newUsageLimitEntry({ users: ["users/bob", "users/carol"], memoCount: 10n }),
+        newUsageLimitEntry({ users: ["users/bob"], memoCount: 20n }),
+        defaults,
+      ]),
+    );
     render(<UsageLimitsSection />, { wrapper });
-    await screen.findByText("@bob");
+    const badge = await screen.findByText("Never applies");
+    expect(badge.closest("tr")).toBe(screen.getAllByRole("row")[2]);
+  });
 
-    await openRowMenu("bob", "Remove");
-    expect(await screen.findByText("Remove the limits for bob?")).toBeInTheDocument();
+  it("moves an entry up and saves the whole list", async () => {
+    const first = newUsageLimitEntry({ users: ["users/bob"], memoCount: 10n });
+    const second = newUsageLimitEntry({ users: ["users/carol"], memoCount: 20n });
+    mocks.getInstanceSetting.mockResolvedValue(settingOf([first, second, defaults]));
+    render(<UsageLimitsSection />, { wrapper });
+    await screen.findByText("carol");
+
+    await openRowMenu("2", "Move up");
+    await waitFor(() => expect(mocks.updateInstanceSetting).toHaveBeenCalledTimes(1));
+    expect(savedLimits().map((entry) => entry.users)).toEqual([["users/carol"], ["users/bob"], []]);
+  });
+
+  it("does not let the default move or be removed", async () => {
+    mocks.getInstanceSetting.mockResolvedValue(settingOf([newUsageLimitEntry({ users: ["users/bob"] }), defaults]));
+    render(<UsageLimitsSection />, { wrapper });
+    await screen.findByText("bob");
+
+    fireEvent.click(await screen.findByRole("button", { name: "Actions for entry All users" }));
+    expect(await screen.findByRole("menuitem", { name: "Edit" })).toBeInTheDocument();
+    expect(screen.queryByRole("menuitem", { name: "Remove" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("menuitem", { name: "Move up" })).not.toBeInTheDocument();
+  });
+
+  it("removes an entry after confirmation", async () => {
+    mocks.getInstanceSetting.mockResolvedValue(settingOf([newUsageLimitEntry({ users: ["users/bob"], memoCount: 10n }), defaults]));
+    render(<UsageLimitsSection />, { wrapper });
+    await screen.findByText("bob");
+
+    await openRowMenu("1", "Remove");
+    expect(await screen.findByText("Remove this entry?")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Remove" }));
 
-    await waitFor(() => expect(mocks.deleteUsageLimit).toHaveBeenCalledTimes(2));
-    expect(mocks.deleteUsageLimit).toHaveBeenCalledWith({ name: "usageLimits/bob-memos" });
-    expect(mocks.deleteUsageLimit).toHaveBeenCalledWith({ name: "usageLimits/bob-storage" });
+    await waitFor(() => expect(mocks.updateInstanceSetting).toHaveBeenCalledTimes(1));
+    expect(savedLimits()).toHaveLength(1);
+    expect(savedLimits()[0].allUsers).toBe(true);
   });
 });
 
 describe("UsageLimitDialog", () => {
-  it("creates, updates and removes the limits for all users", async () => {
-    mocks.listUsageLimits.mockResolvedValue({
-      usageLimits: [
-        limit("default-memos", UsageLimit_Metric.MEMO_COUNT, 100n),
-        limit("default-content", UsageLimit_Metric.MEMO_CONTENT_BYTES, 8192n),
-        limit("default-storage", UsageLimit_Metric.STORAGE_BYTES, 1024n * MIB),
-      ],
-      nextPageToken: "",
-    });
-    render(<UsageLimitDialog open onOpenChange={vi.fn()} target={{ kind: "all" }} candidates={[]} />, { wrapper });
+  it("edits the limits for all users", async () => {
+    const onSave = vi.fn().mockResolvedValue(undefined);
+    render(
+      <UsageLimitDialog
+        open
+        onOpenChange={vi.fn()}
+        entry={defaults}
+        defaults={defaults}
+        users={[alice, bob]}
+        saving={false}
+        onSave={onSave}
+      />,
+      {
+        wrapper,
+      },
+    );
 
     expect(await screen.findByText("Limits for all users")).toBeInTheDocument();
+    expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
     const memos = screen.getByRole("textbox", { name: "Memos" });
-    await waitFor(() => expect(memos).toHaveValue("100"));
+    expect(memos).toHaveValue("100");
     expect(screen.getByRole("textbox", { name: "Storage (MiB)" })).toHaveValue("1024");
     const content = screen.getByRole("textbox", { name: "Memo content (KiB)" });
     expect(content).toHaveValue("8");
-    fireEvent.change(content, { target: { value: "4" } });
     expect(screen.getByRole("textbox", { name: "Largest file (MiB)" })).toHaveAttribute("placeholder", "Unlimited");
 
     fireEvent.change(memos, { target: { value: "200" } });
+    fireEvent.change(content, { target: { value: "4" } });
     fireEvent.change(screen.getByRole("textbox", { name: "Storage (MiB)" }), { target: { value: "" } });
     fireEvent.change(screen.getByRole("textbox", { name: "Largest file (MiB)" }), { target: { value: "10" } });
     fireEvent.click(screen.getByRole("button", { name: "Save" }));
 
-    await waitFor(() => expect(mocks.createUsageLimit).toHaveBeenCalled());
-    expect(mocks.updateUsageLimit).toHaveBeenCalledWith(
-      expect.objectContaining({ usageLimit: expect.objectContaining({ name: "usageLimits/default-memos", value: 200n }) }),
-    );
-    expect(mocks.deleteUsageLimit).toHaveBeenCalledWith({ name: "usageLimits/default-storage" });
-    expect(mocks.updateUsageLimit).toHaveBeenCalledWith(
-      expect.objectContaining({ usageLimit: expect.objectContaining({ name: "usageLimits/default-content", value: 4096n }) }),
-    );
-    expect(mocks.createUsageLimit).toHaveBeenCalledWith({
-      usageLimit: expect.objectContaining({ metric: UsageLimit_Metric.UPLOAD_BYTES, user: "", value: 10n * MIB }),
-    });
+    await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
+    const saved = onSave.mock.calls[0][0] as UsageLimitEntry;
+    expect(saved.allUsers).toBe(true);
+    expect(saved.users).toEqual([]);
+    expect(saved.memoCount).toBe(200n);
+    expect(saved.memoContentBytes).toBe(4096n);
+    expect(saved.storageBytes).toBeUndefined();
+    expect(saved.uploadBytes).toBe(10n * MIB);
   });
 
-  it("edits a user's own limits, with the all-users limits as placeholders", async () => {
-    mocks.listUsageLimits.mockResolvedValue({
-      usageLimits: [
-        limit("default-memos", UsageLimit_Metric.MEMO_COUNT, 100n),
-        limit("bob-storage", UsageLimit_Metric.STORAGE_BYTES, 5n * 1024n * MIB, "users/bob"),
-        limit("bob-file-size", UsageLimit_Metric.UPLOAD_BYTES, 0n, "users/bob"),
-      ],
-      nextPageToken: "",
-    });
-    render(<UsageLimitDialog open onOpenChange={vi.fn()} target={{ kind: "user", user: bob }} candidates={[]} />, {
-      wrapper,
-    });
+  it("adds an entry for picked users, starting from the default values", async () => {
+    const onSave = vi.fn().mockResolvedValue(undefined);
+    render(
+      <UsageLimitDialog open onOpenChange={vi.fn()} defaults={defaults} users={[alice, bob, carol]} saving={false} onSave={onSave} />,
+      {
+        wrapper,
+      },
+    );
 
-    expect(await screen.findByText("Limits for bob")).toBeInTheDocument();
-    const memos = screen.getByRole("textbox", { name: "Memos" });
-    const storage = screen.getByRole("textbox", { name: "Storage (MiB)" });
-    await waitFor(() => expect(storage).toHaveValue("5120"));
-    expect(memos).toHaveValue("");
-    expect(memos).toHaveAttribute("placeholder", "All users: 100");
-    // No limit for bob shows as 0, because empty means the all-users limit.
-    expect(screen.getByRole("textbox", { name: "Largest file (MiB)" })).toHaveValue("0");
-
-    fireEvent.change(storage, { target: { value: "" } });
-    fireEvent.change(memos, { target: { value: "50" } });
-    fireEvent.click(screen.getByRole("button", { name: "Save" }));
-
-    await waitFor(() => expect(mocks.deleteUsageLimit).toHaveBeenCalledWith({ name: "usageLimits/bob-storage" }));
-    expect(mocks.createUsageLimit).toHaveBeenCalledWith({
-      usageLimit: expect.objectContaining({ metric: UsageLimit_Metric.MEMO_COUNT, user: "users/bob", value: 50n }),
-    });
-    expect(mocks.updateUsageLimit).not.toHaveBeenCalled();
-  });
-
-  it("adds limits for a picked user", async () => {
-    mocks.listUsageLimits.mockResolvedValue({ usageLimits: [], nextPageToken: "" });
-    render(<UsageLimitDialog open onOpenChange={vi.fn()} target={{ kind: "add" }} candidates={[carol]} />, { wrapper });
-
-    expect(await screen.findByRole("heading", { name: "Add user limit" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Add entry" })).toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "Memos" })).toHaveValue("100");
     expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
 
-    await chooseOption("User", "@carol");
-    const fileSize = screen.getByRole("textbox", { name: "Largest file (MiB)" });
-    await waitFor(() => expect(fileSize).toBeEnabled());
-    fireEvent.change(fileSize, { target: { value: "10" } });
+    await chooseOption("Users", "@carol");
+    await waitFor(() => expect(screen.getByRole("button", { name: "Save" })).toBeEnabled());
+    fireEvent.change(screen.getByRole("textbox", { name: "Largest file (MiB)" }), { target: { value: "10" } });
+    fireEvent.change(screen.getByRole("textbox", { name: "Memos" }), { target: { value: "0" } });
     fireEvent.click(screen.getByRole("button", { name: "Save" }));
 
-    await waitFor(() =>
-      expect(mocks.createUsageLimit).toHaveBeenCalledWith({
-        usageLimit: expect.objectContaining({ metric: UsageLimit_Metric.UPLOAD_BYTES, user: "users/carol", value: 10n * MIB }),
-      }),
+    await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
+    const saved = onSave.mock.calls[0][0] as UsageLimitEntry;
+    expect(saved.allUsers).toBe(false);
+    expect(saved.users).toEqual(["users/carol"]);
+    expect(saved.uploadBytes).toBe(10n * MIB);
+    expect(saved.memoCount).toBeUndefined();
+    expect(saved.memoContentBytes).toBe(8192n);
+  });
+
+  it("keeps the stored value of a field the admin did not touch", async () => {
+    const onSave = vi.fn().mockResolvedValue(undefined);
+    // 8,193 bytes displays as 8 KiB; re-parsing the text would turn it into 8,192.
+    const entry = newUsageLimitEntry({ users: ["users/bob"], memoContentBytes: 8193n, storageBytes: 1n });
+    render(
+      <UsageLimitDialog open onOpenChange={vi.fn()} entry={entry} defaults={defaults} users={[bob]} saving={false} onSave={onSave} />,
+      {
+        wrapper,
+      },
     );
-    expect(mocks.createUsageLimit).toHaveBeenCalledTimes(1);
+    expect(await screen.findByRole("textbox", { name: "Memo content (KiB)" })).toHaveValue("8");
+    expect(screen.getByRole("textbox", { name: "Storage (MiB)" })).not.toHaveValue("0");
+    fireEvent.change(screen.getByRole("textbox", { name: "Memos" }), { target: { value: "5" } });
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+    await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
+    const saved = onSave.mock.calls[0][0] as UsageLimitEntry;
+    expect(saved.memoContentBytes).toBe(8193n);
+    expect(saved.storageBytes).toBe(1n);
+    expect(saved.memoCount).toBe(5n);
+  });
+
+  it("rejects a byte size that does not fit an integer instead of throwing", async () => {
+    const onSave = vi.fn().mockResolvedValue(undefined);
+    render(
+      <UsageLimitDialog open onOpenChange={vi.fn()} entry={defaults} defaults={defaults} users={[]} saving={false} onSave={onSave} />,
+      {
+        wrapper,
+      },
+    );
+    const storage = await screen.findByRole("textbox", { name: "Storage (MiB)" });
+    fireEvent.change(storage, { target: { value: "9".repeat(400) } });
+    expect(storage).toHaveAttribute("aria-invalid", "true");
+    expect(screen.getByRole("button", { name: "Save" })).toBeDisabled();
+  });
+
+  it("removes a user from the entry", async () => {
+    const onSave = vi.fn().mockResolvedValue(undefined);
+    const entry = newUsageLimitEntry({ users: ["users/bob", "users/carol"], memoCount: 10n });
+    render(
+      <UsageLimitDialog
+        open
+        onOpenChange={vi.fn()}
+        entry={entry}
+        defaults={defaults}
+        users={[bob, carol]}
+        saving={false}
+        onSave={onSave}
+      />,
+      {
+        wrapper,
+      },
+    );
+    expect(await screen.findByRole("heading", { name: "Edit entry" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Remove bob" }));
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+    await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
+    expect((onSave.mock.calls[0][0] as UsageLimitEntry).users).toEqual(["users/carol"]);
   });
 });

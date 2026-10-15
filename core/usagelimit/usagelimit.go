@@ -1,17 +1,19 @@
-// Package usagelimit resolves the usage limits that apply to a user and
-// decides whether creating or editing a memo, or uploading a file, stays within them.
+// Package usagelimit resolves the limit set that applies to a user and decides
+// whether creating or editing a memo, or uploading a file, stays within it.
 //
-// A usage limit sets one value for one metric, for every user (a default) or
-// for one user. For each metric, the user's own limit applies if there is
-// one, otherwise the default, otherwise the metric is unlimited. A value of 0
-// is unlimited. Usage is counted live on every check, so there are no stored
-// counters that can drift; concurrent requests can therefore overshoot a limit
-// by the number of requests in flight.
+// The usage limits setting is an ordered list of entries. Each entry names the
+// users it applies to, or applies to every user, and carries an optional limit
+// per metric. The first entry that names a user is that user's limit set,
+// whole; the last entry applies to every user and is the default. An unset
+// limit is unlimited, as is 0. Usage is counted live on every check, so there
+// are no stored counters that can drift; concurrent requests can therefore
+// overshoot a limit by the number of requests in flight.
 package usagelimit
 
 import (
 	"context"
 	"fmt"
+	"slices"
 
 	"github.com/pkg/errors"
 
@@ -19,14 +21,14 @@ import (
 )
 
 // Metric is what a usage limit counts.
-type Metric = storepb.InstanceUsageLimitsSetting_Metric
+type Metric string
 
 // The metrics a usage limit can set.
 const (
-	MetricMemoCount        = storepb.InstanceUsageLimitsSetting_MEMO_COUNT
-	MetricStorageBytes     = storepb.InstanceUsageLimitsSetting_STORAGE_BYTES
-	MetricUploadBytes      = storepb.InstanceUsageLimitsSetting_UPLOAD_BYTES
-	MetricMemoContentBytes = storepb.InstanceUsageLimitsSetting_MEMO_CONTENT_BYTES
+	MetricMemoCount        Metric = "MEMO_COUNT"
+	MetricMemoContentBytes Metric = "MEMO_CONTENT_BYTES"
+	MetricStorageBytes     Metric = "STORAGE_BYTES"
+	MetricUploadBytes      Metric = "UPLOAD_BYTES"
 )
 
 // Store is the data the checks read. *store.Store implements it.
@@ -36,88 +38,45 @@ type Store interface {
 	GetAttachmentStorageUsage(ctx context.Context, creatorID int32) (int64, error)
 }
 
-// Limit is the limit in effect for one metric.
-type Limit struct {
-	// Value is the limit. 0 means unlimited.
-	Value int64
-	// Source is the ID of the usage limit the value comes from, or empty when
-	// no usage limit applies.
-	Source string
-}
-
-// Limited reports whether the limit restricts anything.
-func (l Limit) Limited() bool {
-	return l.Value > 0
-}
-
-// Effective is the limit in effect for each metric of one user.
+// Effective is the limit set in effect for one user.
 type Effective struct {
-	MemoCount        Limit
-	StorageBytes     Limit
-	UploadBytes      Limit
-	MemoContentBytes Limit
+	// Entry is the usage limits entry that applies, or nil when none does, in
+	// which case every metric is unlimited. Its getters are nil-safe and return
+	// 0, unlimited, for an unset value.
+	Entry *storepb.InstanceUsageLimitsSetting_UsageLimit
+	// Index is the position of Entry in the setting, or -1 when Entry is nil.
+	Index int
 }
 
-// Resolve returns the limits in effect for userID: for each metric, the user's
-// own limit, otherwise the default, otherwise unlimited.
+// Resolve returns the limit set in effect for userID: the first entry that
+// names the user, else the first entry for all users, else no entry.
 func Resolve(setting *storepb.InstanceUsageLimitsSetting, userID int32) Effective {
-	var effective Effective
-	for _, limit := range setting.GetLimits() {
+	for i, limit := range setting.GetLimits() {
 		if limit == nil {
 			continue
 		}
-		selected := effective.get(limit.Metric)
-		if selected == nil {
-			continue
+		if limit.AllUsers || slices.Contains(limit.UserIds, userID) {
+			return Effective{Entry: limit, Index: i}
 		}
-		switch target := limit.Target.(type) {
-		case *storepb.InstanceUsageLimitsSetting_UsageLimit_AllUsers:
-			// A user's own limit replaces the default, whatever the order.
-			if target == nil || target.AllUsers == nil || selected.Source != "" {
-				continue
-			}
-		case *storepb.InstanceUsageLimitsSetting_UsageLimit_UserId:
-			if target == nil || target.UserId <= 0 || target.UserId != userID {
-				continue
-			}
-		default:
-			continue
-		}
-		*selected = Limit{Value: limit.Value, Source: limit.Uid}
 	}
-	return effective
-}
-
-func (e *Effective) get(metric Metric) *Limit {
-	switch metric {
-	case MetricMemoCount:
-		return &e.MemoCount
-	case MetricStorageBytes:
-		return &e.StorageBytes
-	case MetricUploadBytes:
-		return &e.UploadBytes
-	case MetricMemoContentBytes:
-		return &e.MemoContentBytes
-	default:
-		return nil
-	}
+	return Effective{Index: -1}
 }
 
 // Refusal is returned when an action would exceed a usage limit.
 type Refusal struct {
 	Metric Metric
-	// Limit is the value of the usage limit that applied.
+	// Limit is the value of the limit that applied.
 	Limit int64
 	// Usage is the current usage: the memo count, the stored bytes, or for
 	// UPLOAD_BYTES the size of the refused file, or for MEMO_CONTENT_BYTES the
 	// size of the refused memo content.
 	Usage int64
-	// Source is the ID of the usage limit that applied.
-	Source string
+	// Index is the position of the entry that applied in the setting.
+	Index int
 }
 
 func (r *Refusal) Error() string {
-	return fmt.Sprintf("usage limit %s exceeded: %s limit %d, usage %d", r.Source, r.Metric, r.Limit, r.Usage)
+	return fmt.Sprintf("usage limit exceeded: %s limit %d, usage %d (entry %d)", r.Metric, r.Limit, r.Usage, r.Index)
 }
 
 // AsRefusal returns the refusal in err's chain, or nil.
@@ -138,6 +97,10 @@ func EffectiveFor(ctx context.Context, s Store, userID int32) (Effective, error)
 	return Resolve(setting, userID), nil
 }
 
+func (e Effective) refuse(metric Metric, limit, usage int64) error {
+	return &Refusal{Metric: metric, Limit: limit, Usage: usage, Index: e.Index}
+}
+
 // CheckMemoCreate returns a *Refusal when userID has reached the memo limit.
 // With no memo limit in effect it runs no count query.
 func CheckMemoCreate(ctx context.Context, s Store, userID int32) error {
@@ -145,15 +108,16 @@ func CheckMemoCreate(ctx context.Context, s Store, userID int32) error {
 	if err != nil {
 		return err
 	}
-	if !effective.MemoCount.Limited() {
+	limit := effective.Entry.GetMemoCount()
+	if limit <= 0 {
 		return nil
 	}
 	count, err := s.CountUserMemos(ctx, userID)
 	if err != nil {
 		return errors.Wrap(err, "failed to count memos")
 	}
-	if count >= effective.MemoCount.Value {
-		return &Refusal{Metric: MetricMemoCount, Limit: effective.MemoCount.Value, Usage: count, Source: effective.MemoCount.Source}
+	if count >= limit {
+		return effective.refuse(MetricMemoCount, limit, count)
 	}
 	return nil
 }
@@ -175,15 +139,15 @@ func CheckMemoContentSize(ctx context.Context, s Store, userID int32, size int64
 	if err != nil {
 		return err
 	}
-	if content := effective.MemoContentBytes; content.Limited() && size > content.Value {
-		return &Refusal{Metric: MetricMemoContentBytes, Limit: content.Value, Usage: size, Source: content.Source}
+	if limit := effective.Entry.GetMemoContentBytes(); limit > 0 && size > limit {
+		return effective.refuse(MetricMemoContentBytes, limit, size)
 	}
 	return nil
 }
 
 func (e Effective) checkFileSize(size int64) error {
-	if upload := e.UploadBytes; upload.Limited() && size > upload.Value {
-		return &Refusal{Metric: MetricUploadBytes, Limit: upload.Value, Usage: size, Source: upload.Source}
+	if limit := e.Entry.GetUploadBytes(); limit > 0 && size > limit {
+		return e.refuse(MetricUploadBytes, limit, size)
 	}
 	return nil
 }
@@ -199,20 +163,21 @@ func CheckUpload(ctx context.Context, s Store, userID int32, size int64) error {
 	if err := effective.checkFileSize(size); err != nil {
 		return err
 	}
-	if !effective.StorageBytes.Limited() {
+	limit := effective.Entry.GetStorageBytes()
+	if limit <= 0 {
 		return nil
 	}
 	used, err := s.GetAttachmentStorageUsage(ctx, userID)
 	if err != nil {
 		return errors.Wrap(err, "failed to sum storage usage")
 	}
-	if used+size > effective.StorageBytes.Value {
-		return &Refusal{Metric: MetricStorageBytes, Limit: effective.StorageBytes.Value, Usage: used, Source: effective.StorageBytes.Source}
+	if used+size > limit {
+		return effective.refuse(MetricStorageBytes, limit, used)
 	}
 	return nil
 }
 
-// Usage is a user's usage and the limits in effect for the user.
+// Usage is a user's usage and the limit set in effect for the user.
 type Usage struct {
 	MemoCount    int64
 	StorageBytes int64

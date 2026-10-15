@@ -52,21 +52,6 @@ const (
 	// InstanceServiceGetInstanceStatsProcedure is the fully-qualified name of the InstanceService's
 	// GetInstanceStats RPC.
 	InstanceServiceGetInstanceStatsProcedure = "/memos.api.InstanceService/GetInstanceStats"
-	// InstanceServiceListUsageLimitsProcedure is the fully-qualified name of the InstanceService's
-	// ListUsageLimits RPC.
-	InstanceServiceListUsageLimitsProcedure = "/memos.api.InstanceService/ListUsageLimits"
-	// InstanceServiceGetUsageLimitProcedure is the fully-qualified name of the InstanceService's
-	// GetUsageLimit RPC.
-	InstanceServiceGetUsageLimitProcedure = "/memos.api.InstanceService/GetUsageLimit"
-	// InstanceServiceCreateUsageLimitProcedure is the fully-qualified name of the InstanceService's
-	// CreateUsageLimit RPC.
-	InstanceServiceCreateUsageLimitProcedure = "/memos.api.InstanceService/CreateUsageLimit"
-	// InstanceServiceUpdateUsageLimitProcedure is the fully-qualified name of the InstanceService's
-	// UpdateUsageLimit RPC.
-	InstanceServiceUpdateUsageLimitProcedure = "/memos.api.InstanceService/UpdateUsageLimit"
-	// InstanceServiceDeleteUsageLimitProcedure is the fully-qualified name of the InstanceService's
-	// DeleteUsageLimit RPC.
-	InstanceServiceDeleteUsageLimitProcedure = "/memos.api.InstanceService/DeleteUsageLimit"
 )
 
 // InstanceServiceClient is a client for the memos.api.InstanceService service.
@@ -86,22 +71,6 @@ type InstanceServiceClient interface {
 	TestInstanceEmailSetting(context.Context, *connect.Request[api.TestInstanceEmailSettingRequest]) (*connect.Response[emptypb.Empty], error)
 	// GetInstanceStats gets resource usage statistics for the instance. Admin only. Results are cached for 60 seconds.
 	GetInstanceStats(context.Context, *connect.Request[api.GetInstanceStatsRequest]) (*connect.Response[api.InstanceStats], error)
-	// ListUsageLimits lists the usage limits: the defaults for every user and the
-	// limits for single users. Admin only.
-	ListUsageLimits(context.Context, *connect.Request[api.ListUsageLimitsRequest]) (*connect.Response[api.ListUsageLimitsResponse], error)
-	// GetUsageLimit gets a usage limit. Admin only.
-	GetUsageLimit(context.Context, *connect.Request[api.GetUsageLimitRequest]) (*connect.Response[api.UsageLimit], error)
-	// CreateUsageLimit creates a usage limit. Admin only. There is at most one
-	// limit per metric and user, and one default per metric. Fails with
-	// FAILED_PRECONDITION when the usage limits are configured by the deployment.
-	CreateUsageLimit(context.Context, *connect.Request[api.CreateUsageLimitRequest]) (*connect.Response[api.UsageLimit], error)
-	// UpdateUsageLimit updates the value of a usage limit. Admin only. The metric
-	// and user cannot change.
-	UpdateUsageLimit(context.Context, *connect.Request[api.UpdateUsageLimitRequest]) (*connect.Response[api.UsageLimit], error)
-	// DeleteUsageLimit deletes a usage limit. Admin only. Deleting a user's limit
-	// returns the user to the default; deleting a default makes the metric
-	// unlimited for users without their own limit.
-	DeleteUsageLimit(context.Context, *connect.Request[api.DeleteUsageLimitRequest]) (*connect.Response[emptypb.Empty], error)
 }
 
 // NewInstanceServiceClient constructs a client for the memos.api.InstanceService service. By
@@ -151,36 +120,6 @@ func NewInstanceServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 			connect.WithSchema(instanceServiceMethods.ByName("GetInstanceStats")),
 			connect.WithClientOptions(opts...),
 		),
-		listUsageLimits: connect.NewClient[api.ListUsageLimitsRequest, api.ListUsageLimitsResponse](
-			httpClient,
-			baseURL+InstanceServiceListUsageLimitsProcedure,
-			connect.WithSchema(instanceServiceMethods.ByName("ListUsageLimits")),
-			connect.WithClientOptions(opts...),
-		),
-		getUsageLimit: connect.NewClient[api.GetUsageLimitRequest, api.UsageLimit](
-			httpClient,
-			baseURL+InstanceServiceGetUsageLimitProcedure,
-			connect.WithSchema(instanceServiceMethods.ByName("GetUsageLimit")),
-			connect.WithClientOptions(opts...),
-		),
-		createUsageLimit: connect.NewClient[api.CreateUsageLimitRequest, api.UsageLimit](
-			httpClient,
-			baseURL+InstanceServiceCreateUsageLimitProcedure,
-			connect.WithSchema(instanceServiceMethods.ByName("CreateUsageLimit")),
-			connect.WithClientOptions(opts...),
-		),
-		updateUsageLimit: connect.NewClient[api.UpdateUsageLimitRequest, api.UsageLimit](
-			httpClient,
-			baseURL+InstanceServiceUpdateUsageLimitProcedure,
-			connect.WithSchema(instanceServiceMethods.ByName("UpdateUsageLimit")),
-			connect.WithClientOptions(opts...),
-		),
-		deleteUsageLimit: connect.NewClient[api.DeleteUsageLimitRequest, emptypb.Empty](
-			httpClient,
-			baseURL+InstanceServiceDeleteUsageLimitProcedure,
-			connect.WithSchema(instanceServiceMethods.ByName("DeleteUsageLimit")),
-			connect.WithClientOptions(opts...),
-		),
 	}
 }
 
@@ -192,11 +131,6 @@ type instanceServiceClient struct {
 	updateInstanceSetting    *connect.Client[api.UpdateInstanceSettingRequest, api.InstanceSetting]
 	testInstanceEmailSetting *connect.Client[api.TestInstanceEmailSettingRequest, emptypb.Empty]
 	getInstanceStats         *connect.Client[api.GetInstanceStatsRequest, api.InstanceStats]
-	listUsageLimits          *connect.Client[api.ListUsageLimitsRequest, api.ListUsageLimitsResponse]
-	getUsageLimit            *connect.Client[api.GetUsageLimitRequest, api.UsageLimit]
-	createUsageLimit         *connect.Client[api.CreateUsageLimitRequest, api.UsageLimit]
-	updateUsageLimit         *connect.Client[api.UpdateUsageLimitRequest, api.UsageLimit]
-	deleteUsageLimit         *connect.Client[api.DeleteUsageLimitRequest, emptypb.Empty]
 }
 
 // GetInstanceProfile calls memos.api.InstanceService.GetInstanceProfile.
@@ -229,31 +163,6 @@ func (c *instanceServiceClient) GetInstanceStats(ctx context.Context, req *conne
 	return c.getInstanceStats.CallUnary(ctx, req)
 }
 
-// ListUsageLimits calls memos.api.InstanceService.ListUsageLimits.
-func (c *instanceServiceClient) ListUsageLimits(ctx context.Context, req *connect.Request[api.ListUsageLimitsRequest]) (*connect.Response[api.ListUsageLimitsResponse], error) {
-	return c.listUsageLimits.CallUnary(ctx, req)
-}
-
-// GetUsageLimit calls memos.api.InstanceService.GetUsageLimit.
-func (c *instanceServiceClient) GetUsageLimit(ctx context.Context, req *connect.Request[api.GetUsageLimitRequest]) (*connect.Response[api.UsageLimit], error) {
-	return c.getUsageLimit.CallUnary(ctx, req)
-}
-
-// CreateUsageLimit calls memos.api.InstanceService.CreateUsageLimit.
-func (c *instanceServiceClient) CreateUsageLimit(ctx context.Context, req *connect.Request[api.CreateUsageLimitRequest]) (*connect.Response[api.UsageLimit], error) {
-	return c.createUsageLimit.CallUnary(ctx, req)
-}
-
-// UpdateUsageLimit calls memos.api.InstanceService.UpdateUsageLimit.
-func (c *instanceServiceClient) UpdateUsageLimit(ctx context.Context, req *connect.Request[api.UpdateUsageLimitRequest]) (*connect.Response[api.UsageLimit], error) {
-	return c.updateUsageLimit.CallUnary(ctx, req)
-}
-
-// DeleteUsageLimit calls memos.api.InstanceService.DeleteUsageLimit.
-func (c *instanceServiceClient) DeleteUsageLimit(ctx context.Context, req *connect.Request[api.DeleteUsageLimitRequest]) (*connect.Response[emptypb.Empty], error) {
-	return c.deleteUsageLimit.CallUnary(ctx, req)
-}
-
 // InstanceServiceHandler is an implementation of the memos.api.InstanceService service.
 type InstanceServiceHandler interface {
 	// GetInstanceProfile gets the instance profile. Available without authentication, including on a private instance.
@@ -271,22 +180,6 @@ type InstanceServiceHandler interface {
 	TestInstanceEmailSetting(context.Context, *connect.Request[api.TestInstanceEmailSettingRequest]) (*connect.Response[emptypb.Empty], error)
 	// GetInstanceStats gets resource usage statistics for the instance. Admin only. Results are cached for 60 seconds.
 	GetInstanceStats(context.Context, *connect.Request[api.GetInstanceStatsRequest]) (*connect.Response[api.InstanceStats], error)
-	// ListUsageLimits lists the usage limits: the defaults for every user and the
-	// limits for single users. Admin only.
-	ListUsageLimits(context.Context, *connect.Request[api.ListUsageLimitsRequest]) (*connect.Response[api.ListUsageLimitsResponse], error)
-	// GetUsageLimit gets a usage limit. Admin only.
-	GetUsageLimit(context.Context, *connect.Request[api.GetUsageLimitRequest]) (*connect.Response[api.UsageLimit], error)
-	// CreateUsageLimit creates a usage limit. Admin only. There is at most one
-	// limit per metric and user, and one default per metric. Fails with
-	// FAILED_PRECONDITION when the usage limits are configured by the deployment.
-	CreateUsageLimit(context.Context, *connect.Request[api.CreateUsageLimitRequest]) (*connect.Response[api.UsageLimit], error)
-	// UpdateUsageLimit updates the value of a usage limit. Admin only. The metric
-	// and user cannot change.
-	UpdateUsageLimit(context.Context, *connect.Request[api.UpdateUsageLimitRequest]) (*connect.Response[api.UsageLimit], error)
-	// DeleteUsageLimit deletes a usage limit. Admin only. Deleting a user's limit
-	// returns the user to the default; deleting a default makes the metric
-	// unlimited for users without their own limit.
-	DeleteUsageLimit(context.Context, *connect.Request[api.DeleteUsageLimitRequest]) (*connect.Response[emptypb.Empty], error)
 }
 
 // NewInstanceServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -332,36 +225,6 @@ func NewInstanceServiceHandler(svc InstanceServiceHandler, opts ...connect.Handl
 		connect.WithSchema(instanceServiceMethods.ByName("GetInstanceStats")),
 		connect.WithHandlerOptions(opts...),
 	)
-	instanceServiceListUsageLimitsHandler := connect.NewUnaryHandler(
-		InstanceServiceListUsageLimitsProcedure,
-		svc.ListUsageLimits,
-		connect.WithSchema(instanceServiceMethods.ByName("ListUsageLimits")),
-		connect.WithHandlerOptions(opts...),
-	)
-	instanceServiceGetUsageLimitHandler := connect.NewUnaryHandler(
-		InstanceServiceGetUsageLimitProcedure,
-		svc.GetUsageLimit,
-		connect.WithSchema(instanceServiceMethods.ByName("GetUsageLimit")),
-		connect.WithHandlerOptions(opts...),
-	)
-	instanceServiceCreateUsageLimitHandler := connect.NewUnaryHandler(
-		InstanceServiceCreateUsageLimitProcedure,
-		svc.CreateUsageLimit,
-		connect.WithSchema(instanceServiceMethods.ByName("CreateUsageLimit")),
-		connect.WithHandlerOptions(opts...),
-	)
-	instanceServiceUpdateUsageLimitHandler := connect.NewUnaryHandler(
-		InstanceServiceUpdateUsageLimitProcedure,
-		svc.UpdateUsageLimit,
-		connect.WithSchema(instanceServiceMethods.ByName("UpdateUsageLimit")),
-		connect.WithHandlerOptions(opts...),
-	)
-	instanceServiceDeleteUsageLimitHandler := connect.NewUnaryHandler(
-		InstanceServiceDeleteUsageLimitProcedure,
-		svc.DeleteUsageLimit,
-		connect.WithSchema(instanceServiceMethods.ByName("DeleteUsageLimit")),
-		connect.WithHandlerOptions(opts...),
-	)
 	return "/memos.api.InstanceService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case InstanceServiceGetInstanceProfileProcedure:
@@ -376,16 +239,6 @@ func NewInstanceServiceHandler(svc InstanceServiceHandler, opts ...connect.Handl
 			instanceServiceTestInstanceEmailSettingHandler.ServeHTTP(w, r)
 		case InstanceServiceGetInstanceStatsProcedure:
 			instanceServiceGetInstanceStatsHandler.ServeHTTP(w, r)
-		case InstanceServiceListUsageLimitsProcedure:
-			instanceServiceListUsageLimitsHandler.ServeHTTP(w, r)
-		case InstanceServiceGetUsageLimitProcedure:
-			instanceServiceGetUsageLimitHandler.ServeHTTP(w, r)
-		case InstanceServiceCreateUsageLimitProcedure:
-			instanceServiceCreateUsageLimitHandler.ServeHTTP(w, r)
-		case InstanceServiceUpdateUsageLimitProcedure:
-			instanceServiceUpdateUsageLimitHandler.ServeHTTP(w, r)
-		case InstanceServiceDeleteUsageLimitProcedure:
-			instanceServiceDeleteUsageLimitHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -417,24 +270,4 @@ func (UnimplementedInstanceServiceHandler) TestInstanceEmailSetting(context.Cont
 
 func (UnimplementedInstanceServiceHandler) GetInstanceStats(context.Context, *connect.Request[api.GetInstanceStatsRequest]) (*connect.Response[api.InstanceStats], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.InstanceService.GetInstanceStats is not implemented"))
-}
-
-func (UnimplementedInstanceServiceHandler) ListUsageLimits(context.Context, *connect.Request[api.ListUsageLimitsRequest]) (*connect.Response[api.ListUsageLimitsResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.InstanceService.ListUsageLimits is not implemented"))
-}
-
-func (UnimplementedInstanceServiceHandler) GetUsageLimit(context.Context, *connect.Request[api.GetUsageLimitRequest]) (*connect.Response[api.UsageLimit], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.InstanceService.GetUsageLimit is not implemented"))
-}
-
-func (UnimplementedInstanceServiceHandler) CreateUsageLimit(context.Context, *connect.Request[api.CreateUsageLimitRequest]) (*connect.Response[api.UsageLimit], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.InstanceService.CreateUsageLimit is not implemented"))
-}
-
-func (UnimplementedInstanceServiceHandler) UpdateUsageLimit(context.Context, *connect.Request[api.UpdateUsageLimitRequest]) (*connect.Response[api.UsageLimit], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.InstanceService.UpdateUsageLimit is not implemented"))
-}
-
-func (UnimplementedInstanceServiceHandler) DeleteUsageLimit(context.Context, *connect.Request[api.DeleteUsageLimitRequest]) (*connect.Response[emptypb.Empty], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.InstanceService.DeleteUsageLimit is not implemented"))
 }

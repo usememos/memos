@@ -25,13 +25,14 @@ Add entries under a `## Unreleased` heading. After the release ships, rename it 
 - Access tokens are now bound to the user's password hash and become invalid immediately after a password change or
   an administrator password reset. Pre-upgrade access tokens are also rejected; clients must refresh them or sign in
   again. The browser session that changes its own password can still refresh; other refresh sessions are revoked.
-- Memo content size now uses the `MEMO_CONTENT_BYTES` usage limit, including creates, edits, comments, and imports.
-  The default is 8 KiB when the usage limits setting is absent. `MemoRelatedSetting.content_length_limit` is removed;
-  old values are not migrated. Exceeding the content limit returns `RESOURCE_EXHAUSTED`
-  with quota details.
-  `MemoRelatedSetting` fields are now `enable_double_click_edit = 1` and `reactions = 2`, matching the storage proto.
-- The memo-count usage metric is now `MEMO_COUNT`, and `UserUsage.memos_limit` is now `memo_count_limit`.
-  Metric values are `MEMO_COUNT = 1`, `MEMO_CONTENT_BYTES = 2`, `STORAGE_BYTES = 3`, and `UPLOAD_BYTES = 4`.
+- Usage limits replace the instance-wide upload size and memo content caps. `StorageSetting.upload_size_limit_mb`
+  and `MemoRelatedSetting.content_length_limit` are removed and old values are not migrated; `MemoRelatedSetting`
+  fields are now `enable_double_click_edit = 1` and `reactions = 2`. The limits are the `USAGE_LIMITS` instance
+  setting, `instance/settings/USAGE_LIMITS`, an ordered list of entries read and replaced whole through
+  `GetInstanceSetting` and `UpdateInstanceSetting`; the first entry naming a user applies, the last entry applies to
+  all users. The `usageLimits/{usage_limit}` resource and its five RPCs do not exist. `UserUsage` returns the limit
+  set in effect as `limits` plus `limit_index`. Exceeding a limit returns `RESOURCE_EXHAUSTED` with reason
+  `QUOTA_EXCEEDED` and metadata `metric`, `limit`, and `usage`.
 
 - The API no longer carries a `v1` version marker. Every client must update its paths:
   - REST routes move from `/api/v1/...` to `/api/...` (for example `GET /api/memos`). Server-sent events move from

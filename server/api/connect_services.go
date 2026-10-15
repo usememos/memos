@@ -64,46 +64,6 @@ func (s *ConnectServiceHandler) GetInstanceStats(ctx context.Context, req *conne
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectServiceHandler) ListUsageLimits(ctx context.Context, req *connect.Request[apipb.ListUsageLimitsRequest]) (*connect.Response[apipb.ListUsageLimitsResponse], error) {
-	resp, err := s.APIService.ListUsageLimits(ctx, req.Msg)
-	if err != nil {
-		return nil, convertGRPCError(err)
-	}
-	return connect.NewResponse(resp), nil
-}
-
-func (s *ConnectServiceHandler) GetUsageLimit(ctx context.Context, req *connect.Request[apipb.GetUsageLimitRequest]) (*connect.Response[apipb.UsageLimit], error) {
-	resp, err := s.APIService.GetUsageLimit(ctx, req.Msg)
-	if err != nil {
-		return nil, convertGRPCError(err)
-	}
-	return connect.NewResponse(resp), nil
-}
-
-func (s *ConnectServiceHandler) CreateUsageLimit(ctx context.Context, req *connect.Request[apipb.CreateUsageLimitRequest]) (*connect.Response[apipb.UsageLimit], error) {
-	resp, err := s.APIService.CreateUsageLimit(ctx, req.Msg)
-	if err != nil {
-		return nil, convertGRPCError(err)
-	}
-	return connect.NewResponse(resp), nil
-}
-
-func (s *ConnectServiceHandler) UpdateUsageLimit(ctx context.Context, req *connect.Request[apipb.UpdateUsageLimitRequest]) (*connect.Response[apipb.UsageLimit], error) {
-	resp, err := s.APIService.UpdateUsageLimit(ctx, req.Msg)
-	if err != nil {
-		return nil, convertGRPCError(err)
-	}
-	return connect.NewResponse(resp), nil
-}
-
-func (s *ConnectServiceHandler) DeleteUsageLimit(ctx context.Context, req *connect.Request[apipb.DeleteUsageLimitRequest]) (*connect.Response[emptypb.Empty], error) {
-	resp, err := s.APIService.DeleteUsageLimit(ctx, req.Msg)
-	if err != nil {
-		return nil, convertGRPCError(err)
-	}
-	return connect.NewResponse(resp), nil
-}
-
 // AuthService
 //
 // Auth service methods need special handling for response headers (cookies).
