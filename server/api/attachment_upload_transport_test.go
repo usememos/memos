@@ -10,7 +10,6 @@ import (
 	"testing"
 
 	"connectrpc.com/connect"
-	"github.com/labstack/echo/v5"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
@@ -37,8 +36,10 @@ func TestUploadAttachmentTransports(t *testing.T) {
 	require.NoError(t, err)
 	token, _, err := auth.GenerateAccessTokenV2(user.ID, user.Username, string(user.Role), string(user.RowStatus), user.PasswordHash, []byte(svc.Secret))
 	require.NoError(t, err)
-	e := echo.New()
-	require.NoError(t, svc.RegisterGateway(context.Background(), e))
+	e := http.NewServeMux()
+	apiHandler, handlerErr := svc.NewHandler(context.Background())
+	require.NoError(t, handlerErr)
+	e.Handle("/", apiHandler)
 
 	for _, path := range []string{"/api/attachments:upload", attachmentUploadProcedure} {
 		t.Run(path, func(t *testing.T) {

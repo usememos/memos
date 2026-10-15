@@ -6,12 +6,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/labstack/echo/v5"
-	"github.com/labstack/echo/v5/middleware"
 	sdkmcp "github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
 
+	"github.com/usememos/memos/internal/httphandler"
 	"github.com/usememos/memos/internal/profile"
 	memosproto "github.com/usememos/memos/proto"
 	"github.com/usememos/memos/server/api"
@@ -20,7 +19,7 @@ import (
 // maxMCPRequestBytes caps the /mcp request body. It tracks the API limit because
 // every tool call is forwarded in-process through the API routes. The SDK
 // enforces its own 4 MiB default, so the value is passed to the transport as
-// well; otherwise attachment uploads over MCP fail with 413 before Echo sees them.
+// well; otherwise attachment uploads over MCP fail with 413 before the API sees them.
 const maxMCPRequestBytes int64 = api.MaxAPIRequestBytes
 
 // toolCatalogTTL is the freshness hint advertised on tools/list and
@@ -37,7 +36,7 @@ type MCPService struct {
 }
 
 // NewMCPService creates an MCP service backed by the in-process API routes.
-func NewMCPService(profile *profile.Profile, echoServer *echo.Echo) (*MCPService, error) {
+func NewMCPService(profile *profile.Profile, handler http.Handler) (*MCPService, error) {
 	spec, err := loadMCPServiceOpenAPISpec()
 	if err != nil {
 		return nil, err
@@ -69,7 +68,7 @@ func NewMCPService(profile *profile.Profile, echoServer *echo.Echo) (*MCPService
 	})
 	server.AddReceivingMiddleware(catalogCacheMiddleware)
 
-	adapter := newAPIAdapter(echoServer)
+	adapter := newAPIAdapter(handler)
 	for _, tool := range tools {
 		operation := operationsByTool[tool.Name]
 		server.AddTool(tool, newMCPToolHandler(adapter, operation))
@@ -150,13 +149,17 @@ func newMCPToolHandler(adapter *apiAdapter, operation *registeredOperation) sdkm
 }
 
 // RegisterRoutes registers the streamable HTTP MCP endpoint.
-func (s *MCPService) RegisterRoutes(echoServer *echo.Echo) {
-	echoServer.Any("/mcp", func(c *echo.Context) error {
-		request := c.Request()
-		if !isAllowedMCPOrigin(request.Host, request.Header.Get("Origin"), s.profile) {
-			return c.NoContent(http.StatusForbidden)
+func (s *MCPService) RegisterRoutes(mux *http.ServeMux) {
+	mux.HandleFunc("/mcp", func(w http.ResponseWriter, r *http.Request) {
+		if r.ContentLength > maxMCPRequestBytes {
+			httphandler.WriteError(w, r, &httphandler.Error{Code: http.StatusRequestEntityTooLarge, Message: http.StatusText(http.StatusRequestEntityTooLarge)})
+			return
 		}
-		s.handler.ServeHTTP(c.Response(), request)
-		return nil
-	}, middleware.BodyLimit(maxMCPRequestBytes))
+		if !isAllowedMCPOrigin(r.Host, r.Header.Get("Origin"), s.profile) {
+			w.WriteHeader(http.StatusForbidden)
+			return
+		}
+		r.Body = http.MaxBytesReader(w, r.Body, maxMCPRequestBytes)
+		s.handler.ServeHTTP(w, r)
+	})
 }

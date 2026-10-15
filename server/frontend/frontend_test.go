@@ -6,9 +6,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/labstack/echo/v5"
 	"github.com/stretchr/testify/require"
 
+	"github.com/usememos/memos/internal/httphandler"
 	"github.com/usememos/memos/internal/profile"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
@@ -56,16 +56,13 @@ func TestFrontendService_CacheHeaderRules(t *testing.T) {
 		},
 	}
 
-	e := echo.New()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			req := httptest.NewRequest(http.MethodGet, tt.path, nil)
 			rec := httptest.NewRecorder()
-			c := e.NewContext(req, rec)
 
-			setFrontendCacheHeaders(c, tt.path)
+			setFrontendCacheHeaders(rec, tt.path)
 
-			require.Equal(t, tt.cacheControl, rec.Header().Get(echo.HeaderCacheControl))
+			require.Equal(t, tt.cacheControl, rec.Header().Get("Cache-Control"))
 			require.Equal(t, tt.pragma, rec.Header().Get("Pragma"))
 			require.Equal(t, tt.expires, rec.Header().Get("Expires"))
 		})
@@ -76,8 +73,8 @@ func TestFrontendService_StaticCacheHeaders(t *testing.T) {
 	ctx := context.Background()
 	testStore := teststore.NewTestingStore(ctx, t)
 
-	e := echo.New()
-	NewFrontendService(&profile.Profile{}, testStore).Serve(ctx, e)
+	e := http.NewServeMux()
+	NewFrontendService(&profile.Profile{}, testStore).Serve(ctx, e, http.HandlerFunc(httphandler.NotFound))
 
 	tests := []struct {
 		name         string
@@ -116,7 +113,7 @@ func TestFrontendService_StaticCacheHeaders(t *testing.T) {
 			e.ServeHTTP(rec, req)
 
 			require.Equal(t, http.StatusOK, rec.Code)
-			require.Equal(t, tt.cacheControl, rec.Header().Get(echo.HeaderCacheControl))
+			require.Equal(t, tt.cacheControl, rec.Header().Get("Cache-Control"))
 			require.Equal(t, tt.pragma, rec.Header().Get("Pragma"))
 			require.Equal(t, tt.expires, rec.Header().Get("Expires"))
 		})
@@ -127,8 +124,8 @@ func TestFrontendService_MissingAssetDoesNotFallbackToIndex(t *testing.T) {
 	ctx := context.Background()
 	testStore := teststore.NewTestingStore(ctx, t)
 
-	e := echo.New()
-	NewFrontendService(&profile.Profile{}, testStore).Serve(ctx, e)
+	e := http.NewServeMux()
+	NewFrontendService(&profile.Profile{}, testStore).Serve(ctx, e, http.HandlerFunc(httphandler.NotFound))
 
 	req := httptest.NewRequest(http.MethodGet, "/assets/missing.js", nil)
 	rec := httptest.NewRecorder()
@@ -141,18 +138,18 @@ func TestFrontendService_SkipsDynamicRoutes(t *testing.T) {
 	ctx := context.Background()
 	testStore := teststore.NewTestingStore(ctx, t)
 
-	e := echo.New()
-	NewFrontendService(&profile.Profile{}, testStore).Serve(ctx, e)
-	e.GET("/api/test", func(c *echo.Context) error {
-		return c.String(http.StatusOK, "ok")
-	})
+	e := http.NewServeMux()
+	NewFrontendService(&profile.Profile{}, testStore).Serve(ctx, e, http.HandlerFunc(httphandler.NotFound))
+	e.Handle("GET /api/test", httphandler.Func(func(w http.ResponseWriter, _ *http.Request) error {
+		return httphandler.Text(w, http.StatusOK, "ok")
+	}))
 
 	req := httptest.NewRequest(http.MethodGet, "/api/test", nil)
 	rec := httptest.NewRecorder()
 	e.ServeHTTP(rec, req)
 
 	require.Equal(t, http.StatusOK, rec.Code)
-	require.Empty(t, rec.Header().Get(echo.HeaderCacheControl))
+	require.Empty(t, rec.Header().Get("Cache-Control"))
 }
 
 func TestFrontendService_RobotsTXT(t *testing.T) {
@@ -163,8 +160,8 @@ func TestFrontendService_RobotsTXT(t *testing.T) {
 		InstanceURL: "https://demo.usememos.com/",
 	}
 
-	e := echo.New()
-	NewFrontendService(profile, testStore).Serve(ctx, e)
+	e := http.NewServeMux()
+	NewFrontendService(profile, testStore).Serve(ctx, e, http.HandlerFunc(httphandler.NotFound))
 
 	req := httptest.NewRequest(http.MethodGet, "/robots.txt", nil)
 	rec := httptest.NewRecorder()
@@ -206,8 +203,8 @@ func TestFrontendService_SitemapXML(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	e := echo.New()
-	NewFrontendService(profile, testStore).Serve(ctx, e)
+	e := http.NewServeMux()
+	NewFrontendService(profile, testStore).Serve(ctx, e, http.HandlerFunc(httphandler.NotFound))
 
 	req := httptest.NewRequest(http.MethodGet, "/sitemap.xml", nil)
 	rec := httptest.NewRecorder()
@@ -215,7 +212,7 @@ func TestFrontendService_SitemapXML(t *testing.T) {
 
 	require.Equal(t, http.StatusOK, rec.Code)
 	require.Contains(t, rec.Header().Get("Content-Type"), "application/xml")
-	require.Equal(t, "public, no-cache", rec.Header().Get(echo.HeaderCacheControl))
+	require.Equal(t, "public, no-cache", rec.Header().Get("Cache-Control"))
 	require.Contains(t, rec.Body.String(), `<loc>https://demo.usememos.com/memos/publicmemo</loc>`)
 	require.NotContains(t, rec.Body.String(), "privatememo")
 }
@@ -225,8 +222,8 @@ func TestFrontendService_SitemapRoutesRequireInstanceURL(t *testing.T) {
 	testStore := teststore.NewTestingStore(ctx, t)
 	setFrontendAccessMode(ctx, t, testStore, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC)
 
-	e := echo.New()
-	NewFrontendService(&profile.Profile{}, testStore).Serve(ctx, e)
+	e := http.NewServeMux()
+	NewFrontendService(&profile.Profile{}, testStore).Serve(ctx, e, http.HandlerFunc(httphandler.NotFound))
 
 	for _, path := range []string{"/robots.txt", "/sitemap.xml"} {
 		req := httptest.NewRequest(http.MethodGet, path, nil)
@@ -242,8 +239,8 @@ func TestFrontendService_SitemapRoutesRequirePublicAccess(t *testing.T) {
 	testStore := teststore.NewTestingStore(ctx, t)
 	setFrontendAccessMode(ctx, t, testStore, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE)
 
-	e := echo.New()
-	NewFrontendService(&profile.Profile{InstanceURL: "https://private.example.com"}, testStore).Serve(ctx, e)
+	e := http.NewServeMux()
+	NewFrontendService(&profile.Profile{InstanceURL: "https://private.example.com"}, testStore).Serve(ctx, e, http.HandlerFunc(httphandler.NotFound))
 
 	for _, path := range []string{"/robots.txt", "/sitemap.xml"} {
 		req := httptest.NewRequest(http.MethodGet, path, nil)

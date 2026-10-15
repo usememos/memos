@@ -9,7 +9,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/labstack/echo/v5"
 	"github.com/stretchr/testify/require"
 
 	apipb "github.com/usememos/memos/proto/gen/api"
@@ -35,7 +34,7 @@ func TestSSEHandler_Authentication(t *testing.T) {
 	)
 	require.NoError(t, err)
 
-	e := echo.New()
+	e := http.NewServeMux()
 	api.RegisterSSERoutes(e, ts.Service.SSEHub, ts.Store, ts.Secret)
 
 	t.Run("no token returns 401", func(t *testing.T) {

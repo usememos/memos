@@ -4,15 +4,15 @@ import (
 	"context"
 	"embed"
 	"encoding/xml"
+	"io"
 	"io/fs"
 	"net/http"
 	"path"
 	"strings"
 
-	"github.com/labstack/echo/v5"
-	"github.com/labstack/echo/v5/middleware"
 	"github.com/pkg/errors"
 
+	"github.com/usememos/memos/internal/httphandler"
 	"github.com/usememos/memos/internal/profile"
 	"github.com/usememos/memos/store"
 )
@@ -38,45 +38,54 @@ func NewFrontendService(profile *profile.Profile, store *store.Store) *FrontendS
 	}
 }
 
-func (s *FrontendService) Serve(_ context.Context, e *echo.Echo) {
-	frontendFS := getFileSystem("dist")
-	skipper := func(c *echo.Context) bool {
-		requestPath := c.Request().URL.Path
-		if shouldSkipFrontendStatic(requestPath) {
-			return true
-		}
-
-		setFrontendCacheHeaders(c, requestPath)
-		return false
-	}
-
-	// Route to serve the frontend static assets.
-	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
-		Filesystem: frontendFS,
-		Skipper:    skipper,
-	}))
-
-	e.Use(spaFallbackMiddleware(frontendFS))
-	s.registerRoutes(e)
+func (s *FrontendService) Serve(_ context.Context, mux *http.ServeMux, fallback http.Handler) {
+	mux.Handle("/robots.txt", httphandler.GET(httphandler.Func(s.getRobotsTXT), nil))
+	mux.Handle("/sitemap.xml", httphandler.GET(httphandler.Func(s.getSitemapXML), nil))
+	mux.Handle("/", s.Handler(fallback))
 }
 
-func spaFallbackMiddleware(frontendFS fs.FS) echo.MiddlewareFunc {
-	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c *echo.Context) error {
-			err := next(c)
-			if err == nil {
-				return nil
-			}
-
-			requestPath := c.Request().URL.Path
-			if shouldSkipFrontendStatic(requestPath) || !shouldServeFrontendHTML(requestPath) || echo.StatusCode(err) != http.StatusNotFound {
-				return err
-			}
-
-			setFrontendCacheHeaders(c, requestPath)
-			return c.FileFS("index.html", frontendFS)
+// Handler serves static files and SPA routes, passing API namespaces to fallback.
+func (*FrontendService) Handler(fallback http.Handler) http.Handler {
+	frontendFS := getFileSystem("dist")
+	return httphandler.Func(func(w http.ResponseWriter, r *http.Request) error {
+		requestPath := r.URL.Path
+		if shouldSkipFrontendStatic(requestPath) {
+			fallback.ServeHTTP(w, r)
+			return nil
 		}
-	}
+		setFrontendCacheHeaders(w, requestPath)
+		filename := strings.TrimPrefix(path.Clean("/"+requestPath), "/")
+		if filename == "" {
+			filename = "index.html"
+		}
+		info, err := fs.Stat(frontendFS, filename)
+		if err == nil && info.IsDir() {
+			filename = path.Join(filename, "index.html")
+			_, err = fs.Stat(frontendFS, filename)
+		}
+		if err != nil {
+			if !shouldServeFrontendHTML(requestPath) {
+				return &httphandler.Error{Code: http.StatusNotFound, Message: http.StatusText(http.StatusNotFound)}
+			}
+			filename = "index.html"
+		}
+		// ServeContent avoids FileServer's /index.html and directory redirects.
+		file, err := frontendFS.Open(filename)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+		info, err = file.Stat()
+		if err != nil {
+			return err
+		}
+		content, ok := file.(io.ReadSeeker)
+		if !ok {
+			return errors.New("frontend file does not support seeking")
+		}
+		http.ServeContent(w, r, info.Name(), info.ModTime(), content)
+		return nil
+	})
 }
 
 func shouldSkipFrontendStatic(requestPath string) bool {
@@ -89,11 +98,19 @@ func shouldSkipFrontendStatic(requestPath string) bool {
 		strings.HasPrefix(requestPath, "/memos.api.")
 }
 
-func setFrontendCacheHeaders(c *echo.Context, requestPath string) {
+// SetCacheHeaders applies the frontend cache policy before route dispatch.
+// Dynamic namespaces and discovery routes manage their own cache headers.
+func SetCacheHeaders(w http.ResponseWriter, r *http.Request) {
+	if !shouldSkipFrontendStatic(r.URL.Path) {
+		setFrontendCacheHeaders(w, r.URL.Path)
+	}
+}
+
+func setFrontendCacheHeaders(w http.ResponseWriter, requestPath string) {
 	if shouldServeFrontendHTML(requestPath) {
-		c.Response().Header().Set(echo.HeaderCacheControl, frontendHTMLCacheControl)
-		c.Response().Header().Set("Pragma", "no-cache")
-		c.Response().Header().Set("Expires", "0")
+		w.Header().Set("Cache-Control", frontendHTMLCacheControl)
+		w.Header().Set("Pragma", "no-cache")
+		w.Header().Set("Expires", "0")
 		return
 	}
 
@@ -101,7 +118,7 @@ func setFrontendCacheHeaders(c *echo.Context, requestPath string) {
 	if strings.HasPrefix(requestPath, "/assets/") {
 		cacheControl = frontendHashedAssetCacheControl
 	}
-	c.Response().Header().Set(echo.HeaderCacheControl, cacheControl)
+	w.Header().Set("Cache-Control", cacheControl)
 }
 
 func shouldServeFrontendHTML(requestPath string) bool {
@@ -120,13 +137,8 @@ func getFileSystem(path string) fs.FS {
 	return sub
 }
 
-func (s *FrontendService) registerRoutes(e *echo.Echo) {
-	e.GET("/robots.txt", s.getRobotsTXT)
-	e.GET("/sitemap.xml", s.getSitemapXML)
-}
-
-func (s *FrontendService) getRobotsTXT(c *echo.Context) error {
-	if err := s.requirePublicAccess(c.Request().Context()); err != nil {
+func (s *FrontendService) getRobotsTXT(w http.ResponseWriter, r *http.Request) error {
+	if err := s.requirePublicAccess(r.Context()); err != nil {
 		return err
 	}
 	instanceURL, err := normalizeInstanceURL(s.Profile.InstanceURL)
@@ -140,11 +152,11 @@ func (s *FrontendService) getRobotsTXT(c *echo.Context) error {
 		"Host: " + instanceURL,
 		"Sitemap: " + instanceURL + "/sitemap.xml",
 	}, "\n")
-	return c.String(http.StatusOK, robotsTXT)
+	return httphandler.Text(w, http.StatusOK, robotsTXT)
 }
 
-func (s *FrontendService) getSitemapXML(c *echo.Context) error {
-	if err := s.requirePublicAccess(c.Request().Context()); err != nil {
+func (s *FrontendService) getSitemapXML(w http.ResponseWriter, r *http.Request) error {
+	if err := s.requirePublicAccess(r.Context()); err != nil {
 		return err
 	}
 	instanceURL, err := normalizeInstanceURL(s.Profile.InstanceURL)
@@ -153,7 +165,7 @@ func (s *FrontendService) getSitemapXML(c *echo.Context) error {
 	}
 
 	normal := store.Normal
-	memos, err := s.Store.ListMemos(c.Request().Context(), &store.FindMemo{
+	memos, err := s.Store.ListMemos(r.Context(), &store.FindMemo{
 		RowStatus:       &normal,
 		VisibilityList:  []store.Visibility{store.Public},
 		Access:          &store.MemoAccessScope{AllowPublic: true},
@@ -164,7 +176,7 @@ func (s *FrontendService) getSitemapXML(c *echo.Context) error {
 	}
 	// The set of public memo URLs changes with audience updates. Require
 	// revalidation so a revoked URL is not retained by an intermediary cache.
-	c.Response().Header().Set(echo.HeaderCacheControl, "public, no-cache")
+	w.Header().Set("Cache-Control", "public, no-cache")
 
 	urls := make([]sitemapURL, 0, len(memos))
 	for _, memo := range memos {
@@ -173,7 +185,12 @@ func (s *FrontendService) getSitemapXML(c *echo.Context) error {
 		})
 	}
 
-	return c.XML(http.StatusOK, sitemapURLSet{
+	w.Header().Set("Content-Type", "application/xml; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+	if _, err := io.WriteString(w, xml.Header); err != nil {
+		return err
+	}
+	return xml.NewEncoder(w).Encode(sitemapURLSet{
 		XMLNS: sitemapXMLNamespace,
 		URLs:  urls,
 	})
@@ -182,10 +199,10 @@ func (s *FrontendService) getSitemapXML(c *echo.Context) error {
 func (s *FrontendService) requirePublicAccess(ctx context.Context) error {
 	allowsAnonymous, err := s.Store.AllowsAnonymousAccess(ctx)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get instance access policy").Wrap(err)
+		return &httphandler.Error{Code: http.StatusInternalServerError, Message: "failed to get instance access policy", Cause: err}
 	}
 	if !allowsAnonymous {
-		return echo.NewHTTPError(http.StatusNotFound, "public instance discovery is unavailable")
+		return &httphandler.Error{Code: http.StatusNotFound, Message: "public instance discovery is unavailable"}
 	}
 	return nil
 }
@@ -193,7 +210,7 @@ func (s *FrontendService) requirePublicAccess(ctx context.Context) error {
 func normalizeInstanceURL(instanceURL string) (string, error) {
 	instanceURL = strings.TrimRight(instanceURL, "/")
 	if instanceURL == "" {
-		return "", echo.NewHTTPError(http.StatusNotFound, "instance URL is not configured")
+		return "", &httphandler.Error{Code: http.StatusNotFound, Message: "instance URL is not configured"}
 	}
 	return instanceURL, nil
 }

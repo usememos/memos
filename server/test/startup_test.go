@@ -474,7 +474,7 @@ func TestStartupPrivateInstanceGatewayPolicy(t *testing.T) {
 // attachment; the schema types that field as an object, so clients validating
 // responses against it — MCP clients serve that schema as the tool outputSchema
 // — reject every memo carrying an attachment. The marshaler override lives in
-// RegisterGateway, so only a booted server proves it is wired in.
+// NewHandler, so only a booted server proves it is wired in.
 func TestStartupGatewayOmitsNullMessageFields(t *testing.T) {
 	ctx := context.Background()
 	inst := bootInstance(ctx, t, instanceOptions{instanceURL: "http://localhost"})

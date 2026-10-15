@@ -2,6 +2,7 @@ package clientip
 
 import (
 	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -56,4 +57,27 @@ func TestResolve(t *testing.T) {
 func TestParseTrustedProxiesRejectsGarbage(t *testing.T) {
 	_, err := ParseTrustedProxies([]string{"proxy.internal"})
 	require.Error(t, err)
+}
+
+func TestMiddlewareCarriesResolvedAddress(t *testing.T) {
+	resolver, err := ParseTrustedProxies([]string{"private"})
+	require.NoError(t, err)
+	for _, test := range []struct{ peer, want string }{
+		{"127.0.0.1:1234", "198.51.100.9"},
+		{"203.0.113.1:1234", "203.0.113.1"},
+	} {
+		t.Run(test.peer, func(t *testing.T) {
+			handler := Middleware(resolver)(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				require.Equal(t, test.want, FromContext(r.Context()))
+				w.WriteHeader(http.StatusNoContent)
+			}))
+			r := httptest.NewRequest(http.MethodGet, "/", nil)
+			r.RemoteAddr = test.peer
+			r.Header.Set("X-Forwarded-For", "198.51.100.9")
+			rec := httptest.NewRecorder()
+			handler.ServeHTTP(rec, r)
+			require.Equal(t, http.StatusNoContent, rec.Code)
+			require.Empty(t, FromContext(r.Context()), "the original request context must remain unchanged")
+		})
+	}
 }

@@ -9,11 +9,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/labstack/echo/v5"
 	sdkmcp "github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 
 	"github.com/usememos/memos/internal/clientip"
+	"github.com/usememos/memos/internal/httphandler"
 )
 
 func TestNormalizeStructuredContentKeepsObjects(t *testing.T) {
@@ -336,19 +336,19 @@ func TestBuildAPIRequestEscapesPathAndStringifiesPrimitiveQueryParameters(t *tes
 }
 
 func TestExecuteOperationReturnsObjectStructuredContent(t *testing.T) {
-	echoServer := echo.New()
-	echoServer.GET("/api/memos", func(c *echo.Context) error {
-		require.Equal(t, "Bearer token", c.Request().Header.Get("Authorization"))
-		return c.JSON(http.StatusOK, map[string]any{
+	mux := http.NewServeMux()
+	mux.Handle("GET /api/memos", httphandler.Func(func(w http.ResponseWriter, r *http.Request) error {
+		require.Equal(t, "Bearer token", r.Header.Get("Authorization"))
+		return httphandler.JSON(w, http.StatusOK, map[string]any{
 			"memos": []any{map[string]any{"name": "memos/abc123"}},
 		})
-	})
+	}))
 
 	operation := &openAPIOperation{
 		Method: "GET",
 		Path:   "/api/memos",
 	}
-	adapter := newAPIAdapter(echoServer)
+	adapter := newAPIAdapter(mux)
 
 	result, err := adapter.execute(context.Background(), operation, map[string]any{}, "Bearer token")
 	require.NoError(t, err)
@@ -359,17 +359,17 @@ func TestExecuteOperationReturnsObjectStructuredContent(t *testing.T) {
 }
 
 func TestExecuteOperationConvertsAPIErrorsToToolErrors(t *testing.T) {
-	echoServer := echo.New()
-	echoServer.GET("/api/memos/:memo", func(c *echo.Context) error {
-		return c.JSON(http.StatusNotFound, map[string]any{"message": "missing memo"})
-	})
+	mux := http.NewServeMux()
+	mux.Handle("GET /api/memos/{memo}", httphandler.Func(func(w http.ResponseWriter, _ *http.Request) error {
+		return httphandler.JSON(w, http.StatusNotFound, map[string]any{"message": "missing memo"})
+	}))
 
 	operation := &openAPIOperation{
 		Method:     "GET",
 		Path:       "/api/memos/{memo}",
 		Parameters: []openAPIParameter{{Name: "memo", In: "path", Required: true}},
 	}
-	adapter := newAPIAdapter(echoServer)
+	adapter := newAPIAdapter(mux)
 
 	result, err := adapter.execute(context.Background(), operation, map[string]any{"memo": "missing"}, "")
 	require.NoError(t, err)
