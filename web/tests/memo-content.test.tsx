@@ -165,12 +165,19 @@ describe("raw HTML", () => {
 });
 
 describe("callouts and collapsible sections", () => {
-  it("shows a GitHub alert as a callout under its type title", () => {
+  it("shows a GitHub alert as a callout with its type's icon", () => {
     const { container } = renderMemo("> [!WARNING]\n> Back up first.");
     const callout = container.querySelector('blockquote[data-callout="warning"]');
     expect(callout).toHaveTextContent("Back up first.");
     expect(callout).not.toHaveTextContent("[!WARNING]");
-    expect(callout?.querySelector(".mbe-callout-title")).toHaveTextContent("Warning");
+    expect(callout?.querySelector(".mbe-callout-icon")).toHaveAttribute("aria-label", "Warning");
+  });
+
+  it("renders a list inside a quote", () => {
+    const { container } = renderMemo("> ✏️ **quick note**\n> * Item 1: check xyz\n> * Item 2: check abc");
+    expect(container.querySelector("blockquote strong")).toHaveTextContent("quick note");
+    expect(container.querySelectorAll(".mbe-list-item")).toHaveLength(2);
+    expect(container).not.toHaveTextContent(">");
   });
 
   it("renders footnotes, quotes and code inside a collapsible section", () => {

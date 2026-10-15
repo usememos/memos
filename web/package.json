@@ -25,7 +25,7 @@
     "@tailwindcss/vite": "^4.2.4",
     "@tanstack/react-query": "^5.100.9",
     "@tanstack/react-query-devtools": "^5.100.9",
-    "@usememos/editor": "26.10.14",
+    "@usememos/editor": "26.10.15",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "copy-to-clipboard": "^4.0.2",
