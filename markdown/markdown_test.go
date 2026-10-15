@@ -152,6 +152,12 @@ func TestGenerateSnippet(t *testing.T) {
 			expected:  "[!NOTE] text more",
 		},
 		{
+			name:      "marker in code stays a quote",
+			content:   "> `[!NOTE]`\n> more",
+			maxLength: 100,
+			expected:  "[!NOTE] more",
+		},
+		{
 			name:      "unknown alert type stays a quote",
 			content:   "> [!FYI]\n> more",
 			maxLength: 100,

@@ -54,6 +54,7 @@ describe("calendar day snapshots", () => {
   it("reads a callout without its type marker, as the memo shows it", () => {
     expect(day([memoAt(9, { content: "> [!WARNING]\n> Back up first." })]).excerpt?.text).toBe("Back up first.");
     expect(day([memoAt(9, { content: "> [!NOTE] inline\n> text" })]).excerpt?.text).toBe("[!NOTE] inline\ntext");
+    expect(day([memoAt(9, { content: "> `[!NOTE]`\n> text" })]).excerpt?.text).toBe("[!NOTE]\ntext");
   });
 
   it("skips empty and image-only memos when choosing text and keeps photos from distinct memos", () => {
