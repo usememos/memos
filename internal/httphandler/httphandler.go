@@ -179,6 +179,11 @@ func (w *responseWriter) Write(body []byte) (int, error) {
 func (w *responseWriter) Unwrap() http.ResponseWriter { return w.ResponseWriter }
 
 func (w *responseWriter) Flush() {
+	_ = w.FlushError()
+}
+
+// FlushError propagates flush errors to http.ResponseController callers.
+func (w *responseWriter) FlushError() error {
 	w.committed = true
-	_ = http.NewResponseController(w.ResponseWriter).Flush()
+	return http.NewResponseController(w.ResponseWriter).Flush()
 }

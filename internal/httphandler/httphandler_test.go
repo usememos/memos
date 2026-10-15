@@ -65,6 +65,35 @@ func TestStartedResponseIsNotReplaced(t *testing.T) {
 	}
 }
 
+type flushErrorWriter struct {
+	http.ResponseWriter
+	err error
+}
+
+func (w flushErrorWriter) FlushError() error { return w.err }
+
+func TestFlushErrorPropagation(t *testing.T) {
+	failure := errors.New("flush failed")
+	for _, test := range []struct {
+		name    string
+		writer  func(http.ResponseWriter) http.ResponseWriter
+		wantErr error
+	}{
+		{"underlying failure", func(w http.ResponseWriter) http.ResponseWriter { return flushErrorWriter{w, failure} }, failure},
+		{"unsupported flush", func(w http.ResponseWriter) http.ResponseWriter { return struct{ http.ResponseWriter }{w} }, http.ErrNotSupported},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			handler := Recover(Func(func(w http.ResponseWriter, _ *http.Request) error {
+				require.ErrorIs(t, http.NewResponseController(w).Flush(), test.wantErr)
+				return errors.New("error after flush")
+			}))
+			rec := httptest.NewRecorder()
+			handler.ServeHTTP(test.writer(rec), httptest.NewRequest(http.MethodGet, "/", nil))
+			require.Empty(t, rec.Body.String(), "a flush must prevent appending an error response")
+		})
+	}
+}
+
 func TestRecoverBeforeResponse(t *testing.T) {
 	handler := Recover(http.HandlerFunc(func(http.ResponseWriter, *http.Request) { panic("private detail") }))
 	rec := httptest.NewRecorder()
