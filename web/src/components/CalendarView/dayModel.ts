@@ -46,13 +46,24 @@ export interface BuildCalendarMonthModelOptions {
   isRedacted?: (memo: Memo) => boolean;
 }
 
+// A GitHub alert's first line, such as "[!NOTE]", which the memo shows as the callout's title.
+const ALERT_MARKER = /^\[!(?:note|tip|important|warning|caution)\][ \t]*(?:\n|$)/i;
+
+/** Whether a blockquote is a GitHub alert: its text, not code or a link, starts with the marker line. */
+const isAlert = (node: RootContent): boolean => {
+  const first = node.type === "blockquote" ? node.children[0] : undefined;
+  const lead = first?.type === "paragraph" ? first.children[0] : undefined;
+  return lead?.type === "text" && ALERT_MARKER.test(lead.value);
+};
+
 const plainText = (node: RootContent): string => {
   if (node.type === "text" || node.type === "inlineCode" || node.type === "code") return node.value;
   if (node.type === "break") return "\n";
   // Image alt text and link definitions are not a written excerpt. Never render raw HTML.
   if (!("children" in node)) return "";
   const separator = ["list", "listItem", "blockquote", "table", "tableRow"].includes(node.type) ? "\n" : "";
-  return node.children.map((child) => plainText(child as RootContent)).join(separator);
+  const text = node.children.map((child) => plainText(child as RootContent)).join(separator);
+  return isAlert(node) ? text.replace(ALERT_MARKER, "") : text;
 };
 
 const getExcerpt = (memo: Memo, tree: Root): CalendarDayExcerpt | undefined => {

@@ -128,6 +128,42 @@ func TestGenerateSnippet(t *testing.T) {
 			expected:  "quoted text",
 		},
 		{
+			name:      "blockquote after paragraph",
+			content:   "Before\n\n> quoted text\n\n- item",
+			maxLength: 100,
+			expected:  "Before quoted text item",
+		},
+		{
+			name:      "alert marker omitted",
+			content:   "Before\n\n> [!WARNING]\n> Back up first.",
+			maxLength: 100,
+			expected:  "Before Back up first.",
+		},
+		{
+			name:      "lowercase alert marker omitted",
+			content:   "> [!tip]  \n> Use a key.",
+			maxLength: 100,
+			expected:  "Use a key.",
+		},
+		{
+			name:      "marker with text stays a quote",
+			content:   "> [!NOTE] text\n> more",
+			maxLength: 100,
+			expected:  "[!NOTE] text more",
+		},
+		{
+			name:      "marker in code stays a quote",
+			content:   "> `[!NOTE]`\n> more",
+			maxLength: 100,
+			expected:  "[!NOTE] more",
+		},
+		{
+			name:      "unknown alert type stays a quote",
+			content:   "> [!FYI]\n> more",
+			maxLength: 100,
+			expected:  "[!FYI] more",
+		},
+		{
 			name:      "table cells spaced",
 			content:   "| a | b |\n|---|---|\n| 1 | 2 |",
 			maxLength: 100,

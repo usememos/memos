@@ -44,7 +44,7 @@ MemoEditor/
 │   └── useFocusMode.ts     # Scroll lock and layout-stable focus presentation
 ├── Editor/                 # The composer, on @usememos/editor
 │   ├── index.tsx               # React wrapper around <MarkdownEditor>; hands out the controller
-│   ├── extensions.ts           # buildEditorExtensions(): memo syntax, #tag autocomplete, file paste/drop
+│   ├── extensions.ts           # buildEditorExtensions(): memo syntax, #tag and :emoji autocomplete, file paste/drop
 │   ├── uploadAnchors.ts        # Widget rendering for in-flight upload placeholders
 │   ├── controller.ts           # EditorController over the editor
 │   └── editor.css              # Composer sizing and upload-anchor styles
@@ -76,11 +76,11 @@ Formatting is the editor's own: its toolbar appears over selected text (bold, it
 
 ### Editor extensions
 
-`lib/memo-markdown.ts` holds what the composer and the memo view share: the memo Markdown dialect (`breaks: true`, `setext: false`); `memoExtensions()` (math rendered with KaTeX loaded on demand, footnotes, `#tags` and `@mentions`, code highlighted with highlight.js, ```` ```mermaid ```` diagrams, and raw HTML through the sanitizer in `lib/sanitized-html.ts`); the URL policy for links and images (`memoResolveUrl`); the theme in the app's CSS variables; the translated UI labels; and the tag and mention collectors. Whatever the editor renders shows its source at the caret while editing.
+`lib/memo-markdown.ts` holds what the composer and the memo view share: the memo Markdown dialect (`breaks: true`, `setext: false`, and the editor's defaults for GitHub alerts as callouts and `<details>` as collapsible sections); `memoExtensions()` (math rendered with KaTeX loaded on demand, footnotes, `#tags` and `@mentions`, code highlighted with highlight.js, ```` ```mermaid ```` diagrams, and raw HTML through the sanitizer in `lib/sanitized-html.ts`); the URL policy for links and images (`memoResolveUrl`); the theme in the app's CSS variables; the translated UI labels; and the tag and mention collectors. Whatever the editor renders shows its source at the caret while editing.
 
-`Editor/extensions.ts` adds what only the composer needs: the `#tag` autocomplete (`suggestion()` with `matchToken(scanTags)`, so the popup opens exactly where tags are highlighted; not inside code or links, and not for a bare `#` at the start of a line, which may be a heading) with items from `useTagCounts`, and a `fileHandler()`: pasted files join the attachment list, dropped images are inserted inline where they land and other dropped files are attached.
+`Editor/extensions.ts` adds what only the composer needs: the `#tag` autocomplete (`suggestion()` with `matchToken(scanTags)`, so the popup opens exactly where tags are highlighted; not inside code or links, and not for a bare `#` at the start of a line, which may be a heading) with items from `useTagCounts`, `:emoji` autocomplete from `@usememos/editor/emoji` (its list loads the first time the popup opens), and a `fileHandler()`: pasted files join the attachment list, dropped images are inserted inline where they land and other dropped files are attached.
 
-Keys are the editor's own (see its README): Mod+B/I/E, Mod+Shift+S, Mod+Alt+0–3, Mod+Alt+C, Mod+Shift+7–9, Tab/Shift+Tab, and Mod+Enter / Ctrl+Enter to save. The first Escape selects the caret's block; a second Escape leaves the editor.
+Keys are the editor's own (see its README): Mod+B/I/E, Mod+Shift+S, Mod+Alt+0–4, Mod+Alt+C, Mod+Shift+6 (collapsible section), Mod+Shift+7–9, Tab/Shift+Tab, and Mod+Enter / Ctrl+Enter to save. The first Escape selects the caret's block; a second Escape leaves the editor.
 
 ### Tags and mentions
 
