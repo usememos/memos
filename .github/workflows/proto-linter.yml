@@ -7,6 +7,9 @@ on:
     branches: [main]
     paths:
       - "proto/**"
+permissions:
+  contents: read
+
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -18,17 +21,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
 
       - name: Setup buf
-        uses: bufbuild/buf-setup-action@v1
+        uses: bufbuild/buf-action@85aebf73123b5c15fd5528aaecbf9129cddf7fa7 # v1.6.0
         with:
+          setup_only: true
           github_token: ${{ github.token }}
 
       - name: Run buf lint
-        uses: bufbuild/buf-lint-action@v1
-        with:
-          input: proto
+        run: buf lint proto --error-format github-actions
 
       - name: Check buf format
         run: |
