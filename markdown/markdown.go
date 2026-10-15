@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"cmp"
 	"net/url"
+	"regexp"
 	"slices"
 	"strings"
 
@@ -291,6 +292,8 @@ func (s *service) GenerateSnippet(content []byte, maxLength int) (string, error)
 
 	var buf strings.Builder
 	var lastNodeWasBlock bool
+	// The first line of a GitHub alert, such as "[!NOTE]", which renders as the callout's title.
+	var alertMarker text.Segment
 
 	err = gast.Walk(root, func(n gast.Node, entering bool) (gast.WalkStatus, error) {
 		if entering {
@@ -298,6 +301,10 @@ func (s *service) GenerateSnippet(content []byte, maxLength int) (string, error)
 			switch n.Kind() {
 			case gast.KindCodeBlock, gast.KindFencedCodeBlock:
 				return gast.WalkSkipChildren, nil
+			case gast.KindBlockquote:
+				if marker, ok := alertMarkerLine(n, content); ok {
+					alertMarker = marker
+				}
 			default:
 				// Continue walking for other node types
 			}
@@ -308,6 +315,7 @@ func (s *service) GenerateSnippet(content []byte, maxLength int) (string, error)
 				if buf.Len() > 0 && lastNodeWasBlock {
 					buf.WriteByte(' ')
 				}
+				lastNodeWasBlock = false
 			default:
 				// No space needed for other node types
 			}
@@ -324,12 +332,22 @@ func (s *service) GenerateSnippet(content []byte, maxLength int) (string, error)
 			return gast.WalkContinue, nil
 		}
 
-		lastNodeWasBlock = false
+		// Containers such as quotes and lists write nothing themselves, so the
+		// space before their first block still follows the block before them.
+		textStart := buf.Len()
+		defer func() {
+			if buf.Len() > textStart {
+				lastNodeWasBlock = false
+			}
+		}()
 
 		// Extract text from various node types
 		switch node := n.(type) {
 		case *gast.Text:
 			segment := node.Segment
+			if alertMarker.Len() > 0 && segment.Start >= alertMarker.Start && segment.Stop <= alertMarker.Stop {
+				return gast.WalkContinue, nil
+			}
 			buf.Write(segment.Value(content))
 			if node.SoftLineBreak() {
 				buf.WriteByte(' ')
@@ -376,6 +394,22 @@ func (s *service) GenerateSnippet(content []byte, maxLength int) (string, error)
 	}
 
 	return strings.TrimSpace(snippet), nil
+}
+
+var alertMarkerPattern = regexp.MustCompile(`(?i)^\[!(?:note|tip|important|warning|caution)\]\s*$`)
+
+// alertMarkerLine returns the first line of a blockquote that is a GitHub alert,
+// such as "> [!NOTE]": a known type, alone on the quote's first line.
+func alertMarkerLine(quote gast.Node, source []byte) (text.Segment, bool) {
+	paragraph, ok := quote.FirstChild().(*gast.Paragraph)
+	if !ok || paragraph.Lines().Len() == 0 {
+		return text.Segment{}, false
+	}
+	line := paragraph.Lines().At(0)
+	if !alertMarkerPattern.Match(line.Value(source)) {
+		return text.Segment{}, false
+	}
+	return line, true
 }
 
 // ValidateContent checks if the markdown content is valid.

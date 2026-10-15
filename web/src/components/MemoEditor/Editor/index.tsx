@@ -107,6 +107,8 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
         onFiles: (files, origin) => onFilesRef.current(files, origin),
         getTagsSetting: () => tagsSettingRef.current,
         isMentionResolved: (username) => resolvedMentionsRef.current.has(username),
+        // Read once, like the rest: the popup keeps the language the composer opened in.
+        emojiLabel: t("editor.blocks.emoji"),
       }),
     [],
   );

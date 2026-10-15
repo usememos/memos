@@ -164,6 +164,26 @@ describe("raw HTML", () => {
   });
 });
 
+describe("callouts and collapsible sections", () => {
+  it("shows a GitHub alert as a callout under its type title", () => {
+    const { container } = renderMemo("> [!WARNING]\n> Back up first.");
+    const callout = container.querySelector('blockquote[data-callout="warning"]');
+    expect(callout).toHaveTextContent("Back up first.");
+    expect(callout).not.toHaveTextContent("[!WARNING]");
+    expect(callout?.querySelector(".mbe-callout-title")).toHaveTextContent("Warning");
+  });
+
+  it("renders footnotes, quotes and code inside a collapsible section", () => {
+    const { container } = renderMemo(
+      "<details><summary>Test</summary>\n\n> **Tip** Test[^1]\n\n```\nSome code here\n```\n\n</details>\n\n[^1]: very important",
+    );
+    expect(container.querySelector(".mbe-details")).toHaveTextContent("Test");
+    expect(container.querySelector("blockquote .mbe-footnote-ref")).toHaveTextContent("1");
+    expect(container.querySelector(".mbe-code code")).toHaveTextContent("Some code here");
+    expect(container).not.toHaveTextContent("<details>");
+  });
+});
+
 describe("math", () => {
   it("renders formulas with KaTeX once it loads", async () => {
     const { container } = renderMemo("$L$ and\n\n$$\nx + y\n$$");
