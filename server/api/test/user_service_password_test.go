@@ -7,7 +7,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/labstack/echo/v5"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
@@ -70,8 +69,10 @@ func TestPasswordChangeRejectsOldAccessToken(t *testing.T) {
 			authenticator := auth.NewAuthenticator(ts.Store, ts.Secret)
 			require.NotNil(t, authenticator.Authenticate(ctx, "Bearer "+oldAccess))
 
-			e := echo.New()
-			require.NoError(t, ts.Service.RegisterGateway(ctx, e))
+			e := http.NewServeMux()
+			apiHandler, handlerErr := ts.Service.NewHandler(ctx)
+			require.NoError(t, handlerErr)
+			e.Handle("/", apiHandler)
 			updatePassword := func(password, cookie string) *httptest.ResponseRecorder {
 				t.Helper()
 				method, path := http.MethodPatch, "/api/users/password-victim?updateMask=password"

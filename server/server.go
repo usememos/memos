@@ -7,14 +7,14 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"path"
 	"time"
 	"uuid"
 
-	"github.com/labstack/echo/v5"
-	"github.com/labstack/echo/v5/middleware"
 	"github.com/pkg/errors"
 
 	"github.com/usememos/memos/internal/clientip"
+	"github.com/usememos/memos/internal/httphandler"
 	"github.com/usememos/memos/internal/profile"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/api"
@@ -44,7 +44,7 @@ type Server struct {
 	Profile *profile.Profile
 	Store   *store.Store
 
-	echoServer *echo.Echo
+	handler    http.Handler
 	httpServer *http.Server
 	apiService *api.APIService
 }
@@ -55,17 +55,13 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 		Profile: profile,
 	}
 
-	echoServer := echo.New()
-	echoServer.Use(middleware.Recover())
-	echoServer.Use(newCORSMiddleware(profile))
+	mux := http.NewServeMux()
 	// Resolve the client address once per request, before anything that keys
 	// on it: rate limits, session records, and the file server.
 	clientIPResolver, err := clientip.ParseTrustedProxies(profile.TrustedProxies)
 	if err != nil {
 		return nil, errors.Wrap(err, "invalid trusted proxies")
 	}
-	echoServer.Use(clientip.Middleware(clientIPResolver))
-	s.echoServer = echoServer
 
 	instanceBasicSetting, err := s.getOrUpsertInstanceBasicSetting(ctx)
 	if err != nil {
@@ -80,37 +76,45 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 
 	// Register healthz endpoint. It reports ready only while the database
 	// answers, so a load balancer stops routing to an instance that lost it.
-	echoServer.GET("/healthz", func(c *echo.Context) error {
-		pingCtx, cancel := context.WithTimeout(c.Request().Context(), healthzDatabaseTimeout)
+	mux.Handle("/healthz", httphandler.GET(httphandler.Func(func(w http.ResponseWriter, r *http.Request) error {
+		pingCtx, cancel := context.WithTimeout(r.Context(), healthzDatabaseTimeout)
 		defer cancel()
 		if err := s.Store.GetDriver().GetDB().PingContext(pingCtx); err != nil {
 			slog.Warn("health check failed to reach the database", slog.String("error", err.Error()))
-			return c.String(http.StatusServiceUnavailable, "Database unavailable.")
+			return httphandler.Text(w, http.StatusServiceUnavailable, "Database unavailable.")
 		}
-		return c.String(http.StatusOK, "Service ready.")
-	})
-
-	// Serve frontend static files.
-	frontend.NewFrontendService(profile, store).Serve(ctx, echoServer)
+		return httphandler.Text(w, http.StatusOK, "Service ready.")
+	}), nil))
 
 	apiService := api.NewAPIService(s.Secret, profile, store)
 	s.apiService = apiService
 
-	// Register HTTP file server routes BEFORE gRPC-Gateway to ensure proper range request handling for Safari.
-	// This uses native HTTP serving (http.ServeContent) instead of gRPC for video/audio files.
-	fileServerService := fileserver.NewFileServerService(s.Profile, s.Store, s.Secret)
-	fileServerService.RegisterRoutes(echoServer)
-
-	// Register gRPC gateway as api v1 (includes SSE endpoint on CORS-enabled group).
-	if err := apiService.RegisterGateway(ctx, echoServer); err != nil {
-		return nil, errors.Wrap(err, "failed to register gRPC gateway")
+	apiHandler, err := apiService.NewHandler(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to create API handler")
 	}
+	frontendService := frontend.NewFrontendService(profile, store)
+	frontendService.Serve(ctx, mux, apiHandler)
+	fileServerService := fileserver.NewFileServerService(s.Profile, s.Store, s.Secret)
+	fileServerService.RegisterRoutes(mux, apiHandler)
+	// Preserve unclean-path routing without ServeMux's automatic redirects.
+	fallback := frontendService.Handler(apiHandler)
+	router := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		frontend.SetCacheHeaders(w, r)
+		routingRequest := httphandler.RoutingRequest(r)
+		if path.Clean(routingRequest.URL.Path) != routingRequest.URL.Path && routingRequest.URL.Path != "/" {
+			fallback.ServeHTTP(w, r)
+			return
+		}
+		mux.ServeHTTP(w, routingRequest)
+	})
+	s.handler = httphandler.Recover(clientip.Middleware(clientIPResolver)(newCORSMiddleware(profile, mux)(router)))
 
-	mcpService, err := mcp.NewMCPService(profile, echoServer)
+	mcpService, err := mcp.NewMCPService(profile, s.handler)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create MCP service")
 	}
-	mcpService.RegisterRoutes(echoServer)
+	mcpService.RegisterRoutes(mux)
 
 	return s, nil
 }
@@ -136,15 +140,15 @@ func (s *Server) Start() error {
 		}
 	}
 
-	// Start Echo server directly (no cmux needed - all traffic is HTTP).
+	// All transports share the standard HTTP server.
 	s.httpServer = &http.Server{
-		Handler:           s.echoServer,
+		Handler:           s.handler,
 		ReadHeaderTimeout: readHeaderTimeout,
 		IdleTimeout:       idleTimeout,
 	}
 	go func() {
 		if err := s.httpServer.Serve(listener); err != nil && err != http.ErrServerClosed {
-			slog.Error("failed to start echo server", "error", err)
+			slog.Error("failed to start HTTP server", "error", err)
 		}
 	}()
 

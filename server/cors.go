@@ -1,41 +1,57 @@
 package server
 
 import (
+	"net/http"
 	"net/url"
 	"strings"
 
-	"github.com/labstack/echo/v5"
-	"github.com/labstack/echo/v5/middleware"
-
+	"github.com/usememos/memos/internal/httphandler"
 	"github.com/usememos/memos/internal/profile"
 )
 
-func newCORSMiddleware(profile *profile.Profile) echo.MiddlewareFunc {
-	return middleware.CORSWithConfig(middleware.CORSConfig{
-		// The API is open to any origin so that token-authenticated clients
-		// (Access Token V2 / PAT in the Authorization header) can call it from
-		// anywhere. Credentials — i.e. the SameSite=Lax refresh-token cookie — are
-		// granted only to trusted origins (same host or the configured InstanceURL).
-		//
-		// AllowCredentials stays false here on purpose: the per-origin
-		// Access-Control-Allow-Credentials header is set inside the func below.
-		// Do NOT switch this to AllowCredentials:true — emitting that header for
-		// every reflected origin would let a malicious same-site subdomain read the
-		// cookie-authenticated /auth/refresh response and steal an access token.
-		AllowCredentials: false,
-		UnsafeAllowOriginFunc: func(c *echo.Context, origin string) (string, bool, error) {
-			// Never reflect the opaque "null" origin (sandboxed iframes, file://).
-			if origin == "null" {
-				return "", false, nil
+func newCORSMiddleware(profile *profile.Profile, mux *http.ServeMux) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			h := w.Header()
+			h.Add("Vary", "Origin")
+			origin := r.Header.Get("Origin")
+			preflight := r.Method == http.MethodOptions
+			allowMethods := ""
+			if preflight {
+				handler, _ := mux.Handler(httphandler.RoutingRequest(r))
+				if route, ok := handler.(interface{ AllowedMethods() string }); ok {
+					allowMethods = route.AllowedMethods()
+					if allowMethods != "" {
+						h.Set("Allow", allowMethods)
+					}
+				}
 			}
-			// Trusted origins additionally get credentialed (cookie) access.
-			if isAllowedCORSOrigin(profile, c.Request().Host, origin) {
-				c.Response().Header().Set(echo.HeaderAccessControlAllowCredentials, "true")
+			if origin != "" && origin != "null" {
+				h.Set("Access-Control-Allow-Origin", origin)
+				// Cookie access remains restricted to trusted origins. Other origins
+				// may use Authorization tokens, but must not read credentialed responses.
+				if isAllowedCORSOrigin(profile, r.Host, origin) {
+					h.Set("Access-Control-Allow-Credentials", "true")
+				}
+				if preflight {
+					h.Add("Vary", "Access-Control-Request-Method")
+					h.Add("Vary", "Access-Control-Request-Headers")
+					if allowMethods == "" {
+						allowMethods = "GET,HEAD,PUT,PATCH,POST,DELETE"
+					}
+					h.Set("Access-Control-Allow-Methods", allowMethods)
+					if headers := r.Header.Get("Access-Control-Request-Headers"); headers != "" {
+						h.Set("Access-Control-Allow-Headers", headers)
+					}
+				}
 			}
-			// Reflect every origin; only trusted ones carry the credentials header.
-			return origin, true, nil
-		},
-	})
+			if preflight {
+				w.WriteHeader(http.StatusNoContent)
+				return
+			}
+			next.ServeHTTP(w, r)
+		})
+	}
 }
 
 func isAllowedCORSOrigin(profile *profile.Profile, requestHost, origin string) bool {

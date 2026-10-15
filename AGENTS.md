@@ -7,7 +7,7 @@ repo. If a fact here conflicts with source files or CI config, trust the source 
 
 Memos is a self-hosted note-taking app.
 
-- Backend: Go 1.27.2, Echo v5, Connect RPC, gRPC-Gateway, Protocol Buffers.
+- Backend: Go 1.27.2, net/http, Connect RPC, gRPC-Gateway, Protocol Buffers.
 - Frontend: React 19, TypeScript 7, Vite 8, Tailwind CSS v4, React Query v5.
 - Storage: SQLite, MySQL, PostgreSQL.
 - Generated API outputs: `proto/gen/` for Go/OpenAPI, `web/src/types/proto/` for TypeScript.
@@ -69,7 +69,7 @@ Every root folder is named for what it holds. Read the folder's `doc.go` or `REA
 | Path | Holds | May import |
 | --- | --- | --- |
 | `cmd/memos/` | Cobra/Viper CLI setup and server startup | anything |
-| `server/` | The HTTP process: Echo bootstrap, graceful shutdown, every transport | core, store, provider, markdown, filter, internal |
+| `server/` | The HTTP process: net/http bootstrap, graceful shutdown, every transport | core, store, provider, markdown, filter, internal |
 | `server/api/` | Connect/gRPC-Gateway services, ACL config, SSE hub. Thin handlers; rules go to `core/` | |
 | `server/fileserver/` | Native HTTP file serving, thumbnails, range requests | |
 | `server/frontend/` | Static SPA serving; `dist/` is the built SPA baked in by `go:embed` | |
