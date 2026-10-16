@@ -150,6 +150,9 @@
     "any-thoughts": "Noen tanker...",
     "exit-focus-mode": "Avslutt fokusmodus",
     "focus-mode": "Fokusmodus",
+    "source": "Kilde",
+    "source-mode": "Kildemodus",
+    "switch-to-rich-text": "Bytt til formatert tekst",
     "insert-menu": {
       "add-location": "Legg til plassering",
       "link-memo": "Koblingsnotat",

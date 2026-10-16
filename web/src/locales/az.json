@@ -247,6 +247,9 @@
     "any-thoughts": "Ağlınıza nə gəlir...",
     "exit-focus-mode": "Fokus rejimindən çıx",
     "focus-mode": "Fokus rejimi",
+    "source": "Mənbə",
+    "source-mode": "Mənbə rejimi",
+    "switch-to-rich-text": "Zəngin mətnə keç",
     "comment": "Şərh",
     "format": {
       "paragraph": "Abzas",

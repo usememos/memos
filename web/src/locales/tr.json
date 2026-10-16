@@ -176,6 +176,9 @@
     "any-thoughts": "Düşünceleriniz...",
     "exit-focus-mode": "Odak modundan çık",
     "focus-mode": "Odak modu",
+    "source": "Kaynak",
+    "source-mode": "Kaynak modu",
+    "switch-to-rich-text": "Zengin metne geç",
     "comment": "Yorum yap",
     "format": {
       "paragraph": "Paragraf",

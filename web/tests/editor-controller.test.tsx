@@ -1,4 +1,5 @@
 import { render } from "@testing-library/react";
+import type { EditorMode } from "@usememos/editor";
 import { createRef } from "react";
 import { describe, expect, it, vi } from "vitest";
 import Editor from "@/components/MemoEditor/Editor";
@@ -10,7 +11,7 @@ vi.mock("@/hooks/useUserQueries", () => ({
   useUsersByUsernames: () => ({ data: undefined }),
 }));
 
-function setup(value = "") {
+function setup(value = "", mode: EditorMode = "rich") {
   const ref = createRef<EditorController>();
   const onContentChange = vi.fn();
   const utils = render(
@@ -19,6 +20,7 @@ function setup(value = "") {
       className="x"
       value={value}
       placeholder="memo"
+      mode={mode}
       onContentChange={onContentChange}
       onFiles={vi.fn()}
       onSubmit={vi.fn()}
@@ -156,5 +158,37 @@ describe("upload anchors", () => {
     container.querySelector<HTMLButtonElement>(".memo-upload-anchor-action")?.click();
     expect(fresh).toHaveBeenCalledTimes(1);
     expect(stale).not.toHaveBeenCalled();
+  });
+});
+
+describe("source mode", () => {
+  const memo = "# Plan\n\n- [ ] Ship #work\n\n`#code`";
+
+  it("reads tags and tasks from the Markdown text", () => {
+    const { c } = setup(memo, "source");
+    expect(c.getTags()).toEqual(["work"]);
+    expect(c.hasChecklist()).toBe(true);
+  });
+
+  it("does not insert a tag the text already has", () => {
+    const { c } = setup(memo, "source");
+    caretAtEnd(c, 0, "# Plan".length);
+    expect(c.insertTag("work")).toBe(false);
+    expect(c.insertTag("home")).toBe(true);
+    // Plain text keeps the space after the tag; rich mode drops it at a paragraph's end.
+    expect(c.getMarkdown()).toBe("# Plan #home \n\n- [ ] Ship #work\n\n`#code`");
+  });
+
+  it("inserts Markdown on lines of its own after the caret's line", () => {
+    const { c } = setup(memo, "source");
+    caretAtEnd(c, 0, "# Plan".length);
+    c.insertMarkdown("![photo](a.png)");
+    expect(c.getMarkdown()).toBe("# Plan\n![photo](a.png)\n\n- [ ] Ship #work\n\n`#code`");
+  });
+
+  it("shows the memo as Markdown text, the same document rich mode saves", () => {
+    const { c, container } = setup(memo, "source");
+    expect(container.querySelector(".mbe-source")?.textContent).toBe(memo);
+    expect(c.getMarkdown()).toBe(memo);
   });
 });

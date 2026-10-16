@@ -242,6 +242,9 @@
     "comment": "Kommenter",
     "exit-focus-mode": "Gå ut av fokusmodus",
     "focus-mode": "Fokusmodus",
+    "source": "Kjelde",
+    "source-mode": "Kjeldemodus",
+    "switch-to-rich-text": "Byt til formatert tekst",
     "format": {
       "bold": "Feit skrift",
       "bullet-list": "Punktliste",

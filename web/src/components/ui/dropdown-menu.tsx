@@ -109,8 +109,18 @@ function DropdownMenuLinkItem({ className, inset, ...props }: DropdownMenuPrimit
   );
 }
 
-function DropdownMenuCheckboxItem({ className, children, checked, ...props }: DropdownMenuPrimitive.CheckboxItem.Props) {
+function DropdownMenuCheckboxItem({
+  className,
+  children,
+  checked,
+  indicator = "start",
+  ...props
+}: DropdownMenuPrimitive.CheckboxItem.Props & {
+  /** Where the check mark sits: before the label, or trailing it for items that lead with their own icon. */
+  indicator?: "start" | "end";
+}) {
   const size = React.useContext(DropdownMenuSizeContext);
+  const trailing = indicator === "end";
 
   return (
     <DropdownMenuPrimitive.CheckboxItem
@@ -118,14 +128,14 @@ function DropdownMenuCheckboxItem({ className, children, checked, ...props }: Dr
       className={cn(
         "data-highlighted:bg-accent data-highlighted:text-accent-foreground relative flex cursor-default items-center rounded-sm outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
         size === "sm"
-          ? "min-h-7 gap-1.5 py-1 pe-2 ps-7 text-ui [&_svg:not([class*='size-'])]:size-3.5"
-          : "gap-2 py-1.5 pe-2 ps-8 text-sm [&_svg:not([class*='size-'])]:size-4",
+          ? cn("min-h-7 gap-1.5 py-1 text-ui [&_svg:not([class*='size-'])]:size-3.5", trailing ? "ps-2 pe-7" : "pe-2 ps-7")
+          : cn("gap-2 py-1.5 text-sm [&_svg:not([class*='size-'])]:size-4", trailing ? "ps-2 pe-8" : "pe-2 ps-8"),
         className,
       )}
       checked={checked}
       {...props}
     >
-      <span className="pointer-events-none absolute start-2 flex size-3.5 items-center justify-center">
+      <span className={cn("pointer-events-none absolute flex size-3.5 items-center justify-center", trailing ? "end-2" : "start-2")}>
         <DropdownMenuPrimitive.CheckboxItemIndicator>
           <CheckIcon className={size === "sm" ? "size-3.5" : "size-4"} />
         </DropdownMenuPrimitive.CheckboxItemIndicator>

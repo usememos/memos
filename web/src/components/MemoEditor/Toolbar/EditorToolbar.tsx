@@ -32,6 +32,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
   canChooseSpace,
   onAudioRecorderClick,
   viewToggles,
+  sourceMode,
   onInsertImages,
 }) => {
   const t = useTranslate();
@@ -121,6 +122,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
           memoName={memoName}
           onAudioRecorderClick={onAudioRecorderClick}
           viewToggles={viewToggles}
+          sourceMode={sourceMode}
           onInsertImages={onInsertImages}
         />
         <AudienceMenu

@@ -1,3 +1,4 @@
+import type { EditorMode } from "@usememos/editor";
 import { useEffect, useRef, useState } from "react";
 import type { Location, Memo, Visibility } from "@/types/proto/api/memo_service_pb";
 import { cacheService, memoService } from "../services";
@@ -14,6 +15,8 @@ interface UseMemoInitOptions {
   defaultCreateTime?: Date;
   defaultLocation?: Location;
   canChooseSpace?: boolean;
+  /** The mode the editor opens in; a caret saved in the other mode is not restored. */
+  mode: EditorMode;
 }
 
 export const useMemoInit = ({
@@ -26,6 +29,7 @@ export const useMemoInit = ({
   defaultCreateTime,
   defaultLocation,
   canChooseSpace = false,
+  mode,
 }: UseMemoInitOptions) => {
   const { actions, dispatch } = useEditorContext();
   const initializedRef = useRef(false);
@@ -61,7 +65,7 @@ export const useMemoInit = ({
       }
     }
 
-    const cachedCursor = cacheService.loadCursor(key);
+    const cachedCursor = cacheService.loadCursor(key, mode);
     let restoreCursorTimer: ReturnType<typeof setTimeout> | undefined;
     if (autoFocus || cachedCursor !== undefined) {
       restoreCursorTimer = setTimeout(() => {
@@ -89,6 +93,7 @@ export const useMemoInit = ({
     defaultCreateTime,
     defaultLocation,
     canChooseSpace,
+    mode,
     actions,
     dispatch,
     editorRef,

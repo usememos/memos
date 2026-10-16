@@ -1,5 +1,5 @@
 import { uniqBy } from "lodash-es";
-import { ImageIcon, LinkIcon, LoaderIcon, MapPinIcon, Maximize2Icon, MicIcon, PaperclipIcon, PlusIcon } from "lucide-react";
+import { FileCodeIcon, ImageIcon, LinkIcon, LoaderIcon, MapPinIcon, Maximize2Icon, MicIcon, PaperclipIcon, PlusIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LinkMemoDialog, LocationDialog } from "@/components/MemoMetadata";
 import type { MapPoint } from "@/components/map/types";
@@ -7,6 +7,7 @@ import { useReverseGeocoding } from "@/components/map/useReverseGeocoding";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
@@ -24,7 +25,7 @@ const InsertMenu = (props: InsertMenuProps) => {
   const t = useTranslate();
   const { actions, dispatch, getState } = useEditorContext();
   const relations = useEditorSelector((s) => s.metadata.relations);
-  const { location: initialLocation, onLocationChange, viewToggles, isUploading: isUploadingProp } = props;
+  const { location: initialLocation, onLocationChange, viewToggles, sourceMode, isUploading: isUploadingProp } = props;
 
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [locationDialogOpen, setLocationDialogOpen] = useState(false);
@@ -157,16 +158,19 @@ const InsertMenu = (props: InsertMenuProps) => {
               {item.label}
             </DropdownMenuItem>
           ))}
-          {/* View toggle: focus mode. Absent when a host owns the editor's presentation. */}
+          {/* View toggles. Focus mode is absent when a host owns the editor's presentation;
+              source mode only changes how the text is edited, so every composer has it. */}
+          <DropdownMenuSeparator />
           {viewToggles && (
-            <>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={viewToggles.onToggleFocusMode}>
-                <Maximize2Icon />
-                {t("editor.focus-mode")}
-              </DropdownMenuItem>
-            </>
+            <DropdownMenuItem onClick={viewToggles.onToggleFocusMode}>
+              <Maximize2Icon />
+              {t("editor.focus-mode")}
+            </DropdownMenuItem>
           )}
+          <DropdownMenuCheckboxItem checked={sourceMode.isSourceMode} onCheckedChange={sourceMode.onToggle} closeOnClick indicator="end">
+            <FileCodeIcon />
+            {t("editor.source-mode")}
+          </DropdownMenuCheckboxItem>
         </DropdownMenuContent>
       </DropdownMenu>
 

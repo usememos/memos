@@ -23,7 +23,7 @@ function Harness({ suggestions, space }: { suggestions: MemoSuggestion[]; space?
   controller = useRef<EditorController>(null);
   return (
     <>
-      <EditorContent ref={controller} onSubmit={vi.fn()} onFiles={vi.fn()} />
+      <EditorContent ref={controller} sourceMode={{ isSourceMode: false, onToggle: vi.fn() }} onSubmit={vi.fn()} onFiles={vi.fn()} />
       <EditorSuggestions suggestions={suggestions} controllerRef={controller} space={space} />
     </>
   );

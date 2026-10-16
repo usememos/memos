@@ -1,4 +1,5 @@
 import { fromJson, type JsonValue, toJson } from "@bufbuild/protobuf";
+import type { EditorMode } from "@usememos/editor";
 import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
 
@@ -8,7 +9,8 @@ import type { EditorSelection } from "../types/editorController";
 export const CACHE_DEBOUNCE_DELAY = 500;
 
 const pendingSaves = new Map<string, number>();
-const cursors = new Map<string, EditorSelection>();
+// A selection's shape depends on the editor mode it was taken in, so each one keeps its mode.
+const cursors = new Map<string, { selection: EditorSelection; mode: EditorMode }>();
 const STRUCTURED_CACHE_ENTRY_KIND = "memos.editor-cache";
 const STRUCTURED_CACHE_ENTRY_VERSION = 3;
 
@@ -135,12 +137,14 @@ export const cacheService = {
     return raw ? deserializeDraft(raw) : { content: "", attachments: [] };
   },
 
-  saveCursor(key: string, cursor: EditorSelection): void {
-    cursors.set(key, cursor);
+  saveCursor(key: string, selection: EditorSelection, mode: EditorMode): void {
+    cursors.set(key, { selection, mode });
   },
 
-  loadCursor(key: string): EditorSelection | undefined {
-    return cursors.get(key);
+  /** The caret saved for `key`, unless it was taken in another editor mode. */
+  loadCursor(key: string, mode: EditorMode): EditorSelection | undefined {
+    const cursor = cursors.get(key);
+    return cursor?.mode === mode ? cursor.selection : undefined;
   },
 
   clear(key: string): void {

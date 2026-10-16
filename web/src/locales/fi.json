@@ -188,6 +188,9 @@
     "any-thoughts": "Mitään ajatuksia...",
     "exit-focus-mode": "Poistu tarkennustilasta",
     "focus-mode": "Tarkennustila",
+    "source": "Lähde",
+    "source-mode": "Lähdetila",
+    "switch-to-rich-text": "Vaihda muotoiltuun tekstiin",
     "insert-menu": {
       "add-location": "Lisää sijainti",
       "link-memo": "Linkkimuistio",

@@ -150,6 +150,9 @@
     "any-thoughts": "Alguma ideia…",
     "exit-focus-mode": "Sair do Modo Foco",
     "focus-mode": "Modo Foco",
+    "source": "Código",
+    "source-mode": "Modo Código",
+    "switch-to-rich-text": "Mudar para texto formatado",
     "insert-menu": {
       "add-location": "Adicionar local",
       "link-memo": "Vincular memorando",

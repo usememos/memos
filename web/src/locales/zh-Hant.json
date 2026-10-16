@@ -229,6 +229,9 @@
     "any-thoughts": "任何想法...",
     "exit-focus-mode": "退出專注模式",
     "focus-mode": "專注模式",
+    "source": "原始碼",
+    "source-mode": "原始碼模式",
+    "switch-to-rich-text": "切換到富文字",
     "format": {
       "paragraph": "段落",
       "heading-1": "標題 1",

@@ -150,6 +150,9 @@
     "any-thoughts": "Des idées...",
     "exit-focus-mode": "Quitter le mode concentration",
     "focus-mode": "Mode concentration",
+    "source": "Source",
+    "source-mode": "Mode source",
+    "switch-to-rich-text": "Passer au texte enrichi",
     "insert-menu": {
       "add-location": "Ajouter un emplacement",
       "link-memo": "Lien vers un mémo",

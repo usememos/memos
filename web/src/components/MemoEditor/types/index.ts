@@ -5,6 +5,7 @@ export type {
   AudioRecorderPanelProps,
   EditorContentProps,
   EditorMetadataProps,
+  EditorSourceModeToggle,
   EditorToolbarProps,
   EditorViewToggles,
   FocusModeExitButtonProps,

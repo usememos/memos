@@ -1,4 +1,4 @@
-import type { Editor as MarkdownEditorInstance } from "@usememos/editor";
+import type { EditorMode, Editor as MarkdownEditorInstance } from "@usememos/editor";
 import { MarkdownEditor } from "@usememos/editor/react";
 import "@usememos/editor/style.css";
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
@@ -24,6 +24,8 @@ interface EditorProps {
   /** Invoked by the in-editor save shortcut (Cmd/Ctrl+Enter). */
   onSubmit: () => void;
   isFocusMode?: boolean;
+  /** Rich text, or the whole memo as Markdown text. Switching changes no text. */
+  mode?: EditorMode;
   /** The draft's attachments, so images of managed attachments show. */
   attachments?: readonly Attachment[];
   /** The user's tag settings, for tags in their custom colors. */
@@ -40,7 +42,7 @@ const EDITOR_ATTRIBUTES = {
 };
 
 const Editor = forwardRef(function Editor(props: EditorProps, ref: React.ForwardedRef<EditorController>) {
-  const { className, value, placeholder, onContentChange, onFiles, onSubmit, isFocusMode, attachments, tagsSetting } = props;
+  const { className, value, placeholder, onContentChange, onFiles, onSubmit, isFocusMode, mode, attachments, tagsSetting } = props;
   const t = useTranslate();
   const editorRef = useRef<MarkdownEditorInstance | null>(null);
   const onContentChangeRef = useRef(onContentChange);
@@ -119,6 +121,7 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
     <div
       className={cn("relative flex w-full flex-col items-start justify-start bg-inherit", isFocusMode && "min-h-0 flex-1", className)}
       data-focus-mode={isFocusMode || undefined}
+      data-source-mode={mode === "source" || undefined}
     >
       <div className={cn("memo-editor-scroller w-full text-base", isFocusMode && "min-h-0 flex-1")}>
         <MarkdownEditor
@@ -127,6 +130,7 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
           onChange={onContentChange}
           onSubmit={() => onSubmitRef.current()}
           placeholder={placeholder}
+          mode={mode}
           markdown={MEMO_MARKDOWN}
           extensions={extensions}
           theme={MEMO_EDITOR_THEME}

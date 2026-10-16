@@ -25,8 +25,10 @@ const viewToggles = {
   onToggleFocusMode: vi.fn(),
 };
 
+const richMode = { isSourceMode: false, onToggle: vi.fn() };
+
 /** `hosted` mirrors an editor whose presentation belongs to a host (the global composer). */
-const renderMenu = (onInsertImages = vi.fn(), isSaving = false, hosted = false) =>
+const renderMenu = (onInsertImages = vi.fn(), isSaving = false, hosted = false, sourceMode = richMode) =>
   render(
     <EditorProvider>
       <InsertMenu
@@ -35,6 +37,7 @@ const renderMenu = (onInsertImages = vi.fn(), isSaving = false, hosted = false) 
         onInsertImages={onInsertImages}
         onAudioRecorderClick={vi.fn()}
         viewToggles={hosted ? undefined : viewToggles}
+        sourceMode={sourceMode}
       />
     </EditorProvider>,
   );
@@ -57,14 +60,26 @@ describe("InsertMenu", () => {
     ]);
   });
 
-  test("drops the view toggles when a host owns the editor's presentation", () => {
+  test("drops focus mode but keeps source mode when a host owns the editor's presentation", () => {
     renderMenu(vi.fn(), false, true);
 
     fireEvent.click(screen.getByRole("button", { name: "common.add" }));
 
     const labels = screen.getAllByRole("menuitem").map((item) => item.textContent);
     expect(labels).not.toContain("editor.focus-mode");
-    expect(screen.queryByRole("separator")).not.toBeInTheDocument();
+    expect(screen.getByRole("menuitemcheckbox", { name: "editor.source-mode" })).toBeInTheDocument();
+  });
+
+  test.each([false, true])("shows source mode as a checkbox item that toggles it (on: %s)", (isSourceMode) => {
+    const onToggle = vi.fn();
+    renderMenu(vi.fn(), false, false, { isSourceMode, onToggle });
+
+    fireEvent.click(screen.getByRole("button", { name: "common.add" }));
+    const item = screen.getByRole("menuitemcheckbox", { name: "editor.source-mode" });
+    expect(item).toHaveAttribute("aria-checked", String(isSourceMode));
+
+    fireEvent.click(item);
+    expect(onToggle).toHaveBeenCalledOnce();
   });
 
   test("uses separate unrestricted and multi-image file inputs", () => {
@@ -100,7 +115,13 @@ describe("InsertMenu", () => {
 
     render(
       <EditorProvider initialEditorState={state}>
-        <EditorToolbar onSave={vi.fn()} onAudioRecorderClick={vi.fn()} viewToggles={viewToggles} onInsertImages={vi.fn()} />
+        <EditorToolbar
+          onSave={vi.fn()}
+          onAudioRecorderClick={vi.fn()}
+          viewToggles={viewToggles}
+          sourceMode={richMode}
+          onInsertImages={vi.fn()}
+        />
       </EditorProvider>,
     );
 

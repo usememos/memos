@@ -181,6 +181,9 @@
     "any-thoughts": "此刻的想法...",
     "exit-focus-mode": "退出聚焦模式",
     "focus-mode": "聚焦模式",
+    "source": "源码",
+    "source-mode": "源码模式",
+    "switch-to-rich-text": "切换到富文本",
     "format": {
       "paragraph": "正文",
       "heading-1": "一级标题",

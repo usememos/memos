@@ -129,10 +129,20 @@ describe("memo editor cache", () => {
     const key = cacheService.key("users/steven", "global-memo-editor");
 
     const selection = { anchor: { block: 1, offset: 9 }, focus: { block: 1, offset: 9 } };
-    cacheService.saveCursor(key, selection);
+    cacheService.saveCursor(key, selection, "rich");
 
-    expect(cacheService.loadCursor(key)).toEqual(selection);
+    expect(cacheService.loadCursor(key, "rich")).toEqual(selection);
     cacheService.clear(key);
-    expect(cacheService.loadCursor(key)).toBeUndefined();
+    expect(cacheService.loadCursor(key, "rich")).toBeUndefined();
+  });
+
+  it("drops a cursor taken in the other editor mode", () => {
+    const key = cacheService.key("users/steven", "global-memo-editor");
+
+    // Source mode is one block of Markdown, so its offsets mean nothing to rich mode.
+    cacheService.saveCursor(key, { anchor: { block: 0, offset: 42 }, focus: { block: 0, offset: 42 } }, "source");
+
+    expect(cacheService.loadCursor(key, "rich")).toBeUndefined();
+    expect(cacheService.loadCursor(key, "source")).toBeDefined();
   });
 });

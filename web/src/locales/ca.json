@@ -150,6 +150,9 @@
     "any-thoughts": "Alguna idea...",
     "exit-focus-mode": "Surt del mode focus",
     "focus-mode": "Mode focus",
+    "source": "Font",
+    "source-mode": "Mode font",
+    "switch-to-rich-text": "Canvia a text enriquit",
     "insert-menu": {
       "add-location": "Afegeix la ubicació",
       "link-memo": "Nota d'enllaç",

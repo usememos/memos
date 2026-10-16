@@ -188,6 +188,9 @@
     "any-thoughts": "Akékoľvek myšlienky...",
     "exit-focus-mode": "Ukončite režim zaostrenia",
     "focus-mode": "Režim zaostrenia",
+    "source": "Zdroj",
+    "source-mode": "Režim zdroja",
+    "switch-to-rich-text": "Prepnúť na formátovaný text",
     "insert-menu": {
       "add-location": "Pridať polohu",
       "link-memo": "Odkaz na poznámku",

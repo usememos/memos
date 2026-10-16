@@ -120,12 +120,7 @@ const TagsSection = ({ tagCount, onSelect, scope }: Props) => {
           <DropdownMenuContent align="end" sideOffset={4} size="sm" className="w-44">
             <DropdownMenuGroup>
               <DropdownMenuLabel className="text-muted-foreground">{t("common.tags")}</DropdownMenuLabel>
-              <DropdownMenuCheckboxItem
-                checked={treeMode}
-                onCheckedChange={setTreeMode}
-                closeOnClick
-                className="ps-2 pe-7 [&>span]:start-auto [&>span]:end-2"
-              >
+              <DropdownMenuCheckboxItem checked={treeMode} onCheckedChange={setTreeMode} closeOnClick indicator="end">
                 <ListTreeIcon className="text-muted-foreground" strokeWidth={1.8} />
                 {t("common.tree-mode")}
               </DropdownMenuCheckboxItem>

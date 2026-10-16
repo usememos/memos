@@ -23,6 +23,7 @@ import {
   useInlineImageUpload,
   useMemoInit,
   useMemoSave,
+  useSourceMode,
 } from "./hooks";
 import { cacheService, errorService, transcriptionService } from "./services";
 import { EditorProvider, useEditorContext, useEditorSelector } from "./state";
@@ -97,6 +98,11 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   const defaultVisibility = userGeneralSetting?.memoVisibility ? convertVisibilityFromString(userGeneralSetting.memoVisibility) : undefined;
   const editorCacheKey = cacheService.key(currentUser?.name ?? "", cacheKey);
 
+  // Source mode only changes how the text is edited, so every composer offers it.
+  const [editorMode, setEditorMode] = useSourceMode();
+  const isSourceMode = editorMode === "source";
+  const sourceMode = { isSourceMode, onToggle: () => setEditorMode(isSourceMode ? "rich" : "source") };
+
   const { isInitialized } = useMemoInit({
     editorRef,
     memo,
@@ -107,6 +113,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
     defaultCreateTime,
     defaultLocation,
     canChooseSpace,
+    mode: editorMode,
   });
   const isDraftCacheEnabled = !memo;
 
@@ -224,9 +231,9 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   const rememberCursor = useCallback(() => {
     const cursor = editorRef.current?.getSelection();
     if (cursor !== undefined) {
-      cacheService.saveCursor(editorCacheKey, cursor);
+      cacheService.saveCursor(editorCacheKey, cursor, editorMode);
     }
-  }, [editorCacheKey]);
+  }, [editorCacheKey, editorMode]);
 
   // Hosted: focus mode is the host's frame, so leaving it dismisses the host.
   // Inline: focus mode is a view this editor owns and toggles in place.
@@ -313,6 +320,9 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
         onToggleFocusMode: handleToggleFocusMode,
       };
 
+  // The checklist chip formats a block, which source mode cannot do.
+  const visibleSuggestions = isSourceMode ? suggestions.filter((suggestion) => suggestion.kind !== "checklist") : suggestions;
+
   const handleSave = useMemoSave({
     memoName,
     parentMemoName,
@@ -366,6 +376,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
         <EditorContent
           ref={editorRef}
           placeholder={placeholder}
+          sourceMode={sourceMode}
           onSubmit={handleSave}
           onFiles={handleEditorFiles}
           tagsSetting={userTagsSetting}
@@ -394,8 +405,8 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
             transcribingAttachment={transcribingAttachment}
             transcriptionDisabled={isSaving || audioRecorder.isBusy || isTranscribingAudio}
           />
-          {!memo && !parentMemoName && isInitialized && suggestions.length > 0 && (
-            <EditorSuggestions suggestions={suggestions} controllerRef={editorRef} space={editorSpace} />
+          {!memo && !parentMemoName && isInitialized && visibleSuggestions.length > 0 && (
+            <EditorSuggestions suggestions={visibleSuggestions} controllerRef={editorRef} space={editorSpace} />
           )}
           <EditorToolbar
             onSave={handleSave}
@@ -406,6 +417,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
             canChooseSpace={canChooseSpace}
             onAudioRecorderClick={handleAudioRecorderClick}
             viewToggles={viewToggles}
+            sourceMode={sourceMode}
             onInsertImages={handleInsertImages}
           />
         </div>

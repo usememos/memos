@@ -1,5 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import { act, render, waitFor } from "@testing-library/react";
+import type { EditorMode } from "@usememos/editor";
 import type { RefObject } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useMemoInit } from "@/components/MemoEditor/hooks/useMemoInit";
@@ -17,10 +18,12 @@ function Probe({
   autoFocus,
   defaultLocation,
   canChooseSpace,
+  mode = "rich",
 }: {
   autoFocus?: boolean | (() => boolean);
   defaultLocation?: Location;
   canChooseSpace?: boolean;
+  mode?: EditorMode;
 }) {
   getEditorState = useEditorContext().getState;
   useMemoInit({
@@ -31,6 +34,7 @@ function Probe({
     defaultLocation,
     canChooseSpace,
     defaultVisibility: Visibility.PUBLIC,
+    mode,
   });
   return null;
 }
@@ -57,7 +61,7 @@ describe("useMemoInit", () => {
     const key = cacheService.key("users/steven", "restored-draft");
     cacheService.saveNow(key, { content: "An unfinished memo", attachments: [] });
     const selection = { anchor: { block: 0, offset: 5 }, focus: { block: 0, offset: 5 } };
-    cacheService.saveCursor(key, selection);
+    cacheService.saveCursor(key, selection, "rich");
     const focus = vi.fn();
     const setSelection = vi.fn();
     editorRef.current = { focus, setSelection } as unknown as EditorController;
@@ -76,6 +80,24 @@ describe("useMemoInit", () => {
     act(() => vi.advanceTimersByTime(100));
     expect(autoFocus).toHaveBeenCalledOnce();
     expect(focus).toHaveBeenCalledTimes(allowed ? 1 : 0);
+  });
+
+  it("does not restore a cursor taken in the other editor mode", () => {
+    vi.useFakeTimers();
+    const key = cacheService.key("users/steven", "restored-draft");
+    cacheService.saveNow(key, { content: "An unfinished memo", attachments: [] });
+    cacheService.saveCursor(key, { anchor: { block: 0, offset: 12 }, focus: { block: 0, offset: 12 } }, "source");
+    const setSelection = vi.fn();
+    editorRef.current = { focus: vi.fn(), setSelection } as unknown as EditorController;
+
+    render(
+      <EditorProvider>
+        <Probe mode="rich" />
+      </EditorProvider>,
+    );
+    act(() => vi.advanceTimersByTime(100));
+    expect(getEditorState().content).toBe("An unfinished memo");
+    expect(setSelection).not.toHaveBeenCalled();
   });
 
   it("seeds a new location once and honors a restored removal", () => {

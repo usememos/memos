@@ -247,6 +247,9 @@
     "any-thoughts": "Any thoughts...",
     "exit-focus-mode": "Exit Focus Mode",
     "focus-mode": "Focus Mode",
+    "source": "Source",
+    "source-mode": "Source Mode",
+    "switch-to-rich-text": "Switch to rich text",
     "comment": "Comment",
     "format": {
       "paragraph": "Paragraph",

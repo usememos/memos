@@ -150,6 +150,9 @@
     "any-thoughts": "Ein Gedanke...",
     "exit-focus-mode": "Fokus Modus verlassen",
     "focus-mode": "Fokus Modus",
+    "source": "Quelltext",
+    "source-mode": "Quelltext Modus",
+    "switch-to-rich-text": "Zu formatiertem Text wechseln",
     "insert-menu": {
       "add-location": "Standort hinzufügen",
       "link-memo": "Link-Memo",

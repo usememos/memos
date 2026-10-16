@@ -1,5 +1,5 @@
 import { type Block, containerContent, type Editor, getBlock, inlineText, type Position, type Widget } from "@usememos/editor";
-import { collectTags } from "@/lib/memo-markdown";
+import { collectTags, parseMemoMarkdown } from "@/lib/memo-markdown";
 import { isCompleteTagValue } from "@/utils/tag-grammar";
 import type { EditorController } from "../types/editorController";
 import { renderUploadAnchor } from "./uploadAnchors";
@@ -17,6 +17,13 @@ const textAt = (editor: Editor, position: Position): string => {
   const content = containerContent(getBlock(editor.state.doc, position.blockId), position.cell);
   return content ? inlineText(content) : "";
 };
+
+/**
+ * The memo's blocks. Source mode holds the whole memo as one block of Markdown
+ * text, so the blocks are read from that text instead.
+ */
+const memoBlocks = (editor: Editor): readonly Block[] =>
+  editor.mode === "source" ? parseMemoMarkdown(editor.getMarkdown()).blocks : editor.state.doc.blocks;
 
 /** An empty paragraph, which an inserted block should replace rather than follow. */
 const isEmptyParagraph = (block: Block): boolean => block.type === "paragraph" && inlineText(block.content) === "";
@@ -43,7 +50,7 @@ const insertBlocks = (editor: Editor, markdown: string, position: Position): voi
  */
 export function createController(getEditor: EditorGetter, onReplace: (markdown: string) => void): EditorController {
   const anchors = new Map<string, Widget>();
-  const currentTags = (editor: Editor) => collectTags(editor.state.doc.blocks);
+  const currentTags = (editor: Editor) => collectTags(memoBlocks(editor));
 
   const takeAnchor = (id: string): Widget | undefined => {
     const widget = anchors.get(id);
@@ -76,7 +83,10 @@ export function createController(getEditor: EditorGetter, onReplace: (markdown: 
       const editor = live(getEditor);
       return editor ? currentTags(editor) : [];
     },
-    hasChecklist: () => live(getEditor)?.state.doc.blocks.some((block) => block.type === "listItem" && block.listType === "task") ?? false,
+    hasChecklist: () => {
+      const editor = live(getEditor);
+      return editor ? memoBlocks(editor).some((block) => block.type === "listItem" && block.listType === "task") : false;
+    },
     insertTag: (tag) => {
       const editor = live(getEditor);
       if (!editor || !isCompleteTagValue(tag) || editor.isComposing || currentTags(editor).includes(tag)) return false;

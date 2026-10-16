@@ -188,6 +188,9 @@
     "any-thoughts": "Mingid mõtted...",
     "exit-focus-mode": "Välju teravustamisrežiimist",
     "focus-mode": "Fookusrežiim",
+    "source": "Lähtetekst",
+    "source-mode": "Lähtetekstirežiim",
+    "switch-to-rich-text": "Lülitu vormindatud tekstile",
     "insert-menu": {
       "add-location": "Lisa asukoht",
       "link-memo": "Lingi memo",

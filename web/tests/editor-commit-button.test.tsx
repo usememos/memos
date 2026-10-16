@@ -12,7 +12,14 @@ let dispatchSaving: ((saving: boolean) => void) | undefined;
 const Toolbar = () => {
   const { actions, dispatch } = useEditorContext();
   dispatchSaving = (saving) => dispatch(actions.setLoading("saving", saving));
-  return <EditorToolbar onSave={vi.fn()} onAudioRecorderClick={vi.fn()} onInsertImages={vi.fn()} />;
+  return (
+    <EditorToolbar
+      onSave={vi.fn()}
+      onAudioRecorderClick={vi.fn()}
+      sourceMode={{ isSourceMode: false, onToggle: vi.fn() }}
+      onInsertImages={vi.fn()}
+    />
+  );
 };
 
 const renderToolbar = (content: string) => {

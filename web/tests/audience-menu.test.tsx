@@ -198,7 +198,16 @@ it("removing a Members memo from its Space falls back to Private without discard
   function Toolbar() {
     getState = useEditorContext().getState;
     const space = useEditorSelector((state) => state.metadata.space);
-    return <EditorToolbar space={space} canChooseSpace onSave={vi.fn()} onAudioRecorderClick={vi.fn()} onInsertImages={vi.fn()} />;
+    return (
+      <EditorToolbar
+        space={space}
+        canChooseSpace
+        onSave={vi.fn()}
+        onAudioRecorderClick={vi.fn()}
+        sourceMode={{ isSourceMode: false, onToggle: vi.fn() }}
+        onInsertImages={vi.fn()}
+      />
+    );
   }
   const initial = createInitialState();
   initial.content = "Keep this draft";

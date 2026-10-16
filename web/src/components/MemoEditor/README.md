@@ -41,6 +41,7 @@ MemoEditor/
 │   └── ...
 ├── hooks/                  # React hooks (utilities)
 │   ├── useMemoSave.ts      # Save transaction, cache invalidation, and reset
+│   ├── useSourceMode.ts    # Rich or source mode, remembered per device
 │   └── useFocusMode.ts     # Scroll lock and layout-stable focus presentation
 ├── Editor/                 # The composer, on @usememos/editor
 │   ├── index.tsx               # React wrapper around <MarkdownEditor>; hands out the controller
@@ -73,6 +74,14 @@ A reducer (`state/reducer.ts`) drives an **external store**, not a `useReducer` 
 ### Formatting
 
 Formatting is the editor's own: its toolbar appears over selected text (bold, italic, strikethrough, code, link), the slash menu and Markdown shortcuts change block types, and its keys cover the rest. Memos adds no formatting toolbar. The one formatting call memos makes itself is `toggleTaskList()`, for the checklist suggestion chip.
+
+### Source mode
+
+The editor's `mode` option shows the whole memo as Markdown text and edits it as plain text (see the editor README's "Source mode"). Every composer offers it, hosted ones included, because it changes how the text is edited, not the frame: the ＋ menu has a "Source Mode" checkbox item, and while it is on, `EditorContent` puts a small "Source" tag in the editor's top-right corner, styled like a code block's language label, that says why autocomplete and formatting are gone and switches back. The editor's first line leaves room for the tag (a float sized by `--memo-source-tag-width` in `Editor/editor.css`), so the rest of the text keeps its full width. `useSourceMode` keeps the choice in localStorage (`memos-editor-mode`), so it is per device and every composer mounted afterwards opens in it. Switching changes no text, so saving, drafts and `state.content` are unaffected. In source mode:
+
+- The editor's toolbar, slash menu, autocomplete and formatting keys are off, and the checklist suggestion chip is hidden because `toggleTaskList()` cannot apply.
+- The editor's document is one block of Markdown text, so the controller reads `getTags()` and `hasChecklist()` from the text parsed as a memo, not from its blocks. Insertions (`insertMarkdown`, `insertTag`, upload anchors) work as in rich mode.
+- A selection's shape depends on the mode, so `cacheService` stores the mode with a saved caret and does not restore a caret taken in the other mode.
 
 ### Editor extensions
 
@@ -121,7 +130,7 @@ Every instance is one of two things, and `onFocusModeExit` is the switch:
 - **Inline** (prop omitted) — the editor sits in page flow (Home composer, memo edit, comments) and owns its presentation. The ＋ menu offers focus mode, which expands the editor over the page; the exit button in its top row minimizes it back in place.
 - **Hosted** (prop supplied) — a host presents the editor full-screen and owns that frame; `contexts/GlobalMemoEditorContext.tsx` is the one today. The editor mounts straight into focus mode and exits by calling back to dismiss the host, so the exit button reads as Close rather than minimize. The ＋ menu's view toggle is absent: focus mode is not the editor's to leave.
 
-The toggle travels as an optional `viewToggles` object (`types/components.ts`) down `EditorToolbar` → `InsertMenu`.
+The toggle travels as an optional `viewToggles` object (`types/components.ts`) down `EditorToolbar` → `InsertMenu`. The source-mode switch is not a view toggle and travels separately as `sourceMode` to `InsertMenu` and `EditorContent`, which every instance has.
 
 ### Destination and visibility
 

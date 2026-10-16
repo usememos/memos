@@ -150,6 +150,9 @@
     "any-thoughts": "Imaš li misli...",
     "exit-focus-mode": "Izlazi iz načina rada za fokus",
     "focus-mode": "Način rada za fokus",
+    "source": "Izvor",
+    "source-mode": "Način rada izvora",
+    "switch-to-rich-text": "Prebaci na oblikovani tekst",
     "insert-menu": {
       "add-location": "Dodajte lokaciju",
       "link-memo": "Link dopis",

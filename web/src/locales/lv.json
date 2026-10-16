@@ -188,6 +188,9 @@
     "any-thoughts": "Jebkuras domas...",
     "exit-focus-mode": "Iziet no fokusa režīma",
     "focus-mode": "Fokusa režīms",
+    "source": "Avots",
+    "source-mode": "Avota režīms",
+    "switch-to-rich-text": "Pārslēgties uz formatētu tekstu",
     "insert-menu": {
       "add-location": "Pievienot atrašanās vietu",
       "link-memo": "Saites piezīme",

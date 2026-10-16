@@ -150,6 +150,9 @@
     "any-thoughts": "Jakieś przemyślenia...",
     "exit-focus-mode": "Wyjdź z Trybu Skupienia",
     "focus-mode": "Tryb Skupienia",
+    "source": "Źródło",
+    "source-mode": "Tryb Źródła",
+    "switch-to-rich-text": "Przełącz na tekst sformatowany",
     "format": {
       "paragraph": "Akapit",
       "heading-1": "Nagłówek 1",

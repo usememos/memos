@@ -188,6 +188,9 @@
     "any-thoughts": "Nogen tanker...",
     "exit-focus-mode": "Afslut fokustilstand",
     "focus-mode": "Fokustilstand",
+    "source": "Kilde",
+    "source-mode": "Kildetilstand",
+    "switch-to-rich-text": "Skift til formateret tekst",
     "insert-menu": {
       "add-location": "Tilføj placering",
       "link-memo": "Link memo",

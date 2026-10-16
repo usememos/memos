@@ -50,6 +50,7 @@ export interface MemoEditorProps {
 
 export interface EditorContentProps {
   placeholder?: string;
+  sourceMode: EditorSourceModeToggle;
   /** Invoked by the in-editor save shortcut (Cmd/Ctrl+Enter). */
   onSubmit: () => void;
   onFiles: (files: File[], origin: EditorFileOrigin) => void;
@@ -65,6 +66,12 @@ export interface EditorViewToggles {
   onToggleFocusMode: () => void;
 }
 
+/** The composer's source-mode switch: an item in the ＋ menu, and a tag in the editor's corner while on. */
+export interface EditorSourceModeToggle {
+  isSourceMode: boolean;
+  onToggle: () => void;
+}
+
 export interface EditorToolbarProps {
   onSave: () => void;
   onCancel?: () => void;
@@ -77,6 +84,7 @@ export interface EditorToolbarProps {
   canChooseSpace?: boolean;
   onAudioRecorderClick: () => void;
   viewToggles?: EditorViewToggles;
+  sourceMode: EditorSourceModeToggle;
   onInsertImages: (files: File[]) => void;
 }
 
@@ -120,6 +128,7 @@ export interface InsertMenuProps {
   memoName?: string;
   onAudioRecorderClick?: () => void;
   viewToggles?: EditorViewToggles;
+  sourceMode: EditorSourceModeToggle;
   onInsertImages: (files: File[]) => void;
 }
 

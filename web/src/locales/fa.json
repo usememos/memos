@@ -150,6 +150,9 @@
     "any-thoughts": "فکر شما...",
     "exit-focus-mode": "خروج از حالت تمرکز",
     "focus-mode": "حالت تمرکز",
+    "source": "منبع",
+    "source-mode": "حالت منبع",
+    "switch-to-rich-text": "تغییر به متن قالب‌دار",
     "no-changes-detected": "تغییری شناسایی نشد",
     "save": "ذخیره",
     "insert-menu": {
