@@ -11,6 +11,7 @@ import {
 import { useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import CreateSpaceDialog from "@/components/CreateSpaceDialog";
+import IdentityLabel from "@/components/IdentityLabel";
 import MemosLogo from "@/components/MemosLogo";
 import SpaceMark from "@/components/SpaceMark";
 import SpaceSelectItem from "@/components/SpaceSelectItem";
@@ -101,48 +102,42 @@ function SpaceSwitcher({ className, size = "md" }: { className?: string; size?: 
           aria-label={`${t("space.switch")}: ${triggerLabel}`}
           title={triggerLabel}
           className={cn(
-            "text-start transition-colors hover:bg-sidebar-accent/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/40",
+            "memos-brand-trigger text-start transition-colors hover:bg-sidebar-accent/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/40",
             sidebarSurfaceVariants({ role: size === "header" ? "headerBrand" : "mobileBrand" }),
             className,
           )}
         >
           {showBrand ? (
-            <MemosLogo compact size={size === "header" ? "header" : "md"} />
+            <MemosLogo size={size === "header" ? "header" : "md"} />
           ) : (
-            <span className="flex min-w-0 items-center gap-2 overflow-hidden">
-              {creatorUsername && selectedSpaceName ? (
-                // With a Space selected, the creator recedes to its avatar (its name stays in the tooltip)
-                // so the Space title keeps the width.
-                <span className="flex shrink-0 items-center gap-1">
+            <IdentityLabel
+              label={creatorUsername && selectedSpaceName ? spaceLabel : contextLabel}
+              mark={
+                creatorUsername && selectedSpaceName ? (
+                  // With a Space selected, the creator recedes to its avatar (its name stays in the tooltip)
+                  // so the Space title keeps the width.
+                  <span className="flex shrink-0 items-center gap-1">
+                    <CreatorAvatar avatarUrl={selectedCreator?.avatarUrl} name={creatorLabel} size={size} />
+                    <svg
+                      aria-hidden="true"
+                      viewBox="0 0 10 20"
+                      className="h-5 w-2.5 shrink-0 text-muted-foreground/35"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={1.25}
+                      strokeLinecap="round"
+                    >
+                      <path d="M8 3 2 17" />
+                    </svg>
+                    <SpaceMark icon={selectedSpace?.icon} size={size === "header" ? "header" : "md"} />
+                  </span>
+                ) : creatorUsername ? (
                   <CreatorAvatar avatarUrl={selectedCreator?.avatarUrl} name={creatorLabel} size={size} />
-                  <svg
-                    aria-hidden="true"
-                    viewBox="0 0 10 20"
-                    className="h-5 w-2.5 shrink-0 text-muted-foreground/35"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth={1.25}
-                    strokeLinecap="round"
-                  >
-                    <path d="M8 3 2 17" />
-                  </svg>
+                ) : (
                   <SpaceMark icon={selectedSpace?.icon} size={size === "header" ? "header" : "md"} />
-                </span>
-              ) : creatorUsername ? (
-                <CreatorAvatar avatarUrl={selectedCreator?.avatarUrl} name={creatorLabel} size={size} />
-              ) : (
-                <SpaceMark icon={selectedSpace?.icon} size={size === "header" ? "header" : "md"} />
-              )}
-              <span
-                data-sidebar-label
-                className={cn(
-                  "min-w-0 truncate tracking-[-0.01em]",
-                  size === "header" ? "text-[15px] font-semibold leading-5" : "text-[14px] font-medium leading-4",
-                )}
-              >
-                {creatorUsername && selectedSpaceName ? spaceLabel : contextLabel}
-              </span>
-            </span>
+                )
+              }
+            />
           )}
           <ChevronsUpDownIcon
             aria-hidden="true"

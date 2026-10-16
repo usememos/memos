@@ -5,6 +5,7 @@ import { ROUTES } from "@/router/routes";
 import { InstanceAccessMode } from "@/types/proto/api/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import AuthFooter from "./AuthFooter";
+import MemosLogo from "./MemosLogo";
 
 interface Props {
   chip?: React.ReactNode;
@@ -55,17 +56,14 @@ export const AuthOptionsLoading = () => <div className="h-9 w-full animate-pulse
 
 const AuthPageLayout = ({ chip, title, subtitle, hideExplore, children }: Props) => {
   const t = useTranslate();
-  const { generalSetting, profile } = useInstance();
+  const { profile } = useInstance();
   const showExplore = profile.accessMode === InstanceAccessMode.PUBLIC && !hideExplore;
 
   return (
     <div className="min-h-svh w-full flex flex-col items-center px-4 py-4 sm:py-8">
       <div className="w-full grow flex flex-col justify-center items-center">
         <div className="w-90 max-w-full rounded-xl border border-border bg-card p-7 shadow-sm">
-          <div className="mb-6 flex items-center gap-2">
-            <img className="h-6 w-auto rounded-full" src={generalSetting.customProfile?.logoUrl || "/logo.webp"} alt="" />
-            <span className="text-sm font-semibold text-foreground">{generalSetting.customProfile?.title || "Memos"}</span>
-          </div>
+          <MemosLogo size="lg" className="mb-8" />
           {chip && <div className="mb-2">{chip}</div>}
           <h1 className="text-lg font-semibold tracking-tight text-foreground">{title}</h1>
           {subtitle && <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>}

@@ -39,6 +39,17 @@
 }
 
 @layer components {
+  @media (prefers-reduced-motion: no-preference) {
+    .memos-logo .memos-mark {
+      transition: transform 180ms ease-out;
+    }
+
+    .memos-brand-trigger:is(:hover, :focus-visible) .memos-mark,
+    .memos-logo:hover .memos-mark {
+      transform: translateY(-1px) rotate(-6deg);
+    }
+  }
+
   .map-attribution-minimal .leaflet-control-attribution {
     margin: 0 0.25rem 0.25rem 0 !important;
     border-radius: 0.25rem;

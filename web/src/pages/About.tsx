@@ -1,4 +1,5 @@
 import { BookOpenIcon, CodeXmlIcon, ExternalLinkIcon, GitForkIcon, GlobeIcon, HeartIcon, ScissorsIcon } from "lucide-react";
+import MemosLogo from "@/components/MemosLogo";
 import { Badge } from "@/components/ui/badge";
 import { useInstance } from "@/contexts/InstanceContext";
 import {
@@ -15,7 +16,6 @@ const GITHUB_COMMIT_URL_PREFIX = "https://github.com/usememos/memos/commit/";
 const GITHUB_RELEASE_URL_PREFIX = "https://github.com/usememos/memos/releases/tag/";
 
 const DEFAULT_TITLE = "Memos";
-const DEFAULT_LOGO = "/logo.webp";
 
 const isCommitSha = (commit: string) => /^[0-9a-f]{7,40}$/i.test(commit);
 
@@ -46,7 +46,6 @@ const About = () => {
 
   const customProfile = generalSetting.customProfile;
   const instanceTitle = customProfile?.title || DEFAULT_TITLE;
-  const instanceLogo = customProfile?.logoUrl || DEFAULT_LOGO;
   const isCustomBranded = instanceTitle !== DEFAULT_TITLE;
 
   const releaseTag = getReleaseTag(profile.version);
@@ -86,27 +85,21 @@ const About = () => {
       <div className="@container mx-auto w-full max-w-5xl py-8 sm:py-16">
         <div className="grid gap-10 @min-[52rem]:grid-cols-[minmax(0,0.9fr)_minmax(0,1.5fr)] @min-[52rem]:gap-8">
           <header className="min-w-0 @min-[52rem]:border-e @min-[52rem]:border-border @min-[52rem]:pe-8 @min-[52rem]:pt-7">
-            <div className="flex items-center gap-4">
-              <img
-                className="size-16 shrink-0 select-none rounded-xl object-contain @min-[60rem]:size-20"
-                src={instanceLogo}
-                alt=""
-                draggable={false}
-              />
-              <div className="flex min-w-0 flex-wrap items-center gap-2.5">
-                <h1 className="text-3xl font-semibold tracking-tight wrap-anywhere text-foreground @min-[60rem]:text-4xl">
-                  {instanceTitle}
-                </h1>
-                {profile.version && (
-                  <Chip href={releaseUrl || undefined}>
-                    <span className="sr-only">{t("common.version")} </span>
-                    {versionLabel}
-                  </Chip>
-                )}
-                {profile.demo && <Badge variant="warning">{t("about.demo")}</Badge>}
-              </div>
+            <div className="space-y-3">
+              <MemosLogo as="h1" size="hero" />
+              {(profile.version || profile.demo) && (
+                <div className="flex min-w-0 flex-wrap items-center gap-2.5">
+                  {profile.version && (
+                    <Chip href={releaseUrl || undefined}>
+                      <span className="sr-only">{t("common.version")} </span>
+                      {versionLabel}
+                    </Chip>
+                  )}
+                  {profile.demo && <Badge variant="warning">{t("about.demo")}</Badge>}
+                </div>
+              )}
             </div>
-            <p className="mt-8 text-4xl leading-[1.15] tracking-tight wrap-anywhere text-foreground @min-[60rem]:text-[3.25rem]">
+            <p className="mt-6 text-4xl leading-[1.15] tracking-tight wrap-anywhere text-foreground @min-[60rem]:text-[3.25rem]">
               {customProfile?.description || (
                 <>
                   <span className="block">Your thoughts, your data,</span> <span className="block">shared on your terms.</span>

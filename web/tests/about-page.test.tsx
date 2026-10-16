@@ -50,6 +50,8 @@ describe("<About>", () => {
     renderAbout();
 
     expect(screen.getByRole("heading", { name: "Memos" })).toBeInTheDocument();
+    expect(document.querySelector(".memos-mark")).toHaveAttribute("fill", "currentColor");
+    expect(document.querySelector(".memos-mark")).toHaveAttribute("height", "48");
     expect(screen.getByText(/Your thoughts, your data/i)).toBeInTheDocument();
     expect(screen.getByText("about.description")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Version\s*v0\.25\.0/ })).toHaveAttribute(

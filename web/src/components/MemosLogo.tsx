@@ -1,53 +1,62 @@
-import fullLogoUrl from "@/assets/full-logo.webp?no-inline";
 import { useInstance } from "@/contexts/InstanceContext";
+import { getCustomLogoUrl } from "@/lib/branding";
 import { cn } from "@/lib/utils";
-import UserAvatar from "./UserAvatar";
+import IdentityLabel from "./IdentityLabel";
+import { MemosMark } from "./MemosMark";
 
 interface Props {
   className?: string;
   collapsed?: boolean;
-  compact?: boolean;
-  /** Scale of the compact lockup: "header" for primary chrome, "md" for roomy surfaces, and "sm" for dense menu rows. */
-  size?: keyof typeof COMPACT_SCALE;
+  as?: "div" | "h1";
+  /** Navigation uses header/md; auth pages use lg and About uses hero. */
+  size?: keyof typeof LOGO_SCALE;
 }
 
-// Kept in step with SpaceMark in SpaceSwitcher, so the brand and a Space read as peers
-// wherever the two are listed together.
-const COMPACT_SCALE = {
-  md: { mark: "size-7 rounded-[7px]", gap: "gap-1.5", title: "text-[14px]", weight: "font-medium" },
-  header: { mark: "size-6 rounded-[6px]", gap: "gap-2", title: "text-[15px] leading-5", weight: "font-semibold" },
-  sm: { mark: "size-5 rounded-[5px]", gap: "gap-1.5", title: "text-ui", weight: "font-medium" },
+const LOGO_SCALE = {
+  sm: { mark: 20, text: "sm" },
+  header: { mark: 24, text: "md" },
+  md: { mark: 28, text: "md" },
+  lg: { mark: 32, text: "lg" },
+  hero: { mark: 48, text: "hero" },
 } as const;
 
-function MemosLogo(props: Props) {
-  const { collapsed, compact, size = "md" } = props;
-  const scale = COMPACT_SCALE[size];
+function MemosLogo({ collapsed, size = "md", as: Component = "div", className }: Props) {
+  const scale = LOGO_SCALE[size];
   const { generalSetting: instanceGeneralSetting } = useInstance();
   const title = instanceGeneralSetting.customProfile?.title || "Memos";
-  const avatarUrl = instanceGeneralSetting.customProfile?.logoUrl || fullLogoUrl;
+  const logoUrl = getCustomLogoUrl(instanceGeneralSetting.customProfile?.logoUrl);
 
   return (
-    <div className={cn("relative min-w-0 h-auto", props.className)}>
-      <div
-        className={cn(
-          "flex min-w-0 flex-row items-center justify-start text-foreground",
-          compact ? cn("px-0", scale.gap) : collapsed ? "px-1" : "gap-2 px-3",
-        )}
-      >
-        {/* The instance logo is a brand, not a person, so it keeps a square mark. */}
-        <UserAvatar className={cn("shrink-0", compact ? scale.mark : "rounded-xl")} avatarUrl={avatarUrl} />
-        {!collapsed && (
-          <span
-            className={cn(
-              "shrink truncate text-foreground",
-              compact ? cn(scale.title, scale.weight, "tracking-[-0.01em]") : "text-lg font-medium",
-            )}
-          >
-            {title}
-          </span>
-        )}
-      </div>
-    </div>
+    <Component className={cn("memos-logo w-fit min-w-0 max-w-full", className)}>
+      <IdentityLabel
+        label={title}
+        size={scale.text}
+        collapsed={collapsed}
+        wrap={size === "lg" || size === "hero"}
+        mark={
+          logoUrl ? (
+            <img
+              src={logoUrl}
+              width={scale.mark}
+              height={scale.mark}
+              style={{ width: scale.mark, height: scale.mark }}
+              className="shrink-0 select-none object-contain"
+              alt={collapsed ? title : ""}
+              draggable={false}
+              decoding="async"
+            />
+          ) : (
+            <MemosMark
+              size={scale.mark}
+              className="text-primary"
+              label={collapsed ? title : undefined}
+              // Like dotcom's lockup, trim transparent margins so the gap follows the visible bird.
+              {...(!collapsed ? { viewBox: "112 32 288 448", width: Math.ceil((scale.mark * 288) / 448) } : {})}
+            />
+          )
+        }
+      />
+    </Component>
   );
 }
 

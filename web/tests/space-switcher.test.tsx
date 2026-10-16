@@ -18,7 +18,7 @@ const state = vi.hoisted(() => ({
   setMobileOpen: vi.fn(),
 }));
 
-vi.mock("@/components/MemosLogo", () => ({ default: () => <span>Memos</span> }));
+vi.mock("@/contexts/InstanceContext", () => ({ useInstance: () => ({ generalSetting: {} }) }));
 vi.mock("@/components/UserMenu", () => ({
   default: () => <button type="button">Steven account</button>,
 }));

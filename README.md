@@ -1,8 +1,6 @@
 > ✨ Featured sponsor: [CodeRabbit — Industry-leading AI code reviews](https://coderabbit.link/usememos).
 
-# Memos
-
-<img src="./web/public/logo.webp" alt="" width="96" align="right">
+<h1 id="memos"><img src="./.github/assets/memos-wordmark.svg" alt="Memos" width="145" height="48"></h1>
 
 **Your thoughts, your data, shared on your terms.**
 
