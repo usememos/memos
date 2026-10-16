@@ -21,7 +21,8 @@ function bareLinkOf(block: Block): string | undefined {
   const href = block.content[0].link;
   // Only web links have metadata to preview; `tel:`/`sms:`/`mailto:` hand off to another app.
   if (!href || !/^https?:\/\//i.test(href)) return undefined;
-  if (!block.content.every((span) => span.link === href && !span.image)) return undefined;
+  // A titled link is a written `[text](url "title")`, never a bare URL; a card would drop its title.
+  if (!block.content.every((span) => span.link === href && !span.linkTitle && !span.image)) return undefined;
   return inlineText(block.content) === href ? href : undefined;
 }
 
