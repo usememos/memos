@@ -239,13 +239,22 @@ func TestMemoMarkdownRouteAuthenticationFailures(t *testing.T) {
 	require.Equal(t, http.StatusUnauthorized, badCredentialResponse.Code)
 	require.NotContains(t, badCredentialResponse.Body.String(), "protected source")
 
+	// Keep creator resolution healthy so only the bearer viewer lookup fails.
+	viewer := createSpaceTestUser(ctx, t, service, "markdown-auth-viewer", store.RoleUser)
+	token := generateMemoMarkdownAccessToken(t, service, viewer)
+	viewerResponse := performMemoMarkdownRequest(e, "/memos/"+memoUID(memo)+".md", "", bearer(token), "")
+	require.Equal(t, http.StatusOK, viewerResponse.Code)
+	require.Equal(t, "protected source", viewerResponse.Body.String())
+
 	storeErr := stderrors.New("user lookup unavailable")
-	failingStore := store.New(memoMarkdownFailingAuthDriver{Driver: service.Store.GetDriver(), listUsersErr: storeErr}, service.Profile)
+	failingStore := store.New(memoMarkdownFailingAuthDriver{
+		Driver: service.Store.GetDriver(), listUsersErr: storeErr, failUserID: viewer.ID,
+	}, service.Profile)
 	failingService := NewAPIService(service.Secret, service.Profile, failingStore)
-	failingEcho := newMemoMarkdownMux(failingService)
-	token := generateMemoMarkdownAccessToken(t, service, owner)
-	storeFailureResponse := performMemoMarkdownRequest(failingEcho, "/memos/"+memoUID(memo)+".md", "", bearer(token), "")
+	failingMux := newMemoMarkdownMux(failingService)
+	storeFailureResponse := performMemoMarkdownRequest(failingMux, "/memos/"+memoUID(memo)+".md", "", bearer(token), "")
 	require.Equal(t, http.StatusInternalServerError, storeFailureResponse.Code)
+	require.JSONEq(t, `{"message":"failed to get current user"}`, storeFailureResponse.Body.String())
 	require.NotContains(t, storeFailureResponse.Body.String(), storeErr.Error())
 	require.NotContains(t, storeFailureResponse.Body.String(), "protected source")
 }
@@ -254,11 +263,12 @@ func TestMemoMarkdownRouteAuthenticationFailures(t *testing.T) {
 type memoMarkdownFailingAuthDriver struct {
 	store.Driver
 	listUsersErr error
+	failUserID   int32
 }
 
 // ListUsers returns the configured failure for authentication user lookups.
 func (d memoMarkdownFailingAuthDriver) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User, error) {
-	if d.listUsersErr != nil {
+	if d.listUsersErr != nil && find != nil && find.ID != nil && *find.ID == d.failUserID {
 		return nil, d.listUsersErr
 	}
 	return d.Driver.ListUsers(ctx, find)
