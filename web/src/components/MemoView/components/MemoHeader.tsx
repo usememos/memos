@@ -60,16 +60,16 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showC
 
   // While the card edits in place, the header keeps only identity. The time, visibility
   // and Space show once, in their editable form, in the session below (its timestamp row
-  // and audience menu), and reacting or opening the action menu makes no sense mid-edit.
+  // and audience menu); reacting or opening the action menu makes no sense mid-edit, and
+  // the "new" mark is for finding the memo in the list, not for the person editing it.
   // With no identity to show, the row goes and the session's timestamp row takes its place.
   if (isEditing) {
-    if (!showsCreator && !isNew) return null;
+    if (!showsCreator || !creator) return null;
     return (
       <div className="flex h-6 w-full items-center gap-2">
         <div data-slot="memo-header-meta" className="flex min-w-0 items-center gap-1.5 overflow-hidden">
-          {showsCreator && creator && <CreatorDisplay creator={creator} withSeparator={false} />}
+          <CreatorDisplay creator={creator} withSeparator={false} />
         </div>
-        {isNew && <NewBadge />}
       </div>
     );
   }
