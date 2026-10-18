@@ -361,7 +361,12 @@
     "layout-list-description": "Una sola columna d'amplada de lectura",
     "on-this-memo": "En aquesta nota",
     "parent-memo": "Nota principal",
-    "view-options": "Opcions de visualització"
+    "view-options": "Opcions de visualització",
+    "sensitive-content": "Sensitive content",
+    "split-view": "Split view",
+    "split-view-description": "Memo list beside the open memo",
+    "split-view-list": "Memo list",
+    "split-view-untitled": "No text"
   },
   "message": {
     "archived-successfully": "Arxivat correctament",

@@ -399,7 +399,12 @@
     "layout-list-description": "En enkelt kolonne med læsebredde",
     "on-this-memo": "På dette notat",
     "parent-memo": "Overordnet notat",
-    "view-options": "Visningsmuligheder"
+    "view-options": "Visningsmuligheder",
+    "sensitive-content": "Sensitive content",
+    "split-view": "Split view",
+    "split-view-description": "Memo list beside the open memo",
+    "split-view-list": "Memo list",
+    "split-view-untitled": "No text"
   },
   "message": {
     "archived-successfully": "Arkiveret",

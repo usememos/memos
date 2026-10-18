@@ -361,7 +361,12 @@
     "layout-list-description": "Jedan stupac širine za čitanje",
     "on-this-memo": "Na ovom podsjetniku",
     "parent-memo": "Nadređeni podsjetnik",
-    "view-options": "Opcije prikaza"
+    "view-options": "Opcije prikaza",
+    "sensitive-content": "Sensitive content",
+    "split-view": "Split view",
+    "split-view-description": "Memo list beside the open memo",
+    "split-view-list": "Memo list",
+    "split-view-untitled": "No text"
   },
   "message": {
     "archived-successfully": "Uspješno arhivirano",
