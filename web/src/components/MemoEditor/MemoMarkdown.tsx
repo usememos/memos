@@ -1,7 +1,7 @@
 import type { Editor, EditorMode, Extension } from "@usememos/editor";
 import { MarkdownEditor, type MarkdownEditorProps } from "@usememos/editor/react";
 import "@usememos/editor/style.css";
-import { type Ref, useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { type Ref, useCallback, useMemo, useState } from "react";
 import { MEMO_EDITOR_THEME, MEMO_MARKDOWN, memoEditorLabels, memoExtensions, memoResolveUrl } from "@/lib/memo-markdown";
 import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import { useTranslate } from "@/utils/i18n";
@@ -40,16 +40,6 @@ export interface MemoMarkdownProps {
   slashMenu?: MarkdownEditorProps["slashMenu"];
   className?: string;
 }
-
-// A memo with a Mermaid diagram draws it in the page's color scheme; a new scheme draws
-// the diagrams again.
-const MERMAID_FENCE = /^ {0,3}(?:`{3,}|~{3,})[ \t]*mermaid\b/im;
-const subscribeColorScheme = (onChange: () => void) => {
-  const observer = new MutationObserver(onChange);
-  observer.observe(document.documentElement, { attributes: true, attributeFilter: ["style"] });
-  return () => observer.disconnect();
-};
-const getColorScheme = () => document.documentElement.style.colorScheme;
 
 const assignRef = <T,>(ref: Ref<T> | undefined, value: T) => {
   if (typeof ref === "function") ref(value);
@@ -102,14 +92,6 @@ export const MemoMarkdown = (props: MemoMarkdownProps) => {
   );
   const labels = useMemo(() => memoEditorLabels(t), [t]);
   const resolveUrl = useMemo(() => memoResolveUrl(attachments), [attachments]);
-  const colorScheme = useSyncExternalStore(subscribeColorScheme, getColorScheme, () => "");
-  const drawnScheme = useRef(colorScheme);
-  useEffect(() => {
-    if (drawnScheme.current === colorScheme) return;
-    drawnScheme.current = colorScheme;
-    if (MERMAID_FENCE.test(value)) editor?.refreshViews("code:mermaid");
-  }, [colorScheme, editor, value]);
-
   return (
     <MarkdownEditor
       ref={attach}

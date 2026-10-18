@@ -117,26 +117,32 @@ const codeHighlight = (): Extension => ({
   },
 });
 
-/** Mermaid diagrams for ```mermaid code blocks. The code shows until the diagram is drawn, and stays if it fails. */
-const renderMermaid: SyntaxView = (source, element) => {
+/**
+ * Mermaid diagrams for ```mermaid code blocks, drawn by Pele: the diagram types load on
+ * first use, the SVG takes its colors from the `.pele` variables in index.css, so a new
+ * color scheme needs no redraw, and the layout adapts to the memo's width. The code
+ * shows until the diagram is drawn, and stays if it fails.
+ */
+const renderDiagram: SyntaxView = (source, element) => {
   const pre = document.createElement("pre");
   pre.textContent = source;
   element.appendChild(pre);
   return (async () => {
-    const { default: mermaid } = await import("mermaid");
+    const { PeleError, renderAsync } = await import("pele/lazy");
     await document.fonts?.ready;
-    mermaid.initialize({
-      startOnLoad: false,
-      theme: document.documentElement.style.colorScheme === "dark" ? "dark" : "default",
-      securityLevel: "strict",
-      fontFamily: getComputedStyle(document.body).fontFamily || "sans-serif",
-      suppressErrorRendering: true,
-    });
+    const style = getComputedStyle(element);
     try {
-      const { svg } = await mermaid.render(`mermaid-${Math.random().toString(36).slice(2)}`, source);
-      element.classList.add("mermaid-diagram");
+      const { svg } = await renderAsync(source, {
+        fontFamily: style.fontFamily || "sans-serif",
+        fontFamilyMono: style.getPropertyValue("--font-mono").trim() || "monospace",
+        maxWidth: element.clientWidth || undefined,
+        // A memo column is narrow; the diagram shrinks to fit, but keeps the direction its author wrote.
+        autoDirection: false,
+        idPrefix: `diagram-${Math.random().toString(36).slice(2)}`,
+      });
       element.innerHTML = svg;
-    } catch {
+    } catch (error) {
+      if (!(error instanceof PeleError)) throw error;
       return false;
     }
   })();
@@ -212,8 +218,8 @@ interface MemoExtensionOptions {
 /**
  * The extensions every memo surface reads with, the composer and the memo view
  * alike: math (KaTeX, loaded on demand), footnotes, #tags and @mentions,
- * highlighted code, Mermaid diagrams and sanitized raw HTML. Everything the
- * editor renders shows its source at the caret while editing.
+ * highlighted code, Mermaid diagrams (drawn by Pele) and sanitized raw HTML.
+ * Everything the editor renders shows its source at the caret while editing.
  */
 export const memoExtensions = (options: MemoExtensionOptions = {}): Extension[] => [
   math({ render: renderMath }),
@@ -221,7 +227,7 @@ export const memoExtensions = (options: MemoExtensionOptions = {}): Extension[] 
   tags(options.tags),
   mentions(options.mentions),
   codeHighlight(),
-  { name: "memoViews", views: { "code:mermaid": renderMermaid, html: renderHtml } },
+  { name: "memoViews", views: { "code:mermaid": renderDiagram, html: renderHtml } },
 ];
 
 /** Images load from relative URLs and https only, as memos' sanitizer allowed; anything else is dropped. */

@@ -39,6 +39,20 @@
 }
 
 @layer components {
+  /* Mermaid diagrams drawn by Pele take the theme's colors; a new scheme recolors them live. */
+  .pele {
+    --pele-bg: var(--card);
+    --pele-fg: var(--foreground);
+    --pele-muted: var(--muted-foreground);
+    --pele-line: var(--foreground);
+    --pele-surface: var(--muted);
+    --pele-surface-alt: var(--accent);
+    --pele-border: var(--border);
+    --pele-accent: var(--primary);
+    --pele-critical: var(--destructive);
+    --pele-radius: calc(var(--radius) - 2px);
+  }
+
   @media (prefers-reduced-motion: no-preference) {
     .memos-logo .memos-mark {
       transition: transform 180ms ease-out;
