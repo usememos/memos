@@ -21,7 +21,6 @@
     "api-docs": "API 文档",
     "api-docs-note": "REST 与 gRPC 参考",
     "build": "构建信息",
-    "commit": "提交",
     "demo": "演示",
     "description": "一个开源、自托管的空间，记录你的笔记、灵感和日常思绪。",
     "distribution": "发行版本",

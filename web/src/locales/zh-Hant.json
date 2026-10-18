@@ -3,7 +3,6 @@
     "api-docs": "API 文件",
     "api-docs-note": "REST 與 gRPC 參考",
     "build": "建置資訊",
-    "commit": "提交",
     "demo": "示範",
     "description": "一個開源、自架的空間，記錄你的筆記、靈感和日常思緒。",
     "distribution": "發行版本",

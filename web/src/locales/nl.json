@@ -6,7 +6,6 @@
     "api-docs": "API Documentatie",
     "api-docs-note": "REST- en gRPC-referentie",
     "build": "Bouwen",
-    "commit": "Commit",
     "demo": "Demo",
     "description": "Een opensourceplek op je eigen server voor je notities, ideeën en dagelijkse gedachten.",
     "distribution": "Distributie",

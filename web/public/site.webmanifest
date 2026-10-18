@@ -1,7 +1,7 @@
 {
   "name": "Memos",
   "short_name": "Memos",
-  "description": "Your own timeline for quick notes, private by default.",
+  "description": "A timeline for your thoughts. Just type. It stays yours.",
   "icons": [
     { "src": "/android-chrome-192x192.png?v=celadon", "sizes": "192x192", "type": "image/png" },
     { "src": "/android-chrome-512x512.png?v=celadon", "sizes": "512x512", "type": "image/png" }

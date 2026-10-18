@@ -6,7 +6,6 @@
     "api-docs": "API Dokumentit",
     "api-docs-note": "REST- ja gRPC-viite",
     "build": "Rakentaminen",
-    "commit": "Commit",
     "demo": "Demo",
     "description": "Avoimen lähdekoodin tila omalla palvelimellasi muistiinpanoille, ideoille ja arjen ajatuksille.",
     "distribution": "Jakelu",

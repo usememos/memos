@@ -3,7 +3,6 @@
     "api-docs": "APIドキュメント",
     "api-docs-note": "RESTとgRPCのリファレンス",
     "build": "ビルド",
-    "commit": "コミット",
     "demo": "デモ",
     "description": "メモやアイデア、日々の思いを残すための、オープンソースでセルフホストできる場所。",
     "distribution": "ディストリビューション",

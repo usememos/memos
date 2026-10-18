@@ -3,7 +3,6 @@
     "api-docs": "API-dokumentasjon",
     "api-docs-note": "Referanse for REST og gRPC",
     "build": "Bygg",
-    "commit": "Innsjekking",
     "demo": "Demo",
     "description": "Ein stad for notata, ideane og kvardagstankane dine, med open kjeldekode og drift på eigen tenar.",
     "distribution": "Distribusjon",

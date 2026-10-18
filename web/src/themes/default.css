@@ -33,7 +33,9 @@
   --font-sans:
     ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  /* The wordmark face: Source Serif where installed, then serifs of a similar transitional cut. */
+  --font-serif:
+    "Source Serif 4", "Source Serif Pro", "Source Serif", Charter, "Iowan Old Style", Georgia, Cambria, "Times New Roman", Times, serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --radius: 0.5rem;
   --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);

@@ -51,14 +51,12 @@ const About = () => {
   const releaseTag = getReleaseTag(profile.version);
   const releaseUrl = releaseTag ? `${GITHUB_RELEASE_URL_PREFIX}${releaseTag}` : "";
   const versionLabel = releaseTag ?? profile.version;
-  const hasCommitSha = isCommitSha(profile.commit);
-  const commitUrl = hasCommitSha ? `${GITHUB_COMMIT_URL_PREFIX}${profile.commit}` : "";
-  const shortCommit = hasCommitSha ? profile.commit.slice(0, 7) : "";
+  // The version chip is the one place for build identity: a release links to its
+  // tag, and a development build such as 26.10.18-dev.3bea6df links to its commit.
+  const commitUrl = isCommitSha(profile.commit) ? `${GITHUB_COMMIT_URL_PREFIX}${profile.commit}` : "";
+  const versionUrl = releaseUrl || commitUrl;
 
   const buildRows: { label: string; value: React.ReactNode }[] = [];
-  if (shortCommit) {
-    buildRows.push({ label: t("about.commit"), value: <Chip href={commitUrl}>{shortCommit}</Chip> });
-  }
   if (isCustomBranded) {
     buildRows.push({
       label: t("about.distribution"),
@@ -90,7 +88,7 @@ const About = () => {
               {(profile.version || profile.demo) && (
                 <div className="flex min-w-0 flex-wrap items-center gap-2.5">
                   {profile.version && (
-                    <Chip href={releaseUrl || undefined}>
+                    <Chip href={versionUrl || undefined}>
                       <span className="sr-only">{t("common.version")} </span>
                       {versionLabel}
                     </Chip>
@@ -99,13 +97,17 @@ const About = () => {
                 </div>
               )}
             </div>
-            <p className="mt-6 text-4xl leading-[1.15] tracking-tight wrap-anywhere text-foreground @min-[60rem]:text-[3.25rem]">
-              {customProfile?.description || (
-                <>
-                  <span className="block">Your thoughts, your data,</span> <span className="block">shared on your terms.</span>
-                </>
-              )}
-            </p>
+            {/* The tagline sizes to its own column so neither sentence ever breaks mid-line. */}
+            <div className="@container mt-6">
+              <p className="text-[length:clamp(1.875rem,13cqi,3.25rem)] leading-[1.15] tracking-tight wrap-anywhere text-foreground">
+                {customProfile?.description || (
+                  <>
+                    <span className="block whitespace-nowrap">Seconds to write.</span>{" "}
+                    <span className="block whitespace-nowrap">Yours to keep.</span>
+                  </>
+                )}
+              </p>
+            </div>
             <p className="mt-6 max-w-md text-base leading-relaxed text-muted-foreground @min-[60rem]:text-lg">{t("about.description")}</p>
 
             {buildRows.length > 0 && (

@@ -21,7 +21,6 @@
     "api-docs": "API Belgeleri",
     "api-docs-note": "REST ve gRPC başvuru kaynağı",
     "build": "Derleme",
-    "commit": "Commit",
     "demo": "Demo",
     "description": "Notlarınız, fikirleriniz ve günlük düşünceleriniz için kendi sunucunuzda barındırabileceğiniz açık kaynaklı bir alan.",
     "distribution": "Dağıtım",

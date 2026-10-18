@@ -6,7 +6,6 @@
     "api-docs": "Documentation API",
     "api-docs-note": "Référence REST et gRPC",
     "build": "Compiler",
-    "commit": "Commit",
     "demo": "Démo",
     "description": "Un espace libre et auto-hébergé pour vos notes, vos idées et vos pensées du quotidien.",
     "distribution": "Distribution",

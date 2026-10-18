@@ -6,7 +6,6 @@
     "api-docs": "API 문서",
     "api-docs-note": "REST 및 gRPC 참조",
     "build": "빌드",
-    "commit": "커밋",
     "demo": "데모",
     "description": "메모, 아이디어, 일상의 생각을 위한 오픈 소스 셀프 호스팅 공간입니다.",
     "distribution": "배포",

@@ -6,7 +6,6 @@
     "api-docs": "API Dokumenter",
     "api-docs-note": "REST- og gRPC-reference",
     "build": "Bygg",
-    "commit": "Commit",
     "demo": "Demo",
     "description": "Et sted med åben kildekode på din egen server til dine noter, idéer og hverdagstanker.",
     "distribution": "Distribution",

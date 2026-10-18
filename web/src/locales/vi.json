@@ -6,7 +6,6 @@
     "api-docs": "API Tài liệu",
     "api-docs-note": "Tài liệu tham khảo REST và gRPC",
     "build": "Xây dựng",
-    "commit": "Commit",
     "demo": "Bản demo",
     "description": "Một không gian mã nguồn mở, tự lưu trữ cho ghi chú, ý tưởng và suy nghĩ hằng ngày của bạn.",
     "distribution": "Phân phối",

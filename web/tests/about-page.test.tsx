@@ -46,13 +46,13 @@ describe("<About>", () => {
     document.documentElement.removeAttribute("data-theme");
   });
 
-  it("renders the identity hero with linked version and commit chips", () => {
+  it("renders the identity hero with a linked version chip", () => {
     renderAbout();
 
     expect(screen.getByRole("heading", { name: "Memos" })).toBeInTheDocument();
     expect(document.querySelector(".memos-mark")).toHaveAttribute("fill", "currentColor");
     expect(document.querySelector(".memos-mark")).toHaveAttribute("height", "48");
-    expect(screen.getByText(/Your thoughts, your data/i)).toBeInTheDocument();
+    expect(screen.getByText(/Seconds to write/i)).toBeInTheDocument();
     expect(screen.getByText("about.description")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Version\s*v0\.25\.0/ })).toHaveAttribute(
       "href",
@@ -61,11 +61,21 @@ describe("<About>", () => {
     expect(screen.getByRole("heading", { name: "Memos" }).parentElement).toContainElement(
       screen.getByRole("link", { name: /Version\s*v0\.25\.0/ }),
     );
-    expect(screen.getByRole("link", { name: "0123456" })).toHaveAttribute(
+    expect(screen.queryByRole("link", { name: "0123456" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "about.build" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "MIT" })).not.toBeInTheDocument();
+  });
+
+  it("links a development version to its commit instead of repeating it", () => {
+    mockInstance.profile.version = "26.10.18-dev.0123456";
+
+    renderAbout();
+
+    expect(screen.getByRole("link", { name: /Version\s*26\.10\.18-dev\.0123456/ })).toHaveAttribute(
       "href",
       "https://github.com/usememos/memos/commit/0123456789abcdef0123456789abcdef01234567",
     );
-    expect(screen.queryByRole("link", { name: "MIT" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "about.build" })).not.toBeInTheDocument();
   });
 
   it("links to the project homepage, docs, API docs, GitHub, and Web Clipper", () => {
@@ -134,7 +144,7 @@ describe("<About>", () => {
 
     expect(screen.getByRole("heading", { name: "Team Notes" })).toBeInTheDocument();
     expect(screen.getByText("Our shared scratchpad.")).toBeInTheDocument();
-    expect(screen.queryByText(/Your thoughts, your data/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Seconds to write/i)).not.toBeInTheDocument();
     expect(document.querySelector("img")).toHaveAttribute("src", "/custom-logo.png");
     expect(screen.getByText("Powered by Memos")).toBeInTheDocument();
   });
