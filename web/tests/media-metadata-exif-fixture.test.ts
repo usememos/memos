@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { mediaMetadataService } from "@/components/MemoEditor/services/mediaMetadataService";
+import { mediaMetadataService } from "@/components/MemoEditor/edit/services/mediaMetadataService";
 
 describe("mediaMetadataService EXIF fixture", () => {
   beforeEach(() => {

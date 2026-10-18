@@ -19,7 +19,12 @@ export interface MemoViewContextValue {
   readonly: boolean;
   showBlurredContent: boolean;
   blurred: boolean;
+  /** Whether the card shows the memo's editing session in place of its body. */
+  isEditing: boolean;
   openEditor: () => void;
+  closeEditor: () => void;
+  /** The session reports focus mode so the card's layout can let it take the viewport. */
+  onEditorFocusModeChange: (isFocusMode: boolean) => void;
   toggleBlurVisibility: () => void;
   openPreview: (items: string | string[] | PreviewMediaItem[], index?: number) => void;
 }

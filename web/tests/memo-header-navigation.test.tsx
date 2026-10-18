@@ -7,6 +7,7 @@ import MemoHeader from "@/components/MemoView/components/MemoHeader";
 const state = vi.hoisted(() => ({
   creator: undefined as { username: string; displayName: string; avatarUrl: string } | undefined,
   currentUser: undefined as { name: string } | undefined,
+  isEditing: false,
 }));
 
 vi.mock("@/components/RelativeTime", () => ({
@@ -59,6 +60,7 @@ vi.mock("@/components/MemoView/MemoViewContext", () => ({
     parentPage: "/explore?filter=tagSearch%3Awork",
     isArchived: false,
     readonly: false,
+    isEditing: state.isEditing,
     openEditor: vi.fn(),
   }),
   useMemoViewDerived: () => ({
@@ -87,6 +89,31 @@ describe("MemoHeader navigation", () => {
   beforeEach(() => {
     state.creator = undefined;
     state.currentUser = undefined;
+    state.isEditing = false;
+  });
+
+  it.each([false, true])("keeps only the creator while the card edits in place (showCreator=%s)", (showCreator) => {
+    state.currentUser = { name: "users/alice" };
+    state.creator = { username: "alice", displayName: "Alice", avatarUrl: "" };
+    state.isEditing = true;
+
+    const { container } = render(
+      <MemoryRouter>
+        <MemoHeader showCreator={showCreator} showVisibility showSpace />
+      </MemoryRouter>,
+    );
+
+    // The session below shows the editable time, visibility and Space; reacting and the menu wait.
+    expect(screen.queryByRole("link", { name: "time" })).not.toBeInTheDocument();
+    expect(screen.queryByTestId("memo-space")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "add-reaction" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "memo-actions" })).not.toBeInTheDocument();
+    if (showCreator) {
+      expect(screen.getByRole("link", { name: /Alice/ })).toBeInTheDocument();
+      expect(container).not.toHaveTextContent("·");
+    } else {
+      expect(container).toBeEmptyDOMElement();
+    }
   });
 
   it("uses one compact interaction surface for memo header actions", () => {

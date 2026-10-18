@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { useResolvedUsersByNames } from "@/components/MemoContent/MentionResolutionContext";
 import { memoServiceClient } from "@/connect";
+import { useResolvedUsersByNames } from "@/contexts/MentionResolutionContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { memoKeys } from "@/hooks/useMemoQueries";
 import type { Memo, Reaction } from "@/types/proto/api/memo_service_pb";

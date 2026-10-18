@@ -2,14 +2,15 @@ import { create } from "@bufbuild/protobuf";
 import { render, waitFor } from "@testing-library/react";
 import { createRef } from "react";
 import { describe, expect, it, vi } from "vitest";
-import Editor from "@/components/MemoEditor/Editor";
-import type { EditorController } from "@/components/MemoEditor/types/editorController";
+import Editor from "@/components/MemoEditor/edit/Editor";
+import type { EditorController } from "@/components/MemoEditor/edit/types/editorController";
 import { UserSetting_TagsSettingSchema } from "@/types/proto/api/user_service_pb";
 import { ColorSchema } from "@/types/proto/google/type/color_pb";
 
 const queries = vi.hoisted(() => ({
   useTagCounts: vi.fn(() => ({ data: {} })),
   users: new Map<string, unknown>(),
+  tagsSetting: undefined as unknown,
 }));
 
 vi.mock("@/hooks/useUserQueries", () => ({
@@ -17,7 +18,9 @@ vi.mock("@/hooks/useUserQueries", () => ({
   useUsersByUsernames: (usernames: string[]) => ({
     data: usernames.length ? new Map(usernames.map((username) => [username, queries.users.get(username)])) : undefined,
   }),
+  userDetailQueryOptions: () => ({}),
 }));
+vi.mock("@/contexts/AuthContext", () => ({ useAuth: () => ({ userTagsSetting: queries.tagsSetting }) }));
 
 const baseProps = {
   className: "x",
@@ -89,18 +92,20 @@ describe("Editor", () => {
     expect(root?.style.getPropertyValue("--mbe-placeholder")).toBe('"有什么想法？"');
   });
 
-  it("draws tags as the memo view does, in their custom colors", async () => {
-    const tagsSetting = create(UserSetting_TagsSettingSchema, {
-      tags: { work: { backgroundColor: create(ColorSchema, { red: 1, green: 0, blue: 0 }) } },
-    });
+  it("draws tags as the memo view does, in the viewer's custom colors", async () => {
+    queries.tagsSetting = undefined;
     const { container, rerender } = render(<Editor {...baseProps} value="#work and #life" />);
     const tag = (name: string) => container.querySelector<HTMLElement>(`.mbe-tag[data-tag="${name}"]`);
     expect(tag("life")).toHaveClass("rounded-full", "border-primary");
     expect(tag("work")).not.toHaveAttribute("style");
 
-    rerender(<Editor {...baseProps} value="#work and #life" tagsSetting={tagsSetting} />);
+    queries.tagsSetting = create(UserSetting_TagsSettingSchema, {
+      tags: { work: { backgroundColor: create(ColorSchema, { red: 1, green: 0, blue: 0 }) } },
+    });
+    rerender(<Editor {...baseProps} value="#work and #life" />);
     await waitFor(() => expect(tag("work")?.getAttribute("style")).toContain("color-mix"));
     expect(tag("work")).not.toHaveClass("border-primary");
+    queries.tagsSetting = undefined;
   });
 
   it("draws mentions of people who exist as the memo view does", async () => {

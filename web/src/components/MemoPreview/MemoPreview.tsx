@@ -1,6 +1,7 @@
 import { create } from "@bufbuild/protobuf";
 import { FileIcon } from "lucide-react";
 import { useMemo } from "react";
+import { MemoContentView } from "@/components/MemoEditor/view/MemoContentView";
 import { extractMemoIdFromName } from "@/lib/resource-names";
 import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/attachment_service_pb";
@@ -9,7 +10,6 @@ import type { User } from "@/types/proto/api/user_service_pb";
 import { getAttachmentType, isMotionAttachment } from "@/utils/attachment";
 import { filterInlineManagedAttachments } from "@/utils/managed-attachment";
 import { buildAttachmentVisualItems, countLogicalAttachmentItems } from "@/utils/media-item";
-import MemoContent from "../MemoContent";
 import { MemoViewContext, type MemoViewContextValue } from "../MemoView/MemoViewContext";
 
 interface MemoPreviewProps {
@@ -34,7 +34,10 @@ const STUB_CONTEXT: MemoViewContextValue = {
   readonly: true,
   showBlurredContent: false,
   blurred: false,
+  isEditing: false,
   openEditor: () => {},
+  closeEditor: () => {},
+  onEditorFocusModeChange: () => {},
   toggleBlurVisibility: () => {},
   openPreview: () => {},
 };
@@ -134,7 +137,7 @@ const MemoPreview = ({
     // interactive clamp a full memo card gets.
     hasContent && (
       <div className="max-h-36 w-full overflow-hidden">
-        <MemoContent content={content} attachments={attachments} compact={compact} />
+        <MemoContentView content={content} attachments={attachments} compact={compact} />
       </div>
     )
   );

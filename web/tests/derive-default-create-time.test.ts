@@ -4,7 +4,7 @@ import {
   deriveDefaultCreateTimeFromFilters,
   restampDefaultCreateTime,
   withTimeOfDay,
-} from "@/components/MemoEditor/utils/deriveDefaultCreateTime";
+} from "@/components/MemoEditor/edit/utils/deriveDefaultCreateTime";
 import type { MemoFilter } from "@/contexts/MemoFilterContext";
 
 describe("deriveDefaultCreateTimeFromFilters", () => {

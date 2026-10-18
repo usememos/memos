@@ -1,15 +1,16 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useRef } from "react";
 import { describe, expect, it, vi } from "vitest";
-import { EditorContent } from "@/components/MemoEditor/components/EditorContent";
-import { EditorSuggestions, SuggestionsBar } from "@/components/MemoEditor/components/EditorSuggestions";
-import { createInitialState, EditorProvider, useEditorContext } from "@/components/MemoEditor/state";
-import type { EditorController } from "@/components/MemoEditor/types/editorController";
+import { EditorContent } from "@/components/MemoEditor/edit/components/EditorContent";
+import { EditorSuggestions, SuggestionsBar } from "@/components/MemoEditor/edit/components/EditorSuggestions";
+import { createInitialState, EditorProvider, useEditorContext } from "@/components/MemoEditor/edit/state";
+import type { EditorController } from "@/components/MemoEditor/edit/types/editorController";
 import { getMemoSuggestions, type MemoSuggestion } from "@/lib/memo-suggestions";
 import { Visibility } from "@/types/proto/api/memo_service_pb";
 
 vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
 vi.mock("@/hooks/useUserQueries", () => ({ useTagCounts: () => ({ data: {} }), useUsersByUsernames: () => ({ data: undefined }) }));
+vi.mock("@/contexts/AuthContext", () => ({ useAuth: () => ({ userTagsSetting: undefined }) }));
 
 /** A caret at `offset` in block `block`. */
 const caret = (block: number, offset: number) => ({ anchor: { block, offset }, focus: { block, offset } });

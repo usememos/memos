@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { FocusModeExitButton } from "@/components/MemoEditor/components/FocusModeOverlay";
+import { FocusModeExitButton } from "@/components/MemoEditor/edit/components/FocusModeOverlay";
 
 vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
 

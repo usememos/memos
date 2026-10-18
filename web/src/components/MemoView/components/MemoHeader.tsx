@@ -27,7 +27,7 @@ const MEMO_HEADER_ACTION_CLASSES = cn(buttonVariants({ variant: "quiet", size: "
 const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showCreator, showVisibility, showSpace }) => {
   const t = useTranslate();
 
-  const { memo, creator, currentUser, parentPage, isArchived, readonly, openEditor } = useMemoViewContext();
+  const { memo, creator, currentUser, parentPage, isArchived, readonly, isEditing, openEditor } = useMemoViewContext();
   const location = useLocation();
   const { createTime, updateTime, displayTime: memoDisplayTime, isDisplayingUpdatedTime, relativeTimeFormat } = useMemoViewDerived();
   const { newMemoName } = useNewMemo();
@@ -55,6 +55,24 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showC
         : undefined,
   };
   const spaceMetadata = showSpace && memo.space ? <MemoSpaceBadge spaceName={memo.space} /> : null;
+  const showsCreator = Boolean(showCreator && creator);
+  const isNew = memo.name === newMemoName;
+
+  // While the card edits in place, the header keeps only identity. The time, visibility
+  // and Space show once, in their editable form, in the session below (its timestamp row
+  // and audience menu); reacting or opening the action menu makes no sense mid-edit, and
+  // the "new" mark is for finding the memo in the list, not for the person editing it.
+  // With no identity to show, the row goes and the session's timestamp row takes its place.
+  if (isEditing) {
+    if (!showsCreator || !creator) return null;
+    return (
+      <div className="flex h-6 w-full items-center gap-2">
+        <div data-slot="memo-header-meta" className="flex min-w-0 items-center gap-1.5 overflow-hidden">
+          <CreatorDisplay creator={creator} withSeparator={false} />
+        </div>
+      </div>
+    );
+  }
 
   return (
     // A fixed 24px row, the height of its action squares, so the card's top edge never
@@ -63,7 +81,7 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showC
       <div className="flex min-w-0 flex-1 items-center gap-2">
         {/* The time stays visible while the creator and Space badge can shrink and truncate. */}
         <div data-slot="memo-header-meta" className="flex min-w-0 items-center gap-1.5 overflow-hidden">
-          {showCreator && creator && <CreatorDisplay creator={creator} />}
+          {showsCreator && creator && <CreatorDisplay creator={creator} />}
           <TimeDisplay
             displayTime={displayTime}
             timeTooltip={timeTooltip}
@@ -73,11 +91,7 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showC
           />
           {spaceMetadata}
         </div>
-        {memo.name === newMemoName && (
-          <span className="shrink-0 rounded-full bg-primary/10 px-1.5 py-0.5 text-2xs font-medium leading-none text-primary">
-            {t("memo.new-badge")}
-          </span>
-        )}
+        {isNew && <NewBadge />}
       </div>
 
       <div data-slot="memo-header-actions" className="flex shrink-0 select-none flex-row items-center justify-end gap-1">
@@ -103,12 +117,21 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showC
   );
 };
 
+const NewBadge = () => {
+  const t = useTranslate();
+  return (
+    <span className="shrink-0 rounded-full bg-primary/10 px-1.5 py-0.5 text-2xs font-medium leading-none text-primary">
+      {t("memo.new-badge")}
+    </span>
+  );
+};
+
 /**
  * The author on one line with the time: a 20px avatar in a 20px slot, then the name in
  * medium 13px foreground ink. It is the identity, so it carries the weight; the time after
- * it is muted.
+ * it is muted, and the separator before it goes when nothing follows.
  */
-const CreatorDisplay: React.FC<{ creator: User }> = ({ creator }) => (
+const CreatorDisplay: React.FC<{ creator: User; withSeparator?: boolean }> = ({ creator, withSeparator = true }) => (
   <>
     <Link
       className={cn(
@@ -123,9 +146,11 @@ const CreatorDisplay: React.FC<{ creator: User }> = ({ creator }) => (
       </span>
       <span className="min-w-0 truncate">{creator.displayName || creator.username}</span>
     </Link>
-    <span aria-hidden="true" className="shrink-0 text-muted-foreground/40">
-      ·
-    </span>
+    {withSeparator && (
+      <span aria-hidden="true" className="shrink-0 text-muted-foreground/40">
+        ·
+      </span>
+    )}
   </>
 );
 

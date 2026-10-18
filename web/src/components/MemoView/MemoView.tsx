@@ -1,22 +1,8 @@
-import {
-  type ComponentType,
-  forwardRef,
-  memo,
-  Suspense,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { forwardRef, memo, Suspense, useCallback, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useColumnGridUntrapped } from "@/components/ColumnGrid/ColumnGridContext";
-import { useResolvedUser } from "@/components/MemoContent/MentionResolutionContext";
-import { loadMemoEditor } from "@/components/MemoEditor/loader";
-import type { MemoEditorProps } from "@/components/MemoEditor/types";
 import { useAuth } from "@/contexts/AuthContext";
+import { useResolvedUser } from "@/contexts/MentionResolutionContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { isMemoBlurred } from "@/lib/tag";
 import { cn } from "@/lib/utils";
@@ -47,8 +33,7 @@ const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
     showSpace,
   } = props;
   const cardRef = useRef<HTMLDivElement>(null);
-  const [showEditor, setShowEditor] = useState(false);
-  const [EditorComponent, setEditorComponent] = useState<ComponentType<MemoEditorProps>>();
+  const [isEditing, setIsEditing] = useState(false);
   const [cardWidth, setCardWidth] = useState(0);
 
   const currentUser = useCurrentUser();
@@ -70,27 +55,23 @@ const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
   const toggleBlurVisibility = useCallback(() => setShowBlurredContent((prev) => !prev), []);
 
   const { previewState, openPreview, setPreviewOpen } = useImagePreview();
-  const editorHostRef = useRef<HTMLDivElement>(null);
 
   const focusMountedEditor = useCallback(() => {
-    const editorRoot = editorHostRef.current?.querySelector<HTMLElement>('.memo-editor-root[contenteditable="true"]');
-    const fallbackInput = editorHostRef.current?.querySelector<HTMLElement>("textarea, input");
+    const editorRoot = cardRef.current?.querySelector<HTMLElement>('.memo-editor-root[contenteditable="true"]');
+    const fallbackInput = cardRef.current?.querySelector<HTMLElement>("textarea, input");
     (editorRoot ?? fallbackInput)?.focus();
   }, []);
 
+  // The body edits in place: the card, its header and its frame stay, and the memo's
+  // own editing session takes the body's place until it saves or cancels.
   const openEditor = useCallback(() => {
-    if (showEditor && EditorComponent) {
+    if (isEditing) {
       focusMountedEditor();
       return;
     }
-    void loadMemoEditor()
-      .then(({ default: MemoEditor }) => {
-        setEditorComponent(() => MemoEditor);
-        setShowEditor(true);
-      })
-      .catch(() => undefined);
-  }, [EditorComponent, focusMountedEditor, showEditor]);
-  const closeEditor = useCallback(() => setShowEditor(false), []);
+    setIsEditing(true);
+  }, [focusMountedEditor, isEditing]);
+  const closeEditor = useCallback(() => setIsEditing(false), []);
 
   // The grid keys tiles by memo name (see getMemoKey), so the focused editor
   // identifies its own tile by name and untraps it for the duration.
@@ -108,10 +89,10 @@ const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
   // Release the slot when the editor closes or this card unmounts. Both calls
   // are ownership-scoped, so mounting cards never clobber another card's slot.
   useEffect(() => {
-    if (!showEditor) {
+    if (!isEditing) {
       clearUntrappedKey(memoData.name);
     }
-  }, [showEditor, memoData.name, clearUntrappedKey]);
+  }, [isEditing, memoData.name, clearUntrappedKey]);
   useEffect(() => () => clearUntrappedKey(memoData.name), [memoData.name, clearUntrappedKey]);
 
   useImperativeHandle(ref, () => ({ openEditor }), [openEditor]);
@@ -163,7 +144,10 @@ const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
       readonly,
       showBlurredContent,
       blurred,
+      isEditing,
       openEditor,
+      closeEditor,
+      onEditorFocusModeChange: handleFocusModeChange,
       toggleBlurVisibility,
       openPreview,
     }),
@@ -177,7 +161,10 @@ const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
       readonly,
       showBlurredContent,
       blurred,
+      isEditing,
       openEditor,
+      closeEditor,
+      handleFocusModeChange,
       toggleBlurVisibility,
       openPreview,
     ],
@@ -222,26 +209,7 @@ const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
     article
   );
 
-  return (
-    <MemoViewContext.Provider value={contextValue}>
-      {showEditor && EditorComponent ? (
-        <div ref={editorHostRef} className="w-full">
-          <EditorComponent
-            autoFocus
-            className="mb-2"
-            cacheKey={`inline-memo-editor-${memoData.name}`}
-            memo={memoData}
-            parentMemoName={memoData.parent || undefined}
-            onConfirm={closeEditor}
-            onCancel={closeEditor}
-            onFocusModeChange={handleFocusModeChange}
-          />
-        </div>
-      ) : (
-        memoDisplay
-      )}
-    </MemoViewContext.Provider>
-  );
+  return <MemoViewContext.Provider value={contextValue}>{memoDisplay}</MemoViewContext.Provider>;
 });
 
 MemoView.displayName = "MemoView";

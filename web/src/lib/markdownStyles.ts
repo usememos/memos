@@ -33,8 +33,8 @@ export const headingTypeClass = (level: HeadingLevel): string => headingTypeClas
 
 /**
  * Tag pill styling for the memo view. Split into two tokens so the view can swap
- * `defaultColor` for a custom tag color (MemoContent/enhance.ts). The composer
- * colors tags as text instead (MemoEditor/Editor/editor.css).
+ * `defaultColor` for a custom tag color (MemoEditor/view/MemoContentView.tsx). The composer
+ * colors tags as text instead (MemoEditor/MemoMarkdown.tsx).
  */
 export const tagStyles = {
   /** Shape, padding, and typography — always applied. */

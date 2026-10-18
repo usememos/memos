@@ -1,8 +1,7 @@
 import { create } from "@bufbuild/protobuf";
-import { FieldMaskSchema, timestampDate, timestampFromDate } from "@bufbuild/protobuf/wkt";
+import { timestampDate, timestampFromDate } from "@bufbuild/protobuf/wkt";
 import { isEqual } from "lodash-es";
 import { getEditorReferenceRelations } from "@/components/MemoMetadata/Relation/relationHelpers";
-import { memoServiceClient } from "@/connect";
 import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
 import type { Memo } from "@/types/proto/api/memo_service_pb";
@@ -85,6 +84,15 @@ function buildUpdateMask(
   return { mask, patch };
 }
 
+/** The memo operations a save runs: the memo mutation hooks, so caches follow every save. */
+export interface MemoSaveOperations {
+  /** The memo as the server has it now, to diff the draft against. */
+  getMemo: (name: string) => Promise<Memo>;
+  updateMemo: (update: Partial<Memo>, updateMask: string[]) => Promise<Memo>;
+  /** Creates a memo, or a comment on `parent`. */
+  createMemo: (memo: Memo, parent?: string) => Promise<Memo>;
+}
+
 export const memoService = {
   async save(
     state: EditorState,
@@ -95,6 +103,7 @@ export const memoService = {
       /** Runs as each local file finishes uploading, before the memo is saved. */
       onFileUploaded?: (localFile: LocalFile, attachment: Attachment) => void;
     },
+    operations: MemoSaveOperations,
   ): Promise<{ memoName: string; hasChanges: boolean; moved?: boolean }> {
     // 1. Upload local files first
     const newAttachments = await uploadService.uploadFiles(state.localFiles, options.onFileUploaded);
@@ -102,17 +111,14 @@ export const memoService = {
 
     // 2. Update existing memo
     if (options.memoName) {
-      const prevMemo = await memoServiceClient.getMemo({ name: options.memoName });
+      const prevMemo = await operations.getMemo(options.memoName);
       const { mask, patch } = buildUpdateMask(prevMemo, state, allAttachments);
 
       if (mask.size === 0) {
         return { memoName: prevMemo.name, hasChanges: false };
       }
 
-      const memo = await memoServiceClient.updateMemo({
-        memo: create(MemoSchema, patch as Record<string, unknown>),
-        updateMask: create(FieldMaskSchema, { paths: Array.from(mask) }),
-      });
+      const memo = await operations.updateMemo(patch, Array.from(mask));
       return { memoName: memo.name, hasChanges: true, moved: mask.has("space") };
     }
 
@@ -128,13 +134,7 @@ export const memoService = {
       space: options.parentMemoName ? undefined : (options.space ?? state.metadata.space),
     });
 
-    const memo = options.parentMemoName
-      ? await memoServiceClient.createMemoComment({
-          parent: options.parentMemoName,
-          comment: memoData,
-        })
-      : await memoServiceClient.createMemo({ memo: memoData });
-
+    const memo = await operations.createMemo(memoData, options.parentMemoName);
     return { memoName: memo.name, hasChanges: true };
   },
 

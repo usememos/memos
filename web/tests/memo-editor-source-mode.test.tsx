@@ -1,8 +1,9 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
-import MemoEditor from "@/components/MemoEditor";
-import { cacheService } from "@/components/MemoEditor/services";
+import { MemoEditor, preloadMemoEditing } from "@/components/MemoEditor";
+import { draftKeyFor } from "@/components/MemoEditor/edit/draftKey";
+import { cacheService } from "@/components/MemoEditor/edit/services";
 import type { MemoSuggestion } from "@/lib/memo-suggestions";
 
 vi.mock("@/utils/i18n", async (importOriginal) => ({
@@ -29,7 +30,9 @@ vi.stubGlobal(
   },
 );
 
-beforeAll(() => {
+beforeAll(async () => {
+  // The editing session loads lazily; loaded once, it renders without suspending.
+  await preloadMemoEditing();
   Element.prototype.scrollIntoView = vi.fn();
   Element.prototype.hasPointerCapture = vi.fn(() => false);
   Element.prototype.setPointerCapture = vi.fn();
@@ -42,7 +45,7 @@ const CACHE_KEY = "source-mode-test";
 const mount = (suggestions?: readonly MemoSuggestion[]) =>
   render(
     <QueryClientProvider client={new QueryClient()}>
-      <MemoEditor cacheKey={CACHE_KEY} suggestions={suggestions} />
+      <MemoEditor draft={{ scope: CACHE_KEY }} suggestions={suggestions} />
     </QueryClientProvider>,
   );
 
@@ -89,7 +92,10 @@ describe("MemoEditor source mode", () => {
     ["source", false],
   ])("offers the checklist suggestion in %s mode: %s", async (mode, offered) => {
     localStorage.setItem(MODE_KEY, JSON.stringify(mode));
-    cacheService.saveNow(cacheService.key("users/1", CACHE_KEY), { content: "Groceries", attachments: [] });
+    cacheService.saveNow(cacheService.key("users/1", draftKeyFor({ kind: "new", scope: CACHE_KEY })), {
+      content: "Groceries",
+      attachments: [],
+    });
     mount([
       { id: "tag:food", source: "view", kind: "tag", tag: "food" },
       { id: "checklist", source: "view", kind: "checklist" },

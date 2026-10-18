@@ -1,8 +1,6 @@
 import { type Extension, fileHandler, matchToken, type SuggestionAllowContext, scanTags, suggestion } from "@usememos/editor";
 import { emoji } from "@usememos/editor/emoji";
-import { memoExtensions, memoMentionOptions, memoTagOptions } from "@/lib/memo-markdown";
-import type { UserSetting_TagsSetting } from "@/types/proto/api/user_service_pb";
-import type { EditorPosition } from "../types/editorController";
+import type { EditorPosition } from "./types/editorController";
 
 /** The gesture that handed files to the editor: a drop lands at a document position, a paste has none. */
 export type EditorFileOrigin = { source: "paste" } | { source: "drop"; position: EditorPosition | null };
@@ -11,10 +9,6 @@ export interface EditorExtensionsOptions {
   /** Known tags, read when the popup asks for items. */
   getTags: () => string[];
   onFiles: (files: File[], origin: EditorFileOrigin) => void;
-  /** The user's tag settings, read when tags are drawn, for their custom colors. */
-  getTagsSetting: () => UserSetting_TagsSetting | undefined;
-  /** Whether a mentioned username belongs to a user, read when mentions are drawn. */
-  isMentionResolved: (username: string) => boolean;
   /** Accessible name of the emoji popup. */
   emojiLabel: string;
 }
@@ -57,16 +51,9 @@ export const allowTagSuggestion = ({ excluded, explicit, query, textBefore }: Su
   return !(query === "" && /(^|\n)[ \t]*$/.test(textBefore));
 };
 
-export function buildEditorExtensions({
-  getTags,
-  onFiles,
-  getTagsSetting,
-  isMentionResolved,
-  emojiLabel,
-}: EditorExtensionsOptions): Extension[] {
+/** What only the composer adds to the memo syntax MemoMarkdown already reads: autocomplete and file handling. */
+export function buildEditorExtensions({ getTags, onFiles, emojiLabel }: EditorExtensionsOptions): Extension[] {
   return [
-    // Tags and mentions look the same as in the memo view.
-    ...memoExtensions({ tags: memoTagOptions(getTagsSetting), mentions: memoMentionOptions(isMentionResolved) }),
     // The popup opens exactly where tags are highlighted: the matcher is built
     // from the same scanner as tags(). A pick writes "#work/planning ".
     suggestion({

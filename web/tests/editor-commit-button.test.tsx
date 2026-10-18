@@ -1,10 +1,10 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { createInitialState, EditorProvider, useEditorContext } from "@/components/MemoEditor/state";
-import { EditorToolbar } from "@/components/MemoEditor/Toolbar/EditorToolbar";
+import { createInitialState, EditorProvider, useEditorContext } from "@/components/MemoEditor/edit/state";
+import { EditorToolbar } from "@/components/MemoEditor/edit/Toolbar/EditorToolbar";
 
-vi.mock("@/components/MemoEditor/Toolbar/InsertMenu", () => ({ default: () => null }));
-vi.mock("@/components/MemoEditor/Toolbar/AudienceMenu", () => ({ default: () => null }));
+vi.mock("@/components/MemoEditor/edit/Toolbar/InsertMenu", () => ({ default: () => null }));
+vi.mock("@/components/MemoEditor/edit/Toolbar/AudienceMenu", () => ({ default: () => null }));
 vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
 
 let dispatchSaving: ((saving: boolean) => void) | undefined;

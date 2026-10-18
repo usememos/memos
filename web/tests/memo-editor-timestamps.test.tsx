@@ -2,10 +2,11 @@ import { create } from "@bufbuild/protobuf";
 import { timestampFromDate } from "@bufbuild/protobuf/wkt";
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { TimestampPopover } from "@/components/MemoEditor/components/TimestampPopover";
-import { memoService } from "@/components/MemoEditor/services/memoService";
-import { createInitialState, EditorProvider, useEditorContext } from "@/components/MemoEditor/state";
+import { TimestampPopover } from "@/components/MemoEditor/edit/components/TimestampPopover";
+import { memoService } from "@/components/MemoEditor/edit/services/memoService";
+import { createInitialState, EditorProvider, useEditorContext } from "@/components/MemoEditor/edit/state";
 import { type Memo, MemoSchema } from "@/types/proto/api/memo_service_pb";
+import { clientSaveOperations as ops } from "./helpers/memo-save-operations";
 
 const clients = vi.hoisted(() => ({ getMemo: vi.fn(), updateMemo: vi.fn() }));
 vi.mock("@/connect", () => ({
@@ -57,7 +58,7 @@ describe("memo editor timestamps", () => {
     fireEvent.keyDown(input, { key: "Escape" });
     await waitFor(() => expect(screen.queryByRole("textbox")).not.toBeInTheDocument());
 
-    await memoService.save(editor.getState(), { memoName: memo.name });
+    await memoService.save(editor.getState(), { memoName: memo.name }, ops);
 
     expect(clients.updateMemo).toHaveBeenCalledOnce();
     const request = clients.updateMemo.mock.calls[0][0];
@@ -77,14 +78,14 @@ describe("memo editor timestamps", () => {
     fireEvent.blur(input);
     expect(input).toHaveAttribute("data-invalid", "true");
     expect(editor.getState().timestamps.createTime).toEqual(originalCreate);
-    await memoService.save(editor.getState(), { memoName: memo.name });
+    await memoService.save(editor.getState(), { memoName: memo.name }, ops);
     expect(clients.updateMemo).not.toHaveBeenCalled();
   });
 
   it("automatically updates the modification time for content edits", async () => {
     const memo = renderEditor();
     const state = { ...editor.getState(), content: "Changed content" };
-    await memoService.save(state, { memoName: memo.name });
+    await memoService.save(state, { memoName: memo.name }, ops);
     const request = clients.updateMemo.mock.calls[0][0];
     expect(request.updateMask.paths).toEqual(["content", "update_time"]);
     expect(request.memo.updateTime).toBeUndefined();
@@ -96,7 +97,7 @@ describe("memo editor timestamps", () => {
     const input = screen.getAllByRole("textbox")[1];
     fireEvent.change(input, { target: { value: "2024-02-29 12:34:56" } });
     // Saving must see the edit even if the input has not blurred yet.
-    await memoService.save({ ...editor.getState(), content: "Changed content" }, { memoName: memo.name });
+    await memoService.save({ ...editor.getState(), content: "Changed content" }, { memoName: memo.name }, ops);
     const request = clients.updateMemo.mock.calls[0][0];
     expect(request.updateMask.paths).toEqual(["content", "update_time"]);
     expect(request.memo.updateTime).toEqual(timestampFromDate(customTime));

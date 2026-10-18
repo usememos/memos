@@ -21,12 +21,12 @@ vi.mock("@/utils/i18n", () => ({
   useTranslate: () => (key: string) => key,
 }));
 
-vi.mock("@/components/MemoContent/MentionResolutionContext", () => ({
+vi.mock("@/contexts/MentionResolutionContext", () => ({
   useResolvedMentionUsernames: () => new Set<string>(),
 }));
 
-vi.mock("@/components/MemoContent", () => ({
-  default: ({ content }: { content: string }) => <div>{content}</div>,
+vi.mock("@/components/MemoEditor/MemoEditor", () => ({
+  MemoEditor: ({ name }: { name: string }) => <div>{mockState.memo.content ?? name}</div>,
 }));
 
 vi.mock("@/hooks/useMemoQueries", () => ({

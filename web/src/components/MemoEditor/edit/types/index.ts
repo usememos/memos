@@ -8,10 +8,10 @@ export type {
   EditorSourceModeToggle,
   EditorToolbarProps,
   EditorViewToggles,
+  EditSessionProps,
   FocusModeExitButtonProps,
   FocusModeOverlayProps,
   InsertMenuProps,
-  MemoEditorProps,
 } from "./components";
 export type { EditorController } from "./editorController";
 export type { LocationState } from "./insertMenu";

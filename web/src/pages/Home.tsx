@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import MemoEditor from "@/components/MemoEditor";
-import { deriveDefaultCreateTimeFromFilters } from "@/components/MemoEditor/utils/deriveDefaultCreateTime";
+import { MemoEditor } from "@/components/MemoEditor";
+import { deriveDefaultCreateTimeFromFilters } from "@/components/MemoEditor/edit/utils/deriveDefaultCreateTime";
 import MemoView from "@/components/MemoView";
 import PagedMemoList, { getMemoKey } from "@/components/PagedMemoList";
 import { useAuth } from "@/contexts/AuthContext";
@@ -11,7 +11,6 @@ import { useSpaceContext } from "@/contexts/SpaceContext";
 import { useMemoFilters, useMemoSorting } from "@/hooks";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoSuggestions } from "@/hooks/useMemoSuggestions";
-import { spaceScopedCacheKey } from "@/lib/resource-names";
 import { State } from "@/types/proto/api/common_pb";
 import { Memo } from "@/types/proto/api/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
@@ -25,9 +24,6 @@ const Home = () => {
   const { filters } = useMemoFilterContext();
   const { memoFilter: contextFilter, selectedSpaceName, creatorUsername } = useSpaceContext();
   const defaultCreateTime = useMemo(() => deriveDefaultCreateTimeFromFilters(filters), [filters]);
-  // Doubles as the remount key: the draft cache only reloads on mount, so the editor
-  // has to be rebuilt for the new Space rather than just re-pointed at another cache.
-  const editorCacheKey = spaceScopedCacheKey("home-memo-editor", selectedSpaceName);
 
   const memoFilter = useMemoFilters({
     includeMemoViews: true,
@@ -67,13 +63,11 @@ const Home = () => {
 
             return (
               <MemoEditor
-                key={editorCacheKey}
+                // Each Space keeps its own Home draft; the editor restarts when the Space changes.
+                draft={{ scope: "home", space: selectedSpaceName, createTime: defaultCreateTime }}
                 autoFocus={claimHomeAutoFocus}
                 className={useGrid ? undefined : "mb-2"}
-                cacheKey={editorCacheKey}
                 placeholder={t("editor.any-thoughts")}
-                defaultCreateTime={defaultCreateTime}
-                defaultSpace={selectedSpaceName}
                 suggestions={suggestions}
               />
             );

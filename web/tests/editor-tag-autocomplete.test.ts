@@ -1,6 +1,6 @@
 import { matchToken, type SuggestionAllowContext, scanTags } from "@usememos/editor";
 import { describe, expect, it } from "vitest";
-import { allowTagSuggestion, rankTags } from "@/components/MemoEditor/Editor/extensions";
+import { allowTagSuggestion, rankTags } from "@/components/MemoEditor/edit/extensions";
 
 const match = matchToken(scanTags);
 

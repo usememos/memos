@@ -1,7 +1,7 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import MemoContent from "@/components/MemoContent";
+import { MemoContentView } from "@/components/MemoEditor/view/MemoContentView";
 import { highlightLoadedCode, loadHighlighter } from "@/lib/code-highlight";
 
 const state = vi.hoisted(() => ({
@@ -28,7 +28,7 @@ vi.mock("@/contexts/MemoFilterContext", async (importOriginal) => ({
 }));
 
 vi.mock("@/contexts/ViewContext", () => ({ useLinkPreviewEnabled: () => state.linkPreview }));
-vi.mock("@/components/MemoContent/MentionResolutionContext", () => ({ useResolvedMentionUsernames: () => state.resolved }));
+vi.mock("@/contexts/MentionResolutionContext", () => ({ useResolvedMentionUsernames: () => state.resolved }));
 vi.mock("@/hooks/useNavigateTo", () => ({ default: () => state.navigateTo }));
 vi.mock("@/hooks/useNearViewport", () => ({ useNearViewport: () => ({ ref: () => {}, isNearViewport: true }) }));
 vi.mock("@/hooks/useMemoQueries", () => ({
@@ -38,10 +38,10 @@ vi.mock("@/hooks/useMemoQueries", () => ({
   }),
 }));
 
-const renderMemo = (content: string, props: Partial<React.ComponentProps<typeof MemoContent>> = {}, path = "/") =>
+const renderMemo = (content: string, props: Partial<React.ComponentProps<typeof MemoContentView>> = {}, path = "/") =>
   render(
     <MemoryRouter initialEntries={[path]}>
-      <MemoContent content={content} memoName="memos/1" {...props} />
+      <MemoContentView content={content} memoName="memos/1" {...props} />
     </MemoryRouter>,
   );
 

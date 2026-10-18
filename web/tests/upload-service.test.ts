@@ -6,7 +6,7 @@ import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
 const { uploadAttachment } = vi.hoisted(() => ({ uploadAttachment: vi.fn() }));
 vi.mock("@/connect", () => ({ attachmentServiceClient: { uploadAttachment } }));
 
-import { uploadService } from "@/components/MemoEditor/services/uploadService";
+import { uploadService } from "@/components/MemoEditor/edit/services/uploadService";
 
 const attachment = create(AttachmentSchema, { name: "attachments/uploaded" });
 const localFile = (content: string) => ({

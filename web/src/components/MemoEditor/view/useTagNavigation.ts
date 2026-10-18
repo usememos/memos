@@ -1,8 +1,8 @@
 import { useLocation } from "react-router-dom";
+import { isMemoResourcePath, withMemoFilter } from "@/components/MemoView/navigation";
 import { type MemoFilter, stringifyFilters, useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { Routes } from "@/router";
-import { isMemoResourcePath, withMemoFilter } from "../MemoView/navigation";
 
 /**
  * What clicking a tag in a memo does. On a memo detail page it opens the collection the

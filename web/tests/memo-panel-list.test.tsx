@@ -17,13 +17,13 @@ vi.mock("@/components/MemoView", () => ({
     return <p>{props.memo.name}</p>;
   },
 }));
-vi.mock("@/components/MemoContent/MentionResolutionContext", () => ({
+vi.mock("@/contexts/MentionResolutionContext", () => ({
   MentionResolutionProvider: ({ userNames, children }: { userNames: string[]; children: ReactNode }) => {
     mocks.userNames = userNames;
     return children;
   },
 }));
-vi.mock("@/components/MemoEditor", () => ({ default: () => <div data-testid="editor" /> }));
+vi.mock("@/components/MemoEditor", () => ({ MemoEditor: () => <div data-testid="editor" /> }));
 vi.mock("@/contexts/NewMemoContext", () => ({ NewMemoProvider: ({ children }: { children: ReactNode }) => children }));
 vi.mock("@/contexts/AuthContext", () => ({ useAuth: () => ({ isUserSettingsInitialized: true }) }));
 vi.mock("@/contexts/SpaceContext", () => ({ useSpaceContext: () => ({ creatorUsername: mocks.creatorUsername }) }));

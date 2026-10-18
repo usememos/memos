@@ -3,8 +3,8 @@ import { Code, ConnectError } from "@connectrpc/connect";
 import { act, renderHook } from "@testing-library/react";
 import { toast } from "react-hot-toast";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { useAttachmentTranscription } from "@/components/MemoEditor/hooks/useAttachmentTranscription";
-import { transcriptionService } from "@/components/MemoEditor/services";
+import { useAttachmentTranscription } from "@/components/MemoEditor/edit/hooks/useAttachmentTranscription";
+import { transcriptionService } from "@/components/MemoEditor/edit/services";
 import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
 
 vi.mock("react-hot-toast", () => ({ toast: { error: vi.fn(), success: vi.fn() } }));

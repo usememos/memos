@@ -2,14 +2,16 @@ import { render } from "@testing-library/react";
 import type { EditorMode } from "@usememos/editor";
 import { createRef } from "react";
 import { describe, expect, it, vi } from "vitest";
-import Editor from "@/components/MemoEditor/Editor";
-import type { UploadAnchorDescriptor } from "@/components/MemoEditor/Editor/uploadAnchors";
-import type { EditorController } from "@/components/MemoEditor/types/editorController";
+import Editor from "@/components/MemoEditor/edit/Editor";
+import type { EditorController } from "@/components/MemoEditor/edit/types/editorController";
+import type { UploadAnchorDescriptor } from "@/components/MemoEditor/edit/uploadAnchors";
 
 vi.mock("@/hooks/useUserQueries", () => ({
   useTagCounts: () => ({ data: {} }),
   useUsersByUsernames: () => ({ data: undefined }),
+  userDetailQueryOptions: () => ({}),
 }));
+vi.mock("@/contexts/AuthContext", () => ({ useAuth: () => ({ userTagsSetting: undefined }) }));
 
 function setup(value = "", mode: EditorMode = "rich") {
   const ref = createRef<EditorController>();

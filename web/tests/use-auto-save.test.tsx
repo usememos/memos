@@ -1,9 +1,9 @@
 import { create } from "@bufbuild/protobuf";
 import { act, render } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { useAutoSave } from "@/components/MemoEditor/hooks/useAutoSave";
-import { cacheService } from "@/components/MemoEditor/services/cacheService";
-import { EditorProvider, useEditorContext } from "@/components/MemoEditor/state";
+import { useAutoSave } from "@/components/MemoEditor/edit/hooks/useAutoSave";
+import { cacheService } from "@/components/MemoEditor/edit/services/cacheService";
+import { EditorProvider, useEditorContext } from "@/components/MemoEditor/edit/state";
 import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
 import { Visibility } from "@/types/proto/api/memo_service_pb";
 
@@ -17,7 +17,7 @@ let api: {
 
 function Probe({ username, cacheKey, enabled }: { username: string; cacheKey?: string; enabled?: boolean }) {
   const { dispatch, actions } = useEditorContext();
-  const { discardDraft } = useAutoSave(username, cacheKey, enabled);
+  const { discardDraft } = useAutoSave(cacheService.key(username, cacheKey), enabled);
   api = { dispatch, actions, discardDraft };
   return null;
 }
