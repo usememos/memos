@@ -1,6 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { cacheService } from "@/components/MemoEditor/services/cacheService";
+import { cacheService } from "@/components/MemoEditor/edit/services/cacheService";
 import { AttachmentSchema, MotionMediaFamily, MotionMediaRole, MotionMediaSchema } from "@/types/proto/api/attachment_service_pb";
 
 import { LocationSchema, Visibility } from "@/types/proto/api/memo_service_pb";

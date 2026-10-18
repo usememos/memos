@@ -11,8 +11,8 @@ import {
   XIcon,
 } from "lucide-react";
 import { type FC, type MouseEvent, useMemo, useRef, useState } from "react";
-import type { AttachmentItem, LocalFile } from "@/components/MemoEditor/types/attachment";
-import { getAudioRecordingTimeLabel, toAttachmentItems } from "@/components/MemoEditor/types/attachment";
+import type { AttachmentItem, LocalFile } from "@/components/MemoEditor/edit/types/attachment";
+import { getAudioRecordingTimeLabel, toAttachmentItems } from "@/components/MemoEditor/edit/types/attachment";
 import MetadataSection, {
   METADATA_ROW_BOX_CLASSES,
   METADATA_ROW_CONTROLS_CLASSES,

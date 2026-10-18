@@ -11,7 +11,7 @@ const users: Record<string, { name: string; username: string; displayName: strin
   "users/carol": { name: "users/carol", username: "carol", displayName: "Carol Diaz", avatarUrl: "/carol.png" },
   "users/dan": { name: "users/dan", username: "dan", displayName: "Dan Okafor", avatarUrl: "/dan.png" },
 };
-vi.mock("@/components/MemoContent/MentionResolutionContext", () => ({
+vi.mock("@/contexts/MentionResolutionContext", () => ({
   useResolvedUser: (name: string, options?: { enabled?: boolean }) => (options?.enabled ? users[name] : undefined),
   useResolvedUsersByNames: (names: string[]) => new Map(names.map((name) => [name, users[name]])),
 }));

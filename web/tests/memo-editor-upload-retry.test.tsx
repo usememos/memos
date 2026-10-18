@@ -3,12 +3,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, renderHook } from "@testing-library/react";
 import type { PropsWithChildren } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { useMemoSave } from "@/components/MemoEditor/hooks/useMemoSave";
-import { memoService } from "@/components/MemoEditor/services/memoService";
-import type { EditorState } from "@/components/MemoEditor/state";
-import { createInitialState } from "@/components/MemoEditor/state/types";
-import type { LocalFile } from "@/components/MemoEditor/types/attachment";
+import { useMemoSave } from "@/components/MemoEditor/edit/hooks/useMemoSave";
+import { memoService } from "@/components/MemoEditor/edit/services/memoService";
+import type { EditorState } from "@/components/MemoEditor/edit/state";
+import { createInitialState } from "@/components/MemoEditor/edit/state/types";
+import type { LocalFile } from "@/components/MemoEditor/edit/types/attachment";
 import { type Attachment, AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
+import { clientSaveOperations as ops } from "./helpers/memo-save-operations";
 
 const mocks = vi.hoisted(() => ({
   createMemo: vi.fn(),
@@ -28,7 +29,7 @@ vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
 
 // The hook test drives a small stand-in for the editor reducer, so that what
 // the hook dispatches after a failure is what the next save reads.
-vi.mock("@/components/MemoEditor/state", () => ({
+vi.mock("@/components/MemoEditor/edit/state", () => ({
   useEditorContext: () => ({
     actions: {
       reset: () => ({ type: "reset" }),
@@ -71,7 +72,7 @@ describe("memoService.save", () => {
     const file = localFile("a.txt");
     const onFileUploaded = vi.fn();
 
-    await expect(memoService.save(editorState([file]), { onFileUploaded })).rejects.toThrow("quota exceeded");
+    await expect(memoService.save(editorState([file]), { onFileUploaded }, ops)).rejects.toThrow("quota exceeded");
 
     expect(onFileUploaded).toHaveBeenCalledOnce();
     expect(onFileUploaded).toHaveBeenCalledWith(file, expect.objectContaining({ name: "attachments/a.txt" }));

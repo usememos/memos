@@ -1,10 +1,10 @@
 import { ArrowUpIcon, LoaderCircleIcon } from "lucide-react";
 import { type ReactElement, type ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { MentionResolutionProvider } from "@/components/MemoContent/MentionResolutionContext";
 import { Button } from "@/components/ui/button";
 import { useAppSidebar } from "@/contexts/AppSidebarContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { isSearchFilter, useMemoFilterContext } from "@/contexts/MemoFilterContext";
+import { MentionResolutionProvider } from "@/contexts/MentionResolutionContext";
 import { useNewMemo } from "@/contexts/NewMemoContext";
 import { useView } from "@/contexts/ViewContext";
 import { useDelayedFlag } from "@/hooks/useDelayedFlag";

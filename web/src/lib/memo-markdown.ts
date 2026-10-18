@@ -204,9 +204,9 @@ export const memoMentionOptions = (isResolved: (username: string) => boolean): P
 
 interface MemoExtensionOptions {
   /** `tags()` class and attributes, for the memo view's pills and colors. */
-  readonly tags?: Pick<TagsOptions, "class" | "attributes">;
+  readonly tags?: Pick<TagsOptions, "class" | "attributes" | "onClick">;
   /** `mentions()` class and attributes, for links to the people who exist. */
-  readonly mentions?: Pick<TagsOptions, "class" | "attributes">;
+  readonly mentions?: Pick<TagsOptions, "class" | "attributes" | "onClick">;
 }
 
 /**
@@ -352,6 +352,9 @@ export const memoEditorLabels = (t: ReturnType<typeof useTranslate>): Partial<La
   alignRight: t("editor.blocks.align-right"),
   tableSection: t("editor.blocks.table"),
   imageSection: t("editor.blocks.image"),
+  imageAlignLeft: t("editor.blocks.image-align-left"),
+  imageAlignCenter: t("editor.blocks.image-align-center"),
+  imageAlignRight: t("editor.blocks.image-align-right"),
   resetImageSize: t("editor.blocks.reset-image-size"),
   altText: t("editor.blocks.alt-text"),
   altTextPlaceholder: t("editor.blocks.alt-text-placeholder"),

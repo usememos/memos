@@ -1,15 +1,14 @@
 import { EyeIcon } from "lucide-react";
 import { useMemo } from "react";
 import ClampedSection from "@/components/ClampedSection";
+import { MemoEditor } from "@/components/MemoEditor/MemoEditor";
 import { AttachmentGallery, MemoMetadataRows } from "@/components/MemoMetadata";
 import { separateAttachments } from "@/components/MemoMetadata/Attachment/attachmentHelpers";
 import { isReferenceRelation } from "@/components/MemoMetadata/Relation/relationHelpers";
 import { Button } from "@/components/ui/button";
-import { useUpdateMemo } from "@/hooks/useMemoQueries";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { filterInlineManagedAttachments } from "@/utils/managed-attachment";
-import MemoContent from "../../MemoContent";
 import { MemoReactionListView } from "../../MemoReactionListView";
 import { useMemoHandlers } from "../hooks";
 import { useMemoViewContext } from "../MemoViewContext";
@@ -28,12 +27,21 @@ const BlurOverlay: React.FC<{ onClick?: () => void }> = ({ onClick }) => {
 };
 
 const MemoBody: React.FC<MemoBodyProps> = ({ compact }) => {
-  const { memo, parentPage, showBlurredContent, blurred, readonly, openEditor, openPreview, toggleBlurVisibility } = useMemoViewContext();
+  const {
+    memo,
+    parentPage,
+    showBlurredContent,
+    blurred,
+    readonly,
+    isEditing,
+    openEditor,
+    closeEditor,
+    onEditorFocusModeChange,
+    openPreview,
+    toggleBlurVisibility,
+  } = useMemoViewContext();
 
   const { handleMemoContentClick, handleMemoContentDoubleClick } = useMemoHandlers({ readonly, openEditor, openPreview });
-  const { mutate: updateMemo } = useUpdateMemo();
-  const handleTaskToggle = (content: string) =>
-    updateMemo({ update: { name: memo.name, content }, updateMask: ["content", "update_time"] });
 
   const referencedMemos = memo.relations.filter(isReferenceRelation);
   // Memoized so AttachmentListView's own useMemo chain keeps its cache across body renders.
@@ -42,6 +50,24 @@ const MemoBody: React.FC<MemoBodyProps> = ({ compact }) => {
     [memo.content, memo.attachments],
   );
   const { visual, audio, docs } = useMemo(() => separateAttachments(attachmentOnlyItems), [attachmentOnlyItems]);
+
+  // Editing takes the body's place inside the card's own frame: the session brings its
+  // attachments, metadata and toolbar, so the read-only rows and reactions step aside.
+  if (isEditing) {
+    return (
+      <div data-slot="memo-body" className="w-full">
+        <MemoEditor
+          mode="edit"
+          name={memo.name}
+          frameless
+          autoFocus
+          onConfirm={closeEditor}
+          onCancel={closeEditor}
+          onFocusModeChange={onEditorFocusModeChange}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="w-full flex flex-col justify-start items-start gap-2">
@@ -55,15 +81,12 @@ const MemoBody: React.FC<MemoBodyProps> = ({ compact }) => {
           {/* Compact bounds the whole body — attachments included — behind one Show more.
               Reactions stay outside so they never hide under the fade. */}
           <ClampedSection enabled={Boolean(compact)}>
-            <MemoContent
-              memoName={memo.name}
+            <MemoEditor
+              name={memo.name}
               parentPage={parentPage}
-              content={memo.content}
-              attachments={memo.attachments}
+              compact={Boolean(compact)}
               onClick={handleMemoContentClick}
               onDoubleClick={handleMemoContentDoubleClick}
-              onTaskToggle={readonly ? undefined : handleTaskToggle}
-              compact={Boolean(compact)}
             />
             <AttachmentGallery visual={visual} onImagePreview={openPreview} />
             <MemoMetadataRows

@@ -1,7 +1,7 @@
 import { BinaryWriter } from "@bufbuild/protobuf/wire";
 import { Code, ConnectError } from "@connectrpc/connect";
 import { describe, expect, it } from "vitest";
-import { errorService } from "@/components/MemoEditor/services/errorService";
+import { errorService } from "@/components/MemoEditor/edit/services/errorService";
 import { ERROR_REASON_QUOTA_EXCEEDED, getErrorMessage, getRetryAfterSeconds } from "@/lib/error";
 
 function quotaError(metadata: Record<string, string>): ConnectError {

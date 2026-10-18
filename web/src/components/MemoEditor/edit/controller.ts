@@ -1,7 +1,7 @@
-import { type Block, containerContent, type Editor, getBlock, inlineText, type Position, type Widget } from "@usememos/editor";
+import { type Block, type Editor, inlineText, type Widget } from "@usememos/editor";
 import { collectTags, parseMemoMarkdown } from "@/lib/memo-markdown";
 import { isCompleteTagValue } from "@/utils/tag-grammar";
-import type { EditorController } from "../types/editorController";
+import type { EditorController } from "./types/editorController";
 import { renderUploadAnchor } from "./uploadAnchors";
 
 /** The live editor, or null before it mounts and after it is destroyed. */
@@ -12,12 +12,6 @@ const live = (getEditor: EditorGetter): Editor | null => {
   return editor && !editor.isDestroyed ? editor : null;
 };
 
-/** The text of the block (or table cell) holding `position`. */
-const textAt = (editor: Editor, position: Position): string => {
-  const content = containerContent(getBlock(editor.state.doc, position.blockId), position.cell);
-  return content ? inlineText(content) : "";
-};
-
 /**
  * The memo's blocks. Source mode holds the whole memo as one block of Markdown
  * text, so the blocks are read from that text instead.
@@ -25,22 +19,8 @@ const textAt = (editor: Editor, position: Position): string => {
 const memoBlocks = (editor: Editor): readonly Block[] =>
   editor.mode === "source" ? parseMemoMarkdown(editor.getMarkdown()).blocks : editor.state.doc.blocks;
 
-/** An empty paragraph, which an inserted block should replace rather than follow. */
+/** An empty paragraph, which inserted blocks take the place of rather than follow. */
 const isEmptyParagraph = (block: Block): boolean => block.type === "paragraph" && inlineText(block.content) === "";
-
-/**
- * Inserts Markdown as its own blocks at `position`. In an empty paragraph it
- * takes the paragraph's place, as a paste would, so no empty line is left
- * above the inserted content.
- */
-const insertBlocks = (editor: Editor, markdown: string, position: Position): void => {
-  if (isEmptyParagraph(getBlock(editor.state.doc, position.blockId))) {
-    editor.setSelection({ anchor: position, focus: position });
-    editor.commands.insertMarkdown(markdown, { block: true });
-  } else {
-    editor.commands.insertMarkdown(markdown, { at: position, block: true });
-  }
-};
 
 /**
  * EditorController over a @usememos/editor instance. Every method reads the
@@ -74,8 +54,9 @@ export function createController(getEditor: EditorGetter, onReplace: (markdown: 
       if (!editor || !markdown) return;
       // Insert at the caret without consuming the selection: callers live outside
       // the editor (attachment list, audio recorder), and replacing the range
-      // would delete text the user merely had highlighted.
-      insertBlocks(editor, markdown, editor.getSelection().focus);
+      // would delete text the user merely had highlighted. An empty paragraph at
+      // the caret is replaced, as a paste would.
+      editor.commands.insertMarkdown(markdown, { at: editor.getSelection().focus, block: true });
       editor.commands.focus();
       editor.commands.scrollIntoView();
     },
@@ -89,21 +70,10 @@ export function createController(getEditor: EditorGetter, onReplace: (markdown: 
     },
     insertTag: (tag) => {
       const editor = live(getEditor);
-      if (!editor || !isCompleteTagValue(tag) || editor.isComposing || currentTags(editor).includes(tag)) return false;
-      // Like insertMarkdown, keep highlighted text and insert at the active end.
-      // Honor the chosen Markdown context, including code, instead of relocating it.
-      const head = editor.getSelection().focus;
-      const text = textAt(editor, head);
-      const prefix = head.offset > 0 && !/\s/.test(text[head.offset - 1] ?? "") ? " " : "";
-      const hasFollowingSpace = /^[ \t]$/.test(text[head.offset] ?? "");
-      editor.setSelection({ anchor: head, focus: head });
-      editor.commands.insertText(`${prefix}#${tag}${hasFollowingSpace ? "" : " "}`);
-      if (hasFollowingSpace) {
-        // Exactly one space follows the tag, inserted or reused; the caret lands after it.
-        const after = editor.getSelection().focus;
-        const next = { ...after, offset: after.offset + 1 };
-        editor.setSelection({ anchor: next, focus: next });
-      }
+      if (!editor || !isCompleteTagValue(tag) || currentTags(editor).includes(tag)) return false;
+      // As a word of its own at the caret, keeping highlighted text and the Markdown
+      // context, including code; refused while an input method is composing.
+      if (!editor.commands.insertToken(`#${tag}`)) return false;
       editor.commands.focus();
       editor.commands.scrollIntoView();
       return true;
@@ -124,12 +94,10 @@ export function createController(getEditor: EditorGetter, onReplace: (markdown: 
       const widget = takeAnchor(id);
       if (!editor || !widget) return;
       if (markdown) {
+        // The anchor sits after its block; an empty block gives its place to the content.
         const block = editor.state.doc.blocks.find((candidate) => candidate.id === widget.blockId);
-        if (block && isEmptyParagraph(block)) {
-          insertBlocks(editor, markdown, { blockId: block.id, offset: 0 });
-        } else {
-          editor.commands.insertMarkdown(markdown, { at: widget, block: true });
-        }
+        const at = block && isEmptyParagraph(block) ? { blockId: block.id, offset: 0 } : widget;
+        editor.commands.insertMarkdown(markdown, { at, block: true });
         editor.commands.focus();
         editor.commands.scrollIntoView();
       }

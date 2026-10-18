@@ -98,8 +98,9 @@ function writeEntry(key: string, draft: EditorDraft): void {
 }
 
 export const cacheService = {
-  key: (username: string, cacheKey?: string): string => {
-    return `${username}-${cacheKey || ""}`;
+  /** The storage key for a draft: the user, then the identity-derived suffix (see `draftKeyFor`). */
+  key: (username: string, draftKey?: string): string => {
+    return `${username}-${draftKey || ""}`;
   },
 
   save: (key: string, draft: EditorDraft) => {

@@ -4,11 +4,11 @@ import type { ReactNode } from "react";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { MapView } from "@/components/MapView/MapView";
-import type { MemoEditorProps } from "@/components/MemoEditor/types";
+import type { MemoEditorDraftProps } from "@/components/MemoEditor";
 import { type Memo, MemoSchema } from "@/types/proto/api/memo_service_pb";
 
 const mocks = vi.hoisted(() => ({
-  editor: {} as MemoEditorProps,
+  editor: {} as MemoEditorDraftProps,
   refetch: vi.fn(),
   toast: vi.fn(),
   memos: [] as Memo[],
@@ -35,13 +35,13 @@ vi.mock("@/components/MapView/useMapMemos", () => ({
 }));
 vi.mock("@/components/MapView/useMapPins", () => ({ useMapPins: () => new Map() }));
 vi.mock("@/components/MemoEditor", () => ({
-  default: (props: MemoEditorProps) => {
+  MemoEditor: (props: MemoEditorDraftProps) => {
     mocks.editor = props;
     return <div data-testid="editor" />;
   },
 }));
 vi.mock("@/components/MemoView", () => ({ default: () => <p>Memo</p> }));
-vi.mock("@/components/MemoContent/MentionResolutionContext", () => ({
+vi.mock("@/contexts/MentionResolutionContext", () => ({
   MentionResolutionProvider: ({ children }: { children: ReactNode }) => children,
 }));
 vi.mock("@/contexts/NewMemoContext", () => ({ NewMemoProvider: ({ children }: { children: ReactNode }) => children }));
@@ -94,8 +94,8 @@ describe("map composer", () => {
   it("seeds the selected point and Space and releases controls after save", async () => {
     mocks.refetch.mockResolvedValue({ data: { pages: [{ memos: [item] }] } });
     start();
-    expect(mocks.editor.defaultSpace).toBe("spaces/travel");
-    expect(mocks.editor.defaultLocation).toEqual(item.location);
+    expect(mocks.editor.draft.space).toBe("spaces/travel");
+    expect(mocks.editor.draft.location).toEqual(item.location);
     act(() => mocks.editor.onSavingChange?.(true));
     expect(screen.getByTestId("panel")).toHaveAttribute("data-busy", "true");
     act(() => mocks.editor.onConfirm?.("memos/one"));
@@ -133,7 +133,7 @@ describe("map place labels", () => {
   it("never copies another author's label into a new memo", () => {
     mocks.memos = [other];
     start("memo=memos%2Ftwo");
-    expect(mocks.editor.defaultLocation).toMatchObject({ latitude: 35, longitude: 135, placeholder: "35.0000°, 135.0000°" });
+    expect(mocks.editor.draft.location).toMatchObject({ latitude: 35, longitude: 135, placeholder: "35.0000°, 135.0000°" });
     // A single author's label still titles their own memos.
     expect(screen.getByTestId("panel")).toHaveAttribute("data-title", "Mom's house");
   });
@@ -143,7 +143,7 @@ describe("map place labels", () => {
     start("memo=memos%2Ftwo&memo=memos%2Fone");
     expect(screen.getByTestId("panel")).toHaveAttribute("data-title", "35.0000°, 135.0000°");
     // The writer's own label at the point is theirs to reuse.
-    expect(mocks.editor.defaultLocation).toMatchObject({ placeholder: "Kyoto" });
+    expect(mocks.editor.draft.location).toMatchObject({ placeholder: "Kyoto" });
   });
 });
 

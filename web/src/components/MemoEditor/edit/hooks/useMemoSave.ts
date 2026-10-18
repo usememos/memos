@@ -1,15 +1,17 @@
+import { Code, ConnectError } from "@connectrpc/connect";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { toast } from "react-hot-toast";
 import { useNewMemo } from "@/contexts/NewMemoContext";
 import { attachmentKeys } from "@/hooks/useAttachmentQueries";
-import { memoKeys } from "@/hooks/useMemoQueries";
+import { memoDetailQueryOptions, useCreateMemo, useUpdateMemo } from "@/hooks/useMemoQueries";
 import { userKeys } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
 import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import type { Visibility } from "@/types/proto/api/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { errorService, memoService, validationService } from "../services";
+import type { MemoSaveOperations } from "../services/memoService";
 import { useEditorContext } from "../state";
 import { restampDefaultCreateTime } from "../utils/deriveDefaultCreateTime";
 
@@ -28,9 +30,10 @@ interface UseMemoSaveOptions {
 }
 
 /**
- * Owns the editor's save transaction and its post-save cache/state updates.
- * Keeping this workflow outside the shell makes saving identical whether it is
- * triggered by the toolbar or the editor keyboard shortcut.
+ * Owns the editor's save transaction and its post-save state. The memo itself is
+ * written through the memo mutation hooks, which patch and refresh every query that
+ * holds it, so the saved text shows wherever the memo is on the page as soon as the
+ * server answers. Saving is identical whether the toolbar or the keyboard triggers it.
  */
 export function useMemoSave({
   memoName,
@@ -44,6 +47,8 @@ export function useMemoSave({
 }: UseMemoSaveOptions): () => Promise<void> {
   const t = useTranslate();
   const queryClient = useQueryClient();
+  const { mutateAsync: createMemo } = useCreateMemo();
+  const { mutateAsync: updateMemo } = useUpdateMemo();
   const { markNewMemo } = useNewMemo();
   const { actions, dispatch, getState } = useEditorContext();
 
@@ -78,6 +83,17 @@ export function useMemoSave({
       dispatch(actions.setLocalFiles(current.localFiles.filter((file) => !uploaded.has(file.previewUrl))));
     };
 
+    const operations: MemoSaveOperations = {
+      // The server's current copy, fetched afresh into the detail cache.
+      getMemo: async (name) => {
+        const memo = await queryClient.fetchQuery({ ...memoDetailQueryOptions(name), staleTime: 0 });
+        if (!memo) throw new ConnectError("memo not found", Code.NotFound);
+        return memo;
+      },
+      updateMemo: (update, updateMask) => updateMemo({ update, updateMask }),
+      createMemo: (memo, parent) => createMemo({ memo, parent }),
+    };
+
     try {
       // A new memo composed on a selected day keeps the day but is stamped with
       // the time of saving, so consecutive memos do not share one createTime.
@@ -96,6 +112,7 @@ export function useMemoSave({
           space: defaultSpace,
           onFileUploaded: (file, attachment) => uploaded.set(file.previewUrl, attachment),
         },
+        operations,
       );
 
       if (!result.hasChanges) {
@@ -111,27 +128,14 @@ export function useMemoSave({
         toast.success(t("memo.moved"));
       }
 
-      const invalidationPromises: Promise<unknown>[] = [
-        queryClient.invalidateQueries({ queryKey: memoKeys.lists() }),
-        queryClient.invalidateQueries({ queryKey: userKeys.stats() }),
-        queryClient.invalidateQueries({ queryKey: attachmentKeys.lists() }),
-      ];
-      if (memoName) {
-        invalidationPromises.push(queryClient.invalidateQueries({ queryKey: memoKeys.detail(memoName) }));
-      }
-      if (parentMemoName) {
-        invalidationPromises.push(queryClient.invalidateQueries({ queryKey: memoKeys.comments(parentMemoName) }));
-        invalidationPromises.push(queryClient.invalidateQueries({ queryKey: memoKeys.detail(parentMemoName) }));
-      }
       // Hosts that close after saving (edit, comment) hold a brief "Saved"
       // confirmation on the toolbar while the caches refresh underneath. The
       // in-place composer clears immediately, so it shows nothing.
       if (memoName || parentMemoName) {
         dispatch(actions.setLoading("saving", false));
         dispatch(actions.setJustSaved(true));
-        invalidationPromises.push(new Promise((resolve) => setTimeout(resolve, SAVED_CONFIRMATION_MS)));
+        await new Promise((resolve) => setTimeout(resolve, SAVED_CONFIRMATION_MS));
       }
-      await Promise.all(invalidationPromises);
 
       dispatch(actions.reset());
       if (!memoName && defaultVisibility) {
@@ -166,6 +170,7 @@ export function useMemoSave({
     }
   }, [
     actions,
+    createMemo,
     defaultCreateTime,
     defaultSpace,
     defaultVisibility,
@@ -179,5 +184,6 @@ export function useMemoSave({
     parentMemoName,
     queryClient,
     t,
+    updateMemo,
   ]);
 }

@@ -5,9 +5,9 @@ import {
   getActivityLevel,
   getTooltipText,
 } from "@/components/ActivityCalendar";
-import { useResolvedUser, useResolvedUsersByNames } from "@/components/MemoContent/MentionResolutionContext";
 import UserAvatar from "@/components/UserAvatar";
 import { FOCUS_VISIBLE_OUTLINE_CLASSES } from "@/components/ui/focus";
+import { useResolvedUser, useResolvedUsersByNames } from "@/contexts/MentionResolutionContext";
 import type { MemoTimeBasis } from "@/contexts/ViewContext";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";

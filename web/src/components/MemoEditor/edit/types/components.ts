@@ -1,24 +1,25 @@
 import type { MemoSuggestion } from "@/lib/memo-suggestions";
 import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import type { Location, Memo, Visibility } from "@/types/proto/api/memo_service_pb";
-import type { UserSetting_TagsSetting } from "@/types/proto/api/user_service_pb";
-import type { EditorFileOrigin } from "../Editor/extensions";
+import type { EditorFileOrigin } from "../extensions";
 import type { AudioRecorderStatus } from "../hooks/useAudioRecorder";
 import type { LocalFile } from "./attachment";
 
-export interface MemoEditorProps {
+/** What MemoEditor hands an editing session: its subject, the host's defaults, and where the draft lives. */
+export interface EditSessionProps {
   className?: string;
-  cacheKey?: string;
+  /** The draft and caret storage key, derived from what is edited; see `draftKeyFor`. */
+  draftKey: string;
+  /** Inside a card that is the frame already: no background, border or padding of its own outside focus mode. */
+  frameless?: boolean;
   placeholder?: string;
-  /** Existing memo to edit. When provided, the editor initializes from it without fetching. */
+  /** Existing memo to edit; the session starts from it and persists no draft. */
   memo?: Memo;
   parentMemoName?: string;
   /** Context-derived suggestions for a new top-level memo. */
   suggestions?: readonly MemoSuggestion[];
   /** Assigns a newly created top-level memo to this Space. Ignored for edits and comments. */
   defaultSpace?: string;
-  /** Seeds a new memo once; restored draft metadata takes precedence. */
-  defaultLocation?: Location;
   /** A callback can decide whether focus is still appropriate after draft restoration. */
   autoFocus?: boolean | (() => boolean);
   /**
@@ -54,8 +55,6 @@ export interface EditorContentProps {
   /** Invoked by the in-editor save shortcut (Cmd/Ctrl+Enter). */
   onSubmit: () => void;
   onFiles: (files: File[], origin: EditorFileOrigin) => void;
-  /** The user's tag settings, for tags in their custom colors. */
-  tagsSetting?: UserSetting_TagsSetting;
 }
 
 /**

@@ -57,7 +57,7 @@ vi.mock("@/utils/i18n", () => ({
   useTranslate: () => (key: string) => (key === "message.no-data" ? "No data found." : key),
 }));
 
-vi.mock("@/components/MemoContent/MentionResolutionContext", () => ({
+vi.mock("@/contexts/MentionResolutionContext", () => ({
   MentionResolutionProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 

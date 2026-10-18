@@ -1,5 +1,5 @@
 import { useQueries } from "@tanstack/react-query";
-import { createContext, type ReactNode, useContext, useMemo } from "react";
+import { createContext, type ReactNode, useContext, useMemo, useRef } from "react";
 import { userDetailQueryOptions, useUsersByUsernames } from "@/hooks/useUserQueries";
 import { extractMentionUsernames } from "@/lib/memo-markdown";
 import { extractUsernameFromName } from "@/lib/resource-names";
@@ -57,23 +57,24 @@ export const MentionResolutionProvider = ({ contents, userNames = EMPTY_USER_NAM
 
 export function useResolvedMentionUsernames(content: string) {
   const sharedResolution = useContext(UserResolutionContext);
-  const shouldUseSharedResolution = sharedResolution !== null;
-  const usernames = useMemo(
-    () => sharedResolution?.mentionUsernamesByContent.get(content) ?? extractMentionUsernames(content),
-    [content, sharedResolution],
-  );
-  const { data: mentionUsers } = useUsersByUsernames(usernames, { enabled: !shouldUseSharedResolution });
+  // The provider resolves only the contents it was given; a draft in the composer, or a
+  // memo outside its list, looks its own mentions up.
+  const shared = sharedResolution?.mentionUsernamesByContent.has(content) ? sharedResolution : null;
+  const usernames = useMemo(() => shared?.mentionUsernamesByContent.get(content) ?? extractMentionUsernames(content), [content, shared]);
+  const { data: mentionUsers } = useUsersByUsernames(usernames, { enabled: shared === null });
+  // Until a lookup answers, the people already found stay found: a name typed next to a
+  // resolved mention must not unresolve it for the length of a request.
+  const lastAnswer = useRef(new Set<string>());
 
   return useMemo(() => {
-    if (sharedResolution) {
-      return new Set(usernames.filter((username) => sharedResolution.resolvedMentionUsernames.has(username)));
+    if (shared) {
+      return new Set(usernames.filter((username) => shared.resolvedMentionUsernames.has(username)));
     }
-    if (!mentionUsers) {
-      return new Set<string>();
+    if (mentionUsers) {
+      lastAnswer.current = new Set(Array.from(mentionUsers.entries()).flatMap(([username, user]) => (user ? [username] : [])));
     }
-
-    return new Set(Array.from(mentionUsers.entries()).flatMap(([username, user]) => (user ? [username] : [])));
-  }, [mentionUsers, sharedResolution, usernames]);
+    return lastAnswer.current;
+  }, [mentionUsers, shared, usernames]);
 }
 
 export function useResolvedUser(name: string, options?: { enabled?: boolean }) {

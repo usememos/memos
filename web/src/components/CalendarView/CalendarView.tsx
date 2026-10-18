@@ -1,12 +1,12 @@
 import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
-import { MentionResolutionProvider } from "@/components/MemoContent/MentionResolutionContext";
-import { deriveDefaultCreateTimeFromDate } from "@/components/MemoEditor/utils/deriveDefaultCreateTime";
+import { deriveDefaultCreateTimeFromDate } from "@/components/MemoEditor/edit/utils/deriveDefaultCreateTime";
 import { MEMO_PANEL_INSET, MEMO_PANEL_TITLE_CLASS, MEMO_PANEL_WIDTH_CSS, MemoPanel, MemoPanelList } from "@/components/MemoPanel";
 import MemoListError from "@/components/PagedMemoList/MemoListError";
 import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
+import { MentionResolutionProvider } from "@/contexts/MentionResolutionContext";
 import { useSpaceContext } from "@/contexts/SpaceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useFilteredMemoStats } from "@/hooks/useFilteredMemoStats";
@@ -125,9 +125,9 @@ export const CalendarView = ({ month, date }: CalendarViewProps) => {
       compose={
         canCompose
           ? {
-              cacheKey: `calendar-day-editor:${activeDate}`,
+              scope: `calendar:${activeDate}`,
               label: t("calendar.new-memo-on-day"),
-              defaults: { defaultCreateTime },
+              defaults: { createTime: defaultCreateTime },
               onSavingChange: setSaving,
             }
           : undefined

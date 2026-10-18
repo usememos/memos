@@ -1,170 +1,95 @@
-# MemoEditor Architecture
+# MemoEditor
 
 ## Overview
 
-MemoEditor is a three-layer component. At its core is a single editor — `Editor/`, built on [`@usememos/editor`](https://github.com/usememos/editor), a block editor whose storage format is standard Markdown. Markdown goes in and comes out: blocks the user did not edit are saved byte for byte, and edited blocks are written in a normalized style. The memo view (`components/MemoContent`) is the same editor, read-only, so a memo looks the same while editing and after saving. Everything above the editor boundary talks markdown through the `EditorController` contract.
+`MemoEditor` is the one way a memo is shown, edited or composed. It is memo-aware: it takes a memo's resource name, or a seed for a new memo or comment, and a mode. In view mode it reads the memo from whatever query already holds it and shows it read-only. In edit mode it owns a draft store and renders the editing session over it. The parent owns the mode and hears back through `onConfirm` and `onCancel`.
 
-## Architecture
+Both modes show the memo through the same binding of [`@usememos/editor`](https://github.com/usememos/editor), a block editor whose storage format is standard Markdown, so a memo looks the same while editing and after saving. Blocks the user did not edit are saved byte for byte; edited blocks are written in a normalized style.
 
-```
-┌─────────────────────────────────────────┐
-│   Presentation Layer (Components)       │
-│   - EditorToolbar, EditorContent, etc.  │
-└─────────────────┬───────────────────────┘
-                  │ EditorController
-┌─────────────────▼───────────────────────┐
-│   State Layer (reducer over an external │
-│   store; per-slice subscriptions)       │
-│   - state/, useEditorContext(),         │
-│     useEditorSelector()                 │
-│   - state.content  ← markdown (the      │
-│     single source of truth)             │
-└─────────────────┬───────────────────────┘
-                  │
-┌─────────────────▼───────────────────────┐
-│   Service Layer (Business Logic)        │
-│   - services/ (pure functions)          │
-└─────────────────────────────────────────┘
+```tsx
+<MemoEditor name="memos/abc" />                                     // view; the owner can tick tasks
+<MemoEditor mode="edit" name="memos/abc" onConfirm onCancel />      // edit in place
+<MemoEditor draft={{ parent: "memos/abc" }} onConfirm onCancel />   // new comment
+<MemoEditor draft={{ scope: "home", space, createTime }} />         // new memo
 ```
 
-## Directory Structure
+## Layers
 
 ```
-MemoEditor/
-├── index.tsx               # The shell: EditorProvider + MemoEditorImpl
-├── loader.ts               # loadMemoEditor(): the shared lazy-load entry point
-├── state/                  # State management (reducer, actions, context)
-├── services/               # Business logic (pure functions)
-├── components/             # UI components
-│   ├── EditorContent.tsx   # Hosts Editor; forwards its EditorController ref
-│   ├── EditorMetadata.tsx  # Attachment strip below the document
-│   └── ...
-├── hooks/                  # React hooks (utilities)
-│   ├── useMemoSave.ts      # Save transaction, cache invalidation, and reset
-│   ├── useSourceMode.ts    # Rich or source mode, remembered per device
-│   └── useFocusMode.ts     # Scroll lock and layout-stable focus presentation
-├── Editor/                 # The composer, on @usememos/editor
-│   ├── index.tsx               # React wrapper around <MarkdownEditor>; hands out the controller
-│   ├── extensions.ts           # buildEditorExtensions(): memo syntax, #tag and :emoji autocomplete, file paste/drop
-│   ├── uploadAnchors.ts        # Widget rendering for in-flight upload placeholders
-│   ├── controller.ts           # EditorController over the editor
-│   └── editor.css              # Composer sizing and upload-anchor styles
-├── Toolbar/                # EditorToolbar, InsertMenu, AudienceMenu
-├── constants.ts
-└── types/                  # EditorController, component props,
-                            #   attachment and insert-menu types
+MemoEditor                 memo level: name | draft seed, mode, data, draft store, mutations
+├── MemoContentView        the read-only surface: navigation, anchors, link cards, search highlight
+│   └── MemoMarkdown       the editor binding: dialect, theme, labels, URL policy, memo syntax, decorations
+└── EditSession            the editing surface: chrome, uploads, audio, suggestions, save
+    └── Editor             MemoMarkdown editable, with the composer's extensions, behind EditorController
 ```
 
-## Key Concepts
+- **`MemoMarkdown.tsx`** binds the editor to memos once: the memo Markdown dialect, the theme in the app's CSS variables, translated labels, the image and link URL policy, the memo syntax extensions (math, footnotes, tags, mentions, highlighted code, Mermaid, sanitized HTML) and the stylesheet. `useMemoDecorations` is the one flow for tag colors and resolved mentions, with one redecorate effect. Everything a surface adds sits around this component; nothing in memos styles the editor's own classes.
+- **`view/`** is the read-only surface over `MemoMarkdown`: tags and mentions navigate, in-memo anchors scroll, a paragraph that is one bare link becomes a preview card through the editor's block view (`linkCards.ts`), the page's search matches are painted, and heading ids match the outline. Tag and mention clicks arrive through the editor's `onClick` callbacks, so nothing in memos matches the editor's class names or mutates its DOM. Previews that have Markdown but no memo query (the link-memo search, the share image) use `MemoContentView` directly.
+- **`edit/`** is the editing surface: `EditSession` renders the chrome (timestamp, attachments, suggestions, toolbar, focus mode, audio recording) over the draft store `MemoEditor` provides, persists the draft while open, and saves through the memo mutations. `Editor.tsx` is the composer's editor: `MemoMarkdown` editable with the composer's own extensions (`#tag` and `:emoji` autocomplete, file paste and drop), behind the `EditorController` contract in `controller.ts`.
 
-### State Management
+## Data
 
-A reducer (`state/reducer.ts`) drives an **external store**, not a `useReducer` in the provider, and consumers subscribe to just the slice they read via `useEditorSelector` (`useSyncExternalStore` under the hood). Content changes on every keystroke, so routing it through a single context value would re-render every consumer — toolbar, insert menu, metadata — per keystroke; with per-slice subscriptions only the components whose slice actually changed re-render. All state changes still go through action creators.
+- **Reads are by name.** `useMemoByName` (`hooks/useMemoQueries.ts`) returns the freshest copy of the memo any query holds (a list, a comment page, the calendar month, a detail, a shared memo) and fetches the detail only when nothing holds it. A card in a list therefore costs no request beyond the list's, follows the list's refetches, and never refetches on its own.
+- **Writes are mutations.** A ticked task, a save and a new memo go through `useUpdateMemo` and `useCreateMemo`, which patch and refresh every query holding the memo, so the saved text shows wherever the memo is on the page as soon as the server answers.
+- **The draft is UI state keyed by identity.** `edit/draftKey.ts` derives the key from what is edited: `edit:<name>`, `comment:<parent>`, `new:<scope>[:<space>]`. `initialEditorState` computes the store's first state once, from the memo or the persisted draft over the host's defaults; `useAutoSave` persists it while the session is open; an edit of an existing memo persists no draft. A new identity is a new session (`key`).
 
-`state.content` holds the document as a **markdown string** and is the single source of truth. Because the editor stores markdown verbatim, `state.content` is exactly the editor's document — there is no encoding or normalization step.
+## The editing session
+
+### State
+
+A reducer (`edit/state/reducer.ts`) drives an external store; consumers subscribe to one slice via `useEditorSelector`, so typing re-renders only what reads `content`. `state.content` is the document as Markdown and the single source of truth. UI flags (focus mode, loading, pending inline images), metadata (visibility, Space, attachments, relations, location), timestamps, local files awaiting upload and accepted suggestions live beside it.
 
 ### The editor contract
 
-`types/editorController.ts` defines `EditorController` — document access (`getMarkdown`, `setMarkdown`, `insertMarkdown`), selection and focus (`focus`, `hasFocus`, `isEmpty`, `getSelection`, `setSelection`, `selectAll`), the upload-anchor group below, and `toggleTaskList`. Callers outside the editor implementation use this interface exclusively and never reach into the editor's own API.
+`edit/types/editorController.ts` defines `EditorController`: document access (`getMarkdown`, `setMarkdown`, `insertMarkdown`), selection and focus, the upload-anchor group, `getTags`, `hasChecklist`, `insertTag` and `toggleTaskList`. The chrome uses this interface and never reaches into the editor's own API. `edit/controller.ts` implements it over the live editor; calls before mount or after destroy do nothing.
 
-`Editor/controller.ts` implements `EditorController` over the editor instance. Every method reads the live editor when called, so calls before mount or after destroy do nothing. `insertMarkdown` inserts after the caret's block (or in place of an empty paragraph) without consuming selected text. Selections are the editor's `SelectionJSON` (block index and offset), which survives remounting the same Markdown, so `cacheService` can restore the caret.
+### Formatting and source mode
 
-`createUploadAnchor`/`updateUploadAnchor`/`resolveUploadAnchor`/`cancelUploadAnchor` drive editor widgets (`editor.addWidget`) that hold a place after a block while an attachment uploads and carry its progress, failure message, and retry/keep affordances. Widgets are never saved and are not part of undo history. `resolveUploadAnchor` inserts the finished markdown after the widget's block; resolving with empty markdown cancels instead, as does `cancelUploadAnchor`.
+Formatting is the editor's own: its toolbar appears over selected text, the slash menu and Markdown shortcuts change block types, and its keys cover the rest. The editor's `mode` option shows the whole memo as Markdown text and edits it as plain text; `useSourceMode` remembers the choice per device. In source mode the toolbar, slash menu, autocomplete and formatting keys are off, the checklist chip is hidden, and the controller reads tags and checklists from the text parsed as a memo.
 
-### Formatting
+### Saving
 
-Formatting is the editor's own: its toolbar appears over selected text (bold, italic, strikethrough, code, link), the slash menu and Markdown shortcuts change block types, and its keys cover the rest. Memos adds no formatting toolbar. The one formatting call memos makes itself is `toggleTaskList()`, for the checklist suggestion chip.
-
-### Source mode
-
-The editor's `mode` option shows the whole memo as Markdown text and edits it as plain text (see the editor README's "Source mode"). Every composer offers it, hosted ones included, because it changes how the text is edited, not the frame: the ＋ menu has a "Source Mode" checkbox item, and while it is on, `EditorContent` puts a small "Source" tag in the editor's top-right corner, styled like a code block's language label, that says why autocomplete and formatting are gone and switches back. The editor's first line leaves room for the tag (a float sized by `--memo-source-tag-width` in `Editor/editor.css`), so the rest of the text keeps its full width. `useSourceMode` keeps the choice in localStorage (`memos-editor-mode`), so it is per device and every composer mounted afterwards opens in it. Switching changes no text, so saving, drafts and `state.content` are unaffected. In source mode:
-
-- The editor's toolbar, slash menu, autocomplete and formatting keys are off, and the checklist suggestion chip is hidden because `toggleTaskList()` cannot apply.
-- The editor's document is one block of Markdown text, so the controller reads `getTags()` and `hasChecklist()` from the text parsed as a memo, not from its blocks. Insertions (`insertMarkdown`, `insertTag`, upload anchors) work as in rich mode.
-- A selection's shape depends on the mode, so `cacheService` stores the mode with a saved caret and does not restore a caret taken in the other mode.
-
-### Editor extensions
-
-`lib/memo-markdown.ts` holds what the composer and the memo view share: the memo Markdown dialect (`breaks: true`, `setext: false`, and the editor's defaults for GitHub alerts as callouts and `<details>` as collapsible sections); `memoExtensions()` (math rendered with KaTeX loaded on demand, footnotes, `#tags` and `@mentions`, code highlighted with highlight.js, ```` ```mermaid ```` diagrams, and raw HTML through the sanitizer in `lib/sanitized-html.ts`); the URL policy for links and images (`memoResolveUrl`); the theme in the app's CSS variables; the translated UI labels; and the tag and mention collectors. Whatever the editor renders shows its source at the caret while editing.
-
-`Editor/extensions.ts` adds what only the composer needs: the `#tag` autocomplete (`suggestion()` with `matchToken(scanTags)`, so the popup opens exactly where tags are highlighted; not inside code or links, and not for a bare `#` at the start of a line, which may be a heading) with items from `useTagCounts`, `:emoji` autocomplete from `@usememos/editor/emoji` (its list loads the first time the popup opens), and a `fileHandler()`: pasted files join the attachment list, dropped images are inserted inline where they land and other dropped files are attached.
-
-Keys are the editor's own (see its README): Mod+B/I/E, Mod+Shift+S, Mod+Alt+0–4, Mod+Alt+C, Mod+Shift+6 (collapsible section), Mod+Shift+7–9, Tab/Shift+Tab, and Mod+Enter / Ctrl+Enter to save. The first Escape selects the caret's block; a second Escape leaves the editor.
-
-### Tags and mentions
-
-Highlighting, autocomplete, `EditorController.getTags()` and the memo view all use the editor's scanners (`scanTags`, `scanMentions`), which skip code, links, images and extension tokens, so what is highlighted is what counts. `extractMentionUsernames` in `lib/memo-markdown.ts` reads mentions the same way to decide which users to resolve.
-
-### Services
-
-Pure TypeScript functions containing business logic. No React hooks, easy to test.
+`useMemoSave` validates the draft, uploads local files, and hands the save to `memoService.save` with the operations it runs: the server's current copy (fetched into the detail cache to diff against), `useUpdateMemo` and `useCreateMemo`. Hosts that close after saving (edit, comment) hold a brief "Saved" confirmation before the session resets; the in-place composer resets at once. Uploads that landed before a failed save stay on the draft as attachments so a retry does not upload them again.
 
 ### Suggestions
 
-Hosts of a new top-level memo (Home, the global composer) pass `useMemoSuggestions()`
-into the `suggestions` prop; edits and comments omit the bar. `lib/memo-suggestions.ts`
-merges typed candidates from providers and keeps the strongest source per id
-(selection, then search, then the selected View). `lib/suggestion-expression.ts` is a
-small Boolean CEL reader shared by the providers; unsupported syntax never falls back
-to scanning free text.
+Hosts of a new top-level memo pass `useMemoSuggestions()` into `suggestions`; edits and comments show none. `EditorSuggestions` hides until the draft has text, drops suggestions already satisfied or accepted, and shows at most three. Acceptance history lives in the store so Undo does not immediately resuggest, and clears with the draft.
 
-- Tags: explicit tag conditions and selected tags. `insertTag()` is one isolated undo
-  step at the caret that keeps selected text and honors the current Markdown context.
-- Checklist: task-list conditions in saved Views or filters; a negative
-  task-list or incomplete-task condition suppresses it.
-- Visibility: exactly one explicit audience across filters and View, otherwise nothing.
-  Space visibility also requires actual Space placement.
+### Presentation: in a card, inline, hosted
 
-`EditorSuggestions` hides until the draft has text, drops suggestions already satisfied
-(via the Markdown-aware `getTags()` / `hasChecklist()`, so code examples do not count)
-or already accepted, and shows at most three across kinds. Acceptance history lives in
-the editor store so Undo or reverting a choice does not immediately resuggest it, and it
-clears with the draft on reset; nothing is persisted with the memo. `SuggestionsBar` is
-payload-agnostic; a new kind extends the `MemoSuggestion` union and its
-eligibility/application in `EditorSuggestions`.
+- **In a card** (`frameless`): the card is the frame, so the session has no background, border or padding of its own outside focus mode. `MemoView` flips its body into the session by name and keeps its header, frame and reactions mounted.
+- **Inline** (Home, panels): the session brings its own frame. The ＋ menu offers focus mode, which expands it over the page; the exit button minimizes it back.
+- **Hosted** (`onFocusModeExit`): a host presents the session full-screen and owns that frame (`contexts/GlobalMemoEditorContext.tsx`). It mounts straight into focus mode and exits by calling back to dismiss the host.
 
-### Presentation: inline vs hosted
-
-Every instance is one of two things, and `onFocusModeExit` is the switch:
-
-- **Inline** (prop omitted) — the editor sits in page flow (Home composer, memo edit, comments) and owns its presentation. The ＋ menu offers focus mode, which expands the editor over the page; the exit button in its top row minimizes it back in place.
-- **Hosted** (prop supplied) — a host presents the editor full-screen and owns that frame; `contexts/GlobalMemoEditorContext.tsx` is the one today. The editor mounts straight into focus mode and exits by calling back to dismiss the host, so the exit button reads as Close rather than minimize. The ＋ menu's view toggle is absent: focus mode is not the editor's to leave.
-
-The toggle travels as an optional `viewToggles` object (`types/components.ts`) down `EditorToolbar` → `InsertMenu`. The source-mode switch is not a view toggle and travels separately as `sourceMode` to `InsertMenu` and `EditorContent`, which every instance has.
+The session's code is a chunk of its own, loaded when a memo is first edited or composed, and renders without suspending once loaded; a host that knows an editor is coming calls `preloadMemoEditing()`.
 
 ### Destination and visibility
 
-`AudienceMenu` is one dropdown for a memo's visibility and, where allowed, its Space. Visibility options come first; the Space is an optional row below them that never names the empty state: it reads "Add to space" until one is chosen, then shows the Space, and the selected Space in its submenu toggles back off (a check at rest, an ✕ under the pointer or keyboard, always an ✕ on touch). New top-level memos and edits of top-level memos the user can manage offer the row; a host-provided `defaultSpace` fixes a new memo's placement, and comments never offer it because their Space is the parent's. The destination lives in editor metadata: it is sent on creation, and an edit that changes it sends `space` and `visibility` together so the server can validate the move as one transition. Clearing a Space-only audience resets it to Private; adding a Space never changes the audience. Drafts retain destination and visibility alongside content, attachments, and location. Long names are truncated, with their full text retained for accessible labels and hover titles. Moving a memo between Spaces happens here; there is no separate move dialog.
+`AudienceMenu` is one dropdown for a memo's visibility and, where allowed, its Space. New top-level memos and edits of top-level memos the user can manage offer the Space row; a draft seed's `space` fixes a new memo's placement; comments never offer it because their Space is their parent's. An edit that changes the Space sends `space` and `visibility` together so the server validates the move as one transition.
 
-### Lifecycle hooks
+## Directory structure
 
-Cross-cutting React workflows stay outside the editor shell. `useMemoSave`
-coordinates validation, persistence, query invalidation, and post-save reducer
-state. `useFocusMode` owns focus mode's DOM lifecycle, including restoring the
-previous body scroll style and preserving the editor's place in grid layouts.
-
-### Components
-
-Thin presentation components that dispatch actions and render UI.
-
-## Usage
-
-```typescript
-import MemoEditor from "@/components/MemoEditor";
-
-// Create mode: omit `memo`. Pass an existing Memo to edit it instead.
-<MemoEditor
-  cacheKey="home-composer"
-  onConfirm={(name) => console.log('Saved:', name)}
-  onCancel={() => console.log('Cancelled')}
-/>
+```
+MemoEditor/
+├── index.ts                # MemoEditor, preloadMemoEditing, prop types
+├── MemoEditor.tsx          # The memo-level component: modes, data, draft store, lazy session
+├── MemoMarkdown.tsx        # The editor binding
+├── useMemoDecorations.ts   # Tag colors and resolved mentions, one redecorate
+├── view/                   # Read-only surface: MemoContentView, linkCards, headings, navigation, search highlight
+└── edit/                   # Editing surface
+    ├── EditSession.tsx         # The chrome over the draft store
+    ├── Editor.tsx              # MemoMarkdown editable + composer extensions + controller
+    ├── controller.ts, extensions.ts, uploadAnchors.ts, editor.css
+    ├── draftKey.ts             # Identity → draft key, legacy migration
+    ├── initialState.ts         # The store's first state, from the memo or the draft
+    ├── state/, services/, hooks/, components/, Toolbar/, types/, utils/
+    └── constants.ts
 ```
 
 ## Testing
 
-Services are pure functions — easy to unit test without React.
-
-```typescript
-const state = createInitialState(); // from state/types.ts
-const result = await memoService.save(state, { memoName: 'memos/123' });
-```
+- `tests/memo-record.test.tsx`: reads by name, freshness, optimistic patches, the comment mutations.
+- `tests/memo-editor-view.test.tsx`: view mode by name, task ticking through the mutation.
+- `tests/memo-content-view.test.tsx`, `tests/editor.test.tsx`: the surfaces over the binding.
+- `tests/use-memo-init.test.tsx`, `tests/draft-key.test.ts`, `tests/use-auto-save.test.tsx`: drafts and keys.
+- `tests/use-memo-save.test.tsx`, `tests/memo-editor-*.test.ts*`: the session and its save path. Tests that mount the session call `await preloadMemoEditing()` first so it renders without suspending.

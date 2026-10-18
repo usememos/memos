@@ -3,31 +3,28 @@ import { render, screen } from "@testing-library/react";
 import { act, createRef } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import MemoCommentSection, { type MemoCommentSectionHandle } from "@/components/MemoCommentSection";
-import type { MemoEditorProps } from "@/components/MemoEditor/types";
 import { State } from "@/types/proto/api/common_pb";
 import { MemoSchema } from "@/types/proto/api/memo_service_pb";
 
 const mocks = vi.hoisted(() => ({
   currentUser: { name: "users/alice" } as { name: string } | undefined,
-  loadMemoEditor: vi.fn(),
 }));
 
-vi.mock("@/components/MemoEditor/loader", () => ({ loadMemoEditor: mocks.loadMemoEditor }));
+vi.mock("@/components/MemoEditor", () => ({
+  preloadMemoEditing: () => Promise.resolve(),
+  MemoEditor: ({ autoFocus, draft }: { autoFocus?: boolean; draft: { parent?: string } }) => (
+    <div data-testid="comment-editor" data-auto-focus={autoFocus} data-parent-memo-name={draft.parent}>
+      <textarea aria-label="Comment editor" />
+    </div>
+  ),
+}));
 vi.mock("@/components/MemoView", () => ({ default: () => <div data-testid="comment-memo" /> }));
 vi.mock("@/hooks/useCurrentUser", () => ({ default: () => mocks.currentUser }));
 vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
 
-const MockMemoEditor = ({ autoFocus, parentMemoName }: MemoEditorProps) => (
-  <div data-testid="comment-editor" data-auto-focus={autoFocus} data-parent-memo-name={parentMemoName}>
-    <textarea aria-label="Comment editor" />
-  </div>
-);
-
 describe("MemoCommentSection", () => {
   beforeEach(() => {
     mocks.currentUser = { name: "users/alice" };
-    mocks.loadMemoEditor.mockReset();
-    mocks.loadMemoEditor.mockResolvedValue({ default: MockMemoEditor });
   });
 
   it("does not offer or imperatively open a comment editor for archived memos", async () => {
@@ -47,7 +44,7 @@ describe("MemoCommentSection", () => {
     expect(screen.getByRole("heading", { name: "memo.comment.self" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "memo.comment.self" })).toHaveAttribute("id", "memo-comments");
     expect(screen.queryByRole("button", { name: /memo.comment.write-a-comment/ })).not.toBeInTheDocument();
-    expect(mocks.loadMemoEditor).not.toHaveBeenCalled();
+    expect(screen.queryByTestId("comment-editor")).not.toBeInTheDocument();
   });
 
   it("opens and focuses the existing comment editor through its sidebar handle", async () => {
@@ -68,7 +65,6 @@ describe("MemoCommentSection", () => {
       await ref.current?.openEditor();
     });
 
-    expect(mocks.loadMemoEditor).toHaveBeenCalledOnce();
     expect(screen.getByTestId("comment-editor")).toHaveAttribute("data-auto-focus", "true");
     expect(screen.getByTestId("comment-editor")).toHaveAttribute("data-parent-memo-name", "memos/detail");
 

@@ -1,12 +1,11 @@
 import { PlusIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { MentionResolutionProvider } from "@/components/MemoContent/MentionResolutionContext";
-import MemoEditor from "@/components/MemoEditor";
-import type { MemoEditorProps } from "@/components/MemoEditor/types/components";
+import { type MemoDraftSeed, MemoEditor } from "@/components/MemoEditor";
 import MemoView from "@/components/MemoView";
 import type { MemoTimeDisplay } from "@/components/MemoView/types";
 import { buttonVariants } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { MentionResolutionProvider } from "@/contexts/MentionResolutionContext";
 import { NewMemoProvider } from "@/contexts/NewMemoContext";
 import { useSpaceContext } from "@/contexts/SpaceContext";
 import { useView } from "@/contexts/ViewContext";
@@ -18,11 +17,12 @@ import { useTranslate } from "@/utils/i18n";
 const COMPOSE_ROW_CLASS = cn(buttonVariants({ variant: "quiet", size: "sm" }), "self-start");
 
 export interface MemoPanelCompose {
-  cacheKey: string;
+  /** Where the new memo is composed, such as `calendar:<date>`; each scope keeps its own draft. */
+  scope: string;
   /** The quiet row's label, e.g. "New memo on this day". */
   label: string;
   /** What the new memo inherits from the selection: its day, its place. */
-  defaults?: Pick<MemoEditorProps, "defaultCreateTime" | "defaultLocation">;
+  defaults?: Pick<MemoDraftSeed, "createTime" | "location">;
   /** Whether the editor is open in place of the row, for hosts whose own gestures could dismiss it. */
   onComposingChange?: (composing: boolean) => void;
   onSavingChange?: (saving: boolean) => void;
@@ -94,11 +94,9 @@ export function MemoPanelList({ memos, selectionKey, timeDisplay, emptyText, com
         isUserSettingsInitialized &&
         (composing ? (
           <MemoEditor
-            cacheKey={compose.cacheKey}
+            draft={{ scope: compose.scope, space: selectedSpaceName, ...compose.defaults }}
             autoFocus
             placeholder={t("editor.any-thoughts")}
-            defaultSpace={selectedSpaceName}
-            {...compose.defaults}
             onSavingChange={compose.onSavingChange}
             onConfirm={(name) => {
               setComposingFor(undefined);

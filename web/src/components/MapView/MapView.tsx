@@ -305,9 +305,9 @@ export function MapView() {
           compose={
             composeLocation && user && (!creatorUsername || creatorUsername === user.username)
               ? {
-                  cacheKey: `map-editor:${user?.name}:${selectedSpaceName ?? "all"}:${locationKey(composeLocation)}`,
+                  scope: `map:${user?.name}:${selectedSpaceName ?? "all"}:${locationKey(composeLocation)}`,
                   label: t("map.new-here"),
-                  defaults: { defaultLocation: composeLocation },
+                  defaults: { location: composeLocation },
                   onComposingChange: setComposing,
                   onSavingChange: setSaving,
                   onConfirm: (name) => void afterSave(name),

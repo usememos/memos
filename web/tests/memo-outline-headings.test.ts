@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { extractHeadings } from "@/components/MemoContent/headings";
+import { extractHeadings } from "@/components/MemoEditor/view/headings";
 
 // The memo view sets the same anchors as element ids (see memo-content.test.tsx), so an
 // outline link always has somewhere to land.

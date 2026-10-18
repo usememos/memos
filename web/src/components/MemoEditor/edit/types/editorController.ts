@@ -1,5 +1,5 @@
 import type { Position, SelectionJSON } from "@usememos/editor";
-import type { UploadAnchorDescriptor } from "../Editor/uploadAnchors";
+import type { UploadAnchorDescriptor } from "../uploadAnchors";
 
 /** A place in the document, such as where files were dropped. Valid until the document changes. */
 export type EditorPosition = Position;

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { HeadingItem } from "@/components/MemoContent/headings";
+import type { HeadingItem } from "@/components/MemoEditor/view/headings";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { findAnchorTarget, findMemoContentRoot } from "@/utils/markdown-manipulation";

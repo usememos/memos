@@ -122,6 +122,7 @@ Black-box service tests live in `server/api/test/`, unit tests next to the code.
 - Use `@/` for absolute imports.
 - Follow Biome formatting: 2-space indent, double quotes, semicolons, 140-character line width.
 - Put server data in React Query hooks under `web/src/hooks/`; keep UI-only state in contexts or component state.
+- Show, edit and compose memos through `web/src/components/MemoEditor` (a name or draft seed plus a mode); see its `README.md`.
 - Use Tailwind CSS v4 utilities, `cn()` for class merging, and CVA for variants.
 - Reuse Base UI primitives and existing components before adding new UI primitives.
 - Keep generated proto TypeScript under `web/src/types/proto/` out of manual edits and Biome rewrites.

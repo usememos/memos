@@ -23,7 +23,7 @@ vi.mock("@/contexts/AppSidebarContext", () => ({ useAppSidebar: () => ({ setMemo
 vi.mock("@/components/MemoView", () => ({ default: ({ memo }: { memo: Memo }) => <article>{memo.content}</article> }));
 vi.mock("@/components/MemoView/MemoViewContext", () => ({ computeCommentAmount: () => 0 }));
 vi.mock("@/components/MemoCommentSection", () => ({ default: () => null }));
-vi.mock("@/components/MemoContent/MentionResolutionContext", () => ({
+vi.mock("@/contexts/MentionResolutionContext", () => ({
   MentionResolutionProvider: ({ children }: { children: ReactNode }) => children,
 }));
 vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));

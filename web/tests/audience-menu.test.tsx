@@ -1,8 +1,8 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import { createInitialState, EditorProvider, useEditorContext, useEditorSelector } from "@/components/MemoEditor/state";
-import AudienceMenu from "@/components/MemoEditor/Toolbar/AudienceMenu";
-import { EditorToolbar } from "@/components/MemoEditor/Toolbar/EditorToolbar";
+import { createInitialState, EditorProvider, useEditorContext, useEditorSelector } from "@/components/MemoEditor/edit/state";
+import AudienceMenu from "@/components/MemoEditor/edit/Toolbar/AudienceMenu";
+import { EditorToolbar } from "@/components/MemoEditor/edit/Toolbar/EditorToolbar";
 import { Visibility } from "@/types/proto/api/memo_service_pb";
 
 const spacesQuery = vi.hoisted(() => ({
@@ -14,7 +14,7 @@ const spacesQuery = vi.hoisted(() => ({
   isError: false,
   refetch: vi.fn(),
 }));
-vi.mock("@/components/MemoEditor/Toolbar/InsertMenu", () => ({ default: () => null }));
+vi.mock("@/components/MemoEditor/edit/Toolbar/InsertMenu", () => ({ default: () => null }));
 vi.mock("@/hooks/useCurrentUser", () => ({ default: () => ({ name: "users/test" }) }));
 vi.mock("@/hooks/useSpaceQueries", () => ({ useSpaces: () => spacesQuery }));
 

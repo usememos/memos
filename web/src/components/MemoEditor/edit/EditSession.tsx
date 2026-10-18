@@ -7,11 +7,11 @@ import { cn } from "@/lib/utils";
 import { InstanceSetting_Key } from "@/types/proto/api/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString } from "@/utils/memo";
-import { canManageMemo } from "@/utils/user";
+
 import { AudioRecorderPanel, EditorContent, EditorMetadata, FocusModeExitButton, FocusModeOverlay, TimestampPopover } from "./components";
 import { EditorSuggestions } from "./components/EditorSuggestions";
 import { FOCUS_MODE_STYLES } from "./constants";
-import type { EditorFileOrigin } from "./Editor/extensions";
+import type { EditorFileOrigin } from "./extensions";
 import {
   splitInlineLocalFiles,
   toLocalFiles,
@@ -25,29 +25,30 @@ import {
   useMemoSave,
   useSourceMode,
 } from "./hooks";
+import { canChooseSpaceFor } from "./initialState";
 import { cacheService, errorService, transcriptionService } from "./services";
-import { EditorProvider, useEditorContext, useEditorSelector } from "./state";
+import { useEditorContext, useEditorSelector } from "./state";
 import { EditorToolbar } from "./Toolbar";
-import type { EditorViewToggles, MemoEditorProps } from "./types";
+import type { EditorViewToggles, EditSessionProps } from "./types";
 import type { LocalFile } from "./types/attachment";
 import type { EditorController, EditorPosition } from "./types/editorController";
 
-// A host that presents the editor full-screen supplies `onFocusModeExit`; its
-// presence is what makes an instance hosted, so focus mode starts on and stays on.
-const MemoEditor = (props: MemoEditorProps) => (
-  <EditorProvider initialFocusMode={Boolean(props.onFocusModeExit)}>
-    <MemoEditorImpl {...props} />
-  </EditorProvider>
-);
-
-const MemoEditorImpl: React.FC<MemoEditorProps> = ({
+/**
+ * An editing session over the draft store MemoEditor provides: the editor with the
+ * composer's chrome around it (timestamp, attachments, suggestions, toolbar, focus
+ * mode, audio recording), the draft persisted while it is open, and the save that
+ * writes the memo through the memo mutations. A host that presents the editor
+ * full-screen supplies `onFocusModeExit`; its presence is what makes an instance
+ * hosted, so focus mode starts on and stays on.
+ */
+export const EditSession: React.FC<EditSessionProps> = ({
   className,
-  cacheKey,
+  draftKey,
+  frameless,
   memo,
   parentMemoName,
   suggestions = [],
   defaultSpace,
-  defaultLocation,
   autoFocus,
   onFocusModeExit,
   onFocusModeChange,
@@ -71,7 +72,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   }, [isFocusMode, onFocusModeChange]);
   const isSaving = useEditorSelector((s) => s.ui.isLoading.saving);
   const hasTimestamp = useEditorSelector((s) => Boolean(s.timestamps.createTime));
-  const { userGeneralSetting, userTagsSetting } = useAuth();
+  const { userGeneralSetting } = useAuth();
   const { aiSetting, fetchSetting } = useInstance();
   const [isAudioRecorderOpen, setIsAudioRecorderOpen] = useState(false);
   const [isTranscribingAudio, setIsTranscribingAudio] = useState(false);
@@ -85,7 +86,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   // An edited top-level memo can change its Space; a new one can unless its
   // host fixes the target (e.g. composing inside a Space).
   const draftSpace = useEditorSelector((s) => s.metadata.space);
-  const canChooseSpace = memo ? !memo.parent && canManageMemo(memo, currentUser) : !parentMemoName && !defaultSpace;
+  const canChooseSpace = canChooseSpaceFor({ memo, currentUser, parentMemoName, defaultSpace });
   const editorSpace = memo ? draftSpace : parentMemoName ? undefined : (defaultSpace ?? draftSpace);
   const canTranscribe = useMemo(() => {
     const providerId = aiSetting.transcription?.providerId ?? "";
@@ -96,25 +97,14 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
 
   // Get default visibility from user settings
   const defaultVisibility = userGeneralSetting?.memoVisibility ? convertVisibilityFromString(userGeneralSetting.memoVisibility) : undefined;
-  const editorCacheKey = cacheService.key(currentUser?.name ?? "", cacheKey);
 
   // Source mode only changes how the text is edited, so every composer offers it.
   const [editorMode, setEditorMode] = useSourceMode();
   const isSourceMode = editorMode === "source";
   const sourceMode = { isSourceMode, onToggle: () => setEditorMode(isSourceMode ? "rich" : "source") };
 
-  const { isInitialized } = useMemoInit({
-    editorRef,
-    memo,
-    cacheKey,
-    username: currentUser?.name ?? "",
-    autoFocus,
-    defaultVisibility,
-    defaultCreateTime,
-    defaultLocation,
-    canChooseSpace,
-    mode: editorMode,
-  });
+  const { isInitialized } = useMemoInit({ editorRef, draftKey, autoFocus, mode: editorMode });
+  // An edit starts from the memo and never persists a draft; only new memos and comments do.
   const isDraftCacheEnabled = !memo;
 
   useEffect(() => {
@@ -122,7 +112,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   }, [isSaving, onSavingChange]);
 
   // Auto-save content to localStorage (subscribes to the store internally).
-  const { discardDraft } = useAutoSave(currentUser?.name ?? "", cacheKey, isInitialized && isDraftCacheEnabled);
+  const { discardDraft } = useAutoSave(draftKey, isInitialized && isDraftCacheEnabled);
 
   const { containerRef: editorContainerRef, placeholderHeight } = useFocusMode(isFocusMode);
 
@@ -231,9 +221,9 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   const rememberCursor = useCallback(() => {
     const cursor = editorRef.current?.getSelection();
     if (cursor !== undefined) {
-      cacheService.saveCursor(editorCacheKey, cursor, editorMode);
+      cacheService.saveCursor(draftKey, cursor, editorMode);
     }
-  }, [editorCacheKey, editorMode]);
+  }, [draftKey, editorMode]);
 
   // Hosted: focus mode is the host's frame, so leaving it dismisses the host.
   // Inline: focus mode is a view this editor owns and toggles in place.
@@ -351,7 +341,10 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
       <div
         ref={editorContainerRef}
         className={cn(
-          "group relative w-full flex flex-col justify-between items-start bg-card px-4 py-3 rounded-lg border border-border/70 gap-2",
+          "group relative w-full flex flex-col justify-between items-start gap-2",
+          // A card that is the frame already supplies the background, border and padding; a
+          // session floating over the page in focus mode always brings its own.
+          (!frameless || isFocusMode) && "bg-card px-4 py-3 rounded-lg border border-border/70",
           FOCUS_MODE_STYLES.transition,
           isFocusMode && cn(FOCUS_MODE_STYLES.container.base, FOCUS_MODE_STYLES.container.spacing),
           !isFocusMode && className,
@@ -379,7 +372,6 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
           sourceMode={sourceMode}
           onSubmit={handleSave}
           onFiles={handleEditorFiles}
-          tagsSetting={userTagsSetting}
         />
 
         {isAudioRecorderOpen && (audioRecorder.isBusy || isTranscribingAudio) && (
@@ -425,5 +417,3 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
     </>
   );
 };
-
-export default MemoEditor;

@@ -1,8 +1,8 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeAll, describe, expect, test, vi } from "vitest";
-import { createInitialState, EditorProvider } from "@/components/MemoEditor/state";
-import { EditorToolbar } from "@/components/MemoEditor/Toolbar/EditorToolbar";
-import InsertMenu from "@/components/MemoEditor/Toolbar/InsertMenu";
+import { createInitialState, EditorProvider } from "@/components/MemoEditor/edit/state";
+import { EditorToolbar } from "@/components/MemoEditor/edit/Toolbar/EditorToolbar";
+import InsertMenu from "@/components/MemoEditor/edit/Toolbar/InsertMenu";
 
 vi.mock("@/utils/i18n", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/utils/i18n")>()),
