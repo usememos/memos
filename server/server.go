@@ -99,6 +99,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	fileServerService.RegisterRoutes(mux, apiHandler)
 	// Preserve unclean-path routing without ServeMux's automatic redirects.
 	fallback := frontendService.Handler(apiHandler)
+	apiService.RegisterMemoMarkdownRoutes(mux, fallback)
 	router := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		frontend.SetCacheHeaders(w, r)
 		routingRequest := httphandler.RoutingRequest(r)
