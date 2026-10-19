@@ -67,6 +67,10 @@ export async function callApplication(ctx, upstream, { method = "GET", path, que
  * @param {string[]} o.scopes               AppPort scopes granted to any caller that presents a credential; the application
  *                                          still decides every individual access with that credential
  * @param {object} [o.resources]            integration resources (for `access` declarations)
+ * @param {string[]} [o.extensions]       manifest extensions the bridge advertises (e.g. appport.fulfillment/1)
+ * @param {object} [o.attributes]           non-sensitive manifest attributes, published as given (e.g. fulfillment claims
+ *                                          built with @appport/protocol fulfillmentAttributes). Declarations only: they grant
+ *                                          no caller any permission, and every call is still decided by the application.
  * @param {boolean} o.publish               opt-in public discovery
  * @param {Array} o.publishCapabilities     [{name, version, purpose?}]
  * @param {string} [o.host] [o.port]
@@ -76,6 +80,8 @@ export async function startBridge(o) {
     application: o.application,
     capabilities: o.capabilities,
     ...(o.resources ? { resources: o.resources } : {}),
+    ...(o.extensions ? { extensions: o.extensions } : {}),
+    ...(o.attributes ? { attributes: o.attributes } : {}),
     authorizer: permissionAuthorizer()
   });
   const server = createServer({

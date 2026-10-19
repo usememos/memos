@@ -18,6 +18,10 @@ touched, and nothing runs unless you start it.
 * AppPort only checks that a credential was presented (anonymous calls get `UNAUTHORIZED` without reaching Memos).
   Memos' answers map to AppPort errors: 401 → `UNAUTHORIZED`, 403 → `FORBIDDEN`, 404 → `NOT_FOUND`.
 * Discovery is opt-in (`APPPORT_BRIDGE_PUBLIC=1`) and is never authorization.
+* A host that adds capabilities to the bridge may also publish manifest `extensions` and `attributes` through
+  `startBridge` (for example an AppPort fulfillment claim, `appport.fulfillment/1`, built with `@appport/protocol`'s
+  `claimFor` and `fulfillmentAttributes`). They are declarations, published as given: they grant no caller any permission,
+  and `appport.integration/1` stays reserved for the integration descriptor.
 * Input is constrained by the published contract (e.g. `name` must match `memos/<uid>`), so malformed requests are
   rejected before Memos is contacted.
 
@@ -53,6 +57,9 @@ everything as an independent consumer using only the published `@appport/sdk`:
 * a missing memo is `NOT_FOUND`; malformed input is `INVALID_INPUT`
 * a lost response is *indeterminate*, never confirmed, and is sent once
 * all disposable data is removed
+
+`test/kit.test.mjs` needs no Memos: it checks that manifest extensions and attributes are published exactly as given,
+that without them nothing changes, and that a declaration does not let an anonymous caller in.
 
 Package versions are pinned exactly (`@appport/sdk` 1.2.2) and installed from the npm registry via `package-lock.json`.
 Requires Node 22.13+ (uses the built-in `node:sqlite` for the read-only database check).
