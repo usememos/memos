@@ -2,10 +2,10 @@ import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { MemoContentView } from "@/components/MemoEditor/view/MemoContentView";
+import { TimelineViewProvider } from "@/contexts/ViewContext";
 import { highlightLoadedCode, loadHighlighter } from "@/lib/code-highlight";
 
 const state = vi.hoisted(() => ({
-  linkPreview: true,
   resolved: new Set<string>(),
   tagsSetting: undefined as unknown,
   filters: [] as { factor: string; value: string }[],
@@ -27,7 +27,6 @@ vi.mock("@/contexts/MemoFilterContext", async (importOriginal) => ({
   }),
 }));
 
-vi.mock("@/contexts/ViewContext", () => ({ useLinkPreviewEnabled: () => state.linkPreview }));
 vi.mock("@/contexts/MentionResolutionContext", () => ({ useResolvedMentionUsernames: () => state.resolved }));
 vi.mock("@/hooks/useNavigateTo", () => ({ default: () => state.navigateTo }));
 vi.mock("@/hooks/useNearViewport", () => ({ useNearViewport: () => ({ ref: () => {}, isNearViewport: true }) }));
@@ -41,12 +40,14 @@ vi.mock("@/hooks/useMemoQueries", () => ({
 const renderMemo = (content: string, props: Partial<React.ComponentProps<typeof MemoContentView>> = {}, path = "/") =>
   render(
     <MemoryRouter initialEntries={[path]}>
-      <MemoContentView content={content} memoName="memos/1" {...props} />
+      <TimelineViewProvider>
+        <MemoContentView content={content} memoName="memos/1" {...props} />
+      </TimelineViewProvider>
     </MemoryRouter>,
   );
 
 beforeEach(() => {
-  state.linkPreview = true;
+  localStorage.clear();
   state.resolved = new Set();
   state.tagsSetting = undefined;
   state.filters = [];
@@ -135,16 +136,23 @@ describe("code blocks", () => {
 });
 
 describe("link previews", () => {
-  it("shows a card for a paragraph that is only a bare link", async () => {
-    renderMemo("https://example.com");
+  it.each(["/", "/memos/1", "/memos/shares/example"])("shows a card for a bare link on %s by default", async (path) => {
+    renderMemo("https://example.com", {}, path);
     await waitFor(() => expect(screen.getByText("Example Title")).toBeInTheDocument());
   });
 
   it("keeps the plain link when previews are off or the link has its own text", () => {
-    state.linkPreview = false;
+    localStorage.setItem("memos-view-setting", JSON.stringify({ linkPreview: false }));
     const { container } = renderMemo("https://example.com\n\n[Example](https://example.com)");
     expect(screen.queryByText("Example Title")).not.toBeInTheDocument();
     expect(container.querySelectorAll("a")).toHaveLength(2);
+  });
+
+  it.each(["/memos/1", "/memos/shares/example"])("honors disabled previews when opening %s directly", (path) => {
+    localStorage.setItem("memos-view-setting", JSON.stringify({ linkPreview: false }));
+    renderMemo("https://example.com", {}, path);
+    expect(screen.queryByText("Example Title")).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "https://example.com" })).toHaveAttribute("href", "https://example.com");
   });
 });
 

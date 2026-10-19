@@ -5,7 +5,7 @@ import { TimelineViewProvider, useLinkPreviewEnabled, useView } from "@/contexts
 
 const storageKey = "memos-view-setting";
 const saved = { timeBasis: "update_time", orderByTimeAsc: true, maxColumns: 3, compactMode: true, linkPreview: false };
-const defaults = { timeBasis: "create_time", orderByTimeAsc: false, maxColumns: 1, compactMode: false, linkPreview: true };
+const defaults = { timeBasis: "create_time", orderByTimeAsc: false, maxColumns: 1, compactMode: false, linkPreview: false };
 
 function Probe() {
   const { timeBasis, orderByTimeAsc, maxColumns, compactMode } = useView();
@@ -59,9 +59,25 @@ describe("Timeline display settings scope", () => {
     "/spaces/test/map",
     "/setting",
     "/views",
-  ])("keeps %s independent of Timeline preferences", (path) => {
+  ])("keeps the default layout and saved link-preview preference on %s", (path) => {
     renderRoute(path);
     expect(settings()).toEqual(defaults);
+  });
+
+  it("keeps link previews disabled when opening a memo and returning to the Timeline", async () => {
+    const router = renderRoute("/");
+    expect(settings()).toEqual(saved);
+    await act(() => router.navigate("/memos/example"));
+    expect(settings()).toEqual(defaults);
+    await act(() => router.navigate("/"));
+    expect(settings()).toEqual(saved);
+    expect(JSON.parse(localStorage.getItem(storageKey) ?? "{}")).toEqual(saved);
+  });
+
+  it("leaves link previews enabled by default on a memo detail page", () => {
+    localStorage.removeItem(storageKey);
+    renderRoute("/memos/example");
+    expect(settings()).toEqual({ ...defaults, linkPreview: true });
   });
 
   it("restores Timeline preferences after visiting another view without overwriting storage", async () => {

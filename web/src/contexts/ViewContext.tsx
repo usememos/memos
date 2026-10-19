@@ -62,7 +62,7 @@ export function ViewProvider({ children, enabled = true }: { children: ReactNode
   };
 
   const [viewState, setViewState] = useState(getInitialState);
-  // Keep the saved Timeline preferences while other views use their default presentation.
+  // Keep the saved Timeline layout while other views use their default presentation.
   const activeState = enabled ? viewState : DEFAULT_VIEW_STATE;
   const timeBasis = activeState.timeBasis ?? "create_time";
 
@@ -94,7 +94,8 @@ export function ViewProvider({ children, enabled = true }: { children: ReactNode
         orderByTimeAsc: activeState.orderByTimeAsc,
         timeBasis,
         compactMode: activeState.compactMode,
-        linkPreview: activeState.linkPreview,
+        // Link previews follow the memo content, including outside the Timeline.
+        linkPreview: viewState.linkPreview,
         maxColumns: activeState.maxColumns,
         setOrderByTimeAsc,
         setTimeBasis,
