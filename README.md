@@ -7,6 +7,12 @@
   </picture>
 </h1>
 
+<p>
+  <a href="README.md"><strong>English</strong></a> ·
+  <a href="README.zh-CN.md">简体中文</a>
+</p>
+
+
 ### Seconds to write. Yours to keep.
 
 Memos is a place for every quick thought. No title, no folder, nothing to pick: type, and the thought is kept on the day you wrote it. Your memos stay where you decide, yours alone until you share one with family and friends.
