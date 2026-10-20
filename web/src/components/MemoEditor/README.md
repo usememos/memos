@@ -61,7 +61,7 @@ Hosts of a new top-level memo pass `useMemoSuggestions()` into `suggestions`; ed
 - **Inline** (Home, panels): the session brings its own frame. The ＋ menu offers focus mode, which expands it over the page; the exit button minimizes it back.
 - **Hosted** (`onFocusModeExit`): a host presents the session full-screen and owns that frame (`contexts/GlobalMemoEditorContext.tsx`). It mounts straight into focus mode and exits by calling back to dismiss the host.
 
-The session's code is a chunk of its own, loaded when a memo is first edited or composed, and renders without suspending once loaded; a host that knows an editor is coming calls `preloadMemoEditing()`.
+The session's code is a chunk of its own, loaded when a memo is first edited or composed, and renders without suspending once loaded. A host that knows an editor is coming calls `preloadMemoEditing()`: the router loads it with the Home page for a signed-in user, so the composer renders with the page, and the comment section loads it while the pointer is on its button. Until it is loaded a new draft shows a still of the empty composer, the same frame, placeholder line and toolbar height, so nothing moves when the session takes its place.
 
 ### Destination and visibility
 
