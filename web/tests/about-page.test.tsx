@@ -52,7 +52,7 @@ describe("<About>", () => {
     expect(screen.getByRole("heading", { name: "Memos" })).toBeInTheDocument();
     expect(document.querySelector(".memos-mark")).toHaveAttribute("fill", "currentColor");
     expect(document.querySelector(".memos-mark")).toHaveAttribute("height", "48");
-    expect(screen.getByText(/Seconds to write/i)).toBeInTheDocument();
+    expect(screen.getByText("Simple note-taking for your everyday thoughts.")).toBeInTheDocument();
     expect(screen.getByText("about.description")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Version\s*v0\.25\.0/ })).toHaveAttribute(
       "href",
@@ -144,7 +144,7 @@ describe("<About>", () => {
 
     expect(screen.getByRole("heading", { name: "Team Notes" })).toBeInTheDocument();
     expect(screen.getByText("Our shared scratchpad.")).toBeInTheDocument();
-    expect(screen.queryByText(/Seconds to write/i)).not.toBeInTheDocument();
+    expect(screen.queryByText("Simple note-taking for your everyday thoughts.")).not.toBeInTheDocument();
     expect(document.querySelector("img")).toHaveAttribute("src", "/custom-logo.png");
     expect(screen.getByText("Powered by Memos")).toBeInTheDocument();
   });

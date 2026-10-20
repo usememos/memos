@@ -1,7 +1,7 @@
 {
   "name": "Memos",
   "short_name": "Memos",
-  "description": "A timeline for your thoughts. Just type. It stays yours.",
+  "description": "Memos is an open-source, self-hosted note-taking app that brings your everyday thoughts together in a personal timeline. Your data stays yours, and you choose what to keep private or share.",
   "icons": [
     { "src": "/android-chrome-192x192.png?v=celadon", "sizes": "192x192", "type": "image/png" },
     { "src": "/android-chrome-512x512.png?v=celadon", "sizes": "512x512", "type": "image/png" }

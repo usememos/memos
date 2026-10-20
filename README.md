@@ -7,9 +7,9 @@
   </picture>
 </h1>
 
-### Seconds to write. Yours to keep.
+### Simple note-taking for your everyday thoughts.
 
-Memos is a place for every quick thought. No title, no folder, nothing to pick: type, and the thought is kept on the day you wrote it. Your memos stay where you decide, yours alone until you share one with family and friends.
+Memos is an open-source, self-hosted note-taking app that brings your everyday thoughts together in a personal timeline. Your data stays yours, and you choose what to keep private or share.
 
 [Demo](https://demo.usememos.com) · [Install](#quick-start) · [Docs](https://usememos.com/docs) · [Discord](https://discord.gg/tfPJa4UmAv)
 
@@ -22,12 +22,14 @@ Memos is a place for every quick thought. No title, no folder, nothing to pick: 
   <img src="https://raw.githubusercontent.com/usememos/.github/refs/heads/main/assets/previews/timeline-light.png" alt="The Memos timeline with a memo composer and recent memos" />
 </picture>
 
-## What you get
+## About Memos
 
-- **A place for every quick thought.** Memos asks nothing first: no title to invent, no folder to pick, no place to put it. Type, and the thought is kept before it goes.
-- **A day you can return to.** Every memo keeps the day it was written, so any day can be found again: by scrolling, by calendar, by tag, or by word.
-- **A record that is yours.** Your memos live where you decide, report to no one, and leave as plain Markdown whenever you like.
-- **Family and friends, when you choose.** A memo is yours alone until you share it. Each person writes their own memos and sees only what you choose to show.
+Memos is an open-source, self-hosted note-taking app for your everyday thoughts.
+
+- **Everyday writing.** A single sentence can be a whole memo, or you can take your time with a longer entry, using Markdown to give your words more structure.
+- **A personal timeline.** Each memo stays with the day you wrote it, bringing your thoughts together in a timeline you can look back through. Tags connect related thoughts across those days, making it easy to pick up a topic again or find something you remember writing.
+- **Your own data.** Your record lives on your own server, and your data stays yours.
+- **Sharing you control.** You choose what stays private, what to share with family and friends, and what to publish on the web. In shared spaces, you can write alongside others while each person keeps their own memos.
 
 ## Quick start
 

@@ -7,7 +7,7 @@
     "api-docs-note": "REST and gRPC reference",
     "build": "Build",
     "demo": "Demo",
-    "description": "Memos is a place for every quick thought. No title, no folder, nothing to pick: type, and the thought is kept on the day you wrote it. Your memos stay where you decide, yours alone until you share one with family and friends.",
+    "description": "Memos is an open-source, self-hosted note-taking app that brings your everyday thoughts together in a personal timeline. Your data stays yours, and you choose what to keep private or share.",
     "distribution": "Distribution",
     "documents-note": "Deploy, configure, and use Memos",
     "github-repository-note": "Source, issues, and releases",

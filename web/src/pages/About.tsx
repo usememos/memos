@@ -97,17 +97,9 @@ const About = () => {
                 </div>
               )}
             </div>
-            {/* The tagline sizes to its own column so neither sentence ever breaks mid-line. */}
-            <div className="@container mt-6">
-              <p className="text-[length:clamp(1.875rem,13cqi,3.25rem)] leading-[1.15] tracking-tight wrap-anywhere text-foreground">
-                {customProfile?.description || (
-                  <>
-                    <span className="block whitespace-nowrap">Seconds to write.</span>{" "}
-                    <span className="block whitespace-nowrap">Yours to keep.</span>
-                  </>
-                )}
-              </p>
-            </div>
+            <p className="mt-6 text-balance text-3xl leading-tight tracking-tight wrap-anywhere text-foreground sm:text-4xl">
+              {customProfile?.description || "Simple note-taking for your everyday thoughts."}
+            </p>
             <p className="mt-6 max-w-md text-base leading-relaxed text-muted-foreground @min-[60rem]:text-lg">{t("about.description")}</p>
 
             {buildRows.length > 0 && (
