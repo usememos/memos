@@ -334,11 +334,8 @@ message InstanceSetting {
 
   // MemoRelatedSetting is the memo-related instance configuration.
   message MemoRelatedSetting {
-    // Whether double-clicking a memo opens it for editing.
-    bool enable_double_click_edit = 1;
-
     // The reactions users can choose from. Defaults to a built-in emoji set when empty.
-    repeated string reactions = 2;
+    repeated string reactions = 1;
   }
 
   // TagsSetting is the instance-wide tag metadata configuration.

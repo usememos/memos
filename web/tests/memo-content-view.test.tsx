@@ -27,7 +27,9 @@ vi.mock("@/contexts/MemoFilterContext", async (importOriginal) => ({
   }),
 }));
 
-vi.mock("@/contexts/ViewContext", () => ({ useLinkPreviewEnabled: () => state.linkPreview }));
+vi.mock("@/hooks/useDevicePreferences", () => ({
+  useDevicePreferences: () => ({ linkPreview: state.linkPreview, doubleClickEdit: false }),
+}));
 vi.mock("@/contexts/MentionResolutionContext", () => ({ useResolvedMentionUsernames: () => state.resolved }));
 vi.mock("@/hooks/useNavigateTo", () => ({ default: () => state.navigateTo }));
 vi.mock("@/hooks/useNearViewport", () => ({ useNearViewport: () => ({ ref: () => {}, isNearViewport: true }) }));

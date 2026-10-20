@@ -265,8 +265,7 @@ func convertInstanceMemoRelatedSettingFromStore(setting *storepb.InstanceMemoRel
 		return nil
 	}
 	return &apipb.InstanceSetting_MemoRelatedSetting{
-		EnableDoubleClickEdit: setting.EnableDoubleClickEdit,
-		Reactions:             setting.Reactions,
+		Reactions: setting.Reactions,
 	}
 }
 
@@ -275,8 +274,7 @@ func convertInstanceMemoRelatedSettingToStore(setting *apipb.InstanceSetting_Mem
 		return nil
 	}
 	return &storepb.InstanceMemoRelatedSetting{
-		EnableDoubleClickEdit: setting.EnableDoubleClickEdit,
-		Reactions:             setting.Reactions,
+		Reactions: setting.Reactions,
 	}
 }
 

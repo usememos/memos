@@ -411,18 +411,23 @@
       "label": "내 계정"
     },
     "preference": {
-      "default-memo-visibility": "메모 공개 범위 기본값",
-      "theme": "테마",
-      "label": "개인 설정",
       "appearance-description": "앱의 모양과 계정에 사용할 언어를 선택하세요.",
       "appearance-title": "모양",
+      "default-memo-visibility": "메모 공개 범위 기본값",
       "default-memo-visibility-description": "편집기에서 변경하지 않는 한 새로 생성된 메모에 표시됩니다.",
+      "device-description": "이 브라우저에만 저장되는 읽기 및 편집 설정입니다. 계정에는 저장되지 않습니다.",
+      "device-title": "이 기기",
+      "double-click-edit": "더블 클릭으로 편집",
+      "double-click-edit-description": "내 메모를 더블 클릭하여 편집기에서 엽니다.",
+      "label": "개인 설정",
       "language-description": "인터페이스 언어를 즉시 업데이트하고 계정에 저장합니다.",
+      "link-preview-description": "메모가 표시되는 모든 곳에서 단독 링크 아래에 미리보기 카드를 표시합니다.",
       "memo-defaults-description": "새 메모를 작성할 때 사용할 기본 설정을 지정합니다.",
       "memo-defaults-title": "메모 기본 설정",
       "save-media-metadata": "미디어 메타데이터 저장",
       "save-media-metadata-description": "향후 업로드를 위해 사용 가능한 카메라, 촬영 시간, 위치, 이미지 크기 및 기본 비디오 세부 정보를 저장합니다. 첨부 파일을 볼 수 있는 모든 사용자는 이 메타데이터를 받을 수 있습니다. 기존 첨부 파일은 변경되지 않습니다.",
       "theme-description": "선택한 테마를 이 기기에 즉시 적용합니다.",
+      "theme": "테마",
       "uploads-privacy-description": "업로드된 미디어와 함께 제출되는 개인 정보 보호에 민감한 정보를 관리합니다.",
       "uploads-privacy-title": "업로드 및 개인 정보 보호"
     },
@@ -541,7 +546,6 @@
         "icon-url": "아이콘 URL",
         "title": "서버 커스터마이징"
       },
-      "enable-double-click-to-edit": "더블 클릭으로 편집 활성화",
       "server-name": "서버 이름",
       "label": "시스템",
       "additional-script-description": "모든 웹 페이지에 JavaScript를 삽입합니다. 신뢰할 수 있는 코드만 사용합니다.",
@@ -673,8 +677,6 @@
       "reactions-required": "반응 목록은 비워둘 수 없습니다.",
       "add-reaction": "반응 추가",
       "configured-reactions": "구성된 반응",
-      "double-click-edit-description": "사용자가 메모를 두 번 클릭하여 메모 편집을 시작할 수 있도록 허용합니다.",
-      "editing-title": "편집",
       "reaction-placeholder": "예: 👍",
       "reactions-description": "사용자가 메모에 적용할 수 있는 반응 옵션을 정의합니다.",
       "remove-reaction": "반응 제거"

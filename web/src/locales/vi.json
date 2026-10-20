@@ -411,18 +411,23 @@
       "label": "Tài khoản của tôi"
     },
     "preference": {
-      "default-memo-visibility": "Quyền xem ghi chú mặc định",
-      "theme": "Giao diện",
-      "label": "Tùy chỉnh",
       "appearance-description": "Chọn giao diện ứng dụng và ngôn ngữ ứng dụng sử dụng cho tài khoản của bạn.",
       "appearance-title": "Giao diện",
+      "default-memo-visibility": "Quyền xem ghi chú mặc định",
       "default-memo-visibility-description": "Chế độ hiển thị được áp dụng cho các ghi chú mới được tạo trừ khi được thay đổi trong trình chỉnh sửa.",
+      "device-description": "Tùy chọn đọc và chỉnh sửa chỉ được lưu trong trình duyệt này. Chúng không được lưu vào tài khoản của bạn.",
+      "device-title": "Thiết bị này",
+      "double-click-edit": "Nhấp đúp để chỉnh sửa",
+      "double-click-edit-description": "Mở ghi chú của bạn trong trình soạn thảo bằng cách nhấp đúp vào chúng.",
+      "label": "Tùy chỉnh",
       "language-description": "Cập nhật ngôn ngữ giao diện ngay lập tức và lưu vào tài khoản của bạn.",
+      "link-preview-description": "Hiển thị thẻ xem trước bên dưới các liên kết trần ở bất cứ nơi nào ghi chú được hiển thị.",
       "memo-defaults-description": "Đặt các cài đặt mặc định được sử dụng khi soạn thảo ghi chú mới.",
       "memo-defaults-title": "Cài đặt mặc định ghi chú",
       "save-media-metadata": "Lưu siêu dữ liệu phương tiện",
       "save-media-metadata-description": "Đối với các lần tải lên trong tương lai, hãy lưu thông tin về máy ảnh, thời gian chụp, vị trí, kích thước hình ảnh và chi tiết video cơ bản. Bất kỳ ai có thể xem tệp đính kèm đều có thể nhận được siêu dữ liệu này. Các tệp đính kèm hiện có không thay đổi.",
       "theme-description": "Áp dụng chủ đề đã chọn ngay lập tức trên thiết bị này.",
+      "theme": "Giao diện",
       "uploads-privacy-description": "Kiểm soát thông tin nhạy cảm về quyền riêng tư được gửi kèm theo phương tiện đã tải lên.",
       "uploads-privacy-title": "Tải lên & quyền riêng tư"
     },
@@ -541,7 +546,6 @@
         "icon-url": "URL biểu tượng",
         "title": "Tùy chỉnh máy chủ"
       },
-      "enable-double-click-to-edit": "Bật nhấp đúp để chỉnh sửa",
       "server-name": "Tên máy chủ",
       "label": "Hệ thống",
       "additional-script-description": "Chèn JavaScript vào mọi trang web. Chỉ sử dụng mã đáng tin cậy.",
@@ -673,8 +677,6 @@
       "reactions-required": "Danh sách phản ứng không được trống",
       "add-reaction": "Thêm biểu tượng cảm xúc",
       "configured-reactions": "Biểu tượng cảm xúc đã cấu hình",
-      "double-click-edit-description": "Cho phép người dùng mở chỉnh sửa ghi chú bằng cách nhấp đúp vào ghi chú.",
-      "editing-title": "Đang chỉnh sửa",
       "reaction-placeholder": "ví dụ: 👍",
       "reactions-description": "Xác định các tùy chọn biểu tượng cảm xúc mà người dùng có thể áp dụng cho ghi chú.",
       "remove-reaction": "Xóa phản ứng"

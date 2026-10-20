@@ -411,18 +411,23 @@
       "label": "Minha conta"
     },
     "preference": {
-      "default-memo-visibility": "Visibilidade padrão do memo",
-      "theme": "Tema",
-      "label": "Preferências",
       "appearance-description": "Escolha a aparência do aplicativo e o idioma que ele usa para sua conta.",
       "appearance-title": "Aparência",
+      "default-memo-visibility": "Visibilidade padrão do memo",
       "default-memo-visibility-description": "Visibilidade aplicada a memorandos recém-criados, a menos que seja alterada no editor.",
+      "device-description": "Opções de leitura e edição mantidas apenas neste navegador. Elas não são salvas na sua conta.",
+      "device-title": "Este dispositivo",
+      "double-click-edit": "Clique duplo para editar",
+      "double-click-edit-description": "Abra seus próprios memos no editor com um clique duplo.",
+      "label": "Preferências",
       "language-description": "Atualiza o idioma da interface imediatamente e o salva em sua conta.",
+      "link-preview-description": "Mostrar um cartão de pré-visualização sob links soltos onde quer que memos sejam exibidos.",
       "memo-defaults-description": "Define os padrões usados ​​ao compor novos memorandos.",
       "memo-defaults-title": "Padrões de memorando",
       "save-media-metadata": "Salvar metadados de mídia",
       "save-media-metadata-description": "Para uploads futuros, salve a câmera disponível, a hora da captura, a localização, as dimensões da imagem e detalhes básicos do vídeo. Qualquer pessoa que possa visualizar o anexo poderá receber esses metadados. Os anexos existentes permanecem inalterados.",
       "theme-description": "Aplica o tema selecionado imediatamente neste dispositivo.",
+      "theme": "Tema",
       "uploads-privacy-description": "Controle as informações confidenciais de privacidade enviadas com a mídia carregada.",
       "uploads-privacy-title": "Uploads e privacidade"
     },
@@ -541,7 +546,6 @@
         "icon-url": "URL do ícone",
         "title": "Personalizar instância"
       },
-      "enable-double-click-to-edit": "Ativar clique duplo para editar",
       "server-name": "Nome da instância",
       "label": "Sistema",
       "additional-script-description": "Injetar JavaScript em todas as páginas da web. Usar somente código confiável.",
@@ -673,8 +677,6 @@
       "reactions-required": "A lista de reações não deve estar vazia",
       "add-reaction": "Adicionar reação",
       "configured-reactions": "Reações configuradas",
-      "double-click-edit-description": "Permitir que os usuários abram a edição do memorando clicando duas vezes nele.",
-      "editing-title": "Edição",
       "reaction-placeholder": "Ex.: 👍",
       "reactions-description": "Definir as opções de reação que os usuários podem aplicar aos memorandos.",
       "remove-reaction": "Remover reação"

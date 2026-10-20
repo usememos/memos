@@ -532,8 +532,6 @@
       "reactions-required": "Tepki listesi boş olamaz",
       "add-reaction": "Tepki ekle",
       "configured-reactions": "Yapılandırılmış reaksiyonlar",
-      "double-click-edit-description": "Kullanıcıların bir notu çift tıklatarak not düzenlemeyi açmasına izin verin.",
-      "editing-title": "Düzenleme",
       "reaction-placeholder": "örneğin 👍",
       "reactions-description": "Kullanıcıların notlara uygulayabileceği reaksiyon seçeneklerini tanımlayın.",
       "remove-reaction": "Reaksiyonu kaldır"
@@ -663,20 +661,25 @@
       "your-spaces": "Alanlarınız"
     },
     "preference": {
-      "default-memo-visibility": "Varsayılan not görünürlüğü",
-      "label": "Tercihler",
-      "theme": "Tema",
-      "uploads-privacy-description": "Yüklenen medyayla birlikte gönderilen, gizlilik açısından hassas bilgileri denetleyin.",
-      "uploads-privacy-title": "Yüklemeler ve gizlilik",
       "appearance-description": "Uygulamanın nasıl görüneceğini ve hesabınız için hangi dili kullanacağını seçin.",
       "appearance-title": "Dış görünüş",
+      "default-memo-visibility": "Varsayılan not görünürlüğü",
       "default-memo-visibility-description": "Editörde değiştirilmediği sürece görünürlük yeni oluşturulan notlara uygulandı.",
+      "device-description": "Yalnızca bu tarayıcıda saklanan okuma ve düzenleme tercihleri. Hesabınıza kaydedilmez.",
+      "device-title": "Bu cihaz",
+      "double-click-edit": "Düzenlemek için çift tıkla",
+      "double-click-edit-description": "Kendi notlarınızı çift tıklayarak düzenleyicide açın.",
+      "label": "Tercihler",
       "language-description": "Arayüz dilini anında günceller ve hesabınıza kaydeder.",
+      "link-preview-description": "Notların gösterildiği her yerde yalın bağlantıların altında önizleme kartı göster.",
       "memo-defaults-description": "Yeni notlar oluştururken kullanılan varsayılanları ayarlayın.",
       "memo-defaults-title": "Not varsayılanları",
       "save-media-metadata": "Medya meta verilerini kaydet",
       "save-media-metadata-description": "Sonraki yüklemelerde mevcut kamera, çekim zamanı, konum, görsel boyutları ve temel video bilgilerini kaydeder. Eki görüntüleyebilen herkes bu meta verilere ulaşabilir. Mevcut ekler değişmez.",
-      "theme-description": "Seçilen temayı bu cihaza hemen uygular."
+      "theme-description": "Seçilen temayı bu cihaza hemen uygular.",
+      "theme": "Tema",
+      "uploads-privacy-description": "Yüklenen medyayla birlikte gönderilen, gizlilik açısından hassas bilgileri denetleyin.",
+      "uploads-privacy-title": "Yüklemeler ve gizlilik"
     },
     "memo-view": {
       "create": "Görünüm oluştur",
@@ -793,7 +796,6 @@
         "icon-url": "İkon URL'si",
         "title": "Sunucuyu Özelleştir"
       },
-      "enable-double-click-to-edit": "Düzenlemek için çift tıklamayı etkinleştir",
       "label": "Sistem",
       "server-name": "Sunucu Adı",
       "additional-script-description": "JavaScript'i her web sayfasına enjekte edin. Yalnızca güvenilir kodu kullanın.",

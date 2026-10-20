@@ -643,8 +643,6 @@
     "memo": {
       "add-reaction": "Legg til reaksjon",
       "configured-reactions": "Oppsette reaksjonar",
-      "double-click-edit-description": "Lat brukarane opne notatredigeringa ved å dobbeltklikke på eit notat.",
-      "editing-title": "Redigering",
       "label": "Notat",
       "reaction-placeholder": "t.d. 👍",
       "reactions": "Reaksjonar",
@@ -741,14 +739,19 @@
       "appearance-title": "Utsjånad",
       "default-memo-visibility": "Standard synlegheit for notat",
       "default-memo-visibility-description": "Synlegheita som vert nytta for nye notat dersom ho ikkje vert endra i redigeringa.",
+      "device-description": "Lese- og redigeringsval som berre vert lagra i denne nettlesaren. Dei vert ikkje lagra på kontoen din.",
+      "device-title": "Denne eininga",
+      "double-click-edit": "Dobbeltklikk for å redigere",
+      "double-click-edit-description": "Opne dine eigne notat i redigeringsverktøyet ved å dobbeltklikke på dei.",
       "label": "Brukarval",
       "language-description": "Endrar grensesnittspråket med ein gong og lagrar det på kontoen din.",
+      "link-preview-description": "Vis eit førehandsvisingskort under reine lenkjer overalt der notat vert viste.",
       "memo-defaults-description": "Vel standardane som vert nytta når du skriv nye notat.",
       "memo-defaults-title": "Notatstandardar",
       "save-media-metadata": "Lagre mediemetadata",
       "save-media-metadata-description": "Lagre tilgjengelege opplysningar om kamera, opptakstidspunkt, stad, biletdimensjonar og grunnleggjande videodetaljar for framtidige opplastingar. Alle som kan sjå vedlegget, kan få desse metadataa. Vedlegg som alt er lasta opp, vert ikkje endra.",
-      "theme": "Tema",
       "theme-description": "Tek i bruk det valde temaet med ein gong på denne eininga.",
+      "theme": "Tema",
       "uploads-privacy-description": "Styr kva personvernkjenslege opplysningar som vert sende med opplasta medium.",
       "uploads-privacy-title": "Opplasting og personvern"
     },
@@ -965,7 +968,6 @@
         "icon-url": "Ikonadresse",
         "title": "Tilpass tenar"
       },
-      "enable-double-click-to-edit": "Slå på dobbeltklikk for redigering",
       "label": "System",
       "server-name": "Tenarnamn"
     },

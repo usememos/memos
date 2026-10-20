@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { MemoMarkdown } from "@/components/MemoEditor/MemoMarkdown";
 import { createMemoNavigationState } from "@/components/MemoView/navigation";
 import { useContentSearchTerms } from "@/contexts/MemoFilterContext";
-import { useLinkPreviewEnabled } from "@/contexts/ViewContext";
+import { useDevicePreferences } from "@/hooks/useDevicePreferences";
 import { useNearViewport } from "@/hooks/useNearViewport";
 import { markdownStyles } from "@/lib/markdownStyles";
 import { cn } from "@/lib/utils";
@@ -67,7 +67,7 @@ let nextLinkCardKey = 0;
 const MemoContentViewImpl = (props: MemoContentViewProps) => {
   const { className, contentClassName, content, attachments, memoName, parentPage, compact, onTaskToggle, onClick, onDoubleClick } = props;
   const navigate = useNavigate();
-  const linkPreviewEnabled = useLinkPreviewEnabled();
+  const { linkPreview: linkPreviewEnabled } = useDevicePreferences();
   const navigateToTag = useTagNavigation(parentPage);
   // Whatever the page's search matched is painted here, without altering the rendered tree.
   const contentRef = useRef<HTMLDivElement>(null);

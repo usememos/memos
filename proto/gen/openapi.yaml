@@ -4021,9 +4021,6 @@ components:
         InstanceSetting_MemoRelatedSetting:
             type: object
             properties:
-                enableDoubleClickEdit:
-                    type: boolean
-                    description: Whether double-clicking a memo opens it for editing.
                 reactions:
                     type: array
                     items:

@@ -6,7 +6,6 @@ import { toast } from "react-hot-toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
 import { useInstance } from "@/contexts/InstanceContext";
 import {
   InstanceSetting_Key,
@@ -16,7 +15,7 @@ import {
 } from "@/types/proto/api/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import SettingGroup from "./SettingGroup";
-import { SettingList, SettingListItem, SettingPanel } from "./SettingList";
+import { SettingPanel } from "./SettingList";
 import SettingSection from "./SettingSection";
 import useInstanceSettingUpdater, { buildInstanceSettingName } from "./useInstanceSettingUpdater";
 
@@ -70,21 +69,7 @@ const MemoRelatedSettings = () => {
 
   return (
     <SettingSection title={t("setting.memo.label")}>
-      <SettingGroup title={t("setting.memo.editing-title")}>
-        <SettingList>
-          <SettingListItem
-            label={t("setting.system.enable-double-click-to-edit")}
-            description={t("setting.memo.double-click-edit-description")}
-          >
-            <Switch
-              checked={memoRelatedSetting.enableDoubleClickEdit}
-              onCheckedChange={(checked) => updatePartialSetting({ enableDoubleClickEdit: checked })}
-            />
-          </SettingListItem>
-        </SettingList>
-      </SettingGroup>
-
-      <SettingGroup title={t("setting.memo.reactions")} description={t("setting.memo.reactions-description")} showSeparator>
+      <SettingGroup title={t("setting.memo.reactions")} description={t("setting.memo.reactions-description")}>
         <SettingPanel
           header={
             <div className="flex items-center justify-between gap-3">

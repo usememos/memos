@@ -11,6 +11,9 @@ Add entries under a `## Unreleased` heading. After the release ships, rename it 
 
 ### Breaking
 
+- `MemoRelatedSetting.enable_double_click_edit` is removed; double-click editing is now a per-browser preference in
+  the web client and is no longer an instance setting. `MemoRelatedSetting.reactions` moves to field number 1. A
+  deployment config file that still sets `enableDoubleClickEdit` is rejected.
 - `MemoService.ListShortcuts`: removed. Use `UserService.ListMemoViews`.
 
 ### Deprecated

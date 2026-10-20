@@ -141,10 +141,8 @@ message StorageS3Config {
 }
 
 message InstanceMemoRelatedSetting {
-  // enable_double_click_edit enables editing on double click.
-  bool enable_double_click_edit = 1;
   // reactions is the list of reactions.
-  repeated string reactions = 2;
+  repeated string reactions = 1;
 }
 
 message InstanceTagMetadata {
