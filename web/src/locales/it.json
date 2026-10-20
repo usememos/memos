@@ -360,7 +360,12 @@
     "layout-list-description": "Una singola colonna a larghezza di lettura",
     "on-this-memo": "Su questo memo",
     "parent-memo": "Memo principale",
-    "view-options": "Opzioni di visualizzazione"
+    "view-options": "Opzioni di visualizzazione",
+    "sensitive-content": "Sensitive content",
+    "split-view": "Split view",
+    "split-view-description": "Memo list beside the open memo",
+    "split-view-list": "Memo list",
+    "split-view-untitled": "No text"
   },
   "message": {
     "archived-successfully": "Archiviato con successo",

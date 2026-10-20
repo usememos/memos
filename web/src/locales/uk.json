@@ -360,7 +360,12 @@
     "layout-list-description": "Один стовпець ширини для читання",
     "on-this-memo": "У цій нотатці",
     "parent-memo": "Батьківська нотатка",
-    "view-options": "Параметри перегляду"
+    "view-options": "Параметри перегляду",
+    "sensitive-content": "Sensitive content",
+    "split-view": "Split view",
+    "split-view-description": "Memo list beside the open memo",
+    "split-view-list": "Memo list",
+    "split-view-untitled": "No text"
   },
   "message": {
     "archived-successfully": "Архівовано успішно",

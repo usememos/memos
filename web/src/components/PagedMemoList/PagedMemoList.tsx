@@ -20,6 +20,7 @@ import ColumnGrid, { ColumnGridUntrappedProvider, columnCountForWidth, GRID_GAP 
 import MemoFilters from "../MemoFilters";
 import Placeholder from "../Placeholder";
 import MemoListError from "./MemoListError";
+import MemoSplitView from "./MemoSplitView";
 import { estimateMemoCardHeight } from "./memoCardHeight";
 
 // Memo identity for React keys and grid planning. The pages use it for their renderer keys too,
@@ -30,6 +31,9 @@ export const getMemoKey = (memo: Memo) => memo.name;
 // Columns never stretch past this, so 2 columns on a wide monitor stay readable and the
 // grid centers in the leftover space instead of filling it.
 const MAX_COLUMN_WIDTH = 420;
+
+// Below this width the split view's list pane would squeeze the memo, so the feed takes over.
+const SPLIT_VIEW_MIN_WIDTH = 720;
 
 const Loader = () => (
   <div className="w-full flex flex-row justify-center items-center py-8">
@@ -124,7 +128,7 @@ const PagedMemoList = (props: Props) => {
   const { isUserSettingsInitialized } = useAuth();
   const { filters, memoView, removeFilter } = useMemoFilterContext();
   const { setQuickFindOpen } = useAppSidebar();
-  const { maxColumns, compactMode } = useView();
+  const { maxColumns, compactMode, splitView } = useView();
   // maxColumns is a ceiling: 1 = single reading column, 0 = as many as fit. The single
   // column renders in normal document flow; anything wider becomes the packed grid.
   const multiColumn = maxColumns !== 1;
@@ -135,17 +139,24 @@ const PagedMemoList = (props: Props) => {
   // one-column threshold is actually crossed.
   const layoutMeasureRef = useRef<HTMLDivElement>(null);
   const [fitsGridWidth, setFitsGridWidth] = useState<boolean | undefined>(undefined);
+  const [fitsSplitWidth, setFitsSplitWidth] = useState<boolean | undefined>(undefined);
   useLayoutEffect(() => {
     const el = layoutMeasureRef.current;
     if (!el) return;
-    const apply = (nextWidth: number) => setFitsGridWidth(columnCountForWidth(nextWidth) >= 2);
+    const apply = (nextWidth: number) => {
+      setFitsGridWidth(columnCountForWidth(nextWidth) >= 2);
+      setFitsSplitWidth(nextWidth >= SPLIT_VIEW_MIN_WIDTH);
+    };
     apply(el.clientWidth);
     if (typeof ResizeObserver === "undefined") return;
     const observer = new ResizeObserver((entries) => apply(entries[0]?.contentRect.width ?? el.clientWidth));
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
-  const useGrid = multiColumn && (fitsGridWidth ?? true);
+  // The split view replaces the feed while there is room for both panes; narrower, the
+  // user's column layout applies again.
+  const useSplit = splitView && (fitsSplitWidth ?? true);
+  const useGrid = !useSplit && multiColumn && (fitsGridWidth ?? true);
   // Grid tiles are always bounded/compact; the narrow-width fallback behaves exactly like
   // maxColumns = 1, so it respects the user's own compact setting. Centralized here so the
   // pages don't each repeat the policy.
@@ -182,9 +193,10 @@ const PagedMemoList = (props: Props) => {
     return hoistMemoToFront(sorted, newMemoName);
   }, [memos, props.listSort, newMemoName]);
 
-  // Auto-fetch hook: fetches more content when page isn't scrollable
+  // Auto-fetch hook: fetches more content when page isn't scrollable. The split view's list
+  // pane scrolls on its own and paginates itself, so the page height says nothing there.
   useAutoFetchWhenNotScrollable({
-    enabled: canPaginate,
+    enabled: canPaginate && !useSplit,
     hasNextPage,
     isFetchingNextPage,
     memoCount: sortedMemoList.length,
@@ -193,7 +205,7 @@ const PagedMemoList = (props: Props) => {
 
   // Infinite scroll: fetch more when user scrolls near bottom
   useEffect(() => {
-    if (!canPaginate || !hasNextPage) return;
+    if (!canPaginate || !hasNextPage || useSplit) return;
 
     const handleScroll = () => {
       const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 300;
@@ -204,7 +216,7 @@ const PagedMemoList = (props: Props) => {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [canPaginate, hasNextPage, isFetchingNextPage, fetchNextPage]);
+  }, [canPaginate, hasNextPage, isFetchingNextPage, fetchNextPage, useSplit]);
 
   const leadingContent = props.renderLeading?.({ useGrid });
   const headerContent = props.renderHeader?.({ useGrid });
@@ -278,8 +290,32 @@ const PagedMemoList = (props: Props) => {
   const children = (
     <MentionResolutionProvider contents={contents} userNames={userNames}>
       <div ref={layoutMeasureRef} className="w-full">
-        <div className={cn("flex flex-col justify-start w-full mx-auto", useGrid ? "max-w-none" : "max-w-2xl")}>
-          {useGrid ? (
+        <div className={cn("flex flex-col justify-start w-full mx-auto", useGrid ? "max-w-none" : useSplit ? "max-w-5xl" : "max-w-2xl")}>
+          {useSplit ? (
+            <>
+              {headerContent}
+              <MemoSplitView
+                memos={displayMemoList}
+                getKey={getMemoKey}
+                renderMemo={(memo) => props.renderer(memo, { compact: false })}
+                leading={
+                  <>
+                    {leadingContent}
+                    <MemoFilters className="mb-2" />
+                    {initialLoader}
+                    {initialError}
+                    {emptyPlaceholder}
+                  </>
+                }
+                listFooter={pageError}
+                priorityKey={priorityKey}
+                canPaginate={canPaginate}
+                hasNextPage={hasNextPage}
+                isFetchingNextPage={isFetchingNextPage}
+                onFetchNext={fetchNextPage}
+              />
+            </>
+          ) : useGrid ? (
             <>
               <ColumnGridUntrappedProvider>
                 <ColumnGrid

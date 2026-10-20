@@ -360,7 +360,12 @@
     "layout-list-description": "Unha única columna de ancho de lectura",
     "on-this-memo": "Nesta nota",
     "parent-memo": "Nota principal",
-    "view-options": "Ver opcións"
+    "view-options": "Ver opcións",
+    "sensitive-content": "Sensitive content",
+    "split-view": "Split view",
+    "split-view-description": "Memo list beside the open memo",
+    "split-view-list": "Memo list",
+    "split-view-untitled": "No text"
   },
   "message": {
     "archived-successfully": "Arquivada correctamente",

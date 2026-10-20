@@ -355,7 +355,12 @@
       "uncheck-all": "إلغاء تحديد جميع المهام",
       "updated": "تم تحديث المهام"
     },
-    "view-options": "خيارات العرض"
+    "view-options": "خيارات العرض",
+    "sensitive-content": "Sensitive content",
+    "split-view": "Split view",
+    "split-view-description": "Memo list beside the open memo",
+    "split-view-list": "Memo list",
+    "split-view-untitled": "No text"
   },
   "message": {
     "archived-successfully": "تمت الأرشفة بنجاح",

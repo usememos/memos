@@ -398,7 +398,12 @@
     "layout-list-description": "Една колона с ширина за четене",
     "on-this-memo": "В тази бележка",
     "parent-memo": "Родителска бележка",
-    "view-options": "Опции за преглед"
+    "view-options": "Опции за преглед",
+    "sensitive-content": "Sensitive content",
+    "split-view": "Split view",
+    "split-view-description": "Memo list beside the open memo",
+    "split-view-list": "Memo list",
+    "split-view-untitled": "No text"
   },
   "message": {
     "archived-successfully": "Архивиран успешно",

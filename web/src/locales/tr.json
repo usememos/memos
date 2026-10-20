@@ -386,7 +386,12 @@
       "check-all": "Tüm görevleri kontrol et",
       "uncheck-all": "Tüm görevlerin işaretini kaldırın",
       "updated": "Görevler güncellendi"
-    }
+    },
+    "sensitive-content": "Sensitive content",
+    "split-view": "Split view",
+    "split-view-description": "Memo list beside the open memo",
+    "split-view-list": "Memo list",
+    "split-view-untitled": "No text"
   },
   "message": {
     "archived-successfully": "Başarıyla arşivlendi",

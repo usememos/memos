@@ -360,7 +360,12 @@
     "back-to": "Назад к {{source}}",
     "connections": "Подключения",
     "on-this-memo": "К этой заметке",
-    "parent-memo": "Родительская заметка"
+    "parent-memo": "Родительская заметка",
+    "sensitive-content": "Sensitive content",
+    "split-view": "Split view",
+    "split-view-description": "Memo list beside the open memo",
+    "split-view-list": "Memo list",
+    "split-view-untitled": "No text"
   },
   "message": {
     "archived-successfully": "Перемещено в архив",

@@ -398,7 +398,12 @@
     "layout-list-description": "Jeden stĺpec na šírku čítania",
     "on-this-memo": "V tejto poznámke",
     "parent-memo": "Nadradená poznámka",
-    "view-options": "Možnosti zobrazenia"
+    "view-options": "Možnosti zobrazenia",
+    "sensitive-content": "Sensitive content",
+    "split-view": "Split view",
+    "split-view-description": "Memo list beside the open memo",
+    "split-view-list": "Memo list",
+    "split-view-untitled": "No text"
   },
   "message": {
     "archived-successfully": "Úspešne archivované",

@@ -355,7 +355,12 @@
       "uncheck-all": "सर्व कार्ये निवड रद्द करा",
       "updated": "कार्ये अद्यतनित केली"
     },
-    "view-options": "पाहण्याचे पर्याय"
+    "view-options": "पाहण्याचे पर्याय",
+    "sensitive-content": "Sensitive content",
+    "split-view": "Split view",
+    "split-view-description": "Memo list beside the open memo",
+    "split-view-list": "Memo list",
+    "split-view-untitled": "No text"
   },
   "message": {
     "archived-successfully": "यशस्वीरित्या संग्रहित केले",

@@ -360,7 +360,12 @@
     "new-badge": "New",
     "on-this-memo": "On this memo",
     "parent-memo": "Parent memo",
-    "view-options": "View options"
+    "view-options": "View options",
+    "sensitive-content": "Sensitive content",
+    "split-view": "Split view",
+    "split-view-description": "Memo list beside the open memo",
+    "split-view-list": "Memo list",
+    "split-view-untitled": "No text"
   },
   "message": {
     "archived-successfully": "Archived successfully",
