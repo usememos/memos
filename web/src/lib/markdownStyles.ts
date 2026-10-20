@@ -1,18 +1,16 @@
 export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
 /**
- * Per-level heading type (size / line height / weight / color). The composer and
- * the memo view are the same Markdown editor, so a heading looks the same while
- * editing and after saving. The scale stays close to the 16px body: headings
- * organize a note, they are not page titles.
+ * Per-level heading classes for the editor's `theme.classes.heading`. Size, line
+ * height and weight are the editor's own: it scales h1–h3 from its `fontSize` and
+ * `lineHeight` tokens (1.5×, 1.25× and 1.125×, each with the body's leading) and
+ * sets h4–h6 at the body size, in its own unlayered stylesheet, so a Tailwind size
+ * here would never apply and a changed token would not reach it. Only what the
+ * editor leaves to the app goes here. The composer and the memo view are the same
+ * Markdown editor, so a heading looks the same while editing and after saving.
  */
-const headingTypeClasses: Record<HeadingLevel, string> = {
-  1: "text-2xl/8 font-semibold",
-  2: "text-xl/7 font-semibold",
-  3: "text-lg/6.5 font-semibold",
-  4: "text-base/6 font-semibold",
-  5: "text-base/6 font-semibold",
-  6: "text-base/6 font-semibold text-muted-foreground",
+export const headingClasses: Readonly<Partial<Record<HeadingLevel, string>>> = {
+  6: "text-muted-foreground",
 };
 
 /**
@@ -27,9 +25,6 @@ export const markdownStyles = {
   link: "text-primary underline decoration-primary/50 underline-offset-2 transition-colors hover:decoration-primary",
   image: "max-w-full my-2 rounded-lg",
 } as const;
-
-/** Heading type for a level: size, line height, weight and color. */
-export const headingTypeClass = (level: HeadingLevel): string => headingTypeClasses[level];
 
 /**
  * Tag pill styling for the memo view. Split into two tokens so the view can swap

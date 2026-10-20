@@ -191,12 +191,7 @@ or add manual `dark:` overrides for feedback states.
 
 ## Theme Switching
 
-The color system automatically adapts between light and dark themes when the `.dark` class is applied to a parent element (typically `<html>` or `<body>`):
-
-```javascript
-// Toggle dark mode
-document.documentElement.classList.toggle("dark");
-```
+A theme is a stylesheet in this folder, selected by the `data-theme` attribute on `<html>`; `utils/theme.ts` sets the attribute and the document's `color-scheme`, and the memo editor follows that `color-scheme`. There is no `.dark` or `.light` class: do not add one to a container, since the editor would switch its own scheme on it.
 
 ## Accessibility
 

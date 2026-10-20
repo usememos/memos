@@ -36,8 +36,8 @@ importers:
         specifier: ^5.100.9
         version: 5.100.9(@tanstack/react-query@5.100.9(react@19.2.6))(react@19.2.6)
       '@usememos/editor':
-        specifier: 26.10.22
-        version: 26.10.22(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        specifier: 26.10.24
+        version: 26.10.24(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -1006,8 +1006,8 @@ packages:
     resolution: {integrity: sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g==}
     deprecated: Potential CWE-502 - Update to 1.3.1 or higher
 
-  '@usememos/editor@26.10.22':
-    resolution: {integrity: sha512-Cd8BHuKDjyhwc4zJuWNmo0FjlvBVgBozb5fRn8oEJvPjr4whwJeOuwmR+DZT4wRaIe1Qc2J+UnxjMQQcm9GuvQ==}
+  '@usememos/editor@26.10.24':
+    resolution: {integrity: sha512-hRikkcHkooXRMN5uRg2mqlEPzzpTj8NEP+uBwROAz2ruPLyaIAq0UhNPYCAnHNbJbLlQRRUW6+FhPq0O45SDCg==}
     peerDependencies:
       react: '>=18'
       react-dom: '>=18'
@@ -2694,7 +2694,7 @@ snapshots:
 
   '@ungap/structured-clone@1.3.0': {}
 
-  '@usememos/editor@26.10.22(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
+  '@usememos/editor@26.10.24(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     optionalDependencies:
       react: 19.2.6
       react-dom: 19.2.6(react@19.2.6)

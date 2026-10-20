@@ -23,7 +23,7 @@ import {
 } from "@usememos/editor";
 import { ensureHighlightTheme, highlightLoadedCode, loadHighlighter } from "@/lib/code-highlight";
 import { colorToHex } from "@/lib/color";
-import { headingTypeClass, markdownStyles, mentionStyles, tagStyles } from "@/lib/markdownStyles";
+import { headingClasses, markdownStyles, mentionStyles, tagStyles } from "@/lib/markdownStyles";
 import { findTagMetadata } from "@/lib/tag";
 import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/attachment_service_pb";
@@ -250,8 +250,11 @@ export const memoResolveUrl =
 
 /**
  * The editor's look in memos' palette. Every color is one of the app's own CSS
- * variables, for both schemes, so the active memos theme decides; `inherit`
- * follows the `color-scheme` memos sets on the document.
+ * variables, set once for both schemes (`colors`), since the variables already
+ * follow the active memos theme; `inherit` follows the `color-scheme` memos sets
+ * on the document. No `highlight` token: memos' HTML sanitizer drops `<mark>`, and
+ * should it ever pass, the editor's yellow is what a highlighter means, where a
+ * tint of the primary color would read as a tag pill or a selection.
  */
 export const MEMO_EDITOR_THEME: Theme = (() => {
   const colors = {
@@ -270,8 +273,7 @@ export const MEMO_EDITOR_THEME: Theme = (() => {
   return {
     colorScheme: "inherit",
     tokens: {
-      light: colors,
-      dark: colors,
+      colors,
       font: "inherit",
       mono: "var(--font-mono, ui-monospace, monospace)",
       fontSize: 16,
@@ -280,14 +282,7 @@ export const MEMO_EDITOR_THEME: Theme = (() => {
       blockGap: 8,
     },
     classes: {
-      heading: {
-        1: headingTypeClass(1),
-        2: headingTypeClass(2),
-        3: headingTypeClass(3),
-        4: headingTypeClass(4),
-        5: headingTypeClass(5),
-        6: headingTypeClass(6),
-      },
+      heading: headingClasses,
       code: markdownStyles.inlineCode,
       link: markdownStyles.link,
       // The editor sizes and spaces its images; raw HTML images keep markdownStyles.image.
