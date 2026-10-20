@@ -34,6 +34,10 @@ vi.mock("@/utils/theme", async (importOriginal) => ({
   loadTheme: vi.fn(),
 }));
 
+vi.mock("@/contexts/ViewContext", () => ({
+  useView: () => ({ linkPreview: true, setLinkPreview: vi.fn() }),
+}));
+
 import PreferencesSection from "@/components/Settings/PreferencesSection";
 
 describe("PreferencesSection media metadata setting", () => {
