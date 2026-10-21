@@ -28,7 +28,7 @@ func TestInstanceAdminRetrieval(t *testing.T) {
 		require.NotNil(t, user)
 
 		// Verify instance is now initialized
-		profile2, err := ts.Service.GetInstanceProfile(ctx, &apipb.GetInstanceProfileRequest{})
+		profile2, err := ts.Service.GetInstanceProfile(ts.CreateUserContext(ctx, user.ID), &apipb.GetInstanceProfileRequest{})
 		require.NoError(t, err)
 		require.NotNil(t, profile2.Admin, "Instance should be initialized after first admin user is created")
 		require.Equal(t, user.Username, profile2.Admin.Username)
@@ -42,10 +42,11 @@ func TestInstanceAdminRetrieval(t *testing.T) {
 		// Create admin user
 		user, err := ts.CreateHostUser(ctx, "admin")
 		require.NoError(t, err)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
 
 		// Multiple calls should return consistent admin user (from cache)
 		for range 5 {
-			profile, err := ts.Service.GetInstanceProfile(ctx, &apipb.GetInstanceProfileRequest{})
+			profile, err := ts.Service.GetInstanceProfile(userCtx, &apipb.GetInstanceProfileRequest{})
 			require.NoError(t, err)
 			require.NotNil(t, profile.Admin)
 			require.Equal(t, user.Username, profile.Admin.Username)

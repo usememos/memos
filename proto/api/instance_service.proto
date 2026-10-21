@@ -94,8 +94,9 @@ message InstanceProfile {
   bool needs_setup = 6;
 
   // The first administrator of the instance, for display purposes.
-  // May be null on an instance that has lost all admins; use needs_setup to determine whether initial setup is
-  // required.
+  // Only set for signed-in callers; anonymous requests never receive it, so the admin's login identifier is not
+  // disclosed before authentication. May also be null on an instance that has lost all admins; use needs_setup to
+  // determine whether initial setup is required.
   User admin = 7;
 
   // The proof-of-humanity challenge required on signup and password sign-in.
