@@ -250,6 +250,8 @@
     "source-mode": "Source Mode",
     "switch-to-rich-text": "Switch to rich text",
     "comment": "Comment",
+    "footnotes": "Footnotes",
+    "back-to-reference": "Back to reference",
     "format": {
       "paragraph": "Paragraph",
       "heading-1": "Heading 1",

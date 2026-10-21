@@ -198,6 +198,8 @@
       "task-list": "할 일 목록"
     },
     "comment": "댓글",
+    "footnotes": "각주",
+    "back-to-reference": "참조로 돌아가기",
     "new-memo": "새 메모",
     "saved": "저장됨",
     "validation": {

@@ -198,6 +198,8 @@
       "link": "リンク"
     },
     "comment": "コメント",
+    "footnotes": "脚注",
+    "back-to-reference": "参照箇所に戻る",
     "new-memo": "新しいメモ",
     "saved": "保存済み",
     "validation": {

@@ -236,6 +236,8 @@
       "task-list": "Uzdevumu saraksts"
     },
     "comment": "Komentārs",
+    "footnotes": "Vēres",
+    "back-to-reference": "Atpakaļ pie atsauces",
     "new-memo": "Jauna piezīme",
     "saved": "Saglabāts",
     "validation": {

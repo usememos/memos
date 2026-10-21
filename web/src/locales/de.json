@@ -198,6 +198,8 @@
       "task-list": "Aufgabenliste"
     },
     "comment": "Kommentar",
+    "footnotes": "Fußnoten",
+    "back-to-reference": "Zurück zur Referenz",
     "new-memo": "Neues Memo",
     "saved": "Gespeichert",
     "validation": {

@@ -198,6 +198,8 @@
       "task-list": "Att-göra-lista"
     },
     "comment": "Kommentar",
+    "footnotes": "Fotnoter",
+    "back-to-reference": "Tillbaka till referensen",
     "new-memo": "Nytt memo",
     "saved": "Sparat",
     "validation": {

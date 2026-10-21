@@ -198,6 +198,8 @@
       "task-list": "Daftar tugas"
     },
     "comment": "Komentar",
+    "footnotes": "Catatan kaki",
+    "back-to-reference": "Kembali ke referensi",
     "new-memo": "Memo baru",
     "saved": "Tersimpan",
     "validation": {

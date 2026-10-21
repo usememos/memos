@@ -236,6 +236,8 @@
       "task-list": "Tehtävälista"
     },
     "comment": "Kommentti",
+    "footnotes": "Alaviitteet",
+    "back-to-reference": "Takaisin viitteeseen",
     "new-memo": "Uusi muistio",
     "saved": "Tallennettu",
     "validation": {

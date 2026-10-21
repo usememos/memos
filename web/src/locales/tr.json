@@ -179,6 +179,8 @@
     "source-mode": "Kaynak modu",
     "switch-to-rich-text": "Zengin metne geç",
     "comment": "Yorum yap",
+    "footnotes": "Dipnotlar",
+    "back-to-reference": "Referansa geri dön",
     "format": {
       "paragraph": "Paragraf",
       "heading-1": "Başlık 1",

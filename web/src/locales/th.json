@@ -198,6 +198,8 @@
       "task-list": "รายการสิ่งที่ต้องทำ"
     },
     "comment": "ความคิดเห็น",
+    "footnotes": "เชิงอรรถ",
+    "back-to-reference": "กลับไปยังการอ้างอิง",
     "new-memo": "บันทึกใหม่",
     "saved": "บันทึกแล้ว",
     "validation": {

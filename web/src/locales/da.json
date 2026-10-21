@@ -236,6 +236,8 @@
       "task-list": "Opgaveliste"
     },
     "comment": "Kommentar",
+    "footnotes": "Fodnoter",
+    "back-to-reference": "Tilbage til referencen",
     "new-memo": "Nyt notat",
     "saved": "Gemt",
     "validation": {

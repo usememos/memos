@@ -236,6 +236,8 @@
       "task-list": "Листа обавеза"
     },
     "comment": "Коментар",
+    "footnotes": "Фусноте",
+    "back-to-reference": "Назад на референцу",
     "new-memo": "Нова белешка",
     "saved": "Сачувано",
     "validation": {

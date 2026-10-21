@@ -198,6 +198,8 @@
       "link": "Ligazón"
     },
     "comment": "Comentario",
+    "footnotes": "Notas ao pé",
+    "back-to-reference": "Volver á referencia",
     "new-memo": "Nova nota",
     "saved": "Gardada",
     "validation": {

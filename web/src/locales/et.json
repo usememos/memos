@@ -236,6 +236,8 @@
       "task-list": "Ülesannete loend"
     },
     "comment": "Kommentaar",
+    "footnotes": "Allmärkused",
+    "back-to-reference": "Tagasi viite juurde",
     "new-memo": "Uus memo",
     "saved": "Salvestatud",
     "validation": {

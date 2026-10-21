@@ -198,6 +198,8 @@
       "task-list": "Danh sách việc cần làm"
     },
     "comment": "Bình luận",
+    "footnotes": "Chú thích",
+    "back-to-reference": "Quay lại tham chiếu",
     "new-memo": "Ghi chú mới",
     "saved": "Đã lưu",
     "validation": {

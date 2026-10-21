@@ -236,6 +236,8 @@
       "task-list": "Списък със задачи"
     },
     "comment": "Коментар",
+    "footnotes": "Бележки под линия",
+    "back-to-reference": "Назад към препратката",
     "new-memo": "Нова бележка",
     "saved": "Запазена",
     "validation": {

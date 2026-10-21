@@ -288,6 +288,8 @@
       "trigger": "錄製音訊"
     },
     "comment": "評論",
+    "footnotes": "腳註",
+    "back-to-reference": "返回引用處",
     "saved": "已儲存",
     "blocks": {
       "task": "任務",

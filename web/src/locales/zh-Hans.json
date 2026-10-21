@@ -240,6 +240,8 @@
       "trigger": "录制音频"
     },
     "comment": "评论",
+    "footnotes": "脚注",
+    "back-to-reference": "返回引用处",
     "saved": "已保存",
     "blocks": {
       "task": "任务",

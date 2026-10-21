@@ -339,6 +339,8 @@ export const memoEditorLabels = (t: ReturnType<typeof useTranslate>): Partial<La
   altTextPlaceholder: t("editor.blocks.alt-text-placeholder"),
   imageUnavailable: t("editor.blocks.image-unavailable"),
   resizeImage: t("editor.blocks.resize-image"),
+  footnotes: t("editor.footnotes"),
+  backToReference: t("editor.back-to-reference"),
 });
 
 /** Whether a span is literal text for tags: not code, raw HTML, a link, an image, or an extension token. */

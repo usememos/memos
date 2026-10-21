@@ -198,6 +198,8 @@
       "task-list": "Popis obaveza"
     },
     "comment": "Komentar",
+    "footnotes": "Bilješke",
+    "back-to-reference": "Natrag na referencu",
     "new-memo": "Novi podsjetnik",
     "saved": "Spremljeno",
     "validation": {

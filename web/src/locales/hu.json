@@ -198,6 +198,8 @@
       "link": "Link"
     },
     "comment": "Megjegyzés",
+    "footnotes": "Lábjegyzetek",
+    "back-to-reference": "Vissza a hivatkozáshoz",
     "new-memo": "Új feljegyzés",
     "saved": "Mentve",
     "validation": {

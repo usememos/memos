@@ -183,6 +183,8 @@
       "transcribing": "Transcribing..."
     },
     "comment": "Comment",
+    "footnotes": "Footnotes",
+    "back-to-reference": "Back to reference",
     "format": {
       "paragraph": "Paragraph",
       "heading-1": "Heading 1",

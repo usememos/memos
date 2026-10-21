@@ -198,6 +198,8 @@
       "task-list": "Gjøremålsliste"
     },
     "comment": "Kommentar",
+    "footnotes": "Fotnoter",
+    "back-to-reference": "Tilbake til referansen",
     "new-memo": "Nytt notat",
     "saved": "Lagret",
     "validation": {

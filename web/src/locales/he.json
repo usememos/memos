@@ -279,6 +279,8 @@
       "trigger": "הקלט שמע"
     },
     "comment": "תגובה",
+    "footnotes": "הערות שוליים",
+    "back-to-reference": "חזרה להפניה",
     "new-memo": "תזכיר חדש",
     "saved": "נשמר",
     "blocks": {

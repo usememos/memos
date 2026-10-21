@@ -239,6 +239,8 @@
       "trigger": "Ta opp ljod"
     },
     "comment": "Kommenter",
+    "footnotes": "Fotnotar",
+    "back-to-reference": "Tilbake til referansen",
     "exit-focus-mode": "Gå ut av fokusmodus",
     "focus-mode": "Fokusmodus",
     "source": "Kjelde",

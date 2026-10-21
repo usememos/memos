@@ -198,6 +198,8 @@
       "task-list": "Lista de tarefas"
     },
     "comment": "Comentário",
+    "footnotes": "Notas de rodapé",
+    "back-to-reference": "Voltar à referência",
     "new-memo": "Novo memorando",
     "saved": "Salvo",
     "validation": {

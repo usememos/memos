@@ -236,6 +236,8 @@
       "task-list": "Λίστα υποχρεώσεων"
     },
     "comment": "Σχόλιο",
+    "footnotes": "Υποσημειώσεις",
+    "back-to-reference": "Επιστροφή στην αναφορά",
     "new-memo": "Νέο σημείωμα",
     "saved": "Αποθηκεύτηκε",
     "validation": {

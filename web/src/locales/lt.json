@@ -236,6 +236,8 @@
       "task-list": "Darbų sąrašas"
     },
     "comment": "Komentaras",
+    "footnotes": "Išnašos",
+    "back-to-reference": "Grįžti į nuorodą",
     "new-memo": "Naujas priminimas",
     "saved": "Išsaugota",
     "validation": {

@@ -198,6 +198,8 @@
       "task-list": "Elenco delle cose da fare"
     },
     "comment": "Commento",
+    "footnotes": "Note a piè di pagina",
+    "back-to-reference": "Torna al riferimento",
     "new-memo": "Nuovo memo",
     "saved": "Salvato",
     "validation": {

@@ -198,6 +198,8 @@
       "task-list": "Liste de tâches"
     },
     "comment": "Commentaire",
+    "footnotes": "Notes de bas de page",
+    "back-to-reference": "Retour à la référence",
     "new-memo": "Nouvelle note",
     "saved": "Enregistrée",
     "validation": {

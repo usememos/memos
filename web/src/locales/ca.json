@@ -198,6 +198,8 @@
       "task-list": "Llista de tasques pendents"
     },
     "comment": "Comentari",
+    "footnotes": "Notes al peu",
+    "back-to-reference": "Torna a la referència",
     "new-memo": "Nova nota",
     "saved": "Desada",
     "validation": {

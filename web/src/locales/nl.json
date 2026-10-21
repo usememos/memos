@@ -198,6 +198,8 @@
       "task-list": "Takenlijst"
     },
     "comment": "Opmerking",
+    "footnotes": "Voetnoten",
+    "back-to-reference": "Terug naar de verwijzing",
     "new-memo": "Nieuwe memo",
     "saved": "Opgeslagen",
     "validation": {

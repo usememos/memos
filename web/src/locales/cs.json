@@ -198,6 +198,8 @@
       "task-list": "Seznam úkolů"
     },
     "comment": "Komentář",
+    "footnotes": "Poznámky pod čarou",
+    "back-to-reference": "Zpět na odkaz",
     "new-memo": "Nová poznámka",
     "saved": "Uloženo",
     "validation": {

@@ -250,6 +250,8 @@
     "source-mode": "Mənbə rejimi",
     "switch-to-rich-text": "Zəngin mətnə keç",
     "comment": "Şərh",
+    "footnotes": "Qeydlər",
+    "back-to-reference": "İstinada qayıt",
     "format": {
       "paragraph": "Abzas",
       "heading-1": "Başlıq 1",

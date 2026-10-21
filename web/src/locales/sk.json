@@ -236,6 +236,8 @@
       "task-list": "Zoznam úloh"
     },
     "comment": "Komentár",
+    "footnotes": "Poznámky pod čiarou",
+    "back-to-reference": "Späť na odkaz",
     "new-memo": "Nová poznámka",
     "saved": "Uložené",
     "validation": {

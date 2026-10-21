@@ -198,6 +198,8 @@
       "link": "رابط"
     },
     "comment": "تعليق",
+    "footnotes": "الحواشي",
+    "back-to-reference": "الرجوع إلى المرجع",
     "new-memo": "مذكرة جديدة",
     "saved": "تم الحفظ",
     "validation": {
