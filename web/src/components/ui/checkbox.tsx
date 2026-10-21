@@ -2,6 +2,7 @@ import { Checkbox as CheckboxPrimitive } from "@base-ui/react/checkbox";
 import { CheckIcon } from "lucide-react";
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { FIELD_FOCUS_CLASSES } from "./focus";
 
 const Checkbox = React.forwardRef<HTMLSpanElement, CheckboxPrimitive.Root.Props>(({ className, ...props }, ref) => {
   return (
@@ -9,7 +10,9 @@ const Checkbox = React.forwardRef<HTMLSpanElement, CheckboxPrimitive.Root.Props>
       ref={ref}
       data-slot="checkbox"
       className={cn(
-        "peer border-border data-checked:bg-primary data-checked:text-primary-foreground data-checked:border-primary size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow data-disabled:cursor-not-allowed data-disabled:opacity-50",
+        "peer border-input data-checked:bg-primary data-checked:text-primary-foreground data-checked:border-primary size-4 shrink-0 rounded border transition-[color,background-color,border-color] duration-150 data-disabled:cursor-not-allowed data-disabled:opacity-50 motion-reduce:transition-none",
+        FIELD_FOCUS_CLASSES,
+        "focus-visible:outline-offset-2",
         className,
       )}
       {...props}

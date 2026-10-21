@@ -27,7 +27,7 @@ describe("DropdownMenu sizing", () => {
 
     const menu = await screen.findByRole("menu");
     expect(menu).toHaveAttribute("data-size", "sm");
-    expect(menu).toHaveClass("min-w-24", "rounded", "p-0.5", "shadow-sm");
+    expect(menu).toHaveClass("min-w-24", "rounded-lg", "p-1", "shadow-float");
 
     for (const item of screen.getAllByRole("menuitem")) {
       expect(item).toHaveClass("min-h-7", "px-2", "py-1", "text-ui");
@@ -63,8 +63,8 @@ describe("DropdownMenu sizing", () => {
     const submenu = nestedAction.closest('[data-slot="dropdown-menu-content"]');
     expect(submenu).toHaveAttribute("data-side", "inline-end");
     expect(submenu).toHaveClass(
-      "data-[side=inline-end]:data-starting-style:-translate-x-2",
-      "rtl:data-[side=inline-end]:data-starting-style:translate-x-2",
+      "data-[side=inline-end]:data-starting-style:-translate-x-1",
+      "rtl:data-[side=inline-end]:data-starting-style:translate-x-1",
     );
   });
 });

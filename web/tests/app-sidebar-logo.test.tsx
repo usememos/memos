@@ -241,7 +241,7 @@ describe("App sidebar logo", () => {
     expect(within(switcher).getByText("Memos logo")).toHaveAttribute("data-logo-size", "header");
     expect(switcher.querySelector(".lucide-chevrons-up-down")).not.toBeNull();
     expect(switcher.querySelector(".lucide-chevron-down")).toBeNull();
-    expect(compose).toHaveClass("size-7", "rounded-md", "border", "bg-background", "shadow-xs");
+    expect(compose).toHaveClass("size-7", "rounded-md", "border", "border-border/80", "bg-transparent");
     expect(compose).not.toHaveClass("rounded-full");
     expect(header).not.toContainElement(search);
     expect(search).toHaveClass("ms-auto", "h-7", "px-1.5");
@@ -613,7 +613,7 @@ describe("App sidebar logo", () => {
 
     const menu = await screen.findByRole("menu");
     expect(menu).toHaveAttribute("data-size", "sm");
-    expect(menu).toHaveClass("min-w-24", "p-0.5");
+    expect(menu).toHaveClass("min-w-24", "p-1");
     const editItem = screen.getByRole("menuitem", { name: "common.edit" });
     const deleteItem = screen.getByRole("menuitem", { name: "common.delete" });
     expect(editItem.querySelector("svg")).toBeNull();

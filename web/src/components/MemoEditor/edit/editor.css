@@ -1,7 +1,9 @@
+@reference "../../../index.css";
+
 /*
  * Composer layout around @usememos/editor. Colors, fonts and block rhythm come
  * from MEMO_EDITOR_THEME (lib/memo-markdown.ts); this file only sizes the
- * editor in the composer and styles the upload anchors it hosts as widgets.
+ * editor in the composer, aligns its floating UI with the app, and styles upload widgets.
  */
 .memo-editor-content {
   & .memo-editor-scroller {
@@ -118,4 +120,18 @@
   .memo-upload-anchor-spinner {
     animation: none;
   }
+}
+
+/* The editor portals its own UI outside the composer. Match the app's floating
+   surfaces here without changing document typography or package internals. */
+.mbe-ui:is(.mbe-menu, .mbe-toolbar, .mbe-image-toolbar, .mbe-link-card, .mbe-input-popover) {
+  @apply rounded-lg border-border/70 bg-popover text-popover-foreground text-ui font-normal leading-5 tracking-normal shadow-float;
+}
+
+.mbe-ui.mbe-menu {
+  @apply p-1.5;
+}
+
+.mbe-ui.mbe-tooltip {
+  @apply max-w-[min(16rem,calc(100vw-1rem))] whitespace-normal rounded-md border border-border/70 bg-popover px-2 py-1 text-xs font-normal leading-4 tracking-normal text-popover-foreground text-pretty [overflow-wrap:anywhere] shadow-md;
 }

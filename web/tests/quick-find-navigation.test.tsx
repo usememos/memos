@@ -116,6 +116,22 @@ describe("Quick Find navigation", () => {
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
   });
 
+  it("keeps keyboard focus on the mode tabs while preserving the draft", async () => {
+    renderSearch();
+    openQuickFind();
+    fireEvent.change(await screen.findByRole("textbox"), { target: { value: "pinned" } });
+    const textTab = screen.getByRole("tab", { name: "search.text" });
+    act(() => textTab.focus());
+    fireEvent.keyDown(textTab, { key: "ArrowRight" });
+    const expressionTab = screen.getByRole("tab", { name: "search.expression-mode" });
+    await waitFor(() => expect(expressionTab).toHaveFocus());
+    expect(expressionTab).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("textbox")).toHaveValue("pinned");
+    fireEvent.keyDown(expressionTab, { key: "ArrowLeft" });
+    await waitFor(() => expect(textTab).toHaveFocus());
+    expect(textTab).toHaveAttribute("aria-selected", "true");
+  });
+
   it("restores the expression from its chip and discards cancelled changes", async () => {
     state.filters = [
       { factor: "celSearch", value: "pinned\n || has_code" },

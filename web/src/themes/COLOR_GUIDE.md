@@ -51,7 +51,7 @@ The color system supports both light and dark themes automatically through CSS c
 | `--background`         | Near white  | Dark gray   | Main page background        |
 | `--card`               | Near white  | Dark gray   | Card/container backgrounds  |
 | `--card-foreground`    | Very dark   | Near white  | Text on card backgrounds    |
-| `--popover`            | Pure white  | Darker gray | Overlay backgrounds         |
+| `--popover`            | Pure white  | Graphite    | Floating surface backgrounds |
 | `--popover-foreground` | Dark gray   | Light gray  | Text on overlay backgrounds |
 | `--overlay`            | Pure black  | Pure black  | Scrim behind modals         |
 
@@ -61,6 +61,24 @@ The color system supports both light and dark themes automatically through CSS c
 - Content cards and panels (`--card`)
 - Tooltips, dropdowns, modals (`--popover`)
 - Modal scrims (`--overlay`, always with an alpha utility: `bg-overlay/50` for dialogs and sheets, `bg-overlay/20` for focus mode)
+
+### Floating surface details
+
+Tooltip, popover, dropdown menu, and select surfaces use the `--popover` / `--popover-foreground` pair in every theme. Keep primary color for actions and selection, rather than ordinary hints.
+
+- Tooltips: 12px text / 16px line height, 8px horizontal and 4px vertical padding, 6px radius, no arrow, and `shadow-md`. Long hints wrap at 16rem or the available viewport width.
+- Interactive popups: `text-ui` (13px / 20px), 8px radius, `border-border/70`, and `shadow-float`. Default padding is 6px; content such as maps and search lists can own its padding.
+- Menu and select rows: 32px default minimum height; compact menus retain 28px rows. Section labels and shortcuts use smaller, muted text.
+- Default trigger gap: 6px. Submenus stay adjacent to their parent menu so the pointer can cross safely.
+- Shared motion: 150ms, 2% scale and 4px travel; reduced-motion users get no transition. Positioning, collision handling, and keyboard behavior stay with Base UI.
+
+The editor owns a separate set of floating elements. `MemoEditor/edit/editor.css` aligns their surfaces and tooltips with these values while preserving document typography.
+
+### Form controls
+
+Form fields share a visible keyboard outline and semantic invalid styling. Resting fields use a subtle border without a shadow; disabled fields use a muted surface. Small checkbox/radio/switch controls put their outline outside the glyph.
+
+`--control-thumb` gives switch thumbs enough separation from the track in each scheme: it follows `--card` in light/paper and `--foreground` in dark. It reuses the theme palette rather than introducing a fixed white. The 32×20px switch has a 16px thumb and a 2px visual inset.
 
 ### ✏️ Text & Content Colors
 

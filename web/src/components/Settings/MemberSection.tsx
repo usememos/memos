@@ -146,10 +146,10 @@ const MemberSection = () => {
             render: (_, user: User) => (
               <div className="flex min-w-[18rem] flex-col gap-2">
                 <div className="flex flex-wrap items-center gap-2">
-                  <Badge variant="secondary" className="rounded-full px-2.5 py-0.5">
+                  <Badge variant="neutral" shape="pill">
                     {stringifyUserRole(user.role)}
                   </Badge>
-                  <Badge variant={user.state === State.ARCHIVED ? "outline" : "default"} className="rounded-full px-2.5 py-0.5">
+                  <Badge variant={user.state === State.ARCHIVED ? "outline" : "neutral"} shape="pill">
                     {user.state === State.ARCHIVED ? t("setting.member.archived") : t("setting.member.active")}
                   </Badge>
                 </div>
