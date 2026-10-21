@@ -1,8 +1,10 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import type { Editor } from "@usememos/editor";
+import { createRef } from "react";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { MemoMarkdown } from "@/components/MemoEditor/MemoMarkdown";
 import { MemoContentView } from "@/components/MemoEditor/view/MemoContentView";
-import { highlightLoadedCode, loadHighlighter } from "@/lib/code-highlight";
 
 const state = vi.hoisted(() => ({
   linkPreview: true,
@@ -126,13 +128,33 @@ describe("code blocks", () => {
     expect(container.querySelector(".mbe-code .mbe-code-copy")).toBeInTheDocument();
     expect(container.querySelector<HTMLInputElement>(".mbe-code-lang")?.value).toBe("js");
     expect(container.querySelector(".mbe-code code")).toHaveTextContent("const value = 1;");
-    await waitFor(() => expect(container.querySelector(".mbe-code code .hljs-keyword")).toHaveTextContent("const"));
+    await waitFor(() => expect(container.querySelector(".mbe-code code .memos-code-token")).toHaveTextContent("const"));
   });
 
-  it("escapes plain code and highlights common languages", async () => {
-    expect(highlightLoadedCode('<script data-test="x">&</script>', "")).toBe("&lt;script data-test=&quot;x&quot;&gt;&amp;&lt;/script&gt;");
-    await loadHighlighter("js");
-    expect(highlightLoadedCode("const value = 1;", "js")).toContain("hljs-keyword");
+  it("keeps HTML literal in highlighted and plain code", async () => {
+    const code = '<script data-test="x">&</script>';
+    const content = ["html", "", "not-a-language"].map((language) => `\`\`\`${language}\n${code}\n\`\`\``).join("\n\n");
+    const { container } = renderMemo(content);
+    await waitFor(() => expect(container.querySelector(".memos-code-token")).not.toBeNull());
+    expect(container.querySelectorAll(".mbe-code code")).toHaveLength(3);
+    for (const block of container.querySelectorAll(".mbe-code code")) expect(block.textContent).toBe(code);
+    expect(container.querySelector("script")).toBeNull();
+    expect(container.querySelector("[data-test]")).toBeNull();
+  });
+
+  it("highlights changed code while editing without changing the stored Markdown", async () => {
+    const editorRef = createRef<Editor>();
+    const onChange = vi.fn();
+    const content = '```ts\nconst message = "😀中文";\n```';
+    const { container, rerender } = render(<MemoMarkdown value={content} editable editorRef={editorRef} onChange={onChange} />);
+    await waitFor(() => expect(container.querySelector(".memos-code-token")).not.toBeNull());
+    expect(editorRef.current?.getMarkdown()).toBe(content);
+
+    const updated = content.replace("message", "greeting");
+    rerender(<MemoMarkdown value={updated} editable editorRef={editorRef} onChange={onChange} />);
+    expect(container.querySelector(".mbe-code code")).toHaveTextContent('const greeting = "😀中文";');
+    expect(editorRef.current?.getMarkdown()).toBe(updated);
+    expect(onChange).not.toHaveBeenCalled();
   });
 });
 

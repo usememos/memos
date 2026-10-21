@@ -21,7 +21,7 @@ import {
   type Theme,
   tags,
 } from "@usememos/editor";
-import { ensureHighlightTheme, highlightLoadedCode, loadHighlighter } from "@/lib/code-highlight";
+import { highlightLoadedCode, loadHighlighter } from "@/lib/code-highlight";
 import { colorToHex } from "@/lib/color";
 import { headingClasses, markdownStyles, mentionStyles, tagStyles } from "@/lib/markdownStyles";
 import { findTagMetadata } from "@/lib/tag";
@@ -65,29 +65,8 @@ const highlightedEditors = new Set<import("@usememos/editor").Editor>();
 /** Languages loading now, so each load redecorates the editors once, however many blocks wait for it. */
 const loadingLanguages = new Set<string>();
 
-/** highlight.js output as decorations: one range per highlighted span, classes and all. */
-function highlightRanges(html: string): { from: number; to: number; class: string }[] {
-  const template = document.createElement("template");
-  template.innerHTML = html;
-  const ranges: { from: number; to: number; class: string }[] = [];
-  let offset = 0;
-  const walk = (node: Node) => {
-    for (const child of node.childNodes) {
-      if (child.nodeType === Node.TEXT_NODE) {
-        offset += child.textContent?.length ?? 0;
-      } else if (child instanceof Element) {
-        const from = offset;
-        walk(child);
-        if (child.className && offset > from) ranges.push({ from, to: offset, class: child.className });
-      }
-    }
-  };
-  walk(template.content);
-  return ranges;
-}
-
 /**
- * Syntax highlighting for code blocks with highlight.js, while editing and when read-only.
+ * Token-based syntax highlighting for code blocks, while editing and when read-only.
  * A language loads the first time it is needed; the editors then highlight again.
  */
 const codeHighlight = (): Extension => ({
@@ -98,9 +77,8 @@ const codeHighlight = (): Extension => ({
   },
   codeDecorations: ({ text, language }) => {
     if (!language.trim() || !text) return [];
-    void ensureHighlightTheme(document.documentElement.style.colorScheme === "dark");
-    const html = highlightLoadedCode(text, language);
-    if (html === undefined) {
+    const ranges = highlightLoadedCode(text, language);
+    if (ranges === undefined) {
       const key = language.trim().toLowerCase();
       if (!loadingLanguages.has(key)) {
         loadingLanguages.add(key);
@@ -113,7 +91,7 @@ const codeHighlight = (): Extension => ({
       }
       return [];
     }
-    return highlightRanges(html);
+    return ranges;
   },
 });
 

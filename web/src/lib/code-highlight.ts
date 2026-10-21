@@ -1,147 +1,71 @@
-import type { HLJSApi, LanguageFn } from "highlight.js";
-import { escape as escapeHTML } from "lodash-es";
+import type { Theme } from "@pierre/highlights";
+import type { Decoration } from "@usememos/editor";
 
-type LanguageModule = { default: LanguageFn };
-type LanguageLoader = () => Promise<LanguageModule>;
+type CodeHighlighter = (code: string) => Decoration[];
+const readyHighlighters = new Map<string, CodeHighlighter>();
+const plainTextLanguages = new Set(["", "plain", "plaintext", "text", "txt"]);
 
-// Keep the languages most commonly used in memos cheap. Less common languages
-// fall back to the complete build, preserving existing language support without
-// making every visitor download all language definitions.
-const commonLanguageLoaders = {
-  bash: () => import("highlight.js/lib/languages/bash"),
-  c: () => import("highlight.js/lib/languages/c"),
-  cpp: () => import("highlight.js/lib/languages/cpp"),
-  csharp: () => import("highlight.js/lib/languages/csharp"),
-  css: () => import("highlight.js/lib/languages/css"),
-  diff: () => import("highlight.js/lib/languages/diff"),
-  dockerfile: () => import("highlight.js/lib/languages/dockerfile"),
-  go: () => import("highlight.js/lib/languages/go"),
-  graphql: () => import("highlight.js/lib/languages/graphql"),
-  java: () => import("highlight.js/lib/languages/java"),
-  javascript: () => import("highlight.js/lib/languages/javascript"),
-  json: () => import("highlight.js/lib/languages/json"),
-  kotlin: () => import("highlight.js/lib/languages/kotlin"),
-  markdown: () => import("highlight.js/lib/languages/markdown"),
-  php: () => import("highlight.js/lib/languages/php"),
-  python: () => import("highlight.js/lib/languages/python"),
-  ruby: () => import("highlight.js/lib/languages/ruby"),
-  rust: () => import("highlight.js/lib/languages/rust"),
-  sql: () => import("highlight.js/lib/languages/sql"),
-  swift: () => import("highlight.js/lib/languages/swift"),
-  typescript: () => import("highlight.js/lib/languages/typescript"),
-  xml: () => import("highlight.js/lib/languages/xml"),
-  yaml: () => import("highlight.js/lib/languages/yaml"),
-} satisfies Record<string, LanguageLoader>;
-
-type CommonLanguage = keyof typeof commonLanguageLoaders;
-
-const languageAliases: Record<string, CommonLanguage> = {
-  cs: "csharp",
-  cxx: "cpp",
-  golang: "go",
-  htm: "xml",
-  html: "xml",
-  js: "javascript",
-  jsx: "javascript",
-  md: "markdown",
-  py: "python",
-  rb: "ruby",
-  sh: "bash",
-  shell: "bash",
-  ts: "typescript",
-  tsx: "typescript",
-  vue: "xml",
-  yml: "yaml",
-  zsh: "bash",
+/** Keep structural punctuation plain without adding decoration spans. */
+const codeTheme = (theme: Theme): Theme => {
+  const foreground = theme.style["editor.foreground"] ?? theme.style.text;
+  const syntax = { ...theme.style.syntax };
+  for (const name of Object.keys(syntax)) {
+    if (name === "operator" || name === "keyword.operator" || name === "punctuation" || name.startsWith("punctuation.")) {
+      syntax[name] = { color: foreground };
+    }
+  }
+  return { ...theme, style: { ...theme.style, syntax } };
 };
 
-const plainTextLanguages = new Set(["", "plain", "plaintext", "text", "txt"]);
-const registeredLanguagePromises = new Map<CommonLanguage, Promise<HLJSApi>>();
-let corePromise: Promise<HLJSApi> | undefined;
-let fullBuildPromise: Promise<HLJSApi> | undefined;
-let injectedThemeKey: string | undefined;
+/** Load the Wasm engine and just the two themes we use, only when a code block needs them. */
+const loadHighlights = () =>
+  Promise.all([
+    import("@pierre/highlights"),
+    import("@pierre/highlights/themes/github-light"),
+    import("@pierre/highlights/themes/github-dark-dimmed"),
+  ]).then(([{ codeToTokens, isSupportedLanguage }, light, dark]) => ({
+    codeToTokens,
+    isSupportedLanguage,
+    themes: { light: codeTheme(light.default), dark: codeTheme(dark.default) },
+  }));
 
-const isPlainTextLanguage = (language: string): boolean => plainTextLanguages.has(language.trim().toLowerCase());
+let highlightsPromise: ReturnType<typeof loadHighlights> | undefined;
 
-// The hljs theme stylesheet is a document-global singleton, so it is managed here
-// (keyed by theme) rather than by each rendered code block.
-export const ensureHighlightTheme = async (isDarkTheme: boolean): Promise<void> => {
-  const themeKey = isDarkTheme ? "dark" : "light";
-  if (injectedThemeKey === themeKey) {
+/** Loads a token highlighter. Unsupported languages or unavailable Wasm remain plain text. */
+export const loadHighlighter = async (language: string): Promise<void> => {
+  const key = language.trim().toLowerCase();
+  if (plainTextLanguages.has(key) || readyHighlighters.has(key)) return;
+
+  // The editor follows the document's color-scheme. Older browsers keep plain code.
+  const supportsThemeColors = typeof CSS === "undefined" || !CSS.supports || CSS.supports("color", "light-dark(black, white)");
+  const highlights = supportsThemeColors ? await (highlightsPromise ??= loadHighlights()).catch(() => null) : null;
+  if (highlights?.isSupportedLanguage(key)) {
+    readyHighlighters.set(key, (code) => {
+      const { tokens, fg } = highlights.codeToTokens(code, { lang: key, themes: highlights.themes, defaultColor: "light-dark()" });
+      return tokens.flatMap((line) =>
+        line
+          .filter((token) => token.htmlStyle && !(Object.keys(token.htmlStyle).length === 1 && token.htmlStyle.color === fg))
+          .map((token) => ({
+            from: token.offset,
+            to: token.offset + token.content.length,
+            class: "memos-code-token",
+            attributes: {
+              style: Object.entries(token.htmlStyle ?? {})
+                .map(([name, value]) => `${name}:${value}`)
+                .join(";"),
+            },
+          })),
+      );
+    });
     return;
   }
-  injectedThemeKey = themeKey;
 
-  try {
-    const cssModule = isDarkTheme
-      ? await import("highlight.js/styles/github-dark-dimmed.css?inline")
-      : await import("highlight.js/styles/github.css?inline");
-    if (injectedThemeKey !== themeKey) {
-      return;
-    }
-
-    document.querySelector("style[data-hljs-theme]")?.remove();
-    const style = document.createElement("style");
-    style.textContent = cssModule.default;
-    style.setAttribute("data-hljs-theme", themeKey);
-    document.head.appendChild(style);
-  } catch (error) {
-    injectedThemeKey = undefined;
-    console.warn("Failed to load highlight.js theme:", error);
-  }
+  readyHighlighters.set(key, () => []);
 };
 
-const loadCore = (): Promise<HLJSApi> => {
-  corePromise ??= import("highlight.js/lib/core").then((module) => module.default);
-  return corePromise;
-};
-
-const loadCommonLanguage = (language: CommonLanguage): Promise<HLJSApi> => {
-  const existingPromise = registeredLanguagePromises.get(language);
-  if (existingPromise) {
-    return existingPromise;
-  }
-
-  const languagePromise = Promise.all([loadCore(), commonLanguageLoaders[language]()]).then(([hljs, languageModule]) => {
-    if (!hljs.getLanguage(language)) {
-      hljs.registerLanguage(language, languageModule.default);
-    }
-    return hljs;
-  });
-  registeredLanguagePromises.set(language, languagePromise);
-  return languagePromise;
-};
-
-const loadFullBuild = (): Promise<HLJSApi> => {
-  fullBuildPromise ??= import("highlight.js").then((module) => module.default);
-  return fullBuildPromise;
-};
-
-/** Highlighters ready for use, by normalized language; null when the language is unknown to highlight.js. */
-const readyHighlighters = new Map<string, HLJSApi | null>();
-
-const canonicalLanguageOf = (normalizedLanguage: string): CommonLanguage | undefined =>
-  languageAliases[normalizedLanguage] ??
-  (Object.hasOwn(commonLanguageLoaders, normalizedLanguage) ? (normalizedLanguage as CommonLanguage) : undefined);
-
-/** Loads what highlighting `language` needs. Afterwards, highlightLoadedCode returns a result for it. */
-export const loadHighlighter = async (language: string): Promise<void> => {
-  const normalizedLanguage = language.trim().toLowerCase();
-  if (isPlainTextLanguage(normalizedLanguage) || readyHighlighters.has(normalizedLanguage)) return;
-  const canonicalLanguage = canonicalLanguageOf(normalizedLanguage);
-  const hljs = canonicalLanguage ? await loadCommonLanguage(canonicalLanguage) : await loadFullBuild();
-  readyHighlighters.set(normalizedLanguage, hljs.getLanguage(canonicalLanguage ?? normalizedLanguage) ? hljs : null);
-};
-
-/**
- * Highlighted HTML for code whose language is loaded, the escaped code for plain text
- * and unknown languages, or undefined while the language still has to load.
- */
-export const highlightLoadedCode = (code: string, language: string): string | undefined => {
-  const normalizedLanguage = language.trim().toLowerCase();
-  if (isPlainTextLanguage(normalizedLanguage)) return escapeHTML(code);
-  if (!readyHighlighters.has(normalizedLanguage)) return undefined;
-  const hljs = readyHighlighters.get(normalizedLanguage);
-  if (!hljs) return escapeHTML(code);
-  return hljs.highlight(code, { language: canonicalLanguageOf(normalizedLanguage) ?? normalizedLanguage }).value;
+/** Text decorations, or undefined until the language has loaded. Plain text needs no decorations. */
+export const highlightLoadedCode = (code: string, language: string): Decoration[] | undefined => {
+  const key = language.trim().toLowerCase();
+  if (!code || plainTextLanguages.has(key)) return [];
+  return readyHighlighters.get(key)?.(code);
 };
