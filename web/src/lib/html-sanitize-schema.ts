@@ -4,6 +4,8 @@ const TRUSTED_IFRAME_SRC_PATTERNS = [
   /^https:\/\/www\.youtube\.com\/embed\/[^?#]+(?:\?.*)?$/i,
   /^https:\/\/www\.youtube-nocookie\.com\/embed\/[^?#]+(?:\?.*)?$/i,
   /^https:\/\/player\.vimeo\.com\/video\/[^?#]+(?:\?.*)?$/i,
+  // Bilibili emits a protocol-relative embed URL; both forms resolve to the same HTTPS origin.
+  /^(?:https:)?\/\/player\.bilibili\.com\/player\.html(?:\?.*)?$/i,
   /^https:\/\/open\.spotify\.com\/embed\/[^?#]+(?:\?.*)?$/i,
   /^https:\/\/w\.soundcloud\.com\/player\/?(?:\?.*)?$/i,
   /^https:\/\/www\.loom\.com\/embed\/[^?#]+(?:\?.*)?$/i,
