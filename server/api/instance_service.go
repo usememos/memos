@@ -43,7 +43,10 @@ func (c *instanceSettingCaller) currentUser(ctx context.Context, service *APISer
 
 // GetInstanceProfile returns the instance profile.
 func (s *APIService) GetInstanceProfile(ctx context.Context, _ *apipb.GetInstanceProfileRequest) (*apipb.InstanceProfile, error) {
-	currentUser, _ := s.fetchCurrentUser(ctx)
+	currentUser, err := s.fetchCurrentUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
+	}
 	admin, err := s.getInstanceAdmin(ctx, currentUser)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get instance admin: %v", err)
