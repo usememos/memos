@@ -64,10 +64,15 @@ const finishElement = (element: HTMLElement, node: Element): HTMLElement | null 
       element.setAttribute("referrerpolicy", "no-referrer");
       element.className = cn(markdownStyles.image, element.className);
       break;
-    case "iframe":
-      if (!isTrustedIframeSrc(element.getAttribute("src") ?? "")) return null;
+    case "iframe": {
+      const src = element.getAttribute("src") ?? "";
+      // Bilibili's share dialog emits a protocol-relative URL; upgrade it so the embed always loads over HTTPS.
+      const normalizedSrc = src.startsWith("//") ? `https:${src}` : src;
+      if (!isTrustedIframeSrc(normalizedSrc)) return null;
+      element.setAttribute("src", normalizedSrc);
       element.className = cn("max-w-full rounded-lg border border-border", element.className);
       break;
+    }
     case "details":
       element.className = cn("my-0 mb-2", element.className);
       break;
