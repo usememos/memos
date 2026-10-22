@@ -327,7 +327,9 @@
     "delete-confirm-description": "Αυτή η ενέργεια είναι μη αναστρέψιμη. Τα συνημμένα, οι σύνδεσμοι και οι αναφορές θα αφαιρεθούν επίσης.",
     "direction": "Κατεύθυνση",
     "filters": {
+      "has-attachments": "έχει συνημμένα",
       "has-code": "έχει Κώδικα",
+      "has-image": "έχει εικόνα",
       "has-link": "έχει Σύνδεσμο",
       "has-location": "έχει τοποθεσία",
       "has-task-list": "hasTaskList"

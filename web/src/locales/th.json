@@ -283,7 +283,9 @@
     "delete-confirm-description": "การดำเนินการนี้ไม่สามารถย้อนกลับได้ ไฟล์แนบ ลิงก์ และการอ้างอิงจะถูกลบออกด้วย",
     "direction": "ทิศทาง",
     "filters": {
+      "has-attachments": "มีไฟล์แนบ",
       "has-code": "มีโค้ด",
+      "has-image": "มีรูปภาพ",
       "has-link": "มีลิงก์",
       "has-location": "มีตำแหน่ง",
       "has-task-list": "มีรายการที่ต้องทำ"

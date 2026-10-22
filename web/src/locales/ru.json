@@ -288,7 +288,9 @@
     "delete-confirm-description": "Это действие нельзя отменить. Вложения, ссылки и упоминания также будут удалены.",
     "direction": "Сортировка",
     "filters": {
+      "has-attachments": "есть вложения",
       "has-code": "hasCode",
+      "has-image": "есть изображение",
       "has-link": "hasLink",
       "has-location": "есть местоположение",
       "has-task-list": "hasTaskList"

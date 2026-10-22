@@ -345,6 +345,39 @@ func TestExtractProperties(t *testing.T) {
 	}
 }
 
+// TestExtractInlineImage pins HasInlineImage to Markdown image syntax, managed
+// or external, and keeps both property walks in agreement.
+func TestExtractInlineImage(t *testing.T) {
+	tests := []struct {
+		name    string
+		content string
+		want    bool
+	}{
+		{name: "plain text", content: "No pictures here", want: false},
+		{name: "link is not an image", content: "[photo](https://example.com/a.png)", want: false},
+		{name: "external image", content: "![sunset](https://example.com/sunset.jpg)", want: true},
+		{name: "managed attachment image", content: "![](/file/attachments/abc123)", want: true},
+		{name: "reference-style image", content: "![logo][l]\n\n[l]: https://example.com/logo.svg", want: true},
+		{name: "image inside a link", content: "[![badge](https://example.com/b.svg)](https://example.com)", want: true},
+		{name: "image syntax in a code span", content: "`![x](https://example.com/x.png)`", want: false},
+		{name: "image syntax in a code block", content: "```\n![x](https://example.com/x.png)\n```", want: false},
+		{name: "raw HTML img", content: `<img src="https://example.com/x.png">`, want: false},
+	}
+
+	svc := NewService()
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			props, err := svc.ExtractProperties([]byte(tt.content))
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, props.HasInlineImage, "ExtractProperties")
+
+			data, err := svc.ExtractAll([]byte(tt.content))
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, data.Property.HasInlineImage, "ExtractAll")
+		})
+	}
+}
+
 func TestExtractAllTitle(t *testing.T) {
 	svc := NewService(WithTagExtension())
 

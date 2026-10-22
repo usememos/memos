@@ -327,7 +327,9 @@
     "delete-confirm-description": "See toiming on pöördumatu. Samuti eemaldatakse manused, lingid ja viited.",
     "direction": "Suund",
     "filters": {
+      "has-attachments": "on manuseid",
       "has-code": "hasCode",
+      "has-image": "on pilt",
       "has-link": "hasLink",
       "has-location": "on asukoht",
       "has-task-list": "hasTaskList"

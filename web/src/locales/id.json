@@ -283,7 +283,9 @@
     "delete-confirm-description": "Tindakan ini tidak dapat dibatalkan. Lampiran, tautan, dan referensi juga akan dihapus.",
     "direction": "Arah",
     "filters": {
+      "has-attachments": "Memiliki lampiran",
       "has-code": "Memiliki kode",
+      "has-image": "Memiliki gambar",
       "has-link": "Memiliki tautan",
       "has-location": "Memiliki lokasi",
       "has-task-list": "Memiliki daftar tugas"

@@ -388,7 +388,9 @@
     "delete-confirm-description": "Denne handlinga kan ikkje gjerast om. Vedlegg, lenkjer og tilvisingar vert òg fjerna.",
     "direction": "Retning",
     "filters": {
+      "has-attachments": "Har vedlegg",
       "has-code": "Har kode",
+      "has-image": "Har bilete",
       "has-link": "Har lenkje",
       "has-location": "Har stad",
       "has-task-list": "Har gjeremålsliste"

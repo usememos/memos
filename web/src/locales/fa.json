@@ -283,7 +283,9 @@
     "delete-confirm-description": "این عمل غیرقابل بازگشت است. پیوست‌ها، پیوندها و ارجاعات نیز حذف خواهند شد.",
     "direction": "جهت",
     "filters": {
+      "has-attachments": "دارای پیوست",
       "has-code": "دارای کد",
+      "has-image": "دارای تصویر",
       "has-link": "دارای پیوند",
       "has-location": "دارای موقعیت",
       "has-task-list": "دارای لیست کارها"

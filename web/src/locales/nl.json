@@ -288,7 +288,9 @@
     "delete-confirm-description": "Deze actie is onomkeerelijk. Bijlagen, links en referenties worden ook verwijderd.",
     "direction": "Richting",
     "filters": {
+      "has-attachments": "heeft bijlagen",
       "has-code": "heeftCode",
+      "has-image": "heeft afbeelding",
       "has-link": "heeftLink",
       "has-location": "heeft locatie",
       "has-task-list": "heeftTakenlijst"

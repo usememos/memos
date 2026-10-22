@@ -283,7 +283,9 @@
     "delete-confirm-description": "ही क्रिया अपरिवर्तनीय आहे. संलग्नक, लिंक आणि संदर्भ देखील काढून टाकले जातील.",
     "direction": "दिशा",
     "filters": {
+      "has-attachments": "संलग्नक आहे",
       "has-code": "कोड आहे",
+      "has-image": "प्रतिमा आहे",
       "has-link": "लिंक आहे",
       "has-location": "स्थान आहे",
       "has-task-list": "कार्यसूची आहे"

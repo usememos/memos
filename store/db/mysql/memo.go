@@ -354,3 +354,20 @@ func (d *DB) DeleteMemo(ctx context.Context, delete *store.DeleteMemo) error {
 	}
 	return nil
 }
+
+// RefreshMemoDerivedPayload sets the payload's tags and property while the
+// content is unchanged; JSON_SET keeps every other payload key. The content
+// comparison is binary so a case-insensitive collation cannot match an edit.
+func (d *DB) RefreshMemoDerivedPayload(ctx context.Context, refresh *store.RefreshMemoDerivedPayload) error {
+	tags, property, err := refresh.JSON()
+	if err != nil {
+		return err
+	}
+	if _, err := d.db.ExecContext(ctx,
+		"UPDATE `memo` SET `payload` = JSON_SET(COALESCE(`payload`, JSON_OBJECT()), '$.tags', CAST(? AS JSON), '$.property', CAST(? AS JSON)) WHERE `id` = ? AND CAST(`content` AS BINARY) = CAST(? AS BINARY)",
+		tags, property, refresh.ID, refresh.Content,
+	); err != nil {
+		return errors.Wrap(err, "failed to refresh memo payload")
+	}
+	return nil
+}

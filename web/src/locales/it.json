@@ -288,7 +288,9 @@
     "delete-confirm-description": "Questa azione è irreversibile. Allegati, link e riferimenti saranno rimossi.",
     "direction": "Direzione",
     "filters": {
+      "has-attachments": "ha allegati",
       "has-code": "haCodice",
+      "has-image": "ha un'immagine",
       "has-link": "haLink",
       "has-location": "ha una posizione",
       "has-task-list": "haListaCompiti"

@@ -392,7 +392,9 @@
     "delete-confirm-description": "Bu əməliyyat geri qaytarıla bilməz. Qoşmalar, keçidlər və istinadlar da çıxarılacaq.",
     "direction": "İstiqamət",
     "filters": {
+      "has-attachments": "Qoşma var",
       "has-code": "Kod var",
+      "has-image": "Şəkil var",
       "has-link": "Keçid var",
       "has-location": "Məkan var",
       "has-task-list": "Tapşırıq siyahısı var"

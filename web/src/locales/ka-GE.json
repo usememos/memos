@@ -288,7 +288,9 @@
     "delete-confirm-description": "ეს ქმედება შეუქცევადია. დანართები, ლინკები და რეფერენციებიც წაიშლება.",
     "direction": "მიმართულება",
     "filters": {
+      "has-attachments": "აქვს დანართები",
       "has-code": "კოდიარის",
+      "has-image": "აქვს სურათი",
       "has-link": "ლინკიარის",
       "has-location": "აქვს მდებარეობა",
       "has-task-list": "სიისამოცანებია"

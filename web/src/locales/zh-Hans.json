@@ -315,7 +315,9 @@
     "delete-confirm-description": "此操作是不可逆的，附件、链接和引用也会被删除。",
     "direction": "排序方式",
     "filters": {
+      "has-attachments": "有附件",
       "has-code": "有代码",
+      "has-image": "有图片",
       "has-link": "有链接",
       "has-location": "有位置",
       "has-task-list": "有待办"

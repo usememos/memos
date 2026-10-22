@@ -327,7 +327,9 @@
     "delete-confirm-description": "Táto akcia je nezvratná. Odstránia sa aj prílohy, odkazy a referencie.",
     "direction": "Smer",
     "filters": {
+      "has-attachments": "má prílohy",
       "has-code": "hasCode",
+      "has-image": "má obrázok",
       "has-link": "hasLink",
       "has-location": "má polohu",
       "has-task-list": "hasTaskList"

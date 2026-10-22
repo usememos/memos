@@ -327,7 +327,9 @@
     "delete-confirm-description": "Ова акција је неповратна. Прилози, везе и референце ће такође бити уклоњени.",
     "direction": "Правац",
     "filters": {
+      "has-attachments": "има прилоге",
       "has-code": "хасЦоде",
+      "has-image": "има слику",
       "has-link": "хасЛинк",
       "has-location": "има локацију",
       "has-task-list": "хасТаскЛист"

@@ -288,7 +288,9 @@
     "delete-confirm-description": "Denna åtgärd är oåterkallelig. Bilagor, länk och referenser kommer också att tas bort.",
     "direction": "Riktning",
     "filters": {
+      "has-attachments": "har bilagor",
       "has-code": "harKod",
+      "has-image": "har bild",
       "has-link": "harLänk",
       "has-location": "har plats",
       "has-task-list": "harAttGöraLista"

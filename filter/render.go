@@ -149,6 +149,12 @@ func (r *renderer) renderFieldPredicate(cond *FieldPredicateCondition) (renderRe
 			return renderResult{}, errors.Wrap(err, "failed to render JSON existence predicate")
 		}
 		return renderResult{sql: sql}, nil
+	case FieldKindExists:
+		sql, err := r.existsPredicate(field)
+		if err != nil {
+			return renderResult{}, errors.Wrap(err, "failed to render existence predicate")
+		}
+		return renderResult{sql: sql}, nil
 	default:
 		return renderResult{}, errors.Errorf("field %q cannot be used as a predicate", cond.Field)
 	}
@@ -168,6 +174,8 @@ func (r *renderer) renderComparison(cond *ComparisonCondition) (renderResult, er
 			return r.renderJSONBoolComparison(field, cond.Operator, cond.Right)
 		case FieldKindJSONExists:
 			return r.renderJSONExistsComparison(field, cond.Operator, cond.Right)
+		case FieldKindExists:
+			return r.renderExistsComparison(field, cond.Operator, cond.Right)
 		case FieldKindScalar:
 			return r.renderScalarComparison(field, cond.Operator, cond.Right)
 		default:
@@ -726,6 +734,49 @@ func (r *renderer) renderJSONExistsComparison(field Field, op ComparisonOperator
 	return renderPredicateComparison(field, op, value, existsSQL)
 }
 
+// existsPredicate renders a FieldKindExists field: an EXISTS subquery over the
+// related rows, OR-ed with the field's JSON boolean flag when it has one. The
+// flag goes through jsonBoolPredicate, so a missing key or NULL payload reads
+// as false and the whole expression stays two-valued under NOT.
+func (r *renderer) existsPredicate(field Field) (string, error) {
+	related := field.Related
+	if related == nil {
+		return "", errors.Errorf("field %q has no related rows", field.Name)
+	}
+	where := fmt.Sprintf("%s = %s",
+		qualifyColumn(r.dialect, Column{Table: related.Table, Name: related.ForeignKey}),
+		qualifyColumn(r.dialect, related.Owner))
+	if related.PrefixColumn != "" {
+		if related.Prefix == "" || strings.ContainsAny(related.Prefix, `'"%_\`) {
+			return "", errors.Errorf("field %q has an unsafe prefix %q", field.Name, related.Prefix)
+		}
+		where += fmt.Sprintf(" AND LOWER(%s) LIKE '%s%%'",
+			qualifyColumn(r.dialect, Column{Table: related.Table, Name: related.PrefixColumn}),
+			strings.ToLower(related.Prefix))
+	}
+	exists := fmt.Sprintf("EXISTS (SELECT 1 FROM %s WHERE %s)", quoteTable(r.dialect, related.Table), where)
+	if len(field.JSONPath) == 0 {
+		return exists, nil
+	}
+	flag, err := r.jsonBoolPredicate(field)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("(%s OR %s)", flag, exists), nil
+}
+
+func (r *renderer) renderExistsComparison(field Field, op ComparisonOperator, right ValueExpr) (renderResult, error) {
+	value, err := expectBool(right)
+	if err != nil {
+		return renderResult{}, errors.Wrap(err, "existence comparison requires a boolean value")
+	}
+	predicate, err := r.existsPredicate(field)
+	if err != nil {
+		return renderResult{}, errors.Wrap(err, "failed to render existence comparison")
+	}
+	return renderPredicateComparison(field, op, value, predicate)
+}
+
 // renderPredicateComparison renders `field == value` or `field != value` for a
 // field whose truth is fully described by predicate: the predicate itself when
 // the comparison asks for true, its negation when it asks for false.
@@ -863,6 +914,15 @@ func toInt64(value any) (int64, error) {
 
 func sqlOperator(op ComparisonOperator) string {
 	return string(op)
+}
+
+func quoteTable(d DialectName, table string) string {
+	switch d {
+	case DialectPostgres:
+		return table
+	default:
+		return fmt.Sprintf("`%s`", table)
+	}
 }
 
 func qualifyColumn(d DialectName, col Column) string {

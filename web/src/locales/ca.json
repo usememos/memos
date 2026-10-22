@@ -288,7 +288,9 @@
     "delete-confirm-description": "Aquesta acció és irreversible. Els adjunts, enllaços i referències també s'eliminaran.",
     "direction": "Direcció",
     "filters": {
+      "has-attachments": "té adjunts",
       "has-code": "téCodi",
+      "has-image": "té imatge",
       "has-link": "téEnllaç",
       "has-location": "té ubicació",
       "has-task-list": "téLlistaTasques"

@@ -288,7 +288,9 @@
     "delete-confirm-description": "Ez a művelet visszafordíthatatlan. A mellékletek, hivatkozások és referenciák is törlődnek.",
     "direction": "Irány",
     "filters": {
+      "has-attachments": "van melléklet",
       "has-code": "vanKód",
+      "has-image": "van kép",
       "has-link": "vanLink",
       "has-location": "van helyadat",
       "has-task-list": "vanFeladatLista"

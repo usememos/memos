@@ -327,7 +327,9 @@
     "delete-confirm-description": "Šis veiksmas yra negrįžtamas. Taip pat bus pašalinti priedai, nuorodos ir nuorodos.",
     "direction": "Kryptis",
     "filters": {
+      "has-attachments": "turi priedų",
       "has-code": "hasCode",
+      "has-image": "turi paveikslėlį",
       "has-link": "hasLink",
       "has-location": "turi vietą",
       "has-task-list": "turiTaskList"

@@ -288,7 +288,9 @@
     "delete-confirm-description": "Esta acción es irreversible. Los adjuntos, enlaces y referencias también se eliminarán.",
     "direction": "Dirección",
     "filters": {
+      "has-attachments": "tiene adjuntos",
       "has-code": "tieneCódigo",
+      "has-image": "tiene imagen",
       "has-link": "tieneEnlace",
       "has-location": "tiene ubicación",
       "has-task-list": "tieneListaTareas"

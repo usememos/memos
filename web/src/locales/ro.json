@@ -327,7 +327,9 @@
     "delete-confirm-description": "Această acțiune este ireversibilă. Atașamentele, linkurile și referințele vor fi, de asemenea, eliminate.",
     "direction": "Direcţie",
     "filters": {
+      "has-attachments": "are atașamente",
       "has-code": "areCode",
+      "has-image": "are imagine",
       "has-link": "areLink",
       "has-location": "are locație",
       "has-task-list": "areTaskList"

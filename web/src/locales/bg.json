@@ -327,7 +327,9 @@
     "delete-confirm-description": "Това действие е необратимо. Прикачените файлове, връзките и препратките също ще бъдат премахнати.",
     "direction": "Посока",
     "filters": {
+      "has-attachments": "има прикачени файлове",
       "has-code": "hasCode",
+      "has-image": "има изображение",
       "has-link": "hasLink",
       "has-location": "има местоположение",
       "has-task-list": "hasTaskList"

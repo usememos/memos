@@ -288,7 +288,9 @@
     "delete-confirm-description": "Tato akce je nevratná. Přílohy, odkazy a reference budou také odstraněny.",
     "direction": "Směr",
     "filters": {
+      "has-attachments": "má přílohy",
       "has-code": "maKod",
+      "has-image": "má obrázek",
       "has-link": "maOdkaz",
       "has-location": "má polohu",
       "has-task-list": "maSeznamUkolu"

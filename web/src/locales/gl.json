@@ -288,7 +288,9 @@
     "delete-confirm-description": "Esta acción non se pode desfacer. Vanse eliminar tamén as ligazóns e referencias.",
     "direction": "Dirección",
     "filters": {
+      "has-attachments": "ten anexos",
       "has-code": "hasCode",
+      "has-image": "ten imaxe",
       "has-link": "hasLink",
       "has-location": "ten localización",
       "has-task-list": "hasTaskList"

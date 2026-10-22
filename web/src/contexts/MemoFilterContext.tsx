@@ -12,7 +12,9 @@ export type FilterFactor =
   | "property.hasLink"
   | "property.hasTaskList"
   | "property.hasCode"
-  | "property.hasLocation";
+  | "property.hasLocation"
+  | "property.hasAttachments"
+  | "property.hasImage";
 
 export interface MemoFilter {
   factor: FilterFactor;

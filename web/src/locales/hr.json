@@ -288,7 +288,9 @@
     "delete-confirm-description": "Ova akcija je nepovratna. Privici, linkovi i reference će također biti uklonjeni.",
     "direction": "Smjer",
     "filters": {
+      "has-attachments": "ima privitke",
       "has-code": "imaKod",
+      "has-image": "ima sliku",
       "has-link": "imaLink",
       "has-location": "ima lokaciju",
       "has-task-list": "imaZadatke"
