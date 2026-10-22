@@ -26,6 +26,10 @@ func TestRefreshMemoDerivedPayload(t *testing.T) {
 		CreatorID:  user.ID,
 		Content:    "Ünïcode ![sunset](https://example.com/s.jpg) #trip",
 		Visibility: store.Private,
+		// Fixed past timestamps, so a refresh that touched updated_ts within
+		// the same second as the fixture could not go unnoticed.
+		CreatedTs: 1700000000,
+		UpdatedTs: 1700000100,
 		Payload: &storepb.MemoPayload{
 			Tags:     []string{"stale"},
 			Property: &storepb.MemoPayload_Property{HasCode: true},
@@ -48,7 +52,7 @@ func TestRefreshMemoDerivedPayload(t *testing.T) {
 		require.False(t, got.Payload.Property.HasCode)
 		require.Equal(t, location.Placeholder, got.Payload.Location.GetPlaceholder())
 		require.InDelta(t, location.Latitude, got.Payload.Location.GetLatitude(), 1e-9)
-		require.Equal(t, memo.UpdatedTs, got.UpdatedTs)
+		require.Equal(t, int64(1700000100), got.UpdatedTs)
 
 		images, err := ts.ListMemos(ctx, &store.FindMemo{IDList: []int32{memo.ID}, Filters: []string{"has_image"}})
 		require.NoError(t, err)
