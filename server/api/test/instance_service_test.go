@@ -53,9 +53,9 @@ func TestGetInstanceProfile(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, hostUser)
 
-		// Call GetInstanceProfile directly
+		// Call GetInstanceProfile as the signed-in admin
 		req := &apipb.GetInstanceProfileRequest{}
-		resp, err := ts.Service.GetInstanceProfile(ctx, req)
+		resp, err := ts.Service.GetInstanceProfile(ts.CreateUserContext(ctx, hostUser.ID), req)
 
 		// Verify response
 		require.NoError(t, err)
@@ -73,6 +73,30 @@ func TestGetInstanceProfile(t *testing.T) {
 		require.False(t, resp.NeedsSetup)
 	})
 
+	t.Run("GetInstanceProfile hides the admin from anonymous callers", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		hostUser, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+
+		// The endpoint is public so the sign-in page can render, but an
+		// unauthenticated visitor must not learn the admin's username.
+		resp, err := ts.Service.GetInstanceProfile(ctx, &apipb.GetInstanceProfileRequest{})
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+		require.Nil(t, resp.Admin)
+		require.False(t, resp.NeedsSetup)
+
+		// Any signed-in user, not only the admin, may see it.
+		regularUser, err := ts.CreateRegularUser(ctx, "alice")
+		require.NoError(t, err)
+		resp, err = ts.Service.GetInstanceProfile(ts.CreateUserContext(ctx, regularUser.ID), &apipb.GetInstanceProfileRequest{})
+		require.NoError(t, err)
+		require.NotNil(t, resp.Admin)
+		require.Equal(t, hostUser.Username, resp.Admin.Username)
+	})
+
 	t.Run("GetInstanceProfile with users but no admin", func(t *testing.T) {
 		// Create test service for this specific test
 		ts := NewTestService(t)
@@ -86,7 +110,7 @@ func TestGetInstanceProfile(t *testing.T) {
 		require.NotNil(t, regularUser)
 
 		req := &apipb.GetInstanceProfileRequest{}
-		resp, err := ts.Service.GetInstanceProfile(ctx, req)
+		resp, err := ts.Service.GetInstanceProfile(ts.CreateUserContext(ctx, regularUser.ID), req)
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 
@@ -105,8 +129,9 @@ func TestGetInstanceProfile_Concurrency(t *testing.T) {
 		defer ts.Cleanup()
 
 		// Create a host user
-		_, err := ts.CreateHostUser(ctx, "admin")
+		hostUser, err := ts.CreateHostUser(ctx, "admin")
 		require.NoError(t, err)
+		userCtx := ts.CreateUserContext(ctx, hostUser.ID)
 
 		// Make concurrent requests
 		numGoroutines := 10
@@ -116,7 +141,7 @@ func TestGetInstanceProfile_Concurrency(t *testing.T) {
 		for range numGoroutines {
 			go func() {
 				req := &apipb.GetInstanceProfileRequest{}
-				resp, err := ts.Service.GetInstanceProfile(ctx, req)
+				resp, err := ts.Service.GetInstanceProfile(userCtx, req)
 				if err != nil {
 					errors <- err
 					return

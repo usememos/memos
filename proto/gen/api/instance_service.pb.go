@@ -337,8 +337,9 @@ type InstanceProfile struct {
 	// mistaken for a fresh install.
 	NeedsSetup bool `protobuf:"varint,6,opt,name=needs_setup,json=needsSetup,proto3" json:"needs_setup,omitempty"`
 	// The first administrator of the instance, for display purposes.
-	// May be null on an instance that has lost all admins; use needs_setup to determine whether initial setup is
-	// required.
+	// Only set for signed-in callers; anonymous requests never receive it, so the admin's login identifier is not
+	// disclosed before authentication. May also be null on an instance that has lost all admins; use needs_setup to
+	// determine whether initial setup is required.
 	Admin *User `protobuf:"bytes,7,opt,name=admin,proto3" json:"admin,omitempty"`
 	// The proof-of-humanity challenge required on signup and password sign-in.
 	// Absent when none is configured, which is the case on every self-hosted instance.

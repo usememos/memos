@@ -74,8 +74,9 @@ export type InstanceProfile = Message<"memos.api.InstanceProfile"> & {
 
   /**
    * The first administrator of the instance, for display purposes.
-   * May be null on an instance that has lost all admins; use needs_setup to determine whether initial setup is
-   * required.
+   * Only set for signed-in callers; anonymous requests never receive it, so the admin's login identifier is not
+   * disclosed before authentication. May also be null on an instance that has lost all admins; use needs_setup to
+   * determine whether initial setup is required.
    *
    * @generated from field: memos.api.User admin = 7;
    */
