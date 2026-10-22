@@ -288,7 +288,9 @@
     "delete-confirm-description": "Denne handlingen kan ikke angres. Vedlegg, lenker og referanser vil også bli fjernet.",
     "direction": "Retning",
     "filters": {
+      "has-attachments": "har vedlegg",
       "has-code": "harKode",
+      "has-image": "har bilde",
       "has-link": "harLink",
       "has-location": "har posisjon",
       "has-task-list": "harGjøremålsListe"

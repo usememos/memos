@@ -327,7 +327,9 @@
     "delete-confirm-description": "Tämä toimenpide on peruuttamaton. Myös liitteet, linkit ja viittaukset poistetaan.",
     "direction": "Suunta",
     "filters": {
+      "has-attachments": "on liitteitä",
       "has-code": "hasCode",
+      "has-image": "on kuva",
       "has-link": "hasLink",
       "has-location": "on sijainti",
       "has-task-list": "hasTaskList"

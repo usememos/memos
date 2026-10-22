@@ -283,7 +283,9 @@
     "delete-confirm-description": "Hành động này không thể hoàn tác. Tệp đính kèm, liên kết và tham chiếu cũng sẽ bị xóa.",
     "direction": "Hướng",
     "filters": {
+      "has-attachments": "có tệp đính kèm",
       "has-code": "cóMã",
+      "has-image": "có hình ảnh",
       "has-link": "cóLiênKết",
       "has-location": "có vị trí",
       "has-task-list": "cóDanhSáchViệc"

@@ -283,7 +283,9 @@
     "delete-confirm-description": "Esta ação é irreversível. Anexos, links e referências também serão removidos.",
     "direction": "Sentido",
     "filters": {
+      "has-attachments": "tem anexos",
       "has-code": "temCódigo",
+      "has-image": "tem imagem",
       "has-link": "temLink",
       "has-location": "tem localização",
       "has-task-list": "temListaDeTarefas"

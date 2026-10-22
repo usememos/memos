@@ -288,7 +288,9 @@
     "delete-confirm-description": "Czy na pewno chcesz usunąć tę notatkę? Załączniki, linki i odnośniki także będą usunięte. TA AKCJA JEST NIEODWRACALNA",
     "direction": "Kierunek",
     "filters": {
+      "has-attachments": "ma załączniki",
       "has-code": "ma kod",
+      "has-image": "ma obraz",
       "has-link": "ma link",
       "has-location": "ma lokalizację",
       "has-task-list": "ma listę zadań"

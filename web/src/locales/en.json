@@ -392,7 +392,9 @@
     "delete-confirm-description": "This action is irreversible. Attachments, links, and references will also be removed.",
     "direction": "Direction",
     "filters": {
+      "has-attachments": "hasAttachments",
       "has-code": "hasCode",
+      "has-image": "hasImage",
       "has-link": "hasLink",
       "has-location": "hasLocation",
       "has-task-list": "hasTaskList"

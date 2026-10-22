@@ -283,7 +283,9 @@
     "delete-confirm-description": "هذا الإجراء لا رجعة فيه. ستتم إزالة المرفقات والروابط والمراجع أيضًا.",
     "direction": "الاتجاه",
     "filters": {
+      "has-attachments": "يحتوي على مرفقات",
       "has-code": "يحتوي على كود",
+      "has-image": "يحتوي على صورة",
       "has-link": "يحتوي على رابط",
       "has-location": "يحتوي على موقع",
       "has-task-list": "يحتوي على قائمة مهام"

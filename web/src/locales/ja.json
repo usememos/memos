@@ -288,7 +288,9 @@
     "delete-confirm-description": "この操作は元に戻せません。添付ファイル、リンク、参照も削除されます。",
     "direction": "並び順",
     "filters": {
+      "has-attachments": "添付ファイルあり",
       "has-code": "コードあり",
+      "has-image": "画像あり",
       "has-link": "リンクあり",
       "has-location": "位置情報あり",
       "has-task-list": "タスクリストあり"

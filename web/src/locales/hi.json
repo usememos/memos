@@ -283,7 +283,9 @@
     "delete-confirm-description": "यह कार्रवाई वापस नहीं की जा सकती। संलग्नक, लिंक और संदर्भ भी हटा दिए जाएंगे।",
     "direction": "दिशा",
     "filters": {
+      "has-attachments": "अटैचमेंट है",
       "has-code": "कोड है",
+      "has-image": "छवि है",
       "has-link": "लिंक है",
       "has-location": "स्थान है",
       "has-task-list": "टास्क लिस्ट है"

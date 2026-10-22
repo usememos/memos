@@ -327,7 +327,9 @@
     "delete-confirm-description": "Denne handling er irreversibel. Vedhæftede filer, links og referencer vil også blive fjernet.",
     "direction": "Retning",
     "filters": {
+      "has-attachments": "har vedhæftninger",
       "has-code": "hasCode",
+      "has-image": "har billede",
       "has-link": "harLink",
       "has-location": "har placering",
       "has-task-list": "har Opgaveliste"

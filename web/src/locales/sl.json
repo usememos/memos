@@ -288,7 +288,9 @@
     "delete-confirm-description": "To dejanje je nepovratno. Priložene datoteke, povezave in reference bodo prav tako odstranjene.",
     "direction": "Smer",
     "filters": {
+      "has-attachments": "ima priloge",
       "has-code": "imaKodo",
+      "has-image": "ima sliko",
       "has-link": "imaPovezavo",
       "has-location": "imaLokacijo",
       "has-task-list": "imaSeznamOpravil"

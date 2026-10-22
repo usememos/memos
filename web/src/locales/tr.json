@@ -320,7 +320,9 @@
     "delete-confirm-description": "Bu işlem geri alınamaz. Ekler, bağlantılar ve referanslar da kaldırılacaktır.",
     "direction": "Yön",
     "filters": {
+      "has-attachments": "Ek içerir",
       "has-code": "Kod içerir",
+      "has-image": "Görsel içerir",
       "has-link": "Bağlantı içerir",
       "has-location": "Konum içerir",
       "has-task-list": "Yapılacaklar listesi içerir"

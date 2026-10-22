@@ -288,7 +288,9 @@
     "delete-confirm-description": "Dieser Vorgang ist nicht rückgängig zu machen. Anhänge, Links und Verknüpfungen werden ebenfalls gelöscht.",
     "direction": "Richtung",
     "filters": {
+      "has-attachments": "hat Anhänge",
       "has-code": "hatCode",
+      "has-image": "hat Bild",
       "has-link": "hatLink",
       "has-location": "hat Standort",
       "has-task-list": "hatAufgabenliste"

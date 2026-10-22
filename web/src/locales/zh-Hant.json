@@ -368,7 +368,9 @@
     "delete-confirm-description": "此操作無法恢復。附件、連結和引用將一併被移除。",
     "direction": "排序",
     "filters": {
+      "has-attachments": "有附件",
       "has-code": "有程式碼",
+      "has-image": "有圖片",
       "has-link": "有連結",
       "has-location": "有位置",
       "has-task-list": "有待辦事項"

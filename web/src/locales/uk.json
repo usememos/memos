@@ -288,7 +288,9 @@
     "delete-confirm-description": "Ця дія є незворотною. Вкладення, посилання та посилання також буде видалено.",
     "direction": "Напрямок",
     "filters": {
+      "has-attachments": "є вкладення",
       "has-code": "єКод",
+      "has-image": "є зображення",
       "has-link": "єПосилання",
       "has-location": "є розташування",
       "has-task-list": "єСписокЗавдань"

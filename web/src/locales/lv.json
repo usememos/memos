@@ -327,7 +327,9 @@
     "delete-confirm-description": "Šī darbība ir neatgriezeniska. Tiks noņemti arī pielikumi, saites un atsauces.",
     "direction": "Virziens",
     "filters": {
+      "has-attachments": "ir pielikumi",
       "has-code": "hasCode",
+      "has-image": "ir attēls",
       "has-link": "hasLink",
       "has-location": "ir atrašanās vieta",
       "has-task-list": "hasTaskList"

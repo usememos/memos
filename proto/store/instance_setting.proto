@@ -49,6 +49,9 @@ message InstanceBasicSetting {
   string secret_key = 1;
   // The current schema version of database.
   string schema_version = 2;
+  // The memopayload.Version every memo's content-derived payload has been
+  // rebuilt to. A lower value makes the server rebuild them in the background.
+  int32 payload_version = 3;
 }
 
 message InstanceGeneralSetting {

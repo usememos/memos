@@ -360,7 +360,9 @@
     "delete-confirm-description": "פעולה זו אינה הפיכה. גם קבצים מצורפים, קישורים והפניות יוסרו.",
     "direction": "כיוון",
     "filters": {
+      "has-attachments": "מכיל קבצים מצורפים",
       "has-code": "מכיל קוד",
+      "has-image": "מכיל תמונה",
       "has-link": "מכיל קישור",
       "has-location": "מכיל מיקום",
       "has-task-list": "מכיל רשימת משימות"

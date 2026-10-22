@@ -367,6 +367,7 @@ func convertMemoPropertyFromStore(property *storepb.MemoPayload_Property) *apipb
 		HasTaskList:        property.HasTaskList,
 		HasCode:            property.HasCode,
 		HasIncompleteTasks: property.HasIncompleteTasks,
+		HasInlineImage:     property.HasInlineImage,
 		Title:              property.Title,
 	}
 }

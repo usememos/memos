@@ -288,7 +288,9 @@
     "delete-confirm-description": "Cette action est irréversible. Les pièces jointes, liens et références seront également supprimés.",
     "direction": "Direction",
     "filters": {
+      "has-attachments": "a des pièces jointes",
       "has-code": "aCode",
+      "has-image": "a une image",
       "has-link": "aLien",
       "has-location": "a une localisation",
       "has-task-list": "aListeTâches"
