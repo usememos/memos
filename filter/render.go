@@ -2,6 +2,8 @@ package filter
 
 import (
 	"fmt"
+	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -16,9 +18,7 @@ type renderer struct {
 }
 
 type renderResult struct {
-	sql           string
-	trivial       bool
-	unsatisfiable bool
+	sql string
 }
 
 func newRenderer(schema Schema, opts RenderOptions) *renderer {
@@ -30,6 +30,17 @@ func newRenderer(schema Schema, opts RenderOptions) *renderer {
 }
 
 func (r *renderer) Render(cond Condition) (Statement, error) {
+	// Fold boolean constants first: a subtree that folds away must never reach
+	// the renderer, or its arguments would outlive its discarded SQL and shift
+	// every later positional bind.
+	cond = foldConstants(cond)
+	if c, ok := cond.(*ConstantCondition); ok {
+		if c.Value {
+			return Statement{SQL: "", Args: []any{}}, nil
+		}
+		return Statement{SQL: "1 = 0", Args: []any{}}, nil
+	}
+
 	result, err := r.renderCondition(cond)
 	if err != nil {
 		return Statement{}, err
@@ -38,24 +49,71 @@ func (r *renderer) Render(cond Condition) (Statement, error) {
 	if args == nil {
 		args = []any{}
 	}
-
-	switch {
-	case result.unsatisfiable:
-		return Statement{
-			SQL:  "1 = 0",
-			Args: args,
-		}, nil
-	case result.trivial:
-		return Statement{
-			SQL:  "",
-			Args: args,
-		}, nil
-	default:
-		return Statement{
-			SQL:  result.sql,
-			Args: args,
-		}, nil
+	if err := checkPlaceholderParity(result.sql, args, r.dialect, r.placeholderOffset); err != nil {
+		return Statement{}, err
 	}
+	return Statement{SQL: result.sql, Args: args}, nil
+}
+
+// foldConstants removes boolean constants from the condition tree, so every
+// subtree the renderer visits contributes its SQL and its arguments together.
+// The result is either a single ConstantCondition or a tree with no constants.
+func foldConstants(cond Condition) Condition {
+	switch c := cond.(type) {
+	case *LogicalCondition:
+		left := foldConstants(c.Left)
+		right := foldConstants(c.Right)
+		leftConst, leftOK := left.(*ConstantCondition)
+		rightConst, rightOK := right.(*ConstantCondition)
+		// AND is decided by a false operand, OR by a true one; the other
+		// constant is the operator's identity and drops out.
+		decisive := c.Operator == LogicalOr
+		if (leftOK && leftConst.Value == decisive) || (rightOK && rightConst.Value == decisive) {
+			return &ConstantCondition{Value: decisive}
+		}
+		if leftOK {
+			return right
+		}
+		if rightOK {
+			return left
+		}
+		return &LogicalCondition{Operator: c.Operator, Left: left, Right: right}
+	case *NotCondition:
+		child := foldConstants(c.Expr)
+		if childConst, ok := child.(*ConstantCondition); ok {
+			return &ConstantCondition{Value: !childConst.Value}
+		}
+		return &NotCondition{Expr: child}
+	default:
+		return cond
+	}
+}
+
+var postgresPlaceholderPattern = regexp.MustCompile(`\$(\d+)`)
+
+// checkPlaceholderParity rejects a fragment whose placeholders and arguments
+// disagree. Callers bind positionally after appending their own predicates, so
+// a surplus argument would silently bind to a later placeholder.
+func checkPlaceholderParity(sql string, args []any, dialect DialectName, offset int) error {
+	if dialect != DialectPostgres {
+		if count := strings.Count(sql, "?"); count != len(args) {
+			return errors.Errorf("filter rendered %d placeholders for %d arguments", count, len(args))
+		}
+		return nil
+	}
+	matches := postgresPlaceholderPattern.FindAllStringSubmatch(sql, -1)
+	if len(matches) != len(args) {
+		return errors.Errorf("filter rendered %d placeholders for %d arguments", len(matches), len(args))
+	}
+	seen := make(map[int]bool, len(matches))
+	for _, match := range matches {
+		n, err := strconv.Atoi(match[1])
+		if err != nil || n <= offset || n > offset+len(args) || seen[n] {
+			return errors.Errorf("filter rendered out-of-range placeholder $%s", match[1])
+		}
+		seen[n] = true
+	}
+	return nil
 }
 
 func (r *renderer) renderCondition(cond Condition) (renderResult, error) {
@@ -79,10 +137,7 @@ func (r *renderer) renderCondition(cond Condition) (renderResult, error) {
 	case *ListComprehensionCondition:
 		return r.renderListComprehension(c)
 	case *ConstantCondition:
-		if c.Value {
-			return renderResult{trivial: true}, nil
-		}
-		return renderResult{sql: "1 = 0", unsatisfiable: true}, nil
+		return renderResult{}, errors.New("constant condition must be folded before rendering")
 	default:
 		return renderResult{}, errors.Errorf("unsupported condition type %T", c)
 	}
@@ -99,10 +154,8 @@ func (r *renderer) renderLogicalCondition(cond *LogicalCondition) (renderResult,
 	}
 
 	switch cond.Operator {
-	case LogicalAnd:
-		return combineAnd(left, right), nil
-	case LogicalOr:
-		return combineOr(left, right), nil
+	case LogicalAnd, LogicalOr:
+		return renderResult{sql: fmt.Sprintf("(%s %s %s)", left.sql, cond.Operator, right.sql)}, nil
 	default:
 		return renderResult{}, errors.Errorf("unsupported logical operator %s", cond.Operator)
 	}
@@ -114,12 +167,6 @@ func (r *renderer) renderNotCondition(cond *NotCondition) (renderResult, error) 
 		return renderResult{}, err
 	}
 
-	if child.trivial {
-		return renderResult{sql: "1 = 0", unsatisfiable: true}, nil
-	}
-	if child.unsatisfiable {
-		return renderResult{trivial: true}, nil
-	}
 	return renderResult{
 		sql: fmt.Sprintf("NOT (%s)", child.sql),
 	}, nil
@@ -755,36 +802,6 @@ func (r *renderer) jsonBoolPredicate(field Field) (string, error) {
 		return fmt.Sprintf("(%s)::boolean IS TRUE", expr), nil
 	default:
 		return "", errors.Errorf("unsupported dialect %s", r.dialect)
-	}
-}
-
-func combineAnd(left, right renderResult) renderResult {
-	if left.unsatisfiable || right.unsatisfiable {
-		return renderResult{sql: "1 = 0", unsatisfiable: true}
-	}
-	if left.trivial {
-		return right
-	}
-	if right.trivial {
-		return left
-	}
-	return renderResult{
-		sql: fmt.Sprintf("(%s AND %s)", left.sql, right.sql),
-	}
-}
-
-func combineOr(left, right renderResult) renderResult {
-	if left.trivial || right.trivial {
-		return renderResult{trivial: true}
-	}
-	if left.unsatisfiable {
-		return right
-	}
-	if right.unsatisfiable {
-		return left
-	}
-	return renderResult{
-		sql: fmt.Sprintf("(%s OR %s)", left.sql, right.sql),
 	}
 }
 
