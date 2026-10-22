@@ -11,6 +11,32 @@ import { markdownStyles } from "@/lib/markdownStyles";
 import { cn } from "@/lib/utils";
 
 /**
+ * Upgrades scheme-relative and uppercase-scheme iframe sources to lowercase `https`
+ * before sanitization. Bilibili's share dialog emits `//player.bilibili.com/...`, and
+ * the sanitizer's protocol allowlist is case-sensitive.
+ */
+const normalizeIframeSrc = (tree: Root): void => {
+  const walk = (node: Root | RootContent): void => {
+    if (node.type === "element" && node.tagName === "iframe") {
+      const properties = node.properties;
+      const src = properties?.src;
+      if (properties && typeof src === "string") {
+        const trimmed = src.trim();
+        if (trimmed.startsWith("//")) {
+          properties.src = `https:${trimmed}`;
+        } else if (/^https:/i.test(trimmed)) {
+          properties.src = `https:${trimmed.slice(6)}`;
+        }
+      }
+    }
+    if ("children" in node) {
+      for (const child of node.children) walk(child);
+    }
+  };
+  walk(tree);
+};
+
+/**
  * Raw HTML in a memo, such as a `<details>` section or a trusted video embed,
  * as the memo view shows it. Loaded on demand: the editor keeps an HTML block
  * as source, and this turns that source into sanitized DOM. Markdown between
@@ -22,6 +48,7 @@ const processor = unified()
   .use(remarkBreaks)
   .use(remarkRehype, { allowDangerousHtml: true })
   .use(rehypeRaw)
+  .use(() => normalizeIframeSrc)
   .use([[rehypeSanitize, SANITIZE_SCHEMA]]);
 
 const ATTRIBUTE_NAMES: Record<string, string> = {
@@ -64,15 +91,10 @@ const finishElement = (element: HTMLElement, node: Element): HTMLElement | null 
       element.setAttribute("referrerpolicy", "no-referrer");
       element.className = cn(markdownStyles.image, element.className);
       break;
-    case "iframe": {
-      const src = element.getAttribute("src") ?? "";
-      // Bilibili's share dialog emits a protocol-relative URL; upgrade it so the embed always loads over HTTPS.
-      const normalizedSrc = src.startsWith("//") ? `https:${src}` : src;
-      if (!isTrustedIframeSrc(normalizedSrc)) return null;
-      element.setAttribute("src", normalizedSrc);
+    case "iframe":
+      if (!isTrustedIframeSrc(element.getAttribute("src") ?? "")) return null;
       element.className = cn("max-w-full rounded-lg border border-border", element.className);
       break;
-    }
     case "details":
       element.className = cn("my-0 mb-2", element.className);
       break;
