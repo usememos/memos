@@ -14,6 +14,8 @@ export interface MemoDetailSidebarDescriptor {
   from?: string;
   commentCount?: number;
   readonly?: boolean;
+  /** The memo body is tag-blurred and not yet revealed, so its outline stays hidden. */
+  contentHidden?: boolean;
   onEdit?: () => void;
   onCommentsOpen?: () => void;
   onCommentCreate?: () => void;
