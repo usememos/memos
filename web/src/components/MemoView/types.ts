@@ -15,6 +15,9 @@ export interface MemoViewProps {
   parentPage?: string;
   shareImageDialogOpen?: boolean;
   onShareImageDialogOpenChange?: (open: boolean) => void;
+  /** Controls whether tag-blurred content is revealed; uncontrolled when omitted. */
+  showBlurredContent?: boolean;
+  onShowBlurredContentChange?: (show: boolean) => void;
 }
 
 export interface MemoViewHandle {

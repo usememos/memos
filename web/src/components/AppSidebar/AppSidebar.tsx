@@ -241,6 +241,7 @@ const MemoDetailSidebarContent = () => {
       parentPage={memoDetail.from}
       commentCount={memoDetail.commentCount}
       forceReadonly={memoDetail.readonly}
+      contentHidden={memoDetail.contentHidden}
       onEdit={runAndClose(memoDetail.onEdit)}
       onCommentsOpen={runAndClose(memoDetail.onCommentsOpen)}
       onCommentCreate={runAndClose(memoDetail.onCommentCreate)}

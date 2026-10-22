@@ -50,9 +50,18 @@ const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
   });
 
   // Blur content when any tag has blur_content enabled in the current user's tag settings.
-  const [showBlurredContent, setShowBlurredContent] = useState(false);
+  // The detail page controls the reveal so the sidebar outline can follow it.
+  const [localShowBlurredContent, setLocalShowBlurredContent] = useState(false);
+  const showBlurredContent = props.showBlurredContent ?? localShowBlurredContent;
+  const onShowBlurredContentChange = props.onShowBlurredContentChange;
   const blurred = isMemoBlurred(memoData, userTagsSetting);
-  const toggleBlurVisibility = useCallback(() => setShowBlurredContent((prev) => !prev), []);
+  const toggleBlurVisibility = useCallback(() => {
+    if (onShowBlurredContentChange) {
+      onShowBlurredContentChange(!showBlurredContent);
+    } else {
+      setLocalShowBlurredContent((prev) => !prev);
+    }
+  }, [onShowBlurredContentChange, showBlurredContent]);
 
   const { previewState, openPreview, setPreviewOpen } = useImagePreview();
 
