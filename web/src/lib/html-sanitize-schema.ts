@@ -4,7 +4,6 @@ const TRUSTED_IFRAME_SRC_PATTERNS = [
   /^https:\/\/www\.youtube\.com\/embed\/[^?#]+(?:\?.*)?$/i,
   /^https:\/\/www\.youtube-nocookie\.com\/embed\/[^?#]+(?:\?.*)?$/i,
   /^https:\/\/player\.vimeo\.com\/video\/[^?#]+(?:\?.*)?$/i,
-  // Bilibili's share dialog emits a protocol-relative URL; sanitized-html.ts upgrades it to HTTPS.
   /^https:\/\/player\.bilibili\.com\/player\.html(?:\?.*)?$/i,
   /^https:\/\/open\.spotify\.com\/embed\/[^?#]+(?:\?.*)?$/i,
   /^https:\/\/w\.soundcloud\.com\/player\/?(?:\?.*)?$/i,

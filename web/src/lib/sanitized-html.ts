@@ -6,34 +6,33 @@ import remarkGfm from "remark-gfm";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import { unified } from "unified";
+import { visit } from "unist-util-visit";
 import { isTrustedIframeSrc, SANITIZE_SCHEMA } from "@/lib/html-sanitize-schema";
 import { markdownStyles } from "@/lib/markdownStyles";
 import { cn } from "@/lib/utils";
 
+const BILIBILI_PLAYER_SRC = /^https:\/\/player\.bilibili\.com\/player\.html(?:\?|$)/i;
+
 /**
- * Upgrades scheme-relative and uppercase-scheme iframe sources to lowercase `https`
- * before sanitization. Bilibili's share dialog emits `//player.bilibili.com/...`, and
- * the sanitizer's protocol allowlist is case-sensitive.
+ * Normalizes every `src` to a lowercase `https:` URL before sanitization. The sanitizer's
+ * protocol allowlist is case-sensitive, so `HTTPS://…` would be dropped, and it treats a
+ * scheme-relative `//host/…` as a relative URL, which an HTTP deployment would load over
+ * plain HTTP. Bilibili's share dialog emits a scheme-relative iframe, and its player starts
+ * playing on load unless the URL says `autoplay=0`.
  */
-const normalizeIframeSrc = (tree: Root): void => {
-  const walk = (node: Root | RootContent): void => {
-    if (node.type === "element" && node.tagName === "iframe") {
-      const properties = node.properties;
-      const src = properties?.src;
-      if (properties && typeof src === "string") {
-        const trimmed = src.trim();
-        if (trimmed.startsWith("//")) {
-          properties.src = `https:${trimmed}`;
-        } else if (/^https:/i.test(trimmed)) {
-          properties.src = `https:${trimmed.slice(6)}`;
-        }
-      }
+const normalizeSources = (tree: Root): void => {
+  visit(tree, "element", (node) => {
+    const src = node.properties.src;
+    if (typeof src !== "string") return;
+    const trimmed = src.trim();
+    let normalized = trimmed.startsWith("//") ? `https:${trimmed}` : trimmed.replace(/^https:/i, "https:");
+    if (node.tagName === "iframe" && BILIBILI_PLAYER_SRC.test(normalized)) {
+      const url = new URL(normalized);
+      if (!url.searchParams.has("autoplay")) url.searchParams.set("autoplay", "0");
+      normalized = url.href;
     }
-    if ("children" in node) {
-      for (const child of node.children) walk(child);
-    }
-  };
-  walk(tree);
+    node.properties.src = normalized;
+  });
 };
 
 /**
@@ -48,7 +47,7 @@ const processor = unified()
   .use(remarkBreaks)
   .use(remarkRehype, { allowDangerousHtml: true })
   .use(rehypeRaw)
-  .use(() => normalizeIframeSrc)
+  .use(() => normalizeSources)
   .use([[rehypeSanitize, SANITIZE_SCHEMA]]);
 
 const ATTRIBUTE_NAMES: Record<string, string> = {
@@ -93,7 +92,12 @@ const finishElement = (element: HTMLElement, node: Element): HTMLElement | null 
       break;
     case "iframe":
       if (!isTrustedIframeSrc(element.getAttribute("src") ?? "")) return null;
-      element.className = cn("max-w-full rounded-lg border border-border", element.className);
+      // Share snippets without a size (Bilibili's) would otherwise render at the browser's 300×150.
+      element.className = cn(
+        "max-w-full rounded-lg border border-border",
+        !node.properties.width && !node.properties.height && "w-full aspect-video",
+        element.className,
+      );
       break;
     case "details":
       element.className = cn("my-0 mb-2", element.className);

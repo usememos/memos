@@ -51,11 +51,32 @@ describe("raw HTML sanitization", () => {
     expect(renderHtml('<iframe src="https://evil.example/embed/abc123" title="demo"></iframe>')).not.toMatch(/<iframe/);
   });
 
-  it("normalizes scheme-relative and uppercase Bilibili iframes to https", () => {
-    const expected = /<iframe[^>]+src="https:\/\/player\.bilibili\.com\/player\.html\?bvid=BV1xx411c7mD"/;
-    expect(renderHtml('<iframe src="//player.bilibili.com/player.html?bvid=BV1xx411c7mD"></iframe>')).toMatch(expected);
-    expect(renderHtml('<iframe src="HTTPS://player.bilibili.com/player.html?bvid=BV1xx411c7mD"></iframe>')).toMatch(expected);
+  it("upgrades scheme-relative and uppercase-scheme sources to https", () => {
+    const youtube = /<iframe[^>]+src="https:\/\/www\.youtube\.com\/embed\/abc123"/;
+    expect(renderHtml('<iframe src="//www.youtube.com/embed/abc123"></iframe>')).toMatch(youtube);
+    expect(renderHtml('<iframe src=" HTTPS://www.youtube.com/embed/abc123"></iframe>')).toMatch(youtube);
+    expect(renderHtml('<img src="HTTPS://img.example/a.png">')).toContain('src="https://img.example/a.png"');
+    expect(renderHtml('<img src="//img.example/a.png">')).toContain('src="https://img.example/a.png"');
+    expect(renderHtml('<iframe src="http://www.youtube.com/embed/abc123"></iframe>')).not.toMatch(/<iframe/);
+    expect(renderHtml('<iframe src="//evil.example/embed/abc123"></iframe>')).not.toMatch(/<iframe/);
+  });
+
+  it("renders Bilibili's share snippet as a non-autoplaying, full-width player", () => {
+    const html = renderHtml(
+      '<iframe src="//player.bilibili.com/player.html?isOutside=true&bvid=BV1xx411c7mD&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>',
+    );
+    expect(html).toMatch(
+      /<iframe[^>]+src="https:\/\/player\.bilibili\.com\/player\.html\?isOutside=true&amp;bvid=BV1xx411c7mD&amp;p=1&amp;autoplay=0"/,
+    );
+    expect(html).toMatch(/class="[^"]*w-full[^"]*aspect-video/);
+    expect(renderHtml('<iframe src="https://player.bilibili.com/player.html?bvid=BV1xx411c7mD&autoplay=1"></iframe>')).toMatch(
+      /autoplay=1"/,
+    );
+    expect(
+      renderHtml('<iframe src="https://player.bilibili.com/player.html?bvid=BV1xx411c7mD" width="640" height="360"></iframe>'),
+    ).not.toMatch(/aspect-video/);
     expect(renderHtml('<iframe src="//player.bilibili.com.evil.example/player.html?bvid=BV1xx411c7mD"></iframe>')).not.toMatch(/<iframe/);
+    expect(renderHtml('<iframe src="http://player.bilibili.com/player.html?bvid=BV1xx411c7mD"></iframe>')).not.toMatch(/<iframe/);
   });
 
   it("renders Markdown between disclosure tags and keeps the authored open state", () => {
