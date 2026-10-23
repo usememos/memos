@@ -94,6 +94,10 @@ func shouldSkipFrontendStatic(requestPath string) bool {
 	}
 	return hasPathPrefix(requestPath, "/api") ||
 		hasPathPrefix(requestPath, "/file") ||
+		// RFC 8615 well-known URIs are protocol metadata endpoints, never SPA
+		// pages. Serving HTML 200 for an unimplemented one (for example OAuth
+		// protected resource metadata) breaks standards-based client discovery.
+		hasPathPrefix(requestPath, "/.well-known") ||
 		requestPath == "/memos.api" ||
 		strings.HasPrefix(requestPath, "/memos.api.")
 }

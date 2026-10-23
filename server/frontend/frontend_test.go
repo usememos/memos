@@ -152,6 +152,36 @@ func TestFrontendService_SkipsDynamicRoutes(t *testing.T) {
 	require.Empty(t, rec.Header().Get("Cache-Control"))
 }
 
+func TestFrontendService_WellKnownPathsDoNotServeSPAHTML(t *testing.T) {
+	ctx := context.Background()
+	testStore := teststore.NewTestingStore(ctx, t)
+
+	e := http.NewServeMux()
+	NewFrontendService(&profile.Profile{}, testStore).Serve(ctx, e, http.HandlerFunc(httphandler.NotFound))
+
+	tests := []struct {
+		name string
+		path string
+	}{
+		{name: "oauth protected resource metadata", path: "/.well-known/oauth-protected-resource"},
+		{name: "oauth protected resource metadata for mcp", path: "/.well-known/oauth-protected-resource/mcp"},
+		{name: "oauth authorization server metadata", path: "/.well-known/oauth-authorization-server"},
+		{name: "unrelated well-known uri", path: "/.well-known/security.txt"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			req := httptest.NewRequest(http.MethodGet, tt.path, nil)
+			rec := httptest.NewRecorder()
+			e.ServeHTTP(rec, req)
+
+			require.Equal(t, http.StatusNotFound, rec.Code)
+			require.NotContains(t, rec.Header().Get("Content-Type"), "text/html")
+			require.Empty(t, rec.Header().Get("Cache-Control"))
+		})
+	}
+}
+
 func TestFrontendService_RobotsTXT(t *testing.T) {
 	ctx := context.Background()
 	testStore := teststore.NewTestingStore(ctx, t)
