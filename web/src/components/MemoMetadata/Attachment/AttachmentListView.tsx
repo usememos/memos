@@ -10,7 +10,7 @@ import type { AttachmentVisualItem, PreviewMediaItem } from "@/utils/media-item"
 import { buildAttachmentVisualItems } from "@/utils/media-item";
 import {
   METADATA_ROW_CLASSES,
-  METADATA_ROW_HINT_CLASSES,
+  METADATA_ROW_HOVER_CLASSES,
   METADATA_ROW_TEXT_CLASSES,
   MetadataRowDetail,
   MetadataRowIconSlot,
@@ -191,18 +191,23 @@ export const AttachmentGallery = ({ visual, onImagePreview }: AttachmentGalleryP
 
 /**
  * A document is a row: file glyph in the slot, name, type and size on the detail rail.
- * The whole row downloads; its arrow only appears over the detail rail once the row is
- * engaged, so the rail stays on the same edge as every other row's at rest.
+ * The whole row opens the file (if possible), and a download icon is shown on the right.
  */
 const DocumentRow = ({ attachment }: { attachment: Attachment }) => {
   const { fileTypeLabel, fileSizeLabel } = getAttachmentMetadata(attachment);
+  const attachmentUrl = getAttachmentUrl(attachment);
+
   return (
-    <a href={getAttachmentUrl(attachment)} download title={`Download ${attachment.filename}`} className={METADATA_ROW_CLASSES}>
-      <MetadataRowIconSlot icon={FileIcon} />
-      <span className={METADATA_ROW_TEXT_CLASSES}>{attachment.filename}</span>
-      <MetadataRowDetail parts={[fileTypeLabel, fileSizeLabel]} />
-      <DownloadIcon aria-hidden="true" className={METADATA_ROW_HINT_CLASSES} strokeWidth={1.8} />
-    </a>
+    <div className="flex w-full">
+      <a href={attachmentUrl} target="_blank" title={`Open ${attachment.filename}`} className={METADATA_ROW_CLASSES}>
+        <MetadataRowIconSlot icon={FileIcon} />
+        <span className={METADATA_ROW_TEXT_CLASSES}>{attachment.filename}</span>
+        <MetadataRowDetail parts={[fileTypeLabel, fileSizeLabel]} />
+      </a>
+      <a href={attachmentUrl} download title={`Download ${attachment.filename}`} className={METADATA_ROW_HOVER_CLASSES}>
+        <MetadataRowIconSlot icon={DownloadIcon} />
+      </a>
+    </div>
   );
 };
 
