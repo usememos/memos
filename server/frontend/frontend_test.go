@@ -152,6 +152,8 @@ func TestFrontendService_SkipsDynamicRoutes(t *testing.T) {
 	require.Empty(t, rec.Header().Get("Cache-Control"))
 }
 
+// TestFrontendService_WellKnownPathsDoNotServeSPAHTML verifies that well-known URIs
+// return 404 instead of the SPA HTML shell.
 func TestFrontendService_WellKnownPathsDoNotServeSPAHTML(t *testing.T) {
 	ctx := context.Background()
 	testStore := teststore.NewTestingStore(ctx, t)
