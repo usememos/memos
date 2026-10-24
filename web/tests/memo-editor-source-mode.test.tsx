@@ -91,10 +91,8 @@ describe("MemoEditor source mode", () => {
   });
 
   it("switches with the keyboard without changing the text", () => {
-    cacheService.saveNow(cacheService.key("users/1", draftKeyFor({ kind: "new", scope: CACHE_KEY })), {
-      content: "# Plan\n\n- [ ] Ship **it**",
-      attachments: [],
-    });
+    const markdown = "# Plan\n\n- [ ] Ship **it**";
+    cacheService.saveNow(cacheService.key("users/1", draftKeyFor({ kind: "new", scope: CACHE_KEY })), { content: markdown, attachments: [] });
     const { container } = mount();
     const root = container.querySelector<HTMLElement>(".memo-editor-root")!;
     // jsdom is not a Mac, so the editor reads Mod as Ctrl.
@@ -104,12 +102,16 @@ describe("MemoEditor source mode", () => {
     expect(sourceText(container)).not.toBeNull();
     expect(localStorage.getItem(MODE_KEY)).toBe(JSON.stringify("source"));
     expect(screen.getByRole("button", { name: "editor.source" })).toHaveAttribute("aria-keyshortcuts", "Meta+Alt+S Control+Alt+S");
-    expect(sourceLines(container)).toBe("# Plan\n\n- [ ] Ship **it**");
+    expect(sourceLines(container)).toBe(markdown);
 
     fireEvent.keyDown(root, key);
     expect(sourceText(container)).toBeNull();
     expect(localStorage.getItem(MODE_KEY)).toBe(JSON.stringify("rich"));
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Plan");
+
+    // Rich mode shows no Markdown string, so the source text after a third switch is the round trip's result.
+    fireEvent.keyDown(root, key);
+    expect(sourceLines(container)).toBe(markdown);
   });
 
   it.each(["rich", "source"])("offers the checklist suggestion in %s mode and applies it there", async (mode) => {
