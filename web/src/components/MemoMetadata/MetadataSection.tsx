@@ -4,14 +4,16 @@ import { Button } from "@/components/ui/button";
 import { FOCUS_VISIBLE_OUTLINE_CLASSES } from "@/components/ui/focus";
 import { cn } from "@/lib/utils";
 
+export const METADATA_ROW_HOVER_CLASSES =
+  "flex h-7 items-center gap-1 rounded-md px-2 text-start text-ui text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground";
+
 /**
  * The metadata lists under a memo (attachments, relations, location, comments) share one
  * row grammar with the sidebar rail: a 28px row, a 20px leading slot on the artwork rail,
  * a 13px label and a tabular detail rail. Only the hover wash differs, because these rows
  * sit on a card rather than the sidebar surface.
  */
-export const METADATA_ROW_BOX_CLASSES =
-  "group/row relative flex h-7 w-full min-w-0 items-center gap-1 rounded-md px-2 text-start text-ui text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground";
+export const METADATA_ROW_BOX_CLASSES = cn(METADATA_ROW_HOVER_CLASSES, "group/row relative w-full min-w-0");
 /** A row that is itself the control: the box, the focus outline, and the quiet "on" fill while pressed or holding a popup open. */
 export const METADATA_ROW_CLASSES = cn(
   METADATA_ROW_BOX_CLASSES,
@@ -75,7 +77,7 @@ export const METADATA_ROW_LIST_CLASSES = "-mx-2 flex w-[calc(100%+1rem)] flex-co
 
 /** The standard glyph-in-slot pairing, so every row draws its glyph identically. */
 export const MetadataRowIconSlot = ({ icon: Icon }: { icon: LucideIcon }) => (
-  <span className={METADATA_ROW_SLOT_CLASSES} aria-hidden="true">
+  <span aria-hidden="true">
     <Icon className={METADATA_ROW_ICON_CLASSES} strokeWidth={1.8} />
   </span>
 );
