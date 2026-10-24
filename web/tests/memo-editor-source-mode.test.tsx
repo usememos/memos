@@ -60,25 +60,23 @@ afterEach(() => {
 });
 
 describe("MemoEditor source mode", () => {
-  it("switches from the ＋ menu, names itself in the editor's corner while on, and switches back from there", () => {
+  it("switches from the ＋ menu and back, and nothing in the editor names the mode", () => {
     const { container } = mount();
     expect(sourceText(container)).toBeNull();
-    expect(screen.queryByRole("button", { name: "editor.source" })).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "common.add" }));
-    fireEvent.click(screen.getByRole("menuitemcheckbox", { name: "editor.source-mode" }));
+    fireEvent.click(screen.getByRole("menuitemcheckbox", { name: "editor.markdown-mode" }));
 
     expect(sourceText(container)).not.toBeNull();
     expect(localStorage.getItem(MODE_KEY)).toBe(JSON.stringify("source"));
-    // The tag belongs to the writing area, not the toolbar, and the first line leaves room for it.
-    const tag = screen.getByRole("button", { name: "editor.source" });
-    expect(tag.parentElement?.querySelector(":scope > .memo-editor-content")).not.toBeNull();
+    // The text shows the mode; the composer adds no tag or indicator for it.
+    expect(screen.queryByRole("button", { name: "editor.source" })).not.toBeInTheDocument();
     expect(container.querySelector(".memo-editor-content")).toHaveAttribute("data-source-mode");
 
-    fireEvent.click(screen.getByRole("button", { name: "editor.source" }));
+    fireEvent.click(screen.getByRole("button", { name: "common.add" }));
+    fireEvent.click(screen.getByRole("menuitemcheckbox", { name: "editor.markdown-mode" }));
 
     expect(sourceText(container)).toBeNull();
-    expect(screen.queryByRole("button", { name: "editor.source" })).not.toBeInTheDocument();
     expect(localStorage.getItem(MODE_KEY)).toBe(JSON.stringify("rich"));
   });
 
@@ -87,33 +85,31 @@ describe("MemoEditor source mode", () => {
     const { container } = mount();
 
     expect(sourceText(container)).not.toBeNull();
-    expect(screen.getByRole("button", { name: "editor.source" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "common.add" }));
+    expect(screen.getByRole("menuitemcheckbox", { name: "editor.markdown-mode" })).toHaveAttribute("aria-checked", "true");
   });
 
-  it("switches with the keyboard without changing the text", () => {
+  it("switches without changing the text", () => {
     const markdown = "# Plan\n\n- [ ] Ship **it**";
     cacheService.saveNow(cacheService.key("users/1", draftKeyFor({ kind: "new", scope: CACHE_KEY })), {
       content: markdown,
       attachments: [],
     });
     const { container } = mount();
-    const root = container.querySelector<HTMLElement>(".memo-editor-root")!;
-    // jsdom is not a Mac, so the editor reads Mod as Ctrl.
-    const key = { key: "s", code: "KeyS", ctrlKey: true, altKey: true };
+    const toggle = () => {
+      fireEvent.click(screen.getByRole("button", { name: "common.add" }));
+      fireEvent.click(screen.getByRole("menuitemcheckbox", { name: "editor.markdown-mode" }));
+    };
 
-    fireEvent.keyDown(root, key);
-    expect(sourceText(container)).not.toBeNull();
-    expect(localStorage.getItem(MODE_KEY)).toBe(JSON.stringify("source"));
-    expect(screen.getByRole("button", { name: "editor.source" })).toHaveAttribute("aria-keyshortcuts", "Meta+Alt+S Control+Alt+S");
+    toggle();
     expect(sourceLines(container)).toBe(markdown);
 
-    fireEvent.keyDown(root, key);
+    toggle();
     expect(sourceText(container)).toBeNull();
-    expect(localStorage.getItem(MODE_KEY)).toBe(JSON.stringify("rich"));
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Plan");
 
     // Rich mode shows no Markdown string, so the source text after a third switch is the round trip's result.
-    fireEvent.keyDown(root, key);
+    toggle();
     expect(sourceLines(container)).toBe(markdown);
   });
 

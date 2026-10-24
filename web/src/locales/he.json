@@ -220,9 +220,7 @@
     "any-thoughts": "יש מחשבות...",
     "exit-focus-mode": "יציאה ממצב מיקוד",
     "focus-mode": "מצב מיקוד",
-    "source": "מקור",
-    "source-mode": "מצב מקור",
-    "switch-to-rich-text": "מעבר לטקסט מעוצב",
+    "markdown-mode": "מצב Markdown",
     "format": {
       "paragraph": "פסקה",
       "heading-1": "כותרת 1",

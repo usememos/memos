@@ -11,19 +11,7 @@ export interface EditorExtensionsOptions {
   onFiles: (files: File[], origin: EditorFileOrigin) => void;
   /** Accessible name of the emoji popup. */
   emojiLabel: string;
-  /** Switches between rich text and source mode; bound to SOURCE_MODE_KEY. */
-  onToggleSourceMode: () => void;
 }
-
-/**
- * The key that switches between rich text and the Markdown source, in the editor's
- * key grammar. Mod+Alt is the editor's own family for keys that change how a block
- * is written (headings, code block), and the editor binds none of its keys to S.
- */
-export const SOURCE_MODE_KEY = "Mod-Alt-s";
-
-/** SOURCE_MODE_KEY for `aria-keyshortcuts`: the editor binds Mod to ⌘ on Apple platforms and Ctrl elsewhere. */
-export const SOURCE_MODE_ARIA_KEYSHORTCUTS = "Meta+Alt+S Control+Alt+S";
 
 /**
  * Ranks a candidate tag against the typed text (both already lower-cased).
@@ -63,20 +51,9 @@ export const allowTagSuggestion = ({ excluded, explicit, query, textBefore }: Su
   return !(query === "" && /(^|\n)[ \t]*$/.test(textBefore));
 };
 
-/** What only the composer adds to the memo syntax MemoMarkdown already reads: the mode key, autocomplete and file handling. */
-export function buildEditorExtensions({ getTags, onFiles, emojiLabel, onToggleSourceMode }: EditorExtensionsOptions): Extension[] {
+/** What only the composer adds to the memo syntax MemoMarkdown already reads: autocomplete and file handling. */
+export function buildEditorExtensions({ getTags, onFiles, emojiLabel }: EditorExtensionsOptions): Extension[] {
   return [
-    // The mode switch is the app's, so its key is too. It works in both modes and
-    // changes no text: the editor keeps the Markdown byte for byte across a switch.
-    {
-      name: "sourceMode",
-      keymap: {
-        [SOURCE_MODE_KEY]: () => {
-          onToggleSourceMode();
-          return true;
-        },
-      },
-    },
     // The popup opens exactly where tags are highlighted: the matcher is built
     // from the same scanner as tags(). A pick writes "#work/planning ".
     suggestion({

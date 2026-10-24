@@ -149,9 +149,7 @@
     "any-thoughts": "O que pensas...",
     "exit-focus-mode": "Saír do modo sen distraccións",
     "focus-mode": "Modo Sen distraccións",
-    "source": "Fonte",
-    "source-mode": "Modo fonte",
-    "switch-to-rich-text": "Cambiar a texto enriquecido",
+    "markdown-mode": "Modo Markdown",
     "insert-menu": {
       "add-location": "Engadir localización",
       "link-memo": "Nota de ligazón",

@@ -65,7 +65,7 @@ export interface EditorViewToggles {
   onToggleFocusMode: () => void;
 }
 
-/** The composer's source-mode switch: an item in the ＋ menu, and a tag in the editor's corner while on. */
+/** The composer's source-mode switch: a checked item in the ＋ menu. The text itself shows the mode. */
 export interface EditorSourceModeToggle {
   isSourceMode: boolean;
   onToggle: () => void;

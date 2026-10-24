@@ -28,14 +28,6 @@
   & .memo-editor-root ::selection {
     background: var(--accent);
   }
-  /* Source mode: the first line leaves room for the tag EditorContent puts in the corner. */
-  &[data-source-mode] .memo-editor-root::before {
-    content: "";
-    float: inline-end;
-    /* The tag's width plus a gap, so the first line never runs into it. */
-    width: calc(var(--memo-source-tag-width, 0px) + 0.5rem);
-    height: 1lh;
-  }
 }
 
 .memo-upload-anchor {

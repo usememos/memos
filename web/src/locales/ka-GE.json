@@ -149,9 +149,7 @@
     "any-thoughts": "რამე იდეები...",
     "exit-focus-mode": "ფოკუსის რეჟიმიდან გასვლა",
     "focus-mode": "ფოკუსის რეჟიმი",
-    "source": "წყარო",
-    "source-mode": "წყაროს რეჟიმი",
-    "switch-to-rich-text": "ფორმატირებულ ტექსტზე გადართვა",
+    "markdown-mode": "Markdown რეჟიმი",
     "insert-menu": {
       "add-location": "მდებარეობის დამატება",
       "link-memo": "ლინკ შენიშვნა",

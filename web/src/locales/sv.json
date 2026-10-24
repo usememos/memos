@@ -149,9 +149,7 @@
     "any-thoughts": "Några tankar...",
     "exit-focus-mode": "Avsluta fokusläge",
     "focus-mode": "Fokusläge",
-    "source": "Källa",
-    "source-mode": "Källäge",
-    "switch-to-rich-text": "Växla till formaterad text",
+    "markdown-mode": "Markdown-läge",
     "insert-menu": {
       "add-location": "Lägg till plats",
       "link-memo": "Länkmemo",

@@ -187,9 +187,7 @@
     "any-thoughts": "Било каква размишљања...",
     "exit-focus-mode": "Изађите из режима фокуса",
     "focus-mode": "Фоцус Моде",
-    "source": "Извор",
-    "source-mode": "Режим извора",
-    "switch-to-rich-text": "Пребаци на форматирани текст",
+    "markdown-mode": "Режим Markdown",
     "insert-menu": {
       "add-location": "Додајте локацију",
       "link-memo": "Меморандум о вези",

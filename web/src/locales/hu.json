@@ -149,9 +149,7 @@
     "any-thoughts": "Bármi ami a fejedben jár...",
     "exit-focus-mode": "Kilépés a fókusz módból",
     "focus-mode": "Fókusz mód",
-    "source": "Forrás",
-    "source-mode": "Forrás mód",
-    "switch-to-rich-text": "Váltás formázott szövegre",
+    "markdown-mode": "Markdown mód",
     "insert-menu": {
       "add-location": "Hely hozzáadása",
       "link-memo": "Linkjegyzet",

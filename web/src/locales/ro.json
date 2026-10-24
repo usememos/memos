@@ -187,9 +187,7 @@
     "any-thoughts": "Orice gânduri...",
     "exit-focus-mode": "Ieșiți din modul de focalizare",
     "focus-mode": "Modul de focalizare",
-    "source": "Sursă",
-    "source-mode": "Modul sursă",
-    "switch-to-rich-text": "Comută la text formatat",
+    "markdown-mode": "Modul Markdown",
     "insert-menu": {
       "add-location": "Adăugați locația",
       "link-memo": "Notă de legături",

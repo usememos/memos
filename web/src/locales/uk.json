@@ -149,9 +149,7 @@
     "any-thoughts": "Якісь думки...",
     "exit-focus-mode": "Вийти з режиму фокусування",
     "focus-mode": "Режим фокусування",
-    "source": "Вихідний код",
-    "source-mode": "Режим вихідного коду",
-    "switch-to-rich-text": "Перейти до форматованого тексту",
+    "markdown-mode": "Режим Markdown",
     "insert-menu": {
       "add-location": "Додайте місцезнаходження",
       "link-memo": "Пам'ятка про посилання",

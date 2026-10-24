@@ -1,6 +1,7 @@
 import { uniqBy } from "lodash-es";
-import { FileCodeIcon, ImageIcon, LinkIcon, LoaderIcon, MapPinIcon, Maximize2Icon, MicIcon, PaperclipIcon, PlusIcon } from "lucide-react";
+import { ImageIcon, LinkIcon, LoaderIcon, MapPinIcon, Maximize2Icon, MicIcon, PaperclipIcon, PlusIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { MarkdownMark } from "@/components/MarkdownMark";
 import { LinkMemoDialog, LocationDialog } from "@/components/MemoMetadata";
 import type { MapPoint } from "@/components/map/types";
 import { useReverseGeocoding } from "@/components/map/useReverseGeocoding";
@@ -11,14 +12,11 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useDebouncedEffect } from "@/hooks";
 import type { MemoRelation } from "@/types/proto/api/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
-import { shortcutLabel } from "@/utils/platform";
-import { SOURCE_MODE_ARIA_KEYSHORTCUTS, SOURCE_MODE_KEY } from "../extensions";
 import { useFileUpload, useLinkMemo, useLocation } from "../hooks";
 import { useEditorContext, useEditorSelector } from "../state";
 import type { InsertMenuProps } from "../types";
@@ -161,8 +159,10 @@ const InsertMenu = (props: InsertMenuProps) => {
               {item.label}
             </DropdownMenuItem>
           ))}
-          {/* View toggles. Focus mode is absent when a host owns the editor's presentation;
-              source mode only changes how the text is edited, so every composer has it. */}
+          {/* How the composer presents itself. Focus mode is absent when a host owns the
+              editor's presentation; Markdown mode (the editor's source mode) only changes how
+              the text is edited, so every composer has it. Checked while on: the text shows
+              the mode, and nothing in the editor names it. */}
           <DropdownMenuSeparator />
           {viewToggles && (
             <DropdownMenuItem onClick={viewToggles.onToggleFocusMode}>
@@ -170,16 +170,9 @@ const InsertMenu = (props: InsertMenuProps) => {
               {t("editor.focus-mode")}
             </DropdownMenuItem>
           )}
-          <DropdownMenuCheckboxItem
-            checked={sourceMode.isSourceMode}
-            onCheckedChange={sourceMode.onToggle}
-            closeOnClick
-            indicator="end"
-            aria-keyshortcuts={SOURCE_MODE_ARIA_KEYSHORTCUTS}
-          >
-            <FileCodeIcon />
-            {t("editor.source-mode")}
-            <DropdownMenuShortcut aria-hidden>{shortcutLabel(SOURCE_MODE_KEY)}</DropdownMenuShortcut>
+          <DropdownMenuCheckboxItem checked={sourceMode.isSourceMode} onCheckedChange={sourceMode.onToggle} closeOnClick indicator="end">
+            <MarkdownMark />
+            {t("editor.markdown-mode")}
           </DropdownMenuCheckboxItem>
         </DropdownMenuContent>
       </DropdownMenu>

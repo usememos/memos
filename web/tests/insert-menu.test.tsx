@@ -67,7 +67,7 @@ describe("InsertMenu", () => {
 
     const labels = screen.getAllByRole("menuitem").map((item) => item.textContent);
     expect(labels).not.toContain("editor.focus-mode");
-    expect(screen.getByRole("menuitemcheckbox", { name: "editor.source-mode" })).toBeInTheDocument();
+    expect(screen.getByRole("menuitemcheckbox", { name: "editor.markdown-mode" })).toBeInTheDocument();
   });
 
   test.each([false, true])("shows source mode as a checkbox item that toggles it (on: %s)", (isSourceMode) => {
@@ -75,7 +75,7 @@ describe("InsertMenu", () => {
     renderMenu(vi.fn(), false, false, { isSourceMode, onToggle });
 
     fireEvent.click(screen.getByRole("button", { name: "common.add" }));
-    const item = screen.getByRole("menuitemcheckbox", { name: "editor.source-mode" });
+    const item = screen.getByRole("menuitemcheckbox", { name: "editor.markdown-mode" });
     expect(item).toHaveAttribute("aria-checked", String(isSourceMode));
 
     fireEvent.click(item);

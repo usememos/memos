@@ -23,7 +23,6 @@ function setup(value = "", mode: EditorMode = "rich") {
       value={value}
       placeholder="memo"
       mode={mode}
-      onToggleMode={vi.fn()}
       onContentChange={onContentChange}
       onFiles={vi.fn()}
       onSubmit={vi.fn()}
