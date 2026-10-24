@@ -6,7 +6,6 @@
     "api-docs": "API Dokumenter",
     "api-docs-note": "REST- og gRPC-referanse",
     "build": "Bygg",
-    "commit": "Commit",
     "demo": "Demo",
     "description": "Et sted med åpen kildekode på din egen server for notater, ideer og hverdagstanker.",
     "distribution": "Distribusjon",
@@ -150,9 +149,7 @@
     "any-thoughts": "Noen tanker...",
     "exit-focus-mode": "Avslutt fokusmodus",
     "focus-mode": "Fokusmodus",
-    "source": "Kilde",
-    "source-mode": "Kildemodus",
-    "switch-to-rich-text": "Bytt til formatert tekst",
+    "markdown-mode": "Markdown-modus",
     "insert-menu": {
       "add-location": "Legg til plassering",
       "link-memo": "Koblingsnotat",
@@ -199,6 +196,8 @@
       "task-list": "Gjøremålsliste"
     },
     "comment": "Kommentar",
+    "footnotes": "Fotnoter",
+    "back-to-reference": "Tilbake til referansen",
     "new-memo": "Nytt notat",
     "saved": "Lagret",
     "validation": {
@@ -287,7 +286,9 @@
     "delete-confirm-description": "Denne handlingen kan ikke angres. Vedlegg, lenker og referanser vil også bli fjernet.",
     "direction": "Retning",
     "filters": {
+      "has-attachments": "har vedlegg",
       "has-code": "harKode",
+      "has-image": "har bilde",
       "has-link": "harLink",
       "has-location": "har posisjon",
       "has-task-list": "harGjøremålsListe"
@@ -498,8 +499,6 @@
       "reactions-required": "Reaksjonslisten må ikke være tom",
       "add-reaction": "Legg til reaksjon",
       "configured-reactions": "Konfigurerte reaksjoner",
-      "double-click-edit-description": "Tillat brukere å åpne notatredigering ved å dobbeltklikke på et memo.",
-      "editing-title": "Redigering",
       "reaction-placeholder": "f.eks. 👍",
       "reactions-description": "Definer reaksjonsalternativene brukere kan bruke på notater.",
       "remove-reaction": "Fjern reaksjonen"
@@ -508,18 +507,23 @@
       "label": "Min konto"
     },
     "preference": {
-      "default-memo-visibility": "Standard synlighet for memoer",
-      "label": "Innstillinger",
-      "theme": "Tema",
       "appearance-description": "Velg hvordan appen ser ut og hvilket språk den bruker for kontoen din.",
       "appearance-title": "Utseende",
+      "default-memo-visibility": "Standard synlighet for memoer",
       "default-memo-visibility-description": "Synlighet brukt på nyopprettede notater med mindre de endres i redigeringsprogrammet.",
+      "device-description": "Lese- og redigeringsvalg som bare lagres i denne nettleseren. De lagres ikke på kontoen din.",
+      "device-title": "Denne enheten",
+      "double-click-edit": "Dobbeltklikk for å redigere",
+      "double-click-edit-description": "Åpne dine egne notater i redigeringsverktøyet ved å dobbeltklikke på dem.",
+      "label": "Innstillinger",
       "language-description": "Oppdaterer grensesnittspråket umiddelbart og lagrer det på kontoen din.",
+      "link-preview-description": "Vis et forhåndsvisningskort under rene lenker overalt der notater vises.",
       "memo-defaults-description": "Angi standardinnstillingene som brukes når du skriver nye notater.",
       "memo-defaults-title": "Memo standarder",
-      "theme-description": "Bruker det valgte temaet umiddelbart på denne enheten.",
       "save-media-metadata": "Lagre mediemetadata",
       "save-media-metadata-description": "Lagre tilgjengelig kamera, opptakstidspunkt, sted, bildedimensjoner og grunnleggende videodetaljer for fremtidige opplastinger. Alle som kan se vedlegget kan motta disse metadataene. Eksisterende vedlegg endres ikke.",
+      "theme-description": "Bruker det valgte temaet umiddelbart på denne enheten.",
+      "theme": "Tema",
       "uploads-privacy-description": "Kontroller personvernsensitiv informasjon som sendes inn med opplastede medier.",
       "uploads-privacy-title": "Opplastinger og personvern"
     },
@@ -638,7 +642,6 @@
         "icon-url": "Ikon-URL",
         "title": "Tilpass server"
       },
-      "enable-double-click-to-edit": "Slå på dobbeltklikk for å redigere",
       "label": "System",
       "server-name": "Servernavn",
       "additional-script-description": "Injiser JavaScript på hver nettside. Bruk kun pålitelig kode.",

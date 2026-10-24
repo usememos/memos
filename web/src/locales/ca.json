@@ -6,7 +6,6 @@
     "api-docs": "API Documentació",
     "api-docs-note": "Referència REST i gRPC",
     "build": "Compilació",
-    "commit": "Commit",
     "demo": "Demostració",
     "description": "Un espai de codi obert i autoallotjat per a les teves notes, idees i pensaments quotidians.",
     "distribution": "Distribució",
@@ -150,9 +149,7 @@
     "any-thoughts": "Alguna idea...",
     "exit-focus-mode": "Surt del mode focus",
     "focus-mode": "Mode focus",
-    "source": "Font",
-    "source-mode": "Mode font",
-    "switch-to-rich-text": "Canvia a text enriquit",
+    "markdown-mode": "Mode Markdown",
     "insert-menu": {
       "add-location": "Afegeix la ubicació",
       "link-memo": "Nota d'enllaç",
@@ -199,6 +196,8 @@
       "task-list": "Llista de tasques pendents"
     },
     "comment": "Comentari",
+    "footnotes": "Notes al peu",
+    "back-to-reference": "Torna a la referència",
     "new-memo": "Nova nota",
     "saved": "Desada",
     "validation": {
@@ -287,7 +286,9 @@
     "delete-confirm-description": "Aquesta acció és irreversible. Els adjunts, enllaços i referències també s'eliminaran.",
     "direction": "Direcció",
     "filters": {
+      "has-attachments": "té adjunts",
       "has-code": "téCodi",
+      "has-image": "té imatge",
       "has-link": "téEnllaç",
       "has-location": "té ubicació",
       "has-task-list": "téLlistaTasques"
@@ -498,8 +499,6 @@
       "reactions-required": "La llista de reaccions no ha d'estar buida",
       "add-reaction": "Afegeix reacció",
       "configured-reactions": "Reaccions configurades",
-      "double-click-edit-description": "Permet als usuaris obrir l'edició de notes fent doble clic en una nota.",
-      "editing-title": "Edició",
       "reaction-placeholder": "p. ex. 👍",
       "reactions-description": "Definiu les opcions de reacció que els usuaris poden aplicar a les notes.",
       "remove-reaction": "Elimina la reacció"
@@ -508,18 +507,23 @@
       "label": "El meu compte"
     },
     "preference": {
-      "default-memo-visibility": "Visibilitat per defecte de la nota",
-      "label": "Preferències",
-      "theme": "Tema",
       "appearance-description": "Trieu com es veu l'aplicació i quin idioma utilitza per al vostre compte.",
       "appearance-title": "Aparença",
+      "default-memo-visibility": "Visibilitat per defecte de la nota",
       "default-memo-visibility-description": "La visibilitat s'aplica a les notes de nova creació tret que es modifiqui a l'editor.",
+      "device-description": "Opcions de lectura i edició desades només en aquest navegador. No es desen al vostre compte.",
+      "device-title": "Aquest dispositiu",
+      "double-click-edit": "Doble clic per editar",
+      "double-click-edit-description": "Obriu les vostres notes a l'editor fent-hi doble clic.",
+      "label": "Preferències",
       "language-description": "Actualitza l'idioma de la interfície immediatament i el desa al vostre compte.",
+      "link-preview-description": "Mostra una targeta de previsualització sota els enllaços nus allà on es mostrin notes.",
       "memo-defaults-description": "Estableix els valors predeterminats que s'utilitzen per redactar memòries noves.",
       "memo-defaults-title": "Memo per defecte",
-      "theme-description": "Aplica el tema seleccionat immediatament en aquest dispositiu.",
       "save-media-metadata": "Desa les metadades dels continguts multimèdia",
       "save-media-metadata-description": "Per a futures càrregues, desa la càmera disponible, l'hora de captura, la ubicació, les dimensions de la imatge i els detalls bàsics del vídeo. Qualsevol persona que pugui veure el fitxer adjunt pot rebre aquestes metadades. Els fitxers adjunts existents no canvien.",
+      "theme-description": "Aplica el tema seleccionat immediatament en aquest dispositiu.",
+      "theme": "Tema",
       "uploads-privacy-description": "Controla la informació sensible a la privadesa enviada amb els continguts multimèdia carregats.",
       "uploads-privacy-title": "Càrregues i privadesa"
     },
@@ -638,7 +642,6 @@
         "icon-url": "URL de la icona",
         "title": "Personalitza el servidor"
       },
-      "enable-double-click-to-edit": "Habilita doble clic per editar",
       "label": "Sistema",
       "server-name": "Nom del servidor",
       "additional-script-description": "Injecteu JavaScript a cada pàgina web. Utilitzeu només codi de confiança.",

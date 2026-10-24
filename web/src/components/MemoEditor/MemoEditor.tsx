@@ -162,8 +162,14 @@ const MemoEditorDraft = ({ draft, ...editing }: MemoEditorDraftProps) => {
   const identity: MemoEditIdentity = draft.parent
     ? { kind: "comment", parent: draft.parent }
     : { kind: "new", scope: draft.scope ?? "default", space: draft.space };
+  // While the session's code loads, a still of the empty composer: the same frame, the
+  // placeholder line and the toolbar's height, so the page below does not move when the
+  // session takes its place.
   const fallback = editing.frameless ? null : (
-    <div aria-hidden className={cn("w-full min-h-28 rounded-lg border border-border/70 bg-card", editing.className)} />
+    <div aria-hidden className={cn("flex w-full flex-col gap-2 rounded-lg border border-border/70 bg-card px-4 py-3", editing.className)}>
+      <div className="w-full text-base leading-6 text-muted-foreground">{editing.placeholder ?? " "}</div>
+      <div className="h-9 w-full" />
+    </div>
   );
   return (
     <Suspense fallback={fallback}>

@@ -152,7 +152,7 @@ const LinkedIdentitySection = () => {
               <div className="flex min-w-[16rem] flex-col gap-2">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="text-sm font-medium text-foreground">{row.title}</span>
-                  <Badge variant="secondary" className="rounded-full px-2.5 py-0.5">
+                  <Badge variant="neutral" shape="pill">
                     {row.typeLabel}
                   </Badge>
                 </div>
@@ -168,7 +168,7 @@ const LinkedIdentitySection = () => {
             render: (_, row: LinkedIdentityRow) => (
               <div className="flex min-w-[22rem] flex-col gap-2">
                 <div className="flex flex-wrap items-center gap-2">
-                  <Badge variant={row.isLinked ? "default" : "outline"} className="rounded-full px-2.5 py-0.5">
+                  <Badge variant={row.isLinked ? "neutral" : "outline"} shape="pill">
                     {row.isLinked ? t("setting.sso.linked") : t("setting.sso.not-linked")}
                   </Badge>
                   {row.isLinked && row.externalUid ? (

@@ -1,7 +1,7 @@
 import { Popover as PopoverPrimitive } from "@base-ui/react/popover";
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { popupMotionClasses } from "./popup";
+import { popupMotionClasses, popupSurfaceClasses } from "./popup";
 
 const Popover = ({ ...props }: PopoverPrimitive.Root.Props) => {
   return <PopoverPrimitive.Root data-slot="popover" {...props} />;
@@ -16,7 +16,7 @@ const PopoverContent = React.forwardRef<
   HTMLDivElement,
   PopoverPrimitive.Popup.Props &
     Pick<PopoverPrimitive.Positioner.Props, "anchor" | "align" | "alignOffset" | "positionMethod" | "side" | "sideOffset">
->(({ className, anchor, align = "center", alignOffset, positionMethod, side, sideOffset = 4, ...props }, ref) => {
+>(({ className, anchor, align = "center", alignOffset, positionMethod, side, sideOffset = 6, ...props }, ref) => {
   return (
     <PopoverPrimitive.Portal>
       <PopoverPrimitive.Positioner
@@ -32,7 +32,8 @@ const PopoverContent = React.forwardRef<
           ref={ref}
           data-slot="popover-content"
           className={cn(
-            "bg-popover text-popover-foreground z-dropdown w-auto origin-(--transform-origin) rounded-md border p-1 shadow-md outline-hidden",
+            popupSurfaceClasses,
+            "z-dropdown w-auto max-w-(--available-width) origin-(--transform-origin) p-1.5 outline-hidden",
             popupMotionClasses,
             className,
           )}

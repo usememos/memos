@@ -3,7 +3,6 @@
     "api-docs": "API 文件",
     "api-docs-note": "REST 與 gRPC 參考",
     "build": "建置資訊",
-    "commit": "提交",
     "demo": "示範",
     "description": "一個開源、自架的空間，記錄你的筆記、靈感和日常思緒。",
     "distribution": "發行版本",
@@ -229,9 +228,7 @@
     "any-thoughts": "任何想法...",
     "exit-focus-mode": "退出專注模式",
     "focus-mode": "專注模式",
-    "source": "原始碼",
-    "source-mode": "原始碼模式",
-    "switch-to-rich-text": "切換到富文字",
+    "markdown-mode": "Markdown 模式",
     "format": {
       "paragraph": "段落",
       "heading-1": "標題 1",
@@ -289,6 +286,8 @@
       "trigger": "錄製音訊"
     },
     "comment": "評論",
+    "footnotes": "腳註",
+    "back-to-reference": "返回引用處",
     "saved": "已儲存",
     "blocks": {
       "task": "任務",
@@ -367,7 +366,9 @@
     "delete-confirm-description": "此操作無法恢復。附件、連結和引用將一併被移除。",
     "direction": "排序",
     "filters": {
+      "has-attachments": "有附件",
       "has-code": "有程式碼",
+      "has-image": "有圖片",
       "has-link": "有連結",
       "has-location": "有位置",
       "has-task-list": "有待辦事項"
@@ -617,8 +618,6 @@
     "memo": {
       "add-reaction": "新增表情回應",
       "configured-reactions": "已設定的表情回應",
-      "double-click-edit-description": "允許使用者雙擊備忘錄以開啟編輯。",
-      "editing-title": "編輯",
       "label": "備忘錄",
       "reaction-placeholder": "例如 👍",
       "reactions-description": "定義使用者可以對備忘錄套用的表情回應選項。",
@@ -669,8 +668,13 @@
       "appearance-title": "外觀",
       "default-memo-visibility": "備忘錄預設瀏覽權限",
       "default-memo-visibility-description": "套用於新建立的備忘錄，除非在編輯器中變更。",
+      "device-description": "僅保存在此瀏覽器中的閱讀與編輯選項，不會儲存到你的帳號。",
+      "device-title": "此裝置",
+      "double-click-edit": "雙擊編輯",
+      "double-click-edit-description": "雙擊自己的 Memo 即可在編輯器中開啟。",
       "label": "偏好設定",
       "language-description": "立即更新介面語言並儲存至您的帳號。",
+      "link-preview-description": "在顯示 Memo 的任何位置，為單獨的連結顯示預覽卡片。",
       "memo-defaults-description": "設定撰寫新備忘錄時使用的預設值。",
       "memo-defaults-title": "備忘錄預設值",
       "save-media-metadata": "儲存媒體中繼資料",
@@ -881,7 +885,6 @@
       },
       "custom-code-description": "套用至前端的選擇性全實例 CSS 和 JavaScript。",
       "custom-code-title": "自訂代碼",
-      "enable-double-click-to-edit": "啟用雙擊編輯",
       "label": "系統",
       "server-name": "伺服器名稱"
     },

@@ -11,6 +11,10 @@ extending or debugging the package.
    - Define the backing column (`Column`), JSON path (if applicable), type, and
      allowed operators.  
    - Include the CEL variable in `EnvOptions`.
+   - Choose the kind by where the truth lives: a payload flag
+     (`FieldKindJSONBool`) only for facts computed from the content; a fact about
+     related rows, such as attachments, uses `FieldKindExists` with `Related`,
+     never a payload copy.
 2. **Adjust parser or renderer (if needed)**  
    - For non-scalar fields (JSON booleans, lists), add handling in
      `parser.go` or extend the renderer helpers.  

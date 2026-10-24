@@ -2,7 +2,7 @@ import { Menu as DropdownMenuPrimitive } from "@base-ui/react/menu";
 import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react";
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { popupMotionClasses } from "./popup";
+import { popupMotionClasses, popupSurfaceClasses } from "./popup";
 
 const DropdownMenu = ({ ...props }: DropdownMenuPrimitive.Root.Props) => {
   return <DropdownMenuPrimitive.Root data-slot="dropdown-menu" modal={false} {...props} />;
@@ -28,7 +28,7 @@ type DropdownMenuContentProps = DropdownMenuPrimitive.Popup.Props &
   };
 
 const DropdownMenuContent = React.forwardRef<HTMLDivElement, DropdownMenuContentProps>(
-  ({ className, align, alignOffset, collisionAvoidance, positionMethod, side, sideOffset = 4, size = "default", ...props }, ref) => {
+  ({ className, align, alignOffset, collisionAvoidance, positionMethod, side, sideOffset = 6, size = "default", ...props }, ref) => {
     return (
       <DropdownMenuSizeContext.Provider value={size}>
         <DropdownMenuPrimitive.Portal>
@@ -46,8 +46,9 @@ const DropdownMenuContent = React.forwardRef<HTMLDivElement, DropdownMenuContent
               data-slot="dropdown-menu-content"
               data-size={size}
               className={cn(
-                "bg-popover text-popover-foreground z-dropdown max-h-(--available-height) origin-(--transform-origin) overflow-x-hidden overflow-y-auto border outline-none",
-                size === "sm" ? "min-w-24 rounded p-0.5 shadow-sm" : "min-w-[8rem] rounded-md p-1 shadow-md",
+                popupSurfaceClasses,
+                "z-dropdown max-h-(--available-height) max-w-(--available-width) origin-(--transform-origin) overflow-x-hidden overflow-y-auto outline-none",
+                size === "sm" ? "min-w-24 p-1" : "min-w-32 p-1.5",
                 popupMotionClasses,
                 className,
               )}
@@ -67,10 +68,10 @@ function DropdownMenuGroup({ ...props }: DropdownMenuPrimitive.Group.Props) {
 
 const dropdownMenuItemClasses = (size: DropdownMenuSize) =>
   cn(
-    "data-highlighted:bg-accent data-highlighted:text-accent-foreground data-[variant=destructive]:text-destructive data-[variant=destructive]:data-highlighted:bg-destructive/10 data-[variant=destructive]:data-highlighted:text-destructive data-[variant=destructive]:*:[svg]:!text-destructive [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center rounded-sm outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+    "data-highlighted:bg-accent data-highlighted:text-accent-foreground data-[variant=destructive]:text-destructive data-[variant=destructive]:data-highlighted:bg-destructive/10 data-[variant=destructive]:data-highlighted:text-destructive data-[variant=destructive]:*:[svg]:!text-destructive [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center rounded outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
     size === "sm"
       ? "min-h-7 gap-1.5 px-2 py-1 text-ui data-[inset]:ps-7 [&_svg:not([class*='size-'])]:size-3.5"
-      : "gap-2 px-2 py-1.5 text-sm data-[inset]:ps-8 [&_svg:not([class*='size-'])]:size-4",
+      : "min-h-8 gap-2 px-2 py-1.5 text-ui data-[inset]:ps-8 [&_svg:not([class*='size-'])]:size-4",
   );
 
 function DropdownMenuItem({
@@ -126,10 +127,10 @@ function DropdownMenuCheckboxItem({
     <DropdownMenuPrimitive.CheckboxItem
       data-slot="dropdown-menu-checkbox-item"
       className={cn(
-        "data-highlighted:bg-accent data-highlighted:text-accent-foreground relative flex cursor-default items-center rounded-sm outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+        "data-highlighted:bg-accent data-highlighted:text-accent-foreground relative flex cursor-default items-center rounded outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
         size === "sm"
           ? cn("min-h-7 gap-1.5 py-1 text-ui [&_svg:not([class*='size-'])]:size-3.5", trailing ? "ps-2 pe-7" : "pe-2 ps-7")
-          : cn("gap-2 py-1.5 text-sm [&_svg:not([class*='size-'])]:size-4", trailing ? "ps-2 pe-8" : "pe-2 ps-8"),
+          : cn("min-h-8 gap-2 py-1.5 text-ui [&_svg:not([class*='size-'])]:size-4", trailing ? "ps-2 pe-8" : "pe-2 ps-8"),
         className,
       )}
       checked={checked}
@@ -156,10 +157,10 @@ function DropdownMenuRadioItem({ className, children, ...props }: DropdownMenuPr
     <DropdownMenuPrimitive.RadioItem
       data-slot="dropdown-menu-radio-item"
       className={cn(
-        "data-highlighted:bg-accent data-highlighted:text-accent-foreground relative flex cursor-default items-center rounded-sm outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+        "data-highlighted:bg-accent data-highlighted:text-accent-foreground relative flex cursor-default items-center rounded outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
         size === "sm"
           ? "min-h-7 gap-1.5 py-1 pe-2 ps-7 text-ui [&_svg:not([class*='size-'])]:size-3.5"
-          : "gap-2 py-1.5 pe-2 ps-8 text-sm [&_svg:not([class*='size-'])]:size-4",
+          : "min-h-8 gap-2 py-1.5 pe-2 ps-8 text-ui [&_svg:not([class*='size-'])]:size-4",
         className,
       )}
       {...props}
@@ -187,7 +188,11 @@ function DropdownMenuLabel({
     <DropdownMenuPrimitive.GroupLabel
       data-slot="dropdown-menu-label"
       data-inset={inset}
-      className={cn("px-2 font-medium", size === "sm" ? "py-1 text-ui data-[inset]:ps-7" : "py-1.5 text-sm data-[inset]:ps-8", className)}
+      className={cn(
+        "px-2 text-xs font-medium leading-4 text-muted-foreground",
+        size === "sm" ? "py-1 data-[inset]:ps-7" : "py-1.5 data-[inset]:ps-8",
+        className,
+      )}
       {...props}
     />
   );
@@ -199,7 +204,7 @@ function DropdownMenuSeparator({ className, ...props }: DropdownMenuPrimitive.Se
   return (
     <DropdownMenuPrimitive.Separator
       data-slot="dropdown-menu-separator"
-      className={cn("bg-border h-px", size === "sm" ? "-mx-0.5 my-0.5" : "-mx-1 my-1", className)}
+      className={cn("bg-border/60 h-px", size === "sm" ? "-mx-1 my-1" : "-mx-1.5 my-1.5", className)}
       {...props}
     />
   );
@@ -211,7 +216,7 @@ function DropdownMenuShortcut({ className, ...props }: React.ComponentProps<"spa
   return (
     <span
       data-slot="dropdown-menu-shortcut"
-      className={cn("text-muted-foreground ms-auto tracking-widest", size === "sm" ? "text-2xs" : "text-xs", className)}
+      className={cn("text-muted-foreground ms-auto ps-4 font-normal tracking-normal", size === "sm" ? "text-2xs" : "text-xs", className)}
       {...props}
     />
   );
@@ -236,10 +241,10 @@ function DropdownMenuSubTrigger({
       data-slot="dropdown-menu-sub-trigger"
       data-inset={inset}
       className={cn(
-        "data-highlighted:bg-accent data-highlighted:text-accent-foreground data-popup-open:bg-accent data-popup-open:text-accent-foreground [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center rounded-sm outline-hidden select-none [&_svg]:pointer-events-none [&_svg]:shrink-0",
+        "data-highlighted:bg-accent data-highlighted:text-accent-foreground data-popup-open:bg-accent data-popup-open:text-accent-foreground [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-default items-center rounded outline-hidden select-none [&_svg]:pointer-events-none [&_svg]:shrink-0",
         size === "sm"
           ? "min-h-7 gap-1.5 px-2 py-1 text-ui data-[inset]:ps-7 [&_svg:not([class*='size-'])]:size-3.5"
-          : "gap-2 px-2 py-1.5 text-sm data-[inset]:ps-8 [&_svg:not([class*='size-'])]:size-4",
+          : "min-h-8 gap-2 px-2 py-1.5 text-ui data-[inset]:ps-8 [&_svg:not([class*='size-'])]:size-4",
         className,
       )}
       {...props}

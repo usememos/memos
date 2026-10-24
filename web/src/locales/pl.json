@@ -6,7 +6,6 @@
     "api-docs": "API Dokumentacja",
     "api-docs-note": "Referencje REST i gRPC",
     "build": "Kompilacja",
-    "commit": "Commit",
     "demo": "Demo",
     "description": "Otwarta przestrzeń na własnym serwerze na Twoje notatki, pomysły i codzienne przemyślenia.",
     "distribution": "Dystrybucja",
@@ -150,9 +149,7 @@
     "any-thoughts": "Jakieś przemyślenia...",
     "exit-focus-mode": "Wyjdź z Trybu Skupienia",
     "focus-mode": "Tryb Skupienia",
-    "source": "Źródło",
-    "source-mode": "Tryb Źródła",
-    "switch-to-rich-text": "Przełącz na tekst sformatowany",
+    "markdown-mode": "Tryb Markdown",
     "format": {
       "paragraph": "Akapit",
       "heading-1": "Nagłówek 1",
@@ -199,6 +196,8 @@
       "transcribing": "Transkrypcja..."
     },
     "comment": "Komentarz",
+    "footnotes": "Przypisy",
+    "back-to-reference": "Wróć do odniesienia",
     "new-memo": "Nowa notatka",
     "saved": "Zapisano",
     "validation": {
@@ -287,7 +286,9 @@
     "delete-confirm-description": "Czy na pewno chcesz usunąć tę notatkę? Załączniki, linki i odnośniki także będą usunięte. TA AKCJA JEST NIEODWRACALNA",
     "direction": "Kierunek",
     "filters": {
+      "has-attachments": "ma załączniki",
       "has-code": "ma kod",
+      "has-image": "ma obraz",
       "has-link": "ma link",
       "has-location": "ma lokalizację",
       "has-task-list": "ma listę zadań"
@@ -498,8 +499,6 @@
       "reactions-required": "Lista reakcji nie może być pusta",
       "add-reaction": "Dodaj reakcję",
       "configured-reactions": "Skonfigurowane reakcje",
-      "double-click-edit-description": "Zezwalaj użytkownikom na otwieranie edycji notatek poprzez dwukrotne kliknięcie notatki.",
-      "editing-title": "Redagowanie",
       "reaction-placeholder": "np. 👍",
       "reactions-description": "Zdefiniuj opcje reakcji, które użytkownicy mogą zastosować do notatek.",
       "remove-reaction": "Usuń reakcję"
@@ -508,18 +507,23 @@
       "label": "Moje konto"
     },
     "preference": {
-      "default-memo-visibility": "Domyślna widoczność notatek",
-      "label": "Preferencje",
-      "theme": "Motyw",
       "appearance-description": "Wybierz wygląd aplikacji i język, którego używa na Twoim koncie.",
       "appearance-title": "Wygląd",
+      "default-memo-visibility": "Domyślna widoczność notatek",
       "default-memo-visibility-description": "Widoczność stosowana do nowo utworzonych notatek, chyba że zostanie zmieniona w edytorze.",
+      "device-description": "Ustawienia czytania i edycji przechowywane tylko w tej przeglądarce. Nie są zapisywane na Twoim koncie.",
+      "device-title": "To urządzenie",
+      "double-click-edit": "Dwukrotne kliknięcie, aby edytować",
+      "double-click-edit-description": "Otwieraj własne notatki w edytorze, klikając je dwukrotnie.",
+      "label": "Preferencje",
       "language-description": "Natychmiast aktualizuje język interfejsu i zapisuje go na Twoim koncie.",
+      "link-preview-description": "Pokazuj kartę podglądu pod samymi linkami wszędzie tam, gdzie wyświetlane są notatki.",
       "memo-defaults-description": "Ustaw wartości domyślne używane podczas tworzenia nowych notatek.",
       "memo-defaults-title": "Domyślne ustawienia notatki",
-      "theme-description": "Natychmiast stosuje wybrany motyw na tym urządzeniu.",
       "save-media-metadata": "Zapisz metadane multimediów",
       "save-media-metadata-description": "Na potrzeby przyszłych przesyłów zapisz dostępne ustawienia aparatu, czas przechwytywania, lokalizację, wymiary obrazu i podstawowe szczegóły wideo. Każdy, kto może wyświetlić załącznik, może otrzymać te metadane. Istniejące załączniki pozostają niezmienione.",
+      "theme-description": "Natychmiast stosuje wybrany motyw na tym urządzeniu.",
+      "theme": "Motyw",
       "uploads-privacy-description": "Kontroluj informacje wrażliwe dotyczące prywatności przesyłane wraz z przesłanymi multimediami.",
       "uploads-privacy-title": "Przesyłanie i prywatność"
     },
@@ -638,7 +642,6 @@
         "icon-url": "URL ikony",
         "title": "Dostosuj serwer"
       },
-      "enable-double-click-to-edit": "Włącz edycję przez podwójne kliknięcie",
       "label": "System",
       "server-name": "Nazwa serwera",
       "additional-script-description": "Wstrzyknij JavaScript do każdej strony internetowej. Używaj tylko zaufanego kodu.",

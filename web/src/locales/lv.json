@@ -6,7 +6,6 @@
     "api-docs": "API Dokumenti",
     "api-docs-note": "REST un gRPC atsauce",
     "build": "Izveidot",
-    "commit": "Commit",
     "demo": "Demonstrācija",
     "description": "Atvērtā pirmkoda vieta jūsu serverī piezīmēm, idejām un ikdienas domām.",
     "distribution": "Izplatīšana",
@@ -188,9 +187,7 @@
     "any-thoughts": "Jebkuras domas...",
     "exit-focus-mode": "Iziet no fokusa režīma",
     "focus-mode": "Fokusa režīms",
-    "source": "Avots",
-    "source-mode": "Avota režīms",
-    "switch-to-rich-text": "Pārslēgties uz formatētu tekstu",
+    "markdown-mode": "Markdown režīms",
     "insert-menu": {
       "add-location": "Pievienot atrašanās vietu",
       "link-memo": "Saites piezīme",
@@ -237,6 +234,8 @@
       "task-list": "Uzdevumu saraksts"
     },
     "comment": "Komentārs",
+    "footnotes": "Vēres",
+    "back-to-reference": "Atpakaļ pie atsauces",
     "new-memo": "Jauna piezīme",
     "saved": "Saglabāts",
     "validation": {
@@ -326,7 +325,9 @@
     "delete-confirm-description": "Šī darbība ir neatgriezeniska. Tiks noņemti arī pielikumi, saites un atsauces.",
     "direction": "Virziens",
     "filters": {
+      "has-attachments": "ir pielikumi",
       "has-code": "hasCode",
+      "has-image": "ir attēls",
       "has-link": "hasLink",
       "has-location": "ir atrašanās vieta",
       "has-task-list": "hasTaskList"
@@ -576,8 +577,6 @@
     "memo": {
       "add-reaction": "Pievienojiet reakciju",
       "configured-reactions": "Konfigurētas reakcijas",
-      "double-click-edit-description": "Ļaujiet lietotājiem atvērt piezīmju rediģēšanu, veicot dubultklikšķi uz piezīmes.",
-      "editing-title": "Rediģēšana",
       "label": "Piezīme",
       "reaction-placeholder": "piem. 👍",
       "reactions-description": "Definējiet reakcijas opcijas, kuras lietotāji var lietot piezīmēm.",
@@ -628,14 +627,19 @@
       "appearance-title": "Izskats",
       "default-memo-visibility": "Noklusējuma piezīmju redzamība",
       "default-memo-visibility-description": "Redzamība tiek piemērota jaunizveidotajām piezīmēm, ja vien tas nav mainīts redaktorā.",
+      "device-description": "Lasīšanas un rediģēšanas izvēles, kas tiek glabātas tikai šajā pārlūkā. Tās netiek saglabātas jūsu kontā.",
+      "device-title": "Šī ierīce",
+      "double-click-edit": "Dubultklikšķis, lai rediģētu",
+      "double-click-edit-description": "Atveriet savas piezīmes redaktorā ar dubultklikšķi.",
       "label": "Preferences",
       "language-description": "Nekavējoties atjaunina saskarnes valodu un saglabā to jūsu kontā.",
+      "link-preview-description": "Rādīt priekšskatījuma kartīti zem kailām saitēm visur, kur tiek rādītas piezīmes.",
       "memo-defaults-description": "Iestatiet noklusējuma iestatījumus, kas tiek izmantoti, veidojot jaunas piezīmes.",
       "memo-defaults-title": "Atgādņu noklusējuma iestatījumi",
-      "theme-description": "Šajā ierīcē nekavējoties tiek lietots atlasītais motīvs.",
-      "theme": "Tēma",
       "save-media-metadata": "Saglabāt multivides metadatus",
       "save-media-metadata-description": "Turpmākām augšupielādēm saglabājiet pieejamo kameru, uzņemšanas laiku, atrašanās vietu, attēla izmērus un pamata video informāciju. Ikviens, kurš var skatīt pielikumu, var saņemt šos metadatus. Esošie pielikumi netiek mainīti.",
+      "theme-description": "Šajā ierīcē nekavējoties tiek lietots atlasītais motīvs.",
+      "theme": "Tēma",
       "uploads-privacy-description": "Kontrolējiet konfidenciālu informāciju, kas iesniegta kopā ar augšupielādēto multividi.",
       "uploads-privacy-title": "Augšupielādes un konfidencialitāte"
     },
@@ -759,7 +763,6 @@
       },
       "custom-code-description": "Izvēles instances mēroga CSS un JavaScript, kas tiek lietoti priekšgalā.",
       "custom-code-title": "Pielāgots kods",
-      "enable-double-click-to-edit": "Iespējojiet dubultklikšķi, lai rediģētu",
       "label": "Sistēma",
       "server-name": "Servera nosaukums"
     },

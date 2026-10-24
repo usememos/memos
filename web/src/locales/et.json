@@ -6,7 +6,6 @@
     "api-docs": "API Dokumendid",
     "api-docs-note": "REST ja gRPC viide",
     "build": "Ehitus",
-    "commit": "Commit",
     "demo": "Demo",
     "description": "Avatud lähtekoodiga ruum sinu serveris märkmete, ideede ja igapäevaste mõtete jaoks.",
     "distribution": "Levitamine",
@@ -188,9 +187,7 @@
     "any-thoughts": "Mingid mõtted...",
     "exit-focus-mode": "Välju teravustamisrežiimist",
     "focus-mode": "Fookusrežiim",
-    "source": "Lähtetekst",
-    "source-mode": "Lähtetekstirežiim",
-    "switch-to-rich-text": "Lülitu vormindatud tekstile",
+    "markdown-mode": "Markdown-režiim",
     "insert-menu": {
       "add-location": "Lisa asukoht",
       "link-memo": "Lingi memo",
@@ -237,6 +234,8 @@
       "task-list": "Ülesannete loend"
     },
     "comment": "Kommentaar",
+    "footnotes": "Allmärkused",
+    "back-to-reference": "Tagasi viite juurde",
     "new-memo": "Uus memo",
     "saved": "Salvestatud",
     "validation": {
@@ -326,7 +325,9 @@
     "delete-confirm-description": "See toiming on pöördumatu. Samuti eemaldatakse manused, lingid ja viited.",
     "direction": "Suund",
     "filters": {
+      "has-attachments": "on manuseid",
       "has-code": "hasCode",
+      "has-image": "on pilt",
       "has-link": "hasLink",
       "has-location": "on asukoht",
       "has-task-list": "hasTaskList"
@@ -576,8 +577,6 @@
     "memo": {
       "add-reaction": "Lisa reaktsioon",
       "configured-reactions": "Konfigureeritud reaktsioonid",
-      "double-click-edit-description": "Lubage kasutajatel memo redigeerimist avada, topeltklõpsates memo.",
-      "editing-title": "Redigeerimine",
       "label": "Memo",
       "reaction-placeholder": "nt. 👍",
       "reactions-description": "Määratlege reaktsioonivalikud, mida kasutajad saavad memodele rakendada.",
@@ -628,14 +627,19 @@
       "appearance-title": "Välimus",
       "default-memo-visibility": "Memode vaikenähtavus",
       "default-memo-visibility-description": "Nähtavus rakendatakse äsja loodud memodele, kui seda pole redaktoris muudetud.",
+      "device-description": "Lugemis- ja muutmisvalikud, mida hoitakse ainult selles brauseris. Neid ei salvestata teie kontole.",
+      "device-title": "See seade",
+      "double-click-edit": "Topeltklõps muutmiseks",
+      "double-click-edit-description": "Ava oma memod redaktoris topeltklõpsuga.",
       "label": "Eelistused",
       "language-description": "Värskendab koheselt liidese keelt ja salvestab selle teie kontole.",
+      "link-preview-description": "Näita eelvaatekaarti paljaste linkide all kõikjal, kus memosid kuvatakse.",
       "memo-defaults-description": "Määrake uute memode koostamisel kasutatavad vaikeseaded.",
       "memo-defaults-title": "Memo vaikeseaded",
-      "theme-description": "Rakendab valitud teema kohe selles seadmes.",
-      "theme": "Teema",
       "save-media-metadata": "Salvesta meedia metaandmed",
       "save-media-metadata-description": "Tulevaste üleslaadimiste jaoks salvesta saadaolev kaamera, võtteaeg, asukoht, pildi mõõtmed ja video põhiandmed. Kõik, kes saavad manust vaadata, saavad selle metateabe kätte. Olemasolevad manused jäävad muutmata.",
+      "theme-description": "Rakendab valitud teema kohe selles seadmes.",
+      "theme": "Teema",
       "uploads-privacy-description": "Kontrolli üleslaaditud meediaga esitatud privaatsustundlikku teavet.",
       "uploads-privacy-title": "Üleslaadimised ja privaatsus"
     },
@@ -759,7 +763,6 @@
       },
       "custom-code-description": "Valikuline kogu eksemplari hõlmav CSS ja JavaScript, mida rakendatakse esiservale.",
       "custom-code-title": "Kohandatud kood",
-      "enable-double-click-to-edit": "Redigeerimiseks lubage topeltklõps",
       "label": "Süsteem",
       "server-name": "Serveri nimi"
     },

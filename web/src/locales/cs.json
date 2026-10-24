@@ -6,7 +6,6 @@
     "api-docs": "API Dokumentace",
     "api-docs-note": "Referenční informace o REST a gRPC",
     "build": "Sestavení",
-    "commit": "Commit",
     "demo": "Demo",
     "description": "Prostor s otevřeným zdrojovým kódem na vlastním serveru pro vaše poznámky, nápady a každodenní myšlenky.",
     "distribution": "Distribuce",
@@ -150,9 +149,7 @@
     "any-thoughts": "Jakékoli myšlenky...",
     "exit-focus-mode": "Ukončit režim soustředění",
     "focus-mode": "Režim soustředění",
-    "source": "Zdroj",
-    "source-mode": "Režim zdroje",
-    "switch-to-rich-text": "Přepnout na formátovaný text",
+    "markdown-mode": "Režim Markdown",
     "insert-menu": {
       "add-location": "Přidat umístění",
       "link-memo": "Odkaz na poznámku",
@@ -199,6 +196,8 @@
       "task-list": "Seznam úkolů"
     },
     "comment": "Komentář",
+    "footnotes": "Poznámky pod čarou",
+    "back-to-reference": "Zpět na odkaz",
     "new-memo": "Nová poznámka",
     "saved": "Uloženo",
     "validation": {
@@ -287,7 +286,9 @@
     "delete-confirm-description": "Tato akce je nevratná. Přílohy, odkazy a reference budou také odstraněny.",
     "direction": "Směr",
     "filters": {
+      "has-attachments": "má přílohy",
       "has-code": "maKod",
+      "has-image": "má obrázek",
       "has-link": "maOdkaz",
       "has-location": "má polohu",
       "has-task-list": "maSeznamUkolu"
@@ -498,8 +499,6 @@
       "reactions-required": "Seznam reakcí nesmí být prázdný",
       "add-reaction": "Přidejte reakci",
       "configured-reactions": "Nastavené reakce",
-      "double-click-edit-description": "Umožněte uživatelům otevřít úpravy poznámek dvojitým kliknutím na poznámku.",
-      "editing-title": "Editace",
       "reaction-placeholder": "např. 👍",
       "reactions-description": "Definujte možnosti reakce, které mohou uživatelé použít na poznámky.",
       "remove-reaction": "Odstraňte reakci"
@@ -508,18 +507,23 @@
       "label": "Můj účet"
     },
     "preference": {
-      "default-memo-visibility": "Výchozí viditelnost poznámky",
-      "label": "Předvolby",
-      "theme": "Motiv",
       "appearance-description": "Vyberte, jak aplikace vypadá a jaký jazyk používá pro váš účet.",
       "appearance-title": "Vzhled",
+      "default-memo-visibility": "Výchozí viditelnost poznámky",
       "default-memo-visibility-description": "Viditelnost se použije na nově vytvořené poznámky, pokud se nezmění v editoru.",
+      "device-description": "Volby čtení a úprav uložené jen v tomto prohlížeči. Do vašeho účtu se neukládají.",
+      "device-title": "Toto zařízení",
+      "double-click-edit": "Upravit dvojklikem",
+      "double-click-edit-description": "Otevřete své poznámky v editoru dvojklikem.",
+      "label": "Předvolby",
       "language-description": "Okamžitě aktualizuje jazyk rozhraní a uloží jej do vašeho účtu.",
+      "link-preview-description": "Zobrazovat kartu s náhledem pod holými odkazy všude, kde se poznámky zobrazují.",
       "memo-defaults-description": "Nastavte výchozí hodnoty používané při vytváření nových poznámek.",
       "memo-defaults-title": "Výchozí nastavení poznámek",
-      "theme-description": "Okamžitě použije vybraný motiv na tomto zařízení.",
       "save-media-metadata": "Uložit metadata médií",
       "save-media-metadata-description": "Pro budoucí nahrávání uložit dostupnou kameru, čas pořízení, místo, rozměry obrázku a základní podrobnosti o videu. Tato metadata může obdržet kdokoli, kdo si může přílohu prohlédnout. Stávající přílohy zůstávají nezměněny.",
+      "theme-description": "Okamžitě použije vybraný motiv na tomto zařízení.",
+      "theme": "Motiv",
       "uploads-privacy-description": "Ovládejte informace citlivé na ochranu soukromí odesílané s nahranými médii.",
       "uploads-privacy-title": "Nahrávání a soukromí"
     },
@@ -638,7 +642,6 @@
         "icon-url": "URL ikony",
         "title": "Přizpůsobení serveru"
       },
-      "enable-double-click-to-edit": "Povolit dvojklik pro editaci",
       "label": "Systém",
       "server-name": "Název serveru",
       "additional-script-description": "Vložte JavaScript do každé webové stránky. Používejte pouze důvěryhodný kód.",

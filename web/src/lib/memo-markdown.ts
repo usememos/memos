@@ -21,9 +21,9 @@ import {
   type Theme,
   tags,
 } from "@usememos/editor";
-import { ensureHighlightTheme, highlightLoadedCode, loadHighlighter } from "@/lib/code-highlight";
+import { highlightLoadedCode, loadHighlighter } from "@/lib/code-highlight";
 import { colorToHex } from "@/lib/color";
-import { headingTypeClass, markdownStyles, mentionStyles, tagStyles } from "@/lib/markdownStyles";
+import { headingClasses, markdownStyles, mentionStyles, tagStyles } from "@/lib/markdownStyles";
 import { findTagMetadata } from "@/lib/tag";
 import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/attachment_service_pb";
@@ -65,29 +65,8 @@ const highlightedEditors = new Set<import("@usememos/editor").Editor>();
 /** Languages loading now, so each load redecorates the editors once, however many blocks wait for it. */
 const loadingLanguages = new Set<string>();
 
-/** highlight.js output as decorations: one range per highlighted span, classes and all. */
-function highlightRanges(html: string): { from: number; to: number; class: string }[] {
-  const template = document.createElement("template");
-  template.innerHTML = html;
-  const ranges: { from: number; to: number; class: string }[] = [];
-  let offset = 0;
-  const walk = (node: Node) => {
-    for (const child of node.childNodes) {
-      if (child.nodeType === Node.TEXT_NODE) {
-        offset += child.textContent?.length ?? 0;
-      } else if (child instanceof Element) {
-        const from = offset;
-        walk(child);
-        if (child.className && offset > from) ranges.push({ from, to: offset, class: child.className });
-      }
-    }
-  };
-  walk(template.content);
-  return ranges;
-}
-
 /**
- * Syntax highlighting for code blocks with highlight.js, while editing and when read-only.
+ * Token-based syntax highlighting for code blocks, while editing and when read-only.
  * A language loads the first time it is needed; the editors then highlight again.
  */
 const codeHighlight = (): Extension => ({
@@ -98,9 +77,8 @@ const codeHighlight = (): Extension => ({
   },
   codeDecorations: ({ text, language }) => {
     if (!language.trim() || !text) return [];
-    void ensureHighlightTheme(document.documentElement.style.colorScheme === "dark");
-    const html = highlightLoadedCode(text, language);
-    if (html === undefined) {
+    const ranges = highlightLoadedCode(text, language);
+    if (ranges === undefined) {
       const key = language.trim().toLowerCase();
       if (!loadingLanguages.has(key)) {
         loadingLanguages.add(key);
@@ -113,30 +91,36 @@ const codeHighlight = (): Extension => ({
       }
       return [];
     }
-    return highlightRanges(html);
+    return ranges;
   },
 });
 
-/** Mermaid diagrams for ```mermaid code blocks. The code shows until the diagram is drawn, and stays if it fails. */
-const renderMermaid: SyntaxView = (source, element) => {
+/**
+ * Mermaid diagrams for ```mermaid code blocks, drawn by Pele: the diagram types load on
+ * first use, the SVG takes its colors from the `.pele` variables in index.css, so a new
+ * color scheme needs no redraw, and the layout adapts to the memo's width. The code
+ * shows until the diagram is drawn, and stays if it fails.
+ */
+const renderDiagram: SyntaxView = (source, element) => {
   const pre = document.createElement("pre");
   pre.textContent = source;
   element.appendChild(pre);
   return (async () => {
-    const { default: mermaid } = await import("mermaid");
+    const { PeleError, renderAsync } = await import("pele/lazy");
     await document.fonts?.ready;
-    mermaid.initialize({
-      startOnLoad: false,
-      theme: document.documentElement.style.colorScheme === "dark" ? "dark" : "default",
-      securityLevel: "strict",
-      fontFamily: getComputedStyle(document.body).fontFamily || "sans-serif",
-      suppressErrorRendering: true,
-    });
+    const style = getComputedStyle(element);
     try {
-      const { svg } = await mermaid.render(`mermaid-${Math.random().toString(36).slice(2)}`, source);
-      element.classList.add("mermaid-diagram");
+      const { svg } = await renderAsync(source, {
+        fontFamily: style.fontFamily || "sans-serif",
+        fontFamilyMono: style.getPropertyValue("--font-mono").trim() || "monospace",
+        maxWidth: element.clientWidth || undefined,
+        // A memo column is narrow; the diagram shrinks to fit, but keeps the direction its author wrote.
+        autoDirection: false,
+        idPrefix: `diagram-${Math.random().toString(36).slice(2)}`,
+      });
       element.innerHTML = svg;
-    } catch {
+    } catch (error) {
+      if (!(error instanceof PeleError)) throw error;
       return false;
     }
   })();
@@ -156,32 +140,29 @@ const renderHtml: SyntaxView = (source, element, kind) => {
   return htmlRendererPromise.then((render) => render(source, element, kind));
 };
 
-/**
- * A tag's custom color from the user's tag settings, as a style attribute, or undefined
- * for the theme color. Text uses a darkened variant (60% color + black) for contrast.
- */
-function tagColorStyle(tag: string, tagsSetting: UserSetting_TagsSetting | undefined): string | undefined {
+/** A tag's custom color from the user's tag settings, as a hex value, or undefined for the theme color. */
+function tagColor(tag: string, tagsSetting: UserSetting_TagsSetting | undefined): string | undefined {
   const metadata = tagsSetting ? findTagMetadata(tag, tagsSetting) : undefined;
-  const bgHex = colorToHex(metadata?.backgroundColor);
-  if (!bgHex) return undefined;
-  return `border-color: ${bgHex}; color: color-mix(in srgb, ${bgHex} 60%, black); background-color: color-mix(in srgb, ${bgHex} 15%, transparent)`;
+  return colorToHex(metadata?.backgroundColor);
 }
 
 // `mbe-tag` is the editor's own class; the memo view finds tags by it.
 const TAG_CLASS = cn("mbe-tag", tagStyles.base);
 const DEFAULT_TAG_CLASS = cn(TAG_CLASS, tagStyles.defaultColor);
+const CUSTOM_TAG_CLASS = cn(TAG_CLASS, tagStyles.customColor);
 
 /**
  * How a #tag looks wherever a memo is shown, in the composer and the memo view alike:
- * a pill in the theme color, or in the color the user gave the tag. `getTagsSetting`
+ * a pill in the theme color, or in the color the user gave the tag, which the element
+ * carries as `--tag-color` for tagStyles.customColor to draw from. `getTagsSetting`
  * is read when a block is decorated; call `editor.redecorate()` when it changes.
  */
 export const memoTagOptions = (getTagsSetting: () => UserSetting_TagsSetting | undefined): Pick<TagsOptions, "class" | "attributes"> => ({
-  class: (match) => (tagColorStyle(match.slice(1), getTagsSetting()) ? TAG_CLASS : DEFAULT_TAG_CLASS),
+  class: (match) => (tagColor(match.slice(1), getTagsSetting()) ? CUSTOM_TAG_CLASS : DEFAULT_TAG_CLASS),
   attributes: (match): Record<string, string> => {
     const tag = match.slice(1);
-    const style = tagColorStyle(tag, getTagsSetting());
-    return style ? { "data-tag": tag, style } : { "data-tag": tag };
+    const color = tagColor(tag, getTagsSetting());
+    return color ? { "data-tag": tag, style: `--tag-color: ${color}` } : { "data-tag": tag };
   },
 });
 
@@ -212,8 +193,8 @@ interface MemoExtensionOptions {
 /**
  * The extensions every memo surface reads with, the composer and the memo view
  * alike: math (KaTeX, loaded on demand), footnotes, #tags and @mentions,
- * highlighted code, Mermaid diagrams and sanitized raw HTML. Everything the
- * editor renders shows its source at the caret while editing.
+ * highlighted code, Mermaid diagrams (drawn by Pele) and sanitized raw HTML.
+ * Everything the editor renders shows its source at the caret while editing.
  */
 export const memoExtensions = (options: MemoExtensionOptions = {}): Extension[] => [
   math({ render: renderMath }),
@@ -221,7 +202,7 @@ export const memoExtensions = (options: MemoExtensionOptions = {}): Extension[] 
   tags(options.tags),
   mentions(options.mentions),
   codeHighlight(),
-  { name: "memoViews", views: { "code:mermaid": renderMermaid, html: renderHtml } },
+  { name: "memoViews", views: { "code:mermaid": renderDiagram, html: renderHtml } },
 ];
 
 /** Images load from relative URLs and https only, as memos' sanitizer allowed; anything else is dropped. */
@@ -244,8 +225,11 @@ export const memoResolveUrl =
 
 /**
  * The editor's look in memos' palette. Every color is one of the app's own CSS
- * variables, for both schemes, so the active memos theme decides; `inherit`
- * follows the `color-scheme` memos sets on the document.
+ * variables, set once for both schemes (`colors`), since the variables already
+ * follow the active memos theme; `inherit` follows the `color-scheme` memos sets
+ * on the document. No `highlight` token: memos' HTML sanitizer drops `<mark>`, and
+ * should it ever pass, the editor's yellow is what a highlighter means, where a
+ * tint of the primary color would read as a tag pill or a selection.
  */
 export const MEMO_EDITOR_THEME: Theme = (() => {
   const colors = {
@@ -264,8 +248,7 @@ export const MEMO_EDITOR_THEME: Theme = (() => {
   return {
     colorScheme: "inherit",
     tokens: {
-      light: colors,
-      dark: colors,
+      colors,
       font: "inherit",
       mono: "var(--font-mono, ui-monospace, monospace)",
       fontSize: 16,
@@ -274,14 +257,7 @@ export const MEMO_EDITOR_THEME: Theme = (() => {
       blockGap: 8,
     },
     classes: {
-      heading: {
-        1: headingTypeClass(1),
-        2: headingTypeClass(2),
-        3: headingTypeClass(3),
-        4: headingTypeClass(4),
-        5: headingTypeClass(5),
-        6: headingTypeClass(6),
-      },
+      heading: headingClasses,
       code: markdownStyles.inlineCode,
       link: markdownStyles.link,
       // The editor sizes and spaces its images; raw HTML images keep markdownStyles.image.
@@ -360,6 +336,8 @@ export const memoEditorLabels = (t: ReturnType<typeof useTranslate>): Partial<La
   altTextPlaceholder: t("editor.blocks.alt-text-placeholder"),
   imageUnavailable: t("editor.blocks.image-unavailable"),
   resizeImage: t("editor.blocks.resize-image"),
+  footnotes: t("editor.footnotes"),
+  backToReference: t("editor.back-to-reference"),
 });
 
 /** Whether a span is literal text for tags: not code, raw HTML, a link, an image, or an extension token. */

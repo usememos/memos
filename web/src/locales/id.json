@@ -6,7 +6,6 @@
     "api-docs": "Dokumen API",
     "api-docs-note": "Referensi REST dan gRPC",
     "build": "Build",
-    "commit": "Commit",
     "demo": "Demo",
     "description": "Ruang sumber terbuka yang dihosting sendiri untuk catatan, ide, dan pemikiran sehari-hari Anda.",
     "distribution": "Distribusi",
@@ -150,9 +149,7 @@
     "any-thoughts": "Punya pemikiran...",
     "exit-focus-mode": "Keluar dari Mode Fokus",
     "focus-mode": "Mode Fokus",
-    "source": "Sumber",
-    "source-mode": "Mode Sumber",
-    "switch-to-rich-text": "Beralih ke Teks Kaya",
+    "markdown-mode": "Mode Markdown",
     "no-changes-detected": "Tidak ada perubahan yang terdeteksi",
     "save": "Simpan",
     "insert-menu": {
@@ -199,6 +196,8 @@
       "task-list": "Daftar tugas"
     },
     "comment": "Komentar",
+    "footnotes": "Catatan kaki",
+    "back-to-reference": "Kembali ke referensi",
     "new-memo": "Memo baru",
     "saved": "Tersimpan",
     "validation": {
@@ -282,7 +281,9 @@
     "delete-confirm-description": "Tindakan ini tidak dapat dibatalkan. Lampiran, tautan, dan referensi juga akan dihapus.",
     "direction": "Arah",
     "filters": {
+      "has-attachments": "Memiliki lampiran",
       "has-code": "Memiliki kode",
+      "has-image": "Memiliki gambar",
       "has-link": "Memiliki tautan",
       "has-location": "Memiliki lokasi",
       "has-task-list": "Memiliki daftar tugas"
@@ -417,18 +418,23 @@
       "label": "Akun Saya"
     },
     "preference": {
-      "default-memo-visibility": "Visibilitas memo default",
-      "theme": "Tema",
-      "label": "Preferensi",
       "appearance-description": "Pilih tampilan aplikasi dan bahasa yang digunakan untuk akun Anda.",
       "appearance-title": "Tampilan",
+      "default-memo-visibility": "Visibilitas memo default",
       "default-memo-visibility-description": "Visibilitas diterapkan pada memo yang baru dibuat kecuali diubah di editor.",
+      "device-description": "Pilihan membaca dan menyunting yang hanya disimpan di peramban ini. Tidak disimpan ke akun Anda.",
+      "device-title": "Perangkat ini",
+      "double-click-edit": "Klik dua kali untuk menyunting",
+      "double-click-edit-description": "Buka memo Anda sendiri di editor dengan mengekliknya dua kali.",
+      "label": "Preferensi",
       "language-description": "Memperbarui bahasa antarmuka secara instan dan menyimpannya ke akun Anda.",
+      "link-preview-description": "Tampilkan kartu pratinjau di bawah tautan polos di mana pun memo ditampilkan.",
       "memo-defaults-description": "Mengatur default yang digunakan saat membuat memo baru.",
       "memo-defaults-title": "Default memo",
       "save-media-metadata": "Menyimpan metadata media",
       "save-media-metadata-description": "Untuk unggahan di masa mendatang, simpan kamera yang tersedia, waktu pengambilan gambar, lokasi, dimensi gambar, dan detail video dasar. Siapa pun yang dapat melihat lampiran dapat menerima metadata ini. Lampiran yang sudah ada tidak berubah.",
       "theme-description": "Menerapkan tema yang dipilih secara instan pada perangkat ini.",
+      "theme": "Tema",
       "uploads-privacy-description": "Mengontrol informasi sensitif privasi yang dikirimkan dengan media yang diunggah.",
       "uploads-privacy-title": "Unggahan & privasi"
     },
@@ -547,7 +553,6 @@
         "icon-url": "URL Ikon",
         "title": "Sesuaikan Server"
       },
-      "enable-double-click-to-edit": "Aktifkan klik ganda untuk mengedit",
       "server-name": "Nama Server",
       "label": "Sistem",
       "additional-script-description": "Suntikkan JavaScript ke setiap halaman web. Gunakan hanya kode tepercaya.",
@@ -679,8 +684,6 @@
       "reactions-required": "Daftar reaksi wajib diisi",
       "add-reaction": "Tambahkan reaksi",
       "configured-reactions": "Reaksi yang dikonfigurasi",
-      "double-click-edit-description": "Izinkan pengguna untuk membuka pengeditan memo dengan mengklik dua kali memo.",
-      "editing-title": "Pengeditan",
       "reaction-placeholder": "contoh: 👍",
       "reactions-description": "Tentukan opsi reaksi yang dapat diterapkan pengguna pada memo.",
       "remove-reaction": "Hapus reaksi"

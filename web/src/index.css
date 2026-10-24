@@ -2,6 +2,14 @@
 @import "tw-animate-css";
 @import "./themes/default.css";
 
+/*
+ * Rich text in the memo editor: everything outside its source mode, which shows the
+ * Markdown as text (the editor marks its root `.mbe-source-mode`). The editor applies
+ * memos' tag and mention classes in both modes, so the parts that draw a shape take
+ * this variant and source mode keeps the text and its color.
+ */
+@custom-variant rich (&:not(.mbe-source-mode *));
+
 @layer base {
   * {
     @apply border-border outline-none ring-0;
@@ -39,6 +47,20 @@
 }
 
 @layer components {
+  /* Mermaid diagrams drawn by Pele take the theme's colors; a new scheme recolors them live. */
+  .pele {
+    --pele-bg: var(--card);
+    --pele-fg: var(--foreground);
+    --pele-muted: var(--muted-foreground);
+    --pele-line: var(--foreground);
+    --pele-surface: var(--muted);
+    --pele-surface-alt: var(--accent);
+    --pele-border: var(--border);
+    --pele-accent: var(--primary);
+    --pele-critical: var(--destructive);
+    --pele-radius: calc(var(--radius) - 2px);
+  }
+
   @media (prefers-reduced-motion: no-preference) {
     .memos-logo .memos-mark {
       transition: transform 180ms ease-out;

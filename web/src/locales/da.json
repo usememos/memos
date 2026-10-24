@@ -6,7 +6,6 @@
     "api-docs": "API Dokumenter",
     "api-docs-note": "REST- og gRPC-reference",
     "build": "Bygg",
-    "commit": "Commit",
     "demo": "Demo",
     "description": "Et sted med åben kildekode på din egen server til dine noter, idéer og hverdagstanker.",
     "distribution": "Distribution",
@@ -188,9 +187,7 @@
     "any-thoughts": "Nogen tanker...",
     "exit-focus-mode": "Afslut fokustilstand",
     "focus-mode": "Fokustilstand",
-    "source": "Kilde",
-    "source-mode": "Kildetilstand",
-    "switch-to-rich-text": "Skift til formateret tekst",
+    "markdown-mode": "Markdown-tilstand",
     "insert-menu": {
       "add-location": "Tilføj placering",
       "link-memo": "Link memo",
@@ -237,6 +234,8 @@
       "task-list": "Opgaveliste"
     },
     "comment": "Kommentar",
+    "footnotes": "Fodnoter",
+    "back-to-reference": "Tilbage til referencen",
     "new-memo": "Nyt notat",
     "saved": "Gemt",
     "validation": {
@@ -326,7 +325,9 @@
     "delete-confirm-description": "Denne handling er irreversibel. Vedhæftede filer, links og referencer vil også blive fjernet.",
     "direction": "Retning",
     "filters": {
+      "has-attachments": "har vedhæftninger",
       "has-code": "hasCode",
+      "has-image": "har billede",
       "has-link": "harLink",
       "has-location": "har placering",
       "has-task-list": "har Opgaveliste"
@@ -576,8 +577,6 @@
     "memo": {
       "add-reaction": "Tilføj reaktion",
       "configured-reactions": "Konfigurerede reaktioner",
-      "double-click-edit-description": "Tillad brugere at åbne notatredigering ved at dobbeltklikke på et memo.",
-      "editing-title": "Redigering",
       "label": "Memo",
       "reaction-placeholder": "f.eks. 👍",
       "reactions-description": "Definer de reaktionsmuligheder, som brugere kan anvende på notater.",
@@ -628,14 +627,19 @@
       "appearance-title": "Udseende",
       "default-memo-visibility": "Standard memosynlighed",
       "default-memo-visibility-description": "Synlighed anvendt på nyoprettede notater, medmindre det ændres i editoren.",
+      "device-description": "Læse- og redigeringsvalg, der kun gemmes i denne browser. De gemmes ikke på din konto.",
+      "device-title": "Denne enhed",
+      "double-click-edit": "Dobbeltklik for at redigere",
+      "double-click-edit-description": "Åbn dine egne memoer i editoren ved at dobbeltklikke på dem.",
       "label": "Præferencer",
       "language-description": "Opdaterer grænsefladesproget med det samme og gemmer det på din konto.",
+      "link-preview-description": "Vis et forhåndsvisningskort under rene links, hvor end memoer vises.",
       "memo-defaults-description": "Indstil de standardindstillinger, der bruges, når du komponerer nye notater.",
       "memo-defaults-title": "Memo standarder",
-      "theme-description": "Anvender det valgte tema med det samme på denne enhed.",
-      "theme": "Tema",
       "save-media-metadata": "Gem mediemetadata",
       "save-media-metadata-description": "Gem tilgængeligt kamera, optagetidspunkt, placering, billeddimensioner og grundlæggende videooplysninger til fremtidige uploads. Enhver, der kan se den vedhæftede fil, kan modtage disse metadata. Eksisterende vedhæftede filer er uændrede.",
+      "theme-description": "Anvender det valgte tema med det samme på denne enhed.",
+      "theme": "Tema",
       "uploads-privacy-description": "Kontroller privatlivsfølsomme oplysninger, der indsendes med uploadede medier.",
       "uploads-privacy-title": "Uploads og privatliv"
     },
@@ -759,7 +763,6 @@
       },
       "custom-code-description": "Valgfri instansdækkende CSS og JavaScript anvendes på frontend.",
       "custom-code-title": "Brugerdefineret kode",
-      "enable-double-click-to-edit": "Aktiver dobbeltklik for at redigere",
       "label": "System",
       "server-name": "Servernavn"
     },

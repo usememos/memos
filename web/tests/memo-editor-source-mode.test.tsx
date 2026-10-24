@@ -50,6 +50,9 @@ const mount = (suggestions?: readonly MemoSuggestion[]) =>
   );
 
 const sourceText = (container: HTMLElement) => container.querySelector(".mbe-source");
+/** The Markdown source mode shows: one element per line, the line endings between them. */
+const sourceLines = (container: HTMLElement) =>
+  Array.from(container.querySelectorAll(".mbe-source .mbe-source-line"), (line) => line.textContent).join("\n");
 
 afterEach(() => {
   localStorage.clear();
@@ -57,25 +60,23 @@ afterEach(() => {
 });
 
 describe("MemoEditor source mode", () => {
-  it("switches from the ＋ menu, names itself in the editor's corner while on, and switches back from there", () => {
+  it("switches from the ＋ menu and back, and nothing in the editor names the mode", () => {
     const { container } = mount();
     expect(sourceText(container)).toBeNull();
-    expect(screen.queryByRole("button", { name: "editor.source" })).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "common.add" }));
-    fireEvent.click(screen.getByRole("menuitemcheckbox", { name: "editor.source-mode" }));
+    fireEvent.click(screen.getByRole("menuitemcheckbox", { name: "editor.markdown-mode" }));
 
     expect(sourceText(container)).not.toBeNull();
     expect(localStorage.getItem(MODE_KEY)).toBe(JSON.stringify("source"));
-    // The tag belongs to the writing area, not the toolbar, and the first line leaves room for it.
-    const tag = screen.getByRole("button", { name: "editor.source" });
-    expect(tag.parentElement?.querySelector(":scope > .memo-editor-content")).not.toBeNull();
+    // The text shows the mode; the composer adds no tag or indicator for it.
+    expect(screen.queryByRole("button", { name: "editor.source" })).not.toBeInTheDocument();
     expect(container.querySelector(".memo-editor-content")).toHaveAttribute("data-source-mode");
 
-    fireEvent.click(screen.getByRole("button", { name: "editor.source" }));
+    fireEvent.click(screen.getByRole("button", { name: "common.add" }));
+    fireEvent.click(screen.getByRole("menuitemcheckbox", { name: "editor.markdown-mode" }));
 
     expect(sourceText(container)).toBeNull();
-    expect(screen.queryByRole("button", { name: "editor.source" })).not.toBeInTheDocument();
     expect(localStorage.getItem(MODE_KEY)).toBe(JSON.stringify("rich"));
   });
 
@@ -84,25 +85,51 @@ describe("MemoEditor source mode", () => {
     const { container } = mount();
 
     expect(sourceText(container)).not.toBeNull();
-    expect(screen.getByRole("button", { name: "editor.source" })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "common.add" }));
+    expect(screen.getByRole("menuitemcheckbox", { name: "editor.markdown-mode" })).toHaveAttribute("aria-checked", "true");
   });
 
-  it.each([
-    ["rich", true],
-    ["source", false],
-  ])("offers the checklist suggestion in %s mode: %s", async (mode, offered) => {
+  it("switches without changing the text", () => {
+    const markdown = "# Plan\n\n- [ ] Ship **it**";
+    cacheService.saveNow(cacheService.key("users/1", draftKeyFor({ kind: "new", scope: CACHE_KEY })), {
+      content: markdown,
+      attachments: [],
+    });
+    const { container } = mount();
+    const toggle = () => {
+      fireEvent.click(screen.getByRole("button", { name: "common.add" }));
+      fireEvent.click(screen.getByRole("menuitemcheckbox", { name: "editor.markdown-mode" }));
+    };
+
+    toggle();
+    expect(sourceLines(container)).toBe(markdown);
+
+    toggle();
+    expect(sourceText(container)).toBeNull();
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Plan");
+
+    // Rich mode shows no Markdown string, so the source text after a third switch is the round trip's result.
+    toggle();
+    expect(sourceLines(container)).toBe(markdown);
+  });
+
+  it.each(["rich", "source"])("offers the checklist suggestion in %s mode and applies it there", async (mode) => {
     localStorage.setItem(MODE_KEY, JSON.stringify(mode));
     cacheService.saveNow(cacheService.key("users/1", draftKeyFor({ kind: "new", scope: CACHE_KEY })), {
       content: "Groceries",
       attachments: [],
     });
-    mount([
+    const { container } = mount([
       { id: "tag:food", source: "view", kind: "tag", tag: "food" },
       { id: "checklist", source: "view", kind: "checklist" },
     ]);
 
-    // The tag chip works in both modes, so the bar renders either way and only the checklist chip differs.
     await waitFor(() => expect(screen.getByRole("button", { name: "common.add #food" })).toBeInTheDocument());
-    expect(screen.queryByRole("button", { name: "editor.format.task-list" }) !== null).toBe(offered);
+    fireEvent.click(screen.getByRole("button", { name: "editor.format.task-list" }));
+
+    // In source mode the chip is a text edit; in rich mode it changes the block. Both save the same Markdown.
+    await waitFor(() => expect(screen.queryByRole("button", { name: "editor.format.task-list" })).not.toBeInTheDocument());
+    if (mode === "source") expect(sourceLines(container)).toBe("- [ ] Groceries");
+    else expect(container.querySelector(".memo-editor-root input[type=checkbox]")).not.toBeNull();
   });
 });

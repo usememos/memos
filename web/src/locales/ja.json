@@ -3,7 +3,6 @@
     "api-docs": "APIドキュメント",
     "api-docs-note": "RESTとgRPCのリファレンス",
     "build": "ビルド",
-    "commit": "コミット",
     "demo": "デモ",
     "description": "メモやアイデア、日々の思いを残すための、オープンソースでセルフホストできる場所。",
     "distribution": "ディストリビューション",
@@ -150,9 +149,7 @@
     "any-thoughts": "今思ったことは...",
     "exit-focus-mode": "フォーカスを終了",
     "focus-mode": "フォーカスモード",
-    "source": "ソース",
-    "source-mode": "ソースモード",
-    "switch-to-rich-text": "リッチテキストに切り替え",
+    "markdown-mode": "Markdown モード",
     "no-changes-detected": "変更はありません",
     "save": "保存",
     "insert-menu": {
@@ -199,6 +196,8 @@
       "link": "リンク"
     },
     "comment": "コメント",
+    "footnotes": "脚注",
+    "back-to-reference": "参照箇所に戻る",
     "new-memo": "新しいメモ",
     "saved": "保存済み",
     "validation": {
@@ -287,7 +286,9 @@
     "delete-confirm-description": "この操作は元に戻せません。添付ファイル、リンク、参照も削除されます。",
     "direction": "並び順",
     "filters": {
+      "has-attachments": "添付ファイルあり",
       "has-code": "コードあり",
+      "has-image": "画像あり",
       "has-link": "リンクあり",
       "has-location": "位置情報あり",
       "has-task-list": "タスクリストあり"
@@ -498,8 +499,6 @@
       "reactions-required": "リアクションリストは空にできません",
       "add-reaction": "リアクションを追加",
       "configured-reactions": "設定された反応",
-      "double-click-edit-description": "ユーザーがメモをダブルクリックしてメモ編集を開くことができるようにします。",
-      "editing-title": "編集",
       "reaction-placeholder": "例えば 👍",
       "reactions-description": "ユーザーがメモに適用できる反応オプションを定義します。",
       "remove-reaction": "反応を取り除く"
@@ -508,18 +507,23 @@
       "label": "アカウント設定"
     },
     "preference": {
-      "default-memo-visibility": "公開範囲の初期設定",
-      "label": "設定",
-      "theme": "テーマ",
       "appearance-description": "アプリの外観と、アカウントで使用する言語を選択します。",
       "appearance-title": "外観",
+      "default-memo-visibility": "公開範囲の初期設定",
       "default-memo-visibility-description": "エディターで変更しない限り、新しく作成されたメモに表示設定が適用されます。",
+      "device-description": "このブラウザーにのみ保存される閲覧・編集の設定です。アカウントには保存されません。",
+      "device-title": "このデバイス",
+      "double-click-edit": "ダブルクリックで編集",
+      "double-click-edit-description": "自分のメモをダブルクリックしてエディターで開きます。",
+      "label": "設定",
       "language-description": "インターフェイス言語をすぐに更新し、アカウントに保存します。",
+      "link-preview-description": "メモが表示されるすべての場所で、単独のリンクの下にプレビューカードを表示します。",
       "memo-defaults-description": "新しいメモを作成するときに使用するデフォルトを設定します。",
       "memo-defaults-title": "メモのデフォルト",
-      "theme-description": "選択したテーマをこのデバイスにすぐに適用します。",
       "save-media-metadata": "メディアメタデータの保存",
       "save-media-metadata-description": "今後のアップロードのために、使用可能なカメラ、撮影時間、場所、画像サイズ、および基本的なビデオの詳細を保存します。添付ファイルを閲覧できるユーザーは誰でもこのメタデータを受け取ることができます。既存の添付ファイルは変更されません。",
+      "theme-description": "選択したテーマをこのデバイスにすぐに適用します。",
+      "theme": "テーマ",
       "uploads-privacy-description": "アップロードされたメディアとともに送信されるプライバシーに配慮した情報を管理します。",
       "uploads-privacy-title": "アップロードとプライバシー"
     },
@@ -638,7 +642,6 @@
         "icon-url": "アイコンURL",
         "title": "サーバーをカスタマイズ"
       },
-      "enable-double-click-to-edit": "ダブルクリック編集を有効化",
       "label": "システム",
       "server-name": "サーバー名",
       "additional-script-description": "JavaScript をすべての Web ページに挿入します。 信頼できるコードのみを使用してください。",

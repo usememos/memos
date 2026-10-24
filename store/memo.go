@@ -3,10 +3,12 @@ package store
 import (
 	"context"
 	"database/sql"
-	"errors"
+	"encoding/json"
+
+	"github.com/pkg/errors"
+	"google.golang.org/protobuf/encoding/protojson"
 
 	"github.com/usememos/memos/internal/identifier"
-
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
 
@@ -103,6 +105,38 @@ type FindMemoPayload struct {
 	HasTaskList        bool
 	HasCode            bool
 	HasIncompleteTasks bool
+}
+
+// RefreshMemoDerivedPayload replaces the content-derived part of a memo's
+// payload, its tags and property, computed from Content.
+type RefreshMemoDerivedPayload struct {
+	ID int32
+	// Content is the memo content the tags and property were computed from.
+	// The refresh applies only while the stored content still equals it.
+	Content  string
+	Tags     []string
+	Property *storepb.MemoPayload_Property
+}
+
+// JSON returns the tags and property encoded the way memo payloads are stored.
+func (r *RefreshMemoDerivedPayload) JSON() (tags string, property string, err error) {
+	tagList := r.Tags
+	if tagList == nil {
+		tagList = []string{}
+	}
+	tagBytes, err := json.Marshal(tagList)
+	if err != nil {
+		return "", "", errors.Wrap(err, "failed to marshal memo tags")
+	}
+	prop := r.Property
+	if prop == nil {
+		prop = &storepb.MemoPayload_Property{}
+	}
+	propertyBytes, err := protojson.Marshal(prop)
+	if err != nil {
+		return "", "", errors.Wrap(err, "failed to marshal memo property")
+	}
+	return string(tagBytes), string(propertyBytes), nil
 }
 
 type UpdateMemo struct {
@@ -265,6 +299,15 @@ func (s *Store) UpdateMemo(ctx context.Context, update *UpdateMemo) error {
 		return s.driver.UpdateMemo(ctx, update)
 	}
 	return s.driver.UpdateMemo(ctx, update)
+}
+
+// RefreshMemoDerivedPayload rewrites a memo's payload tags and property in
+// place, and only if the memo's content has not changed since it was read. It
+// leaves every other payload field, such as the location, and updated_ts as
+// they are, so a background rebuild can never undo a concurrent edit. A memo
+// that was edited or deleted in the meantime is left alone.
+func (s *Store) RefreshMemoDerivedPayload(ctx context.Context, refresh *RefreshMemoDerivedPayload) error {
+	return s.driver.RefreshMemoDerivedPayload(ctx, refresh)
 }
 
 func validateMemoWritePolicy(policy *MemoWritePolicy) error {

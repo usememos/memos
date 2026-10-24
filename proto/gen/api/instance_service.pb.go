@@ -337,8 +337,9 @@ type InstanceProfile struct {
 	// mistaken for a fresh install.
 	NeedsSetup bool `protobuf:"varint,6,opt,name=needs_setup,json=needsSetup,proto3" json:"needs_setup,omitempty"`
 	// The first administrator of the instance, for display purposes.
-	// May be null on an instance that has lost all admins; use needs_setup to determine whether initial setup is
-	// required.
+	// Only set for signed-in callers; anonymous requests never receive it, so the admin's login identifier is not
+	// disclosed before authentication. May also be null on an instance that has lost all admins; use needs_setup to
+	// determine whether initial setup is required.
 	Admin *User `protobuf:"bytes,7,opt,name=admin,proto3" json:"admin,omitempty"`
 	// The proof-of-humanity challenge required on signup and password sign-in.
 	// Absent when none is configured, which is the case on every self-hosted instance.
@@ -1370,10 +1371,8 @@ func (*InstanceSetting_Storage_S3Config_) isInstanceSetting_Storage_Config() {}
 // MemoRelatedSetting is the memo-related instance configuration.
 type InstanceSetting_MemoRelatedSetting struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Whether double-clicking a memo opens it for editing.
-	EnableDoubleClickEdit bool `protobuf:"varint,1,opt,name=enable_double_click_edit,json=enableDoubleClickEdit,proto3" json:"enable_double_click_edit,omitempty"`
 	// The reactions users can choose from. Defaults to a built-in emoji set when empty.
-	Reactions     []string `protobuf:"bytes,2,rep,name=reactions,proto3" json:"reactions,omitempty"`
+	Reactions     []string `protobuf:"bytes,1,rep,name=reactions,proto3" json:"reactions,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1406,13 +1405,6 @@ func (x *InstanceSetting_MemoRelatedSetting) ProtoReflect() protoreflect.Message
 // Deprecated: Use InstanceSetting_MemoRelatedSetting.ProtoReflect.Descriptor instead.
 func (*InstanceSetting_MemoRelatedSetting) Descriptor() ([]byte, []int) {
 	return file_api_instance_service_proto_rawDescGZIP(), []int{2, 3}
-}
-
-func (x *InstanceSetting_MemoRelatedSetting) GetEnableDoubleClickEdit() bool {
-	if x != nil {
-		return x.EnableDoubleClickEdit
-	}
-	return false
 }
 
 func (x *InstanceSetting_MemoRelatedSetting) GetReactions() []string {
@@ -2470,7 +2462,7 @@ const file_api_instance_service_proto_rawDesc = "" +
 	"\tChallenge\x12\x1a\n" +
 	"\bprovider\x18\x01 \x01(\tR\bprovider\x12\x19\n" +
 	"\bsite_key\x18\x02 \x01(\tR\asiteKey\"\x1b\n" +
-	"\x19GetInstanceProfileRequest\"\xb5%\n" +
+	"\x19GetInstanceProfileRequest\"\xfc$\n" +
 	"\x0fInstanceSetting\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12T\n" +
 	"\x0fgeneral_setting\x18\x02 \x01(\v2).memos.api.InstanceSetting.GeneralSettingH\x00R\x0egeneralSetting\x12T\n" +
@@ -2527,10 +2519,9 @@ const file_api_instance_service_proto_rawDesc = "" +
 	"\x11access_key_secret\x18\x05 \x01(\tB\x03\xe0A\x04R\x0faccessKeySecret\x12$\n" +
 	"\x0euse_path_style\x18\x06 \x01(\bR\fusePathStyle\x127\n" +
 	"\x18insecure_skip_tls_verify\x18\a \x01(\bR\x15insecureSkipTlsVerifyB\b\n" +
-	"\x06config\x1ak\n" +
-	"\x12MemoRelatedSetting\x127\n" +
-	"\x18enable_double_click_edit\x18\x01 \x01(\bR\x15enableDoubleClickEdit\x12\x1c\n" +
-	"\treactions\x18\x02 \x03(\tR\treactions\x1a\xb4\x01\n" +
+	"\x06config\x1a2\n" +
+	"\x12MemoRelatedSetting\x12\x1c\n" +
+	"\treactions\x18\x01 \x03(\tR\treactions\x1a\xb4\x01\n" +
 	"\vTagsSetting\x12D\n" +
 	"\x04tags\x18\x01 \x03(\v20.memos.api.InstanceSetting.TagsSetting.TagsEntryR\x04tags\x1a_\n" +
 	"\tTagsEntry\x12\x10\n" +

@@ -6,7 +6,6 @@
     "api-docs": "API اسناد",
     "api-docs-note": "مرجع REST و gRPC",
     "build": "ساخت",
-    "commit": "کامیت",
     "demo": "نسخه آزمایشی",
     "description": "فضایی متن‌باز و خودمیزبان برای یادداشت‌ها، ایده‌ها و افکار روزمرهٔ شما.",
     "distribution": "توزیع",
@@ -150,9 +149,7 @@
     "any-thoughts": "فکر شما...",
     "exit-focus-mode": "خروج از حالت تمرکز",
     "focus-mode": "حالت تمرکز",
-    "source": "منبع",
-    "source-mode": "حالت منبع",
-    "switch-to-rich-text": "تغییر به متن قالب‌دار",
+    "markdown-mode": "حالت Markdown",
     "no-changes-detected": "تغییری شناسایی نشد",
     "save": "ذخیره",
     "insert-menu": {
@@ -199,6 +196,8 @@
       "task-list": "فهرست کارها"
     },
     "comment": "نظر",
+    "footnotes": "پانویس‌ها",
+    "back-to-reference": "بازگشت به مرجع",
     "new-memo": "یادداشت جدید",
     "saved": "ذخیره شد",
     "validation": {
@@ -282,7 +281,9 @@
     "delete-confirm-description": "این عمل غیرقابل بازگشت است. پیوست‌ها، پیوندها و ارجاعات نیز حذف خواهند شد.",
     "direction": "جهت",
     "filters": {
+      "has-attachments": "دارای پیوست",
       "has-code": "دارای کد",
+      "has-image": "دارای تصویر",
       "has-link": "دارای پیوند",
       "has-location": "دارای موقعیت",
       "has-task-list": "دارای لیست کارها"
@@ -417,18 +418,23 @@
       "label": "حساب من"
     },
     "preference": {
-      "default-memo-visibility": "قابلیت مشاهده پیش‌فرض یادداشت",
-      "theme": "پوسته",
-      "label": "ترجیحات",
       "appearance-description": "نحوه نمایش برنامه و زبانی که برای حساب شما استفاده می‌کند را انتخاب کنید.",
       "appearance-title": "ظاهر",
+      "default-memo-visibility": "قابلیت مشاهده پیش‌فرض یادداشت",
       "default-memo-visibility-description": "قابلیت مشاهده برای یادداشت‌های تازه ایجاد شده اعمال می‌شود، مگر اینکه در ویرایشگر تغییر کند.",
+      "device-description": "گزینه‌های خواندن و ویرایش که فقط در این مرورگر نگه داشته می‌شوند. در حساب شما ذخیره نمی‌شوند.",
+      "device-title": "این دستگاه",
+      "double-click-edit": "دوبار کلیک برای ویرایش",
+      "double-click-edit-description": "یادداشت‌های خود را با دوبار کلیک در ویرایشگر باز کنید.",
+      "label": "ترجیحات",
       "language-description": "زبان رابط را فوراً به‌روزرسانی می‌کند و آن را در حساب شما ذخیره می‌کند.",
+      "link-preview-description": "نمایش کارت پیش‌نمایش زیر پیوندهای خام در هر جایی که یادداشت‌ها نمایش داده می‌شوند.",
       "memo-defaults-description": "پیش‌فرض‌های مورد استفاده هنگام نوشتن یادداشت‌های جدید را تنظیم می‌کند.",
       "memo-defaults-title": "پیش‌فرض‌های یادداشت",
       "save-media-metadata": "ذخیره فراداده رسانه",
       "save-media-metadata-description": "برای آپلودهای بعدی، دوربین موجود، زمان ضبط، مکان، ابعاد تصویر و جزئیات اولیه ویدیو را ذخیره می‌کند. هر کسی که بتواند پیوست را مشاهده کند، می‌تواند این فراداده را دریافت کند. پیوست‌های موجود بدون تغییر هستند.",
       "theme-description": "تم انتخاب شده را فوراً در این دستگاه اعمال می‌کند.",
+      "theme": "پوسته",
       "uploads-privacy-description": "اطلاعات حساس به حریم خصوصی ارسال شده با رسانه آپلود شده را کنترل می‌کند.",
       "uploads-privacy-title": "آپلودها و حریم خصوصی"
     },
@@ -547,7 +553,6 @@
         "icon-url": "آدرس آیکون",
         "title": "سفارشی‌سازی سرور"
       },
-      "enable-double-click-to-edit": "فعال‌سازی دوبار کلیک برای ویرایش",
       "server-name": "نام سرور",
       "label": "سیستم",
       "additional-script-description": "جاوا اسکریپت را به هر صفحه وب تزریق کنید. فقط از کد قابل اعتماد استفاده کنید.",
@@ -679,8 +684,6 @@
       "reactions-required": "لیست واکنش ها نباید خالی باشد",
       "add-reaction": "افزودن واکنش",
       "configured-reactions": "واکنش‌های پیکربندی شده",
-      "double-click-edit-description": "به کاربران اجازه دهید با دوبار کلیک کردن روی یک یادداشت، ویرایش یادداشت را باز کنند.",
-      "editing-title": "ویرایش",
       "reaction-placeholder": "مثلاً 👍",
       "reactions-description": "گزینه‌های واکنشی را که کاربران می‌توانند برای یادداشت‌ها اعمال کنند، تعریف کنید.",
       "remove-reaction": "حذف واکنش"

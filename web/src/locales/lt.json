@@ -6,7 +6,6 @@
     "api-docs": "API Dokumentai",
     "api-docs-note": "REST ir gRPC nuoroda",
     "build": "Sukūrimas",
-    "commit": "Commit",
     "demo": "Demonstracija",
     "description": "Atvirojo kodo erdvė jūsų serveryje užrašams, idėjoms ir kasdienėms mintims.",
     "distribution": "Platinimas",
@@ -188,9 +187,7 @@
     "any-thoughts": "Bet kokios mintys...",
     "exit-focus-mode": "Išeikite iš fokusavimo režimo",
     "focus-mode": "Fokusavimo režimas",
-    "source": "Šaltinis",
-    "source-mode": "Šaltinio režimas",
-    "switch-to-rich-text": "Perjungti į formatuotą tekstą",
+    "markdown-mode": "Markdown režimas",
     "insert-menu": {
       "add-location": "Pridėti vietą",
       "link-memo": "Nuorodos atmintinė",
@@ -237,6 +234,8 @@
       "task-list": "Darbų sąrašas"
     },
     "comment": "Komentaras",
+    "footnotes": "Išnašos",
+    "back-to-reference": "Grįžti į nuorodą",
     "new-memo": "Naujas priminimas",
     "saved": "Išsaugota",
     "validation": {
@@ -326,7 +325,9 @@
     "delete-confirm-description": "Šis veiksmas yra negrįžtamas. Taip pat bus pašalinti priedai, nuorodos ir nuorodos.",
     "direction": "Kryptis",
     "filters": {
+      "has-attachments": "turi priedų",
       "has-code": "hasCode",
+      "has-image": "turi paveikslėlį",
       "has-link": "hasLink",
       "has-location": "turi vietą",
       "has-task-list": "turiTaskList"
@@ -576,8 +577,6 @@
     "memo": {
       "add-reaction": "Pridėti reakciją",
       "configured-reactions": "Sukonfigūruotos reakcijos",
-      "double-click-edit-description": "Leiskite vartotojams atidaryti atmintinės redagavimą dukart spustelėdami užrašą.",
-      "editing-title": "Redagavimas",
       "label": "Atmintinė",
       "reaction-placeholder": "pvz. 👍",
       "reactions-description": "Apibrėžkite reakcijos parinktis, kurias vartotojai gali pritaikyti atmintinėms.",
@@ -628,14 +627,19 @@
       "appearance-title": "Išvaizda",
       "default-memo-visibility": "Numatytasis atmintinės matomumas",
       "default-memo-visibility-description": "Matomumas taikomas naujai sukurtoms pastaboms, nebent tai būtų pakeista redaktoriuje.",
+      "device-description": "Skaitymo ir redagavimo pasirinkimai, saugomi tik šioje naršyklėje. Jie neįrašomi į jūsų paskyrą.",
+      "device-title": "Šis įrenginys",
+      "double-click-edit": "Redaguoti dvigubu spustelėjimu",
+      "double-click-edit-description": "Atidarykite savo užrašus rengyklėje dukart spustelėję.",
       "label": "Parinktys",
       "language-description": "Nedelsiant atnaujina sąsajos kalbą ir išsaugo ją paskyroje.",
+      "link-preview-description": "Rodyti peržiūros kortelę po plikomis nuorodomis visur, kur rodomi užrašai.",
       "memo-defaults-description": "Nustatykite numatytuosius nustatymus, naudojamus kuriant naujas pastabas.",
       "memo-defaults-title": "Atmintinės numatytosios nuostatos",
-      "theme-description": "Šiame įrenginyje iš karto pritaiko pasirinktą temą.",
-      "theme": "tema",
       "save-media-metadata": "Išsaugoti medijos metaduomenis",
       "save-media-metadata-description": "Ateities įkėlimams išsaugokite turimą kamerą, filmavimo laiką, vietą, vaizdo matmenis ir pagrindinius vaizdo įrašo duomenis. Šiuos metaduomenis gali gauti visi, kas gali peržiūrėti priedą. Esami priedai lieka nepakitę.",
+      "theme-description": "Šiame įrenginyje iš karto pritaiko pasirinktą temą.",
+      "theme": "tema",
       "uploads-privacy-description": "Valdykite privatumo požiūriu svarbią informaciją, pateiktą kartu su įkelta medija.",
       "uploads-privacy-title": "Įkėlimai ir privatumas"
     },
@@ -759,7 +763,6 @@
       },
       "custom-code-description": "Pasirenkamas viso egzemplioriaus CSS ir JavaScript, pritaikytas priekinėje dalyje.",
       "custom-code-title": "Pasirinktinis kodas",
-      "enable-double-click-to-edit": "Įgalinkite dukart spustelėdami redaguoti",
       "label": "Sistema",
       "server-name": "Serverio pavadinimas"
     },

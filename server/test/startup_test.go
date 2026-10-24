@@ -318,6 +318,22 @@ func TestStartupServesEveryRegisteredRouter(t *testing.T) {
 		})
 		require.NotEqual(t, http.StatusNotFound, status, "mcp route should be mounted")
 	})
+
+	t.Run("oauth discovery is not advertised", func(t *testing.T) {
+		// MCP clients probe RFC 9728 metadata before trusting the endpoint.
+		// The MCP server authenticates with personal access tokens, so the
+		// well-known paths must 404 instead of falling back to the SPA.
+		for _, requestPath := range []string{"/.well-known/oauth-protected-resource", "/.well-known/oauth-protected-resource/mcp"} {
+			req, err := http.NewRequestWithContext(ctx, http.MethodGet, inst.baseURL+requestPath, nil)
+			require.NoError(t, err)
+			resp, err := inst.client.Do(req)
+			require.NoError(t, err)
+			resp.Body.Close()
+
+			require.Equal(t, http.StatusNotFound, resp.StatusCode, requestPath)
+			require.NotContains(t, resp.Header.Get("Content-Type"), "text/html", requestPath)
+		}
+	})
 }
 
 // TestStartupFreshInstallRoundTrip covers the new-install path end to end:

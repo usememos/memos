@@ -49,6 +49,9 @@ message InstanceBasicSetting {
   string secret_key = 1;
   // The current schema version of database.
   string schema_version = 2;
+  // The memopayload.Version every memo's content-derived payload has been
+  // rebuilt to. A lower value makes the server rebuild them in the background.
+  int32 payload_version = 3;
 }
 
 message InstanceGeneralSetting {
@@ -141,10 +144,8 @@ message StorageS3Config {
 }
 
 message InstanceMemoRelatedSetting {
-  // enable_double_click_edit enables editing on double click.
-  bool enable_double_click_edit = 1;
   // reactions is the list of reactions.
-  repeated string reactions = 2;
+  repeated string reactions = 1;
 }
 
 message InstanceTagMetadata {

@@ -98,25 +98,10 @@ function CustomIconPicker({ value, onChange, disabled, label, fallback = Astroid
         <CustomIcon icon={value} fallback={fallback} className="size-5 text-xl" />
       </PopoverTrigger>
       <PopoverContent align="start" className="w-[290px] max-w-[calc(100vw-2rem)] p-2" aria-label={label} initialFocus={searchRef}>
-        <Tabs value={tab} onValueChange={changeTab}>
-          <TabsList className="mb-2 rounded-md bg-muted/60 p-0.5" aria-label={t("space.icon.kind")}>
+        <Tabs value={tab} onValueChange={changeTab} size="sm">
+          <TabsList className="mb-2" aria-label={t("space.icon.kind")}>
             {(["icons", "emoji"] as const).map((name) => (
-              <TabsTrigger
-                key={name}
-                id={`${id}-${name}`}
-                value={name}
-                aria-controls={`${id}-panel`}
-                tabIndex={tab === name ? 0 : -1}
-                className="flex-1 py-1 text-xs"
-                onKeyDown={(event) => {
-                  if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
-                    event.preventDefault();
-                    const next = name === "icons" ? "emoji" : "icons";
-                    changeTab(next);
-                    document.getElementById(`${id}-${next}`)?.focus();
-                  }
-                }}
-              >
+              <TabsTrigger key={name} id={`${id}-${name}`} value={name} aria-controls={`${id}-panel`} className="flex-1">
                 {t(`space.icon.${name}`)}
               </TabsTrigger>
             ))}

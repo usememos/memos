@@ -68,6 +68,10 @@ export const buildMemoFilter = ({
       conditions.push(`has_code`);
     } else if (filter.factor === "property.hasLocation") {
       conditions.push(`has_location`);
+    } else if (filter.factor === "property.hasAttachments") {
+      conditions.push(`has_attachments`);
+    } else if (filter.factor === "property.hasImage") {
+      conditions.push(`has_image`);
     } else if (filter.factor === "displayTime") {
       const range = getLocalDayTimestampRange(filter.value);
       if (range) {

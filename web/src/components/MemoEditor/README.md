@@ -23,9 +23,11 @@ MemoEditor                 memo level: name | draft seed, mode, data, draft stor
     └── Editor             MemoMarkdown editable, with the composer's extensions, behind EditorController
 ```
 
-- **`MemoMarkdown.tsx`** binds the editor to memos once: the memo Markdown dialect, the theme in the app's CSS variables, translated labels, the image and link URL policy, the memo syntax extensions (math, footnotes, tags, mentions, highlighted code, Mermaid, sanitized HTML) and the stylesheet. `useMemoDecorations` is the one flow for tag colors and resolved mentions, with one redecorate effect. Everything a surface adds sits around this component; nothing in memos styles the editor's own classes.
+- **`MemoMarkdown.tsx`** binds the editor to memos once: the memo Markdown dialect, the theme in the app's CSS variables, translated labels, the image and link URL policy, the memo syntax extensions (math, footnotes, tags, mentions, highlighted code, Mermaid diagrams drawn by Pele, sanitized HTML) and the stylesheet. `useMemoDecorations` is the one flow for tag colors and resolved mentions, with one redecorate effect. Everything a surface adds sits around this component; nothing in memos styles the editor's own classes. The tag and mention classes memos hands the editor apply in source mode too, so the parts that draw a pill take the `rich:` variant (index.css), which is everything outside the editor's `.mbe-source-mode` root; source mode shows a tag as text in its color.
 - **`view/`** is the read-only surface over `MemoMarkdown`: tags and mentions navigate, in-memo anchors scroll, a paragraph that is one bare link becomes a preview card through the editor's block view (`linkCards.ts`), the page's search matches are painted, and heading ids match the outline. Tag and mention clicks arrive through the editor's `onClick` callbacks, so nothing in memos matches the editor's class names or mutates its DOM. Previews that have Markdown but no memo query (the link-memo search, the share image) use `MemoContentView` directly.
 - **`edit/`** is the editing surface: `EditSession` renders the chrome (timestamp, attachments, suggestions, toolbar, focus mode, audio recording) over the draft store `MemoEditor` provides, persists the draft while open, and saves through the memo mutations. `Editor.tsx` is the composer's editor: `MemoMarkdown` editable with the composer's own extensions (`#tag` and `:emoji` autocomplete, file paste and drop), behind the `EditorController` contract in `controller.ts`.
+
+Code blocks use lazy-loaded `@pierre/highlights` tokens as editor decorations, without an HTML conversion. GitHub Light and GitHub Dark Dimmed colors follow the document's color scheme; ordinary text and structural punctuation keep the editor's text color. Unsupported languages, unavailable WebAssembly, or browsers without `light-dark()` colors leave the code as plain text. Highlighting never changes the saved Markdown.
 
 ## Data
 
@@ -45,7 +47,7 @@ A reducer (`edit/state/reducer.ts`) drives an external store; consumers subscrib
 
 ### Formatting and source mode
 
-Formatting is the editor's own: its toolbar appears over selected text, the slash menu and Markdown shortcuts change block types, and its keys cover the rest. The editor's `mode` option shows the whole memo as Markdown text and edits it as plain text; `useSourceMode` remembers the choice per device. In source mode the toolbar, slash menu, autocomplete and formatting keys are off, the checklist chip is hidden, and the controller reads tags and checklists from the text parsed as a memo.
+Formatting is the editor's own: its toolbar appears over selected text, the slash menu and Markdown shortcuts change block types, and its keys cover the rest. The editor's `mode` option shows the whole memo as Markdown text, with its syntax highlighted, and edits it as text; `useSourceMode` remembers the choice per device. To people it is "Markdown mode", the ＋ menu's item with the pilcrow (the word processors' "show formatting marks" glyph), checked while on; in code it keeps the editor's name, source mode. Nothing in the editor names the mode: the text shows it, as it does in Obsidian and GitLab, and the memo's chrome stays the memo's. Switching changes no text and emits no change. In source mode the toolbar, slash menu, block handle and link card do not show; the `#tag` and `:emoji` popups open as in rich mode, the formatting keys edit the Markdown, and the checklist chip toggles the task marker on the caret's line through the same `toggleTaskList` command. The controller reads tags and checklists from the text parsed as a memo. The source text is in the body font (the editor's `sourceFont` token is left at its default) so a switch keeps the text's rhythm; nothing in memos targets the editor's source classes.
 
 ### Saving
 
@@ -61,7 +63,7 @@ Hosts of a new top-level memo pass `useMemoSuggestions()` into `suggestions`; ed
 - **Inline** (Home, panels): the session brings its own frame. The ＋ menu offers focus mode, which expands it over the page; the exit button minimizes it back.
 - **Hosted** (`onFocusModeExit`): a host presents the session full-screen and owns that frame (`contexts/GlobalMemoEditorContext.tsx`). It mounts straight into focus mode and exits by calling back to dismiss the host.
 
-The session's code is a chunk of its own, loaded when a memo is first edited or composed, and renders without suspending once loaded; a host that knows an editor is coming calls `preloadMemoEditing()`.
+The session's code is a chunk of its own, loaded when a memo is first edited or composed, and renders without suspending once loaded. A host that knows an editor is coming calls `preloadMemoEditing()`: the router loads it with the Home page for a signed-in user, so the composer renders with the page, and the comment section loads it while the pointer is on its button. Until it is loaded a new draft shows a still of the empty composer, the same frame, placeholder line and toolbar height, so nothing moves when the session takes its place.
 
 ### Destination and visibility
 

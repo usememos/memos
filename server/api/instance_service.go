@@ -43,7 +43,11 @@ func (c *instanceSettingCaller) currentUser(ctx context.Context, service *APISer
 
 // GetInstanceProfile returns the instance profile.
 func (s *APIService) GetInstanceProfile(ctx context.Context, _ *apipb.GetInstanceProfileRequest) (*apipb.InstanceProfile, error) {
-	admin, err := s.GetInstanceAdmin(ctx)
+	currentUser, err := s.fetchCurrentUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
+	}
+	admin, err := s.getInstanceAdmin(ctx, currentUser)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get instance admin: %v", err)
 	}
@@ -66,7 +70,7 @@ func (s *APIService) GetInstanceProfile(ctx context.Context, _ *apipb.GetInstanc
 		Version:     s.Profile.Version,
 		Demo:        s.Profile.Demo,
 		InstanceUrl: s.Profile.InstanceURL,
-		Admin:       admin, // for display only; may be nil even on a populated instance
+		Admin:       admin, // signed-in callers only; may be nil even on a populated instance
 		Commit:      s.Profile.Commit,
 		NeedsSetup:  len(users) == 0,
 		AccessMode:  convertInstanceAccessModeFromStore(accessSetting.AccessMode),
@@ -378,7 +382,17 @@ func sameSMTPConnectionIdentity(setting, existing *storepb.InstanceNotificationS
 		setting.UseSsl == existing.UseSsl
 }
 
-func (s *APIService) GetInstanceAdmin(ctx context.Context) (*apipb.User, error) {
+// getInstanceAdmin returns the first admin of the instance as seen by viewer,
+// or nil when the instance has no admin.
+//
+// A nil viewer is an anonymous caller and always gets nil: the profile endpoint
+// is reachable without authentication so the sign-in page can render, and an
+// anonymous visitor must not learn the login identifier of the most privileged
+// account, especially on a private instance.
+func (s *APIService) getInstanceAdmin(ctx context.Context, viewer *store.User) (*apipb.User, error) {
+	if viewer == nil {
+		return nil, nil
+	}
 	adminUserType := store.RoleAdmin
 	user, err := s.Store.GetUser(ctx, &store.FindUser{
 		Role: &adminUserType,
@@ -389,7 +403,5 @@ func (s *APIService) GetInstanceAdmin(ctx context.Context) (*apipb.User, error) 
 	if user == nil {
 		return nil, nil
 	}
-
-	currentUser, _ := s.fetchCurrentUser(ctx)
-	return convertUserFromStore(user, currentUser), nil
+	return convertUserFromStore(user, viewer), nil
 }

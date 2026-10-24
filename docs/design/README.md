@@ -18,6 +18,10 @@ Drafts, merged but not yet released:
 
 - [User usage limits](user-usage-limits.md)
 
+Drafts, implemented but not yet merged:
+
+- [Memo attachment and image filters](memo-attachment-filters.md)
+
 Implemented and frozen:
 
 - [API abuse controls](api-abuse-controls.md)

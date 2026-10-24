@@ -1,16 +1,15 @@
 import { act, render, screen } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import { beforeEach, describe, expect, it } from "vitest";
-import { TimelineViewProvider, useLinkPreviewEnabled, useView } from "@/contexts/ViewContext";
+import { TimelineViewProvider, useView } from "@/contexts/ViewContext";
 
 const storageKey = "memos-view-setting";
-const saved = { timeBasis: "update_time", orderByTimeAsc: true, maxColumns: 3, compactMode: true, linkPreview: false };
-const defaults = { timeBasis: "create_time", orderByTimeAsc: false, maxColumns: 1, compactMode: false, linkPreview: true };
+const saved = { timeBasis: "update_time", orderByTimeAsc: true, maxColumns: 3, compactMode: true };
+const defaults = { timeBasis: "create_time", orderByTimeAsc: false, maxColumns: 1, compactMode: false };
 
 function Probe() {
   const { timeBasis, orderByTimeAsc, maxColumns, compactMode } = useView();
-  const linkPreview = useLinkPreviewEnabled();
-  return <output>{JSON.stringify({ timeBasis, orderByTimeAsc, maxColumns, compactMode, linkPreview })}</output>;
+  return <output>{JSON.stringify({ timeBasis, orderByTimeAsc, maxColumns, compactMode })}</output>;
 }
 
 function renderRoute(path: string) {

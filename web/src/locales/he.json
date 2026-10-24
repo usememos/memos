@@ -3,7 +3,6 @@
     "api-docs": "תיעוד API",
     "api-docs-note": "עיון ב־REST וב־gRPC",
     "build": "פרטי הבנייה",
-    "commit": "קומיט",
     "demo": "הדגמה",
     "description": "מרחב בקוד פתוח ובאירוח עצמי להערות, לרעיונות ולמחשבות היומיומיות שלך.",
     "distribution": "הפצה",
@@ -221,9 +220,7 @@
     "any-thoughts": "יש מחשבות...",
     "exit-focus-mode": "יציאה ממצב מיקוד",
     "focus-mode": "מצב מיקוד",
-    "source": "מקור",
-    "source-mode": "מצב מקור",
-    "switch-to-rich-text": "מעבר לטקסט מעוצב",
+    "markdown-mode": "מצב Markdown",
     "format": {
       "paragraph": "פסקה",
       "heading-1": "כותרת 1",
@@ -280,6 +277,8 @@
       "trigger": "הקלט שמע"
     },
     "comment": "תגובה",
+    "footnotes": "הערות שוליים",
+    "back-to-reference": "חזרה להפניה",
     "new-memo": "תזכיר חדש",
     "saved": "נשמר",
     "blocks": {
@@ -359,7 +358,9 @@
     "delete-confirm-description": "פעולה זו אינה הפיכה. גם קבצים מצורפים, קישורים והפניות יוסרו.",
     "direction": "כיוון",
     "filters": {
+      "has-attachments": "מכיל קבצים מצורפים",
       "has-code": "מכיל קוד",
+      "has-image": "מכיל תמונה",
       "has-link": "מכיל קישור",
       "has-location": "מכיל מיקום",
       "has-task-list": "מכיל רשימת משימות"
@@ -609,8 +610,6 @@
     "memo": {
       "add-reaction": "הוסף תגובה",
       "configured-reactions": "תגובות שהוגדרו",
-      "double-click-edit-description": "אפשרו למשתמשים לפתוח עריכת פתק בלחיצה כפולה על פתק.",
-      "editing-title": "עריכה",
       "label": "פתק",
       "reaction-placeholder": "לדוגמה 👍",
       "reactions-description": "הגדירו את אפשרויות התגובה שמשתמשים יכולים להחיל על פתקים.",
@@ -661,8 +660,13 @@
       "appearance-title": "מראה",
       "default-memo-visibility": "נראות ברירת המחדל של הפתק",
       "default-memo-visibility-description": "הנראות שחלה על פתקים חדשים שנוצרו, אלא אם תשנו אותה בעורך.",
+      "device-description": "אפשרויות קריאה ועריכה שנשמרות רק בדפדפן זה. הן אינן נשמרות בחשבונך.",
+      "device-title": "מכשיר זה",
+      "double-click-edit": "לחיצה כפולה לעריכה",
+      "double-click-edit-description": "פתיחת הפתקים שלך בעורך בלחיצה כפולה עליהם.",
       "label": "העדפות",
       "language-description": "מעדכן את שפת הממשק באופן מיידי ושומר אותה בחשבון שלכם.",
+      "link-preview-description": "הצגת כרטיס תצוגה מקדימה מתחת לקישורים חשופים בכל מקום שבו מוצגים פתקים.",
       "memo-defaults-description": "הגדירו את ברירות המחדל המשמשות בעת כתיבת פתקים חדשים.",
       "memo-defaults-title": "ברירות מחדל של פתקים",
       "save-media-metadata": "שמור מטא־נתונים של מדיה",
@@ -792,7 +796,6 @@
       },
       "custom-code-description": "CSS ו־JavaScript אופציונליים ברמת המופע, המוחלים על ממשק המשתמש.",
       "custom-code-title": "קוד מותאם אישית",
-      "enable-double-click-to-edit": "אפשר לחיצה כפולה לעריכה",
       "label": "מערכת",
       "server-name": "שם השרת"
     },

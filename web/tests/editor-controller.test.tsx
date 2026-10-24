@@ -190,7 +190,25 @@ describe("source mode", () => {
 
   it("shows the memo as Markdown text, the same document rich mode saves", () => {
     const { c, container } = setup(memo, "source");
-    expect(container.querySelector(".mbe-source")?.textContent).toBe(memo);
+    // One element per line; the line endings are the boundaries between them, not in the DOM.
+    const lines = Array.from(container.querySelectorAll(".mbe-source .mbe-source-line"), (line) => line.textContent);
+    expect(lines.join("\n")).toBe(memo);
     expect(c.getMarkdown()).toBe(memo);
+  });
+
+  it("toggles a task item on the caret's line as a text edit", () => {
+    const { c } = setup(memo, "source");
+    caretAtEnd(c, 0, "# Plan".length);
+    // The task marker takes the line's prefix, as a heading becomes a task in rich mode.
+    expect(c.toggleTaskList()).toBe(true);
+    expect(c.getMarkdown()).toBe("- [ ] Plan\n\n- [ ] Ship #work\n\n`#code`");
+    expect(c.hasChecklist()).toBe(true);
+  });
+
+  it("toggles only the caret's line in the middle of the text", () => {
+    const { c } = setup("Intro\nGroceries\nOutro", "source");
+    caretAtEnd(c, 0, "Intro\nGro".length);
+    expect(c.toggleTaskList()).toBe(true);
+    expect(c.getMarkdown()).toBe("Intro\n- [ ] Groceries\nOutro");
   });
 });

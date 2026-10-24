@@ -6,7 +6,6 @@
     "api-docs": "API Documentație",
     "api-docs-note": "Referință REST și gRPC",
     "build": "Compilare",
-    "commit": "Commit",
     "demo": "Demo",
     "description": "Un spațiu cu sursă deschisă, găzduit pe propriul server, pentru notițe, idei și gânduri de zi cu zi.",
     "distribution": "Distribuție",
@@ -188,9 +187,7 @@
     "any-thoughts": "Orice gânduri...",
     "exit-focus-mode": "Ieșiți din modul de focalizare",
     "focus-mode": "Modul de focalizare",
-    "source": "Sursă",
-    "source-mode": "Modul sursă",
-    "switch-to-rich-text": "Comută la text formatat",
+    "markdown-mode": "Modul Markdown",
     "insert-menu": {
       "add-location": "Adăugați locația",
       "link-memo": "Notă de legături",
@@ -237,6 +234,8 @@
       "task-list": "Listă de activități"
     },
     "comment": "Comentariu",
+    "footnotes": "Note de subsol",
+    "back-to-reference": "Înapoi la referință",
     "new-memo": "Memo nou",
     "saved": "Salvat",
     "validation": {
@@ -326,7 +325,9 @@
     "delete-confirm-description": "Această acțiune este ireversibilă. Atașamentele, linkurile și referințele vor fi, de asemenea, eliminate.",
     "direction": "Direcţie",
     "filters": {
+      "has-attachments": "are atașamente",
       "has-code": "areCode",
+      "has-image": "are imagine",
       "has-link": "areLink",
       "has-location": "are locație",
       "has-task-list": "areTaskList"
@@ -576,8 +577,6 @@
     "memo": {
       "add-reaction": "Adăugați reacția",
       "configured-reactions": "Reacții configurate",
-      "double-click-edit-description": "Permiteți utilizatorilor să deschidă editarea notificărilor făcând dublu clic pe o notă.",
-      "editing-title": "Editare",
       "label": "Notă",
       "reaction-placeholder": "de ex. 👍",
       "reactions-description": "Definiți opțiunile de reacție pe care utilizatorii le pot aplica la memorii.",
@@ -628,14 +627,19 @@
       "appearance-title": "Aspect",
       "default-memo-visibility": "Vizibilitatea implicită a notei",
       "default-memo-visibility-description": "Vizibilitatea aplicată notificărilor nou create, dacă nu este schimbată în editor.",
+      "device-description": "Opțiuni de citire și editare păstrate doar în acest browser. Nu sunt salvate în contul tău.",
+      "device-title": "Acest dispozitiv",
+      "double-click-edit": "Dublu clic pentru editare",
+      "double-click-edit-description": "Deschide propriile memo-uri în editor printr-un dublu clic.",
       "label": "Preferințe",
       "language-description": "Actualizează imediat limba interfeței și o salvează în contul tău.",
+      "link-preview-description": "Afișează un card de previzualizare sub linkurile simple oriunde sunt afișate memo-uri.",
       "memo-defaults-description": "Setați setările implicite folosite la compunerea noilor note.",
       "memo-defaults-title": "Memo implicite",
-      "theme-description": "Aplică tema selectată imediat pe acest dispozitiv.",
-      "theme": "Temă",
       "save-media-metadata": "Salvați metadatele media",
       "save-media-metadata-description": "Pentru încărcările viitoare, salvați camera disponibilă, ora capturii, locația, dimensiunile imaginii și detaliile de bază ale videoclipului. Oricine poate vizualiza atașamentul poate primi aceste metadate. Atașamentele existente rămân neschimbate.",
+      "theme-description": "Aplică tema selectată imediat pe acest dispozitiv.",
+      "theme": "Temă",
       "uploads-privacy-description": "Controlați informațiile sensibile la confidențialitate trimise odată cu media încărcată.",
       "uploads-privacy-title": "Încărcări și confidențialitate"
     },
@@ -759,7 +763,6 @@
       },
       "custom-code-description": "Opțional, CSS și JavaScript la nivelul întregii instanțe aplicate frontend-ului.",
       "custom-code-title": "Cod personalizat",
-      "enable-double-click-to-edit": "Activați dublu clic pentru a edita",
       "label": "Sistem",
       "server-name": "Nume server"
     },

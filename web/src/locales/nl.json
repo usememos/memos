@@ -6,7 +6,6 @@
     "api-docs": "API Documentatie",
     "api-docs-note": "REST- en gRPC-referentie",
     "build": "Bouwen",
-    "commit": "Commit",
     "demo": "Demo",
     "description": "Een opensourceplek op je eigen server voor je notities, ideeën en dagelijkse gedachten.",
     "distribution": "Distributie",
@@ -150,9 +149,7 @@
     "any-thoughts": "Enkele gedachten…",
     "exit-focus-mode": "Focusmodus afsluiten",
     "focus-mode": "Focusmodus",
-    "source": "Bron",
-    "source-mode": "Bronmodus",
-    "switch-to-rich-text": "Overschakelen naar opgemaakte tekst",
+    "markdown-mode": "Markdown-modus",
     "insert-menu": {
       "add-location": "Locatie toevoegen",
       "link-memo": "Link-memo",
@@ -199,6 +196,8 @@
       "task-list": "Takenlijst"
     },
     "comment": "Opmerking",
+    "footnotes": "Voetnoten",
+    "back-to-reference": "Terug naar de verwijzing",
     "new-memo": "Nieuwe memo",
     "saved": "Opgeslagen",
     "validation": {
@@ -287,7 +286,9 @@
     "delete-confirm-description": "Deze actie is onomkeerelijk. Bijlagen, links en referenties worden ook verwijderd.",
     "direction": "Richting",
     "filters": {
+      "has-attachments": "heeft bijlagen",
       "has-code": "heeftCode",
+      "has-image": "heeft afbeelding",
       "has-link": "heeftLink",
       "has-location": "heeft locatie",
       "has-task-list": "heeftTakenlijst"
@@ -498,8 +499,6 @@
       "reactions-required": "Reactielijst mag niet leeg zijn",
       "add-reaction": "Reactie toevoegen",
       "configured-reactions": "Geconfigureerde reacties",
-      "double-click-edit-description": "Sta gebruikers toe om het bewerken van memo's te openen door te dubbelklikken op een memo.",
-      "editing-title": "Bewerken",
       "reaction-placeholder": "bijv. 👍",
       "reactions-description": "Definieer de reactieopties die gebruikers op memo's kunnen toepassen.",
       "remove-reaction": "Reactie verwijderen"
@@ -508,18 +507,23 @@
       "label": "Mijn account"
     },
     "preference": {
-      "default-memo-visibility": "Standaard memo zichtbaarheid",
-      "label": "Voorkeuren",
-      "theme": "Thema",
       "appearance-description": "Kies hoe de app eruit ziet en welke taal deze gebruikt voor uw account.",
       "appearance-title": "Verschijning",
+      "default-memo-visibility": "Standaard memo zichtbaarheid",
       "default-memo-visibility-description": "Zichtbaarheid wordt toegepast op nieuw gemaakte memo's, tenzij gewijzigd in de editor.",
+      "device-description": "Lees- en bewerkingsvoorkeuren die alleen in deze browser worden bewaard. Ze worden niet in je account opgeslagen.",
+      "device-title": "Dit apparaat",
+      "double-click-edit": "Dubbelklikken om te bewerken",
+      "double-click-edit-description": "Open je eigen memo's in de editor door erop te dubbelklikken.",
+      "label": "Voorkeuren",
       "language-description": "Werkt de interfacetaal onmiddellijk bij en slaat deze op in uw account.",
+      "link-preview-description": "Toon een voorbeeldkaart onder kale links overal waar memo's worden weergegeven.",
       "memo-defaults-description": "Stel de standaardinstellingen in die worden gebruikt bij het opstellen van nieuwe memo's.",
       "memo-defaults-title": "Standaardinstellingen voor memo's",
-      "theme-description": "Past het geselecteerde thema onmiddellijk toe op dit apparaat.",
       "save-media-metadata": "Mediametadata opslaan",
       "save-media-metadata-description": "Voor toekomstige uploads, sla beschikbare camera, opnametijd, locatie, afmetingen van de afbeelding en basisvideogegevens op. Iedereen die de bijlage kan bekijken, kan deze metadata ontvangen. Bestaande bijlagen blijven ongewijzigd.",
+      "theme-description": "Past het geselecteerde thema onmiddellijk toe op dit apparaat.",
+      "theme": "Thema",
       "uploads-privacy-description": "Beheer privacygevoelige informatie die met geüploade media wordt verzonden.",
       "uploads-privacy-title": "Uploads en privacy"
     },
@@ -638,7 +642,6 @@
         "icon-url": "Pictogram-URL",
         "title": "Server aanpassen"
       },
-      "enable-double-click-to-edit": "Dubbelklik om te bewerken inschakelen",
       "label": "Systeem",
       "server-name": "Servernaam",
       "additional-script-description": "Injecteer JavaScript in elke webpagina. Gebruik alleen vertrouwde code.",

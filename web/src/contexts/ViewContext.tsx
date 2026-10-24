@@ -13,7 +13,6 @@ interface ViewState {
   timeBasis?: MemoTimeBasis;
   sortTimeField?: MemoTimeBasis;
   compactMode: boolean;
-  linkPreview: boolean;
   maxColumns: MemoMaxColumns;
   splitView: boolean;
 }
@@ -22,14 +21,12 @@ interface ViewContextValue {
   orderByTimeAsc: boolean;
   timeBasis: MemoTimeBasis;
   compactMode: boolean;
-  linkPreview: boolean;
   maxColumns: MemoMaxColumns;
   /** List memo titles in a side pane and read the selected memo beside it. */
   splitView: boolean;
   setOrderByTimeAsc: (value: boolean) => void;
   setTimeBasis: (field: MemoTimeBasis) => void;
   setCompactMode: (value: boolean) => void;
-  setLinkPreview: (value: boolean) => void;
   setMaxColumns: (value: MemoMaxColumns) => void;
   setSplitView: (value: boolean) => void;
 }
@@ -39,6 +36,7 @@ const ViewContext = createContext<ViewContextValue | null>(null);
 const LOCAL_STORAGE_KEY = "memos-view-setting";
 
 const DEFAULT_VIEW_STATE: ViewState = { orderByTimeAsc: false, compactMode: false, linkPreview: true, maxColumns: 1, splitView: false };
+const DEFAULT_VIEW_STATE: ViewState = { orderByTimeAsc: false, compactMode: false, maxColumns: 1 };
 
 export function ViewProvider({ children, enabled = true }: { children: ReactNode; enabled?: boolean }) {
   const getInitialState = (): ViewState => {
@@ -55,7 +53,6 @@ export function ViewProvider({ children, enabled = true }: { children: ReactNode
           orderByTimeAsc: Boolean(data.orderByTimeAsc ?? DEFAULT_VIEW_STATE.orderByTimeAsc),
           timeBasis,
           compactMode: Boolean(data.compactMode ?? DEFAULT_VIEW_STATE.compactMode),
-          linkPreview: Boolean(data.linkPreview ?? DEFAULT_VIEW_STATE.linkPreview),
           maxColumns,
           splitView: Boolean(data.splitView ?? DEFAULT_VIEW_STATE.splitView),
         };
@@ -90,7 +87,6 @@ export function ViewProvider({ children, enabled = true }: { children: ReactNode
   const setOrderByTimeAsc = (value: boolean) => updateState({ orderByTimeAsc: value });
   const setTimeBasis = (field: MemoTimeBasis) => updateState({ timeBasis: field });
   const setCompactMode = (value: boolean) => updateState({ compactMode: value });
-  const setLinkPreview = (value: boolean) => updateState({ linkPreview: value });
   const setMaxColumns = (value: MemoMaxColumns) => updateState({ maxColumns: value });
   const setSplitView = (value: boolean) => updateState({ splitView: value });
 
@@ -100,13 +96,11 @@ export function ViewProvider({ children, enabled = true }: { children: ReactNode
         orderByTimeAsc: activeState.orderByTimeAsc,
         timeBasis,
         compactMode: activeState.compactMode,
-        linkPreview: activeState.linkPreview,
         maxColumns: activeState.maxColumns,
         splitView: activeState.splitView,
         setOrderByTimeAsc,
         setTimeBasis,
         setCompactMode,
-        setLinkPreview,
         setMaxColumns,
         setSplitView,
       }}
@@ -131,11 +125,4 @@ export function useView() {
     throw new Error("useView must be used within ViewProvider");
   }
   return context;
-}
-
-// Read the link-preview preference from deep inside the markdown renderer, which
-// can render outside a ViewProvider (tests, isolated previews). Defaults to
-// enabled when no provider is present, preserving the historical behavior.
-export function useLinkPreviewEnabled() {
-  return useContext(ViewContext)?.linkPreview ?? DEFAULT_VIEW_STATE.linkPreview;
 }

@@ -8,11 +8,13 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"sync"
 	"time"
 	"uuid"
 
 	"github.com/pkg/errors"
 
+	"github.com/usememos/memos/core/memopayload"
 	"github.com/usememos/memos/internal/clientip"
 	"github.com/usememos/memos/internal/httphandler"
 	"github.com/usememos/memos/internal/profile"
@@ -47,6 +49,11 @@ type Server struct {
 	handler    http.Handler
 	httpServer *http.Server
 	apiService *api.APIService
+
+	// backgroundCancel stops the startup jobs, and backgroundJobs waits for
+	// them, before the store closes.
+	backgroundCancel context.CancelFunc
+	backgroundJobs   sync.WaitGroup
 }
 
 func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store) (*Server, error) {
@@ -152,7 +159,27 @@ func (s *Server) Start() error {
 		}
 	}()
 
+	s.startBackgroundJobs()
 	return nil
+}
+
+// startBackgroundJobs runs one-off data jobs that must not delay serving.
+func (s *Server) startBackgroundJobs() {
+	ctx, cancel := context.WithCancel(context.Background())
+	s.backgroundCancel = cancel
+	runner := memopayload.NewRunner(s.Store, s.apiService.MarkdownService)
+	s.backgroundJobs.Go(func() {
+		if err := runner.Backfill(ctx); err != nil && ctx.Err() == nil {
+			slog.Error("failed to rebuild memo payloads; retrying on next start", slog.String("error", err.Error()))
+		}
+	})
+}
+
+func (s *Server) stopBackgroundJobs() {
+	if s.backgroundCancel != nil {
+		s.backgroundCancel()
+	}
+	s.backgroundJobs.Wait()
 }
 
 func (s *Server) Shutdown(ctx context.Context) {
@@ -164,6 +191,7 @@ func (s *Server) Shutdown(ctx context.Context) {
 	s.closeLongLivedConnections()
 	s.shutdownHTTPServer(ctx)
 	s.apiService.CloseUploads()
+	s.stopBackgroundJobs()
 
 	// Close database connection.
 	if err := s.Store.Close(); err != nil {

@@ -6,7 +6,6 @@
     "api-docs": "API Dokumenti",
     "api-docs-note": "Referenca za REST in gRPC",
     "build": "Gradnja",
-    "commit": "Commit",
     "demo": "Demo",
     "description": "Odprtokodni prostor na lastnem strežniku za vaše zapiske, ideje in vsakodnevne misli.",
     "distribution": "Distribucija",
@@ -150,9 +149,7 @@
     "any-thoughts": "Kakšne misli...",
     "exit-focus-mode": "Izhod iz načina osredotočanja",
     "focus-mode": "Način osredotočanja",
-    "source": "Izvor",
-    "source-mode": "Način izvora",
-    "switch-to-rich-text": "Preklopi na oblikovano besedilo",
+    "markdown-mode": "Način Markdown",
     "insert-menu": {
       "add-location": "Dodajte lokacijo",
       "link-memo": "Beležka povezave",
@@ -199,6 +196,8 @@
       "task-list": "Seznam opravil"
     },
     "comment": "Komentar",
+    "footnotes": "Opombe",
+    "back-to-reference": "Nazaj na sklic",
     "new-memo": "Nov zapisek",
     "saved": "Shranjeno",
     "validation": {
@@ -287,7 +286,9 @@
     "delete-confirm-description": "To dejanje je nepovratno. Priložene datoteke, povezave in reference bodo prav tako odstranjene.",
     "direction": "Smer",
     "filters": {
+      "has-attachments": "ima priloge",
       "has-code": "imaKodo",
+      "has-image": "ima sliko",
       "has-link": "imaPovezavo",
       "has-location": "imaLokacijo",
       "has-task-list": "imaSeznamOpravil"
@@ -498,8 +499,6 @@
       "reactions-required": "Seznam reakcij ne sme biti prazen",
       "add-reaction": "Dodajte reakcijo",
       "configured-reactions": "Konfigurirane reakcije",
-      "double-click-edit-description": "Omogočite uporabnikom, da odprejo urejanje beležke tako, da dvokliknejo beležko.",
-      "editing-title": "Urejanje",
       "reaction-placeholder": "npr. 👍",
       "reactions-description": "Določite možnosti odziva, ki jih lahko uporabniki uporabijo za beležke.",
       "remove-reaction": "Odstrani reakcijo"
@@ -508,18 +507,23 @@
       "label": "Moj račun"
     },
     "preference": {
-      "default-memo-visibility": "Privzeta vidnost beležke",
-      "label": "Nastavitve",
-      "theme": "Tema",
       "appearance-description": "Izberite, kako izgleda aplikacija in kateri jezik uporablja za vaš račun.",
       "appearance-title": "Videz",
+      "default-memo-visibility": "Privzeta vidnost beležke",
       "default-memo-visibility-description": "Vidnost velja za novo ustvarjene beležke, razen če je spremenjena v urejevalniku.",
+      "device-description": "Možnosti branja in urejanja, shranjene samo v tem brskalniku. V vaš račun se ne shranjujejo.",
+      "device-title": "Ta naprava",
+      "double-click-edit": "Dvojni klik za urejanje",
+      "double-click-edit-description": "Odprite svoje zapiske v urejevalniku z dvojnim klikom.",
+      "label": "Nastavitve",
       "language-description": "Takoj posodobi jezik vmesnika in ga shrani v vaš račun.",
+      "link-preview-description": "Prikaži kartico predogleda pod golimi povezavami povsod, kjer so prikazani zapiski.",
       "memo-defaults-description": "Nastavite privzete nastavitve, ki se uporabljajo pri sestavljanju novih beležk.",
       "memo-defaults-title": "Privzete nastavitve beležke",
-      "theme-description": "Izbrano temo takoj uporabi v tej napravi.",
       "save-media-metadata": "Shranite metapodatke medijev",
       "save-media-metadata-description": "Za prihodnja nalaganja shranite razpoložljivo kamero, čas zajemanja, lokacijo, dimenzije slike in osnovne podrobnosti videoposnetka. Vsakdo, ki si lahko ogleda prilogo, lahko prejme te metapodatke. Obstoječe priloge ostanejo nespremenjene.",
+      "theme-description": "Izbrano temo takoj uporabi v tej napravi.",
+      "theme": "Tema",
       "uploads-privacy-description": "Nadzorujte podatke, ki so občutljivi na zasebnost in so poslani z naloženimi mediji.",
       "uploads-privacy-title": "Nalaganja in zasebnost"
     },
@@ -638,7 +642,6 @@
         "icon-url": "URL ikone",
         "title": "Prilagodi strežnik"
       },
-      "enable-double-click-to-edit": "Omogoči dvojni klik za urejanje",
       "label": "Sistem",
       "server-name": "Ime strežnika",
       "additional-script-description": "Vnesite JavaScript v vsako spletno stran. Uporabljajte samo zaupanja vredno kodo.",

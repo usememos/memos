@@ -1,5 +1,6 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { DEVICE_PREFERENCES_KEY, updateDevicePreferences } from "@/hooks/useDevicePreferences";
 
 const mocks = vi.hoisted(() => ({
   mutate: vi.fn(),
@@ -36,9 +37,10 @@ vi.mock("@/utils/theme", async (importOriginal) => ({
 
 import PreferencesSection from "@/components/Settings/PreferencesSection";
 
-describe("PreferencesSection media metadata setting", () => {
+describe("PreferencesSection", () => {
   beforeEach(() => {
     mocks.mutate.mockReset();
+    localStorage.clear();
   });
 
   it("updates the account setting with the save_media_metadata field mask", () => {
@@ -51,5 +53,18 @@ describe("PreferencesSection media metadata setting", () => {
       generalSetting: { saveMediaMetadata: true },
       updateMask: ["save_media_metadata"],
     });
+  });
+
+  it("toggles device preferences in this browser without touching the account setting", () => {
+    render(<PreferencesSection />);
+
+    fireEvent.click(screen.getByRole("switch", { name: "memo.link-preview" }));
+    fireEvent.click(screen.getByRole("switch", { name: "setting.preference.double-click-edit" }));
+
+    expect(JSON.parse(localStorage.getItem(DEVICE_PREFERENCES_KEY) ?? "null")).toEqual({ linkPreview: false, doubleClickEdit: true });
+    expect(mocks.mutate).not.toHaveBeenCalled();
+
+    act(() => updateDevicePreferences({ linkPreview: true }));
+    expect(screen.getByRole("switch", { name: "memo.link-preview" })).toBeChecked();
   });
 });

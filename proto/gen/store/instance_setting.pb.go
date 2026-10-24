@@ -519,8 +519,11 @@ type InstanceBasicSetting struct {
 	SecretKey string `protobuf:"bytes,1,opt,name=secret_key,json=secretKey,proto3" json:"secret_key,omitempty"`
 	// The current schema version of database.
 	SchemaVersion string `protobuf:"bytes,2,opt,name=schema_version,json=schemaVersion,proto3" json:"schema_version,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	// The memopayload.Version every memo's content-derived payload has been
+	// rebuilt to. A lower value makes the server rebuild them in the background.
+	PayloadVersion int32 `protobuf:"varint,3,opt,name=payload_version,json=payloadVersion,proto3" json:"payload_version,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *InstanceBasicSetting) Reset() {
@@ -565,6 +568,13 @@ func (x *InstanceBasicSetting) GetSchemaVersion() string {
 		return x.SchemaVersion
 	}
 	return ""
+}
+
+func (x *InstanceBasicSetting) GetPayloadVersion() int32 {
+	if x != nil {
+		return x.PayloadVersion
+	}
+	return 0
 }
 
 type InstanceGeneralSetting struct {
@@ -1011,10 +1021,8 @@ func (x *StorageS3Config) GetInsecureSkipTlsVerify() bool {
 
 type InstanceMemoRelatedSetting struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// enable_double_click_edit enables editing on double click.
-	EnableDoubleClickEdit bool `protobuf:"varint,1,opt,name=enable_double_click_edit,json=enableDoubleClickEdit,proto3" json:"enable_double_click_edit,omitempty"`
 	// reactions is the list of reactions.
-	Reactions     []string `protobuf:"bytes,2,rep,name=reactions,proto3" json:"reactions,omitempty"`
+	Reactions     []string `protobuf:"bytes,1,rep,name=reactions,proto3" json:"reactions,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1047,13 +1055,6 @@ func (x *InstanceMemoRelatedSetting) ProtoReflect() protoreflect.Message {
 // Deprecated: Use InstanceMemoRelatedSetting.ProtoReflect.Descriptor instead.
 func (*InstanceMemoRelatedSetting) Descriptor() ([]byte, []int) {
 	return file_store_instance_setting_proto_rawDescGZIP(), []int{7}
-}
-
-func (x *InstanceMemoRelatedSetting) GetEnableDoubleClickEdit() bool {
-	if x != nil {
-		return x.EnableDoubleClickEdit
-	}
-	return false
 }
 
 func (x *InstanceMemoRelatedSetting) GetReactions() []string {
@@ -1749,11 +1750,12 @@ const file_store_instance_setting_proto_rawDesc = "" +
 	"\x0eaccess_setting\x18\t \x01(\v2\".memos.store.InstanceAccessSettingH\x00R\raccessSetting\x12[\n" +
 	"\x14usage_limits_setting\x18\n" +
 	" \x01(\v2'.memos.store.InstanceUsageLimitsSettingH\x00R\x12usageLimitsSettingB\a\n" +
-	"\x05value\"\\\n" +
+	"\x05value\"\x85\x01\n" +
 	"\x14InstanceBasicSetting\x12\x1d\n" +
 	"\n" +
 	"secret_key\x18\x01 \x01(\tR\tsecretKey\x12%\n" +
-	"\x0eschema_version\x18\x02 \x01(\tR\rschemaVersion\"\xd6\x03\n" +
+	"\x0eschema_version\x18\x02 \x01(\tR\rschemaVersion\x12'\n" +
+	"\x0fpayload_version\x18\x03 \x01(\x05R\x0epayloadVersion\"\xd6\x03\n" +
 	"\x16InstanceGeneralSetting\x12<\n" +
 	"\x1adisallow_user_registration\x18\x01 \x01(\bR\x18disallowUserRegistration\x124\n" +
 	"\x16disallow_password_auth\x18\x02 \x01(\bR\x14disallowPasswordAuth\x12+\n" +
@@ -1791,10 +1793,9 @@ const file_store_instance_setting_proto_rawDesc = "" +
 	"\x06region\x18\x04 \x01(\tR\x06region\x12\x16\n" +
 	"\x06bucket\x18\x05 \x01(\tR\x06bucket\x12$\n" +
 	"\x0euse_path_style\x18\x06 \x01(\bR\fusePathStyle\x127\n" +
-	"\x18insecure_skip_tls_verify\x18\a \x01(\bR\x15insecureSkipTlsVerify\"s\n" +
-	"\x1aInstanceMemoRelatedSetting\x127\n" +
-	"\x18enable_double_click_edit\x18\x01 \x01(\bR\x15enableDoubleClickEdit\x12\x1c\n" +
-	"\treactions\x18\x02 \x03(\tR\treactions\"w\n" +
+	"\x18insecure_skip_tls_verify\x18\a \x01(\bR\x15insecureSkipTlsVerify\":\n" +
+	"\x1aInstanceMemoRelatedSetting\x12\x1c\n" +
+	"\treactions\x18\x01 \x03(\tR\treactions\"w\n" +
 	"\x13InstanceTagMetadata\x12=\n" +
 	"\x10background_color\x18\x01 \x01(\v2\x12.google.type.ColorR\x0fbackgroundColor\x12!\n" +
 	"\fblur_content\x18\x02 \x01(\bR\vblurContent\"\xb0\x01\n" +

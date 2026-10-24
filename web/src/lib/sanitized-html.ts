@@ -6,9 +6,34 @@ import remarkGfm from "remark-gfm";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import { unified } from "unified";
+import { visit } from "unist-util-visit";
 import { isTrustedIframeSrc, SANITIZE_SCHEMA } from "@/lib/html-sanitize-schema";
 import { markdownStyles } from "@/lib/markdownStyles";
 import { cn } from "@/lib/utils";
+
+const BILIBILI_PLAYER_SRC = /^https:\/\/player\.bilibili\.com\/player\.html(?:\?|$)/i;
+
+/**
+ * Normalizes every `src` to a lowercase `https:` URL before sanitization. The sanitizer's
+ * protocol allowlist is case-sensitive, so `HTTPS://…` would be dropped, and it treats a
+ * scheme-relative `//host/…` as a relative URL, which an HTTP deployment would load over
+ * plain HTTP. Bilibili's share dialog emits a scheme-relative iframe, and its player starts
+ * playing on load unless the URL says `autoplay=0`.
+ */
+const normalizeSources = (tree: Root): void => {
+  visit(tree, "element", (node) => {
+    const src = node.properties.src;
+    if (typeof src !== "string") return;
+    const trimmed = src.trim();
+    let normalized = trimmed.startsWith("//") ? `https:${trimmed}` : trimmed.replace(/^https:/i, "https:");
+    if (node.tagName === "iframe" && BILIBILI_PLAYER_SRC.test(normalized)) {
+      const url = new URL(normalized);
+      if (!url.searchParams.has("autoplay")) url.searchParams.set("autoplay", "0");
+      normalized = url.href;
+    }
+    node.properties.src = normalized;
+  });
+};
 
 /**
  * Raw HTML in a memo, such as a `<details>` section or a trusted video embed,
@@ -22,6 +47,7 @@ const processor = unified()
   .use(remarkBreaks)
   .use(remarkRehype, { allowDangerousHtml: true })
   .use(rehypeRaw)
+  .use(() => normalizeSources)
   .use([[rehypeSanitize, SANITIZE_SCHEMA]]);
 
 const ATTRIBUTE_NAMES: Record<string, string> = {
@@ -66,7 +92,12 @@ const finishElement = (element: HTMLElement, node: Element): HTMLElement | null 
       break;
     case "iframe":
       if (!isTrustedIframeSrc(element.getAttribute("src") ?? "")) return null;
-      element.className = cn("max-w-full rounded-lg border border-border", element.className);
+      // Share snippets without a size (Bilibili's) would otherwise render at the browser's 300×150.
+      element.className = cn(
+        "max-w-full rounded-lg border border-border",
+        !node.properties.width && !node.properties.height && "w-full aspect-video",
+        element.className,
+      );
       break;
     case "details":
       element.className = cn("my-0 mb-2", element.className);

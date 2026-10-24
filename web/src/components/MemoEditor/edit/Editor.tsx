@@ -1,5 +1,5 @@
 import type { EditorMode, Editor as MarkdownEditorInstance } from "@usememos/editor";
-import { forwardRef, useImperativeHandle, useMemo, useRef } from "react";
+import { forwardRef, useImperativeHandle, useLayoutEffect, useMemo, useRef } from "react";
 import { useTagCounts } from "@/hooks/useUserQueries";
 import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/attachment_service_pb";
@@ -40,10 +40,14 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
   const { className, value, placeholder, onContentChange, onFiles, onSubmit, isFocusMode, mode, attachments } = props;
   const t = useTranslate();
   const editorRef = useRef<MarkdownEditorInstance | null>(null);
+  // The extensions read the latest callbacks through refs, written after commit so
+  // a render React discards never leaves its callbacks behind.
   const onContentChangeRef = useRef(onContentChange);
-  onContentChangeRef.current = onContentChange;
   const onFilesRef = useRef(onFiles);
-  onFilesRef.current = onFiles;
+  useLayoutEffect(() => {
+    onContentChangeRef.current = onContentChange;
+    onFilesRef.current = onFiles;
+  });
   // A user can only author their own memos. Reuse the current-user stats query
   // instead of fetching and aggregating every user's tags for autocomplete.
   const { data: tagData } = useTagCounts(true);

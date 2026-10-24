@@ -32,7 +32,6 @@ vi.mock("react-hot-toast", () => ({
 describe("<MemoRelatedSettings>", () => {
   beforeEach(() => {
     mocks.instance.memoRelatedSetting = create(InstanceSetting_MemoRelatedSettingSchema, {
-      enableDoubleClickEdit: false,
       reactions: ["thumbs-up"],
     });
     mocks.instance.updateSetting.mockReset().mockResolvedValue(undefined);
@@ -41,17 +40,17 @@ describe("<MemoRelatedSettings>", () => {
     mocks.toastSuccess.mockReset();
   });
 
-  it("keeps editing behavior and reactions separate from content limits", async () => {
+  it("saves only the reaction list", async () => {
     render(<MemoRelatedSettings />);
-    expect(screen.queryByRole("spinbutton")).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole("switch"));
+    expect(screen.queryByRole("switch")).not.toBeInTheDocument();
+    fireEvent.change(screen.getByPlaceholderText("setting.memo.reaction-placeholder"), { target: { value: "heart" } });
+    fireEvent.click(screen.getByRole("button", { name: "setting.memo.add-reaction" }));
     fireEvent.click(screen.getByRole("button", { name: "common.save" }));
     await waitFor(() => expect(mocks.instance.updateSetting).toHaveBeenCalledTimes(1));
     const setting = mocks.instance.updateSetting.mock.calls[0][0] as InstanceSetting;
     expect(setting.name).toBe("instance/settings/MEMO_RELATED");
     if (setting.value.case !== "memoRelatedSetting") throw new Error("Expected memo-related setting");
-    expect(setting.value.value.enableDoubleClickEdit).toBe(true);
-    expect(setting.value.value.reactions).toEqual(["thumbs-up"]);
+    expect(setting.value.value).toEqual(create(InstanceSetting_MemoRelatedSettingSchema, { reactions: ["thumbs-up", "heart"] }));
     expect(mocks.instance.fetchSetting).toHaveBeenCalledWith(InstanceSetting_Key.MEMO_RELATED);
   });
 });

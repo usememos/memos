@@ -94,8 +94,9 @@ message InstanceProfile {
   bool needs_setup = 6;
 
   // The first administrator of the instance, for display purposes.
-  // May be null on an instance that has lost all admins; use needs_setup to determine whether initial setup is
-  // required.
+  // Only set for signed-in callers; anonymous requests never receive it, so the admin's login identifier is not
+  // disclosed before authentication. May also be null on an instance that has lost all admins; use needs_setup to
+  // determine whether initial setup is required.
   User admin = 7;
 
   // The proof-of-humanity challenge required on signup and password sign-in.
@@ -334,11 +335,8 @@ message InstanceSetting {
 
   // MemoRelatedSetting is the memo-related instance configuration.
   message MemoRelatedSetting {
-    // Whether double-clicking a memo opens it for editing.
-    bool enable_double_click_edit = 1;
-
     // The reactions users can choose from. Defaults to a built-in emoji set when empty.
-    repeated string reactions = 2;
+    repeated string reactions = 1;
   }
 
   // TagsSetting is the instance-wide tag metadata configuration.

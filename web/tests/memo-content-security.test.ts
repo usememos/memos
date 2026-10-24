@@ -51,6 +51,34 @@ describe("raw HTML sanitization", () => {
     expect(renderHtml('<iframe src="https://evil.example/embed/abc123" title="demo"></iframe>')).not.toMatch(/<iframe/);
   });
 
+  it("upgrades scheme-relative and uppercase-scheme sources to https", () => {
+    const youtube = /<iframe[^>]+src="https:\/\/www\.youtube\.com\/embed\/abc123"/;
+    expect(renderHtml('<iframe src="//www.youtube.com/embed/abc123"></iframe>')).toMatch(youtube);
+    expect(renderHtml('<iframe src=" HTTPS://www.youtube.com/embed/abc123"></iframe>')).toMatch(youtube);
+    expect(renderHtml('<img src="HTTPS://img.example/a.png">')).toContain('src="https://img.example/a.png"');
+    expect(renderHtml('<img src="//img.example/a.png">')).toContain('src="https://img.example/a.png"');
+    expect(renderHtml('<iframe src="http://www.youtube.com/embed/abc123"></iframe>')).not.toMatch(/<iframe/);
+    expect(renderHtml('<iframe src="//evil.example/embed/abc123"></iframe>')).not.toMatch(/<iframe/);
+  });
+
+  it("renders Bilibili's share snippet as a non-autoplaying, full-width player", () => {
+    const html = renderHtml(
+      '<iframe src="//player.bilibili.com/player.html?isOutside=true&bvid=BV1xx411c7mD&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>',
+    );
+    expect(html).toMatch(
+      /<iframe[^>]+src="https:\/\/player\.bilibili\.com\/player\.html\?isOutside=true&amp;bvid=BV1xx411c7mD&amp;p=1&amp;autoplay=0"/,
+    );
+    expect(html).toMatch(/class="[^"]*w-full[^"]*aspect-video/);
+    expect(renderHtml('<iframe src="https://player.bilibili.com/player.html?bvid=BV1xx411c7mD&autoplay=1"></iframe>')).toMatch(
+      /autoplay=1"/,
+    );
+    expect(
+      renderHtml('<iframe src="https://player.bilibili.com/player.html?bvid=BV1xx411c7mD" width="640" height="360"></iframe>'),
+    ).not.toMatch(/aspect-video/);
+    expect(renderHtml('<iframe src="//player.bilibili.com.evil.example/player.html?bvid=BV1xx411c7mD"></iframe>')).not.toMatch(/<iframe/);
+    expect(renderHtml('<iframe src="http://player.bilibili.com/player.html?bvid=BV1xx411c7mD"></iframe>')).not.toMatch(/<iframe/);
+  });
+
   it("renders Markdown between disclosure tags and keeps the authored open state", () => {
     const html = renderHtml("<details open>\n<summary>More <b>info</b></summary>\n\nSome **bold** text\n\n</details>");
     expect(html).toMatch(/<details[^>]* open=""/);
@@ -70,6 +98,12 @@ describe("trusted iframe providers", () => {
     expect(isTrustedIframeSrc("https://www.google.com/maps/embed?pb=test")).toBe(true);
     expect(isTrustedIframeSrc("https://app.diagrams.net/?embed=1")).toBe(true);
     expect(isTrustedIframeSrc("https://www.draw.io/?embed=1")).toBe(true);
+    expect(isTrustedIframeSrc("https://player.bilibili.com/player.html?bvid=BV1xx411c7mD&page=1")).toBe(true);
+    expect(isTrustedIframeSrc("//player.bilibili.com/player.html?bvid=BV1xx411c7mD")).toBe(false);
+    expect(isTrustedIframeSrc("HTTPS://player.bilibili.com/player.html?bvid=BV1xx411c7mD")).toBe(true);
+    expect(isTrustedIframeSrc("https://player.bilibili.com.evil.example/player.html?bvid=BV1xx411c7mD")).toBe(false);
+    expect(isTrustedIframeSrc("https://player.bilibili.com/video/BV1xx411c7mD")).toBe(false);
+    expect(isTrustedIframeSrc("http://player.bilibili.com/player.html?bvid=BV1xx411c7mD")).toBe(false);
     expect(isTrustedIframeSrc("https://evil.example/embed/abc123")).toBe(false);
   });
 });
