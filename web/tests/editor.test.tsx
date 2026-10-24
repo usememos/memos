@@ -106,6 +106,14 @@ describe("Editor", () => {
     rerender(<Editor {...baseProps} value="#work and #life" />);
     await waitFor(() => expect(tag("work")?.style.getPropertyValue("--tag-color")).toBe("#ff0000"));
     expect(tag("work")).not.toHaveClass("rich:border-primary");
+
+    // The pill is rich text's: every memos class but the text color takes the `rich:`
+    // variant, so source mode, where the editor applies the same classes, keeps plain text.
+    for (const name of ["work", "life"]) {
+      const classes = Array.from(tag(name)!.classList).filter((cls) => !cls.startsWith("mbe-"));
+      expect(classes.filter((cls) => cls.startsWith("text-"))).toHaveLength(1);
+      expect(classes.filter((cls) => !cls.startsWith("text-") && !cls.startsWith("rich:"))).toEqual([]);
+    }
     queries.tagsSetting = undefined;
   });
 
