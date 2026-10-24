@@ -11,11 +11,14 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
+  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useDebouncedEffect } from "@/hooks";
 import type { MemoRelation } from "@/types/proto/api/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
+import { shortcutLabel } from "@/utils/platform";
+import { SOURCE_MODE_ARIA_KEYSHORTCUTS, SOURCE_MODE_KEY } from "../extensions";
 import { useFileUpload, useLinkMemo, useLocation } from "../hooks";
 import { useEditorContext, useEditorSelector } from "../state";
 import type { InsertMenuProps } from "../types";
@@ -167,9 +170,16 @@ const InsertMenu = (props: InsertMenuProps) => {
               {t("editor.focus-mode")}
             </DropdownMenuItem>
           )}
-          <DropdownMenuCheckboxItem checked={sourceMode.isSourceMode} onCheckedChange={sourceMode.onToggle} closeOnClick indicator="end">
+          <DropdownMenuCheckboxItem
+            checked={sourceMode.isSourceMode}
+            onCheckedChange={sourceMode.onToggle}
+            closeOnClick
+            indicator="end"
+            aria-keyshortcuts={SOURCE_MODE_ARIA_KEYSHORTCUTS}
+          >
             <FileCodeIcon />
             {t("editor.source-mode")}
+            <DropdownMenuShortcut aria-hidden>{shortcutLabel(SOURCE_MODE_KEY)}</DropdownMenuShortcut>
           </DropdownMenuCheckboxItem>
         </DropdownMenuContent>
       </DropdownMenu>

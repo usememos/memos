@@ -22,6 +22,8 @@ interface EditorProps {
   isFocusMode?: boolean;
   /** Rich text, or the whole memo as Markdown text. Switching changes no text. */
   mode?: EditorMode;
+  /** The source-mode key (SOURCE_MODE_KEY) was pressed in the editor. */
+  onToggleMode: () => void;
   /** The draft's attachments, so images of managed attachments show. */
   attachments?: readonly Attachment[];
 }
@@ -37,13 +39,15 @@ const EDITOR_ATTRIBUTES = {
 
 /** The composer's editor: MemoMarkdown, editable, with the composer's extensions, behind the EditorController contract. */
 const Editor = forwardRef(function Editor(props: EditorProps, ref: React.ForwardedRef<EditorController>) {
-  const { className, value, placeholder, onContentChange, onFiles, onSubmit, isFocusMode, mode, attachments } = props;
+  const { className, value, placeholder, onContentChange, onFiles, onSubmit, isFocusMode, mode, onToggleMode, attachments } = props;
   const t = useTranslate();
   const editorRef = useRef<MarkdownEditorInstance | null>(null);
   const onContentChangeRef = useRef(onContentChange);
   onContentChangeRef.current = onContentChange;
   const onFilesRef = useRef(onFiles);
   onFilesRef.current = onFiles;
+  const onToggleModeRef = useRef(onToggleMode);
+  onToggleModeRef.current = onToggleMode;
   // A user can only author their own memos. Reuse the current-user stats query
   // instead of fetching and aggregating every user's tags for autocomplete.
   const { data: tagData } = useTagCounts(true);
@@ -67,6 +71,7 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
       buildEditorExtensions({
         getTags: () => tagsRef.current,
         onFiles: (files, origin) => onFilesRef.current(files, origin),
+        onToggleSourceMode: () => onToggleModeRef.current(),
         // Read once, like the rest: the popup keeps the language the composer opened in.
         emojiLabel: t("editor.blocks.emoji"),
       }),

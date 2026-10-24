@@ -310,9 +310,6 @@ export const EditSession: React.FC<EditSessionProps> = ({
         onToggleFocusMode: handleToggleFocusMode,
       };
 
-  // The checklist chip formats a block, which source mode cannot do.
-  const visibleSuggestions = isSourceMode ? suggestions.filter((suggestion) => suggestion.kind !== "checklist") : suggestions;
-
   const handleSave = useMemoSave({
     memoName,
     parentMemoName,
@@ -397,8 +394,8 @@ export const EditSession: React.FC<EditSessionProps> = ({
             transcribingAttachment={transcribingAttachment}
             transcriptionDisabled={isSaving || audioRecorder.isBusy || isTranscribingAudio}
           />
-          {!memo && !parentMemoName && isInitialized && visibleSuggestions.length > 0 && (
-            <EditorSuggestions suggestions={visibleSuggestions} controllerRef={editorRef} space={editorSpace} />
+          {!memo && !parentMemoName && isInitialized && suggestions.length > 0 && (
+            <EditorSuggestions suggestions={suggestions} controllerRef={editorRef} space={editorSpace} />
           )}
           <EditorToolbar
             onSave={handleSave}

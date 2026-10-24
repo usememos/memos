@@ -47,7 +47,7 @@ A reducer (`edit/state/reducer.ts`) drives an external store; consumers subscrib
 
 ### Formatting and source mode
 
-Formatting is the editor's own: its toolbar appears over selected text, the slash menu and Markdown shortcuts change block types, and its keys cover the rest. The editor's `mode` option shows the whole memo as Markdown text and edits it as plain text; `useSourceMode` remembers the choice per device. In source mode the toolbar, slash menu, autocomplete and formatting keys are off, the checklist chip is hidden, and the controller reads tags and checklists from the text parsed as a memo.
+Formatting is the editor's own: its toolbar appears over selected text, the slash menu and Markdown shortcuts change block types, and its keys cover the rest. The editor's `mode` option shows the whole memo as Markdown text, with its syntax highlighted, and edits it as text; `useSourceMode` remembers the choice per device. The switch is memos' control: the ＋ menu's Source Mode item, the tag in the editor's corner while on, and `SOURCE_MODE_KEY` (`Mod+Alt+S`, bound through an extension in `extensions.ts` so it works wherever the editor has focus). Switching changes no text and emits no change. In source mode the toolbar, slash menu, block handle and link card do not show; the `#tag` and `:emoji` popups open as in rich mode, the formatting keys edit the Markdown, and the checklist chip toggles the task marker on the caret's line through the same `toggleTaskList` command. The controller reads tags and checklists from the text parsed as a memo. The source text is in the body font (the editor's `sourceFont` token is left at its default) so a switch keeps the text's rhythm; nothing in memos targets the editor's source classes.
 
 ### Saving
 

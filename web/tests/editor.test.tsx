@@ -28,6 +28,7 @@ const baseProps = {
   onContentChange: () => {},
   onFiles: () => {},
   onSubmit: () => {},
+  onToggleMode: () => {},
 };
 
 describe("Editor", () => {

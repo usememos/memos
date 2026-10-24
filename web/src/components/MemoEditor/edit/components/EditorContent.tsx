@@ -2,6 +2,7 @@ import { forwardRef, useLayoutEffect, useRef } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useTranslate } from "@/utils/i18n";
 import Editor from "../Editor";
+import { SOURCE_MODE_ARIA_KEYSHORTCUTS } from "../extensions";
 import { useEditorContext, useEditorSelector } from "../state";
 import type { EditorContentProps } from "../types";
 import type { EditorController } from "../types/editorController";
@@ -43,6 +44,7 @@ export const EditorContent = forwardRef<EditorController, EditorContentProps>(({
         placeholder={placeholder || ""}
         isFocusMode={isFocusMode}
         mode={isSourceMode ? "source" : "rich"}
+        onToggleMode={sourceMode.onToggle}
         attachments={attachments}
         onContentChange={handleContentChange}
         onFiles={onFiles}
@@ -58,6 +60,7 @@ export const EditorContent = forwardRef<EditorController, EditorContentProps>(({
                 ref={sourceTagRef}
                 type="button"
                 onClick={sourceMode.onToggle}
+                aria-keyshortcuts={SOURCE_MODE_ARIA_KEYSHORTCUTS}
                 className="absolute end-0 top-0.5 flex h-5 cursor-pointer items-center rounded px-1 text-2xs text-muted-foreground outline-none transition-colors hover:bg-muted/60 hover:text-foreground focus-visible:bg-muted/60 focus-visible:text-foreground"
               />
             }

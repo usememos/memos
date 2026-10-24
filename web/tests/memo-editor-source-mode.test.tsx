@@ -50,6 +50,9 @@ const mount = (suggestions?: readonly MemoSuggestion[]) =>
   );
 
 const sourceText = (container: HTMLElement) => container.querySelector(".mbe-source");
+/** The Markdown source mode shows: one element per line, the line endings between them. */
+const sourceLines = (container: HTMLElement) =>
+  Array.from(container.querySelectorAll(".mbe-source .mbe-source-line"), (line) => line.textContent).join("\n");
 
 afterEach(() => {
   localStorage.clear();
@@ -87,22 +90,45 @@ describe("MemoEditor source mode", () => {
     expect(screen.getByRole("button", { name: "editor.source" })).toBeInTheDocument();
   });
 
-  it.each([
-    ["rich", true],
-    ["source", false],
-  ])("offers the checklist suggestion in %s mode: %s", async (mode, offered) => {
+  it("switches with the keyboard without changing the text", () => {
+    cacheService.saveNow(cacheService.key("users/1", draftKeyFor({ kind: "new", scope: CACHE_KEY })), {
+      content: "# Plan\n\n- [ ] Ship **it**",
+      attachments: [],
+    });
+    const { container } = mount();
+    const root = container.querySelector<HTMLElement>(".memo-editor-root")!;
+    // jsdom is not a Mac, so the editor reads Mod as Ctrl.
+    const key = { key: "s", code: "KeyS", ctrlKey: true, altKey: true };
+
+    fireEvent.keyDown(root, key);
+    expect(sourceText(container)).not.toBeNull();
+    expect(localStorage.getItem(MODE_KEY)).toBe(JSON.stringify("source"));
+    expect(screen.getByRole("button", { name: "editor.source" })).toHaveAttribute("aria-keyshortcuts", "Meta+Alt+S Control+Alt+S");
+    expect(sourceLines(container)).toBe("# Plan\n\n- [ ] Ship **it**");
+
+    fireEvent.keyDown(root, key);
+    expect(sourceText(container)).toBeNull();
+    expect(localStorage.getItem(MODE_KEY)).toBe(JSON.stringify("rich"));
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Plan");
+  });
+
+  it.each(["rich", "source"])("offers the checklist suggestion in %s mode and applies it there", async (mode) => {
     localStorage.setItem(MODE_KEY, JSON.stringify(mode));
     cacheService.saveNow(cacheService.key("users/1", draftKeyFor({ kind: "new", scope: CACHE_KEY })), {
       content: "Groceries",
       attachments: [],
     });
-    mount([
+    const { container } = mount([
       { id: "tag:food", source: "view", kind: "tag", tag: "food" },
       { id: "checklist", source: "view", kind: "checklist" },
     ]);
 
-    // The tag chip works in both modes, so the bar renders either way and only the checklist chip differs.
     await waitFor(() => expect(screen.getByRole("button", { name: "common.add #food" })).toBeInTheDocument());
-    expect(screen.queryByRole("button", { name: "editor.format.task-list" }) !== null).toBe(offered);
+    fireEvent.click(screen.getByRole("button", { name: "editor.format.task-list" }));
+
+    // In source mode the chip is a text edit; in rich mode it changes the block. Both save the same Markdown.
+    await waitFor(() => expect(screen.queryByRole("button", { name: "editor.format.task-list" })).not.toBeInTheDocument());
+    if (mode === "source") expect(sourceLines(container)).toBe("- [ ] Groceries");
+    else expect(container.querySelector(".memo-editor-root input[type=checkbox]")).not.toBeNull();
   });
 });
