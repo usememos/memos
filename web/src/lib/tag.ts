@@ -26,9 +26,20 @@ const getCompiledPattern = (pattern: string): RegExp | null => {
   return re;
 };
 
+const matchesTagPattern = (tag: string, pattern: string, re: RegExp): boolean => {
+  if (re.test(tag)) {
+    return true;
+  }
+
+  // A tag hierarchy exposes its prefixes as tags too. Treat a trailing /.*
+  // rule as matching the prefix itself by testing the empty suffix.
+  return pattern.endsWith("/.*") && re.test(`${tag}/`);
+};
+
 /**
  * Finds the first matching TagMetadata for a given tag name by treating each
- * key in tagsSetting.tags as an anchored regex pattern (^pattern$).
+ * key in tagsSetting.tags as an anchored regex pattern (^pattern$). A trailing
+ * /.* pattern also matches its hierarchy prefix.
  *
  * Lookup order:
  * 1. Exact key match (O(1) fast path, backward-compatible).
@@ -43,7 +54,7 @@ export const findTagMetadata = (tag: string, tagsSetting: UserSetting_TagsSettin
   // Regex path: treat each key as an anchored pattern.
   for (const [pattern, metadata] of Object.entries(tagsSetting.tags)) {
     const re = getCompiledPattern(pattern);
-    if (re?.test(tag)) {
+    if (re && matchesTagPattern(tag, pattern, re)) {
       return metadata;
     }
   }
