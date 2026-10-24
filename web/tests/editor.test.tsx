@@ -97,15 +97,15 @@ describe("Editor", () => {
     queries.tagsSetting = undefined;
     const { container, rerender } = render(<Editor {...baseProps} value="#work and #life" />);
     const tag = (name: string) => container.querySelector<HTMLElement>(`.mbe-tag[data-tag="${name}"]`);
-    expect(tag("life")).toHaveClass("rounded-full", "border-primary");
+    expect(tag("life")).toHaveClass("rich:rounded-full", "rich:border-primary");
     expect(tag("work")).not.toHaveAttribute("style");
 
     queries.tagsSetting = create(UserSetting_TagsSettingSchema, {
       tags: { work: { backgroundColor: create(ColorSchema, { red: 1, green: 0, blue: 0 }) } },
     });
     rerender(<Editor {...baseProps} value="#work and #life" />);
-    await waitFor(() => expect(tag("work")?.getAttribute("style")).toContain("color-mix"));
-    expect(tag("work")).not.toHaveClass("border-primary");
+    await waitFor(() => expect(tag("work")?.style.getPropertyValue("--tag-color")).toBe("#ff0000"));
+    expect(tag("work")).not.toHaveClass("rich:border-primary");
     queries.tagsSetting = undefined;
   });
 
