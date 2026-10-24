@@ -134,6 +134,37 @@ func TestFrontendService_MissingAssetDoesNotFallbackToIndex(t *testing.T) {
 	require.Equal(t, http.StatusNotFound, rec.Code)
 }
 
+func TestFrontendService_HiddenPathsDoNotFallbackToIndex(t *testing.T) {
+	ctx := context.Background()
+	testStore := teststore.NewTestingStore(ctx, t)
+
+	e := http.NewServeMux()
+	NewFrontendService(&profile.Profile{}, testStore).Serve(ctx, e, http.HandlerFunc(httphandler.NotFound))
+
+	// OAuth Protected Resource Metadata discovery (RFC 9728) probes these
+	// paths and reads a 404 as "not advertised"; HTML would break the client.
+	for _, requestPath := range []string{
+		"/.well-known/oauth-protected-resource",
+		"/.well-known/oauth-protected-resource/mcp",
+		"/.well-known/oauth-authorization-server",
+		"/.git/config",
+		"/u/.hidden",
+	} {
+		req := httptest.NewRequest(http.MethodGet, requestPath, nil)
+		rec := httptest.NewRecorder()
+		e.ServeHTTP(rec, req)
+
+		require.Equal(t, http.StatusNotFound, rec.Code, requestPath)
+		require.NotContains(t, rec.Header().Get("Content-Type"), "text/html", requestPath)
+	}
+
+	req := httptest.NewRequest(http.MethodGet, "/memos/abc", nil)
+	rec := httptest.NewRecorder()
+	e.ServeHTTP(rec, req)
+	require.Equal(t, http.StatusOK, rec.Code)
+	require.Contains(t, rec.Header().Get("Content-Type"), "text/html")
+}
+
 func TestFrontendService_SkipsDynamicRoutes(t *testing.T) {
 	ctx := context.Background()
 	testStore := teststore.NewTestingStore(ctx, t)

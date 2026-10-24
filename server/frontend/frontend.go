@@ -121,8 +121,17 @@ func setFrontendCacheHeaders(w http.ResponseWriter, requestPath string) {
 	w.Header().Set("Cache-Control", cacheControl)
 }
 
+// shouldServeFrontendHTML reports whether an unknown path is an SPA route
+// that loads index.html. Paths with a file extension are assets, and paths
+// with a hidden segment are never app routes: no username, memo UID, or fixed
+// route begins with a dot. This keeps the SPA out of "/.well-known/", which
+// RFC 8615 reserves for registered metadata that clients probe and expect a
+// 404 for when the server does not offer it, and out of probes like "/.git/".
 func shouldServeFrontendHTML(requestPath string) bool {
-	return requestPath == "/" || requestPath == "/index.html" || path.Ext(requestPath) == ""
+	if requestPath == "/" || requestPath == "/index.html" {
+		return true
+	}
+	return path.Ext(requestPath) == "" && !strings.Contains(requestPath, "/.")
 }
 
 func hasPathPrefix(requestPath, prefix string) bool {
