@@ -92,7 +92,10 @@ describe("MemoEditor source mode", () => {
 
   it("switches with the keyboard without changing the text", () => {
     const markdown = "# Plan\n\n- [ ] Ship **it**";
-    cacheService.saveNow(cacheService.key("users/1", draftKeyFor({ kind: "new", scope: CACHE_KEY })), { content: markdown, attachments: [] });
+    cacheService.saveNow(cacheService.key("users/1", draftKeyFor({ kind: "new", scope: CACHE_KEY })), {
+      content: markdown,
+      attachments: [],
+    });
     const { container } = mount();
     const root = container.querySelector<HTMLElement>(".memo-editor-root")!;
     // jsdom is not a Mac, so the editor reads Mod as Ctrl.
