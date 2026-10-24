@@ -205,4 +205,11 @@ describe("source mode", () => {
     expect(c.getMarkdown()).toBe("- [ ] Plan\n\n- [ ] Ship #work\n\n`#code`");
     expect(c.hasChecklist()).toBe(true);
   });
+
+  it("toggles only the caret's line in the middle of the text", () => {
+    const { c } = setup("Intro\nGroceries\nOutro", "source");
+    caretAtEnd(c, 0, "Intro\nGro".length);
+    expect(c.toggleTaskList()).toBe(true);
+    expect(c.getMarkdown()).toBe("Intro\n- [ ] Groceries\nOutro");
+  });
 });

@@ -117,6 +117,24 @@ describe("Editor", () => {
     queries.tagsSetting = undefined;
   });
 
+  it("keeps a tag's text color and nothing of its pill in source mode", async () => {
+    queries.tagsSetting = create(UserSetting_TagsSettingSchema, {
+      tags: { work: { backgroundColor: create(ColorSchema, { red: 1, green: 0, blue: 0 }) } },
+    });
+    const { container } = render(<Editor {...baseProps} value="#work and #life" mode="source" />);
+    const tag = (name: string) => container.querySelector<HTMLElement>(`.mbe-source-mode .mbe-tag[data-tag="${name}"]`);
+
+    // The editor decorates tags in the source text with the same classes as in rich text;
+    // the `rich:` variant is what keeps the pill out of it.
+    await waitFor(() => expect(tag("work")?.style.getPropertyValue("--tag-color")).toBe("#ff0000"));
+    for (const name of ["work", "life"]) {
+      const classes = Array.from(tag(name)!.classList).filter((cls) => !cls.startsWith("mbe-"));
+      expect(classes.filter((cls) => cls.startsWith("text-"))).toHaveLength(1);
+      expect(classes.filter((cls) => !cls.startsWith("text-") && !cls.startsWith("rich:"))).toEqual([]);
+    }
+    queries.tagsSetting = undefined;
+  });
+
   it("draws mentions of people who exist as the memo view does", async () => {
     queries.users = new Map([["alice", { name: "users/alice" }]]);
     const { container } = render(<Editor {...baseProps} value="Hi @alice and @nobody" />);
