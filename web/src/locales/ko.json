@@ -149,9 +149,7 @@
     "any-thoughts": "떠오르는 게 있나요...",
     "exit-focus-mode": "집중 모드 종료",
     "focus-mode": "집중 모드",
-    "source": "소스",
-    "source-mode": "소스 모드",
-    "switch-to-rich-text": "서식 있는 텍스트로 전환",
+    "markdown-mode": "Markdown 모드",
     "no-changes-detected": "변경사항이 없습니다",
     "save": "저장",
     "insert-menu": {

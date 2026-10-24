@@ -149,9 +149,7 @@
     "any-thoughts": "ความคิดใดๆ...",
     "exit-focus-mode": "ออกจากโหมดโฟกัส",
     "focus-mode": "โหมดโฟกัส",
-    "source": "ซอร์ส",
-    "source-mode": "โหมดซอร์ส",
-    "switch-to-rich-text": "สลับเป็นข้อความแบบจัดรูปแบบ",
+    "markdown-mode": "โหมด Markdown",
     "no-changes-detected": "ไม่มีการเปลี่ยนแปลง",
     "save": "บันทึก",
     "insert-menu": {

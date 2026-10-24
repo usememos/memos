@@ -187,9 +187,7 @@
     "any-thoughts": "Οποιαδήποτε σκέψη...",
     "exit-focus-mode": "Έξοδος από τη λειτουργία εστίασης",
     "focus-mode": "Λειτουργία εστίασης",
-    "source": "Πηγή",
-    "source-mode": "Λειτουργία πηγής",
-    "switch-to-rich-text": "Εναλλαγή σε μορφοποιημένο κείμενο",
+    "markdown-mode": "Λειτουργία Markdown",
     "insert-menu": {
       "add-location": "Προσθήκη τοποθεσίας",
       "link-memo": "Σημείωμα σύνδεσης",

@@ -187,9 +187,7 @@
     "any-thoughts": "Bet kokios mintys...",
     "exit-focus-mode": "Išeikite iš fokusavimo režimo",
     "focus-mode": "Fokusavimo režimas",
-    "source": "Šaltinis",
-    "source-mode": "Šaltinio režimas",
-    "switch-to-rich-text": "Perjungti į formatuotą tekstą",
+    "markdown-mode": "Markdown režimas",
     "insert-menu": {
       "add-location": "Pridėti vietą",
       "link-memo": "Nuorodos atmintinė",

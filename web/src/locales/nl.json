@@ -149,9 +149,7 @@
     "any-thoughts": "Enkele gedachten…",
     "exit-focus-mode": "Focusmodus afsluiten",
     "focus-mode": "Focusmodus",
-    "source": "Bron",
-    "source-mode": "Bronmodus",
-    "switch-to-rich-text": "Overschakelen naar opgemaakte tekst",
+    "markdown-mode": "Markdown-modus",
     "insert-menu": {
       "add-location": "Locatie toevoegen",
       "link-memo": "Link-memo",

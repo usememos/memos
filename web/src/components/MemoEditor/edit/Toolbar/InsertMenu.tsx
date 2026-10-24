@@ -1,5 +1,5 @@
 import { uniqBy } from "lodash-es";
-import { FileCodeIcon, ImageIcon, LinkIcon, LoaderIcon, MapPinIcon, Maximize2Icon, MicIcon, PaperclipIcon, PlusIcon } from "lucide-react";
+import { ImageIcon, LinkIcon, LoaderIcon, MapPinIcon, Maximize2Icon, MicIcon, PaperclipIcon, PilcrowIcon, PlusIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LinkMemoDialog, LocationDialog } from "@/components/MemoMetadata";
 import type { MapPoint } from "@/components/map/types";
@@ -158,8 +158,11 @@ const InsertMenu = (props: InsertMenuProps) => {
               {item.label}
             </DropdownMenuItem>
           ))}
-          {/* View toggles. Focus mode is absent when a host owns the editor's presentation;
-              source mode only changes how the text is edited, so every composer has it. */}
+          {/* How the composer presents itself. Focus mode is absent when a host owns the
+              editor's presentation; Markdown mode (the editor's source mode) only changes how
+              the text is edited, so every composer has it. Checked while on: the text shows
+              the mode, and nothing in the editor names it. The pilcrow is the "show formatting
+              marks" glyph of word processors: this mode shows the markup. */}
           <DropdownMenuSeparator />
           {viewToggles && (
             <DropdownMenuItem onClick={viewToggles.onToggleFocusMode}>
@@ -168,8 +171,8 @@ const InsertMenu = (props: InsertMenuProps) => {
             </DropdownMenuItem>
           )}
           <DropdownMenuCheckboxItem checked={sourceMode.isSourceMode} onCheckedChange={sourceMode.onToggle} closeOnClick indicator="end">
-            <FileCodeIcon />
-            {t("editor.source-mode")}
+            <PilcrowIcon />
+            {t("editor.markdown-mode")}
           </DropdownMenuCheckboxItem>
         </DropdownMenuContent>
       </DropdownMenu>

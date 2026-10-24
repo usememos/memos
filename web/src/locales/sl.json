@@ -149,9 +149,7 @@
     "any-thoughts": "Kakšne misli...",
     "exit-focus-mode": "Izhod iz načina osredotočanja",
     "focus-mode": "Način osredotočanja",
-    "source": "Izvor",
-    "source-mode": "Način izvora",
-    "switch-to-rich-text": "Preklopi na oblikovano besedilo",
+    "markdown-mode": "Način Markdown",
     "insert-menu": {
       "add-location": "Dodajte lokacijo",
       "link-memo": "Beležka povezave",

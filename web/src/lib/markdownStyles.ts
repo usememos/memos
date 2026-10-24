@@ -27,15 +27,19 @@ export const markdownStyles = {
 } as const;
 
 /**
- * Tag pill styling for the memo view. Split into two tokens so the view can swap
- * `defaultColor` for a custom tag color (MemoEditor/view/MemoContentView.tsx). The composer
- * colors tags as text instead (MemoEditor/MemoMarkdown.tsx).
+ * `#tag` styling wherever the editor shows a memo. In rich text and the memo view a tag
+ * is a pill, in the theme color or the color the user gave it; in source mode the
+ * `rich:` variant (index.css) leaves only the text and its color, as the editor's own
+ * syntax highlighting does around it.
  */
 export const tagStyles = {
-  /** Shape, padding, and typography — always applied. */
-  base: "inline-flex items-center align-baseline px-1.5 py-0.5 text-[0.9em] leading-none font-normal rounded-full border",
-  /** Default theme color, used when no custom tag color is set. */
-  defaultColor: "border-primary text-primary bg-primary/15",
+  /** The pill: shape, padding and typography. */
+  base: "rich:inline-flex rich:items-center rich:align-baseline rich:px-1.5 rich:py-0.5 rich:text-[0.9em] rich:leading-none rich:font-normal rich:rounded-full rich:border",
+  /** The theme color, used when the tag has no color of its own. */
+  defaultColor: "text-primary rich:border-primary rich:bg-primary/15",
+  /** The user's color, read from `--tag-color` on the element: the text darkened for contrast, the pill a light tint of it. */
+  customColor:
+    "text-[color:color-mix(in_srgb,var(--tag-color)_60%,black)] rich:border-(--tag-color) rich:bg-[color-mix(in_srgb,var(--tag-color)_15%,transparent)]",
 } as const;
 
 /**

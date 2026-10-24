@@ -96,15 +96,41 @@ describe("Editor", () => {
     queries.tagsSetting = undefined;
     const { container, rerender } = render(<Editor {...baseProps} value="#work and #life" />);
     const tag = (name: string) => container.querySelector<HTMLElement>(`.mbe-tag[data-tag="${name}"]`);
-    expect(tag("life")).toHaveClass("rounded-full", "border-primary");
+    expect(tag("life")).toHaveClass("rich:rounded-full", "rich:border-primary");
     expect(tag("work")).not.toHaveAttribute("style");
 
     queries.tagsSetting = create(UserSetting_TagsSettingSchema, {
       tags: { work: { backgroundColor: create(ColorSchema, { red: 1, green: 0, blue: 0 }) } },
     });
     rerender(<Editor {...baseProps} value="#work and #life" />);
-    await waitFor(() => expect(tag("work")?.getAttribute("style")).toContain("color-mix"));
-    expect(tag("work")).not.toHaveClass("border-primary");
+    await waitFor(() => expect(tag("work")?.style.getPropertyValue("--tag-color")).toBe("#ff0000"));
+    expect(tag("work")).not.toHaveClass("rich:border-primary");
+
+    // The pill is rich text's: every memos class but the text color takes the `rich:`
+    // variant, so source mode, where the editor applies the same classes, keeps plain text.
+    for (const name of ["work", "life"]) {
+      const classes = Array.from(tag(name)!.classList).filter((cls) => !cls.startsWith("mbe-"));
+      expect(classes.filter((cls) => cls.startsWith("text-"))).toHaveLength(1);
+      expect(classes.filter((cls) => !cls.startsWith("text-") && !cls.startsWith("rich:"))).toEqual([]);
+    }
+    queries.tagsSetting = undefined;
+  });
+
+  it("keeps a tag's text color and nothing of its pill in source mode", async () => {
+    queries.tagsSetting = create(UserSetting_TagsSettingSchema, {
+      tags: { work: { backgroundColor: create(ColorSchema, { red: 1, green: 0, blue: 0 }) } },
+    });
+    const { container } = render(<Editor {...baseProps} value="#work and #life" mode="source" />);
+    const tag = (name: string) => container.querySelector<HTMLElement>(`.mbe-source-mode .mbe-tag[data-tag="${name}"]`);
+
+    // The editor decorates tags in the source text with the same classes as in rich text;
+    // the `rich:` variant is what keeps the pill out of it.
+    await waitFor(() => expect(tag("work")?.style.getPropertyValue("--tag-color")).toBe("#ff0000"));
+    for (const name of ["work", "life"]) {
+      const classes = Array.from(tag(name)!.classList).filter((cls) => !cls.startsWith("mbe-"));
+      expect(classes.filter((cls) => cls.startsWith("text-"))).toHaveLength(1);
+      expect(classes.filter((cls) => !cls.startsWith("text-") && !cls.startsWith("rich:"))).toEqual([]);
+    }
     queries.tagsSetting = undefined;
   });
 

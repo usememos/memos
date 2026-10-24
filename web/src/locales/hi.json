@@ -149,9 +149,7 @@
     "any-thoughts": "कोई विचार...",
     "exit-focus-mode": "फोकस मोड से बाहर निकलें",
     "focus-mode": "फोकस मोड",
-    "source": "स्रोत",
-    "source-mode": "स्रोत मोड",
-    "switch-to-rich-text": "रिच टेक्स्ट पर जाएँ",
+    "markdown-mode": "Markdown मोड",
     "no-changes-detected": "कोई बदलाव नहीं पाया गया",
     "save": "सहेजें",
     "insert-menu": {

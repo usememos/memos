@@ -149,9 +149,7 @@
     "any-thoughts": "Qualsiasi cosa pensi...",
     "exit-focus-mode": "Esci Modalità Focus",
     "focus-mode": "Modalità Focus",
-    "source": "Sorgente",
-    "source-mode": "Modalità Sorgente",
-    "switch-to-rich-text": "Passa al testo formattato",
+    "markdown-mode": "Modalità Markdown",
     "insert-menu": {
       "add-location": "Aggiungi posizione",
       "link-memo": "Collegamento promemoria",

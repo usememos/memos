@@ -149,9 +149,7 @@
     "any-thoughts": "Jakékoli myšlenky...",
     "exit-focus-mode": "Ukončit režim soustředění",
     "focus-mode": "Režim soustředění",
-    "source": "Zdroj",
-    "source-mode": "Režim zdroje",
-    "switch-to-rich-text": "Přepnout na formátovaný text",
+    "markdown-mode": "Režim Markdown",
     "insert-menu": {
       "add-location": "Přidat umístění",
       "link-memo": "Odkaz na poznámku",

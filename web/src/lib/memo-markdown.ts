@@ -140,32 +140,29 @@ const renderHtml: SyntaxView = (source, element, kind) => {
   return htmlRendererPromise.then((render) => render(source, element, kind));
 };
 
-/**
- * A tag's custom color from the user's tag settings, as a style attribute, or undefined
- * for the theme color. Text uses a darkened variant (60% color + black) for contrast.
- */
-function tagColorStyle(tag: string, tagsSetting: UserSetting_TagsSetting | undefined): string | undefined {
+/** A tag's custom color from the user's tag settings, as a hex value, or undefined for the theme color. */
+function tagColor(tag: string, tagsSetting: UserSetting_TagsSetting | undefined): string | undefined {
   const metadata = tagsSetting ? findTagMetadata(tag, tagsSetting) : undefined;
-  const bgHex = colorToHex(metadata?.backgroundColor);
-  if (!bgHex) return undefined;
-  return `border-color: ${bgHex}; color: color-mix(in srgb, ${bgHex} 60%, black); background-color: color-mix(in srgb, ${bgHex} 15%, transparent)`;
+  return colorToHex(metadata?.backgroundColor);
 }
 
 // `mbe-tag` is the editor's own class; the memo view finds tags by it.
 const TAG_CLASS = cn("mbe-tag", tagStyles.base);
 const DEFAULT_TAG_CLASS = cn(TAG_CLASS, tagStyles.defaultColor);
+const CUSTOM_TAG_CLASS = cn(TAG_CLASS, tagStyles.customColor);
 
 /**
  * How a #tag looks wherever a memo is shown, in the composer and the memo view alike:
- * a pill in the theme color, or in the color the user gave the tag. `getTagsSetting`
+ * a pill in the theme color, or in the color the user gave the tag, which the element
+ * carries as `--tag-color` for tagStyles.customColor to draw from. `getTagsSetting`
  * is read when a block is decorated; call `editor.redecorate()` when it changes.
  */
 export const memoTagOptions = (getTagsSetting: () => UserSetting_TagsSetting | undefined): Pick<TagsOptions, "class" | "attributes"> => ({
-  class: (match) => (tagColorStyle(match.slice(1), getTagsSetting()) ? TAG_CLASS : DEFAULT_TAG_CLASS),
+  class: (match) => (tagColor(match.slice(1), getTagsSetting()) ? CUSTOM_TAG_CLASS : DEFAULT_TAG_CLASS),
   attributes: (match): Record<string, string> => {
     const tag = match.slice(1);
-    const style = tagColorStyle(tag, getTagsSetting());
-    return style ? { "data-tag": tag, style } : { "data-tag": tag };
+    const color = tagColor(tag, getTagsSetting());
+    return color ? { "data-tag": tag, style: `--tag-color: ${color}` } : { "data-tag": tag };
   },
 });
 

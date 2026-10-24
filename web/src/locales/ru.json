@@ -149,9 +149,7 @@
     "any-thoughts": "Напишите что-нибудь...",
     "exit-focus-mode": "Выйти из режима фокуса",
     "focus-mode": "Режим фокуса",
-    "source": "Исходник",
-    "source-mode": "Режим исходника",
-    "switch-to-rich-text": "Переключиться на форматированный текст",
+    "markdown-mode": "Режим Markdown",
     "insert-menu": {
       "add-location": "Добавить местоположение",
       "link-memo": "Ссылка на заметку",

@@ -149,9 +149,7 @@
     "any-thoughts": "今思ったことは...",
     "exit-focus-mode": "フォーカスを終了",
     "focus-mode": "フォーカスモード",
-    "source": "ソース",
-    "source-mode": "ソースモード",
-    "switch-to-rich-text": "リッチテキストに切り替え",
+    "markdown-mode": "Markdown モード",
     "no-changes-detected": "変更はありません",
     "save": "保存",
     "insert-menu": {
