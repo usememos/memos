@@ -2,6 +2,14 @@
 @import "tw-animate-css";
 @import "./themes/default.css";
 
+/*
+ * Rich text in the memo editor: everything outside its source mode, which shows the
+ * Markdown as text (the editor marks its root `.mbe-source-mode`). The editor applies
+ * memos' tag and mention classes in both modes, so the parts that draw a shape take
+ * this variant and source mode keeps the text and its color.
+ */
+@custom-variant rich (&:not(.mbe-source-mode *));
+
 @layer base {
   * {
     @apply border-border outline-none ring-0;
