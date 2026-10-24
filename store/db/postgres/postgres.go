@@ -23,6 +23,14 @@ func NewDB(profile *profile.Profile) (store.Driver, error) {
 		return nil, errors.New("profile is nil")
 	}
 
+	if profile.RDSIAMAuth {
+		connector, err := newRDSIAMConnector(context.Background(), profile.DSN, profile.RDSCABundle)
+		if err != nil {
+			return nil, err
+		}
+		return &DB{db: sql.OpenDB(connector), profile: profile}, nil
+	}
+
 	// Open the PostgreSQL connection
 	db, err := sql.Open("postgres", profile.DSN)
 	if err != nil {

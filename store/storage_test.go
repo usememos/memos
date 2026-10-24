@@ -76,6 +76,27 @@ func TestPrepareInstanceStorageSettingUpdateDoesNotReuseCredentialsAcrossEndpoin
 	require.ErrorContains(t, err, "access key secret is required")
 }
 
+func TestPrepareInstanceStorageSettingUpdateSwitchesToDefaultCredentialChain(t *testing.T) {
+	existing := legacyS3StorageSetting("https://s3.example.com", "memos", "secret")
+	store.NormalizeInstanceStorageSetting(existing)
+
+	incoming := legacyS3StorageSetting("https://s3.example.com", "memos", "")
+	incoming.S3Config.AccessKeyId = ""
+	require.NoError(t, store.PrepareInstanceStorageSettingUpdate(incoming, existing))
+
+	// Clearing the access key must not resurrect the stored secret.
+	config := store.GetDefaultStorage(incoming).GetS3Config()
+	require.Empty(t, config.AccessKeyId)
+	require.Empty(t, config.AccessKeySecret)
+}
+
+func TestPrepareInstanceStorageSettingUpdateRejectsSecretWithoutAccessKey(t *testing.T) {
+	incoming := legacyS3StorageSetting("https://s3.example.com", "memos", "secret")
+	incoming.S3Config.AccessKeyId = ""
+	err := store.PrepareInstanceStorageSettingUpdate(incoming, &storepb.InstanceStorageSetting{})
+	require.ErrorContains(t, err, "access key ID is required")
+}
+
 func TestPrepareInstanceStorageSettingUpdateKeepsReferencedDefault(t *testing.T) {
 	existing := legacyS3StorageSetting("https://s3.example.com", "memos", "secret")
 	store.NormalizeInstanceStorageSetting(existing)
