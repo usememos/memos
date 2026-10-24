@@ -83,16 +83,19 @@ func (a *Authenticator) resolveAccessToken(ctx context.Context, accessToken stri
 	}, nil
 }
 
+// ErrInvalidRefreshToken marks a rejected refresh credential, as distinct from a store failure.
+var ErrInvalidRefreshToken = errors.New("invalid refresh token")
+
 // AuthenticateByRefreshToken validates a refresh token against the database.
 func (a *Authenticator) AuthenticateByRefreshToken(ctx context.Context, refreshToken string) (*store.User, string, error) {
 	claims, err := ParseRefreshToken(refreshToken, []byte(a.secret))
 	if err != nil {
-		return nil, "", errors.Wrap(err, "invalid refresh token")
+		return nil, "", errors.Wrap(ErrInvalidRefreshToken, "invalid refresh token")
 	}
 
 	userID, err := parseInt32(claims.Subject)
 	if err != nil {
-		return nil, "", errors.Wrap(err, "invalid user ID in token")
+		return nil, "", errors.Wrap(ErrInvalidRefreshToken, "invalid user ID in token")
 	}
 
 	// Check token exists in database (revocation check)
@@ -101,12 +104,12 @@ func (a *Authenticator) AuthenticateByRefreshToken(ctx context.Context, refreshT
 		return nil, "", errors.Wrap(err, "failed to get refresh token")
 	}
 	if token == nil {
-		return nil, "", errors.New("refresh token revoked")
+		return nil, "", errors.Wrap(ErrInvalidRefreshToken, "refresh token revoked")
 	}
 
 	// Check token not expired
 	if token.ExpiresAt != nil && token.ExpiresAt.AsTime().Before(time.Now()) {
-		return nil, "", errors.New("refresh token expired")
+		return nil, "", errors.Wrap(ErrInvalidRefreshToken, "refresh token expired")
 	}
 
 	// Get user
@@ -115,10 +118,10 @@ func (a *Authenticator) AuthenticateByRefreshToken(ctx context.Context, refreshT
 		return nil, "", errors.Wrap(err, "failed to get user")
 	}
 	if user == nil {
-		return nil, "", errors.New("user not found")
+		return nil, "", errors.Wrap(ErrInvalidRefreshToken, "user not found")
 	}
 	if user.RowStatus == store.Archived {
-		return nil, "", errors.New("user is archived")
+		return nil, "", errors.Wrap(ErrInvalidRefreshToken, "user is archived")
 	}
 
 	return user, claims.TokenID, nil

@@ -6,6 +6,9 @@ package api
 // This is the SINGLE SOURCE OF TRUTH for public endpoints.
 // Both Connect interceptor and gRPC-Gateway interceptor use this map.
 //
+// Native GET /memos/{uid}[.md] is registered separately and enforces the same
+// memo-read policy itself, including the instance anonymous-access setting.
+//
 // Format: Full gRPC procedure path as returned by req.Spec().Procedure (Connect)
 // or info.FullMethod (gRPC interceptor).
 var PublicMethods = map[string]struct{}{
