@@ -1,0 +1,17 @@
+{
+  "name": "memos-appport-bridge",
+  "private": true,
+  "description": "Opt-in AppPort bridge for Memos: read-only capabilities over Memos' own API, using the caller's own token.",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "start": "node bridge.mjs",
+    "test": "node --no-warnings --test --test-concurrency=1 test/*.test.mjs"
+  },
+  "dependencies": {
+    "@appport/sdk": "1.2.2"
+  }
+}
