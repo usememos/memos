@@ -391,6 +391,7 @@
     "back-to": "Tilbage til {{source}}",
     "connections": "Forbindelser",
     "grid-compact-hint": "Gitterlayout bruger altid kompakte kort.",
+    "hide-completed-tasks": "Hide completed tasks",
     "layout": "Layout",
     "layout-auto": "Auto",
     "layout-auto-description": "Så mange kolonner som der er plads til på skærmen",

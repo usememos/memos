@@ -353,6 +353,7 @@
     "back-to": "Volver a {{source}}",
     "connections": "Conexións",
     "grid-compact-hint": "Os deseños de cuadrícula sempre usan tarxetas compactas.",
+    "hide-completed-tasks": "Hide completed tasks",
     "layout": "Deseño",
     "layout-auto": "Automático",
     "layout-auto-description": "Tantas columnas como axusten á pantalla",

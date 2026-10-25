@@ -353,6 +353,7 @@
     "back-to": "Zurück zu {{source}}",
     "connections": "Verbindungen",
     "grid-compact-hint": "Rasterlayouts verwenden immer kompakte Karten.",
+    "hide-completed-tasks": "Hide completed tasks",
     "layout": "Layout",
     "layout-auto": "Automatisch",
     "layout-auto-description": "So viele Spalten, wie auf den Bildschirm passen",

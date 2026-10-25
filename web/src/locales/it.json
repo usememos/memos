@@ -353,6 +353,7 @@
     "back-to": "Torna a {{source}}",
     "connections": "Connessioni",
     "grid-compact-hint": "I layout a griglia utilizzano sempre schede compatte.",
+    "hide-completed-tasks": "Hide completed tasks",
     "layout": "Layout",
     "layout-auto": "Automatico",
     "layout-auto-description": "Tante colonne quante ne possono entrare nello schermo",

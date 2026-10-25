@@ -353,6 +353,7 @@
     "back-to": "Natrag na {{source}}",
     "connections": "Veze",
     "grid-compact-hint": "Mrežni rasporedi uvijek koriste kompaktne kartice.",
+    "hide-completed-tasks": "Hide completed tasks",
     "layout": "Raspored",
     "layout-auto": "Automatski",
     "layout-auto-description": "Onoliko stupaca koliko stane na zaslon",

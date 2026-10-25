@@ -400,6 +400,7 @@
     "compact-mode": "Compact mode",
     "connections": "Connections",
     "grid-compact-hint": "Grid layouts always use compact cards.",
+    "hide-completed-tasks": "Hide completed tasks",
     "layout": "Layout",
     "layout-auto": "Auto",
     "layout-auto-description": "As many columns as fit the screen",

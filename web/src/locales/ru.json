@@ -345,6 +345,7 @@
       "updated": "Задачи обновлены"
     },
     "grid-compact-hint": "В макетах с сеткой всегда используются компактные карточки.",
+    "hide-completed-tasks": "Hide completed tasks",
     "layout": "Макет",
     "layout-auto": "Автоматически",
     "layout-auto-description": "Столько столбцов, сколько помещается на экране",

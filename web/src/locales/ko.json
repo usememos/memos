@@ -341,6 +341,7 @@
     "count-memos-updated-in-date": "{{count}} {{memos}}이 {{date}}에 업데이트되었습니다.",
     "connections": "연결",
     "grid-compact-hint": "그리드 레이아웃은 항상 컴팩트 카드를 사용합니다.",
+    "hide-completed-tasks": "Hide completed tasks",
     "layout": "레이아웃",
     "layout-auto": "자동",
     "layout-auto-description": "화면에 맞는 열 개수",

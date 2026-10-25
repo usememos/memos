@@ -5,6 +5,7 @@ import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { MemoMarkdown } from "@/components/MemoEditor/MemoMarkdown";
 import { MemoContentView } from "@/components/MemoEditor/view/MemoContentView";
+import { updateDevicePreferences } from "@/hooks/useDevicePreferences";
 
 const state = vi.hoisted(() => ({
   linkPreview: true,
@@ -29,9 +30,13 @@ vi.mock("@/contexts/MemoFilterContext", async (importOriginal) => ({
   }),
 }));
 
-vi.mock("@/hooks/useDevicePreferences", () => ({
-  useDevicePreferences: () => ({ linkPreview: state.linkPreview, doubleClickEdit: false }),
-}));
+vi.mock("@/hooks/useDevicePreferences", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/hooks/useDevicePreferences")>();
+  return {
+    ...actual,
+    useDevicePreferences: () => ({ ...actual.useDevicePreferences(), linkPreview: state.linkPreview }),
+  };
+});
 vi.mock("@/contexts/MentionResolutionContext", () => ({ useResolvedMentionUsernames: () => state.resolved }));
 vi.mock("@/hooks/useNavigateTo", () => ({ default: () => state.navigateTo }));
 vi.mock("@/hooks/useNearViewport", () => ({ useNearViewport: () => ({ ref: () => {}, isNearViewport: true }) }));
@@ -49,7 +54,16 @@ const renderMemo = (content: string, props: Partial<React.ComponentProps<typeof 
     </MemoryRouter>,
   );
 
+/** The task items the editor actually drew, not the empty element a block view hosts. */
+const taskItems = (container: HTMLElement) => Array.from(container.querySelectorAll<HTMLElement>(".mbe-list-item[data-list-type='task']"));
+
+const taskItem = (container: HTMLElement, label: string) =>
+  taskItems(container).find((item) => item.querySelector(":scope > .mbe-content")?.textContent?.startsWith(label));
+
+const taskCheckbox = (item: HTMLElement) => item.querySelector<HTMLInputElement>(":scope > .mbe-marker > input.mbe-checkbox");
+
 beforeEach(() => {
+  localStorage.clear();
   state.linkPreview = true;
   state.resolved = new Set();
   state.tagsSetting = undefined;
@@ -78,6 +92,305 @@ describe("memo view", () => {
   it("keeps tasks locked for readers", () => {
     const { container } = renderMemo("- [ ] First");
     expect(container.querySelector("input.mbe-checkbox")).toBeDisabled();
+  });
+});
+
+describe("completed task reading preference", () => {
+  it("shows every task by default", () => {
+    const { container } = renderMemo("- [ ] Open\n- [x] Done");
+    expect(container).toHaveTextContent("Open");
+    expect(container).toHaveTextContent("Done");
+    expect(container.querySelector(".memos-hide-completed-tasks")).toBeNull();
+  });
+
+  it("hides completed tasks and restores them when the preference is turned off", async () => {
+    const { container } = renderMemo("- [ ] Open\n- [x] Done");
+    await act(async () => updateDevicePreferences({ hideCompletedTasks: true }));
+    expect(container).toHaveTextContent("Open");
+    expect(container).not.toHaveTextContent("Done");
+    expect(container.querySelector(".memos-hide-completed-tasks")).not.toBeNull();
+    expect(container.querySelector("[data-memos-hidden-completed-task]")).not.toBeNull();
+
+    await act(async () => updateDevicePreferences({ hideCompletedTasks: false }));
+    expect(container).toHaveTextContent("Done");
+    expect(container.querySelector("[data-memos-hidden-completed-task]")).toBeNull();
+  });
+
+  it("keeps open nested items and the completed parent that gives them context", async () => {
+    const { container } = renderMemo("- [x] Parent\n  - [ ] Child\n  - [x] Done child\n- [x] Done sibling");
+    await act(async () => updateDevicePreferences({ hideCompletedTasks: true }));
+    expect(container).toHaveTextContent("Parent");
+    expect(container).toHaveTextContent("Child");
+    expect(container).not.toHaveTextContent("Done child");
+    expect(container).not.toHaveTextContent("Done sibling");
+  });
+
+  it("hides an all-completed list and restores it", async () => {
+    const { container } = renderMemo("- [x] Parent\n  - [x] Child");
+    await act(async () => updateDevicePreferences({ hideCompletedTasks: true }));
+    expect(container).not.toHaveTextContent("Parent");
+    expect(container).not.toHaveTextContent("Child");
+
+    await act(async () => updateDevicePreferences({ hideCompletedTasks: false }));
+    expect(container).toHaveTextContent("Parent");
+    expect(container).toHaveTextContent("Child");
+  });
+
+  it("leaves code, ordinary lists and links alone", async () => {
+    const content = [
+      "- [ ] Open",
+      "- [x] Done",
+      "",
+      "- ordinary bullet",
+      "",
+      "```",
+      "- [x] not a task",
+      "```",
+      "",
+      "[Example](https://example.com)",
+    ].join("\n");
+    const { container } = renderMemo(content);
+    await act(async () => updateDevicePreferences({ hideCompletedTasks: true }));
+    expect(container).not.toHaveTextContent("Done");
+    expect(container).toHaveTextContent("ordinary bullet");
+    expect(container).toHaveTextContent("- [x] not a task");
+    expect(screen.getByRole("link", { name: "Example" })).toBeInTheDocument();
+  });
+
+  it("hides completed tasks and keeps open ones inside a quote", async () => {
+    const { container } = renderMemo("> - [x] Done\n> - [ ] Open");
+    await act(async () => updateDevicePreferences({ hideCompletedTasks: true }));
+    expect(container).toHaveTextContent("Open");
+    expect(container).not.toHaveTextContent("Done");
+  });
+
+  it("hides a completed item when a code block keeps the whole list as raw Markdown", async () => {
+    const content = ["- [x] Done", "- [ ] Open", "", "  ```js", "  let x = 1;", "  ```"].join("\n");
+    const { container } = renderMemo(content);
+    await act(async () => updateDevicePreferences({ hideCompletedTasks: true }));
+
+    expect(container.querySelector(".mbe-view-markdown")).not.toBeNull();
+    expect(taskItem(container, "Done")).not.toBeVisible();
+    expect(taskItem(container, "Open")).toBeVisible();
+    expect(container.querySelector(".mbe-code code")).toHaveTextContent("let x = 1;");
+    // The source is untouched: only the rendered element is hidden.
+    expect(taskItem(container, "Done")).toHaveTextContent("Done");
+
+    await act(async () => updateDevicePreferences({ hideCompletedTasks: false }));
+    expect(taskItem(container, "Done")).toBeVisible();
+    expect(taskItem(container, "Open")).toBeVisible();
+  });
+
+  it("hides a completed item in a multi-paragraph list and keeps the open item's text", async () => {
+    const content = ["- [x] Done", "- [ ] Open", "", "  second paragraph"].join("\n");
+    const { container } = renderMemo(content);
+    await act(async () => updateDevicePreferences({ hideCompletedTasks: true }));
+
+    expect(taskItem(container, "Done")).not.toBeVisible();
+    expect(taskItem(container, "Open")).toBeVisible();
+    expect(taskItem(container, "Open")).toHaveTextContent("second paragraph");
+  });
+
+  it("keeps a completed raw item that gives an open nested task its context", async () => {
+    const content = [
+      "- [x] Parent",
+      "  ```js",
+      "  let x = 1;",
+      "  ```",
+      "  - [x] Child done",
+      "  - [ ] Child open",
+      "- [ ] Open sibling",
+    ].join("\n");
+    const { container } = renderMemo(content);
+    await act(async () => updateDevicePreferences({ hideCompletedTasks: true }));
+
+    expect(taskItem(container, "Parent")).toBeVisible();
+    expect(taskItem(container, "Child done")).not.toBeVisible();
+    expect(taskItem(container, "Child open")).toBeVisible();
+    expect(taskItem(container, "Open sibling")).toBeVisible();
+  });
+
+  it("keeps a completed raw item above an indented open task", async () => {
+    const content = [
+      "- [x] Parent",
+      "  ```js",
+      "  let x = 1;",
+      "  ```",
+      "  - [x] Child done",
+      "    - [ ] Grandchild open",
+      "- [ ] Open sibling",
+    ].join("\n");
+    const { container } = renderMemo(content);
+    await act(async () => updateDevicePreferences({ hideCompletedTasks: true }));
+
+    expect(taskItem(container, "Parent")).toBeVisible();
+    expect(taskItem(container, "Child done")).toBeVisible();
+    expect(taskItem(container, "Grandchild open")).toBeVisible();
+    expect(taskItem(container, "Open sibling")).toBeVisible();
+  });
+
+  it("hides and restores an all-completed raw list", async () => {
+    const content = ["- [x] Parent", "  ```js", "  let x = 1;", "  ```", "  - [x] Child", "    - [x] Grandchild", "- [x] Other"].join("\n");
+    const { container } = renderMemo(content);
+    await act(async () => updateDevicePreferences({ hideCompletedTasks: true }));
+
+    for (const label of ["Parent", "Child", "Grandchild", "Other"]) {
+      expect(taskItem(container, label)).not.toBeVisible();
+    }
+    expect(container.querySelector("[data-memos-hidden-completed-task]")).not.toBeNull();
+
+    await act(async () => updateDevicePreferences({ hideCompletedTasks: false }));
+    for (const label of ["Parent", "Child", "Grandchild", "Other"]) {
+      expect(taskItem(container, label)).toBeVisible();
+    }
+    expect(container.querySelector("[data-memos-hidden-completed-task]")).toBeNull();
+  });
+
+  it("keeps raw Markdown, checkbox permissions and non-task content when tasks hide", async () => {
+    const content = [
+      "- [x] Done",
+      "- [ ] Open",
+      "",
+      "  ```js",
+      '  const task = "- [x] untouched";',
+      "  ```",
+      "",
+      "- ordinary bullet",
+      "",
+      "[Example](https://example.com)",
+    ].join("\n");
+    const onTaskToggle = vi.fn();
+    const { container } = renderMemo(content, { onTaskToggle });
+    await act(async () => updateDevicePreferences({ hideCompletedTasks: true }));
+
+    const done = taskItem(container, "Done");
+    expect(done).not.toBeVisible();
+    // The source is still there: a checked box and the text, only not displayed.
+    expect(taskCheckbox(done!)).toBeChecked();
+    expect(done).toHaveTextContent("Done");
+    // Open tasks keep their existing permission and update path.
+    expect(taskCheckbox(taskItem(container, "Open")!)).not.toBeDisabled();
+    expect(taskItems(container)).toHaveLength(2);
+    expect(container.querySelector(".mbe-code code")).toHaveTextContent('const task = "- [x] untouched";');
+    expect(container).toHaveTextContent("ordinary bullet");
+    expect(screen.getByRole("link", { name: "Example" })).toBeVisible();
+    expect(onTaskToggle).not.toHaveBeenCalled();
+  });
+
+  it("hides raw list tasks from the first paint when the preference is already on", () => {
+    updateDevicePreferences({ hideCompletedTasks: true });
+    const content = ["- [x] Done", "- [ ] Open", "", "  ```js", "  let x = 1;", "  ```"].join("\n");
+    const { container } = renderMemo(content);
+    expect(taskItem(container, "Done")).not.toBeVisible();
+    expect(taskItem(container, "Open")).toBeVisible();
+  });
+
+  it("hides completed tasks from the first paint when the preference is already on", () => {
+    updateDevicePreferences({ hideCompletedTasks: true });
+    const { container } = renderMemo("- [ ] Open\n- [x] Done");
+    expect(container).toHaveTextContent("Open");
+    expect(container).not.toHaveTextContent("Done");
+  });
+
+  it("renders every task when a caller turns the filter off", async () => {
+    await act(async () => updateDevicePreferences({ hideCompletedTasks: true }));
+    const { container } = renderMemo("- [ ] Open\n- [x] Done", { filterCompletedTasks: false });
+    expect(container).toHaveTextContent("Open");
+    expect(container).toHaveTextContent("Done");
+  });
+
+  it("renders every raw list task when a caller turns the filter off", async () => {
+    await act(async () => updateDevicePreferences({ hideCompletedTasks: true }));
+    const content = ["- [x] Done", "- [ ] Open", "", "  ```js", "  let x = 1;", "  ```"].join("\n");
+    const { container } = renderMemo(content, { filterCompletedTasks: false });
+    expect(taskItem(container, "Done")).toBeVisible();
+    expect(taskItem(container, "Open")).toBeVisible();
+    expect(container.querySelector("[data-memos-hidden-completed-task]")).toBeNull();
+  });
+
+  it("hides a completed parent once its last open child is ticked", async () => {
+    const content = "- [x] Parent\n  - [ ] A\n  - [ ] B";
+    const onTaskToggle = vi.fn();
+    await act(async () => updateDevicePreferences({ hideCompletedTasks: true }));
+    const { container } = renderMemo(content, { onTaskToggle });
+    expect(container).toHaveTextContent("Parent");
+
+    fireEvent.mouseDown(container.querySelectorAll<HTMLInputElement>("input.mbe-checkbox")[1]);
+    await waitFor(() => expect(onTaskToggle).toHaveBeenCalledWith("- [x] Parent\n  - [x] A\n  - [ ] B"));
+    expect(container).not.toHaveTextContent("A");
+    expect(container).toHaveTextContent("Parent");
+
+    const remaining = container.querySelectorAll<HTMLInputElement>("input.mbe-checkbox");
+    expect(remaining).toHaveLength(2);
+    fireEvent.mouseDown(remaining[1]);
+    await waitFor(() => expect(container).not.toHaveTextContent("Parent"));
+  });
+
+  it("keeps the source mapping when a visible task is ticked", async () => {
+    const content = "- [ ] First\n- [x] Second\n\nNote";
+    const onTaskToggle = vi.fn();
+    const { container } = renderMemo(content, { onTaskToggle });
+    await act(async () => updateDevicePreferences({ hideCompletedTasks: true }));
+    const checkbox = container.querySelector<HTMLInputElement>("input.mbe-checkbox");
+    expect(checkbox).not.toBeNull();
+    fireEvent.mouseDown(checkbox!);
+    await waitFor(() => expect(onTaskToggle).toHaveBeenCalledWith("- [x] First\n- [x] Second\n\nNote"));
+  });
+
+  it("does not write a memo when the preference changes", async () => {
+    const onTaskToggle = vi.fn();
+    renderMemo("- [ ] Open\n- [x] Done", { onTaskToggle });
+    await act(async () => updateDevicePreferences({ hideCompletedTasks: true }));
+    await act(async () => updateDevicePreferences({ hideCompletedTasks: false }));
+    expect(onTaskToggle).not.toHaveBeenCalled();
+  });
+
+  it("keeps keyboard focus on a task that becomes completed but stays visible for its open child", async () => {
+    const onTaskToggle = vi.fn();
+    const { container } = renderMemo("- [ ] Parent\n  - [ ] Child", { onTaskToggle });
+    await act(async () => updateDevicePreferences({ hideCompletedTasks: true }));
+
+    const parent = taskItem(container, "Parent");
+    expect(parent).not.toBeNull();
+    const checkbox = taskCheckbox(parent!);
+    checkbox?.focus();
+    expect(checkbox).toHaveFocus();
+
+    // Space on a checkbox activates it as a click with detail 0; the editor's click
+    // handler toggles a task only for that value.
+    fireEvent.click(checkbox!, { detail: 0 });
+
+    await waitFor(() => expect(onTaskToggle).toHaveBeenCalledWith("- [x] Parent\n  - [ ] Child"));
+    // The redraw makes a new checkbox for the same block; the keyboard position stays
+    // on that task while it is still shown as the open child's context.
+    const after = taskItem(container, "Parent");
+    expect(after).not.toBeNull();
+    expect(taskCheckbox(after!)).toHaveFocus();
+    expect(container).toHaveTextContent("Child");
+  });
+
+  it("keeps every task while the editor is editable", async () => {
+    await act(async () => updateDevicePreferences({ hideCompletedTasks: true }));
+    const { container } = render(
+      <MemoryRouter>
+        <MemoMarkdown value={"- [ ] Open\n- [x] Done"} editable />
+      </MemoryRouter>,
+    );
+    expect(container).toHaveTextContent("Open");
+    expect(container).toHaveTextContent("Done");
+  });
+
+  it("keeps a raw list's source while the editor is editable", async () => {
+    await act(async () => updateDevicePreferences({ hideCompletedTasks: true }));
+    const content = ["- [x] Done", "- [ ] Open", "", "  ```js", "  let x = 1;", "  ```"].join("\n");
+    const { container } = render(
+      <MemoryRouter>
+        <MemoMarkdown value={content} editable />
+      </MemoryRouter>,
+    );
+    expect(container).toHaveTextContent("Done");
+    expect(container).toHaveTextContent("Open");
+    expect(container).toHaveTextContent("let x = 1;");
   });
 });
 

@@ -341,6 +341,7 @@
     "count-memos-updated-in-date": "{{count}} {{memos}} được cập nhật vào {{date}}",
     "connections": "Kết nối",
     "grid-compact-hint": "Bố cục lưới luôn sử dụng thẻ nhỏ gọn.",
+    "hide-completed-tasks": "Hide completed tasks",
     "layout": "Bố cục",
     "layout-auto": "Tự động",
     "layout-auto-description": "Số cột tùy ý cho vừa màn hình",

@@ -375,6 +375,7 @@
     },
     "compact-mode": "精簡模式",
     "grid-compact-hint": "網格版面一律使用精簡卡片。",
+    "hide-completed-tasks": "隱藏已完成任務",
     "layout": "版面配置",
     "layout-auto": "自動",
     "layout-auto-description": "依螢幕寬度顯示最多可容納的欄數",

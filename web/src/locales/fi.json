@@ -391,6 +391,7 @@
     "back-to": "Takaisin kohtaan {{source}}",
     "connections": "Yhteydet",
     "grid-compact-hint": "Ruudukkoasetteluissa käytetään aina kompakteja kortteja.",
+    "hide-completed-tasks": "Hide completed tasks",
     "layout": "Asettelu",
     "layout-auto": "Automaattinen",
     "layout-auto-description": "Niin monta saraketta kuin näytölle mahtuu",

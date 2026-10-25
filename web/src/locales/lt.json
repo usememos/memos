@@ -391,6 +391,7 @@
     "back-to": "Atgal į {{source}}",
     "connections": "Ryšiai",
     "grid-compact-hint": "Tinklelio išdėstymuose visada naudojamos kompaktiškos kortelės.",
+    "hide-completed-tasks": "Hide completed tasks",
     "layout": "Išdėstymas",
     "layout-auto": "Automatinis",
     "layout-auto-description": "Tiek stulpelių, kiek telpa ekrane",

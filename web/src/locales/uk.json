@@ -353,6 +353,7 @@
     "back-to": "Назад до {{source}}",
     "connections": "З'єднання",
     "grid-compact-hint": "Макети сітки завжди використовують компактні картки.",
+    "hide-completed-tasks": "Hide completed tasks",
     "layout": "Макет",
     "layout-auto": "Авто",
     "layout-auto-description": "Стільки стовпців, скільки поміщається на екран",

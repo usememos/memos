@@ -341,6 +341,7 @@
     "count-memos-updated-in-date": "{{count}} {{memos}} อัปเดตเมื่อ {{date}}",
     "connections": "การเชื่อมต่อ",
     "grid-compact-hint": "รูปแบบตารางจะใช้การ์ดแบบกะทัดรัดเสมอ",
+    "hide-completed-tasks": "Hide completed tasks",
     "layout": "รูปแบบการจัดวาง",
     "layout-auto": "อัตโนมัติ",
     "layout-auto-description": "จำนวนคอลัมน์มากที่สุดเท่าที่จะพอดีกับหน้าจอ",

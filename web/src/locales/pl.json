@@ -353,6 +353,7 @@
     "back-to": "Powrót do {{source}}",
     "connections": "Połączenia",
     "grid-compact-hint": "Układy siatki zawsze korzystają z kart kompaktowych.",
+    "hide-completed-tasks": "Hide completed tasks",
     "layout": "Układ",
     "layout-auto": "Automatycznie",
     "layout-auto-description": "Tyle kolumn, ile mieści się na ekranie",

@@ -353,6 +353,7 @@
     "back-to": "Tilbake til {{source}}",
     "connections": "Tilkoblinger",
     "grid-compact-hint": "Rutenettoppsett bruker alltid kompakte kort.",
+    "hide-completed-tasks": "Hide completed tasks",
     "layout": "Oppsett",
     "layout-auto": "Auto",
     "layout-auto-description": "Så mange kolonner som får plass på skjermen",

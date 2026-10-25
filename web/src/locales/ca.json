@@ -353,6 +353,7 @@
     "back-to": "Torna a {{source}}",
     "connections": "Connexions",
     "grid-compact-hint": "Els dissenys de quadrícula sempre utilitzen targetes compactes.",
+    "hide-completed-tasks": "Hide completed tasks",
     "layout": "Disseny",
     "layout-auto": "Automàtic",
     "layout-auto-description": "Tantes columnes com càpiguen a la pantalla",

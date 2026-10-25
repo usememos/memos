@@ -353,6 +353,7 @@
     "back-to": "Nazaj na {{source}}",
     "connections": "Povezave",
     "grid-compact-hint": "Mrežne postavitve vedno uporabljajo kompaktne kartice.",
+    "hide-completed-tasks": "Hide completed tasks",
     "layout": "Postavitev",
     "layout-auto": "Samodejno",
     "layout-auto-description": "Toliko stolpcev, kolikor se prilega zaslonu",

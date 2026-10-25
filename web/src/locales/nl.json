@@ -353,6 +353,7 @@
     "back-to": "Terug naar {{source}}",
     "connections": "Verbindingen",
     "grid-compact-hint": "Rasterindelingen gebruiken altijd compacte kaarten.",
+    "hide-completed-tasks": "Hide completed tasks",
     "layout": "Indeling",
     "layout-auto": "Automatisch",
     "layout-auto-description": "Zoveel kolommen als er op het scherm passen",

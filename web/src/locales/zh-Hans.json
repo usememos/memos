@@ -323,6 +323,7 @@
     "compact-mode": "紧凑模式",
     "connections": "关联",
     "grid-compact-hint": "网格布局始终使用紧凑卡片。",
+    "hide-completed-tasks": "隐藏已完成任务",
     "layout": "布局",
     "layout-auto": "自动",
     "layout-auto-description": "根据屏幕宽度显示尽可能多的列",
