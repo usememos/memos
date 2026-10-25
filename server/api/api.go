@@ -335,9 +335,9 @@ func writeGatewayStatusError(w http.ResponseWriter, err error) {
 
 func writeGatewayAuthorizationError(w http.ResponseWriter, err error) {
 	if errors.Is(err, ErrUnauthenticated) {
-		http.Error(w, `{"code": 16, "message": "authentication required"}`, http.StatusUnauthorized)
+		writeGatewayStatusError(w, status.Error(codes.Unauthenticated, "authentication required"))
 		return
 	}
 	slog.Error("failed to resolve API access policy", "error", err)
-	http.Error(w, `{"code": 13, "message": "failed to resolve API access policy"}`, http.StatusInternalServerError)
+	writeGatewayStatusError(w, status.Error(codes.Internal, "failed to resolve API access policy"))
 }
