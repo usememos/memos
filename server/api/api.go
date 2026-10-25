@@ -323,7 +323,7 @@ func writeGatewayStatusError(w http.ResponseWriter, err error) {
 			w.Header().Add(key, value)
 		}
 	}
-	body, marshalErr := protojson.Marshal(st.Proto())
+	body, marshalErr := (protojson.MarshalOptions{EmitDefaultValues: true}).Marshal(st.Proto())
 	if marshalErr != nil {
 		http.Error(w, `{"code": 13, "message": "failed to encode error"}`, http.StatusInternalServerError)
 		return

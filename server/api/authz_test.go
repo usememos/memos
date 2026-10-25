@@ -55,12 +55,15 @@ func TestWriteGatewayAuthorizationErrorMapsFailureClass(t *testing.T) {
 			assert.Equal(t, "application/json", response.Header().Get("Content-Type"))
 
 			var body struct {
-				Code    int    `json:"code"`
-				Message string `json:"message"`
+				Code    int               `json:"code"`
+				Message string            `json:"message"`
+				Details []json.RawMessage `json:"details"`
 			}
 			if assert.NoError(t, json.Unmarshal(response.Body.Bytes(), &body)) {
 				assert.Equal(t, tc.wantCode, body.Code)
 				assert.Equal(t, tc.wantMsg, body.Message)
+				assert.NotNil(t, body.Details)
+				assert.Empty(t, body.Details)
 			}
 			assert.NotContains(t, response.Body.String(), "database unavailable")
 		})
