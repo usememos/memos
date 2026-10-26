@@ -1,8 +1,8 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeAll, describe, expect, test, vi } from "vitest";
-import { createInitialState, EditorProvider } from "@/components/MemoEditor/state";
-import { EditorToolbar } from "@/components/MemoEditor/Toolbar/EditorToolbar";
-import InsertMenu from "@/components/MemoEditor/Toolbar/InsertMenu";
+import { createInitialState, EditorProvider } from "@/components/MemoEditor/edit/state";
+import { EditorToolbar } from "@/components/MemoEditor/edit/Toolbar/EditorToolbar";
+import InsertMenu from "@/components/MemoEditor/edit/Toolbar/InsertMenu";
 
 vi.mock("@/utils/i18n", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/utils/i18n")>()),
@@ -23,12 +23,12 @@ beforeAll(() => {
 
 const viewToggles = {
   onToggleFocusMode: vi.fn(),
-  isFormattingToolbarVisible: false,
-  onToggleFormattingToolbar: vi.fn(),
 };
 
+const richMode = { isSourceMode: false, onToggle: vi.fn() };
+
 /** `hosted` mirrors an editor whose presentation belongs to a host (the global composer). */
-const renderMenu = (onInsertImages = vi.fn(), isSaving = false, hosted = false) =>
+const renderMenu = (onInsertImages = vi.fn(), isSaving = false, hosted = false, sourceMode = richMode) =>
   render(
     <EditorProvider>
       <InsertMenu
@@ -37,6 +37,7 @@ const renderMenu = (onInsertImages = vi.fn(), isSaving = false, hosted = false) 
         onInsertImages={onInsertImages}
         onAudioRecorderClick={vi.fn()}
         viewToggles={hosted ? undefined : viewToggles}
+        sourceMode={sourceMode}
       />
     </EditorProvider>,
   );
@@ -56,19 +57,29 @@ describe("InsertMenu", () => {
       "editor.insert-menu.link-memo",
       "editor.insert-menu.add-location",
       "editor.focus-mode",
-      "editor.formatting-toolbar",
     ]);
   });
 
-  test("drops the view toggles when a host owns the editor's presentation", () => {
+  test("drops focus mode but keeps source mode when a host owns the editor's presentation", () => {
     renderMenu(vi.fn(), false, true);
 
     fireEvent.click(screen.getByRole("button", { name: "common.add" }));
 
     const labels = screen.getAllByRole("menuitem").map((item) => item.textContent);
     expect(labels).not.toContain("editor.focus-mode");
-    expect(labels).not.toContain("editor.formatting-toolbar");
-    expect(screen.queryByRole("separator")).not.toBeInTheDocument();
+    expect(screen.getByRole("menuitemcheckbox", { name: "editor.markdown-mode" })).toBeInTheDocument();
+  });
+
+  test.each([false, true])("shows source mode as a checkbox item that toggles it (on: %s)", (isSourceMode) => {
+    const onToggle = vi.fn();
+    renderMenu(vi.fn(), false, false, { isSourceMode, onToggle });
+
+    fireEvent.click(screen.getByRole("button", { name: "common.add" }));
+    const item = screen.getByRole("menuitemcheckbox", { name: "editor.markdown-mode" });
+    expect(item).toHaveAttribute("aria-checked", String(isSourceMode));
+
+    fireEvent.click(item);
+    expect(onToggle).toHaveBeenCalledOnce();
   });
 
   test("uses separate unrestricted and multi-image file inputs", () => {
@@ -104,7 +115,13 @@ describe("InsertMenu", () => {
 
     render(
       <EditorProvider initialEditorState={state}>
-        <EditorToolbar onSave={vi.fn()} onAudioRecorderClick={vi.fn()} viewToggles={viewToggles} onInsertImages={vi.fn()} />
+        <EditorToolbar
+          onSave={vi.fn()}
+          onAudioRecorderClick={vi.fn()}
+          viewToggles={viewToggles}
+          sourceMode={richMode}
+          onInsertImages={vi.fn()}
+        />
       </EditorProvider>,
     );
 

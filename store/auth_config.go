@@ -71,7 +71,7 @@ func (s *Store) applyAuthenticationConfigMutation(ctx context.Context, mutation 
 	defer s.authConfigMu.Unlock()
 
 	var err error
-	for attempt := 0; attempt < authenticationMutationMaxAttempts; attempt++ {
+	for attempt := range authenticationMutationMaxAttempts {
 		err = s.driver.ApplyAuthenticationConfigMutation(ctx, mutation)
 		if err == nil || !s.driver.IsRetryableAuthenticationMutationError(err) {
 			return err

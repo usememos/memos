@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { tabsTriggerVariants } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useAppSidebar } from "@/contexts/AppSidebarContext";
 import { getFilterSearch, isSearchFilter, type MemoFilter, useMemoFilterContext } from "@/contexts/MemoFilterContext";
@@ -13,7 +13,6 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoViews } from "@/hooks/useUserQueries";
 import { getMemoViewId, isMemoCollectionRoute } from "@/lib/memo-views";
 import { extractSpaceUidFromName, formatSpaceUidForDisplay } from "@/lib/space-display";
-import { cn } from "@/lib/utils";
 import { getCollectionCreator, withCollectionCreator } from "@/router/routes";
 import { useTranslate } from "@/utils/i18n";
 import { getRouteActionPolicy, getSidebarRouteKind } from "./routes";
@@ -89,6 +88,7 @@ const QuickFindDialog = () => {
   const { quickFindOpen, setQuickFindOpen } = useAppSidebar();
   const [query, setQuery] = useState("");
   const [mode, setMode] = useState<QuickFindMode>("text");
+  const [autoFocusField, setAutoFocusField] = useState(true);
   const hintId = useId();
   const viewApplies = isMemoCollectionRoute(location.pathname);
   const selectedMemoView = viewApplies ? memoViews.find((item) => getMemoViewId(item.name) === memoView) : undefined;
@@ -107,6 +107,7 @@ const QuickFindDialog = () => {
 
   useEffect(() => {
     if (!quickFindOpen) return;
+    setAutoFocusField(true);
     const active = readQuickFindQuery(filters);
     setMode(active.mode);
     setQuery(active.query);
@@ -140,7 +141,7 @@ const QuickFindDialog = () => {
   };
 
   const fieldProps = {
-    autoFocus: true,
+    autoFocus: autoFocusField,
     value: query,
     onChange: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setQuery(event.target.value),
     onKeyDown: handleKeyDown,
@@ -150,6 +151,7 @@ const QuickFindDialog = () => {
     <Dialog open={quickFindOpen} onOpenChange={setQuickFindOpen}>
       <DialogContent
         size="lg"
+        backdrop="subtle"
         className="top-[12vh]! translate-y-0! overflow-hidden border-border/70 p-0! shadow-xl sm:top-[16vh]! [&>div:first-child]:gap-0!"
         showCloseButton={false}
       >
@@ -162,20 +164,20 @@ const QuickFindDialog = () => {
             <span className="min-w-0 truncate text-xs text-muted-foreground" title={scopeLabel}>
               {compactScopeLabel}
             </span>
-            <div role="tablist" aria-label={t("search.mode")} className="flex shrink-0 items-center gap-0.5 rounded-md bg-muted/60 p-0.5">
-              {(["text", "cel"] as const).map((value) => (
-                <button
-                  key={value}
-                  type="button"
-                  role="tab"
-                  aria-selected={mode === value}
-                  onClick={() => setMode(value)}
-                  className={cn(tabsTriggerVariants({ variant: "segmented", active: mode === value }), "h-6 px-2 py-0 text-xs")}
-                >
-                  {value === "cel" ? t("search.expression-mode") : t("search.text")}
-                </button>
-              ))}
-            </div>
+            <Tabs value={mode} onValueChange={(value) => setMode(value as QuickFindMode)} size="sm" className="shrink-0">
+              <TabsList
+                aria-label={t("search.mode")}
+                // Arrow navigation keeps focus on the tabs; clicking a mode focuses its field.
+                onKeyDownCapture={() => setAutoFocusField(false)}
+                onClickCapture={() => setAutoFocusField(true)}
+              >
+                {(["text", "cel"] as const).map((value) => (
+                  <TabsTrigger key={value} value={value}>
+                    {value === "cel" ? t("search.expression-mode") : t("search.text")}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </Tabs>
           </div>
           {mode === "cel" ? (
             <div className="space-y-3 p-4">
@@ -209,17 +211,11 @@ const QuickFindDialog = () => {
               <SearchIcon className="size-[17px] shrink-0 text-muted-foreground" strokeWidth={1.8} />
               <Input
                 {...fieldProps}
-                className="h-10 border-0 bg-transparent px-0 !text-[14px] shadow-none focus-visible:ring-0"
+                className="h-10 border-0 bg-transparent px-0 !text-[14px] focus-visible:outline-offset-2"
                 placeholder={`${t("common.search")} ${compactScopeLabel}`}
                 aria-label={`${t("common.search")} ${scopeLabel}`}
               />
-              <Button
-                type="submit"
-                variant="ghost"
-                size="icon-sm"
-                className="size-7 shrink-0 rounded-md text-muted-foreground"
-                aria-label={t("common.search")}
-              >
+              <Button type="submit" variant="quiet" size="icon-compact" aria-label={t("common.search")}>
                 <CornerDownLeftIcon className="size-3.5" />
               </Button>
             </div>

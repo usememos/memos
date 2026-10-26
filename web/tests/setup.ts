@@ -9,7 +9,7 @@ afterEach(() => {
   cleanup();
 });
 
-// ProseMirror probes layout APIs jsdom doesn't implement.
+// The Markdown editor probes layout APIs jsdom doesn't implement.
 if (typeof document !== "undefined") {
   if (!document.elementFromPoint) {
     document.elementFromPoint = () => null;
@@ -19,9 +19,19 @@ if (typeof document !== "undefined") {
     Range.prototype.getBoundingClientRect = () =>
       ({ x: 0, y: 0, top: 0, left: 0, bottom: 0, right: 0, width: 0, height: 0, toJSON: () => ({}) }) as DOMRect;
   }
-  // CodeMirror probes additional layout APIs jsdom doesn't implement while measuring.
   if (typeof Element !== "undefined" && !Element.prototype.getClientRects) {
     Element.prototype.getClientRects = () => [] as unknown as DOMRectList;
+  }
+  // jsdom does not treat contenteditable elements as focusable, and the editor's root is one.
+  // A tabindex makes jsdom focus it as a browser would.
+  if (typeof HTMLElement !== "undefined") {
+    const focus = HTMLElement.prototype.focus;
+    HTMLElement.prototype.focus = function (this: HTMLElement, options?: FocusOptions) {
+      // jsdom does not reflect the contentEditable property to the attribute either.
+      const editable = this.getAttribute("contenteditable") === "true" || this.contentEditable === "true";
+      if (editable && !this.hasAttribute("tabindex")) this.setAttribute("tabindex", "-1");
+      focus.call(this, options);
+    };
   }
 }
 

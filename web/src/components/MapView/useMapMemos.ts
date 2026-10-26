@@ -5,7 +5,7 @@ import { useView } from "@/contexts/ViewContext";
 import { useMemoFilters } from "@/hooks/useMemoFilters";
 import { useInfiniteMemos } from "@/hooks/useMemoQueries";
 import { combineCELFilters } from "@/lib/cel-filter";
-import { State } from "@/types/proto/api/v1/common_pb";
+import { State } from "@/types/proto/api/common_pb";
 import { mapMemos } from "./model";
 
 /** What the map can show; the sidebar counts against the same scope. */

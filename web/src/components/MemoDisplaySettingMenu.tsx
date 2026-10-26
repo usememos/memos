@@ -44,18 +44,7 @@ const SettingRow = ({ label, description, children }: SettingRowProps) => (
 function MemoDisplaySettingsContent() {
   const t = useTranslate();
   const direction = useDirection();
-  const {
-    orderByTimeAsc,
-    timeBasis,
-    compactMode,
-    linkPreview,
-    maxColumns,
-    setTimeBasis,
-    setOrderByTimeAsc,
-    setCompactMode,
-    setLinkPreview,
-    setMaxColumns,
-  } = useView();
+  const { orderByTimeAsc, timeBasis, compactMode, maxColumns, setTimeBasis, setOrderByTimeAsc, setCompactMode, setMaxColumns } = useView();
   // Multi-column grids always render compact tiles, so the toggle is shown as on and locked
   // there; it only becomes a real choice at a single column.
   const compactLocked = maxColumns !== 1;
@@ -176,9 +165,6 @@ function MemoDisplaySettingsContent() {
             onCheckedChange={setCompactMode}
             disabled={compactLocked}
           />
-        </SettingRow>
-        <SettingRow label={t("memo.link-preview")}>
-          <Switch aria-label={t("memo.link-preview")} checked={linkPreview} onCheckedChange={setLinkPreview} />
         </SettingRow>
       </section>
     </div>

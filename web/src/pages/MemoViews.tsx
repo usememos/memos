@@ -8,8 +8,10 @@ import {
   Clock3Icon,
   ExternalLinkIcon,
   FilterIcon,
+  ImageIcon,
   MapPinIcon,
   MoreVerticalIcon,
+  PaperclipIcon,
   ParenthesesIcon,
   PencilIcon,
   PinIcon,
@@ -41,7 +43,7 @@ import { useMemoViews, userKeys } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
 import { getMemoViewId } from "@/lib/memo-views";
 import { cn } from "@/lib/utils";
-import { MemoView, MemoView_IconSchema, MemoViewSchema } from "@/types/proto/api/v1/user_service_pb";
+import { MemoView, MemoView_IconSchema, MemoViewSchema } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 const memoViewExamples = [
@@ -110,6 +112,18 @@ const memoViewExamples = [
     filter: "!has_location",
     description: "Memos without an attached location.",
     icon: MapPinIcon,
+  },
+  {
+    title: "With attachments",
+    filter: "has_attachments",
+    description: "Memos with at least one attached file.",
+    icon: PaperclipIcon,
+  },
+  {
+    title: "Photos",
+    filter: "has_image",
+    description: "Memos that show an image, in the content or as an attached file.",
+    icon: ImageIcon,
   },
   {
     title: "Content search",
@@ -197,6 +211,8 @@ const filterFields = [
   "has_link",
   "has_code",
   "has_location",
+  "has_attachments",
+  "has_image",
   'created_ts >= now - duration("24h")',
   "created_ts.getFullYear() == ...",
   "created_ts.getMonth() == ... (0 = Jan)",

@@ -1,6 +1,6 @@
 import { LinkIcon, MilestoneIcon } from "lucide-react";
 import { useMemo } from "react";
-import type { MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
+import type { MemoRelation } from "@/types/proto/api/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { METADATA_ROW_DETAIL_CLASSES } from "../MetadataSection";
 import RelationRow from "./RelationRow";

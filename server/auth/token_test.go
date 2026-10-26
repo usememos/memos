@@ -12,7 +12,7 @@ func TestGenerateAccessTokenV2(t *testing.T) {
 	secret := []byte("test-secret")
 
 	t.Run("generates valid access token", func(t *testing.T) {
-		token, expiresAt, err := GenerateAccessTokenV2(1, "testuser", "USER", "ACTIVE", secret)
+		token, expiresAt, err := GenerateAccessTokenV2(1, "testuser", "USER", "ACTIVE", "password-hash", secret)
 		require.NoError(t, err)
 		assert.NotEmpty(t, token)
 		assert.True(t, expiresAt.After(time.Now()))
@@ -20,12 +20,12 @@ func TestGenerateAccessTokenV2(t *testing.T) {
 	})
 
 	t.Run("generates different tokens for same user", func(t *testing.T) {
-		token1, _, err := GenerateAccessTokenV2(1, "testuser", "USER", "ACTIVE", secret)
+		token1, _, err := GenerateAccessTokenV2(1, "testuser", "USER", "ACTIVE", "password-hash", secret)
 		require.NoError(t, err)
 
 		time.Sleep(2 * time.Second) // Ensure different timestamps (tokens have 1s precision)
 
-		token2, _, err := GenerateAccessTokenV2(1, "testuser", "USER", "ACTIVE", secret)
+		token2, _, err := GenerateAccessTokenV2(1, "testuser", "USER", "ACTIVE", "password-hash", secret)
 		require.NoError(t, err)
 
 		assert.NotEqual(t, token1, token2, "tokens should be different due to different timestamps")
@@ -36,7 +36,7 @@ func TestParseAccessTokenV2(t *testing.T) {
 	secret := []byte("test-secret")
 
 	t.Run("parses valid access token", func(t *testing.T) {
-		token, _, err := GenerateAccessTokenV2(1, "testuser", "USER", "ACTIVE", secret)
+		token, _, err := GenerateAccessTokenV2(1, "testuser", "USER", "ACTIVE", "password-hash", secret)
 		require.NoError(t, err)
 
 		claims, err := ParseAccessTokenV2(token, secret)
@@ -46,10 +46,12 @@ func TestParseAccessTokenV2(t *testing.T) {
 		assert.Equal(t, "USER", claims.Role)
 		assert.Equal(t, "ACTIVE", claims.Status)
 		assert.Equal(t, "access", claims.Type)
+		assert.NotEmpty(t, claims.AuthHash)
+		assert.NotEqual(t, "password-hash", claims.AuthHash)
 	})
 
 	t.Run("fails with wrong secret", func(t *testing.T) {
-		token, _, err := GenerateAccessTokenV2(1, "testuser", "USER", "ACTIVE", secret)
+		token, _, err := GenerateAccessTokenV2(1, "testuser", "USER", "ACTIVE", "password-hash", secret)
 		require.NoError(t, err)
 
 		wrongSecret := []byte("wrong-secret")
@@ -76,7 +78,7 @@ func TestParseAccessTokenV2(t *testing.T) {
 	t.Run("parses token with different roles", func(t *testing.T) {
 		roles := []string{"USER", "ADMIN"}
 		for _, role := range roles {
-			token, _, err := GenerateAccessTokenV2(1, "testuser", role, "ACTIVE", secret)
+			token, _, err := GenerateAccessTokenV2(1, "testuser", role, "ACTIVE", "password-hash", secret)
 			require.NoError(t, err)
 
 			claims, err := ParseAccessTokenV2(token, secret)
@@ -138,7 +140,7 @@ func TestParseRefreshToken(t *testing.T) {
 	t.Run("fails with access token", func(t *testing.T) {
 		// Generate an access token and try to parse it as refresh token
 		// Should fail because audience mismatch is caught before type check
-		accessToken, _, err := GenerateAccessTokenV2(1, "testuser", "USER", "ACTIVE", secret)
+		accessToken, _, err := GenerateAccessTokenV2(1, "testuser", "USER", "ACTIVE", "password-hash", secret)
 		require.NoError(t, err)
 
 		_, err = ParseRefreshToken(accessToken, secret)
@@ -209,7 +211,7 @@ func TestAccessTokenV2Integration(t *testing.T) {
 		status := "ACTIVE"
 
 		// Generate token
-		token, expiresAt, err := GenerateAccessTokenV2(userID, username, role, status, secret)
+		token, expiresAt, err := GenerateAccessTokenV2(userID, username, role, status, "password-hash", secret)
 		require.NoError(t, err)
 		assert.NotEmpty(t, token)
 
@@ -287,7 +289,7 @@ func TestTokenExpiration(t *testing.T) {
 	secret := []byte("test-secret")
 
 	t.Run("access token expires after AccessTokenDuration", func(t *testing.T) {
-		_, expiresAt, err := GenerateAccessTokenV2(1, "testuser", "USER", "ACTIVE", secret)
+		_, expiresAt, err := GenerateAccessTokenV2(1, "testuser", "USER", "ACTIVE", "password-hash", secret)
 		require.NoError(t, err)
 
 		expectedExpiry := time.Now().Add(AccessTokenDuration)

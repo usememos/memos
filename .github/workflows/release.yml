@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      # Calendar tags only (26.09, 26.09.1, 26.09-rc.1); legacy v0.x tags
+      # Calendar tags only (26.10.0, 26.10.1, 26.10.0-rc.1); legacy v0.x tags
       # are rejected by scripts/release_version.sh and must not start a run.
       - "[1-9][0-9].*"
   workflow_dispatch:
@@ -16,7 +16,7 @@ permissions:
   contents: read
 
 env:
-  GO_VERSION: "1.27.0"
+  GO_VERSION: "1.27.2"
   NODE_VERSION: "24"
   PNPM_VERSION: "11.0.1"
   ARTIFACT_RETENTION_DAYS: 60

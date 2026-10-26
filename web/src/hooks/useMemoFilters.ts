@@ -7,7 +7,7 @@ import { buildTimestampRangeFilter, getLocalDayTimestampRange, getTimeBasisField
 import { combineCELFilters } from "@/lib/cel-filter";
 import { getMemoViewId } from "@/lib/memo-views";
 import { buildMemoCreatorFilter, getVisibilityName } from "@/lib/resource-names";
-import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
+import { Visibility } from "@/types/proto/api/memo_service_pb";
 
 const escapeFilterValue = (value: string): string => JSON.stringify(value);
 
@@ -68,6 +68,10 @@ export const buildMemoFilter = ({
       conditions.push(`has_code`);
     } else if (filter.factor === "property.hasLocation") {
       conditions.push(`has_location`);
+    } else if (filter.factor === "property.hasAttachments") {
+      conditions.push(`has_attachments`);
+    } else if (filter.factor === "property.hasImage") {
+      conditions.push(`has_image`);
     } else if (filter.factor === "displayTime") {
       const range = getLocalDayTimestampRange(filter.value);
       if (range) {

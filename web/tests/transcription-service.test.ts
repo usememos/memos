@@ -1,11 +1,11 @@
 import { create } from "@bufbuild/protobuf";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
+import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
 
 const { transcribe } = vi.hoisted(() => ({ transcribe: vi.fn() }));
 vi.mock("@/connect", () => ({ aiServiceClient: { transcribe } }));
 
-import { transcriptionService } from "@/components/MemoEditor/services/transcriptionService";
+import { transcriptionService } from "@/components/MemoEditor/edit/services/transcriptionService";
 
 const audio = create(AttachmentSchema, { name: "attachments/voice", filename: "voice.wav", type: "audio/wav", size: 3n });
 

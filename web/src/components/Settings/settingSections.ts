@@ -4,6 +4,7 @@ import {
   BarChart3Icon,
   CogIcon,
   DatabaseIcon,
+  GaugeIcon,
   HeartHandshakeIcon,
   KeyIcon,
   KeyRoundIcon,
@@ -31,8 +32,9 @@ import SpacesSection from "@/components/Settings/SpacesSection";
 import SSOSection from "@/components/Settings/SSOSection";
 import StorageSection from "@/components/Settings/StorageSection";
 import TagsSection from "@/components/Settings/TagsSection";
+import UsageLimitsSection from "@/components/Settings/UsageLimitsSection";
 import WebhookSection from "@/components/Settings/WebhookSection";
-import { InstanceSetting_Key } from "@/types/proto/api/v1/instance_service_pb";
+import { InstanceSetting_Key } from "@/types/proto/api/instance_service_pb";
 
 export type SettingSectionKey =
   | "my-account"
@@ -45,6 +47,7 @@ export type SettingSectionKey =
   | "system"
   | "memo"
   | "storage"
+  | "usage-limits"
   | "notification"
   | "sso"
   | "tags"
@@ -140,6 +143,13 @@ export const SETTINGS_SECTIONS: SettingSectionDefinition[] = [
     icon: DatabaseIcon,
     component: StorageSection,
     preloadSettingKeys: [InstanceSetting_Key.STORAGE],
+  },
+  {
+    key: "usage-limits",
+    scope: "admin",
+    labelKey: "setting.usage-limits.label",
+    icon: GaugeIcon,
+    component: UsageLimitsSection,
   },
   {
     key: "notification",

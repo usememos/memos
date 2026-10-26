@@ -1,9 +1,9 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import { createInitialState, EditorProvider, useEditorContext, useEditorSelector } from "@/components/MemoEditor/state";
-import AudienceMenu from "@/components/MemoEditor/Toolbar/AudienceMenu";
-import { EditorToolbar } from "@/components/MemoEditor/Toolbar/EditorToolbar";
-import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
+import { createInitialState, EditorProvider, useEditorContext, useEditorSelector } from "@/components/MemoEditor/edit/state";
+import AudienceMenu from "@/components/MemoEditor/edit/Toolbar/AudienceMenu";
+import { EditorToolbar } from "@/components/MemoEditor/edit/Toolbar/EditorToolbar";
+import { Visibility } from "@/types/proto/api/memo_service_pb";
 
 const spacesQuery = vi.hoisted(() => ({
   data: [
@@ -14,7 +14,7 @@ const spacesQuery = vi.hoisted(() => ({
   isError: false,
   refetch: vi.fn(),
 }));
-vi.mock("@/components/MemoEditor/Toolbar/InsertMenu", () => ({ default: () => null }));
+vi.mock("@/components/MemoEditor/edit/Toolbar/InsertMenu", () => ({ default: () => null }));
 vi.mock("@/hooks/useCurrentUser", () => ({ default: () => ({ name: "users/test" }) }));
 vi.mock("@/hooks/useSpaceQueries", () => ({ useSpaces: () => spacesQuery }));
 
@@ -198,7 +198,16 @@ it("removing a Members memo from its Space falls back to Private without discard
   function Toolbar() {
     getState = useEditorContext().getState;
     const space = useEditorSelector((state) => state.metadata.space);
-    return <EditorToolbar space={space} canChooseSpace onSave={vi.fn()} onAudioRecorderClick={vi.fn()} onInsertImages={vi.fn()} />;
+    return (
+      <EditorToolbar
+        space={space}
+        canChooseSpace
+        onSave={vi.fn()}
+        onAudioRecorderClick={vi.fn()}
+        sourceMode={{ isSourceMode: false, onToggle: vi.fn() }}
+        onInsertImages={vi.fn()}
+      />
+    );
   }
   const initial = createInitialState();
   initial.content = "Keep this draft";

@@ -2,6 +2,7 @@ import { Radio } from "@base-ui/react/radio";
 import { RadioGroup as RadioGroupPrimitive } from "@base-ui/react/radio-group";
 import { CircleIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { FIELD_FOCUS_CLASSES } from "./focus";
 
 function RadioGroup({ className, ...props }: RadioGroupPrimitive.Props) {
   return <RadioGroupPrimitive data-slot="radio-group" className={cn("grid gap-3", className)} {...props} />;
@@ -12,7 +13,9 @@ function RadioGroupItem({ className, ...props }: Radio.Root.Props) {
     <Radio.Root
       data-slot="radio-group-item"
       className={cn(
-        "border-border text-primary aspect-square size-4 shrink-0 rounded-full border shadow-xs transition-[color,box-shadow] data-disabled:cursor-not-allowed data-disabled:opacity-50",
+        "border-input text-primary data-checked:border-primary aspect-square size-4 shrink-0 rounded-full border transition-[color,border-color] duration-150 data-disabled:cursor-not-allowed data-disabled:opacity-50 motion-reduce:transition-none",
+        FIELD_FOCUS_CLASSES,
+        "focus-visible:outline-offset-2",
         className,
       )}
       {...props}

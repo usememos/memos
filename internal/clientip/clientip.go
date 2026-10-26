@@ -10,9 +10,9 @@ import (
 	"net"
 	"net/http"
 	"net/netip"
+	"slices"
 	"strings"
 
-	"github.com/labstack/echo/v5"
 	"github.com/pkg/errors"
 )
 
@@ -119,8 +119,8 @@ func (r *Resolver) Resolve(remoteAddr string, header http.Header) string {
 			}
 		}
 	}
-	for i := len(entries) - 1; i >= 0; i-- {
-		candidate, ok := parseAddr(entries[i])
+	for _, entry := range slices.Backward(entries) {
+		candidate, ok := parseAddr(entry)
 		if !ok {
 			// A malformed entry ends the walk; nothing to its left can be trusted.
 			break
@@ -171,13 +171,11 @@ func FromContext(ctx context.Context) string {
 
 // Middleware resolves the client address once per request and stores it in
 // the request context, where both API transports and the file server read it.
-func Middleware(resolver *Resolver) echo.MiddlewareFunc {
-	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c *echo.Context) error {
-			request := c.Request()
-			ip := resolver.Resolve(request.RemoteAddr, request.Header)
-			c.SetRequest(request.WithContext(WithClientIP(request.Context(), ip)))
-			return next(c)
-		}
+func Middleware(resolver *Resolver) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			ip := resolver.Resolve(r.RemoteAddr, r.Header)
+			next.ServeHTTP(w, r.WithContext(WithClientIP(r.Context(), ip)))
+		})
 	}
 }

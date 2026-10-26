@@ -2,14 +2,14 @@ import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { Code, ConnectError, createClient, type Interceptor } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { getAccessToken, hasStoredToken, isTokenExpired, REQUEST_TOKEN_EXPIRY_BUFFER_MS, setAccessToken } from "./auth-state";
-import { AIService } from "./types/proto/api/v1/ai_service_pb";
-import { AttachmentService } from "./types/proto/api/v1/attachment_service_pb";
-import { AuthService } from "./types/proto/api/v1/auth_service_pb";
-import { IdentityProviderService } from "./types/proto/api/v1/idp_service_pb";
-import { InstanceService } from "./types/proto/api/v1/instance_service_pb";
-import { MemoService } from "./types/proto/api/v1/memo_service_pb";
-import { SpaceService } from "./types/proto/api/v1/space_service_pb";
-import { UserService } from "./types/proto/api/v1/user_service_pb";
+import { AIService } from "./types/proto/api/ai_service_pb";
+import { AttachmentService } from "./types/proto/api/attachment_service_pb";
+import { AuthService } from "./types/proto/api/auth_service_pb";
+import { IdentityProviderService } from "./types/proto/api/idp_service_pb";
+import { InstanceService } from "./types/proto/api/instance_service_pb";
+import { MemoService } from "./types/proto/api/memo_service_pb";
+import { SpaceService } from "./types/proto/api/space_service_pb";
+import { UserService } from "./types/proto/api/user_service_pb";
 import { redirectOnAuthFailure } from "./utils/auth-redirect";
 
 interface RequestWithHeader {
@@ -78,7 +78,7 @@ async function doRefreshAccessToken(): Promise<void> {
     throw new ConnectError("Refresh token response missing access token", Code.Internal);
   }
 
-  const expiresAt = response.expiresAt ? timestampDate(response.expiresAt) : undefined;
+  const expiresAt = response.accessTokenExpireTime ? timestampDate(response.accessTokenExpireTime) : undefined;
   setAccessToken(response.accessToken, expiresAt);
 }
 

@@ -18,7 +18,7 @@ const state = vi.hoisted(() => ({
   setMobileOpen: vi.fn(),
 }));
 
-vi.mock("@/components/MemosLogo", () => ({ default: () => <span>Memos</span> }));
+vi.mock("@/contexts/InstanceContext", () => ({ useInstance: () => ({ generalSetting: {} }) }));
 vi.mock("@/components/UserMenu", () => ({
   default: () => <button type="button">Steven account</button>,
 }));
@@ -218,6 +218,25 @@ describe("SpaceSwitcher", () => {
     fireEvent.click(screen.getByRole("button", { name: "space.create" }));
     fireEvent.click(screen.getByRole("button", { name: "Complete create" }));
     expect(state.selectSpace).toHaveBeenCalledWith(state.spaces[0]);
+  });
+
+  it.each(["md", "header"] as const)("keeps the %s scope popup and its Space selector fixed after positioning", async (size) => {
+    renderAt("/", size);
+    openSwitcher();
+    const popup = await screen.findByRole("dialog");
+    const positioner = popup.parentElement as HTMLElement;
+    await waitFor(() => {
+      expect(positioner.style.opacity).not.toBe("0");
+      expect(positioner.style.position).toBe("fixed");
+    });
+
+    fireEvent.click(screen.getByRole("combobox", { name: "space.switch" }));
+    const option = await screen.findByRole("option", { name: "Product" });
+    const selectPositioner = option.closest('[data-slot="select-content"]')?.parentElement as HTMLElement;
+    await waitFor(() => {
+      expect(selectPositioner.style.opacity).not.toBe("0");
+      expect(selectPositioner.style.position).toBe("fixed");
+    });
   });
 
   it("gives guests on Explore only the account panel, with no single-choice Browse control", () => {

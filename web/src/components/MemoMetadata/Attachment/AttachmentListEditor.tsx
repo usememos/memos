@@ -11,8 +11,8 @@ import {
   XIcon,
 } from "lucide-react";
 import { type FC, type MouseEvent, useMemo, useRef, useState } from "react";
-import type { AttachmentItem, LocalFile } from "@/components/MemoEditor/types/attachment";
-import { getAudioRecordingTimeLabel, toAttachmentItems } from "@/components/MemoEditor/types/attachment";
+import type { AttachmentItem, LocalFile } from "@/components/MemoEditor/edit/types/attachment";
+import { getAudioRecordingTimeLabel, toAttachmentItems } from "@/components/MemoEditor/edit/types/attachment";
 import MetadataSection, {
   METADATA_ROW_BOX_CLASSES,
   METADATA_ROW_CONTROLS_CLASSES,
@@ -24,7 +24,7 @@ import MetadataSection, {
 import PreviewImageDialog from "@/components/PreviewImageDialog";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
+import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import { formatFileSize, getFileTypeLabel } from "@/utils/format";
 import { useTranslate } from "@/utils/i18n";
 import { canInlineAttachment, extractAttachmentUIDFromName } from "@/utils/managed-attachment";

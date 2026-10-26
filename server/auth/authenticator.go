@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"crypto/hmac"
 	"log/slog"
 	"strconv"
 	"strings"
@@ -37,23 +38,48 @@ func NewAuthenticator(store *store.Store, secret string) *Authenticator {
 }
 
 // AuthenticateByAccessTokenV2 validates a short-lived access token.
-// Returns claims without database query (stateless validation).
-func (a *Authenticator) AuthenticateByAccessTokenV2(accessToken string) (*UserClaims, error) {
+// Checks the user's current account state and password-bound session hash.
+func (a *Authenticator) AuthenticateByAccessTokenV2(ctx context.Context, accessToken string) (*UserClaims, error) {
+	result, err := a.resolveAccessToken(ctx, accessToken)
+	if err != nil {
+		return nil, err
+	}
+	if result == nil {
+		return nil, errors.New("invalid access token")
+	}
+	return result.claims, nil
+}
+
+// resolveAccessToken returns nil for invalid credentials and an error for store failures.
+func (a *Authenticator) resolveAccessToken(ctx context.Context, accessToken string) (*bearerAuth, error) {
 	claims, err := ParseAccessTokenV2(accessToken, []byte(a.secret))
 	if err != nil {
-		return nil, errors.Wrap(err, "invalid access token")
+		return nil, nil //nolint:nilerr // Invalid credentials permit fallback; only store failures are errors.
 	}
 
 	userID, err := parseInt32(claims.Subject)
 	if err != nil {
-		return nil, errors.Wrap(err, "invalid user ID in token")
+		return nil, nil //nolint:nilerr // Invalid credentials permit fallback; only store failures are errors.
+	}
+	user, err := a.store.GetUser(ctx, &store.FindUser{ID: &userID})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get access token user")
+	}
+	if user == nil || user.RowStatus == store.Archived {
+		return nil, nil
+	}
+	if !hmac.Equal([]byte(claims.AuthHash), []byte(accessTokenAuthHash(user.ID, user.PasswordHash, []byte(a.secret)))) {
+		return nil, nil
 	}
 
-	return &UserClaims{
-		UserID:   userID,
-		Username: claims.Username,
-		Role:     claims.Role,
-		Status:   claims.Status,
+	return &bearerAuth{
+		user: user,
+		claims: &UserClaims{
+			UserID:   userID,
+			Username: claims.Username,
+			Role:     claims.Role,
+			Status:   claims.Status,
+		},
 	}, nil
 }
 
@@ -98,26 +124,33 @@ func (a *Authenticator) AuthenticateByRefreshToken(ctx context.Context, refreshT
 	return user, claims.TokenID, nil
 }
 
-// AuthenticateByPAT validates a Personal Access Token.
+// ErrInvalidPAT marks a Personal Access Token that cannot authenticate: it is
+// malformed, unknown, expired, or belongs to a missing or archived user. Any
+// other error from AuthenticateByPAT means the lookup itself failed.
+var ErrInvalidPAT = errors.New("invalid PAT")
+
+// AuthenticateByPAT validates a Personal Access Token. A rejected token yields an
+// error wrapping ErrInvalidPAT; a store failure yields any other error.
 func (a *Authenticator) AuthenticateByPAT(ctx context.Context, token string) (*store.User, *storepb.PersonalAccessTokensUserSetting_PersonalAccessToken, error) {
 	if !strings.HasPrefix(token, PersonalAccessTokenPrefix) {
-		return nil, nil, errors.New("invalid PAT format")
+		return nil, nil, errors.Wrap(ErrInvalidPAT, "invalid PAT format")
 	}
 
 	tokenHash := HashPersonalAccessToken(token)
 	result, err := a.store.GetUserByPATHash(ctx, tokenHash)
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "invalid PAT")
+		return nil, nil, errors.Wrap(err, "failed to look up PAT")
+	}
+	if result == nil {
+		return nil, nil, errors.Wrap(ErrInvalidPAT, "PAT not found")
 	}
 
-	// Check expiry
 	if result.PAT.ExpiresAt != nil && result.PAT.ExpiresAt.AsTime().Before(time.Now()) {
-		return nil, nil, errors.New("PAT expired")
+		return nil, nil, errors.Wrap(ErrInvalidPAT, "PAT expired")
 	}
 
-	// Check user status
 	if result.User.RowStatus == store.Archived {
-		return nil, nil, errors.New("user is archived")
+		return nil, nil, errors.Wrap(ErrInvalidPAT, "user is archived")
 	}
 
 	return result.User, result.PAT, nil
@@ -126,7 +159,7 @@ func (a *Authenticator) AuthenticateByPAT(ctx context.Context, token string) (*s
 // AuthResult contains the result of an authentication attempt.
 type AuthResult struct {
 	User        *store.User // Set for PAT authentication
-	Claims      *UserClaims // Set for Access Token V2 (stateless)
+	Claims      *UserClaims // Set for Access Token V2
 	AccessToken string      // Non-empty if authenticated via JWT
 }
 
@@ -153,27 +186,20 @@ func (a *Authenticator) resolveBearer(ctx context.Context, token string) (*beare
 	}
 
 	if !strings.HasPrefix(token, PersonalAccessTokenPrefix) {
-		// Access Token V2 (stateless). An invalid token yields no identity and no
-		// error, so the caller can fall back to other credentials.
-		claims, err := a.AuthenticateByAccessTokenV2(token)
-		if err == nil && claims != nil {
-			user, err := a.store.GetUser(ctx, &store.FindUser{ID: &claims.UserID})
-			if err != nil {
-				return nil, err
-			}
-			if user != nil && user.RowStatus != store.Archived {
-				return &bearerAuth{user: user, claims: claims}, nil
-			}
-		}
-		return nil, nil
+		return a.resolveAccessToken(ctx, token)
 	}
 
-	// Personal Access Token.
-	if user, pat, err := a.AuthenticateByPAT(ctx, token); err == nil && user != nil {
-		a.recordPATUsage(user.ID, pat.TokenId)
-		return &bearerAuth{user: user, pat: pat}, nil
+	// Personal Access Token. A rejected token yields no identity and no error; a
+	// store failure propagates so it is never mistaken for bad credentials.
+	user, pat, err := a.AuthenticateByPAT(ctx, token)
+	if err != nil {
+		if errors.Is(err, ErrInvalidPAT) {
+			return nil, nil
+		}
+		return nil, err
 	}
-	return nil, nil
+	a.recordPATUsage(user.ID, pat.TokenId)
+	return &bearerAuth{user: user, pat: pat}, nil
 }
 
 // recordPATUsage updates a personal access token's last-used timestamp
@@ -211,11 +237,17 @@ func (a *Authenticator) AuthenticateToUser(ctx context.Context, authHeader, cook
 
 // Authenticate resolves a Bearer token (Access Token V2 or PAT) into an AuthResult,
 // returning nil when no valid credentials are present. Unlike AuthenticateToUser it
-// ignores the refresh cookie.
+// ignores the refresh cookie. A store failure also yields nil, so the caller is
+// treated as anonymous, but it is logged so operators can tell it apart from a
+// rejected token.
 func (a *Authenticator) Authenticate(ctx context.Context, authHeader string) *AuthResult {
 	token := ExtractBearerToken(authHeader)
 	bearer, err := a.resolveBearer(ctx, token)
-	if err != nil || bearer == nil {
+	if err != nil {
+		slog.Error("failed to resolve bearer token", "error", err)
+		return nil
+	}
+	if bearer == nil {
 		return nil
 	}
 	if bearer.pat != nil {

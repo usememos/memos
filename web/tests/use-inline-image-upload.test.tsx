@@ -2,13 +2,13 @@ import { create } from "@bufbuild/protobuf";
 import { act, renderHook, waitFor } from "@testing-library/react";
 import type { PropsWithChildren, RefObject } from "react";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import type { UploadAnchorDescriptor } from "@/components/MemoEditor/Editor/uploadAnchors";
-import { useInlineImageUpload } from "@/components/MemoEditor/hooks/useInlineImageUpload";
-import { uploadService } from "@/components/MemoEditor/services";
-import { EditorProvider, useEditorContext } from "@/components/MemoEditor/state";
-import type { LocalFile } from "@/components/MemoEditor/types/attachment";
-import type { EditorController } from "@/components/MemoEditor/types/editorController";
-import { AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
+import { useInlineImageUpload } from "@/components/MemoEditor/edit/hooks/useInlineImageUpload";
+import { uploadService } from "@/components/MemoEditor/edit/services";
+import { EditorProvider, useEditorContext } from "@/components/MemoEditor/edit/state";
+import type { LocalFile } from "@/components/MemoEditor/edit/types/attachment";
+import type { EditorController } from "@/components/MemoEditor/edit/types/editorController";
+import type { UploadAnchorDescriptor } from "@/components/MemoEditor/edit/uploadAnchors";
+import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
 
 vi.mock("@/utils/i18n", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/utils/i18n")>()),
@@ -56,10 +56,11 @@ describe("useInlineImageUpload", () => {
     const editorRef = { current: controller } as RefObject<EditorController>;
     const { result } = renderHook(() => useInlineImageUpload(editorRef), { wrapper });
 
-    act(() => result.current.insertLocalImages([localImage("first.png"), localImage("second.png")], 7));
+    const position = { blockId: "b1", offset: 7 };
+    act(() => result.current.insertLocalImages([localImage("first.png"), localImage("second.png")], position));
 
     await waitFor(() => expect(controller.resolveUploadAnchor).toHaveBeenCalledTimes(1));
-    expect(controller.createUploadAnchor).toHaveBeenCalledWith(expect.any(Object), 7);
+    expect(controller.createUploadAnchor).toHaveBeenCalledWith(expect.any(Object), position);
     expect(controller.resolveUploadAnchor).toHaveBeenCalledWith(
       expect.any(String),
       "![first](/file/attachments/first)\n\n![second](/file/attachments/second)",

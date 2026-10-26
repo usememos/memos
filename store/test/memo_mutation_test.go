@@ -483,7 +483,10 @@ func TestMemoMutationRechecksActorAndReferenceAudience(t *testing.T) {
 				_, err := f.store.UpdateUser(f.ctx, &store.UpdateUser{ID: f.owner.ID, RowStatus: new(store.Archived)})
 				require.NoError(t, err)
 			case "administrator demoted":
-				_, err := f.store.UpdateUser(f.ctx, &store.UpdateUser{ID: f.peer.ID, Role: new(store.RoleAdmin)})
+				// The instance must keep another administrator for the demotion.
+				_, err := f.store.CreateUser(f.ctx, &store.User{Username: "mutation-admin", Role: store.RoleAdmin})
+				require.NoError(t, err)
+				_, err = f.store.UpdateUser(f.ctx, &store.UpdateUser{ID: f.peer.ID, Role: new(store.RoleAdmin)})
 				require.NoError(t, err)
 				mutation.Policy = memoWritePolicy(f.peer.ID, false)
 				_, err = f.store.UpdateUser(f.ctx, &store.UpdateUser{ID: f.peer.ID, Role: new(store.RoleUser)})

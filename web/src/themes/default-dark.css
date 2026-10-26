@@ -5,6 +5,7 @@
 
   --card: oklch(0.275 0.009 255);
   --card-foreground: oklch(0.9 0.006 255);
+  --control-thumb: var(--foreground);
 
   /* Popovers float above cards without becoming high-glare panels */
   --popover: oklch(0.32 0.01 255);

@@ -44,10 +44,12 @@ to, and whether the working tree differs from the candidate (mention it; do not 
 
 ## 2. Choose the Tag
 
-Format is `YY.MM[.N][-rc.N]` (validated by `scripts/release_version.sh` and `internal/version`). `YY.MM` is the current UTC month.
+Format is `YY.MM.N[-rc.K]` (validated by `scripts/release_version.sh` and `internal/version`). `YY.MM` is the current UTC
+month, `N` counts stable releases in that month from 0, and `K` counts candidates for one stable release from 1. Bare `YY.MM`
+is never a git tag: it is the image tag that follows the newest stable release of its month.
 
-- **New stable:** `YY.MM` if no stable tag exists for this month, else `YY.MM.<N+1>`.
-- **New release candidate:** the next stable version plus `-rc.<N+1>`, counting existing candidates for that version.
+- **New stable:** `YY.MM.0` if no stable tag exists for this month, else `YY.MM.<N+1>`.
+- **New release candidate:** the next stable version plus `-rc.<K+1>`, counting existing candidates for that version.
 - **Promote a candidate:** the candidate's base version, tagged on the candidate's commit. Promotion keeps the base version
   even if the month has changed. If main moved past the candidate, ask whether to promote the candidate commit or cut a new
   candidate from main.
@@ -72,7 +74,8 @@ All must pass before you propose the tag:
 
 Write notes for the range from the last stable tag to the candidate, following [release-notes.md](references/release-notes.md).
 Read the commits, the merged PRs (`gh pr view`), and the diff for migrations, proto changes, configuration flags, and removed
-behavior. Save the draft in a temporary directory outside the repo.
+behavior. Carry the `## Unreleased` entries of `proto/api/CHANGELOG.md` into the notes as breaking API changes. Save the
+draft in a temporary directory outside the repo.
 
 ## 5. Propose, Then Tag
 
@@ -110,8 +113,8 @@ Do not report success until each check passes:
 2. Download `checksums.txt` and the archive for this machine into a temporary directory. Check it with `sha256sum -c` (or
    `shasum -a 256 -c`) against its line, then extract and run `./memos --version`, which must print the tag.
 3. `docker buildx imagetools inspect neosmemo/memos:<tag>` and `ghcr.io/usememos/memos:<tag>`: both list `linux/amd64`,
-   `linux/arm64`, and `linux/arm/v7`. For stable tags, `stable` and the series tag (when it differs from the tag) resolve to the
-   same digest as `<tag>`.
+   `linux/arm64`, and `linux/arm/v7`. For stable tags, `stable` and the month tag `YY.MM` resolve to the same digest as
+   `<tag>`.
 4. If Docker can run locally, `./scripts/release_smoke_test.sh --candidate-image neosmemo/memos:<tag>` tests the published
    image. If Docker is unavailable, say so; do not skip it silently.
 
@@ -125,4 +128,5 @@ that links resolve to the right PRs and commits.
 
 Give the release URL, tag, SHA, image tags and digest, verification results, any reruns and why, and anything not done. Out of
 scope for this skill: announcements, website or docs updates, and the demo deploy (`demo-deploy.yml`, manual dispatch). List
-them as follow-ups for the user rather than doing them.
+them as follow-ups for the user rather than doing them. If `proto/api/CHANGELOG.md` has `## Unreleased` entries, list
+renaming that heading to the tag as a follow-up too.

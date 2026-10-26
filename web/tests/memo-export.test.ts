@@ -46,7 +46,7 @@ describe("memo export files", () => {
   ])("uploads %s as %s without filtering by the filename or MIME type", async (fixture, name, type) => {
     const bytes = readFileSync(resolve(import.meta.dirname, "../../core/memoexport/testdata/1.0", fixture));
     const file = new File([bytes], name, { type });
-    const plan = { memos: 3 };
+    const plan = { memoCount: 3 };
     importRequest.mockImplementation(async (request) => ({
       uploadId: "upload-id",
       maxChunkSize: 1024,

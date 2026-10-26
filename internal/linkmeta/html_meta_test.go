@@ -291,7 +291,7 @@ func TestHTMLMetaFetcherValidatesResponse(t *testing.T) {
 }
 
 func TestHTMLMetaFetcherBoundsHTMLResponse(t *testing.T) {
-	body := `<title>Bounded title</title>` + strings.Repeat("x", maxHTMLMetaBytes) + `<meta property="og:title" content="Outside limit">`
+	body := `<title>Bounded title</title><script>` + strings.Repeat("x", maxHTMLMetaBytes) + `</script><meta property="og:image" content="/outside.png">`
 	reader := &countingReadCloser{Reader: strings.NewReader(body)}
 	fetcher := newTestFetcher(roundTripFunc(func(req *http.Request) (*http.Response, error) {
 		result := response(req, http.StatusOK, "text/html", "")
@@ -302,7 +302,46 @@ func TestHTMLMetaFetcherBoundsHTMLResponse(t *testing.T) {
 	meta, err := fetcher.Get(context.Background(), "http://93.184.216.34/page")
 	require.NoError(t, err)
 	require.Equal(t, "Bounded title", meta.Title)
+	require.Empty(t, meta.Image)
 	require.LessOrEqual(t, reader.bytesRead, int64(maxHTMLMetaBytes))
+}
+
+func TestHTMLMetaFetcherStopsAfterInitialLimitWhenMetadataIsComplete(t *testing.T) {
+	body := `<meta property="og:title" content="Early title"><meta property="og:image" content="/early.png"><script>` + strings.Repeat("x", maxHTMLMetaBytes)
+	reader := &countingReadCloser{Reader: strings.NewReader(body)}
+	fetcher := newTestFetcher(roundTripFunc(func(req *http.Request) (*http.Response, error) {
+		result := response(req, http.StatusOK, "text/html", "")
+		result.Body = reader
+		return result, nil
+	}))
+
+	meta, err := fetcher.Get(context.Background(), "http://93.184.216.34/page")
+	require.NoError(t, err)
+	require.Equal(t, "Early title", meta.Title)
+	require.Equal(t, "http://93.184.216.34/early.png", meta.Image)
+	require.LessOrEqual(t, reader.bytesRead, int64(initialHTMLMetaBytes))
+}
+
+func TestHTMLMetaFetcherFindsOEmbedPastInitialLimit(t *testing.T) {
+	body := `<html><head><script>` + strings.Repeat("x", initialHTMLMetaBytes) + `</script><link rel="alternate" type="application/json+oembed" href="/oembed"></head></html>`
+	var requests atomic.Int32
+	fetcher := newTestFetcher(roundTripFunc(func(req *http.Request) (*http.Response, error) {
+		requests.Add(1)
+		switch req.URL.Path {
+		case "/post":
+			return htmlResponse(req, body), nil
+		case "/oembed":
+			return response(req, http.StatusOK, "application/json", `{"title":"Late title","thumbnail_url":"/late.png"}`), nil
+		default:
+			return nil, errors.New("unexpected request path: " + req.URL.Path)
+		}
+	}))
+
+	meta, err := fetcher.Get(context.Background(), "http://93.184.216.34/post")
+	require.NoError(t, err)
+	require.Equal(t, "Late title", meta.Title)
+	require.Equal(t, "http://93.184.216.34/late.png", meta.Image)
+	require.EqualValues(t, 2, requests.Load())
 }
 
 func TestHTMLMetaFetcherContextCancellation(t *testing.T) {
@@ -393,15 +432,13 @@ func TestHTMLMetaFetcherCoalescesRequests(t *testing.T) {
 	var waitGroup sync.WaitGroup
 	errorsChannel := make(chan error, requestCount)
 	for range requestCount {
-		waitGroup.Add(1)
-		go func() {
-			defer waitGroup.Done()
+		waitGroup.Go(func() {
 			meta, err := fetcher.Get(context.Background(), "http://93.184.216.34/shared")
 			if err == nil && meta.Title != "Shared title" {
 				err = errors.New("unexpected metadata")
 			}
 			errorsChannel <- err
-		}()
+		})
 	}
 	<-started
 	close(release)
@@ -435,11 +472,9 @@ func TestHTMLMetaFetcherLimitsConcurrency(t *testing.T) {
 	const requestCount = 12
 	var waitGroup sync.WaitGroup
 	for index := range requestCount {
-		waitGroup.Add(1)
-		go func() {
-			defer waitGroup.Done()
+		waitGroup.Go(func() {
 			_, _ = fetcher.Get(context.Background(), "http://93.184.216.34/page?id="+string(rune('a'+index)))
-		}()
+		})
 	}
 	for range maxConcurrentFetches {
 		<-entered
@@ -465,11 +500,16 @@ func TestHTMLMetaFetcherRejectsUnsafeURLsAndRedirects(t *testing.T) {
 	require.ErrorIs(t, err, ErrInternalIP)
 }
 
-func TestValidateURLCGNAT(t *testing.T) {
+func TestValidateURLReservedIPv4Ranges(t *testing.T) {
 	tests := []struct {
 		ip      string
 		blocked bool
 	}{
+		{"0.0.0.0", true},
+		{"0.1.2.3", true},
+		{"0.255.255.255", true},
+		{"::ffff:0.1.2.3", true},
+		{"1.0.0.1", false},
 		{"100.63.255.255", false},
 		{"100.64.0.0", true},
 		{"100.100.100.200", true},
@@ -593,4 +633,56 @@ func (reader *countingReadCloser) Read(buffer []byte) (int, error) {
 
 func (*countingReadCloser) Close() error {
 	return nil
+}
+
+func TestIsInternalIP(t *testing.T) {
+	tests := []struct {
+		name     string
+		ip       string
+		internal bool
+	}{
+		{name: "loopback", ip: "127.0.0.1", internal: true},
+		{name: "private 10", ip: "10.0.0.1", internal: true},
+		{name: "private 172", ip: "172.16.0.1", internal: true},
+		{name: "private 192", ip: "192.168.1.1", internal: true},
+		{name: "link local imds", ip: "169.254.169.254", internal: true},
+		{name: "unspecified", ip: "0.0.0.0", internal: true},
+		{name: "cgnat lower bound", ip: "100.64.0.1", internal: true},
+		{name: "cgnat alibaba metadata", ip: "100.100.100.200", internal: true},
+		{name: "cgnat upper bound", ip: "100.127.255.255", internal: true},
+		{name: "mapped ipv6 cgnat", ip: "::ffff:100.100.100.200", internal: true},
+		{name: "ipv6 loopback", ip: "::1", internal: true},
+		{name: "below cgnat", ip: "100.63.255.255", internal: false},
+		{name: "above cgnat", ip: "100.128.0.0", internal: false},
+		{name: "public dns", ip: "8.8.8.8", internal: false},
+		{name: "public example", ip: "93.184.216.34", internal: false},
+		{name: "ipv6 public", ip: "2606:4700:4700::1111", internal: false},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			require.Equal(t, test.internal, isInternalIP(net.ParseIP(test.ip)))
+		})
+	}
+}
+
+func TestHTMLMetaFetcherGetRejectsResolvedCGNAT(t *testing.T) {
+	originalLookupIPAddr := lookupIPAddr
+	originalDialContext := dialContext
+	t.Cleanup(func() {
+		lookupIPAddr = originalLookupIPAddr
+		dialContext = originalDialContext
+	})
+
+	lookupIPAddr = func(context.Context, string) ([]net.IPAddr, error) {
+		return []net.IPAddr{{IP: net.ParseIP("100.100.100.200")}}, nil
+	}
+	var dialed atomic.Bool
+	dialContext = func(context.Context, string, string) (net.Conn, error) {
+		dialed.Store(true)
+		return nil, errors.New("unexpected dial")
+	}
+
+	_, err := NewHTMLMetaFetcher().Get(context.Background(), "http://rebind.example/page")
+	require.ErrorIs(t, err, ErrInternalIP)
+	require.False(t, dialed.Load())
 }

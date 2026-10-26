@@ -3,7 +3,7 @@ import AudioAttachmentItem from "@/components/MemoMetadata/Attachment/AudioAttac
 import VideoPoster from "@/components/VideoPoster";
 import type { AttachmentLibraryListItem } from "@/hooks/useAttachmentLibrary";
 import { cn } from "@/lib/utils";
-import type { User } from "@/types/proto/api/v1/user_service_pb";
+import type { User } from "@/types/proto/api/user_service_pb";
 import { getAttachmentThumbnailUrl, getAttachmentType, isMotionAttachment } from "@/utils/attachment";
 import { AttachmentCreator, AttachmentMetadataLine, AttachmentOpenButton, AttachmentSourceChip } from "./AttachmentLibraryPrimitives";
 

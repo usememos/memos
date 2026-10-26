@@ -178,7 +178,7 @@ func TestDeleteUserCleansRelatedData(t *testing.T) {
 	ts := NewTestingStore(ctx, t)
 	defer ts.Close()
 
-	user, err := createTestingHostUser(ctx, ts)
+	user, err := createTestingUserWithRole(ctx, ts, "test", store.RoleUser)
 	require.NoError(t, err)
 	peer, err := createTestingUserWithRole(ctx, ts, "delete-peer", store.RoleUser)
 	require.NoError(t, err)

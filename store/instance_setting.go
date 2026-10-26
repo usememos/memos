@@ -4,6 +4,7 @@ import (
 	"cmp"
 	"context"
 	"slices"
+	"strings"
 
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -49,6 +50,11 @@ func (s *Store) UpsertInstanceSetting(ctx context.Context, upsert *storepb.Insta
 		valueBytes, err = protojson.Marshal(upsert.GetAiSetting())
 	} else if upsert.Key == storepb.InstanceSettingKey_ACCESS {
 		valueBytes, err = protojson.Marshal(upsert.GetAccessSetting())
+	} else if upsert.Key == storepb.InstanceSettingKey_USAGE_LIMITS {
+		if err := ValidateInstanceUsageLimitsSetting(upsert.GetUsageLimitsSetting()); err != nil {
+			return nil, err
+		}
+		valueBytes, err = protojson.Marshal(upsert.GetUsageLimitsSetting())
 	} else {
 		return nil, errors.Errorf("unsupported instance setting key: %v", upsert.Key)
 	}
@@ -261,9 +267,6 @@ func (s *Store) AllowsAnonymousAccess(ctx context.Context) (bool, error) {
 	return setting.AccessMode == storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC, nil
 }
 
-// DefaultContentLengthLimit is the default limit of content length in bytes. 8KB.
-const DefaultContentLengthLimit = 8 * 1024
-
 // DefaultReactions is the default reactions for memo related setting.
 var DefaultReactions = []string{"👍", "👎", "❤️", "🎉", "😄", "😕", "😢", "😡"}
 
@@ -278,9 +281,6 @@ func (s *Store) GetInstanceMemoRelatedSetting(ctx context.Context) (*storepb.Ins
 	instanceMemoRelatedSetting := &storepb.InstanceMemoRelatedSetting{}
 	if instanceSetting != nil {
 		instanceMemoRelatedSetting = instanceSetting.GetMemoRelatedSetting()
-	}
-	if instanceMemoRelatedSetting.ContentLengthLimit < DefaultContentLengthLimit {
-		instanceMemoRelatedSetting.ContentLengthLimit = DefaultContentLengthLimit
 	}
 	if len(instanceMemoRelatedSetting.Reactions) == 0 {
 		instanceMemoRelatedSetting.Reactions = append(instanceMemoRelatedSetting.Reactions, DefaultReactions...)
@@ -312,6 +312,24 @@ func (s *Store) GetInstanceTagsSetting(ctx context.Context) (*storepb.InstanceTa
 		Value: &storepb.InstanceSetting_TagsSetting{TagsSetting: instanceTagsSetting},
 	})
 	return instanceTagsSetting, nil
+}
+
+// ValidateInstanceNotificationSetting checks the rules a notification setting
+// must meet before it is stored, whether it comes from the API or from
+// deployment configuration: enabled email needs a host, a positive port, and
+// a from address, and TLS and SSL are mutually exclusive.
+func ValidateInstanceNotificationSetting(setting *storepb.InstanceNotificationSetting) error {
+	email := setting.GetEmail()
+	if email == nil || !email.Enabled {
+		return nil
+	}
+	if strings.TrimSpace(email.SmtpHost) == "" || email.SmtpPort <= 0 || strings.TrimSpace(email.FromEmail) == "" {
+		return errors.New("enabled notification email requires smtpHost, a positive smtpPort, and fromEmail")
+	}
+	if email.UseTls && email.UseSsl {
+		return errors.New("notification email cannot enable both useTls and useSsl")
+	}
+	return nil
 }
 
 func (s *Store) GetInstanceNotificationSetting(ctx context.Context) (*storepb.InstanceNotificationSetting, error) {
@@ -357,9 +375,8 @@ func (s *Store) GetInstanceAISetting(ctx context.Context) (*storepb.InstanceAISe
 }
 
 const (
-	defaultInstanceStorageType       = storepb.InstanceStorageSetting_LOCAL
-	defaultInstanceUploadSizeLimitMb = 30
-	defaultInstanceFilepathTemplate  = "assets/{timestamp}_{uuid}_{filename}"
+	defaultInstanceStorageType      = storepb.InstanceStorageSetting_LOCAL
+	defaultInstanceFilepathTemplate = "assets/{timestamp}_{uuid}_{filename}"
 )
 
 func (s *Store) GetInstanceStorageSetting(ctx context.Context) (*storepb.InstanceStorageSetting, error) {
@@ -378,9 +395,6 @@ func (s *Store) GetInstanceStorageSetting(ctx context.Context) (*storepb.Instanc
 	NormalizeInstanceStorageSetting(instanceStorageSetting)
 	if instanceStorageSetting.StorageType == storepb.InstanceStorageSetting_STORAGE_TYPE_UNSPECIFIED {
 		instanceStorageSetting.StorageType = defaultInstanceStorageType
-	}
-	if instanceStorageSetting.UploadSizeLimitMb == 0 {
-		instanceStorageSetting.UploadSizeLimitMb = defaultInstanceUploadSizeLimitMb
 	}
 	if instanceStorageSetting.FilepathTemplate == "" {
 		instanceStorageSetting.FilepathTemplate = defaultInstanceFilepathTemplate
@@ -451,6 +465,12 @@ func convertInstanceSettingFromRaw(instanceSettingRaw *InstanceSetting) (*storep
 			return nil, err
 		}
 		instanceSetting.Value = &storepb.InstanceSetting_AccessSetting{AccessSetting: accessSetting}
+	case storepb.InstanceSettingKey_USAGE_LIMITS.String():
+		usageLimitsSetting := &storepb.InstanceUsageLimitsSetting{}
+		if err := protojsonUnmarshaler.Unmarshal([]byte(instanceSettingRaw.Value), usageLimitsSetting); err != nil {
+			return nil, err
+		}
+		instanceSetting.Value = &storepb.InstanceSetting_UsageLimitsSetting{UsageLimitsSetting: usageLimitsSetting}
 	default:
 		// Skip unsupported instance setting key.
 		return nil, nil

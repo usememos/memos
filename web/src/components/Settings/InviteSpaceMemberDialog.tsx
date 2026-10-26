@@ -12,7 +12,7 @@ import { useCreateSpaceInvitation } from "@/hooks/useSpaceQueries";
 import { useUsersByUsernames } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
 import { extractSpaceUidFromName } from "@/lib/space-display";
-import { type Space, SpaceInvitationSchema, SpaceMember_Role } from "@/types/proto/api/v1/space_service_pb";
+import { type Space, SpaceInvitationSchema, SpaceMember_Role } from "@/types/proto/api/space_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 const LOOKUP_DELAY_MS = 300;

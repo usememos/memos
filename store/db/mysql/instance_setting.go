@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"context"
+	"database/sql"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -23,9 +24,54 @@ func (d *DB) CreateInstanceSettingIfNotExists(ctx context.Context, create *store
 	return rowsAffected == 1, nil
 }
 
+// UpdateInstanceSettingIfUnchanged replaces the setting value only when the
+// stored value still equals oldValue, and reports whether it did.
+func (d *DB) UpdateInstanceSettingIfUnchanged(ctx context.Context, name, oldValue, newValue string) (bool, error) {
+	// MySQL reports zero affected rows when the new value equals the stored
+	// one, which would read as a conflict. An unchanged write is a no-op.
+	if oldValue == newValue {
+		return d.instanceSettingHasValue(ctx, name, oldValue)
+	}
+	// A binary comparison is exact; the column collation may ignore case
+	// and trailing spaces.
+	result, err := d.db.ExecContext(ctx, "UPDATE `system_setting` SET `value` = ? WHERE `name` = ? AND `value` = CAST(? AS BINARY)", newValue, name, oldValue)
+	if err != nil {
+		return false, errors.Wrap(err, "failed to conditionally update instance setting")
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return false, errors.Wrap(err, "failed to inspect conditional instance setting update")
+	}
+	return rowsAffected == 1, nil
+}
+
+func (d *DB) instanceSettingHasValue(ctx context.Context, name, value string) (bool, error) {
+	var count int
+	if err := d.db.QueryRowContext(ctx, "SELECT COUNT(*) FROM `system_setting` WHERE `name` = ? AND `value` = CAST(? AS BINARY)", name, value).Scan(&count); err != nil {
+		return false, errors.Wrap(err, "failed to read instance setting")
+	}
+	return count == 1, nil
+}
+
 func (d *DB) UpsertInstanceSetting(ctx context.Context, upsert *store.InstanceSetting) (*store.InstanceSetting, error) {
+	if err := upsertInstanceSetting(ctx, d.db, upsert); err != nil {
+		return nil, err
+	}
+
+	return upsert, nil
+}
+
+func (*DB) UpsertInstanceSettingTx(ctx context.Context, tx *sql.Tx, upsert *store.InstanceSetting) error {
+	return upsertInstanceSetting(ctx, tx, upsert)
+}
+
+type instanceSettingExecer interface {
+	ExecContext(context.Context, string, ...any) (sql.Result, error)
+}
+
+func upsertInstanceSetting(ctx context.Context, executor instanceSettingExecer, upsert *store.InstanceSetting) error {
 	stmt := "INSERT INTO `system_setting` (`name`, `value`, `description`) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE `value` = ?, `description` = ?"
-	_, err := d.db.ExecContext(
+	_, err := executor.ExecContext(
 		ctx,
 		stmt,
 		upsert.Name,
@@ -34,11 +80,7 @@ func (d *DB) UpsertInstanceSetting(ctx context.Context, upsert *store.InstanceSe
 		upsert.Value,
 		upsert.Description,
 	)
-	if err != nil {
-		return nil, err
-	}
-
-	return upsert, nil
+	return err
 }
 
 func (d *DB) ListInstanceSettings(ctx context.Context, find *store.FindInstanceSetting) ([]*store.InstanceSetting, error) {

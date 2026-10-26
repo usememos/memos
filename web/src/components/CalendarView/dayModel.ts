@@ -4,16 +4,15 @@ import type { Root, RootContent } from "mdast";
 import { fromMarkdown } from "mdast-util-from-markdown";
 import { gfmFromMarkdown } from "mdast-util-gfm";
 import { gfm } from "micromark-extension-gfm";
-import { defaultUrlTransform } from "react-markdown";
 import rehypeSanitize from "rehype-sanitize";
 import remarkRehype from "remark-rehype";
 import { unified } from "unified";
 import { visit } from "unist-util-visit";
-import { SANITIZE_SCHEMA } from "@/components/MemoContent/constants";
 import type { MemoTimeBasis } from "@/contexts/ViewContext";
 import { getMemoSortTime } from "@/hooks/useMemoSorting";
 import { ISO_DATE_FORMAT } from "@/lib/calendar-utils";
-import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
+import { SANITIZE_SCHEMA } from "@/lib/html-sanitize-schema";
+import type { Memo } from "@/types/proto/api/memo_service_pb";
 import { getAttachmentThumbnailUrl, getAttachmentUrl, isImage } from "@/utils/attachment";
 import { classifyManagedAttachmentImageURL, extractAttachmentUIDFromName } from "@/utils/managed-attachment";
 
@@ -47,13 +46,24 @@ export interface BuildCalendarMonthModelOptions {
   isRedacted?: (memo: Memo) => boolean;
 }
 
+// A GitHub alert's first line, such as "[!NOTE]", which the memo shows as the callout's title.
+const ALERT_MARKER = /^\[!(?:note|tip|important|warning|caution)\][ \t]*(?:\n|$)/i;
+
+/** Whether a blockquote is a GitHub alert: its text, not code or a link, starts with the marker line. */
+const isAlert = (node: RootContent): boolean => {
+  const first = node.type === "blockquote" ? node.children[0] : undefined;
+  const lead = first?.type === "paragraph" ? first.children[0] : undefined;
+  return lead?.type === "text" && ALERT_MARKER.test(lead.value);
+};
+
 const plainText = (node: RootContent): string => {
   if (node.type === "text" || node.type === "inlineCode" || node.type === "code") return node.value;
   if (node.type === "break") return "\n";
   // Image alt text and link definitions are not a written excerpt. Never render raw HTML.
   if (!("children" in node)) return "";
   const separator = ["list", "listItem", "blockquote", "table", "tableRow"].includes(node.type) ? "\n" : "";
-  return node.children.map((child) => plainText(child as RootContent)).join(separator);
+  const text = node.children.map((child) => plainText(child as RootContent)).join(separator);
+  return isAlert(node) ? text.replace(ALERT_MARKER, "") : text;
 };
 
 const getExcerpt = (memo: Memo, tree: Root): CalendarDayExcerpt | undefined => {
@@ -93,7 +103,8 @@ const getImageCandidates = (memo: Memo, tree: Root): string[] => {
   const html = imageProcessor.runSync(tree) as HtmlRoot;
   visit(html, "element", (node: Element) => {
     if (node.tagName !== "img" || typeof node.properties.src !== "string") return;
-    const source = defaultUrlTransform(node.properties.src);
+    // The sanitizer above already dropped any src that is not relative or https.
+    const source = node.properties.src;
     if (!source) return;
     const classified = classifyManagedAttachmentImageURL(source);
     if (classified.kind === "invalid") return;

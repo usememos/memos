@@ -1,9 +1,9 @@
 import { create } from "@bufbuild/protobuf";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { cacheService } from "@/components/MemoEditor/services/cacheService";
-import { AttachmentSchema, MotionMediaFamily, MotionMediaRole, MotionMediaSchema } from "@/types/proto/api/v1/attachment_service_pb";
+import { cacheService } from "@/components/MemoEditor/edit/services/cacheService";
+import { AttachmentSchema, MotionMediaFamily, MotionMediaRole, MotionMediaSchema } from "@/types/proto/api/attachment_service_pb";
 
-import { LocationSchema, Visibility } from "@/types/proto/api/v1/memo_service_pb";
+import { LocationSchema, Visibility } from "@/types/proto/api/memo_service_pb";
 
 describe("memo editor cache", () => {
   beforeEach(() => {
@@ -128,10 +128,21 @@ describe("memo editor cache", () => {
   it("keeps the cursor for the next editor mount", () => {
     const key = cacheService.key("users/steven", "global-memo-editor");
 
-    cacheService.saveCursor(key, 9);
+    const selection = { anchor: { block: 1, offset: 9 }, focus: { block: 1, offset: 9 } };
+    cacheService.saveCursor(key, selection, "rich");
 
-    expect(cacheService.loadCursor(key)).toBe(9);
+    expect(cacheService.loadCursor(key, "rich")).toEqual(selection);
     cacheService.clear(key);
-    expect(cacheService.loadCursor(key)).toBeUndefined();
+    expect(cacheService.loadCursor(key, "rich")).toBeUndefined();
+  });
+
+  it("drops a cursor taken in the other editor mode", () => {
+    const key = cacheService.key("users/steven", "global-memo-editor");
+
+    // Source mode is one block of Markdown, so its offsets mean nothing to rich mode.
+    cacheService.saveCursor(key, { anchor: { block: 0, offset: 42 }, focus: { block: 0, offset: 42 } }, "source");
+
+    expect(cacheService.loadCursor(key, "rich")).toBeUndefined();
+    expect(cacheService.loadCursor(key, "source")).toBeDefined();
   });
 });

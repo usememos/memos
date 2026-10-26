@@ -3,7 +3,7 @@ import { render } from "@testing-library/react";
 import type { ComponentProps, ReactNode } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { MapCanvas } from "@/components/MapView/MapCanvas";
-import { MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
+import { MemoSchema } from "@/types/proto/api/memo_service_pb";
 
 const markers = vi.hoisted(() => [] as { icon: { options: { html?: string } }; title: string; alt: string }[]);
 const map = vi.hoisted(() => ({

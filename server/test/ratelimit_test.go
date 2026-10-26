@@ -47,7 +47,7 @@ func TestStartupRateLimitOnBothTransports(t *testing.T) {
 	// per 15 minutes, so the refusal arrives well within the loop bound.
 	var refused *http.Response
 	for range 40 {
-		resp := post("/api/v1/auth/signin", nextBody(), nil)
+		resp := post("/api/auth/signin", nextBody(), nil)
 		if resp.StatusCode == http.StatusTooManyRequests {
 			refused = resp
 			break
@@ -80,7 +80,7 @@ func TestStartupRateLimitOnBothTransports(t *testing.T) {
 	require.Contains(t, types, "type.googleapis.com/google.rpc.RetryInfo")
 
 	// The Connect transport shares the same budget and speaks the same contract.
-	connectResp := post("/memos.api.v1.AuthService/SignIn", nextBody(), map[string]string{"Connect-Protocol-Version": "1"})
+	connectResp := post("/memos.api.AuthService/SignIn", nextBody(), map[string]string{"Connect-Protocol-Version": "1"})
 	defer connectResp.Body.Close()
 	require.Equal(t, http.StatusTooManyRequests, connectResp.StatusCode)
 	require.NotEmpty(t, connectResp.Header.Get("Retry-After"))
@@ -103,7 +103,7 @@ func TestStartupRateLimitOnBothTransports(t *testing.T) {
 	// budget. The test client connects from loopback, which the default
 	// trusted-proxy set includes, so the forged header must name a trusted
 	// address to be walked past and still land on the peer.
-	forged := post("/api/v1/auth/signin", nextBody(), map[string]string{"X-Forwarded-For": "10.0.0.9"})
+	forged := post("/api/auth/signin", nextBody(), map[string]string{"X-Forwarded-For": "10.0.0.9"})
 	defer forged.Body.Close()
 	require.Equal(t, http.StatusTooManyRequests, forged.StatusCode)
 }

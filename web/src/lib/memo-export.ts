@@ -2,8 +2,8 @@ import { create } from "@bufbuild/protobuf";
 import { Code, ConnectError } from "@connectrpc/connect";
 import { userServiceClient } from "@/connect";
 import { downloadFileFromUrl } from "@/lib/browser";
-import type { ImportMemosRequest, MemoImportPlan, MemoImportReport } from "@/types/proto/api/v1/user_service_pb";
-import { ImportMemosRequest_ConflictPolicy, ImportMemosSpecSchema } from "@/types/proto/api/v1/user_service_pb";
+import type { ImportMemosPlan, ImportMemosReport, ImportMemosRequest } from "@/types/proto/api/user_service_pb";
+import { ImportMemosRequest_ConflictPolicy, ImportMemosSpecSchema } from "@/types/proto/api/user_service_pb";
 
 const DEFAULT_CHUNK_SIZE = 2 * 1024 * 1024;
 
@@ -20,7 +20,7 @@ export async function exportMemos(userName: string, username: string): Promise<v
 export interface StagedMemoImport {
   uploadId: string;
   size: number;
-  plan: MemoImportPlan;
+  plan: ImportMemosPlan;
 }
 
 async function sendChunk(request: ImportMemosRequest, signal?: AbortSignal) {
@@ -73,7 +73,7 @@ export async function importStagedMemos(
   userName: string,
   staged: StagedMemoImport,
   conflictPolicy: ImportMemosRequest_ConflictPolicy,
-): Promise<MemoImportReport> {
+): Promise<ImportMemosReport> {
   const response = await userServiceClient.importMemos({
     name: userName,
     upload: { case: "uploadId", value: staged.uploadId },

@@ -10,7 +10,7 @@ import {
   splitLabel,
   validLocation,
 } from "@/components/MapView/model";
-import { LocationSchema, MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
+import { LocationSchema, MemoSchema } from "@/types/proto/api/memo_service_pb";
 
 const memo = (name: string, latitude = 0, longitude = 0) => create(MemoSchema, { name, location: { latitude, longitude } });
 

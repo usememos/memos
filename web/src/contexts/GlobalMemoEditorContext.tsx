@@ -1,9 +1,8 @@
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
-import { type ComponentType, createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { getSidebarRouteKind } from "@/components/AppSidebar/routes";
-import { loadMemoEditor } from "@/components/MemoEditor/loader";
-import type { MemoEditorProps } from "@/components/MemoEditor/types";
+import { MemoEditor, preloadMemoEditing } from "@/components/MemoEditor";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
 import { useAppSidebar } from "@/contexts/AppSidebarContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -11,7 +10,6 @@ import { useSpaceContext } from "@/contexts/SpaceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { useMemoSuggestions } from "@/hooks/useMemoSuggestions";
-import { spaceScopedCacheKey } from "@/lib/resource-names";
 import { useTranslate } from "@/utils/i18n";
 
 interface GlobalMemoEditorContextValue {
@@ -55,12 +53,10 @@ export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) 
   // signing out closes the composer in the same render and a different user signing
   // in cannot resurrect it, and pinned to the Space that was selected at that moment.
   const [opened, setOpened] = useState<{ user: string; space?: string }>();
-  const [EditorComponent, setEditorComponent] = useState<ComponentType<MemoEditorProps>>();
   // Only ever read from event handlers, so a ref keeps each save from
   // re-rendering the provider and the whole editor tree it hosts.
   const isSavingRef = useRef(false);
   const returnFocusRef = useRef<HTMLElement | null>(null);
-  const openRequestVersionRef = useRef(0);
 
   useEffect(() => {
     if (
@@ -83,7 +79,6 @@ export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) 
   }, []);
 
   const closeEditor = useCallback(() => {
-    openRequestVersionRef.current += 1;
     isSavingRef.current = false;
     setOpened(undefined);
   }, []);
@@ -106,18 +101,13 @@ export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) 
     setMobileOpen(false);
     setQuickFindOpen(false);
 
-    const requestVersion = ++openRequestVersionRef.current;
     isSavingRef.current = false;
     const activeElement = document.activeElement;
     returnFocusRef.current = activeElement instanceof HTMLElement && activeElement !== document.body ? activeElement : null;
 
-    void loadMemoEditor()
-      .then(({ default: MemoEditor }) => {
-        if (openRequestVersionRef.current !== requestVersion) return;
-        setEditorComponent(() => MemoEditor);
-        setOpened({ user: currentUserName, space: selectedSpaceName });
-      })
-      .catch(() => undefined);
+    // The dialog opens at once; the editor fills it as soon as its code is here.
+    preloadMemoEditing();
+    setOpened({ user: currentUserName, space: selectedSpaceName });
   }, [canOpen, selectedSpaceName, currentUserName, setMobileOpen, setQuickFindOpen]);
 
   useEffect(() => {
@@ -158,7 +148,7 @@ export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) 
           }
         }}
       >
-        {EditorComponent && (
+        {editorIsOpen && (
           <DialogPrimitive.Portal>
             <DialogPrimitive.Backdrop className="fixed inset-0 z-overlay bg-transparent" />
             <DialogPrimitive.Popup
@@ -170,10 +160,9 @@ export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) 
               <VisuallyHidden>
                 <DialogPrimitive.Title>{t("editor.new-memo")}</DialogPrimitive.Title>
               </VisuallyHidden>
-              <EditorComponent
+              <MemoEditor
                 autoFocus
-                cacheKey={spaceScopedCacheKey("global-memo-editor", opened?.space)}
-                defaultSpace={opened?.space}
+                draft={{ scope: "global", space: opened?.space }}
                 suggestions={suggestions}
                 placeholder={t("editor.any-thoughts")}
                 onConfirm={closeEditor}

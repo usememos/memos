@@ -12,7 +12,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/labstack/echo/v5"
 	sdkmcp "github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/pkg/errors"
 
@@ -20,11 +19,11 @@ import (
 )
 
 type apiAdapter struct {
-	echoServer *echo.Echo
+	handler http.Handler
 }
 
-func newAPIAdapter(echoServer *echo.Echo) *apiAdapter {
-	return &apiAdapter{echoServer: echoServer}
+func newAPIAdapter(handler http.Handler) *apiAdapter {
+	return &apiAdapter{handler: handler}
 }
 
 func (a *apiAdapter) execute(ctx context.Context, operation *openAPIOperation, arguments map[string]any, authorization string) (*sdkmcp.CallToolResult, error) {
@@ -34,7 +33,7 @@ func (a *apiAdapter) execute(ctx context.Context, operation *openAPIOperation, a
 	}
 
 	recorder := httptest.NewRecorder()
-	a.echoServer.ServeHTTP(recorder, req)
+	a.handler.ServeHTTP(recorder, req)
 
 	value, err := decodeJSONValue(recorder.Body.Bytes())
 	if err != nil {
@@ -161,12 +160,12 @@ func pathPlaceholderNames(path string) []string {
 // segments match the other arguments. Bare IDs pass through unchanged.
 func trimResourceNamePrefix(path, parameterName, value string, resolved map[string]string) string {
 	placeholder := "/{" + parameterName + "}"
-	index := strings.Index(path, placeholder)
-	if index < 0 {
+	before, _, found := strings.Cut(path, placeholder)
+	if !found {
 		return value
 	}
 
-	prefix, ok := resolvedResourceNamePrefix(path[:index], resolved)
+	prefix, ok := resolvedResourceNamePrefix(before, resolved)
 	if !ok || prefix == "" {
 		return value
 	}
@@ -184,7 +183,7 @@ func trimResourceNamePrefix(path, parameterName, value string, resolved map[stri
 // any id that is not a single bare segment, so every iteration removes one "{"
 // and the loop always terminates.
 func resolvedResourceNamePrefix(prefix string, resolved map[string]string) (string, bool) {
-	const apiPrefix = "/api/v1/"
+	const apiPrefix = "/api/"
 	prefix, ok := strings.CutPrefix(prefix, apiPrefix)
 	if !ok {
 		return "", false

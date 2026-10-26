@@ -218,6 +218,16 @@ set_current_base_url() {
   current_base_url="http://127.0.0.1:$port"
 }
 
+# api_url prints the API root of the running container. Older releases serve the
+# API under /api/v1; current releases serve it under /api.
+api_url() {
+  if curl --fail --silent --output /dev/null --max-time 2 "$current_base_url/api/instance/profile"; then
+    printf '%s/api\n' "$current_base_url"
+  else
+    printf '%s/api/v1\n' "$current_base_url"
+  fi
+}
+
 start_container() {
   local container_name="$1"
   local image="$2"
@@ -257,7 +267,7 @@ create_admin() {
   response="$(curl --fail --silent --show-error \
     --header 'Content-Type: application/json' \
     --data "$payload" \
-    "$current_base_url/api/v1/users")"
+    "$(api_url)/users")"
   jq -e '.username == "smoke-admin" and .role == "ADMIN"' <<<"$response" >/dev/null
 }
 
@@ -267,7 +277,7 @@ sign_in() {
   curl --fail --silent --show-error \
     --header 'Content-Type: application/json' \
     --data "$payload" \
-    "$current_base_url/api/v1/auth/signin" | jq -er '.accessToken'
+    "$(api_url)/auth/signin" | jq -er '.accessToken'
 }
 
 create_memo() {
@@ -280,7 +290,7 @@ create_memo() {
     --header "Authorization: Bearer $token" \
     --header 'Content-Type: application/json' \
     --data "$payload" \
-    "$current_base_url/api/v1/memos?memoId=$memo_id")"
+    "$(api_url)/memos?memoId=$memo_id")"
   jq -e --arg name "memos/$memo_id" --arg content "$content" '.name == $name and .content == $content' <<<"$response" >/dev/null
 }
 
@@ -290,7 +300,7 @@ assert_memo() {
   local content="$3"
   curl --fail --silent --show-error \
     --header "Authorization: Bearer $token" \
-    "$current_base_url/api/v1/memos/$memo_id" |
+    "$(api_url)/memos/$memo_id" |
     jq -e --arg content "$content" '.content == $content' >/dev/null
 }
 

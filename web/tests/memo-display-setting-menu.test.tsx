@@ -20,7 +20,6 @@ vi.mock("@/utils/i18n", () => ({
       "memo.layout-columns-description": `Up to ${params?.n ?? ""} columns`,
       "memo.layout-list": "List",
       "memo.layout-list-description": "A single column",
-      "memo.link-preview": "Link preview",
       "memo.newest-first": "Newest first",
       "memo.oldest-first": "Oldest first",
       "memo.order": "Order",

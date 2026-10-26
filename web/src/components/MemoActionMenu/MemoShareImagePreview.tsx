@@ -1,5 +1,5 @@
 import { forwardRef, useMemo } from "react";
-import MemoContent from "@/components/MemoContent";
+import { MemoContentView } from "@/components/MemoEditor/view/MemoContentView";
 import UserAvatar from "@/components/UserAvatar";
 import i18n from "@/i18n";
 import { cn } from "@/lib/utils";
@@ -39,7 +39,7 @@ const MemoShareImagePreview = forwardRef<HTMLDivElement, { width: number }>(({ w
 
         <div className="mt-4">
           <div className={cn("pointer-events-none", blurred && !showBlurredContent && "blur-lg")}>
-            <MemoContent
+            <MemoContentView
               content={memo.content}
               attachments={memo.attachments}
               compact={false}

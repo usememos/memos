@@ -2,21 +2,29 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, renderHook } from "@testing-library/react";
 import type { PropsWithChildren } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { useMemoSave } from "@/components/MemoEditor/hooks/useMemoSave";
+import { useMemoSave } from "@/components/MemoEditor/edit/hooks/useMemoSave";
 
 const mocks = vi.hoisted(() => ({
   dispatch: vi.fn(),
   markNewMemo: vi.fn(),
   memoSave: vi.fn(),
+  createMemo: vi.fn(),
+  createMemoComment: vi.fn(),
+  newMemoName: null as string | null,
+  timestamps: {} as { createTime?: Date; updateTime?: Date },
 }));
 
-vi.mock("@/components/MemoEditor/services", () => ({
+vi.mock("@/connect", () => ({
+  memoServiceClient: { createMemo: mocks.createMemo, createMemoComment: mocks.createMemoComment },
+}));
+
+vi.mock("@/components/MemoEditor/edit/services", () => ({
   errorService: { getErrorMessage: () => "save failed" },
   memoService: { save: mocks.memoSave },
   validationService: { canSave: () => ({ valid: true }) },
 }));
 
-vi.mock("@/components/MemoEditor/state", () => ({
+vi.mock("@/components/MemoEditor/edit/state", () => ({
   useEditorContext: () => ({
     actions: {
       reset: () => ({ type: "reset" }),
@@ -26,12 +34,12 @@ vi.mock("@/components/MemoEditor/state", () => ({
       setTimestamps: () => ({ type: "set-timestamps" }),
     },
     dispatch: mocks.dispatch,
-    getState: () => ({ ui: { justSaved: false } }),
+    getState: () => ({ ui: { justSaved: false }, timestamps: mocks.timestamps }),
   }),
 }));
 
 vi.mock("@/contexts/NewMemoContext", () => ({
-  useNewMemo: () => ({ markNewMemo: mocks.markNewMemo }),
+  useNewMemo: () => ({ newMemoName: mocks.newMemoName, markNewMemo: mocks.markNewMemo }),
 }));
 
 vi.mock("@/utils/i18n", () => ({
@@ -43,10 +51,20 @@ describe("useMemoSave", () => {
     mocks.dispatch.mockReset();
     mocks.markNewMemo.mockReset();
     mocks.memoSave.mockReset();
+    mocks.newMemoName = null;
+    mocks.timestamps = {};
+    mocks.markNewMemo.mockImplementation((value: string | null | ((current: string | null) => string | null)) => {
+      mocks.newMemoName = typeof value === "function" ? value(mocks.newMemoName) : value;
+    });
   });
 
   it("invalidates scoped attachment libraries after a memo save", async () => {
-    mocks.memoSave.mockResolvedValue({ hasChanges: true, memoName: "memos/new" });
+    // The service hands the create to the memo mutation, whose hook refreshes the caches.
+    mocks.createMemo.mockResolvedValue({ name: "memos/new" });
+    mocks.memoSave.mockImplementation(async (_state, _options, operations) => {
+      const memo = await operations.createMemo({ name: "" });
+      return { hasChanges: true, memoName: memo.name };
+    });
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     const invalidateQueries = vi.spyOn(queryClient, "invalidateQueries");
     const wrapper = ({ children }: PropsWithChildren) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
@@ -61,7 +79,11 @@ describe("useMemoSave", () => {
   });
 
   it("refreshes the parent memo total after creating a comment", async () => {
-    mocks.memoSave.mockResolvedValue({ hasChanges: true, memoName: "memos/comment" });
+    mocks.createMemoComment.mockResolvedValue({ name: "memos/comment", parent: "memos/parent" });
+    mocks.memoSave.mockImplementation(async (_state, options, operations) => {
+      const memo = await operations.createMemo({ name: "" }, options.parentMemoName);
+      return { hasChanges: true, memoName: memo.name };
+    });
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     const invalidateQueries = vi.spyOn(queryClient, "invalidateQueries");
     const wrapper = ({ children }: PropsWithChildren) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
@@ -88,6 +110,102 @@ describe("useMemoSave", () => {
     expect(savedOn).toBeGreaterThan(-1);
     expect(reset).toBeGreaterThan(savedOn);
     expect(onConfirm).toHaveBeenCalledWith("memos/existing");
+  });
+
+  it("clears the new memo hoist after editing that memo", async () => {
+    mocks.newMemoName = "memos/new";
+    mocks.memoSave.mockResolvedValue({ hasChanges: true, memoName: "memos/new" });
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const wrapper = ({ children }: PropsWithChildren) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+    const { result } = renderHook(() => useMemoSave({ memoName: "memos/new", discardDraft: vi.fn() }), { wrapper });
+
+    await act(async () => result.current());
+
+    expect(mocks.newMemoName).toBeNull();
+  });
+
+  it("preserves the new memo hoist when editing another memo", async () => {
+    mocks.newMemoName = "memos/new";
+    mocks.memoSave.mockResolvedValue({ hasChanges: true, memoName: "memos/existing" });
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const wrapper = ({ children }: PropsWithChildren) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+    const { result } = renderHook(() => useMemoSave({ memoName: "memos/existing", discardDraft: vi.fn() }), { wrapper });
+
+    await act(async () => result.current());
+
+    expect(mocks.newMemoName).toBe("memos/new");
+  });
+
+  it("preserves a newer marker created while the edit save is pending", async () => {
+    mocks.newMemoName = "memos/new";
+    let finishSave!: (value: { hasChanges: boolean; memoName: string }) => void;
+    mocks.memoSave.mockReturnValue(
+      new Promise((resolve) => {
+        finishSave = resolve;
+      }),
+    );
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const wrapper = ({ children }: PropsWithChildren) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+    const { result } = renderHook(() => useMemoSave({ memoName: "memos/new", discardDraft: vi.fn() }), { wrapper });
+
+    await act(async () => {
+      const save = result.current();
+      mocks.newMemoName = "memos/newer";
+      finishSave({ hasChanges: true, memoName: "memos/new" });
+      await save;
+    });
+
+    expect(mocks.newMemoName).toBe("memos/newer");
+  });
+
+  it("preserves the new memo hoist when the edit has no changes", async () => {
+    mocks.newMemoName = "memos/new";
+    mocks.memoSave.mockResolvedValue({ hasChanges: false, memoName: "memos/new" });
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const wrapper = ({ children }: PropsWithChildren) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+    const { result } = renderHook(() => useMemoSave({ memoName: "memos/new", discardDraft: vi.fn() }), { wrapper });
+
+    await act(async () => result.current());
+
+    expect(mocks.markNewMemo).not.toHaveBeenCalled();
+  });
+
+  it("stamps an untouched default create time with the time of saving", async () => {
+    vi.useFakeTimers({ now: new Date(2026, 9, 6, 13, 17, 40), toFake: ["Date"] });
+    try {
+      // Derived when the day was selected; the same reference stays in state across saves.
+      const defaultCreateTime = new Date(2026, 9, 1, 13, 17, 23);
+      mocks.timestamps = { createTime: defaultCreateTime, updateTime: defaultCreateTime };
+      mocks.memoSave.mockResolvedValue({ hasChanges: true, memoName: "memos/new" });
+      const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+      const wrapper = ({ children }: PropsWithChildren) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+      const { result } = renderHook(() => useMemoSave({ defaultCreateTime, discardDraft: vi.fn() }), { wrapper });
+
+      await act(async () => result.current());
+      vi.setSystemTime(new Date(2026, 9, 6, 13, 17, 55));
+      await act(async () => result.current());
+
+      const sent = mocks.memoSave.mock.calls.map(([state]) => state.timestamps.createTime as Date);
+      expect(sent[0]).toEqual(new Date(2026, 9, 1, 13, 17, 40));
+      expect(sent[1]).toEqual(new Date(2026, 9, 1, 13, 17, 55));
+      expect(defaultCreateTime).toEqual(new Date(2026, 9, 1, 13, 17, 23));
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("sends a manually edited create time unchanged", async () => {
+    const defaultCreateTime = new Date(2026, 9, 1, 13, 17, 23);
+    const edited = new Date(2026, 8, 20, 9, 30, 0);
+    mocks.timestamps = { createTime: edited, updateTime: edited };
+    mocks.memoSave.mockResolvedValue({ hasChanges: true, memoName: "memos/new" });
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const wrapper = ({ children }: PropsWithChildren) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+    const { result } = renderHook(() => useMemoSave({ defaultCreateTime, discardDraft: vi.fn() }), { wrapper });
+
+    await act(async () => result.current());
+
+    expect(mocks.memoSave.mock.calls[0][0].timestamps.createTime).toBe(edited);
   });
 
   it("does not hold the in-place composer after saving a new memo", async () => {

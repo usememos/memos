@@ -13,7 +13,7 @@ import { useSpaceContext } from "@/contexts/SpaceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { cn } from "@/lib/utils";
-import { LocationSchema } from "@/types/proto/api/v1/memo_service_pb";
+import { LocationSchema } from "@/types/proto/api/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { fitMemos, MapCanvas } from "./MapCanvas";
 import { locationKey, type MapViewport, pointLabel, readViewport, splitLabel } from "./model";
@@ -305,9 +305,9 @@ export function MapView() {
           compose={
             composeLocation && user && (!creatorUsername || creatorUsername === user.username)
               ? {
-                  cacheKey: `map-editor:${user?.name}:${selectedSpaceName ?? "all"}:${locationKey(composeLocation)}`,
+                  scope: `map:${user?.name}:${selectedSpaceName ?? "all"}:${locationKey(composeLocation)}`,
                   label: t("map.new-here"),
-                  defaults: { defaultLocation: composeLocation },
+                  defaults: { location: composeLocation },
                   onComposingChange: setComposing,
                   onSavingChange: setSaving,
                   onConfirm: (name) => void afterSave(name),

@@ -239,9 +239,6 @@ func validateAndNormalizeDeploymentInstanceSetting(setting *storepb.InstanceSett
 			return errors.New("storageSetting.s3Config is required for S3")
 		}
 		NormalizeInstanceStorageSetting(storage)
-		if storage.UploadSizeLimitMb < 0 {
-			return errors.New("storageSetting.uploadSizeLimitMb must not be negative")
-		}
 		defaultStorage := GetDefaultStorage(storage)
 		if defaultStorage != nil && defaultStorage.Type == storepb.StorageType_STORAGE_TYPE_S3 {
 			s3Config := defaultStorage.GetS3Config()
@@ -272,13 +269,8 @@ func validateAndNormalizeDeploymentInstanceSetting(setting *storepb.InstanceSett
 		if notification == nil {
 			return errors.New("notificationSetting must be populated for key NOTIFICATION")
 		}
-		if email := notification.Email; email != nil && email.Enabled {
-			if strings.TrimSpace(email.SmtpHost) == "" || email.SmtpPort <= 0 || strings.TrimSpace(email.FromEmail) == "" {
-				return errors.New("enabled notification email requires smtpHost, a positive smtpPort, and fromEmail")
-			}
-			if email.UseTls && email.UseSsl {
-				return errors.New("notification email cannot enable both useTls and useSsl")
-			}
+		if err := ValidateInstanceNotificationSetting(notification); err != nil {
+			return err
 		}
 	case storepb.InstanceSettingKey_AI:
 		if setting.GetAiSetting() == nil {
@@ -296,6 +288,14 @@ func validateAndNormalizeDeploymentInstanceSetting(setting *storepb.InstanceSett
 		case storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC:
 		default:
 			return errors.New("accessSetting.accessMode must be PRIVATE or PUBLIC")
+		}
+	case storepb.InstanceSettingKey_USAGE_LIMITS:
+		usageLimits := setting.GetUsageLimitsSetting()
+		if usageLimits == nil {
+			return errors.New("usageLimitsSetting must be populated for key USAGE_LIMITS")
+		}
+		if err := ValidateInstanceUsageLimitsSetting(usageLimits); err != nil {
+			return errors.Wrap(err, "usageLimitsSetting")
 		}
 	case storepb.InstanceSettingKey_BASIC, storepb.InstanceSettingKey_TAGS:
 		return errors.Errorf("key %s cannot be deployment configured", setting.Key)

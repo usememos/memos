@@ -11,11 +11,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/labstack/echo/v5"
 	sdkmcp "github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/stretchr/testify/require"
 
 	"github.com/usememos/memos/internal/clientip"
+	"github.com/usememos/memos/internal/httphandler"
 	"github.com/usememos/memos/internal/profile"
 	memosproto "github.com/usememos/memos/proto"
 )
@@ -46,9 +46,9 @@ func TestIsAllowedMCPOrigin(t *testing.T) {
 }
 
 func TestNewMCPServiceRegistersCuratedTools(t *testing.T) {
-	echoServer := echo.New()
+	mux := http.NewServeMux()
 
-	service, err := NewMCPService(&profile.Profile{Version: "test-version"}, echoServer)
+	service, err := NewMCPService(&profile.Profile{Version: "test-version"}, mux)
 	require.NoError(t, err)
 	require.NotNil(t, service.handler)
 	require.Len(t, service.operationsByTool, len(curatedOperationIDs))
@@ -57,13 +57,13 @@ func TestNewMCPServiceRegistersCuratedTools(t *testing.T) {
 	require.NotNil(t, operation)
 	require.Equal(t, "MemoService_ListMemos", operation.OperationID)
 	require.Equal(t, "GET", operation.Method)
-	require.Equal(t, "/api/v1/memos", operation.Path)
+	require.Equal(t, "/api/memos", operation.Path)
 }
 
 func TestNewMCPServiceUsesEmbeddedOpenAPISpec(t *testing.T) {
 	t.Chdir(t.TempDir())
 
-	service, err := NewMCPService(&profile.Profile{Version: "test-version"}, echo.New())
+	service, err := NewMCPService(&profile.Profile{Version: "test-version"}, http.NewServeMux())
 	require.NoError(t, err)
 	require.NotNil(t, service.handler)
 	require.Len(t, service.operationsByTool, len(curatedOperationIDs))
@@ -76,23 +76,23 @@ func TestEmbeddedOpenAPISpecMatchesGeneratedFile(t *testing.T) {
 }
 
 func TestMCPToolHandlerForwardsArgumentsAndAuthorization(t *testing.T) {
-	echoServer := echo.New()
-	echoServer.GET("/api/v1/memos", func(c *echo.Context) error {
-		require.Equal(t, "Bearer token", c.Request().Header.Get("Authorization"))
-		require.Equal(t, "7", c.QueryParam("pageSize"))
-		return c.JSON(http.StatusOK, map[string]any{
+	mux := http.NewServeMux()
+	mux.Handle("GET /api/memos", httphandler.Func(func(w http.ResponseWriter, r *http.Request) error {
+		require.Equal(t, "Bearer token", r.Header.Get("Authorization"))
+		require.Equal(t, "7", r.URL.Query().Get("pageSize"))
+		return httphandler.JSON(w, http.StatusOK, map[string]any{
 			"memos": []any{map[string]any{"name": "memos/test"}},
 		})
-	})
+	}))
 
 	operation := &registeredOperation{
 		Operation: &openAPIOperation{
 			Method:     "GET",
-			Path:       "/api/v1/memos",
+			Path:       "/api/memos",
 			Parameters: []openAPIParameter{{Name: "pageSize", In: "query", Schema: jsonSchema{"type": "integer"}}},
 		},
 	}
-	handler := newMCPToolHandler(newAPIAdapter(echoServer), operation)
+	handler := newMCPToolHandler(newAPIAdapter(mux), operation)
 	arguments, err := json.Marshal(map[string]any{"pageSize": 7})
 	require.NoError(t, err)
 
@@ -153,20 +153,20 @@ func TestMCPToolCallForwardsClientAddress(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			echoServer := echo.New()
+			mux := http.NewServeMux()
 			resolver, err := clientip.ParseTrustedProxies(nil)
 			require.NoError(t, err)
-			echoServer.Use(clientip.Middleware(resolver))
+			handler := clientip.Middleware(resolver)(mux)
 
 			seen := ""
-			echoServer.GET("/api/v1/memos", func(c *echo.Context) error {
-				seen = clientip.FromContext(c.Request().Context())
-				return c.JSON(http.StatusOK, map[string]any{"memos": []any{}})
-			})
-			service, err := NewMCPService(&profile.Profile{Version: "test-version"}, echoServer)
+			mux.Handle("GET /api/memos", httphandler.Func(func(w http.ResponseWriter, r *http.Request) error {
+				seen = clientip.FromContext(r.Context())
+				return httphandler.JSON(w, http.StatusOK, map[string]any{"memos": []any{}})
+			}))
+			service, err := NewMCPService(&profile.Profile{Version: "test-version"}, handler)
 			require.NoError(t, err)
-			service.RegisterRoutes(echoServer)
-			initializeMCP(t, echoServer)
+			service.RegisterRoutes(mux)
+			initializeMCP(t, handler)
 
 			payload, err := json.Marshal(map[string]any{
 				"jsonrpc": "2.0",
@@ -183,7 +183,7 @@ func TestMCPToolCallForwardsClientAddress(t *testing.T) {
 			request.Header.Set("Content-Type", "application/json")
 			request.Header.Set("Accept", "application/json, text/event-stream")
 			recorder := httptest.NewRecorder()
-			echoServer.ServeHTTP(recorder, request)
+			handler.ServeHTTP(recorder, request)
 			require.Equal(t, http.StatusOK, recorder.Code, recorder.Body.String())
 			require.Equal(t, test.expectedIP, seen)
 		})
@@ -214,7 +214,7 @@ func TestMCPToolCallBindsSpaceResourcesFromPath(t *testing.T) {
 				"invitation": "spaces/team/invitations/sam",
 			},
 			method:     http.MethodPost,
-			path:       "/api/v1/spaces/team/invitations/sam:accept",
+			path:       "/api/spaces/team/invitations/sam:accept",
 			body:       map[string]any{},
 			response:   map[string]any{"name": "spaces/team/members/sam", "role": "USER"},
 			structured: map[string]any{"name": "spaces/team/members/sam", "role": "USER"},
@@ -228,7 +228,7 @@ func TestMCPToolCallBindsSpaceResourcesFromPath(t *testing.T) {
 				"body":       map[string]any{},
 			},
 			method:     http.MethodPost,
-			path:       "/api/v1/spaces/team/invitations/sam:decline",
+			path:       "/api/spaces/team/invitations/sam:decline",
 			body:       map[string]any{},
 			response:   map[string]any{},
 			structured: map[string]any{},
@@ -242,7 +242,7 @@ func TestMCPToolCallBindsSpaceResourcesFromPath(t *testing.T) {
 				"body":   map[string]any{"role": "ADMIN"},
 			},
 			method:     http.MethodPatch,
-			path:       "/api/v1/spaces/team/members/sam",
+			path:       "/api/spaces/team/members/sam",
 			body:       map[string]any{"role": "ADMIN"},
 			response:   map[string]any{"name": "spaces/team/members/sam", "role": "ADMIN"},
 			structured: map[string]any{"name": "spaces/team/members/sam", "role": "ADMIN"},
@@ -255,7 +255,7 @@ func TestMCPToolCallBindsSpaceResourcesFromPath(t *testing.T) {
 				"body":  map[string]any{"description": "renamed"},
 			},
 			method:     http.MethodPatch,
-			path:       "/api/v1/spaces/team",
+			path:       "/api/spaces/team",
 			body:       map[string]any{"description": "renamed"},
 			response:   map[string]any{"name": "spaces/team", "title": "Team", "description": "renamed"},
 			structured: map[string]any{"name": "spaces/team", "title": "Team", "description": "renamed"},
@@ -268,7 +268,7 @@ func TestMCPToolCallBindsSpaceResourcesFromPath(t *testing.T) {
 				"body":  map[string]any{"invitee": "users/sam", "role": "USER"},
 			},
 			method:     http.MethodPost,
-			path:       "/api/v1/spaces/team/invitations",
+			path:       "/api/spaces/team/invitations",
 			body:       map[string]any{"invitee": "users/sam", "role": "USER"},
 			response:   map[string]any{"name": "spaces/team/invitations/sam"},
 			structured: map[string]any{"name": "spaces/team/invitations/sam"},
@@ -281,7 +281,7 @@ func TestMCPToolCallBindsSpaceResourcesFromPath(t *testing.T) {
 				"member": "spaces/team/members/sam",
 			},
 			method:     http.MethodDelete,
-			path:       "/api/v1/spaces/team/members/sam",
+			path:       "/api/spaces/team/members/sam",
 			response:   map[string]any{},
 			structured: map[string]any{},
 		},
@@ -289,31 +289,31 @@ func TestMCPToolCallBindsSpaceResourcesFromPath(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			echoServer := echo.New()
+			mux := http.NewServeMux()
 			routeHits := 0
-			echoServer.Any("/api/v1/spaces/*", func(c *echo.Context) error {
+			mux.Handle("/api/spaces/{rest...}", httphandler.Func(func(w http.ResponseWriter, r *http.Request) error {
 				routeHits++
-				require.Equal(t, test.method, c.Request().Method)
-				require.Equal(t, test.path, c.Request().URL.Path)
-				require.Empty(t, c.QueryParam("updateMask"))
+				require.Equal(t, test.method, r.Method)
+				require.Equal(t, test.path, r.URL.Path)
+				require.Empty(t, r.URL.Query().Get("updateMask"))
 				if test.body != nil {
 					body := map[string]any{}
-					require.NoError(t, json.NewDecoder(c.Request().Body).Decode(&body))
+					require.NoError(t, json.NewDecoder(r.Body).Decode(&body))
 					require.Equal(t, test.body, body)
 					require.NotContains(t, body, "name")
 					require.NotContains(t, body, "user")
 				} else {
-					require.Empty(t, c.Request().Header.Get("Content-Type"))
+					require.Empty(t, r.Header.Get("Content-Type"))
 				}
-				return c.JSON(http.StatusOK, test.response)
-			})
+				return httphandler.JSON(w, http.StatusOK, test.response)
+			}))
 
-			service, err := NewMCPService(&profile.Profile{Version: "test-version"}, echoServer)
+			service, err := NewMCPService(&profile.Profile{Version: "test-version"}, mux)
 			require.NoError(t, err)
-			service.RegisterRoutes(echoServer)
+			service.RegisterRoutes(mux)
 
-			initializeMCP(t, echoServer)
-			response := postMCP(t, echoServer, map[string]any{
+			initializeMCP(t, mux)
+			response := postMCP(t, mux, map[string]any{
 				"jsonrpc": "2.0",
 				"id":      2,
 				"method":  "tools/call",
@@ -333,14 +333,14 @@ func TestMCPToolCallBindsSpaceResourcesFromPath(t *testing.T) {
 }
 
 func TestMCPProtocolListsCuratedToolsOnly(t *testing.T) {
-	echoServer := echo.New()
+	mux := http.NewServeMux()
 
-	service, err := NewMCPService(&profile.Profile{Version: "test-version"}, echoServer)
+	service, err := NewMCPService(&profile.Profile{Version: "test-version"}, mux)
 	require.NoError(t, err)
-	service.RegisterRoutes(echoServer)
+	service.RegisterRoutes(mux)
 
-	initializeMCP(t, echoServer)
-	response := postMCP(t, echoServer, map[string]any{
+	initializeMCP(t, mux)
+	response := postMCP(t, mux, map[string]any{
 		"jsonrpc": "2.0",
 		"id":      2,
 		"method":  "tools/list",
@@ -369,19 +369,19 @@ func TestMCPProtocolListsCuratedToolsOnly(t *testing.T) {
 }
 
 func TestMCPToolCallReturnsObjectStructuredContent(t *testing.T) {
-	echoServer := echo.New()
-	echoServer.GET("/api/v1/memos", func(c *echo.Context) error {
-		return c.JSON(http.StatusOK, map[string]any{
+	mux := http.NewServeMux()
+	mux.Handle("GET /api/memos", httphandler.Func(func(w http.ResponseWriter, _ *http.Request) error {
+		return httphandler.JSON(w, http.StatusOK, map[string]any{
 			"memos": []any{map[string]any{"name": "memos/abc123"}},
 		})
-	})
+	}))
 
-	service, err := NewMCPService(&profile.Profile{Version: "test-version"}, echoServer)
+	service, err := NewMCPService(&profile.Profile{Version: "test-version"}, mux)
 	require.NoError(t, err)
-	service.RegisterRoutes(echoServer)
+	service.RegisterRoutes(mux)
 
-	initializeMCP(t, echoServer)
-	response := postMCP(t, echoServer, map[string]any{
+	initializeMCP(t, mux)
+	response := postMCP(t, mux, map[string]any{
 		"jsonrpc": "2.0",
 		"id":      2,
 		"method":  "tools/call",
@@ -401,28 +401,28 @@ func TestMCPToolCallReturnsObjectStructuredContent(t *testing.T) {
 }
 
 func TestMCPToolCallAllowsGatewayToInferMemoUpdateMask(t *testing.T) {
-	echoServer := echo.New()
+	mux := http.NewServeMux()
 	routeHits := 0
-	echoServer.PATCH("/api/v1/memos/:memo", func(c *echo.Context) error {
+	mux.Handle("PATCH /api/memos/{memo}", httphandler.Func(func(w http.ResponseWriter, r *http.Request) error {
 		routeHits++
-		require.Equal(t, "abc123", c.Param("memo"))
-		require.Empty(t, c.QueryParam("updateMask"))
+		require.Equal(t, "abc123", r.PathValue("memo"))
+		require.Empty(t, r.URL.Query().Get("updateMask"))
 
 		body := map[string]any{}
-		require.NoError(t, json.NewDecoder(c.Request().Body).Decode(&body))
+		require.NoError(t, json.NewDecoder(r.Body).Decode(&body))
 		require.Equal(t, map[string]any{"content": "updated"}, body)
-		return c.JSON(http.StatusOK, map[string]any{
+		return httphandler.JSON(w, http.StatusOK, map[string]any{
 			"name":    "memos/abc123",
 			"content": "updated",
 		})
-	})
+	}))
 
-	service, err := NewMCPService(&profile.Profile{Version: "test-version"}, echoServer)
+	service, err := NewMCPService(&profile.Profile{Version: "test-version"}, mux)
 	require.NoError(t, err)
-	service.RegisterRoutes(echoServer)
+	service.RegisterRoutes(mux)
 
-	initializeMCP(t, echoServer)
-	response := postMCP(t, echoServer, map[string]any{
+	initializeMCP(t, mux)
+	response := postMCP(t, mux, map[string]any{
 		"jsonrpc": "2.0",
 		"id":      2,
 		"method":  "tools/call",
@@ -446,15 +446,8 @@ func TestMCPToolCallAllowsGatewayToInferMemoUpdateMask(t *testing.T) {
 }
 
 func TestMCPToolCallBindsMemoFromPathForBodyStarOperations(t *testing.T) {
-	register := func(e *echo.Echo, method, path string, handler func(*echo.Context) error) {
-		switch method {
-		case http.MethodPatch:
-			e.PATCH(path, handler)
-		case http.MethodPost:
-			e.POST(path, handler)
-		default:
-			t.Fatalf("unsupported method %q", method)
-		}
+	register := func(mux *http.ServeMux, method, path string, handler httphandler.Func) {
+		mux.Handle(method+" "+strings.ReplaceAll(path, ":memo", "{memo}"), handler)
 	}
 
 	tests := []struct {
@@ -468,7 +461,7 @@ func TestMCPToolCallBindsMemoFromPathForBodyStarOperations(t *testing.T) {
 		{
 			name:     "set attachments",
 			method:   http.MethodPatch,
-			path:     "/api/v1/memos/:memo/attachments",
+			path:     "/api/memos/:memo/attachments",
 			toolName: "memo_set_memo_attachments",
 			body:     map[string]any{"attachments": []any{}},
 			response: map[string]any{},
@@ -476,7 +469,7 @@ func TestMCPToolCallBindsMemoFromPathForBodyStarOperations(t *testing.T) {
 		{
 			name:     "set relations",
 			method:   http.MethodPatch,
-			path:     "/api/v1/memos/:memo/relations",
+			path:     "/api/memos/:memo/relations",
 			toolName: "memo_set_memo_relations",
 			body:     map[string]any{"relations": []any{}},
 			response: map[string]any{},
@@ -484,7 +477,7 @@ func TestMCPToolCallBindsMemoFromPathForBodyStarOperations(t *testing.T) {
 		{
 			name:     "upsert reaction",
 			method:   http.MethodPost,
-			path:     "/api/v1/memos/:memo/reactions",
+			path:     "/api/memos/:memo/reactions",
 			toolName: "memo_upsert_memo_reaction",
 			body: map[string]any{
 				"reaction": map[string]any{
@@ -497,25 +490,25 @@ func TestMCPToolCallBindsMemoFromPathForBodyStarOperations(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			echoServer := echo.New()
+			mux := http.NewServeMux()
 			routeHits := 0
-			register(echoServer, test.method, test.path, func(c *echo.Context) error {
+			register(mux, test.method, test.path, func(w http.ResponseWriter, r *http.Request) error {
 				routeHits++
 				// The memo must be bound from the path, and the omitted "name"
 				// property must not reappear in the forwarded body.
-				require.Equal(t, "abc123", c.Param("memo"))
+				require.Equal(t, "abc123", r.PathValue("memo"))
 				body := map[string]any{}
-				require.NoError(t, json.NewDecoder(c.Request().Body).Decode(&body))
+				require.NoError(t, json.NewDecoder(r.Body).Decode(&body))
 				require.NotContains(t, body, "name")
-				return c.JSON(http.StatusOK, test.response)
+				return httphandler.JSON(w, http.StatusOK, test.response)
 			})
 
-			service, err := NewMCPService(&profile.Profile{Version: "test-version"}, echoServer)
+			service, err := NewMCPService(&profile.Profile{Version: "test-version"}, mux)
 			require.NoError(t, err)
-			service.RegisterRoutes(echoServer)
+			service.RegisterRoutes(mux)
 
-			initializeMCP(t, echoServer)
-			response := postMCP(t, echoServer, map[string]any{
+			initializeMCP(t, mux)
+			response := postMCP(t, mux, map[string]any{
 				"jsonrpc": "2.0",
 				"id":      2,
 				"method":  "tools/call",
@@ -537,22 +530,22 @@ func TestMCPToolCallBindsMemoFromPathForBodyStarOperations(t *testing.T) {
 }
 
 func TestMCPToolCallRejectsInvalidArguments(t *testing.T) {
-	echoServer := echo.New()
+	mux := http.NewServeMux()
 	routeHits := 0
-	echoServer.GET("/api/v1/memos", func(c *echo.Context) error {
+	mux.Handle("GET /api/memos", httphandler.Func(func(w http.ResponseWriter, _ *http.Request) error {
 		routeHits++
-		return c.JSON(http.StatusOK, map[string]any{"memos": []any{}})
-	})
-	echoServer.GET("/api/v1/memos/:memo", func(c *echo.Context) error {
+		return httphandler.JSON(w, http.StatusOK, map[string]any{"memos": []any{}})
+	}))
+	mux.Handle("GET /api/memos/{memo}", httphandler.Func(func(w http.ResponseWriter, r *http.Request) error {
 		routeHits++
-		return c.JSON(http.StatusOK, map[string]any{"name": c.Param("memo")})
-	})
+		return httphandler.JSON(w, http.StatusOK, map[string]any{"name": r.PathValue("memo")})
+	}))
 
-	service, err := NewMCPService(&profile.Profile{Version: "test-version"}, echoServer)
+	service, err := NewMCPService(&profile.Profile{Version: "test-version"}, mux)
 	require.NoError(t, err)
-	service.RegisterRoutes(echoServer)
+	service.RegisterRoutes(mux)
 
-	initializeMCP(t, echoServer)
+	initializeMCP(t, mux)
 
 	tests := []struct {
 		name      string
@@ -582,7 +575,7 @@ func TestMCPToolCallRejectsInvalidArguments(t *testing.T) {
 
 	for index, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			response := postMCP(t, echoServer, map[string]any{
+			response := postMCP(t, mux, map[string]any{
 				"jsonrpc": "2.0",
 				"id":      index + 2,
 				"method":  "tools/call",
@@ -616,10 +609,10 @@ func TestMCPToolCallRejectsInvalidArguments(t *testing.T) {
 // longer rejected by the SDK's DNS-rebinding guard, while memos' own Origin
 // allowlist still rejects disallowed origins.
 func TestMCPLoopbackBehindReverseProxy(t *testing.T) {
-	echoServer := echo.New()
-	service, err := NewMCPService(&profile.Profile{Version: "test-version"}, echoServer)
+	mux := http.NewServeMux()
+	service, err := NewMCPService(&profile.Profile{Version: "test-version"}, mux)
 	require.NoError(t, err)
-	service.RegisterRoutes(echoServer)
+	service.RegisterRoutes(mux)
 
 	initialize, err := json.Marshal(map[string]any{
 		"jsonrpc": "2.0",
@@ -647,7 +640,7 @@ func TestMCPLoopbackBehindReverseProxy(t *testing.T) {
 
 	t.Run("allows non-loopback host with no origin", func(t *testing.T) {
 		recorder := httptest.NewRecorder()
-		echoServer.ServeHTTP(recorder, newRequest())
+		mux.ServeHTTP(recorder, newRequest())
 		require.Equal(t, http.StatusOK, recorder.Code, recorder.Body.String())
 	})
 
@@ -655,14 +648,14 @@ func TestMCPLoopbackBehindReverseProxy(t *testing.T) {
 		request := newRequest()
 		request.Header.Set("Origin", "https://evil.example.com")
 		recorder := httptest.NewRecorder()
-		echoServer.ServeHTTP(recorder, request)
+		mux.ServeHTTP(recorder, request)
 		require.Equal(t, http.StatusForbidden, recorder.Code)
 	})
 }
 
-func initializeMCP(t *testing.T, echoServer *echo.Echo) {
+func initializeMCP(t *testing.T, mux http.Handler) {
 	t.Helper()
-	response := postMCP(t, echoServer, map[string]any{
+	response := postMCP(t, mux, map[string]any{
 		"jsonrpc": "2.0",
 		"id":      1,
 		"method":  "initialize",
@@ -678,7 +671,7 @@ func initializeMCP(t *testing.T, echoServer *echo.Echo) {
 	require.NotNil(t, response["result"])
 }
 
-func postMCP(t *testing.T, echoServer *echo.Echo, payload map[string]any) map[string]any {
+func postMCP(t *testing.T, mux http.Handler, payload map[string]any) map[string]any {
 	t.Helper()
 	data, err := json.Marshal(payload)
 	require.NoError(t, err)
@@ -688,7 +681,7 @@ func postMCP(t *testing.T, echoServer *echo.Echo, payload map[string]any) map[st
 	request.Header.Set("Accept", "application/json, text/event-stream")
 
 	recorder := httptest.NewRecorder()
-	echoServer.ServeHTTP(recorder, request)
+	mux.ServeHTTP(recorder, request)
 	require.Equal(t, http.StatusOK, recorder.Code, recorder.Body.String())
 
 	var response map[string]any
@@ -699,15 +692,15 @@ func postMCP(t *testing.T, echoServer *echo.Echo, payload map[string]any) map[st
 // TestMCPStatelessProtocol2026 drives the endpoint the way a 2026-07-28 client
 // does: no initialize handshake, per-request _meta, and the standard MCP headers.
 func TestMCPStatelessProtocol2026(t *testing.T) {
-	echoServer := echo.New()
+	mux := http.NewServeMux()
 	var forwardedAuthorization string
-	echoServer.GET("/api/v1/memos", func(c *echo.Context) error {
-		forwardedAuthorization = c.Request().Header.Get("Authorization")
-		return c.JSON(http.StatusOK, map[string]any{"memos": []any{}})
-	})
-	service, err := NewMCPService(&profile.Profile{Version: "test-version"}, echoServer)
+	mux.Handle("GET /api/memos", httphandler.Func(func(w http.ResponseWriter, r *http.Request) error {
+		forwardedAuthorization = r.Header.Get("Authorization")
+		return httphandler.JSON(w, http.StatusOK, map[string]any{"memos": []any{}})
+	}))
+	service, err := NewMCPService(&profile.Profile{Version: "test-version"}, mux)
 	require.NoError(t, err)
-	service.RegisterRoutes(echoServer)
+	service.RegisterRoutes(mux)
 
 	meta := map[string]any{
 		"io.modelcontextprotocol/protocolVersion":    "2026-07-28",
@@ -715,7 +708,7 @@ func TestMCPStatelessProtocol2026(t *testing.T) {
 		"io.modelcontextprotocol/clientInfo":         map[string]any{"name": "memos-test", "version": "1.0.0"},
 	}
 
-	discover := postMCPWithHeaders(t, echoServer, map[string]any{
+	discover := postMCPWithHeaders(t, mux, map[string]any{
 		"jsonrpc": "2.0",
 		"id":      1,
 		"method":  "server/discover",
@@ -731,7 +724,7 @@ func TestMCPStatelessProtocol2026(t *testing.T) {
 	require.NotContains(t, capabilities, "logging", "logging is deprecated and unused")
 	require.Positive(t, discoverResult["ttlMs"])
 
-	list := postMCPWithHeaders(t, echoServer, map[string]any{
+	list := postMCPWithHeaders(t, mux, map[string]any{
 		"jsonrpc": "2.0",
 		"id":      2,
 		"method":  "tools/list",
@@ -743,7 +736,7 @@ func TestMCPStatelessProtocol2026(t *testing.T) {
 	require.Equal(t, float64(toolCatalogTTL.Milliseconds()), listResult["ttlMs"])
 	require.Equal(t, "public", listResult["cacheScope"])
 
-	call := postMCPWithHeaders(t, echoServer, map[string]any{
+	call := postMCPWithHeaders(t, mux, map[string]any{
 		"jsonrpc": "2.0",
 		"id":      3,
 		"method":  "tools/call",
@@ -767,16 +760,16 @@ func TestMCPStatelessProtocol2026(t *testing.T) {
 // TestMCPStatelessRejectsSessionMethods confirms the stateless transport shape
 // required by 2026-07-28: no GET stream, no DELETE session teardown.
 func TestMCPStatelessRejectsSessionMethods(t *testing.T) {
-	echoServer := echo.New()
-	service, err := NewMCPService(&profile.Profile{Version: "test-version"}, echoServer)
+	mux := http.NewServeMux()
+	service, err := NewMCPService(&profile.Profile{Version: "test-version"}, mux)
 	require.NoError(t, err)
-	service.RegisterRoutes(echoServer)
+	service.RegisterRoutes(mux)
 
 	for _, method := range []string{http.MethodGet, http.MethodDelete} {
 		request := httptest.NewRequest(method, "/mcp", nil)
 		request.Header.Set("Accept", "application/json, text/event-stream")
 		recorder := httptest.NewRecorder()
-		echoServer.ServeHTTP(recorder, request)
+		mux.ServeHTTP(recorder, request)
 		require.Equal(t, http.StatusMethodNotAllowed, recorder.Code, method)
 	}
 }
@@ -784,22 +777,22 @@ func TestMCPStatelessRejectsSessionMethods(t *testing.T) {
 // TestMCPRequestBodyLimitMatchesAPI guards against the SDK's 4 MiB default
 // overriding the API-wide limit, which would break attachment uploads over MCP.
 func TestMCPRequestBodyLimitMatchesAPI(t *testing.T) {
-	echoServer := echo.New()
+	mux := http.NewServeMux()
 	var receivedBytes int
-	echoServer.POST("/api/v1/attachments", func(c *echo.Context) error {
+	mux.Handle("POST /api/attachments", httphandler.Func(func(w http.ResponseWriter, r *http.Request) error {
 		body := map[string]any{}
-		require.NoError(t, json.NewDecoder(c.Request().Body).Decode(&body))
+		require.NoError(t, json.NewDecoder(r.Body).Decode(&body))
 		content, ok := body["content"].(string)
 		require.True(t, ok)
 		receivedBytes = len(content)
-		return c.JSON(http.StatusOK, map[string]any{"name": "attachments/1"})
-	})
-	service, err := NewMCPService(&profile.Profile{Version: "test-version"}, echoServer)
+		return httphandler.JSON(w, http.StatusOK, map[string]any{"name": "attachments/1"})
+	}))
+	service, err := NewMCPService(&profile.Profile{Version: "test-version"}, mux)
 	require.NoError(t, err)
-	service.RegisterRoutes(echoServer)
+	service.RegisterRoutes(mux)
 
 	content := strings.Repeat("A", 8<<20)
-	response := postMCPWithHeaders(t, echoServer, map[string]any{
+	response := postMCPWithHeaders(t, mux, map[string]any{
 		"jsonrpc": "2.0",
 		"id":      1,
 		"method":  "tools/call",
@@ -823,11 +816,11 @@ func TestMCPRequestBodyLimitMatchesAPI(t *testing.T) {
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("Accept", "application/json, text/event-stream")
 	recorder := httptest.NewRecorder()
-	echoServer.ServeHTTP(recorder, request)
+	mux.ServeHTTP(recorder, request)
 	require.Equal(t, http.StatusRequestEntityTooLarge, recorder.Code)
 }
 
-func postMCPWithHeaders(t *testing.T, echoServer *echo.Echo, payload map[string]any, headers map[string]string) map[string]any {
+func postMCPWithHeaders(t *testing.T, mux http.Handler, payload map[string]any, headers map[string]string) map[string]any {
 	t.Helper()
 	data, err := json.Marshal(payload)
 	require.NoError(t, err)
@@ -843,7 +836,7 @@ func postMCPWithHeaders(t *testing.T, echoServer *echo.Echo, payload map[string]
 	}
 
 	recorder := httptest.NewRecorder()
-	echoServer.ServeHTTP(recorder, request)
+	mux.ServeHTTP(recorder, request)
 	require.Equal(t, http.StatusOK, recorder.Code, recorder.Body.String())
 
 	var response map[string]any

@@ -11,7 +11,7 @@ import { userServiceClient } from "@/connect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
 import { handleError } from "@/lib/error";
-import { CreatePersonalAccessTokenResponse } from "@/types/proto/api/v1/user_service_pb";
+import { CreatePersonalAccessTokenResponse } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 interface Props {

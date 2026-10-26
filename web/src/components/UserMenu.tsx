@@ -29,7 +29,8 @@ import { useNotifications, useUpdateUserGeneralSetting } from "@/hooks/useUserQu
 import { locales } from "@/i18n";
 import { cn } from "@/lib/utils";
 import { Routes } from "@/router";
-import { UserNotification_Status } from "@/types/proto/api/v1/user_service_pb";
+import { UserNotification_Status } from "@/types/proto/api/user_service_pb";
+import { buildAuthRoute } from "@/utils/auth-redirect";
 import { getLocaleDisplayName, getLocaleWithFallback, loadLocale, useTranslate } from "@/utils/i18n";
 import { getThemeWithFallback, loadTheme, THEME_OPTIONS } from "@/utils/theme";
 
@@ -67,6 +68,7 @@ const PreferenceSubmenu = ({ icon: Icon, label, value, options, onChange, classN
       sideOffset={8}
       alignOffset={-4}
       collisionAvoidance={{ fallbackAxisSide: "end" }}
+      positionMethod="fixed"
       size="sm"
       className={className}
     >
@@ -166,7 +168,7 @@ const UserMenu = ({ onClose }: { onClose: () => void }) => {
     } catch {
       // Ignore errors from localStorage operations.
     }
-    window.location.replace(Routes.AUTH);
+    window.location.replace(buildAuthRoute({ autoSignIn: false }));
   };
 
   return (

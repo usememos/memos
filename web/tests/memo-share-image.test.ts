@@ -10,8 +10,8 @@ import {
   getMemoShareRenderWidth,
 } from "@/components/MemoActionMenu/memoShareImage";
 import { buildMemoShareImagePreviewModel } from "@/components/MemoActionMenu/memoShareImagePreviewModel";
-import { AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
-import { type Memo, MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
+import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
+import { type Memo, MemoSchema } from "@/types/proto/api/memo_service_pb";
 
 vi.mock("html-to-image", () => ({
   toBlob: vi.fn(),

@@ -26,7 +26,7 @@ type Profile struct {
 	Data string
 	// DSN points to where memos stores its own data
 	DSN string
-	// Driver is the database driver: sqlite, mysql, postgres, or d1.
+	// Driver is the database driver: sqlite, mysql, or postgres.
 	Driver string
 	// Version is the current version of server
 	Version string
@@ -106,7 +106,7 @@ func (p *Profile) Validate() error {
 
 	dataDir, err := checkDataDir(p.Data)
 	if err != nil {
-		slog.Error("failed to check dsn", slog.String("data", dataDir), slog.String("error", err.Error()))
+		slog.Error("failed to check data directory", slog.String("data", p.Data), slog.String("error", err.Error()))
 		return err
 	}
 

@@ -16,7 +16,7 @@ export const SIDEBAR_NAV_LEADING_SLOT_CLASSES = "flex size-4 shrink-0 items-cent
 /**
  * Brand controls hug their content, ordinary rows fill the inset rail, and the account
  * action fills the footer shell (or becomes a rail-aligned square when collapsed).
- * The header brand is the sidebar's title, not a row: a 24px mark on the artwork rail and
+ * The header brand is the sidebar's title, not a row: a 24px-tall mark on the artwork rail and
  * a larger label, so it reads as a different kind of object from the 16px nav pills below.
  * Heights stay fixed so data cannot change a surface's padding or vertical position.
  */

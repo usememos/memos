@@ -128,7 +128,7 @@ func TestSendAsyncConcurrent(t *testing.T) {
 	g := errgroup.Group{}
 	count := 5
 
-	for i := 0; i < count; i++ {
+	for range count {
 		g.Go(func() error {
 			message := &Message{
 				To:      []string{"recipient@example.com"},

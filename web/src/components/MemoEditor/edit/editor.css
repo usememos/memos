@@ -1,0 +1,171 @@
+@reference "../../../index.css";
+
+/*
+ * Composer layout around @usememos/editor. Colors, fonts and block rhythm come
+ * from MEMO_EDITOR_THEME (lib/memo-markdown.ts); this file only sizes the
+ * editor in the composer, aligns its floating UI with the app, and styles upload widgets.
+ */
+.memo-editor-content {
+  & .memo-editor-scroller {
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+  /* Focus mode fills the frame, and so does the editable root: a click anywhere
+     below the text lands in the editor, which puts the caret at the end. */
+  &[data-focus-mode] .memo-editor-scroller {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    max-height: none;
+  }
+  &[data-focus-mode] .memo-editor-root {
+    flex: 1 0 auto;
+  }
+  & .memo-editor-root {
+    caret-color: var(--foreground);
+    outline: none;
+  }
+  & .memo-editor-root ::selection {
+    background: var(--accent);
+  }
+}
+
+/*
+ * Focus mode's toggle (useFocusMode): the frame's box moves and resizes between its
+ * place on the page and the sheet, its two looks cross-fading inside it at their
+ * own size, top-left anchored and clipped to the box, so text never stretches.
+ * The page cross-fades under it (the default root fade), which fades the backdrop in and out.
+ */
+::view-transition-group(memo-focus-mode) {
+  animation-duration: 280ms;
+  animation-timing-function: cubic-bezier(0.2, 0, 0, 1);
+  overflow: clip;
+  border-radius: var(--radius);
+}
+::view-transition-old(memo-focus-mode),
+::view-transition-new(memo-focus-mode) {
+  height: 100%;
+  object-fit: none;
+  object-position: left top;
+}
+::view-transition-old(memo-focus-mode) {
+  animation: 120ms ease-out both memo-focus-mode-fade-out;
+}
+::view-transition-new(memo-focus-mode) {
+  animation: 200ms ease-out 60ms both memo-focus-mode-fade-in;
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(memo-focus-mode),
+  ::view-transition-old(memo-focus-mode),
+  ::view-transition-new(memo-focus-mode) {
+    animation: none !important;
+  }
+}
+@keyframes memo-focus-mode-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes memo-focus-mode-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.memo-upload-anchor {
+  position: relative;
+  display: flex;
+  min-height: 2.25rem;
+  align-items: center;
+  gap: 0.375rem;
+  margin: 0.375rem 0;
+  padding-left: 1rem;
+  font-family: inherit;
+  font-size: 0.6875rem;
+}
+
+.memo-upload-anchor-rail {
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  width: 2px;
+  border-radius: 999px;
+  background: var(--primary);
+}
+
+.memo-upload-anchor-rail::after {
+  position: absolute;
+  top: 50%;
+  left: -3px;
+  width: 8px;
+  height: 8px;
+  border: 2px solid var(--card);
+  border-radius: 999px;
+  background: var(--primary);
+  content: "";
+  transform: translateY(-50%);
+}
+
+.memo-upload-anchor-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: calc(var(--radius) - 2px);
+  background: color-mix(in oklab, var(--primary) 8%, transparent);
+  padding: 0.25rem 0.5rem;
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.memo-upload-anchor[data-status="failed"] .memo-upload-anchor-badge {
+  background: color-mix(in oklab, var(--destructive) 8%, transparent);
+  color: var(--destructive);
+}
+
+.memo-upload-anchor-spinner {
+  width: 0.75rem;
+  height: 0.75rem;
+  border: 1.5px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 999px;
+  animation: spin 1s linear infinite;
+}
+
+.memo-upload-anchor-actions {
+  display: inline-flex;
+  gap: 0.25rem;
+}
+
+.memo-upload-anchor-action {
+  border-radius: calc(var(--radius) - 2px);
+  padding: 0.25rem 0.5rem;
+  color: var(--muted-foreground);
+  font-weight: 500;
+}
+
+.memo-upload-anchor-action:hover,
+.memo-upload-anchor-action:focus-visible {
+  background: var(--accent);
+  color: var(--accent-foreground);
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .memo-upload-anchor-spinner {
+    animation: none;
+  }
+}
+
+/* The editor portals its own UI outside the composer. Match the app's floating
+   surfaces here without changing document typography or package internals. */
+.mbe-ui:is(.mbe-menu, .mbe-toolbar, .mbe-image-toolbar, .mbe-link-card, .mbe-input-popover) {
+  @apply rounded-lg border-border/70 bg-popover text-popover-foreground text-ui font-normal leading-5 tracking-normal shadow-float;
+}
+
+.mbe-ui.mbe-menu {
+  @apply p-1.5;
+}
+
+.mbe-ui.mbe-tooltip {
+  @apply max-w-[min(16rem,calc(100vw-1rem))] whitespace-normal rounded-md border border-border/70 bg-popover px-2 py-1 text-xs font-normal leading-4 tracking-normal text-popover-foreground text-pretty [overflow-wrap:anywhere] shadow-md;
+}

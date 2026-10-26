@@ -41,7 +41,7 @@ import { useNotifications } from "@/hooks/useUserQueries";
 import { combineCELFilters } from "@/lib/cel-filter";
 import { cn } from "@/lib/utils";
 import { collectionNavigationPath, ROUTES } from "@/router/routes";
-import { User_Role, UserNotification_Status } from "@/types/proto/api/v1/user_service_pb";
+import { User_Role, UserNotification_Status } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import CommonSidebarContent from "./CommonSidebarContent";
 import { getSidebarRouteKind } from "./routes";
@@ -241,6 +241,7 @@ const MemoDetailSidebarContent = () => {
       parentPage={memoDetail.from}
       commentCount={memoDetail.commentCount}
       forceReadonly={memoDetail.readonly}
+      contentHidden={memoDetail.contentHidden}
       onEdit={runAndClose(memoDetail.onEdit)}
       onCommentsOpen={runAndClose(memoDetail.onCommentsOpen)}
       onCommentCreate={runAndClose(memoDetail.onCommentCreate)}

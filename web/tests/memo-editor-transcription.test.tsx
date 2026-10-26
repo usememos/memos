@@ -1,13 +1,14 @@
 import { create } from "@bufbuild/protobuf";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
-import MemoEditor from "@/components/MemoEditor";
-import { transcriptionService } from "@/components/MemoEditor/services";
-import { AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
-import { MemoSchema, Visibility } from "@/types/proto/api/v1/memo_service_pb";
+import { beforeAll, describe, expect, it, vi } from "vitest";
+import { MemoEditor, preloadMemoEditing } from "@/components/MemoEditor";
+import { transcriptionService } from "@/components/MemoEditor/edit/services";
+import { memoKeys } from "@/hooks/useMemoQueries";
+import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
+import { MemoSchema, Visibility } from "@/types/proto/api/memo_service_pb";
 
-vi.mock("@/hooks/useUserQueries", () => ({ useTagCounts: () => ({ data: {} }) }));
+vi.mock("@/hooks/useUserQueries", () => ({ useTagCounts: () => ({ data: {} }), useUsersByUsernames: () => ({ data: undefined }) }));
 vi.mock("@/hooks/useCurrentUser", () => ({ default: () => ({ name: "users/1" }) }));
 vi.mock("@/contexts/AuthContext", () => ({ useAuth: () => ({ userGeneralSetting: {} }) }));
 vi.mock("@/contexts/InstanceContext", () => ({
@@ -29,6 +30,9 @@ vi.stubGlobal(
   },
 );
 
+// The editing session loads lazily; loaded once, it renders without suspending.
+beforeAll(() => preloadMemoEditing());
+
 describe("existing memo audio transcription", () => {
   it("blocks save while transcribing, inserts into the editable draft and retains the original attachment on save", async () => {
     const attachment = create(AttachmentSchema, { name: "attachments/voice", filename: "voice.wav", type: "audio/wav" });
@@ -43,20 +47,23 @@ describe("existing memo audio transcription", () => {
     clients.updateMemo.mockImplementation(async ({ memo: update }) => create(MemoSchema, { ...memo, ...update }));
     const pending = Promise.withResolvers<string>();
     vi.spyOn(transcriptionService, "transcribeAttachment").mockReturnValue(pending.promise);
+    // The card edits a memo a query already holds; the save still fetches the server's copy to diff.
+    const client = new QueryClient();
+    client.setQueryData(memoKeys.detail(memo.name), memo);
     const { container } = render(
-      <QueryClientProvider client={new QueryClient()}>
-        <MemoEditor memo={memo} />
+      <QueryClientProvider client={client}>
+        <MemoEditor mode="edit" name={memo.name} />
       </QueryClientProvider>,
     );
-    await waitFor(() => expect(container.querySelector(".cm-content")?.textContent).toBe(memo.content));
+    await waitFor(() => expect(container.querySelector(".memo-editor-root")?.textContent).toBe(memo.content));
     fireEvent.click(screen.getByRole("button", { name: "Transcribe" }));
     expect(screen.getByRole("button", { name: "Update" })).toBeDisabled();
     await act(async () => {
       pending.resolve("Recognized meeting discussion");
       await pending.promise;
     });
-    await waitFor(() => expect(container.querySelector(".cm-content")?.textContent).toContain("Recognized meeting discussion"));
-    expect(container.querySelector(".cm-content")?.textContent).toContain(memo.content);
+    await waitFor(() => expect(container.querySelector(".memo-editor-root")?.textContent).toContain("Recognized meeting discussion"));
+    expect(container.querySelector(".memo-editor-root")?.textContent).toContain(memo.content);
     expect(screen.getByText("voice.wav")).toBeInTheDocument();
     expect(clients.updateMemo).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", { name: "Update" }));

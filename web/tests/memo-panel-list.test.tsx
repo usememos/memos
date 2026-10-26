@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { MemoPanelList } from "@/components/MemoPanel/MemoPanelList";
 import type { MemoViewProps } from "@/components/MemoView/types";
-import { MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
+import { MemoSchema } from "@/types/proto/api/memo_service_pb";
 
 const mocks = vi.hoisted(() => ({
   creatorUsername: undefined as string | undefined,
@@ -17,13 +17,13 @@ vi.mock("@/components/MemoView", () => ({
     return <p>{props.memo.name}</p>;
   },
 }));
-vi.mock("@/components/MemoContent/MentionResolutionContext", () => ({
+vi.mock("@/contexts/MentionResolutionContext", () => ({
   MentionResolutionProvider: ({ userNames, children }: { userNames: string[]; children: ReactNode }) => {
     mocks.userNames = userNames;
     return children;
   },
 }));
-vi.mock("@/components/MemoEditor", () => ({ default: () => <div data-testid="editor" /> }));
+vi.mock("@/components/MemoEditor", () => ({ MemoEditor: () => <div data-testid="editor" /> }));
 vi.mock("@/contexts/NewMemoContext", () => ({ NewMemoProvider: ({ children }: { children: ReactNode }) => children }));
 vi.mock("@/contexts/AuthContext", () => ({ useAuth: () => ({ isUserSettingsInitialized: true }) }));
 vi.mock("@/contexts/SpaceContext", () => ({ useSpaceContext: () => ({ creatorUsername: mocks.creatorUsername }) }));

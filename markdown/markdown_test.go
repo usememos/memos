@@ -128,6 +128,42 @@ func TestGenerateSnippet(t *testing.T) {
 			expected:  "quoted text",
 		},
 		{
+			name:      "blockquote after paragraph",
+			content:   "Before\n\n> quoted text\n\n- item",
+			maxLength: 100,
+			expected:  "Before quoted text item",
+		},
+		{
+			name:      "alert marker omitted",
+			content:   "Before\n\n> [!WARNING]\n> Back up first.",
+			maxLength: 100,
+			expected:  "Before Back up first.",
+		},
+		{
+			name:      "lowercase alert marker omitted",
+			content:   "> [!tip]  \n> Use a key.",
+			maxLength: 100,
+			expected:  "Use a key.",
+		},
+		{
+			name:      "marker with text stays a quote",
+			content:   "> [!NOTE] text\n> more",
+			maxLength: 100,
+			expected:  "[!NOTE] text more",
+		},
+		{
+			name:      "marker in code stays a quote",
+			content:   "> `[!NOTE]`\n> more",
+			maxLength: 100,
+			expected:  "[!NOTE] more",
+		},
+		{
+			name:      "unknown alert type stays a quote",
+			content:   "> [!FYI]\n> more",
+			maxLength: 100,
+			expected:  "[!FYI] more",
+		},
+		{
 			name:      "table cells spaced",
 			content:   "| a | b |\n|---|---|\n| 1 | 2 |",
 			maxLength: 100,
@@ -305,6 +341,39 @@ func TestExtractProperties(t *testing.T) {
 			assert.Equal(t, tt.hasTasks, props.HasTaskList, "HasTaskList")
 			assert.Equal(t, tt.hasInc, props.HasIncompleteTasks, "HasIncompleteTasks")
 			assert.Equal(t, tt.title, props.Title, "Title")
+		})
+	}
+}
+
+// TestExtractInlineImage pins HasInlineImage to Markdown image syntax, managed
+// or external, and keeps both property walks in agreement.
+func TestExtractInlineImage(t *testing.T) {
+	tests := []struct {
+		name    string
+		content string
+		want    bool
+	}{
+		{name: "plain text", content: "No pictures here", want: false},
+		{name: "link is not an image", content: "[photo](https://example.com/a.png)", want: false},
+		{name: "external image", content: "![sunset](https://example.com/sunset.jpg)", want: true},
+		{name: "managed attachment image", content: "![](/file/attachments/abc123)", want: true},
+		{name: "reference-style image", content: "![logo][l]\n\n[l]: https://example.com/logo.svg", want: true},
+		{name: "image inside a link", content: "[![badge](https://example.com/b.svg)](https://example.com)", want: true},
+		{name: "image syntax in a code span", content: "`![x](https://example.com/x.png)`", want: false},
+		{name: "image syntax in a code block", content: "```\n![x](https://example.com/x.png)\n```", want: false},
+		{name: "raw HTML img", content: `<img src="https://example.com/x.png">`, want: false},
+	}
+
+	svc := NewService()
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			props, err := svc.ExtractProperties([]byte(tt.content))
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, props.HasInlineImage, "ExtractProperties")
+
+			data, err := svc.ExtractAll([]byte(tt.content))
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, data.Property.HasInlineImage, "ExtractAll")
 		})
 	}
 }

@@ -2,6 +2,7 @@ import { Dialog as SheetPrimitive } from "@base-ui/react/dialog";
 import { XIcon } from "lucide-react";
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { buttonVariants } from "./button";
 
 const Sheet = ({ ...props }: SheetPrimitive.Root.Props) => {
   return <SheetPrimitive.Root data-slot="sheet" {...props} />;
@@ -27,7 +28,7 @@ const SheetOverlay = React.forwardRef<HTMLDivElement, SheetPrimitive.Backdrop.Pr
       ref={ref}
       data-slot="sheet-overlay"
       className={cn(
-        "fixed inset-0 z-overlay bg-overlay/50 transition-opacity duration-300 data-starting-style:opacity-0 data-ending-style:opacity-0",
+        "fixed inset-0 z-overlay bg-overlay/50 transition-opacity duration-200 data-starting-style:opacity-0 data-ending-style:opacity-0 motion-reduce:transition-none",
         className,
       )}
       {...props}
@@ -49,13 +50,15 @@ const SheetContent = React.forwardRef<
         ref={ref}
         data-slot="sheet-content"
         className={cn(
-          "bg-background fixed z-overlay flex flex-col gap-4 shadow-lg transition-transform duration-500 ease-in-out data-ending-style:duration-300",
+          "bg-popover text-popover-foreground fixed z-overlay flex flex-col gap-4 border-border/70 shadow-float transition-transform duration-200 ease-out motion-reduce:transition-none",
           side === "right" &&
-            "inset-y-0 right-0 h-full w-3/4 border-l data-starting-style:translate-x-full data-ending-style:translate-x-full sm:max-w-sm",
+            "inset-y-0 right-0 h-full w-3/4 border-l motion-safe:data-starting-style:translate-x-full motion-safe:data-ending-style:translate-x-full sm:max-w-sm",
           side === "left" &&
-            "inset-y-0 left-0 h-full w-3/4 border-r data-starting-style:-translate-x-full data-ending-style:-translate-x-full sm:max-w-sm",
-          side === "top" && "inset-x-0 top-0 h-auto border-b data-starting-style:-translate-y-full data-ending-style:-translate-y-full",
-          side === "bottom" && "inset-x-0 bottom-0 h-auto border-t data-starting-style:translate-y-full data-ending-style:translate-y-full",
+            "inset-y-0 left-0 h-full w-3/4 border-r motion-safe:data-starting-style:-translate-x-full motion-safe:data-ending-style:-translate-x-full sm:max-w-sm",
+          side === "top" &&
+            "inset-x-0 top-0 h-auto border-b motion-safe:data-starting-style:-translate-y-full motion-safe:data-ending-style:-translate-y-full",
+          side === "bottom" &&
+            "inset-x-0 bottom-0 h-auto border-t motion-safe:data-starting-style:translate-y-full motion-safe:data-ending-style:translate-y-full",
           className,
         )}
         {...props}
@@ -63,9 +66,9 @@ const SheetContent = React.forwardRef<
         {children}
         <SheetPrimitive.Close
           data-slot="sheet-close"
-          className="ring-offset-background absolute top-4 end-4 rounded-xs opacity-60 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none"
+          className={cn(buttonVariants({ variant: "quiet", size: "icon-compact" }), "absolute top-3 end-3")}
         >
-          <XIcon className="size-5" />
+          <XIcon className="size-4" />
           <span className="sr-only">Close</span>
         </SheetPrimitive.Close>
       </SheetPrimitive.Popup>
@@ -75,7 +78,7 @@ const SheetContent = React.forwardRef<
 SheetContent.displayName = "SheetContent";
 
 const SheetHeader = React.forwardRef<React.ElementRef<"div">, React.ComponentPropsWithoutRef<"div">>(({ className, ...props }, ref) => {
-  return <div ref={ref} data-slot="sheet-header" className={cn("flex flex-col gap-1.5 p-4", className)} {...props} />;
+  return <div ref={ref} data-slot="sheet-header" className={cn("flex flex-col gap-1.5 p-4 pe-12", className)} {...props} />;
 });
 SheetHeader.displayName = "SheetHeader";
 
@@ -85,7 +88,14 @@ const SheetFooter = React.forwardRef<React.ElementRef<"div">, React.ComponentPro
 SheetFooter.displayName = "SheetFooter";
 
 const SheetTitle = React.forwardRef<HTMLHeadingElement, SheetPrimitive.Title.Props>(({ className, ...props }, ref) => {
-  return <SheetPrimitive.Title ref={ref} data-slot="sheet-title" className={cn("text-foreground font-semibold", className)} {...props} />;
+  return (
+    <SheetPrimitive.Title
+      ref={ref}
+      data-slot="sheet-title"
+      className={cn("text-foreground text-base font-semibold leading-6", className)}
+      {...props}
+    />
+  );
 });
 SheetTitle.displayName = "SheetTitle";
 
@@ -94,7 +104,7 @@ const SheetDescription = React.forwardRef<HTMLParagraphElement, SheetPrimitive.D
     <SheetPrimitive.Description
       ref={ref}
       data-slot="sheet-description"
-      className={cn("text-muted-foreground text-sm", className)}
+      className={cn("text-muted-foreground text-sm leading-5", className)}
       {...props}
     />
   );

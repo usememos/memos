@@ -11,6 +11,6 @@ describe("Switch", () => {
 
     expect(root).toHaveAttribute("aria-checked", "true");
     expect(thumb).toHaveAttribute("data-checked");
-    expect(thumb).toHaveClass("data-checked:translate-x-[calc(100%-2px)]", "rtl:data-checked:-translate-x-[calc(100%-2px)]");
+    expect(thumb).toHaveClass("data-checked:translate-x-3", "rtl:data-checked:-translate-x-3");
   });
 });

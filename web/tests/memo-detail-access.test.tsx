@@ -7,7 +7,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { memoKeys } from "@/hooks/useMemoQueries";
 import MemoDetail from "@/pages/MemoDetail";
-import { type Memo, MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
+import { type Memo, MemoSchema } from "@/types/proto/api/memo_service_pb";
 
 const state = vi.hoisted(() => ({
   currentUser: undefined as { name: string } | undefined,
@@ -23,7 +23,7 @@ vi.mock("@/contexts/AppSidebarContext", () => ({ useAppSidebar: () => ({ setMemo
 vi.mock("@/components/MemoView", () => ({ default: ({ memo }: { memo: Memo }) => <article>{memo.content}</article> }));
 vi.mock("@/components/MemoView/MemoViewContext", () => ({ computeCommentAmount: () => 0 }));
 vi.mock("@/components/MemoCommentSection", () => ({ default: () => null }));
-vi.mock("@/components/MemoContent/MentionResolutionContext", () => ({
+vi.mock("@/contexts/MentionResolutionContext", () => ({
   MentionResolutionProvider: ({ children }: { children: ReactNode }) => children,
 }));
 vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
@@ -47,7 +47,7 @@ describe("memo detail access recovery", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     state.currentUser = undefined;
-    state.listMemoComments.mockResolvedValue({ memos: [], nextPageToken: "" });
+    state.listMemoComments.mockResolvedValue({ comments: [], nextPageToken: "" });
   });
 
   it.each(["fresh", "stale"])("revalidates a %s cached denial before showing a restored memo", async (freshness) => {

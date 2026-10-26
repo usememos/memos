@@ -6,8 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/labstack/echo/v5"
-
+	"github.com/usememos/memos/internal/httphandler"
 	"github.com/usememos/memos/internal/profile"
 )
 
@@ -80,19 +79,20 @@ func TestAllowedCORSOrigin(t *testing.T) {
 }
 
 func TestCORSMiddleware(t *testing.T) {
-	e := echo.New()
-	e.Use(newCORSMiddleware(&profile.Profile{InstanceURL: "https://memos.example"}))
-	e.POST("/api/v1/test", func(c *echo.Context) error {
-		return c.NoContent(http.StatusOK)
-	})
+	e := http.NewServeMux()
+	handler := newCORSMiddleware(&profile.Profile{InstanceURL: "https://memos.example"}, e)(e)
+	e.Handle("POST /api/test", httphandler.Func(func(w http.ResponseWriter, _ *http.Request) error {
+		w.WriteHeader(http.StatusOK)
+		return nil
+	}))
 
 	t.Run("trusted origin gets credentialed access", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodOptions, "/api/v1/test", nil)
+		req := httptest.NewRequest(http.MethodOptions, "/api/test", nil)
 		req.Header.Set("Origin", "https://memos.example")
 		req.Header.Set("Access-Control-Request-Method", http.MethodPost)
 		rec := httptest.NewRecorder()
 
-		e.ServeHTTP(rec, req)
+		handler.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusNoContent {
 			t.Fatalf("expected status %d, got %d", http.StatusNoContent, rec.Code)
@@ -106,12 +106,12 @@ func TestCORSMiddleware(t *testing.T) {
 	})
 
 	t.Run("arbitrary origin is reflected without credentials", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodOptions, "/api/v1/test", nil)
+		req := httptest.NewRequest(http.MethodOptions, "/api/test", nil)
 		req.Header.Set("Origin", "https://evil.example")
 		req.Header.Set("Access-Control-Request-Method", http.MethodPost)
 		rec := httptest.NewRecorder()
 
-		e.ServeHTTP(rec, req)
+		handler.ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusNoContent {
 			t.Fatalf("expected status %d, got %d", http.StatusNoContent, rec.Code)
@@ -127,13 +127,13 @@ func TestCORSMiddleware(t *testing.T) {
 	})
 
 	t.Run("arbitrary origin may send Authorization header", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodOptions, "/api/v1/test", nil)
+		req := httptest.NewRequest(http.MethodOptions, "/api/test", nil)
 		req.Header.Set("Origin", "https://app.third-party.example")
 		req.Header.Set("Access-Control-Request-Method", http.MethodPost)
 		req.Header.Set("Access-Control-Request-Headers", "Authorization")
 		rec := httptest.NewRecorder()
 
-		e.ServeHTTP(rec, req)
+		handler.ServeHTTP(rec, req)
 
 		if got := rec.Header().Get("Access-Control-Allow-Headers"); !strings.Contains(strings.ToLower(got), "authorization") {
 			t.Fatalf("expected Authorization to be allowed for a cross-origin token client, got %q", got)
@@ -141,12 +141,12 @@ func TestCORSMiddleware(t *testing.T) {
 	})
 
 	t.Run("null origin is not reflected", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodOptions, "/api/v1/test", nil)
+		req := httptest.NewRequest(http.MethodOptions, "/api/test", nil)
 		req.Header.Set("Origin", "null")
 		req.Header.Set("Access-Control-Request-Method", http.MethodPost)
 		rec := httptest.NewRecorder()
 
-		e.ServeHTTP(rec, req)
+		handler.ServeHTTP(rec, req)
 
 		if got := rec.Header().Get("Access-Control-Allow-Origin"); got != "" {
 			t.Fatalf("expected null origin not to be reflected, got %q", got)

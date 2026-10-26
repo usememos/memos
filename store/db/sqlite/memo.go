@@ -275,6 +275,17 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	return list, nil
 }
 
+// CountUserMemos counts the memos a user created, comments included, in every
+// row status and Space.
+func (d *DB) CountUserMemos(ctx context.Context, creatorID int32) (int64, error) {
+	stmt := `SELECT COUNT(*) FROM memo WHERE creator_id = ?`
+	var count int64
+	if err := d.db.QueryRowContext(ctx, stmt, creatorID).Scan(&count); err != nil {
+		return 0, errors.Wrap(err, "failed to count user memos")
+	}
+	return count, nil
+}
+
 func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
 	if update.Policy == nil {
 		return applyMemoUpdate(ctx, d.db, update)
@@ -310,6 +321,22 @@ func (d *DB) DeleteMemo(ctx context.Context, delete *store.DeleteMemo) error {
 	}
 	if err := tx.Commit(); err != nil {
 		return errors.Wrap(err, "failed to commit memo delete transaction")
+	}
+	return nil
+}
+
+// RefreshMemoDerivedPayload sets the payload's tags and property while the
+// content is unchanged; JSON_SET keeps every other payload key.
+func (d *DB) RefreshMemoDerivedPayload(ctx context.Context, refresh *store.RefreshMemoDerivedPayload) error {
+	tags, property, err := refresh.JSON()
+	if err != nil {
+		return err
+	}
+	if _, err := d.db.ExecContext(ctx,
+		"UPDATE `memo` SET `payload` = JSON_SET(COALESCE(NULLIF(`payload`, ''), '{}'), '$.tags', JSON(?), '$.property', JSON(?)) WHERE `id` = ? AND `content` = ?",
+		tags, property, refresh.ID, refresh.Content,
+	); err != nil {
+		return errors.Wrap(err, "failed to refresh memo payload")
 	}
 	return nil
 }

@@ -2,8 +2,8 @@ import { create, type MessageInitShape } from "@bufbuild/protobuf";
 import { timestampFromDate } from "@bufbuild/protobuf/wkt";
 import { describe, expect, it } from "vitest";
 import { buildCalendarMonthModel, getMemoThumbnail } from "@/components/CalendarView/dayModel";
-import { AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
-import { type Memo, MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
+import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
+import { type Memo, MemoSchema } from "@/types/proto/api/memo_service_pb";
 
 const memoAt = (hour: number, overrides: MessageInitShape<typeof MemoSchema> = {}): Memo =>
   create(MemoSchema, {
@@ -49,6 +49,12 @@ describe("calendar day snapshots", () => {
       isCode: true,
     });
     expect(day([memoAt(9, { content: "- [x] Ship release\n- [ ] Write notes" })]).excerpt?.text).toBe("Ship release\nWrite notes");
+  });
+
+  it("reads a callout without its type marker, as the memo shows it", () => {
+    expect(day([memoAt(9, { content: "> [!WARNING]\n> Back up first." })]).excerpt?.text).toBe("Back up first.");
+    expect(day([memoAt(9, { content: "> [!NOTE] inline\n> text" })]).excerpt?.text).toBe("[!NOTE] inline\ntext");
+    expect(day([memoAt(9, { content: "> `[!NOTE]`\n> text" })]).excerpt?.text).toBe("[!NOTE]\ntext");
   });
 
   it("skips empty and image-only memos when choosing text and keeps photos from distinct memos", () => {

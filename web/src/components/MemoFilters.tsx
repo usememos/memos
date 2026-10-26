@@ -7,9 +7,11 @@ import {
   CodeIcon,
   EyeIcon,
   HashIcon,
+  ImageIcon,
   LinkIcon,
   type LucideIcon,
   MapPinIcon,
+  PaperclipIcon,
   SearchIcon,
   XIcon,
 } from "lucide-react";
@@ -78,6 +80,14 @@ const FILTER_CONFIGS: Record<FilterFactor, FilterConfig> = {
   "property.hasLocation": {
     icon: MapPinIcon,
     getLabel: (_, t) => t("memo.filters.has-location"),
+  },
+  "property.hasAttachments": {
+    icon: PaperclipIcon,
+    getLabel: (_, t) => t("memo.filters.has-attachments"),
+  },
+  "property.hasImage": {
+    icon: ImageIcon,
+    getLabel: (_, t) => t("memo.filters.has-image"),
   },
 };
 
