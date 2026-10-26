@@ -102,4 +102,14 @@ describe("memo editor timestamps", () => {
     expect(request.updateMask.paths).toEqual(["content", "update_time"]);
     expect(request.memo.updateTime).toEqual(timestampFromDate(customTime));
   });
+
+  it("reads Now for a memo being written that has no time yet", () => {
+    render(
+      <EditorProvider initialEditorState={createInitialState()}>
+        <TimestampPopover />
+      </EditorProvider>,
+    );
+    expect(screen.getByText("Now")).toBeInTheDocument();
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+  });
 });

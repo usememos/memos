@@ -1,6 +1,7 @@
 import type { EditorMode, Editor as MarkdownEditorInstance } from "@usememos/editor";
 import { forwardRef, useImperativeHandle, useLayoutEffect, useMemo, useRef } from "react";
 import { useTagCounts } from "@/hooks/useUserQueries";
+import { MEMO_FOCUS_EDITOR_THEME } from "@/lib/memo-markdown";
 import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import { useTranslate } from "@/utils/i18n";
@@ -95,6 +96,7 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
           attachments={attachments}
           extensions={extensions}
           attributes={EDITOR_ATTRIBUTES}
+          theme={isFocusMode ? MEMO_FOCUS_EDITOR_THEME : undefined}
           className="memo-editor-root"
         />
       </div>

@@ -114,7 +114,7 @@ export const EditSession: React.FC<EditSessionProps> = ({
   // Auto-save content to localStorage (subscribes to the store internally).
   const { discardDraft } = useAutoSave(draftKey, isInitialized && isDraftCacheEnabled);
 
-  const { containerRef: editorContainerRef, placeholderHeight } = useFocusMode(isFocusMode);
+  const { containerRef: editorContainerRef, placeholderHeight, animateFocusMode } = useFocusMode(isFocusMode);
 
   // Live-sync the draft's createTime/updateTime to the calendar-derived prop.
   // Only applies in create mode; edit mode owns its own timestamps. Runs after
@@ -233,7 +233,7 @@ export const EditSession: React.FC<EditSessionProps> = ({
       onFocusModeExit();
       return;
     }
-    dispatch(actions.toggleFocusMode());
+    animateFocusMode(() => dispatch(actions.toggleFocusMode()));
   };
 
   const handleCancel = useCallback(() => {
@@ -342,20 +342,19 @@ export const EditSession: React.FC<EditSessionProps> = ({
           // A card that is the frame already supplies the background, border and padding; a
           // session floating over the page in focus mode always brings its own.
           (!frameless || isFocusMode) && "bg-card px-4 py-3 rounded-lg border border-border/70",
-          FOCUS_MODE_STYLES.transition,
           isFocusMode && cn(FOCUS_MODE_STYLES.container.base, FOCUS_MODE_STYLES.container.spacing),
           !isFocusMode && className,
         )}
       >
         {/* Formatting is the editor's own: its toolbar appears over selected
             text, and the slash menu and Markdown shortcuts change block types.
-            Focus mode adds the button that leaves the current frame — minimize
-            inline, close when hosted. */}
+            Focus mode always shows the memo's time ("Now" before it has one) and adds
+            the button that leaves the current frame — minimize inline, close when hosted. */}
         {(showTimestamp || isFocusMode) && (
-          <div className="flex h-6 w-full items-center">
-            {showTimestamp && <TimestampPopover />}
+          <div className={cn("flex w-full items-center", isFocusMode ? "h-10" : "h-6")}>
+            <TimestampPopover />
             {isFocusMode && (
-              <div className="ms-auto">
+              <div className="ms-auto -me-2">
                 <FocusModeExitButton action={onFocusModeExit ? "close" : "minimize"} onExit={handleToggleFocusMode} />
               </div>
             )}

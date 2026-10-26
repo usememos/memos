@@ -1,6 +1,7 @@
 import { type FC, useId, useRef, useState } from "react";
 import { MEMO_TIME_CONTROL_CLASSES } from "@/components/MemoView/constants";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import i18n from "@/i18n";
 import { useTranslate } from "@/utils/i18n";
 import { useEditorContext, useEditorSelector } from "../state";
 
@@ -63,13 +64,20 @@ const TimestampInput: FC<{
   );
 };
 
+/** "Now" in the viewer's language, the word the memo card shows for a memo written this moment. */
+function nowLabel(): string {
+  const word = new Intl.RelativeTimeFormat(i18n.language, { numeric: "auto" }).format(0, "second");
+  return word.charAt(0).toLocaleUpperCase(i18n.language) + word.slice(1);
+}
+
+/** The memo's time as a control; a memo being written that has no time yet reads "Now". */
 export const TimestampPopover: FC = () => {
   const t = useTranslate();
   const { actions, dispatch } = useEditorContext();
   const createTime = useEditorSelector((s) => s.timestamps.createTime);
   const updateTime = useEditorSelector((s) => s.timestamps.updateTime);
 
-  if (!createTime) return null;
+  if (!createTime) return <span className="shrink-0 whitespace-nowrap text-ui text-muted-foreground select-none">{nowLabel()}</span>;
 
   return (
     <Popover>

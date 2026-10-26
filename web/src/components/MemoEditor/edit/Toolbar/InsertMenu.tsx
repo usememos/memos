@@ -1,5 +1,5 @@
 import { uniqBy } from "lodash-es";
-import { ImageIcon, LinkIcon, LoaderIcon, MapPinIcon, Maximize2Icon, MicIcon, PaperclipIcon, PilcrowIcon, PlusIcon } from "lucide-react";
+import { CodeXmlIcon, ImageIcon, LinkIcon, LoaderIcon, MapPinIcon, Maximize2Icon, MicIcon, PaperclipIcon, PlusIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LinkMemoDialog, LocationDialog } from "@/components/MemoMetadata";
 import type { MapPoint } from "@/components/map/types";
@@ -161,8 +161,8 @@ const InsertMenu = (props: InsertMenuProps) => {
           {/* How the composer presents itself. Focus mode is absent when a host owns the
               editor's presentation; Markdown mode (the editor's source mode) only changes how
               the text is edited, so every composer has it. Checked while on: the text shows
-              the mode, and nothing in the editor names it. The pilcrow is the "show formatting
-              marks" glyph of word processors: this mode shows the markup. */}
+              the mode, and nothing in the editor names it. The code glyph says this mode
+              shows the markup. */}
           <DropdownMenuSeparator />
           {viewToggles && (
             <DropdownMenuItem onClick={viewToggles.onToggleFocusMode}>
@@ -171,7 +171,7 @@ const InsertMenu = (props: InsertMenuProps) => {
             </DropdownMenuItem>
           )}
           <DropdownMenuCheckboxItem checked={sourceMode.isSourceMode} onCheckedChange={sourceMode.onToggle} closeOnClick indicator="end">
-            <PilcrowIcon />
+            <CodeXmlIcon />
             {t("editor.markdown-mode")}
           </DropdownMenuCheckboxItem>
         </DropdownMenuContent>

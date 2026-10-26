@@ -266,6 +266,12 @@ export const MEMO_EDITOR_THEME: Theme = (() => {
   };
 })();
 
+/** The composer's look in focus mode: the same theme, set larger for writing at length. */
+export const MEMO_FOCUS_EDITOR_THEME: Theme = {
+  ...MEMO_EDITOR_THEME,
+  tokens: { ...MEMO_EDITOR_THEME.tokens, fontSize: 17, lineHeight: 28 },
+};
+
 /** The editor's UI strings in the user's language. */
 export const memoEditorLabels = (t: ReturnType<typeof useTranslate>): Partial<Labels> => ({
   text: t("editor.format.paragraph"),

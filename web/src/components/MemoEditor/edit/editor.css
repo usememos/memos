@@ -30,6 +30,48 @@
   }
 }
 
+/*
+ * Focus mode's toggle (useFocusMode): the frame's box moves and resizes between its
+ * place on the page and the sheet, its two looks cross-fading inside it at their
+ * own size, top-left anchored and clipped to the box, so text never stretches.
+ * The page cross-fades under it (the default root fade), which fades the backdrop in and out.
+ */
+::view-transition-group(memo-focus-mode) {
+  animation-duration: 280ms;
+  animation-timing-function: cubic-bezier(0.2, 0, 0, 1);
+  overflow: clip;
+  border-radius: var(--radius);
+}
+::view-transition-old(memo-focus-mode),
+::view-transition-new(memo-focus-mode) {
+  height: 100%;
+  object-fit: none;
+  object-position: left top;
+}
+::view-transition-old(memo-focus-mode) {
+  animation: 120ms ease-out both memo-focus-mode-fade-out;
+}
+::view-transition-new(memo-focus-mode) {
+  animation: 200ms ease-out 60ms both memo-focus-mode-fade-in;
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(memo-focus-mode),
+  ::view-transition-old(memo-focus-mode),
+  ::view-transition-new(memo-focus-mode) {
+    animation: none !important;
+  }
+}
+@keyframes memo-focus-mode-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes memo-focus-mode-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
 .memo-upload-anchor {
   position: relative;
   display: flex;
