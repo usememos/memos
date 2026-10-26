@@ -346,6 +346,17 @@ export const EditSession: React.FC<EditSessionProps> = ({
           !isFocusMode && className,
         )}
       >
+        {isSourceMode && (
+          <span
+            className={cn(
+              "pointer-events-none absolute end-0 top-0 rounded-es-lg rounded-se-lg border-s border-b border-border/70 bg-muted/40 px-1.5 py-1 select-none font-mono text-[10px] font-medium leading-3 text-muted-foreground [text-box:trim-both_cap_alphabetic]",
+              isFocusMode && "border-border py-px leading-none",
+            )}
+            aria-label={t("editor.markdown-mode")}
+          >
+            Markdown
+          </span>
+        )}
         {/* Formatting is the editor's own: its toolbar appears over selected
             text, and the slash menu and Markdown shortcuts change block types.
             Focus mode always shows the memo's time ("Now" before it has one) and adds

@@ -13,7 +13,10 @@ vi.mock("@/connect", () => ({
   attachmentServiceClient: { createAttachment: vi.fn() },
   memoServiceClient: clients,
 }));
-vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
+vi.mock("@/utils/i18n", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/utils/i18n")>()),
+  useTranslate: () => (key: string) => key,
+}));
 
 const originalCreate = new Date(2020, 0, 1, 10, 20, 30);
 const originalUpdate = new Date(2020, 0, 2, 11, 22, 33);

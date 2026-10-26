@@ -160,9 +160,8 @@ const InsertMenu = (props: InsertMenuProps) => {
           ))}
           {/* How the composer presents itself. Focus mode is absent when a host owns the
               editor's presentation; Markdown mode (the editor's source mode) only changes how
-              the text is edited, so every composer has it. Checked while on: the text shows
-              the mode, and nothing in the editor names it. The code glyph says this mode
-              shows the markup. */}
+              the text is edited, so every composer has it. Checked while on, with a corner
+              label in the composer. The code glyph says this mode shows the markup. */}
           <DropdownMenuSeparator />
           {viewToggles && (
             <DropdownMenuItem onClick={viewToggles.onToggleFocusMode}>

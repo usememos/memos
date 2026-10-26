@@ -60,23 +60,24 @@ afterEach(() => {
 });
 
 describe("MemoEditor source mode", () => {
-  it("switches from the ＋ menu and back, and nothing in the editor names the mode", () => {
+  it("shows the Markdown label only while source mode is on", () => {
     const { container } = mount();
     expect(sourceText(container)).toBeNull();
+    expect(screen.queryByText("Markdown", { exact: true })).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "common.add" }));
     fireEvent.click(screen.getByRole("menuitemcheckbox", { name: "editor.markdown-mode" }));
 
     expect(sourceText(container)).not.toBeNull();
     expect(localStorage.getItem(MODE_KEY)).toBe(JSON.stringify("source"));
-    // The text shows the mode; the composer adds no tag or indicator for it.
-    expect(screen.queryByRole("button", { name: "editor.source" })).not.toBeInTheDocument();
+    expect(screen.getByText("Markdown", { exact: true })).toHaveAttribute("aria-label", "editor.markdown-mode");
     expect(container.querySelector(".memo-editor-content")).toHaveAttribute("data-source-mode");
 
     fireEvent.click(screen.getByRole("button", { name: "common.add" }));
     fireEvent.click(screen.getByRole("menuitemcheckbox", { name: "editor.markdown-mode" }));
 
     expect(sourceText(container)).toBeNull();
+    expect(screen.queryByText("Markdown", { exact: true })).not.toBeInTheDocument();
     expect(localStorage.getItem(MODE_KEY)).toBe(JSON.stringify("rich"));
   });
 
@@ -85,6 +86,7 @@ describe("MemoEditor source mode", () => {
     const { container } = mount();
 
     expect(sourceText(container)).not.toBeNull();
+    expect(screen.getByText("Markdown", { exact: true })).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "common.add" }));
     expect(screen.getByRole("menuitemcheckbox", { name: "editor.markdown-mode" })).toHaveAttribute("aria-checked", "true");
   });
