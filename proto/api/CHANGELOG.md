@@ -11,9 +11,6 @@ Add entries under a `## Unreleased` heading. After the release ships, rename it 
 
 ### Breaking
 
-- `MemoRelatedSetting.enable_double_click_edit` is removed; double-click editing is now a per-browser preference in
-  the web client and is no longer an instance setting. `MemoRelatedSetting.reactions` moves to field number 1. A
-  deployment config file that still sets `enableDoubleClickEdit` is rejected.
 - `MemoService.ListShortcuts`: removed. Use `UserService.ListMemoViews`.
 
 ### Deprecated
@@ -29,14 +26,15 @@ Add entries under a `## Unreleased` heading. After the release ships, rename it 
   an administrator password reset. Pre-upgrade access tokens are also rejected; clients must refresh them or sign in
   again. The browser session that changes its own password can still refresh; other refresh sessions are revoked.
 - Usage limits replace the instance-wide upload size and memo content caps. `StorageSetting.upload_size_limit_mb`
-  and `MemoRelatedSetting.content_length_limit` are removed and old values are not migrated; `MemoRelatedSetting`
-  fields are now `enable_double_click_edit = 1` and `reactions = 2`. The limits are the `USAGE_LIMITS` instance
-  setting, `instance/settings/USAGE_LIMITS`, an ordered list of entries read and replaced whole through
-  `GetInstanceSetting` and `UpdateInstanceSetting`; the first entry naming a user applies, the last entry applies to
-  all users. The `usageLimits/{usage_limit}` resource and its five RPCs do not exist. `UserUsage` returns the limit
-  set in effect as `limits` plus `limit_index`. Exceeding a limit returns `RESOURCE_EXHAUSTED` with reason
+  and `MemoRelatedSetting.content_length_limit` are removed and old values are not migrated. The limits are the
+  `USAGE_LIMITS` instance setting, `instance/settings/USAGE_LIMITS`, an ordered list of entries read and replaced whole
+  through `GetInstanceSetting` and `UpdateInstanceSetting`; the first entry naming a user applies, the last entry
+  applies to all users. The `usageLimits/{usage_limit}` resource and its five RPCs do not exist. `UserUsage` returns
+  the limit set in effect as `limits` plus `limit_index`. Exceeding a limit returns `RESOURCE_EXHAUSTED` with reason
   `QUOTA_EXCEEDED` and metadata `metric`, `limit`, and `usage`.
-
+- `MemoRelatedSetting.enable_double_click_edit` is removed; double-click editing is now a per-browser preference in
+  the web client and is no longer an instance setting. `MemoRelatedSetting` keeps the single field `reactions = 1`. A
+  deployment config file that still sets `enableDoubleClickEdit` is rejected.
 - The API no longer carries a `v1` version marker. Every client must update its paths:
   - REST routes move from `/api/v1/...` to `/api/...` (for example `GET /api/memos`). Server-sent events move from
     `/api/v1/sse` to `/api/sse`.
