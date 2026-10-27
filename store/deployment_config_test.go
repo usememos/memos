@@ -207,6 +207,55 @@ func TestLoadDeploymentConfigurationAcceptsRegularFileSymlink(t *testing.T) {
 	assert.True(t, stores.IsIdentityProviderDeploymentConfigured("primary-sso"))
 }
 
+func TestLoadDeploymentConfigurationAcceptsShortAndPrefixedStorageTypes(t *testing.T) {
+	ctx := context.Background()
+	storageJSON := func(typeValue string) string {
+		return `{
+  "key": "STORAGE",
+  "storageSetting": {
+    "filepathTemplate": "assets/{timestamp}_{uuid}_{filename}",
+    "uploadSizeLimitMb": "30",
+    "defaultStorageId": "team-assets",
+    "storages": [
+      {
+        "id": "team-assets",
+        "name": "Team assets",
+        "type": "` + typeValue + `",
+        "s3Config": {
+          "accessKeyId": "access-key",
+          "accessKeySecret": "secret-key",
+          "endpoint": "https://s3.example.local",
+          "region": "us-east-1",
+          "bucket": "memos-assets",
+          "usePathStyle": false,
+          "insecureSkipTlsVerify": false
+        }
+      }
+    ]
+  }
+}`
+	}
+
+	for _, typeValue := range []string{"S3", "STORAGE_TYPE_S3"} {
+		t.Run(typeValue, func(t *testing.T) {
+			stores := newDeploymentConfigurationTestStore(t)
+			dir := t.TempDir()
+			require.NoError(t, os.WriteFile(filepath.Join(dir, "memos-instance-setting-storage.json"), []byte(storageJSON(typeValue)), 0600))
+			require.NoError(t, stores.LoadDeploymentConfigurationDir(ctx, dir))
+
+			assert.True(t, stores.IsInstanceSettingDeploymentConfigured(storepb.InstanceSettingKey_STORAGE))
+			setting, err := stores.GetInstanceStorageSetting(ctx)
+			require.NoError(t, err)
+			require.NotNil(t, setting)
+			assert.Equal(t, "team-assets", setting.DefaultStorageId)
+			require.Len(t, setting.Storages, 1)
+			assert.Equal(t, storepb.StorageType_STORAGE_TYPE_S3, setting.Storages[0].Type)
+			require.NotNil(t, setting.Storages[0].GetS3Config())
+			assert.Equal(t, "memos-assets", setting.Storages[0].GetS3Config().Bucket)
+		})
+	}
+}
+
 func TestLoadDeploymentConfigurationSupportsEveryProvisionableSettingGroup(t *testing.T) {
 	ctx := context.Background()
 	stores := newDeploymentConfigurationTestStore(t)

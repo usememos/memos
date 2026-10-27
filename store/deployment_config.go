@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"encoding/json"
 	"io"
 	"log/slog"
 	"net/url"
@@ -32,6 +33,14 @@ var (
 	idpDeploymentFilenameMatcher             = regexp.MustCompile(`^memos-idp-[a-z0-9]+(?:-[a-z0-9]+)*\.json$`)
 	instanceSettingDeploymentFilenameMatcher = regexp.MustCompile(`^memos-instance-setting-[a-z0-9]+(?:-[a-z0-9]+)*\.json$`)
 	protoJSONUnknownFieldMatcher             = regexp.MustCompile(`unknown field "([^"]+)"`)
+	// shortStorageTypeAliases maps public-API / docs spellings onto the store
+	// StorageType enum names required by protojson. Package-level enum name
+	// collisions prevent declaring these as protobuf aliases.
+	shortStorageTypeAliases = map[string]string{
+		"DATABASE": "STORAGE_TYPE_DATABASE",
+		"LOCAL":    "STORAGE_TYPE_LOCAL",
+		"S3":       "STORAGE_TYPE_S3",
+	}
 )
 
 // LoadDeploymentConfiguration loads the default runtime deployment configuration.
@@ -146,6 +155,9 @@ func readDeploymentProtoJSON(path string, message proto.Message) error {
 	if len(content) > maxDeploymentConfigurationSize {
 		return errors.Errorf("file exceeds %d bytes", maxDeploymentConfigurationSize)
 	}
+	if _, ok := message.(*storepb.InstanceSetting); ok {
+		content = normalizeStorageTypeAliasesInInstanceSettingJSON(content)
+	}
 	if err := (protojson.UnmarshalOptions{DiscardUnknown: false}).Unmarshal(content, message); err != nil {
 		if matches := protoJSONUnknownFieldMatcher.FindStringSubmatch(err.Error()); len(matches) == 2 {
 			return errors.Errorf("failed to decode protobuf JSON: unknown field %q", matches[1])
@@ -153,6 +165,50 @@ func readDeploymentProtoJSON(path string, message proto.Message) error {
 		return errors.New("failed to decode protobuf JSON; verify field names, value types, and JSON syntax")
 	}
 	return nil
+}
+
+// normalizeStorageTypeAliasesInInstanceSettingJSON rewrites storages[].type
+// values from the short docs/API spellings (S3, LOCAL, DATABASE) to the store
+// enum names protojson requires. Invalid JSON is returned unchanged so
+// protojson can report the decode error.
+func normalizeStorageTypeAliasesInInstanceSettingJSON(content []byte) []byte {
+	var root map[string]any
+	if err := json.Unmarshal(content, &root); err != nil {
+		return content
+	}
+	storageSetting, ok := root["storageSetting"].(map[string]any)
+	if !ok {
+		return content
+	}
+	storages, ok := storageSetting["storages"].([]any)
+	if !ok {
+		return content
+	}
+	changed := false
+	for _, item := range storages {
+		storage, ok := item.(map[string]any)
+		if !ok {
+			continue
+		}
+		typeValue, ok := storage["type"].(string)
+		if !ok {
+			continue
+		}
+		normalized, ok := shortStorageTypeAliases[typeValue]
+		if !ok {
+			continue
+		}
+		storage["type"] = normalized
+		changed = true
+	}
+	if !changed {
+		return content
+	}
+	rewritten, err := json.Marshal(root)
+	if err != nil {
+		return content
+	}
+	return rewritten
 }
 
 func validateDeploymentIdentityProvider(provider *storepb.IdentityProvider) error {
