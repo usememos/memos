@@ -56,10 +56,15 @@ type Driver struct {
 }
 
 // NewDriver creates an S3 storage driver from the supplied configuration.
+// Without an access key ID it authenticates with the default AWS credential
+// chain: environment variables, shared config files, web identity, and
+// container or instance roles.
 func NewDriver(ctx context.Context, s3Config *storepb.StorageS3Config) (*Driver, error) {
 	loadOptions := []func(*config.LoadOptions) error{
-		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(s3Config.AccessKeyId, s3Config.AccessKeySecret, "")),
 		config.WithRegion(s3Config.Region),
+	}
+	if s3Config.AccessKeyId != "" {
+		loadOptions = append(loadOptions, config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(s3Config.AccessKeyId, s3Config.AccessKeySecret, "")))
 	}
 	if s3Config.InsecureSkipTlsVerify {
 		// Skip TLS certificate verification for endpoints using self-signed certificates.
