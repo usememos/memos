@@ -152,7 +152,9 @@ Black-box service tests live in `server/api/test/`, unit tests next to the code.
 - Docker excludes `.git`; pass `--build-arg VERSION="$(bash scripts/release_version.sh development-version)"` and
   `--build-arg COMMIT="$(git rev-parse HEAD)"` when building locally (build frontend assets first).
 
-- Backend CI: Go 1.27.2, `go mod tidy -go=1.27.2`, `go fix -diff ./...`, golangci-lint v2.14.0 (including goimports), test groups
+- Workflows install toolchains through `.github/actions/setup-go` (Go version from `go.mod`) and `.github/actions/setup-web`
+  (pnpm from `web/package.json`, Node 24, `pnpm install`); change versions there, not per workflow.
+- Backend CI: Go 1.27.2, `go mod tidy`, `go fix -diff ./...`, golangci-lint v2.14.0 (including goimports), test groups
   `store`, `server`, `internal`, `other` (`cmd`, `core`, `markdown`, `filter`, `provider`, `proto`).
 - Frontend CI: Node 24, pnpm 11.0.1, `pnpm lint`, `pnpm test`, `pnpm build`.
 - Proto CI: `buf lint` and `buf format` check.

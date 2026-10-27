@@ -10,14 +10,12 @@ on:
       - "go.sum"
       - "**.go"
       - ".golangci.yaml"
+      - ".github/actions/setup-go/**"
       - ".github/workflows/backend-tests.yml"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-
-env:
-  GO_VERSION: "1.27.2"
 
 jobs:
   static-checks:
@@ -26,17 +24,13 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
-      
+
       - name: Setup Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: ${{ env.GO_VERSION }}
-          cache: true
-          cache-dependency-path: go.sum
+        uses: ./.github/actions/setup-go
 
       - name: Verify go.mod is tidy
         run: |
-          go mod tidy -go=${{ env.GO_VERSION }}
+          go mod tidy
           git diff --exit-code
 
       - name: Verify go fix
@@ -58,13 +52,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
-      
+
       - name: Setup Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: ${{ env.GO_VERSION }}
-          cache: true
-          cache-dependency-path: go.sum
+        uses: ./.github/actions/setup-go
 
       - name: Run tests
         run: |
