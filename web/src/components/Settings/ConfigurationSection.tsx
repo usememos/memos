@@ -1,6 +1,6 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { useConfigurationStatus } from "@/hooks/useConfigurationQueries";
-import type { ConfigurationStatus_ManagedResource } from "@/types/proto/api/configuration_service_pb";
+import type { ConfigurationStatus_ManagedResource } from "@/types/proto/api/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import InfoChip from "./InfoChip";
 import SettingSection from "./SettingSection";

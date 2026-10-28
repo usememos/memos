@@ -2,8 +2,7 @@ import { create } from "@bufbuild/protobuf";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import InstanceSection from "@/components/Settings/InstanceSection";
-import { type ConfigurationStatus, ConfigurationStatusSchema } from "@/types/proto/api/configuration_service_pb";
-import { InstanceAccessMode } from "@/types/proto/api/instance_service_pb";
+import { type ConfigurationStatus, ConfigurationStatusSchema, InstanceAccessMode } from "@/types/proto/api/instance_service_pb";
 
 const instance = vi.hoisted(() => ({
   accessSetting: { accessMode: 1 },

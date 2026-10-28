@@ -1,7 +1,7 @@
 import { create } from "@bufbuild/protobuf";
 import { describe, expect, it } from "vitest";
 import { findManagedResource, isFieldManaged } from "@/hooks/useConfigurationQueries";
-import { ConfigurationStatus_ManagedResourceSchema, ConfigurationStatusSchema } from "@/types/proto/api/configuration_service_pb";
+import { ConfigurationStatus_ManagedResourceSchema, ConfigurationStatusSchema } from "@/types/proto/api/instance_service_pb";
 
 describe("isFieldManaged", () => {
   const general = create(ConfigurationStatus_ManagedResourceSchema, {

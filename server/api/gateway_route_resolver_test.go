@@ -241,7 +241,6 @@ func TestOpenAPIPathsReachTheirGatewayMethods(t *testing.T) {
 	require.NoError(t, apipb.RegisterAttachmentServiceHandlerServer(ctx, mux, apipb.UnimplementedAttachmentServiceServer{}))
 	require.NoError(t, apipb.RegisterAIServiceHandlerServer(ctx, mux, apipb.UnimplementedAIServiceServer{}))
 	require.NoError(t, apipb.RegisterIdentityProviderServiceHandlerServer(ctx, mux, apipb.UnimplementedIdentityProviderServiceServer{}))
-	require.NoError(t, apipb.RegisterConfigurationServiceHandlerServer(ctx, mux, apipb.UnimplementedConfigurationServiceServer{}))
 
 	var spec struct {
 		Paths map[string]map[string]struct {

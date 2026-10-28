@@ -64,6 +64,14 @@ func (s *ConnectServiceHandler) GetInstanceStats(ctx context.Context, req *conne
 	return connect.NewResponse(resp), nil
 }
 
+func (s *ConnectServiceHandler) GetConfigurationStatus(ctx context.Context, req *connect.Request[apipb.GetConfigurationStatusRequest]) (*connect.Response[apipb.ConfigurationStatus], error) {
+	resp, err := s.APIService.GetConfigurationStatus(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
 // AuthService
 //
 // Auth service methods need special handling for response headers (cookies).
@@ -767,16 +775,6 @@ func (s *ConnectServiceHandler) UpdateIdentityProvider(ctx context.Context, req 
 
 func (s *ConnectServiceHandler) DeleteIdentityProvider(ctx context.Context, req *connect.Request[apipb.DeleteIdentityProviderRequest]) (*connect.Response[emptypb.Empty], error) {
 	resp, err := s.APIService.DeleteIdentityProvider(ctx, req.Msg)
-	if err != nil {
-		return nil, convertGRPCError(err)
-	}
-	return connect.NewResponse(resp), nil
-}
-
-// ConfigurationService
-
-func (s *ConnectServiceHandler) GetConfigurationStatus(ctx context.Context, req *connect.Request[apipb.GetConfigurationStatusRequest]) (*connect.Response[apipb.ConfigurationStatus], error) {
-	resp, err := s.APIService.GetConfigurationStatus(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}

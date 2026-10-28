@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { configurationServiceClient } from "@/connect";
+import { instanceServiceClient } from "@/connect";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import type { ConfigurationStatus, ConfigurationStatus_ManagedResource } from "@/types/proto/api/configuration_service_pb";
+import type { ConfigurationStatus, ConfigurationStatus_ManagedResource } from "@/types/proto/api/instance_service_pb";
 import { isSuperUser } from "@/utils/user";
 
 export const configurationKeys = {
@@ -14,7 +14,7 @@ export function useConfigurationStatus() {
   const currentUser = useCurrentUser();
   const { data } = useQuery({
     queryKey: configurationKeys.status,
-    queryFn: () => configurationServiceClient.getConfigurationStatus({}),
+    queryFn: () => instanceServiceClient.getConfigurationStatus({}),
     staleTime: Number.POSITIVE_INFINITY,
     enabled: !!isSuperUser(currentUser),
   });

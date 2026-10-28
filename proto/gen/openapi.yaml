@@ -510,11 +510,11 @@ paths:
     /api/instance/configuration:
         get:
             tags:
-                - ConfigurationService
+                - InstanceService
             description: |-
-                GetConfigurationStatus gets the state record: the managed resources and the last apply.
-                 Administrators only. It carries resource names and field paths, never a configured value.
-            operationId: ConfigurationService_GetConfigurationStatus
+                GetConfigurationStatus gets what declarative configuration manages: the managed resources and the last apply.
+                 Admin only. It carries resource names and field paths, never a configured value.
+            operationId: InstanceService_GetConfigurationStatus
             responses:
                 "200":
                     description: OK
@@ -647,8 +647,8 @@ paths:
             tags:
                 - InstanceService
             description: |-
-                UpdateInstanceSetting replaces an instance setting. Admin only. Settings configured by the deployment cannot be
-                 updated. Empty write-only credentials keep the stored values.
+                UpdateInstanceSetting replaces an instance setting. Admin only. Fields declarative configuration manages cannot be
+                 changed. Empty write-only credentials keep the stored values.
             operationId: InstanceService_UpdateInstanceSetting
             parameters:
                 - name: instance
@@ -5921,8 +5921,6 @@ tags:
       description: AttachmentService manages files attached to memos.
     - name: AuthService
       description: 'AuthService manages sign-in sessions: it issues, refreshes, and revokes the tokens that authenticate API calls.'
-    - name: ConfigurationService
-      description: ConfigurationService reports what declarative configuration manages.
     - name: IdentityProviderService
       description: IdentityProviderService manages the external identity providers users can sign in with.
     - name: InstanceService

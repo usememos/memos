@@ -2,8 +2,13 @@ import { create } from "@bufbuild/protobuf";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import MemoRelatedSettings from "@/components/Settings/MemoRelatedSettings";
-import { type ConfigurationStatus, ConfigurationStatusSchema } from "@/types/proto/api/configuration_service_pb";
-import { type InstanceSetting, InstanceSetting_Key, InstanceSetting_MemoRelatedSettingSchema } from "@/types/proto/api/instance_service_pb";
+import {
+  type ConfigurationStatus,
+  ConfigurationStatusSchema,
+  type InstanceSetting,
+  InstanceSetting_Key,
+  InstanceSetting_MemoRelatedSettingSchema,
+} from "@/types/proto/api/instance_service_pb";
 
 const mocks = vi.hoisted(() => ({
   instance: {

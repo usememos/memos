@@ -195,7 +195,7 @@ message Removed {
 }
 ```
 
-The message lives in `proto/api/configuration_service.proto` next to `ConfigurationService`. It is a public API message: `buf breaking`,
+The message lives in `proto/api/configuration.proto` next to `Plan`. It is a public API message: `buf breaking`,
 `proto/api/CHANGELOG.md`, and the review-time compatibility check apply to it exactly as to every request and response message.
 
 Example `/etc/memos/config/instance.json`:
@@ -572,14 +572,14 @@ Each update computes what it changes after the API's own conveniences: an empty 
 so resending a form with the secret left blank changes nothing. Usage limits name users only in their API form, so their stored values
 are compared instead.
 
-### ConfigurationService
+### Configuration status
 
-Administrators see what is managed through one admin-only RPC. It is absent from `server/api/acl_config.go`, which lists only public
-methods, so it requires authentication; the handler then requires an administrator. Like `GetInstanceProfile`, it is a singleton read at
-a fixed path with an empty request:
+Administrators see what is managed through one admin-only `InstanceService` RPC. It is absent from `server/api/acl_config.go`, which
+lists only public methods, so it requires authentication; the handler then requires an administrator. Like `GetInstanceProfile`, it is a
+singleton read at a fixed path with an empty request:
 
 ```proto
-service ConfigurationService {
+service InstanceService {
   rpc GetConfigurationStatus(GetConfigurationStatusRequest) returns (ConfigurationStatus) {
     option (google.api.http) = {get: "/api/instance/configuration"};
   }
@@ -649,7 +649,7 @@ Plan: 1 to create, 1 to update, 0 to destroy; 1 to adopt.
       role: USER -> ADMIN
 ```
 
-The JSON form is the `Plan` message from `configuration_service.proto`, so a pipeline can gate on it without parsing text. The commands
+The JSON form is the `Plan` message from `configuration.proto`, so a pipeline can gate on it without parsing text. The commands
 that read the database take `--data`, `--driver`, and `--dsn` (or `MEMOS_DATA`, `MEMOS_DRIVER`, `MEMOS_DSN`) as `memos` does, and every
 command uses the same `--config-dir` default and `MEMOS_CONFIG_DIR` variable. `plan` never creates or migrates a database: it fails when
 the SQLite file does not exist or the schema is not the one this binary migrates to.
@@ -662,7 +662,7 @@ the SQLite file does not exist or the schema is not the one this binary migrates
   the API already redacts in responses; the engine and the API share that one list.
 - Substitution errors name the reference, not the content; decode errors name the field, not the value.
 - Write-only values are held in memory only for the duration of apply.
-- `ConfigurationService` is admin-only. `memos config` commands need database access and therefore the same trust as the server.
+- `GetConfigurationStatus` is admin-only. `memos config` commands need database access and therefore the same trust as the server.
 - A failed apply leaves the database and the state record exactly as they were.
 
 ## Database and migration impact
@@ -676,11 +676,12 @@ conditional setting writes.
 
 | Path | Holds |
 | --- | --- |
-| `proto/api/configuration_service.proto` | `Configuration`, `Lifecycle`, `Removed`, `Plan`, `ConfigurationStatus`, `ConfigurationService` |
+| `proto/api/configuration.proto` | `Configuration`, `Lifecycle`, `Removed`, `Plan` |
+| `proto/api/instance_service.proto` | `GetConfigurationStatus`, `ConfigurationStatus` |
 | `core/configuration/` | Reading and substituting files, decoding, the plan engine, the digest, the API guard rule |
 | `core/identityprovider/`, `core/instancesetting/`, `core/user/` | Per-resource validation shared by the API and the plan engine; API↔store conversion for identity providers and instance settings, since files are API messages and `core` cannot import `server/api` |
 | `store/configuration_state.go`, `store/transaction.go` | State record read and write; the serializable transaction helper with retries |
-| `server/api/configuration_service.go` | `GetConfigurationStatus`; guard calls in the five mutating handlers |
+| `server/api/instance_service_configuration.go` | `GetConfigurationStatus`; the guard the five mutating handlers call |
 | `cmd/memos/config.go` | The `memos config` subcommands |
 | `web/src/` | The managed label, disabled controls, and error presentation |
 
@@ -698,7 +699,7 @@ in the order an operator adopts Terraform: validate, then plan, then apply, then
 | 3 | State record message and store access; the serializable transaction helper, which the authentication mutation moves onto | No callers but tests. Independent of 1 and 2 |
 | 4 | Plan engine, text and JSON output, `memos config plan --detailed-exitcode` | Read-only against a real database; the first operational value. Needs 1 to 3 |
 | 5 | Apply, `memos config apply`, `memos config state` | CLI only, opt-in through a job; startup untouched |
-| 6 | The guard in the mutating handlers; `ConfigurationService` | Reads the state record, so it covers CLI-applied resources at once |
+| 6 | The guard in the mutating handlers; `GetConfigurationStatus` | Reads the state record, so it covers CLI-applied resources at once |
 | 7 | `--config-apply` at startup, default `startup` | Startup integration only; everything it calls already exists |
 | 8 | Web presentation: managed label, disabled controls, error display, the Configuration section | Last, after mockups |
 

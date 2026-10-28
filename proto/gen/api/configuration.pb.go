@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.12
 // 	protoc        (unknown)
-// source: api/configuration_service.proto
+// source: api/configuration.proto
 
 package api
 
@@ -10,7 +10,6 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -83,11 +82,11 @@ func (x ResourceChange_Action) String() string {
 }
 
 func (ResourceChange_Action) Descriptor() protoreflect.EnumDescriptor {
-	return file_api_configuration_service_proto_enumTypes[0].Descriptor()
+	return file_api_configuration_proto_enumTypes[0].Descriptor()
 }
 
 func (ResourceChange_Action) Type() protoreflect.EnumType {
-	return &file_api_configuration_service_proto_enumTypes[0]
+	return &file_api_configuration_proto_enumTypes[0]
 }
 
 func (x ResourceChange_Action) Number() protoreflect.EnumNumber {
@@ -96,135 +95,7 @@ func (x ResourceChange_Action) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ResourceChange_Action.Descriptor instead.
 func (ResourceChange_Action) EnumDescriptor() ([]byte, []int) {
-	return file_api_configuration_service_proto_rawDescGZIP(), []int{6, 0}
-}
-
-// Request message for ConfigurationService.GetConfigurationStatus.
-type GetConfigurationStatusRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *GetConfigurationStatusRequest) Reset() {
-	*x = GetConfigurationStatusRequest{}
-	mi := &file_api_configuration_service_proto_msgTypes[0]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *GetConfigurationStatusRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*GetConfigurationStatusRequest) ProtoMessage() {}
-
-func (x *GetConfigurationStatusRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_configuration_service_proto_msgTypes[0]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use GetConfigurationStatusRequest.ProtoReflect.Descriptor instead.
-func (*GetConfigurationStatusRequest) Descriptor() ([]byte, []int) {
-	return file_api_configuration_service_proto_rawDescGZIP(), []int{0}
-}
-
-// ConfigurationStatus is what declarative configuration manages on the instance.
-type ConfigurationStatus struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// The state record serial; zero before any apply has changed something.
-	Serial int64 `protobuf:"varint,1,opt,name=serial,proto3" json:"serial,omitempty"`
-	// Identifies the applied configuration, with sensitive values masked before hashing.
-	ConfigDigest string `protobuf:"bytes,2,opt,name=config_digest,json=configDigest,proto3" json:"config_digest,omitempty"`
-	// The apply path ("cli" or "startup") and the host of the last apply.
-	AppliedBy string `protobuf:"bytes,3,opt,name=applied_by,json=appliedBy,proto3" json:"applied_by,omitempty"`
-	// The Memos version of the last apply.
-	Version string `protobuf:"bytes,4,opt,name=version,proto3" json:"version,omitempty"`
-	// The resources the configuration manages.
-	ManagedResources []*ConfigurationStatus_ManagedResource `protobuf:"bytes,5,rep,name=managed_resources,json=managedResources,proto3" json:"managed_resources,omitempty"`
-	// When the last apply that changed something ran.
-	ApplyTime     *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=apply_time,json=applyTime,proto3" json:"apply_time,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ConfigurationStatus) Reset() {
-	*x = ConfigurationStatus{}
-	mi := &file_api_configuration_service_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ConfigurationStatus) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ConfigurationStatus) ProtoMessage() {}
-
-func (x *ConfigurationStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_api_configuration_service_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ConfigurationStatus.ProtoReflect.Descriptor instead.
-func (*ConfigurationStatus) Descriptor() ([]byte, []int) {
-	return file_api_configuration_service_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *ConfigurationStatus) GetSerial() int64 {
-	if x != nil {
-		return x.Serial
-	}
-	return 0
-}
-
-func (x *ConfigurationStatus) GetConfigDigest() string {
-	if x != nil {
-		return x.ConfigDigest
-	}
-	return ""
-}
-
-func (x *ConfigurationStatus) GetAppliedBy() string {
-	if x != nil {
-		return x.AppliedBy
-	}
-	return ""
-}
-
-func (x *ConfigurationStatus) GetVersion() string {
-	if x != nil {
-		return x.Version
-	}
-	return ""
-}
-
-func (x *ConfigurationStatus) GetManagedResources() []*ConfigurationStatus_ManagedResource {
-	if x != nil {
-		return x.ManagedResources
-	}
-	return nil
-}
-
-func (x *ConfigurationStatus) GetApplyTime() *timestamppb.Timestamp {
-	if x != nil {
-		return x.ApplyTime
-	}
-	return nil
+	return file_api_configuration_proto_rawDescGZIP(), []int{4, 0}
 }
 
 // Configuration is one declarative configuration document. Every file in the
@@ -248,7 +119,7 @@ type Configuration struct {
 
 func (x *Configuration) Reset() {
 	*x = Configuration{}
-	mi := &file_api_configuration_service_proto_msgTypes[2]
+	mi := &file_api_configuration_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -260,7 +131,7 @@ func (x *Configuration) String() string {
 func (*Configuration) ProtoMessage() {}
 
 func (x *Configuration) ProtoReflect() protoreflect.Message {
-	mi := &file_api_configuration_service_proto_msgTypes[2]
+	mi := &file_api_configuration_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -273,7 +144,7 @@ func (x *Configuration) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Configuration.ProtoReflect.Descriptor instead.
 func (*Configuration) Descriptor() ([]byte, []int) {
-	return file_api_configuration_service_proto_rawDescGZIP(), []int{2}
+	return file_api_configuration_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Configuration) GetIdentityProviders() []*IdentityProvider {
@@ -330,7 +201,7 @@ type Lifecycle struct {
 
 func (x *Lifecycle) Reset() {
 	*x = Lifecycle{}
-	mi := &file_api_configuration_service_proto_msgTypes[3]
+	mi := &file_api_configuration_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -342,7 +213,7 @@ func (x *Lifecycle) String() string {
 func (*Lifecycle) ProtoMessage() {}
 
 func (x *Lifecycle) ProtoReflect() protoreflect.Message {
-	mi := &file_api_configuration_service_proto_msgTypes[3]
+	mi := &file_api_configuration_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -355,7 +226,7 @@ func (x *Lifecycle) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Lifecycle.ProtoReflect.Descriptor instead.
 func (*Lifecycle) Descriptor() ([]byte, []int) {
-	return file_api_configuration_service_proto_rawDescGZIP(), []int{3}
+	return file_api_configuration_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *Lifecycle) GetResource() string {
@@ -401,7 +272,7 @@ type Removed struct {
 
 func (x *Removed) Reset() {
 	*x = Removed{}
-	mi := &file_api_configuration_service_proto_msgTypes[4]
+	mi := &file_api_configuration_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -413,7 +284,7 @@ func (x *Removed) String() string {
 func (*Removed) ProtoMessage() {}
 
 func (x *Removed) ProtoReflect() protoreflect.Message {
-	mi := &file_api_configuration_service_proto_msgTypes[4]
+	mi := &file_api_configuration_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -426,7 +297,7 @@ func (x *Removed) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Removed.ProtoReflect.Descriptor instead.
 func (*Removed) Descriptor() ([]byte, []int) {
-	return file_api_configuration_service_proto_rawDescGZIP(), []int{4}
+	return file_api_configuration_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *Removed) GetResource() string {
@@ -464,7 +335,7 @@ type Plan struct {
 
 func (x *Plan) Reset() {
 	*x = Plan{}
-	mi := &file_api_configuration_service_proto_msgTypes[5]
+	mi := &file_api_configuration_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -476,7 +347,7 @@ func (x *Plan) String() string {
 func (*Plan) ProtoMessage() {}
 
 func (x *Plan) ProtoReflect() protoreflect.Message {
-	mi := &file_api_configuration_service_proto_msgTypes[5]
+	mi := &file_api_configuration_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -489,7 +360,7 @@ func (x *Plan) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Plan.ProtoReflect.Descriptor instead.
 func (*Plan) Descriptor() ([]byte, []int) {
-	return file_api_configuration_service_proto_rawDescGZIP(), []int{5}
+	return file_api_configuration_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *Plan) GetSerial() int64 {
@@ -549,7 +420,7 @@ type ResourceChange struct {
 
 func (x *ResourceChange) Reset() {
 	*x = ResourceChange{}
-	mi := &file_api_configuration_service_proto_msgTypes[6]
+	mi := &file_api_configuration_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -561,7 +432,7 @@ func (x *ResourceChange) String() string {
 func (*ResourceChange) ProtoMessage() {}
 
 func (x *ResourceChange) ProtoReflect() protoreflect.Message {
-	mi := &file_api_configuration_service_proto_msgTypes[6]
+	mi := &file_api_configuration_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -574,7 +445,7 @@ func (x *ResourceChange) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResourceChange.ProtoReflect.Descriptor instead.
 func (*ResourceChange) Descriptor() ([]byte, []int) {
-	return file_api_configuration_service_proto_rawDescGZIP(), []int{6}
+	return file_api_configuration_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *ResourceChange) GetResource() string {
@@ -635,7 +506,7 @@ type FieldChange struct {
 
 func (x *FieldChange) Reset() {
 	*x = FieldChange{}
-	mi := &file_api_configuration_service_proto_msgTypes[7]
+	mi := &file_api_configuration_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -647,7 +518,7 @@ func (x *FieldChange) String() string {
 func (*FieldChange) ProtoMessage() {}
 
 func (x *FieldChange) ProtoReflect() protoreflect.Message {
-	mi := &file_api_configuration_service_proto_msgTypes[7]
+	mi := &file_api_configuration_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -660,7 +531,7 @@ func (x *FieldChange) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FieldChange.ProtoReflect.Descriptor instead.
 func (*FieldChange) Descriptor() ([]byte, []int) {
-	return file_api_configuration_service_proto_rawDescGZIP(), []int{7}
+	return file_api_configuration_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *FieldChange) GetPath() string {
@@ -684,100 +555,11 @@ func (x *FieldChange) GetAfter() string {
 	return ""
 }
 
-// ManagedResource is one resource the configuration manages.
-type ConfigurationStatus_ManagedResource struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// The resource name.
-	// Format: identity-providers/{idp}, instance/settings/{setting}, or users/{user}
-	Resource string `protobuf:"bytes,1,opt,name=resource,proto3" json:"resource,omitempty"`
-	// The configuration file that declares the resource.
-	Source string `protobuf:"bytes,2,opt,name=source,proto3" json:"source,omitempty"`
-	// The field paths, in JSON names, the configuration manages; "*" means the whole resource.
-	ManagedFields []string `protobuf:"bytes,3,rep,name=managed_fields,json=managedFields,proto3" json:"managed_fields,omitempty"`
-	// The managed field paths the configuration does not write after creation, so the API accepts edits to them.
-	IgnoredFields []string `protobuf:"bytes,4,rep,name=ignored_fields,json=ignoredFields,proto3" json:"ignored_fields,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
+var File_api_configuration_proto protoreflect.FileDescriptor
 
-func (x *ConfigurationStatus_ManagedResource) Reset() {
-	*x = ConfigurationStatus_ManagedResource{}
-	mi := &file_api_configuration_service_proto_msgTypes[8]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ConfigurationStatus_ManagedResource) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ConfigurationStatus_ManagedResource) ProtoMessage() {}
-
-func (x *ConfigurationStatus_ManagedResource) ProtoReflect() protoreflect.Message {
-	mi := &file_api_configuration_service_proto_msgTypes[8]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ConfigurationStatus_ManagedResource.ProtoReflect.Descriptor instead.
-func (*ConfigurationStatus_ManagedResource) Descriptor() ([]byte, []int) {
-	return file_api_configuration_service_proto_rawDescGZIP(), []int{1, 0}
-}
-
-func (x *ConfigurationStatus_ManagedResource) GetResource() string {
-	if x != nil {
-		return x.Resource
-	}
-	return ""
-}
-
-func (x *ConfigurationStatus_ManagedResource) GetSource() string {
-	if x != nil {
-		return x.Source
-	}
-	return ""
-}
-
-func (x *ConfigurationStatus_ManagedResource) GetManagedFields() []string {
-	if x != nil {
-		return x.ManagedFields
-	}
-	return nil
-}
-
-func (x *ConfigurationStatus_ManagedResource) GetIgnoredFields() []string {
-	if x != nil {
-		return x.IgnoredFields
-	}
-	return nil
-}
-
-var File_api_configuration_service_proto protoreflect.FileDescriptor
-
-const file_api_configuration_service_proto_rawDesc = "" +
+const file_api_configuration_proto_rawDesc = "" +
 	"\n" +
-	"\x1fapi/configuration_service.proto\x12\tmemos.api\x1a\x15api/idp_service.proto\x1a\x1aapi/instance_service.proto\x1a\x16api/user_service.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x1f\n" +
-	"\x1dGetConfigurationStatusRequest\"\xb9\x03\n" +
-	"\x13ConfigurationStatus\x12\x16\n" +
-	"\x06serial\x18\x01 \x01(\x03R\x06serial\x12#\n" +
-	"\rconfig_digest\x18\x02 \x01(\tR\fconfigDigest\x12\x1d\n" +
-	"\n" +
-	"applied_by\x18\x03 \x01(\tR\tappliedBy\x12\x18\n" +
-	"\aversion\x18\x04 \x01(\tR\aversion\x12[\n" +
-	"\x11managed_resources\x18\x05 \x03(\v2..memos.api.ConfigurationStatus.ManagedResourceR\x10managedResources\x129\n" +
-	"\n" +
-	"apply_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tapplyTime\x1a\x93\x01\n" +
-	"\x0fManagedResource\x12\x1a\n" +
-	"\bresource\x18\x01 \x01(\tR\bresource\x12\x16\n" +
-	"\x06source\x18\x02 \x01(\tR\x06source\x12%\n" +
-	"\x0emanaged_fields\x18\x03 \x03(\tR\rmanagedFields\x12%\n" +
-	"\x0eignored_fields\x18\x04 \x03(\tR\rignoredFields\"\xc6\x02\n" +
+	"\x17api/configuration.proto\x12\tmemos.api\x1a\x15api/idp_service.proto\x1a\x1aapi/instance_service.proto\x1a\x16api/user_service.proto\x1a\x1fgoogle/api/field_behavior.proto\"\xc6\x02\n" +
 	"\rConfiguration\x12O\n" +
 	"\x12identity_providers\x18\x01 \x03(\v2\x1b.memos.api.IdentityProviderB\x03\xe0A\x01R\x11identityProviders\x12L\n" +
 	"\x11instance_settings\x18\x02 \x03(\v2\x1a.memos.api.InstanceSettingB\x03\xe0A\x01R\x10instanceSettings\x12*\n" +
@@ -820,65 +602,55 @@ const file_api_configuration_service_proto_rawDesc = "" +
 	"\vFieldChange\x12\x12\n" +
 	"\x04path\x18\x01 \x01(\tR\x04path\x12\x16\n" +
 	"\x06before\x18\x02 \x01(\tR\x06before\x12\x14\n" +
-	"\x05after\x18\x03 \x01(\tR\x05after2\xa0\x01\n" +
-	"\x14ConfigurationService\x12\x87\x01\n" +
-	"\x16GetConfigurationStatus\x12(.memos.api.GetConfigurationStatusRequest\x1a\x1e.memos.api.ConfigurationStatus\"#\x82\xd3\xe4\x93\x02\x1d\x12\x1b/api/instance/configurationB\x98\x01\n" +
-	"\rcom.memos.apiB\x19ConfigurationServiceProtoP\x01Z'github.com/usememos/memos/proto/gen/api\xa2\x02\x03MAX\xaa\x02\tMemos.Api\xca\x02\tMemos\\Api\xe2\x02\x15Memos\\Api\\GPBMetadata\xea\x02\n" +
+	"\x05after\x18\x03 \x01(\tR\x05afterB\x91\x01\n" +
+	"\rcom.memos.apiB\x12ConfigurationProtoP\x01Z'github.com/usememos/memos/proto/gen/api\xa2\x02\x03MAX\xaa\x02\tMemos.Api\xca\x02\tMemos\\Api\xe2\x02\x15Memos\\Api\\GPBMetadata\xea\x02\n" +
 	"Memos::Apib\x06proto3"
 
 var (
-	file_api_configuration_service_proto_rawDescOnce sync.Once
-	file_api_configuration_service_proto_rawDescData []byte
+	file_api_configuration_proto_rawDescOnce sync.Once
+	file_api_configuration_proto_rawDescData []byte
 )
 
-func file_api_configuration_service_proto_rawDescGZIP() []byte {
-	file_api_configuration_service_proto_rawDescOnce.Do(func() {
-		file_api_configuration_service_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_api_configuration_service_proto_rawDesc), len(file_api_configuration_service_proto_rawDesc)))
+func file_api_configuration_proto_rawDescGZIP() []byte {
+	file_api_configuration_proto_rawDescOnce.Do(func() {
+		file_api_configuration_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_api_configuration_proto_rawDesc), len(file_api_configuration_proto_rawDesc)))
 	})
-	return file_api_configuration_service_proto_rawDescData
+	return file_api_configuration_proto_rawDescData
 }
 
-var file_api_configuration_service_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_api_configuration_service_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
-var file_api_configuration_service_proto_goTypes = []any{
-	(ResourceChange_Action)(0),                  // 0: memos.api.ResourceChange.Action
-	(*GetConfigurationStatusRequest)(nil),       // 1: memos.api.GetConfigurationStatusRequest
-	(*ConfigurationStatus)(nil),                 // 2: memos.api.ConfigurationStatus
-	(*Configuration)(nil),                       // 3: memos.api.Configuration
-	(*Lifecycle)(nil),                           // 4: memos.api.Lifecycle
-	(*Removed)(nil),                             // 5: memos.api.Removed
-	(*Plan)(nil),                                // 6: memos.api.Plan
-	(*ResourceChange)(nil),                      // 7: memos.api.ResourceChange
-	(*FieldChange)(nil),                         // 8: memos.api.FieldChange
-	(*ConfigurationStatus_ManagedResource)(nil), // 9: memos.api.ConfigurationStatus.ManagedResource
-	(*timestamppb.Timestamp)(nil),               // 10: google.protobuf.Timestamp
-	(*IdentityProvider)(nil),                    // 11: memos.api.IdentityProvider
-	(*InstanceSetting)(nil),                     // 12: memos.api.InstanceSetting
-	(*User)(nil),                                // 13: memos.api.User
+var file_api_configuration_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_api_configuration_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_api_configuration_proto_goTypes = []any{
+	(ResourceChange_Action)(0), // 0: memos.api.ResourceChange.Action
+	(*Configuration)(nil),      // 1: memos.api.Configuration
+	(*Lifecycle)(nil),          // 2: memos.api.Lifecycle
+	(*Removed)(nil),            // 3: memos.api.Removed
+	(*Plan)(nil),               // 4: memos.api.Plan
+	(*ResourceChange)(nil),     // 5: memos.api.ResourceChange
+	(*FieldChange)(nil),        // 6: memos.api.FieldChange
+	(*IdentityProvider)(nil),   // 7: memos.api.IdentityProvider
+	(*InstanceSetting)(nil),    // 8: memos.api.InstanceSetting
+	(*User)(nil),               // 9: memos.api.User
 }
-var file_api_configuration_service_proto_depIdxs = []int32{
-	9,  // 0: memos.api.ConfigurationStatus.managed_resources:type_name -> memos.api.ConfigurationStatus.ManagedResource
-	10, // 1: memos.api.ConfigurationStatus.apply_time:type_name -> google.protobuf.Timestamp
-	11, // 2: memos.api.Configuration.identity_providers:type_name -> memos.api.IdentityProvider
-	12, // 3: memos.api.Configuration.instance_settings:type_name -> memos.api.InstanceSetting
-	13, // 4: memos.api.Configuration.users:type_name -> memos.api.User
-	4,  // 5: memos.api.Configuration.lifecycle:type_name -> memos.api.Lifecycle
-	5,  // 6: memos.api.Configuration.removed:type_name -> memos.api.Removed
-	7,  // 7: memos.api.Plan.resource_changes:type_name -> memos.api.ResourceChange
-	0,  // 8: memos.api.ResourceChange.action:type_name -> memos.api.ResourceChange.Action
-	8,  // 9: memos.api.ResourceChange.field_changes:type_name -> memos.api.FieldChange
-	1,  // 10: memos.api.ConfigurationService.GetConfigurationStatus:input_type -> memos.api.GetConfigurationStatusRequest
-	2,  // 11: memos.api.ConfigurationService.GetConfigurationStatus:output_type -> memos.api.ConfigurationStatus
-	11, // [11:12] is the sub-list for method output_type
-	10, // [10:11] is the sub-list for method input_type
-	10, // [10:10] is the sub-list for extension type_name
-	10, // [10:10] is the sub-list for extension extendee
-	0,  // [0:10] is the sub-list for field type_name
+var file_api_configuration_proto_depIdxs = []int32{
+	7, // 0: memos.api.Configuration.identity_providers:type_name -> memos.api.IdentityProvider
+	8, // 1: memos.api.Configuration.instance_settings:type_name -> memos.api.InstanceSetting
+	9, // 2: memos.api.Configuration.users:type_name -> memos.api.User
+	2, // 3: memos.api.Configuration.lifecycle:type_name -> memos.api.Lifecycle
+	3, // 4: memos.api.Configuration.removed:type_name -> memos.api.Removed
+	5, // 5: memos.api.Plan.resource_changes:type_name -> memos.api.ResourceChange
+	0, // 6: memos.api.ResourceChange.action:type_name -> memos.api.ResourceChange.Action
+	6, // 7: memos.api.ResourceChange.field_changes:type_name -> memos.api.FieldChange
+	8, // [8:8] is the sub-list for method output_type
+	8, // [8:8] is the sub-list for method input_type
+	8, // [8:8] is the sub-list for extension type_name
+	8, // [8:8] is the sub-list for extension extendee
+	0, // [0:8] is the sub-list for field type_name
 }
 
-func init() { file_api_configuration_service_proto_init() }
-func file_api_configuration_service_proto_init() {
-	if File_api_configuration_service_proto != nil {
+func init() { file_api_configuration_proto_init() }
+func file_api_configuration_proto_init() {
+	if File_api_configuration_proto != nil {
 		return
 	}
 	file_api_idp_service_proto_init()
@@ -888,18 +660,18 @@ func file_api_configuration_service_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_configuration_service_proto_rawDesc), len(file_api_configuration_service_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_configuration_proto_rawDesc), len(file_api_configuration_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   9,
+			NumMessages:   6,
 			NumExtensions: 0,
-			NumServices:   1,
+			NumServices:   0,
 		},
-		GoTypes:           file_api_configuration_service_proto_goTypes,
-		DependencyIndexes: file_api_configuration_service_proto_depIdxs,
-		EnumInfos:         file_api_configuration_service_proto_enumTypes,
-		MessageInfos:      file_api_configuration_service_proto_msgTypes,
+		GoTypes:           file_api_configuration_proto_goTypes,
+		DependencyIndexes: file_api_configuration_proto_depIdxs,
+		EnumInfos:         file_api_configuration_proto_enumTypes,
+		MessageInfos:      file_api_configuration_proto_msgTypes,
 	}.Build()
-	File_api_configuration_service_proto = out.File
-	file_api_configuration_service_proto_goTypes = nil
-	file_api_configuration_service_proto_depIdxs = nil
+	File_api_configuration_proto = out.File
+	file_api_configuration_proto_goTypes = nil
+	file_api_configuration_proto_depIdxs = nil
 }
