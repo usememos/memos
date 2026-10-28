@@ -4,6 +4,7 @@ import {
   type InlineNode,
   inlineNodesText,
   type ListItemNode,
+  type RawNode,
   type Root,
   visit,
 } from "@usememos/editor";
@@ -57,17 +58,34 @@ const isAlert = (node: BlockQuoteNode): boolean => {
   return lead?.type === "text" && ALERT_MARKER.test(lead.value);
 };
 
-/** Inline nodes without image alt text, which is not a written excerpt, and without raw HTML, which is never rendered. */
+const FOOTNOTE_LABEL = /^\[\^(?:[^\]\s\\]|\\.)+\]:[ \t]?/;
+
+/**
+ * A footnote definition's text as a tree of its own. The editor keeps a definition as a raw
+ * block, so a walk over the memo does not see the Markdown in it. Its lines go on indented
+ * by up to four spaces; the memo's link reference definitions still resolve in it.
+ */
+const footnoteTree = (node: RawNode, memo: Root): Root => {
+  const lines = node.value.replace(FOOTNOTE_LABEL, "").split("\n");
+  const text = lines.map((line, index) => (index === 0 ? line : line.replace(/^(?: {1,4}|\t)/, ""))).join("\n");
+  return parseMemoAst([text, ...memo.definitions].join("\n\n"));
+};
+
+/**
+ * Inline nodes without image alt text, which is not a written excerpt, without raw HTML, which
+ * is never rendered, and without footnote references, which are labels.
+ */
 const prose = (nodes: readonly InlineNode[]): InlineNode[] =>
   nodes.flatMap<InlineNode>((node) => {
-    if (node.type === "image" || node.type === "html") return [];
+    if (node.type === "image" || node.type === "html" || (node.type === "token" && node.name === "footnote")) return [];
     return "children" in node ? [{ ...node, children: prose(node.children) }] : [node];
   });
 
 // A soft break is a line break in a memo (`breaks: true`).
 const inlineText = (nodes: readonly InlineNode[]): string => inlineNodesText(prose(nodes), "\n");
 
-const plainText = (node: BlockNode | ListItemNode): string => {
+const plainText = (node: BlockNode | ListItemNode, memo: Root): string => {
+  const children = (nodes: readonly (BlockNode | ListItemNode)[]) => nodes.map((child) => plainText(child, memo)).join("\n");
   switch (node.type) {
     case "paragraph":
     case "heading":
@@ -75,17 +93,18 @@ const plainText = (node: BlockNode | ListItemNode): string => {
     case "codeBlock":
       return node.value;
     case "blockQuote": {
-      const text = node.children.map(plainText).join("\n");
+      const text = children(node.children);
       return isAlert(node) ? text.replace(ALERT_MARKER, "") : text;
     }
     case "list":
-      return node.items.map(plainText).join("\n");
+      return children(node.items);
     case "listItem":
-      return node.children.map(plainText).join("\n");
+      return children(node.children);
     case "table":
       return node.rows.map((row) => row.map(inlineText).join("\n")).join("\n");
     case "raw":
-      // A formula reads as its TeX; other extension blocks, such as footnote definitions, are not the memo's text.
+      // A formula reads as its TeX and a footnote as its text; other extension blocks are not the memo's text.
+      if (node.name === "footnote") return children(footnoteTree(node, memo).children);
       return node.name === "math" ? node.value : "";
     default:
       // Dividers, and raw HTML, which is never rendered.
@@ -96,7 +115,7 @@ const plainText = (node: BlockNode | ListItemNode): string => {
 const getExcerpt = (memo: Memo, tree: Root): CalendarDayExcerpt | undefined => {
   const blocks = tree.children;
   const readable = blocks
-    .map((block) => ({ text: plainText(block).trim(), isCode: block.type === "codeBlock" }))
+    .map((block) => ({ text: plainText(block, tree).trim(), isCode: block.type === "codeBlock" }))
     .filter(({ text }) => text);
   const text =
     readable
@@ -113,13 +132,14 @@ const getExcerpt = (memo: Memo, tree: Root): CalendarDayExcerpt | undefined => {
 };
 
 /**
- * Markdown image sources in reading order, with references resolved in the tree, under the
- * memo view's source policy: relative or https only. Raw HTML is deliberately excluded:
- * only Markdown images contribute to this preview.
+ * Markdown image sources in reading order, footnotes included, with references resolved in the
+ * tree, under the memo view's source policy: relative or https only. Raw HTML is deliberately
+ * excluded: only Markdown images contribute to this preview.
  */
-const contentImageSources = (tree: Root): string[] => {
+const contentImageSources = (tree: Root, memo: Root = tree): string[] => {
   const sources: string[] = [];
   visit(tree, (node) => {
+    if (node.type === "raw" && node.name === "footnote") sources.push(...contentImageSources(footnoteTree(node, memo), memo));
     if (node.type !== "image") return;
     const source = allowedAttributeValue("img", "src", node.destination);
     if (source) sources.push(source);
