@@ -125,6 +125,7 @@ describe("calendar day snapshots", () => {
           "`![code](https://example.com/code.jpg)`",
           "```md\n![fenced](https://example.com/fenced.jpg)\n```",
           '<img src="https://example.com/html.jpg">',
+          'Inline <img src="https://example.com/inline-html.jpg"> text',
           "![missing][undefined]",
           "![data](data:image/png;base64,AAAA)",
           "![insecure](http://example.com/insecure.jpg)",

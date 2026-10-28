@@ -1,8 +1,5 @@
-import type { ListItem } from "mdast";
-import { fromMarkdown } from "mdast-util-from-markdown";
-import { gfmFromMarkdown } from "mdast-util-gfm";
-import { gfm } from "micromark-extension-gfm";
-import { visit } from "unist-util-visit";
+import { lineTable, visit } from "@usememos/editor";
+import { parseMemoAst } from "@/lib/memo-ast";
 
 interface SourceRange {
   start: number;
@@ -18,79 +15,26 @@ interface ParsedTaskItem {
   checkboxMarker: SourceRange;
 }
 
-interface LineInfo {
-  text: string;
-  startOffset: number;
-  endOffset: number;
-}
-
-const TASK_LINE_REGEXP = /^(\s*)((?:[-*+])|(?:\d+[.)]))(\s+)\[([ xX])\]/;
-
-function getLineStarts(markdown: string): number[] {
-  const starts = [0];
-  for (let index = 0; index < markdown.length; index++) {
-    if (markdown[index] === "\n") {
-      starts.push(index + 1);
-    }
-  }
-  return starts;
-}
-
-function getLineInfo(markdown: string, lineStarts: number[], lineNumber: number): LineInfo | undefined {
-  const startOffset = lineStarts[lineNumber];
-  if (startOffset === undefined) {
-    return undefined;
-  }
-
-  const nextLineStart = lineStarts[lineNumber + 1];
-  const endOffset = nextLineStart === undefined ? markdown.length : nextLineStart - 1;
-  return {
-    text: markdown.slice(startOffset, endOffset),
-    startOffset,
-    endOffset,
-  };
-}
-
-function parseMarkdown(markdown: string) {
-  return fromMarkdown(markdown, {
-    extensions: [gfm()],
-    mdastExtensions: [gfmFromMarkdown()],
-  });
-}
+// A task item's first line: the quote markers and list markers before it (a list item may
+// start with another list's marker), its own marker, then the box.
+const TASK_LINE_REGEXP = /^((?:[ \t]*>)*(?:[ \t]*(?:[-*+]|\d{1,9}[.)])[ \t]+)+)\[([ xX])\]/;
 
 function parseTaskItems(markdown: string): ParsedTaskItem[] {
-  let tree: ReturnType<typeof parseMarkdown>;
-  try {
-    tree = parseMarkdown(markdown);
-  } catch {
-    return [];
-  }
-
-  const lineStarts = getLineStarts(markdown);
+  const lines = lineTable(markdown);
   const tasks: ParsedTaskItem[] = [];
 
-  visit(tree, "listItem", (node: ListItem) => {
-    if (typeof node.checked !== "boolean") {
+  visit(parseMemoAst(markdown), (node) => {
+    if (node.type !== "listItem" || !node.task || !node.lines) {
       return;
     }
 
-    const startLine = node.position ? node.position.start.line - 1 : undefined;
-    if (startLine === undefined) {
+    const lineStart = lines.starts[node.lines.start - 1];
+    const match = markdown.slice(lineStart, lines.ends[node.lines.start - 1]).match(TASK_LINE_REGEXP);
+    if (!match) {
       return;
     }
 
-    const lineInfo = getLineInfo(markdown, lineStarts, startLine);
-    if (!lineInfo) {
-      return;
-    }
-
-    const match = lineInfo.text.match(TASK_LINE_REGEXP);
-    if (!match || match.index !== 0) {
-      return;
-    }
-
-    const markerStart = lineInfo.startOffset + match[1].length + match[2].length + match[3].length + 1;
-
+    const markerStart = lineStart + match[1].length + 1;
     tasks.push({
       checked: node.checked,
       checkboxMarker: {

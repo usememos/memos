@@ -75,6 +75,15 @@ describe("memo view", () => {
     await waitFor(() => expect(onTaskToggle).toHaveBeenCalledWith("- [x] First\n- [x] Second\n\nNote"));
   });
 
+  it("lets an owner tick a task in a quote, changing only its bracket", async () => {
+    const onTaskToggle = vi.fn();
+    const content = "- [ ] First\n\n> - [ ] Quoted\n>   - [ ] Nested";
+    const { container } = renderMemo(content, { onTaskToggle });
+    const checkboxes = container.querySelectorAll<HTMLInputElement>("input.mbe-checkbox");
+    fireEvent.mouseDown(checkboxes[2]!);
+    await waitFor(() => expect(onTaskToggle).toHaveBeenCalledWith("- [ ] First\n\n> - [ ] Quoted\n>   - [x] Nested"));
+  });
+
   it("keeps tasks locked for readers", () => {
     const { container } = renderMemo("- [ ] First");
     expect(container.querySelector("input.mbe-checkbox")).toBeDisabled();
@@ -185,6 +194,32 @@ describe("raw HTML", () => {
     await waitFor(() => expect(container.querySelector("details")).toHaveAttribute("open"));
     expect(container.querySelector("summary em")).toHaveTextContent("more");
     expect(screen.getByText("Supporting text.")).toBeInTheDocument();
+  });
+
+  it("renders Markdown between disclosure tags inside the one section", async () => {
+    const { container } = renderMemo("<details>\n<summary>x</summary>\n\n**bold**\n\n</details>");
+    expect(container.querySelectorAll(".mbe-details")).toHaveLength(1);
+    expect(container.querySelector(".mbe-details")).toHaveTextContent("x");
+    expect(container.querySelector("[data-in-section] strong")).toHaveTextContent("bold");
+    expect(container).not.toHaveTextContent("<details>");
+  });
+
+  it("renders Markdown between HTML tags inside the one element", async () => {
+    const { container } = renderMemo('<div align="center">\n\n**bold**\n\n</div>');
+    await waitFor(() => expect(container.querySelector('div[align="center"] strong')).toHaveTextContent("bold"));
+    expect(container.querySelectorAll('div[align="center"]')).toHaveLength(1);
+    expect(container).not.toHaveTextContent("<div");
+  });
+
+  it("keeps trusted embeds and drops other iframes, handlers and scripts", async () => {
+    const { container } = renderMemo(
+      '<iframe src="https://www.youtube.com/embed/abc123"></iframe>\n\n<iframe src="https://evil.example/embed"></iframe>\n\n<div onclick="alert(1)">hi</div>\n\n<script>alert(2)</script>',
+    );
+    await waitFor(() => expect(container.querySelector('iframe[src^="https://www.youtube.com/embed/abc123"]')).not.toBeNull());
+    expect(container.querySelectorAll("iframe")).toHaveLength(1);
+    expect(container.querySelector("[onclick]")).toBeNull();
+    expect(container.querySelector("script")).toBeNull();
+    expect(container).not.toHaveTextContent("alert");
   });
 });
 
