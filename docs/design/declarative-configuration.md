@@ -557,17 +557,23 @@ metadata: resource = identity-providers/company-sso
 ```
 
 The guard is a rule in `core/configuration` applied by `CreateIdentityProvider`, `UpdateIdentityProvider`, `DeleteIdentityProvider`,
-`UpdateInstanceSetting`, `UpdateUser`, and `DeleteUser`. It compares the request against the stored resource and refuses only when a
-managed field would change. Consequences:
+`UpdateInstanceSetting`, `UpdateUser`, and `DeleteUser`. It makes three checks, each refused with the same error:
+
+- **Change.** `UpdateIdentityProvider`, `UpdateInstanceSetting`, and `UpdateUser` compare the request against the stored resource and
+  refuse only when a managed field would change.
+- **Existence.** `CreateIdentityProvider` refuses a name the configuration manages, so the resource cannot exist twice;
+  `DeleteIdentityProvider` and `DeleteUser` refuse to delete a managed resource.
+- **Reference.** `UpdateUser` refuses a username change and `DeleteUser` a deletion when a managed resource names the user, such as a
+  managed usage-limits setting listing it, though the user is not itself managed: the next plan could not resolve the name, and a
+  startup apply would stop the server. The error names the user, the referring resource in `metadata.referenced_by`, and its file; the
+  operator removes the name there and applies first.
+
+Consequences:
 
 - A whole-group `UpdateInstanceSetting` that resends the managed values unchanged succeeds, so a settings page can save an unrelated field
   the configuration released with `ignoreChanges`.
-- Creating a resource whose name is managed is refused with the same error; it cannot exist twice.
 - Write-only fields are never guarded. The administrator changes their password freely.
 - Fields in `ignoreChanges` are never guarded.
-- A user a managed resource names, such as one a managed usage-limits setting lists, can be neither renamed nor deleted, though it is
-  not itself managed: the next plan could not resolve the name, and a startup apply would stop the server. The error names the user, the
-  referring resource in `metadata.referenced_by`, and its file; the operator removes the name there and applies first.
 
 Terraform does not enforce ownership; Grafana provisioning does (`allowUiUpdates: false`), and Kubernetes server-side apply reports a
 conflict. Refusing is chosen over tolerate-and-revert because the person at the settings page should learn now, not at the next restart.
