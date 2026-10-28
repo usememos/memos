@@ -115,6 +115,43 @@ func TestConfigurationGuard(t *testing.T) {
 	require.NoError(t, err)
 }
 
+func TestConfigurationGuardReferencedUser(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+	admin, err := ts.CreateHostUser(ctx, "admin")
+	require.NoError(t, err)
+	adminCtx := ts.CreateUserContext(ctx, admin.ID)
+	_, err = ts.CreateRegularUser(ctx, "alice")
+	require.NoError(t, err)
+	_, err = ts.CreateRegularUser(ctx, "bob")
+	require.NoError(t, err)
+	applyConfiguration(ctx, t, ts, map[string]string{
+		"limits.json": `{"instanceSettings":[{"name":"instance/settings/USAGE_LIMITS","usageLimitsSetting":{"limits":[
+			{"users":["users/alice"],"memoCount":"100"},{"allUsers":true,"memoCount":"10"}]}}]}`,
+	})
+
+	// A user the managed usage limits name can be neither renamed nor deleted,
+	// since the next plan could not resolve the name.
+	update := func(name string, user *apipb.User, paths ...string) error {
+		user.Name = name
+		_, err := ts.Service.UpdateUser(adminCtx, &apipb.UpdateUserRequest{User: user, UpdateMask: &fieldmaskpb.FieldMask{Paths: paths}})
+		return err
+	}
+	metadata := requireManaged(t, update("users/alice", &apipb.User{Username: "alice2"}, "username"), "users/alice")
+	require.Equal(t, "limits.json", metadata["source"])
+	require.Equal(t, "instance/settings/USAGE_LIMITS", metadata["referenced_by"])
+	_, err = ts.Service.DeleteUser(adminCtx, &apipb.DeleteUserRequest{Name: "users/alice"})
+	requireManaged(t, err, "users/alice")
+
+	// The rest of the user stays the API's, and unnamed users are not guarded.
+	require.NoError(t, update("users/alice", &apipb.User{DisplayName: "Alice"}, "display_name"))
+	require.NoError(t, update("users/alice", &apipb.User{Username: "alice"}, "username"), "resending the username passes")
+	require.NoError(t, update("users/bob", &apipb.User{Username: "bob2"}, "username"))
+	_, err = ts.Service.DeleteUser(adminCtx, &apipb.DeleteUserRequest{Name: "users/bob2"})
+	require.NoError(t, err)
+}
+
 func TestGetConfigurationStatus(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)

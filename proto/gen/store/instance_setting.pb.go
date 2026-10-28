@@ -1857,8 +1857,12 @@ type InstanceConfigurationState_ManagedResource struct {
 	// prevent_destroy is the lifecycle prevent_destroy last applied. A removed
 	// entry cannot destroy the resource until an apply has cleared it.
 	PreventDestroy bool `protobuf:"varint,9,opt,name=prevent_destroy,json=preventDestroy,proto3" json:"prevent_destroy,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// references are the resource names the declaration names, such as the
+	// users a usage-limits setting lists. The API cannot rename or delete them
+	// while the resource is managed, since the next plan could not resolve them.
+	References    []string `protobuf:"bytes,10,rep,name=references,proto3" json:"references,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *InstanceConfigurationState_ManagedResource) Reset() {
@@ -1952,6 +1956,13 @@ func (x *InstanceConfigurationState_ManagedResource) GetPreventDestroy() bool {
 		return x.PreventDestroy
 	}
 	return false
+}
+
+func (x *InstanceConfigurationState_ManagedResource) GetReferences() []string {
+	if x != nil {
+		return x.References
+	}
+	return nil
 }
 
 var File_store_instance_setting_proto protoreflect.FileDescriptor
@@ -2073,7 +2084,7 @@ const file_store_instance_setting_proto_rawDesc = "" +
 	"\v_memo_countB\x15\n" +
 	"\x13_memo_content_bytesB\x10\n" +
 	"\x0e_storage_bytesB\x0f\n" +
-	"\r_upload_bytes\"\xb8\x04\n" +
+	"\r_upload_bytes\"\xd8\x04\n" +
 	"\x1aInstanceConfigurationState\x12\x16\n" +
 	"\x06serial\x18\x01 \x01(\x03R\x06serial\x12#\n" +
 	"\rconfig_digest\x18\x02 \x01(\tR\fconfigDigest\x12\x1d\n" +
@@ -2082,7 +2093,7 @@ const file_store_instance_setting_proto_rawDesc = "" +
 	"\n" +
 	"applied_by\x18\x04 \x01(\tR\tappliedBy\x12\x18\n" +
 	"\aversion\x18\x05 \x01(\tR\aversion\x12U\n" +
-	"\tresources\x18\x06 \x03(\v27.memos.store.InstanceConfigurationState.ManagedResourceR\tresources\x1a\xad\x02\n" +
+	"\tresources\x18\x06 \x03(\v27.memos.store.InstanceConfigurationState.ManagedResourceR\tresources\x1a\xcd\x02\n" +
 	"\x0fManagedResource\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x12\n" +
 	"\x04kind\x18\x02 \x01(\tR\x04kind\x12\x16\n" +
@@ -2093,7 +2104,11 @@ const file_store_instance_setting_proto_rawDesc = "" +
 	"applied_ts\x18\x06 \x01(\x03R\tappliedTs\x12%\n" +
 	"\x0eignored_fields\x18\a \x03(\tR\rignoredFields\x12\x16\n" +
 	"\x06digest\x18\b \x01(\tR\x06digest\x12'\n" +
-	"\x0fprevent_destroy\x18\t \x01(\bR\x0epreventDestroy*\xcc\x01\n" +
+	"\x0fprevent_destroy\x18\t \x01(\bR\x0epreventDestroy\x12\x1e\n" +
+	"\n" +
+	"references\x18\n" +
+	" \x03(\tR\n" +
+	"references*\xcc\x01\n" +
 	"\x12InstanceSettingKey\x12$\n" +
 	" INSTANCE_SETTING_KEY_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05BASIC\x10\x01\x12\v\n" +

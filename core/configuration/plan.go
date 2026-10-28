@@ -254,6 +254,7 @@ func (p *planner) planInstanceSettings() error {
 		entry := &storepb.InstanceConfigurationState_ManagedResource{
 			ManagedFields: []string{"*"},
 			Digest:        digest(desiredAPI, p.lifecycle[declared.Name]),
+			References:    settingReferences(declared),
 		}
 		p.declared(rankInstanceSetting, declared.Name, KindInstanceSetting, actual != nil, changes, entry, op)
 		if desiredStore.Key == storepb.InstanceSettingKey_GENERAL {
@@ -286,6 +287,17 @@ func (p *planner) settingToStore(setting *apipb.InstanceSetting) (*storepb.Insta
 	}
 	instancesetting.Normalize(stored)
 	return stored, nil
+}
+
+// settingReferences lists the users a declared usage-limits setting names,
+// sorted and without repeats; other settings name no resources.
+func settingReferences(setting *apipb.InstanceSetting) []string {
+	var names []string
+	for _, limit := range setting.GetUsageLimitsSetting().GetLimits() {
+		names = append(names, limit.GetUsers()...)
+	}
+	slices.Sort(names)
+	return slices.Compact(names)
 }
 
 func (p *planner) settingFromStore(setting *storepb.InstanceSetting) (*apipb.InstanceSetting, error) {

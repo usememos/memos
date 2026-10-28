@@ -19,9 +19,15 @@ type ManagedError struct {
 	Source string
 	// Fields are the managed JSON-name paths the write would change.
 	Fields []string
+	// ReferencedBy, when set, is the managed resource that names Resource;
+	// Source is then the file that declares it.
+	ReferencedBy string
 }
 
 func (e *ManagedError) Error() string {
+	if e.ReferencedBy != "" {
+		return fmt.Sprintf("%s is named by %s in %s; remove it there and apply first", e.Resource, e.ReferencedBy, e.Source)
+	}
 	return fmt.Sprintf("%s is managed by configuration in %s; change %s there", e.Resource, e.Source, strings.Join(e.Fields, ", "))
 }
 
@@ -54,6 +60,18 @@ func CheckExistence(state *storepb.InstanceConfigurationState, resource string) 
 		return nil
 	}
 	return &ManagedError{Resource: resource, Source: managed.Source, Fields: slices.Clone(managed.ManagedFields)}
+}
+
+// CheckReference returns a *ManagedError when a resource state manages names
+// resource, so the API can neither rename nor delete it: the next plan would
+// not resolve the name.
+func CheckReference(state *storepb.InstanceConfigurationState, resource string) error {
+	for _, managed := range state.GetResources() {
+		if slices.Contains(managed.References, resource) {
+			return &ManagedError{Resource: resource, Source: managed.Source, ReferencedBy: managed.Name}
+		}
+	}
+	return nil
 }
 
 // Manages reports whether state manages resource.

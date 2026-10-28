@@ -316,5 +316,9 @@ message InstanceConfigurationState {
     // prevent_destroy is the lifecycle prevent_destroy last applied. A removed
     // entry cannot destroy the resource until an apply has cleared it.
     bool prevent_destroy = 9;
+    // references are the resource names the declaration names, such as the
+    // users a usage-limits setting lists. The API cannot rename or delete them
+    // while the resource is managed, since the next plan could not resolve them.
+    repeated string references = 10;
   }
 }

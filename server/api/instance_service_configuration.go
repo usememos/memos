@@ -81,6 +81,17 @@ func (s *APIService) checkManagedExistence(ctx context.Context, resource string)
 	return managedStatus(configuration.CheckExistence(state, resource))
 }
 
+// checkManagedReference refuses renaming or deleting a resource that a
+// resource the configuration manages names, such as a user a managed
+// usage-limits setting lists.
+func (s *APIService) checkManagedReference(ctx context.Context, resource string) error {
+	state, err := s.Store.GetConfigurationState(ctx)
+	if err != nil {
+		return status.Errorf(codes.Internal, "failed to read the configuration state: %v", err)
+	}
+	return managedStatus(configuration.CheckReference(state, resource))
+}
+
 // managedStatus turns a refusal into FAILED_PRECONDITION with an ErrorInfo
 // naming the resource, the file that declares it, and the fields.
 func managedStatus(err error) error {
@@ -89,14 +100,18 @@ func managedStatus(err error) error {
 		return err
 	}
 	st := status.New(codes.FailedPrecondition, managed.Error())
+	metadata := map[string]string{
+		"resource": managed.Resource,
+		"source":   managed.Source,
+		"fields":   strings.Join(managed.Fields, ","),
+	}
+	if managed.ReferencedBy != "" {
+		metadata["referenced_by"] = managed.ReferencedBy
+	}
 	detailed, detailErr := st.WithDetails(&errdetails.ErrorInfo{
-		Reason: reasonManagedByConfiguration,
-		Domain: errorInfoDomain,
-		Metadata: map[string]string{
-			"resource": managed.Resource,
-			"source":   managed.Source,
-			"fields":   strings.Join(managed.Fields, ","),
-		},
+		Reason:   reasonManagedByConfiguration,
+		Domain:   errorInfoDomain,
+		Metadata: metadata,
 	})
 	if detailErr != nil {
 		return st.Err()

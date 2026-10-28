@@ -30,3 +30,16 @@ func TestGuard(t *testing.T) {
 	require.NoError(t, CheckExistence(state, "identity-providers/sso"))
 	require.NoError(t, CheckExistence(&storepb.InstanceConfigurationState{}, "users/admin"))
 }
+
+func TestCheckReference(t *testing.T) {
+	state := &storepb.InstanceConfigurationState{Resources: []*storepb.InstanceConfigurationState_ManagedResource{
+		{Name: "instance/settings/USAGE_LIMITS", Source: "limits.json", ManagedFields: []string{"*"}, References: []string{"users/alice"}},
+	}}
+
+	err := CheckReference(state, "users/alice")
+	var managed *ManagedError
+	require.ErrorAs(t, err, &managed)
+	require.Equal(t, &ManagedError{Resource: "users/alice", Source: "limits.json", ReferencedBy: "instance/settings/USAGE_LIMITS"}, managed)
+	require.Contains(t, err.Error(), "users/alice is named by instance/settings/USAGE_LIMITS in limits.json")
+	require.NoError(t, CheckReference(state, "users/bob"), "a user no managed resource names is not guarded")
+}

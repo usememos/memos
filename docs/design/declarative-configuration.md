@@ -381,6 +381,9 @@ message InstanceConfigurationState {
     string digest = 8;
     // The lifecycle preventDestroy last applied.
     bool prevent_destroy = 9;
+    // The resource names the declaration names: the users a usage-limits
+    // setting lists.
+    repeated string references = 10;
   }
 }
 ```
@@ -397,7 +400,7 @@ message InstanceConfigurationState {
   so such an update reads as drift; it is still applied.
 - `prevent_destroy` is recorded because a `removed` entry can only name a resource no file declares any longer, and so no lifecycle rule
   can still name it. Destroying a resource that set it takes two applies, as in Terraform: one without `preventDestroy`, then the removal.
-- `managed_fields` is what the API guard reads, so a replica that never opened the files still enforces ownership.
+- `managed_fields` and `references` are what the API guard reads, so a replica that never opened the files still enforces ownership.
 - Nothing in the document is a configured value. A database dump exposes which resources are managed and nothing more.
 
 The record is tens of entries and a few kilobytes. It would outgrow one row only with thousands of managed resources, SQL queries over them,
@@ -554,14 +557,17 @@ metadata: resource = identity-providers/company-sso
 ```
 
 The guard is a rule in `core/configuration` applied by `CreateIdentityProvider`, `UpdateIdentityProvider`, `DeleteIdentityProvider`,
-`UpdateInstanceSetting`, `UpdateUser`, and `DeleteUser`. It compares the request against the stored resource and refuses only when a managed field would change.
-Consequences:
+`UpdateInstanceSetting`, `UpdateUser`, and `DeleteUser`. It compares the request against the stored resource and refuses only when a
+managed field would change. Consequences:
 
 - A whole-group `UpdateInstanceSetting` that resends the managed values unchanged succeeds, so a settings page can save an unrelated field
   the configuration released with `ignoreChanges`.
 - Creating a resource whose name is managed is refused with the same error; it cannot exist twice.
 - Write-only fields are never guarded. The administrator changes their password freely.
 - Fields in `ignoreChanges` are never guarded.
+- A user a managed resource names, such as one a managed usage-limits setting lists, can be neither renamed nor deleted, though it is
+  not itself managed: the next plan could not resolve the name, and a startup apply would stop the server. The error names the user, the
+  referring resource in `metadata.referenced_by`, and its file; the operator removes the name there and applies first.
 
 Terraform does not enforce ownership; Grafana provisioning does (`allowUiUpdates: false`), and Kubernetes server-side apply reports a
 conflict. Refusing is chosen over tolerate-and-revert because the person at the settings page should learn now, not at the next restart.
@@ -681,7 +687,7 @@ conditional setting writes.
 | `core/configuration/` | Reading and substituting files, decoding, the plan engine, the digest, the API guard rule |
 | `core/identityprovider/`, `core/instancesetting/`, `core/user/` | Per-resource validation shared by the API and the plan engine; API↔store conversion for identity providers and instance settings, since files are API messages and `core` cannot import `server/api` |
 | `store/configuration_state.go`, `store/transaction.go` | State record read and write; the serializable transaction helper with retries |
-| `server/api/instance_service_configuration.go` | `GetConfigurationStatus`; the guard the five mutating handlers call |
+| `server/api/instance_service_configuration.go` | `GetConfigurationStatus`; the guard the six mutating handlers call |
 | `cmd/memos/config.go` | The `memos config` subcommands |
 | `web/src/` | The managed label, disabled controls, and error presentation |
 

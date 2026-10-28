@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -505,6 +506,9 @@ func (s *APIService) DeleteUser(ctx context.Context, request *apipb.DeleteUserRe
 	if err := s.checkManagedExistence(ctx, BuildUserName(user.Username)); err != nil {
 		return nil, err
 	}
+	if err := s.checkManagedReference(ctx, BuildUserName(user.Username)); err != nil {
+		return nil, err
+	}
 
 	deleteResult, err := s.Store.DeleteUser(ctx, &store.DeleteUser{
 		ID: user.ID,
@@ -536,7 +540,8 @@ const lastInstanceAdminMessage = "the instance must retain an active administrat
 
 // checkManagedUserChange refuses an update that changes the fields of a user
 // the configuration manages: username, role, and the profile fields its file
-// declares. The password is write-only and never refused.
+// declares. The password is write-only and never refused. A rename is also
+// refused while a managed resource names the user.
 func (s *APIService) checkManagedUserChange(ctx context.Context, user *store.User, request *apipb.UpdateUserRequest) error {
 	changed := []string{}
 	for _, path := range request.UpdateMask.Paths {
@@ -558,6 +563,11 @@ func (s *APIService) checkManagedUserChange(ctx context.Context, user *store.Use
 				changed = append(changed, "role")
 			}
 		default:
+		}
+	}
+	if slices.Contains(changed, "username") {
+		if err := s.checkManagedReference(ctx, BuildUserName(user.Username)); err != nil {
+			return err
 		}
 	}
 	return s.checkManagedChange(ctx, BuildUserName(user.Username), changed)
