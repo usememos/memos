@@ -644,6 +644,21 @@
       "delete-success": "Zobrazenie `{{title}}` bolo úspešne odstránené",
       "change-icon": "Zmeniť ikonu zobrazenia"
     },
+    "configuration": {
+      "label": "Konfigurácia",
+      "description": "Zdroje nastavené konfiguračnými súbormi. Ak ich chcete zmeniť, upravte súbor a použite ho; zvyšok inštancie zostáva upraviteľný tu.",
+      "managed-by": "Spravované konfiguráciou",
+      "managed-tooltip": "Nastavené v {{source}}. Ak to chcete zmeniť, upravte súbor a použite ho.",
+      "resource": "Zdroj",
+      "source": "Súbor",
+      "managed-fields": "Spravované polia",
+      "whole-resource": "Všetky polia",
+      "ignored-fields": "Upraviteľné tu",
+      "serial": "Poradové číslo",
+      "last-apply": "Naposledy použité",
+      "applied-by": "Použil",
+      "nothing-managed": "Nebola použitá žiadna konfigurácia. Všetko sa nastavuje tu."
+    },
     "sso": {
       "account": "účtu",
       "accounts-description": "Skontrolujte každého poskytovateľa identity, pozrite si aktuálny stav prepojenia a pripojte alebo odpojte externé identity od tohto účtu.",

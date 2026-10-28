@@ -644,6 +644,21 @@
       "delete-success": "Rodinys `{{title}}` sėkmingai ištrintas",
       "change-icon": "Keisti rodinio piktogramą"
     },
+    "configuration": {
+      "label": "Konfigūracija",
+      "description": "Ištekliai, nustatyti konfigūracijos failais. Norėdami juos pakeisti, redaguokite failą ir pritaikykite jį; likusią egzemplioriaus dalį vis dar galima redaguoti čia.",
+      "managed-by": "Valdoma konfigūracijos",
+      "managed-tooltip": "Nustatyta faile {{source}}. Norėdami tai pakeisti, redaguokite failą ir pritaikykite jį.",
+      "resource": "Išteklius",
+      "source": "Failas",
+      "managed-fields": "Valdomi laukai",
+      "whole-resource": "Visi laukai",
+      "ignored-fields": "Redaguojama čia",
+      "serial": "Serijos numeris",
+      "last-apply": "Paskutinį kartą pritaikyta",
+      "applied-by": "Pritaikė",
+      "nothing-managed": "Konfigūracija nepritaikyta. Viskas nustatoma čia."
+    },
     "sso": {
       "account": "sąskaita",
       "accounts-description": "Peržiūrėkite kiekvieną tapatybės teikėją, peržiūrėkite dabartinę susiejimo būseną ir prijunkite arba atjunkite išorines tapatybes nuo šios paskyros.",

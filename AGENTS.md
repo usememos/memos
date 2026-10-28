@@ -37,6 +37,7 @@ Run from the repository root unless a command starts with `cd`.
 ```bash
 # Backend
 go run -buildvcs=true ./cmd/memos --port 8081 # Start backend with commit-derived CalVer
+go run -buildvcs=true ./cmd/memos config plan --data DIR --config-dir DIR # Declarative configuration: also validate, apply, state
 go test ./...                      # Run all Go tests
 go test -v ./store/...             # Store tests, including DB drivers via TestContainers
 go test -v -race ./server/...      # Server tests with race detector
@@ -75,7 +76,7 @@ Every root folder is named for what it holds. Read the folder's `doc.go` or `REA
 | `server/frontend/` | Static SPA serving; `dist/` is the built SPA baked in by `go:embed` | |
 | `server/mcp/` | Model Context Protocol server | |
 | `server/auth/` | JWT access tokens, refresh tokens, PAT handling | |
-| `core/` | Business rules with no HTTP and no SQL: `access`, `notification`, `memopayload`, `memoexport`, `usagelimit` | store, provider, markdown, filter, internal |
+| `core/` | Business rules with no HTTP and no SQL: `access`, `notification`, `memopayload`, `memoexport`, `usagelimit`, `identityprovider`, `instancesetting`, `user`, `configuration` | store, provider, markdown, filter, internal |
 | `store/` | Store facade, cache, migrations, `Driver` interface; `store/db/{sqlite,mysql,postgres}/` implement it | provider, markdown, filter, internal |
 | `markdown/` | Markdown engine: parser, AST, memos syntax extensions, renderer, memo payload | proto/gen, internal |
 | `filter/` | CEL filter compiler: parse to IR, render to SQL per driver, filterable field schema | internal |
@@ -94,6 +95,8 @@ Layering rules, enforced by `depguard` in `.golangci.yaml`:
 
 File convention inside `server/api/`: `<resource>_service.go` holds the RPC handlers, `<resource>_service_converters.go` the
 store↔proto conversion, and `<resource>_service_<topic>.go` further splits. Extend the matching file; do not add `*_helpers2.go`.
+Identity providers and instance settings are the exception: declarative configuration files use their API messages, so their
+conversion lives in `core/identityprovider` and `core/instancesetting`, and `server/api` keeps only response redaction.
 Black-box service tests live in `server/api/test/`, unit tests next to the code.
 
 ## Change Routing

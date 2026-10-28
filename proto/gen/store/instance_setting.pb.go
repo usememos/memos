@@ -45,21 +45,26 @@ const (
 	// USAGE_LIMITS is the key for the ordered usage limits list, read and
 	// replaced whole through the instance settings API.
 	InstanceSettingKey_USAGE_LIMITS InstanceSettingKey = 9
+	// CONFIGURATION_STATE is the key for the declarative configuration state
+	// record. It is state, not a setting: the instance settings API never reads
+	// or writes it, and configuration files cannot declare it.
+	InstanceSettingKey_CONFIGURATION_STATE InstanceSettingKey = 10
 )
 
 // Enum value maps for InstanceSettingKey.
 var (
 	InstanceSettingKey_name = map[int32]string{
-		0: "INSTANCE_SETTING_KEY_UNSPECIFIED",
-		1: "BASIC",
-		2: "GENERAL",
-		3: "STORAGE",
-		4: "MEMO_RELATED",
-		5: "TAGS",
-		6: "NOTIFICATION",
-		7: "AI",
-		8: "ACCESS",
-		9: "USAGE_LIMITS",
+		0:  "INSTANCE_SETTING_KEY_UNSPECIFIED",
+		1:  "BASIC",
+		2:  "GENERAL",
+		3:  "STORAGE",
+		4:  "MEMO_RELATED",
+		5:  "TAGS",
+		6:  "NOTIFICATION",
+		7:  "AI",
+		8:  "ACCESS",
+		9:  "USAGE_LIMITS",
+		10: "CONFIGURATION_STATE",
 	}
 	InstanceSettingKey_value = map[string]int32{
 		"INSTANCE_SETTING_KEY_UNSPECIFIED": 0,
@@ -72,6 +77,7 @@ var (
 		"AI":                               7,
 		"ACCESS":                           8,
 		"USAGE_LIMITS":                     9,
+		"CONFIGURATION_STATE":              10,
 	}
 )
 
@@ -1523,6 +1529,100 @@ func (x *InstanceUsageLimitsSetting) GetLimits() []*InstanceUsageLimitsSetting_U
 	return nil
 }
 
+// InstanceConfigurationState is the declarative configuration state record: which
+// resources the configuration manages and when it was last applied. It holds no
+// configured value.
+type InstanceConfigurationState struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// serial increases by one with every apply that changes something.
+	Serial int64 `protobuf:"varint,1,opt,name=serial,proto3" json:"serial,omitempty"`
+	// config_digest identifies the applied configuration, with sensitive and
+	// write-only values masked before hashing.
+	ConfigDigest string `protobuf:"bytes,2,opt,name=config_digest,json=configDigest,proto3" json:"config_digest,omitempty"`
+	// applied_ts is the Unix time of the last apply that changed something.
+	AppliedTs int64 `protobuf:"varint,3,opt,name=applied_ts,json=appliedTs,proto3" json:"applied_ts,omitempty"`
+	// applied_by names the apply path ("cli" or "startup") and the host.
+	AppliedBy string `protobuf:"bytes,4,opt,name=applied_by,json=appliedBy,proto3" json:"applied_by,omitempty"`
+	// version is the Memos version that applied.
+	Version string `protobuf:"bytes,5,opt,name=version,proto3" json:"version,omitempty"`
+	// resources are the managed resources.
+	Resources     []*InstanceConfigurationState_ManagedResource `protobuf:"bytes,6,rep,name=resources,proto3" json:"resources,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *InstanceConfigurationState) Reset() {
+	*x = InstanceConfigurationState{}
+	mi := &file_store_instance_setting_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *InstanceConfigurationState) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*InstanceConfigurationState) ProtoMessage() {}
+
+func (x *InstanceConfigurationState) ProtoReflect() protoreflect.Message {
+	mi := &file_store_instance_setting_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use InstanceConfigurationState.ProtoReflect.Descriptor instead.
+func (*InstanceConfigurationState) Descriptor() ([]byte, []int) {
+	return file_store_instance_setting_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *InstanceConfigurationState) GetSerial() int64 {
+	if x != nil {
+		return x.Serial
+	}
+	return 0
+}
+
+func (x *InstanceConfigurationState) GetConfigDigest() string {
+	if x != nil {
+		return x.ConfigDigest
+	}
+	return ""
+}
+
+func (x *InstanceConfigurationState) GetAppliedTs() int64 {
+	if x != nil {
+		return x.AppliedTs
+	}
+	return 0
+}
+
+func (x *InstanceConfigurationState) GetAppliedBy() string {
+	if x != nil {
+		return x.AppliedBy
+	}
+	return ""
+}
+
+func (x *InstanceConfigurationState) GetVersion() string {
+	if x != nil {
+		return x.Version
+	}
+	return ""
+}
+
+func (x *InstanceConfigurationState) GetResources() []*InstanceConfigurationState_ManagedResource {
+	if x != nil {
+		return x.Resources
+	}
+	return nil
+}
+
 type InstanceNotificationSetting_EmailSetting struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Enabled       bool                   `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"`
@@ -1541,7 +1641,7 @@ type InstanceNotificationSetting_EmailSetting struct {
 
 func (x *InstanceNotificationSetting_EmailSetting) Reset() {
 	*x = InstanceNotificationSetting_EmailSetting{}
-	mi := &file_store_instance_setting_proto_msgTypes[17]
+	mi := &file_store_instance_setting_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1553,7 +1653,7 @@ func (x *InstanceNotificationSetting_EmailSetting) String() string {
 func (*InstanceNotificationSetting_EmailSetting) ProtoMessage() {}
 
 func (x *InstanceNotificationSetting_EmailSetting) ProtoReflect() protoreflect.Message {
-	mi := &file_store_instance_setting_proto_msgTypes[17]
+	mi := &file_store_instance_setting_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1662,7 +1762,7 @@ type InstanceUsageLimitsSetting_UsageLimit struct {
 
 func (x *InstanceUsageLimitsSetting_UsageLimit) Reset() {
 	*x = InstanceUsageLimitsSetting_UsageLimit{}
-	mi := &file_store_instance_setting_proto_msgTypes[18]
+	mi := &file_store_instance_setting_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1674,7 +1774,7 @@ func (x *InstanceUsageLimitsSetting_UsageLimit) String() string {
 func (*InstanceUsageLimitsSetting_UsageLimit) ProtoMessage() {}
 
 func (x *InstanceUsageLimitsSetting_UsageLimit) ProtoReflect() protoreflect.Message {
-	mi := &file_store_instance_setting_proto_msgTypes[18]
+	mi := &file_store_instance_setting_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1730,6 +1830,139 @@ func (x *InstanceUsageLimitsSetting_UsageLimit) GetUploadBytes() int64 {
 		return *x.UploadBytes
 	}
 	return 0
+}
+
+// ManagedResource is one resource the configuration manages.
+type InstanceConfigurationState_ManagedResource struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// name is the API resource name, such as identity-providers/company-sso.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// kind is IdentityProvider, InstanceSetting, or User.
+	Kind string `protobuf:"bytes,2,opt,name=kind,proto3" json:"kind,omitempty"`
+	// source is the configuration file that declares the resource.
+	Source string `protobuf:"bytes,3,opt,name=source,proto3" json:"source,omitempty"`
+	// managed_fields are the JSON-name field paths the configuration manages;
+	// "*" means the whole resource.
+	ManagedFields []string `protobuf:"bytes,4,rep,name=managed_fields,json=managedFields,proto3" json:"managed_fields,omitempty"`
+	// write_only_version is the lifecycle write_only_version last applied.
+	WriteOnlyVersion int32 `protobuf:"varint,5,opt,name=write_only_version,json=writeOnlyVersion,proto3" json:"write_only_version,omitempty"`
+	// applied_ts is the Unix time the resource was last written by an apply.
+	AppliedTs int64 `protobuf:"varint,6,opt,name=applied_ts,json=appliedTs,proto3" json:"applied_ts,omitempty"`
+	// ignored_fields are the lifecycle ignore_changes paths: covered by
+	// managed_fields, but neither written after creation nor protected.
+	IgnoredFields []string `protobuf:"bytes,7,rep,name=ignored_fields,json=ignoredFields,proto3" json:"ignored_fields,omitempty"`
+	// digest identifies the declared value last applied, with sensitive and
+	// write-only values masked, so a later plan can tell drift from a file change.
+	Digest string `protobuf:"bytes,8,opt,name=digest,proto3" json:"digest,omitempty"`
+	// prevent_destroy is the lifecycle prevent_destroy last applied. A removed
+	// entry cannot destroy the resource until an apply has cleared it.
+	PreventDestroy bool `protobuf:"varint,9,opt,name=prevent_destroy,json=preventDestroy,proto3" json:"prevent_destroy,omitempty"`
+	// references are the resource names the declaration names, such as the
+	// users a usage-limits setting lists. The API cannot rename or delete them
+	// while the resource is managed, since the next plan could not resolve them.
+	References    []string `protobuf:"bytes,10,rep,name=references,proto3" json:"references,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *InstanceConfigurationState_ManagedResource) Reset() {
+	*x = InstanceConfigurationState_ManagedResource{}
+	mi := &file_store_instance_setting_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *InstanceConfigurationState_ManagedResource) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*InstanceConfigurationState_ManagedResource) ProtoMessage() {}
+
+func (x *InstanceConfigurationState_ManagedResource) ProtoReflect() protoreflect.Message {
+	mi := &file_store_instance_setting_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use InstanceConfigurationState_ManagedResource.ProtoReflect.Descriptor instead.
+func (*InstanceConfigurationState_ManagedResource) Descriptor() ([]byte, []int) {
+	return file_store_instance_setting_proto_rawDescGZIP(), []int{16, 0}
+}
+
+func (x *InstanceConfigurationState_ManagedResource) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *InstanceConfigurationState_ManagedResource) GetKind() string {
+	if x != nil {
+		return x.Kind
+	}
+	return ""
+}
+
+func (x *InstanceConfigurationState_ManagedResource) GetSource() string {
+	if x != nil {
+		return x.Source
+	}
+	return ""
+}
+
+func (x *InstanceConfigurationState_ManagedResource) GetManagedFields() []string {
+	if x != nil {
+		return x.ManagedFields
+	}
+	return nil
+}
+
+func (x *InstanceConfigurationState_ManagedResource) GetWriteOnlyVersion() int32 {
+	if x != nil {
+		return x.WriteOnlyVersion
+	}
+	return 0
+}
+
+func (x *InstanceConfigurationState_ManagedResource) GetAppliedTs() int64 {
+	if x != nil {
+		return x.AppliedTs
+	}
+	return 0
+}
+
+func (x *InstanceConfigurationState_ManagedResource) GetIgnoredFields() []string {
+	if x != nil {
+		return x.IgnoredFields
+	}
+	return nil
+}
+
+func (x *InstanceConfigurationState_ManagedResource) GetDigest() string {
+	if x != nil {
+		return x.Digest
+	}
+	return ""
+}
+
+func (x *InstanceConfigurationState_ManagedResource) GetPreventDestroy() bool {
+	if x != nil {
+		return x.PreventDestroy
+	}
+	return false
+}
+
+func (x *InstanceConfigurationState_ManagedResource) GetReferences() []string {
+	if x != nil {
+		return x.References
+	}
+	return nil
 }
 
 var File_store_instance_setting_proto protoreflect.FileDescriptor
@@ -1851,7 +2084,31 @@ const file_store_instance_setting_proto_rawDesc = "" +
 	"\v_memo_countB\x15\n" +
 	"\x13_memo_content_bytesB\x10\n" +
 	"\x0e_storage_bytesB\x0f\n" +
-	"\r_upload_bytes*\xb3\x01\n" +
+	"\r_upload_bytes\"\xd8\x04\n" +
+	"\x1aInstanceConfigurationState\x12\x16\n" +
+	"\x06serial\x18\x01 \x01(\x03R\x06serial\x12#\n" +
+	"\rconfig_digest\x18\x02 \x01(\tR\fconfigDigest\x12\x1d\n" +
+	"\n" +
+	"applied_ts\x18\x03 \x01(\x03R\tappliedTs\x12\x1d\n" +
+	"\n" +
+	"applied_by\x18\x04 \x01(\tR\tappliedBy\x12\x18\n" +
+	"\aversion\x18\x05 \x01(\tR\aversion\x12U\n" +
+	"\tresources\x18\x06 \x03(\v27.memos.store.InstanceConfigurationState.ManagedResourceR\tresources\x1a\xcd\x02\n" +
+	"\x0fManagedResource\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x12\n" +
+	"\x04kind\x18\x02 \x01(\tR\x04kind\x12\x16\n" +
+	"\x06source\x18\x03 \x01(\tR\x06source\x12%\n" +
+	"\x0emanaged_fields\x18\x04 \x03(\tR\rmanagedFields\x12,\n" +
+	"\x12write_only_version\x18\x05 \x01(\x05R\x10writeOnlyVersion\x12\x1d\n" +
+	"\n" +
+	"applied_ts\x18\x06 \x01(\x03R\tappliedTs\x12%\n" +
+	"\x0eignored_fields\x18\a \x03(\tR\rignoredFields\x12\x16\n" +
+	"\x06digest\x18\b \x01(\tR\x06digest\x12'\n" +
+	"\x0fprevent_destroy\x18\t \x01(\bR\x0epreventDestroy\x12\x1e\n" +
+	"\n" +
+	"references\x18\n" +
+	" \x03(\tR\n" +
+	"references*\xcc\x01\n" +
 	"\x12InstanceSettingKey\x12$\n" +
 	" INSTANCE_SETTING_KEY_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05BASIC\x10\x01\x12\v\n" +
@@ -1863,7 +2120,9 @@ const file_store_instance_setting_proto_rawDesc = "" +
 	"\x02AI\x10\a\x12\n" +
 	"\n" +
 	"\x06ACCESS\x10\b\x12\x10\n" +
-	"\fUSAGE_LIMITS\x10\t*s\n" +
+	"\fUSAGE_LIMITS\x10\t\x12\x17\n" +
+	"\x13CONFIGURATION_STATE\x10\n" +
+	"*s\n" +
 	"\vStorageType\x12\x1c\n" +
 	"\x18STORAGE_TYPE_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15STORAGE_TYPE_DATABASE\x10\x01\x12\x16\n" +
@@ -1894,33 +2153,35 @@ func file_store_instance_setting_proto_rawDescGZIP() []byte {
 }
 
 var file_store_instance_setting_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
-var file_store_instance_setting_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
+var file_store_instance_setting_proto_msgTypes = make([]protoimpl.MessageInfo, 21)
 var file_store_instance_setting_proto_goTypes = []any{
-	(InstanceSettingKey)(0),                          // 0: memos.store.InstanceSettingKey
-	(StorageType)(0),                                 // 1: memos.store.StorageType
-	(AIProviderType)(0),                              // 2: memos.store.AIProviderType
-	(InstanceAccessMode)(0),                          // 3: memos.store.InstanceAccessMode
-	(InstanceStorageSetting_StorageType)(0),          // 4: memos.store.InstanceStorageSetting.StorageType
-	(*InstanceSetting)(nil),                          // 5: memos.store.InstanceSetting
-	(*InstanceBasicSetting)(nil),                     // 6: memos.store.InstanceBasicSetting
-	(*InstanceGeneralSetting)(nil),                   // 7: memos.store.InstanceGeneralSetting
-	(*InstanceCustomProfile)(nil),                    // 8: memos.store.InstanceCustomProfile
-	(*Storage)(nil),                                  // 9: memos.store.Storage
-	(*InstanceStorageSetting)(nil),                   // 10: memos.store.InstanceStorageSetting
-	(*StorageS3Config)(nil),                          // 11: memos.store.StorageS3Config
-	(*InstanceMemoRelatedSetting)(nil),               // 12: memos.store.InstanceMemoRelatedSetting
-	(*InstanceTagMetadata)(nil),                      // 13: memos.store.InstanceTagMetadata
-	(*InstanceTagsSetting)(nil),                      // 14: memos.store.InstanceTagsSetting
-	(*InstanceNotificationSetting)(nil),              // 15: memos.store.InstanceNotificationSetting
-	(*InstanceAISetting)(nil),                        // 16: memos.store.InstanceAISetting
-	(*AIProviderConfig)(nil),                         // 17: memos.store.AIProviderConfig
-	(*TranscriptionConfig)(nil),                      // 18: memos.store.TranscriptionConfig
-	(*InstanceAccessSetting)(nil),                    // 19: memos.store.InstanceAccessSetting
-	(*InstanceUsageLimitsSetting)(nil),               // 20: memos.store.InstanceUsageLimitsSetting
-	nil,                                              // 21: memos.store.InstanceTagsSetting.TagsEntry
-	(*InstanceNotificationSetting_EmailSetting)(nil), // 22: memos.store.InstanceNotificationSetting.EmailSetting
-	(*InstanceUsageLimitsSetting_UsageLimit)(nil),    // 23: memos.store.InstanceUsageLimitsSetting.UsageLimit
-	(*color.Color)(nil),                              // 24: google.type.Color
+	(InstanceSettingKey)(0),                            // 0: memos.store.InstanceSettingKey
+	(StorageType)(0),                                   // 1: memos.store.StorageType
+	(AIProviderType)(0),                                // 2: memos.store.AIProviderType
+	(InstanceAccessMode)(0),                            // 3: memos.store.InstanceAccessMode
+	(InstanceStorageSetting_StorageType)(0),            // 4: memos.store.InstanceStorageSetting.StorageType
+	(*InstanceSetting)(nil),                            // 5: memos.store.InstanceSetting
+	(*InstanceBasicSetting)(nil),                       // 6: memos.store.InstanceBasicSetting
+	(*InstanceGeneralSetting)(nil),                     // 7: memos.store.InstanceGeneralSetting
+	(*InstanceCustomProfile)(nil),                      // 8: memos.store.InstanceCustomProfile
+	(*Storage)(nil),                                    // 9: memos.store.Storage
+	(*InstanceStorageSetting)(nil),                     // 10: memos.store.InstanceStorageSetting
+	(*StorageS3Config)(nil),                            // 11: memos.store.StorageS3Config
+	(*InstanceMemoRelatedSetting)(nil),                 // 12: memos.store.InstanceMemoRelatedSetting
+	(*InstanceTagMetadata)(nil),                        // 13: memos.store.InstanceTagMetadata
+	(*InstanceTagsSetting)(nil),                        // 14: memos.store.InstanceTagsSetting
+	(*InstanceNotificationSetting)(nil),                // 15: memos.store.InstanceNotificationSetting
+	(*InstanceAISetting)(nil),                          // 16: memos.store.InstanceAISetting
+	(*AIProviderConfig)(nil),                           // 17: memos.store.AIProviderConfig
+	(*TranscriptionConfig)(nil),                        // 18: memos.store.TranscriptionConfig
+	(*InstanceAccessSetting)(nil),                      // 19: memos.store.InstanceAccessSetting
+	(*InstanceUsageLimitsSetting)(nil),                 // 20: memos.store.InstanceUsageLimitsSetting
+	(*InstanceConfigurationState)(nil),                 // 21: memos.store.InstanceConfigurationState
+	nil,                                                // 22: memos.store.InstanceTagsSetting.TagsEntry
+	(*InstanceNotificationSetting_EmailSetting)(nil),   // 23: memos.store.InstanceNotificationSetting.EmailSetting
+	(*InstanceUsageLimitsSetting_UsageLimit)(nil),      // 24: memos.store.InstanceUsageLimitsSetting.UsageLimit
+	(*InstanceConfigurationState_ManagedResource)(nil), // 25: memos.store.InstanceConfigurationState.ManagedResource
+	(*color.Color)(nil),                                // 26: google.type.Color
 }
 var file_store_instance_setting_proto_depIdxs = []int32{
 	0,  // 0: memos.store.InstanceSetting.key:type_name -> memos.store.InstanceSettingKey
@@ -1939,20 +2200,21 @@ var file_store_instance_setting_proto_depIdxs = []int32{
 	4,  // 13: memos.store.InstanceStorageSetting.storage_type:type_name -> memos.store.InstanceStorageSetting.StorageType
 	11, // 14: memos.store.InstanceStorageSetting.s3_config:type_name -> memos.store.StorageS3Config
 	9,  // 15: memos.store.InstanceStorageSetting.storages:type_name -> memos.store.Storage
-	24, // 16: memos.store.InstanceTagMetadata.background_color:type_name -> google.type.Color
-	21, // 17: memos.store.InstanceTagsSetting.tags:type_name -> memos.store.InstanceTagsSetting.TagsEntry
-	22, // 18: memos.store.InstanceNotificationSetting.email:type_name -> memos.store.InstanceNotificationSetting.EmailSetting
+	26, // 16: memos.store.InstanceTagMetadata.background_color:type_name -> google.type.Color
+	22, // 17: memos.store.InstanceTagsSetting.tags:type_name -> memos.store.InstanceTagsSetting.TagsEntry
+	23, // 18: memos.store.InstanceNotificationSetting.email:type_name -> memos.store.InstanceNotificationSetting.EmailSetting
 	17, // 19: memos.store.InstanceAISetting.providers:type_name -> memos.store.AIProviderConfig
 	18, // 20: memos.store.InstanceAISetting.transcription:type_name -> memos.store.TranscriptionConfig
 	2,  // 21: memos.store.AIProviderConfig.type:type_name -> memos.store.AIProviderType
 	3,  // 22: memos.store.InstanceAccessSetting.access_mode:type_name -> memos.store.InstanceAccessMode
-	23, // 23: memos.store.InstanceUsageLimitsSetting.limits:type_name -> memos.store.InstanceUsageLimitsSetting.UsageLimit
-	13, // 24: memos.store.InstanceTagsSetting.TagsEntry.value:type_name -> memos.store.InstanceTagMetadata
-	25, // [25:25] is the sub-list for method output_type
-	25, // [25:25] is the sub-list for method input_type
-	25, // [25:25] is the sub-list for extension type_name
-	25, // [25:25] is the sub-list for extension extendee
-	0,  // [0:25] is the sub-list for field type_name
+	24, // 23: memos.store.InstanceUsageLimitsSetting.limits:type_name -> memos.store.InstanceUsageLimitsSetting.UsageLimit
+	25, // 24: memos.store.InstanceConfigurationState.resources:type_name -> memos.store.InstanceConfigurationState.ManagedResource
+	13, // 25: memos.store.InstanceTagsSetting.TagsEntry.value:type_name -> memos.store.InstanceTagMetadata
+	26, // [26:26] is the sub-list for method output_type
+	26, // [26:26] is the sub-list for method input_type
+	26, // [26:26] is the sub-list for extension type_name
+	26, // [26:26] is the sub-list for extension extendee
+	0,  // [0:26] is the sub-list for field type_name
 }
 
 func init() { file_store_instance_setting_proto_init() }
@@ -1974,14 +2236,14 @@ func file_store_instance_setting_proto_init() {
 	file_store_instance_setting_proto_msgTypes[4].OneofWrappers = []any{
 		(*Storage_S3Config)(nil),
 	}
-	file_store_instance_setting_proto_msgTypes[18].OneofWrappers = []any{}
+	file_store_instance_setting_proto_msgTypes[19].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_store_instance_setting_proto_rawDesc), len(file_store_instance_setting_proto_rawDesc)),
 			NumEnums:      5,
-			NumMessages:   19,
+			NumMessages:   21,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

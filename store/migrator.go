@@ -28,7 +28,6 @@ import (
 // 2. checkMinimumUpgradeVersion: Verify the database meets the fixed v0.31.0 baseline
 // 3. Migrate (prod mode): Apply incremental migrations from current to target version
 // 4. Migrate (demo mode): Seed database with demo data
-// Deployment configuration is loaded separately after migration completes.
 //
 // Version Tracking:
 // - New installations: Schema version set in system_setting immediately
@@ -324,6 +323,31 @@ func (s *Store) seed(ctx context.Context) error {
 		}
 	}
 	return tx.Commit()
+}
+
+// CheckSchemaCurrent fails unless the database is initialized and at the
+// schema version this binary migrates to. Commands that only read, such as a
+// configuration plan, call it instead of Migrate, which writes.
+func (s *Store) CheckSchemaCurrent(ctx context.Context) error {
+	initialized, err := s.driver.IsInitialized(ctx)
+	if err != nil {
+		return errors.Wrap(err, "failed to check whether the database is initialized")
+	}
+	if !initialized {
+		return errors.New("the database is not initialized; start Memos once to create it")
+	}
+	basic, err := s.GetInstanceBasicSetting(ctx)
+	if err != nil {
+		return err
+	}
+	current, err := s.GetCurrentSchemaVersion()
+	if err != nil {
+		return errors.Wrap(err, "failed to get current schema version")
+	}
+	if basic.SchemaVersion != current {
+		return errors.Errorf("the database schema is %s but this Memos expects %s; start this version of Memos once to migrate it", basic.SchemaVersion, current)
+	}
+	return nil
 }
 
 // GetCurrentSchemaVersion returns the latest schema version available for the configured database driver.

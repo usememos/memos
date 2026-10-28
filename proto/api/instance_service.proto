@@ -37,8 +37,8 @@ service InstanceService {
     };
   }
 
-  // UpdateInstanceSetting replaces an instance setting. Admin only. Settings configured by the deployment cannot be
-  // updated. Empty write-only credentials keep the stored values.
+  // UpdateInstanceSetting replaces an instance setting. Admin only. Fields declarative configuration manages cannot be
+  // changed. Empty write-only credentials keep the stored values.
   rpc UpdateInstanceSetting(UpdateInstanceSettingRequest) returns (InstanceSetting) {
     option (google.api.http) = {
       patch: "/api/{instance_setting.name=instance/settings/*}"
@@ -58,6 +58,12 @@ service InstanceService {
   // GetInstanceStats gets resource usage statistics for the instance. Admin only. Results are cached for 60 seconds.
   rpc GetInstanceStats(GetInstanceStatsRequest) returns (InstanceStats) {
     option (google.api.http) = {get: "/api/instance/stats"};
+  }
+
+  // GetConfigurationStatus gets what declarative configuration manages: the managed resources and the last apply.
+  // Admin only. It carries resource names and field paths, never a configured value.
+  rpc GetConfigurationStatus(GetConfigurationStatusRequest) returns (ConfigurationStatus) {
+    option (google.api.http) = {get: "/api/instance/configuration"};
   }
 }
 
@@ -562,3 +568,43 @@ message InstanceStats {
 
 // Request message for InstanceService.GetInstanceStats.
 message GetInstanceStatsRequest {}
+
+// Request message for InstanceService.GetConfigurationStatus.
+message GetConfigurationStatusRequest {}
+
+// ConfigurationStatus is what declarative configuration manages on the instance.
+message ConfigurationStatus {
+  // The state record serial; zero before any apply has changed something.
+  int64 serial = 1;
+
+  // Identifies the applied configuration, with sensitive values masked before hashing.
+  string config_digest = 2;
+
+  // The apply path ("cli" or "startup") and the host of the last apply.
+  string applied_by = 3;
+
+  // The Memos version of the last apply.
+  string version = 4;
+
+  // The resources the configuration manages.
+  repeated ManagedResource managed_resources = 5;
+
+  // When the last apply that changed something ran.
+  google.protobuf.Timestamp apply_time = 6;
+
+  // ManagedResource is one resource the configuration manages.
+  message ManagedResource {
+    // The resource name.
+    // Format: identity-providers/{idp}, instance/settings/{setting}, or users/{user}
+    string resource = 1;
+
+    // The configuration file that declares the resource.
+    string source = 2;
+
+    // The field paths, in JSON names, the configuration manages; "*" means the whole resource.
+    repeated string managed_fields = 3;
+
+    // The managed field paths the configuration does not write after creation, so the API accepts edits to them.
+    repeated string ignored_fields = 4;
+  }
+}

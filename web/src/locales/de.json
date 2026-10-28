@@ -528,6 +528,21 @@
       "delete-success": "Ansicht `{{title}}` erfolgreich gelöscht",
       "change-icon": "Ansichtssymbol ändern"
     },
+    "configuration": {
+      "label": "Konfiguration",
+      "description": "Ressourcen, die über Konfigurationsdateien festgelegt werden. Bearbeiten Sie eine Datei und wenden Sie sie an, um sie zu ändern; der Rest der Instanz bleibt hier bearbeitbar.",
+      "managed-by": "Durch Konfiguration verwaltet",
+      "managed-tooltip": "Festgelegt in {{source}}. Bearbeiten Sie die Datei und wenden Sie sie an, um dies zu ändern.",
+      "resource": "Ressource",
+      "source": "Datei",
+      "managed-fields": "Verwaltete Felder",
+      "whole-resource": "Alle Felder",
+      "ignored-fields": "Hier bearbeitbar",
+      "serial": "Seriennummer",
+      "last-apply": "Zuletzt angewendet",
+      "applied-by": "Angewendet von",
+      "nothing-managed": "Es wurde keine Konfiguration angewendet. Alles wird hier festgelegt."
+    },
     "sso": {
       "authorization-endpoint": "Autorisierungsendpunkt",
       "client-id": "Client ID",

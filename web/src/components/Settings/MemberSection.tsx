@@ -10,6 +10,7 @@ import UserAvatar from "@/components/UserAvatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { userServiceClient } from "@/connect";
+import { findManagedResource, useConfigurationStatus } from "@/hooks/useConfigurationQueries";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useDialog } from "@/hooks/useDialog";
 import { useDeleteUser, useListUsers } from "@/hooks/useUserQueries";
@@ -19,11 +20,13 @@ import { User, User_Role } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import CreateUserDialog from "../CreateUserDialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import ManagedByConfigurationChip from "./ManagedByConfigurationChip";
 import SettingSection from "./SettingSection";
 import SettingTable from "./SettingTable";
 
 const MemberSection = () => {
   const t = useTranslate();
+  const configurationStatus = useConfigurationStatus();
   const currentUser = useCurrentUser();
   const { data: users = [], refetch: refetchUsers } = useListUsers();
   const deleteUserMutation = useDeleteUser();
@@ -153,9 +156,10 @@ const MemberSection = () => {
                     {user.state === State.ARCHIVED ? t("setting.member.archived") : t("setting.member.active")}
                   </Badge>
                 </div>
-                {user.email ? (
+                {user.email || findManagedResource(configurationStatus, user.name) ? (
                   <div className="flex flex-wrap gap-2">
-                    <InfoChip label={t("common.email")} value={user.email} tooltip={user.email} />
+                    {user.email ? <InfoChip label={t("common.email")} value={user.email} tooltip={user.email} /> : null}
+                    <ManagedByConfigurationChip resource={findManagedResource(configurationStatus, user.name)} />
                   </div>
                 ) : null}
               </div>
@@ -178,9 +182,11 @@ const MemberSection = () => {
                     ) : (
                       <>
                         <DropdownMenuItem onClick={() => handleRestoreUserClick(user)}>{t("common.restore")}</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleDeleteUserClick(user)} className="text-destructive focus:text-destructive">
-                          {t("setting.member.delete-member")}
-                        </DropdownMenuItem>
+                        {findManagedResource(configurationStatus, user.name) ? null : (
+                          <DropdownMenuItem onClick={() => handleDeleteUserClick(user)} className="text-destructive focus:text-destructive">
+                            {t("setting.member.delete-member")}
+                          </DropdownMenuItem>
+                        )}
                       </>
                     )}
                   </DropdownMenuContent>

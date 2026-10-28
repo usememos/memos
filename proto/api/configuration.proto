@@ -1,0 +1,134 @@
+syntax = "proto3";
+
+package memos.api;
+
+import "api/idp_service.proto";
+import "api/instance_service.proto";
+import "api/user_service.proto";
+import "google/api/field_behavior.proto";
+
+option go_package = "gen/api";
+
+// Configuration is one declarative configuration document. Every file in the
+// configuration directory is one Configuration, and all files are merged into
+// one desired state. A resource may be declared in exactly one file.
+message Configuration {
+  // Optional. Identity providers to manage, by resource name.
+  repeated IdentityProvider identity_providers = 1 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Instance setting groups to manage, by resource name.
+  repeated InstanceSetting instance_settings = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Users to manage, by resource name. Intended for bootstrap administrators.
+  repeated User users = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Lifecycle rules for declared resources.
+  repeated Lifecycle lifecycle = 4 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Resources to take out of management.
+  repeated Removed removed = 5 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Lifecycle adjusts how one declared resource is planned and applied.
+message Lifecycle {
+  // Required. The resource name of a resource declared in the configuration.
+  // Format: identity-providers/{idp}, instance/settings/{setting}, or users/{user}
+  string resource = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. Field paths, in JSON name form, that the configuration does not manage.
+  // Apply writes them only when it creates the resource, and the API does not protect them.
+  repeated string ignore_changes = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Plan fails instead of destroying the resource.
+  bool prevent_destroy = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Increment to send write-only fields, such as a user's password, again.
+  int32 write_only_version = 4 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Removed takes a resource out of management.
+message Removed {
+  // Required. The resource name of a resource the configuration manages.
+  // Format: identity-providers/{idp}, instance/settings/{setting}, or users/{user}
+  string resource = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. Delete the resource, or reset an instance setting group to its defaults,
+  // instead of only releasing it from management.
+  bool destroy = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Plan is the difference between the declarative configuration and the
+// instance: what apply would change. Configured values never appear in it.
+message Plan {
+  // The state record serial the plan was computed against.
+  int64 serial = 1;
+
+  // One entry per resource the configuration declares or manages, in the order apply would act.
+  repeated ResourceChange resource_changes = 2;
+
+  // Whether apply would write the state record. It is true whenever a resource
+  // changes, and also when only what the record holds changes, such as a lifecycle rule.
+  bool state_record_changes = 3;
+
+  // Problems that stop the plan from being applied.
+  repeated string errors = 4;
+
+  // Diagnostics that do not stop the plan.
+  repeated string warnings = 5;
+}
+
+// ResourceChange is what apply would do to one resource.
+message ResourceChange {
+  // The resource name.
+  // Format: identity-providers/{idp}, instance/settings/{setting}, or users/{user}
+  string resource = 1;
+
+  // The configuration file that declares the resource; empty for one that is no longer declared.
+  string source = 2;
+
+  // What apply would do.
+  Action action = 3;
+
+  // Whether the change undoes an edit made outside the configuration since the last apply.
+  bool drift = 4;
+
+  // The fields apply would write, with their values before and after.
+  repeated FieldChange field_changes = 5;
+
+  // Why the resource has this action, when the action alone does not say.
+  string message = 6;
+
+  // Action is what apply does to a resource.
+  enum Action {
+    ACTION_UNSPECIFIED = 0;
+    // Write a resource that does not exist.
+    CREATE = 1;
+    // Bring an existing resource under management and write the declared value.
+    ADOPT = 2;
+    // Write a managed resource that differs from its declaration.
+    UPDATE = 3;
+    // Nothing; the managed resource matches its declaration.
+    NO_OP = 4;
+    // Delete a managed resource a removed entry destroys.
+    DESTROY = 5;
+    // Reset a managed instance setting a removed entry destroys to its defaults.
+    RESET = 6;
+    // Stop managing a resource and leave it as it is.
+    RELEASE = 7;
+    // None; the resource is managed but no longer declared and has no removed entry.
+    ERROR = 8;
+  }
+}
+
+// FieldChange is one field apply would write.
+message FieldChange {
+  // The field path, in JSON names from the resource, such as config.oauth2Config.scopes.
+  string path = 1;
+
+  // The value before, as JSON. Sensitive values print as (sensitive) and write-only values
+  // as (write-only); an empty string means the resource does not exist yet.
+  string before = 2;
+
+  // The value after, in the same form as before.
+  string after = 3;
+}

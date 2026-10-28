@@ -528,6 +528,21 @@
       "delete-success": "Vyn `{{title}}` raderades framgångsrikt",
       "change-icon": "Ändra vyikon"
     },
+    "configuration": {
+      "label": "Konfiguration",
+      "description": "Resurser som anges av konfigurationsfiler. Redigera en fil och tillämpa den för att ändra dem; resten av instansen går fortfarande att redigera här.",
+      "managed-by": "Styrs av konfiguration",
+      "managed-tooltip": "Anges i {{source}}. Redigera filen och tillämpa den för att ändra detta.",
+      "resource": "Resurs",
+      "source": "Fil",
+      "managed-fields": "Styrda fält",
+      "whole-resource": "Alla fält",
+      "ignored-fields": "Kan redigeras här",
+      "serial": "Serienummer",
+      "last-apply": "Senast tillämpad",
+      "applied-by": "Tillämpad av",
+      "nothing-managed": "Ingen konfiguration har tillämpats. Allt ställs in här."
+    },
     "sso": {
       "authorization-endpoint": "Auktoriseringsendpoint",
       "client-id": "Klient-ID",

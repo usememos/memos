@@ -528,6 +528,21 @@
       "delete-success": "Weergave `{{title}}` succesvol verwijderd",
       "change-icon": "Weergavepictogram wijzigen"
     },
+    "configuration": {
+      "label": "Configuratie",
+      "description": "Resources die door configuratiebestanden worden ingesteld. Bewerk een bestand en pas het toe om ze te wijzigen; de rest van de instantie blijft hier bewerkbaar.",
+      "managed-by": "Beheerd door configuratie",
+      "managed-tooltip": "Ingesteld in {{source}}. Bewerk het bestand en pas het toe om dit te wijzigen.",
+      "resource": "Resource",
+      "source": "Bestand",
+      "managed-fields": "Beheerde velden",
+      "whole-resource": "Alle velden",
+      "ignored-fields": "Hier bewerkbaar",
+      "serial": "Volgnummer",
+      "last-apply": "Laatst toegepast",
+      "applied-by": "Toegepast door",
+      "nothing-managed": "Er is geen configuratie toegepast. Alles wordt hier ingesteld."
+    },
     "sso": {
       "authorization-endpoint": "Autorisatie-eindpunt",
       "client-id": "Client-ID",

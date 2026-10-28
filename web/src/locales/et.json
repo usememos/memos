@@ -644,6 +644,21 @@
       "delete-success": "Vaade `{{title}}` kustutati edukalt",
       "change-icon": "Muuda vaate ikooni"
     },
+    "configuration": {
+      "label": "Konfiguratsioon",
+      "description": "Konfiguratsioonifailidega määratud ressursid. Nende muutmiseks muutke faili ja rakendage see; ülejäänud eksemplar jääb siin muudetavaks.",
+      "managed-by": "Hallatud konfiguratsiooniga",
+      "managed-tooltip": "Määratud failis {{source}}. Selle muutmiseks muutke faili ja rakendage see.",
+      "resource": "Ressurss",
+      "source": "Fail",
+      "managed-fields": "Hallatud väljad",
+      "whole-resource": "Kõik väljad",
+      "ignored-fields": "Siin muudetav",
+      "serial": "Järjekorranumber",
+      "last-apply": "Viimati rakendatud",
+      "applied-by": "Rakendaja",
+      "nothing-managed": "Konfiguratsiooni pole rakendatud. Kõik määratakse siin."
+    },
     "sso": {
       "account": "konto",
       "accounts-description": "Vaadake üle iga identiteedipakkuja, vaadake praegust lingi olekut ja ühendage selle kontoga välised identiteedid või ühendage need lahti.",

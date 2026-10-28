@@ -528,6 +528,21 @@
       "delete-success": "Visning `{{title}}` slettet vellykket",
       "change-icon": "Endre visningsikon"
     },
+    "configuration": {
+      "label": "Konfigurasjon",
+      "description": "Ressurser som er satt av konfigurasjonsfiler. Rediger en fil og bruk den for å endre dem; resten av instansen kan fortsatt redigeres her.",
+      "managed-by": "Styrt av konfigurasjon",
+      "managed-tooltip": "Satt i {{source}}. Rediger filen og bruk den for å endre dette.",
+      "resource": "Ressurs",
+      "source": "Fil",
+      "managed-fields": "Styrte felt",
+      "whole-resource": "Alle felt",
+      "ignored-fields": "Kan redigeres her",
+      "serial": "Serienummer",
+      "last-apply": "Sist brukt",
+      "applied-by": "Brukt av",
+      "nothing-managed": "Ingen konfigurasjon er brukt. Alt stilles inn her."
+    },
     "sso": {
       "authorization-endpoint": "Autorisasjon endepunkt",
       "client-id": "Klient-ID",

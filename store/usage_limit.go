@@ -113,19 +113,14 @@ func ValidateInstanceUsageLimitsSetting(setting *storepb.InstanceUsageLimitsSett
 	return nil
 }
 
-// GetInstanceUsageLimitsSetting returns the usage limits setting. A deployment
-// file takes precedence over the database. The database row is read directly,
-// without the instance setting cache, so a change made through any replica
-// applies at the next check on every replica. An absent setting is
-// DefaultInstanceUsageLimitsSetting.
+// GetInstanceUsageLimitsSetting returns the usage limits setting. The database
+// row is read directly, without the instance setting cache, so a change made
+// through any replica applies at the next check on every replica. An absent
+// setting is DefaultInstanceUsageLimitsSetting.
 func (s *Store) GetInstanceUsageLimitsSetting(ctx context.Context) (*storepb.InstanceUsageLimitsSetting, error) {
-	instanceSetting := s.getDeploymentInstanceSetting(storepb.InstanceSettingKey_USAGE_LIMITS)
-	if instanceSetting == nil {
-		var err error
-		instanceSetting, err = s.getRawInstanceSetting(ctx, storepb.InstanceSettingKey_USAGE_LIMITS.String())
-		if err != nil {
-			return nil, errors.Wrap(err, "failed to get usage limits setting")
-		}
+	instanceSetting, err := s.GetUncachedInstanceSetting(ctx, &FindInstanceSetting{Name: storepb.InstanceSettingKey_USAGE_LIMITS.String()})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get usage limits setting")
 	}
 	if setting := instanceSetting.GetUsageLimitsSetting(); setting != nil {
 		if err := ValidateInstanceUsageLimitsSetting(setting); err != nil {
@@ -137,11 +132,9 @@ func (s *Store) GetInstanceUsageLimitsSetting(ctx context.Context) (*storepb.Ins
 }
 
 // RemoveUserFromUsageLimits drops userID from every entry of the stored usage
-// limits, and drops entries left without users. It does nothing when the
-// limits come from a deployment file, because the store cannot change them;
-// an entry naming a missing user never matches anyone.
+// limits, and drops entries left without users.
 func (s *Store) RemoveUserFromUsageLimits(ctx context.Context, userID int32) error {
-	if userID == 0 || s.IsInstanceSettingDeploymentConfigured(storepb.InstanceSettingKey_USAGE_LIMITS) {
+	if userID == 0 {
 		return nil
 	}
 	name := storepb.InstanceSettingKey_USAGE_LIMITS.String()

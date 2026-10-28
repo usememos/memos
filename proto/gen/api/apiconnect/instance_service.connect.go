@@ -52,6 +52,9 @@ const (
 	// InstanceServiceGetInstanceStatsProcedure is the fully-qualified name of the InstanceService's
 	// GetInstanceStats RPC.
 	InstanceServiceGetInstanceStatsProcedure = "/memos.api.InstanceService/GetInstanceStats"
+	// InstanceServiceGetConfigurationStatusProcedure is the fully-qualified name of the
+	// InstanceService's GetConfigurationStatus RPC.
+	InstanceServiceGetConfigurationStatusProcedure = "/memos.api.InstanceService/GetConfigurationStatus"
 )
 
 // InstanceServiceClient is a client for the memos.api.InstanceService service.
@@ -64,13 +67,16 @@ type InstanceServiceClient interface {
 	// BatchGetInstanceSettings gets up to 100 instance settings in request order, with the same access rules as
 	// GetInstanceSetting. The call fails if any setting cannot be returned.
 	BatchGetInstanceSettings(context.Context, *connect.Request[api.BatchGetInstanceSettingsRequest]) (*connect.Response[api.BatchGetInstanceSettingsResponse], error)
-	// UpdateInstanceSetting replaces an instance setting. Admin only. Settings configured by the deployment cannot be
-	// updated. Empty write-only credentials keep the stored values.
+	// UpdateInstanceSetting replaces an instance setting. Admin only. Fields declarative configuration manages cannot be
+	// changed. Empty write-only credentials keep the stored values.
 	UpdateInstanceSetting(context.Context, *connect.Request[api.UpdateInstanceSettingRequest]) (*connect.Response[api.InstanceSetting], error)
 	// TestInstanceEmailSetting sends a test email with the provided or stored SMTP settings. Admin only.
 	TestInstanceEmailSetting(context.Context, *connect.Request[api.TestInstanceEmailSettingRequest]) (*connect.Response[emptypb.Empty], error)
 	// GetInstanceStats gets resource usage statistics for the instance. Admin only. Results are cached for 60 seconds.
 	GetInstanceStats(context.Context, *connect.Request[api.GetInstanceStatsRequest]) (*connect.Response[api.InstanceStats], error)
+	// GetConfigurationStatus gets what declarative configuration manages: the managed resources and the last apply.
+	// Admin only. It carries resource names and field paths, never a configured value.
+	GetConfigurationStatus(context.Context, *connect.Request[api.GetConfigurationStatusRequest]) (*connect.Response[api.ConfigurationStatus], error)
 }
 
 // NewInstanceServiceClient constructs a client for the memos.api.InstanceService service. By
@@ -120,6 +126,12 @@ func NewInstanceServiceClient(httpClient connect.HTTPClient, baseURL string, opt
 			connect.WithSchema(instanceServiceMethods.ByName("GetInstanceStats")),
 			connect.WithClientOptions(opts...),
 		),
+		getConfigurationStatus: connect.NewClient[api.GetConfigurationStatusRequest, api.ConfigurationStatus](
+			httpClient,
+			baseURL+InstanceServiceGetConfigurationStatusProcedure,
+			connect.WithSchema(instanceServiceMethods.ByName("GetConfigurationStatus")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -131,6 +143,7 @@ type instanceServiceClient struct {
 	updateInstanceSetting    *connect.Client[api.UpdateInstanceSettingRequest, api.InstanceSetting]
 	testInstanceEmailSetting *connect.Client[api.TestInstanceEmailSettingRequest, emptypb.Empty]
 	getInstanceStats         *connect.Client[api.GetInstanceStatsRequest, api.InstanceStats]
+	getConfigurationStatus   *connect.Client[api.GetConfigurationStatusRequest, api.ConfigurationStatus]
 }
 
 // GetInstanceProfile calls memos.api.InstanceService.GetInstanceProfile.
@@ -163,6 +176,11 @@ func (c *instanceServiceClient) GetInstanceStats(ctx context.Context, req *conne
 	return c.getInstanceStats.CallUnary(ctx, req)
 }
 
+// GetConfigurationStatus calls memos.api.InstanceService.GetConfigurationStatus.
+func (c *instanceServiceClient) GetConfigurationStatus(ctx context.Context, req *connect.Request[api.GetConfigurationStatusRequest]) (*connect.Response[api.ConfigurationStatus], error) {
+	return c.getConfigurationStatus.CallUnary(ctx, req)
+}
+
 // InstanceServiceHandler is an implementation of the memos.api.InstanceService service.
 type InstanceServiceHandler interface {
 	// GetInstanceProfile gets the instance profile. Available without authentication, including on a private instance.
@@ -173,13 +191,16 @@ type InstanceServiceHandler interface {
 	// BatchGetInstanceSettings gets up to 100 instance settings in request order, with the same access rules as
 	// GetInstanceSetting. The call fails if any setting cannot be returned.
 	BatchGetInstanceSettings(context.Context, *connect.Request[api.BatchGetInstanceSettingsRequest]) (*connect.Response[api.BatchGetInstanceSettingsResponse], error)
-	// UpdateInstanceSetting replaces an instance setting. Admin only. Settings configured by the deployment cannot be
-	// updated. Empty write-only credentials keep the stored values.
+	// UpdateInstanceSetting replaces an instance setting. Admin only. Fields declarative configuration manages cannot be
+	// changed. Empty write-only credentials keep the stored values.
 	UpdateInstanceSetting(context.Context, *connect.Request[api.UpdateInstanceSettingRequest]) (*connect.Response[api.InstanceSetting], error)
 	// TestInstanceEmailSetting sends a test email with the provided or stored SMTP settings. Admin only.
 	TestInstanceEmailSetting(context.Context, *connect.Request[api.TestInstanceEmailSettingRequest]) (*connect.Response[emptypb.Empty], error)
 	// GetInstanceStats gets resource usage statistics for the instance. Admin only. Results are cached for 60 seconds.
 	GetInstanceStats(context.Context, *connect.Request[api.GetInstanceStatsRequest]) (*connect.Response[api.InstanceStats], error)
+	// GetConfigurationStatus gets what declarative configuration manages: the managed resources and the last apply.
+	// Admin only. It carries resource names and field paths, never a configured value.
+	GetConfigurationStatus(context.Context, *connect.Request[api.GetConfigurationStatusRequest]) (*connect.Response[api.ConfigurationStatus], error)
 }
 
 // NewInstanceServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -225,6 +246,12 @@ func NewInstanceServiceHandler(svc InstanceServiceHandler, opts ...connect.Handl
 		connect.WithSchema(instanceServiceMethods.ByName("GetInstanceStats")),
 		connect.WithHandlerOptions(opts...),
 	)
+	instanceServiceGetConfigurationStatusHandler := connect.NewUnaryHandler(
+		InstanceServiceGetConfigurationStatusProcedure,
+		svc.GetConfigurationStatus,
+		connect.WithSchema(instanceServiceMethods.ByName("GetConfigurationStatus")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/memos.api.InstanceService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case InstanceServiceGetInstanceProfileProcedure:
@@ -239,6 +266,8 @@ func NewInstanceServiceHandler(svc InstanceServiceHandler, opts ...connect.Handl
 			instanceServiceTestInstanceEmailSettingHandler.ServeHTTP(w, r)
 		case InstanceServiceGetInstanceStatsProcedure:
 			instanceServiceGetInstanceStatsHandler.ServeHTTP(w, r)
+		case InstanceServiceGetConfigurationStatusProcedure:
+			instanceServiceGetConfigurationStatusHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -270,4 +299,8 @@ func (UnimplementedInstanceServiceHandler) TestInstanceEmailSetting(context.Cont
 
 func (UnimplementedInstanceServiceHandler) GetInstanceStats(context.Context, *connect.Request[api.GetInstanceStatsRequest]) (*connect.Response[api.InstanceStats], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.InstanceService.GetInstanceStats is not implemented"))
+}
+
+func (UnimplementedInstanceServiceHandler) GetConfigurationStatus(context.Context, *connect.Request[api.GetConfigurationStatusRequest]) (*connect.Response[api.ConfigurationStatus], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.InstanceService.GetConfigurationStatus is not implemented"))
 }

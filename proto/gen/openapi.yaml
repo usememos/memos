@@ -507,6 +507,27 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/instance/configuration:
+        get:
+            tags:
+                - InstanceService
+            description: |-
+                GetConfigurationStatus gets what declarative configuration manages: the managed resources and the last apply.
+                 Admin only. It carries resource names and field paths, never a configured value.
+            operationId: InstanceService_GetConfigurationStatus
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ConfigurationStatus'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/instance/profile:
         get:
             tags:
@@ -626,8 +647,8 @@ paths:
             tags:
                 - InstanceService
             description: |-
-                UpdateInstanceSetting replaces an instance setting. Admin only. Settings configured by the deployment cannot be
-                 updated. Empty write-only credentials keep the stored values.
+                UpdateInstanceSetting replaces an instance setting. Admin only. Fields declarative configuration manages cannot be
+                 changed. Empty write-only credentials keep the stored values.
             operationId: InstanceService_UpdateInstanceSetting
             parameters:
                 - name: instance
@@ -3507,6 +3528,53 @@ components:
                      };
 
                      // ...
+        ConfigurationStatus:
+            type: object
+            properties:
+                serial:
+                    type: string
+                    description: The state record serial; zero before any apply has changed something.
+                configDigest:
+                    type: string
+                    description: Identifies the applied configuration, with sensitive values masked before hashing.
+                appliedBy:
+                    type: string
+                    description: The apply path ("cli" or "startup") and the host of the last apply.
+                version:
+                    type: string
+                    description: The Memos version of the last apply.
+                managedResources:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ConfigurationStatus_ManagedResource'
+                    description: The resources the configuration manages.
+                applyTime:
+                    type: string
+                    description: When the last apply that changed something ran.
+                    format: date-time
+            description: ConfigurationStatus is what declarative configuration manages on the instance.
+        ConfigurationStatus_ManagedResource:
+            type: object
+            properties:
+                resource:
+                    type: string
+                    description: |-
+                        The resource name.
+                         Format: identity-providers/{idp}, instance/settings/{setting}, or users/{user}
+                source:
+                    type: string
+                    description: The configuration file that declares the resource.
+                managedFields:
+                    type: array
+                    items:
+                        type: string
+                    description: The field paths, in JSON names, the configuration manages; "*" means the whole resource.
+                ignoredFields:
+                    type: array
+                    items:
+                        type: string
+                    description: The managed field paths the configuration does not write after creation, so the API accepts edits to them.
+            description: ManagedResource is one resource the configuration manages.
         CreateLinkedIdentityRequest:
             required:
                 - parent

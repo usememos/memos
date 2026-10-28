@@ -528,6 +528,21 @@
       "delete-success": "ビュー `{{title}}` を削除しました",
       "change-icon": "ビューのアイコンを変更"
     },
+    "configuration": {
+      "label": "構成",
+      "description": "構成ファイルで設定されたリソースです。変更するにはファイルを編集して適用してください。インスタンスのその他の部分は引き続きここで編集できます。",
+      "managed-by": "構成で管理",
+      "managed-tooltip": "{{source}} で設定されています。変更するにはファイルを編集して適用してください。",
+      "resource": "リソース",
+      "source": "ファイル",
+      "managed-fields": "管理対象のフィールド",
+      "whole-resource": "すべてのフィールド",
+      "ignored-fields": "ここで編集可能",
+      "serial": "シリアル",
+      "last-apply": "最終適用",
+      "applied-by": "適用者",
+      "nothing-managed": "構成はまだ適用されていません。すべてここで設定します。"
+    },
     "sso": {
       "authorization-endpoint": "認証エンドポイント",
       "client-id": "クライアントID",

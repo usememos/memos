@@ -13,6 +13,7 @@ import (
 
 	apipb "github.com/usememos/memos/proto/gen/api"
 	storepb "github.com/usememos/memos/proto/gen/store"
+	"github.com/usememos/memos/store"
 )
 
 func TestGetInstanceProfile(t *testing.T) {
@@ -526,7 +527,7 @@ func TestUpdateInstanceSetting(t *testing.T) {
 		bothEncryptions.UseSsl = true
 		err = update(bothEncryptions)
 		require.Equal(t, codes.InvalidArgument, status.Code(err))
-		require.Contains(t, err.Error(), "cannot enable both useTls and useSsl")
+		require.Contains(t, err.Error(), "cannot enable both use_tls and use_ssl")
 
 		for name, mutate := range map[string]func(*apipb.InstanceSetting_NotificationSetting_EmailSetting){
 			"host": func(e *apipb.InstanceSetting_NotificationSetting_EmailSetting) { e.SmtpHost = " " },
@@ -537,7 +538,7 @@ func TestUpdateInstanceSetting(t *testing.T) {
 			mutate(email)
 			err := update(email)
 			require.Equal(t, codes.InvalidArgument, status.Code(err), "missing %s", name)
-			require.Contains(t, err.Error(), "requires smtpHost", "missing %s", name)
+			require.Contains(t, err.Error(), "requires smtp_host", "missing %s", name)
 		}
 
 		require.NoError(t, update(valid()))
@@ -1133,4 +1134,69 @@ func TestUpdateInstanceSetting(t *testing.T) {
 		require.Equal(t, "en", stored.GetTranscription().GetLanguage())
 		require.Equal(t, "names: Alice", stored.GetTranscription().GetPrompt())
 	})
+}
+
+func TestUpdateInstanceSettingValidatesStorages(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+	hostUser, err := ts.CreateHostUser(ctx, "admin")
+	require.NoError(t, err)
+	adminCtx := ts.CreateUserContext(ctx, hostUser.ID)
+
+	update := func(storages []*apipb.InstanceSetting_Storage, defaultID string) error {
+		_, err := ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{
+			InstanceSetting: &apipb.InstanceSetting{
+				Name: "instance/settings/STORAGE",
+				Value: &apipb.InstanceSetting_StorageSetting_{StorageSetting: &apipb.InstanceSetting_StorageSetting{
+					Storages:         storages,
+					DefaultStorageId: defaultID,
+				}},
+			},
+		})
+		return err
+	}
+	local := &apipb.InstanceSetting_Storage{Id: "local", Type: apipb.InstanceSetting_LOCAL}
+	archive := &apipb.InstanceSetting_Storage{
+		Id:   "archive",
+		Type: apipb.InstanceSetting_S3,
+		Config: &apipb.InstanceSetting_Storage_S3Config_{S3Config: &apipb.InstanceSetting_Storage_S3Config{
+			AccessKeyId: "AKID", AccessKeySecret: "secret", Endpoint: "https://s3.example.com", Bucket: "memos",
+		}},
+	}
+
+	// A non-default S3 storage without a region would fail on first use.
+	err = update([]*apipb.InstanceSetting_Storage{local, archive}, "local")
+	require.Equal(t, codes.InvalidArgument, status.Code(err))
+	require.Contains(t, err.Error(), "storage archive region is required")
+
+	archive.GetS3Config().Region = "us-east-1"
+	require.NoError(t, update([]*apipb.InstanceSetting_Storage{local, archive}, "local"))
+}
+
+func TestConfigurationStateIsNotExposed(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+	hostUser, err := ts.CreateHostUser(ctx, "admin")
+	require.NoError(t, err)
+	adminCtx := ts.CreateUserContext(ctx, hostUser.ID)
+
+	_, err = ts.Store.RunConfigurationTransaction(ctx, func(context.Context, *store.ConfigurationTransaction) (*storepb.InstanceConfigurationState, error) {
+		return &storepb.InstanceConfigurationState{ConfigDigest: "digest"}, nil
+	})
+	require.NoError(t, err)
+
+	const name = "instance/settings/CONFIGURATION_STATE"
+	_, err = ts.Service.GetInstanceSetting(adminCtx, &apipb.GetInstanceSettingRequest{Name: name})
+	require.Equal(t, codes.InvalidArgument, status.Code(err))
+	_, err = ts.Service.BatchGetInstanceSettings(adminCtx, &apipb.BatchGetInstanceSettingsRequest{Names: []string{name}})
+	require.Equal(t, codes.InvalidArgument, status.Code(err))
+	_, err = ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{InstanceSetting: &apipb.InstanceSetting{Name: name}})
+	require.Equal(t, codes.InvalidArgument, status.Code(err))
+	require.Contains(t, err.Error(), "state record and cannot be written")
+
+	state, err := ts.Store.GetConfigurationState(ctx)
+	require.NoError(t, err)
+	require.Equal(t, "digest", state.ConfigDigest, "the API did not overwrite the record")
 }

@@ -439,6 +439,21 @@
       "delete-success": "Vista `{{title}}` excluída com sucesso",
       "change-icon": "Alterar ícone de visualização"
     },
+    "configuration": {
+      "label": "Configuração",
+      "description": "Recursos definidos por arquivos de configuração. Edite um arquivo e aplique-o para alterá-los; o restante da instância continua editável aqui.",
+      "managed-by": "Gerenciado pela configuração",
+      "managed-tooltip": "Definido em {{source}}. Edite o arquivo e aplique-o para alterar isto.",
+      "resource": "Recurso",
+      "source": "Arquivo",
+      "managed-fields": "Campos gerenciados",
+      "whole-resource": "Todos os campos",
+      "ignored-fields": "Editáveis aqui",
+      "serial": "Número de série",
+      "last-apply": "Última aplicação",
+      "applied-by": "Aplicado por",
+      "nothing-managed": "Nenhuma configuração foi aplicada. Tudo é definido aqui."
+    },
     "sso": {
       "authorization-endpoint": "Endpoint de autenticação",
       "client-id": "ID do cliente",

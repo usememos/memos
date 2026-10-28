@@ -439,6 +439,21 @@
       "delete-success": "Tampilan `{{title}}` berhasil dihapus",
       "change-icon": "Mengubah ikon tampilan"
     },
+    "configuration": {
+      "label": "Konfigurasi",
+      "description": "Sumber daya yang diatur oleh berkas konfigurasi. Sunting berkas lalu terapkan untuk mengubahnya; bagian lain instans tetap dapat disunting di sini.",
+      "managed-by": "Dikelola oleh konfigurasi",
+      "managed-tooltip": "Diatur di {{source}}. Sunting berkas lalu terapkan untuk mengubahnya.",
+      "resource": "Sumber daya",
+      "source": "Berkas",
+      "managed-fields": "Bidang yang dikelola",
+      "whole-resource": "Semua bidang",
+      "ignored-fields": "Dapat disunting di sini",
+      "serial": "Nomor seri",
+      "last-apply": "Terakhir diterapkan",
+      "applied-by": "Diterapkan oleh",
+      "nothing-managed": "Belum ada konfigurasi yang diterapkan. Semuanya diatur di sini."
+    },
     "sso": {
       "authorization-endpoint": "Akhir Otorisasi",
       "client-id": "ID Klien",

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -16,6 +17,7 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 
+	coreuser "github.com/usememos/memos/core/user"
 	"github.com/usememos/memos/internal/clientip"
 	"github.com/usememos/memos/internal/ratelimit"
 	apipb "github.com/usememos/memos/proto/gen/api"
@@ -32,13 +34,6 @@ const (
 	// base64-encoded (4/3 expansion) plus the "data:<type>;base64," prefix.
 	maxAvatarDataURIBytes = maxAvatarImageBytes/3*4 + 256
 )
-
-func validatePassword(password string) error {
-	if password == "" {
-		return errors.New("password must not be empty")
-	}
-	return nil
-}
 
 func validateUserTagsSetting(setting *apipb.UserSetting_TagsSetting) error {
 	if setting == nil {
@@ -215,10 +210,10 @@ func (s *APIService) CreateUser(ctx context.Context, request *apipb.CreateUserRe
 	if request.UserId != "" && request.UserId != request.User.Username {
 		return nil, status.Errorf(codes.InvalidArgument, "user_id must match user.username")
 	}
-	if err := validateWritableUsername(request.User.Username); err != nil {
+	if err := coreuser.ValidateUsername(request.User.Username); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := validatePassword(request.User.Password); err != nil {
+	if err := coreuser.ValidatePassword(request.User.Password); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 	email, err := store.NormalizeEmail(request.User.Email)
@@ -278,7 +273,7 @@ func (s *APIService) CreateUser(ctx context.Context, request *apipb.CreateUserRe
 	}
 
 	// Self-service registration is bounded per address, may require a challenge,
-	// and may be vetoed by the deployment's signup policy. Admin creation and
+	// and may be vetoed by the instance's signup policy. Admin creation and
 	// first-user setup are not.
 	if currentUser == nil || currentUser.Role != store.RoleAdmin {
 		clientIP := clientip.FromContext(ctx)
@@ -373,6 +368,10 @@ func (s *APIService) UpdateUser(ctx context.Context, request *apipb.UpdateUserRe
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
+	if err := s.checkManagedUserChange(ctx, user, request); err != nil {
+		return nil, err
+	}
+
 	currentTsSec := time.Now().Unix()
 	update := &store.UpdateUser{
 		ID:        user.ID,
@@ -389,7 +388,7 @@ func (s *APIService) UpdateUser(ctx context.Context, request *apipb.UpdateUserRe
 			if instanceGeneralSetting.DisallowChangeUsername {
 				return nil, status.Errorf(codes.PermissionDenied, "permission denied: disallow change username")
 			}
-			if err := validateWritableUsername(request.User.Username); err != nil {
+			if err := coreuser.ValidateUsername(request.User.Username); err != nil {
 				return nil, status.Errorf(codes.InvalidArgument, "%v", err)
 			}
 			update.Username = &request.User.Username
@@ -437,7 +436,7 @@ func (s *APIService) UpdateUser(ctx context.Context, request *apipb.UpdateUserRe
 			role := convertUserRoleToStore(request.User.Role)
 			update.Role = &role
 		case "password":
-			if err := validatePassword(request.User.Password); err != nil {
+			if err := coreuser.ValidatePassword(request.User.Password); err != nil {
 				return nil, status.Errorf(codes.InvalidArgument, "%v", err)
 			}
 			passwordHash, err := bcrypt.GenerateFromPassword([]byte(request.User.Password), bcrypt.DefaultCost)
@@ -504,6 +503,12 @@ func (s *APIService) DeleteUser(ctx context.Context, request *apipb.DeleteUserRe
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 	isSelfDelete := currentUser.ID == userID
+	if err := s.checkManagedExistence(ctx, BuildUserName(user.Username)); err != nil {
+		return nil, err
+	}
+	if err := s.checkManagedReference(ctx, BuildUserName(user.Username)); err != nil {
+		return nil, err
+	}
 
 	deleteResult, err := s.Store.DeleteUser(ctx, &store.DeleteUser{
 		ID: user.ID,
@@ -532,6 +537,41 @@ func (s *APIService) DeleteUser(ctx context.Context, request *apipb.DeleteUserRe
 const emailTakenMessage = "email is already in use"
 
 const lastInstanceAdminMessage = "the instance must retain an active administrator"
+
+// checkManagedUserChange refuses an update that changes the fields of a user
+// the configuration manages: username, role, and the profile fields its file
+// declares. The password is write-only and never refused. A rename is also
+// refused while a managed resource names the user.
+func (s *APIService) checkManagedUserChange(ctx context.Context, user *store.User, request *apipb.UpdateUserRequest) error {
+	changed := []string{}
+	for _, path := range request.UpdateMask.Paths {
+		switch path {
+		case "username":
+			if request.User.Username != user.Username {
+				changed = append(changed, "username")
+			}
+		case "display_name":
+			if request.User.DisplayName != user.Nickname {
+				changed = append(changed, "displayName")
+			}
+		case "email":
+			if email, err := store.NormalizeEmail(request.User.Email); err != nil || email != user.Email {
+				changed = append(changed, "email")
+			}
+		case "role":
+			if convertUserRoleToStore(request.User.Role) != user.Role {
+				changed = append(changed, "role")
+			}
+		default:
+		}
+	}
+	if slices.Contains(changed, "username") {
+		if err := s.checkManagedReference(ctx, BuildUserName(user.Username)); err != nil {
+			return err
+		}
+	}
+	return s.checkManagedChange(ctx, BuildUserName(user.Username), changed)
+}
 
 // convertUserWriteError maps the store's uniqueness sentinels onto
 // AlreadyExists and everything else onto Internal with the given context.

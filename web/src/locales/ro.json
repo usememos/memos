@@ -644,6 +644,21 @@
       "delete-success": "Vizualizarea `{{title}}` a fost ștearsă cu succes",
       "change-icon": "Schimbă pictograma vizualizării"
     },
+    "configuration": {
+      "label": "Configurație",
+      "description": "Resurse setate prin fișiere de configurație. Editați un fișier și aplicați-l pentru a le modifica; restul instanței rămâne editabil aici.",
+      "managed-by": "Gestionat prin configurație",
+      "managed-tooltip": "Setat în {{source}}. Editați fișierul și aplicați-l pentru a modifica acest lucru.",
+      "resource": "Resursă",
+      "source": "Fișier",
+      "managed-fields": "Câmpuri gestionate",
+      "whole-resource": "Toate câmpurile",
+      "ignored-fields": "Editabile aici",
+      "serial": "Număr de serie",
+      "last-apply": "Ultima aplicare",
+      "applied-by": "Aplicat de",
+      "nothing-managed": "Nu a fost aplicată nicio configurație. Totul se setează aici."
+    },
     "sso": {
       "account": "Cont",
       "accounts-description": "Examinați fiecare furnizor de identitate, vedeți starea actuală a conexiunii și conectați sau deconectați identitățile externe de la acest cont.",

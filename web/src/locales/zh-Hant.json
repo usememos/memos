@@ -685,6 +685,21 @@
       "delete-success": "檢視 `{{title}}` 刪除成功",
       "change-icon": "變更檢視圖示"
     },
+    "configuration": {
+      "label": "設定檔",
+      "description": "由設定檔設定的資源。若要變更，請編輯檔案並套用；執行個體的其餘部分仍可在此編輯。",
+      "managed-by": "由設定檔管理",
+      "managed-tooltip": "在 {{source}} 中設定。若要變更，請編輯該檔案並套用。",
+      "resource": "資源",
+      "source": "檔案",
+      "managed-fields": "受管理的欄位",
+      "whole-resource": "所有欄位",
+      "ignored-fields": "可在此編輯",
+      "serial": "序號",
+      "last-apply": "上次套用",
+      "applied-by": "套用者",
+      "nothing-managed": "尚未套用任何設定。所有設定都在這裡完成。"
+    },
     "sso": {
       "account": "帳號",
       "accounts-description": "檢視每個身分識別提供者、查看目前的連結狀態，並從此帳號連接或斷開外部身分。",

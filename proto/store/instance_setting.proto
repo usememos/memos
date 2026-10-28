@@ -27,6 +27,10 @@ enum InstanceSettingKey {
   // USAGE_LIMITS is the key for the ordered usage limits list, read and
   // replaced whole through the instance settings API.
   USAGE_LIMITS = 9;
+  // CONFIGURATION_STATE is the key for the declarative configuration state
+  // record. It is state, not a setting: the instance settings API never reads
+  // or writes it, and configuration files cannot declare it.
+  CONFIGURATION_STATE = 10;
 }
 
 message InstanceSetting {
@@ -267,5 +271,54 @@ message InstanceUsageLimitsSetting {
     optional int64 storage_bytes = 6;
     // upload_bytes limits the size of one uploaded file.
     optional int64 upload_bytes = 7;
+  }
+}
+
+// InstanceConfigurationState is the declarative configuration state record: which
+// resources the configuration manages and when it was last applied. It holds no
+// configured value.
+message InstanceConfigurationState {
+  // serial increases by one with every apply that changes something.
+  int64 serial = 1;
+  // config_digest identifies the applied configuration, with sensitive and
+  // write-only values masked before hashing.
+  string config_digest = 2;
+  // applied_ts is the Unix time of the last apply that changed something.
+  int64 applied_ts = 3;
+  // applied_by names the apply path ("cli" or "startup") and the host.
+  string applied_by = 4;
+  // version is the Memos version that applied.
+  string version = 5;
+  // resources are the managed resources.
+  repeated ManagedResource resources = 6;
+
+  // ManagedResource is one resource the configuration manages.
+  message ManagedResource {
+    // name is the API resource name, such as identity-providers/company-sso.
+    string name = 1;
+    // kind is IdentityProvider, InstanceSetting, or User.
+    string kind = 2;
+    // source is the configuration file that declares the resource.
+    string source = 3;
+    // managed_fields are the JSON-name field paths the configuration manages;
+    // "*" means the whole resource.
+    repeated string managed_fields = 4;
+    // write_only_version is the lifecycle write_only_version last applied.
+    int32 write_only_version = 5;
+    // applied_ts is the Unix time the resource was last written by an apply.
+    int64 applied_ts = 6;
+    // ignored_fields are the lifecycle ignore_changes paths: covered by
+    // managed_fields, but neither written after creation nor protected.
+    repeated string ignored_fields = 7;
+    // digest identifies the declared value last applied, with sensitive and
+    // write-only values masked, so a later plan can tell drift from a file change.
+    string digest = 8;
+    // prevent_destroy is the lifecycle prevent_destroy last applied. A removed
+    // entry cannot destroy the resource until an apply has cleared it.
+    bool prevent_destroy = 9;
+    // references are the resource names the declaration names, such as the
+    // users a usage-limits setting lists. The API cannot rename or delete them
+    // while the resource is managed, since the next plan could not resolve them.
+    repeated string references = 10;
   }
 }

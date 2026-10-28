@@ -64,6 +64,14 @@ func (s *ConnectServiceHandler) GetInstanceStats(ctx context.Context, req *conne
 	return connect.NewResponse(resp), nil
 }
 
+func (s *ConnectServiceHandler) GetConfigurationStatus(ctx context.Context, req *connect.Request[apipb.GetConfigurationStatusRequest]) (*connect.Response[apipb.ConfigurationStatus], error) {
+	resp, err := s.APIService.GetConfigurationStatus(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
 // AuthService
 //
 // Auth service methods need special handling for response headers (cookies).

@@ -528,6 +528,21 @@
       "delete-success": "Widok `{{title}}` usunięty pomyślnie",
       "change-icon": "Zmień ikonę widoku"
     },
+    "configuration": {
+      "label": "Konfiguracja",
+      "description": "Zasoby ustawione w plikach konfiguracyjnych. Aby je zmienić, edytuj plik i zastosuj go; reszta instancji pozostaje tu edytowalna.",
+      "managed-by": "Zarządzane przez konfigurację",
+      "managed-tooltip": "Ustawione w {{source}}. Aby to zmienić, edytuj plik i zastosuj go.",
+      "resource": "Zasób",
+      "source": "Plik",
+      "managed-fields": "Zarządzane pola",
+      "whole-resource": "Wszystkie pola",
+      "ignored-fields": "Edytowalne tutaj",
+      "serial": "Numer seryjny",
+      "last-apply": "Ostatnio zastosowano",
+      "applied-by": "Zastosował",
+      "nothing-managed": "Nie zastosowano żadnej konfiguracji. Wszystko ustawia się tutaj."
+    },
     "sso": {
       "authorization-endpoint": "Endpoint autoryzacji",
       "client-id": "ID klienta",

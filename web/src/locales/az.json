@@ -838,6 +838,21 @@
       "delete-confirm": "`{{title}}` görünüşünü silmək istədiyinizə əminsiniz?",
       "delete-success": "`{{title}}` görünüşü silindi"
     },
+    "configuration": {
+      "label": "Konfiqurasiya",
+      "description": "Konfiqurasiya faylları ilə təyin olunan resurslar. Onları dəyişmək üçün faylı redaktə edib tətbiq edin; nümunənin qalan hissəsi burada redaktə oluna bilər.",
+      "managed-by": "Konfiqurasiya ilə idarə olunur",
+      "managed-tooltip": "{{source}} faylında təyin olunub. Bunu dəyişmək üçün faylı redaktə edib tətbiq edin.",
+      "resource": "Resurs",
+      "source": "Fayl",
+      "managed-fields": "İdarə olunan sahələr",
+      "whole-resource": "Bütün sahələr",
+      "ignored-fields": "Burada redaktə oluna bilər",
+      "serial": "Seriya nömrəsi",
+      "last-apply": "Son tətbiq",
+      "applied-by": "Tətbiq edən",
+      "nothing-managed": "Heç bir konfiqurasiya tətbiq olunmayıb. Hər şey burada təyin olunur."
+    },
     "sso": {
       "account": "Hesab",
       "accounts-description": "Hər kimlik provayderini nəzərdən keçirin, cari bağlantı vəziyyətini görün və xarici kimlikləri bu hesaba qoşun və ya ondan ayırın.",

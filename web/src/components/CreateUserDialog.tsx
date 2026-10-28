@@ -8,10 +8,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { userServiceClient } from "@/connect";
+import { isFieldManaged, useManagedResource } from "@/hooks/useConfigurationQueries";
 import useLoading from "@/hooks/useLoading";
 import { handleError } from "@/lib/error";
 import { User, User_Role, UserSchema } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
+import ManagedByConfigurationChip from "./Settings/ManagedByConfigurationChip";
 
 interface Props {
   open: boolean;
@@ -27,6 +29,8 @@ function CreateUserDialog({ open, onOpenChange, user: initialUser, onSuccess }: 
   );
   const requestState = useLoading(false);
   const isCreating = !initialUser;
+  // The password is write-only, so configuration never locks it.
+  const managed = useManagedResource(initialUser?.name ?? "");
 
   useEffect(() => {
     if (initialUser) {
@@ -85,6 +89,11 @@ function CreateUserDialog({ open, onOpenChange, user: initialUser, onSuccess }: 
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>{`${isCreating ? t("common.create") : t("common.edit")} ${t("common.user")}`}</DialogTitle>
+          {managed ? (
+            <div className="flex">
+              <ManagedByConfigurationChip resource={managed} />
+            </div>
+          ) : null}
         </DialogHeader>
         <div className="flex flex-col gap-4">
           <div className="grid gap-2">
@@ -93,6 +102,7 @@ function CreateUserDialog({ open, onOpenChange, user: initialUser, onSuccess }: 
               id="username"
               type="text"
               placeholder={t("common.username")}
+              disabled={isFieldManaged(managed, "username")}
               value={user.username}
               onChange={(e) =>
                 setPartialUser({
@@ -119,6 +129,7 @@ function CreateUserDialog({ open, onOpenChange, user: initialUser, onSuccess }: 
           <div className="grid gap-2">
             <Label>{t("common.role")}</Label>
             <RadioGroup
+              disabled={isFieldManaged(managed, "role")}
               value={String(user.role)}
               onValueChange={(value) => setPartialUser({ role: Number(value) as User_Role })}
               className="flex flex-row gap-4"

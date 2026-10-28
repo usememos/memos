@@ -10,6 +10,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	coreuser "github.com/usememos/memos/core/user"
 	"github.com/usememos/memos/internal/random"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/provider/idp"
@@ -163,7 +164,7 @@ func (s *APIService) createSSOUser(
 	}
 
 	// Adopt any valid external identifier. Invalid names fall back to an opaque UUID.
-	if err := validateWritableUsername(userInfo.Identifier); err == nil {
+	if err := coreuser.ValidateUsername(userInfo.Identifier); err == nil {
 		user, err := tryUsername(userInfo.Identifier)
 		if err != nil {
 			return nil, err
