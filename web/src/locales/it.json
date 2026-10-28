@@ -528,6 +528,21 @@
       "delete-success": "Vista `{{title}}` eliminata con successo",
       "change-icon": "Cambia icona di visualizzazione"
     },
+    "configuration": {
+      "label": "Configurazione",
+      "description": "Risorse impostate da file di configurazione. Modifica un file e applicalo per cambiarle; il resto dell'istanza resta modificabile qui.",
+      "managed-by": "Gestito dalla configurazione",
+      "managed-tooltip": "Impostato in {{source}}. Modifica il file e applicalo per cambiarlo.",
+      "resource": "Risorsa",
+      "source": "File",
+      "managed-fields": "Campi gestiti",
+      "whole-resource": "Tutti i campi",
+      "ignored-fields": "Modificabili qui",
+      "serial": "Numero di serie",
+      "last-apply": "Ultima applicazione",
+      "applied-by": "Applicato da",
+      "nothing-managed": "Nessuna configurazione applicata. Tutto si imposta qui."
+    },
     "sso": {
       "authorization-endpoint": "Endpoint autorizzazione",
       "client-id": "Client ID",

@@ -62,16 +62,27 @@ type Driver interface {
 	CreateInstanceSettingIfNotExists(ctx context.Context, create *InstanceSetting) (bool, error)
 	// UpdateInstanceSettingIfUnchanged replaces the value only when the stored value still equals oldValue, and reports whether it did.
 	UpdateInstanceSettingIfUnchanged(ctx context.Context, name, oldValue, newValue string) (bool, error)
+	// GetInstanceSettingTx reads one setting within tx, locking its row where the database supports row locks, or returns nil when it is absent.
+	GetInstanceSettingTx(ctx context.Context, tx *sql.Tx, name string) (*InstanceSetting, error)
+	// CreateInstanceSettingIfNotExistsTx is CreateInstanceSettingIfNotExists within tx.
+	CreateInstanceSettingIfNotExistsTx(ctx context.Context, tx *sql.Tx, create *InstanceSetting) (bool, error)
+	// UpdateInstanceSettingIfUnchangedTx is UpdateInstanceSettingIfUnchanged within tx.
+	UpdateInstanceSettingIfUnchangedTx(ctx context.Context, tx *sql.Tx, name, oldValue, newValue string) (bool, error)
 	UpsertInstanceSetting(ctx context.Context, upsert *InstanceSetting) (*InstanceSetting, error)
 	// UpsertInstanceSettingTx writes the setting within tx, for callers that must commit it together with other statements.
 	UpsertInstanceSettingTx(ctx context.Context, tx *sql.Tx, upsert *InstanceSetting) error
 	ListInstanceSettings(ctx context.Context, find *FindInstanceSetting) ([]*InstanceSetting, error)
 	DeleteInstanceSetting(ctx context.Context, delete *DeleteInstanceSetting) error
+	DeleteInstanceSettingTx(ctx context.Context, tx *sql.Tx, delete *DeleteInstanceSetting) error
 
 	// User model related methods.
 	CreateUser(ctx context.Context, create *User) (*User, error)
 	UpdateUser(ctx context.Context, update *UpdateUser) (*User, error)
 	ListUsers(ctx context.Context, find *FindUser) ([]*User, error)
+	// CreateUserTx, UpdateUserTx, and ListUsersTx are the same methods within tx.
+	CreateUserTx(ctx context.Context, tx *sql.Tx, create *User) (*User, error)
+	UpdateUserTx(ctx context.Context, tx *sql.Tx, update *UpdateUser) (*User, error)
+	ListUsersTx(ctx context.Context, tx *sql.Tx, find *FindUser) ([]*User, error)
 	DeleteUser(ctx context.Context, delete *DeleteUser) (*DeleteUserResult, error)
 
 	// UserSetting model related methods.
@@ -88,8 +99,16 @@ type Driver interface {
 	ListIdentityProviders(ctx context.Context, find *FindIdentityProvider) ([]*IdentityProvider, error)
 	UpdateIdentityProvider(ctx context.Context, update *UpdateIdentityProvider) (*IdentityProvider, error)
 	DeleteIdentityProvider(ctx context.Context, delete *DeleteIdentityProvider) error
-	ApplyAuthenticationConfigMutation(ctx context.Context, mutation *AuthenticationConfigMutation) error
-	IsRetryableAuthenticationMutationError(err error) bool
+	// The identity provider methods within tx.
+	CreateIdentityProviderTx(ctx context.Context, tx *sql.Tx, create *IdentityProvider) (*IdentityProvider, error)
+	ListIdentityProvidersTx(ctx context.Context, tx *sql.Tx, find *FindIdentityProvider) ([]*IdentityProvider, error)
+	UpdateIdentityProviderTx(ctx context.Context, tx *sql.Tx, update *UpdateIdentityProvider) (*IdentityProvider, error)
+	DeleteIdentityProviderTx(ctx context.Context, tx *sql.Tx, delete *DeleteIdentityProvider) error
+	// ApplyAuthenticationConfigMutationTx reads the authentication configuration, validates the mutation, and applies it within tx.
+	ApplyAuthenticationConfigMutationTx(ctx context.Context, tx *sql.Tx, mutation *AuthenticationConfigMutation) error
+
+	// IsRetryableTransactionError reports whether err is a serialization or locking conflict that running the transaction again can resolve.
+	IsRetryableTransactionError(err error) bool
 
 	// Inbox model related methods.
 	CreateInbox(ctx context.Context, create *Inbox) (*Inbox, error)

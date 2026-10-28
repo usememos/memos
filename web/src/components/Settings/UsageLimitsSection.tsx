@@ -12,16 +12,20 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { isFieldManaged, useManagedResource } from "@/hooks/useConfigurationQueries";
 import { type UsageLimitEntry, useSaveUsageLimits, useUsageLimits } from "@/hooks/useUsageLimitQueries";
 import { useListUsers } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
 import { extractUsernameFromName } from "@/lib/resource-names";
+import { InstanceSetting_Key } from "@/types/proto/api/instance_service_pb";
 import type { User } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
+import ManagedByConfigurationChip from "./ManagedByConfigurationChip";
 import SettingSection from "./SettingSection";
 import SettingTable from "./SettingTable";
 import UsageLimitDialog from "./UsageLimitDialog";
 import { formatLimitValue, isLimited, type UsageMetric } from "./usageLimitValues";
+import { buildInstanceSettingName } from "./useInstanceSettingUpdater";
 
 /** A table row: one entry and its position in the list. */
 type LimitRow = { index: number; entry: UsageLimitEntry; shadowed: boolean } & Record<string, unknown>;
@@ -48,6 +52,8 @@ const metricColumns: {
  */
 const UsageLimitsSection = () => {
   const t = useTranslate();
+  const managed = useManagedResource(buildInstanceSettingName(InstanceSetting_Key.USAGE_LIMITS));
+  const locked = isFieldManaged(managed, "usageLimitsSetting");
   const { limits, isLoading } = useUsageLimits();
   const { data: users = [] } = useListUsers();
   const save = useSaveUsageLimits();
@@ -134,10 +140,13 @@ const UsageLimitsSection = () => {
       title={t("setting.usage-limits.title")}
       description={t("setting.usage-limits.description")}
       actions={
-        <Button disabled={isLoading || !defaults} onClick={() => setDialog({ open: true })}>
-          <PlusIcon className="w-4 h-4 mr-2" />
-          {t("setting.usage-limits.add-entry")}
-        </Button>
+        <>
+          {locked ? <ManagedByConfigurationChip resource={managed} /> : null}
+          <Button disabled={locked || isLoading || !defaults} onClick={() => setDialog({ open: true })}>
+            <PlusIcon className="w-4 h-4 mr-2" />
+            {t("setting.usage-limits.add-entry")}
+          </Button>
+        </>
       }
     >
       <p className="text-sm text-muted-foreground">{t("setting.usage-limits.order-note")}</p>
@@ -188,7 +197,7 @@ const UsageLimitsSection = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        disabled={isLoading || save.isPending}
+                        disabled={locked || isLoading || save.isPending}
                         aria-label={t("setting.usage-limits.row-actions", { name })}
                       />
                     }

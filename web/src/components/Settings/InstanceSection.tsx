@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { identityProviderServiceClient } from "@/connect";
 import { useInstance } from "@/contexts/InstanceContext";
+import { isFieldManaged, useManagedResource } from "@/hooks/useConfigurationQueries";
 import useDialog from "@/hooks/useDialog";
 import { IdentityProvider } from "@/types/proto/api/idp_service_pb";
 import {
@@ -20,6 +21,7 @@ import {
 } from "@/types/proto/api/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import UpdateCustomizedProfileDialog from "../UpdateCustomizedProfileDialog";
+import ManagedByConfigurationChip from "./ManagedByConfigurationChip";
 import SettingGroup from "./SettingGroup";
 import { SettingCodeEditor, SettingList, SettingListItem } from "./SettingList";
 import SettingSection from "./SettingSection";
@@ -33,6 +35,13 @@ const InstanceSection = () => {
   const [instanceAccessSetting, setInstanceAccessSetting] = useState<InstanceSetting_AccessSetting>(originalAccessSetting);
   const [instanceGeneralSetting, setInstanceGeneralSetting] = useState<InstanceSetting_GeneralSetting>(originalGeneralSetting);
   const [identityProviderList, setIdentityProviderList] = useState<IdentityProvider[]>([]);
+  const managedGeneral = useManagedResource(buildInstanceSettingName(InstanceSetting_Key.GENERAL));
+  const managedAccess = useManagedResource(buildInstanceSettingName(InstanceSetting_Key.ACCESS));
+  const generalLocked = (field: string) => isFieldManaged(managedGeneral, `generalSetting.${field}`);
+  const accessLocked = isFieldManaged(managedAccess, "accessSetting.accessMode");
+  // A group names its configuration file only when one of its own fields is managed.
+  const groupChip = (locked: boolean, resource = managedGeneral) =>
+    locked ? <ManagedByConfigurationChip resource={resource} /> : undefined;
 
   useEffect(() => {
     setInstanceAccessSetting(originalAccessSetting);
@@ -115,16 +124,21 @@ const InstanceSection = () => {
 
   return (
     <SettingSection title={t("setting.system.label")}>
-      <SettingGroup title={t("common.basic")} description={t("setting.system.basic-description")}>
+      <SettingGroup
+        title={t("common.basic")}
+        description={t("setting.system.basic-description")}
+        actions={groupChip(generalLocked("customProfile") || generalLocked("weekStartDayOffset"))}
+      >
         <SettingList>
           <SettingListItem label={t("setting.system.server-name")} description={instanceGeneralSetting.customProfile?.title || "Memos"}>
-            <Button variant="outline" onClick={customizeDialog.open}>
+            <Button variant="outline" disabled={generalLocked("customProfile")} onClick={customizeDialog.open}>
               {t("common.edit")}
             </Button>
           </SettingListItem>
 
           <SettingListItem label={t("setting.instance.week-start-day")} description={t("setting.instance.week-start-day-description")}>
             <Select
+              disabled={generalLocked("weekStartDayOffset")}
               value={instanceGeneralSetting.weekStartDayOffset.toString()}
               items={weekStartDayOptions}
               onValueChange={(value) => {
@@ -146,14 +160,24 @@ const InstanceSection = () => {
         </SettingList>
       </SettingGroup>
 
-      <SettingGroup title={t("setting.instance.access-title")} description={t("setting.instance.access-description")} showSeparator>
+      <SettingGroup
+        title={t("setting.instance.access-title")}
+        description={t("setting.instance.access-description")}
+        showSeparator
+        actions={
+          groupChip(accessLocked, managedAccess) ??
+          groupChip(
+            ["disallowUserRegistration", "disallowPasswordAuth", "disallowChangeUsername", "disallowChangeNickname"].some(generalLocked),
+          )
+        }
+      >
         <SettingList>
           <SettingListItem
             label={t("setting.instance.allow-public-access")}
             description={t("setting.instance.allow-public-access-description")}
           >
             <Switch
-              disabled={profile.demo}
+              disabled={profile.demo || accessLocked}
               checked={instanceAccessSetting.accessMode === InstanceAccessMode.PUBLIC}
               onCheckedChange={(checked) => updateAccessMode(checked ? InstanceAccessMode.PUBLIC : InstanceAccessMode.PRIVATE)}
             />
@@ -164,7 +188,7 @@ const InstanceSection = () => {
             description={t("setting.instance.disallow-user-registration-description")}
           >
             <Switch
-              disabled={profile.demo}
+              disabled={profile.demo || generalLocked("disallowUserRegistration")}
               checked={instanceGeneralSetting.disallowUserRegistration}
               onCheckedChange={(checked) => updatePartialSetting({ disallowUserRegistration: checked })}
             />
@@ -175,7 +199,11 @@ const InstanceSection = () => {
             description={t("setting.instance.disallow-password-auth-description")}
           >
             <Switch
-              disabled={profile.demo || (identityProviderList.length === 0 && !instanceGeneralSetting.disallowPasswordAuth)}
+              disabled={
+                profile.demo ||
+                generalLocked("disallowPasswordAuth") ||
+                (identityProviderList.length === 0 && !instanceGeneralSetting.disallowPasswordAuth)
+              }
               checked={instanceGeneralSetting.disallowPasswordAuth}
               onCheckedChange={(checked) => updatePartialSetting({ disallowPasswordAuth: checked })}
             />
@@ -186,6 +214,7 @@ const InstanceSection = () => {
             description={t("setting.instance.disallow-change-username-description")}
           >
             <Switch
+              disabled={generalLocked("disallowChangeUsername")}
               checked={instanceGeneralSetting.disallowChangeUsername}
               onCheckedChange={(checked) => updatePartialSetting({ disallowChangeUsername: checked })}
             />
@@ -196,6 +225,7 @@ const InstanceSection = () => {
             description={t("setting.instance.disallow-change-nickname-description")}
           >
             <Switch
+              disabled={generalLocked("disallowChangeNickname")}
               checked={instanceGeneralSetting.disallowChangeNickname}
               onCheckedChange={(checked) => updatePartialSetting({ disallowChangeNickname: checked })}
             />
@@ -203,12 +233,18 @@ const InstanceSection = () => {
         </SettingList>
       </SettingGroup>
 
-      <SettingGroup title={t("setting.system.custom-code-title")} description={t("setting.system.custom-code-description")} showSeparator>
+      <SettingGroup
+        title={t("setting.system.custom-code-title")}
+        description={t("setting.system.custom-code-description")}
+        showSeparator
+        actions={groupChip(generalLocked("additionalStyle") || generalLocked("additionalScript"))}
+      >
         <SettingCodeEditor
           label={t("setting.system.additional-style")}
           description={t("setting.system.additional-style-description")}
           placeholder={t("setting.system.additional-style-placeholder")}
           value={instanceGeneralSetting.additionalStyle}
+          disabled={generalLocked("additionalStyle")}
           onChange={(additionalStyle) => updatePartialSetting({ additionalStyle })}
         />
 
@@ -217,6 +253,7 @@ const InstanceSection = () => {
           description={t("setting.system.additional-script-description")}
           placeholder={t("setting.system.additional-script-placeholder")}
           value={instanceGeneralSetting.additionalScript}
+          disabled={generalLocked("additionalScript")}
           onChange={(additionalScript) => updatePartialSetting({ additionalScript })}
         />
       </SettingGroup>

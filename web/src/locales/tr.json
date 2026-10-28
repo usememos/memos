@@ -689,6 +689,21 @@
       "delete-confirm": "`{{title}}` görünümünü silmek istediğinizden emin misiniz?",
       "delete-success": "`{{title}}` görünümü başarıyla silindi"
     },
+    "configuration": {
+      "label": "Yapılandırma",
+      "description": "Yapılandırma dosyalarıyla belirlenen kaynaklar. Değiştirmek için bir dosyayı düzenleyip uygulayın; örneğin geri kalanı burada düzenlenebilir kalır.",
+      "managed-by": "Yapılandırma tarafından yönetiliyor",
+      "managed-tooltip": "{{source}} dosyasında belirlendi. Bunu değiştirmek için dosyayı düzenleyip uygulayın.",
+      "resource": "Kaynak",
+      "source": "Dosya",
+      "managed-fields": "Yönetilen alanlar",
+      "whole-resource": "Tüm alanlar",
+      "ignored-fields": "Burada düzenlenebilir",
+      "serial": "Seri numarası",
+      "last-apply": "Son uygulama",
+      "applied-by": "Uygulayan",
+      "nothing-managed": "Hiçbir yapılandırma uygulanmadı. Her şey burada ayarlanır."
+    },
     "sso": {
       "authorization-endpoint": "Yetkilendirme uç noktası",
       "client-id": "İstemci Kimliği",

@@ -1,10 +1,7 @@
 package store
 
 import (
-	"cmp"
 	"context"
-	"slices"
-	"strings"
 
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -27,7 +24,9 @@ type DeleteInstanceSetting struct {
 	Name string
 }
 
-func (s *Store) UpsertInstanceSetting(ctx context.Context, upsert *storepb.InstanceSetting) (*storepb.InstanceSetting, error) {
+// encodeInstanceSetting turns a setting into its stored row, normalizing a
+// storage setting and validating usage limits as every write must.
+func encodeInstanceSetting(upsert *storepb.InstanceSetting) (*InstanceSetting, error) {
 	instanceSettingRaw := &InstanceSetting{
 		Name: upsert.Key.String(),
 	}
@@ -61,8 +60,15 @@ func (s *Store) UpsertInstanceSetting(ctx context.Context, upsert *storepb.Insta
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to marshal instance setting value")
 	}
-	valueString := string(valueBytes)
-	instanceSettingRaw.Value = valueString
+	instanceSettingRaw.Value = string(valueBytes)
+	return instanceSettingRaw, nil
+}
+
+func (s *Store) UpsertInstanceSetting(ctx context.Context, upsert *storepb.InstanceSetting) (*storepb.InstanceSetting, error) {
+	instanceSettingRaw, err := encodeInstanceSetting(upsert)
+	if err != nil {
+		return nil, err
+	}
 	instanceSettingRaw, err = s.driver.UpsertInstanceSetting(ctx, instanceSettingRaw)
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to upsert instance setting")
@@ -93,38 +99,6 @@ func (s *Store) DeleteInstanceSetting(ctx context.Context, delete *DeleteInstanc
 }
 
 func (s *Store) ListInstanceSettings(ctx context.Context, find *FindInstanceSetting) ([]*storepb.InstanceSetting, error) {
-	stored, err := s.listStoredInstanceSettings(ctx, find)
-	if err != nil {
-		return nil, err
-	}
-	if find.Name != "" {
-		key, ok := storepb.InstanceSettingKey_value[find.Name]
-		if ok {
-			if configured := s.getDeploymentInstanceSetting(storepb.InstanceSettingKey(key)); configured != nil {
-				return []*storepb.InstanceSetting{configured}, nil
-			}
-		}
-		return stored, nil
-	}
-
-	byKey := make(map[storepb.InstanceSettingKey]*storepb.InstanceSetting, len(stored))
-	for _, setting := range stored {
-		byKey[setting.Key] = setting
-	}
-	s.deploymentConfigMu.RLock()
-	for key, setting := range s.deploymentConfig.instanceSettings {
-		byKey[key] = cloneInstanceSetting(setting)
-	}
-	s.deploymentConfigMu.RUnlock()
-	settings := make([]*storepb.InstanceSetting, 0, len(byKey))
-	for _, setting := range byKey {
-		settings = append(settings, setting)
-	}
-	slices.SortFunc(settings, func(a, b *storepb.InstanceSetting) int { return cmp.Compare(a.Key, b.Key) })
-	return settings, nil
-}
-
-func (s *Store) listStoredInstanceSettings(ctx context.Context, find *FindInstanceSetting) ([]*storepb.InstanceSetting, error) {
 	list, err := s.driver.ListInstanceSettings(ctx, find)
 	if err != nil {
 		return nil, err
@@ -145,8 +119,10 @@ func (s *Store) listStoredInstanceSettings(ctx context.Context, find *FindInstan
 	return instanceSettings, nil
 }
 
-func (s *Store) getRawInstanceSetting(ctx context.Context, name string) (*storepb.InstanceSetting, error) {
-	list, err := s.listStoredInstanceSettings(ctx, &FindInstanceSetting{Name: name})
+// GetUncachedInstanceSetting reads one setting from the database, bypassing
+// the instance setting cache.
+func (s *Store) GetUncachedInstanceSetting(ctx context.Context, find *FindInstanceSetting) (*storepb.InstanceSetting, error) {
+	list, err := s.ListInstanceSettings(ctx, find)
 	if err != nil {
 		return nil, err
 	}
@@ -154,22 +130,12 @@ func (s *Store) getRawInstanceSetting(ctx context.Context, name string) (*storep
 		return nil, nil
 	}
 	if len(list) > 1 {
-		return nil, errors.Errorf("found multiple stored instance settings with key %s", name)
+		return nil, errors.Errorf("found multiple instance settings with key %s", find.Name)
 	}
 	return list[0], nil
 }
 
-// GetStoredInstanceSetting returns a database-backed setting without deployment shadowing.
-func (s *Store) GetStoredInstanceSetting(ctx context.Context, find *FindInstanceSetting) (*storepb.InstanceSetting, error) {
-	return s.getRawInstanceSetting(ctx, find.Name)
-}
-
 func (s *Store) GetInstanceSetting(ctx context.Context, find *FindInstanceSetting) (*storepb.InstanceSetting, error) {
-	if key, ok := storepb.InstanceSettingKey_value[find.Name]; ok {
-		if setting := s.getDeploymentInstanceSetting(storepb.InstanceSettingKey(key)); setting != nil {
-			return setting, nil
-		}
-	}
 	if cache, ok := s.instanceSettingCache.Get(ctx, find.Name); ok {
 		instanceSetting, ok := cache.(*storepb.InstanceSetting)
 		if ok {
@@ -191,7 +157,7 @@ func (s *Store) GetInstanceSetting(ctx context.Context, find *FindInstanceSettin
 }
 
 func (s *Store) cacheInstanceSetting(ctx context.Context, setting *storepb.InstanceSetting) {
-	if setting == nil || s.IsInstanceSettingDeploymentConfigured(setting.Key) {
+	if setting == nil {
 		return
 	}
 	s.instanceSettingCache.Set(ctx, setting.Key.String(), setting)
@@ -237,15 +203,11 @@ func (s *Store) GetInstanceGeneralSetting(ctx context.Context) (*storepb.Instanc
 
 // GetInstanceAccessSetting gets the instance access policy, defaulting to private.
 func (s *Store) GetInstanceAccessSetting(ctx context.Context) (*storepb.InstanceAccessSetting, error) {
-	instanceSetting := s.getDeploymentInstanceSetting(storepb.InstanceSettingKey_ACCESS)
-	if instanceSetting == nil {
-		var err error
-		// Access policy changes must take effect across replicas without waiting for
-		// the general instance-setting cache to expire.
-		instanceSetting, err = s.getRawInstanceSetting(ctx, storepb.InstanceSettingKey_ACCESS.String())
-		if err != nil {
-			return nil, errors.Wrap(err, "failed to get instance access setting")
-		}
+	// Access policy changes must take effect across replicas without waiting for
+	// the general instance-setting cache to expire.
+	instanceSetting, err := s.GetUncachedInstanceSetting(ctx, &FindInstanceSetting{Name: storepb.InstanceSettingKey_ACCESS.String()})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get instance access setting")
 	}
 
 	instanceAccessSetting := &storepb.InstanceAccessSetting{}
@@ -312,24 +274,6 @@ func (s *Store) GetInstanceTagsSetting(ctx context.Context) (*storepb.InstanceTa
 		Value: &storepb.InstanceSetting_TagsSetting{TagsSetting: instanceTagsSetting},
 	})
 	return instanceTagsSetting, nil
-}
-
-// ValidateInstanceNotificationSetting checks the rules a notification setting
-// must meet before it is stored, whether it comes from the API or from
-// deployment configuration: enabled email needs a host, a positive port, and
-// a from address, and TLS and SSL are mutually exclusive.
-func ValidateInstanceNotificationSetting(setting *storepb.InstanceNotificationSetting) error {
-	email := setting.GetEmail()
-	if email == nil || !email.Enabled {
-		return nil
-	}
-	if strings.TrimSpace(email.SmtpHost) == "" || email.SmtpPort <= 0 || strings.TrimSpace(email.FromEmail) == "" {
-		return errors.New("enabled notification email requires smtpHost, a positive smtpPort, and fromEmail")
-	}
-	if email.UseTls && email.UseSsl {
-		return errors.New("notification email cannot enable both useTls and useSsl")
-	}
-	return nil
 }
 
 func (s *Store) GetInstanceNotificationSetting(ctx context.Context) (*storepb.InstanceNotificationSetting, error) {

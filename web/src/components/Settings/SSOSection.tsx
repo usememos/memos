@@ -13,12 +13,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { identityProviderServiceClient } from "@/connect";
+import { findManagedResource, useConfigurationStatus } from "@/hooks/useConfigurationQueries";
 import { useDialog } from "@/hooks/useDialog";
 import { handleError } from "@/lib/error";
 import { IdentityProvider } from "@/types/proto/api/idp_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import CreateIdentityProviderDialog from "../CreateIdentityProviderDialog";
 import LearnMore from "../LearnMore";
+import ManagedByConfigurationChip from "./ManagedByConfigurationChip";
 import SettingSection from "./SettingSection";
 import SettingTable from "./SettingTable";
 
@@ -33,6 +35,7 @@ interface IdentityProviderRow extends Record<string, unknown> {
 
 const SSOSection = () => {
   const t = useTranslate();
+  const configurationStatus = useConfigurationStatus();
   const [identityProviderList, setIdentityProviderList] = useState<IdentityProvider[]>([]);
   const [editingIdentityProvider, setEditingIdentityProvider] = useState<IdentityProvider | undefined>();
   const [deleteTarget, setDeleteTarget] = useState<IdentityProvider | undefined>(undefined);
@@ -137,6 +140,7 @@ const SSOSection = () => {
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <InfoChip label={t("setting.sso.provider-uid")} value={row.providerUid} />
+                  <ManagedByConfigurationChip resource={findManagedResource(configurationStatus, row.name)} />
                 </div>
               </div>
             ),
@@ -165,13 +169,20 @@ const SSOSection = () => {
                   <MoreVerticalIcon className="w-4 h-auto" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" sideOffset={2}>
-                  <DropdownMenuItem onClick={() => handleEditIdentityProvider(row.provider)}>{t("common.edit")}</DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={() => handleDeleteIdentityProvider(row.provider)}
-                    className="text-destructive focus:text-destructive"
+                    disabled={!!findManagedResource(configurationStatus, row.name)}
+                    onClick={() => handleEditIdentityProvider(row.provider)}
                   >
-                    {t("common.delete")}
+                    {t("common.edit")}
                   </DropdownMenuItem>
+                  {findManagedResource(configurationStatus, row.name) ? null : (
+                    <DropdownMenuItem
+                      onClick={() => handleDeleteIdentityProvider(row.provider)}
+                      className="text-destructive focus:text-destructive"
+                    >
+                      {t("common.delete")}
+                    </DropdownMenuItem>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
             ),

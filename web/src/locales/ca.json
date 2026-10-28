@@ -528,6 +528,21 @@
       "delete-success": "Vista `{{title}}` eliminada correctament",
       "change-icon": "Canvia la icona de vista"
     },
+    "configuration": {
+      "label": "Configuració",
+      "description": "Recursos definits per fitxers de configuració. Editeu un fitxer i apliqueu-lo per canviar-los; la resta de la instància continua sent editable aquí.",
+      "managed-by": "Gestionat per la configuració",
+      "managed-tooltip": "Definit a {{source}}. Editeu el fitxer i apliqueu-lo per canviar-ho.",
+      "resource": "Recurs",
+      "source": "Fitxer",
+      "managed-fields": "Camps gestionats",
+      "whole-resource": "Tots els camps",
+      "ignored-fields": "Editables aquí",
+      "serial": "Número de sèrie",
+      "last-apply": "Darrera aplicació",
+      "applied-by": "Aplicat per",
+      "nothing-managed": "No s'ha aplicat cap configuració. Tot es defineix aquí."
+    },
     "sso": {
       "authorization-endpoint": "Punt final d'autorització",
       "client-id": "ID de client",

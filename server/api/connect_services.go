@@ -772,3 +772,13 @@ func (s *ConnectServiceHandler) DeleteIdentityProvider(ctx context.Context, req 
 	}
 	return connect.NewResponse(resp), nil
 }
+
+// ConfigurationService
+
+func (s *ConnectServiceHandler) GetConfigurationStatus(ctx context.Context, req *connect.Request[apipb.GetConfigurationStatusRequest]) (*connect.Response[apipb.ConfigurationStatus], error) {
+	resp, err := s.APIService.GetConfigurationStatus(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}

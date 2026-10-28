@@ -528,6 +528,21 @@
       "delete-success": "Vue `{{title}}` supprimée avec succès",
       "change-icon": "Modifier l'icône d'affichage"
     },
+    "configuration": {
+      "label": "Configuration",
+      "description": "Ressources définies par des fichiers de configuration. Modifiez un fichier et appliquez-le pour les changer ; le reste de l'instance reste modifiable ici.",
+      "managed-by": "Géré par la configuration",
+      "managed-tooltip": "Défini dans {{source}}. Modifiez le fichier et appliquez-le pour changer ceci.",
+      "resource": "Ressource",
+      "source": "Fichier",
+      "managed-fields": "Champs gérés",
+      "whole-resource": "Tous les champs",
+      "ignored-fields": "Modifiables ici",
+      "serial": "Numéro de série",
+      "last-apply": "Dernière application",
+      "applied-by": "Appliqué par",
+      "nothing-managed": "Aucune configuration n'a été appliquée. Tout se règle ici."
+    },
     "sso": {
       "authorization-endpoint": "Point de terminaison d'autorisation",
       "client-id": "ID client",

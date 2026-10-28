@@ -528,6 +528,21 @@
       "delete-success": "`{{title}}` nézet sikeresen törölve",
       "change-icon": "Nézet ikonjának módosítása"
     },
+    "configuration": {
+      "label": "Konfiguráció",
+      "description": "Konfigurációs fájlok által beállított erőforrások. A módosításukhoz szerkessze a fájlt, és alkalmazza; a példány többi része itt továbbra is szerkeszthető.",
+      "managed-by": "Konfiguráció kezeli",
+      "managed-tooltip": "Beállítva itt: {{source}}. A módosításhoz szerkessze a fájlt, és alkalmazza.",
+      "resource": "Erőforrás",
+      "source": "Fájl",
+      "managed-fields": "Kezelt mezők",
+      "whole-resource": "Minden mező",
+      "ignored-fields": "Itt szerkeszthető",
+      "serial": "Sorszám",
+      "last-apply": "Utoljára alkalmazva",
+      "applied-by": "Alkalmazta",
+      "nothing-managed": "Nincs alkalmazott konfiguráció. Minden itt állítható be."
+    },
     "sso": {
       "authorization-endpoint": "Hitelesítési végpont",
       "client-id": "Kliens ID",

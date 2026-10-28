@@ -439,6 +439,21 @@
       "delete-success": "보기 `{{title}}`가 성공적으로 삭제되었습니다",
       "change-icon": "뷰 아이콘 변경"
     },
+    "configuration": {
+      "label": "구성",
+      "description": "구성 파일로 설정된 리소스입니다. 변경하려면 파일을 편집한 뒤 적용하세요. 인스턴스의 나머지는 여기에서 계속 편집할 수 있습니다.",
+      "managed-by": "구성으로 관리됨",
+      "managed-tooltip": "{{source}}에서 설정됩니다. 변경하려면 파일을 편집한 뒤 적용하세요.",
+      "resource": "리소스",
+      "source": "파일",
+      "managed-fields": "관리되는 필드",
+      "whole-resource": "모든 필드",
+      "ignored-fields": "여기서 편집 가능",
+      "serial": "일련번호",
+      "last-apply": "마지막 적용",
+      "applied-by": "적용한 주체",
+      "nothing-managed": "적용된 구성이 없습니다. 모든 설정은 여기에서 합니다."
+    },
     "sso": {
       "authorization-endpoint": "인증 엔드포인트",
       "client-id": "클라이언트 ID",

@@ -2,13 +2,15 @@ package api
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/emptypb"
 
+	"github.com/usememos/memos/core/configuration"
+	"github.com/usememos/memos/core/identityprovider"
 	apipb "github.com/usememos/memos/proto/gen/api"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
@@ -26,16 +28,21 @@ func (s *APIService) CreateIdentityProvider(ctx context.Context, request *apipb.
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
+	if request.IdentityProvider == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "identity provider is required")
+	}
 	idpUID, err := ValidateAndGenerateUID(request.IdentityProviderId)
 	if err != nil {
 		return nil, err
 	}
-	if s.Store.IsIdentityProviderDeploymentConfigured(idpUID) {
-		return nil, status.Errorf(codes.FailedPrecondition, "identity provider %q is configured by the deployment", idpUID)
+	if err := s.checkManagedExistence(ctx, identityprovider.NamePrefix+idpUID); err != nil {
+		return nil, err
 	}
-
-	storeIdp := convertIdentityProviderToStore(request.IdentityProvider)
+	storeIdp := identityprovider.ToStore(request.IdentityProvider)
 	storeIdp.Uid = idpUID
+	if err := identityprovider.Validate(storeIdp); err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid identity provider: %v", err)
+	}
 
 	identityProvider, err := s.Store.CreateIdentityProvider(ctx, storeIdp)
 	if err != nil {
@@ -89,6 +96,9 @@ func (s *APIService) UpdateIdentityProvider(ctx context.Context, request *apipb.
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
+	if request.IdentityProvider == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "identity provider is required")
+	}
 	if request.UpdateMask == nil || len(request.UpdateMask.Paths) == 0 {
 		return nil, status.Errorf(codes.InvalidArgument, "update_mask is required")
 	}
@@ -97,12 +107,8 @@ func (s *APIService) UpdateIdentityProvider(ctx context.Context, request *apipb.
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid identity provider name: %v", err)
 	}
-	if s.Store.IsIdentityProviderDeploymentConfigured(uid) {
-		return nil, status.Errorf(codes.FailedPrecondition, "identity provider %q is configured by the deployment", uid)
-	}
-
 	// Look up the IdP by UID to get the internal ID for update.
-	existing, err := s.Store.GetStoredIdentityProvider(ctx, &store.FindIdentityProvider{UID: &uid})
+	existing, err := s.Store.GetIdentityProvider(ctx, &store.FindIdentityProvider{UID: &uid})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get identity provider, error: %+v", err)
 	}
@@ -121,7 +127,7 @@ func (s *APIService) UpdateIdentityProvider(ctx context.Context, request *apipb.
 		case "identifier_filter":
 			update.IdentifierFilter = &request.IdentityProvider.IdentifierFilter
 		case "config":
-			update.Config = convertIdentityProviderConfigToStore(request.IdentityProvider.Type, request.IdentityProvider.Config)
+			update.Config = identityprovider.ConfigToStore(request.IdentityProvider.Type, request.IdentityProvider.Config)
 		default:
 			// Ignore unsupported fields
 		}
@@ -134,6 +140,25 @@ func (s *APIService) UpdateIdentityProvider(ctx context.Context, request *apipb.
 				oauth2Config.ClientSecret = existingOAuth.ClientSecret
 			}
 		}
+	}
+
+	// Validate the provider as it will be stored, not the partial update.
+	merged := proto.CloneOf(existing)
+	if update.Name != nil {
+		merged.Name = *update.Name
+	}
+	if update.IdentifierFilter != nil {
+		merged.IdentifierFilter = *update.IdentifierFilter
+	}
+	if update.Config != nil {
+		merged.Config = update.Config
+	}
+	if err := identityprovider.Validate(merged); err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid identity provider: %v", err)
+	}
+	changed := configuration.ChangedPaths(identityprovider.FromStore(existing), identityprovider.FromStore(merged))
+	if err := s.checkManagedChange(ctx, identityprovider.NamePrefix+uid, changed); err != nil {
+		return nil, err
 	}
 
 	identityProvider, err := s.Store.UpdateIdentityProvider(ctx, update)
@@ -159,12 +184,11 @@ func (s *APIService) DeleteIdentityProvider(ctx context.Context, request *apipb.
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid identity provider name: %v", err)
 	}
-	if s.Store.IsIdentityProviderDeploymentConfigured(uid) {
-		return nil, status.Errorf(codes.FailedPrecondition, "identity provider %q is configured by the deployment", uid)
+	if err := s.checkManagedExistence(ctx, identityprovider.NamePrefix+uid); err != nil {
+		return nil, err
 	}
-
 	// Look up the IdP by UID to get the internal ID for deletion.
-	identityProvider, err := s.Store.GetStoredIdentityProvider(ctx, &store.FindIdentityProvider{UID: &uid})
+	identityProvider, err := s.Store.GetIdentityProvider(ctx, &store.FindIdentityProvider{UID: &uid})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to check identity provider existence: %v", err)
 	}
@@ -181,68 +205,12 @@ func (s *APIService) DeleteIdentityProvider(ctx context.Context, request *apipb.
 	return &emptypb.Empty{}, nil
 }
 
-func convertIdentityProviderFromStore(identityProvider *storepb.IdentityProvider) *apipb.IdentityProvider {
-	temp := &apipb.IdentityProvider{
-		Name:             fmt.Sprintf("%s%s", IdentityProviderNamePrefix, identityProvider.Uid),
-		Title:            identityProvider.Name,
-		IdentifierFilter: identityProvider.IdentifierFilter,
-		Type:             apipb.IdentityProvider_Type(apipb.IdentityProvider_Type_value[identityProvider.Type.String()]),
+// convertIdentityProviderFromStore converts a stored provider for a response.
+// The client secret is write-only and never returned.
+func convertIdentityProviderFromStore(provider *storepb.IdentityProvider) *apipb.IdentityProvider {
+	result := identityprovider.FromStore(provider)
+	if oauth2Config := result.GetConfig().GetOauth2Config(); oauth2Config != nil {
+		oauth2Config.ClientSecret = ""
 	}
-	if identityProvider.Type == storepb.IdentityProvider_OAUTH2 {
-		oauth2Config := identityProvider.Config.GetOauth2Config()
-		temp.Config = &apipb.IdentityProviderConfig{
-			Config: &apipb.IdentityProviderConfig_Oauth2Config{
-				Oauth2Config: &apipb.OAuth2Config{
-					ClientId: oauth2Config.ClientId,
-					// ClientSecret is write-only: never returned in responses.
-					AuthUrl:     oauth2Config.AuthUrl,
-					TokenUrl:    oauth2Config.TokenUrl,
-					UserInfoUrl: oauth2Config.UserInfoUrl,
-					Scopes:      oauth2Config.Scopes,
-					FieldMapping: &apipb.FieldMapping{
-						Identifier:  oauth2Config.FieldMapping.Identifier,
-						DisplayName: oauth2Config.FieldMapping.DisplayName,
-						Email:       oauth2Config.FieldMapping.Email,
-						AvatarUrl:   oauth2Config.FieldMapping.AvatarUrl,
-					},
-				},
-			},
-		}
-	}
-	return temp
-}
-
-func convertIdentityProviderToStore(identityProvider *apipb.IdentityProvider) *storepb.IdentityProvider {
-	temp := &storepb.IdentityProvider{
-		Name:             identityProvider.Title,
-		IdentifierFilter: identityProvider.IdentifierFilter,
-		Type:             storepb.IdentityProvider_Type(storepb.IdentityProvider_Type_value[identityProvider.Type.String()]),
-		Config:           convertIdentityProviderConfigToStore(identityProvider.Type, identityProvider.Config),
-	}
-	return temp
-}
-
-func convertIdentityProviderConfigToStore(identityProviderType apipb.IdentityProvider_Type, config *apipb.IdentityProviderConfig) *storepb.IdentityProviderConfig {
-	if identityProviderType == apipb.IdentityProvider_OAUTH2 {
-		oauth2Config := config.GetOauth2Config()
-		return &storepb.IdentityProviderConfig{
-			Config: &storepb.IdentityProviderConfig_Oauth2Config{
-				Oauth2Config: &storepb.OAuth2Config{
-					ClientId:     oauth2Config.ClientId,
-					ClientSecret: oauth2Config.ClientSecret,
-					AuthUrl:      oauth2Config.AuthUrl,
-					TokenUrl:     oauth2Config.TokenUrl,
-					UserInfoUrl:  oauth2Config.UserInfoUrl,
-					Scopes:       oauth2Config.Scopes,
-					FieldMapping: &storepb.FieldMapping{
-						Identifier:  oauth2Config.FieldMapping.Identifier,
-						DisplayName: oauth2Config.FieldMapping.DisplayName,
-						Email:       oauth2Config.FieldMapping.Email,
-						AvatarUrl:   oauth2Config.FieldMapping.AvatarUrl,
-					},
-				},
-			},
-		}
-	}
-	return nil
+	return result
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	coreuser "github.com/usememos/memos/core/user"
 	apipb "github.com/usememos/memos/proto/gen/api"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
@@ -49,23 +50,11 @@ func canViewerAccessUserEmail(viewer, user *store.User) bool {
 }
 
 func convertUserRoleFromStore(role store.Role) apipb.User_Role {
-	switch role {
-	case store.RoleAdmin:
-		return apipb.User_ADMIN
-	case store.RoleUser:
-		return apipb.User_USER
-	default:
-		return apipb.User_ROLE_UNSPECIFIED
-	}
+	return coreuser.RoleFromStore(role)
 }
 
 func convertUserRoleToStore(role apipb.User_Role) store.Role {
-	switch role {
-	case apipb.User_ADMIN:
-		return store.RoleAdmin
-	default:
-		return store.RoleUser
-	}
+	return coreuser.RoleToStore(role)
 }
 
 // extractImageInfo extracts image type and base64 data from a data URI.

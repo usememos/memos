@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useInstance } from "@/contexts/InstanceContext";
+import { isFieldManaged, useManagedResource } from "@/hooks/useConfigurationQueries";
 import {
   InstanceSetting_AIProviderConfig,
   InstanceSetting_AIProviderConfigSchema,
@@ -24,6 +25,7 @@ import {
   InstanceSettingSchema,
 } from "@/types/proto/api/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
+import ManagedByConfigurationChip from "./ManagedByConfigurationChip";
 import SettingGroup from "./SettingGroup";
 import { SettingPanel } from "./SettingList";
 import SettingSection from "./SettingSection";
@@ -103,6 +105,9 @@ const toTranscriptionConfig = (transcription: LocalTranscription) =>
 
 const AISection = () => {
   const t = useTranslate();
+  const managed = useManagedResource(buildInstanceSettingName(InstanceSetting_Key.AI));
+  const providersLocked = isFieldManaged(managed, "aiSetting.providers");
+  const transcriptionLocked = isFieldManaged(managed, "aiSetting.transcription");
   const saveInstanceSetting = useInstanceSettingUpdater();
   const { aiSetting: originalSetting } = useInstance();
   const [providers, setProviders] = useState<LocalAIProvider[]>(() => originalSetting.providers.map(toLocalProvider));
@@ -227,7 +232,7 @@ const AISection = () => {
     <SettingSection
       title={t("setting.ai.label")}
       actions={
-        <Button onClick={handleCreateProvider}>
+        <Button disabled={providersLocked} onClick={handleCreateProvider}>
           <PlusIcon className="w-4 h-4 mr-2" />
           {t("setting.ai.add-provider")}
         </Button>
@@ -253,7 +258,11 @@ const AISection = () => {
         </div>
       </SettingPanel>
 
-      <SettingGroup title={t("setting.ai.integrations-title")} description={t("setting.ai.integrations-description")}>
+      <SettingGroup
+        title={t("setting.ai.integrations-title")}
+        description={t("setting.ai.integrations-description")}
+        actions={providersLocked ? <ManagedByConfigurationChip resource={managed} /> : undefined}
+      >
         <SettingTable
           columns={[
             {
@@ -295,10 +304,14 @@ const AISection = () => {
                     <MoreVerticalIcon className="w-4 h-auto" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" sideOffset={2}>
-                    <DropdownMenuItem onClick={() => handleEditProvider(provider)}>{t("common.edit")}</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setDeleteTarget(provider)} className="text-destructive focus:text-destructive">
-                      {t("common.delete")}
+                    <DropdownMenuItem disabled={providersLocked} onClick={() => handleEditProvider(provider)}>
+                      {t("common.edit")}
                     </DropdownMenuItem>
+                    {providersLocked ? null : (
+                      <DropdownMenuItem onClick={() => setDeleteTarget(provider)} className="text-destructive focus:text-destructive">
+                        {t("common.delete")}
+                      </DropdownMenuItem>
+                    )}
                   </DropdownMenuContent>
                 </DropdownMenu>
               ),
@@ -315,12 +328,16 @@ const AISection = () => {
         description={t("setting.ai.transcription-description")}
         showSeparator
         actions={
-          <Button disabled={!transcriptionHasChanges} onClick={handleSaveTranscription}>
-            {t("common.save")}
-          </Button>
+          <>
+            {transcriptionLocked ? <ManagedByConfigurationChip resource={managed} /> : null}
+            <Button disabled={transcriptionLocked || !transcriptionHasChanges} onClick={handleSaveTranscription}>
+              {t("common.save")}
+            </Button>
+          </>
         }
       >
         <TranscriptionForm
+          locked={transcriptionLocked}
           providers={providers}
           transcription={transcription}
           onChange={setTranscription}
@@ -348,15 +365,17 @@ const AISection = () => {
 };
 
 interface TranscriptionFormProps {
+  locked: boolean;
   providers: LocalAIProvider[];
   transcription: LocalTranscription;
   referencedProvider: LocalAIProvider | undefined;
   onChange: (next: LocalTranscription) => void;
 }
 
-const TranscriptionForm = ({ providers, transcription, referencedProvider, onChange }: TranscriptionFormProps) => {
+const TranscriptionForm = ({ locked, providers, transcription, referencedProvider, onChange }: TranscriptionFormProps) => {
   const t = useTranslate();
   const noProviders = providers.length === 0;
+  const fieldsDisabled = locked || !transcription.providerId;
 
   const providerOptions = useMemo(
     () => [
@@ -385,7 +404,7 @@ const TranscriptionForm = ({ providers, transcription, referencedProvider, onCha
           value={transcription.providerId || "__none__"}
           items={providerOptions}
           onValueChange={(value) => update({ providerId: value === "__none__" ? "" : value })}
-          disabled={noProviders}
+          disabled={locked || noProviders}
         >
           <SelectTrigger className="w-full">
             <SelectValue />
@@ -410,7 +429,7 @@ const TranscriptionForm = ({ providers, transcription, referencedProvider, onCha
           value={transcription.model}
           onChange={(e) => update({ model: e.target.value })}
           placeholder={placeholderForProvider(referencedProvider)}
-          disabled={!transcription.providerId}
+          disabled={fieldsDisabled}
           maxLength={256}
         />
         <p className="text-xs text-muted-foreground">{t("setting.ai.transcription-model-help")}</p>
@@ -422,7 +441,7 @@ const TranscriptionForm = ({ providers, transcription, referencedProvider, onCha
           value={transcription.language}
           onChange={(e) => update({ language: e.target.value })}
           placeholder={t("setting.ai.transcription-language-placeholder")}
-          disabled={!transcription.providerId}
+          disabled={fieldsDisabled}
           maxLength={32}
         />
         <p className="text-xs text-muted-foreground">{t("setting.ai.transcription-language-help")}</p>
@@ -435,7 +454,7 @@ const TranscriptionForm = ({ providers, transcription, referencedProvider, onCha
           onChange={(e) => update({ prompt: e.target.value })}
           placeholder={t("setting.ai.transcription-prompt-placeholder")}
           rows={3}
-          disabled={!transcription.providerId}
+          disabled={fieldsDisabled}
           maxLength={4096}
         />
         <p className="text-xs text-muted-foreground">{t("setting.ai.transcription-prompt-help")}</p>

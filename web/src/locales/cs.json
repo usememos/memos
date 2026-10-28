@@ -528,6 +528,21 @@
       "delete-success": "Zobrazení `{{title}}` bylo úspěšně odstraněno",
       "change-icon": "Změnit ikonu zobrazení"
     },
+    "configuration": {
+      "label": "Konfigurace",
+      "description": "Prostředky nastavené konfiguračními soubory. Chcete-li je změnit, upravte soubor a použijte jej; zbytek instance zůstává upravitelný zde.",
+      "managed-by": "Spravováno konfigurací",
+      "managed-tooltip": "Nastaveno v {{source}}. Chcete-li to změnit, upravte soubor a použijte jej.",
+      "resource": "Prostředek",
+      "source": "Soubor",
+      "managed-fields": "Spravovaná pole",
+      "whole-resource": "Všechna pole",
+      "ignored-fields": "Upravitelné zde",
+      "serial": "Pořadové číslo",
+      "last-apply": "Naposledy použito",
+      "applied-by": "Použil",
+      "nothing-managed": "Nebyla použita žádná konfigurace. Vše se nastavuje zde."
+    },
     "sso": {
       "authorization-endpoint": "Autorizační koncový bod",
       "client-id": "ID klienta",

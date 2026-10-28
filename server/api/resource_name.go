@@ -10,19 +10,22 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"github.com/usememos/memos/core/identityprovider"
+	"github.com/usememos/memos/core/instancesetting"
+	coreuser "github.com/usememos/memos/core/user"
 	"github.com/usememos/memos/internal/identifier"
 	"github.com/usememos/memos/internal/random"
 )
 
 const (
-	InstanceSettingNamePrefix  = "instance/settings/"
-	UserNamePrefix             = "users/"
+	InstanceSettingNamePrefix  = instancesetting.NamePrefix
+	UserNamePrefix             = coreuser.NamePrefix
 	MemoNamePrefix             = "memos/"
 	MemoShareNamePrefix        = "shares/"
 	AttachmentNamePrefix       = "attachments/"
 	ReactionNamePrefix         = "reactions/"
 	InboxNamePrefix            = "inboxes/"
-	IdentityProviderNamePrefix = "identity-providers/"
+	IdentityProviderNamePrefix = identityprovider.NamePrefix
 	WebhookNamePrefix          = "webhooks/"
 	SpaceNamePrefix            = "spaces/"
 	SpaceMemberNamePrefix      = "members/"

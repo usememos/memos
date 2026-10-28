@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useInstance } from "@/contexts/InstanceContext";
+import { isFieldManaged, useManagedResource } from "@/hooks/useConfigurationQueries";
 import {
   InstanceSetting_Key,
   InstanceSetting_MemoRelatedSetting,
@@ -14,6 +15,7 @@ import {
   InstanceSettingSchema,
 } from "@/types/proto/api/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
+import ManagedByConfigurationChip from "./ManagedByConfigurationChip";
 import SettingGroup from "./SettingGroup";
 import { SettingPanel } from "./SettingList";
 import SettingSection from "./SettingSection";
@@ -25,6 +27,8 @@ const MemoRelatedSettings = () => {
   const { memoRelatedSetting: originalSetting } = useInstance();
   const [memoRelatedSetting, setMemoRelatedSetting] = useState<InstanceSetting_MemoRelatedSetting>(originalSetting);
   const [editingReaction, setEditingReaction] = useState<string>("");
+  const managed = useManagedResource(buildInstanceSettingName(InstanceSetting_Key.MEMO_RELATED));
+  const reactionsLocked = isFieldManaged(managed, "memoRelatedSetting.reactions");
 
   useEffect(() => {
     setMemoRelatedSetting(originalSetting);
@@ -69,7 +73,11 @@ const MemoRelatedSettings = () => {
 
   return (
     <SettingSection title={t("setting.memo.label")}>
-      <SettingGroup title={t("setting.memo.reactions")} description={t("setting.memo.reactions-description")}>
+      <SettingGroup
+        title={t("setting.memo.reactions")}
+        description={t("setting.memo.reactions-description")}
+        actions={reactionsLocked ? <ManagedByConfigurationChip resource={managed} /> : undefined}
+      >
         <SettingPanel
           header={
             <div className="flex items-center justify-between gap-3">
@@ -85,10 +93,11 @@ const MemoRelatedSettings = () => {
                 className="h-8 max-w-48 font-mono"
                 placeholder={t("setting.memo.reaction-placeholder")}
                 value={editingReaction}
+                disabled={reactionsLocked}
                 onChange={(event) => setEditingReaction(event.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && upsertReaction()}
               />
-              <Button variant="outline" size="sm" onClick={upsertReaction} disabled={!editingReaction.trim()}>
+              <Button variant="outline" size="sm" onClick={upsertReaction} disabled={reactionsLocked || !editingReaction.trim()}>
                 <CheckIcon className="w-4 h-4 mr-1.5" />
                 {t("setting.memo.add-reaction")}
               </Button>
@@ -102,6 +111,7 @@ const MemoRelatedSettings = () => {
                 <Button
                   variant="ghost"
                   size="icon-sm"
+                  disabled={reactionsLocked}
                   onClick={() => updatePartialSetting({ reactions: memoRelatedSetting.reactions.filter((r) => r !== reactionType) })}
                   aria-label={t("setting.memo.remove-reaction")}
                 >

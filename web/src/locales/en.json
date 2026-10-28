@@ -838,6 +838,21 @@
       "delete-confirm": "Are you sure you want to delete view `{{title}}`?",
       "delete-success": "View `{{title}}` deleted successfully"
     },
+    "configuration": {
+      "label": "Configuration",
+      "description": "Resources set by configuration files. Edit a file and apply it to change them; the rest of the instance stays editable here.",
+      "managed-by": "Managed by configuration",
+      "managed-tooltip": "Set in {{source}}. Edit the file and apply it to change this.",
+      "resource": "Resource",
+      "source": "File",
+      "managed-fields": "Managed fields",
+      "whole-resource": "All fields",
+      "ignored-fields": "Editable here",
+      "serial": "Serial",
+      "last-apply": "Last applied",
+      "applied-by": "Applied by",
+      "nothing-managed": "No configuration has been applied. Everything is set here."
+    },
     "sso": {
       "account": "Account",
       "accounts-description": "Review each identity provider, see the current link state, and connect or disconnect external identities from this account.",

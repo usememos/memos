@@ -644,6 +644,21 @@
       "delete-success": "Skats `{{title}}` veiksmīgi izdzēsts",
       "change-icon": "Mainīt skata ikonu"
     },
+    "configuration": {
+      "label": "Konfigurācija",
+      "description": "Resursi, ko nosaka konfigurācijas faili. Lai tos mainītu, rediģējiet failu un lietojiet to; pārējā instance joprojām ir rediģējama šeit.",
+      "managed-by": "Pārvalda konfigurācija",
+      "managed-tooltip": "Iestatīts failā {{source}}. Lai to mainītu, rediģējiet failu un lietojiet to.",
+      "resource": "Resurss",
+      "source": "Fails",
+      "managed-fields": "Pārvaldītie lauki",
+      "whole-resource": "Visi lauki",
+      "ignored-fields": "Rediģējams šeit",
+      "serial": "Sērijas numurs",
+      "last-apply": "Pēdējoreiz lietots",
+      "applied-by": "Lietoja",
+      "nothing-managed": "Neviena konfigurācija nav lietota. Viss tiek iestatīts šeit."
+    },
     "sso": {
       "account": "Konts",
       "accounts-description": "Pārskatiet katru identitātes nodrošinātāju, skatiet pašreizējo saites stāvokli un pievienojiet vai atvienojiet ārējās identitātes no šī konta.",

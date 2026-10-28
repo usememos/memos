@@ -439,6 +439,21 @@
       "delete-success": "Đã xóa chế độ xem `{{title}}` thành công",
       "change-icon": "Thay đổi biểu tượng xem"
     },
+    "configuration": {
+      "label": "Cấu hình",
+      "description": "Tài nguyên được đặt bởi tệp cấu hình. Chỉnh sửa tệp và áp dụng để thay đổi chúng; phần còn lại của phiên bản vẫn có thể chỉnh sửa tại đây.",
+      "managed-by": "Được quản lý bởi cấu hình",
+      "managed-tooltip": "Được đặt trong {{source}}. Chỉnh sửa tệp và áp dụng để thay đổi mục này.",
+      "resource": "Tài nguyên",
+      "source": "Tệp",
+      "managed-fields": "Trường được quản lý",
+      "whole-resource": "Tất cả các trường",
+      "ignored-fields": "Có thể chỉnh sửa tại đây",
+      "serial": "Số sê-ri",
+      "last-apply": "Áp dụng lần cuối",
+      "applied-by": "Áp dụng bởi",
+      "nothing-managed": "Chưa áp dụng cấu hình nào. Mọi thứ được đặt tại đây."
+    },
     "sso": {
       "authorization-endpoint": "Điểm cuối xác thực",
       "client-id": "ID khách hàng",

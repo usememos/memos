@@ -644,6 +644,21 @@
       "delete-success": "Visningen `{{title}}` blev slettet",
       "change-icon": "Skift visningsikon"
     },
+    "configuration": {
+      "label": "Konfiguration",
+      "description": "Ressourcer angivet af konfigurationsfiler. Rediger en fil, og anvend den for at ændre dem; resten af instansen kan stadig redigeres her.",
+      "managed-by": "Styret af konfiguration",
+      "managed-tooltip": "Angivet i {{source}}. Rediger filen, og anvend den for at ændre dette.",
+      "resource": "Ressource",
+      "source": "Fil",
+      "managed-fields": "Styrede felter",
+      "whole-resource": "Alle felter",
+      "ignored-fields": "Kan redigeres her",
+      "serial": "Serienummer",
+      "last-apply": "Senest anvendt",
+      "applied-by": "Anvendt af",
+      "nothing-managed": "Der er ikke anvendt nogen konfiguration. Alt indstilles her."
+    },
     "sso": {
       "account": "Konto",
       "accounts-description": "Gennemgå hver identitetsudbyder, se den aktuelle linktilstand, og tilslut eller afbryd eksterne identiteter fra denne konto.",

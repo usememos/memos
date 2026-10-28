@@ -81,9 +81,10 @@ interface SettingCodeEditorProps {
   value: string;
   placeholder: string;
   onChange: (value: string) => void;
+  disabled?: boolean;
 }
 
-export const SettingCodeEditor = ({ label, description, value, placeholder, onChange }: SettingCodeEditorProps) => {
+export const SettingCodeEditor = ({ label, description, value, placeholder, onChange, disabled }: SettingCodeEditorProps) => {
   return (
     <SettingPanel
       header={
@@ -98,6 +99,7 @@ export const SettingCodeEditor = ({ label, description, value, placeholder, onCh
         rows={4}
         placeholder={placeholder}
         value={value}
+        disabled={disabled}
         onChange={(event) => onChange(event.target.value)}
       />
     </SettingPanel>

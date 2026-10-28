@@ -439,6 +439,21 @@
       "delete-success": "تم حذف طريقة العرض `{{title}}` بنجاح",
       "change-icon": "تغيير أيقونة العرض"
     },
+    "configuration": {
+      "label": "الإعداد",
+      "description": "موارد تحددها ملفات الإعداد. عدّل ملفًا وطبّقه لتغييرها؛ ويبقى باقي المثيل قابلًا للتعديل هنا.",
+      "managed-by": "تُدار بواسطة الإعداد",
+      "managed-tooltip": "محدد في {{source}}. عدّل الملف وطبّقه لتغيير ذلك.",
+      "resource": "المورد",
+      "source": "الملف",
+      "managed-fields": "الحقول المُدارة",
+      "whole-resource": "كل الحقول",
+      "ignored-fields": "قابلة للتعديل هنا",
+      "serial": "الرقم التسلسلي",
+      "last-apply": "آخر تطبيق",
+      "applied-by": "طُبّق بواسطة",
+      "nothing-managed": "لم يُطبَّق أي إعداد. كل شيء يُضبط من هنا."
+    },
     "sso": {
       "authorization-endpoint": "نقطة نهاية التفويض",
       "client-id": "معرف العميل",

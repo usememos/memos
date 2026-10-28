@@ -2,7 +2,6 @@ package test
 
 import (
 	"context"
-	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -191,33 +190,6 @@ func TestUsageLimitsSettingUpdate(t *testing.T) {
 	require.Len(t, got.GetUsageLimitsSetting().Limits, 2)
 	require.Equal(t, []string{bobName}, got.GetUsageLimitsSetting().Limits[0].Users)
 	require.True(t, got.GetUsageLimitsSetting().Limits[1].AllUsers)
-}
-
-func TestUsageLimitsDeploymentFile(t *testing.T) {
-	ctx := context.Background()
-	ts := NewTestService(t)
-	defer ts.Cleanup()
-	admin, err := ts.CreateHostUser(ctx, "file-admin")
-	require.NoError(t, err)
-	adminCtx := ts.CreateUserContext(ctx, admin.ID)
-
-	dir := t.TempDir()
-	require.NoError(t, os.WriteFile(filepath.Join(dir, "memos-instance-setting-usage-limits.json"),
-		[]byte(`{"key":"USAGE_LIMITS","usageLimitsSetting":{"limits":[{"allUsers":true,"memoCount":"1"}]}}`), 0o600))
-	require.NoError(t, ts.Store.LoadDeploymentConfigurationDir(ctx, dir))
-
-	got, err := ts.Service.GetInstanceSetting(adminCtx, &apipb.GetInstanceSettingRequest{Name: usageLimitsSettingName})
-	require.NoError(t, err)
-	require.Len(t, got.GetUsageLimitsSetting().Limits, 1)
-	require.Equal(t, int64(1), got.GetUsageLimitsSetting().Limits[0].GetMemoCount())
-	_, err = ts.Service.UpdateInstanceSetting(adminCtx, &apipb.UpdateInstanceSettingRequest{InstanceSetting: usageLimitsSetting(&usageLimitEntry{AllUsers: true})})
-	require.Equal(t, codes.FailedPrecondition, status.Code(err))
-
-	// The file-provided limit is enforced.
-	_, err = ts.Service.CreateMemo(adminCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{Content: "first", Visibility: apipb.Visibility_PRIVATE}})
-	require.NoError(t, err)
-	_, err = ts.Service.CreateMemo(adminCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{Content: "second", Visibility: apipb.Visibility_PRIVATE}})
-	requireQuotaExceeded(t, err, "MEMO_COUNT", api.BuildUserName(admin.Username))
 }
 
 func TestMemoLimitEnforcement(t *testing.T) {

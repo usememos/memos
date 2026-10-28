@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -24,6 +25,7 @@ import (
 	// sqlite driver.
 	_ "modernc.org/sqlite"
 
+	"github.com/usememos/memos/core/configuration"
 	"github.com/usememos/memos/internal/profile"
 	"github.com/usememos/memos/internal/version"
 	storepb "github.com/usememos/memos/proto/gen/store"
@@ -51,6 +53,9 @@ type instanceOptions struct {
 	// dataDir reuses an existing data directory instead of a fresh one, which
 	// is how a restart against an already-migrated database is simulated.
 	dataDir string
+	// configDir is the declarative configuration directory applied at
+	// startup; empty means a directory that does not exist.
+	configDir string
 }
 
 // instance is a booted server plus the HTTP plumbing needed to talk to it.
@@ -62,8 +67,8 @@ type instance struct {
 }
 
 // bootInstance starts a full server following the same sequence as
-// cmd/memos/main.go: validate profile, open the driver, migrate, load
-// deployment configuration, construct the server, then listen.
+// cmd/memos/main.go: validate profile, open the driver, migrate, apply the
+// declarative configuration, construct the server, then listen.
 //
 // Keep this in lockstep with main.go. The value of these tests comes from
 // exercising the real startup path rather than a hand-assembled subset of it.
@@ -94,11 +99,15 @@ func bootInstance(ctx context.Context, t *testing.T, opts instanceOptions) *inst
 	storeInstance := store.New(dbDriver, instanceProfile)
 	require.NoError(t, storeInstance.Migrate(ctx), "should migrate database")
 
-	// main.go calls LoadDeploymentConfiguration, which scans the fixed
-	// /etc/secrets path. Point the scan at a per-test directory so the result
-	// cannot depend on host state; the missing-directory branch is identical.
-	require.NoError(t, storeInstance.LoadDeploymentConfigurationDir(ctx, filepath.Join(dataDir, "secrets")),
-		"should load deployment configuration")
+	configDir := opts.configDir
+	if configDir == "" {
+		configDir = filepath.Join(dataDir, "no-configuration")
+	}
+	desired, err := configuration.Load(configDir, configuration.OSResolver())
+	require.NoError(t, err, "should load the configuration")
+	plan, _, err := configuration.Apply(ctx, desired, storeInstance, configuration.ApplyMetadata{AppliedBy: "startup test", Now: time.Now()})
+	require.NoError(t, err, "should apply the configuration")
+	require.True(t, plan.Valid(), "the configuration should be applicable: %v", plan.Message.Errors)
 
 	s, err := server.NewServer(ctx, instanceProfile, storeInstance)
 	require.NoError(t, err, "should construct server")
@@ -545,4 +554,38 @@ func TestStartupDemoMode(t *testing.T) {
 	}
 	require.NoError(t, json.Unmarshal(body, &listed))
 	require.NotEmpty(t, listed.Memos, "demo mode should seed memos")
+}
+
+// TestStartupAppliesConfiguration boots a headless instance from files alone:
+// the administrator signs in without anyone having opened the browser, and the
+// configured settings are what the API serves.
+func TestStartupAppliesConfiguration(t *testing.T) {
+	ctx := context.Background()
+	configDir := t.TempDir()
+	require.NoError(t, os.WriteFile(filepath.Join(configDir, "instance.json"), []byte(`{
+		"instanceSettings": [
+			{"name": "instance/settings/ACCESS", "accessSetting": {"accessMode": "INSTANCE_ACCESS_MODE_PUBLIC"}},
+			{"name": "instance/settings/GENERAL", "generalSetting": {"customProfile": {"title": "Configured Memos"}}}
+		],
+		"users": [{"name": "users/`+testAdminUsername+`", "username": "`+testAdminUsername+`", "role": "ADMIN", "password": "${env:MEMOS_TEST_ADMIN_PASSWORD}"}]
+	}`), 0o600))
+	t.Setenv("MEMOS_TEST_ADMIN_PASSWORD", testAdminPassword)
+	inst := bootInstance(ctx, t, instanceOptions{configDir: configDir})
+
+	token := inst.signIn(t)
+	status, body := inst.do(t, http.MethodGet, "/api/instance/settings/GENERAL", "", nil)
+	require.Equal(t, http.StatusOK, status, "a public instance serves GENERAL anonymously: %s", body)
+	require.Contains(t, string(body), "Configured Memos")
+
+	status, body = inst.do(t, http.MethodGet, "/api/instance/configuration", token, nil)
+	require.Equal(t, http.StatusOK, status, "%s", body)
+	var configurationStatus struct {
+		Serial           string `json:"serial"`
+		ManagedResources []struct {
+			Resource string `json:"resource"`
+		} `json:"managedResources"`
+	}
+	require.NoError(t, json.Unmarshal(body, &configurationStatus))
+	require.Equal(t, "1", configurationStatus.Serial)
+	require.Len(t, configurationStatus.ManagedResources, 3)
 }

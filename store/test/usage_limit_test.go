@@ -2,9 +2,6 @@ package test
 
 import (
 	"context"
-	"fmt"
-	"os"
-	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -131,7 +128,7 @@ func TestUsageLimitsDefaultSetting(t *testing.T) {
 	require.Equal(t, store.DefaultMemoContentBytes, setting.Limits[0].GetMemoContentBytes())
 	require.Nil(t, setting.Limits[0].MemoCount)
 	require.Nil(t, setting.Limits[0].StorageBytes)
-	stored, err := ts.GetStoredInstanceSetting(ctx, &store.FindInstanceSetting{Name: storepb.InstanceSettingKey_USAGE_LIMITS.String()})
+	stored, err := ts.GetUncachedInstanceSetting(ctx, &store.FindInstanceSetting{Name: storepb.InstanceSettingKey_USAGE_LIMITS.String()})
 	require.NoError(t, err)
 	require.Nil(t, stored, "reading defaults does not persist a setting")
 
@@ -148,7 +145,7 @@ func TestUsageLimitsDefaultSetting(t *testing.T) {
 	require.Nil(t, setting.Limits[0].MemoContentBytes, "the stored list is the whole truth; built-in defaults do not come back")
 
 	// The row round-trips through the generic setting reads too.
-	stored, err = ts.GetStoredInstanceSetting(ctx, &store.FindInstanceSetting{Name: storepb.InstanceSettingKey_USAGE_LIMITS.String()})
+	stored, err = ts.GetUncachedInstanceSetting(ctx, &store.FindInstanceSetting{Name: storepb.InstanceSettingKey_USAGE_LIMITS.String()})
 	require.NoError(t, err)
 	require.True(t, proto.Equal(setting, stored.GetUsageLimitsSetting()))
 }
@@ -209,7 +206,7 @@ func TestUpsertInstanceSettingValidatesUsageLimits(t *testing.T) {
 		Value: &storepb.InstanceSetting_UsageLimitsSetting{UsageLimitsSetting: usageLimitsSetting(&usageLimitEntry{UserIds: []int32{1}})},
 	})
 	require.ErrorIs(t, err, store.ErrInvalidUsageLimits)
-	stored, err := ts.GetStoredInstanceSetting(ctx, &store.FindInstanceSetting{Name: storepb.InstanceSettingKey_USAGE_LIMITS.String()})
+	stored, err := ts.GetUncachedInstanceSetting(ctx, &store.FindInstanceSetting{Name: storepb.InstanceSettingKey_USAGE_LIMITS.String()})
 	require.NoError(t, err)
 	require.Nil(t, stored, "an invalid write stores nothing")
 
@@ -250,54 +247,4 @@ func TestDeleteUserRemovesFromUsageLimits(t *testing.T) {
 
 	require.NoError(t, ts.RemoveUserFromUsageLimits(ctx, 99999), "an unknown user is a no-op")
 	require.Equal(t, [][]int32{{bob.ID}, {bob.ID}, nil}, storedUserIDs(ctx, t, ts))
-}
-
-func TestUsageLimitsDeploymentFile(t *testing.T) {
-	t.Parallel()
-	ctx := context.Background()
-	ts := NewTestingStore(ctx, t)
-	defer ts.Close()
-	alice, err := ts.CreateUser(ctx, &store.User{Username: "alice", Role: store.RoleUser, PasswordHash: "hash"})
-	require.NoError(t, err)
-	writeUsageLimits(ctx, t, ts, &usageLimitEntry{AllUsers: true, MemoCount: new(int64(10))})
-
-	dir := t.TempDir()
-	path := filepath.Join(dir, "memos-instance-setting-usage-limits.json")
-	require.NoError(t, os.WriteFile(path, []byte(`{"key":"USAGE_LIMITS","usageLimitsSetting":{"limits":[
-		{"userIds":[`+fmt.Sprint(alice.ID)+`],"storageBytes":"5368709120"},
-		{"allUsers":true,"storageBytes":"1073741824"}
-	]}}`), 0o600))
-	require.NoError(t, ts.LoadDeploymentConfigurationDir(ctx, dir))
-
-	effective, err := ts.GetInstanceUsageLimitsSetting(ctx)
-	require.NoError(t, err)
-	require.Len(t, effective.Limits, 2, "the file shadows the stored row")
-	require.Equal(t, []int32{alice.ID}, effective.Limits[0].UserIds)
-	require.Equal(t, int64(5<<30), effective.Limits[0].GetStorageBytes())
-	require.True(t, effective.Limits[1].AllUsers)
-	require.Nil(t, effective.Limits[1].MemoCount)
-	require.True(t, ts.IsInstanceSettingDeploymentConfigured(storepb.InstanceSettingKey_USAGE_LIMITS))
-	require.NoError(t, ts.RemoveUserFromUsageLimits(ctx, alice.ID), "user deletion cleanup skips file-provided limits")
-
-	stored, err := ts.GetStoredInstanceSetting(ctx, &store.FindInstanceSetting{Name: storepb.InstanceSettingKey_USAGE_LIMITS.String()})
-	require.NoError(t, err)
-	require.Equal(t, int64(10), stored.GetUsageLimitsSetting().Limits[0].GetMemoCount(), "the stored row is unchanged")
-
-	for name, content := range map[string]string{
-		"missing value":        `{"key":"USAGE_LIMITS"}`,
-		"negative value":       `{"key":"USAGE_LIMITS","usageLimitsSetting":{"limits":[{"allUsers":true,"memoCount":"-1"}]}}`,
-		"no all-users entry":   `{"key":"USAGE_LIMITS","usageLimitsSetting":{"limits":[{"userIds":[1],"memoCount":"1"}]}}`,
-		"all users not last":   `{"key":"USAGE_LIMITS","usageLimitsSetting":{"limits":[{"allUsers":true},{"userIds":[1]}]}}`,
-		"users and all users":  `{"key":"USAGE_LIMITS","usageLimitsSetting":{"limits":[{"allUsers":true,"userIds":[1]}]}}`,
-		"user resource names":  `{"key":"USAGE_LIMITS","usageLimitsSetting":{"limits":[{"users":["users/alice"]},{"allUsers":true}]}}`,
-		"unknown field":        `{"key":"USAGE_LIMITS","usageLimitsSetting":{"limits":[{"allUsers":true,"plan":"pro"}]}}`,
-		"old per-metric shape": `{"key":"USAGE_LIMITS","usageLimitsSetting":{"limits":[{"uid":"a","metric":"MEMO_COUNT","allUsers":{},"value":"1"}]}}`,
-	} {
-		invalidDir := t.TempDir()
-		require.NoError(t, os.WriteFile(filepath.Join(invalidDir, "memos-instance-setting-usage-limits.json"), []byte(content), 0o600))
-		require.Error(t, ts.LoadDeploymentConfigurationDir(ctx, invalidDir), name)
-		effective, err := ts.GetInstanceUsageLimitsSetting(ctx)
-		require.NoError(t, err)
-		require.Len(t, effective.Limits, 2, "an invalid reload preserves the active configuration: %s", name)
-	}
 }

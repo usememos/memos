@@ -856,6 +856,21 @@
       "your-access": "Åtgangen din",
       "your-spaces": "Romma dine"
     },
+    "configuration": {
+      "label": "Konfigurasjon",
+      "description": "Ressursar som er sette av konfigurasjonsfiler. Rediger ei fil og bruk henne for å endre dei; resten av instansen kan framleis redigerast her.",
+      "managed-by": "Styrt av konfigurasjon",
+      "managed-tooltip": "Sett i {{source}}. Rediger fila og bruk henne for å endre dette.",
+      "resource": "Ressurs",
+      "source": "Fil",
+      "managed-fields": "Styrte felt",
+      "whole-resource": "Alle felt",
+      "ignored-fields": "Kan redigerast her",
+      "serial": "Serienummer",
+      "last-apply": "Sist brukt",
+      "applied-by": "Brukt av",
+      "nothing-managed": "Ingen konfigurasjon er brukt. Alt blir stilt inn her."
+    },
     "sso": {
       "account": "Konto",
       "accounts-description": "Sjå gjennom kvar identitetstilbydar, sjå gjeldande tilknytingsstatus, og knyt til eller fjern eksterne identitetar frå denne kontoen.",

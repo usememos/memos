@@ -513,6 +513,21 @@
       "delete-success": "视图 `{{title}}` 删除成功",
       "change-icon": "更改视图图标"
     },
+    "configuration": {
+      "label": "配置文件",
+      "description": "由配置文件设置的资源。要修改它们，请编辑文件并应用；实例的其余部分仍可在此编辑。",
+      "managed-by": "由配置文件管理",
+      "managed-tooltip": "在 {{source}} 中设置。要修改此项，请编辑该文件并应用。",
+      "resource": "资源",
+      "source": "文件",
+      "managed-fields": "受管理的字段",
+      "whole-resource": "全部字段",
+      "ignored-fields": "可在此编辑",
+      "serial": "序号",
+      "last-apply": "上次应用",
+      "applied-by": "应用者",
+      "nothing-managed": "尚未应用任何配置。所有设置都在这里完成。"
+    },
     "sso": {
       "account": "账户",
       "accounts-description": "查看每个身份提供程序的当前绑定状态，并为当前账户连接或解绑外部身份。",

@@ -528,6 +528,21 @@
       "delete-success": "Pogled \"{{title}}\" je uspešno izbrisan",
       "change-icon": "Spremeni ikono pogleda"
     },
+    "configuration": {
+      "label": "Konfiguracija",
+      "description": "Viri, nastavljeni s konfiguracijskimi datotekami. Če jih želite spremeniti, uredite datoteko in jo uveljavite; preostali del primerka ostaja urejljiv tukaj.",
+      "managed-by": "Upravlja konfiguracija",
+      "managed-tooltip": "Nastavljeno v {{source}}. Če želite to spremeniti, uredite datoteko in jo uveljavite.",
+      "resource": "Vir",
+      "source": "Datoteka",
+      "managed-fields": "Upravljana polja",
+      "whole-resource": "Vsa polja",
+      "ignored-fields": "Urejljivo tukaj",
+      "serial": "Zaporedna številka",
+      "last-apply": "Nazadnje uveljavljeno",
+      "applied-by": "Uveljavil",
+      "nothing-managed": "Nobena konfiguracija ni bila uveljavljena. Vse se nastavi tukaj."
+    },
     "sso": {
       "authorization-endpoint": "Končna točka avtorizacije",
       "client-id": "ID odjemalca",

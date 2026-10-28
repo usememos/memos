@@ -10,47 +10,15 @@ import (
 	"github.com/pkg/errors"
 	colorpb "google.golang.org/genproto/googleapis/type/color"
 
+	"github.com/usememos/memos/core/instancesetting"
 	apipb "github.com/usememos/memos/proto/gen/api"
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
 
-func validateInstanceSetting(setting *apipb.InstanceSetting) error {
-	key, err := ExtractInstanceSettingKeyFromName(setting.Name)
-	if err != nil {
-		return err
-	}
-	switch key {
-	case storepb.InstanceSettingKey_MEMO_RELATED.String():
-		if setting.GetMemoRelatedSetting() == nil {
-			return errors.New("memo related setting is required")
-		}
-		return nil
-	case storepb.InstanceSettingKey_TAGS.String():
-		return validateInstanceTagsSetting(setting.GetTagsSetting())
-	case storepb.InstanceSettingKey_ACCESS.String():
-		return validateInstanceAccessSetting(setting.GetAccessSetting())
-	case storepb.InstanceSettingKey_USAGE_LIMITS.String():
-		if setting.GetUsageLimitsSetting() == nil {
-			return errors.New("usage limits setting is required")
-		}
-		return nil
-	default:
-		return nil
-	}
-}
-
-func validateInstanceAccessSetting(setting *apipb.InstanceSetting_AccessSetting) error {
-	if setting == nil {
-		return errors.New("access setting is required")
-	}
-	switch setting.AccessMode {
-	case apipb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE, apipb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC:
-		return nil
-	default:
-		return errors.New("access_mode must be PRIVATE or PUBLIC")
-	}
-}
-
+// prepareInstanceAISettingForUpdate applies the API's update conveniences to an
+// AI setting before it is validated: trimming and default endpoints, generated
+// IDs for new providers, an empty API key meaning "keep the stored key", and an
+// omitted transcription config meaning "keep the stored config".
 func (s *APIService) prepareInstanceAISettingForUpdate(ctx context.Context, setting *storepb.InstanceAISetting) error {
 	if setting == nil {
 		return errors.New("AI setting is required")
@@ -69,92 +37,24 @@ func (s *APIService) prepareInstanceAISettingForUpdate(ctx context.Context, sett
 		}
 	}
 
-	seenIDs := map[string]bool{}
+	instancesetting.NormalizeAISetting(setting)
 	for _, provider := range setting.Providers {
 		if provider == nil {
-			return errors.New("provider cannot be nil")
+			continue
 		}
-
-		provider.Id = strings.TrimSpace(provider.Id)
 		if provider.Id == "" {
 			provider.Id = shortuuid.New()
 		}
-		if seenIDs[provider.Id] {
-			return errors.Errorf("duplicate provider ID %q", provider.Id)
-		}
-		seenIDs[provider.Id] = true
-
-		provider.Title = strings.TrimSpace(provider.Title)
-		if provider.Title == "" {
-			return errors.New("provider title is required")
-		}
-		if provider.Type != storepb.AIProviderType_OPENAI && provider.Type != storepb.AIProviderType_GEMINI {
-			return errors.Errorf("provider %q has unsupported type", provider.Id)
-		}
-
-		provider.Endpoint = strings.TrimSpace(provider.Endpoint)
-		if provider.Type == storepb.AIProviderType_OPENAI && provider.Endpoint == "" {
-			provider.Endpoint = "https://api.openai.com/v1"
-		}
-		if provider.Type == storepb.AIProviderType_GEMINI && provider.Endpoint == "" {
-			provider.Endpoint = "https://generativelanguage.googleapis.com/v1beta"
-		}
-
 		if provider.ApiKey == "" {
 			if existingProvider, ok := existingProviders[provider.Id]; ok {
 				provider.ApiKey = existingProvider.ApiKey
 			}
 		}
-		if provider.ApiKey == "" {
-			return errors.Errorf("provider %q API key is required", provider.Id)
-		}
 	}
-
-	if err := preparePersistedTranscriptionConfig(setting, existing); err != nil {
-		return err
-	}
-	return nil
-}
-
-func preparePersistedTranscriptionConfig(setting *storepb.InstanceAISetting, existing *storepb.InstanceAISetting) error {
-	// Preserve the previously stored transcription config when the request omits it,
-	// matching the same "absence == keep" semantics used for API keys. The preserved
-	// config still falls through to validation below, so a stale provider_id is
+	// The preserved config is still validated, so a stale provider_id is
 	// rejected if the same update removed or renamed its referenced provider.
 	if setting.Transcription == nil && existing != nil {
 		setting.Transcription = existing.GetTranscription()
-	}
-	if setting.Transcription == nil {
-		return nil
-	}
-
-	cfg := setting.Transcription
-	cfg.ProviderId = strings.TrimSpace(cfg.ProviderId)
-	cfg.Model = strings.TrimSpace(cfg.Model)
-	cfg.Language = strings.TrimSpace(cfg.Language)
-	cfg.Prompt = strings.TrimSpace(cfg.Prompt)
-
-	if cfg.ProviderId != "" {
-		referenced := false
-		for _, provider := range setting.Providers {
-			if provider != nil && provider.Id == cfg.ProviderId {
-				referenced = true
-				break
-			}
-		}
-		if !referenced {
-			return errors.Errorf("transcription provider_id %q does not reference any configured provider", cfg.ProviderId)
-		}
-	}
-
-	if len(cfg.Model) > maxTranscriptionConfigModelLength {
-		return errors.Errorf("transcription model is too long; maximum length is %d characters", maxTranscriptionConfigModelLength)
-	}
-	if len(cfg.Language) > maxTranscriptionConfigLanguageLength {
-		return errors.Errorf("transcription language is too long; maximum length is %d characters", maxTranscriptionConfigLanguageLength)
-	}
-	if len(cfg.Prompt) > maxTranscriptionConfigPromptLength {
-		return errors.Errorf("transcription prompt is too long; maximum length is %d characters", maxTranscriptionConfigPromptLength)
 	}
 	return nil
 }

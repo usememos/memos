@@ -644,6 +644,21 @@
       "delete-success": "Näkymä `{{title}}` poistettu onnistuneesti",
       "change-icon": "Vaihda näkymäkuvaketta"
     },
+    "configuration": {
+      "label": "Konfiguraatio",
+      "description": "Konfiguraatiotiedostoilla määritetyt resurssit. Muuta niitä muokkaamalla tiedostoa ja ottamalla se käyttöön; muuta instanssia voi edelleen muokata täällä.",
+      "managed-by": "Konfiguraation hallitsema",
+      "managed-tooltip": "Määritetty tiedostossa {{source}}. Muuta tätä muokkaamalla tiedostoa ja ottamalla se käyttöön.",
+      "resource": "Resurssi",
+      "source": "Tiedosto",
+      "managed-fields": "Hallitut kentät",
+      "whole-resource": "Kaikki kentät",
+      "ignored-fields": "Muokattavissa täällä",
+      "serial": "Sarjanumero",
+      "last-apply": "Viimeksi otettu käyttöön",
+      "applied-by": "Käyttöön ottanut",
+      "nothing-managed": "Konfiguraatiota ei ole otettu käyttöön. Kaikki asetetaan täällä."
+    },
     "sso": {
       "account": "Tili",
       "accounts-description": "Tarkista jokainen identiteetin tarjoaja, katso linkin nykyinen tila ja yhdistä tai irrota ulkoiset identiteetit tästä tilistä.",

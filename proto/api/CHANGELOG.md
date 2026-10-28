@@ -6,12 +6,19 @@ Record schema, REST route, and behavior breaks here. API compatibility is checke
 
 Add entries under a `## Unreleased` heading. After the release ships, rename it to the release tag.
 
+`IdentityProvider`, `InstanceSetting`, and `User` are also the declarative configuration file format. When a break removes or
+renames a field a configuration file can set, say that files setting it are rejected from this release and what to write
+instead, and update `core/configuration/testdata/compat/` in the same change. After a release ships, copy
+`testdata/compat/unreleased/` to a directory named for the release tag.
+
 ```markdown
 ## Unreleased
 
 ### Breaking
 
 - `MemoService.ListShortcuts`: removed. Use `UserService.ListMemoViews`.
+- `InstanceSetting.StorageSetting.upload_size_limit_mb`: removed. Configuration files that set `uploadSizeLimitMb` are
+  rejected from this release; set the `UPLOAD_BYTES` usage limit instead.
 
 ### Deprecated
 
@@ -33,8 +40,15 @@ Add entries under a `## Unreleased` heading. After the release ships, rename it 
   the limit set in effect as `limits` plus `limit_index`. Exceeding a limit returns `RESOURCE_EXHAUSTED` with reason
   `QUOTA_EXCEEDED` and metadata `metric`, `limit`, and `usage`.
 - `MemoRelatedSetting.enable_double_click_edit` is removed; double-click editing is now a per-browser preference in
-  the web client and is no longer an instance setting. `MemoRelatedSetting` keeps the single field `reactions = 1`. A
-  deployment config file that still sets `enableDoubleClickEdit` is rejected.
+  the web client and is no longer an instance setting. `MemoRelatedSetting` keeps the single field `reactions = 1`.
+- `CreateIdentityProvider` and `UpdateIdentityProvider` validate the provider as it will be stored and return
+  `INVALID_ARGUMENT` when it has no title, an invalid `identifier_filter`, no `client_id`, a non-absolute or non-HTTP(S)
+  `auth_url`, `token_url`, or `user_info_url`, an empty scope entry, or no `field_mapping.identifier`. A request that
+  omitted `config` or `field_mapping` previously failed with `INTERNAL`.
+- `UpdateInstanceSetting` for `STORAGE` requires every new or changed S3 storage to have `endpoint`, `region`, `bucket`,
+  `access_key_id`, and `access_key_secret` (an empty secret still keeps the stored one). For `GENERAL`,
+  `week_start_day_offset` must be between -1 and 6. `BASIC` cannot be written. Notification validation errors name
+  fields in proto form (`smtp_host`, `use_tls`).
 - The API no longer carries a `v1` version marker. Every client must update its paths:
   - REST routes move from `/api/v1/...` to `/api/...` (for example `GET /api/memos`). Server-sent events move from
     `/api/v1/sse` to `/api/sse`.

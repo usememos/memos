@@ -528,6 +528,21 @@
       "delete-success": "Prikaz `{{title}}` uspješno obrisan",
       "change-icon": "Promijeni ikonu prikaza"
     },
+    "configuration": {
+      "label": "Konfiguracija",
+      "description": "Resursi postavljeni konfiguracijskim datotekama. Uredite datoteku i primijenite je da biste ih promijenili; ostatak instance ostaje ovdje uredljiv.",
+      "managed-by": "Upravlja konfiguracija",
+      "managed-tooltip": "Postavljeno u {{source}}. Uredite datoteku i primijenite je da biste ovo promijenili.",
+      "resource": "Resurs",
+      "source": "Datoteka",
+      "managed-fields": "Upravljana polja",
+      "whole-resource": "Sva polja",
+      "ignored-fields": "Uredljivo ovdje",
+      "serial": "Serijski broj",
+      "last-apply": "Zadnja primjena",
+      "applied-by": "Primijenio",
+      "nothing-managed": "Nije primijenjena nijedna konfiguracija. Sve se postavlja ovdje."
+    },
     "sso": {
       "authorization-endpoint": "Krajnja točka autorizacije",
       "client-id": "ID klijenta",

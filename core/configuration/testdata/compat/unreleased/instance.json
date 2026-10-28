@@ -1,0 +1,37 @@
+{
+  "identityProviders": [
+    {
+      "name": "identity-providers/company-sso",
+      "type": "OAUTH2",
+      "title": "Company SSO",
+      "config": {
+        "oauth2Config": {
+          "clientId": "memos",
+          "clientSecret": "${env:OIDC_CLIENT_SECRET}",
+          "authUrl": "https://idp.example.com/oauth/authorize",
+          "tokenUrl": "https://idp.example.com/oauth/token",
+          "userInfoUrl": "https://idp.example.com/oauth/userinfo",
+          "scopes": ["openid", "profile", "email"],
+          "fieldMapping": { "identifier": "sub", "displayName": "name", "email": "email" }
+        }
+      }
+    }
+  ],
+  "instanceSettings": [
+    { "name": "instance/settings/ACCESS", "accessSetting": { "accessMode": "INSTANCE_ACCESS_MODE_PRIVATE" } },
+    {
+      "name": "instance/settings/GENERAL",
+      "generalSetting": {
+        "disallowPasswordAuth": true,
+        "disallowUserRegistration": false,
+        "customProfile": { "title": "Company Memos" }
+      }
+    }
+  ],
+  "users": [
+    { "name": "users/admin", "username": "admin", "role": "ADMIN", "password": "${file:/run/secrets/memos-admin-password}" }
+  ],
+  "lifecycle": [
+    { "resource": "users/admin", "preventDestroy": true, "writeOnlyVersion": 1 }
+  ]
+}

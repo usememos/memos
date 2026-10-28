@@ -43,6 +43,7 @@ func (s *ConnectServiceHandler) RegisterConnectHandlers(mux *http.ServeMux, opts
 		wrap(apiconnect.NewAttachmentServiceHandler(s, opts...)),
 		wrap(apiconnect.NewAIServiceHandler(s, opts...)),
 		wrap(apiconnect.NewIdentityProviderServiceHandler(s, opts...)),
+		wrap(apiconnect.NewConfigurationServiceHandler(s, opts...)),
 	}
 
 	for _, h := range handlers {

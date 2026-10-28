@@ -528,6 +528,21 @@
       "delete-success": "View `{{title}}` deleted successfully",
       "change-icon": "Change view icon"
     },
+    "configuration": {
+      "label": "Configuration",
+      "description": "Resources set by configuration files. Edit a file and apply it to change them; the rest of the instance stays editable here.",
+      "managed-by": "Managed by configuration",
+      "managed-tooltip": "Set in {{source}}. Edit the file and apply it to change this.",
+      "resource": "Resource",
+      "source": "File",
+      "managed-fields": "Managed fields",
+      "whole-resource": "All fields",
+      "ignored-fields": "Editable here",
+      "serial": "Serial",
+      "last-apply": "Last applied",
+      "applied-by": "Applied by",
+      "nothing-managed": "No configuration has been applied. Everything is set here."
+    },
     "sso": {
       "authorization-endpoint": "Authorisation endpoint",
       "client-id": "Client ID",
