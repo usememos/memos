@@ -196,6 +196,15 @@ export const AttachmentGallery = ({ visual, onImagePreview }: AttachmentGalleryP
 /** The file server renders only images and PDFs inline; it serves every other file as a download. */
 const opensInline = (mimeType: string) => mimeType === "application/pdf" || isImage(mimeType);
 
+/** Share links carry an external link too, but it still points at this instance's file server. A link that does not parse is not ours. */
+const isServedHere = (url: string) => {
+  try {
+    return new URL(url, window.location.origin).origin === window.location.origin;
+  } catch {
+    return false;
+  }
+};
+
 /**
  * A document is a row: file glyph in the slot, name, type and size on the detail rail.
  * A file the browser can show, or a link to another site, opens in a new tab; any other
@@ -206,8 +215,6 @@ const opensInline = (mimeType: string) => mimeType === "application/pdf" || isIm
 const DocumentRow = ({ attachment }: { attachment: Attachment }) => {
   const { fileTypeLabel, fileSizeLabel } = getAttachmentMetadata(attachment);
   const url = getAttachmentUrl(attachment);
-  // Share links carry an external link too, but it still points at this instance's file server.
-  const servedHere = new URL(url, window.location.origin).origin === window.location.origin;
   const body = (
     <>
       <MetadataRowIconSlot icon={FileIcon} />
@@ -216,7 +223,7 @@ const DocumentRow = ({ attachment }: { attachment: Attachment }) => {
     </>
   );
 
-  if (!servedHere) {
+  if (!isServedHere(url)) {
     return (
       <a href={url} target="_blank" rel="noreferrer" title={`Open ${attachment.filename}`} className={METADATA_ROW_CLASSES}>
         {body}

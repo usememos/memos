@@ -47,4 +47,11 @@ describe("<AttachmentRows> document rows", () => {
     expect(row.getAttribute("target")).toBe("_blank");
     expect(row.hasAttribute("download")).toBe(false);
   });
+
+  it("opens a link that does not parse instead of failing the render", () => {
+    renderDocument({ filename: "broken.docx", type: "application/msword", externalLink: "http://[" });
+
+    const row = screen.getByTitle("Open broken.docx");
+    expect(row.getAttribute("target")).toBe("_blank");
+  });
 });
