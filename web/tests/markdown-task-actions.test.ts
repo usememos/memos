@@ -37,4 +37,12 @@ describe("uncheckAllTasks", () => {
       ["```", "- [x] not a task", "```", "", "Inline `- [x] not a task` text", "", "- [ ] real task"].join("\n"),
     );
   });
+
+  it("changes the marker of tasks in quotes and of a task that opens a nested list", () => {
+    const markdown = ["> - [x] quoted", ">   - [X] nested", "", "- - [x] inner", "", "> ```", "> - [x] code", "> ```"].join("\n");
+
+    expect(uncheckAllTasks(markdown)).toBe(
+      ["> - [ ] quoted", ">   - [ ] nested", "", "- - [ ] inner", "", "> ```", "> - [x] code", "> ```"].join("\n"),
+    );
+  });
 });

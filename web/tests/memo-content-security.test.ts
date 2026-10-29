@@ -2,12 +2,15 @@ import { create } from "@bufbuild/protobuf";
 import { describe, expect, it } from "vitest";
 import { isTrustedIframeSrc } from "@/lib/html-sanitize-schema";
 import { memoResolveUrl } from "@/lib/memo-markdown";
-import { renderSanitizedHtml } from "@/lib/sanitized-html";
+import { sanitizeMemoHtml } from "@/lib/sanitized-html";
 import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
 
+// As the editor hands raw HTML to `sanitizeHtml`: parsed by the browser into a fragment that is not in the page.
 const renderHtml = (source: string): string => {
+  const template = document.createElement("template");
+  template.innerHTML = source;
   const element = document.createElement("div");
-  renderSanitizedHtml(source, element);
+  element.append(sanitizeMemoHtml(template.content));
   return element.innerHTML;
 };
 
@@ -79,11 +82,32 @@ describe("raw HTML sanitization", () => {
     expect(renderHtml('<iframe src="http://player.bilibili.com/player.html?bvid=BV1xx411c7mD"></iframe>')).not.toMatch(/<iframe/);
   });
 
-  it("renders Markdown between disclosure tags and keeps the authored open state", () => {
-    const html = renderHtml("<details open>\n<summary>More <b>info</b></summary>\n\nSome **bold** text\n\n</details>");
+  it("keeps the disclosure's open state and the editor's markers for the Markdown between the tags", () => {
+    const html = renderHtml("<details open>\n<summary>More <b>info</b></summary>\n\uE000\n</details>");
     expect(html).toMatch(/<details[^>]* open=""/);
     expect(html).toMatch(/<summary[^>]*>More <b>info<\/b><\/summary>/);
-    expect(html).toContain("<strong>bold</strong>");
+    expect(html).toContain("\uE000");
+  });
+
+  it("keeps the text of removed elements but never a script's", () => {
+    const html = renderHtml("<marquee>\uE001 moving</marquee><script>alert(1)</script><style>p{}</style>");
+    expect(html).toBe("\uE001 moving");
+  });
+
+  it("keeps only the allowed class names and the span data the tag and mention classes use", () => {
+    expect(renderHtml('<span class="tag evil" data-tag="work" aria-label="tag">#work</span>')).toBe(
+      '<span class="tag" data-tag="work" aria-label="tag">#work</span>',
+    );
+    expect(renderHtml('<div class="fixed inset-0" data-x="1" aria-hidden="true">a</div>')).toBe("<div>a</div>");
+    expect(renderHtml('<code class="language-ts math-inline">x</code>')).toBe('<code class="language-ts math-inline">x</code>');
+  });
+
+  it("keeps heading and footnote ids as written", () => {
+    expect(renderHtml('<h2 id="setup">Setup</h2><a href="#fn-1" id="ref-1">1</a>')).toMatch(/id="setup".*href="#fn-1" id="ref-1"/);
+  });
+
+  it("makes checkboxes read-only checkboxes", () => {
+    expect(renderHtml('<input type="text" checked value="x">')).toMatch(/<input[^>]* type="checkbox"[^>]* disabled=""/);
   });
 });
 
