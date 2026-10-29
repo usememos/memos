@@ -433,6 +433,10 @@
       "uploads-privacy-description": "Mengontrol informasi sensitif privasi yang dikirimkan dengan media yang diunggah.",
       "uploads-privacy-title": "Unggahan & privasi"
     },
+    "editor": {
+      "label": "Editor",
+      "markdown-mode-description": "Tulis dan sunting memo sebagai teks Markdown, bukan teks berformat."
+    },
     "memo-view": {
       "create": "Buat tampilan",
       "delete-confirm": "Apakah Anda yakin ingin menghapus tampilan `{{title}}`?",

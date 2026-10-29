@@ -433,6 +433,10 @@
       "uploads-privacy-description": "Controle as informações confidenciais de privacidade enviadas com a mídia carregada.",
       "uploads-privacy-title": "Uploads e privacidade"
     },
+    "editor": {
+      "label": "Editor",
+      "markdown-mode-description": "Escreva e edite memorandos como texto Markdown em vez de texto formatado."
+    },
     "memo-view": {
       "create": "Criar visualização",
       "delete-confirm": "Tem certeza de que deseja excluir a vista `{{title}}`?",

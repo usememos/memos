@@ -433,6 +433,10 @@
       "uploads-privacy-description": "التحكم في المعلومات الحساسة المتعلقة بالخصوصية المُرسلة مع الوسائط المُحمّلة.",
       "uploads-privacy-title": "التحميلات والخصوصية"
     },
+    "editor": {
+      "label": "المحرر",
+      "markdown-mode-description": "اكتب المذكرات وعدّلها كنص Markdown بدلًا من النص المنسق."
+    },
     "memo-view": {
       "create": "إنشاء عرض",
       "delete-confirm": "هل أنت متأكد من حذف طريقة العرض `{{title}}`؟",

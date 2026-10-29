@@ -486,6 +486,9 @@ message UserSetting {
 
     // The value of the TAGS setting.
     TagsSetting tags_setting = 4;
+
+    // The value of the EDITOR setting.
+    EditorSetting editor_setting = 5;
   }
 
   // Key identifies a user setting.
@@ -497,6 +500,8 @@ message UserSetting {
     WEBHOOKS = 2;
     // Per-user tag metadata.
     TAGS = 3;
+    // Memo editor preferences.
+    EDITOR = 4;
   }
 
   // GeneralSetting holds general user preferences.
@@ -538,6 +543,14 @@ message UserSetting {
 
     // Optional. Whether memos with this tag have their content blurred.
     bool blur_content = 2 [(google.api.field_behavior) = OPTIONAL];
+  }
+
+  // EditorSetting holds the user's memo editor preferences.
+  message EditorSetting {
+    // Optional. Whether the official client's memo editor uses source mode,
+    // which shows and edits memos as Markdown text instead of formatted text.
+    // The official client calls this "Markdown mode".
+    bool source_mode = 1 [(google.api.field_behavior) = OPTIONAL];
   }
 }
 

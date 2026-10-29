@@ -522,6 +522,10 @@
       "uploads-privacy-description": "Kontrolirajte podatke osjetljive na privatnost koji se šalju s prenesenim medijima.",
       "uploads-privacy-title": "Prijenosi i privatnost"
     },
+    "editor": {
+      "label": "Uređivač",
+      "markdown-mode-description": "Pišite i uređujte bilješke kao Markdown tekst umjesto oblikovanog teksta."
+    },
     "memo-view": {
       "create": "Stvori prikaz",
       "delete-confirm": "Jesi li siguran da želiš obrisati prikaz `{{title}}`?",

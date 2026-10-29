@@ -638,6 +638,10 @@
       "uploads-privacy-description": "Kontrolli üleslaaditud meediaga esitatud privaatsustundlikku teavet.",
       "uploads-privacy-title": "Üleslaadimised ja privaatsus"
     },
+    "editor": {
+      "label": "Redaktor",
+      "markdown-mode-description": "Kirjuta ja muuda memosid Markdown-tekstina vormindatud teksti asemel."
+    },
     "memo-view": {
       "create": "Loo vaade",
       "delete-confirm": "Kas olete kindel, et soovite vaate `{{title}}` kustutada?",

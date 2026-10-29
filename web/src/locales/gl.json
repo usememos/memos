@@ -522,6 +522,10 @@
       "uploads-privacy-description": "Controla a información confidencial sobre a privacidade enviada cos medios cargados.",
       "uploads-privacy-title": "Cargas e privacidade"
     },
+    "editor": {
+      "label": "Editor",
+      "markdown-mode-description": "Escribe e edita as notas como texto Markdown en lugar de texto con formato."
+    },
     "memo-view": {
       "create": "Crear vista",
       "delete-confirm": "Tes certeza de querer eliminar a vista `{{title}}`?",

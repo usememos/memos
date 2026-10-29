@@ -671,6 +671,10 @@
       "uploads-privacy-description": "שליטה במידע רגיש לפרטיות שנשלח עם מדיה שהועלתה.",
       "uploads-privacy-title": "העלאות ופרטיות"
     },
+    "editor": {
+      "label": "עורך",
+      "markdown-mode-description": "כתבו וערכו פתקים כטקסט Markdown במקום כטקסט מעוצב."
+    },
     "memo-view": {
       "create": "יצירת תצוגה",
       "delete-confirm": "האם אתם בטוחים שברצונכם למחוק את התצוגה `{{title}}`?",

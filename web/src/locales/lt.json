@@ -638,6 +638,10 @@
       "uploads-privacy-description": "Valdykite privatumo požiūriu svarbią informaciją, pateiktą kartu su įkelta medija.",
       "uploads-privacy-title": "Įkėlimai ir privatumas"
     },
+    "editor": {
+      "label": "Redaktorius",
+      "markdown-mode-description": "Rašykite ir redaguokite pastabas kaip Markdown tekstą, o ne formatuotą tekstą."
+    },
     "memo-view": {
       "create": "Sukurti rodinį",
       "delete-confirm": "Ar tikrai norite ištrinti rodinį `{{title}}`?",

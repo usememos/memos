@@ -857,6 +857,40 @@ func TestUserSettingMultipleSettingTypes(t *testing.T) {
 	ts.Close()
 }
 
+func TestUserSettingEditor(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	user, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+
+	_, err = ts.UpsertUserSetting(ctx, &storepb.UserSetting{
+		UserId: user.ID,
+		Key:    storepb.UserSetting_EDITOR,
+		Value:  &storepb.UserSetting_Editor{Editor: &storepb.EditorUserSetting{SourceMode: true}},
+	})
+	require.NoError(t, err)
+
+	setting, err := ts.GetUserSetting(ctx, &store.FindUserSetting{UserID: &user.ID, Key: storepb.UserSetting_EDITOR})
+	require.NoError(t, err)
+	require.NotNil(t, setting)
+	require.True(t, setting.GetEditor().GetSourceMode())
+
+	_, err = ts.UpsertUserSetting(ctx, &storepb.UserSetting{
+		UserId: user.ID,
+		Key:    storepb.UserSetting_EDITOR,
+		Value:  &storepb.UserSetting_Editor{Editor: &storepb.EditorUserSetting{SourceMode: false}},
+	})
+	require.NoError(t, err)
+
+	setting, err = ts.GetUserSetting(ctx, &store.FindUserSetting{UserID: &user.ID, Key: storepb.UserSetting_EDITOR})
+	require.NoError(t, err)
+	require.NotNil(t, setting)
+	require.False(t, setting.GetEditor().GetSourceMode())
+
+	ts.Close()
+}
+
 func TestUserSettingMemoViewsEdgeCases(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()

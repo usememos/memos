@@ -13,6 +13,7 @@ import {
   type LucideIcon,
   MailIcon,
   Settings2Icon,
+  SquarePenIcon,
   TagsIcon,
   UserIcon,
   UsersIcon,
@@ -22,6 +23,7 @@ import { type ComponentType } from "react";
 import AccessTokenSection from "@/components/Settings/AccessTokenSection";
 import AISection from "@/components/Settings/AISection";
 import ConfigurationSection from "@/components/Settings/ConfigurationSection";
+import EditorSection from "@/components/Settings/EditorSection";
 import InstanceSection from "@/components/Settings/InstanceSection";
 import MemberSection from "@/components/Settings/MemberSection";
 import MemoExportSection from "@/components/Settings/MemoExportSection";
@@ -44,6 +46,7 @@ export type SettingSectionKey =
   | "spaces"
   | "access-token"
   | "preference"
+  | "editor"
   | "webhook"
   | "member"
   | "system"
@@ -96,6 +99,13 @@ export const SETTINGS_SECTIONS: SettingSectionDefinition[] = [
     labelKey: "setting.preference.label",
     icon: CogIcon,
     component: PreferencesSection,
+  },
+  {
+    key: "editor",
+    scope: "basic",
+    labelKey: "setting.editor.label",
+    icon: SquarePenIcon,
+    component: EditorSection,
   },
   {
     key: "webhook",

@@ -522,6 +522,10 @@
       "uploads-privacy-description": "Kontroluj informacje wrażliwe dotyczące prywatności przesyłane wraz z przesłanymi multimediami.",
       "uploads-privacy-title": "Przesyłanie i prywatność"
     },
+    "editor": {
+      "label": "Edytor",
+      "markdown-mode-description": "Pisz i edytuj notatki jako tekst Markdown zamiast tekstu sformatowanego."
+    },
     "memo-view": {
       "create": "Utwórz widok",
       "delete-confirm": "Czy na pewno chcesz usunąć widok `{{title}}`?",

@@ -258,3 +258,70 @@ func TestUserTagSettingsPermissionDeniedForOtherUser(t *testing.T) {
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "permission denied")
 }
+
+func TestUserEditorSetting(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	user, err := ts.CreateRegularUser(ctx, "editor-user")
+	require.NoError(t, err)
+	userCtx := ts.CreateUserContext(ctx, user.ID)
+	settingName := "users/editor-user/settings/EDITOR"
+
+	defaultSetting, err := ts.Service.GetUserSetting(userCtx, &apipb.GetUserSettingRequest{Name: settingName})
+	require.NoError(t, err)
+	require.Equal(t, settingName, defaultSetting.Name)
+	require.NotNil(t, defaultSetting.GetEditorSetting())
+	require.False(t, defaultSetting.GetEditorSetting().GetSourceMode())
+
+	// An unset editor setting is not listed.
+	listed, err := ts.Service.ListUserSettings(userCtx, &apipb.ListUserSettingsRequest{Parent: api.BuildUserName(user.Username)})
+	require.NoError(t, err)
+	for _, setting := range listed.UserSettings {
+		require.Nil(t, setting.GetEditorSetting())
+	}
+
+	updated, err := ts.Service.UpdateUserSetting(userCtx, &apipb.UpdateUserSettingRequest{
+		UserSetting: &apipb.UserSetting{
+			Name: settingName,
+			Value: &apipb.UserSetting_EditorSetting_{
+				EditorSetting: &apipb.UserSetting_EditorSetting{SourceMode: true},
+			},
+		},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"source_mode"}},
+	})
+	require.NoError(t, err)
+	require.True(t, updated.GetEditorSetting().GetSourceMode())
+
+	listed, err = ts.Service.ListUserSettings(userCtx, &apipb.ListUserSettingsRequest{Parent: api.BuildUserName(user.Username)})
+	require.NoError(t, err)
+	var listedEditor *apipb.UserSetting
+	for _, setting := range listed.UserSettings {
+		if setting.GetEditorSetting() != nil {
+			listedEditor = setting
+		}
+	}
+	require.NotNil(t, listedEditor)
+	require.Equal(t, settingName, listedEditor.Name)
+	require.True(t, listedEditor.GetEditorSetting().GetSourceMode())
+
+	_, err = ts.Service.UpdateUserSetting(userCtx, &apipb.UpdateUserSettingRequest{
+		UserSetting: &apipb.UserSetting{
+			Name: settingName,
+			Value: &apipb.UserSetting_EditorSetting_{
+				EditorSetting: &apipb.UserSetting_EditorSetting{},
+			},
+		},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"theme"}},
+	})
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "unsupported update mask path")
+
+	other, err := ts.CreateRegularUser(ctx, "editor-other")
+	require.NoError(t, err)
+	otherCtx := ts.CreateUserContext(ctx, other.ID)
+	_, err = ts.Service.GetUserSetting(otherCtx, &apipb.GetUserSettingRequest{Name: settingName})
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "permission denied")
+}

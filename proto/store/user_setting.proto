@@ -22,6 +22,8 @@ message UserSetting {
     PERSONAL_ACCESS_TOKENS = 5;
     // Per-user tag metadata.
     TAGS = 6;
+    // Memo editor preferences of the user.
+    EDITOR = 7;
   }
 
   int32 user_id = 1;
@@ -34,6 +36,7 @@ message UserSetting {
     RefreshTokensUserSetting refresh_tokens = 6;
     PersonalAccessTokensUserSetting personal_access_tokens = 7;
     TagsUserSetting tags = 8;
+    EditorUserSetting editor = 9;
   }
 }
 
@@ -47,6 +50,11 @@ message GeneralUserSetting {
   string theme = 3;
   // Whether the official client should save metadata from future media uploads.
   bool save_media_metadata = 4;
+}
+
+message EditorUserSetting {
+  // Whether the memo editor shows and edits memos as Markdown text.
+  bool source_mode = 1;
 }
 
 message UserTagMetadata {

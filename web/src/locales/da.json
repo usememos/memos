@@ -638,6 +638,10 @@
       "uploads-privacy-description": "Kontroller privatlivsfølsomme oplysninger, der indsendes med uploadede medier.",
       "uploads-privacy-title": "Uploads og privatliv"
     },
+    "editor": {
+      "label": "Editor",
+      "markdown-mode-description": "Skriv og rediger notater som Markdown-tekst i stedet for formateret tekst."
+    },
     "memo-view": {
       "create": "Opret visning",
       "delete-confirm": "Er du sikker på, at du vil slette visningen `{{title}}`?",

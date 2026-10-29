@@ -638,6 +638,10 @@
       "uploads-privacy-description": "Kontrolējiet konfidenciālu informāciju, kas iesniegta kopā ar augšupielādēto multividi.",
       "uploads-privacy-title": "Augšupielādes un konfidencialitāte"
     },
+    "editor": {
+      "label": "Redaktors",
+      "markdown-mode-description": "Rakstiet un rediģējiet piezīmes kā Markdown tekstu, nevis formatētu tekstu."
+    },
     "memo-view": {
       "create": "Izveidot skatu",
       "delete-confirm": "Vai tiešām vēlaties dzēst skatu `{{title}}`?",

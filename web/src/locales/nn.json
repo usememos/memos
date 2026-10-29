@@ -757,6 +757,10 @@
       "uploads-privacy-description": "Styr kva personvernkjenslege opplysningar som vert sende med opplasta medium.",
       "uploads-privacy-title": "Opplasting og personvern"
     },
+    "editor": {
+      "label": "Redigering",
+      "markdown-mode-description": "Skriv og rediger notat som Markdown-tekst i staden for formatert tekst."
+    },
     "resource-stats": {
       "database": {
         "driver": "Drivar",

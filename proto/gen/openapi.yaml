@@ -5695,7 +5695,21 @@ components:
                     allOf:
                         - $ref: '#/components/schemas/UserSetting_TagsSetting'
                     description: The value of the TAGS setting.
+                editorSetting:
+                    allOf:
+                        - $ref: '#/components/schemas/UserSetting_EditorSetting'
+                    description: The value of the EDITOR setting.
             description: UserSetting is one group of a user's preferences, identified by its key.
+        UserSetting_EditorSetting:
+            type: object
+            properties:
+                sourceMode:
+                    type: boolean
+                    description: |-
+                        Optional. Whether the official client's memo editor uses source mode,
+                         which shows and edits memos as Markdown text instead of formatted text.
+                         The official client calls this "Markdown mode".
+            description: EditorSetting holds the user's memo editor preferences.
         UserSetting_GeneralSetting:
             type: object
             properties:

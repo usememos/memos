@@ -522,6 +522,10 @@
       "uploads-privacy-description": "Ovládejte informace citlivé na ochranu soukromí odesílané s nahranými médii.",
       "uploads-privacy-title": "Nahrávání a soukromí"
     },
+    "editor": {
+      "label": "Editor",
+      "markdown-mode-description": "Pište a upravujte poznámky jako text Markdown místo formátovaného textu."
+    },
     "memo-view": {
       "create": "Vytvořit pohled",
       "delete-confirm": "Jste si jisti, že chcete odstranit zobrazení `{{title}}`?",
