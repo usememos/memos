@@ -522,6 +522,10 @@
       "uploads-privacy-description": "Beheer privacygevoelige informatie die met geüploade media wordt verzonden.",
       "uploads-privacy-title": "Uploads en privacy"
     },
+    "editor": {
+      "label": "Editor",
+      "markdown-mode-description": "Schrijf en bewerk memo's als Markdown-tekst in plaats van opgemaakte tekst."
+    },
     "memo-view": {
       "create": "Weergave maken",
       "delete-confirm": "Weet je zeker dat je weergave `{{title}}` wilt verwijderen?",

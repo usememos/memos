@@ -679,6 +679,10 @@
       "uploads-privacy-description": "控制上傳媒體時提交的隱私敏感資訊。",
       "uploads-privacy-title": "上傳與隱私"
     },
+    "editor": {
+      "label": "編輯器",
+      "markdown-mode-description": "以 Markdown 文字而非格式化文字撰寫和編輯備忘錄。"
+    },
     "memo-view": {
       "create": "建立檢視",
       "delete-confirm": "您確定要刪除檢視 `{{title}}` 嗎？",

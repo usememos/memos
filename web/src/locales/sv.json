@@ -522,6 +522,10 @@
       "uploads-privacy-description": "Kontrollera integritetskänslig information som skickas in med uppladdad media.",
       "uploads-privacy-title": "Uppladdningar och sekretess"
     },
+    "editor": {
+      "label": "Redigerare",
+      "markdown-mode-description": "Skriv och redigera memon som Markdown-text i stället för formaterad text."
+    },
     "memo-view": {
       "create": "Skapa vy",
       "delete-confirm": "Är du säker på att du vill ta bort vyn `{{title}}`?",

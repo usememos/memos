@@ -522,6 +522,10 @@
       "uploads-privacy-description": "Nadzorujte podatke, ki so občutljivi na zasebnost in so poslani z naloženimi mediji.",
       "uploads-privacy-title": "Nalaganja in zasebnost"
     },
+    "editor": {
+      "label": "Urejevalnik",
+      "markdown-mode-description": "Pišite in urejajte beležke kot besedilo Markdown namesto oblikovanega besedila."
+    },
     "memo-view": {
       "create": "Ustvari pogled",
       "delete-confirm": "Ali ste prepričani, da želite izbrisati pogled \"{{title}}\"?",

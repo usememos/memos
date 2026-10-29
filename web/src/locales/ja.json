@@ -522,6 +522,10 @@
       "uploads-privacy-description": "アップロードされたメディアとともに送信されるプライバシーに配慮した情報を管理します。",
       "uploads-privacy-title": "アップロードとプライバシー"
     },
+    "editor": {
+      "label": "エディター",
+      "markdown-mode-description": "メモを書式付きテキストではなく Markdown テキストとして作成・編集します。"
+    },
     "memo-view": {
       "create": "ビューを作成",
       "delete-confirm": "ビュー `{{title}}` を削除してもよろしいですか？",

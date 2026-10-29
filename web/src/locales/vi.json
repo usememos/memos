@@ -433,6 +433,10 @@
       "uploads-privacy-description": "Kiểm soát thông tin nhạy cảm về quyền riêng tư được gửi kèm theo phương tiện đã tải lên.",
       "uploads-privacy-title": "Tải lên & quyền riêng tư"
     },
+    "editor": {
+      "label": "Trình chỉnh sửa",
+      "markdown-mode-description": "Viết và chỉnh sửa ghi chú dưới dạng văn bản Markdown thay vì văn bản có định dạng."
+    },
     "memo-view": {
       "create": "Tạo chế độ xem",
       "delete-confirm": "Bạn có chắc chắn muốn xóa chế độ xem `{{title}}`?",

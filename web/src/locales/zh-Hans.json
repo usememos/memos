@@ -507,6 +507,10 @@
       "uploads-privacy-description": "控制上传媒体时提交的隐私敏感信息。",
       "uploads-privacy-title": "上传与隐私"
     },
+    "editor": {
+      "label": "编辑器",
+      "markdown-mode-description": "以 Markdown 文本而非格式化文本撰写和编辑备忘录。"
+    },
     "memo-view": {
       "create": "创建视图",
       "delete-confirm": "您确定要删除视图 `{{title}}` 吗？",

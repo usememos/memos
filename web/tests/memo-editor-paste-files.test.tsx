@@ -8,7 +8,11 @@ vi.mock("@/utils/i18n", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/utils/i18n")>()),
   useTranslate: () => (key: string) => key,
 }));
-vi.mock("@/hooks/useUserQueries", () => ({ useTagCounts: () => ({ data: {} }), useUsersByUsernames: () => ({ data: undefined }) }));
+vi.mock("@/hooks/useUserQueries", () => ({
+  useTagCounts: () => ({ data: {} }),
+  useUsersByUsernames: () => ({ data: undefined }),
+  useUpdateUserEditorSetting: () => ({ mutate: vi.fn() }),
+}));
 vi.mock("@/hooks/useCurrentUser", () => ({ default: () => ({ name: "users/1" }) }));
 vi.mock("@/contexts/AuthContext", () => ({ useAuth: () => ({ userGeneralSetting: {} }) }));
 vi.mock("@/contexts/InstanceContext", () => ({

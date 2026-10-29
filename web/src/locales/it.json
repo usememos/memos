@@ -522,6 +522,10 @@
       "uploads-privacy-description": "Controlla le informazioni sensibili alla privacy inviate con i media caricati.",
       "uploads-privacy-title": "Caricamenti e privacy"
     },
+    "editor": {
+      "label": "Editor",
+      "markdown-mode-description": "Scrivi e modifica i promemoria come testo Markdown anziché come testo formattato."
+    },
     "memo-view": {
       "create": "Crea vista",
       "delete-confirm": "Confermi di voler eliminare la vista `{{title}}`?",

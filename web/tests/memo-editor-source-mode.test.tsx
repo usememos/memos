@@ -10,9 +10,40 @@ vi.mock("@/utils/i18n", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/utils/i18n")>()),
   useTranslate: () => (key: string) => key,
 }));
-vi.mock("@/hooks/useUserQueries", () => ({ useTagCounts: () => ({ data: {} }), useUsersByUsernames: () => ({ data: undefined }) }));
+// The account's EDITOR setting, shared by every useAuth caller the way AuthContext shares it.
+const editorSetting = vi.hoisted(() => {
+  let value: { sourceMode: boolean } | undefined;
+  const listeners = new Set<() => void>();
+  return {
+    get: () => value,
+    set: (next: { sourceMode: boolean } | undefined) => {
+      value = next;
+      for (const listener of listeners) listener();
+    },
+    subscribe: (listener: () => void) => {
+      listeners.add(listener);
+      return () => listeners.delete(listener);
+    },
+  };
+});
+const updateEditorSetting = vi.hoisted(() => vi.fn());
+vi.mock("@/hooks/useUserQueries", () => ({
+  useTagCounts: () => ({ data: {} }),
+  useUsersByUsernames: () => ({ data: undefined }),
+  useUpdateUserEditorSetting: () => ({ mutate: updateEditorSetting }),
+}));
 vi.mock("@/hooks/useCurrentUser", () => ({ default: () => ({ name: "users/1" }) }));
-vi.mock("@/contexts/AuthContext", () => ({ useAuth: () => ({ userGeneralSetting: {} }) }));
+vi.mock("@/contexts/AuthContext", async () => {
+  const { useSyncExternalStore } = await import("react");
+  return {
+    useAuth: () => ({
+      userGeneralSetting: {},
+      userEditorSetting: useSyncExternalStore(editorSetting.subscribe, editorSetting.get),
+      setUserEditorSetting: editorSetting.set,
+    }),
+  };
+});
+vi.mock("react-hot-toast", () => ({ toast: { error: vi.fn(), success: vi.fn() } }));
 vi.mock("@/contexts/InstanceContext", () => ({
   useInstance: () => ({ aiSetting: { providers: [], transcription: undefined }, fetchSetting: vi.fn().mockResolvedValue(undefined) }),
 }));
@@ -39,7 +70,6 @@ beforeAll(async () => {
   Element.prototype.releasePointerCapture = vi.fn();
 });
 
-const MODE_KEY = "memos-editor-mode";
 const CACHE_KEY = "source-mode-test";
 
 const mount = (suggestions?: readonly MemoSuggestion[]) =>
@@ -55,9 +85,15 @@ const sourceLines = (container: HTMLElement) =>
   Array.from(container.querySelectorAll(".mbe-source .mbe-source-line"), (line) => line.textContent).join("\n");
 
 afterEach(() => {
-  localStorage.clear();
+  editorSetting.set(undefined);
+  updateEditorSetting.mockReset();
   cacheService.clearAll();
 });
+
+const toggleSourceMode = () => {
+  fireEvent.click(screen.getByRole("button", { name: "common.add" }));
+  fireEvent.click(screen.getByRole("menuitemcheckbox", { name: "editor.markdown-mode" }));
+};
 
 describe("MemoEditor source mode", () => {
   it("shows the Markdown label only while source mode is on", () => {
@@ -65,24 +101,32 @@ describe("MemoEditor source mode", () => {
     expect(sourceText(container)).toBeNull();
     expect(screen.queryByText("Markdown", { exact: true })).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "common.add" }));
-    fireEvent.click(screen.getByRole("menuitemcheckbox", { name: "editor.markdown-mode" }));
+    toggleSourceMode();
 
     expect(sourceText(container)).not.toBeNull();
-    expect(localStorage.getItem(MODE_KEY)).toBe(JSON.stringify("source"));
+    expect(updateEditorSetting).toHaveBeenLastCalledWith(expect.objectContaining({ sourceMode: true }), expect.anything());
     expect(screen.getByText("Markdown", { exact: true })).toHaveAttribute("aria-label", "editor.markdown-mode");
     expect(container.querySelector(".memo-editor-content")).toHaveAttribute("data-source-mode");
 
-    fireEvent.click(screen.getByRole("button", { name: "common.add" }));
-    fireEvent.click(screen.getByRole("menuitemcheckbox", { name: "editor.markdown-mode" }));
+    toggleSourceMode();
 
     expect(sourceText(container)).toBeNull();
     expect(screen.queryByText("Markdown", { exact: true })).not.toBeInTheDocument();
-    expect(localStorage.getItem(MODE_KEY)).toBe(JSON.stringify("rich"));
+    expect(updateEditorSetting).toHaveBeenLastCalledWith(expect.objectContaining({ sourceMode: false }), expect.anything());
   });
 
-  it("opens in the mode remembered on this device", () => {
-    localStorage.setItem(MODE_KEY, JSON.stringify("source"));
+  it("switches back when saving the mode fails", () => {
+    updateEditorSetting.mockImplementation((_setting, options) => options.onError(new Error("unavailable")));
+    const { container } = mount();
+
+    toggleSourceMode();
+
+    expect(sourceText(container)).toBeNull();
+    expect(screen.queryByText("Markdown", { exact: true })).not.toBeInTheDocument();
+  });
+
+  it("opens in the mode saved on the account", () => {
+    editorSetting.set({ sourceMode: true });
     const { container } = mount();
 
     expect(sourceText(container)).not.toBeNull();
@@ -98,25 +142,21 @@ describe("MemoEditor source mode", () => {
       attachments: [],
     });
     const { container } = mount();
-    const toggle = () => {
-      fireEvent.click(screen.getByRole("button", { name: "common.add" }));
-      fireEvent.click(screen.getByRole("menuitemcheckbox", { name: "editor.markdown-mode" }));
-    };
 
-    toggle();
+    toggleSourceMode();
     expect(sourceLines(container)).toBe(markdown);
 
-    toggle();
+    toggleSourceMode();
     expect(sourceText(container)).toBeNull();
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Plan");
 
     // Rich mode shows no Markdown string, so the source text after a third switch is the round trip's result.
-    toggle();
+    toggleSourceMode();
     expect(sourceLines(container)).toBe(markdown);
   });
 
   it.each(["rich", "source"])("offers the checklist suggestion in %s mode and applies it there", async (mode) => {
-    localStorage.setItem(MODE_KEY, JSON.stringify(mode));
+    editorSetting.set({ sourceMode: mode === "source" });
     cacheService.saveNow(cacheService.key("users/1", draftKeyFor({ kind: "new", scope: CACHE_KEY })), {
       content: "Groceries",
       attachments: [],

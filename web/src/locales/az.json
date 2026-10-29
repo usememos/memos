@@ -832,6 +832,10 @@
       "uploads-privacy-description": "Yüklənən media ilə birlikdə göndərilən, məxfiliyə həssas məlumatları idarə edin.",
       "uploads-privacy-title": "Yükləmələr və məxfilik"
     },
+    "editor": {
+      "label": "Redaktor",
+      "markdown-mode-description": "Qeydləri formatlanmış mətn əvəzinə Markdown mətni kimi yazın və redaktə edin."
+    },
     "memo-view": {
       "create": "Görünüş yarat",
       "change-icon": "Görünüş ikonunu dəyiş",

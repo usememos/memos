@@ -522,6 +522,10 @@
       "uploads-privacy-description": "Contrôler les informations sensibles soumises avec les médias chargés.",
       "uploads-privacy-title": "Téléchargements et confidentialité"
     },
+    "editor": {
+      "label": "Éditeur",
+      "markdown-mode-description": "Rédigez et modifiez les mémos en texte Markdown plutôt qu'en texte mis en forme."
+    },
     "memo-view": {
       "create": "Créer une vue",
       "delete-confirm": "Êtes-vous sûr de vouloir supprimer la vue `{{title}}` ?",

@@ -832,6 +832,10 @@
       "uploads-privacy-description": "Control privacy-sensitive information submitted with uploaded media.",
       "uploads-privacy-title": "Uploads & privacy"
     },
+    "editor": {
+      "label": "Editor",
+      "markdown-mode-description": "Write and edit memos as Markdown text instead of formatted text."
+    },
     "memo-view": {
       "create": "Create view",
       "change-icon": "Change view icon",

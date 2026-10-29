@@ -522,6 +522,10 @@
       "uploads-privacy-description": "Kontrolle über datenschutzrelevante Informationen, die mit hochgeladenen Medien übermittelt werden.",
       "uploads-privacy-title": "Uploads & Datenschutz"
     },
+    "editor": {
+      "label": "Editor",
+      "markdown-mode-description": "Memos als Markdown-Text statt als formatierten Text schreiben und bearbeiten."
+    },
     "memo-view": {
       "create": "Ansicht erstellen",
       "delete-confirm": "Bist du sicher, dass du die Ansicht `{{title}}` löschen möchtest?",

@@ -3,6 +3,7 @@ import { toast } from "react-hot-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { useSourceMode } from "@/hooks/useSourceMode";
 import { cn } from "@/lib/utils";
 import { InstanceSetting_Key } from "@/types/proto/api/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
@@ -23,7 +24,6 @@ import {
   useInlineImageUpload,
   useMemoInit,
   useMemoSave,
-  useSourceMode,
 } from "./hooks";
 import { canChooseSpaceFor } from "./initialState";
 import { cacheService, errorService, transcriptionService } from "./services";

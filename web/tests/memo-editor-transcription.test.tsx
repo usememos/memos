@@ -8,7 +8,11 @@ import { memoKeys } from "@/hooks/useMemoQueries";
 import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
 import { MemoSchema, Visibility } from "@/types/proto/api/memo_service_pb";
 
-vi.mock("@/hooks/useUserQueries", () => ({ useTagCounts: () => ({ data: {} }), useUsersByUsernames: () => ({ data: undefined }) }));
+vi.mock("@/hooks/useUserQueries", () => ({
+  useTagCounts: () => ({ data: {} }),
+  useUsersByUsernames: () => ({ data: undefined }),
+  useUpdateUserEditorSetting: () => ({ mutate: vi.fn() }),
+}));
 vi.mock("@/hooks/useCurrentUser", () => ({ default: () => ({ name: "users/1" }) }));
 vi.mock("@/contexts/AuthContext", () => ({ useAuth: () => ({ userGeneralSetting: {} }) }));
 vi.mock("@/contexts/InstanceContext", () => ({

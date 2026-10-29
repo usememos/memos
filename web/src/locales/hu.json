@@ -522,6 +522,10 @@
       "uploads-privacy-description": "A feltöltött médiával beküldött adatvédelmi szempontból érzékeny információk kezelése.",
       "uploads-privacy-title": "Feltöltések és adatvédelem"
     },
+    "editor": {
+      "label": "Szerkesztő",
+      "markdown-mode-description": "Jegyzetek írása és szerkesztése Markdown szövegként formázott szöveg helyett."
+    },
     "memo-view": {
       "create": "Nézet létrehozása",
       "delete-confirm": "Biztosan törlöd a `{{title}}` nézetet?",

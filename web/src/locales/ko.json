@@ -433,6 +433,10 @@
       "uploads-privacy-description": "업로드된 미디어와 함께 제출되는 개인 정보 보호에 민감한 정보를 관리합니다.",
       "uploads-privacy-title": "업로드 및 개인 정보 보호"
     },
+    "editor": {
+      "label": "편집기",
+      "markdown-mode-description": "메모를 서식 있는 텍스트 대신 Markdown 텍스트로 작성하고 편집합니다."
+    },
     "memo-view": {
       "create": "뷰 만들기",
       "delete-confirm": "보기 `{{title}}`를 정말로 삭제하시겠습니까?",

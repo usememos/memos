@@ -656,6 +656,12 @@ func convertUserSettingFromRaw(raw *UserSetting) (*storepb.UserSetting, error) {
 			return nil, errors.Wrap(err, "unmarshal tags user setting")
 		}
 		userSetting.Value = &storepb.UserSetting_Tags{Tags: tagsUserSetting}
+	case storepb.UserSetting_EDITOR:
+		editorUserSetting := &storepb.EditorUserSetting{}
+		if err := protojsonUnmarshaler.Unmarshal([]byte(raw.Value), editorUserSetting); err != nil {
+			return nil, errors.Wrap(err, "unmarshal editor user setting")
+		}
+		userSetting.Value = &storepb.UserSetting_Editor{Editor: editorUserSetting}
 	case storepb.UserSetting_REFRESH_TOKENS:
 		refreshTokensUserSetting := &storepb.RefreshTokensUserSetting{}
 		if err := protojsonUnmarshaler.Unmarshal([]byte(raw.Value), refreshTokensUserSetting); err != nil {
@@ -706,6 +712,12 @@ func convertUserSettingToRaw(userSetting *storepb.UserSetting) (*UserSetting, er
 		value, err := protojson.Marshal(tagsUserSetting)
 		if err != nil {
 			return nil, errors.Wrap(err, "marshal tags user setting")
+		}
+		raw.Value = string(value)
+	case storepb.UserSetting_EDITOR:
+		value, err := protojson.Marshal(userSetting.GetEditor())
+		if err != nil {
+			return nil, errors.Wrap(err, "marshal editor user setting")
 		}
 		raw.Value = string(value)
 	case storepb.UserSetting_REFRESH_TOKENS:

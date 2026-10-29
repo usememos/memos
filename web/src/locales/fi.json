@@ -638,6 +638,10 @@
       "uploads-privacy-description": "Hallitse ladatun median mukana lähetettyjä yksityisyyttä suojaavia tietoja.",
       "uploads-privacy-title": "Lataukset ja tietosuoja"
     },
+    "editor": {
+      "label": "Editori",
+      "markdown-mode-description": "Kirjoita ja muokkaa muistioita Markdown-tekstinä muotoillun tekstin sijaan."
+    },
     "memo-view": {
       "create": "Luo näkymä",
       "delete-confirm": "Haluatko varmasti poistaa näkymän `{{title}}`?",

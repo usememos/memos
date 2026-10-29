@@ -683,6 +683,10 @@
       "uploads-privacy-description": "Yüklenen medyayla birlikte gönderilen, gizlilik açısından hassas bilgileri denetleyin.",
       "uploads-privacy-title": "Yüklemeler ve gizlilik"
     },
+    "editor": {
+      "label": "Editör",
+      "markdown-mode-description": "Notları biçimlendirilmiş metin yerine Markdown metni olarak yazın ve düzenleyin."
+    },
     "memo-view": {
       "create": "Görünüm oluştur",
       "change-icon": "Görünüm simgesini değiştir",

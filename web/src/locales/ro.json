@@ -638,6 +638,10 @@
       "uploads-privacy-description": "Controlați informațiile sensibile la confidențialitate trimise odată cu media încărcată.",
       "uploads-privacy-title": "Încărcări și confidențialitate"
     },
+    "editor": {
+      "label": "Editor",
+      "markdown-mode-description": "Scrieți și editați notițele ca text Markdown în loc de text formatat."
+    },
     "memo-view": {
       "create": "Creează o vizualizare",
       "delete-confirm": "Sigur doriți să ștergeți vizualizarea `{{title}}`?",
