@@ -1,16 +1,20 @@
-import { DownloadIcon, FileIcon, PlayIcon } from "lucide-react";
+import { DownloadIcon, ExternalLinkIcon, FileIcon, PlayIcon } from "lucide-react";
 import type { PropsWithChildren } from "react";
 import { useMemo } from "react";
 import MotionPhotoPreview from "@/components/MotionPhotoPreview";
+import { buttonVariants } from "@/components/ui/button";
 import VideoPoster from "@/components/VideoPoster";
 import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/attachment_service_pb";
-import { getAttachmentUrl } from "@/utils/attachment";
+import { getAttachmentUrl, isImage } from "@/utils/attachment";
 import type { AttachmentVisualItem, PreviewMediaItem } from "@/utils/media-item";
 import { buildAttachmentVisualItems } from "@/utils/media-item";
 import {
+  METADATA_ROW_BOX_CLASSES,
   METADATA_ROW_CLASSES,
+  METADATA_ROW_CONTROLS_CLASSES,
   METADATA_ROW_HINT_CLASSES,
+  METADATA_ROW_LABEL_CLASSES,
   METADATA_ROW_TEXT_CLASSES,
   MetadataRowDetail,
   MetadataRowIconSlot,
@@ -189,20 +193,71 @@ export const AttachmentGallery = ({ visual, onImagePreview }: AttachmentGalleryP
   );
 };
 
+/** The file server renders only images and PDFs inline; it serves every other file as a download. */
+const opensInline = (mimeType: string) => mimeType === "application/pdf" || isImage(mimeType);
+
+/** Share links carry an external link too, but it still points at this instance's file server. A link that does not parse is not ours. */
+const isServedHere = (url: string) => {
+  try {
+    return new URL(url, window.location.origin).origin === window.location.origin;
+  } catch {
+    return false;
+  }
+};
+
 /**
  * A document is a row: file glyph in the slot, name, type and size on the detail rail.
- * The whole row downloads; its arrow only appears over the detail rail once the row is
- * engaged, so the rail stays on the same edge as every other row's at rest.
+ * A file the browser can show, or a link to another site, opens in a new tab; any other
+ * file downloads. A shown file offers its download in the trailing overlay. Hint and
+ * controls only appear over the detail rail once the row is engaged, so the rail stays on
+ * the same edge as every other row's at rest.
  */
 const DocumentRow = ({ attachment }: { attachment: Attachment }) => {
   const { fileTypeLabel, fileSizeLabel } = getAttachmentMetadata(attachment);
-  return (
-    <a href={getAttachmentUrl(attachment)} download title={`Download ${attachment.filename}`} className={METADATA_ROW_CLASSES}>
+  const url = getAttachmentUrl(attachment);
+  const body = (
+    <>
       <MetadataRowIconSlot icon={FileIcon} />
       <span className={METADATA_ROW_TEXT_CLASSES}>{attachment.filename}</span>
       <MetadataRowDetail parts={[fileTypeLabel, fileSizeLabel]} />
-      <DownloadIcon aria-hidden="true" className={METADATA_ROW_HINT_CLASSES} strokeWidth={1.8} />
-    </a>
+    </>
+  );
+
+  if (!isServedHere(url)) {
+    return (
+      <a href={url} target="_blank" rel="noreferrer" title={`Open ${attachment.filename}`} className={METADATA_ROW_CLASSES}>
+        {body}
+        <ExternalLinkIcon aria-hidden="true" className={METADATA_ROW_HINT_CLASSES} strokeWidth={1.8} />
+      </a>
+    );
+  }
+
+  if (!opensInline(attachment.type)) {
+    return (
+      <a href={url} download title={`Download ${attachment.filename}`} className={METADATA_ROW_CLASSES}>
+        {body}
+        <DownloadIcon aria-hidden="true" className={METADATA_ROW_HINT_CLASSES} strokeWidth={1.8} />
+      </a>
+    );
+  }
+
+  return (
+    <div className={METADATA_ROW_BOX_CLASSES}>
+      <a href={url} target="_blank" rel="noreferrer" title={`Open ${attachment.filename}`} className={METADATA_ROW_LABEL_CLASSES}>
+        {body}
+      </a>
+      <div className={METADATA_ROW_CONTROLS_CLASSES}>
+        <a
+          href={url}
+          download
+          title="Download"
+          aria-label={`Download ${attachment.filename}`}
+          className={buttonVariants({ variant: "quiet", size: "icon-sm" })}
+        >
+          <DownloadIcon className="size-3.5" strokeWidth={1.8} />
+        </a>
+      </div>
+    </div>
   );
 };
 
