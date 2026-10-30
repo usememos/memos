@@ -14,6 +14,7 @@ interface ViewState {
   sortTimeField?: MemoTimeBasis;
   compactMode: boolean;
   maxColumns: MemoMaxColumns;
+  splitView: boolean;
 }
 
 interface ViewContextValue {
@@ -21,16 +22,20 @@ interface ViewContextValue {
   timeBasis: MemoTimeBasis;
   compactMode: boolean;
   maxColumns: MemoMaxColumns;
+  /** List memo titles in a side pane and read the selected memo beside it. */
+  splitView: boolean;
   setOrderByTimeAsc: (value: boolean) => void;
   setTimeBasis: (field: MemoTimeBasis) => void;
   setCompactMode: (value: boolean) => void;
   setMaxColumns: (value: MemoMaxColumns) => void;
+  setSplitView: (value: boolean) => void;
 }
 
 const ViewContext = createContext<ViewContextValue | null>(null);
 
 const LOCAL_STORAGE_KEY = "memos-view-setting";
 
+const DEFAULT_VIEW_STATE: ViewState = { orderByTimeAsc: false, compactMode: false, linkPreview: true, maxColumns: 1, splitView: false };
 const DEFAULT_VIEW_STATE: ViewState = { orderByTimeAsc: false, compactMode: false, maxColumns: 1 };
 
 export function ViewProvider({ children, enabled = true }: { children: ReactNode; enabled?: boolean }) {
@@ -49,6 +54,7 @@ export function ViewProvider({ children, enabled = true }: { children: ReactNode
           timeBasis,
           compactMode: Boolean(data.compactMode ?? DEFAULT_VIEW_STATE.compactMode),
           maxColumns,
+          splitView: Boolean(data.splitView ?? DEFAULT_VIEW_STATE.splitView),
         };
       }
     } catch (error) {
@@ -82,6 +88,7 @@ export function ViewProvider({ children, enabled = true }: { children: ReactNode
   const setTimeBasis = (field: MemoTimeBasis) => updateState({ timeBasis: field });
   const setCompactMode = (value: boolean) => updateState({ compactMode: value });
   const setMaxColumns = (value: MemoMaxColumns) => updateState({ maxColumns: value });
+  const setSplitView = (value: boolean) => updateState({ splitView: value });
 
   return (
     <ViewContext.Provider
@@ -90,10 +97,12 @@ export function ViewProvider({ children, enabled = true }: { children: ReactNode
         timeBasis,
         compactMode: activeState.compactMode,
         maxColumns: activeState.maxColumns,
+        splitView: activeState.splitView,
         setOrderByTimeAsc,
         setTimeBasis,
         setCompactMode,
         setMaxColumns,
+        setSplitView,
       }}
     >
       {children}

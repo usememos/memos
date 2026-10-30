@@ -357,7 +357,12 @@
       "uncheck-all": "सभी टास्क अनचेक करें",
       "updated": "टास्क अपडेट किए गए"
     },
-    "view-options": "ऑप्शन देखें"
+    "view-options": "ऑप्शन देखें",
+    "sensitive-content": "Sensitive content",
+    "split-view": "Split view",
+    "split-view-description": "Memo list beside the open memo",
+    "split-view-list": "Memo list",
+    "split-view-untitled": "No text"
   },
   "message": {
     "archived-successfully": "सफलतापूर्वक संग्रहीत किया गया",

@@ -1,11 +1,11 @@
 import { Code, ConnectError } from "@connectrpc/connect";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, fireEvent, render, screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import PagedMemoList from "@/components/PagedMemoList";
 import type { Memo } from "@/types/proto/api/memo_service_pb";
 
-const view = vi.hoisted(() => ({ maxColumns: 1 as 0 | 1 | 2 | 3, compactMode: false }));
+const view = vi.hoisted(() => ({ maxColumns: 1 as 0 | 1 | 2 | 3, compactMode: false, splitView: false }));
 const feed = vi.hoisted(() => ({
   memos: [] as unknown[],
   hasNextPage: false,
@@ -61,6 +61,10 @@ vi.mock("@/contexts/MentionResolutionContext", () => ({
   MentionResolutionProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
+vi.mock("@/components/RelativeTime", () => ({
+  default: () => null,
+}));
+
 vi.mock("@/components/MemoFilters", () => ({
   default: () => <div data-testid="memo-filters" />,
 }));
@@ -81,6 +85,7 @@ describe("<PagedMemoList>", () => {
   beforeEach(() => {
     view.maxColumns = 1;
     view.compactMode = false;
+    view.splitView = false;
     feed.memos = [];
     feed.hasNextPage = false;
     feed.isLoading = false;
@@ -316,6 +321,86 @@ describe("<PagedMemoList>", () => {
         expect(renderer).toHaveBeenCalledWith(expect.objectContaining({ name: "memos/1" }), { compact: true });
       } finally {
         widthSpy.mockRestore();
+      }
+    });
+  });
+
+  describe("split view", () => {
+    const second = { name: "memos/2", content: ["# Groceries", "- milk", "- eggs"].join("\n"), updateTime: undefined } as unknown as Memo;
+    let widthSpy: { mockRestore: () => void } | undefined;
+
+    beforeEach(() => {
+      view.splitView = true;
+      feed.memos = [memo, second];
+      widthSpy = vi.spyOn(Element.prototype, "clientWidth", "get").mockReturnValue(1200);
+    });
+
+    afterEach(() => {
+      widthSpy?.mockRestore();
+    });
+
+    it("lists memo titles and opens the first memo in full", () => {
+      const renderer = vi.fn((m: Memo) => (
+        <div key={m.name} data-testid="open-memo">
+          {m.name}
+        </div>
+      ));
+      renderList(renderer);
+
+      const list = screen.getByRole("navigation", { name: "memo.split-view-list" });
+      expect(list).toHaveTextContent("hello");
+      expect(list).toHaveTextContent("Groceries");
+      expect(list).toHaveTextContent("milk eggs");
+      expect(screen.getByTestId("open-memo")).toHaveTextContent("memos/1");
+      expect(renderer).toHaveBeenCalledWith(expect.objectContaining({ name: "memos/1" }), { compact: false });
+    });
+
+    it("opens the memo clicked in the list", () => {
+      renderList((m: Memo) => (
+        <div key={m.name} data-testid="open-memo">
+          {m.name}
+        </div>
+      ));
+
+      fireEvent.click(screen.getByRole("button", { name: /Groceries/ }));
+
+      expect(screen.getByTestId("open-memo")).toHaveTextContent("memos/2");
+      expect(screen.getByRole("button", { name: /Groceries/ })).toHaveAttribute("aria-current", "true");
+    });
+
+    it("moves the selection with the arrow keys", () => {
+      renderList((m: Memo) => (
+        <div key={m.name} data-testid="open-memo">
+          {m.name}
+        </div>
+      ));
+
+      fireEvent.keyDown(screen.getByRole("button", { name: /hello/ }), { key: "ArrowDown" });
+
+      expect(screen.getByTestId("open-memo")).toHaveTextContent("memos/2");
+    });
+
+    it("falls back to the feed when the width cannot fit both panes", () => {
+      widthSpy?.mockRestore();
+      widthSpy = vi.spyOn(Element.prototype, "clientWidth", "get").mockReturnValue(500);
+      renderList((m: Memo) => <div key={m.name}>{m.name}</div>);
+
+      expect(screen.queryByRole("navigation", { name: "memo.split-view-list" })).not.toBeInTheDocument();
+      expect(screen.getByText("memos/1")).toBeInTheDocument();
+      expect(screen.getByText("memos/2")).toBeInTheDocument();
+    });
+
+    it("does not page through the whole feed just because the document is short", async () => {
+      vi.useFakeTimers();
+      try {
+        feed.hasNextPage = true;
+        renderList();
+        const fetchesFromPane = feed.fetchNextPage.mock.calls.length;
+        await act(async () => vi.advanceTimersByTimeAsync(1000));
+        fireEvent.scroll(window);
+        expect(feed.fetchNextPage).toHaveBeenCalledTimes(fetchesFromPane);
+      } finally {
+        vi.useRealTimers();
       }
     });
   });

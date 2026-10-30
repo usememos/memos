@@ -433,7 +433,12 @@
     "back-to": "חזרה אל {{source}}",
     "connections": "חיבורים",
     "on-this-memo": "על תזכיר זה",
-    "parent-memo": "תזכיר אב"
+    "parent-memo": "תזכיר אב",
+    "sensitive-content": "Sensitive content",
+    "split-view": "Split view",
+    "split-view-description": "Memo list beside the open memo",
+    "split-view-list": "Memo list",
+    "split-view-untitled": "No text"
   },
   "message": {
     "archived-successfully": "הועבר לארכיון בהצלחה",

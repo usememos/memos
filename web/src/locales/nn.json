@@ -459,7 +459,12 @@
       "public-description": "Synleg for alle",
       "space": "Medlemer",
       "space-description": "Alle i {{space}}"
-    }
+    },
+    "sensitive-content": "Sensitive content",
+    "split-view": "Split view",
+    "split-view-description": "Memo list beside the open memo",
+    "split-view-list": "Memo list",
+    "split-view-untitled": "No text"
   },
   "message": {
     "archived-successfully": "Arkivert",

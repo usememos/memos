@@ -459,7 +459,12 @@
       "public-description": "Hamıya görünür",
       "space": "Üzvlər",
       "space-description": "{{space}} daxilində hamı"
-    }
+    },
+    "sensitive-content": "Sensitive content",
+    "split-view": "Split view",
+    "split-view-description": "Memo list beside the open memo",
+    "split-view-list": "Memo list",
+    "split-view-untitled": "No text"
   },
   "message": {
     "archived-successfully": "Uğurla arxivləndi",

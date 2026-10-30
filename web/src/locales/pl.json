@@ -362,7 +362,12 @@
     "layout-list-description": "Pojedyncza kolumna o szerokości odczytu",
     "on-this-memo": "W tej notatce",
     "parent-memo": "Notatka nadrzędna",
-    "view-options": "Opcje widoku"
+    "view-options": "Opcje widoku",
+    "sensitive-content": "Sensitive content",
+    "split-view": "Split view",
+    "split-view-description": "Memo list beside the open memo",
+    "split-view-list": "Memo list",
+    "split-view-untitled": "No text"
   },
   "message": {
     "archived-successfully": "Zarchiwizowano pomyślnie",

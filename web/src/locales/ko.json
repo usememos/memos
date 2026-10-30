@@ -357,7 +357,12 @@
       "uncheck-all": "모든 작업 선택 해제",
       "updated": "작업 업데이트됨"
     },
-    "view-options": "보기 옵션"
+    "view-options": "보기 옵션",
+    "sensitive-content": "Sensitive content",
+    "split-view": "Split view",
+    "split-view-description": "Memo list beside the open memo",
+    "split-view-list": "Memo list",
+    "split-view-untitled": "No text"
   },
   "message": {
     "archived-successfully": "성공적으로 보관되었습니다",
