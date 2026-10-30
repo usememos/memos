@@ -4,7 +4,7 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoByName, useUpdateMemo } from "@/hooks/useMemoQueries";
 import type { MemoSuggestion } from "@/lib/memo-suggestions";
 import { cn } from "@/lib/utils";
-import type { Location } from "@/types/proto/api/memo_service_pb";
+import { type Location, Visibility } from "@/types/proto/api/memo_service_pb";
 import { lazyWithReload } from "@/utils/lazy";
 import { convertVisibilityFromString } from "@/utils/memo";
 import { canManageMemo } from "@/utils/user";
@@ -216,7 +216,15 @@ const EditingSession = ({
       draftKey,
       // A hosted editor starts in focus mode and stays there.
       initialFocusMode: Boolean(editing.onFocusModeExit),
-      defaultVisibility: userGeneralSetting?.memoVisibility ? convertVisibilityFromString(userGeneralSetting.memoVisibility) : undefined,
+      // When posting into a Space, seed visibility to SPACE so the memo is
+      // immediately readable by all Space members. Outside a Space, fall back to
+      // the user's global preference. EditSession reapplies the same default
+      // after a save resets the composer.
+      defaultVisibility: defaultSpace
+        ? Visibility.SPACE
+        : userGeneralSetting?.memoVisibility
+          ? convertVisibilityFromString(userGeneralSetting.memoVisibility)
+          : undefined,
       defaultCreateTime,
       defaultLocation,
       canChooseSpace: canChooseSpaceFor({ memo, currentUser, parentMemoName, defaultSpace }),
