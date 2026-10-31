@@ -107,16 +107,21 @@ func (c *Cache) SetWithTTL(_ context.Context, key string, value any, ttl time.Du
 	}
 
 	for {
-		actual, loaded := c.data.LoadOrStore(key, entry)
-		if !loaded {
-			(&c.itemCount).Add(1)
+		if old, ok := c.data.Load(key); ok {
+			// Replacing an existing entry does not change the count.
+			if c.data.CompareAndSwap(key, old, entry) {
+				break
+			}
+			continue
+		}
+		// Count the new entry before it is published, so a concurrent removal
+		// cannot decrement a count that has not been incremented.
+		(&c.itemCount).Add(1)
+		if _, loaded := c.data.LoadOrStore(key, entry); !loaded {
 			break
 		}
-		// Replace the existing entry atomically: a LoadAndDelete + Store pair
-		// would race with a concurrent writer and double-count the key.
-		if c.data.CompareAndSwap(key, actual, entry) {
-			break
-		}
+		// Another writer published the key first. Undo the reservation and retry.
+		(&c.itemCount).Add(-1)
 	}
 
 	// If we're over the max items, clean up old items.
