@@ -124,9 +124,21 @@ func (c *Cache) SetWithTTL(_ context.Context, key string, value any, ttl time.Du
 		(&c.itemCount).Add(-1)
 	}
 
-	// If we're over the max items, clean up old items.
+	// If we're over the max items, clean up old items. itemCount can
+	// transiently over-count while other writers hold reservations for keys
+	// they have not published yet, so confirm against the entries actually
+	// in the map before evicting anything live.
 	if c.config.MaxItems > 0 && (&c.itemCount).Load() > int64(c.config.MaxItems) {
-		c.cleanupOldest()
+		published := int64(0)
+		c.data.Range(func(_, value any) bool {
+			if _, ok := value.(*item); ok {
+				published++
+			}
+			return true
+		})
+		if published > int64(c.config.MaxItems) {
+			c.cleanupOldest()
+		}
 	}
 }
 

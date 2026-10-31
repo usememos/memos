@@ -356,6 +356,44 @@ func TestCacheEvictionAfterConcurrentExpiry(t *testing.T) {
 	}
 }
 
+func TestCacheEvictionGuardIgnoresInflightReservations(t *testing.T) {
+	ctx := context.Background()
+	config := DefaultConfig()
+	config.CleanupInterval = time.Hour
+	config.MaxItems = 2
+	var evictions atomic.Int64
+	config.OnEviction = func(string, any) {
+		evictions.Add(1)
+	}
+	cache := New(config)
+	defer cache.Close()
+
+	cache.Set(ctx, "x", 1)
+
+	// Simulate a concurrent writer that reserved a count for a key it has
+	// not published yet.
+	(&cache.itemCount).Add(1)
+
+	// Publishing another key must not evict live entries: only two entries
+	// are actually in the cache, which is within the limit.
+	cache.Set(ctx, "k", 2)
+
+	if _, ok := cache.Get(ctx, "x"); !ok {
+		t.Fatal("live entry evicted by a guard that counted an in-flight reservation")
+	}
+	if got := evictions.Load(); got != 0 {
+		t.Fatalf("expected no eviction callbacks, got %d", got)
+	}
+
+	// Roll the simulated reservation back and verify a real overflow still
+	// triggers eviction.
+	(&cache.itemCount).Add(-1)
+	cache.Set(ctx, "y", 3)
+	if cache.Size() > int64(config.MaxItems) {
+		t.Fatalf("cache size %d exceeds limit %d after a real overflow", cache.Size(), config.MaxItems)
+	}
+}
+
 func TestCacheConcurrentClose(t *testing.T) {
 	cache := NewDefault()
 
