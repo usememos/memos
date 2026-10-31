@@ -45,6 +45,14 @@ instead, and update `core/configuration/testdata/compat/` in the same change. Af
   `QUOTA_EXCEEDED` and metadata `metric`, `limit`, and `usage`.
 - `MemoRelatedSetting.enable_double_click_edit` is removed; double-click editing is now a per-browser preference in
   the web client and is no longer an instance setting. `MemoRelatedSetting` keeps the single field `reactions = 1`.
+- The deployment configuration files under `/etc/secrets` (`memos-idp-*.json`, `memos-instance-setting-*.json`)
+  introduced in v0.31.0 are no longer read, and the stored values they overrode take effect again. Identity providers,
+  instance settings, bootstrap users, and their linked identities are declared instead as `memos.api.Configuration`
+  documents in the configuration directory (`--config-dir` or `MEMOS_CONFIG_DIR`, default `/etc/memos/config`), applied
+  at startup unless `--config-apply=off`, or through `memos config plan` and `memos config apply`. Keep an identity
+  provider's UID when moving it so linked accounts keep working. An API write that changes a field a file manages
+  returns `FAILED_PRECONDITION` with `ErrorInfo{reason: MANAGED_BY_CONFIGURATION}` naming the file and fields;
+  `GET /api/instance/configuration` (administrators) lists what is managed.
 - `CreateIdentityProvider` and `UpdateIdentityProvider` validate the provider as it will be stored and return
   `INVALID_ARGUMENT` when it has no title, an invalid `identifier_filter`, no `client_id`, a non-absolute or non-HTTP(S)
   `auth_url`, `token_url`, or `user_info_url`, an empty scope entry, or no `field_mapping.identifier`. A request that
