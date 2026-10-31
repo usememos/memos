@@ -20,7 +20,13 @@ export const memoExportUrl = (username: string) => `/file/users/${encodeURICompo
 
 const filenameFromDisposition = (disposition: string | null): string | undefined => {
   const match = disposition?.match(/filename\*?=(?:UTF-8'')?"?([^";]+)"?/i);
-  return match ? decodeURIComponent(match[1]) : undefined;
+  if (!match) return undefined;
+  try {
+    return decodeURIComponent(match[1]);
+  } catch {
+    // A plain filename may hold a literal percent sign; keep it as sent.
+    return match[1];
+  }
 };
 
 // exportMemos downloads a user's Memos export file. The archive streams from

@@ -81,9 +81,14 @@ func (s *FileServerService) serveMemoExport(w http.ResponseWriter, r *http.Reque
 		if ctx.Err() == nil {
 			slog.Error("memo export failed", slog.Int("user", int(user.ID)), slog.Int("caller", int(caller.ID)), slog.Bool("committed", body.committed), slog.Any("error", err))
 		}
-		// Before the first byte this becomes a JSON 500. After it, the
-		// response is already committed and the client receives a truncated
-		// archive, which the handler wrapper leaves alone.
+		// Before the first byte this becomes a JSON 500, so the archive
+		// headers must go or the client would save the error as the ZIP.
+		// After it, the response is already committed and the client
+		// receives a truncated archive, which the handler wrapper leaves alone.
+		if !body.committed {
+			w.Header().Del("Content-Type")
+			w.Header().Del("Content-Disposition")
+		}
 		return &httphandler.Error{Code: http.StatusInternalServerError, Message: "failed to export memos", Cause: err}
 	}
 	return nil

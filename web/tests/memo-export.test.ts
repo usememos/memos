@@ -34,6 +34,26 @@ describe("memo export files", () => {
     expect(download).toHaveBeenCalledWith("/file/users/alice/export", "memos-export-alice-20260920T083000Z.zip");
   });
 
+  it("keeps a filename that is not percent-encoded as sent", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(null, {
+        status: 200,
+        headers: { "Content-Disposition": 'attachment; filename="memos-export-100%25-20260920T083000Z.zip"' },
+      }),
+    );
+    await exportMemos("100%");
+    expect(download).toHaveBeenCalledWith("/file/users/100%25/export", "memos-export-100%-20260920T083000Z.zip");
+
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(null, {
+        status: 200,
+        headers: { "Content-Disposition": 'attachment; filename="memos-export-50%-20260920T083000Z.zip"' },
+      }),
+    );
+    await exportMemos("50%");
+    expect(download).toHaveBeenLastCalledWith("/file/users/50%25/export", "memos-export-50%-20260920T083000Z.zip");
+  });
+
   it("reports a refused preflight with its status instead of downloading", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response(null, { status: 429 }));
 

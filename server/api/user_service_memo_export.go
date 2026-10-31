@@ -35,8 +35,9 @@ type memoExportData struct {
 // created, including comments and archived memos, and the attachments linked
 // to them. Nothing another user created is included. exportTime is recorded
 // in the manifest; callers name the download after the same instant. Every
-// row the archive needs is loaded before the first byte is written, so a
-// database failure surfaces before the response is committed.
+// memo row the archive needs is loaded before the first byte is written, so a
+// failure loading them surfaces before the response is committed. Attachment
+// content is read while writing; a failure there truncates the archive.
 func (s *APIService) WriteMemoExport(ctx context.Context, user *store.User, w io.Writer, exportTime time.Time) error {
 	if user == nil {
 		return errors.New("user is required")

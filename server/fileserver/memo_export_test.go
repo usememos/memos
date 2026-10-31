@@ -3,10 +3,13 @@ package fileserver
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 
@@ -136,23 +139,72 @@ func TestServeMemoExport_HeadPreflightChecksWithoutExporting(t *testing.T) {
 	require.Equal(t, http.StatusTooManyRequests, f.request(ctx, t, http.MethodHead, f.member.Username, f.admin).Code)
 }
 
+// stubExporter stands in for the API service. It parks inside WriteMemoExport
+// until released, so a test can observe a running export, or fails before
+// writing a byte when err is set.
+type stubExporter struct {
+	started chan struct{}
+	release chan struct{}
+	err     error
+}
+
+func (e *stubExporter) WriteMemoExport(ctx context.Context, _ *store.User, w io.Writer, _ time.Time) error {
+	if e.err != nil {
+		return e.err
+	}
+	close(e.started)
+	select {
+	case <-e.release:
+	case <-ctx.Done():
+		return ctx.Err()
+	}
+	_, err := w.Write([]byte("PK"))
+	return err
+}
+
 func TestServeMemoExport_OneExportAtATime(t *testing.T) {
 	ctx := context.Background()
 	f, cleanup := newMemoExportFixture(ctx, t)
 	defer cleanup()
 
-	// Hold the lock as a running export would.
-	require.True(t, f.fs.memoExportSemaphore.TryAcquire(1))
+	exporter := &stubExporter{started: make(chan struct{}), release: make(chan struct{})}
+	f.fs.MemoExporter = exporter
+	running := make(chan *httptest.ResponseRecorder, 1)
+	go func() { running <- f.request(ctx, t, http.MethodGet, f.member.Username, f.admin) }()
+	<-exporter.started
+
+	// The lock spans the whole export: while one streams, another is refused.
 	busy := f.request(ctx, t, http.MethodGet, f.member.Username, f.admin)
 	require.Equal(t, http.StatusTooManyRequests, busy.Code)
 	require.Contains(t, busy.Body.String(), "another export is running")
 	require.Equal(t, http.StatusTooManyRequests, f.request(ctx, t, http.MethodHead, f.member.Username, f.admin).Code)
-	f.fs.memoExportSemaphore.Release(1)
+
+	close(exporter.release)
+	require.Equal(t, http.StatusOK, (<-running).Code)
 
 	// The refused request refunded its budget unit and the lock is free again.
+	f.fs.MemoExporter = f.svc
 	require.Equal(t, http.StatusOK, f.request(ctx, t, http.MethodGet, f.member.Username, f.admin).Code)
-	require.Equal(t, ratelimit.DefaultPolicy()[ratelimit.ScopeArchiveUser].Limit-1,
+	require.Equal(t, ratelimit.DefaultPolicy()[ratelimit.ScopeArchiveUser].Limit-2,
 		f.fs.RateLimiter.Allowed(ratelimit.ScopeArchiveUser, fmt.Sprint(f.admin.ID), 1).Remaining)
+}
+
+func TestServeMemoExport_FailureBeforeFirstByteIsAnErrorResponse(t *testing.T) {
+	ctx := context.Background()
+	f, cleanup := newMemoExportFixture(ctx, t)
+	defer cleanup()
+
+	f.fs.MemoExporter = &stubExporter{err: errors.New("storage unavailable")}
+	failed := f.request(ctx, t, http.MethodGet, f.member.Username, f.admin)
+	require.Equal(t, http.StatusInternalServerError, failed.Code)
+	require.Equal(t, "application/json", failed.Header().Get("Content-Type"))
+	require.Empty(t, failed.Header().Get("Content-Disposition"))
+	require.Contains(t, failed.Body.String(), "failed to export memos")
+	require.NotContains(t, failed.Body.String(), "storage unavailable")
+
+	// The lock is released after a failure.
+	f.fs.MemoExporter = f.svc
+	require.Equal(t, http.StatusOK, f.request(ctx, t, http.MethodGet, f.member.Username, f.admin).Code)
 }
 
 func TestServeMemoExport_RouteDisabledWithoutExporter(t *testing.T) {
