@@ -119,8 +119,8 @@ func (d *DB) GetUserByPATHash(ctx context.Context, tokenHash string) (*store.PAT
 			continue
 		}
 
-		patsUserSetting := &storepb.PersonalAccessTokensUserSetting{}
-		if err := protojsonUnmarshaler.Unmarshal([]byte(tokensJSON), patsUserSetting); err != nil {
+		patsUserSetting, err := store.ParsePersonalAccessTokens([]byte(tokensJSON))
+		if err != nil {
 			return nil, err
 		}
 
