@@ -554,8 +554,9 @@ transaction, PostgreSQL from `SERIALIZABLE`, MySQL from `SERIALIZABLE` with `SEL
   before rolling the replicas, the same place database migration runs. It migrates the database first, exactly as server startup does,
   so it also bootstraps a fresh instance before its first start.
 - Server startup, controlled by `--config-apply=startup|off` (`MEMOS_CONFIG_APPLY`), default `startup`, and `--config-dir`
-  (`MEMOS_CONFIG_DIR`). The sequence is migrate, seed (demo mode), apply, then construct services. A plan error or apply failure stops startup, as an invalid `nginx.conf` stops nginx; the
-  process never serves with a configuration it could not apply.
+  (`MEMOS_CONFIG_DIR`). The sequence is migrate, apply, seed (demo mode), then construct services. The demo seed runs after apply so its content attaches to
+  the users the configuration declares; it creates a user only when none exists. A plan error or apply failure stops startup, as an
+  invalid `nginx.conf` stops nginx; the process never serves with a configuration it could not apply.
 
 `off` is for fleets that apply through the job and want replicas to never touch the files. Replicas started with `off` still read the
 state record, so the API guard works everywhere.

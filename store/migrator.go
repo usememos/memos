@@ -26,8 +26,8 @@ import (
 // Migration Flow:
 // 1. preMigrate: Check if DB is initialized. If not, apply LATEST.sql
 // 2. checkMinimumUpgradeVersion: Verify the database meets the fixed v0.31.0 baseline
-// 3. Migrate (prod mode): Apply incremental migrations from current to target version
-// 4. Migrate (demo mode): Seed database with demo data
+// 3. Migrate: Apply incremental migrations from current to target version
+// 4. Seed (demo mode, called by the server after the configuration apply): load the demo content
 //
 // Version Tracking:
 // - New installations: Schema version set in system_setting immediately
@@ -95,7 +95,6 @@ func validateMigrationFileName(filename string) error {
 
 // Migrate migrates the database schema to the latest version.
 // It checks the current schema version and applies any necessary migrations.
-// It also seeds the database with initial data if in demo mode.
 func (s *Store) Migrate(ctx context.Context) error {
 	if err := s.preMigrate(ctx); err != nil {
 		return errors.Wrap(err, "failed to pre-migrate")
@@ -127,12 +126,6 @@ func (s *Store) Migrate(ctx context.Context) error {
 		}
 	}
 
-	if s.profile.Demo {
-		// In demo mode, we should seed the database.
-		if err := s.seed(ctx); err != nil {
-			return errors.Wrap(err, "failed to seed")
-		}
-	}
 	if err := s.initializeInstanceAccessSetting(ctx); err != nil {
 		return errors.Wrap(err, "failed to initialize instance access setting")
 	}
@@ -289,10 +282,11 @@ func (s *Store) getSeedBasePath() string {
 	return fmt.Sprintf("seed/%s/", s.profile.Driver)
 }
 
-// seed seeds the database with initial data.
-// It reads all seed files from the embedded filesystem and executes them in order.
-// This is only supported for SQLite databases and is used in demo mode.
-func (s *Store) seed(ctx context.Context) error {
+// Seed loads the demo content: every seed file from the embedded filesystem,
+// in name order, in one transaction. The server calls it in demo mode after
+// the declarative configuration is applied, so content attaches to the users
+// the configuration declares. Only SQLite has seed files.
+func (s *Store) Seed(ctx context.Context) error {
 	// Only seed for SQLite - other databases should use production data
 	if s.profile.Driver != "sqlite" {
 		slog.Warn("seed is only supported for SQLite, skipping for other databases")

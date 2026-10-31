@@ -165,6 +165,12 @@ func runServer() error {
 	if err := applyConfigurationAtStartup(ctx, storeInstance); err != nil {
 		return errors.Wrap(err, "failed to apply the declarative configuration")
 	}
+	if instanceProfile.Demo {
+		// After the apply, so the demo content attaches to the declared users.
+		if err := storeInstance.Seed(ctx); err != nil {
+			return errors.Wrap(err, "failed to seed the demo content")
+		}
+	}
 	accessSetting, err := storeInstance.GetInstanceAccessSetting(ctx)
 	if err != nil {
 		return errors.Wrap(err, "failed to get instance access setting")

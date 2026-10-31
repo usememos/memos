@@ -14,8 +14,8 @@ import (
 	"github.com/usememos/memos/store/db/sqlite"
 )
 
-func TestDemoSeed(t *testing.T) {
-	ctx := context.Background()
+func newDemoStore(t *testing.T) *store.Store {
+	t.Helper()
 	p := &profile.Profile{
 		Demo:   true,
 		Data:   t.TempDir(),
@@ -28,8 +28,14 @@ func TestDemoSeed(t *testing.T) {
 	t.Cleanup(func() {
 		require.NoError(t, stores.Close())
 	})
+	require.NoError(t, stores.Migrate(context.Background()))
+	return stores
+}
 
-	require.NoError(t, stores.Migrate(ctx))
+func TestDemoSeed(t *testing.T) {
+	ctx := context.Background()
+	stores := newDemoStore(t)
+	require.NoError(t, stores.Seed(ctx))
 	generalSetting, err := stores.GetInstanceGeneralSetting(ctx)
 	require.NoError(t, err)
 	require.False(t, generalSetting.DisallowPasswordAuth, "the demo seed does not set an authentication policy")
@@ -89,4 +95,41 @@ func TestDemoSeed(t *testing.T) {
 	attachments, err := stores.ListAttachments(ctx, &store.FindAttachment{HasRelatedMemo: true})
 	require.NoError(t, err)
 	require.NotEmpty(t, attachments, "demo should include a memo attachment")
+
+	// The seed holds content only: settings, including the reaction list, come
+	// from the demo's declarative configuration, and no account carries a
+	// seeded credential.
+	memoRelated, err := stores.GetUncachedInstanceSetting(ctx, &store.FindInstanceSetting{Name: "MEMO_RELATED"})
+	require.NoError(t, err)
+	require.Nil(t, memoRelated, "the seed does not set instance settings")
+	userSettings, err := stores.ListUserSettings(ctx, &store.FindUserSetting{})
+	require.NoError(t, err)
+	require.Empty(t, userSettings, "the seed does not set user settings or access tokens")
+}
+
+// The server seeds after the declarative configuration is applied, so the
+// administrator may already exist: the seed keeps that row, fills only the
+// profile fields left empty, and attaches its content to it.
+func TestDemoSeedAttachesToDeclaredAdmin(t *testing.T) {
+	ctx := context.Background()
+	stores := newDemoStore(t)
+	declared, err := stores.CreateUser(ctx, &store.User{Username: "steven", Role: store.RoleAdmin, Nickname: "Declared", PasswordHash: "hash"})
+	require.NoError(t, err)
+	require.NoError(t, stores.Seed(ctx))
+
+	username := "steven"
+	users, err := stores.ListUsers(ctx, &store.FindUser{Username: &username})
+	require.NoError(t, err)
+	require.Len(t, users, 1, "the seed does not create a second steven")
+	require.Equal(t, declared.ID, users[0].ID)
+	require.Equal(t, "Declared", users[0].Nickname, "a declared display name is kept")
+	require.Equal(t, "hash", users[0].PasswordHash, "the declared credentials are kept")
+	require.NotEmpty(t, users[0].Description, "an empty bio is filled from the seed")
+
+	memos, err := stores.ListMemos(ctx, &store.FindMemo{CreatorID: &declared.ID})
+	require.NoError(t, err)
+	require.NotEmpty(t, memos, "the welcome memo and the rest of Steven's content belong to the declared user")
+	all, err := stores.ListMemos(ctx, &store.FindMemo{})
+	require.NoError(t, err)
+	require.GreaterOrEqual(t, len(all), 20)
 }

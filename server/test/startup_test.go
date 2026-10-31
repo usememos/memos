@@ -108,6 +108,10 @@ func bootInstance(ctx context.Context, t *testing.T, opts instanceOptions) *inst
 	plan, _, err := configuration.Apply(ctx, desired, storeInstance, configuration.ApplyMetadata{AppliedBy: "startup test", Now: time.Now()})
 	require.NoError(t, err, "should apply the configuration")
 	require.True(t, plan.Valid(), "the configuration should be applicable: %v", plan.Message.Errors)
+	if opts.demo {
+		// As the server does: after the apply, so content attaches to declared users.
+		require.NoError(t, storeInstance.Seed(ctx), "should seed the demo content")
+	}
 
 	s, err := server.NewServer(ctx, instanceProfile, storeInstance)
 	require.NoError(t, err, "should construct server")
@@ -535,8 +539,8 @@ func TestStartupGatewayOmitsNullMessageFields(t *testing.T) {
 	require.Equal(t, "image/gif", fetched["type"])
 }
 
-// TestStartupDemoMode verifies demo mode boots, which exercises the seed path
-// in store.Migrate that prod-mode startups never touch.
+// TestStartupDemoMode verifies demo mode boots, which exercises the seed step
+// that prod-mode startups never run.
 func TestStartupDemoMode(t *testing.T) {
 	ctx := context.Background()
 	inst := bootInstance(ctx, t, instanceOptions{
