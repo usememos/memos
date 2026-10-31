@@ -39,8 +39,8 @@ importers:
         specifier: ^5.100.9
         version: 5.100.9(@tanstack/react-query@5.100.9(react@19.2.6))(react@19.2.6)
       '@usememos/editor':
-        specifier: 26.10.29
-        version: 26.10.29(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        specifier: 26.10.30
+        version: 26.10.30(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -951,8 +951,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@usememos/editor@26.10.29':
-    resolution: {integrity: sha512-nsseJXXwQV47duQ5lBnSIXwiDMIb4ta3o+7qJYjCBWxdafiiNbMu/Mjq9suXfDD1dtSSxSpl5GnDaw0znwlLAw==}
+  '@usememos/editor@26.10.30':
+    resolution: {integrity: sha512-jc0RU5O5BWpX7+tPjU3hDWYSrdv463SoZLalDpDGJkvZskB69lYkp5L8JB1BATQ+jtqig1TenbJxc5ROAZycLg==}
     peerDependencies:
       react: '>=18'
       react-dom: '>=18'
@@ -2373,7 +2373,7 @@ snapshots:
   '@typescript/typescript-win32-x64@7.0.2':
     optional: true
 
-  '@usememos/editor@26.10.29(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
+  '@usememos/editor@26.10.30(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     optionalDependencies:
       react: 19.2.6
       react-dom: 19.2.6(react@19.2.6)
