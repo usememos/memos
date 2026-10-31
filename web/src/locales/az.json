@@ -400,6 +400,7 @@
     "compact-mode": "Yığcam rejim",
     "connections": "Bağlantılar",
     "grid-compact-hint": "Şəbəkə düzülüşləri həmişə yığcam kartlardan istifadə edir.",
+    "hide-completed-tasks": "Hide completed tasks",
     "layout": "Düzülüş",
     "layout-auto": "Avtomatik",
     "layout-auto-description": "Ekrana sığdığı qədər sütun",

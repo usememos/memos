@@ -353,6 +353,7 @@
     "back-to": "Retour à {{source}}",
     "connections": "Connexions",
     "grid-compact-hint": "Les mises en page en grille utilisent toujours des cartes compactes.",
+    "hide-completed-tasks": "Hide completed tasks",
     "layout": "Mise en page",
     "layout-auto": "Automatique",
     "layout-auto-description": "Autant de colonnes que l'écran peut en afficher",

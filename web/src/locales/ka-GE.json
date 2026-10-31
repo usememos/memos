@@ -353,6 +353,7 @@
     "back-to": "დაბრუნება {{source}}-ზე",
     "connections": "კავშირები",
     "grid-compact-hint": "ბადისებრი განლაგებები ყოველთვის კომპაქტურ ბარათებს იყენებს.",
+    "hide-completed-tasks": "Hide completed tasks",
     "layout": "განლაგება",
     "layout-auto": "ავტომატური",
     "layout-auto-description": "ეკრანზე რამდენიც უნდა მოთავსდეს",

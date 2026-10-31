@@ -391,6 +391,7 @@
     "back-to": "Обратно към {{source}}",
     "connections": "Връзки",
     "grid-compact-hint": "Мрежовите оформления винаги използват компактни карти.",
+    "hide-completed-tasks": "Hide completed tasks",
     "layout": "Оформление",
     "layout-auto": "Автоматично",
     "layout-auto-description": "Толкова колони, колкото се побират на екрана",

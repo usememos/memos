@@ -4,6 +4,7 @@ import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { MemoEditor } from "@/components/MemoEditor/MemoEditor";
+import { updateDevicePreferences } from "@/hooks/useDevicePreferences";
 import { memoKeys } from "@/hooks/useMemoQueries";
 import { ListMemosResponseSchema, type Memo, MemoSchema } from "@/types/proto/api/memo_service_pb";
 
@@ -39,7 +40,22 @@ const memo = (content: string): Memo => create(MemoSchema, { name: "memos/one", 
 describe("MemoEditor in view mode", () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    localStorage.clear();
     state.currentUser = undefined;
+  });
+
+  it("hides completed tasks for an owner with the browser reading preference, without writing", () => {
+    const { client, renderMemo } = setup();
+    state.currentUser = { name: "users/owner" };
+    client.setQueryData(memoKeys.list({}), create(ListMemosResponseSchema, { memos: [memo("- [ ] Open\n- [x] Done")] }));
+    updateDevicePreferences({ hideCompletedTasks: true });
+
+    const { container } = renderMemo("memos/one");
+
+    expect(container).toHaveTextContent("Open");
+    expect(container).not.toHaveTextContent("Done");
+    expect(container.querySelector("input.mbe-checkbox")).not.toBeDisabled();
+    expect(api.updateMemo).not.toHaveBeenCalled();
   });
 
   it("shows the memo a list already holds, without fetching it", () => {

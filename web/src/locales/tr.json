@@ -328,6 +328,7 @@
     "compact-mode": "Kompakt mod",
     "connections": "Bağlantılar",
     "grid-compact-hint": "Izgara düzenleri her zaman kompakt kartlar kullanır.",
+    "hide-completed-tasks": "Hide completed tasks",
     "layout": "Düzen",
     "layout-auto": "Otomatik",
     "layout-auto-description": "Ekrana sığdığı kadar sütun",

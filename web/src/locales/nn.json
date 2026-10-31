@@ -394,6 +394,7 @@
       "has-task-list": "Har gjeremålsliste"
     },
     "grid-compact-hint": "Rutenett nyttar alltid kompakte kort.",
+    "hide-completed-tasks": "Hide completed tasks",
     "layout": "Oppsett",
     "layout-auto": "Automatisk",
     "layout-auto-description": "Så mange kolonnar som skjermen har plass til",

@@ -353,6 +353,7 @@
     "back-to": "Vissza a {{source}}-hez",
     "connections": "Kapcsolatok",
     "grid-compact-hint": "A rácsos elrendezések mindig kompakt kártyákat használnak.",
+    "hide-completed-tasks": "Hide completed tasks",
     "layout": "Elrendezés",
     "layout-auto": "Automatikus",
     "layout-auto-description": "Annyi oszlop, amennyi elfér a képernyőn",

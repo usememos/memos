@@ -367,6 +367,7 @@
     },
     "compact-mode": "מצב קומפקטי",
     "grid-compact-hint": "פריסות רשת משתמשות תמיד בכרטיסים קומפקטיים.",
+    "hide-completed-tasks": "Hide completed tasks",
     "layout": "פריסה",
     "layout-auto": "אוטומטי",
     "layout-auto-description": "מספר העמודות המרבי שמתאים למסך",

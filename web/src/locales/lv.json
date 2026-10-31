@@ -391,6 +391,7 @@
     "back-to": "Atpakaļ uz {{source}}",
     "connections": "Savienojumi",
     "grid-compact-hint": "Režģa izkārtojumos vienmēr tiek izmantotas kompaktas kartes.",
+    "hide-completed-tasks": "Hide completed tasks",
     "layout": "Izkārtojums",
     "layout-auto": "Automātiski",
     "layout-auto-description": "Tik daudz kolonnu, cik ietilpst ekrānā",

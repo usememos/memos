@@ -353,6 +353,7 @@
     "back-to": "Zpět na {{source}}",
     "connections": "Připojení",
     "grid-compact-hint": "Mřížkové rozvržení vždy používá kompaktní karty.",
+    "hide-completed-tasks": "Hide completed tasks",
     "layout": "Rozvržení",
     "layout-auto": "Automaticky",
     "layout-auto-description": "Tolik sloupců, kolik se vejde na obrazovku",

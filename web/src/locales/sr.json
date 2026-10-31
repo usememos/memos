@@ -391,6 +391,7 @@
     "back-to": "Назад на {{source}}",
     "connections": "Везе",
     "grid-compact-hint": "Распореди мреже увек користе компактне картице.",
+    "hide-completed-tasks": "Hide completed tasks",
     "layout": "Распоред",
     "layout-auto": "Аутоматски",
     "layout-auto-description": "Колико год колона стане на екран",

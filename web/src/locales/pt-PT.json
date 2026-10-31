@@ -353,6 +353,7 @@
     "back-to": "Voltar para {{source}}",
     "connections": "Ligações",
     "grid-compact-hint": "Os layouts de grelha utilizam sempre cartões compactos.",
+    "hide-completed-tasks": "Hide completed tasks",
     "layout": "Layout",
     "layout-auto": "Automático",
     "layout-auto-description": "Quantas colunas couberem no ecrã",

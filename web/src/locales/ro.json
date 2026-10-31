@@ -391,6 +391,7 @@
     "back-to": "Înapoi la {{source}}",
     "connections": "Conexiuni",
     "grid-compact-hint": "Aspectele de tip grilă utilizează întotdeauna carduri compacte.",
+    "hide-completed-tasks": "Hide completed tasks",
     "layout": "Aspect",
     "layout-auto": "Automat",
     "layout-auto-description": "Atâtea coloane câte se potrivesc pe ecran",

@@ -391,6 +391,7 @@
     "back-to": "Tagasi {{source}} juurde",
     "connections": "Ühendused",
     "grid-compact-hint": "Ruudustikupaigutused kasutavad alati kompaktseid kaarte.",
+    "hide-completed-tasks": "Hide completed tasks",
     "layout": "Paigutus",
     "layout-auto": "Automaatne",
     "layout-auto-description": "Nii palju veerge kui ekraanile mahub",

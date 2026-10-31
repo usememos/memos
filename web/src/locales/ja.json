@@ -295,6 +295,7 @@
     },
     "compact-mode": "コンパクト表示",
     "grid-compact-hint": "グリッドレイアウトでは常にコンパクトなカードで表示されます。",
+    "hide-completed-tasks": "Hide completed tasks",
     "layout": "レイアウト",
     "layout-auto": "自動",
     "layout-auto-description": "画面に収まる分だけ列を表示",

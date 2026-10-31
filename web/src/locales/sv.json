@@ -353,6 +353,7 @@
     "back-to": "Tillbaka till {{source}}",
     "connections": "Anslutningar",
     "grid-compact-hint": "Rutnätslayouter använder alltid kompakta kort.",
+    "hide-completed-tasks": "Hide completed tasks",
     "layout": "Layout",
     "layout-auto": "Auto",
     "layout-auto-description": "Så många kolumner som får plats på skärmen",

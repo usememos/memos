@@ -353,6 +353,7 @@
     "back-to": "Volver a {{source}}",
     "connections": "Conexiones",
     "grid-compact-hint": "Los diseños de cuadrícula siempre utilizan tarjetas compactas.",
+    "hide-completed-tasks": "Hide completed tasks",
     "layout": "Diseño",
     "layout-auto": "Automático",
     "layout-auto-description": "Tantas columnas como quepan en la pantalla",

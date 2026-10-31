@@ -391,6 +391,7 @@
     "back-to": "Επιστροφή στο {{source}}",
     "connections": "Συνδέσεις",
     "grid-compact-hint": "Οι διατάξεις πλέγματος χρησιμοποιούν πάντα συμπαγείς κάρτες.",
+    "hide-completed-tasks": "Hide completed tasks",
     "layout": "Διάταξη",
     "layout-auto": "Αυτόματη",
     "layout-auto-description": "Τόσες στήλες όσες χωράνε στην οθόνη",
