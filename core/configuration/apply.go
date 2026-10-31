@@ -114,9 +114,38 @@ func applyOperation(ctx context.Context, tx *store.ConfigurationTransaction, op 
 			})
 		}
 		return tx.DeleteInstanceSetting(ctx, op.settingKey)
+	case KindLinkedIdentity:
+		return applyLinkedIdentity(ctx, tx, op)
 	default:
 		return applyUser(ctx, tx, op, now)
 	}
+}
+
+// applyLinkedIdentity writes the one field a link has by replacing the row,
+// after resolving the user, who may have been created earlier in this apply.
+func applyLinkedIdentity(ctx context.Context, tx *store.ConfigurationTransaction, op *operation) error {
+	var userID int32
+	if op.actualUser != nil {
+		userID = op.actualUser.ID
+	} else {
+		users, err := tx.ListUsers(ctx, &store.FindUser{Username: &op.identityUsername})
+		if err != nil {
+			return errors.Wrap(err, "failed to read user")
+		}
+		if len(users) == 0 {
+			return errors.Errorf("user %s does not exist", op.identityUsername)
+		}
+		userID = users[0].ID
+	}
+	if op.actualIdentity != nil {
+		if err := tx.DeleteUserIdentities(ctx, &store.DeleteUserIdentity{UserID: &userID, Provider: &op.actualIdentity.Provider}); err != nil {
+			return err
+		}
+	}
+	if op.change.Action == apipb.ResourceChange_DESTROY {
+		return nil
+	}
+	return tx.CreateUserIdentity(ctx, &store.UserIdentity{UserID: userID, Provider: op.identity.Provider, ExternUID: op.identity.ExternUID})
 }
 
 // applyUser writes exactly the fields the plan lists, which already leave out
@@ -132,6 +161,13 @@ func applyUser(ctx context.Context, tx *store.ConfigurationTransaction, op *oper
 			}
 			passwordHash = string(hash)
 		}
+	}
+	if op.randomPassword {
+		hash, err := coreuser.RandomPasswordHash()
+		if err != nil {
+			return err
+		}
+		passwordHash = hash
 	}
 
 	if op.actualUser == nil {

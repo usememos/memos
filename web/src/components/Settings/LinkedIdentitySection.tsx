@@ -5,6 +5,7 @@ import { getIdentityProviderTypeLabel, getSSOProviderUid } from "@/components/Se
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { identityProviderServiceClient, userServiceClient } from "@/connect";
+import { findManagedResource, useConfigurationStatus } from "@/hooks/useConfigurationQueries";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { absolutifyLink } from "@/lib/browser";
 import { handleError } from "@/lib/error";
@@ -12,6 +13,7 @@ import { IdentityProvider, IdentityProvider_Type } from "@/types/proto/api/idp_s
 import { LinkedIdentity } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { storeOAuthState } from "@/utils/oauth";
+import ManagedByConfigurationChip from "./ManagedByConfigurationChip";
 import SettingGroup from "./SettingGroup";
 import SettingTable from "./SettingTable";
 
@@ -29,6 +31,7 @@ interface LinkedIdentityRow extends Record<string, unknown> {
 const LinkedIdentitySection = () => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
+  const configurationStatus = useConfigurationStatus();
   const [identityProviderList, setIdentityProviderList] = useState<IdentityProvider[]>([]);
   const [linkedIdentityList, setLinkedIdentityList] = useState<LinkedIdentity[]>([]);
 
@@ -174,6 +177,7 @@ const LinkedIdentitySection = () => {
                   {row.isLinked && row.externalUid ? (
                     <InfoChip label={t("setting.sso.extern-uid")} value={row.externalUid} tooltip={row.externalUid} />
                   ) : null}
+                  <ManagedByConfigurationChip resource={findManagedResource(configurationStatus, row.linkedIdentity?.name ?? "")} />
                 </div>
                 <p className="text-xs text-muted-foreground">
                   {row.isLinked ? t("setting.sso.extern-uid-description") : t("setting.sso.not-linked-description")}
@@ -187,9 +191,12 @@ const LinkedIdentitySection = () => {
             className: "w-px text-right",
             render: (_, row: LinkedIdentityRow) =>
               row.linkedIdentity ? (
-                <Button variant="outline" size="sm" onClick={() => handleUnlinkIdentityProvider(row)}>
-                  {t("common.unlink")}
-                </Button>
+                // A link the configuration declares is unlinked in its file, not here.
+                findManagedResource(configurationStatus, row.linkedIdentity.name) ? null : (
+                  <Button variant="outline" size="sm" onClick={() => handleUnlinkIdentityProvider(row)}>
+                    {t("common.unlink")}
+                  </Button>
+                )
               ) : (
                 <Button variant="outline" size="sm" onClick={() => handleLinkIdentityProvider(row.identityProvider)}>
                   {t("common.link")}

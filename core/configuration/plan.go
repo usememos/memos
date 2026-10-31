@@ -25,6 +25,7 @@ type Reader interface {
 	ListIdentityProviders(ctx context.Context, find *store.FindIdentityProvider) ([]*storepb.IdentityProvider, error)
 	GetUncachedInstanceSetting(ctx context.Context, find *store.FindInstanceSetting) (*storepb.InstanceSetting, error)
 	ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User, error)
+	ListUserIdentities(ctx context.Context, find *store.FindUserIdentity) ([]*store.UserIdentity, error)
 }
 
 // Plan is what apply would change.
@@ -51,8 +52,16 @@ type operation struct {
 	settingKey storepb.InstanceSettingKey
 
 	// The managed part of a declared user, and the stored user when it exists.
-	user       *apipb.User
-	actualUser *store.User
+	// A user created without a declared password gets an unusable random one.
+	user           *apipb.User
+	actualUser     *store.User
+	randomPassword bool
+
+	// The identity link to write, without its user ID, which apply resolves
+	// from identityUsername once the user exists; and the stored link, if any.
+	identity         *store.UserIdentity
+	identityUsername string
+	actualIdentity   *store.UserIdentity
 }
 
 // Valid reports whether the plan can be applied.
@@ -66,11 +75,14 @@ func (p *Plan) HasChanges() bool {
 }
 
 // Apply order: identity providers are created and updated first, so a GENERAL
-// setting that needs one finds it; users are destroyed before providers.
+// setting that needs one finds it; linked identities follow the users they
+// belong to; users are destroyed before providers.
 const (
 	rankIdentityProvider = iota
 	rankInstanceSetting
 	rankUser
+	rankLinkedIdentity
+	rankLinkedIdentityDestroy
 	rankUserDestroy
 	rankIdentityProviderDestroy
 )
@@ -109,7 +121,7 @@ func ComputePlan(ctx context.Context, desired *Desired, reader Reader) (*Plan, e
 		p.removed[removed.Resource] = removed
 	}
 
-	steps := []func() error{p.planIdentityProviders, p.planInstanceSettings, p.planUsers, p.planUndeclared, p.checkAuthentication}
+	steps := []func() error{p.planIdentityProviders, p.planInstanceSettings, p.planUsers, p.planLinkedIdentities, p.planUndeclared, p.checkAuthentication}
 	for _, step := range steps {
 		if err := step(); err != nil {
 			return nil, err
@@ -131,6 +143,8 @@ type planner struct {
 	next      []*storepb.InstanceConfigurationState_ManagedResource
 
 	providersByUID map[string]*storepb.IdentityProvider
+	// The stored users the configuration declares, by username.
+	declaredUsers map[string]*store.User
 
 	// What the authentication invariant needs about the planned end state.
 	providersAfter    map[string]bool
@@ -364,6 +378,13 @@ func (p *planner) planUsers() error {
 			actualByName[user.Username] = user
 		}
 	}
+	p.declaredUsers = actualByName
+
+	linkedUsers := map[string]bool{}
+	for _, identity := range p.desired.Configuration.LinkedIdentities {
+		userName, _ := splitLinkedIdentityName(identity.GetName())
+		linkedUsers[userName] = true
+	}
 
 	for _, declared := range declaredUsers {
 		name := declared.Name
@@ -373,9 +394,16 @@ func (p *planner) planUsers() error {
 		version := lifecycle.GetWriteOnlyVersion()
 		recorded := p.managed[name].GetWriteOnlyVersion()
 		sendPassword := actual == nil || version > recorded
+		// A user with a declared linked identity signs in through its provider,
+		// so it may be created without a password, as SSO provisioning creates
+		// users: with a random password nobody knows.
+		randomPassword := actual == nil && declared.Password == "" && linkedUsers[name]
+		if randomPassword {
+			sendPassword = false
+		}
 		if sendPassword && declared.Password == "" {
 			if actual == nil {
-				p.fail(name, "password is required to create the user")
+				p.fail(name, "password is required to create the user, unless a linked identity is declared for it")
 			} else {
 				p.fail(name, "writeOnlyVersion is %d, above the %d last applied, but no password is declared", version, recorded)
 			}
@@ -389,7 +417,11 @@ func (p *planner) planUsers() error {
 			Digest:           digest(managedView, lifecycle),
 			WriteOnlyVersion: max(version, recorded),
 		}
-		p.declared(rankUser, name, KindUser, actual != nil, changes, entry, &operation{user: managedView, actualUser: actual})
+		op := &operation{user: managedView, actualUser: actual, randomPassword: randomPassword}
+		p.declared(rankUser, name, KindUser, actual != nil, changes, entry, op)
+		if randomPassword {
+			op.change.Message = "created without a password; signs in through its linked identity"
+		}
 	}
 	return nil
 }
@@ -449,6 +481,101 @@ func (p *planner) userChanges(view *apipb.User, actual *store.User, sendPassword
 	return changes
 }
 
+// planLinkedIdentities plans the identity links of declared users. The user is
+// declared, so the schema layer already guarantees planUsers saw it; the
+// provider must exist after apply; and a subject already linked to another
+// user is never taken over, since the plan cannot know which binding is right.
+func (p *planner) planLinkedIdentities() error {
+	for _, declared := range sortedByName(p.desired.Configuration.LinkedIdentities, (*apipb.LinkedIdentity).GetName) {
+		name := declared.Name
+		userName, providerName := splitLinkedIdentityName(name)
+		username := strings.TrimPrefix(userName, coreuser.NamePrefix)
+		uid := strings.TrimPrefix(providerName, identityprovider.NamePrefix)
+		if !p.providersAfter[uid] {
+			p.fail(name, "names %s, which would not exist after apply", providerName)
+			continue
+		}
+		user := p.declaredUsers[username]
+		holders, err := p.reader.ListUserIdentities(p.ctx, &store.FindUserIdentity{Provider: &uid, ExternUID: &declared.ExternalUid})
+		if err != nil {
+			return errors.Wrapf(err, "failed to read the identity links of %s", providerName)
+		}
+		if len(holders) > 0 && (user == nil || holders[0].UserID != user.ID) {
+			holder, err := p.userName(holders[0].UserID)
+			if err != nil {
+				return err
+			}
+			p.fail(name, "the %s subject is already linked to %s; unlink it there first", providerName, holder)
+			continue
+		}
+
+		var actual *store.UserIdentity
+		if user != nil {
+			links, err := p.reader.ListUserIdentities(p.ctx, &store.FindUserIdentity{UserID: &user.ID, Provider: &uid})
+			if err != nil {
+				return errors.Wrapf(err, "failed to read the identity links of %s", userName)
+			}
+			if len(links) > 0 {
+				actual = links[0]
+			}
+		}
+		desiredAPI := &apipb.LinkedIdentity{Name: name, ExternalUid: declared.ExternalUid}
+		var actualAPI proto.Message
+		if actual != nil {
+			actualAPI = &apipb.LinkedIdentity{Name: name, ExternalUid: actual.ExternUID}
+		}
+		changes := diffResource(actualAPI, desiredAPI, nil)
+		entry := &storepb.InstanceConfigurationState_ManagedResource{
+			ManagedFields: []string{"*"},
+			Digest:        digest(desiredAPI, p.lifecycle[name]),
+			References:    []string{providerName},
+		}
+		op := &operation{
+			identity:         &store.UserIdentity{Provider: uid, ExternUID: declared.ExternalUid},
+			identityUsername: username,
+			actualIdentity:   actual,
+			actualUser:       user,
+		}
+		p.declared(rankLinkedIdentity, name, KindLinkedIdentity, actual != nil, changes, entry, op)
+	}
+	return nil
+}
+
+// userName returns the resource name of the stored user with id.
+func (p *planner) userName(id int32) (string, error) {
+	users, err := p.reader.ListUsers(p.ctx, &store.FindUser{ID: &id})
+	if err != nil {
+		return "", errors.Wrap(err, "failed to read user")
+	}
+	if len(users) == 0 {
+		return "a deleted user", nil
+	}
+	return coreuser.NamePrefix + users[0].Username, nil
+}
+
+// storedLinkedIdentity returns the identity link a managed linked identity
+// name describes, or nil when the user or the link is gone.
+func (p *planner) storedLinkedIdentity(name string) (*store.User, *store.UserIdentity, error) {
+	userName, providerName := splitLinkedIdentityName(name)
+	username := strings.TrimPrefix(userName, coreuser.NamePrefix)
+	uid := strings.TrimPrefix(providerName, identityprovider.NamePrefix)
+	users, err := p.reader.ListUsers(p.ctx, &store.FindUser{Username: &username})
+	if err != nil {
+		return nil, nil, errors.Wrap(err, "failed to read user")
+	}
+	if len(users) == 0 {
+		return nil, nil, nil
+	}
+	links, err := p.reader.ListUserIdentities(p.ctx, &store.FindUserIdentity{UserID: &users[0].ID, Provider: &uid})
+	if err != nil {
+		return nil, nil, errors.Wrapf(err, "failed to read the identity links of %s", userName)
+	}
+	if len(links) == 0 {
+		return users[0], nil, nil
+	}
+	return users[0], links[0], nil
+}
+
 // planUndeclared handles managed resources no file declares any longer: a
 // removed entry destroys, resets, or releases them; without one, removal was
 // not explicit and the plan fails.
@@ -466,7 +593,7 @@ func (p *planner) planUndeclared() error {
 		}
 		change := &apipb.ResourceChange{Resource: name}
 		op := &operation{change: change, kind: kind}
-		rank := map[Kind]int{KindIdentityProvider: rankIdentityProvider, KindInstanceSetting: rankInstanceSetting, KindUser: rankUser}[kind]
+		rank := map[Kind]int{KindIdentityProvider: rankIdentityProvider, KindInstanceSetting: rankInstanceSetting, KindUser: rankUser, KindLinkedIdentity: rankLinkedIdentity}[kind]
 		switch {
 		case removed == nil:
 			change.Action = apipb.ResourceChange_ERROR
@@ -491,6 +618,19 @@ func (p *planner) planUndeclared() error {
 				p.generalAfter = &storepb.InstanceGeneralSetting{}
 				p.generalPlanned = true
 			}
+		case kind == KindLinkedIdentity:
+			user, link, err := p.storedLinkedIdentity(name)
+			if err != nil {
+				return err
+			}
+			if link == nil {
+				change.Action = apipb.ResourceChange_RELEASE
+				change.Message = "already deleted outside the configuration"
+				break
+			}
+			change.Action = apipb.ResourceChange_DESTROY
+			rank = rankLinkedIdentityDestroy
+			op.actualUser, op.actualIdentity = user, link
 		default:
 			if !p.providersAfter[id] {
 				change.Action = apipb.ResourceChange_RELEASE

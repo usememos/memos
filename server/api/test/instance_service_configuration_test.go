@@ -180,3 +180,39 @@ func TestGetConfigurationStatus(t *testing.T) {
 	_, err = ts.Service.GetConfigurationStatus(ctx, &apipb.GetConfigurationStatusRequest{})
 	require.Equal(t, codes.Unauthenticated, status.Code(err))
 }
+
+func TestConfigurationGuardLinkedIdentity(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+	admin, err := ts.CreateHostUser(ctx, "admin")
+	require.NoError(t, err)
+	adminCtx := ts.CreateUserContext(ctx, admin.ID)
+	applyConfiguration(ctx, t, ts, map[string]string{
+		"idp.json":   `{"identityProviders":[` + managedProvider + `]}`,
+		"users.json": `{"users":[{"name":"users/admin","username":"admin","role":"ADMIN","password":"pw"}]}`,
+		"links.json": `{"linkedIdentities":[{"name":"users/admin/linkedIdentities/sso","externalUid":"subject-1"}]}`,
+	})
+
+	// The declared link exists and signs the subject in as the admin.
+	identities, err := ts.Service.ListLinkedIdentities(adminCtx, &apipb.ListLinkedIdentitiesRequest{Parent: "users/admin"})
+	require.NoError(t, err)
+	require.Len(t, identities.LinkedIdentities, 1)
+	require.Equal(t, "subject-1", identities.LinkedIdentities[0].ExternalUid)
+
+	// A managed link cannot be unlinked in Settings; the error names the file.
+	_, err = ts.Service.DeleteLinkedIdentity(adminCtx, &apipb.DeleteLinkedIdentityRequest{Name: "users/admin/linkedIdentities/sso"})
+	require.Equal(t, "links.json", requireManaged(t, err, "users/admin/linkedIdentities/sso")["source"])
+
+	// The provider a declared link names cannot be deleted while the link is
+	// declared, even once the provider itself is released.
+	applyConfiguration(ctx, t, ts, map[string]string{
+		"users.json": `{"users":[{"name":"users/admin","username":"admin","role":"ADMIN","password":"pw"}]}`,
+		"links.json": `{"linkedIdentities":[{"name":"users/admin/linkedIdentities/sso","externalUid":"subject-1"}]}`,
+		"idp.json":   `{"removed":[{"resource":"identity-providers/sso"}]}`,
+	})
+	_, err = ts.Service.DeleteIdentityProvider(adminCtx, &apipb.DeleteIdentityProviderRequest{Name: "identity-providers/sso"})
+	metadata := requireManaged(t, err, "identity-providers/sso")
+	require.Equal(t, "users/admin/linkedIdentities/sso", metadata["referenced_by"])
+	require.Equal(t, "links.json", metadata["source"])
+}

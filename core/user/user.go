@@ -3,15 +3,55 @@
 package user
 
 import (
+	"strings"
+
 	"github.com/pkg/errors"
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/usememos/memos/internal/identifier"
+	"github.com/usememos/memos/internal/random"
 	apipb "github.com/usememos/memos/proto/gen/api"
 	"github.com/usememos/memos/store"
 )
 
 // NamePrefix starts every user resource name.
 const NamePrefix = "users/"
+
+// linkedIdentitiesSegment separates the user from the identity provider in a
+// linked identity name.
+const linkedIdentitiesSegment = "/linkedIdentities/"
+
+// LinkedIdentityName is the resource name of the link between the user with
+// username and the identity provider with uid provider:
+// users/{user}/linkedIdentities/{idp}.
+func LinkedIdentityName(username, provider string) string {
+	return NamePrefix + username + linkedIdentitiesSegment + provider
+}
+
+// SplitLinkedIdentityName returns the username and identity provider uid a
+// linked identity name joins, and whether name has that shape. It does not
+// validate either part.
+func SplitLinkedIdentityName(name string) (username, provider string, ok bool) {
+	rest, ok := strings.CutPrefix(name, NamePrefix)
+	if !ok {
+		return "", "", false
+	}
+	return strings.Cut(rest, linkedIdentitiesSegment)
+}
+
+// RandomPasswordHash returns the hash of a password nobody knows, for an
+// account that signs in through an identity provider and never with a password.
+func RandomPasswordHash() (string, error) {
+	password, err := random.String(20)
+	if err != nil {
+		return "", errors.Wrap(err, "failed to generate a random password")
+	}
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", errors.Wrap(err, "failed to hash the password")
+	}
+	return string(hash), nil
+}
 
 // ValidateUsername reports whether username may be written as a new or
 // changed username.

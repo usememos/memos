@@ -166,6 +166,51 @@ func TestApplyRemovals(t *testing.T) {
 	require.Equal(t, []string{"👍"}, memoRelated.GetMemoRelatedSetting().GetReactions(), "a released setting is left as it is")
 }
 
+func TestApplyLinkedIdentities(t *testing.T) {
+	ctx := context.Background()
+	s := newTestStore(t)
+	files := func(subject string) map[string]string {
+		return map[string]string{"all.json": `{
+			"identityProviders":[` + validIDP + `],
+			"users":[{"name":"users/admin","username":"admin","role":"ADMIN"}],
+			"linkedIdentities":[{"name":"users/admin/linkedIdentities/sso","externalUid":"` + subject + `"}]}`}
+	}
+	linked := func() *store.UserIdentity {
+		username := "admin"
+		user, err := s.GetUser(ctx, &store.FindUser{Username: &username})
+		require.NoError(t, err)
+		require.NotNil(t, user)
+		identity, err := s.GetUserIdentity(ctx, &store.FindUserIdentity{UserID: &user.ID, Provider: new("sso")})
+		require.NoError(t, err)
+		return identity
+	}
+
+	// The user and its link are created in one apply; without a declared
+	// password the user gets one nobody knows, as SSO provisioning does.
+	plan, state := applyFor(t, loadDesired(t, files("subject-1")), s)
+	require.True(t, plan.Valid(), plan.Message.Errors)
+	require.Len(t, state.Resources, 3)
+	require.Equal(t, "subject-1", linked().ExternUID)
+	username := "admin"
+	admin, err := s.GetUser(ctx, &store.FindUser{Username: &username})
+	require.NoError(t, err)
+	require.NotEmpty(t, admin.PasswordHash)
+	require.Error(t, bcrypt.CompareHashAndPassword([]byte(admin.PasswordHash), []byte("")))
+
+	again, _ := applyFor(t, loadDesired(t, files("subject-1")), s)
+	require.False(t, again.HasChanges(), "a second apply changes nothing")
+
+	_, _ = applyFor(t, loadDesired(t, files("subject-2")), s)
+	require.Equal(t, "subject-2", linked().ExternUID, "a changed subject replaces the link")
+
+	_, state = applyFor(t, loadDesired(t, map[string]string{"all.json": `{
+		"identityProviders":[` + validIDP + `],
+		"users":[{"name":"users/admin","username":"admin","role":"ADMIN"}],
+		"removed":[{"resource":"users/admin/linkedIdentities/sso","destroy":true}]}`}), s)
+	require.Len(t, state.Resources, 2)
+	require.Nil(t, linked(), "a destroyed link is deleted")
+}
+
 func TestApplyFailureRollsBack(t *testing.T) {
 	ctx := context.Background()
 	s := newTestStore(t)

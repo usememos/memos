@@ -8,7 +8,7 @@ import type { IdentityProvider } from "./idp_service_pb";
 import { file_api_idp_service } from "./idp_service_pb";
 import type { InstanceSetting } from "./instance_service_pb";
 import { file_api_instance_service } from "./instance_service_pb";
-import type { User } from "./user_service_pb";
+import type { LinkedIdentity, User } from "./user_service_pb";
 import { file_api_user_service } from "./user_service_pb";
 import { file_google_api_field_behavior } from "../google/api/field_behavior_pb";
 import type { Message } from "@bufbuild/protobuf";
@@ -17,7 +17,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file api/configuration.proto.
  */
 export const file_api_configuration: GenFile = /*@__PURE__*/
-  fileDesc("ChdhcGkvY29uZmlndXJhdGlvbi5wcm90bxIJbWVtb3MuYXBpIoYCCg1Db25maWd1cmF0aW9uEjwKEmlkZW50aXR5X3Byb3ZpZGVycxgBIAMoCzIbLm1lbW9zLmFwaS5JZGVudGl0eVByb3ZpZGVyQgPgQQESOgoRaW5zdGFuY2Vfc2V0dGluZ3MYAiADKAsyGi5tZW1vcy5hcGkuSW5zdGFuY2VTZXR0aW5nQgPgQQESIwoFdXNlcnMYAyADKAsyDy5tZW1vcy5hcGkuVXNlckID4EEBEiwKCWxpZmVjeWNsZRgEIAMoCzIULm1lbW9zLmFwaS5MaWZlY3ljbGVCA+BBARIoCgdyZW1vdmVkGAUgAygLMhIubWVtb3MuYXBpLlJlbW92ZWRCA+BBASJ+CglMaWZlY3ljbGUSFQoIcmVzb3VyY2UYASABKAlCA+BBAhIbCg5pZ25vcmVfY2hhbmdlcxgCIAMoCUID4EEBEhwKD3ByZXZlbnRfZGVzdHJveRgDIAEoCEID4EEBEh8KEndyaXRlX29ubHlfdmVyc2lvbhgEIAEoBUID4EEBIjYKB1JlbW92ZWQSFQoIcmVzb3VyY2UYASABKAlCA+BBAhIUCgdkZXN0cm95GAIgASgIQgPgQQEiiwEKBFBsYW4SDgoGc2VyaWFsGAEgASgDEjMKEHJlc291cmNlX2NoYW5nZXMYAiADKAsyGS5tZW1vcy5hcGkuUmVzb3VyY2VDaGFuZ2USHAoUc3RhdGVfcmVjb3JkX2NoYW5nZXMYAyABKAgSDgoGZXJyb3JzGAQgAygJEhAKCHdhcm5pbmdzGAUgAygJIrMCCg5SZXNvdXJjZUNoYW5nZRIQCghyZXNvdXJjZRgBIAEoCRIOCgZzb3VyY2UYAiABKAkSMAoGYWN0aW9uGAMgASgOMiAubWVtb3MuYXBpLlJlc291cmNlQ2hhbmdlLkFjdGlvbhINCgVkcmlmdBgEIAEoCBItCg1maWVsZF9jaGFuZ2VzGAUgAygLMhYubWVtb3MuYXBpLkZpZWxkQ2hhbmdlEg8KB21lc3NhZ2UYBiABKAkifgoGQWN0aW9uEhYKEkFDVElPTl9VTlNQRUNJRklFRBAAEgoKBkNSRUFURRABEgkKBUFET1BUEAISCgoGVVBEQVRFEAMSCQoFTk9fT1AQBBILCgdERVNUUk9ZEAUSCQoFUkVTRVQQBhILCgdSRUxFQVNFEAcSCQoFRVJST1IQCCI6CgtGaWVsZENoYW5nZRIMCgRwYXRoGAEgASgJEg4KBmJlZm9yZRgCIAEoCRINCgVhZnRlchgDIAEoCUKRAQoNY29tLm1lbW9zLmFwaUISQ29uZmlndXJhdGlvblByb3RvUAFaJ2dpdGh1Yi5jb20vdXNlbWVtb3MvbWVtb3MvcHJvdG8vZ2VuL2FwaaICA01BWKoCCU1lbW9zLkFwacoCCU1lbW9zXEFwaeICFU1lbW9zXEFwaVxHUEJNZXRhZGF0YeoCCk1lbW9zOjpBcGliBnByb3RvMw", [file_api_idp_service, file_api_instance_service, file_api_user_service, file_google_api_field_behavior]);
+  fileDesc("ChdhcGkvY29uZmlndXJhdGlvbi5wcm90bxIJbWVtb3MuYXBpIsECCg1Db25maWd1cmF0aW9uEjwKEmlkZW50aXR5X3Byb3ZpZGVycxgBIAMoCzIbLm1lbW9zLmFwaS5JZGVudGl0eVByb3ZpZGVyQgPgQQESOgoRaW5zdGFuY2Vfc2V0dGluZ3MYAiADKAsyGi5tZW1vcy5hcGkuSW5zdGFuY2VTZXR0aW5nQgPgQQESIwoFdXNlcnMYAyADKAsyDy5tZW1vcy5hcGkuVXNlckID4EEBEjkKEWxpbmtlZF9pZGVudGl0aWVzGAYgAygLMhkubWVtb3MuYXBpLkxpbmtlZElkZW50aXR5QgPgQQESLAoJbGlmZWN5Y2xlGAQgAygLMhQubWVtb3MuYXBpLkxpZmVjeWNsZUID4EEBEigKB3JlbW92ZWQYBSADKAsyEi5tZW1vcy5hcGkuUmVtb3ZlZEID4EEBIn4KCUxpZmVjeWNsZRIVCghyZXNvdXJjZRgBIAEoCUID4EECEhsKDmlnbm9yZV9jaGFuZ2VzGAIgAygJQgPgQQESHAoPcHJldmVudF9kZXN0cm95GAMgASgIQgPgQQESHwoSd3JpdGVfb25seV92ZXJzaW9uGAQgASgFQgPgQQEiNgoHUmVtb3ZlZBIVCghyZXNvdXJjZRgBIAEoCUID4EECEhQKB2Rlc3Ryb3kYAiABKAhCA+BBASKLAQoEUGxhbhIOCgZzZXJpYWwYASABKAMSMwoQcmVzb3VyY2VfY2hhbmdlcxgCIAMoCzIZLm1lbW9zLmFwaS5SZXNvdXJjZUNoYW5nZRIcChRzdGF0ZV9yZWNvcmRfY2hhbmdlcxgDIAEoCBIOCgZlcnJvcnMYBCADKAkSEAoId2FybmluZ3MYBSADKAkiswIKDlJlc291cmNlQ2hhbmdlEhAKCHJlc291cmNlGAEgASgJEg4KBnNvdXJjZRgCIAEoCRIwCgZhY3Rpb24YAyABKA4yIC5tZW1vcy5hcGkuUmVzb3VyY2VDaGFuZ2UuQWN0aW9uEg0KBWRyaWZ0GAQgASgIEi0KDWZpZWxkX2NoYW5nZXMYBSADKAsyFi5tZW1vcy5hcGkuRmllbGRDaGFuZ2USDwoHbWVzc2FnZRgGIAEoCSJ+CgZBY3Rpb24SFgoSQUNUSU9OX1VOU1BFQ0lGSUVEEAASCgoGQ1JFQVRFEAESCQoFQURPUFQQAhIKCgZVUERBVEUQAxIJCgVOT19PUBAEEgsKB0RFU1RST1kQBRIJCgVSRVNFVBAGEgsKB1JFTEVBU0UQBxIJCgVFUlJPUhAIIjoKC0ZpZWxkQ2hhbmdlEgwKBHBhdGgYASABKAkSDgoGYmVmb3JlGAIgASgJEg0KBWFmdGVyGAMgASgJQpEBCg1jb20ubWVtb3MuYXBpQhJDb25maWd1cmF0aW9uUHJvdG9QAVonZ2l0aHViLmNvbS91c2VtZW1vcy9tZW1vcy9wcm90by9nZW4vYXBpogIDTUFYqgIJTWVtb3MuQXBpygIJTWVtb3NcQXBp4gIVTWVtb3NcQXBpXEdQQk1ldGFkYXRh6gIKTWVtb3M6OkFwaWIGcHJvdG8z", [file_api_idp_service, file_api_instance_service, file_api_user_service, file_google_api_field_behavior]);
 
 /**
  * Configuration is one declarative configuration document. Every file in the
@@ -49,6 +49,16 @@ export type Configuration = Message<"memos.api.Configuration"> & {
   users: User[];
 
   /**
+   * Optional. SSO identities of declared users, by resource name: which
+   * identity-provider subject signs in as which user. Only a user the
+   * configuration declares may have one. Intended for bootstrap administrators
+   * on instances where sign-in is through an identity provider.
+   *
+   * @generated from field: repeated memos.api.LinkedIdentity linked_identities = 6;
+   */
+  linkedIdentities: LinkedIdentity[];
+
+  /**
    * Optional. Lifecycle rules for declared resources.
    *
    * @generated from field: repeated memos.api.Lifecycle lifecycle = 4;
@@ -78,7 +88,8 @@ export const ConfigurationSchema: GenMessage<Configuration> = /*@__PURE__*/
 export type Lifecycle = Message<"memos.api.Lifecycle"> & {
   /**
    * Required. The resource name of a resource declared in the configuration.
-   * Format: identity-providers/{idp}, instance/settings/{setting}, or users/{user}
+   * Format: identity-providers/{idp}, instance/settings/{setting}, users/{user},
+   * or users/{user}/linkedIdentities/{linked_identity}
    *
    * @generated from field: string resource = 1;
    */
@@ -122,7 +133,8 @@ export const LifecycleSchema: GenMessage<Lifecycle> = /*@__PURE__*/
 export type Removed = Message<"memos.api.Removed"> & {
   /**
    * Required. The resource name of a resource the configuration manages.
-   * Format: identity-providers/{idp}, instance/settings/{setting}, or users/{user}
+   * Format: identity-providers/{idp}, instance/settings/{setting}, users/{user},
+   * or users/{user}/linkedIdentities/{linked_identity}
    *
    * @generated from field: string resource = 1;
    */
@@ -203,7 +215,8 @@ export const PlanSchema: GenMessage<Plan> = /*@__PURE__*/
 export type ResourceChange = Message<"memos.api.ResourceChange"> & {
   /**
    * The resource name.
-   * Format: identity-providers/{idp}, instance/settings/{setting}, or users/{user}
+   * Format: identity-providers/{idp}, instance/settings/{setting}, users/{user},
+   * or users/{user}/linkedIdentities/{linked_identity}
    *
    * @generated from field: string resource = 1;
    */

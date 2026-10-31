@@ -296,7 +296,7 @@ message InstanceConfigurationState {
   message ManagedResource {
     // name is the API resource name, such as identity-providers/company-sso.
     string name = 1;
-    // kind is IdentityProvider, InstanceSetting, or User.
+    // kind is IdentityProvider, InstanceSetting, User, or LinkedIdentity.
     string kind = 2;
     // source is the configuration file that declares the resource.
     string source = 3;

@@ -1151,8 +1151,10 @@ message LinkedIdentity {
     (google.api.resource_reference) = {type: "memos.api/IdentityProvider"}
   ];
 
-  // Output only. The external user identifier from the identity provider.
-  string external_uid = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The external user identifier from the identity provider: the subject that
+  // signs in as this user. Set by signing in through the provider, or declared
+  // in a configuration file for a declared user.
+  string external_uid = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // Request message for UserService.ListLinkedIdentities.

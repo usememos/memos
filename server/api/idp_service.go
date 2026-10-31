@@ -187,6 +187,9 @@ func (s *APIService) DeleteIdentityProvider(ctx context.Context, request *apipb.
 	if err := s.checkManagedExistence(ctx, identityprovider.NamePrefix+uid); err != nil {
 		return nil, err
 	}
+	if err := s.checkManagedReference(ctx, identityprovider.NamePrefix+uid); err != nil {
+		return nil, err
+	}
 	// Look up the IdP by UID to get the internal ID for deletion.
 	identityProvider, err := s.Store.GetIdentityProvider(ctx, &store.FindIdentityProvider{UID: &uid})
 	if err != nil {

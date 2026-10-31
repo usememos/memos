@@ -4,7 +4,7 @@ Status: Draft
 
 ## Summary
 
-Operators describe the identity providers, instance settings, and bootstrap users an instance should have in configuration files. Memos
+Operators describe the identity providers, instance settings, bootstrap users, and those users' SSO identities an instance should have in configuration files. Memos
 treats those files as the desired state, compares them with the actual state in the database, shows the difference as a plan, and applies
 the plan as one atomic database transaction. A state record remembers which resources the configuration manages, so Memos can detect
 drift, release or destroy resources that leave the configuration, and refuse API writes that would silently diverge from the files.
@@ -20,7 +20,7 @@ A declarative configuration system has five parts. Every decision below is a cho
 | Part | Memos |
 | --- | --- |
 | Desired state | JSON documents in a configuration directory, merged into one `memos.api.Configuration` |
-| Actual state | The `idp`, `system_setting`, and `user` tables, read through the store |
+| Actual state | The `idp`, `system_setting`, `user`, and `user_identity` tables, read through the store |
 | State record | One `CONFIGURATION_STATE` row in `system_setting`: a serial and the list of managed resources, never a value |
 | Plan | A deterministic list of per-resource actions computed from desired, actual, and state record, printable as text or JSON |
 | Apply | The plan executed inside one serializable transaction, followed by an update of the state record in the same transaction |
@@ -75,7 +75,7 @@ Failing one puts the resource in the UI and API.
 | `users/*/webhooks/*` | Later | Reproducible wiring for an automation user; content for anyone else |
 | `users/*/personalAccessTokens/*` | Later, with care | Bootstrapping an MCP client needs a token before anyone signs in; the value would be a write-only field the operator supplies |
 | `users/*/settings/*`, `users/*/views/*` | Never | Personal preferences |
-| `users/*/linkedIdentities/*` | Never | Created by signing in, not declared |
+| `users/*/linkedIdentities/*` | In, for declared users | A bootstrap administrator on an SSO-only instance needs a way in before the first sign-in; a declared subject trusts no claim the provider makes. Other users' links are created by signing in |
 | `users/*/notifications/*`, `users/*/stats`, `users/*/usage`, `spaces/*/invitations/*` | Never | Transient or computed |
 | `memos/*`, `attachments/*`, reactions, shares, comments | Never | Content |
 
@@ -169,6 +169,9 @@ message Configuration {
   repeated Lifecycle lifecycle = 4;
   // Resources to take out of management.
   repeated Removed removed = 5;
+  // SSO identities of declared users, by resource name: which identity-provider
+  // subject signs in as which user.
+  repeated LinkedIdentity linked_identities = 6;
 }
 
 // Lifecycle adjusts how one declared resource is planned. Mirrors Terraform's
@@ -233,6 +236,9 @@ Example `/etc/memos/config/instance.json`:
   ],
   "users": [
     { "name": "users/admin", "username": "admin", "role": "ADMIN", "password": "${file:/run/secrets/memos-admin-password}" }
+  ],
+  "linkedIdentities": [
+    { "name": "users/admin/linkedIdentities/company-sso", "externalUid": "${env:ADMIN_SSO_SUBJECT}" }
   ],
   "lifecycle": [
     { "resource": "users/admin", "preventDestroy": true, "writeOnlyVersion": 1 }
@@ -312,7 +318,7 @@ values exactly as to values written through the API, because both paths write th
 | `username` | managed, must equal the `{user}` segment |
 | `role` | managed |
 | `displayName`, `email` | optional: managed only when declared, otherwise left as the user set them |
-| `password` | write-only |
+| `password` | write-only; required to create the user unless a linked identity is declared for it |
 
 Users are included for one purpose: bringing up an instance without a browser. The user owns their profile, so the configuration manages
 only what it declares. Presence is taken from the JSON document, not from the decoded message, so `"displayName": ""` manages the field as
@@ -322,11 +328,37 @@ empty while omitting it leaves the field alone.
 protected by the API guard, so the administrator can change their own password in the UI. Apply sends it on create and whenever the
 resource's `lifecycle.writeOnlyVersion` is greater than the version recorded in the state record. Resending on every apply would undo a
 password change at every restart; resending only on an explicit version bump is the behavior Terraform standardized on for the same reason.
+A user with a declared linked identity signs in through its provider, so it may be created without a password: apply then gives it a
+random password nobody knows, exactly as the sign-in path provisions a new SSO user. Declaring a password later, with a version bump,
+sets one.
 
 Configuration never deletes a user. Deleting one deletes their memos and attachment files and must respect the spaces they belong to,
 which is the deletion flow in Settings, with its confirmations. A `removed` entry with `destroy: true` for a user is therefore a plan
 error; `destroy: false` releases the user, who can then be deleted in Settings. `preventDestroy` still guards a user's identity provider
 and settings, and is recommended for every declared user for the day that changes.
+
+### LinkedIdentity
+
+| Field | Class |
+| --- | --- |
+| `name` | identity, `users/{user}/linkedIdentities/{idp}`: the user and the identity provider it links |
+| `externalUid` | managed: the provider's subject that signs in as the user |
+| `identityProvider` | output only; it repeats the name |
+
+A linked identity exists for one case: an administrator declared in the files, on an instance where sign-in is through an identity
+provider. Without it the first sign-in through the provider provisions a new account, because the sign-in path matches a provider and
+subject and nothing else. Matching on an email or a username claim instead was rejected: a provider's email claim is not proof of
+ownership on this instance, the OAuth2 mapping has no verified-email claim, and a provider username is chosen by whoever signs up there.
+A declared subject trusts no claim: the operator reads it once from the provider and writes it down, and the sign-in path is unchanged.
+
+The user must be declared in the same configuration. The declaration is what makes the binding trustworthy, so a link for an undeclared
+user is a schema error, and a link stays managed only while its user is. One subject signs in as one user, so a subject declared twice is
+a schema error, and plan fails when the subject is already linked to a different user rather than taking it over. The provider must exist
+after apply, declared or stored. A link the user made by signing in with the declared subject is adopted; a different stored subject for
+that provider is replaced, since the user has one link per provider.
+
+Destroy deletes the link; the user keeps the account and can sign in with the password, or link again by signing in through the provider
+once the link is released. `ignoreChanges` does not apply, since `externalUid` is the whole resource.
 
 ## State record
 
@@ -452,14 +484,15 @@ is hidden.
 ### Ordering and dependencies
 
 Actions are ordered so every intermediate state is valid even though apply is atomic (the order matters for the plan text and for the
-invariant check): identity provider creates and updates, then instance setting updates and resets, then user creates and updates, then
-identity provider destroys. Within a group, resource names sort lexically.
+invariant check): identity provider creates and updates, then instance setting updates and resets, then user creates and updates, then linked identity
+creates, updates, and destroys, then identity provider destroys. Within a group, resource names sort lexically.
 
 ### Validation
 
 Validation runs in three layers, and the first two are the same code the API uses:
 
-1. Schema: strict decoding, substitution, resource name format, the `oneof` matching the setting key, `username` matching `{user}`.
+1. Schema: strict decoding, substitution, resource name format, the `oneof` matching the setting key, `username` matching `{user}`, a
+   linked identity's user declared and its subject declared once.
 2. Resource: the per-resource rules the API applies on create and update, called from one shared package per resource under `core/`
    (S3 credentials present for an S3 storage, SMTP host and sender present when email is enabled, AI providers have IDs and keys,
    `ACCESS` mode is explicit, week start offset in range, `defaultStorageId` names a declared storage, storage IDs unique and non-empty,
@@ -469,10 +502,10 @@ Validation runs in three layers, and the first two are the same code the API use
    does not re-check a storage it leaves unchanged, so a storage stored before a rule existed does not block editing the others; a
    declared file has no such exemption, since it states the whole value. An OAuth2 provider needs a client ID, absolute HTTP(S)
    endpoints, and an identifier mapping; a client secret and scopes stay optional because public clients have neither.
-3. Cross-resource: rules that hold over the whole desired state. The one such rule today is the authentication invariant: when the
-   effective `GENERAL` setting disables password sign-in for regular users, at least one identity provider must exist after apply. It is
-   checked against the planned end state, so a plan that both deletes the last provider and leaves password sign-in disabled fails before
-   anything is written.
+3. Cross-resource: rules that hold over the whole desired state. The authentication invariant: when the effective `GENERAL` setting
+   disables password sign-in for regular users, at least one identity provider must exist after apply. It is checked against the planned
+   end state, so a plan that both deletes the last provider and leaves password sign-in disabled fails before anything is written. And a
+   linked identity's provider must exist after apply, and its subject must not be linked to another user.
 
 `memos config validate` runs layer 1 and 2 without a database. `memos config plan` runs all three. Without a database, the users a
 `USAGE_LIMITS` setting names get stand-in IDs for layer 2, since its rules depend only on the list's shape; whether those users exist is
@@ -557,16 +590,17 @@ metadata: resource = identity-providers/company-sso
 ```
 
 The guard is a rule in `core/configuration` applied by `CreateIdentityProvider`, `UpdateIdentityProvider`, `DeleteIdentityProvider`,
-`UpdateInstanceSetting`, `UpdateUser`, and `DeleteUser`. It makes three checks, each refused with the same error:
+`UpdateInstanceSetting`, `UpdateUser`, `DeleteUser`, `CreateLinkedIdentity`, and `DeleteLinkedIdentity`. It makes three checks, each
+refused with the same error:
 
 - **Change.** `UpdateIdentityProvider`, `UpdateInstanceSetting`, and `UpdateUser` compare the request against the stored resource and
   refuse only when a managed field would change.
-- **Existence.** `CreateIdentityProvider` refuses a name the configuration manages, so the resource cannot exist twice;
-  `DeleteIdentityProvider` and `DeleteUser` refuse to delete a managed resource.
+- **Existence.** `CreateIdentityProvider` and `CreateLinkedIdentity` refuse a name the configuration manages, so the resource cannot
+  exist twice; `DeleteIdentityProvider`, `DeleteUser`, and `DeleteLinkedIdentity` refuse to delete a managed resource.
 - **Reference.** `UpdateUser` refuses a username change and `DeleteUser` a deletion when a managed resource names the user, such as a
-  managed usage-limits setting listing it, though the user is not itself managed: the next plan could not resolve the name, and a
-  startup apply would stop the server. The error names the user, the referring resource in `metadata.referenced_by`, and its file; the
-  operator removes the name there and applies first.
+  managed usage-limits setting listing it, though the user is not itself managed; `DeleteIdentityProvider` refuses a provider a managed
+  linked identity names. The next plan could not resolve the name, and a startup apply would stop the server. The error names the
+  resource, the referring resource in `metadata.referenced_by`, and its file; the operator removes the name there and applies first.
 
 Consequences:
 
@@ -626,7 +660,8 @@ The web app reads the status once per session, and only for administrators. Ever
 - Disables the controls for managed fields, each by the JSON-name path it edits, so an ignored path stays editable. Storage locks its
   registry, default storage, and S3 fields together because the page edits them as one value; usage limits lock as one ordered list.
 - Hides Delete for a managed identity provider or user, and disables Edit for a managed provider. In the user dialog the username and role
-  of a managed user are disabled; the password stays editable because it is write-only.
+  of a managed user are disabled; the password stays editable because it is write-only. The linked identities of the account hide Unlink
+  for a declared link.
 
 An administrator-only Configuration section lists the managed resources, their files and managed fields, and the serial and last apply.
 A write refused anyway, from a second tab or a stale page, shows the server's message, which names the file. The labels and disabled
@@ -693,7 +728,7 @@ conditional setting writes.
 | `core/configuration/` | Reading and substituting files, decoding, the plan engine, the digest, the API guard rule |
 | `core/identityprovider/`, `core/instancesetting/`, `core/user/` | Per-resource validation shared by the API and the plan engine; API↔store conversion for identity providers and instance settings, since files are API messages and `core` cannot import `server/api` |
 | `store/configuration_state.go`, `store/transaction.go` | State record read and write; the serializable transaction helper with retries |
-| `server/api/instance_service_configuration.go` | `GetConfigurationStatus`; the guard the six mutating handlers call |
+| `server/api/instance_service_configuration.go` | `GetConfigurationStatus`; the guard the mutating handlers call |
 | `cmd/memos/config.go` | The `memos config` subcommands |
 | `web/src/` | The managed label, disabled controls, and error presentation |
 

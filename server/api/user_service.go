@@ -3,7 +3,6 @@ package api
 import (
 	"context"
 	stderrors "errors"
-	"fmt"
 	"log/slog"
 	"regexp"
 	"slices"
@@ -644,9 +643,15 @@ func (s *APIService) resolveUserAndLinkedIdentityProviderFromName(ctx context.Co
 	return user, parts[3], nil
 }
 
+// linkedIdentityName is the resource name of user's link to the identity
+// provider with uid provider: users/{user}/linkedIdentities/{idp}.
+func linkedIdentityName(user *store.User, provider string) string {
+	return coreuser.LinkedIdentityName(user.Username, provider)
+}
+
 func convertLinkedIdentityFromStore(user *store.User, identity *store.UserIdentity) *apipb.LinkedIdentity {
 	return &apipb.LinkedIdentity{
-		Name:             fmt.Sprintf("%s/linkedIdentities/%s", BuildUserName(user.Username), identity.Provider),
+		Name:             linkedIdentityName(user, identity.Provider),
 		IdentityProvider: IdentityProviderNamePrefix + identity.Provider,
 		ExternalUid:      identity.ExternUID,
 	}

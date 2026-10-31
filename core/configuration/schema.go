@@ -23,6 +23,7 @@ const (
 	KindIdentityProvider Kind = "IdentityProvider"
 	KindInstanceSetting  Kind = "InstanceSetting"
 	KindUser             Kind = "User"
+	KindLinkedIdentity   Kind = "LinkedIdentity"
 )
 
 // ConfigurableInstanceSettingKeys are the instance setting keys a file may declare.
@@ -32,7 +33,9 @@ var ConfigurableInstanceSettingKeys = []string{"ACCESS", "GENERAL", "STORAGE", "
 // to the user.
 var userFields = []protoreflect.Name{"name", "username", "display_name", "email", "password", "role"}
 
-// ParseResourceName returns the kind and identifier of a configurable resource name.
+// ParseResourceName returns the kind and identifier of a configurable resource
+// name. A linked identity's identifier is {user}/{idp}; splitLinkedIdentityName
+// returns the two parts.
 func ParseResourceName(name string) (Kind, string, error) {
 	switch {
 	case strings.HasPrefix(name, identityprovider.NamePrefix):
@@ -56,14 +59,27 @@ func ParseResourceName(name string) (Kind, string, error) {
 			return "", "", errors.Errorf("unknown instance setting %q", name)
 		}
 	case strings.HasPrefix(name, coreuser.NamePrefix):
+		if username, uid, ok := coreuser.SplitLinkedIdentityName(name); ok {
+			if coreuser.ValidateUsername(username) != nil || !identifier.UIDMatcher.MatchString(uid) {
+				return "", "", errors.Errorf("invalid linked identity name %q", name)
+			}
+			return KindLinkedIdentity, username + "/" + uid, nil
+		}
 		username := strings.TrimPrefix(name, coreuser.NamePrefix)
 		if err := coreuser.ValidateUsername(username); err != nil {
 			return "", "", errors.Errorf("invalid user name %q", name)
 		}
 		return KindUser, username, nil
 	default:
-		return "", "", errors.Errorf("%q is not an identity provider, instance setting, or user name", name)
+		return "", "", errors.Errorf("%q is not an identity provider, instance setting, user, or linked identity name", name)
 	}
+}
+
+// splitLinkedIdentityName returns the user and identity provider names a
+// linked identity name joins. The name must have parsed as KindLinkedIdentity.
+func splitLinkedIdentityName(name string) (userName, providerName string) {
+	username, uid, _ := coreuser.SplitLinkedIdentityName(name)
+	return coreuser.NamePrefix + username, identityprovider.NamePrefix + uid
 }
 
 // checkDocument checks the rules one file must meet on its own.
@@ -128,6 +144,14 @@ func checkDocument(document *apipb.Configuration) []string {
 		})
 	}
 
+	for i, identity := range document.LinkedIdentities {
+		path := fmt.Sprintf("linkedIdentities[%d]", i)
+		checkName(path, identity.GetName(), KindLinkedIdentity)
+		if identity.GetExternalUid() == "" {
+			report("%s.externalUid is required", path)
+		}
+	}
+
 	for i, lifecycle := range document.Lifecycle {
 		path := fmt.Sprintf("lifecycle[%d]", i)
 		if lifecycle.GetResource() == "" {
@@ -144,6 +168,10 @@ func checkDocument(document *apipb.Configuration) []string {
 		}
 		if lifecycle.GetWriteOnlyVersion() != 0 && kind != KindUser {
 			report("%s.writeOnlyVersion applies only to users", path)
+		}
+		if len(lifecycle.GetIgnoreChanges()) > 0 && kind == KindLinkedIdentity {
+			report("%s.ignoreChanges does not apply to linked identities; externalUid is the whole resource", path)
+			continue
 		}
 		for j, fieldPath := range lifecycle.GetIgnoreChanges() {
 			if err := checkFieldPath(kindDescriptor(kind), fieldPath); err != nil {
@@ -171,6 +199,8 @@ func kindDescriptor(kind Kind) protoreflect.MessageDescriptor {
 		return (&apipb.IdentityProvider{}).ProtoReflect().Descriptor()
 	case KindInstanceSetting:
 		return (&apipb.InstanceSetting{}).ProtoReflect().Descriptor()
+	case KindLinkedIdentity:
+		return (&apipb.LinkedIdentity{}).ProtoReflect().Descriptor()
 	default:
 		return (&apipb.User{}).ProtoReflect().Descriptor()
 	}
@@ -204,7 +234,8 @@ func checkFieldPath(descriptor protoreflect.MessageDescriptor, path string) erro
 
 // merger combines files into one desired state and checks the rules that span
 // files: one declaration per resource, lifecycle rules for declared resources,
-// and removals of resources no file still declares.
+// removals of resources no file still declares, and linked identities whose
+// user is declared and whose subject is declared once.
 type merger struct {
 	desired          *Desired
 	problems         []string
@@ -242,6 +273,11 @@ func (m *merger) add(file string, document *apipb.Configuration, userFields map[
 			m.desired.UserFields[user.GetName()] = userFields[i]
 		}
 	}
+	for _, identity := range document.LinkedIdentities {
+		if claim(m.desired.Sources, identity.GetName(), "resource") {
+			config.LinkedIdentities = append(config.LinkedIdentities, identity)
+		}
+	}
 	for _, lifecycle := range document.Lifecycle {
 		if claim(m.lifecycleSources, lifecycle.GetResource(), "a lifecycle rule") {
 			config.Lifecycle = append(config.Lifecycle, lifecycle)
@@ -266,5 +302,24 @@ func (m *merger) checkReferences() {
 			m.problems = append(m.problems, fmt.Sprintf("%s: %s is removed but still declared in %s",
 				m.removedSources[removed.GetResource()], removed.GetResource(), declaredIn))
 		}
+	}
+	// A linked identity binds a subject to a declared user: the declaration is
+	// what makes the binding trustworthy, so an undeclared user cannot have one.
+	// A subject signs in as one user, so it is declared at most once.
+	subjects := map[string]string{}
+	for _, identity := range m.desired.Configuration.LinkedIdentities {
+		name := identity.GetName()
+		userName, providerName := splitLinkedIdentityName(name)
+		if _, ok := m.desired.Sources[userName]; !ok {
+			m.problems = append(m.problems, fmt.Sprintf("%s: %s is declared for %s, which no file declares; a linked identity needs a declared user",
+				m.desired.Sources[name], name, userName))
+		}
+		subject := providerName + " " + identity.GetExternalUid()
+		if previous, ok := subjects[subject]; ok {
+			m.problems = append(m.problems, fmt.Sprintf("%s: %s declares the same %s subject as %s",
+				m.desired.Sources[name], name, providerName, previous))
+			continue
+		}
+		subjects[subject] = name
 	}
 }

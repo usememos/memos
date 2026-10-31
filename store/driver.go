@@ -133,4 +133,8 @@ type Driver interface {
 	CreateUserWithIdentity(ctx context.Context, createUser *User, createIdentity *UserIdentity) (*User, error)
 	ListUserIdentities(ctx context.Context, find *FindUserIdentity) ([]*UserIdentity, error)
 	DeleteUserIdentities(ctx context.Context, delete *DeleteUserIdentity) error
+	// The identity link methods within tx.
+	CreateUserIdentityTx(ctx context.Context, tx *sql.Tx, create *UserIdentity) (*UserIdentity, error)
+	ListUserIdentitiesTx(ctx context.Context, tx *sql.Tx, find *FindUserIdentity) ([]*UserIdentity, error)
+	DeleteUserIdentitiesTx(ctx context.Context, tx *sql.Tx, delete *DeleteUserIdentity) error
 }

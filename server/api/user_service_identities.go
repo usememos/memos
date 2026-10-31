@@ -60,6 +60,9 @@ func (s *APIService) CreateLinkedIdentity(ctx context.Context, request *apipb.Cr
 	provider := identityProvider.Uid
 	externUID := userInfo.Identifier
 
+	if err := s.checkManagedExistence(ctx, linkedIdentityName(user, provider)); err != nil {
+		return nil, err
+	}
 	if _, err := s.bindSSOIdentityToUser(ctx, currentUser, provider, externUID); err != nil {
 		return nil, err
 	}
@@ -123,6 +126,9 @@ func (s *APIService) DeleteLinkedIdentity(ctx context.Context, request *apipb.De
 	}
 	if existing == nil {
 		return nil, status.Errorf(codes.NotFound, "linked identity not found")
+	}
+	if err := s.checkManagedExistence(ctx, linkedIdentityName(user, provider)); err != nil {
+		return nil, err
 	}
 
 	if err := s.Store.DeleteUserIdentities(ctx, &store.DeleteUserIdentity{

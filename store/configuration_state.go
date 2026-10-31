@@ -184,6 +184,31 @@ func (t *ConfigurationTransaction) UpdateUser(ctx context.Context, update *Updat
 	return nil
 }
 
+// ListUserIdentities reads identity links within the transaction.
+func (t *ConfigurationTransaction) ListUserIdentities(ctx context.Context, find *FindUserIdentity) ([]*UserIdentity, error) {
+	return t.store.driver.ListUserIdentitiesTx(ctx, t.tx, find)
+}
+
+// CreateUserIdentity links an identity-provider subject to a user within the
+// transaction. A subject already linked elsewhere is ErrUserIdentityTaken.
+func (t *ConfigurationTransaction) CreateUserIdentity(ctx context.Context, create *UserIdentity) error {
+	if _, err := t.store.driver.CreateUserIdentityTx(ctx, t.tx, create); err != nil {
+		if uniqueErr := classifyUserUniqueViolation(err); uniqueErr != nil {
+			return uniqueErr
+		}
+		return errors.Wrapf(err, "failed to link the %s identity of user %d", create.Provider, create.UserID)
+	}
+	return nil
+}
+
+// DeleteUserIdentities removes identity links within the transaction.
+func (t *ConfigurationTransaction) DeleteUserIdentities(ctx context.Context, delete *DeleteUserIdentity) error {
+	if err := t.store.driver.DeleteUserIdentitiesTx(ctx, t.tx, delete); err != nil {
+		return errors.Wrap(err, "failed to delete identity links")
+	}
+	return nil
+}
+
 // afterCommit drops what the committed writes made stale. A new password ends
 // every session of that user, as an administrator's password reset does.
 func (t *ConfigurationTransaction) afterCommit(ctx context.Context) {

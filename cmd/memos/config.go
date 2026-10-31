@@ -169,8 +169,8 @@ func runConfigValidate(dir string, resolver configuration.Resolver, stdout, stde
 		return err
 	}
 	config := desired.Configuration
-	fmt.Fprintf(stdout, "Configuration in %s is valid: %d identity providers, %d instance settings, %d users.\n",
-		dir, len(config.IdentityProviders), len(config.InstanceSettings), len(config.Users))
+	fmt.Fprintf(stdout, "Configuration in %s is valid: %d identity providers, %d instance settings, %d users, %d linked identities.\n",
+		dir, len(config.IdentityProviders), len(config.InstanceSettings), len(config.Users), len(config.LinkedIdentities))
 	return nil
 }
 

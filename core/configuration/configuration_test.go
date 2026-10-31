@@ -211,7 +211,14 @@ func TestLoadChecksSchema(t *testing.T) {
 		"path through list":  {`{"identityProviders":[{"name":"identity-providers/sso"}],"lifecycle":[{"resource":"identity-providers/sso","ignoreChanges":["config.oauth2Config.scopes.x"]}]}`, "is not a message field"},
 		"removed bad name":   {`{"removed":[{"resource":"memos/123"}]}`, "removed[0].resource"},
 		"lifecycle dangling": {`{"lifecycle":[{"resource":"users/admin"}]}`, "names users/admin, which no file declares"},
-		"removed declared":   {`{"users":[{"name":"users/admin","username":"admin","role":"ADMIN"}],"removed":[{"resource":"users/admin"}]}`, "is removed but still declared"},
+		"identity no uid":    {`{"linkedIdentities":[{"name":"users/admin/linkedIdentities/sso"}]}`, "linkedIdentities[0].externalUid is required"},
+		"identity bad name":  {`{"linkedIdentities":[{"name":"users/admin/linkedIdentities/-sso","externalUid":"s"}]}`, "invalid linked identity name"},
+		"identity provider":  {`{"linkedIdentities":[{"name":"users/admin/linkedIdentities/sso","externalUid":"s","identityProvider":"identity-providers/sso"}]}`, "linkedIdentities[0].identityProvider is output only"},
+		"identity no user":   {`{"linkedIdentities":[{"name":"users/admin/linkedIdentities/sso","externalUid":"s"}]}`, "users/admin/linkedIdentities/sso is declared for users/admin, which no file declares"},
+		"identity ignore":    {`{"users":[{"name":"users/admin","username":"admin","role":"ADMIN"}],"linkedIdentities":[{"name":"users/admin/linkedIdentities/sso","externalUid":"s"}],"lifecycle":[{"resource":"users/admin/linkedIdentities/sso","ignoreChanges":["externalUid"]}]}`, "ignoreChanges does not apply to linked identities"},
+		"identity twice": {`{"users":[{"name":"users/admin","username":"admin","role":"ADMIN"},{"name":"users/root","username":"root","role":"ADMIN"}],
+			"linkedIdentities":[{"name":"users/admin/linkedIdentities/sso","externalUid":"s"},{"name":"users/root/linkedIdentities/sso","externalUid":"s"}]}`, "users/root/linkedIdentities/sso declares the same identity-providers/sso subject as users/admin/linkedIdentities/sso"},
+		"removed declared": {`{"users":[{"name":"users/admin","username":"admin","role":"ADMIN"}],"removed":[{"resource":"users/admin"}]}`, "is removed but still declared"},
 	}
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {

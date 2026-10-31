@@ -1837,7 +1837,7 @@ type InstanceConfigurationState_ManagedResource struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// name is the API resource name, such as identity-providers/company-sso.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// kind is IdentityProvider, InstanceSetting, or User.
+	// kind is IdentityProvider, InstanceSetting, User, or LinkedIdentity.
 	Kind string `protobuf:"bytes,2,opt,name=kind,proto3" json:"kind,omitempty"`
 	// source is the configuration file that declares the resource.
 	Source string `protobuf:"bytes,3,opt,name=source,proto3" json:"source,omitempty"`

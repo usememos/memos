@@ -4280,9 +4280,11 @@ components:
                         Output only. The resource name of the identity provider.
                          Format: identity-providers/{idp}
                 externalUid:
-                    readOnly: true
                     type: string
-                    description: Output only. The external user identifier from the identity provider.
+                    description: |-
+                        The external user identifier from the identity provider: the subject that
+                         signs in as this user. Set by signing in through the provider, or declared
+                         in a configuration file for a declared user.
             description: LinkedIdentity is an SSO identity linked to a user account.
         ListAttachmentsResponse:
             type: object

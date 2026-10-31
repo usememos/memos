@@ -21,10 +21,11 @@ import (
 
 // fakeReader is an in-memory instance for planning.
 type fakeReader struct {
-	state     *storepb.InstanceConfigurationState
-	providers []*storepb.IdentityProvider
-	settings  map[storepb.InstanceSettingKey]*storepb.InstanceSetting
-	users     []*store.User
+	state      *storepb.InstanceConfigurationState
+	providers  []*storepb.IdentityProvider
+	settings   map[storepb.InstanceSettingKey]*storepb.InstanceSetting
+	users      []*store.User
+	identities []*store.UserIdentity
 }
 
 func newFakeReader() *fakeReader {
@@ -54,12 +55,27 @@ func (f *fakeReader) GetUncachedInstanceSetting(_ context.Context, find *store.F
 func (f *fakeReader) ListUsers(_ context.Context, find *store.FindUser) ([]*store.User, error) {
 	result := []*store.User{}
 	for _, user := range f.users {
-		if find.Username != nil && user.Username != *find.Username ||
+		if find.ID != nil && user.ID != *find.ID ||
+			find.Username != nil && user.Username != *find.Username ||
 			len(find.UsernameList) > 0 && !slices.Contains(find.UsernameList, user.Username) ||
 			len(find.IDList) > 0 && !slices.Contains(find.IDList, user.ID) {
 			continue
 		}
 		copied := *user
+		result = append(result, &copied)
+	}
+	return result, nil
+}
+
+func (f *fakeReader) ListUserIdentities(_ context.Context, find *store.FindUserIdentity) ([]*store.UserIdentity, error) {
+	result := []*store.UserIdentity{}
+	for _, identity := range f.identities {
+		if find.UserID != nil && identity.UserID != *find.UserID ||
+			find.Provider != nil && identity.Provider != *find.Provider ||
+			find.ExternUID != nil && identity.ExternUID != *find.ExternUID {
+			continue
+		}
+		copied := *identity
 		result = append(result, &copied)
 	}
 	return result, nil
@@ -286,6 +302,72 @@ func TestPlanOrdersActions(t *testing.T) {
 	require.Equal(t, []string{"identity-providers/sso", "instance/settings/ACCESS", "users/admin", "identity-providers/old"}, order)
 }
 
+func TestPlanLinkedIdentities(t *testing.T) {
+	admin := func(identity string) map[string]string {
+		return map[string]string{"all.json": `{
+			"identityProviders":[` + validIDP + `],
+			"users":[{"name":"users/admin","username":"admin","role":"ADMIN","password":"pw"}],
+			"linkedIdentities":[` + identity + `]}`}
+	}
+	declared := admin(`{"name":"users/admin/linkedIdentities/sso","externalUid":"subject-1"}`)
+
+	// Everything new: the link is created after its user, and it names its provider.
+	reader := newFakeReader()
+	result := planFor(t, loadDesired(t, declared), reader)
+	require.True(t, result.Valid(), result.Message.Errors)
+	link := changeFor(t, result, "users/admin/linkedIdentities/sso")
+	require.Equal(t, apipb.ResourceChange_CREATE, link.Action)
+	require.Equal(t, []*apipb.FieldChange{{Path: "externalUid", After: `"subject-1"`}}, link.FieldChanges)
+	order := []string{}
+	for _, change := range result.Message.ResourceChanges {
+		order = append(order, change.Resource)
+	}
+	require.Equal(t, []string{"identity-providers/sso", "users/admin", "users/admin/linkedIdentities/sso"}, order)
+	for _, resource := range result.next.Resources {
+		if resource.Name == "users/admin/linkedIdentities/sso" {
+			require.Equal(t, "LinkedIdentity", resource.Kind)
+			require.Equal(t, []string{"identity-providers/sso"}, resource.References)
+		}
+	}
+
+	// A link the user made by signing in is adopted; a different subject is replaced.
+	reader.users = []*store.User{{ID: 1, Username: "admin", Role: store.RoleAdmin}, {ID: 2, Username: "other"}}
+	reader.identities = []*store.UserIdentity{{ID: 1, UserID: 1, Provider: "sso", ExternUID: "subject-1"}}
+	require.Equal(t, apipb.ResourceChange_ADOPT, changeFor(t, planFor(t, loadDesired(t, declared), reader), "users/admin/linkedIdentities/sso").Action)
+	replaced := changeFor(t, planFor(t, loadDesired(t, admin(`{"name":"users/admin/linkedIdentities/sso","externalUid":"subject-2"}`)), reader), "users/admin/linkedIdentities/sso")
+	require.Equal(t, apipb.ResourceChange_ADOPT, replaced.Action)
+	require.Equal(t, []*apipb.FieldChange{{Path: "externalUid", Before: `"subject-1"`, After: `"subject-2"`}}, replaced.FieldChanges)
+
+	// A subject another user holds is never taken over.
+	reader.identities = []*store.UserIdentity{{ID: 1, UserID: 2, Provider: "sso", ExternUID: "subject-1"}}
+	taken := planFor(t, loadDesired(t, declared), reader)
+	require.False(t, taken.Valid())
+	require.Contains(t, strings.Join(taken.Message.Errors, "\n"), "the identity-providers/sso subject is already linked to users/other; unlink it there first")
+
+	// The provider must exist after apply, declared or stored.
+	reader.identities = nil
+	missing := planFor(t, loadDesired(t, admin(`{"name":"users/admin/linkedIdentities/elsewhere","externalUid":"subject-1"}`)), reader)
+	require.Contains(t, strings.Join(missing.Message.Errors, "\n"), "names identity-providers/elsewhere, which would not exist after apply")
+	reader.providers = []*storepb.IdentityProvider{{Id: 2, Uid: "elsewhere"}}
+	require.True(t, planFor(t, loadDesired(t, admin(`{"name":"users/admin/linkedIdentities/elsewhere","externalUid":"subject-1"}`)), reader).Valid())
+
+	// Undeclared: destroy deletes the stored link, or releases one already gone.
+	reader.identities = []*store.UserIdentity{{ID: 1, UserID: 1, Provider: "sso", ExternUID: "subject-1"}}
+	reader.state = &storepb.InstanceConfigurationState{Resources: []*storepb.InstanceConfigurationState_ManagedResource{
+		{Name: "users/admin/linkedIdentities/sso", Kind: "LinkedIdentity", ManagedFields: []string{"*"}},
+		{Name: "users/admin/linkedIdentities/gone", Kind: "LinkedIdentity", ManagedFields: []string{"*"}},
+		{Name: "users/admin/linkedIdentities/kept", Kind: "LinkedIdentity", ManagedFields: []string{"*"}},
+	}}
+	removed := planFor(t, loadDesired(t, map[string]string{"removed.json": `{"removed":[
+		{"resource":"users/admin/linkedIdentities/sso","destroy":true},
+		{"resource":"users/admin/linkedIdentities/gone","destroy":true},
+		{"resource":"users/admin/linkedIdentities/kept"}]}`}), reader)
+	require.True(t, removed.Valid(), removed.Message.Errors)
+	require.Equal(t, apipb.ResourceChange_DESTROY, changeFor(t, removed, "users/admin/linkedIdentities/sso").Action)
+	require.Equal(t, apipb.ResourceChange_RELEASE, changeFor(t, removed, "users/admin/linkedIdentities/gone").Action)
+	require.Equal(t, apipb.ResourceChange_RELEASE, changeFor(t, removed, "users/admin/linkedIdentities/kept").Action)
+}
+
 func TestPlanUsers(t *testing.T) {
 	reader := newFakeReader()
 	require.Contains(t, strings.Join(planFor(t, loadDesired(t, map[string]string{"u.json": `{"users":[{"name":"users/admin","username":"admin","role":"ADMIN"}]}`}), reader).Message.Errors, ""),
@@ -319,6 +401,16 @@ func TestPlanUsers(t *testing.T) {
 
 	noPassword := loadDesired(t, map[string]string{"u.json": `{"users":[{"name":"users/admin","username":"admin","role":"ADMIN"}],"lifecycle":[{"resource":"users/admin","writeOnlyVersion":2}]}`})
 	require.Contains(t, strings.Join(planFor(t, noPassword, reader).Message.Errors, ""), "no password is declared")
+
+	// A user with a declared linked identity needs no password to be created.
+	linked := planFor(t, loadDesired(t, map[string]string{"u.json": `{"identityProviders":[` + validIDP + `],
+		"users":[{"name":"users/sso-admin","username":"sso-admin","role":"ADMIN"}],
+		"linkedIdentities":[{"name":"users/sso-admin/linkedIdentities/sso","externalUid":"subject"}]}`}), newFakeReader())
+	require.True(t, linked.Valid(), linked.Message.Errors)
+	ssoAdmin := changeFor(t, linked, "users/sso-admin")
+	require.Equal(t, apipb.ResourceChange_CREATE, ssoAdmin.Action)
+	require.Equal(t, []*apipb.FieldChange{{Path: "username", After: `"sso-admin"`}, {Path: "role", After: "ADMIN"}}, ssoAdmin.FieldChanges)
+	require.Equal(t, "created without a password; signs in through its linked identity", ssoAdmin.Message)
 }
 
 func TestPlanAuthenticationInvariant(t *testing.T) {

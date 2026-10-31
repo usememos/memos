@@ -2996,7 +2996,9 @@ type LinkedIdentity struct {
 	// Output only. The resource name of the identity provider.
 	// Format: identity-providers/{idp}
 	IdentityProvider string `protobuf:"bytes,2,opt,name=identity_provider,json=identityProvider,proto3" json:"identity_provider,omitempty"`
-	// Output only. The external user identifier from the identity provider.
+	// The external user identifier from the identity provider: the subject that
+	// signs in as this user. Set by signing in through the provider, or declared
+	// in a configuration file for a declared user.
 	ExternalUid   string `protobuf:"bytes,3,opt,name=external_uid,json=externalUid,proto3" json:"external_uid,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -5345,7 +5347,7 @@ const file_api_user_service_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12O\n" +
 	"\x11identity_provider\x18\x02 \x01(\tB\"\xe0A\x03\xfaA\x1c\n" +
 	"\x1amemos.api/IdentityProviderR\x10identityProvider\x12&\n" +
-	"\fexternal_uid\x18\x03 \x01(\tB\x03\xe0A\x03R\vexternalUid:p\xeaAm\n" +
+	"\fexternal_uid\x18\x03 \x01(\tB\x03\xe0A\x01R\vexternalUid:p\xeaAm\n" +
 	"\x18memos.api/LinkedIdentity\x12/users/{user}/linkedIdentities/{linked_identity}*\x10linkedIdentities2\x0elinkedIdentity\"M\n" +
 	"\x1bListLinkedIdentitiesRequest\x12.\n" +
 	"\x06parent\x18\x01 \x01(\tB\x16\xe0A\x02\xfaA\x10\n" +

@@ -31,6 +31,9 @@
   "users": [
     { "name": "users/admin", "username": "admin", "role": "ADMIN", "password": "${file:/run/secrets/memos-admin-password}" }
   ],
+  "linkedIdentities": [
+    { "name": "users/admin/linkedIdentities/company-sso", "externalUid": "${env:ADMIN_SSO_SUBJECT}" }
+  ],
   "lifecycle": [
     { "resource": "users/admin", "preventDestroy": true, "writeOnlyVersion": 1 }
   ]

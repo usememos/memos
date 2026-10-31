@@ -6,12 +6,10 @@ import (
 	"regexp"
 
 	"github.com/pkg/errors"
-	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	coreuser "github.com/usememos/memos/core/user"
-	"github.com/usememos/memos/internal/random"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/provider/idp"
 	"github.com/usememos/memos/provider/idp/oauth2"
@@ -51,16 +49,12 @@ func (s *APIService) resolveSSOUser(ctx context.Context, currentUser *store.User
 		return nil, status.Errorf(codes.PermissionDenied, "user registration is not allowed")
 	}
 
-	password, err := random.String(20)
+	passwordHash, err := coreuser.RandomPasswordHash()
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to generate random password, error: %v", err)
-	}
-	passwordHash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to generate password hash, error: %v", err)
+		return nil, status.Errorf(codes.Internal, "%v", err)
 	}
 	email := s.resolveSSOEmail(ctx, userInfo.Email, provider, externUID)
-	user, err = s.createSSOUser(ctx, userInfo, email, string(passwordHash), provider, externUID)
+	user, err = s.createSSOUser(ctx, userInfo, email, passwordHash, provider, externUID)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create user, error: %v", err)
 	}
