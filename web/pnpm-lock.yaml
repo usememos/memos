@@ -27,8 +27,8 @@ importers:
         specifier: ^0.1.4
         version: 0.1.4(@types/leaflet@1.9.21)(leaflet@1.9.4)(maplibre-gl@6.8.0)
       '@pierre/highlights':
-        specifier: 0.2.0
-        version: 0.2.0
+        specifier: 0.3.0
+        version: 0.3.0
       '@tailwindcss/vite':
         specifier: ^4.2.4
         version: 4.2.4(vite@8.0.11(@types/node@24.12.2)(jiti@2.6.1))
@@ -84,8 +84,8 @@ importers:
         specifier: ^6.8.0
         version: 6.8.0
       pele:
-        specifier: 1.6.0
-        version: 1.6.0
+        specifier: 1.13.0
+        version: 1.13.0
       react:
         specifier: ^19.2.6
         version: 19.2.6
@@ -513,8 +513,8 @@ packages:
   '@oxc-project/types@0.128.0':
     resolution: {integrity: sha512-huv1Y/LzBJkBVHt3OlC7u0zHBW9qXf1FdD7sGmc1rXc2P1mTwHssYv7jyGx5KAACSCH+9B3Bhn6Z9luHRvf7pQ==}
 
-  '@pierre/highlights@0.2.0':
-    resolution: {integrity: sha512-hTpcOU1EzDAP4bYtEhxmMu2jwMvtkUydRUBUpWMSHTs3dw0IaC3Ld5ansMy18L0GE3b6Vfl2OGkLK+pWWpnBmw==}
+  '@pierre/highlights@0.3.0':
+    resolution: {integrity: sha512-s6xZ/giPPrSeCO2w254GiysUXD4ditKMTOrl1vHynvPqP7VdlujYi01O9joxJ0T16XkoXGQMN6zkRi9+O8NCzg==}
 
   '@react-leaflet/core@3.0.0':
     resolution: {integrity: sha512-3EWmekh4Nz+pGcr+xjf0KNyYfC3U2JjnkWsh0zcqaexYqmmB5ZhH37kz41JXGmKzpaMZCnPofBBm64i+YrEvGQ==}
@@ -1379,8 +1379,8 @@ packages:
     resolution: {integrity: sha512-mnvGdvOrIvJOBGUEdGkrVXjN8E/VkIJCkf2eS1DH2yv82ORUlLttmDt0rWY38yYZmVwciZwBUvHM20qxBZf40w==}
     hasBin: true
 
-  pele@1.6.0:
-    resolution: {integrity: sha512-VfAiVItsOGlGhvnBfphdT28VCG7mXMZxQNOwAGsCtxI2ztbUsT39MraEOYjsapLxVETkdUZscm0DdotYDQMLdw==}
+  pele@1.13.0:
+    resolution: {integrity: sha512-Ie8UKY9x00MsuR3jO6AzUwzK2Z6MIV3Tf4EDdITiuk8Uaz8K7g0R082WqsqNaSU8DdgkrRvZThzhit83mi/uiw==}
     engines: {node: '>=20'}
 
   picocolors@1.1.1:
@@ -2064,7 +2064,7 @@ snapshots:
 
   '@oxc-project/types@0.128.0': {}
 
-  '@pierre/highlights@0.2.0': {}
+  '@pierre/highlights@0.3.0': {}
 
   '@react-leaflet/core@3.0.0(leaflet@1.9.4)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
@@ -2730,7 +2730,7 @@ snapshots:
     dependencies:
       resolve-protobuf-schema: 2.1.0
 
-  pele@1.6.0: {}
+  pele@1.13.0: {}
 
   picocolors@1.1.1: {}
 
