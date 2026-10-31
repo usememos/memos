@@ -1,6 +1,6 @@
 # Declarative Configuration
 
-Status: Draft
+Status: Implemented
 
 ## Summary
 

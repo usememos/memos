@@ -1,6 +1,6 @@
 # Memo Attachment and Image Filters Design
 
-Status: Draft (implemented, not yet merged)
+Status: Implemented
 
 Date: 2026-10-22
 

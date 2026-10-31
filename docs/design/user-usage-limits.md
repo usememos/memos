@@ -1,6 +1,6 @@
 # User Usage Limits Design
 
-Status: Draft (merged, not yet released; revised 2026-10-14)
+Status: Implemented
 
 Date: 2026-10-11, revised 2026-10-14
 

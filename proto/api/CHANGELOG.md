@@ -25,7 +25,7 @@ instead, and update `core/configuration/testdata/compat/` in the same change. Af
 - `Memo.unassigned`: use an unset `Memo.space`. Removed in a later release.
 ```
 
-## Unreleased
+## 26.10.0
 
 ### Breaking
 
