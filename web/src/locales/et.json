@@ -570,7 +570,8 @@
       "restore-success": "{{username}} taastati edukalt",
       "summary-column": "Kokkuvõte",
       "user": "Kasutaja",
-      "no-members-found": "Ühtegi liiget ei leitud"
+      "no-members-found": "Ühtegi liiget ei leitud",
+      "export-memos": "Ekspordi märkmed"
     },
     "memo": {
       "add-reaction": "Lisa reaktsioon",
@@ -927,7 +928,9 @@
       "review-existing": "Juba teie kontol",
       "review-exported": "Eksporditud",
       "review-memos": "Memos failis",
-      "review-new": "Luuakse"
+      "review-new": "Luuakse",
+      "export-admin-only": "Märkmeid saavad eksportida ainult administraatorid. Küsi oma ekspordifaili administraatorilt.",
+      "export-busy": "Teine eksport on pooleli. Proovi hetke pärast uuesti."
     },
     "spaces": {
       "general": "Kindral",

@@ -489,7 +489,8 @@
       "active": "Aktiv",
       "archived": "Arkiverad",
       "member-column": "Medlem",
-      "summary-column": "Sammanfattning"
+      "summary-column": "Sammanfattning",
+      "export-memos": "Exportera anteckningar"
     },
     "memo": {
       "label": "Anteckning",
@@ -889,7 +890,9 @@
       "review-existing": "Redan i ditt konto",
       "review-exported": "Exporterad av",
       "review-memos": "Anteckningar i filen",
-      "review-new": "Kommer att skapas"
+      "review-new": "Kommer att skapas",
+      "export-admin-only": "Endast administratörer kan exportera anteckningar. Be en administratör om din exportfil.",
+      "export-busy": "En annan export pågår. Försök igen om en stund."
     },
     "spaces": {
       "general": "Allmänt",

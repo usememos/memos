@@ -643,7 +643,8 @@
       "restore-success": "{{username}} uğurla bərpa edildi",
       "summary-column": "Xülasə",
       "user": "İstifadəçi",
-      "no-members-found": "Üzv tapılmadı"
+      "no-members-found": "Üzv tapılmadı",
+      "export-memos": "Qeydləri ixrac et"
     },
     "memo": {
       "add-reaction": "Reaksiya əlavə et",
@@ -693,7 +694,9 @@
       "review-exported": "İxrac edən",
       "review-file": "Fayl",
       "review-memos": "Fayldakı qeydlər",
-      "review-new": "Yaradılacaq"
+      "review-new": "Yaradılacaq",
+      "export-admin-only": "Qeydləri yalnız administratorlar ixrac edə bilər. İxrac faylınız üçün administratora müraciət edin.",
+      "export-busy": "Başqa bir ixrac davam edir. Bir az sonra yenidən cəhd edin."
     },
     "my-account": {
       "label": "Hesabım"

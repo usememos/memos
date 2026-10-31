@@ -9,13 +9,14 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { getErrorMessage } from "@/lib/error";
-import { exportMemos, importStagedMemos, type StagedMemoImport, stageMemoImport } from "@/lib/memo-export";
+import { importStagedMemos, type StagedMemoImport, stageMemoImport } from "@/lib/memo-export";
 import type { ImportMemosIssue, ImportMemosReport } from "@/types/proto/api/user_service_pb";
-import { ImportMemosRequest_ConflictPolicy } from "@/types/proto/api/user_service_pb";
+import { ImportMemosRequest_ConflictPolicy, User_Role } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import SettingGroup from "./SettingGroup";
 import { SettingList, SettingListItem, StatRow } from "./SettingList";
 import SettingSection from "./SettingSection";
+import { useExportMemos } from "./useExportMemos";
 
 const POLICIES = [
   {
@@ -58,22 +59,10 @@ const MemoExportSection = () => {
   const t = useTranslate();
   const user = useCurrentUser();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [exporting, setExporting] = useState(false);
+  const { exportMemos, exporting } = useExportMemos();
   const [busy, setBusy] = useState(false);
   const [stage, setStage] = useState<ImportStage>({ kind: "idle" });
-
-  const handleExport = async () => {
-    if (!user) return;
-    setExporting(true);
-    try {
-      await exportMemos(user.name, user.username);
-      toast.success(t("setting.memo-export.export-success"));
-    } catch (error) {
-      toast.error(getErrorMessage(error, t("setting.memo-export.export-failed")));
-    } finally {
-      setExporting(false);
-    }
-  };
+  const isAdmin = user?.role === User_Role.ADMIN;
 
   const handleFileChosen = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -112,15 +101,20 @@ const MemoExportSection = () => {
 
   return (
     <SettingSection title={t("setting.memo-export.label")} description={t("setting.memo-export.description")}>
-      <SettingGroup title={t("setting.memo-export.export-title")} description={t("setting.memo-export.export-description")}>
-        <SettingList>
-          <SettingListItem label={t("setting.memo-export.export-label")} description={t("setting.memo-export.export-detail")}>
-            <Button variant="outline" size="sm" disabled={exporting} onClick={handleExport}>
-              <DownloadIcon className="w-4 h-4 mr-1.5" />
-              {exporting ? t("setting.memo-export.exporting") : t("setting.memo-export.export-action")}
-            </Button>
-          </SettingListItem>
-        </SettingList>
+      <SettingGroup
+        title={t("setting.memo-export.export-title")}
+        description={isAdmin ? t("setting.memo-export.export-description") : t("setting.memo-export.export-admin-only")}
+      >
+        {isAdmin && (
+          <SettingList>
+            <SettingListItem label={t("setting.memo-export.export-label")} description={t("setting.memo-export.export-detail")}>
+              <Button variant="outline" size="sm" disabled={exporting} onClick={() => exportMemos(user.username)}>
+                <DownloadIcon className="w-4 h-4 mr-1.5" />
+                {exporting ? t("setting.memo-export.exporting") : t("setting.memo-export.export-action")}
+              </Button>
+            </SettingListItem>
+          </SettingList>
+        )}
       </SettingGroup>
 
       <SettingGroup showSeparator title={t("setting.memo-export.import-title")} description={t("setting.memo-export.import-description")}>

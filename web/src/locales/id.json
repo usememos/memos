@@ -410,7 +410,8 @@
       "archived": "Diarsipkan",
       "member-column": "Anggota",
       "active": "Aktif",
-      "summary-column": "Ringkasan"
+      "summary-column": "Ringkasan",
+      "export-memos": "Ekspor memo"
     },
     "my-account": {
       "label": "Akun Saya"
@@ -831,7 +832,9 @@
       "review-existing": "Sudah ada di akun Anda",
       "review-exported": "Diekspor oleh",
       "review-memos": "Memo di file",
-      "review-new": "Akan dibuat"
+      "review-new": "Akan dibuat",
+      "export-admin-only": "Hanya administrator yang dapat mengekspor memo. Minta berkas ekspor Anda kepada administrator.",
+      "export-busy": "Ekspor lain sedang berjalan. Coba lagi sebentar."
     },
     "spaces": {
       "general": "Umum",

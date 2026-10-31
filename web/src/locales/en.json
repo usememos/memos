@@ -643,7 +643,8 @@
       "restore-success": "{{username}} restored successfully",
       "summary-column": "Summary",
       "user": "User",
-      "no-members-found": "No members found"
+      "no-members-found": "No members found",
+      "export-memos": "Export memos"
     },
     "memo": {
       "add-reaction": "Add reaction",
@@ -693,7 +694,9 @@
       "review-exported": "Exported by",
       "review-file": "File",
       "review-memos": "Memos in file",
-      "review-new": "Will be created"
+      "review-new": "Will be created",
+      "export-admin-only": "Only administrators can export memos. Ask an administrator for your export file.",
+      "export-busy": "Another export is running. Try again in a moment."
     },
     "my-account": {
       "label": "My Account"

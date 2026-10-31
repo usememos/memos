@@ -489,7 +489,8 @@
       "active": "Aktiven",
       "archived": "Arhivirano",
       "member-column": "član",
-      "summary-column": "Povzetek"
+      "summary-column": "Povzetek",
+      "export-memos": "Izvozi zapiske"
     },
     "memo": {
       "label": "Beležka",
@@ -889,7 +890,9 @@
       "review-existing": "Že v vašem računu",
       "review-exported": "Izvozil/a",
       "review-memos": "Beležke v datoteki",
-      "review-new": "Bo ustvarjeno"
+      "review-new": "Bo ustvarjeno",
+      "export-admin-only": "Zapiske lahko izvozijo samo skrbniki. Za svojo izvozno datoteko prosite skrbnika.",
+      "export-busy": "Drug izvoz je v teku. Poskusite znova čez trenutek."
     },
     "spaces": {
       "general": "Splošno",

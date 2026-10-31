@@ -489,7 +489,8 @@
       "active": "アクティブ",
       "archived": "アーカイブ済み",
       "member-column": "メンバー",
-      "summary-column": "まとめ"
+      "summary-column": "まとめ",
+      "export-memos": "メモをエクスポート"
     },
     "memo": {
       "label": "メモ",
@@ -889,7 +890,9 @@
       "review-existing": "アカウントに既に存在します",
       "review-exported": "エクスポート元",
       "review-memos": "ファイル内のメモ",
-      "review-new": "作成されます"
+      "review-new": "作成されます",
+      "export-admin-only": "メモをエクスポートできるのは管理者のみです。エクスポートファイルは管理者に依頼してください。",
+      "export-busy": "別のエクスポートが実行中です。しばらくしてからもう一度お試しください。"
     },
     "spaces": {
       "general": "全般",

@@ -489,7 +489,8 @@
       "active": "Active",
       "archived": "Archived",
       "member-column": "Member",
-      "summary-column": "Summary"
+      "summary-column": "Summary",
+      "export-memos": "Export memos"
     },
     "memo": {
       "label": "Memo",
@@ -889,7 +890,9 @@
       "review-exported": "Exported by",
       "review-file": "File",
       "review-memos": "Memos in file",
-      "review-new": "Will be created"
+      "review-new": "Will be created",
+      "export-admin-only": "Only administrators can export memos. Ask an administrator for your export file.",
+      "export-busy": "Another export is running. Try again in a moment."
     },
     "spaces": {
       "accept": "Accept",

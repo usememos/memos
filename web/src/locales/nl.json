@@ -489,7 +489,8 @@
       "active": "Actief",
       "archived": "Gearchiveerd",
       "member-column": "Lid",
-      "summary-column": "Samenvatting"
+      "summary-column": "Samenvatting",
+      "export-memos": "Memo's exporteren"
     },
     "memo": {
       "label": "Memo",
@@ -889,7 +890,9 @@
       "review-existing": "Al in uw account",
       "review-exported": "Geëxporteerd door",
       "review-memos": "Memos in bestand",
-      "review-new": "Wordt aangemaakt"
+      "review-new": "Wordt aangemaakt",
+      "export-admin-only": "Alleen beheerders kunnen memo's exporteren. Vraag een beheerder om je exportbestand.",
+      "export-busy": "Er loopt al een andere export. Probeer het zo opnieuw."
     },
     "spaces": {
       "general": "Algemeen",

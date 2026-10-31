@@ -489,7 +489,8 @@
       "active": "Actius",
       "archived": "Arxivat",
       "member-column": "Membre",
-      "summary-column": "Resum"
+      "summary-column": "Resum",
+      "export-memos": "Exportar notes"
     },
     "memo": {
       "label": "Nota",
@@ -889,7 +890,9 @@
       "review-existing": "Ja al vostre compte",
       "review-exported": "Exportat per",
       "review-memos": "Memos a el fitxer",
-      "review-new": "Es crearà"
+      "review-new": "Es crearà",
+      "export-admin-only": "Només els administradors poden exportar notes. Demana el fitxer d'exportació a un administrador.",
+      "export-busy": "Hi ha una altra exportació en curs. Torna-ho a provar d'aquí a un moment."
     },
     "spaces": {
       "general": "General",

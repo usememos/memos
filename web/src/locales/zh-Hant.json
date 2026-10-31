@@ -611,7 +611,8 @@
       "restore-success": "{{username}} 恢復成功",
       "summary-column": "摘要",
       "user": "使用者",
-      "no-members-found": "沒有找到成員"
+      "no-members-found": "沒有找到成員",
+      "export-memos": "匯出備忘錄"
     },
     "memo": {
       "add-reaction": "新增表情回應",
@@ -1049,7 +1050,9 @@
       "review-existing": "您的帳號中已存在",
       "review-exported": "匯出者",
       "review-memos": "檔案中的備忘錄",
-      "review-new": "將建立"
+      "review-new": "將建立",
+      "export-admin-only": "只有管理員可以匯出備忘錄。請向管理員索取你的匯出檔案。",
+      "export-busy": "另一個匯出正在進行。請稍後再試。"
     }
   },
   "space": {

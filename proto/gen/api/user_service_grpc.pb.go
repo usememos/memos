@@ -8,7 +8,6 @@ package api
 
 import (
 	context "context"
-	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -53,7 +52,6 @@ const (
 	UserService_ListPersonalAccessTokens_FullMethodName    = "/memos.api.UserService/ListPersonalAccessTokens"
 	UserService_CreatePersonalAccessToken_FullMethodName   = "/memos.api.UserService/CreatePersonalAccessToken"
 	UserService_DeletePersonalAccessToken_FullMethodName   = "/memos.api.UserService/DeletePersonalAccessToken"
-	UserService_ExportMemos_FullMethodName                 = "/memos.api.UserService/ExportMemos"
 	UserService_ImportMemos_FullMethodName                 = "/memos.api.UserService/ImportMemos"
 )
 
@@ -160,11 +158,6 @@ type UserServiceClient interface {
 	// DeletePersonalAccessToken deletes a personal access token, which stops
 	// working immediately. Only the owner may call it.
 	DeletePersonalAccessToken(ctx context.Context, in *DeletePersonalAccessTokenRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// ExportMemos writes every memo the user created, with comments, archived
-	// memos, and attachment files, as a Memos export file (a ZIP file, see
-	// docs/design/memos-export-format.md). Only the user may export their own
-	// memos. The body is the archive; content_type is its media type.
-	ExportMemos(ctx context.Context, in *ExportMemosRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
 	// ImportMemos uploads a Memos export file in bounded chunks and imports it
 	// into the user's memos. The first call carries the spec and returns an
 	// upload_id; later calls carry that upload_id. A finishing call with
@@ -503,16 +496,6 @@ func (c *userServiceClient) DeletePersonalAccessToken(ctx context.Context, in *D
 	return out, nil
 }
 
-func (c *userServiceClient) ExportMemos(ctx context.Context, in *ExportMemosRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(httpbody.HttpBody)
-	err := c.cc.Invoke(ctx, UserService_ExportMemos_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *userServiceClient) ImportMemos(ctx context.Context, in *ImportMemosRequest, opts ...grpc.CallOption) (*ImportMemosResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ImportMemosResponse)
@@ -626,11 +609,6 @@ type UserServiceServer interface {
 	// DeletePersonalAccessToken deletes a personal access token, which stops
 	// working immediately. Only the owner may call it.
 	DeletePersonalAccessToken(context.Context, *DeletePersonalAccessTokenRequest) (*emptypb.Empty, error)
-	// ExportMemos writes every memo the user created, with comments, archived
-	// memos, and attachment files, as a Memos export file (a ZIP file, see
-	// docs/design/memos-export-format.md). Only the user may export their own
-	// memos. The body is the archive; content_type is its media type.
-	ExportMemos(context.Context, *ExportMemosRequest) (*httpbody.HttpBody, error)
 	// ImportMemos uploads a Memos export file in bounded chunks and imports it
 	// into the user's memos. The first call carries the spec and returns an
 	// upload_id; later calls carry that upload_id. A finishing call with
@@ -744,9 +722,6 @@ func (UnimplementedUserServiceServer) CreatePersonalAccessToken(context.Context,
 }
 func (UnimplementedUserServiceServer) DeletePersonalAccessToken(context.Context, *DeletePersonalAccessTokenRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeletePersonalAccessToken not implemented")
-}
-func (UnimplementedUserServiceServer) ExportMemos(context.Context, *ExportMemosRequest) (*httpbody.HttpBody, error) {
-	return nil, status.Error(codes.Unimplemented, "method ExportMemos not implemented")
 }
 func (UnimplementedUserServiceServer) ImportMemos(context.Context, *ImportMemosRequest) (*ImportMemosResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ImportMemos not implemented")
@@ -1348,24 +1323,6 @@ func _UserService_DeletePersonalAccessToken_Handler(srv interface{}, ctx context
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_ExportMemos_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ExportMemosRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServiceServer).ExportMemos(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: UserService_ExportMemos_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).ExportMemos(ctx, req.(*ExportMemosRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _UserService_ImportMemos_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ImportMemosRequest)
 	if err := dec(in); err != nil {
@@ -1518,10 +1475,6 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeletePersonalAccessToken",
 			Handler:    _UserService_DeletePersonalAccessToken_Handler,
-		},
-		{
-			MethodName: "ExportMemos",
-			Handler:    _UserService_ExportMemos_Handler,
 		},
 		{
 			MethodName: "ImportMemos",

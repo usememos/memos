@@ -570,7 +570,8 @@
       "restore-success": "{{username}} a fost restaurat cu succes",
       "summary-column": "Rezumat",
       "user": "Utilizator",
-      "no-members-found": "Nu s-au găsit membri"
+      "no-members-found": "Nu s-au găsit membri",
+      "export-memos": "Exportă notițele"
     },
     "memo": {
       "add-reaction": "Adăugați reacția",
@@ -927,7 +928,9 @@
       "review-existing": "Deja în contul dvs.",
       "review-exported": "Exportat de",
       "review-memos": "Memos în fișier",
-      "review-new": "Va fi creat"
+      "review-new": "Va fi creat",
+      "export-admin-only": "Doar administratorii pot exporta notițe. Cere-i unui administrator fișierul tău de export.",
+      "export-busy": "Un alt export este în curs. Încearcă din nou peste câteva momente."
     },
     "spaces": {
       "general": "General",

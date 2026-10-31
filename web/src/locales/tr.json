@@ -529,7 +529,8 @@
       "active": "Aktif",
       "archived": "Arşivlendi",
       "member-column": "Üye",
-      "summary-column": "Özet"
+      "summary-column": "Özet",
+      "export-memos": "Notları dışa aktar"
     },
     "memo": {
       "label": "Not",
@@ -579,7 +580,9 @@
       "review-exported": "Dışa aktaran",
       "review-file": "Dosya",
       "review-memos": "Dosyadaki notlar",
-      "review-new": "Oluşturulacak"
+      "review-new": "Oluşturulacak",
+      "export-admin-only": "Notları yalnızca yöneticiler dışa aktarabilir. Dışa aktarma dosyanızı bir yöneticiden isteyin.",
+      "export-busy": "Başka bir dışa aktarma sürüyor. Biraz sonra yeniden deneyin."
     },
     "my-account": {
       "label": "Hesabım"

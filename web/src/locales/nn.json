@@ -643,7 +643,8 @@
       "no-members-found": "Ingen medlemer funne",
       "restore-success": "{{username}} er gjenoppretta",
       "summary-column": "Samandrag",
-      "user": "Brukar"
+      "user": "Brukar",
+      "export-memos": "Eksporter notat"
     },
     "memo": {
       "add-reaction": "Legg til reaksjon",
@@ -693,7 +694,9 @@
       "review-exported": "Eksportert av",
       "review-file": "Fil",
       "review-memos": "Notat i fila",
-      "review-new": "Vert oppretta"
+      "review-new": "Vert oppretta",
+      "export-admin-only": "Berre administratorar kan eksportere notat. Be ein administrator om eksportfila di.",
+      "export-busy": "Ein annan eksport køyrer. Prøv igjen om ei lita stund."
     },
     "memo-view": {
       "change-icon": "Endre visingsikon",

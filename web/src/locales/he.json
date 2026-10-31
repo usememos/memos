@@ -603,7 +603,8 @@
       "restore-success": "{{username}} שוחזר/ה בהצלחה",
       "summary-column": "סיכום",
       "user": "משתמש",
-      "no-members-found": "לא נמצאו חברים"
+      "no-members-found": "לא נמצאו חברים",
+      "export-memos": "ייצוא פתקים"
     },
     "memo": {
       "add-reaction": "הוסף תגובה",
@@ -960,7 +961,9 @@
       "review-memos": "פתקים בקובץ",
       "review-new": "ייווצר",
       "import-confirm": "ייבוא {{count}} תזכירים",
-      "import-success": "יובאו {{created}} תזכירים חדשים ועודכנו {{updated}} תזכירים."
+      "import-success": "יובאו {{created}} תזכירים חדשים ועודכנו {{updated}} תזכירים.",
+      "export-admin-only": "רק מנהלים יכולים לייצא פתקים. בקשו ממנהל את קובץ הייצוא שלכם.",
+      "export-busy": "ייצוא אחר מתבצע כעת. נסו שוב בעוד רגע."
     },
     "spaces": {
       "general": "כללי",

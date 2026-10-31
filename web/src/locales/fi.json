@@ -570,7 +570,8 @@
       "restore-success": "{{username}} palautettiin onnistuneesti",
       "summary-column": "Yhteenveto",
       "user": "Käyttäjä",
-      "no-members-found": "Jäseniä ei löytynyt"
+      "no-members-found": "Jäseniä ei löytynyt",
+      "export-memos": "Vie muistiinpanot"
     },
     "memo": {
       "add-reaction": "Lisää reaktio",
@@ -927,7 +928,9 @@
       "review-existing": "Jo tililläsi.",
       "review-exported": "Vienti.",
       "review-memos": "Memos tiedostossa.",
-      "review-new": "Luodaan."
+      "review-new": "Luodaan.",
+      "export-admin-only": "Vain järjestelmänvalvojat voivat viedä muistiinpanoja. Pyydä vientitiedostosi järjestelmänvalvojalta.",
+      "export-busy": "Toinen vienti on käynnissä. Yritä hetken päästä uudelleen."
     },
     "spaces": {
       "general": "Kenraali",

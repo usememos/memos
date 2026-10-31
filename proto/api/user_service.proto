@@ -7,7 +7,6 @@ import "api/space_service.proto";
 import "google/api/annotations.proto";
 import "google/api/client.proto";
 import "google/api/field_behavior.proto";
-import "google/api/httpbody.proto";
 import "google/api/resource.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/field_mask.proto";
@@ -270,15 +269,6 @@ service UserService {
   // working immediately. Only the owner may call it.
   rpc DeletePersonalAccessToken(DeletePersonalAccessTokenRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {delete: "/api/{name=users/*/personalAccessTokens/*}"};
-    option (google.api.method_signature) = "name";
-  }
-
-  // ExportMemos writes every memo the user created, with comments, archived
-  // memos, and attachment files, as a Memos export file (a ZIP file, see
-  // docs/design/memos-export-format.md). Only the user may export their own
-  // memos. The body is the archive; content_type is its media type.
-  rpc ExportMemos(ExportMemosRequest) returns (google.api.HttpBody) {
-    option (google.api.http) = {get: "/api/{name=users/*}:exportMemos"};
     option (google.api.method_signature) = "name";
   }
 
@@ -1307,16 +1297,6 @@ message DeletePersonalAccessTokenRequest {
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type: "memos.api/PersonalAccessToken"}
-  ];
-}
-
-// Request message for UserService.ExportMemos.
-message ExportMemosRequest {
-  // Required. The user whose memos are exported. Must be the caller.
-  // Format: users/{user}
-  string name = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api/User"}
   ];
 }
 

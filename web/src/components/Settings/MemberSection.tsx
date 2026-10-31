@@ -23,6 +23,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import ManagedByConfigurationChip from "./ManagedByConfigurationChip";
 import SettingSection from "./SettingSection";
 import SettingTable from "./SettingTable";
+import { useExportMemos } from "./useExportMemos";
 
 const MemberSection = () => {
   const t = useTranslate();
@@ -30,6 +31,7 @@ const MemberSection = () => {
   const currentUser = useCurrentUser();
   const { data: users = [], refetch: refetchUsers } = useListUsers();
   const deleteUserMutation = useDeleteUser();
+  const { exportMemos, exporting } = useExportMemos();
   const createDialog = useDialog();
   const editDialog = useDialog();
   const [editingUser, setEditingUser] = useState<User | undefined>();
@@ -177,6 +179,9 @@ const MemberSection = () => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" sideOffset={2}>
                     <DropdownMenuItem onClick={() => handleEditUser(user)}>{t("common.update")}</DropdownMenuItem>
+                    <DropdownMenuItem disabled={exporting} onClick={() => exportMemos(user.username)}>
+                      {t("setting.member.export-memos")}
+                    </DropdownMenuItem>
                     {user.state === State.NORMAL ? (
                       <DropdownMenuItem onClick={() => handleArchiveUserClick(user)}>{t("setting.member.archive-member")}</DropdownMenuItem>
                     ) : (

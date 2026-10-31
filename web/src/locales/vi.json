@@ -410,7 +410,8 @@
       "archived": "Đã lưu trữ",
       "member-column": "Thành viên",
       "active": "Đang hoạt động",
-      "summary-column": "Tóm tắt"
+      "summary-column": "Tóm tắt",
+      "export-memos": "Xuất ghi chú"
     },
     "my-account": {
       "label": "Tài khoản của tôi"
@@ -831,7 +832,9 @@
       "review-existing": "Đã có trong tài khoản của bạn",
       "review-exported": "Được xuất bởi",
       "review-memos": "Ghi chú trong tệp",
-      "review-new": "Sẽ được tạo"
+      "review-new": "Sẽ được tạo",
+      "export-admin-only": "Chỉ quản trị viên mới có thể xuất ghi chú. Hãy yêu cầu quản trị viên cung cấp tệp xuất của bạn.",
+      "export-busy": "Một quá trình xuất khác đang chạy. Hãy thử lại sau ít phút."
     },
     "spaces": {
       "general": "Chung",

@@ -570,7 +570,8 @@
       "restore-success": "{{username}} gendannet med succes",
       "summary-column": "Oversigt",
       "user": "Bruger",
-      "no-members-found": "Ingen medlemmer fundet"
+      "no-members-found": "Ingen medlemmer fundet",
+      "export-memos": "Eksportér noter"
     },
     "memo": {
       "add-reaction": "Tilføj reaktion",
@@ -927,7 +928,9 @@
       "review-existing": "Allerede på din konto",
       "review-exported": "Eksporteret af",
       "review-memos": "Memos i fil",
-      "review-new": "Vil blive oprettet"
+      "review-new": "Vil blive oprettet",
+      "export-admin-only": "Kun administratorer kan eksportere noter. Bed en administrator om din eksportfil.",
+      "export-busy": "En anden eksport er i gang. Prøv igen om et øjeblik."
     },
     "spaces": {
       "general": "Generel",

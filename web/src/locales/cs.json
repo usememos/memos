@@ -489,7 +489,8 @@
       "active": "Aktivní",
       "archived": "Archivováno",
       "member-column": "Člen",
-      "summary-column": "Shrnutí"
+      "summary-column": "Shrnutí",
+      "export-memos": "Exportovat poznámky"
     },
     "memo": {
       "label": "Poznámky",
@@ -889,7 +890,9 @@
       "review-existing": "Již ve vašem účtu",
       "review-exported": "Exportováno uživatelem",
       "review-memos": "Poznámky v souboru",
-      "review-new": "Bude vytvořeno"
+      "review-new": "Bude vytvořeno",
+      "export-admin-only": "Poznámky mohou exportovat pouze správci. Požádejte správce o svůj exportní soubor.",
+      "export-busy": "Právě probíhá jiný export. Zkuste to za chvíli znovu."
     },
     "spaces": {
       "general": "Obecné",
