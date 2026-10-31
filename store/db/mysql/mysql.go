@@ -32,6 +32,15 @@ func NewDB(profile *profile.Profile) (store.Driver, error) {
 		return nil, errors.New("Parse DSN error")
 	}
 
+	if profile.RDSIAMAuth {
+		connector, err := newRDSIAMConnector(context.Background(), driver.config, profile.RDSCABundle)
+		if err != nil {
+			return nil, err
+		}
+		driver.db = sql.OpenDB(connector)
+		return &driver, nil
+	}
+
 	driver.db, err = sql.Open("mysql", dsn)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to open db: %s", profile.DSN)

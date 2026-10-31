@@ -65,6 +65,8 @@ func init() {
 	rootCmd.Flags().String("data", "", "data directory")
 	rootCmd.Flags().String("driver", "sqlite", "database driver (sqlite, mysql, postgres)")
 	rootCmd.Flags().String("dsn", "", "database source name (DSN)")
+	rootCmd.Flags().Bool("rds-iam-auth", false, "authenticate to MySQL or PostgreSQL on Amazon RDS with IAM tokens instead of the DSN password")
+	rootCmd.Flags().String("rds-ca-bundle", "", "PEM CA bundle (e.g. RDS global-bundle.pem) used to verify the database server certificate with --rds-iam-auth")
 	rootCmd.Flags().String("instance-url", "", "canonical external URL of the Memos instance")
 	rootCmd.Flags().Bool("allow-private-webhooks", false, "allow webhooks to access any private/reserved IP address")
 	rootCmd.Flags().StringSlice("webhook-private-network-allowlist", nil, "private webhook destinations to allow (exact hostname, IP, or CIDR)")
@@ -85,6 +87,8 @@ func init() {
 		"data",
 		"driver",
 		"dsn",
+		"rds-iam-auth",
+		"rds-ca-bundle",
 		"instance-url",
 		"allow-private-webhooks",
 		"webhook-private-network-allowlist",
@@ -123,6 +127,8 @@ func runServer() error {
 		Data:           viper.GetString("data"),
 		Driver:         viper.GetString("driver"),
 		DSN:            viper.GetString("dsn"),
+		RDSIAMAuth:     viper.GetBool("rds-iam-auth"),
+		RDSCABundle:    viper.GetString("rds-ca-bundle"),
 		InstanceURL:    viper.GetString("instance-url"),
 		RateLimit:      viper.GetBool("rate-limit"),
 		TrustedProxies: viper.GetStringSlice("trusted-proxies"),
