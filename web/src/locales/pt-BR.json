@@ -410,7 +410,8 @@
       "archived": "Arquivo",
       "member-column": "Membro",
       "active": "Ativo",
-      "summary-column": "Resumo"
+      "summary-column": "Resumo",
+      "export-memos": "Exportar memos"
     },
     "my-account": {
       "label": "Minha conta"
@@ -831,7 +832,9 @@
       "review-existing": "Já está na sua conta",
       "review-exported": "Exportado por",
       "review-memos": "Memos no arquivo",
-      "review-new": "Será criado"
+      "review-new": "Será criado",
+      "export-admin-only": "Somente administradores podem exportar memos. Peça seu arquivo de exportação a um administrador.",
+      "export-busy": "Outra exportação está em andamento. Tente novamente em instantes."
     },
     "spaces": {
       "general": "Geral",

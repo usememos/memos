@@ -489,7 +489,8 @@
       "active": "Aktív",
       "archived": "Archivált",
       "member-column": "Tag",
-      "summary-column": "Összegzés"
+      "summary-column": "Összegzés",
+      "export-memos": "Jegyzetek exportálása"
     },
     "memo": {
       "label": "Jegyzet",
@@ -889,7 +890,9 @@
       "review-existing": "Már a fiókodban van",
       "review-exported": "Exportálta:",
       "review-memos": "Jegyzetek a fájlban",
-      "review-new": "Létrehozva lesz"
+      "review-new": "Létrehozva lesz",
+      "export-admin-only": "Csak az adminisztrátorok exportálhatnak jegyzeteket. Kérd az exportfájlodat egy adminisztrátortól.",
+      "export-busy": "Egy másik exportálás folyamatban van. Próbáld újra egy pillanat múlva."
     },
     "spaces": {
       "general": "Általános",

@@ -489,7 +489,8 @@
       "active": "Aktiv",
       "archived": "Archiviert",
       "member-column": "Mitglied",
-      "summary-column": "Zusammenfassung"
+      "summary-column": "Zusammenfassung",
+      "export-memos": "Memos exportieren"
     },
     "memo": {
       "label": "Notiz",
@@ -889,7 +890,9 @@
       "review-existing": "Bereits in Ihrem Konto",
       "review-exported": "Exportiert von",
       "review-memos": "Notizen in der Datei",
-      "review-new": "Wird erstellt"
+      "review-new": "Wird erstellt",
+      "export-admin-only": "Nur Administratoren können Memos exportieren. Bitte einen Administrator um deine Exportdatei.",
+      "export-busy": "Ein anderer Export läuft gerade. Versuche es gleich noch einmal."
     },
     "spaces": {
       "general": "Allgemein",

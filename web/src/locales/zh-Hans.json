@@ -441,7 +441,8 @@
       "list-title": "成员列表",
       "member-column": "成员",
       "summary-column": "摘要",
-      "no-members-found": "没有找到会员"
+      "no-members-found": "没有找到会员",
+      "export-memos": "导出备忘录"
     },
     "my-account": {
       "label": "我的账号"
@@ -915,7 +916,9 @@
       "review-existing": "您的账户中已存在",
       "review-exported": "导出者",
       "review-memos": "文件中的备忘录",
-      "review-new": "将新建"
+      "review-new": "将新建",
+      "export-admin-only": "只有管理员可以导出备忘录。请向管理员索取你的导出文件。",
+      "export-busy": "另一个导出正在进行。请稍后再试。"
     },
     "spaces": {
       "general": "一般设置",

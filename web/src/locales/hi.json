@@ -410,7 +410,8 @@
       "archived": "संग्रहीत",
       "member-column": "सदस्य",
       "active": "एक्टिव",
-      "summary-column": "समरी"
+      "summary-column": "समरी",
+      "export-memos": "मेमो निर्यात करें"
     },
     "my-account": {
       "label": "मेरा खाता"
@@ -831,7 +832,9 @@
       "review-existing": "आपके अकाउंट में पहले से हैं",
       "review-exported": "एक्सपोर्ट किया गया",
       "review-memos": "Memos एक्सपोर्ट फ़ाइल में",
-      "review-new": "बनाया जाएगा"
+      "review-new": "बनाया जाएगा",
+      "export-admin-only": "केवल प्रशासक ही मेमो निर्यात कर सकते हैं। अपनी निर्यात फ़ाइल के लिए किसी प्रशासक से कहें।",
+      "export-busy": "एक अन्य निर्यात चल रहा है। कुछ क्षण बाद पुनः प्रयास करें।"
     },
     "spaces": {
       "general": "सामान्य",

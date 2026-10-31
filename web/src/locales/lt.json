@@ -570,7 +570,8 @@
       "restore-success": "{{username}} sėkmingai atkurtas",
       "summary-column": "Santrauka",
       "user": "Vartotojas",
-      "no-members-found": "Narių nerasta"
+      "no-members-found": "Narių nerasta",
+      "export-memos": "Eksportuoti užrašus"
     },
     "memo": {
       "add-reaction": "Pridėti reakciją",
@@ -927,7 +928,9 @@
       "review-existing": "Jau jūsų paskyroje",
       "review-exported": "Eksportavo",
       "review-memos": "Memos faile",
-      "review-new": "Bus sukurta"
+      "review-new": "Bus sukurta",
+      "export-admin-only": "Užrašus eksportuoti gali tik administratoriai. Eksporto failo paprašykite administratoriaus.",
+      "export-busy": "Vyksta kitas eksportas. Po akimirkos bandykite dar kartą."
     },
     "spaces": {
       "general": "Generolas",

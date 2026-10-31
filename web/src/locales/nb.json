@@ -489,7 +489,8 @@
       "active": "Aktiv",
       "archived": "Arkivert",
       "member-column": "Medlem",
-      "summary-column": "Sammendrag"
+      "summary-column": "Sammendrag",
+      "export-memos": "Eksporter notater"
     },
     "memo": {
       "label": "Memo",
@@ -889,7 +890,9 @@
       "review-existing": "Allerede i kontoen din",
       "review-exported": "Eksportert av",
       "review-memos": "Memoer i filen",
-      "review-new": "Vil bli opprettet"
+      "review-new": "Vil bli opprettet",
+      "export-admin-only": "Bare administratorer kan eksportere notater. Be en administrator om eksportfilen din.",
+      "export-busy": "En annen eksport kjører. Prøv igjen om et øyeblikk."
     },
     "spaces": {
       "general": "Generelt",

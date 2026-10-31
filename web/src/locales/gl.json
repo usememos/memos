@@ -489,7 +489,8 @@
       "active": "Activo",
       "archived": "Arquivado",
       "member-column": "Membro",
-      "summary-column": "Resumo"
+      "summary-column": "Resumo",
+      "export-memos": "Exportar notas"
     },
     "memo": {
       "label": "Memo",
@@ -889,7 +890,9 @@
       "review-existing": "Xa na túa conta",
       "review-exported": "Exportado por",
       "review-memos": "Memos no ficheiro",
-      "review-new": "Crearase"
+      "review-new": "Crearase",
+      "export-admin-only": "Só os administradores poden exportar notas. Pídelle o teu ficheiro de exportación a un administrador.",
+      "export-busy": "Hai outra exportación en curso. Téntao de novo nun momento."
     },
     "spaces": {
       "general": "Xeral",

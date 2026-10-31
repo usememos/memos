@@ -489,7 +489,8 @@
       "active": "Attiva",
       "archived": "Archiviata",
       "member-column": "Membro",
-      "summary-column": "Riepilogo"
+      "summary-column": "Riepilogo",
+      "export-memos": "Esporta note"
     },
     "memo": {
       "label": "Memo",
@@ -889,7 +890,9 @@
       "review-existing": "Già presenti nel tuo account",
       "review-exported": "Esportato da",
       "review-memos": "Memo nelil file",
-      "review-new": "Verrà creato"
+      "review-new": "Verrà creato",
+      "export-admin-only": "Solo gli amministratori possono esportare le note. Chiedi il file di esportazione a un amministratore.",
+      "export-busy": "Un'altra esportazione è in corso. Riprova tra un momento."
     },
     "spaces": {
       "general": "Generale",

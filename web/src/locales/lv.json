@@ -570,7 +570,8 @@
       "restore-success": "{{username}} ir veiksmīgi atjaunots",
       "summary-column": "Kopsavilkums",
       "user": "Lietotājs",
-      "no-members-found": "Nav atrasts neviens dalībnieks"
+      "no-members-found": "Nav atrasts neviens dalībnieks",
+      "export-memos": "Eksportēt piezīmes"
     },
     "memo": {
       "add-reaction": "Pievienojiet reakciju",
@@ -927,7 +928,9 @@
       "review-existing": "Jau ir jūsu kontā",
       "review-exported": "Eksportējis",
       "review-memos": "Memos failā",
-      "review-new": "Tiks izveidots"
+      "review-new": "Tiks izveidots",
+      "export-admin-only": "Piezīmes var eksportēt tikai administratori. Lūdziet administratoram savu eksporta failu.",
+      "export-busy": "Notiek cits eksports. Pēc brīža mēģiniet vēlreiz."
     },
     "spaces": {
       "general": "Ģenerālis",

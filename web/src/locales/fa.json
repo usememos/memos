@@ -410,7 +410,8 @@
       "archived": "آرشیو شده",
       "member-column": "عضو",
       "active": "فعال",
-      "summary-column": "خلاصه"
+      "summary-column": "خلاصه",
+      "export-memos": "خروجی گرفتن از یادداشت‌ها"
     },
     "my-account": {
       "label": "حساب من"
@@ -831,7 +832,9 @@
       "review-existing": "قبلاً در حساب شما",
       "review-exported": "صادر شده توسط",
       "review-memos": "یادداشت‌ها در فایل",
-      "review-new": "ایجاد خواهد شد"
+      "review-new": "ایجاد خواهد شد",
+      "export-admin-only": "فقط مدیران می‌توانند یادداشت‌ها را خروجی بگیرند. فایل خروجی خود را از یک مدیر بخواهید.",
+      "export-busy": "یک خروجی دیگر در حال انجام است. لحظه‌ای دیگر دوباره تلاش کنید."
     },
     "spaces": {
       "general": "عمومی",

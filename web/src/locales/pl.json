@@ -489,7 +489,8 @@
       "active": "Aktywny",
       "archived": "Zarchiwizowane",
       "member-column": "Członek",
-      "summary-column": "Streszczenie"
+      "summary-column": "Streszczenie",
+      "export-memos": "Eksportuj notatki"
     },
     "memo": {
       "label": "Notatki",
@@ -889,7 +890,9 @@
       "review-existing": "Już na Twoim koncie",
       "review-exported": "Wyeksportowano przez",
       "review-memos": "Notatki w pliku",
-      "review-new": "Zostanie utworzone"
+      "review-new": "Zostanie utworzone",
+      "export-admin-only": "Tylko administratorzy mogą eksportować notatki. Poproś administratora o plik eksportu.",
+      "export-busy": "Trwa inny eksport. Spróbuj ponownie za chwilę."
     },
     "spaces": {
       "general": "Ogólne",

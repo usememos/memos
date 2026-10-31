@@ -410,7 +410,8 @@
       "archived": "المؤرشفة",
       "member-column": "عضو",
       "active": "نشط",
-      "summary-column": "ملخص"
+      "summary-column": "ملخص",
+      "export-memos": "تصدير الملاحظات"
     },
     "my-account": {
       "label": "حسابي"
@@ -831,7 +832,9 @@
       "review-existing": "موجودة بالفعل في حسابك",
       "review-exported": "تم التصدير بواسطة",
       "review-memos": "مذكرات في الملف",
-      "review-new": "سيتم الإنشاء"
+      "review-new": "سيتم الإنشاء",
+      "export-admin-only": "يمكن للمسؤولين فقط تصدير الملاحظات. اطلب من مسؤول ملف التصدير الخاص بك.",
+      "export-busy": "هناك عملية تصدير أخرى قيد التنفيذ. حاول مرة أخرى بعد قليل."
     },
     "spaces": {
       "general": "عام",

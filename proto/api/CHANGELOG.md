@@ -29,6 +29,10 @@ instead, and update `core/configuration/testdata/compat/` in the same change. Af
 
 ### Breaking
 
+- `UserService.ExportMemos` and `ExportMemosRequest` are removed. Export is an instance-administrator download at
+  `GET /file/users/{username}/export`, authenticated like attachments (Bearer header or session cookie), streaming the
+  archive with `Content-Disposition`. One export runs at a time per instance; a second request receives `429`. Members
+  ask an administrator for their archive. `ImportMemos` is unchanged.
 - Access tokens are now bound to the user's password hash and become invalid immediately after a password change or
   an administrator password reset. Pre-upgrade access tokens are also rejected; clients must refresh them or sign in
   again. The browser session that changes its own password can still refresh; other refresh sessions are revoked.

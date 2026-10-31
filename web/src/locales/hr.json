@@ -489,7 +489,8 @@
       "active": "Aktivan",
       "archived": "Arhivirano",
       "member-column": "Član",
-      "summary-column": "Sažetak"
+      "summary-column": "Sažetak",
+      "export-memos": "Izvezi bilješke"
     },
     "memo": {
       "label": "Memo",
@@ -889,7 +890,9 @@
       "review-existing": "Već na vašem računu",
       "review-exported": "Izvezeno od strane",
       "review-memos": "Memos u datoteci",
-      "review-new": "Bit će kreirano"
+      "review-new": "Bit će kreirano",
+      "export-admin-only": "Samo administratori mogu izvoziti bilješke. Zatražite svoju datoteku izvoza od administratora.",
+      "export-busy": "Drugi izvoz je u tijeku. Pokušajte ponovno za trenutak."
     },
     "spaces": {
       "general": "Općenito",

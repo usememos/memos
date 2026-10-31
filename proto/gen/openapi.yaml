@@ -3095,34 +3095,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/users/{user}:exportMemos:
-        get:
-            tags:
-                - UserService
-            description: |-
-                ExportMemos writes every memo the user created, with comments, archived
-                 memos, and attachment files, as a Memos export file (a ZIP file, see
-                 docs/design/memos-export-format.md). Only the user may export their own
-                 memos. The body is the archive; content_type is its media type.
-            operationId: UserService_ExportMemos
-            parameters:
-                - name: user
-                  in: path
-                  description: The user id.
-                  required: true
-                  schema:
-                    type: string
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        '*/*': {}
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
     /api/users/{user}:getStats:
         get:
             tags:

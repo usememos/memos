@@ -410,7 +410,8 @@
       "archived": "보관 목록",
       "member-column": "멤버",
       "active": "활성",
-      "summary-column": "요약"
+      "summary-column": "요약",
+      "export-memos": "메모 내보내기"
     },
     "my-account": {
       "label": "내 계정"
@@ -831,7 +832,9 @@
       "review-exported": "내보낸 사용자",
       "review-memos": "파일의 메모",
       "review-new": "생성 예정",
-      "import-success": "새 메모 {{created}}개를 가져오고 메모 {{updated}}개를 업데이트했습니다."
+      "import-success": "새 메모 {{created}}개를 가져오고 메모 {{updated}}개를 업데이트했습니다.",
+      "export-admin-only": "관리자만 메모를 내보낼 수 있습니다. 내보내기 파일은 관리자에게 요청하세요.",
+      "export-busy": "다른 내보내기가 진행 중입니다. 잠시 후 다시 시도하세요."
     },
     "spaces": {
       "general": "일반",

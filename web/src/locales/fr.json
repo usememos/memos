@@ -489,7 +489,8 @@
       "active": "Active",
       "archived": "Archivé",
       "member-column": "Membre",
-      "summary-column": "Résumé"
+      "summary-column": "Résumé",
+      "export-memos": "Exporter les mémos"
     },
     "memo": {
       "label": "Note",
@@ -889,7 +890,9 @@
       "review-exported": "Exporté par",
       "review-memos": "Memos dans le fichier",
       "review-new": "Sera créé",
-      "import-success": "{{created}} nouveaux mémos importés et {{updated}} mémos mis à jour."
+      "import-success": "{{created}} nouveaux mémos importés et {{updated}} mémos mis à jour.",
+      "export-admin-only": "Seuls les administrateurs peuvent exporter les mémos. Demandez votre fichier d'export à un administrateur.",
+      "export-busy": "Un autre export est en cours. Réessayez dans un instant."
     },
     "spaces": {
       "general": "Général",

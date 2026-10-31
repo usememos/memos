@@ -570,7 +570,8 @@
       "restore-success": "{{username}} bol úspešne obnovený",
       "summary-column": "Zhrnutie",
       "user": "Používateľ",
-      "no-members-found": "Nenašli sa žiadni členovia"
+      "no-members-found": "Nenašli sa žiadni členovia",
+      "export-memos": "Exportovať poznámky"
     },
     "memo": {
       "add-reaction": "Pridajte reakciu",
@@ -927,7 +928,9 @@
       "review-existing": "Už vo vašom účte",
       "review-exported": "Exportované používateľom",
       "review-memos": "Memos v súbore",
-      "review-new": "Bude vytvorené"
+      "review-new": "Bude vytvorené",
+      "export-admin-only": "Poznámky môžu exportovať iba správcovia. Požiadajte správcu o svoj exportný súbor.",
+      "export-busy": "Práve prebieha iný export. Skúste to o chvíľu znova."
     },
     "spaces": {
       "general": "generál",

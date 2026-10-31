@@ -489,7 +489,8 @@
       "active": "Ativa",
       "archived": "Arquivada",
       "member-column": "Membro",
-      "summary-column": "Resumo"
+      "summary-column": "Resumo",
+      "export-memos": "Exportar memos"
     },
     "memo": {
       "label": "Memo",
@@ -889,7 +890,9 @@
       "review-existing": "Já está na sua conta",
       "review-exported": "Exportado por",
       "review-memos": "Memos no ficheiro",
-      "review-new": "Será criado"
+      "review-new": "Será criado",
+      "export-admin-only": "Apenas administradores podem exportar memos. Peça o seu ficheiro de exportação a um administrador.",
+      "export-busy": "Está a decorrer outra exportação. Tente novamente dentro de momentos."
     },
     "spaces": {
       "general": "Geral",
