@@ -106,26 +106,6 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
   const isZoomed = zoomScale > MIN_ZOOM;
 
   useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (!open) {
-        return;
-      }
-
-      if (event.key === "ArrowLeft") {
-        setCurrentIndex((prev) => Math.max(prev - 1, 0));
-        return;
-      }
-
-      if (event.key === "ArrowRight") {
-        setCurrentIndex((prev) => Math.min(prev + 1, itemCount - 1));
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [itemCount, open]);
-
-  useEffect(() => {
     const drag = panDragRef.current;
     if (drag && imageRef.current?.hasPointerCapture(drag.pointerId)) {
       imageRef.current.releasePointerCapture(drag.pointerId);
@@ -161,6 +141,19 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
   };
   const handleNext = () => {
     setCurrentIndex((prev) => Math.min(prev + 1, itemCount - 1));
+  };
+  // The dialog popup stops arrow keys from reaching the document, so navigation listens on the popup itself.
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.altKey || event.ctrlKey || event.metaKey) {
+      return;
+    }
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      handlePrevious();
+    } else if (event.key === "ArrowRight") {
+      event.preventDefault();
+      handleNext();
+    }
   };
 
   const updateZoom = (nextScale: number) => {
@@ -334,7 +327,8 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
     >
       <DialogContent
         showCloseButton={false}
-        className="!h-dvh !w-[100vw] !max-h-dvh !max-w-[100vw] overflow-hidden border-0 bg-black/92 p-0 shadow-none"
+        className="!h-dvh !w-[100vw] !max-h-dvh !max-w-[100vw] overflow-hidden rounded-none border-0 bg-black/92 p-0 shadow-none"
+        onKeyDown={handleKeyDown}
       >
         <VisuallyHidden>
           <DialogTitle>{currentItem.filename || "Attachment preview"}</DialogTitle>

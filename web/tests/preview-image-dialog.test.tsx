@@ -316,8 +316,8 @@ describe("<PreviewImageDialog>", () => {
     fireEvent.pointerMove(image, { pointerId: 1, clientX: 200, clientY: 300 });
     expect(image).toHaveStyle({ transform: "translate3d(-100px, 0px, 0) scale(2)" });
 
-    fireEvent.keyDown(document, { key: "ArrowRight" });
-    fireEvent.keyDown(document, { key: "ArrowLeft" });
+    fireEvent.keyDown(screen.getByRole("dialog"), { key: "ArrowRight" });
+    fireEvent.keyDown(screen.getByRole("dialog"), { key: "ArrowLeft" });
 
     const returned = screen.getByAltText("Preview image 1 of 2");
     fireEvent.doubleClick(returned);
@@ -571,6 +571,30 @@ describe("<PreviewImageDialog>", () => {
 
     expect(screen.getByRole("button", { name: /previous item/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /next item/i })).toBeInTheDocument();
+  });
+
+  it("switches items with the arrow keys while focus is inside the dialog", () => {
+    render(
+      <PreviewImageDialog
+        open
+        onOpenChange={vi.fn()}
+        items={[
+          { id: "image-1", kind: "image", sourceUrl: "/image-1.jpg", posterUrl: "/image-1.jpg", filename: "image-1.jpg" },
+          { id: "image-2", kind: "image", sourceUrl: "/image-2.jpg", posterUrl: "/image-2.jpg", filename: "image-2.jpg" },
+        ]}
+      />,
+    );
+
+    // The dialog traps focus, so key presses start from a control inside it and bubble through the popup.
+    const closeButton = screen.getByRole("button", { name: /close preview/i });
+    fireEvent.keyDown(closeButton, { key: "ArrowRight" });
+    expect(screen.getByAltText("Preview image 2 of 2")).toBeInTheDocument();
+
+    fireEvent.keyDown(closeButton, { key: "ArrowRight" });
+    expect(screen.getByAltText("Preview image 2 of 2")).toBeInTheDocument();
+
+    fireEvent.keyDown(closeButton, { key: "ArrowLeft" });
+    expect(screen.getByAltText("Preview image 1 of 2")).toBeInTheDocument();
   });
 
   it("shows saved media details on demand with grouped, lean facts", () => {
