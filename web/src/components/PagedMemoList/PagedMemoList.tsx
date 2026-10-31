@@ -19,6 +19,7 @@ import { useTranslate } from "@/utils/i18n";
 import ColumnGrid, { ColumnGridUntrappedProvider, columnCountForWidth, GRID_GAP } from "../ColumnGrid";
 import MemoFilters from "../MemoFilters";
 import Placeholder from "../Placeholder";
+import EmptyLine from "./EmptyLine";
 import MemoListError from "./MemoListError";
 import { estimateMemoCardHeight } from "./memoCardHeight";
 
@@ -51,8 +52,8 @@ interface Props {
   renderLeading?: (options: { useGrid: boolean }) => ReactNode;
   /** Route-owned content spanning the full list width above every column (e.g. a page identity block). */
   renderHeader?: (options: { useGrid: boolean }) => ReactNode;
-  /** Replaces the generic empty-state message when the route knows why the list is empty. */
-  emptyMessage?: string;
+  /** Route-owned first-use content for an empty, unfiltered list. Without it the generic placeholder shows. */
+  emptyState?: ReactNode;
 }
 
 function useAutoFetchWhenNotScrollable({
@@ -122,7 +123,7 @@ function useAutoFetchWhenNotScrollable({
 const PagedMemoList = (props: Props) => {
   const t = useTranslate();
   const { isUserSettingsInitialized } = useAuth();
-  const { filters, memoView, removeFilter } = useMemoFilterContext();
+  const { filters, memoView, removeFilter, setFilters, setMemoView } = useMemoFilterContext();
   const { setQuickFindOpen } = useAppSidebar();
   const { maxColumns, compactMode } = useView();
   // maxColumns is a ceiling: 1 = single reading column, 0 = as many as fit. The single
@@ -231,10 +232,17 @@ const PagedMemoList = (props: Props) => {
   );
 
   const hasFilters = filters.length > 0 || memoView !== undefined;
-  const emptyPlaceholder =
-    !isDisplayPending && !isError && !isFetchingNextPage && !hasNextPage && displayMemoList.length === 0 ? (
-      <Placeholder scene={hasFilters ? "search" : "memo"} message={props.emptyMessage ?? t("message.no-data")} className="w-full" />
-    ) : null;
+  const isEmpty = !isDisplayPending && !isError && !isFetchingNextPage && !hasNextPage && displayMemoList.length === 0;
+  const clearFilters = () => {
+    setFilters([]);
+    setMemoView(undefined);
+  };
+  // No results is neutral and offers the way out; first use belongs to the route.
+  const emptyPlaceholder = !isEmpty ? null : hasFilters ? (
+    <EmptyLine message={t("memo.no-matching-memos")} action={t("memo.clear-filters")} onAction={clearFilters} />
+  ) : (
+    (props.emptyState ?? <Placeholder scene="memo" message={t("message.no-data")} className="w-full" />)
+  );
   const initialLoader = isDisplayPending && showLoader ? <Loader /> : null;
   // Only a query the user typed can be edited or cleared from the error; facet and scope
   // filters are fixed by the route.

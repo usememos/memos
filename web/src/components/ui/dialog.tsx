@@ -45,9 +45,16 @@ const dialogContentVariants = cva(
           "w-[calc(100%-2rem)] max-w-[calc(100%-2rem)] p-4 sm:w-[calc(100%-3rem)] sm:max-w-[calc(100%-3rem)] sm:p-6 md:w-full md:max-w-2xl",
         full: "w-[calc(100%-2rem)] max-w-[calc(100%-2rem)] p-4 sm:w-[calc(100%-3rem)] sm:max-w-[calc(100%-3rem)] sm:p-6 md:w-[calc(100%-2rem)] md:max-w-none",
       },
+      // The welcome guide's frame: no border or inner padding, the page background as paper, a
+      // rounder corner, and its own layout inside. Every other dialog keeps the default chrome.
+      chrome: {
+        default: "",
+        guide: "rounded-[18px] border-0 bg-background p-0 sm:p-0 md:max-w-[440px]",
+      },
     },
     defaultVariants: {
       size: "default",
+      chrome: "default",
     },
   },
 );
@@ -59,10 +66,10 @@ const DialogContent = React.forwardRef<
       showCloseButton?: boolean;
       backdrop?: DialogBackdrop;
     }
->(({ className, children, showCloseButton = true, backdrop = "default", size, ...props }, ref) => (
+>(({ className, children, showCloseButton = true, backdrop = "default", size, chrome, ...props }, ref) => (
   <DialogPortal>
     <DialogOverlay tone={backdrop} />
-    <DialogPrimitive.Popup ref={ref} className={cn(dialogContentVariants({ size }), className)} {...props}>
+    <DialogPrimitive.Popup ref={ref} className={cn(dialogContentVariants({ size, chrome }), className)} {...props}>
       <div className="overflow-y-auto overflow-x-hidden flex-1 flex flex-col gap-4">{children}</div>
       {showCloseButton && (
         <DialogPrimitive.Close className={cn(buttonVariants({ variant: "quiet", size: "icon-compact" }), "absolute top-3 end-3")}>

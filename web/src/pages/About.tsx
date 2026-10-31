@@ -1,6 +1,8 @@
-import { BookOpenIcon, CodeXmlIcon, ExternalLinkIcon, GitForkIcon, GlobeIcon, HeartIcon, ScissorsIcon } from "lucide-react";
+import { BookOpenIcon, CodeXmlIcon, ExternalLinkIcon, GitForkIcon, GlobeIcon, HeartIcon, ScissorsIcon, SparklesIcon } from "lucide-react";
+import { useState } from "react";
 import MemosLogo from "@/components/MemosLogo";
 import { Badge } from "@/components/ui/badge";
+import { WelcomeGuideDialog } from "@/components/WelcomeGuide";
 import { useInstance } from "@/contexts/InstanceContext";
 import {
   MEMOS_API_DOCUMENTATION_URL,
@@ -16,6 +18,10 @@ const GITHUB_COMMIT_URL_PREFIX = "https://github.com/usememos/memos/commit/";
 const GITHUB_RELEASE_URL_PREFIX = "https://github.com/usememos/memos/releases/tag/";
 
 const DEFAULT_TITLE = "Memos";
+
+/** One card per project link; the welcome guide reopens from a button in the same frame. */
+const PROJECT_CARD_CLASSES =
+  "group flex h-full flex-col rounded-xl border border-border p-5 transition-colors hover:border-muted-foreground/40 hover:bg-muted/40 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring @min-[60rem]:p-6";
 
 const isCommitSha = (commit: string) => /^[0-9a-f]{7,40}$/i.test(commit);
 
@@ -63,6 +69,8 @@ const About = () => {
       value: <span className="text-[13px] text-muted-foreground">{t("about.powered-by")}</span>,
     });
   }
+
+  const [guideOpen, setGuideOpen] = useState(false);
 
   const projectLinks = [
     { label: t("about.official-website"), note: t("about.official-website-note"), href: MEMOS_WEBSITE_URL, icon: GlobeIcon },
@@ -123,12 +131,7 @@ const About = () => {
               <ul className="grid gap-3 @min-[28rem]:grid-cols-2 @min-[60rem]:gap-4">
                 {projectLinks.map((link) => (
                   <li key={link.href} className="min-w-0">
-                    <a
-                      className="group flex h-full flex-col rounded-xl border border-border p-5 transition-colors hover:border-muted-foreground/40 hover:bg-muted/40 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring @min-[60rem]:p-6"
-                      href={link.href}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
+                    <a className={PROJECT_CARD_CLASSES} href={link.href} target="_blank" rel="noreferrer">
                       <span className="flex items-center justify-between text-muted-foreground">
                         <link.icon aria-hidden="true" className="size-6 @min-[60rem]:size-7" strokeWidth={1.75} />
                         <ExternalLinkIcon aria-hidden="true" className="size-4 transition-colors group-hover:text-foreground" />
@@ -138,11 +141,25 @@ const About = () => {
                     </a>
                   </li>
                 ))}
+                {!profile.demo && (
+                  <li className="min-w-0">
+                    <button type="button" className={`${PROJECT_CARD_CLASSES} w-full text-start`} onClick={() => setGuideOpen(true)}>
+                      <span className="flex items-center justify-between text-muted-foreground">
+                        <SparklesIcon aria-hidden="true" className="size-6 @min-[60rem]:size-7" strokeWidth={1.75} />
+                      </span>
+                      <span className="mt-5 block text-base font-medium text-foreground @min-[60rem]:text-lg">{t("welcome.reopen")}</span>
+                      <span className="mt-1 block text-sm leading-relaxed text-muted-foreground @min-[60rem]:text-base">
+                        {t("welcome.reopen-note")}
+                      </span>
+                    </button>
+                  </li>
+                )}
               </ul>
             </nav>
           </section>
         </div>
       </div>
+      <WelcomeGuideDialog open={guideOpen} onOpenChange={setGuideOpen} />
     </section>
   );
 };

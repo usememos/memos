@@ -47,6 +47,12 @@ vi.mock("@/components/PagedMemoList", () => ({
     );
   },
   getMemoKey: (memo: { name: string }) => memo.name,
+  EmptyLine: () => null,
+}));
+
+vi.mock("@/components/WelcomeGuide", () => ({
+  WelcomeGuideDialog: () => null,
+  useWelcomeGuide: () => ({ open: false, onOpenChange: () => {} }),
 }));
 
 vi.mock("@/contexts/AuthContext", () => ({

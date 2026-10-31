@@ -16,7 +16,12 @@ const feed = vi.hoisted(() => ({
   isFetchNextPageError: false,
 }));
 const sidebar = vi.hoisted(() => ({ setQuickFindOpen: vi.fn() }));
-const filterContext = vi.hoisted(() => ({ filters: [{ factor: "celSearch", value: "pinned" }], removeFilter: vi.fn() }));
+const filterContext = vi.hoisted(() => ({
+  filters: [{ factor: "celSearch", value: "pinned" }],
+  removeFilter: vi.fn(),
+  setFilters: vi.fn(),
+  setMemoView: vi.fn(),
+}));
 const readiness = vi.hoisted(() => ({ userSettings: true }));
 const memoQuery = vi.hoisted(() => ({ request: undefined as Record<string, unknown> | undefined }));
 
@@ -40,7 +45,12 @@ vi.mock("@/hooks/useMemoQueries", () => ({
 
 vi.mock("@/contexts/MemoFilterContext", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/contexts/MemoFilterContext")>()),
-  useMemoFilterContext: () => ({ filters: filterContext.filters, removeFilter: filterContext.removeFilter }),
+  useMemoFilterContext: () => ({
+    filters: filterContext.filters,
+    removeFilter: filterContext.removeFilter,
+    setFilters: filterContext.setFilters,
+    setMemoView: filterContext.setMemoView,
+  }),
 }));
 
 vi.mock("@/contexts/AppSidebarContext", () => ({ useAppSidebar: () => sidebar }));
@@ -69,11 +79,15 @@ const memo = { name: "memos/1", content: "hello", updateTime: undefined } as unk
 
 const renderList = (
   renderer: (memo: Memo, options: { compact: boolean }) => React.ReactElement = () => <div />,
-  options: { leading?: React.ReactNode } = {},
+  options: { leading?: React.ReactNode; emptyState?: React.ReactNode } = {},
 ) =>
   render(
     <QueryClientProvider client={new QueryClient()}>
-      <PagedMemoList renderer={renderer} renderLeading={options.leading ? () => options.leading : undefined} />
+      <PagedMemoList
+        renderer={renderer}
+        renderLeading={options.leading ? () => options.leading : undefined}
+        emptyState={options.emptyState}
+      />
     </QueryClientProvider>,
   );
 
@@ -233,18 +247,30 @@ describe("<PagedMemoList>", () => {
     expect(screen.getByTestId("leading-content")).toBeInTheDocument();
   });
 
-  it("uses the search illustration when filters return no memos", () => {
+  it("offers to clear filters when they return no memos, without an illustration", () => {
     renderList();
 
-    expect(screen.getByText("No data found.")).toBeInTheDocument();
-    expect(screen.getByTestId("placeholder-illustration")).toHaveAttribute("data-scene", "search");
+    expect(screen.getByText("memo.no-matching-memos")).toBeInTheDocument();
+    expect(screen.queryByTestId("placeholder-illustration")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "memo.clear-filters" }));
+    expect(filterContext.setFilters).toHaveBeenCalledWith([]);
+    expect(filterContext.setMemoView).toHaveBeenCalledWith(undefined);
   });
 
-  it("uses the blank memo illustration for an unfiltered empty list", () => {
+  it("uses the blank memo illustration for an unfiltered empty list without route content", () => {
     filterContext.filters = [];
     renderList();
 
     expect(screen.getByTestId("placeholder-illustration")).toHaveAttribute("data-scene", "memo");
+  });
+
+  it("renders the route's own first-use content for an unfiltered empty list", () => {
+    filterContext.filters = [];
+    renderList(undefined, { emptyState: <div data-testid="first-use" /> });
+
+    expect(screen.getByTestId("first-use")).toBeInTheDocument();
+    expect(screen.queryByTestId("placeholder-illustration")).not.toBeInTheDocument();
   });
 
   it("combines the selected Space filter with the memo list filter", () => {
@@ -263,8 +289,7 @@ describe("<PagedMemoList>", () => {
     renderList(undefined, { leading: <div data-testid="leading-content" /> });
 
     expect(screen.getByTestId("leading-content")).toBeInTheDocument();
-    expect(screen.getByText("No data found.")).toBeInTheDocument();
-    expect(screen.getByTestId("placeholder-illustration")).toBeInTheDocument();
+    expect(screen.getByText("memo.no-matching-memos")).toBeInTheDocument();
   });
 
   it("places leading content and the empty state in the first grid column", () => {
@@ -273,7 +298,7 @@ describe("<PagedMemoList>", () => {
     try {
       renderList(undefined, { leading: <div data-testid="leading-content" /> });
 
-      const leadingTile = screen.getByText("No data found.").closest(".absolute");
+      const leadingTile = screen.getByText("memo.no-matching-memos").closest(".absolute");
       expect(leadingTile).not.toBeNull();
       expect(leadingTile).toContainElement(screen.getByTestId("leading-content"));
     } finally {
