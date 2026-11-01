@@ -392,6 +392,9 @@ func TestCacheEvictionGuardIgnoresInflightReservations(t *testing.T) {
 	if cache.Size() > int64(config.MaxItems) {
 		t.Fatalf("cache size %d exceeds limit %d after a real overflow", cache.Size(), config.MaxItems)
 	}
+	if v, ok := cache.Get(ctx, "y"); !ok || v != 3 {
+		t.Fatalf("newest entry y was evicted by an overflow cleanup (ok=%v, v=%v)", ok, v)
+	}
 }
 
 func TestCacheConcurrentClose(t *testing.T) {
