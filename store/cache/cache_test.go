@@ -428,8 +428,12 @@ func TestCacheCloseWaitsForCleanup(t *testing.T) {
 		default:
 			close(release)
 		}
-		_ = cache.Close()
-		<-cache.closedChan
+		go func() { _ = cache.Close() }()
+		select {
+		case <-cache.closedChan:
+		case <-time.After(5 * time.Second):
+			t.Error("cleanup goroutine did not exit")
+		}
 	})
 	cache.SetWithTTL(context.Background(), "expired", "value", -time.Second)
 	select {
@@ -438,6 +442,11 @@ func TestCacheCloseWaitsForCleanup(t *testing.T) {
 		t.Fatal("cleanup did not enter the eviction callback")
 	}
 	go func() { done <- cache.Close() }()
+	select {
+	case <-cache.stopChan:
+	case <-time.After(5 * time.Second):
+		t.Fatal("Close did not signal the cleanup goroutine")
+	}
 	select {
 	case err := <-done:
 		t.Fatalf("Close returned before cleanup finished: %v", err)
