@@ -124,40 +124,32 @@ func (c *Cache) SetWithTTL(_ context.Context, key string, value any, ttl time.Du
 		(&c.itemCount).Add(-1)
 	}
 
-	// If we're over the max items, clean up old items. itemCount can
-	// transiently over-count while other writers hold reservations for keys
-	// they have not published yet, so confirm against the entries actually
-	// in the map before evicting anything live.
+	// If we're over the max items, clean up old items.
 	if c.config.MaxItems > 0 && (&c.itemCount).Load() > int64(c.config.MaxItems) {
-		published := int64(0)
-		c.data.Range(func(_, value any) bool {
-			if _, ok := value.(*item); ok {
-				published++
-			}
-			return true
-		})
-		if published > int64(c.config.MaxItems) {
-			c.cleanupOldest()
-		}
+		c.cleanupOldest()
 	}
 }
 
 // Get retrieves a value from the cache.
 func (c *Cache) Get(_ context.Context, key string) (any, bool) {
-	value, ok := c.data.Load(key)
-	if !ok {
-		return nil, false
-	}
-
-	itm, ok := value.(*item)
-	if !ok {
-		// If the value is not of type *item, it means it was corrupted or not set correctly.
-		if _, loaded := c.data.LoadAndDelete(key); loaded {
-			(&c.itemCount).Add(-1)
+	for {
+		value, ok := c.data.Load(key)
+		if !ok {
+			return nil, false
 		}
-		return nil, false
-	}
-	if time.Now().After(itm.expiration) {
+
+		itm, ok := value.(*item)
+		if !ok {
+			// If the value is not of type *item, it means it was corrupted or not set correctly.
+			if _, loaded := c.data.LoadAndDelete(key); loaded {
+				(&c.itemCount).Add(-1)
+			}
+			return nil, false
+		}
+		if !time.Now().After(itm.expiration) {
+			return itm.value, true
+		}
+
 		// Only account for the removal if we removed the exact entry we
 		// observed. A concurrent Set may have already replaced it with a
 		// fresher entry, which must survive.
@@ -167,12 +159,10 @@ func (c *Cache) Get(_ context.Context, key string) (any, bool) {
 			if c.config.OnEviction != nil {
 				c.config.OnEviction(key, itm.value)
 			}
+			return nil, false
 		}
-
-		return nil, false
+		// The expired entry was replaced while we looked at it; read the fresher one.
 	}
-
-	return itm.value, true
 }
 
 // Delete removes a value from the cache.
@@ -279,16 +269,14 @@ func (c *Cache) cleanup() {
 }
 
 // cleanupOldest removes the oldest items if we're over the max items.
+//
+// itemCount can transiently over-count while other writers hold reservations
+// for keys they have not published yet, so the decision to evict is based on
+// the entries actually in the map, counted during the same scan that picks
+// the eviction candidates.
 func (c *Cache) cleanupOldest() {
 	// Remove 20% of max items at once
 	threshold := max(c.config.MaxItems/5, 1)
-
-	currentCount := (&c.itemCount).Load()
-
-	// If we're not over the threshold, don't do anything
-	if currentCount <= int64(c.config.MaxItems) {
-		return
-	}
 
 	// Find the oldest items
 	type keyExpPair struct {
@@ -297,11 +285,13 @@ func (c *Cache) cleanupOldest() {
 		expiration time.Time
 	}
 	candidates := make([]keyExpPair, 0, threshold)
+	published := int64(0)
 	c.data.Range(func(key, value any) bool {
 		itm, ok := value.(*item)
 		if !ok {
 			return true
 		}
+		published++
 		if keyStr, ok := key.(string); ok && len(candidates) < threshold {
 			candidates = append(candidates, keyExpPair{keyStr, itm, itm.expiration})
 			return true
@@ -322,6 +312,11 @@ func (c *Cache) cleanupOldest() {
 
 		return true
 	})
+
+	// Not actually over the limit: the counter was inflated by in-flight reservations.
+	if published <= int64(c.config.MaxItems) {
+		return
+	}
 
 	// Delete the oldest items
 	deletedCount := 0
