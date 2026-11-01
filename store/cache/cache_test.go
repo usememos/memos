@@ -410,3 +410,46 @@ func TestCacheConcurrentClose(t *testing.T) {
 	}
 	wg.Wait()
 }
+
+func TestCacheCloseWaitsForCleanup(t *testing.T) {
+	started := make(chan struct{})
+	release := make(chan struct{})
+	done := make(chan error, 1)
+	config := DefaultConfig()
+	config.CleanupInterval = time.Millisecond
+	config.OnEviction = func(string, any) {
+		close(started)
+		<-release
+	}
+	cache := New(config)
+	t.Cleanup(func() {
+		select {
+		case <-release:
+		default:
+			close(release)
+		}
+		_ = cache.Close()
+		<-cache.closedChan
+	})
+	cache.SetWithTTL(context.Background(), "expired", "value", -time.Second)
+	select {
+	case <-started:
+	case <-time.After(5 * time.Second):
+		t.Fatal("cleanup did not enter the eviction callback")
+	}
+	go func() { done <- cache.Close() }()
+	select {
+	case err := <-done:
+		t.Fatalf("Close returned before cleanup finished: %v", err)
+	case <-time.After(20 * time.Millisecond):
+	}
+	close(release)
+	select {
+	case err := <-done:
+		if err != nil {
+			t.Fatalf("Close returned error: %v", err)
+		}
+	case <-time.After(5 * time.Second):
+		t.Fatal("Close did not return after cleanup finished")
+	}
+}
