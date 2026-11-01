@@ -41,6 +41,15 @@ func WriteError(w http.ResponseWriter, r *http.Request, err error) {
 	if errors.As(err, &publicError) {
 		code, message = publicError.Code, publicError.Message
 	}
+	// Handlers may have prepared representation headers for the body they
+	// meant to serve before failing (e.g. the file server sets the attachment's
+	// Content-Type and Content-Disposition up front). The error body is JSON,
+	// so the stale values must not leak onto the response: a media-typed error
+	// gets handed to the browser's document viewer instead of being read.
+	h := w.Header()
+	h.Del("Content-Type")
+	h.Del("Content-Disposition")
+	h.Del("Content-Length")
 	if r.Method == http.MethodHead {
 		w.WriteHeader(code)
 		return

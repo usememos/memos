@@ -101,6 +101,90 @@ func TestServeAttachmentFile_S3(t *testing.T) {
 	require.Empty(t, multiRangeRecorder.Header().Get("Content-Range"))
 }
 
+// A failed media fetch must answer with the JSON error it actually is, not the
+// attachment's media type: browsers route a Content-Type like application/pdf
+// to their document viewer, which then reports a misleading "Failed to load
+// PDF document" for the JSON body (usememos/memos#6515).
+func TestServeAttachmentFile_StorageFailureIsAJSONError(t *testing.T) {
+	ctx := context.Background()
+	fake := fakes3.New(t, "file-server-attachments")
+	svc, fs, stores, cleanup := newShareAttachmentTestServices(ctx, t)
+	defer cleanup()
+
+	configuredStorage := &storepb.Storage{
+		Id:     "s3-files",
+		Name:   "File server S3",
+		Type:   storepb.StorageType_STORAGE_TYPE_S3,
+		Config: &storepb.Storage_S3Config{S3Config: fake.Config("file-server-attachments")},
+	}
+	_, err := stores.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_STORAGE,
+		Value: &storepb.InstanceSetting_StorageSetting{StorageSetting: &storepb.InstanceStorageSetting{
+			FilepathTemplate: "files/{uuid}_{filename}",
+			Storages:         []*storepb.Storage{configuredStorage},
+			DefaultStorageId: configuredStorage.Id,
+		}},
+	})
+	require.NoError(t, err)
+
+	creator, err := stores.CreateUser(ctx, &store.User{
+		Username: "s3-failure-owner",
+		Role:     store.RoleUser,
+		Email:    "s3-failure-owner@example.com",
+	})
+	require.NoError(t, err)
+	creatorCtx := context.WithValue(ctx, auth.UserIDContextKey, creator.ID)
+
+	var attachments []*apipb.Attachment
+	for _, spec := range []struct{ filename, contentType string }{
+		{"document.pdf", "application/pdf"},
+		{"archive.zip", "application/zip"},
+	} {
+		attachment, err := svc.CreateAttachment(creatorCtx, &apipb.CreateAttachmentRequest{Attachment: &apipb.Attachment{
+			Filename: spec.filename,
+			Type:     spec.contentType,
+			Content:  []byte("s3 bytes"),
+		}})
+		require.NoError(t, err)
+		attachments = append(attachments, attachment)
+	}
+	_, err = svc.CreateMemo(creatorCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{
+		Content:     "public S3 attachments",
+		Visibility:  apipb.Visibility_PUBLIC,
+		Attachments: []*apipb.Attachment{{Name: attachments[0].Name}, {Name: attachments[1].Name}},
+	}})
+	require.NoError(t, err)
+
+	e := http.NewServeMux()
+	fs.RegisterRoutes(e, http.HandlerFunc(httphandler.NotFound))
+
+	// Healthy PDFs keep their media type and are served inline so a new tab
+	// renders them in the browser's document viewer.
+	recorder := httptest.NewRecorder()
+	e.ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/%s", attachments[0].Name, attachments[0].Filename), nil))
+	require.Equal(t, http.StatusOK, recorder.Code)
+	require.Equal(t, "application/pdf", recorder.Header().Get("Content-Type"))
+	require.Empty(t, recorder.Header().Get("Content-Disposition"))
+
+	// Drop the backing objects so the S3 reads fail after the handler has
+	// already prepared the attachments' media headers.
+	for _, attachment := range attachments {
+		uid := strings.TrimPrefix(attachment.Name, "attachments/")
+		stored, err := svc.Store.GetAttachment(ctx, &store.FindAttachment{UID: &uid})
+		require.NoError(t, err)
+		require.NoError(t, fake.DeleteObject("file-server-attachments", stored.Payload.GetS3Object().Key))
+	}
+
+	for _, attachment := range attachments {
+		recorder := httptest.NewRecorder()
+		e.ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/%s", attachment.Name, attachment.Filename), nil))
+		require.Equal(t, http.StatusInternalServerError, recorder.Code)
+		require.Equal(t, "application/json", recorder.Header().Get("Content-Type"))
+		require.Empty(t, recorder.Header().Get("Content-Disposition"))
+		require.Contains(t, recorder.Body.String(), "failed to stream from S3")
+	}
+}
+
 func TestServeAttachmentFile_ShareTokenAllowsDirectMemoAttachment(t *testing.T) {
 	ctx := context.Background()
 	svc, fs, stores, cleanup := newShareAttachmentTestServices(ctx, t)

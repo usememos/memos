@@ -67,3 +67,11 @@ func (s *Server) GetObject(bucket, key string) ([]byte, error) {
 	defer object.Contents.Close()
 	return io.ReadAll(object.Contents)
 }
+
+// DeleteObject removes an object directly from the in-memory store, bypassing
+// the HTTP API, for arranging state where the backend no longer holds an
+// attachment's bytes.
+func (s *Server) DeleteObject(bucket, key string) error {
+	_, err := s.memory.DeleteObject(bucket, key)
+	return err
+}
