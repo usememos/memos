@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"slices"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/yuin/goldmark"
 	gast "github.com/yuin/goldmark/ast"
@@ -352,7 +353,7 @@ func (s *service) GenerateSnippet(content []byte, maxLength int) (string, error)
 				return gast.WalkContinue, nil
 			}
 			buf.Write(segment.Value(content))
-			if node.SoftLineBreak() {
+			if node.SoftLineBreak() || node.HardLineBreak() {
 				buf.WriteByte(' ')
 			}
 		case *gast.AutoLink:
@@ -377,8 +378,9 @@ func (s *service) GenerateSnippet(content []byte, maxLength int) (string, error)
 		}
 
 		// Stop walking if we've exceeded double the max length
-		// (we'll truncate precisely later)
-		if buf.Len() > maxLength*2 {
+		// (we'll truncate precisely later). Count characters, not bytes,
+		// like truncateAtWord does, so multi-byte text isn't cut short.
+		if utf8.RuneCountInString(buf.String()) > maxLength*2 {
 			return gast.WalkStop, nil
 		}
 
