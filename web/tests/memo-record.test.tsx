@@ -188,3 +188,58 @@ describe("useCreateMemo", () => {
     expect(invalidate.mock.calls.map(([filters]) => filters?.queryKey?.[1])).not.toContain("comments");
   });
 });
+
+describe("useUpdateMemo", () => {
+  beforeEach(() => vi.resetAllMocks());
+
+  // Pin, then unpin before the first reply: two updates of one memo in flight, as a quick second click makes them.
+  const pinThenUnpin = () => {
+    const { client, wrapper } = setup();
+    const target = memo("memos/x");
+    client.setQueryData(memoKeys.detail(target.name), target);
+    const replies: Array<() => void> = [];
+    api.updateMemo.mockImplementation(
+      ({ memo: update }: { memo: Memo }) =>
+        new Promise<Memo>((done) => replies.push(() => done(create(MemoSchema, { ...target, pinned: update.pinned })))),
+    );
+    const { result } = renderHook(() => ({ record: useMemoRecord(target.name), update: useUpdateMemo() }), { wrapper });
+    act(() => {
+      result.current.update.mutate({ update: { name: target.name, pinned: true }, updateMask: ["pinned"] });
+      result.current.update.mutate({ update: { name: target.name, pinned: false }, updateMask: ["pinned"] });
+    });
+    // Answers one waiting request: the newest (pop) or the oldest (shift), once every request that can be sent is.
+    const answer = async (pick: "newest" | "oldest") => {
+      await act(async () => {
+        await new Promise((done) => setTimeout(done, 0));
+      });
+      await waitFor(() => expect(replies.length).toBeGreaterThan(0));
+      await act(async () => (pick === "newest" ? replies.pop() : replies.shift())?.());
+    };
+    return { client, target, result, answer };
+  };
+
+  it("keeps the newer change when the older reply arrives last", async () => {
+    const { client, target, result, answer } = pinThenUnpin();
+    await waitFor(() => expect(result.current.record?.pinned).toBe(false));
+
+    await answer("newest");
+    await answer("newest");
+    await waitFor(() => expect(client.isMutating()).toBe(0));
+
+    expect(api.updateMemo.mock.calls.map(([request]) => request.memo.pinned)).toEqual([true, false]);
+    expect(client.getQueryData<Memo>(memoKeys.detail(target.name))?.pinned).toBe(false);
+    expect(result.current.record?.pinned).toBe(false);
+  });
+
+  it("does not show the older reply while the newer update is still saving", async () => {
+    const { client, result, answer } = pinThenUnpin();
+    await waitFor(() => expect(result.current.record?.pinned).toBe(false));
+
+    await answer("oldest");
+    expect(result.current.record?.pinned).toBe(false);
+
+    await answer("oldest");
+    await waitFor(() => expect(client.isMutating()).toBe(0));
+    expect(result.current.record?.pinned).toBe(false);
+  });
+});

@@ -327,6 +327,9 @@ export function useUpdateMemo() {
   const queryClient = useQueryClient();
 
   return useMutation({
+    // Memo updates run one at a time, in the order they were made. Sent together, two quick updates of one memo
+    // (pin then unpin) can finish in either order, and the older reply would overwrite the newer change in the cache.
+    scope: { id: "memo-update" },
     mutationFn: async ({ update, updateMask }: { update: Partial<Memo>; updateMask: string[] }) => {
       const memo = await memoServiceClient.updateMemo({
         memo: create(MemoSchema, update as Record<string, unknown>),
@@ -369,6 +372,13 @@ export function useUpdateMemo() {
       if (updateMask.includes("space")) {
         queryClient.invalidateQueries({ queryKey: memoKeys.all });
       }
+      // A newer update of this memo is queued behind this one: keep its optimistic patch, and leave the cache
+      // writes and refetches to its own onSuccess. This reply, or a refetch sent before it is saved, is older.
+      const newerUpdateQueued =
+        queryClient.isMutating({
+          predicate: (mutation) => (mutation.state.variables as { update?: Partial<Memo> } | undefined)?.update?.name === updatedMemo.name,
+        }) > 1;
+      if (newerUpdateQueued) return;
       // Update cache with server response
       queryClient.setQueryData(memoKeys.detail(updatedMemo.name), updatedMemo);
       patchMemoInCollectionQueries(queryClient, updatedMemo);
