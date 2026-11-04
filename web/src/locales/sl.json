@@ -529,8 +529,8 @@
     },
     "editor": {
       "label": "Urejevalnik",
-      "auto-focus-mode": "Automatic focus mode",
-      "auto-focus-mode-description": "Enter focus mode automatically when editing a memo.",
+      "auto-focus-mode": "Samodejni način osredotočanja",
+      "auto-focus-mode-description": "Ob urejanju beležke samodejno preklopi v način osredotočanja.",
       "markdown-mode-description": "Pišite in urejajte beležke kot besedilo Markdown namesto oblikovanega besedila."
     },
     "memo-view": {

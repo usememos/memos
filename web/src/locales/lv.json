@@ -645,8 +645,8 @@
     },
     "editor": {
       "label": "Redaktors",
-      "auto-focus-mode": "Automatic focus mode",
-      "auto-focus-mode-description": "Enter focus mode automatically when editing a memo.",
+      "auto-focus-mode": "Automātiskais fokusa režīms",
+      "auto-focus-mode-description": "Rediģējot piezīmi, automātiski ieslēgt fokusa režīmu.",
       "markdown-mode-description": "Rakstiet un rediģējiet piezīmes kā Markdown tekstu, nevis formatētu tekstu."
     },
     "memo-view": {

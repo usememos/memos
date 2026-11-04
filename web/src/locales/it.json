@@ -529,8 +529,8 @@
     },
     "editor": {
       "label": "Editor",
-      "auto-focus-mode": "Automatic focus mode",
-      "auto-focus-mode-description": "Enter focus mode automatically when editing a memo.",
+      "auto-focus-mode": "Modalità Focus automatica",
+      "auto-focus-mode-description": "Entra automaticamente in Modalità Focus durante la modifica di un promemoria.",
       "markdown-mode-description": "Scrivi e modifica i promemoria come testo Markdown anziché come testo formattato."
     },
     "memo-view": {

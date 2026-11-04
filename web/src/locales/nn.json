@@ -766,8 +766,8 @@
     },
     "editor": {
       "label": "Redigering",
-      "auto-focus-mode": "Automatic focus mode",
-      "auto-focus-mode-description": "Enter focus mode automatically when editing a memo.",
+      "auto-focus-mode": "Automatisk fokusmodus",
+      "auto-focus-mode-description": "Gå automatisk til fokusmodus ved redigering av eit notat.",
       "markdown-mode-description": "Skriv og rediger notat som Markdown-tekst i staden for formatert tekst."
     },
     "resource-stats": {

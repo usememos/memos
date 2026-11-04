@@ -529,8 +529,8 @@
     },
     "editor": {
       "label": "რედაქტორი",
-      "auto-focus-mode": "Automatic focus mode",
-      "auto-focus-mode-description": "Enter focus mode automatically when editing a memo.",
+      "auto-focus-mode": "ფოკუსის ავტომატური რეჟიმი",
+      "auto-focus-mode-description": "შენიშვნის რედაქტირებისას ავტომატურად გადასვლა ფოკუსის რეჟიმში.",
       "markdown-mode-description": "დაწერეთ და დაარედაქტირეთ შენიშვნები Markdown ტექსტად ფორმატირებული ტექსტის ნაცვლად."
     },
     "memo-view": {

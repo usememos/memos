@@ -440,8 +440,8 @@
     },
     "editor": {
       "label": "المحرر",
-      "auto-focus-mode": "Automatic focus mode",
-      "auto-focus-mode-description": "Enter focus mode automatically when editing a memo.",
+      "auto-focus-mode": "وضع التركيز التلقائي",
+      "auto-focus-mode-description": "الدخول إلى وضع التركيز تلقائيًا عند تعديل مذكرة.",
       "markdown-mode-description": "اكتب المذكرات وعدّلها كنص Markdown بدلًا من النص المنسق."
     },
     "memo-view": {

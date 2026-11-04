@@ -529,8 +529,8 @@
     },
     "editor": {
       "label": "Uređivač",
-      "auto-focus-mode": "Automatic focus mode",
-      "auto-focus-mode-description": "Enter focus mode automatically when editing a memo.",
+      "auto-focus-mode": "Automatski način rada za fokus",
+      "auto-focus-mode-description": "Automatski uđite u način rada za fokus prilikom uređivanja bilješke.",
       "markdown-mode-description": "Pišite i uređujte bilješke kao Markdown tekst umjesto oblikovanog teksta."
     },
     "memo-view": {

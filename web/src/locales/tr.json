@@ -692,8 +692,8 @@
     },
     "editor": {
       "label": "Editör",
-      "auto-focus-mode": "Automatic focus mode",
-      "auto-focus-mode-description": "Enter focus mode automatically when editing a memo.",
+      "auto-focus-mode": "Otomatik odak modu",
+      "auto-focus-mode-description": "Bir notu düzenlerken otomatik olarak odak moduna geç.",
       "markdown-mode-description": "Notları biçimlendirilmiş metin yerine Markdown metni olarak yazın ve düzenleyin."
     },
     "memo-view": {

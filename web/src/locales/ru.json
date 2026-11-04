@@ -529,8 +529,8 @@
     },
     "editor": {
       "label": "Редактор",
-      "auto-focus-mode": "Automatic focus mode",
-      "auto-focus-mode-description": "Enter focus mode automatically when editing a memo.",
+      "auto-focus-mode": "Автоматический режим фокуса",
+      "auto-focus-mode-description": "Автоматически переходить в режим фокуса при редактировании заметки.",
       "markdown-mode-description": "Создавайте и редактируйте заметки как текст Markdown вместо форматированного текста."
     },
     "memo-view": {

@@ -529,8 +529,8 @@
     },
     "editor": {
       "label": "エディター",
-      "auto-focus-mode": "Automatic focus mode",
-      "auto-focus-mode-description": "Enter focus mode automatically when editing a memo.",
+      "auto-focus-mode": "自動フォーカスモード",
+      "auto-focus-mode-description": "メモの編集時に自動的にフォーカスモードに入ります。",
       "markdown-mode-description": "メモを書式付きテキストではなく Markdown テキストとして作成・編集します。"
     },
     "memo-view": {

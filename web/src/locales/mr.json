@@ -440,8 +440,8 @@
     },
     "editor": {
       "label": "संपादक",
-      "auto-focus-mode": "Automatic focus mode",
-      "auto-focus-mode-description": "Enter focus mode automatically when editing a memo.",
+      "auto-focus-mode": "स्वयंचलित फोकस मोड",
+      "auto-focus-mode-description": "मेमो संपादित करताना आपोआप फोकस मोडमध्ये प्रवेश करा.",
       "markdown-mode-description": "मेमो स्वरूपित मजकुराऐवजी Markdown मजकूर म्हणून लिहा आणि संपादित करा."
     },
     "memo-view": {

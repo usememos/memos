@@ -645,8 +645,8 @@
     },
     "editor": {
       "label": "Πρόγραμμα επεξεργασίας",
-      "auto-focus-mode": "Automatic focus mode",
-      "auto-focus-mode-description": "Enter focus mode automatically when editing a memo.",
+      "auto-focus-mode": "Αυτόματη λειτουργία εστίασης",
+      "auto-focus-mode-description": "Αυτόματη είσοδος στη λειτουργία εστίασης κατά την επεξεργασία μιας σημείωσης.",
       "markdown-mode-description": "Γράψτε και επεξεργαστείτε σημειώσεις ως κείμενο Markdown αντί για μορφοποιημένο κείμενο."
     },
     "memo-view": {

@@ -514,8 +514,8 @@
     },
     "editor": {
       "label": "编辑器",
-      "auto-focus-mode": "Automatic focus mode",
-      "auto-focus-mode-description": "Enter focus mode automatically when editing a memo.",
+      "auto-focus-mode": "自动聚焦模式",
+      "auto-focus-mode-description": "编辑备忘录时自动进入聚焦模式。",
       "markdown-mode-description": "以 Markdown 文本而非格式化文本撰写和编辑备忘录。"
     },
     "memo-view": {

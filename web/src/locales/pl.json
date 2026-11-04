@@ -529,8 +529,8 @@
     },
     "editor": {
       "label": "Edytor",
-      "auto-focus-mode": "Automatic focus mode",
-      "auto-focus-mode-description": "Enter focus mode automatically when editing a memo.",
+      "auto-focus-mode": "Automatyczny Tryb Skupienia",
+      "auto-focus-mode-description": "Automatycznie przechodź do Trybu Skupienia podczas edycji notatki.",
       "markdown-mode-description": "Pisz i edytuj notatki jako tekst Markdown zamiast tekstu sformatowanego."
     },
     "memo-view": {

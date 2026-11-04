@@ -529,8 +529,8 @@
     },
     "editor": {
       "label": "Redigerare",
-      "auto-focus-mode": "Automatic focus mode",
-      "auto-focus-mode-description": "Enter focus mode automatically when editing a memo.",
+      "auto-focus-mode": "Automatiskt fokusläge",
+      "auto-focus-mode-description": "Gå automatiskt in i fokusläge när du redigerar ett memo.",
       "markdown-mode-description": "Skriv och redigera memon som Markdown-text i stället för formaterad text."
     },
     "memo-view": {

@@ -529,8 +529,8 @@
     },
     "editor": {
       "label": "Szerkesztő",
-      "auto-focus-mode": "Automatic focus mode",
-      "auto-focus-mode-description": "Enter focus mode automatically when editing a memo.",
+      "auto-focus-mode": "Automatikus fókusz mód",
+      "auto-focus-mode-description": "Jegyzet szerkesztésekor automatikusan lépjen fókusz módba.",
       "markdown-mode-description": "Jegyzetek írása és szerkesztése Markdown szövegként formázott szöveg helyett."
     },
     "memo-view": {

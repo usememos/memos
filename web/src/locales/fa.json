@@ -440,8 +440,8 @@
     },
     "editor": {
       "label": "ویرایشگر",
-      "auto-focus-mode": "Automatic focus mode",
-      "auto-focus-mode-description": "Enter focus mode automatically when editing a memo.",
+      "auto-focus-mode": "حالت تمرکز خودکار",
+      "auto-focus-mode-description": "هنگام ویرایش یادداشت، به‌طور خودکار وارد حالت تمرکز شوید.",
       "markdown-mode-description": "یادداشت‌ها را به‌جای متن قالب‌بندی‌شده، به‌صورت متن Markdown بنویسید و ویرایش کنید."
     },
     "memo-view": {

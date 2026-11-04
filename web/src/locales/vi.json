@@ -440,8 +440,8 @@
     },
     "editor": {
       "label": "Trình chỉnh sửa",
-      "auto-focus-mode": "Automatic focus mode",
-      "auto-focus-mode-description": "Enter focus mode automatically when editing a memo.",
+      "auto-focus-mode": "Chế độ tập trung tự động",
+      "auto-focus-mode-description": "Tự động vào chế độ tập trung khi chỉnh sửa ghi chú.",
       "markdown-mode-description": "Viết và chỉnh sửa ghi chú dưới dạng văn bản Markdown thay vì văn bản có định dạng."
     },
     "memo-view": {

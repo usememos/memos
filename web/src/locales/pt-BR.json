@@ -440,8 +440,8 @@
     },
     "editor": {
       "label": "Editor",
-      "auto-focus-mode": "Automatic focus mode",
-      "auto-focus-mode-description": "Enter focus mode automatically when editing a memo.",
+      "auto-focus-mode": "Modo Foco automático",
+      "auto-focus-mode-description": "Entrar no Modo Foco automaticamente ao editar um memorando.",
       "markdown-mode-description": "Escreva e edite memorandos como texto Markdown em vez de texto formatado."
     },
     "memo-view": {
