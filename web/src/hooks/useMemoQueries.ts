@@ -325,6 +325,11 @@ export function useCreateMemo() {
 
 export function useUpdateMemo() {
   const queryClient = useQueryClient();
+  // The update settling now still counts as mutating, so more than one means a newer update of this memo is queued.
+  const hasNewerUpdateQueued = (name?: string) =>
+    queryClient.isMutating({
+      predicate: (mutation) => (mutation.state.variables as { update?: Partial<Memo> } | undefined)?.update?.name === name,
+    }) > 1;
 
   return useMutation({
     // Memo updates run one at a time, in the order they were made. Sent together, two quick updates of one memo
@@ -364,21 +369,23 @@ export function useUpdateMemo() {
       if (context?.previousMemo && update.name) {
         queryClient.setQueryData(memoKeys.detail(update.name), context.previousMemo);
         patchMemoInCollectionQueries(queryClient, context.previousMemo);
-      } else {
-        queryClient.invalidateQueries({ queryKey: memoKeys.all });
       }
+      // The snapshot can hold an older update's patch but not its reply, and that update left its refetches to this one.
+      // A newer update queued behind this one does them instead: a refetch sent now could answer after its reply.
+      if (hasNewerUpdateQueued(update.name)) return;
+      queryClient.invalidateQueries({ queryKey: memoKeys.all });
     },
     onSuccess: (updatedMemo, { updateMask }) => {
       if (updateMask.includes("space")) {
         queryClient.invalidateQueries({ queryKey: memoKeys.all });
       }
-      // A newer update of this memo is queued behind this one: keep its optimistic patch, and leave the cache
-      // writes and refetches to its own onSuccess. This reply, or a refetch sent before it is saved, is older.
-      const newerUpdateQueued =
-        queryClient.isMutating({
-          predicate: (mutation) => (mutation.state.variables as { update?: Partial<Memo> } | undefined)?.update?.name === updatedMemo.name,
-        }) > 1;
-      if (newerUpdateQueued) return;
+      // Invalidate user stats
+      queryClient.invalidateQueries({ queryKey: userKeys.stats() });
+      // Placement changes move linked attachments between scoped libraries.
+      queryClient.invalidateQueries({ queryKey: attachmentKeys.lists() });
+      // A newer update of this memo is queued behind this one: keep its optimistic patch, and leave the memo's cache
+      // writes and refetches to its own onSuccess or onError. This reply, or a refetch sent before it is saved, is older.
+      if (hasNewerUpdateQueued(updatedMemo.name)) return;
       // Update cache with server response
       queryClient.setQueryData(memoKeys.detail(updatedMemo.name), updatedMemo);
       patchMemoInCollectionQueries(queryClient, updatedMemo);
@@ -389,10 +396,6 @@ export function useUpdateMemo() {
         queryClient.invalidateQueries({ queryKey: memoKeys.comments(updatedMemo.parent) });
         queryClient.invalidateQueries({ queryKey: memoKeys.detail(updatedMemo.parent) });
       }
-      // Invalidate user stats
-      queryClient.invalidateQueries({ queryKey: userKeys.stats() });
-      // Placement changes move linked attachments between scoped libraries.
-      queryClient.invalidateQueries({ queryKey: attachmentKeys.lists() });
     },
   });
 }

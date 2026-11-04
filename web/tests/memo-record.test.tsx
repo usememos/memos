@@ -3,11 +3,28 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, renderHook, waitFor } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { findMemoInCollectionQueries, memoKeys, useCreateMemo, useMemoByName, useMemoRecord, useUpdateMemo } from "@/hooks/useMemoQueries";
+import { attachmentKeys } from "@/hooks/useAttachmentQueries";
+import {
+  findMemoInCollectionQueries,
+  memoKeys,
+  useCreateMemo,
+  useMemo,
+  useMemoByName,
+  useMemoRecord,
+  useMemos,
+  useUpdateMemo,
+} from "@/hooks/useMemoQueries";
 import { memoShareKeys } from "@/hooks/useMemoShareQueries";
+import { userKeys } from "@/hooks/useUserQueries";
 import { ListMemoCommentsResponseSchema, ListMemosResponseSchema, type Memo, MemoSchema } from "@/types/proto/api/memo_service_pb";
 
-const api = vi.hoisted(() => ({ getMemo: vi.fn(), updateMemo: vi.fn(), createMemo: vi.fn(), createMemoComment: vi.fn() }));
+const api = vi.hoisted(() => ({
+  getMemo: vi.fn(),
+  listMemos: vi.fn(),
+  updateMemo: vi.fn(),
+  createMemo: vi.fn(),
+  createMemoComment: vi.fn(),
+}));
 vi.mock("@/connect", () => ({ memoServiceClient: api }));
 
 const setup = () => {
@@ -241,5 +258,75 @@ describe("useUpdateMemo", () => {
     await answer("oldest");
     await waitFor(() => expect(client.isMutating()).toBe(0));
     expect(result.current.record?.pinned).toBe(false);
+  });
+
+  // A detail page and a list on screen, and a fake server that answers both from what it has saved.
+  const onScreen = async (before: Memo) => {
+    const { client, wrapper } = setup();
+    const server = { memo: before };
+    api.getMemo.mockImplementation(async () => server.memo);
+    api.listMemos.mockImplementation(async () => create(ListMemosResponseSchema, { memos: [server.memo] }));
+    client.setQueryData(memoKeys.detail(before.name), before);
+    const rendered = renderHook(() => ({ detail: useMemo(before.name), list: useMemos(), update: useUpdateMemo() }), { wrapper });
+    await waitFor(() => expect(rendered.result.current.list.data?.memos).toHaveLength(1));
+    return { client, server, result: rendered.result };
+  };
+
+  it("ends on the server's state when the queued update fails after the older one saved", async () => {
+    const before = create(MemoSchema, { name: "memos/x", content: "- [ ] a", snippet: "[ ] a", property: { hasIncompleteTasks: true } });
+    // The server derives the snippet and the property from the content, so only its replies carry them.
+    const saved = create(MemoSchema, { name: before.name, content: "- [x] a", snippet: "[x] a", property: { hasIncompleteTasks: false } });
+    const { client, server, result } = await onScreen(before);
+    api.updateMemo
+      .mockImplementationOnce(async () => {
+        server.memo = saved;
+        return saved;
+      })
+      .mockRejectedValueOnce(new Error("pin failed"));
+    const invalidate = vi.spyOn(client, "invalidateQueries");
+
+    act(() => {
+      result.current.update.mutate({ update: { name: before.name, content: saved.content }, updateMask: ["content"] });
+      result.current.update.mutate({ update: { name: before.name, pinned: true }, updateMask: ["pinned"] });
+    });
+    await waitFor(() => expect(client.isMutating()).toBe(0));
+
+    await waitFor(() => expect(result.current.detail.data?.snippet).toBe(saved.snippet));
+    expect(result.current.detail.data?.property?.hasIncompleteTasks).toBe(false);
+    expect(result.current.detail.data?.pinned).toBe(false);
+    await waitFor(() => expect(result.current.list.data?.memos[0].snippet).toBe(saved.snippet));
+    expect(result.current.list.data?.memos[0].property?.hasIncompleteTasks).toBe(false);
+    // The saved update refreshes what holds no memo itself, whatever the update behind it does.
+    const keys = invalidate.mock.calls.map(([filters]) => filters?.queryKey);
+    expect(keys).toContainEqual(userKeys.stats());
+    expect(keys).toContainEqual(attachmentKeys.lists());
+  });
+
+  it("sends no refetch that could answer after the newer reply when the older update fails", async () => {
+    const before = memo("memos/x");
+    const { client, server, result } = await onScreen(before);
+    // A refetch answers with what the server held when it was asked, however late.
+    const refetches: Array<() => void> = [];
+    api.getMemo.mockImplementation(() => {
+      const held = server.memo;
+      return new Promise<Memo>((done) => refetches.push(() => done(held)));
+    });
+    api.updateMemo.mockRejectedValueOnce(new Error("edit failed")).mockImplementationOnce(async () => {
+      server.memo = create(MemoSchema, { ...before, pinned: true });
+      return server.memo;
+    });
+
+    act(() => {
+      result.current.update.mutate({ update: { name: before.name, content: "edited" }, updateMask: ["content"] });
+      result.current.update.mutate({ update: { name: before.name, pinned: true }, updateMask: ["pinned"] });
+    });
+    await waitFor(() => expect(client.isMutating()).toBe(0));
+    await act(async () => {
+      refetches.forEach((answer) => answer());
+      await new Promise((done) => setTimeout(done, 0));
+    });
+
+    expect(client.getQueryData<Memo>(memoKeys.detail(before.name))?.pinned).toBe(true);
+    expect(result.current.detail.data?.pinned).toBe(true);
   });
 });
