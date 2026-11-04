@@ -198,6 +198,7 @@ describe("automatic focus mode", () => {
           });
     fireEvent.click(dismissButton);
     expect(container.querySelector(".memo-editor-content")).not.toHaveAttribute("data-focus-mode");
+    expect(editor.contains(document.activeElement)).toBe(true);
     fireEvent(editor, new InputEvent("beforeinput", { bubbles: true, inputType: "insertText", data: "a" }));
     if (dismissal !== "button") {
       await waitFor(() => expect(container.querySelector(".memo-editor-content")).toHaveAttribute("data-focus-mode"));
@@ -205,6 +206,20 @@ describe("automatic focus mode", () => {
       await new Promise((resolve) => setTimeout(resolve, 10));
       expect(container.querySelector(".memo-editor-content")).not.toHaveAttribute("data-focus-mode");
     }
+  });
+
+  it("keeps the editor focused when leaving focus mode from the insert menu", async () => {
+    editorSetting.set({ sourceMode: false, autoFocusMode: false });
+    const { container } = mount();
+    const editor = container.querySelector(".memo-editor-root") as HTMLElement;
+    fireEvent.click(screen.getByRole("button", { name: "common.add" }));
+    fireEvent.click(screen.getByRole("menuitem", { name: "editor.focus-mode" }));
+    expect(container.querySelector(".memo-editor-content")).toHaveAttribute("data-focus-mode");
+
+    fireEvent.click(screen.getByRole("button", { name: "common.add" }));
+    fireEvent.click(screen.getByRole("menuitem", { name: "editor.focus-mode" }));
+    expect(container.querySelector(".memo-editor-content")).not.toHaveAttribute("data-focus-mode");
+    await waitFor(() => expect(editor.contains(document.activeElement)).toBe(true));
   });
 
   it("does not offer temporary collapse in a host-owned dialog", () => {

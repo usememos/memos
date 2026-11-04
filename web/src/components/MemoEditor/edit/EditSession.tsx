@@ -244,6 +244,14 @@ export const EditSession: React.FC<EditSessionProps> = ({
     }
   }, [draftKey, editorMode]);
 
+  const focusFrameRef = useRef(0);
+  useEffect(() => () => cancelAnimationFrame(focusFrameRef.current), []);
+  const focusEditor = () => {
+    cancelAnimationFrame(focusFrameRef.current);
+    editorRef.current?.focus();
+    focusFrameRef.current = requestAnimationFrame(() => editorRef.current?.focus());
+  };
+
   // Hosted: focus mode is the host's frame, so leaving it dismisses the host.
   // Inline: focus mode is a view this editor owns and toggles in place.
   const handleToggleFocusMode = () => {
@@ -253,7 +261,11 @@ export const EditSession: React.FC<EditSessionProps> = ({
       onFocusModeExit();
       return;
     }
+    const leavingFocusMode = getState().ui.isFocusMode;
     animateFocusMode(() => dispatch(actions.toggleFocusMode()));
+    if (leavingFocusMode) {
+      focusEditor();
+    }
   };
 
   // Dismissing the inline backdrop is temporary: typing can open focus mode again.
@@ -265,6 +277,7 @@ export const EditSession: React.FC<EditSessionProps> = ({
     }
     autoFocusHandled.current = false;
     animateFocusMode(() => dispatch(actions.toggleFocusMode()));
+    focusEditor();
   };
 
   const handleUserTextInput = () => {
