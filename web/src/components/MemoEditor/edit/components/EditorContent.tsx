@@ -1,4 +1,4 @@
-import { forwardRef, useCallback, useEffect, useRef } from "react";
+import { forwardRef, useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import Editor from "../Editor";
 import { useEditorContext, useEditorSelector } from "../state";
 import type { EditorContentProps } from "../types";
@@ -18,7 +18,9 @@ export const EditorContent = forwardRef<EditorController, EditorContentProps>(
     const composing = useRef(false);
     const containerRef = useRef<HTMLDivElement>(null);
     const onUserTextInputRef = useRef(onUserTextInput);
-    onUserTextInputRef.current = onUserTextInput;
+    useLayoutEffect(() => {
+      onUserTextInputRef.current = onUserTextInput;
+    });
     useEffect(() => () => clearTimeout(inputTimer.current), []);
 
     // Wait until the editor has processed the browser event before changing its layout.
