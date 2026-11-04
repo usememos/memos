@@ -242,6 +242,7 @@
     "footnotes": "Fotnotar",
     "back-to-reference": "Tilbake til referansen",
     "exit-focus-mode": "Gå ut av fokusmodus",
+    "temporarily-collapse-focus-mode": "Skjul mellombels",
     "focus-mode": "Fokusmodus",
     "markdown-mode": "Markdown-modus",
     "format": {

@@ -126,14 +126,33 @@ describe("automatic focus mode", () => {
     }
   });
 
-  it.each(["typing", "paste"])("reopens a new draft after dismissing the backdrop and %s", async (input) => {
+  it("hides temporary collapse when automatic focus mode is disabled", () => {
+    editorSetting.set({ sourceMode: false, autoFocusMode: false });
+    const { container } = mount();
+    fireEvent.click(screen.getByRole("button", { name: "common.add" }));
+    fireEvent.click(screen.getByRole("menuitem", { name: "editor.focus-mode" }));
+    expect(container.querySelector(".memo-editor-content")).toHaveAttribute("data-focus-mode");
+    expect(screen.queryByRole("button", { name: "editor.temporarily-collapse-focus-mode" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "editor.exit-focus-mode" })).toBeInTheDocument();
+  });
+
+  it.each([
+    ["backdrop", "typing"],
+    ["backdrop", "paste"],
+    ["temporary button", "typing"],
+    ["temporary button", "paste"],
+  ])("reopens a new draft after %s and %s", async (dismissal, input) => {
     editorSetting.set({ sourceMode: false, autoFocusMode: true });
     const { container } = mount();
     const editor = container.querySelector(".memo-editor-root") as HTMLElement;
     fireEvent(editor, new InputEvent("beforeinput", { bubbles: true, inputType: "insertText", data: "a" }));
     await waitFor(() => expect(container.querySelector(".memo-editor-content")).toHaveAttribute("data-focus-mode"));
 
-    fireEvent.click(screen.getByLabelText("Exit focus mode"));
+    fireEvent.click(
+      dismissal === "backdrop"
+        ? screen.getByLabelText("Exit focus mode")
+        : screen.getByRole("button", { name: "editor.temporarily-collapse-focus-mode" }),
+    );
     expect(container.querySelector(".memo-editor-content")).not.toHaveAttribute("data-focus-mode");
     fireEvent.focus(editor);
     fireEvent.click(editor);
@@ -146,7 +165,7 @@ describe("automatic focus mode", () => {
     await waitFor(() => expect(container.querySelector(".memo-editor-content")).toHaveAttribute("data-focus-mode"));
   });
 
-  it.each(["backdrop", "button"])("respects %s dismissal while editing an existing memo", async (dismissal) => {
+  it.each(["backdrop", "temporary button", "button"])("respects %s dismissal while editing an existing memo", async (dismissal) => {
     editorSetting.set({ sourceMode: false, autoFocusMode: true });
     const memo = create(MemoSchema, { name: "memos/existing", creator: "users/1", content: "Existing memo" });
     const client = new QueryClient();
@@ -158,17 +177,32 @@ describe("automatic focus mode", () => {
     );
     const editor = container.querySelector(".memo-editor-root") as HTMLElement;
     expect(container.querySelector(".memo-editor-content")).toHaveAttribute("data-focus-mode");
-    fireEvent.click(
-      dismissal === "backdrop" ? screen.getByLabelText("Exit focus mode") : screen.getByRole("button", { name: "editor.exit-focus-mode" }),
-    );
+    const dismissButton =
+      dismissal === "backdrop"
+        ? screen.getByLabelText("Exit focus mode")
+        : screen.getByRole("button", {
+            name: dismissal === "button" ? "editor.exit-focus-mode" : "editor.temporarily-collapse-focus-mode",
+          });
+    fireEvent.click(dismissButton);
     expect(container.querySelector(".memo-editor-content")).not.toHaveAttribute("data-focus-mode");
     fireEvent(editor, new InputEvent("beforeinput", { bubbles: true, inputType: "insertText", data: "a" }));
-    if (dismissal === "backdrop") {
+    if (dismissal !== "button") {
       await waitFor(() => expect(container.querySelector(".memo-editor-content")).toHaveAttribute("data-focus-mode"));
     } else {
       await new Promise((resolve) => setTimeout(resolve, 10));
       expect(container.querySelector(".memo-editor-content")).not.toHaveAttribute("data-focus-mode");
     }
+  });
+
+  it("does not offer temporary collapse in a host-owned dialog", () => {
+    editorSetting.set({ sourceMode: false, autoFocusMode: true });
+    render(
+      <QueryClientProvider client={new QueryClient()}>
+        <MemoEditor draft={{ scope: "hosted" }} onFocusModeExit={vi.fn()} />
+      </QueryClientProvider>,
+    );
+    expect(screen.queryByRole("button", { name: "editor.temporarily-collapse-focus-mode" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "common.close" })).toBeInTheDocument();
   });
 
   it("waits until input method composition is committed", async () => {

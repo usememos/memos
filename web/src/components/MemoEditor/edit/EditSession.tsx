@@ -9,7 +9,15 @@ import { InstanceSetting_Key } from "@/types/proto/api/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString } from "@/utils/memo";
 
-import { AudioRecorderPanel, EditorContent, EditorMetadata, FocusModeExitButton, FocusModeOverlay, TimestampPopover } from "./components";
+import {
+  AudioRecorderPanel,
+  EditorContent,
+  EditorMetadata,
+  FocusModeExitButton,
+  FocusModeOverlay,
+  FocusModeTemporaryCollapseButton,
+  TimestampPopover,
+} from "./components";
 import { EditorSuggestions } from "./components/EditorSuggestions";
 import { FOCUS_MODE_STYLES } from "./constants";
 import type { EditorFileOrigin } from "./extensions";
@@ -388,7 +396,10 @@ export const EditSession: React.FC<EditSessionProps> = ({
           <div className={cn("flex w-full items-center", isFocusMode ? "h-10" : "h-6")}>
             <TimestampPopover />
             {isFocusMode && (
-              <div className="ms-auto -me-2">
+              <div className="ms-auto -me-2 flex items-center">
+                {!onFocusModeExit && userEditorSetting?.autoFocusMode && (
+                  <FocusModeTemporaryCollapseButton onCollapse={handleBackdropClick} />
+                )}
                 <FocusModeExitButton action={onFocusModeExit ? "close" : "minimize"} onExit={handleToggleFocusMode} />
               </div>
             )}

@@ -148,6 +148,7 @@
     "add-your-comment-here": "เพิ่มความคิดเห็นของคุณที่นี่...",
     "any-thoughts": "ความคิดใดๆ...",
     "exit-focus-mode": "ออกจากโหมดโฟกัส",
+    "temporarily-collapse-focus-mode": "ยุบชั่วคราว",
     "focus-mode": "โหมดโฟกัส",
     "markdown-mode": "โหมด Markdown",
     "no-changes-detected": "ไม่มีการเปลี่ยนแปลง",

@@ -148,6 +148,7 @@
     "add-your-comment-here": "Afegeix el teu comentari aquí...",
     "any-thoughts": "Alguna idea...",
     "exit-focus-mode": "Surt del mode focus",
+    "temporarily-collapse-focus-mode": "Replega temporalment",
     "focus-mode": "Mode focus",
     "markdown-mode": "Mode Markdown",
     "insert-menu": {
