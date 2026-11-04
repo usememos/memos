@@ -644,6 +644,8 @@
     },
     "editor": {
       "label": "Editor",
+      "auto-focus-mode": "Automatic focus mode",
+      "auto-focus-mode-description": "Enter focus mode automatically when editing a memo.",
       "markdown-mode-description": "Scrieți și editați notițele ca text Markdown în loc de text formatat."
     },
     "memo-view": {

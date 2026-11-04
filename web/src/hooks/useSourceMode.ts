@@ -18,15 +18,22 @@ export const useSourceMode = (): [EditorMode, (mode: EditorMode) => void] => {
 
   const setMode = useCallback(
     (next: EditorMode) => {
-      const previous = userEditorSetting;
+      const previous = userEditorSetting?.sourceMode ?? false;
       const editorSetting = create(UserSetting_EditorSettingSchema, { sourceMode: next === "source" });
-      setUserEditorSetting(editorSetting);
-      updateUserEditorSetting(editorSetting, {
-        onError: (error) => {
-          setUserEditorSetting(previous);
-          handleError(error, toast.error);
+      setUserEditorSetting((current) =>
+        create(UserSetting_EditorSettingSchema, { autoFocusMode: current?.autoFocusMode, sourceMode: next === "source" }),
+      );
+      updateUserEditorSetting(
+        { editorSetting, updateMask: ["source_mode"] },
+        {
+          onError: (error) => {
+            setUserEditorSetting((current) =>
+              create(UserSetting_EditorSettingSchema, { autoFocusMode: current?.autoFocusMode, sourceMode: previous }),
+            );
+            handleError(error, toast.error);
+          },
         },
-      });
+      );
     },
     [setUserEditorSetting, updateUserEditorSetting, userEditorSetting],
   );

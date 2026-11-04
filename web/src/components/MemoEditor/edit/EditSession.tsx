@@ -72,7 +72,9 @@ export const EditSession: React.FC<EditSessionProps> = ({
   }, [isFocusMode, onFocusModeChange]);
   const isSaving = useEditorSelector((s) => s.ui.isLoading.saving);
   const hasTimestamp = useEditorSelector((s) => Boolean(s.timestamps.createTime));
-  const { userGeneralSetting } = useAuth();
+  const { userGeneralSetting, userEditorSetting } = useAuth();
+  // The inline composer remains mounted after saving, so reset this for the next memo.
+  const autoFocusHandled = useRef(Boolean(memo || onFocusModeExit));
   const { aiSetting, fetchSetting } = useInstance();
   const [isAudioRecorderOpen, setIsAudioRecorderOpen] = useState(false);
   const [isTranscribingAudio, setIsTranscribingAudio] = useState(false);
@@ -228,11 +230,29 @@ export const EditSession: React.FC<EditSessionProps> = ({
   // Hosted: focus mode is the host's frame, so leaving it dismisses the host.
   // Inline: focus mode is a view this editor owns and toggles in place.
   const handleToggleFocusMode = () => {
+    autoFocusHandled.current = true;
     if (onFocusModeExit) {
       rememberCursor();
       onFocusModeExit();
       return;
     }
+    animateFocusMode(() => dispatch(actions.toggleFocusMode()));
+  };
+
+  // Dismissing the inline backdrop is temporary: typing can open focus mode again.
+  // A hosted editor owns its frame and still dismisses the entire host.
+  const handleBackdropClick = () => {
+    if (onFocusModeExit) {
+      handleToggleFocusMode();
+      return;
+    }
+    autoFocusHandled.current = false;
+    animateFocusMode(() => dispatch(actions.toggleFocusMode()));
+  };
+
+  const handleUserTextInput = () => {
+    if (!userEditorSetting?.autoFocusMode || autoFocusHandled.current || getState().ui.isFocusMode) return;
+    autoFocusHandled.current = true;
     animateFocusMode(() => dispatch(actions.toggleFocusMode()));
   };
 
@@ -317,13 +337,16 @@ export const EditSession: React.FC<EditSessionProps> = ({
     defaultVisibility,
     defaultCreateTime,
     discardDraft,
-    onConfirm,
+    onConfirm: (name) => {
+      autoFocusHandled.current = Boolean(memo || onFocusModeExit);
+      onConfirm?.(name);
+    },
     onCancel: onCancel ? handleCancel : undefined,
   });
 
   return (
     <>
-      <FocusModeOverlay isActive={isFocusMode} onToggle={handleToggleFocusMode} />
+      <FocusModeOverlay isActive={isFocusMode} onToggle={handleBackdropClick} />
 
       {/*
         Layout structure:
@@ -377,6 +400,7 @@ export const EditSession: React.FC<EditSessionProps> = ({
           ref={editorRef}
           placeholder={placeholder}
           sourceMode={sourceMode}
+          onUserTextInput={handleUserTextInput}
           onSubmit={handleSave}
           onFiles={handleEditorFiles}
         />

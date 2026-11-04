@@ -840,6 +840,8 @@
     },
     "editor": {
       "label": "Redaktor",
+      "auto-focus-mode": "Automatic focus mode",
+      "auto-focus-mode-description": "Enter focus mode automatically when editing a memo.",
       "markdown-mode-description": "Qeydləri formatlanmış mətn əvəzinə Markdown mətni kimi yazın və redaktə edin."
     },
     "memo-view": {

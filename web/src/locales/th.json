@@ -439,6 +439,8 @@
     },
     "editor": {
       "label": "โปรแกรมแก้ไข",
+      "auto-focus-mode": "Automatic focus mode",
+      "auto-focus-mode-description": "Enter focus mode automatically when editing a memo.",
       "markdown-mode-description": "เขียนและแก้ไขบันทึกช่วยจำเป็นข้อความ Markdown แทนข้อความที่จัดรูปแบบ"
     },
     "memo-view": {

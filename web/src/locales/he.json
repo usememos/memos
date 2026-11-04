@@ -677,6 +677,8 @@
     },
     "editor": {
       "label": "עורך",
+      "auto-focus-mode": "Automatic focus mode",
+      "auto-focus-mode-description": "Enter focus mode automatically when editing a memo.",
       "markdown-mode-description": "כתבו וערכו פתקים כטקסט Markdown במקום כטקסט מעוצב."
     },
     "memo-view": {

@@ -348,7 +348,9 @@ func (x *GeneralUserSetting) GetSaveMediaMetadata() bool {
 type EditorUserSetting struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Whether the memo editor shows and edits memos as Markdown text.
-	SourceMode    bool `protobuf:"varint,1,opt,name=source_mode,json=sourceMode,proto3" json:"source_mode,omitempty"`
+	SourceMode bool `protobuf:"varint,1,opt,name=source_mode,json=sourceMode,proto3" json:"source_mode,omitempty"`
+	// Whether the memo editor automatically enters focus mode.
+	AutoFocusMode bool `protobuf:"varint,2,opt,name=auto_focus_mode,json=autoFocusMode,proto3" json:"auto_focus_mode,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -386,6 +388,13 @@ func (*EditorUserSetting) Descriptor() ([]byte, []int) {
 func (x *EditorUserSetting) GetSourceMode() bool {
 	if x != nil {
 		return x.SourceMode
+	}
+	return false
+}
+
+func (x *EditorUserSetting) GetAutoFocusMode() bool {
+	if x != nil {
+		return x.AutoFocusMode
 	}
 	return false
 }
@@ -1177,10 +1186,11 @@ const file_store_user_setting_proto_rawDesc = "" +
 	"\x06locale\x18\x01 \x01(\tR\x06locale\x12'\n" +
 	"\x0fmemo_visibility\x18\x02 \x01(\tR\x0ememoVisibility\x12\x14\n" +
 	"\x05theme\x18\x03 \x01(\tR\x05theme\x12.\n" +
-	"\x13save_media_metadata\x18\x04 \x01(\bR\x11saveMediaMetadata\"4\n" +
+	"\x13save_media_metadata\x18\x04 \x01(\bR\x11saveMediaMetadata\"\\\n" +
 	"\x11EditorUserSetting\x12\x1f\n" +
 	"\vsource_mode\x18\x01 \x01(\bR\n" +
-	"sourceMode\"s\n" +
+	"sourceMode\x12&\n" +
+	"\x0fauto_focus_mode\x18\x02 \x01(\bR\rautoFocusMode\"s\n" +
 	"\x0fUserTagMetadata\x12=\n" +
 	"\x10background_color\x18\x01 \x01(\v2\x12.google.type.ColorR\x0fbackgroundColor\x12!\n" +
 	"\fblur_content\x18\x02 \x01(\bR\vblurContent\"\xa4\x01\n" +

@@ -439,6 +439,8 @@
     },
     "editor": {
       "label": "Editor",
+      "auto-focus-mode": "Automatic focus mode",
+      "auto-focus-mode-description": "Enter focus mode automatically when editing a memo.",
       "markdown-mode-description": "Tulis dan sunting memo sebagai teks Markdown, bukan teks berformat."
     },
     "memo-view": {

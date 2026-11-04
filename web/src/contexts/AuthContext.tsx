@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { createContext, type ReactNode, useCallback, useContext, useMemo, useState } from "react";
+import { createContext, type Dispatch, type ReactNode, type SetStateAction, useCallback, useContext, useMemo, useState } from "react";
 import { clearAccessToken, getAccessToken } from "@/auth-state";
 import { authServiceClient, refreshAccessToken, userServiceClient } from "@/connect";
 import { userKeys } from "@/hooks/useUserQueries";
@@ -32,7 +32,7 @@ interface AuthContextValue extends AuthState {
   refetchSettings: () => Promise<void>;
   setCurrentUser: (user: User | undefined) => void;
   /** Applies an editor setting locally, ahead of or instead of a refetch. */
-  setUserEditorSetting: (setting: UserSetting_EditorSetting | undefined) => void;
+  setUserEditorSetting: Dispatch<SetStateAction<UserSetting_EditorSetting | undefined>>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -199,8 +199,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [queryClient],
   );
 
-  const setUserEditorSetting = useCallback((setting: UserSetting_EditorSetting | undefined) => {
-    setState((prev) => ({ ...prev, userEditorSetting: setting }));
+  const setUserEditorSetting = useCallback<Dispatch<SetStateAction<UserSetting_EditorSetting | undefined>>>((setting) => {
+    setState((prev) => ({
+      ...prev,
+      userEditorSetting: typeof setting === "function" ? setting(prev.userEditorSetting) : setting,
+    }));
   }, []);
 
   // Memoize context value to prevent unnecessary re-renders of consumers

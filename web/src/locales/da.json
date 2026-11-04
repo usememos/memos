@@ -644,6 +644,8 @@
     },
     "editor": {
       "label": "Editor",
+      "auto-focus-mode": "Automatic focus mode",
+      "auto-focus-mode-description": "Enter focus mode automatically when editing a memo.",
       "markdown-mode-description": "Skriv og rediger notater som Markdown-tekst i stedet for formateret tekst."
     },
     "memo-view": {

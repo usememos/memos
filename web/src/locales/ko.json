@@ -439,6 +439,8 @@
     },
     "editor": {
       "label": "편집기",
+      "auto-focus-mode": "Automatic focus mode",
+      "auto-focus-mode-description": "Enter focus mode automatically when editing a memo.",
       "markdown-mode-description": "메모를 서식 있는 텍스트 대신 Markdown 텍스트로 작성하고 편집합니다."
     },
     "memo-view": {

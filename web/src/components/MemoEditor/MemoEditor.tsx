@@ -206,7 +206,7 @@ const EditingSession = ({
   ...editing
 }: EditingSessionProps) => {
   const currentUser = useCurrentUser();
-  const { userGeneralSetting } = useAuth();
+  const { userGeneralSetting, userEditorSetting } = useAuth();
   const username = currentUser?.name ?? "";
   const draftKey = cacheService.key(username, draftKeyFor(identity));
   const [initialState] = useState(() => {
@@ -214,8 +214,8 @@ const EditingSession = ({
     return initialEditorState({
       memo,
       draftKey,
-      // A hosted editor starts in focus mode and stays there.
-      initialFocusMode: Boolean(editing.onFocusModeExit),
+      // A hosted editor owns its frame; an existing memo opens in focus mode when preferred.
+      initialFocusMode: Boolean(editing.onFocusModeExit || (memo && userEditorSetting?.autoFocusMode)),
       defaultVisibility: userGeneralSetting?.memoVisibility ? convertVisibilityFromString(userGeneralSetting.memoVisibility) : undefined,
       defaultCreateTime,
       defaultLocation,

@@ -528,6 +528,8 @@
     },
     "editor": {
       "label": "Редактор",
+      "auto-focus-mode": "Automatic focus mode",
+      "auto-focus-mode-description": "Enter focus mode automatically when editing a memo.",
       "markdown-mode-description": "Пишіть і редагуйте нотатки як текст Markdown замість форматованого тексту."
     },
     "memo-view": {

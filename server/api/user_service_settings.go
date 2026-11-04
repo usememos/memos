@@ -154,27 +154,29 @@ func (s *APIService) UpdateUserSetting(ctx context.Context, request *apipb.Updat
 			},
 		}
 	case storepb.UserSetting_EDITOR:
-		var shouldUpdateSourceMode bool
-		for _, field := range request.UpdateMask.Paths {
-			switch field {
-			case "source_mode":
-				shouldUpdateSourceMode = true
-			default:
-				return nil, status.Errorf(codes.InvalidArgument, "unsupported update mask path for editor setting: %s", field)
-			}
-		}
-		if !shouldUpdateSourceMode {
-			return nil, status.Errorf(codes.InvalidArgument, "update mask must include source_mode")
-		}
-
 		incomingEditor := request.UserSetting.GetEditorSetting()
 		if incomingEditor == nil {
 			return nil, status.Errorf(codes.InvalidArgument, "editor setting is required")
 		}
+		existingUserSetting, err := s.Store.GetUserSetting(ctx, &store.FindUserSetting{UserID: &userID, Key: storeKey})
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to get existing editor setting: %v", err)
+		}
+		updatedEditor := convertUserSettingFromStore(existingUserSetting, user, storeKey).GetEditorSetting()
+		for _, field := range request.UpdateMask.Paths {
+			switch field {
+			case "source_mode":
+				updatedEditor.SourceMode = incomingEditor.SourceMode
+			case "auto_focus_mode":
+				updatedEditor.AutoFocusMode = incomingEditor.AutoFocusMode
+			default:
+				return nil, status.Errorf(codes.InvalidArgument, "unsupported update mask path for editor setting: %s", field)
+			}
+		}
 		updatedSetting = &apipb.UserSetting{
 			Name: request.UserSetting.Name,
 			Value: &apipb.UserSetting_EditorSetting_{
-				EditorSetting: &apipb.UserSetting_EditorSetting{SourceMode: incomingEditor.SourceMode},
+				EditorSetting: updatedEditor,
 			},
 		}
 	default:

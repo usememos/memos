@@ -644,6 +644,8 @@
     },
     "editor": {
       "label": "Редактор",
+      "auto-focus-mode": "Automatic focus mode",
+      "auto-focus-mode-description": "Enter focus mode automatically when editing a memo.",
       "markdown-mode-description": "Пишете и редактирайте бележки като Markdown текст вместо форматиран текст."
     },
     "memo-view": {
