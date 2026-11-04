@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
@@ -125,6 +125,15 @@ export const EditSession: React.FC<EditSessionProps> = ({
   const { discardDraft } = useAutoSave(draftKey, isInitialized && isDraftCacheEnabled);
 
   const { containerRef: editorContainerRef, placeholderHeight, animateFocusMode } = useFocusMode(isFocusMode);
+  const initialAutoFocusEntered = useRef(false);
+  // Enter focus mode for an existing memo after useFocusMode has measured its inline height.
+  useLayoutEffect(() => {
+    if (initialAutoFocusEntered.current) return;
+    initialAutoFocusEntered.current = true;
+    if (memo && !onFocusModeExit && userEditorSetting?.autoFocusMode && !getState().ui.isFocusMode) {
+      dispatch(actions.toggleFocusMode());
+    }
+  }, [actions, dispatch, getState, memo, onFocusModeExit, userEditorSetting?.autoFocusMode]);
 
   // Live-sync the draft's createTime/updateTime to the calendar-derived prop.
   // Only applies in create mode; edit mode owns its own timestamps. Runs after

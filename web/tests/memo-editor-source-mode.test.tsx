@@ -170,13 +170,26 @@ describe("automatic focus mode", () => {
     const memo = create(MemoSchema, { name: "memos/existing", creator: "users/1", content: "Existing memo" });
     const client = new QueryClient();
     client.setQueryData(memoKeys.detail(memo.name), memo);
+    const rectSpy = vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockReturnValue({
+      height: 180,
+      width: 480,
+      top: 0,
+      left: 0,
+      right: 480,
+      bottom: 180,
+      x: 0,
+      y: 0,
+      toJSON: () => ({}),
+    });
     const { container } = render(
       <QueryClientProvider client={client}>
         <MemoEditor mode="edit" name={memo.name} />
       </QueryClientProvider>,
     );
+    rectSpy.mockRestore();
     const editor = container.querySelector(".memo-editor-root") as HTMLElement;
     expect(container.querySelector(".memo-editor-content")).toHaveAttribute("data-focus-mode");
+    expect(container.querySelector('[aria-hidden="true"]')).toHaveStyle({ height: "180px" });
     const dismissButton =
       dismissal === "backdrop"
         ? screen.getByLabelText("Exit focus mode")
