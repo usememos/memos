@@ -43,6 +43,7 @@ const MemoShareImagePreview = forwardRef<HTMLDivElement, { width: number }>(({ w
               content={memo.content}
               attachments={memo.attachments}
               compact={false}
+              filterCompletedTasks={false}
               contentClassName="text-[14px] leading-6.5 sm:text-[15px]"
             />
           </div>

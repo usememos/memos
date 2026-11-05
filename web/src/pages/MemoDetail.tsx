@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo as useReactMemo, useRef, useState } fro
 import { Link, Navigate, useLocation, useParams } from "react-router-dom";
 import MemoCommentSection, { type MemoCommentSectionHandle } from "@/components/MemoCommentSection";
 import MemoParentPlaceholder, { type MemoParentStatus } from "@/components/MemoParentPlaceholder";
+import MemoReadingOptions from "@/components/MemoReadingOptions";
 import MemoView, { type MemoViewHandle } from "@/components/MemoView";
 import { computeCommentAmount } from "@/components/MemoView/MemoViewContext";
 import { createMemoNavigationState, resolveMemoDetailOrigin } from "@/components/MemoView/navigation";
@@ -253,6 +254,7 @@ const MemoDetail = () => {
         />
         <div className="w-full max-w-2xl px-4 sm:px-6">
           <div className="w-full">
+            <MemoReadingOptions className="mb-2" />
             {!isShareMode && parentStatus && (
               <div className="mb-2 md:hidden">
                 <MemoParentPlaceholder status={parentStatus} onRetry={handleParentRetry} />

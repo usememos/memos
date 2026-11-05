@@ -97,4 +97,17 @@
     outline: 2px solid var(--ring);
     outline-offset: 1px;
   }
+
+  /* Reading preference: a hidden completed task item renders empty through the editor's
+     block view, and its wrapper goes too so the list's spacing leaves with it. */
+  .memos-hide-completed-tasks .mbe-block-view:has(> [data-memos-hidden-completed-task]) {
+    display: none;
+  }
+}
+
+/* A completed item inside a raw Markdown list has no block view to draw it empty, so it
+   stays in the drawn DOM; this hides it. Unlayered and more specific than the editor's
+   own `display: flex` for list items, which would otherwise override `[hidden]`. */
+.memos-hide-completed-tasks .mbe-list-item[data-memos-hidden-completed-task] {
+  display: none;
 }

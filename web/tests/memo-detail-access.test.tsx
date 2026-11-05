@@ -12,6 +12,7 @@ import { type Memo, MemoSchema } from "@/types/proto/api/memo_service_pb";
 const state = vi.hoisted(() => ({
   currentUser: undefined as { name: string } | undefined,
   getMemo: vi.fn(),
+  getSharedMemo: vi.fn(),
   listMemoComments: vi.fn(),
   setMemoDetail: vi.fn(),
   toastError: vi.fn(),
@@ -43,11 +44,41 @@ function renderDetail(client: QueryClient, name = "memos/restored") {
 }
 const createClient = () => new QueryClient({ defaultOptions: { queries: { retry: false, retryDelay: 0 } } });
 
+function renderSharedMemo(client: QueryClient, token = "token-1") {
+  return render(
+    <QueryClientProvider client={client}>
+      <MemoryRouter initialEntries={[`/memos/shares/${token}`]}>
+        <Routes>
+          <Route path="/memos/shares/:token" element={<MemoDetail />} />
+          <Route path="/404" element={<div>not found</div>} />
+        </Routes>
+      </MemoryRouter>
+    </QueryClientProvider>,
+  );
+}
+
 describe("memo detail access recovery", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     state.currentUser = undefined;
     state.listMemoComments.mockResolvedValue({ comments: [], nextPageToken: "" });
+  });
+
+  it("offers the browser reading switch to a guest", async () => {
+    const client = createClient();
+    const memo = create(MemoSchema, { name: "memos/public-note", content: "- [ ] Open\n- [x] Done" });
+    state.getMemo.mockResolvedValue(memo);
+    renderDetail(client, memo.name);
+    expect(await screen.findByRole("switch", { name: "memo.hide-completed-tasks" })).toBeInTheDocument();
+    client.clear();
+  });
+
+  it("offers the browser reading switch on an anonymous share link", async () => {
+    const client = createClient();
+    state.getSharedMemo.mockResolvedValue(create(MemoSchema, { name: "memos/shared-note", content: "- [ ] Open\n- [x] Done" }));
+    renderSharedMemo(client);
+    expect(await screen.findByRole("switch", { name: "memo.hide-completed-tasks" })).toBeInTheDocument();
+    client.clear();
   });
 
   it.each(["fresh", "stale"])("revalidates a %s cached denial before showing a restored memo", async (freshness) => {
