@@ -2,6 +2,8 @@ import { ROUTES } from "@/router/routes";
 
 export interface MemoNavigationState {
   from: string;
+  /** Set by the card's comment button: the detail page opens the comment editor on arrival. */
+  composeComment?: boolean;
 }
 
 interface ResolveMemoDetailOriginOptions {
