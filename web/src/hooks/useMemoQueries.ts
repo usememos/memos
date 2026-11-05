@@ -325,11 +325,15 @@ export function useCreateMemo() {
 
 export function useUpdateMemo() {
   const queryClient = useQueryClient();
-  // The update settling now still counts as mutating, so more than one means a newer update of this memo is queued.
-  const hasNewerUpdateQueued = (name?: string) =>
-    queryClient.isMutating({
-      predicate: (mutation) => (mutation.state.variables as { update?: Partial<Memo> } | undefined)?.update?.name === name,
-    }) > 1;
+  // This memo's updates queued behind the one settling now, oldest first. That one still counts as pending and is the oldest.
+  const queuedUpdates = (name?: string) =>
+    queryClient
+      .getMutationCache()
+      .findAll({
+        status: "pending",
+        predicate: (mutation) => (mutation.state.variables as { update?: Partial<Memo> } | undefined)?.update?.name === name,
+      })
+      .slice(1);
 
   return useMutation({
     // Memo updates run one at a time, in the order they were made. Sent together, two quick updates of one memo
@@ -362,17 +366,22 @@ export function useUpdateMemo() {
       }
       patchMemoInCollectionQueries(queryClient, memoPatch);
 
-      return { previousMemo };
+      return { previousMemo, memoPatch };
     },
     onError: (_err, { update }, context) => {
-      // Rollback on error
+      const queued = queuedUpdates(update.name);
+      // Rollback on error, keeping the optimistic patches of the updates queued behind this one
       if (context?.previousMemo && update.name) {
-        queryClient.setQueryData(memoKeys.detail(update.name), context.previousMemo);
-        patchMemoInCollectionQueries(queryClient, context.previousMemo);
+        const restored = queued.reduce<Memo>(
+          (memo, { state }) => ({ ...memo, ...(state.context as { memoPatch?: MemoPatch } | undefined)?.memoPatch }),
+          context.previousMemo,
+        );
+        queryClient.setQueryData(memoKeys.detail(update.name), restored);
+        patchMemoInCollectionQueries(queryClient, restored);
       }
       // The snapshot can hold an older update's patch but not its reply, and that update left its refetches to this one.
       // A newer update queued behind this one does them instead: a refetch sent now could answer after its reply.
-      if (hasNewerUpdateQueued(update.name)) return;
+      if (queued.length > 0) return;
       queryClient.invalidateQueries({ queryKey: memoKeys.all });
     },
     onSuccess: (updatedMemo, { updateMask }) => {
@@ -385,7 +394,7 @@ export function useUpdateMemo() {
       queryClient.invalidateQueries({ queryKey: attachmentKeys.lists() });
       // A newer update of this memo is queued behind this one: keep its optimistic patch, and leave the memo's cache
       // writes and refetches to its own onSuccess or onError. This reply, or a refetch sent before it is saved, is older.
-      if (hasNewerUpdateQueued(updatedMemo.name)) return;
+      if (queuedUpdates(updatedMemo.name).length > 0) return;
       // Update cache with server response
       queryClient.setQueryData(memoKeys.detail(updatedMemo.name), updatedMemo);
       patchMemoInCollectionQueries(queryClient, updatedMemo);

@@ -329,4 +329,32 @@ describe("useUpdateMemo", () => {
     expect(client.getQueryData<Memo>(memoKeys.detail(before.name))?.pinned).toBe(true);
     expect(result.current.detail.data?.pinned).toBe(true);
   });
+
+  it("keeps a queued update's optimistic patch when the older update fails and rolls back", async () => {
+    const before = memo("memos/x");
+    const { client, result } = await onScreen(before);
+    const pinReply: Array<() => void> = [];
+    api.updateMemo
+      .mockRejectedValueOnce(new Error("edit failed"))
+      .mockImplementationOnce(
+        () => new Promise<Memo>((done) => pinReply.push(() => done(create(MemoSchema, { ...before, pinned: true })))),
+      );
+
+    act(() => {
+      result.current.update.mutate({ update: { name: before.name, content: "edited" }, updateMask: ["content"] });
+      result.current.update.mutate({ update: { name: before.name, pinned: true }, updateMask: ["pinned"] });
+    });
+    // The edit has failed and rolled back; the pin's reply has not come.
+    await waitFor(() => expect(api.updateMemo).toHaveBeenCalledTimes(2));
+    await act(async () => {
+      await new Promise((done) => setTimeout(done, 0));
+    });
+
+    expect(result.current.detail.data).toMatchObject({ content: before.content, pinned: true });
+    expect(result.current.list.data?.memos[0]).toMatchObject({ content: before.content, pinned: true });
+
+    await act(async () => pinReply[0]());
+    await waitFor(() => expect(client.isMutating()).toBe(0));
+    expect(result.current.detail.data).toMatchObject({ content: before.content, pinned: true });
+  });
 });
