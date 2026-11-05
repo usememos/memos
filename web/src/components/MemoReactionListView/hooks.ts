@@ -55,9 +55,9 @@ export const useReactionActions = ({ memo, onComplete }: UseReactionActionsOptio
           reaction: { reactionType },
         });
       }
-      // Refetch the memo to get updated reactions and invalidate cache
-      const updatedMemo = await memoServiceClient.getMemo({ name: memo.name });
-      queryClient.setQueryData(memoKeys.detail(memo.name), updatedMemo);
+      // Refetch the memo through its query: a newer refetch (another reaction, a live update) cancels this one, so an
+      // older copy of the reactions cannot land after a newer one.
+      await queryClient.invalidateQueries({ queryKey: memoKeys.detail(memo.name) });
       queryClient.invalidateQueries({ queryKey: memoKeys.lists() });
       // If this memo is a comment, refresh the parent's comments list so the comment's reactions update in the UI
       if (memo.parent) {
