@@ -323,22 +323,26 @@ export function useCreateMemo() {
   });
 }
 
-export function useUpdateMemo() {
+/** Updates memo `name`; its updates share one queue. */
+export function useUpdateMemo(name?: string) {
   const queryClient = useQueryClient();
   // This memo's updates queued behind the one settling now, oldest first. That one still counts as pending and is the oldest.
-  const queuedUpdates = (name?: string) =>
+  const queuedUpdates = (memoName?: string) =>
     queryClient
       .getMutationCache()
       .findAll({
         status: "pending",
-        predicate: (mutation) => (mutation.state.variables as { update?: Partial<Memo> } | undefined)?.update?.name === name,
+        predicate: (mutation) => (mutation.state.variables as { update?: Partial<Memo> } | undefined)?.update?.name === memoName,
       })
       .slice(1);
 
   return useMutation({
-    // Memo updates run one at a time, in the order they were made. Sent together, two quick updates of one memo
+    // A memo's updates run one at a time, in the order they were made. Sent together, two quick updates of one memo
     // (pin then unpin) can finish in either order, and the older reply would overwrite the newer change in the cache.
-    scope: { id: "memo-update" },
+    scope: { id: `memo-update:${name}` },
+    // A new memo detaches this hook from its running update, which would otherwise move to the new scope and leave the
+    // updates queued behind it unsent.
+    mutationKey: ["memo-update", name],
     mutationFn: async ({ update, updateMask }: { update: Partial<Memo>; updateMask: string[] }) => {
       const memo = await memoServiceClient.updateMemo({
         memo: create(MemoSchema, update as Record<string, unknown>),

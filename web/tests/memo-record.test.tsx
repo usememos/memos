@@ -219,7 +219,7 @@ describe("useUpdateMemo", () => {
       ({ memo: update }: { memo: Memo }) =>
         new Promise<Memo>((done) => replies.push(() => done(create(MemoSchema, { ...target, pinned: update.pinned })))),
     );
-    const { result } = renderHook(() => ({ record: useMemoRecord(target.name), update: useUpdateMemo() }), { wrapper });
+    const { result } = renderHook(() => ({ record: useMemoRecord(target.name), update: useUpdateMemo(target.name) }), { wrapper });
     act(() => {
       result.current.update.mutate({ update: { name: target.name, pinned: true }, updateMask: ["pinned"] });
       result.current.update.mutate({ update: { name: target.name, pinned: false }, updateMask: ["pinned"] });
@@ -267,7 +267,9 @@ describe("useUpdateMemo", () => {
     api.getMemo.mockImplementation(async () => server.memo);
     api.listMemos.mockImplementation(async () => create(ListMemosResponseSchema, { memos: [server.memo] }));
     client.setQueryData(memoKeys.detail(before.name), before);
-    const rendered = renderHook(() => ({ detail: useMemo(before.name), list: useMemos(), update: useUpdateMemo() }), { wrapper });
+    const rendered = renderHook(() => ({ detail: useMemo(before.name), list: useMemos(), update: useUpdateMemo(before.name) }), {
+      wrapper,
+    });
     await waitFor(() => expect(rendered.result.current.list.data?.memos).toHaveLength(1));
     return { client, server, result: rendered.result };
   };
@@ -356,5 +358,41 @@ describe("useUpdateMemo", () => {
     await act(async () => pinReply[0]());
     await waitFor(() => expect(client.isMutating()).toBe(0));
     expect(result.current.detail.data).toMatchObject({ content: before.content, pinned: true });
+  });
+
+  it("sends an update of another memo while one memo's update is unanswered", async () => {
+    const { wrapper } = setup();
+    api.updateMemo.mockImplementation(() => new Promise<Memo>(() => {}));
+    const { result } = renderHook(() => ({ a: useUpdateMemo("memos/a"), b: useUpdateMemo("memos/b") }), { wrapper });
+
+    act(() => {
+      result.current.a.mutate({ update: { name: "memos/a", pinned: true }, updateMask: ["pinned"] });
+      result.current.b.mutate({ update: { name: "memos/b", pinned: true }, updateMask: ["pinned"] });
+    });
+
+    await waitFor(() => expect(api.updateMemo).toHaveBeenCalledTimes(2));
+  });
+
+  it("sends a queued update when the hook of the update in front of it moves to another memo", async () => {
+    const { wrapper } = setup();
+    const replies: Array<() => void> = [];
+    api.updateMemo.mockImplementation(
+      ({ memo: update }: { memo: Memo }) =>
+        new Promise<Memo>((done) => replies.push(() => done(create(MemoSchema, { name: update.name })))),
+    );
+    const { result, rerender } = renderHook(({ name }) => ({ moving: useUpdateMemo(name), staying: useUpdateMemo("memos/a") }), {
+      wrapper,
+      initialProps: { name: "memos/a" },
+    });
+    act(() => {
+      result.current.moving.mutate({ update: { name: "memos/a", content: "edited" }, updateMask: ["content"] });
+      result.current.staying.mutate({ update: { name: "memos/a", pinned: true }, updateMask: ["pinned"] });
+    });
+    await waitFor(() => expect(api.updateMemo).toHaveBeenCalledTimes(1));
+
+    rerender({ name: "memos/b" });
+    await act(async () => replies[0]());
+
+    await waitFor(() => expect(api.updateMemo).toHaveBeenCalledTimes(2));
   });
 });
