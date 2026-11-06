@@ -63,6 +63,7 @@ vi.mock("@/components/map/map-utils", () => ({
   MinimalAttributionControl: () => <div data-testid="attribution" />,
 }));
 
+vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
 vi.mock("@/components/map/BasemapLayer", () => ({ BasemapLayer: () => <div data-testid="map-layer" /> }));
 
 describe("LocationPicker", () => {

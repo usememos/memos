@@ -38,12 +38,7 @@ vi.mock("@/utils/i18n", () => ({
   useTranslate: () => (key: string) => key,
 }));
 
-vi.mock("react-hot-toast", () => ({
-  toast: {
-    error: mocks.toastError,
-    success: mocks.toastSuccess,
-  },
-}));
+vi.mock("@/lib/toast", () => ({ toast: { add: mocks.toastSuccess, close: vi.fn() }, showErrorToast: mocks.toastError }));
 
 describe("<MemoRelatedSettings>", () => {
   beforeEach(() => {

@@ -43,7 +43,7 @@ vi.mock("@/contexts/AuthContext", async () => {
     }),
   };
 });
-vi.mock("react-hot-toast", () => ({ toast: { error: vi.fn(), success: vi.fn() } }));
+vi.mock("@/lib/toast", () => ({ toast: { add: vi.fn(), close: vi.fn() }, showErrorToast: vi.fn() }));
 vi.mock("@/contexts/InstanceContext", () => ({
   useInstance: () => ({ aiSetting: { providers: [], transcription: undefined }, fetchSetting: vi.fn().mockResolvedValue(undefined) }),
 }));

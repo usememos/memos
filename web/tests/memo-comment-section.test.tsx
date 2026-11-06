@@ -85,7 +85,7 @@ describe("MemoCommentSection", () => {
 
     render(<MemoCommentSection memo={memo} comments={[comment]} commentCount={24} />);
 
-    expect(screen.getByText("(24)")).toBeInTheDocument();
+    expect(screen.getByText("24")).toBeInTheDocument();
     expect(screen.getAllByTestId("comment-memo")).toHaveLength(1);
   });
 });

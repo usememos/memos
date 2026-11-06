@@ -58,7 +58,7 @@ describe("calendar daily snapshot cell", () => {
     const link = screen.getByRole("link");
     expect(screen.queryByText("2")).toBeNull();
     // Today's badge is a 22px rounded square that starts on the text axis, not a centred disc.
-    expect(screen.getByText("7")).toHaveClass("text-primary-foreground", "bg-primary", "rounded-md", "h-[22px]", "text-ui");
+    expect(screen.getByText("7")).toHaveClass("text-mu-on-primary", "bg-mu-primary", "rounded-mu-md", "h-[22px]", "mu-caption");
     expect(screen.getByText("7")).not.toHaveClass("size-6", "before:rounded-full");
     expect(link).toHaveAccessibleName("2 memos in 2026-08-07");
     expect(link).toHaveAttribute("href", "/spaces/work/calendar/2026/08/07?filter=test");
@@ -76,25 +76,26 @@ describe("calendar daily snapshot cell", () => {
   it("tints the background by the day's share of the busiest day, like a heatmap", () => {
     cell(summary, { isSelected: false });
     // Two of a max of four memos is the second of four levels.
-    expect(screen.getByRole("link")).toHaveClass("bg-primary/16");
-    expect(screen.getByRole("link")).not.toHaveClass("bg-card", "bg-accent");
+    expect(screen.getByRole("link")).toHaveClass("bg-mu-primary/16");
+    expect(screen.getByRole("link")).not.toHaveClass("bg-mu-surface", "bg-mu-hover");
   });
   it("keeps the heat tint under the open day and marks it with a quiet badge on the numeral", () => {
     cell(summary, { isToday: false });
-    expect(screen.getByRole("link")).toHaveClass("bg-primary/16");
-    expect(screen.getByRole("link")).not.toHaveClass("bg-accent");
-    expect(screen.getByText("7")).toHaveClass("font-medium", "bg-foreground/10", "text-foreground", "rounded-md");
-    expect(screen.getByText("7").parentElement).not.toHaveClass("bg-foreground/10");
+    expect(screen.getByRole("link")).toHaveClass("bg-mu-primary/16");
+    expect(screen.getByRole("link")).not.toHaveClass("bg-mu-hover");
+    expect(screen.getByText("7")).toHaveClass("bg-mu-ink/10", "text-mu-ink", "rounded-mu-md");
+    expect(screen.getByText("7")).not.toHaveClass("font-medium");
+    expect(screen.getByText("7").parentElement).not.toHaveClass("bg-mu-ink/10");
   });
   it("marks today with the solid primary badge and no weight change", () => {
     cell(summary, { isSelected: false });
-    expect(screen.getByText("7")).toHaveClass("bg-primary", "text-primary-foreground", "font-normal");
-    expect(screen.getByText("7").parentElement).not.toHaveClass("bg-foreground/10");
+    expect(screen.getByText("7")).toHaveClass("bg-mu-primary", "text-mu-on-primary", "mu-caption");
+    expect(screen.getByText("7").parentElement).not.toHaveClass("bg-mu-ink/10");
   });
   it("nests today's badge in a grey halo when today is also the open day", () => {
     cell(summary);
-    expect(screen.getByText("7")).toHaveClass("bg-primary", "text-primary-foreground", "font-medium");
-    expect(screen.getByText("7").parentElement).toHaveClass("bg-foreground/10", "p-[3px]", "-m-[3px]");
+    expect(screen.getByText("7")).toHaveClass("bg-mu-primary", "text-mu-on-primary");
+    expect(screen.getByText("7").parentElement).toHaveClass("bg-mu-ink/10", "p-[3px]", "-m-[3px]");
   });
   it("removes failed photos while retaining the excerpt", () => {
     cell(summary);
@@ -105,9 +106,9 @@ describe("calendar daily snapshot cell", () => {
   it("keeps a thumbnail under a clamped excerpt in the 117px cell that previously hid it", () => {
     cell(summary, { width: 106, height: 117 });
     expect(document.querySelector("img")).toHaveAttribute("src", "/photo.jpg");
-    expect(document.querySelector("img")).toHaveClass("size-9", "rounded-md");
+    expect(document.querySelector("img")).toHaveClass("size-9", "rounded-mu-md");
     expect(screen.getByText("A memorable afternoon")).toHaveStyle({ WebkitLineClamp: "1" });
-    expect(screen.getByText("A memorable afternoon")).toHaveClass("text-ui", "leading-[18px]");
+    expect(screen.getByText("A memorable afternoon")).toHaveClass("mu-caption");
   });
   it("keeps the image instead of text when both cannot fit in a short cell", () => {
     cell(summary, { width: 106, height: 97 });
@@ -128,7 +129,7 @@ describe("calendar daily snapshot cell", () => {
   });
   it("trades the preview for a mark on the tinted date when very narrow", () => {
     cell(summary, { width: 56, isSelected: false });
-    expect(screen.getByRole("link")).toHaveClass("bg-primary/16");
+    expect(screen.getByRole("link")).toHaveClass("bg-mu-primary/16");
     expect(screen.queryByText("A memorable afternoon")).toBeNull();
     expect(document.querySelectorAll("img")).toHaveLength(1);
     expect(document.querySelector("img")).toHaveClass("size-4");

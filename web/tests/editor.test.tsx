@@ -96,7 +96,7 @@ describe("Editor", () => {
     queries.tagsSetting = undefined;
     const { container, rerender } = render(<Editor {...baseProps} value="#work and #life" />);
     const tag = (name: string) => container.querySelector<HTMLElement>(`.mbe-tag[data-tag="${name}"]`);
-    expect(tag("life")).toHaveClass("rich:rounded-full", "rich:border-primary");
+    expect(tag("life")).toHaveClass("rich:rounded-mu-sm", "rich:bg-mu-well");
     expect(tag("work")).not.toHaveAttribute("style");
 
     queries.tagsSetting = create(UserSetting_TagsSettingSchema, {
@@ -104,13 +104,16 @@ describe("Editor", () => {
     });
     rerender(<Editor {...baseProps} value="#work and #life" />);
     await waitFor(() => expect(tag("work")?.style.getPropertyValue("--tag-color")).toBe("#ff0000"));
-    expect(tag("work")).not.toHaveClass("rich:border-primary");
+    expect(tag("work")).not.toHaveClass("rich:bg-mu-well");
 
     // The pill is rich text's: every memos class but the text color takes the `rich:`
     // variant, so source mode, where the editor applies the same classes, keeps plain text.
     for (const name of ["work", "life"]) {
-      const classes = Array.from(tag(name)!.classList).filter((cls) => !cls.startsWith("mbe-"));
-      expect(classes.filter((cls) => cls.startsWith("text-"))).toHaveLength(1);
+      // A `dark:` variant only swaps a value for the dark theme, so it doesn't change what a class is.
+      const classes = Array.from(tag(name)!.classList)
+        .filter((cls) => !cls.startsWith("mbe-"))
+        .map((cls) => cls.replace(/^dark:/, ""));
+      expect(classes.filter((cls) => cls.startsWith("text-")).length).toBeGreaterThanOrEqual(1);
       expect(classes.filter((cls) => !cls.startsWith("text-") && !cls.startsWith("rich:"))).toEqual([]);
     }
     queries.tagsSetting = undefined;
@@ -127,8 +130,11 @@ describe("Editor", () => {
     // the `rich:` variant is what keeps the pill out of it.
     await waitFor(() => expect(tag("work")?.style.getPropertyValue("--tag-color")).toBe("#ff0000"));
     for (const name of ["work", "life"]) {
-      const classes = Array.from(tag(name)!.classList).filter((cls) => !cls.startsWith("mbe-"));
-      expect(classes.filter((cls) => cls.startsWith("text-"))).toHaveLength(1);
+      // A `dark:` variant only swaps a value for the dark theme, so it doesn't change what a class is.
+      const classes = Array.from(tag(name)!.classList)
+        .filter((cls) => !cls.startsWith("mbe-"))
+        .map((cls) => cls.replace(/^dark:/, ""));
+      expect(classes.filter((cls) => cls.startsWith("text-")).length).toBeGreaterThanOrEqual(1);
       expect(classes.filter((cls) => !cls.startsWith("text-") && !cls.startsWith("rich:"))).toEqual([]);
     }
     queries.tagsSetting = undefined;
@@ -139,8 +145,8 @@ describe("Editor", () => {
     const { container } = render(<Editor {...baseProps} value="Hi @alice and @nobody" />);
     const mention = (name: string) => container.querySelector<HTMLElement>(`.mbe-mention[data-mention="${name}"]`);
     await waitFor(() => expect(mention("alice")).toHaveAttribute("data-resolved"), { timeout: 2000 });
-    expect(mention("alice")).toHaveClass("text-primary");
+    expect(mention("alice")).toHaveClass("text-mu-accent");
     expect(mention("nobody")).not.toHaveAttribute("data-resolved");
-    expect(mention("nobody")).not.toHaveClass("text-primary");
+    expect(mention("nobody")).not.toHaveClass("text-mu-accent");
   });
 });

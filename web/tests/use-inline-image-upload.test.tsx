@@ -14,7 +14,7 @@ vi.mock("@/utils/i18n", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/utils/i18n")>()),
   useTranslate: () => (key: string) => key,
 }));
-vi.mock("react-hot-toast", () => ({ toast: { error: vi.fn() } }));
+vi.mock("@/lib/toast", () => ({ toast: { add: vi.fn(), close: vi.fn() }, showErrorToast: vi.fn() }));
 
 const wrapper = ({ children }: PropsWithChildren) => <EditorProvider>{children}</EditorProvider>;
 

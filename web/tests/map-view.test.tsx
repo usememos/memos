@@ -52,7 +52,7 @@ vi.mock("@/contexts/ViewContext", () => ({ useView: () => ({ timeBasis: "create_
 vi.mock("@/hooks/useCurrentUser", () => ({ default: () => mocks.user }));
 vi.mock("@/hooks/useMediaQuery", () => ({ default: () => true }));
 vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
-vi.mock("react-hot-toast", () => ({ toast: mocks.toast }));
+vi.mock("@/lib/toast", () => ({ toast: { add: mocks.toast, close: vi.fn() }, showErrorToast: vi.fn() }));
 
 beforeEach(() => {
   sessionStorage.clear();
@@ -108,18 +108,17 @@ describe("map composer", () => {
     act(() => mocks.editor.onConfirm?.("memos/outside"));
     await waitFor(() => expect(mocks.toast).toHaveBeenCalled());
     // Toasts render outside the router; the action must not require router context.
-    const toastContent = mocks.toast.mock.calls[0][0]({ id: "saved" });
-    render(toastContent);
-    expect(screen.getByRole("button", { name: "map.open-memo" })).toBeVisible();
+    const options = mocks.toast.mock.calls[0][0];
+    expect(options.title).toBe("map.saved-outside-filter");
+    expect(options.actionProps.children).toBe("map.open-memo");
+    act(() => options.actionProps.onClick());
   });
   it("reports refresh failure without claiming the saved memo is outside the filter", async () => {
     mocks.refetch.mockResolvedValue({ isError: true });
     start();
     act(() => mocks.editor.onConfirm?.("memos/saved"));
     await waitFor(() => expect(mocks.toast).toHaveBeenCalled());
-    render(mocks.toast.mock.calls[0][0]({ id: "saved" }));
-    expect(screen.getByText("map.load-error")).toBeVisible();
-    expect(screen.queryByText("map.saved-outside-filter")).not.toBeInTheDocument();
+    expect(mocks.toast.mock.calls[0][0]).toMatchObject({ title: "map.load-error", type: "danger" });
   });
 });
 

@@ -9,6 +9,7 @@ import {
   MediaMetadataSchema,
   PhotoMetadataSchema,
 } from "@/types/proto/api/attachment_service_pb";
+import english from "../src/locales/en.json";
 
 vi.mock("@/hooks/useMediaQuery", () => ({
   __esModule: true,
@@ -19,31 +20,13 @@ vi.mock("@/components/map/LazyLocationPicker", () => ({
   LazyLocationPicker: () => <div data-testid="attachment-location-map" />,
 }));
 
-const labels: Record<string, string> = {
-  "attachment-details.actions.hide": "Hide attachment details",
-  "attachment-details.actions.hide-map": "Hide map",
-  "attachment-details.actions.show": "Show attachment details",
-  "attachment-details.actions.show-map": "Show map",
-  "attachment-details.empty": "No saved capture metadata.",
-  "attachment-details.fields.altitude": "Altitude",
-  "attachment-details.fields.camera": "Camera",
-  "attachment-details.fields.captured": "Captured",
-  "attachment-details.fields.dimensions": "Dimensions",
-  "attachment-details.fields.exposure": "Exposure",
-  "attachment-details.fields.file": "File",
-  "attachment-details.fields.lens": "Lens",
-  "attachment-details.fields.location": "Coordinates",
-  "attachment-details.sections.camera": "Camera",
-  "attachment-details.sections.capture": "Capture",
-  "attachment-details.sections.file": "File",
-  "attachment-details.sections.location": "Location",
-  "attachment-details.timezone-unknown": "Time zone unknown",
-  "attachment-details.title": "Details",
-};
-
+// Render the English copy, so the assertions read like the screen.
 vi.mock("@/utils/i18n", () => ({
   findNearestMatchedLanguage: (language: string) => language || "en",
-  useTranslate: () => (key: string) => labels[key] ?? key,
+  useTranslate: () => (key: string, params?: Record<string, unknown>) => {
+    const text = key.split(".").reduce<unknown>((node, part) => (node as Record<string, unknown>)?.[part], english);
+    return typeof text === "string" ? text.replace(/\{\{(\w+)\}\}/g, (_, name) => String(params?.[name])) : key;
+  },
 }));
 
 const buildAttachmentWithPhotoMetadata = () =>
