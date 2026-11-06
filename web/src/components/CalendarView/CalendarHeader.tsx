@@ -1,8 +1,7 @@
+import { Button, buttonClasses } from "@usememos/ui";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { buttonVariants } from "@/components/ui/button";
 import { addMonths } from "@/lib/calendar-utils";
-import { cn } from "@/lib/utils";
 import { collectionPathForLocation } from "@/router/routes";
 import { useTranslate } from "@/utils/i18n";
 import { CalendarLink } from "./CalendarLink";
@@ -36,32 +35,33 @@ export const CalendarHeader = ({ month, monthLabel, today, activeDate, closable 
   const navigate = useNavigate();
   const { pathname, search } = useLocation();
   const todayOpen = activeDate === today;
-  const iconControlClassName = cn(buttonVariants({ variant: "quiet", size: "icon-compact" }));
+  const iconControlClassName = buttonClasses({ variant: "ghost", size: "sm", iconOnly: true });
 
   return (
     // The title's text starts on the grid's text axis (border + cell padding); the month
     // controls sit at the trailing edge so they never move as the title's width changes.
     <header className="flex h-9 shrink-0 items-center ps-px">
       <MonthPicker month={month} monthLabel={monthLabel} today={today} />
-      <div className="ms-auto flex items-center gap-0.5">
+      <div className="ms-auto flex items-center gap-0.5 pointer-coarse:gap-4">
         <CalendarLink to={buildCalendarPath(addMonths(month, -1))} aria-label={t("common.previous-month")} className={iconControlClassName}>
-          <ChevronLeftIcon className="rtl:rotate-180" strokeWidth={1.75} />
+          <ChevronLeftIcon className="mu-icon rtl:rotate-180" />
         </CalendarLink>
         <CalendarLink to={buildCalendarPath(addMonths(month, 1))} aria-label={t("common.next-month")} className={iconControlClassName}>
-          <ChevronRightIcon className="rtl:rotate-180" strokeWidth={1.75} />
+          <ChevronRightIcon className="mu-icon rtl:rotate-180" />
         </CalendarLink>
         {/* Today is a toggle, so it is a button that navigates; the search keeps the filter query.
             Its pressed state is the quiet variant's accent fill, keyed off aria-pressed. */}
-        <button
-          type="button"
+        <Button
+          variant="ghost"
+          size="sm"
           aria-pressed={todayOpen}
-          className={cn(buttonVariants({ variant: "quiet", size: "sm" }), "ms-1.5")}
+          className="ms-1.5"
           onClick={() =>
             navigate({ pathname: collectionPathForLocation(getTodayPath(month, activeDate, today, closable), pathname), search })
           }
         >
           {t("common.today")}
-        </button>
+        </Button>
       </div>
     </header>
   );

@@ -1,8 +1,7 @@
+import { Button, buttonClasses, Popover } from "@usememos/ui";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { buttonVariants } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { CalendarLink } from "./CalendarLink";
@@ -18,8 +17,9 @@ export interface MonthPickerProps {
 
 const MONTHS = Array.from({ length: 12 }, (_, index) => index + 1);
 
-const TEXT_CONTROL_CLASSES = cn(buttonVariants({ variant: "quiet", size: "sm" }));
-const ICON_CONTROL_CLASSES = cn(buttonVariants({ variant: "quiet", size: "icon-compact" }));
+const TEXT_CONTROL_CLASSES = buttonClasses({ variant: "ghost", size: "sm" });
+// md, so the 20px heading line fits the control.
+const TITLE_CONTROL_CLASSES = buttonClasses({ variant: "ghost", size: "md" });
 
 /**
  * The month title is the trigger; the popup is a year stepper over the twelve months, the
@@ -45,32 +45,30 @@ export const MonthPicker = ({ month, monthLabel, today }: MonthPickerProps) => {
   );
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger
-        aria-label={t("calendar.select-month")}
-        className={cn(TEXT_CONTROL_CLASSES, "text-base font-semibold tracking-tight text-foreground")}
-      >
-        {monthLabel}
-      </PopoverTrigger>
-      <PopoverContent align="start" sideOffset={6} className="w-60 p-2">
+    <Popover.Root open={open} onOpenChange={setOpen}>
+      {/* The month is the calendar page's title, so it is the page heading as well as the trigger. */}
+      <h1 className="min-w-0">
+        <Popover.Trigger aria-label={t("calendar.select-month")} className={cn(TITLE_CONTROL_CLASSES, "mu-heading text-mu-ink")}>
+          {monthLabel}
+        </Popover.Trigger>
+      </h1>
+      <Popover.Popup align="start" className="w-60">
         <div className="mb-1 flex items-center">
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="sm"
             aria-label={t("calendar.previous-year")}
-            className={ICON_CONTROL_CLASSES}
+            icon={<ChevronLeftIcon className="mu-icon rtl:rotate-180" />}
             onClick={() => setYear((value) => value - 1)}
-          >
-            <ChevronLeftIcon className="rtl:rotate-180" strokeWidth={1.75} />
-          </button>
-          <span className="flex-1 text-center text-ui font-medium tabular-nums text-foreground">{year}</span>
-          <button
-            type="button"
+          />
+          <span className="flex-1 text-center mu-label-sm tabular-nums text-mu-ink">{year}</span>
+          <Button
+            variant="ghost"
+            size="sm"
             aria-label={t("calendar.next-year")}
-            className={ICON_CONTROL_CLASSES}
+            icon={<ChevronRightIcon className="mu-icon rtl:rotate-180" />}
             onClick={() => setYear((value) => value + 1)}
-          >
-            <ChevronRightIcon className="rtl:rotate-180" strokeWidth={1.75} />
-          </button>
+          />
         </div>
         <div className="grid grid-cols-3 gap-0.5">
           {MONTHS.map((value) => {
@@ -82,18 +80,18 @@ export const MonthPicker = ({ month, monthLabel, today }: MonthPickerProps) => {
                 key={key}
                 to={buildCalendarPath(key)}
                 aria-current={isShown ? "page" : undefined}
-                className={cn(TEXT_CONTROL_CLASSES, "relative text-foreground", isShown && "font-medium")}
+                className={cn(TEXT_CONTROL_CLASSES, "relative text-mu-ink")}
                 onClick={() => setOpen(false)}
               >
                 {monthShortLabels[value - 1]}
                 {isCurrent && (
-                  <span aria-hidden="true" className="absolute bottom-1 left-1/2 size-1 -translate-x-1/2 rounded-full bg-primary" />
+                  <span aria-hidden="true" className="absolute bottom-1 left-1/2 size-1 -translate-x-1/2 rounded-full bg-mu-primary" />
                 )}
               </CalendarLink>
             );
           })}
         </div>
-      </PopoverContent>
-    </Popover>
+      </Popover.Popup>
+    </Popover.Root>
   );
 };

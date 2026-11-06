@@ -1,6 +1,7 @@
+import { Select } from "@usememos/ui";
 import { Monitor, Moon, Palette, Sun } from "lucide-react";
 import type { ReactElement } from "react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useTranslate } from "@/utils/i18n";
 import { loadTheme, THEME_OPTIONS } from "@/utils/theme";
 
 interface ThemeSelectProps {
@@ -11,15 +12,18 @@ interface ThemeSelectProps {
 }
 
 const THEME_ICONS: Record<string, ReactElement> = {
-  system: <Monitor className="w-4 h-4" />,
-  default: <Sun className="w-4 h-4" />,
-  "default-dark": <Moon className="w-4 h-4" />,
-  paper: <Palette className="w-4 h-4" />,
+  system: <Monitor className="mu-icon" />,
+  default: <Sun className="mu-icon" />,
+  "default-dark": <Moon className="mu-icon" />,
+  paper: <Palette className="mu-icon" />,
 };
 
 const ThemeSelect = ({ value, onValueChange, className, compact = false }: ThemeSelectProps = {}) => {
+  const t = useTranslate();
   const currentTheme = value || "system";
-  const triggerLabel = currentTheme === "system" ? "System" : THEME_OPTIONS.find((option) => option.value === currentTheme)?.label;
+  const options = THEME_OPTIONS.map((option) => ({ value: option.value, label: t(option.labelKey) }));
+  const triggerLabel =
+    currentTheme === "system" ? t("setting.preference.theme-system-short") : options.find((option) => option.value === currentTheme)?.label;
 
   const handleThemeChange = (newTheme: string) => {
     // Apply theme globally immediately
@@ -31,24 +35,21 @@ const ThemeSelect = ({ value, onValueChange, className, compact = false }: Theme
   };
 
   return (
-    <Select value={currentTheme} items={THEME_OPTIONS} onValueChange={handleThemeChange}>
-      <SelectTrigger className={className}>
+    <Select.Root value={currentTheme} items={options} onValueChange={(value) => value !== null && handleThemeChange(value)}>
+      <Select.Trigger className={className}>
         <div className="flex min-w-0 flex-1 items-center gap-2">
           {compact && THEME_ICONS[currentTheme]}
-          {compact ? <span className="truncate">{triggerLabel}</span> : <SelectValue className="truncate" placeholder="Select theme" />}
+          {compact ? <span className="truncate">{triggerLabel}</span> : <Select.Value className="truncate" />}
         </div>
-      </SelectTrigger>
-      <SelectContent>
-        {THEME_OPTIONS.map((option) => (
-          <SelectItem key={option.value} value={option.value}>
-            <div className="flex items-center gap-2">
-              {THEME_ICONS[option.value]}
-              <span>{option.label}</span>
-            </div>
-          </SelectItem>
+      </Select.Trigger>
+      <Select.Popup>
+        {options.map((option) => (
+          <Select.Item key={option.value} value={option.value} icon={THEME_ICONS[option.value]}>
+            {option.label}
+          </Select.Item>
         ))}
-      </SelectContent>
-    </Select>
+      </Select.Popup>
+    </Select.Root>
   );
 };
 

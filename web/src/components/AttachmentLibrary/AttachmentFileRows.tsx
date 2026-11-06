@@ -15,7 +15,7 @@ const AttachmentThumb = ({ item, className }: { item: AttachmentLibraryListItem;
 
   if (type === "image/*" || isMotion) {
     return (
-      <div className={cn("overflow-hidden rounded-xl bg-muted/35", className)}>
+      <div className={cn("overflow-hidden rounded-mu-xl bg-mu-well/35", className)}>
         <img
           src={getAttachmentThumbnailUrl(item.attachment)}
           alt={item.attachment.filename}
@@ -29,18 +29,18 @@ const AttachmentThumb = ({ item, className }: { item: AttachmentLibraryListItem;
 
   if (type === "video/*") {
     return (
-      <div className={cn("relative overflow-hidden rounded-xl bg-muted/35", className)}>
+      <div className={cn("relative overflow-hidden rounded-mu-xl bg-mu-well/35", className)}>
         <VideoPoster sourceUrl={item.sourceUrl} alt={item.attachment.filename} className="h-full w-full object-cover" />
-        <span className="absolute bottom-2 right-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-background/85 text-foreground shadow-sm">
-          <PlayIcon className="h-3.5 w-3.5 fill-current" />
+        <span className="absolute bottom-2 right-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-mu-canvas/85 text-mu-ink">
+          <PlayIcon className="mu-icon-sm fill-current" />
         </span>
       </div>
     );
   }
 
   return (
-    <div className={cn("flex items-center justify-center rounded-xl bg-muted/45 text-muted-foreground", className)}>
-      {type === "audio/*" ? <FileAudioIcon className="h-5 w-5" /> : <FileIcon className="h-5 w-5" />}
+    <div className={cn("flex items-center justify-center rounded-mu-xl bg-mu-well/45 text-mu-ink-muted", className)}>
+      {type === "audio/*" ? <FileAudioIcon className="mu-icon h-5 w-5" /> : <FileIcon className="mu-icon h-5 w-5" />}
     </div>
   );
 };
@@ -51,14 +51,14 @@ export const AttachmentDocumentRows = ({ items, creators }: { items: AttachmentL
       {items.map((item) => (
         <article
           key={item.attachment.name}
-          className="flex items-center gap-2.5 rounded-[18px] border border-border/60 bg-background/90 p-3 shadow-sm shadow-black/[0.02]"
+          className="flex items-center gap-2.5 rounded-[18px] border border-mu-line/60 bg-mu-canvas/90 p-3"
         >
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted/45 text-muted-foreground">
-            <FileIcon className="h-4.5 w-4.5" />
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-mu-lg bg-mu-well/45 text-mu-ink-muted">
+            <FileIcon className="mu-icon h-4.5 w-4.5" />
           </div>
 
           <div className="min-w-0 flex-1">
-            <div className="truncate text-sm font-medium text-foreground" title={item.attachment.filename}>
+            <div className="truncate mu-label text-mu-ink" title={item.attachment.filename}>
               {item.attachment.filename}
             </div>
             <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
@@ -79,17 +79,14 @@ export const AttachmentAudioRows = ({ items, creators }: { items: AttachmentLibr
   return (
     <div className="space-y-2.5">
       {items.map((item) => (
-        <article
-          key={item.attachment.name}
-          className="rounded-[18px] border border-border/60 bg-background/90 p-2.5 shadow-sm shadow-black/[0.02]"
-        >
+        <article key={item.attachment.name} className="rounded-[18px] border border-mu-line/60 bg-mu-canvas/90 p-2.5">
           <AudioAttachmentItem
             filename={item.attachment.filename}
             sourceUrl={item.sourceUrl}
             mimeType={item.attachment.type}
             size={Number(item.attachment.size)}
           />
-          <div className="mt-2.5 flex items-center justify-between gap-2 border-t border-border/60 px-0.5 pt-2.5">
+          <div className="mt-2.5 flex items-center justify-between gap-2 border-t border-mu-line/60 px-0.5 pt-2.5">
             <div className="min-w-0 flex flex-wrap items-center gap-1.5">
               <AttachmentMetadataLine className="min-w-0 max-w-full" items={[item.createdLabel]} />
               <AttachmentCreator creatorName={item.attachment.creator} user={creators?.get(item.attachment.creator)} />
@@ -109,12 +106,12 @@ export const AttachmentUnusedRows = ({ items, creators }: { items: AttachmentLib
       {items.map((item) => (
         <article
           key={item.attachment.name}
-          className="flex items-center gap-2.5 rounded-[18px] border border-warning/30 bg-warning/5 p-3 shadow-sm shadow-black/[0.02]"
+          className="flex items-center gap-2.5 rounded-[18px] border border-mu-warning/30 bg-mu-warning-soft p-3"
         >
           <AttachmentThumb item={item} className="h-10 w-10 shrink-0" />
 
           <div className="min-w-0 flex-1">
-            <div className="truncate text-sm font-medium text-foreground" title={item.attachment.filename}>
+            <div className="truncate mu-label text-mu-ink" title={item.attachment.filename}>
               {item.attachment.filename}
             </div>
             <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
@@ -124,7 +121,7 @@ export const AttachmentUnusedRows = ({ items, creators }: { items: AttachmentLib
             </div>
           </div>
 
-          <AttachmentOpenButton className="text-warning/90 hover:text-warning" href={item.sourceUrl} />
+          <AttachmentOpenButton className="text-mu-warning/90 hover:text-mu-warning" href={item.sourceUrl} />
         </article>
       ))}
     </div>

@@ -1,9 +1,8 @@
-import { LoaderIcon } from "lucide-react";
+import { Button } from "@usememos/ui";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { toast } from "react-hot-toast";
 import { useSearchParams } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { handleError } from "@/lib/error";
+import { showErrorToast } from "@/lib/toast";
 import { IdentityProvider } from "@/types/proto/api/idp_service_pb";
 import { AUTH_AUTO_SIGN_IN_PARAM } from "@/utils/auth-redirect";
 import { useTranslate } from "@/utils/i18n";
@@ -41,7 +40,7 @@ const IdentityProviderButtons = ({ identityProviderList, redirectTarget, autoSig
       } catch (error) {
         pendingRef.current = false;
         setPendingProvider(undefined);
-        handleError(error, toast.error, {
+        handleError(error, showErrorToast, {
           context: "Failed to initiate OAuth flow",
           fallbackMessage: "Failed to initiate sign-in. Please try again.",
         });
@@ -83,14 +82,12 @@ const IdentityProviderButtons = ({ identityProviderList, redirectTarget, autoSig
       {identityProviderList.map((identityProvider) => (
         <Button
           key={identityProvider.name}
-          variant="outline"
+          variant="neutral"
           disabled={Boolean(pendingProvider)}
-          aria-busy={pendingProvider?.name === identityProvider.name}
+          loading={pendingProvider?.name === identityProvider.name}
+          loadingLabel={t("auth.continue-with", { provider: identityProvider.title })}
           onClick={() => void handleSignInWithIdentityProvider(identityProvider)}
         >
-          {pendingProvider?.name === identityProvider.name && (
-            <LoaderIcon className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
-          )}
           {t("auth.continue-with", { provider: identityProvider.title })}
         </Button>
       ))}

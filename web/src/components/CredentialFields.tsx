@@ -1,5 +1,4 @@
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Field, Input } from "@usememos/ui";
 import { useTranslate } from "@/utils/i18n";
 
 interface Props {
@@ -18,8 +17,8 @@ const CredentialFields = ({ idPrefix, username, password, passwordAutoComplete, 
 
   return (
     <>
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor={`${idPrefix}-username`}>{t("common.username")}</Label>
+      <Field.Root>
+        <Field.Label>{t("common.username")}</Field.Label>
         <Input
           id={`${idPrefix}-username`}
           type="text"
@@ -32,9 +31,9 @@ const CredentialFields = ({ idPrefix, username, password, passwordAutoComplete, 
           onChange={(e) => onUsernameChange(e.target.value)}
           required
         />
-      </div>
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor={`${idPrefix}-password`}>{t("common.password")}</Label>
+      </Field.Root>
+      <Field.Root>
+        <Field.Label>{t("common.password")}</Field.Label>
         <Input
           id={`${idPrefix}-password`}
           type="password"
@@ -47,7 +46,7 @@ const CredentialFields = ({ idPrefix, username, password, passwordAutoComplete, 
           onChange={(e) => onPasswordChange(e.target.value)}
           required
         />
-      </div>
+      </Field.Root>
     </>
   );
 };

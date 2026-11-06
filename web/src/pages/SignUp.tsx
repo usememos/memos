@@ -1,15 +1,14 @@
 import { create } from "@bufbuild/protobuf";
 import { timestampDate } from "@bufbuild/protobuf/wkt";
-import { InfoIcon, LoaderIcon, LockIcon, SparklesIcon, UserRoundXIcon } from "lucide-react";
+import { Button } from "@usememos/ui";
+import { InfoIcon, LockIcon, SparklesIcon, UserRoundXIcon } from "lucide-react";
 import { useState } from "react";
-import { toast } from "react-hot-toast";
 import { useSearchParams } from "react-router-dom";
 import { setAccessToken } from "@/auth-state";
 import AuthPageLayout, { AuthChip, AuthEmptyState, AuthLinkPrompt, AuthOptionsLoading } from "@/components/AuthPageLayout";
 import ChallengeWidget, { CHALLENGE_TOKEN_HEADER } from "@/components/ChallengeWidget";
 import CredentialFields from "@/components/CredentialFields";
 import IdentityProviderButtons from "@/components/IdentityProviderButtons";
-import { Button } from "@/components/ui/button";
 import { authServiceClient, userServiceClient } from "@/connect";
 import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
@@ -17,6 +16,7 @@ import { useIdentityProviderList } from "@/hooks/useIdentityProviderQueries";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { ERROR_REASON_CHALLENGE_REQUIRED, handleError, hasErrorReason } from "@/lib/error";
+import { showErrorToast } from "@/lib/toast";
 import { ROUTES } from "@/router/routes";
 import { User_Role, UserSchema } from "@/types/proto/api/user_service_pb";
 import { AUTH_REDIRECT_PARAM, appendSearchParams, getSafeRedirectPath } from "@/utils/auth-redirect";
@@ -91,8 +91,8 @@ const SignUp = () => {
       if (hasErrorReason(error, ERROR_REASON_CHALLENGE_REQUIRED)) {
         setChallengeResetKey((key) => key + 1);
       }
-      handleError(error, toast.error, {
-        fallbackMessage: "Sign up failed",
+      handleError(error, showErrorToast, {
+        fallbackMessage: t("error.sign-up-failed"),
       });
     }
     actionBtnLoadingState.setFinish();
@@ -110,9 +110,13 @@ const SignUp = () => {
         onPasswordChange={setPassword}
       />
       {!needsSetup && <ChallengeWidget onToken={setChallengeToken} resetKey={challengeResetKey} />}
-      <Button type="submit" disabled={actionBtnLoadingState.isLoading}>
+      <Button
+        variant="primary"
+        type="submit"
+        loading={actionBtnLoadingState.isLoading}
+        loadingLabel={needsSetup ? t("auth.create-admin-account") : t("common.sign-up")}
+      >
         {needsSetup ? t("auth.create-admin-account") : t("common.sign-up")}
-        {actionBtnLoadingState.isLoading && <LoaderIcon className="ml-1 h-4 w-auto animate-spin opacity-60" />}
       </Button>
     </form>
   );
@@ -125,7 +129,7 @@ const SignUp = () => {
       <AuthPageLayout
         chip={
           <AuthChip>
-            <SparklesIcon className="h-3 w-3" />
+            <SparklesIcon className="mu-icon-xs" />
             {t("auth.first-run")}
           </AuthChip>
         }
@@ -134,8 +138,8 @@ const SignUp = () => {
         hideExplore
       >
         {signUpForm}
-        <div className="mt-4 flex items-start gap-2 rounded-lg border border-border bg-accent/50 px-3 py-2 text-[13px] leading-relaxed text-muted-foreground">
-          <InfoIcon className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+        <div className="mt-4 flex items-start gap-2 rounded-mu-lg border border-mu-line bg-mu-hover/50 px-3 py-2 mu-caption text-mu-ink-muted">
+          <InfoIcon className="mu-icon-sm mt-0.5 shrink-0" />
           {t("auth.setup-note")}
         </div>
       </AuthPageLayout>
@@ -147,7 +151,7 @@ const SignUp = () => {
     return (
       <AuthPageLayout title={t("auth.create-your-account")}>
         <AuthEmptyState
-          icon={<UserRoundXIcon className="h-5 w-5" />}
+          icon={<UserRoundXIcon />}
           title={t("auth.signups-closed-title")}
           description={t("auth.signups-closed-description")}
         />
@@ -172,7 +176,7 @@ const SignUp = () => {
           />
         ) : (
           <AuthEmptyState
-            icon={<LockIcon className="h-5 w-5" />}
+            icon={<LockIcon />}
             title={t("auth.signup-unavailable-title")}
             description={t("auth.signup-unavailable-description")}
           />

@@ -9,7 +9,13 @@ import type { MonthCalendarProps } from "./types";
 import { calculateMaxCount, getTooltipText } from "./utils";
 
 /** The type of a weekday column label, shared by every month grid. */
-export const WEEKDAY_LABEL_CLASSES = "text-2xs font-medium uppercase tracking-[0.04em] text-muted-foreground/50";
+/**
+ * Seven 28px columns, the sidebar's one control height, so day cells land on whole pixels; the
+ * leftover width goes into the column gaps, which keeps the first and last columns on the rails.
+ */
+const CALENDAR_GRID_CLASSES = "grid grid-cols-[repeat(7,28px)] justify-between gap-y-1";
+/** Weekday initials: caption weight in muted ink, so they sit under the day numbers rather than beside them. */
+export const WEEKDAY_LABEL_CLASSES = "mu-caption text-mu-ink-muted";
 
 /** Localized weekday labels starting on the instance's first day of the week. */
 export const useWeekdayLabels = (weekStartDayOffset: number) => {
@@ -46,9 +52,9 @@ export const MonthCalendar = memo(({ month, data, selectedDate, onClick, timeBas
   });
 
   return (
-    <div className="flex flex-col" role="group" aria-label={`Calendar for ${month}`}>
+    <div className="flex flex-col" role="group" aria-label={t("common.calendar-for-month", { month })}>
       {/* Every day button already announces its full date, so the initials are decoration. */}
-      <div className="mb-1.5 grid grid-cols-7 gap-1" aria-hidden="true">
+      <div className={cn("mb-1", CALENDAR_GRID_CLASSES)} aria-hidden="true">
         {weekDays.map((label, index) => (
           <div key={index} className={cn("flex h-5 items-center justify-center", WEEKDAY_LABEL_CLASSES)}>
             {Array.from(label)[0]}
@@ -56,7 +62,7 @@ export const MonthCalendar = memo(({ month, data, selectedDate, onClick, timeBas
         ))}
       </div>
 
-      <div className="grid grid-cols-7 gap-1">
+      <div className={CALENDAR_GRID_CLASSES}>
         {days.map((day) => (
           <CalendarCell
             key={day.date}
