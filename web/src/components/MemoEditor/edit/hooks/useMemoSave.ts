@@ -1,12 +1,12 @@
 import { Code, ConnectError } from "@connectrpc/connect";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
-import { toast } from "react-hot-toast";
 import { useNewMemo } from "@/contexts/NewMemoContext";
 import { attachmentKeys } from "@/hooks/useAttachmentQueries";
 import { memoDetailQueryOptions, useCreateMemo, useUpdateMemo } from "@/hooks/useMemoQueries";
 import { userKeys } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
+import { showErrorToast, toast } from "@/lib/toast";
 import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import type { Visibility } from "@/types/proto/api/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
@@ -59,7 +59,7 @@ export function useMemoSave({
     if (state.ui.justSaved) return;
     const { valid, reason, detail } = validationService.canSave(state);
     if (!valid) {
-      toast.error(reason ? t(reason, detail ? { url: detail } : undefined) : t("editor.validation.cannot-save"));
+      showErrorToast(reason ? t(reason, detail ? { url: detail } : undefined) : t("editor.validation.cannot-save"));
       return;
     }
 
@@ -116,7 +116,7 @@ export function useMemoSave({
       );
 
       if (!result.hasChanges) {
-        toast.error(t("editor.no-changes-detected"));
+        showErrorToast(t("editor.no-changes-detected"));
         onCancel?.();
         return;
       }
@@ -125,7 +125,7 @@ export function useMemoSave({
       discardDraft();
       // A moved memo may leave the feed it was edited in; say where it went.
       if (result.moved) {
-        toast.success(t("memo.moved"));
+        toast.add({ title: t("memo.moved"), type: "success" });
       }
 
       // Hosts that close after saving (edit, comment) hold a brief "Saved"
@@ -160,7 +160,7 @@ export function useMemoSave({
         void queryClient.invalidateQueries({ queryKey: attachmentKeys.lists() });
         void queryClient.invalidateQueries({ queryKey: userKeys.stats() });
       }
-      handleError(error, toast.error, {
+      handleError(error, showErrorToast, {
         context: "Failed to save memo",
         fallbackMessage: errorService.getErrorMessage(error),
       });

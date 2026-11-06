@@ -1,8 +1,7 @@
-import { AudioWaveformIcon, LoaderCircleIcon, SquareIcon, XIcon } from "lucide-react";
+import { Button, Spinner, Tooltip } from "@usememos/ui";
+import { AudioWaveformIcon, SquareIcon, XIcon } from "lucide-react";
 import type { FC } from "react";
 import { formatAudioTime } from "@/components/MemoMetadata/Attachment/attachmentHelpers";
-import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { useAudioWaveform } from "../hooks/useAudioWaveform";
@@ -34,64 +33,70 @@ export const AudioRecorderPanel: FC<AudioRecorderPanelProps> = ({
   return (
     <div
       className={cn(
-        "flex w-full items-center justify-between gap-2 rounded-lg border border-border bg-muted/30 px-2.5 py-1.5",
-        "dark:bg-muted/20",
+        "flex w-full items-center justify-between gap-2 rounded-mu-lg border border-mu-line bg-mu-well/30 px-2.5 py-1.5",
+        "dark:bg-mu-well/20",
       )}
     >
       <div className="flex min-w-0 flex-1 items-center gap-2">
-        {isRequestingPermission || isTranscribing ? (
-          <LoaderCircleIcon className="size-3.5 shrink-0 animate-spin text-muted-foreground" aria-hidden />
-        ) : null}
-        <span className="sr-only">{srStatusText}</span>
+        {isRequestingPermission || isTranscribing ? <Spinner size="sm" aria-hidden className="shrink-0 text-mu-ink-muted" /> : null}
+        <span className="mu-visually-hidden">{srStatusText}</span>
         <VoiceWaveform levels={waveformLevels} className="max-w-[200px] overflow-hidden" />
-        <span className="shrink-0 font-mono text-xs tabular-nums text-muted-foreground">
+        <span className="shrink-0 font-mono mu-caption tabular-nums text-mu-ink-muted">
           {isTranscribing ? t("editor.audio-recorder.transcribing") : formatAudioTime(elapsedSeconds)}
         </span>
       </div>
 
-      <div className="flex shrink-0 items-center gap-1 border-s border-border/60 ps-2">
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="rounded-full"
-          onClick={onCancel}
-          disabled={isTranscribing}
-          aria-label={t("common.cancel")}
-        >
-          <XIcon className="size-4" />
-        </Button>
-        {canTranscribe && (
-          <Tooltip>
-            <TooltipTrigger render={<span className="-ms-2 inline-flex" />}>
+      <div className="flex shrink-0 items-center gap-1 border-s border-mu-line/60 ps-2">
+        <Tooltip.Root>
+          <Tooltip.Trigger
+            render={
               <Button
                 type="button"
                 variant="ghost"
-                size="icon"
-                className="rounded-full"
-                onClick={onTranscribe}
-                disabled={isTranscribeDisabled}
-                aria-label={t("editor.audio-recorder.transcribe")}
-              >
-                <AudioWaveformIcon className="size-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="top">
+                onClick={onCancel}
+                disabled={isTranscribing}
+                aria-label={t("common.cancel")}
+                icon={<XIcon />}
+              />
+            }
+          />
+          <Tooltip.Popup side="top">{t("common.cancel")}</Tooltip.Popup>
+        </Tooltip.Root>
+        {canTranscribe && (
+          <Tooltip.Root>
+            <Tooltip.Trigger
+              render={
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={onTranscribe}
+                  disabled={isTranscribeDisabled}
+                  focusableWhenDisabled
+                  aria-label={t("editor.audio-recorder.transcribe")}
+                  icon={<AudioWaveformIcon />}
+                />
+              }
+            />
+            <Tooltip.Popup side="top">
               <p>{t("editor.audio-recorder.transcribe")}</p>
-            </TooltipContent>
-          </Tooltip>
+            </Tooltip.Popup>
+          </Tooltip.Root>
         )}
-        <Button
-          type="button"
-          variant="destructive"
-          size="icon"
-          className="rounded-full"
-          onClick={onStop}
-          disabled={isRequestingPermission || isTranscribing}
-          aria-label={t("editor.audio-recorder.stop")}
-        >
-          <SquareIcon className="size-4" />
-        </Button>
+        <Tooltip.Root>
+          <Tooltip.Trigger
+            render={
+              <Button
+                type="button"
+                variant="primary"
+                onClick={onStop}
+                disabled={isRequestingPermission || isTranscribing}
+                aria-label={t("editor.audio-recorder.stop")}
+                icon={<SquareIcon />}
+              />
+            }
+          />
+          <Tooltip.Popup side="top">{t("editor.audio-recorder.stop")}</Tooltip.Popup>
+        </Tooltip.Root>
       </div>
     </div>
   );

@@ -25,14 +25,14 @@ const MemoShareImagePreview = forwardRef<HTMLDivElement, { width: number }>(({ w
   );
 
   return (
-    <div ref={ref} className="overflow-hidden rounded-xl border border-border/50 bg-background p-2 sm:p-2.5" style={{ width }}>
-      <div className="overflow-hidden rounded-lg border border-border/60 bg-background p-4 sm:p-5">
+    <div ref={ref} className="overflow-hidden rounded-mu-xl border border-mu-line/50 bg-mu-canvas p-2 sm:p-2.5" style={{ width }}>
+      <div className="overflow-hidden rounded-mu-lg border border-mu-line/60 bg-mu-canvas p-4 sm:p-5">
         <div className="flex items-start gap-3">
           <div className="flex min-w-0 items-center gap-2.5">
             <UserAvatar avatarUrl={preview.avatarUrl} name={preview.displayName} className="h-8 w-8" />
             <div className="min-w-0">
-              <div className="truncate text-[13px] font-semibold text-foreground">{preview.displayName}</div>
-              {preview.formattedDisplayTime && <div className="truncate text-xs text-muted-foreground">{preview.formattedDisplayTime}</div>}
+              <div className="truncate mu-label-sm text-mu-ink">{preview.displayName}</div>
+              {preview.formattedDisplayTime && <div className="truncate mu-caption text-mu-ink-muted">{preview.formattedDisplayTime}</div>}
             </div>
           </div>
         </div>
@@ -43,7 +43,7 @@ const MemoShareImagePreview = forwardRef<HTMLDivElement, { width: number }>(({ w
               content={memo.content}
               attachments={memo.attachments}
               compact={false}
-              contentClassName="text-[14px] leading-6.5 sm:text-[15px]"
+              contentClassName="mu-body leading-6.5 sm:text-[15px]"
             />
           </div>
         </div>
@@ -54,14 +54,14 @@ const MemoShareImagePreview = forwardRef<HTMLDivElement, { width: number }>(({ w
               <div
                 key={item.id}
                 className={cn(
-                  "relative overflow-hidden rounded-md border border-border/70 bg-muted/30",
+                  "relative overflow-hidden rounded-mu-md border border-mu-line/70 bg-mu-well/30",
                   preview.visualItems.length === 1 ? "aspect-[4/3]" : "aspect-square",
                   preview.visualItems.length === 3 && index === 0 && "col-span-2 aspect-[2.2/1]",
                 )}
               >
                 <img src={item.posterUrl} alt={item.filename} className="h-full w-full object-cover" loading="eager" decoding="async" />
                 {index === 3 && preview.visualItems.length > 4 && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-foreground/35 text-lg font-semibold text-background">
+                  <div className="absolute inset-0 flex items-center justify-center bg-mu-ink/35 mu-title text-mu-canvas">
                     +{preview.visualItems.length - 4}
                   </div>
                 )}
@@ -75,7 +75,7 @@ const MemoShareImagePreview = forwardRef<HTMLDivElement, { width: number }>(({ w
             {preview.footerBadges.map((badge) => (
               <span
                 key={badge.type}
-                className="inline-flex rounded-full border border-border/70 bg-muted/55 px-2 py-0.5 text-[11px] text-muted-foreground"
+                className="inline-flex rounded-full border border-mu-line/70 bg-mu-well/55 px-2 py-0.5 mu-caption text-mu-ink-muted"
               >
                 {badge.count} {t("common.attachments").toLowerCase()}
               </span>

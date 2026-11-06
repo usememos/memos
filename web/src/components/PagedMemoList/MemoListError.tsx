@@ -1,6 +1,6 @@
 import { Code } from "@connectrpc/connect";
+import { Button } from "@usememos/ui";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { getErrorMessage, hasConnectCode } from "@/lib/error";
 import { useTranslate } from "@/utils/i18n";
 
@@ -39,21 +39,21 @@ const MemoListError = ({ error, onRetry, onEditQuery, onClearQuery }: Props) => 
   };
 
   return (
-    <div role="alert" className="w-full min-w-0 space-y-3 rounded-lg border border-border px-4 py-4">
-      <p className="text-sm font-medium">{t(MESSAGE_KEYS[kind])}</p>
+    <div role="alert" className="w-full min-w-0 space-y-3 rounded-mu-lg border border-mu-line px-4 py-4">
+      <p className="mu-label">{t(MESSAGE_KEYS[kind])}</p>
       {kind === "invalid" && (
-        <pre className="max-h-48 overflow-auto whitespace-pre-wrap break-words font-mono text-xs text-muted-foreground">
+        <pre className="max-h-48 overflow-auto whitespace-pre-wrap break-words font-mono mu-caption text-mu-ink-muted">
           {getErrorMessage(error)}
         </pre>
       )}
       <div className="flex flex-wrap items-center gap-2">
         {kind === "load" && (
-          <Button variant="outline" size="sm" disabled={retrying} onClick={handleRetry}>
+          <Button variant="neutral" size="sm" disabled={retrying} onClick={handleRetry}>
             {t("search.retry")}
           </Button>
         )}
         {kind !== "load" && onEditQuery && (
-          <Button variant="outline" size="sm" onClick={onEditQuery}>
+          <Button variant="neutral" size="sm" onClick={onEditQuery}>
             {t("search.edit-query")}
           </Button>
         )}

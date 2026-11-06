@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { MemoSuggestion } from "@/lib/memo-suggestions";
 import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import type { Location, Memo, Visibility } from "@/types/proto/api/memo_service_pb";
@@ -12,6 +13,8 @@ export interface EditSessionProps {
   draftKey: string;
   /** Inside a card that is the frame already: no background, border or padding of its own outside focus mode. */
   frameless?: boolean;
+  /** Leads the timestamp row, before the time: the card's creator while it edits in place. */
+  timestampLead?: ReactNode;
   placeholder?: string;
   /** Existing memo to edit; the session starts from it and persists no draft. */
   memo?: Memo;

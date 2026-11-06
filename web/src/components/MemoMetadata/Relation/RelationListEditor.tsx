@@ -43,7 +43,7 @@ const RelationListEditor: FC<RelationListEditorProps> = ({ relations, onRelation
         return (
           <div key={memo.name} className={METADATA_ROW_BOX_CLASSES}>
             <RelationRow memo={memo} parentPage={parentPage} variant="label" />
-            <MetadataRowRemoveControl label="Remove relation" onClick={() => handleDeleteRelation(memo.name)} />
+            <MetadataRowRemoveControl label={t("editor.remove-relation")} onClick={() => handleDeleteRelation(memo.name)} />
           </div>
         );
       })}

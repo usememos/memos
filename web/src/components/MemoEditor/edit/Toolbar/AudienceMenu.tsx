@@ -1,21 +1,12 @@
+import { buttonClasses, Menu } from "@usememos/ui";
 import { CheckIcon, ChevronDownIcon, PlusIcon, XIcon } from "lucide-react";
 import SpaceIcon from "@/components/SpaceIcon";
 import SpaceMark from "@/components/SpaceMark";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import VisibilityIcon from "@/components/VisibilityIcon";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useSpaces } from "@/hooks/useSpaceQueries";
 import { extractSpaceUidFromName, getDuplicateSpaceTitles } from "@/lib/space-display";
+import { cn } from "@/lib/utils";
 import type { Space_Icon } from "@/types/proto/api/space_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { getAssignableVisibilityOptions, getVisibilityOption } from "@/utils/memo";
@@ -51,15 +42,18 @@ const AudienceMenu = ({ value, onChange, space, onSpaceChange, disabled }: Audie
   ];
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger
-        render={<Button variant="quiet" size="sm" className="min-w-0 max-w-64 shrink gap-1 text-muted-foreground" disabled={disabled} />}
+    <Menu.Root modal={false} size="sm">
+      {/* The trigger starts with an icon (a space mark or the lock) inside a span, so it takes the
+          package's icon-side padding itself; its gaps are the md icon gap, like a Button's. */}
+      <Menu.Trigger
+        className={cn(buttonClasses({ variant: "ghost", size: "md" }), "min-w-0 max-w-64 shrink ps-(--mu-row-padding-icon)")}
+        disabled={disabled}
         title={summary}
         aria-label={summary}
       >
         {onSpaceChange && space && (
           <>
-            <span className="flex min-w-0 max-w-32 items-center gap-1 sm:max-w-40">
+            <span className="flex min-w-0 max-w-32 items-center gap-1.5 sm:max-w-40">
               <SpaceIcon icon={selectedSpace?.icon} size={14} />
               <span className="truncate">{destination}</span>
             </span>
@@ -68,89 +62,88 @@ const AudienceMenu = ({ value, onChange, space, onSpaceChange, disabled }: Audie
             </span>
           </>
         )}
-        <span className="flex shrink-0 items-center gap-1">
-          <VisibilityIcon visibility={value} className="size-3.5 text-current" />
+        <span className="flex shrink-0 items-center gap-1.5">
+          <VisibilityIcon visibility={value} className="text-current" />
           <span>{visibilityLabel}</span>
         </span>
-        <ChevronDownIcon className="size-3 opacity-50" strokeWidth={1.8} />
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" size="sm" className="w-56" aria-label={t("common.visibility")}>
+        <ChevronDownIcon className="mu-icon-sm" />
+      </Menu.Trigger>
+      <Menu.Popup align="start" className="w-56" aria-label={t("common.visibility")}>
         {/* Two lines per audience: the description is the only place the app explains who can
             read a memo, and translations run long. The menu's fixed width makes long copy wrap
             instead of widening it; icon and check stay on the title's line. */}
-        {visibilityOptions.map((option) => (
-          <DropdownMenuItem key={option.value} onClick={() => onChange(option.value)}>
-            <span aria-hidden className="flex h-4.5 w-5 shrink-0 items-center justify-center self-start">
-              <VisibilityIcon visibility={option.value} className="size-3.5" />
-            </span>
-            <span className="flex min-w-0 flex-1 flex-col">
-              <span>{t(option.labelKey)}</span>
-              <span className="text-xs text-muted-foreground">{t(option.descriptionKey, { space: destination })}</span>
-            </span>
-            <span aria-hidden className="ms-auto flex h-4.5 w-3.5 shrink-0 items-center justify-center self-start">
-              {option.value === value && <CheckIcon className="size-3.5" />}
-            </span>
-          </DropdownMenuItem>
-        ))}
+        <Menu.RadioGroup value={value} onValueChange={(next) => onChange(next)}>
+          {visibilityOptions.map((option) => (
+            <Menu.RadioItem
+              key={option.value}
+              value={option.value}
+              closeOnClick
+              icon={<VisibilityIcon visibility={option.value} />}
+              description={t(option.descriptionKey, { space: destination })}
+            >
+              {t(option.labelKey)}
+            </Menu.RadioItem>
+          ))}
+        </Menu.RadioGroup>
         {showSpaceRow && onSpaceChange && (
           <>
-            <DropdownMenuSeparator />
-            <DropdownMenuSub>
-              <DropdownMenuSubTrigger title={space ? destination : undefined}>
-                {space ? (
-                  <>
+            <Menu.Separator />
+            <Menu.SubmenuRoot>
+              <Menu.SubmenuTrigger
+                title={space ? destination : undefined}
+                icon={
+                  space ? (
                     <SpaceMark icon={selectedSpace?.icon} size="sm" />
-                    <span className="min-w-0 flex-1 truncate">{destination}</span>
-                  </>
-                ) : (
-                  <>
+                  ) : (
                     <span
                       aria-hidden
-                      className="flex size-5 shrink-0 items-center justify-center rounded-[5px] border border-dashed border-muted-foreground/45"
+                      className="flex size-5 shrink-0 items-center justify-center rounded-[5px] border border-dashed border-mu-ink-muted/45"
                     >
-                      <PlusIcon className="size-3" strokeWidth={2} />
+                      <PlusIcon className="mu-icon-xs" />
                     </span>
-                    <span className="flex-1 text-muted-foreground">{t("space.add-to")}</span>
-                  </>
-                )}
-              </DropdownMenuSubTrigger>
-              <DropdownMenuSubContent className="w-56">
+                  )
+                }
+              >
+                {space ? destination : <span className="text-mu-ink-muted">{t("space.add-to")}</span>}
+              </Menu.SubmenuTrigger>
+              <Menu.Popup className="w-56">
                 {spaceChoices.map((item) => {
                   const selected = item.name === space;
                   const removeLabel = t("space.remove-from", { space: item.label });
                   return (
-                    <DropdownMenuItem
+                    <Menu.Item
                       key={item.name}
                       title={selected ? removeLabel : item.label}
                       aria-label={selected ? removeLabel : item.label}
                       onClick={() => onSpaceChange(selected ? undefined : item.name)}
+                      icon={<SpaceMark icon={item.icon} size="sm" />}
+                      // The selected Space is its own off switch: a check at rest, an ✕ under the
+                      // pointer or keyboard, and always an ✕ on touch, which has no hover.
+                      shortcut={
+                        selected ? (
+                          <span aria-hidden className="flex size-3.5 items-center justify-center">
+                            <CheckIcon className="mu-icon-sm in-data-highlighted:hidden pointer-coarse:hidden" />
+                            <XIcon className="mu-icon-sm hidden in-data-highlighted:block pointer-coarse:block" />
+                          </span>
+                        ) : undefined
+                      }
                     >
-                      <SpaceMark icon={item.icon} size="sm" />
-                      <span className="min-w-0 flex-1 truncate">{item.label}</span>
-                      {/* The selected Space is its own off switch: a check at rest, an ✕ under the
-                          pointer or keyboard, and always an ✕ on touch, which has no hover. */}
-                      {selected && (
-                        <span aria-hidden className="ms-auto flex size-3.5 shrink-0 items-center justify-center">
-                          <CheckIcon className="size-3.5 in-data-highlighted:hidden pointer-coarse:hidden" />
-                          <XIcon className="hidden size-3.5 in-data-highlighted:block pointer-coarse:block" />
-                        </span>
-                      )}
-                    </DropdownMenuItem>
+                      {item.label}
+                    </Menu.Item>
                   );
                 })}
-                {isPending && <DropdownMenuItem disabled>{t("space.loading")}</DropdownMenuItem>}
+                {isPending && <Menu.Item disabled>{t("space.loading")}</Menu.Item>}
                 {isError && (
-                  <DropdownMenuItem closeOnClick={false} onClick={() => void refetch()}>
-                    <span className="text-destructive">{t("space.load-error")}</span>
-                    <span className="ms-auto text-muted-foreground">{t("search.retry")}</span>
-                  </DropdownMenuItem>
+                  <Menu.Item closeOnClick={false} onClick={() => void refetch()} shortcut={t("search.retry")}>
+                    <span className="text-mu-danger">{t("space.load-error")}</span>
+                  </Menu.Item>
                 )}
-              </DropdownMenuSubContent>
-            </DropdownMenuSub>
+              </Menu.Popup>
+            </Menu.SubmenuRoot>
           </>
         )}
-      </DropdownMenuContent>
-    </DropdownMenu>
+      </Menu.Popup>
+    </Menu.Root>
   );
 };
 
