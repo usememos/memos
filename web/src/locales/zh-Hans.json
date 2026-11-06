@@ -15,7 +15,12 @@
     "loading": "正在加载 Memo…",
     "new-here": "在这里记录",
     "saved-outside-filter": "已保存，这条 Memo 不在当前地图结果中。",
-    "open-memo": "打开 Memo"
+    "open-memo": "打开 Memo",
+    "open-in-google-maps": "在 Google Maps 中打开",
+    "location-description": "在地图上选择位置或手动输入坐标",
+    "latitude": "纬度",
+    "longitude": "经度",
+    "place-placeholder": "请先选择一个位置。"
   },
   "about": {
     "api-docs": "API 文档",
@@ -169,7 +174,24 @@
     "views": "视图",
     "yourself": "您自己",
     "resize-sidebar": "调整侧边栏大小",
-    "view-all": "查看全部"
+    "open-navigation": "打开导航",
+    "navigation": "导航",
+    "primary-navigation": "主导航",
+    "download": "下载",
+    "download-name": "下载 {{name}}",
+    "open-name": "打开 {{name}}",
+    "preview-name": "预览 {{name}}",
+    "no-content": "无内容",
+    "previous": "上一个",
+    "next": "下一个",
+    "retry": "重试",
+    "docs": "文档",
+    "calendar-for-month": "{{month}}日历",
+    "date-at-time": "{{date}} {{time}}",
+    "selected-location": "已选位置",
+    "choose-location": "选择位置",
+    "unknown-error": "未知错误",
+    "error-occurred": "发生错误"
   },
   "locale-picker": {
     "no-language-feedback": "未找到语言？ 提交反馈"
@@ -287,7 +309,17 @@
       "alt-text-placeholder": "描述这张图片…",
       "image-unavailable": "图片无法显示",
       "resize-image": "调整图片大小"
-    }
+    },
+    "attachments": {
+      "move-up": "上移附件",
+      "move-down": "下移附件",
+      "remove": "移除附件"
+    },
+    "remove-relation": "移除关联",
+    "remove-location": "移除位置",
+    "recording-unsupported": "此浏览器不支持录音。",
+    "microphone-denied": "麦克风权限被拒绝。",
+    "recording-failed": "无法开始录音。"
   },
   "inbox": {
     "failed-to-load": "加载失败",
@@ -296,7 +328,16 @@
     "unread": "未读",
     "space-invitation": "已邀请您加入空间",
     "space-invitation-accepted": "您已加入此空间。",
-    "space-invitation-open": "打开空间"
+    "space-invitation-open": "打开空间",
+    "commented-on-memo": "评论了您的备忘录",
+    "mentioned-in-comment": "在评论中提到了您",
+    "mentioned-in-memo": "在备忘录中提到了您",
+    "original": "原文：",
+    "memo-label": "备忘录：",
+    "comment-heading": "评论",
+    "memo-heading": "备忘录",
+    "empty-memo": "空备忘录",
+    "empty-comment": "空评论"
   },
   "memo": {
     "no-memos-yet": "还没有备忘录",
@@ -307,7 +348,9 @@
     "click-to-show-sensitive-content": "点击显示敏感内容",
     "comment": {
       "self": "评论",
-      "write-a-comment": "写评论"
+      "write-a-comment": "写评论",
+      "view-all-count_one": "查看全部 {{count}} 条评论",
+      "view-all-count_other": "查看全部 {{count}} 条评论"
     },
     "copy-content": "复制内容",
     "copy-link": "复制链接",
@@ -321,7 +364,8 @@
       "has-image": "有图片",
       "has-link": "有链接",
       "has-location": "有位置",
-      "has-task-list": "有待办"
+      "has-task-list": "有待办",
+      "remove": "移除筛选"
     },
     "compact-mode": "紧凑模式",
     "connections": "关联",
@@ -406,7 +450,9 @@
     "restored-successfully": "恢复成功",
     "succeed-copy-content": "复制内容到剪贴板成功。",
     "succeed-copy-link": "复制链接到剪贴板成功。",
-    "update-succeed": "更新成功"
+    "update-succeed": "更新成功",
+    "not-signed-in": "您尚未登录。",
+    "invalid-datetime": "日期和时间无效。请使用 2023-12-31 23:59:59 格式。"
   },
   "reference": {
     "no-memos-found": "没有发现备忘录",
@@ -442,7 +488,10 @@
       "member-column": "成员",
       "summary-column": "摘要",
       "no-members-found": "没有找到会员",
-      "export-memos": "导出备忘录"
+      "export-memos": "导出备忘录",
+      "username-password-required": "用户名和密码不能为空",
+      "create-success": "用户已创建",
+      "update-success": "用户已更新"
     },
     "my-account": {
       "label": "我的账号"
@@ -509,7 +558,12 @@
       "theme-description": "立即在当前设备上应用所选主题。",
       "theme": "主题",
       "uploads-privacy-description": "控制上传媒体时提交的隐私敏感信息。",
-      "uploads-privacy-title": "上传与隐私"
+      "uploads-privacy-title": "上传与隐私",
+      "theme-system": "跟随系统",
+      "theme-system-short": "系统",
+      "theme-light": "浅色",
+      "theme-dark": "深色",
+      "theme-paper": "纸张"
     },
     "editor": {
       "label": "编辑器",
@@ -519,7 +573,118 @@
       "create": "创建视图",
       "delete-confirm": "您确定要删除视图 `{{title}}` 吗？",
       "delete-success": "视图 `{{title}}` 删除成功",
-      "change-icon": "更改视图图标"
+      "change-icon": "更改视图图标",
+      "page-description": "使用字段、运算符、时间函数和标签匹配创建可复用的视图。可以从示例开始，保存前先验证。",
+      "edit": "编辑视图",
+      "form-description": "为视图命名，并定义它要应用的备忘录筛选表达式。",
+      "title-placeholder": "置顶、最近笔记、工作",
+      "filter-help": "使用 {{and}}、{{or}} 和 {{not}} 组合表达式。时间字段是时间戳——可使用 {{now}}、{{duration}}、{{timestamp}} 以及 {{year}} 等访问器。标签支持 {{sets}}，{{size}} 用于计算长度。",
+      "validate": "验证",
+      "all": "所有视图",
+      "loading": "正在加载视图…",
+      "load-failed": "无法加载视图。",
+      "empty-title": "暂无视图",
+      "empty-description": "保存筛选条件，以便快速回到需要的备忘录。",
+      "examples-title": "表达式示例",
+      "fields-title": "支持的字段",
+      "title-filter-required": "标题和筛选条件不能为空",
+      "filter-valid": "筛选表达式看起来有效",
+      "create-success": "视图已创建",
+      "update-success": "视图已更新",
+      "examples": {
+        "pinned": {
+          "title": "置顶",
+          "description": "仅置顶的备忘录。"
+        },
+        "recent": {
+          "title": "最近笔记",
+          "description": "过去一小时内创建的备忘录。"
+        },
+        "public": {
+          "title": "公开备忘录",
+          "description": "仅公开的备忘录。"
+        },
+        "project-tags": {
+          "title": "项目标签",
+          "description": "精确匹配一个或多个标签。"
+        },
+        "untagged": {
+          "title": "无标签",
+          "description": "没有任何标签的备忘录。"
+        },
+        "archive-tree": {
+          "title": "归档树",
+          "description": "按前缀匹配层级标签。"
+        },
+        "unassigned": {
+          "title": "未归入空间",
+          "description": "未放入任何空间的备忘录。"
+        },
+        "one-space": {
+          "title": "单个空间内",
+          "description": "放入某个空间的备忘录。请使用该空间 URL 或设置中的空间 ID。"
+        },
+        "open-tasks": {
+          "title": "未完成任务",
+          "description": "包含未完成任务的备忘录。"
+        },
+        "links-or-code": {
+          "title": "链接或代码",
+          "description": "包含链接或代码块的备忘录。"
+        },
+        "no-location": {
+          "title": "无位置",
+          "description": "未附加位置的备忘录。"
+        },
+        "with-attachments": {
+          "title": "含附件",
+          "description": "至少附有一个文件的备忘录。"
+        },
+        "photos": {
+          "title": "照片",
+          "description": "在内容中或以附件形式显示图片的备忘录。"
+        },
+        "content-search": {
+          "title": "内容搜索",
+          "description": "搜索备忘录内容中的文本。"
+        },
+        "starts-with": {
+          "title": "开头匹配",
+          "description": "内容以指定文本开头的备忘录（也可用 endsWith）。"
+        },
+        "regex": {
+          "title": "正则匹配",
+          "description": "用正则表达式匹配内容。"
+        },
+        "all-tags-complete": {
+          "title": "所有标签已完成",
+          "description": "每个标签都以 -done 结尾（仅限有标签的备忘录）。"
+        },
+        "one-project-tag": {
+          "title": "单个项目标签",
+          "description": "恰好有一个标签满足条件。"
+        },
+        "any-tags": {
+          "title": "包含任一标签",
+          "description": "标签与给定集合有交集。"
+        },
+        "exact-tags": {
+          "title": "恰好这些标签",
+          "description": "标签恰好为该集合，不多不少。"
+        },
+        "year-2024": {
+          "title": "2024 年的备忘录",
+          "description": "按日历年筛选。"
+        },
+        "weekend": {
+          "title": "周末笔记",
+          "description": "创建于周日或周六（0 = 周日）。"
+        },
+        "long": {
+          "title": "长笔记",
+          "description": "超过 280 个字符的备忘录。"
+        }
+      }
     },
     "configuration": {
       "label": "配置文件",
@@ -595,7 +760,9 @@
       "token-endpoint": "令牌端点（Token Endpoint）",
       "update-sso": "更新单点登录",
       "update-sso-description": "检查当前 provider 配置，只保存你需要变更的字段。",
-      "user-endpoint": "用户端点（User Endpoint）"
+      "user-endpoint": "用户端点（User Endpoint）",
+      "invalid-config": "身份提供商配置无效。",
+      "provider-id-placeholder": "例如 github, okta-corp"
     },
     "storage": {
       "accesskey": "访问密钥（Access key）",
@@ -646,7 +813,8 @@
       "customize-server": {
         "description": "描述",
         "icon-url": "图标链接",
-        "title": "自定义服务器"
+        "title": "自定义服务器",
+        "dialog-description": "自定义实例的外观和设置。"
       },
       "custom-code-description": "应用到前端的实例范围 CSS 和 JavaScript，可选。",
       "custom-code-title": "自定义代码",
@@ -749,7 +917,9 @@
       "title": "账号信息",
       "update-information": "更新个人信息",
       "username-note": "用于登录",
-      "email-in-use": "此邮箱已被其他帐户使用。"
+      "email-in-use": "此邮箱已被其他帐户使用。",
+      "avatar-too-large": "请选择不超过 2 MB 的图片。",
+      "avatar-unreadable": "无法读取此图片，请换一个文件。"
     },
     "instance": {
       "access-description": "控制该实例的公开访问、注册、登录和资料编辑。",
@@ -1004,7 +1174,8 @@
   },
   "tooltip": {
     "link-memo": "链接备忘录",
-    "select-location": "位置"
+    "select-location": "位置",
+    "link-memo-description": "搜索并选择要关联的备忘录"
   },
   "live-update": {
     "connected": "已连接",
@@ -1180,5 +1351,47 @@
       "tag-reading": "阅读",
       "tag-ideas": "想法"
     }
+  },
+  "error": {
+    "title": "出错了",
+    "description": "发生了意外错误，可能是网络问题或应用程序出现故障。",
+    "description-update": "发生了意外错误，可能是网络问题或应用程序已更新。重新加载通常可以解决。",
+    "details": "错误详情",
+    "reload": "重新加载应用",
+    "not-found": "找不到您要访问的页面。",
+    "permission-denied": "权限不足",
+    "too-many-requests": "请求过于频繁，请在 {{wait}} 后重试。",
+    "wait-seconds": "{{count}} 秒",
+    "wait-minutes": "{{count}} 分钟",
+    "wait-hours": "{{count}} 小时",
+    "challenge-required": "请完成验证后重试。",
+    "quota-memo-count": "您已达到 {{limit}} 条备忘录的上限。请删除部分备忘录后再创建。",
+    "quota-storage": "此次上传将超出您 {{limit}} 的存储上限。您已使用 {{usage}}。",
+    "quota-upload": "此文件超出了每个文件 {{limit}} 的上限。",
+    "quota-memo-content": "此备忘录超出了每条备忘录 {{limit}} 的上限。请缩短内容后保存。",
+    "quota-generic": "您已达到使用上限。",
+    "sign-in-failed": "登录失败。",
+    "sign-up-failed": "注册失败",
+    "authenticate-failed": "身份验证失败。",
+    "update-profile-failed": "更新个人资料失败",
+    "unlink-identity-failed": "解除身份提供商关联失败。",
+    "link-identity-failed": "无法开始关联账号，请重试。"
+  },
+  "attachment-preview": {
+    "title": "附件预览",
+    "description": "附件预览对话框。按 Esc 关闭，使用左右方向键切换项目，可通过控件、鼠标滚轮、双击或双指捏合缩放图片。",
+    "close": "关闭预览",
+    "previous": "上一项",
+    "next": "下一项",
+    "reset-zoom": "重置缩放",
+    "image-alt": "预览图片 {{index}}/{{count}}",
+    "live-photo-alt": "预览实况照片 {{index}}/{{count}}",
+    "play-live-photo": "悬停或按下以播放实况照片"
+  },
+  "audio-player": {
+    "seek": "调整 {{name}} 的播放进度",
+    "back": "后退 {{seconds}} 秒",
+    "forward": "前进 {{seconds}} 秒",
+    "speed": "播放速度 {{rate}}x"
   }
 }

@@ -1,6 +1,6 @@
+import { Popover } from "@usememos/ui";
 import { type FC, useId, useRef, useState } from "react";
 import { MEMO_TIME_CONTROL_CLASSES } from "@/components/MemoView/constants";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import i18n from "@/i18n";
 import { useTranslate } from "@/utils/i18n";
 import { useEditorContext, useEditorSelector } from "../state";
@@ -45,14 +45,14 @@ const TimestampInput: FC<{
 
   return (
     <div className="space-y-1">
-      <label htmlFor={id} className="text-xs font-medium text-muted-foreground">
+      <label htmlFor={id} className="mu-label-sm text-mu-ink-muted">
         {label}
-        {value !== initialValue.current && <span className="text-primary ml-0.5">*</span>}
+        {value !== initialValue.current && <span className="text-mu-primary ml-0.5">*</span>}
       </label>
       <input
         id={id}
         type="text"
-        className="block w-full rounded-md border border-border bg-background px-2 py-1 text-sm font-mono data-[invalid=true]:border-destructive"
+        className="block w-full rounded-mu-md border border-mu-line bg-mu-canvas px-2 py-1 mu-body font-mono data-[invalid=true]:border-mu-danger"
         data-invalid={invalid}
         aria-invalid={invalid}
         placeholder={DATETIME_FORMAT}
@@ -77,12 +77,12 @@ export const TimestampPopover: FC = () => {
   const createTime = useEditorSelector((s) => s.timestamps.createTime);
   const updateTime = useEditorSelector((s) => s.timestamps.updateTime);
 
-  if (!createTime) return <span className="shrink-0 whitespace-nowrap text-ui text-muted-foreground select-none">{nowLabel()}</span>;
+  if (!createTime) return <span className="shrink-0 whitespace-nowrap mu-caption text-mu-ink-muted select-none">{nowLabel()}</span>;
 
   return (
-    <Popover>
-      <PopoverTrigger render={<button type="button" className={MEMO_TIME_CONTROL_CLASSES} />}>{formatDate(createTime)}</PopoverTrigger>
-      <PopoverContent align="start" className="w-auto p-2 pt-1 space-y-1">
+    <Popover.Root>
+      <Popover.Trigger render={<button type="button" className={MEMO_TIME_CONTROL_CLASSES} />}>{formatDate(createTime)}</Popover.Trigger>
+      <Popover.Popup align="start" className="w-auto">
         <TimestampInput
           label={t("common.created-at")}
           date={createTime}
@@ -93,7 +93,7 @@ export const TimestampPopover: FC = () => {
           date={updateTime}
           onChange={(d) => dispatch(actions.setTimestamps({ updateTime: d }))}
         />
-      </PopoverContent>
-    </Popover>
+      </Popover.Popup>
+    </Popover.Root>
   );
 };

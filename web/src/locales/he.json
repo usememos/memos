@@ -209,7 +209,24 @@
     "collapse-panel": "כווץ את הפאנל",
     "expand-panel": "הרחב את הפאנל",
     "resize-panel": "שינוי גודל הפאנל",
-    "view-all": "הצג הכל"
+    "open-navigation": "פתיחת ניווט",
+    "navigation": "ניווט",
+    "primary-navigation": "ראשי",
+    "download": "הורדה",
+    "download-name": "הורדת {{name}}",
+    "open-name": "פתיחת {{name}}",
+    "preview-name": "תצוגה מקדימה של {{name}}",
+    "no-content": "אין תוכן",
+    "previous": "הקודם",
+    "next": "הבא",
+    "retry": "ניסיון חוזר",
+    "docs": "תיעוד",
+    "calendar-for-month": "לוח שנה עבור {{month}}",
+    "date-at-time": "{{date}} בשעה {{time}}",
+    "selected-location": "המיקום שנבחר",
+    "choose-location": "בחרו מיקום",
+    "unknown-error": "שגיאה לא ידועה",
+    "error-occurred": "אירעה שגיאה"
   },
   "locale-picker": {
     "no-language-feedback": "לא מצאתם את השפה? שלחו משוב"
@@ -327,7 +344,17 @@
       "alt-text-placeholder": "תאר את התמונה…",
       "image-unavailable": "התמונה אינה זמינה",
       "resize-image": "שינוי גודל התמונה"
-    }
+    },
+    "attachments": {
+      "move-up": "הזזת הקובץ המצורף למעלה",
+      "move-down": "הזזת הקובץ המצורף למטה",
+      "remove": "הסרת הקובץ המצורף"
+    },
+    "remove-relation": "הסרת הקישור",
+    "remove-location": "הסרת המיקום",
+    "recording-unsupported": "הקלטת שמע אינה נתמכת בדפדפן זה.",
+    "microphone-denied": "הגישה למיקרופון נדחתה.",
+    "recording-failed": "הפעלת הקלטת השמע נכשלה."
   },
   "inbox": {
     "failed-to-load": "טעינת פריט מתיבת הדואר הנכנס נכשלה",
@@ -336,7 +363,16 @@
     "unread": "לא נקרא",
     "space-invitation": "הזמין אותך להצטרף למרחב",
     "space-invitation-accepted": "הצטרפת למרחב הזה.",
-    "space-invitation-open": "פתח מרחב"
+    "space-invitation-open": "פתח מרחב",
+    "commented-on-memo": "הגיב על הפתק שלך",
+    "mentioned-in-comment": "הזכיר אותך בתגובה",
+    "mentioned-in-memo": "הזכיר אותך בפתק",
+    "original": "מקור:",
+    "memo-label": "פתק:",
+    "comment-heading": "תגובה",
+    "memo-heading": "פתק",
+    "empty-memo": "פתק ריק",
+    "empty-comment": "תגובה ריקה"
   },
   "live-update": {
     "connected": "עדכונים חיים פעילים",
@@ -351,7 +387,9 @@
     "click-to-show-sensitive-content": "לחצו כדי להציג תוכן רגיש",
     "comment": {
       "self": "תגובות",
-      "write-a-comment": "כתבו תגובה"
+      "write-a-comment": "כתבו תגובה",
+      "view-all-count_one": "הצג {{count}} תגובה",
+      "view-all-count_other": "הצג את כל {{count}} התגובות"
     },
     "copy-content": "העתק תוכן",
     "copy-link": "העתק קישור",
@@ -366,7 +404,8 @@
       "has-image": "מכיל תמונה",
       "has-link": "מכיל קישור",
       "has-location": "מכיל מיקום",
-      "has-task-list": "מכיל רשימת משימות"
+      "has-task-list": "מכיל רשימת משימות",
+      "remove": "הסרת מסנן"
     },
     "compact-mode": "מצב קומפקטי",
     "grid-compact-hint": "פריסות רשת משתמשות תמיד בכרטיסים קומפקטיים.",
@@ -451,7 +490,9 @@
     "restored-successfully": "שוחזר בהצלחה",
     "succeed-copy-content": "התוכן הועתק בהצלחה.",
     "succeed-copy-link": "הקישור הועתק בהצלחה.",
-    "update-succeed": "העדכון הצליח"
+    "update-succeed": "העדכון הצליח",
+    "not-signed-in": "אינכם מחוברים.",
+    "invalid-datetime": "תאריך ושעה לא תקינים. השתמשו בתבנית 2023-12-31 23:59:59."
   },
   "reference": {
     "no-memos-found": "לא נמצאו פתקים",
@@ -521,7 +562,9 @@
       "usage-storage": "Storage",
       "usage-title": "Usage limits",
       "storage-usage-error": "אחסון הקבצים המצורפים שלך אינו זמין.",
-      "email-in-use": "כתובת דוא\"ל זו כבר נמצאת בשימוש על ידי חשבון אחר."
+      "email-in-use": "כתובת דוא\"ל זו כבר נמצאת בשימוש על ידי חשבון אחר.",
+      "avatar-too-large": "בחרו תמונה בגודל של עד 2 MB.",
+      "avatar-unreadable": "לא ניתן לקרוא את התמונה הזו. נסו קובץ אחר."
     },
     "ai": {
       "add-provider": "הוסף ספק",
@@ -604,7 +647,10 @@
       "summary-column": "סיכום",
       "user": "משתמש",
       "no-members-found": "לא נמצאו חברים",
-      "export-memos": "ייצוא פתקים"
+      "export-memos": "ייצוא פתקים",
+      "username-password-required": "שם המשתמש והסיסמה אינם יכולים להיות ריקים",
+      "create-success": "המשתמש נוצר",
+      "update-success": "המשתמש עודכן"
     },
     "memo": {
       "add-reaction": "הוסף תגובה",
@@ -673,7 +719,12 @@
       "theme-description": "החל את ערכת הנושא שנבחרה באופן מיידי במכשיר הזה.",
       "theme": "ערכת נושא",
       "uploads-privacy-description": "שליטה במידע רגיש לפרטיות שנשלח עם מדיה שהועלתה.",
-      "uploads-privacy-title": "העלאות ופרטיות"
+      "uploads-privacy-title": "העלאות ופרטיות",
+      "theme-system": "סנכרון עם המערכת",
+      "theme-system-short": "מערכת",
+      "theme-light": "בהיר",
+      "theme-dark": "כהה",
+      "theme-paper": "נייר"
     },
     "editor": {
       "label": "עורך",
@@ -683,7 +734,118 @@
       "create": "יצירת תצוגה",
       "delete-confirm": "האם אתם בטוחים שברצונכם למחוק את התצוגה `{{title}}`?",
       "delete-success": "התצוגה `{{title}}` נמחקה בהצלחה",
-      "change-icon": "שינוי סמל התצוגה"
+      "change-icon": "שינוי סמל התצוגה",
+      "page-description": "צרו תצוגות לשימוש חוזר עם שדות, אופרטורים, פונקציות זמן והתאמת תגיות. התחילו מהדוגמאות, ואמתו לפני השמירה.",
+      "edit": "עריכת תצוגה",
+      "form-description": "תנו שם לתצוגה והגדירו את ביטוי סינון הפתקים שהיא תחיל.",
+      "title-placeholder": "נעוצים, פתקים אחרונים, עבודה",
+      "filter-help": "שלבו ביטויים באמצעות {{and}}, {{or}} ו-{{not}}. שדות זמן הם חותמות זמן — השתמשו ב-{{now}}, {{duration}}, {{timestamp}} ובמאפיינים כמו {{year}}. תגיות תומכות ב-{{sets}}, ו-{{size}} מודד אורך.",
+      "validate": "אימות",
+      "all": "כל התצוגות",
+      "loading": "טוען תצוגות…",
+      "load-failed": "לא ניתן היה לטעון את התצוגות.",
+      "empty-title": "אין עדיין תצוגות",
+      "empty-description": "שמרו מסנן כדי לחזור במהירות לפתקים שאתם צריכים.",
+      "examples-title": "דוגמאות לביטויים",
+      "fields-title": "שדות נתמכים",
+      "title-filter-required": "הכותרת והמסנן אינם יכולים להיות ריקים",
+      "filter-valid": "ביטוי הסינון נראה תקין",
+      "create-success": "התצוגה נוצרה",
+      "update-success": "התצוגה עודכנה",
+      "examples": {
+        "pinned": {
+          "title": "נעוצים",
+          "description": "רק פתקים נעוצים."
+        },
+        "recent": {
+          "title": "פתקים אחרונים",
+          "description": "פתקים שנוצרו בשעה האחרונה."
+        },
+        "public": {
+          "title": "פתקים ציבוריים",
+          "description": "רק פתקים ציבוריים."
+        },
+        "project-tags": {
+          "title": "תגיות פרויקט",
+          "description": "התאמה לתגית מדויקת אחת או יותר."
+        },
+        "untagged": {
+          "title": "ללא תגיות",
+          "description": "פתקים ללא תגיות כלל."
+        },
+        "archive-tree": {
+          "title": "עץ ארכיון",
+          "description": "התאמת תגיות היררכיות לפי קידומת."
+        },
+        "unassigned": {
+          "title": "לא משויכים",
+          "description": "פתקים שאינם משויכים לאף מרחב."
+        },
+        "one-space": {
+          "title": "במרחב אחד",
+          "description": "פתקים שנמצאים במרחב. השתמשו במזהה המרחב מכתובת ה-URL שלו או מההגדרות."
+        },
+        "open-tasks": {
+          "title": "משימות פתוחות",
+          "description": "פתקים עם משימות שלא הושלמו."
+        },
+        "links-or-code": {
+          "title": "קישורים או קוד",
+          "description": "פתקים המכילים קישורים או בלוקי קוד."
+        },
+        "no-location": {
+          "title": "ללא מיקום",
+          "description": "פתקים ללא מיקום מצורף."
+        },
+        "with-attachments": {
+          "title": "עם קבצים מצורפים",
+          "description": "פתקים עם קובץ מצורף אחד לפחות."
+        },
+        "photos": {
+          "title": "תמונות",
+          "description": "פתקים שמציגים תמונה, בתוכן או כקובץ מצורף."
+        },
+        "content-search": {
+          "title": "חיפוש בתוכן",
+          "description": "חיפוש טקסט בתוך תוכן הפתק."
+        },
+        "starts-with": {
+          "title": "מתחיל ב…",
+          "description": "פתקים שתוכנם מתחיל בטקסט מסוים (וגם endsWith)."
+        },
+        "regex": {
+          "title": "התאמת Regex",
+          "description": "התאמת התוכן לביטוי רגולרי."
+        },
+        "all-tags-complete": {
+          "title": "כל התגיות הושלמו",
+          "description": "כל תגית מסתיימת ב־ -done (פתקים מתויגים בלבד)."
+        },
+        "one-project-tag": {
+          "title": "תגית פרויקט אחת",
+          "description": "בדיוק תגית אחת תואמת לתנאי."
+        },
+        "any-tags": {
+          "title": "אחת מהתגיות האלה",
+          "description": "התגיות חופפות לקבוצה הנתונה."
+        },
+        "exact-tags": {
+          "title": "בדיוק התגיות האלה",
+          "description": "מתויג בדיוק בקבוצה זו, ולא יותר."
+        },
+        "year-2024": {
+          "title": "פתקים מ-2024",
+          "description": "סינון לפי שנה קלנדרית."
+        },
+        "weekend": {
+          "title": "פתקי סוף שבוע",
+          "description": "נוצרו ביום ראשון או בשבת (0 = יום ראשון)."
+        },
+        "long": {
+          "title": "פתקים ארוכים",
+          "description": "פתקים ארוכים מ-280 תווים."
+        }
+      }
     },
     "configuration": {
       "label": "תצורה",
@@ -759,7 +921,9 @@
       "token-endpoint": "נקודת קצה של אסימון",
       "update-sso": "עדכן SSO",
       "update-sso-description": "בדקו את תצורת הספק, ואז שמרו את השדות שצריכים להשתנות.",
-      "user-endpoint": "נקודת קצה של משתמש"
+      "user-endpoint": "נקודת קצה של משתמש",
+      "invalid-config": "תצורת ספק הזהות אינה תקינה.",
+      "provider-id-placeholder": "לדוגמה: github, okta-corp"
     },
     "storage": {
       "accesskey": "מפתח גישה",
@@ -810,7 +974,8 @@
       "customize-server": {
         "description": "תיאור",
         "icon-url": "כתובת סמל",
-        "title": "התאמת השרת"
+        "title": "התאמת השרת",
+        "dialog-description": "התאימו את המראה וההגדרות של המופע שלכם."
       },
       "custom-code-description": "CSS ו־JavaScript אופציונליים ברמת המופע, המוחלים על ממשק המשתמש.",
       "custom-code-title": "קוד מותאם אישית",
@@ -1049,7 +1214,8 @@
   },
   "tooltip": {
     "link-memo": "קשר פתק",
-    "select-location": "מיקום"
+    "select-location": "מיקום",
+    "link-memo-description": "חפשו ובחרו פתק לקישור"
   },
   "search": {
     "retry": "נסה שוב",
@@ -1081,7 +1247,12 @@
     "loading": "טוען תזכירים…",
     "new-here": "כתוב כאן",
     "saved-outside-filter": "נשמר. תזכיר זה מחוץ לתוצאות המפה הנוכחיות.",
-    "open-memo": "פתח תזכיר"
+    "open-memo": "פתח תזכיר",
+    "open-in-google-maps": "פתיחה ב-Google Maps",
+    "location-description": "בחרו מיקום במפה או הזינו קואורדינטות ידנית",
+    "latitude": "קו רוחב",
+    "longitude": "קו אורך",
+    "place-placeholder": "בחרו נקודה תחילה."
   },
   "calendar": {
     "new-memo-on-day": "תזכיר חדש ביום זה",
@@ -1180,5 +1351,47 @@
       "tag-reading": "קריאה",
       "tag-ideas": "רעיונות"
     }
+  },
+  "error": {
+    "title": "משהו השתבש",
+    "description": "אירעה שגיאה בלתי צפויה. ייתכן שהסיבה היא בעיית רשת או בעיה ביישום.",
+    "description-update": "אירעה שגיאה בלתי צפויה. ייתכן שהסיבה היא בעיית רשת או עדכון של היישום. טעינה מחדש בדרך כלל פותרת זאת.",
+    "details": "פרטי השגיאה",
+    "reload": "טעינה מחדש של היישום",
+    "not-found": "הדף שחיפשתם לא נמצא.",
+    "permission-denied": "אין הרשאה",
+    "too-many-requests": "יותר מדי בקשות. נסו שוב בעוד {{wait}}.",
+    "wait-seconds": "{{count}} שנ׳",
+    "wait-minutes": "{{count}} דק׳",
+    "wait-hours": "{{count}} שע׳",
+    "challenge-required": "השלימו את אתגר האימות ונסו שוב.",
+    "quota-memo-count": "הגעתם למגבלה של {{limit}} פתקים. מחקו פתקים כדי ליצור חדשים.",
+    "quota-storage": "העלאה זו תחרוג ממגבלת האחסון שלכם ({{limit}}). אתם משתמשים כעת ב-{{usage}}.",
+    "quota-upload": "קובץ זה גדול מהמגבלה שלכם, {{limit}} לקובץ.",
+    "quota-memo-content": "פתק זה גדול מהמגבלה שלכם, {{limit}} לפתק. קצרו את התוכן כדי לשמור אותו.",
+    "quota-generic": "הגעתם למגבלת שימוש.",
+    "sign-in-failed": "ההתחברות נכשלה.",
+    "sign-up-failed": "ההרשמה נכשלה",
+    "authenticate-failed": "האימות נכשל.",
+    "update-profile-failed": "עדכון הפרופיל נכשל",
+    "unlink-identity-failed": "ניתוק ספק הזהות נכשל.",
+    "link-identity-failed": "לא ניתן להתחיל את קישור החשבון. נסו שוב."
+  },
+  "attachment-preview": {
+    "title": "תצוגה מקדימה של קובץ מצורף",
+    "description": "חלון תצוגה מקדימה של קובץ מצורף. הקישו Escape לסגירה, השתמשו במקשי החצים ימינה ושמאלה למעבר בין פריטים, והגדילו תמונות באמצעות הפקדים, גלגלת העכבר, הקשה כפולה או מחוות צביטה.",
+    "close": "סגירת התצוגה המקדימה",
+    "previous": "הפריט הקודם",
+    "next": "הפריט הבא",
+    "reset-zoom": "איפוס הגדלה",
+    "image-alt": "תצוגה מקדימה של תמונה {{index}} מתוך {{count}}",
+    "live-photo-alt": "תצוגה מקדימה של Live Photo {{index}} מתוך {{count}}",
+    "play-live-photo": "רחפו או לחצו כדי להפעיל את ה-Live Photo"
+  },
+  "audio-player": {
+    "seek": "מיקום השמעה ב-{{name}}",
+    "back": "{{seconds}} שניות אחורה",
+    "forward": "{{seconds}} שניות קדימה",
+    "speed": "מהירות השמעה {{rate}}x"
   }
 }

@@ -1,5 +1,4 @@
-import { FOCUS_VISIBLE_OUTLINE_CLASSES } from "@/components/ui/focus";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip } from "@usememos/ui";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { cn } from "@/lib/utils";
 import { State } from "@/types/proto/api/common_pb";
@@ -7,23 +6,15 @@ import type { Memo } from "@/types/proto/api/memo_service_pb";
 import type { User } from "@/types/proto/api/user_service_pb";
 import { formatReactionTooltip, useReactionActions } from "./hooks";
 
-/**
- * A reaction is a token attached to the memo, not a control, so it takes the pill shape
- * the space and New badges use rather than the rounded box of a button, and like them it
- * has a faint resting surface: a token must read as one even where it cannot be pressed.
- * Everything else is the quiet grammar: 28px, 13px, muted ink that darkens under a light
- * wash, and the accent fill for the one that is on — your own reaction, or the add
- * control while its picker is open.
- */
-export const REACTION_PILL_CLASSES =
-  "inline-flex h-7 shrink-0 items-center gap-1.5 rounded-full bg-muted/40 px-2.5 text-ui text-muted-foreground/70";
+/** A reaction is a chip in the Badge's grammar, the same shape and height as a tag. */
+const REACTION_PILL_CLASSES = "inline-flex h-5 shrink-0 items-center gap-1.5 rounded-mu-sm bg-mu-well px-1.5 mu-caption text-mu-ink";
 const REACTION_PILL_INTERACTIVE_CLASSES = cn(
   REACTION_PILL_CLASSES,
-  "cursor-pointer transition-colors hover:bg-muted/70 hover:text-foreground aria-pressed:bg-accent aria-pressed:text-accent-foreground data-popup-open:bg-accent data-popup-open:text-accent-foreground",
-  FOCUS_VISIBLE_OUTLINE_CLASSES,
+  "cursor-pointer transition-colors hover:bg-mu-hover hover:text-mu-ink aria-pressed:bg-mu-hover aria-pressed:text-mu-ink data-popup-open:bg-mu-hover data-popup-open:text-mu-ink",
+  "mu-focus",
 );
-/** The strip's add control is a control, not a token: a round quiet face of the pills' height with no resting surface. */
-export const REACTION_ADD_CLASSES = cn(REACTION_PILL_INTERACTIVE_CLASSES, "size-7 justify-center bg-transparent px-0 hover:bg-muted/60");
+/** The strip's add control is a control, not a token: a quiet square of the chips' height with no resting surface. */
+export const REACTION_ADD_CLASSES = cn(REACTION_PILL_INTERACTIVE_CLASSES, "size-5 justify-center bg-transparent px-0 text-mu-ink-muted");
 
 interface Props {
   memo: Memo;
@@ -42,15 +33,15 @@ const ReactionView = (props: Props) => {
   const isClickable = Boolean(currentUser) && !readonly;
   const label = (
     <>
-      <span className="text-sm leading-none">{reactionType}</span>
-      <span className="text-2xs tabular-nums text-muted-foreground/60">{users.length}</span>
+      <span className="mu-body">{reactionType}</span>
+      <span className="mu-caption tabular-nums text-mu-ink-muted">{users.length}</span>
     </>
   );
 
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger
+    <Tooltip.Provider>
+      <Tooltip.Root>
+        <Tooltip.Trigger
           render={
             isClickable ? (
               <button
@@ -65,12 +56,12 @@ const ReactionView = (props: Props) => {
           }
         >
           {label}
-        </TooltipTrigger>
-        <TooltipContent>
+        </Tooltip.Trigger>
+        <Tooltip.Popup>
           <p>{formatReactionTooltip(users, reactionType)}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+        </Tooltip.Popup>
+      </Tooltip.Root>
+    </Tooltip.Provider>
   );
 };
 

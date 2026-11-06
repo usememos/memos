@@ -138,7 +138,24 @@
     "resize-panel": "Paneelgrootte aanpassen",
     "resize-sidebar": "Zijbalkgrootte aanpassen",
     "sign-in-to-memos": "Aanmelden bij Memos",
-    "view-all": "Alles bekijken"
+    "open-navigation": "Navigatie openen",
+    "navigation": "Navigatie",
+    "primary-navigation": "Hoofd",
+    "download": "Downloaden",
+    "download-name": "{{name}} downloaden",
+    "open-name": "{{name}} openen",
+    "preview-name": "Voorbeeld van {{name}}",
+    "no-content": "Geen inhoud",
+    "previous": "Vorige",
+    "next": "Volgende",
+    "retry": "Opnieuw proberen",
+    "docs": "Documentatie",
+    "calendar-for-month": "Kalender voor {{month}}",
+    "date-at-time": "{{date}} om {{time}}",
+    "selected-location": "Geselecteerde locatie",
+    "choose-location": "Kies een locatie",
+    "unknown-error": "Onbekende fout",
+    "error-occurred": "Er is een fout opgetreden"
   },
   "locale-picker": {
     "no-language-feedback": "Taal niet gevonden? Geef feedback"
@@ -256,7 +273,17 @@
       "alt-text-placeholder": "Beschrijf de afbeelding…",
       "image-unavailable": "Afbeelding niet beschikbaar",
       "resize-image": "Afbeeldingsgrootte wijzigen"
-    }
+    },
+    "attachments": {
+      "move-up": "Bijlage omhoog verplaatsen",
+      "move-down": "Bijlage omlaag verplaatsen",
+      "remove": "Bijlage verwijderen"
+    },
+    "remove-relation": "Koppeling verwijderen",
+    "remove-location": "Locatie verwijderen",
+    "recording-unsupported": "Audio opnemen wordt niet ondersteund in deze browser.",
+    "microphone-denied": "Toegang tot de microfoon is geweigerd.",
+    "recording-failed": "Kan audio-opname niet starten."
   },
   "inbox": {
     "failed-to-load": "Postvak-item laden mislukt",
@@ -265,7 +292,16 @@
     "unread": "Ongelezen",
     "space-invitation": "Je bent uitgenodigd om deel te nemen aan een ruimte",
     "space-invitation-accepted": "Je hebt je bij deze ruimte aangesloten.",
-    "space-invitation-open": "Ruimte openen"
+    "space-invitation-open": "Ruimte openen",
+    "commented-on-memo": "heeft gereageerd op je memo",
+    "mentioned-in-comment": "heeft je genoemd in een opmerking",
+    "mentioned-in-memo": "heeft je genoemd in een memo",
+    "original": "Origineel:",
+    "memo-label": "Memo:",
+    "comment-heading": "Opmerking",
+    "memo-heading": "Memo",
+    "empty-memo": "Lege memo",
+    "empty-comment": "Lege opmerking"
   },
   "live-update": {
     "connected": "Live-updates actief",
@@ -280,7 +316,9 @@
     "click-to-show-sensitive-content": "Klik om NSFW-inhoud te tonen",
     "comment": {
       "self": "Opmerkingen",
-      "write-a-comment": "Schrijf een opmerking"
+      "write-a-comment": "Schrijf een opmerking",
+      "view-all-count_one": "{{count}} opmerking bekijken",
+      "view-all-count_other": "Alle {{count}} opmerkingen bekijken"
     },
     "copy-content": "Inhoud kopiëren",
     "copy-link": "Kopieer link",
@@ -294,7 +332,8 @@
       "has-image": "heeft afbeelding",
       "has-link": "heeftLink",
       "has-location": "heeft locatie",
-      "has-task-list": "heeftTakenlijst"
+      "has-task-list": "heeftTakenlijst",
+      "remove": "Filter verwijderen"
     },
     "compact-mode": "Compacte modus",
     "link-preview": "Linkvoorbeeld",
@@ -380,7 +419,9 @@
     "restored-successfully": "Succesvol teruggezet",
     "succeed-copy-content": "Inhoud succesvol gekopieerd.",
     "succeed-copy-link": "Link gekopieerd naar klembord.",
-    "update-succeed": "Update voltooid"
+    "update-succeed": "Update voltooid",
+    "not-signed-in": "Je bent niet ingelogd.",
+    "invalid-datetime": "Ongeldige datum en tijd. Gebruik de notatie 2023-12-31 23:59:59."
   },
   "reference": {
     "no-memos-found": "Geen memos gevonden",
@@ -450,7 +491,9 @@
       "usage-storage": "Storage",
       "usage-title": "Usage limits",
       "storage-usage-error": "Uw bijlageopslag is niet beschikbaar.",
-      "email-in-use": "Dit e-mailadres wordt al door een ander account gebruikt."
+      "email-in-use": "Dit e-mailadres wordt al door een ander account gebruikt.",
+      "avatar-too-large": "Kies een afbeelding van maximaal 2 MB.",
+      "avatar-unreadable": "Deze afbeelding kan niet worden gelezen. Probeer een ander bestand."
     },
     "instance": {
       "disallow-change-nickname": "Wijzigen van bijnaam niet toestaan",
@@ -490,7 +533,10 @@
       "archived": "Gearchiveerd",
       "member-column": "Lid",
       "summary-column": "Samenvatting",
-      "export-memos": "Memo's exporteren"
+      "export-memos": "Memo's exporteren",
+      "username-password-required": "Gebruikersnaam en wachtwoord mogen niet leeg zijn",
+      "create-success": "Gebruiker aangemaakt",
+      "update-success": "Gebruiker bijgewerkt"
     },
     "memo": {
       "label": "Memo",
@@ -524,7 +570,12 @@
       "theme-description": "Past het geselecteerde thema onmiddellijk toe op dit apparaat.",
       "theme": "Thema",
       "uploads-privacy-description": "Beheer privacygevoelige informatie die met geüploade media wordt verzonden.",
-      "uploads-privacy-title": "Uploads en privacy"
+      "uploads-privacy-title": "Uploads en privacy",
+      "theme-system": "Systeem volgen",
+      "theme-system-short": "Systeem",
+      "theme-light": "Licht",
+      "theme-dark": "Donker",
+      "theme-paper": "Papier"
     },
     "editor": {
       "label": "Editor",
@@ -534,7 +585,118 @@
       "create": "Weergave maken",
       "delete-confirm": "Weet je zeker dat je weergave `{{title}}` wilt verwijderen?",
       "delete-success": "Weergave `{{title}}` succesvol verwijderd",
-      "change-icon": "Weergavepictogram wijzigen"
+      "change-icon": "Weergavepictogram wijzigen",
+      "page-description": "Maak herbruikbare weergaven met velden, operatoren, tijdfuncties en labelvergelijking. Begin met de voorbeelden en valideer voordat je opslaat.",
+      "edit": "Weergave bewerken",
+      "form-description": "Geef de weergave een naam en definieer de memofilterexpressie die moet worden toegepast.",
+      "title-placeholder": "Vastgezet, Recente notities, Werk",
+      "filter-help": "Combineer expressies met {{and}}, {{or}} en {{not}}. Tijdvelden zijn tijdstempels — gebruik {{now}}, {{duration}}, {{timestamp}} en accessors zoals {{year}}. Labels ondersteunen {{sets}} en {{size}} meet de lengte.",
+      "validate": "Valideren",
+      "all": "Alle weergaven",
+      "loading": "Weergaven laden…",
+      "load-failed": "Kan weergaven niet laden.",
+      "empty-title": "Nog geen weergaven",
+      "empty-description": "Sla een filter op om snel terug te gaan naar de memo's die je nodig hebt.",
+      "examples-title": "Voorbeeldexpressies",
+      "fields-title": "Ondersteunde velden",
+      "title-filter-required": "Titel en filter mogen niet leeg zijn",
+      "filter-valid": "Filterexpressie lijkt geldig",
+      "create-success": "Weergave aangemaakt",
+      "update-success": "Weergave bijgewerkt",
+      "examples": {
+        "pinned": {
+          "title": "Vastgezet",
+          "description": "Alleen vastgezette memo's."
+        },
+        "recent": {
+          "title": "Recente notities",
+          "description": "Memo's die in het afgelopen uur zijn gemaakt."
+        },
+        "public": {
+          "title": "Openbare memo's",
+          "description": "Alleen openbare memo's."
+        },
+        "project-tags": {
+          "title": "Projectlabels",
+          "description": "Komt exact overeen met een of meer labels."
+        },
+        "untagged": {
+          "title": "Zonder labels",
+          "description": "Memo's zonder labels."
+        },
+        "archive-tree": {
+          "title": "Archiefboom",
+          "description": "Hiërarchische labels vergelijken op voorvoegsel."
+        },
+        "unassigned": {
+          "title": "Niet toegewezen",
+          "description": "Memo's die in geen enkele ruimte staan."
+        },
+        "one-space": {
+          "title": "In één ruimte",
+          "description": "Memo's in een ruimte. Gebruik de ruimte-ID uit de URL of de instellingen ervan."
+        },
+        "open-tasks": {
+          "title": "Openstaande taken",
+          "description": "Memo's met onafgeronde taken."
+        },
+        "links-or-code": {
+          "title": "Links of code",
+          "description": "Memo's met links of codeblokken."
+        },
+        "no-location": {
+          "title": "Geen locatie",
+          "description": "Memo's zonder gekoppelde locatie."
+        },
+        "with-attachments": {
+          "title": "Met bijlagen",
+          "description": "Memo's met minstens één bijgevoegd bestand."
+        },
+        "photos": {
+          "title": "Foto's",
+          "description": "Memo's die een afbeelding tonen, in de inhoud of als bijgevoegd bestand."
+        },
+        "content-search": {
+          "title": "Zoeken in inhoud",
+          "description": "Zoek tekst in de inhoud van memo's."
+        },
+        "starts-with": {
+          "title": "Begint met",
+          "description": "Memo's waarvan de inhoud met een tekst begint (ook endsWith)."
+        },
+        "regex": {
+          "title": "Regex-overeenkomst",
+          "description": "Vergelijk inhoud met een reguliere expressie."
+        },
+        "all-tags-complete": {
+          "title": "Alle labels voltooid",
+          "description": "Elk label eindigt op -done (alleen memo's met labels)."
+        },
+        "one-project-tag": {
+          "title": "Eén projectlabel",
+          "description": "Precies één label voldoet aan de voorwaarde."
+        },
+        "any-tags": {
+          "title": "Een van deze labels",
+          "description": "Labels overlappen met de opgegeven verzameling."
+        },
+        "exact-tags": {
+          "title": "Precies deze labels",
+          "description": "Gelabeld met precies deze verzameling, niets meer."
+        },
+        "year-2024": {
+          "title": "Memo's uit 2024",
+          "description": "Filter op kalenderjaar."
+        },
+        "weekend": {
+          "title": "Weekendnotities",
+          "description": "Gemaakt op een zondag of zaterdag (0 = zondag)."
+        },
+        "long": {
+          "title": "Lange notities",
+          "description": "Memo's langer dan 280 tekens."
+        }
+      }
     },
     "configuration": {
       "label": "Configuratie",
@@ -610,7 +772,9 @@
       "scopes-description": "Aparte scopes met spaties. De meeste providers hebben slechts een kleine set nodig, zoals profiel- of e-mailtoegang.",
       "template-description": "Begin met een vooraf ingestelde provider en pas vervolgens de referenties en eindpunten voor uw tenant aan.",
       "unlink-success": "Ontkoppelde {{name}}.",
-      "update-sso-description": "Controleer de providerconfiguratie en sla vervolgens de velden op die moeten veranderen."
+      "update-sso-description": "Controleer de providerconfiguratie en sla vervolgens de velden op die moeten veranderen.",
+      "invalid-config": "De configuratie van de identiteitsprovider is ongeldig.",
+      "provider-id-placeholder": "bijv. github, okta-corp"
     },
     "storage": {
       "accesskey": "Access key",
@@ -658,7 +822,8 @@
       "customize-server": {
         "description": "Beschrijving",
         "icon-url": "Pictogram-URL",
-        "title": "Server aanpassen"
+        "title": "Server aanpassen",
+        "dialog-description": "Pas het uiterlijk en de instellingen van je instantie aan."
       },
       "label": "Systeem",
       "server-name": "Servernaam",
@@ -978,7 +1143,8 @@
   },
   "tooltip": {
     "link-memo": "Memo linken",
-    "select-location": "Locatie"
+    "select-location": "Locatie",
+    "link-memo-description": "Zoek en selecteer een memo om te koppelen"
   },
   "demo": {
     "banner-description": "Wijzigingen zijn tijdelijk en kunnen worden gereset.",
@@ -1081,7 +1247,12 @@
     "loading": "Memo's laden…",
     "new-here": "Hier schrijven",
     "saved-outside-filter": "Opgeslagen. Deze memo valt buiten de huidige kaartresultaten.",
-    "open-memo": "Open memo"
+    "open-memo": "Open memo",
+    "open-in-google-maps": "Openen in Google Maps",
+    "location-description": "Selecteer een locatie op de kaart of voer handmatig coördinaten in",
+    "latitude": "Breedtegraad",
+    "longitude": "Lengtegraad",
+    "place-placeholder": "Kies eerst een positie."
   },
   "calendar": {
     "new-memo-on-day": "Nieuwe memo op deze dag",
@@ -1180,5 +1351,47 @@
       "tag-reading": "lezen",
       "tag-ideas": "ideeën"
     }
+  },
+  "error": {
+    "title": "Er is iets misgegaan",
+    "description": "Er is een onverwachte fout opgetreden. Dit kan komen door een netwerkprobleem of een probleem met de applicatie.",
+    "description-update": "Er is een onverwachte fout opgetreden. Dit kan komen door een netwerkprobleem of een update van de applicatie. Opnieuw laden lost het meestal op.",
+    "details": "Foutdetails",
+    "reload": "Applicatie opnieuw laden",
+    "not-found": "De pagina die je zoekt, kan niet worden gevonden.",
+    "permission-denied": "Toegang geweigerd",
+    "too-many-requests": "Te veel verzoeken. Probeer het over {{wait}} opnieuw.",
+    "wait-seconds": "{{count}} s",
+    "wait-minutes": "{{count}} min",
+    "wait-hours": "{{count}} u",
+    "challenge-required": "Voltooi de verificatie en probeer het opnieuw.",
+    "quota-memo-count": "Je hebt je limiet van {{limit}} memo's bereikt. Verwijder memo's om nieuwe te maken.",
+    "quota-storage": "Deze upload zou je opslaglimiet van {{limit}} overschrijden. Je gebruikt {{usage}}.",
+    "quota-upload": "Dit bestand is groter dan je limiet van {{limit}} per bestand.",
+    "quota-memo-content": "Deze memo is groter dan je limiet van {{limit}} per memo. Maak de inhoud korter om hem op te slaan.",
+    "quota-generic": "Je hebt een gebruikslimiet bereikt.",
+    "sign-in-failed": "Inloggen mislukt.",
+    "sign-up-failed": "Registreren mislukt",
+    "authenticate-failed": "Authenticatie mislukt.",
+    "update-profile-failed": "Profiel bijwerken mislukt",
+    "unlink-identity-failed": "Ontkoppelen van identiteitsprovider mislukt.",
+    "link-identity-failed": "Koppelen van het account kon niet worden gestart. Probeer het opnieuw."
+  },
+  "attachment-preview": {
+    "title": "Voorbeeld van bijlage",
+    "description": "Voorbeeldvenster voor bijlagen. Druk op Escape om te sluiten, gebruik de pijltoetsen links of rechts om van item te wisselen en zoom in op afbeeldingen met de knoppen, het muiswiel, dubbeltikken of knijpen.",
+    "close": "Voorbeeld sluiten",
+    "previous": "Vorig item",
+    "next": "Volgend item",
+    "reset-zoom": "Zoom herstellen",
+    "image-alt": "Voorbeeldafbeelding {{index}} van {{count}}",
+    "live-photo-alt": "Voorbeeld van live-foto {{index}} van {{count}}",
+    "play-live-photo": "Beweeg erover of druk om de live-foto af te spelen"
+  },
+  "audio-player": {
+    "seek": "Afspeelpositie van {{name}}",
+    "back": "{{seconds}} seconden terug",
+    "forward": "{{seconds}} seconden vooruit",
+    "speed": "Afspeelsnelheid {{rate}}x"
   }
 }

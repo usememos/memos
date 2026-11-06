@@ -1,6 +1,7 @@
 import { BinaryReader } from "@bufbuild/protobuf/wire";
 import { type Code, ConnectError } from "@connectrpc/connect";
 import { formatFileSize } from "@/utils/format";
+import { translate } from "@/utils/i18n";
 
 /** google.rpc.ErrorInfo, the mandatory detail on every server error (AIP-193). */
 export interface ErrorInfo {
@@ -94,36 +95,38 @@ export function getQuotaExceededMessage(error: unknown): string | undefined {
   const usage = Number(info.metadata.usage ?? "");
   switch (info.metadata.metric) {
     case "MEMO_COUNT":
-      return `You have reached your limit of ${limit} memos. Delete memos to create new ones.`;
+      return translate("error.quota-memo-count", { limit });
     case "STORAGE_BYTES":
-      return `This upload would exceed your storage limit of ${formatFileSize(limit)}. You are using ${formatFileSize(usage)}.`;
+      return translate("error.quota-storage", { limit: formatFileSize(limit), usage: formatFileSize(usage) });
     case "UPLOAD_BYTES":
-      return `This file is larger than your limit of ${formatFileSize(limit)} per file.`;
+      return translate("error.quota-upload", { limit: formatFileSize(limit) });
     case "MEMO_CONTENT_BYTES":
-      return `This memo is larger than your limit of ${formatFileSize(limit)} per memo. Shorten the content to save it.`;
+      return translate("error.quota-memo-content", { limit: formatFileSize(limit) });
     default:
-      return "You have reached a usage limit.";
+      return translate("error.quota-generic");
   }
 }
 
 function formatWait(seconds: number): string {
-  if (seconds < 60) return `${seconds}s`;
+  if (seconds < 60) return translate("error.wait-seconds", { count: seconds });
   const minutes = Math.ceil(seconds / 60);
-  return minutes < 60 ? `${minutes} min` : `${Math.ceil(minutes / 60)} h`;
+  return minutes < 60
+    ? translate("error.wait-minutes", { count: minutes })
+    : translate("error.wait-hours", { count: Math.ceil(minutes / 60) });
 }
 
 export function hasConnectCode(error: unknown, ...codes: Code[]): error is ConnectError {
   return error instanceof ConnectError && codes.includes(error.code);
 }
 
-export function getErrorMessage(error: unknown, fallback = "Unknown error"): string {
+export function getErrorMessage(error: unknown, fallback = translate("common.unknown-error")): string {
   if (error instanceof ConnectError) {
     const retryAfter = getRetryAfterSeconds(error);
     if (retryAfter !== undefined) {
-      return `Too many requests. Try again in ${formatWait(retryAfter)}.`;
+      return translate("error.too-many-requests", { wait: formatWait(retryAfter) });
     }
     if (hasErrorReason(error, ERROR_REASON_CHALLENGE_REQUIRED)) {
-      return "Complete the verification challenge and try again.";
+      return translate("error.challenge-required");
     }
     const limitMessage = getQuotaExceededMessage(error);
     if (limitMessage !== undefined) {

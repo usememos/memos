@@ -138,7 +138,24 @@
     "resize-panel": "Panel átméretezése",
     "resize-sidebar": "Oldalsáv átméretezése",
     "sign-in-to-memos": "Bejelentkezés a következőbe: Memos",
-    "view-all": "Összes megtekintése"
+    "open-navigation": "Navigáció megnyitása",
+    "navigation": "Navigáció",
+    "primary-navigation": "Fő",
+    "download": "Letöltés",
+    "download-name": "{{name}} letöltése",
+    "open-name": "{{name}} megnyitása",
+    "preview-name": "{{name}} előnézete",
+    "no-content": "Nincs tartalom",
+    "previous": "Előző",
+    "next": "Következő",
+    "retry": "Újra",
+    "docs": "Dokumentáció",
+    "calendar-for-month": "Naptár: {{month}}",
+    "date-at-time": "{{date}}, {{time}}",
+    "selected-location": "Kiválasztott hely",
+    "choose-location": "Válassz helyet",
+    "unknown-error": "Ismeretlen hiba",
+    "error-occurred": "Hiba történt"
   },
   "locale-picker": {
     "no-language-feedback": "Nem található a nyelv? Visszajelzés küldése"
@@ -256,7 +273,17 @@
       "alt-text-placeholder": "Írd le a képet…",
       "image-unavailable": "A kép nem érhető el",
       "resize-image": "Kép átméretezése"
-    }
+    },
+    "attachments": {
+      "move-up": "Melléklet mozgatása feljebb",
+      "move-down": "Melléklet mozgatása lejjebb",
+      "remove": "Melléklet eltávolítása"
+    },
+    "remove-relation": "Kapcsolat eltávolítása",
+    "remove-location": "Hely eltávolítása",
+    "recording-unsupported": "Ez a böngésző nem támogatja a hangfelvételt.",
+    "microphone-denied": "A mikrofonhoz való hozzáférés megtagadva.",
+    "recording-failed": "Nem sikerült elindítani a hangfelvételt."
   },
   "inbox": {
     "failed-to-load": "Nem sikerült betölteni az értesítést",
@@ -265,7 +292,16 @@
     "unread": "Olvasatlan",
     "space-invitation": "meghívott egy térbe.",
     "space-invitation-accepted": "Csatlakoztál ehhez a térhez.",
-    "space-invitation-open": "Megnyitott tér"
+    "space-invitation-open": "Megnyitott tér",
+    "commented-on-memo": "hozzászólt a jegyzetedhez",
+    "mentioned-in-comment": "megemlített egy hozzászólásban",
+    "mentioned-in-memo": "megemlített egy jegyzetben",
+    "original": "Eredeti:",
+    "memo-label": "Jegyzet:",
+    "comment-heading": "Hozzászólás",
+    "memo-heading": "Jegyzet",
+    "empty-memo": "Üres jegyzet",
+    "empty-comment": "Üres hozzászólás"
   },
   "live-update": {
     "connected": "Élő frissítések aktívak",
@@ -280,7 +316,9 @@
     "click-to-show-sensitive-content": "Kattints a kényes tartalom megjelenítéséhez",
     "comment": {
       "self": "Hozzászólások",
-      "write-a-comment": "Írj hozzászólást"
+      "write-a-comment": "Írj hozzászólást",
+      "view-all-count_one": "Összes hozzászólás megtekintése ({{count}})",
+      "view-all-count_other": "Összes hozzászólás megtekintése ({{count}})"
     },
     "copy-content": "Tartalom másolása",
     "copy-link": "Hivatkozás másolása",
@@ -294,7 +332,8 @@
       "has-image": "van kép",
       "has-link": "vanLink",
       "has-location": "van helyadat",
-      "has-task-list": "vanFeladatLista"
+      "has-task-list": "vanFeladatLista",
+      "remove": "Szűrő eltávolítása"
     },
     "compact-mode": "Kompakt mód",
     "link-preview": "Hivatkozás előnézete",
@@ -380,7 +419,9 @@
     "restored-successfully": "Sikeres visszaállítás",
     "succeed-copy-content": "Tartalom sikeresen másolva.",
     "succeed-copy-link": "Hivatkozás sikeresen másolva.",
-    "update-succeed": "Sikeres frissítés"
+    "update-succeed": "Sikeres frissítés",
+    "not-signed-in": "Nem vagy bejelentkezve.",
+    "invalid-datetime": "Érvénytelen dátum és idő. Használd a 2023-12-31 23:59:59 formátumot."
   },
   "reference": {
     "no-memos-found": "Nem található jegyzet",
@@ -450,7 +491,9 @@
       "usage-storage": "Storage",
       "usage-title": "Usage limits",
       "storage-usage-error": "A mellékletek tárhelye nem érhető el.",
-      "email-in-use": "Ezt az e-mail címet már egy másik fiók használja."
+      "email-in-use": "Ezt az e-mail címet már egy másik fiók használja.",
+      "avatar-too-large": "Válassz legfeljebb 2 MB-os képet.",
+      "avatar-unreadable": "Ez a kép nem olvasható. Próbálj meg egy másik fájlt."
     },
     "instance": {
       "disallow-change-nickname": "Becenév módosításának tiltása",
@@ -490,7 +533,10 @@
       "archived": "Archivált",
       "member-column": "Tag",
       "summary-column": "Összegzés",
-      "export-memos": "Jegyzetek exportálása"
+      "export-memos": "Jegyzetek exportálása",
+      "username-password-required": "A felhasználónév és a jelszó nem lehet üres",
+      "create-success": "Felhasználó létrehozva",
+      "update-success": "Felhasználó frissítve"
     },
     "memo": {
       "label": "Jegyzet",
@@ -524,7 +570,12 @@
       "theme-description": "Azonnal alkalmazza a kiválasztott témát ezen az eszközön.",
       "theme": "Téma",
       "uploads-privacy-description": "A feltöltött médiával beküldött adatvédelmi szempontból érzékeny információk kezelése.",
-      "uploads-privacy-title": "Feltöltések és adatvédelem"
+      "uploads-privacy-title": "Feltöltések és adatvédelem",
+      "theme-system": "Rendszerbeállítás követése",
+      "theme-system-short": "Rendszer",
+      "theme-light": "Világos",
+      "theme-dark": "Sötét",
+      "theme-paper": "Papír"
     },
     "editor": {
       "label": "Szerkesztő",
@@ -534,7 +585,118 @@
       "create": "Nézet létrehozása",
       "delete-confirm": "Biztosan törlöd a `{{title}}` nézetet?",
       "delete-success": "`{{title}}` nézet sikeresen törölve",
-      "change-icon": "Nézet ikonjának módosítása"
+      "change-icon": "Nézet ikonjának módosítása",
+      "page-description": "Hozz létre újrahasználható nézeteket mezőkkel, operátorokkal, időfüggvényekkel és címkeillesztéssel. Indulj ki a példákból, és mentés előtt ellenőrizd őket.",
+      "edit": "Nézet szerkesztése",
+      "form-description": "Nevezd el a nézetet, és add meg a jegyzetszűrő kifejezést, amelyet alkalmaznia kell.",
+      "title-placeholder": "Rögzített, Friss jegyzetek, Munka",
+      "filter-help": "A kifejezéseket a(z) {{and}}, {{or}} és {{not}} operátorokkal kombinálhatod. Az időmezők időbélyegek — használd a(z) {{now}}, {{duration}}, {{timestamp}} függvényeket és az olyan elérőket, mint a(z) {{year}}. A címkék támogatják a(z) {{sets}} műveleteket, a(z) {{size}} pedig a hosszt méri.",
+      "validate": "Ellenőrzés",
+      "all": "Összes nézet",
+      "loading": "Nézetek betöltése…",
+      "load-failed": "Nem sikerült betölteni a nézeteket.",
+      "empty-title": "Még nincsenek nézetek",
+      "empty-description": "Ments el egy szűrőt, hogy gyorsan visszatérhess a szükséges jegyzetekhez.",
+      "examples-title": "Példakifejezések",
+      "fields-title": "Támogatott mezők",
+      "title-filter-required": "A cím és a szűrő nem lehet üres",
+      "filter-valid": "A szűrőkifejezés érvényesnek tűnik",
+      "create-success": "Nézet létrehozva",
+      "update-success": "Nézet frissítve",
+      "examples": {
+        "pinned": {
+          "title": "Rögzített",
+          "description": "Csak a rögzített jegyzetek."
+        },
+        "recent": {
+          "title": "Friss jegyzetek",
+          "description": "Az elmúlt egy órában létrehozott jegyzetek."
+        },
+        "public": {
+          "title": "Nyilvános jegyzetek",
+          "description": "Csak a nyilvános jegyzetek."
+        },
+        "project-tags": {
+          "title": "Projektcímkék",
+          "description": "Egy vagy több pontos címke egyezése."
+        },
+        "untagged": {
+          "title": "Címke nélküli",
+          "description": "Címkék nélküli jegyzetek."
+        },
+        "archive-tree": {
+          "title": "Archívumfa",
+          "description": "Hierarchikus címkék egyezése előtag alapján."
+        },
+        "unassigned": {
+          "title": "Hozzá nem rendelt",
+          "description": "Jegyzetek, amelyek egyetlen térben sincsenek."
+        },
+        "one-space": {
+          "title": "Egy térben",
+          "description": "Egy adott térben lévő jegyzetek. Használd a tér azonosítóját az URL-jéből vagy a beállításaiból."
+        },
+        "open-tasks": {
+          "title": "Nyitott feladatok",
+          "description": "Befejezetlen feladatokat tartalmazó jegyzetek."
+        },
+        "links-or-code": {
+          "title": "Linkek vagy kód",
+          "description": "Linkeket vagy kódblokkokat tartalmazó jegyzetek."
+        },
+        "no-location": {
+          "title": "Hely nélkül",
+          "description": "Csatolt hely nélküli jegyzetek."
+        },
+        "with-attachments": {
+          "title": "Melléklettel",
+          "description": "Legalább egy csatolt fájllal rendelkező jegyzetek."
+        },
+        "photos": {
+          "title": "Fotók",
+          "description": "Képet megjelenítő jegyzetek, a tartalomban vagy csatolt fájlként."
+        },
+        "content-search": {
+          "title": "Keresés a tartalomban",
+          "description": "Szöveg keresése a jegyzetek tartalmában."
+        },
+        "starts-with": {
+          "title": "Ezzel kezdődik",
+          "description": "Jegyzetek, amelyek tartalma adott szöveggel kezdődik (endsWith is elérhető)."
+        },
+        "regex": {
+          "title": "Regex egyezés",
+          "description": "Tartalom egyeztetése reguláris kifejezéssel."
+        },
+        "all-tags-complete": {
+          "title": "Minden címke kész",
+          "description": "Minden címke -done végződésű (csak címkézett jegyzetek)."
+        },
+        "one-project-tag": {
+          "title": "Egy projektcímke",
+          "description": "Pontosan egy címke felel meg a feltételnek."
+        },
+        "any-tags": {
+          "title": "Bármelyik ezek közül",
+          "description": "A címkék metszik a megadott halmazt."
+        },
+        "exact-tags": {
+          "title": "Pontosan ezek a címkék",
+          "description": "Pontosan ezzel a halmazzal címkézve, semmi mással."
+        },
+        "year-2024": {
+          "title": "2024-es jegyzetek",
+          "description": "Szűrés naptári év szerint."
+        },
+        "weekend": {
+          "title": "Hétvégi jegyzetek",
+          "description": "Vasárnap vagy szombaton létrehozva (0 = vasárnap)."
+        },
+        "long": {
+          "title": "Hosszú jegyzetek",
+          "description": "280 karakternél hosszabb jegyzetek."
+        }
+      }
     },
     "configuration": {
       "label": "Konfiguráció",
@@ -610,7 +772,9 @@
       "scopes-description": "A távirányítókat szóközökkel válassza el. A legtöbb szolgáltatónak csak egy kis készletre van szüksége, például profil- vagy e-mail hozzáférésre.",
       "template-description": "Kezdje a szolgáltató előre beállított értékével, majd állítsa be a bérlő hitelesítő adatait és végpontjait.",
       "unlink-success": "Leválasztva {{name}}.",
-      "update-sso-description": "Tekintse át a szolgáltató konfigurációját, majd mentse el a módosítani kívánt mezőket."
+      "update-sso-description": "Tekintse át a szolgáltató konfigurációját, majd mentse el a módosítani kívánt mezőket.",
+      "invalid-config": "Az identitásszolgáltató konfigurációja érvénytelen.",
+      "provider-id-placeholder": "pl. github, okta-corp"
     },
     "storage": {
       "accesskey": "Hozzáférési kulcs",
@@ -658,7 +822,8 @@
       "customize-server": {
         "description": "Leírás",
         "icon-url": "Ikon URL",
-        "title": "Szerver személyre szabása"
+        "title": "Szerver személyre szabása",
+        "dialog-description": "Szabd testre a példány megjelenését és beállításait."
       },
       "label": "Rendszer",
       "server-name": "Szerver neve",
@@ -978,7 +1143,8 @@
   },
   "tooltip": {
     "link-memo": "Jegyzet hivatkozása",
-    "select-location": "Helyszín"
+    "select-location": "Helyszín",
+    "link-memo-description": "Keress és válassz ki egy jegyzetet a hivatkozáshoz"
   },
   "demo": {
     "banner-description": "A változtatások ideiglenesek, és visszaállíthatók.",
@@ -1081,7 +1247,12 @@
     "loading": "Feljegyzések betöltése…",
     "new-here": "Írjon ide",
     "saved-outside-filter": "Mentve. Ez a feljegyzés kívül esik a jelenlegi térképeredményeken.",
-    "open-memo": "Jegyzet megnyitása"
+    "open-memo": "Jegyzet megnyitása",
+    "open-in-google-maps": "Megnyitás a Google Maps-ben",
+    "location-description": "Válassz helyet a térképen, vagy add meg kézzel a koordinátákat",
+    "latitude": "Szélesség",
+    "longitude": "Hosszúság",
+    "place-placeholder": "Előbb válassz egy pontot."
   },
   "calendar": {
     "new-memo-on-day": "Új emlékeztető ezen a napon.",
@@ -1180,5 +1351,47 @@
       "tag-reading": "olvasás",
       "tag-ideas": "ötletek"
     }
+  },
+  "error": {
+    "title": "Valami hiba történt",
+    "description": "Váratlan hiba történt. Ezt hálózati probléma vagy az alkalmazás hibája okozhatta.",
+    "description-update": "Váratlan hiba történt. Ezt hálózati probléma vagy az alkalmazás frissítése okozhatta. Az újratöltés általában megoldja.",
+    "details": "Hiba részletei",
+    "reload": "Alkalmazás újratöltése",
+    "not-found": "A keresett oldal nem található.",
+    "permission-denied": "Hozzáférés megtagadva",
+    "too-many-requests": "Túl sok kérés. Próbáld újra {{wait}} múlva.",
+    "wait-seconds": "{{count}} mp",
+    "wait-minutes": "{{count}} perc",
+    "wait-hours": "{{count}} óra",
+    "challenge-required": "Teljesítsd az ellenőrzést, majd próbáld újra.",
+    "quota-memo-count": "Elérted a(z) {{limit}} jegyzetes korlátot. Törölj jegyzeteket, hogy újakat hozhass létre.",
+    "quota-storage": "Ez a feltöltés túllépné a(z) {{limit}} tárhelykorlátodat. Jelenleg {{usage}} van használatban.",
+    "quota-upload": "Ez a fájl nagyobb a fájlonkénti {{limit}} korlátodnál.",
+    "quota-memo-content": "Ez a jegyzet nagyobb a jegyzetenkénti {{limit}} korlátodnál. Rövidítsd le a tartalmat a mentéshez.",
+    "quota-generic": "Elértél egy használati korlátot.",
+    "sign-in-failed": "A bejelentkezés sikertelen.",
+    "sign-up-failed": "A regisztráció sikertelen",
+    "authenticate-failed": "A hitelesítés sikertelen.",
+    "update-profile-failed": "Nem sikerült frissíteni a profilt",
+    "unlink-identity-failed": "Nem sikerült leválasztani az identitásszolgáltatót.",
+    "link-identity-failed": "Nem sikerült elindítani a fiók összekapcsolását. Próbáld újra."
+  },
+  "attachment-preview": {
+    "title": "Melléklet előnézete",
+    "description": "Melléklet-előnézeti párbeszédablak. A bezáráshoz nyomd meg az Escape billentyűt, az elemek között a bal és jobb nyíllal válthatsz, a képeket pedig a vezérlőkkel, egérgörgővel, dupla koppintással vagy csípő mozdulattal nagyíthatod.",
+    "close": "Előnézet bezárása",
+    "previous": "Előző elem",
+    "next": "Következő elem",
+    "reset-zoom": "Nagyítás visszaállítása",
+    "image-alt": "Előnézeti kép: {{index}} / {{count}}",
+    "live-photo-alt": "Élő fotó előnézete: {{index}} / {{count}}",
+    "play-live-photo": "Vidd fölé az egeret vagy nyomd meg az élő fotó lejátszásához"
+  },
+  "audio-player": {
+    "seek": "Tekerés: {{name}}",
+    "back": "{{seconds}} másodperc vissza",
+    "forward": "{{seconds}} másodperc előre",
+    "speed": "Lejátszási sebesség: {{rate}}x"
   }
 }

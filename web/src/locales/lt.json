@@ -176,7 +176,24 @@
     "resize-panel": "Keisti skydelio dydį",
     "resize-sidebar": "Keisti šoninės juostos dydį",
     "sign-in-to-memos": "Prisijungti prie Memos",
-    "view-all": "Peržiūrėti viską"
+    "open-navigation": "Atidaryti naršymą",
+    "navigation": "Naršymas",
+    "primary-navigation": "Pagrindinis",
+    "download": "Atsisiųsti",
+    "download-name": "Atsisiųsti {{name}}",
+    "open-name": "Atidaryti {{name}}",
+    "preview-name": "Peržiūrėti {{name}}",
+    "no-content": "Turinio nėra",
+    "previous": "Ankstesnis",
+    "next": "Kitas",
+    "retry": "Bandyti dar kartą",
+    "docs": "Dokumentacija",
+    "calendar-for-month": "Kalendorius: {{month}}",
+    "date-at-time": "{{date}} {{time}}",
+    "selected-location": "Pasirinkta vieta",
+    "choose-location": "Pasirinkite vietą",
+    "unknown-error": "Nežinoma klaida",
+    "error-occurred": "Įvyko klaida"
   },
   "locale-picker": {
     "no-language-feedback": "Kalba nerasta? Pateikite atsiliepimą"
@@ -294,7 +311,17 @@
       "alt-text-placeholder": "Aprašykite paveikslėlį…",
       "image-unavailable": "Paveikslėlis nepasiekiamas",
       "resize-image": "Keisti paveikslėlio dydį"
-    }
+    },
+    "attachments": {
+      "move-up": "Perkelti priedą aukštyn",
+      "move-down": "Perkelti priedą žemyn",
+      "remove": "Pašalinti priedą"
+    },
+    "remove-relation": "Pašalinti ryšį",
+    "remove-location": "Pašalinti vietą",
+    "recording-unsupported": "Ši naršyklė nepalaiko garso įrašymo.",
+    "microphone-denied": "Prieiga prie mikrofono atmesta.",
+    "recording-failed": "Nepavyko pradėti garso įrašymo."
   },
   "inbox": {
     "failed-to-load": "Nepavyko įkelti gautųjų elemento",
@@ -303,7 +330,16 @@
     "unread": "Neskaityta",
     "space-invitation": "pakvietė jus prisijungti prie erdvės",
     "space-invitation-accepted": "Prisijungėte prie šios erdvės.",
-    "space-invitation-open": "Atidaryta erdvė"
+    "space-invitation-open": "Atidaryta erdvė",
+    "commented-on-memo": "pakomentavo jūsų atmintinę",
+    "mentioned-in-comment": "paminėjo jus komentare",
+    "mentioned-in-memo": "paminėjo jus atmintinėje",
+    "original": "Originalas:",
+    "memo-label": "Atmintinė:",
+    "comment-heading": "Komentaras",
+    "memo-heading": "Atmintinė",
+    "empty-memo": "Tuščia atmintinė",
+    "empty-comment": "Tuščias komentaras"
   },
   "live-update": {
     "connected": "Aktyvūs tiesioginiai atnaujinimai",
@@ -318,7 +354,11 @@
     "click-to-show-sensitive-content": "Spustelėkite, kad būtų rodomas jautrus turinys",
     "comment": {
       "self": "Komentarai",
-      "write-a-comment": "Parašyk komentarą"
+      "write-a-comment": "Parašyk komentarą",
+      "view-all-count_one": "Peržiūrėti {{count}} komentarą",
+      "view-all-count_few": "Peržiūrėti visus {{count}} komentarus",
+      "view-all-count_many": "Peržiūrėti visus {{count}} komentaro",
+      "view-all-count_other": "Peržiūrėti visus {{count}} komentarų"
     },
     "copy-content": "Kopijuoti turinį",
     "copy-link": "Kopijuoti nuorodą",
@@ -333,7 +373,8 @@
       "has-image": "turi paveikslėlį",
       "has-link": "hasLink",
       "has-location": "turi vietą",
-      "has-task-list": "turiTaskList"
+      "has-task-list": "turiTaskList",
+      "remove": "Pašalinti filtrą"
     },
     "compact-mode": "Kompaktiškas režimas",
     "link-preview": "Nuorodos peržiūra",
@@ -418,7 +459,9 @@
     "restored-successfully": "Sėkmingai atkurta",
     "succeed-copy-content": "Turinys sėkmingai nukopijuotas.",
     "succeed-copy-link": "Nuoroda sėkmingai nukopijuota.",
-    "update-succeed": "Atnaujinimas pavyko"
+    "update-succeed": "Atnaujinimas pavyko",
+    "not-signed-in": "Jūs neprisijungę.",
+    "invalid-datetime": "Neteisinga data ir laikas. Naudokite formatą 2023-12-31 23:59:59."
   },
   "reference": {
     "no-memos-found": "Nerasta jokių atmintinių",
@@ -488,7 +531,9 @@
       "usage-storage": "Storage",
       "usage-title": "Usage limits",
       "storage-usage-error": "Jūsų priedų saugykla nepasiekiama.",
-      "email-in-use": "Šį el. pašto adresą jau naudoja kita paskyra."
+      "email-in-use": "Šį el. pašto adresą jau naudoja kita paskyra.",
+      "avatar-too-large": "Pasirinkite ne didesnį kaip 2 MB paveikslėlį.",
+      "avatar-unreadable": "Šio paveikslėlio nepavyksta nuskaityti. Pabandykite kitą failą."
     },
     "ai": {
       "add-provider": "Pridėti teikėją",
@@ -571,7 +616,10 @@
       "summary-column": "Santrauka",
       "user": "Vartotojas",
       "no-members-found": "Narių nerasta",
-      "export-memos": "Eksportuoti užrašus"
+      "export-memos": "Eksportuoti užrašus",
+      "username-password-required": "Vartotojo vardas ir slaptažodis negali būti tušti",
+      "create-success": "Vartotojas sukurtas",
+      "update-success": "Vartotojas atnaujintas"
     },
     "memo": {
       "add-reaction": "Pridėti reakciją",
@@ -640,7 +688,12 @@
       "theme-description": "Šiame įrenginyje iš karto pritaiko pasirinktą temą.",
       "theme": "tema",
       "uploads-privacy-description": "Valdykite privatumo požiūriu svarbią informaciją, pateiktą kartu su įkelta medija.",
-      "uploads-privacy-title": "Įkėlimai ir privatumas"
+      "uploads-privacy-title": "Įkėlimai ir privatumas",
+      "theme-system": "Pagal sistemą",
+      "theme-system-short": "Sistema",
+      "theme-light": "Šviesi",
+      "theme-dark": "Tamsi",
+      "theme-paper": "Popierius"
     },
     "editor": {
       "label": "Redaktorius",
@@ -650,7 +703,118 @@
       "create": "Sukurti rodinį",
       "delete-confirm": "Ar tikrai norite ištrinti rodinį `{{title}}`?",
       "delete-success": "Rodinys `{{title}}` sėkmingai ištrintas",
-      "change-icon": "Keisti rodinio piktogramą"
+      "change-icon": "Keisti rodinio piktogramą",
+      "page-description": "Kurkite pakartotinai naudojamus rodinius su laukais, operatoriais, laiko funkcijomis ir žymų atitikimu. Pradėkite nuo pavyzdžių, o prieš išsaugodami patikrinkite.",
+      "edit": "Redaguoti rodinį",
+      "form-description": "Pavadinkite rodinį ir apibrėžkite atmintinių filtro išraišką, kurią jis taikys.",
+      "title-placeholder": "Prisegta, Naujausi užrašai, Darbas",
+      "filter-help": "Išraiškas derinkite su {{and}}, {{or}} ir {{not}}. Laiko laukai yra laiko žymos — naudokite {{now}}, {{duration}}, {{timestamp}} ir prieigos funkcijas, pvz., {{year}}. Žymos palaiko {{sets}}, o {{size}} matuoja ilgį.",
+      "validate": "Patikrinti",
+      "all": "Visi rodiniai",
+      "loading": "Įkeliami rodiniai…",
+      "load-failed": "Nepavyko įkelti rodinių.",
+      "empty-title": "Rodinių dar nėra",
+      "empty-description": "Išsaugokite filtrą, kad greitai grįžtumėte prie reikiamų atmintinių.",
+      "examples-title": "Išraiškų pavyzdžiai",
+      "fields-title": "Palaikomi laukai",
+      "title-filter-required": "Pavadinimas ir filtras negali būti tušti",
+      "filter-valid": "Filtro išraiška atrodo tinkama",
+      "create-success": "Rodinys sukurtas",
+      "update-success": "Rodinys atnaujintas",
+      "examples": {
+        "pinned": {
+          "title": "Prisegta",
+          "description": "Tik prisegtos atmintinės."
+        },
+        "recent": {
+          "title": "Naujausi užrašai",
+          "description": "Per pastarąją valandą sukurtos atmintinės."
+        },
+        "public": {
+          "title": "Viešos atmintinės",
+          "description": "Tik viešos atmintinės."
+        },
+        "project-tags": {
+          "title": "Projektų žymos",
+          "description": "Atitinka vieną ar kelias tikslias žymas."
+        },
+        "untagged": {
+          "title": "Be žymų",
+          "description": "Atmintinės be jokių žymų."
+        },
+        "archive-tree": {
+          "title": "Archyvo medis",
+          "description": "Hierarchinių žymų atitikimas pagal priešdėlį."
+        },
+        "unassigned": {
+          "title": "Nepriskirtos",
+          "description": "Atmintinės, nepriskirtos jokiai erdvei."
+        },
+        "one-space": {
+          "title": "Vienoje erdvėje",
+          "description": "Erdvėje esančios atmintinės. Naudokite erdvės ID iš jos URL arba nustatymų."
+        },
+        "open-tasks": {
+          "title": "Atviros užduotys",
+          "description": "Atmintinės su neužbaigtomis užduotimis."
+        },
+        "links-or-code": {
+          "title": "Nuorodos arba kodas",
+          "description": "Atmintinės, kuriose yra nuorodų arba kodo blokų."
+        },
+        "no-location": {
+          "title": "Be vietos",
+          "description": "Atmintinės be pridėtos vietos."
+        },
+        "with-attachments": {
+          "title": "Su priedais",
+          "description": "Atmintinės su bent vienu pridėtu failu."
+        },
+        "photos": {
+          "title": "Nuotraukos",
+          "description": "Atmintinės, rodančios vaizdą turinyje arba kaip pridėtą failą."
+        },
+        "content-search": {
+          "title": "Paieška turinyje",
+          "description": "Ieškokite teksto atmintinių turinyje."
+        },
+        "starts-with": {
+          "title": "Prasideda",
+          "description": "Atmintinės, kurių turinys prasideda tekstu (taip pat endsWith)."
+        },
+        "regex": {
+          "title": "Regex atitikimas",
+          "description": "Turinio atitikimas reguliariajai išraiškai."
+        },
+        "all-tags-complete": {
+          "title": "Visos žymos atliktos",
+          "description": "Kiekviena žyma baigiasi -done (tik atmintinės su žymomis)."
+        },
+        "one-project-tag": {
+          "title": "Viena projekto žyma",
+          "description": "Sąlygą atitinka lygiai viena žyma."
+        },
+        "any-tags": {
+          "title": "Bet kuri iš šių žymų",
+          "description": "Žymos susikerta su nurodytu rinkiniu."
+        },
+        "exact-tags": {
+          "title": "Tiksliai šios žymos",
+          "description": "Pažymėta tiksliai šiuo rinkiniu, ne daugiau."
+        },
+        "year-2024": {
+          "title": "2024 m. atmintinės",
+          "description": "Filtruoti pagal kalendorinius metus."
+        },
+        "weekend": {
+          "title": "Savaitgalio užrašai",
+          "description": "Sukurta sekmadienį arba šeštadienį (0 = sekmadienis)."
+        },
+        "long": {
+          "title": "Ilgi užrašai",
+          "description": "Atmintinės, ilgesnės nei 280 simbolių."
+        }
+      }
     },
     "configuration": {
       "label": "Konfigūracija",
@@ -726,7 +890,9 @@
       "token-endpoint": "Ženklo galutinis taškas",
       "update-sso": "Atnaujinkite SSO",
       "update-sso-description": "Peržiūrėkite teikėjo konfigūraciją, tada išsaugokite laukus, kurie turėtų būti pakeisti.",
-      "user-endpoint": "Vartotojo galutinis taškas"
+      "user-endpoint": "Vartotojo galutinis taškas",
+      "invalid-config": "Tapatybės teikėjo konfigūracija netinkama.",
+      "provider-id-placeholder": "pvz., github, okta-corp"
     },
     "storage": {
       "accesskey": "Prieigos raktas",
@@ -777,7 +943,8 @@
       "customize-server": {
         "description": "Aprašymas",
         "icon-url": "Piktograma URL",
-        "title": "Tinkinti serverį"
+        "title": "Tinkinti serverį",
+        "dialog-description": "Pritaikykite savo egzemplioriaus išvaizdą ir nustatymus."
       },
       "custom-code-description": "Pasirenkamas viso egzemplioriaus CSS ir JavaScript, pritaikytas priekinėje dalyje.",
       "custom-code-title": "Pasirinktinis kodas",
@@ -1016,7 +1183,8 @@
   },
   "tooltip": {
     "link-memo": "Nuorodos atmintinė",
-    "select-location": "Vieta"
+    "select-location": "Vieta",
+    "link-memo-description": "Raskite ir pasirinkite atmintinę, kurią norite susieti"
   },
   "attachment-details": {
     "fields": {
@@ -1081,7 +1249,12 @@
     "loading": "Įkeliami priminimai…",
     "new-here": "Rašyti čia",
     "saved-outside-filter": "Išsaugota. Šis priminimas yra už dabartinių žemėlapio rezultatų ribų.",
-    "open-memo": "Atidaryti atmintinę"
+    "open-memo": "Atidaryti atmintinę",
+    "open-in-google-maps": "Atidaryti Google Maps",
+    "location-description": "Pasirinkite vietą žemėlapyje arba įveskite koordinates rankiniu būdu",
+    "latitude": "Platuma",
+    "longitude": "Ilguma",
+    "place-placeholder": "Pirmiausia pasirinkite tašką."
   },
   "calendar": {
     "new-memo-on-day": "Naujas priminimas šią dieną",
@@ -1180,5 +1353,47 @@
       "tag-reading": "skaitymas",
       "tag-ideas": "idėjos"
     }
+  },
+  "error": {
+    "title": "Kažkas nutiko",
+    "description": "Įvyko netikėta klaida. Ją galėjo sukelti tinklo arba programos problema.",
+    "description-update": "Įvyko netikėta klaida. Ją galėjo sukelti tinklo problema arba programos atnaujinimas. Paprastai padeda puslapio įkėlimas iš naujo.",
+    "details": "Klaidos informacija",
+    "reload": "Įkelti programą iš naujo",
+    "not-found": "Ieškomas puslapis nerastas.",
+    "permission-denied": "Prieiga uždrausta",
+    "too-many-requests": "Per daug užklausų. Bandykite dar kartą po {{wait}}.",
+    "wait-seconds": "{{count}} s",
+    "wait-minutes": "{{count}} min.",
+    "wait-hours": "{{count}} val.",
+    "challenge-required": "Atlikite patvirtinimo užduotį ir bandykite dar kartą.",
+    "quota-memo-count": "Pasiekėte {{limit}} atmintinių ribą. Ištrinkite atmintines, kad galėtumėte kurti naujas.",
+    "quota-storage": "Šis įkėlimas viršytų jūsų {{limit}} saugyklos ribą. Šiuo metu naudojate {{usage}}.",
+    "quota-upload": "Šis failas didesnis už jūsų {{limit}} vienam failui ribą.",
+    "quota-memo-content": "Ši atmintinė didesnė už jūsų {{limit}} vienai atmintinei ribą. Sutrumpinkite turinį, kad galėtumėte ją išsaugoti.",
+    "quota-generic": "Pasiekėte naudojimo ribą.",
+    "sign-in-failed": "Nepavyko prisijungti.",
+    "sign-up-failed": "Nepavyko užsiregistruoti",
+    "authenticate-failed": "Nepavyko patvirtinti tapatybės.",
+    "update-profile-failed": "Nepavyko atnaujinti profilio",
+    "unlink-identity-failed": "Nepavyko atsieti tapatybės teikėjo.",
+    "link-identity-failed": "Nepavyko pradėti paskyros susiejimo. Bandykite dar kartą."
+  },
+  "attachment-preview": {
+    "title": "Priedo peržiūra",
+    "description": "Priedo peržiūros langas. Paspauskite Escape, kad uždarytumėte, kairiuoju arba dešiniuoju rodyklės klavišu perjunkite elementus, o vaizdus didinkite valdikliais, pelės ratuku, dvigubu bakstelėjimu arba suspaudimo gestu.",
+    "close": "Uždaryti peržiūrą",
+    "previous": "Ankstesnis elementas",
+    "next": "Kitas elementas",
+    "reset-zoom": "Atkurti mastelį",
+    "image-alt": "Peržiūros vaizdas {{index}} iš {{count}}",
+    "live-photo-alt": "Gyvos nuotraukos peržiūra {{index}} iš {{count}}",
+    "play-live-photo": "Užveskite žymeklį arba paspauskite, kad paleistumėte gyvą nuotrauką"
+  },
+  "audio-player": {
+    "seek": "Atkūrimo vieta: {{name}}",
+    "back": "Atgal {{seconds}} sekundžių",
+    "forward": "Pirmyn {{seconds}} sekundžių",
+    "speed": "Atkūrimo greitis {{rate}}x"
   }
 }

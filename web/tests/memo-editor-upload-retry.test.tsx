@@ -23,7 +23,7 @@ vi.mock("@/connect", () => ({
   attachmentServiceClient: { uploadAttachment: mocks.uploadAttachment },
 }));
 
-vi.mock("react-hot-toast", () => ({ toast: { error: vi.fn(), success: vi.fn() } }));
+vi.mock("@/lib/toast", () => ({ toast: { add: vi.fn(), close: vi.fn() }, showErrorToast: vi.fn() }));
 vi.mock("@/contexts/NewMemoContext", () => ({ useNewMemo: () => ({ markNewMemo: vi.fn() }) }));
 vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
 

@@ -1,3 +1,4 @@
+import { Button, Tooltip } from "@usememos/ui";
 import {
   ChevronDownIcon,
   ChevronUpIcon,
@@ -5,7 +6,6 @@ import {
   FileIcon,
   FileTextIcon,
   ImagePlusIcon,
-  LoaderIcon,
   PauseIcon,
   PlayIcon,
   XIcon,
@@ -15,14 +15,13 @@ import type { AttachmentItem, LocalFile } from "@/components/MemoEditor/edit/typ
 import { getAudioRecordingTimeLabel, toAttachmentItems } from "@/components/MemoEditor/edit/types/attachment";
 import MetadataSection, {
   METADATA_ROW_BOX_CLASSES,
+  METADATA_ROW_CONTENT_TEXT_CLASSES,
   METADATA_ROW_CONTROLS_CLASSES,
   METADATA_ROW_SLOT_BUTTON_CLASSES,
   METADATA_ROW_SLOT_CLASSES,
-  METADATA_ROW_TEXT_CLASSES,
   MetadataRowDetail,
 } from "@/components/MemoMetadata/MetadataSection";
 import PreviewImageDialog from "@/components/PreviewImageDialog";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import { formatFileSize, getFileTypeLabel } from "@/utils/format";
@@ -60,6 +59,7 @@ const AttachmentItemActions: FC<{
   canMoveUp?: boolean;
   canMoveDown?: boolean;
 }> = ({ transcriptionAction, placementAction, onRemove, onMoveUp, onMoveDown, canMoveUp = true, canMoveDown = true }) => {
+  const t = useTranslate();
   const stopPropagation = (event: MouseEvent) => {
     event.stopPropagation();
   };
@@ -68,77 +68,94 @@ const AttachmentItemActions: FC<{
     <div className={METADATA_ROW_CONTROLS_CLASSES}>
       {transcriptionAction && (
         <Button
-          variant="quiet"
+          variant="ghost"
           size="sm"
           disabled={transcriptionAction.disabled}
+          loading={transcriptionAction.busy}
+          loadingLabel={transcriptionAction.label}
           onClick={(event) => {
             stopPropagation(event);
             transcriptionAction.onClick();
           }}
+          icon={<FileTextIcon />}
         >
-          {transcriptionAction.busy ? <LoaderIcon className="size-3.5 animate-spin" /> : <FileTextIcon className="size-3.5" />}
           {transcriptionAction.label}
         </Button>
       )}
       {placementAction && (
         <Button
-          variant="quiet"
+          variant="ghost"
           size="sm"
           onClick={(event) => {
             stopPropagation(event);
             placementAction.onClick();
           }}
           disabled={placementAction.disabled}
+          icon={<ImagePlusIcon />}
         >
-          <ImagePlusIcon className="size-3.5" strokeWidth={1.8} />
           {placementAction.label}
         </Button>
       )}
       {onMoveUp && (
-        <Button
-          variant="quiet"
-          size="icon-sm"
-          onClick={(event) => {
-            stopPropagation(event);
-            onMoveUp();
-          }}
-          disabled={!canMoveUp}
-          title="Move up"
-          aria-label="Move attachment up"
-        >
-          <ChevronUpIcon className="size-3.5" strokeWidth={1.8} />
-        </Button>
+        <Tooltip.Root>
+          <Tooltip.Trigger
+            render={
+              <Button
+                variant="ghost"
+                size="xs"
+                onClick={(event) => {
+                  stopPropagation(event);
+                  onMoveUp();
+                }}
+                disabled={!canMoveUp}
+                aria-label={t("editor.attachments.move-up")}
+                icon={<ChevronUpIcon />}
+              />
+            }
+          />
+          <Tooltip.Popup>{t("editor.attachments.move-up")}</Tooltip.Popup>
+        </Tooltip.Root>
       )}
 
       {onMoveDown && (
-        <Button
-          variant="quiet"
-          size="icon-sm"
-          onClick={(event) => {
-            stopPropagation(event);
-            onMoveDown();
-          }}
-          disabled={!canMoveDown}
-          title="Move down"
-          aria-label="Move attachment down"
-        >
-          <ChevronDownIcon className="size-3.5" strokeWidth={1.8} />
-        </Button>
+        <Tooltip.Root>
+          <Tooltip.Trigger
+            render={
+              <Button
+                variant="ghost"
+                size="xs"
+                onClick={(event) => {
+                  stopPropagation(event);
+                  onMoveDown();
+                }}
+                disabled={!canMoveDown}
+                aria-label={t("editor.attachments.move-down")}
+                icon={<ChevronDownIcon />}
+              />
+            }
+          />
+          <Tooltip.Popup>{t("editor.attachments.move-down")}</Tooltip.Popup>
+        </Tooltip.Root>
       )}
 
       {onRemove && (
-        <Button
-          variant="quiet"
-          size="icon-sm"
-          onClick={(event) => {
-            stopPropagation(event);
-            onRemove();
-          }}
-          title="Remove"
-          aria-label="Remove attachment"
-        >
-          <XIcon className="size-3.5" strokeWidth={1.8} />
-        </Button>
+        <Tooltip.Root>
+          <Tooltip.Trigger
+            render={
+              <Button
+                variant="ghost"
+                size="xs"
+                onClick={(event) => {
+                  stopPropagation(event);
+                  onRemove();
+                }}
+                aria-label={t("editor.attachments.remove")}
+                icon={<XIcon />}
+              />
+            }
+          />
+          <Tooltip.Popup>{t("editor.attachments.remove")}</Tooltip.Popup>
+        </Tooltip.Root>
       )}
     </div>
   );
@@ -171,7 +188,7 @@ const AttachmentItemCard: FC<{
   const { category, filename, thumbnailUrl, mimeType, size, sourceUrl, isVoiceNote, audioMeta } = item;
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const fileTypeLabel = item.category === "motion" ? "Live Photo" : getFileTypeLabel(mimeType);
+  const fileTypeLabel = item.category === "motion" ? t("attachment-library.labels.live-photo") : getFileTypeLabel(mimeType);
   const isPreviewable = category === "image" || category === "video" || category === "motion";
   const recordingTimeLabel = isVoiceNote ? getAudioRecordingTimeLabel(filename) : undefined;
   const titleLabel =
@@ -200,7 +217,7 @@ const AttachmentItemCard: FC<{
 
   return (
     <div className={METADATA_ROW_BOX_CLASSES} aria-busy={isUploadingInline || undefined}>
-      <div className={cn(METADATA_ROW_SLOT_CLASSES, "relative overflow-hidden rounded-[5px] bg-muted/40")}>
+      <div className={cn(METADATA_ROW_SLOT_CLASSES, "relative overflow-hidden rounded-[5px] bg-mu-well/40")}>
         {(category === "image" || category === "motion") && thumbnailUrl ? (
           <div
             onClick={(event) => {
@@ -208,7 +225,7 @@ const AttachmentItemCard: FC<{
               onPreview?.();
             }}
             className={cn("size-full overflow-hidden", isPreviewable ? "cursor-pointer" : "cursor-default")}
-            aria-label={`Preview ${filename}`}
+            aria-label={t("common.preview-name", { name: filename })}
           >
             <img src={thumbnailUrl} alt="" className="size-full object-cover" loading="lazy" decoding="async" />
           </div>
@@ -221,11 +238,7 @@ const AttachmentItemCard: FC<{
               aria-pressed={isPlaying}
               aria-label={isPlaying ? t("editor.audio-recorder.pause-recording") : t("editor.audio-recorder.play-recording")}
             >
-              {isPlaying ? (
-                <PauseIcon className="size-3.5" strokeWidth={1.8} />
-              ) : (
-                <PlayIcon className="size-3.5 translate-x-[0.5px]" strokeWidth={1.8} />
-              )}
+              {isPlaying ? <PauseIcon className="mu-icon-sm" /> : <PlayIcon className="mu-icon-sm translate-x-[0.5px]" />}
             </button>
             <audio
               ref={audioRef}
@@ -244,23 +257,23 @@ const AttachmentItemCard: FC<{
               onPreview?.();
             }}
             className={METADATA_ROW_SLOT_BUTTON_CLASSES}
-            aria-label={`Preview ${filename}`}
+            aria-label={t("common.preview-name", { name: filename })}
           >
-            <PlayIcon className="size-3.5 translate-x-[0.5px]" strokeWidth={1.8} />
+            <PlayIcon className="mu-icon-sm translate-x-[0.5px]" />
           </button>
         ) : category === "audio" ? (
-          <FileAudioIcon className="size-3.5 text-muted-foreground" strokeWidth={1.8} />
+          <FileAudioIcon className="mu-icon-sm text-mu-ink-muted" />
         ) : (
-          <FileIcon className="size-3.5 text-muted-foreground" strokeWidth={1.8} />
+          <FileIcon className="mu-icon-sm text-mu-ink-muted" />
         )}
         {category === "motion" && (
-          <span className="absolute inset-x-0 bottom-0 bg-black/70 text-center text-[7px] font-semibold uppercase tracking-wide text-white">
-            Live
+          <span className="absolute inset-x-0 bottom-0 bg-black/70 text-center text-[7px] font-medium uppercase tracking-wide text-white">
+            {t("attachment-library.labels.live")}
           </span>
         )}
       </div>
 
-      <span className={METADATA_ROW_TEXT_CLASSES} title={filename}>
+      <span className={METADATA_ROW_CONTENT_TEXT_CLASSES} title={filename}>
         {titleLabel}
       </span>
 

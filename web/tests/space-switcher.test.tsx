@@ -105,7 +105,7 @@ describe("SpaceSwitcher", () => {
     expect(userButton.compareDocumentPosition(exploreButton) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(screen.getByRole("combobox", { name: "space.switch" })).toHaveTextContent("space.all-spaces");
     expect(screen.queryByText("Product")).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "space.create" })).toHaveAttribute("title", "space.create");
+    expect(screen.getByRole("button", { name: "space.create" })).toHaveClass("mu-button-icon", "mu-s-xs");
     expect(screen.getByRole("button", { name: "Steven account" })).toBeInTheDocument();
   });
 
@@ -214,7 +214,7 @@ describe("SpaceSwitcher", () => {
     vi.spyOn(sidebar, "getBoundingClientRect").mockReturnValue({ left: 0, right: 223, width: 223 } as DOMRect);
     vi.spyOn(trigger, "getBoundingClientRect").mockReturnValue({ left: 12, right: 143, width: 131 } as DOMRect);
     openSwitcher();
-    expect(document.querySelector('[data-slot="popover-content"]')).toHaveStyle({ width: "199px" });
+    expect(document.querySelector(".mu-popover-popup")).toHaveStyle({ width: "199px" });
     fireEvent.click(screen.getByRole("button", { name: "space.create" }));
     fireEvent.click(screen.getByRole("button", { name: "Complete create" }));
     expect(state.selectSpace).toHaveBeenCalledWith(state.spaces[0]);
@@ -232,7 +232,7 @@ describe("SpaceSwitcher", () => {
 
     fireEvent.click(screen.getByRole("combobox", { name: "space.switch" }));
     const option = await screen.findByRole("option", { name: "Product" });
-    const selectPositioner = option.closest('[data-slot="select-content"]')?.parentElement as HTMLElement;
+    const selectPositioner = option.closest(".mu-select-popup")?.parentElement as HTMLElement;
     await waitFor(() => {
       expect(selectPositioner.style.opacity).not.toBe("0");
       expect(selectPositioner.style.position).toBe("fixed");

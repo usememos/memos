@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
+/** The wordmark keeps its own lettering scale: it is the brand mark set as text, not app text. */
 const TEXT_SCALE = { sm: "text-base", md: "text-lg", lg: "text-2xl", hero: "text-[2rem]" } as const;
 
 interface Props {
@@ -17,9 +18,7 @@ interface Props {
  * brand wordmark's weight and spacing in the theme's serif stack; the exact face is not required.
  */
 const IdentityLabel = ({ mark, label, size = "md", collapsed, wrap, className }: Props) => (
-  <span
-    className={cn("flex min-w-0 items-center text-foreground", size === "hero" ? "gap-3" : size === "lg" ? "gap-2.5" : "gap-2", className)}
-  >
+  <span className={cn("flex min-w-0 items-center text-mu-ink", size === "hero" ? "gap-3" : size === "lg" ? "gap-2.5" : "gap-2", className)}>
     {mark}
     {!collapsed && (
       <span

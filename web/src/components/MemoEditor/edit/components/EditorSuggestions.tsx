@@ -1,7 +1,7 @@
+import { buttonClasses } from "@usememos/ui";
 import { isEqual } from "lodash-es";
 import { ListTodoIcon, ZapIcon } from "lucide-react";
 import { type RefObject, useEffect, useId, useState } from "react";
-import { buttonVariants } from "@/components/ui/button";
 import { MAX_MEMO_SUGGESTIONS, type MemoSuggestion, type SuggestionItem } from "@/lib/memo-suggestions";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
@@ -23,9 +23,9 @@ export function SuggestionsBar({
   const labelId = useId();
   if (!suggestions.length) return null;
   return (
-    <div role="group" aria-labelledby={labelId} className="flex w-full items-start gap-2 text-ui">
-      <span id={labelId} className="inline-flex h-6 shrink-0 items-center gap-1.5 text-muted-foreground/70">
-        <ZapIcon className="size-3.5" aria-hidden />
+    <div role="group" aria-labelledby={labelId} className="flex w-full items-start gap-2 mu-caption">
+      <span id={labelId} className="inline-flex h-6 shrink-0 items-center gap-1.5 text-mu-ink-muted/70">
+        <ZapIcon className="mu-icon-sm" aria-hidden />
         {t("editor.suggestions")}
       </span>
       <div className="flex min-w-0 flex-1 flex-wrap gap-1.5">
@@ -36,8 +36,8 @@ export function SuggestionsBar({
             disabled={disabled}
             aria-label={suggestion.accessibleLabel ?? suggestion.label}
             className={cn(
-              buttonVariants({ variant: "quiet", size: "sm" }),
-              "h-6 max-w-full gap-1 border border-dashed border-muted-foreground/30 px-1.5 text-muted-foreground hover:border-muted-foreground/50 has-[>svg]:px-1.5",
+              buttonClasses({ variant: "ghost", size: "sm" }),
+              "h-6 max-w-full gap-1 border border-dashed border-mu-ink-muted/30 px-1.5 text-mu-ink-muted hover:border-mu-ink-muted/50 has-[>svg]:px-1.5",
             )}
             onClick={() => onAccept(suggestion.id)}
           >

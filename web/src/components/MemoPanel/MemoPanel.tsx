@@ -1,8 +1,8 @@
 import { Dialog } from "@base-ui/react/dialog";
+import { Button } from "@usememos/ui";
 import { XIcon } from "lucide-react";
 import { type ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { type PersistedWidthConfig, SidebarResizeHandle, usePersistedWidth, useSidebarWidth } from "@/components/AppSidebar";
-import { buttonVariants } from "@/components/ui/button";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
@@ -17,8 +17,7 @@ const PANEL_WIDTH_VAR = "--memo-panel-width";
 /** The card's current width as a CSS expression, for pages that give way to it. */
 export const MEMO_PANEL_WIDTH_CSS = `var(${PANEL_WIDTH_VAR})`;
 /** The title's type, shared with hosts that show the same content inline without the card. */
-export const MEMO_PANEL_TITLE_CLASS = "truncate text-base font-semibold tracking-tight text-foreground";
-const ICON_CONTROL_CLASS = buttonVariants({ variant: "quiet", size: "icon-compact" });
+export const MEMO_PANEL_TITLE_CLASS = "truncate mu-title text-mu-ink";
 const PANEL_DEFAULT_WIDTH = 400;
 const PANEL_MIN_WIDTH = 320;
 const PANEL_MAX_WIDTH = 640;
@@ -130,10 +129,10 @@ export function MemoPanel({ open, title, subtitle, reservedWidth, busy = false, 
           className={cn(
             // A popover surface: lighter than the page in both themes, with the float shadow
             // rather than the tight card shadow, so a 400px card reads as lifted, not pasted on.
-            "fixed z-30 flex min-h-0 flex-col border border-border/70 bg-popover text-popover-foreground shadow-float outline-none transition-transform duration-200",
+            "fixed z-30 flex min-h-0 flex-col border border-mu-line/70 bg-mu-surface text-mu-ink shadow-mu-pop outline-none transition-transform duration-200",
             desktop
-              ? "inset-y-3 end-3 w-[var(--memo-panel-width)] rounded-xl data-starting-style:translate-x-full data-ending-style:translate-x-full"
-              : "inset-x-0 bottom-0 rounded-t-2xl pb-[env(safe-area-inset-bottom)] data-starting-style:translate-y-full data-ending-style:translate-y-full",
+              ? "inset-y-3 end-3 w-[var(--memo-panel-width)] rounded-mu-xl data-starting-style:translate-x-full data-ending-style:translate-x-full"
+              : "inset-x-0 bottom-0 rounded-t-mu-2xl pb-[env(safe-area-inset-bottom)] data-starting-style:translate-y-full data-ending-style:translate-y-full",
           )}
         >
           {desktop && (
@@ -159,17 +158,15 @@ export function MemoPanel({ open, title, subtitle, reservedWidth, busy = false, 
               aria-label={t(expanded ? "common.collapse-panel" : "common.expand-panel")}
               onClick={() => setExpanded((value) => !value)}
             >
-              <span className="h-1 w-10 rounded-full bg-muted-foreground/35" />
+              <span className="h-1 w-10 rounded-full bg-mu-ink-muted/35" />
             </button>
           )}
-          <header className="flex shrink-0 items-center gap-0.5 border-b border-border/70 py-2.5 ps-3 pe-3">
+          <header className="flex shrink-0 items-center gap-0.5 border-b border-mu-line/70 py-2.5 ps-3 pe-3">
             <div className="min-w-0 flex-1">
               <Dialog.Title className={MEMO_PANEL_TITLE_CLASS}>{shown.title}</Dialog.Title>
-              {shown.subtitle && <p className="truncate text-xs text-muted-foreground">{shown.subtitle}</p>}
+              {shown.subtitle && <p className="truncate mu-caption text-mu-ink-muted">{shown.subtitle}</p>}
             </div>
-            <Dialog.Close disabled={busy} render={<button type="button" className={ICON_CONTROL_CLASS} aria-label={t("common.close")} />}>
-              <XIcon strokeWidth={1.8} />
-            </Dialog.Close>
+            <Dialog.Close disabled={busy} render={<Button variant="ghost" size="sm" aria-label={t("common.close")} icon={<XIcon />} />} />
           </header>
           <div ref={scrollRef} tabIndex={-1} className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 outline-none">
             {shown.children}

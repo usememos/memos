@@ -48,7 +48,7 @@ const t = useTranslate();
   confirmLabel={t("common.delete")}
   cancelLabel={t("common.cancel")}
   onConfirm={handleDelete}
-  confirmVariant="destructive"
+  confirmVariant="danger"
 />;
 ```
 
@@ -63,7 +63,7 @@ const t = useTranslate();
 | `confirmLabel` | `string` | Yes | Non-empty localized action text (1–2 words) |
 | `cancelLabel` | `string` | Yes | Localized cancel label |
 | `onConfirm` | `() => void | Promise<void>` | Yes | Sync or async handler; resolve = close, reject = stay open |
-| `confirmVariant` | `"default" | "destructive"` | No | Defaults to `"default"`; use `"destructive"` for irreversible actions |
+| `confirmVariant` | `"primary" | "danger"` | No | Defaults to `"primary"`; use `"danger"` for irreversible actions |
 
 ## Benefits vs Previous Implementation
 

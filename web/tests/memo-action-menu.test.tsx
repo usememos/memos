@@ -153,11 +153,11 @@ describe("MemoActionMenu", () => {
     );
 
     const trigger = screen.getByRole("button", { name: "common.more" });
-    expect(trigger).toHaveClass("size-6", "rounded-md", "text-muted-foreground/70", "hover:bg-muted/60", "data-popup-open:bg-accent");
+    expect(trigger).toHaveClass("mu-button", "mu-button-ghost", "mu-button-icon", "mu-s-sm");
     expect(trigger.className).not.toMatch(/ring-/);
     expect(trigger).toHaveAttribute("aria-haspopup", "menu");
     expect(trigger).toHaveAttribute("aria-expanded", "false");
-    expect(trigger.querySelector(".lucide-ellipsis-vertical")).toHaveClass("size-4");
+    expect(trigger.querySelector(".lucide-ellipsis-vertical")).not.toBeNull();
 
     fireEvent.click(trigger);
 

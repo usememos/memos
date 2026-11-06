@@ -68,9 +68,9 @@ describe("automatic SSO auth pages", () => {
     expect(new URLSearchParams(router.state.location.search).get("auto_sign_in")).toBe("false");
     expect(new URLSearchParams(router.state.location.search).get("reason")).toBe("protected-memo");
     const button = screen.getByRole("button", { name: "auth.continue-with: Company SSO" });
-    expect(button).toBeDisabled();
+    expect(button).toHaveAttribute("aria-disabled", "true");
     expect(button).toHaveAttribute("aria-busy", "true");
-    expect(button.querySelector("svg")).toBeInTheDocument();
+    expect(button.querySelector(".mu-spinner")).toBeInTheDocument();
     expect(screen.queryByText("auth.redirecting-to-provider: Company SSO")).not.toBeInTheDocument();
   });
   it.each([
@@ -165,8 +165,8 @@ describe("automatic SSO auth pages", () => {
     const otherButton = screen.getByRole("button", { name: "auth.continue-with: Other SSO" });
     fireEvent.click(button);
     expect(button).toHaveAttribute("aria-busy", "true");
-    expect(otherButton).toHaveAttribute("aria-busy", "false");
-    expect(otherButton.querySelector("svg")).not.toBeInTheDocument();
+    expect(otherButton).not.toHaveAttribute("aria-busy");
+    expect(otherButton.querySelector(".mu-spinner")).not.toBeInTheDocument();
     expect(otherButton).toBeDisabled();
     fireEvent.click(otherButton);
     expect(signInWithSSO).toHaveBeenCalledOnce();
@@ -176,8 +176,8 @@ describe("automatic SSO auth pages", () => {
     renderPage();
     const button = await screen.findByRole("button", { name: "auth.continue-with: Company SSO" });
     await waitFor(() => expect(button).toBeEnabled());
-    expect(button).toHaveAttribute("aria-busy", "false");
-    expect(button.querySelector("svg")).not.toBeInTheDocument();
+    expect(button).not.toHaveAttribute("aria-busy");
+    expect(button.querySelector(".mu-spinner")).not.toBeInTheDocument();
     expect(signInWithSSO).toHaveBeenCalledOnce();
     fireEvent.click(button);
     expect(signInWithSSO).toHaveBeenCalledTimes(2);
@@ -189,7 +189,7 @@ describe("automatic SSO auth pages", () => {
       window.dispatchEvent(new PageTransitionEvent("pageshow", { persisted: true }));
     });
     expect(screen.getByRole("button", { name: "auth.continue-with: Company SSO" })).toBeEnabled();
-    expect(screen.getByRole("button", { name: "auth.continue-with: Company SSO" })).toHaveAttribute("aria-busy", "false");
+    expect(screen.getByRole("button", { name: "auth.continue-with: Company SSO" })).not.toHaveAttribute("aria-busy");
     expect(signInWithSSO).toHaveBeenCalledOnce();
   });
 });

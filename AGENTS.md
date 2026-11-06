@@ -8,7 +8,7 @@ repo. If a fact here conflicts with source files or CI config, trust the source 
 Memos is a self-hosted note-taking app.
 
 - Backend: Go 1.27.2, net/http, Connect RPC, gRPC-Gateway, Protocol Buffers.
-- Frontend: React 19, TypeScript 7, Vite 8, Tailwind CSS v4, React Query v5.
+- Frontend: React 19, TypeScript 7, Vite 8, Tailwind CSS v4, `@usememos/ui` on Base UI, React Query v5.
 - Storage: SQLite, MySQL, PostgreSQL.
 - Generated API outputs: `proto/gen/` for Go/OpenAPI, `web/src/types/proto/` for TypeScript.
 
@@ -51,7 +51,7 @@ golangci-lint run --fix            # Auto-fix lint, including goimports
 
 # Frontend
 cd web && pnpm install             # Install dependencies
-cd web && pnpm dev                 # Dev server on :3001, proxying API to :8081
+cd web && pnpm dev                 # Dev server on :3001, proxying API to :8081 (or $DEV_PROXY_SERVER)
 cd web && pnpm lint                # Type check + Biome lint
 cd web && pnpm test                # Vitest unit tests
 cd web && pnpm build               # Production build
@@ -83,7 +83,7 @@ Every root folder is named for what it holds. Read the folder's `doc.go` or `REA
 | `provider/` | Backends configured by instance settings: `ai`, `idp`, `storage` | proto/gen, internal |
 | `internal/` | Private plumbing with no memos vocabulary (`identifier`, `email`, `webhook`, `ratelimit`, …) | third party only |
 | `proto/api/`, `proto/store/` | Public API and internal storage proto sources; `proto/gen/` is generated | |
-| `web/src/` | React SPA: `connect.ts` clients, `auth-state.ts`, `hooks/`, `contexts/`, `components/`, `themes/` | |
+| `web/src/` | React SPA: `connect.ts` clients, `auth-state.ts`, `hooks/`, `contexts/`, `components/`, `lib/`, `locales/`, `themes/` | |
 
 Layering rules, enforced by `depguard` in `.golangci.yaml`:
 
@@ -126,9 +126,24 @@ Black-box service tests live in `server/api/test/`, unit tests next to the code.
 - Follow Biome formatting: 2-space indent, double quotes, semicolons, 140-character line width.
 - Put server data in React Query hooks under `web/src/hooks/`; keep UI-only state in contexts or component state.
 - Show, edit and compose memos through `web/src/components/MemoEditor` (a name or draft seed plus a mode); see its `README.md`.
-- Use Tailwind CSS v4 utilities, `cn()` for class merging, and CVA for variants.
-- Reuse Base UI primitives and existing components before adding new UI primitives.
 - Keep generated proto TypeScript under `web/src/types/proto/` out of manual edits and Biome rewrites.
+- UI work reads `web/node_modules/@usememos/ui/llms.txt` first: `@usememos/ui` is the design system (tokens, type classes,
+  components). Controls come from the package; build a part it lacks on Base UI as its `custom-components.md` describes.
+- Use a package component when one fits (`Button`, `Link`, `Spinner`, `Badge`). Its class functions (`buttonClasses()`,
+  `menuClasses()`, `badgeClasses()`) are for elements it can't render, such as a router link or a Base UI trigger.
+- Style with Tailwind CSS v4 and the package's `mu-` utilities (`bg-mu-surface`, `text-mu-ink-muted`, `rounded-mu-md`),
+  text with its type classes (`mu-caption`, `mu-body`, `mu-label`, `mu-title`), and `cn()` for class merging. No Tailwind
+  text sizes or old color names (`muted-foreground`, `destructive`, `popover`). The exceptions are the brand wordmark and
+  emoji glyphs, whose font size is their icon box (`SpaceIcon`, `SpaceMark`, `MemoViewIcon`, `CustomIconPicker`).
+- Focus shows through `mu-focus`. Never add `ring-*` or `focus-visible:ring-*`, and never pair `mu-focus` with
+  `outline-none`, which overrides it. Visually hidden text uses `mu-visually-hidden`; a control that appears on focus keeps
+  Tailwind's `sr-only focus-visible:not-sr-only` pair.
+- Report failures with `showErrorToast` from `web/src/lib/toast.ts`. A form's own validation errors go under the field
+  (`Field.Error`, kept in `useFieldErrors`), not in a toast.
+- Every new key in `web/src/locales/en.json` is translated into all locales; `tests/locale-resources.test.ts` fails
+  otherwise. A plural message is stored as `key_one`, `key_other`, … and looked up by its base key with `count`.
+- Lucide icons outside a package control take a size class that sets box and stroke together: `mu-icon-xs` (12px),
+  `mu-icon-sm` (14px) or `mu-icon` (16px). No Tailwind sizes on 12–16px icons and no `strokeWidth`.
 
 ## Database And Proto Rules
 

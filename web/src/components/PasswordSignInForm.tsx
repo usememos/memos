@@ -1,16 +1,15 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
-import { LoaderIcon } from "lucide-react";
+import { Button } from "@usememos/ui";
 import { useState } from "react";
-import { toast } from "react-hot-toast";
 import { setAccessToken } from "@/auth-state";
 import ChallengeWidget, { CHALLENGE_TOKEN_HEADER } from "@/components/ChallengeWidget";
 import CredentialFields from "@/components/CredentialFields";
-import { Button } from "@/components/ui/button";
 import { authServiceClient } from "@/connect";
 import { useAuth } from "@/contexts/AuthContext";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { ERROR_REASON_CHALLENGE_REQUIRED, handleError, hasErrorReason } from "@/lib/error";
+import { showErrorToast } from "@/lib/toast";
 import { ROUTES } from "@/router/routes";
 import { useTranslate } from "@/utils/i18n";
 
@@ -60,8 +59,8 @@ function PasswordSignInForm({ redirectPath }: PasswordSignInFormProps) {
       if (hasErrorReason(error, ERROR_REASON_CHALLENGE_REQUIRED)) {
         setChallengeResetKey((key) => key + 1);
       }
-      handleError(error, toast.error, {
-        fallbackMessage: "Failed to sign in.",
+      handleError(error, showErrorToast, {
+        fallbackMessage: t("error.sign-in-failed"),
       });
     }
     actionBtnLoadingState.setFinish();
@@ -79,9 +78,8 @@ function PasswordSignInForm({ redirectPath }: PasswordSignInFormProps) {
         onPasswordChange={setPassword}
       />
       <ChallengeWidget onToken={setChallengeToken} resetKey={challengeResetKey} />
-      <Button type="submit" disabled={actionBtnLoadingState.isLoading}>
+      <Button variant="primary" type="submit" loading={actionBtnLoadingState.isLoading} loadingLabel={t("common.sign-in")}>
         {t("common.sign-in")}
-        {actionBtnLoadingState.isLoading && <LoaderIcon className="ml-1 h-4 w-auto animate-spin opacity-60" />}
       </Button>
     </form>
   );

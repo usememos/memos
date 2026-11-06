@@ -12,9 +12,7 @@ const mocks = vi.hoisted(() => ({
   isPending: false,
 }));
 
-vi.mock("react-hot-toast", () => ({
-  toast: { error: vi.fn(), success: mocks.toastSuccess },
-}));
+vi.mock("@/lib/toast", () => ({ toast: { add: mocks.toastSuccess, close: vi.fn() }, showErrorToast: vi.fn() }));
 
 vi.mock("@/hooks/useCurrentUser", () => ({
   default: () => ({ name: "users/test" }),
@@ -29,6 +27,7 @@ vi.mock("uuid", () => ({
 }));
 
 vi.mock("@/utils/i18n", () => ({
+  translate: (key: string) => key,
   useTranslate: () => (key: string) => key,
 }));
 
@@ -63,7 +62,7 @@ describe("CreateSpaceDialog", () => {
     const view = render(<CreateSpaceDialog open onOpenChange={mocks.onOpenChange} />);
     fireEvent.change(screen.getByLabelText("common.name"), { target: { value: "Garden" } });
     fireEvent.click(screen.getByRole("button", { name: "space.icon.change" }));
-    fireEvent.click(await screen.findByRole("button", { name: "Leaf" }));
+    fireEvent.click(await screen.findByRole("gridcell", { name: "Leaf" }));
     expect(mocks.mutateAsync).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", { name: "common.create" }));
     await waitFor(() =>
@@ -116,7 +115,7 @@ describe("CreateSpaceDialog", () => {
     expect(screen.getByRole("button", { name: "common.create" })).toBeDisabled();
 
     fireEvent.change(spaceUidInput, { target: { value: "product-2" } });
-    expect(spaceUidInput).toHaveAttribute("aria-invalid", "false");
+    expect(spaceUidInput).not.toHaveAttribute("aria-invalid", "true");
     expect(screen.getByText("space.custom-id-help")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "common.create" })).toBeEnabled();
   });
@@ -194,7 +193,7 @@ describe("CreateSpaceDialog", () => {
 
     mocks.isPending = true;
     view.rerender(<CreateSpaceDialog open onOpenChange={mocks.onOpenChange} onCreated={mocks.onCreated} />);
-    fireEvent.click(screen.getByRole("button", { name: "Close" }));
+    fireEvent.click(screen.getByRole("button", { name: "common.close" }));
     expect(mocks.onOpenChange).not.toHaveBeenCalled();
     expect(screen.getByRole("dialog")).toBeInTheDocument();
 

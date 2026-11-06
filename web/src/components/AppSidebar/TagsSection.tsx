@@ -1,15 +1,6 @@
+import { Button, Menu, Tooltip } from "@usememos/ui";
 import { HashIcon, ListTreeIcon, MoreHorizontalIcon } from "lucide-react";
 import { forwardRef, useMemo } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { useLocalStorage, useOverflowTitle } from "@/hooks";
 import { cn } from "@/lib/utils";
@@ -22,7 +13,7 @@ import {
   sidebarRowStateAttributes,
   sidebarRowStateClasses,
 } from "./SidebarRow";
-import SidebarSection, { SIDEBAR_SECTION_ACTION_ICON_CLASSES } from "./SidebarSection";
+import SidebarSection from "./SidebarSection";
 
 interface Props {
   tagCount: Record<string, number>;
@@ -38,8 +29,8 @@ const TagPath = forwardRef<HTMLSpanElement, { tag: string }>(({ tag }, ref) => {
     <span ref={ref} className="min-w-0 flex-1 truncate text-start">
       {segments.map((segment, index) => (
         <span key={`${segment}-${index}`}>
-          {index > 0 && <span className="px-0.5 text-muted-foreground/40">/</span>}
-          <span className={index === segments.length - 1 ? "text-current" : "text-muted-foreground/75"}>{segment}</span>
+          {index > 0 && <span className="px-0.5 text-mu-ink-muted/40">/</span>}
+          <span className={index === segments.length - 1 ? "text-current" : "text-mu-ink-muted/75"}>{segment}</span>
         </span>
       ))}
     </span>
@@ -105,28 +96,27 @@ const TagsSection = ({ tagCount, onSelect, scope }: Props) => {
     <SidebarSection
       label={t("common.tags")}
       action={
-        <DropdownMenu>
-          <Tooltip>
-            <TooltipTrigger render={<span className="inline-flex" />}>
-              <DropdownMenuTrigger
-                aria-label={`${t("common.tags")}: ${t("common.more")}`}
-                render={<Button variant="quiet" size="icon-sm" />}
-              >
-                <MoreHorizontalIcon className={SIDEBAR_SECTION_ACTION_ICON_CLASSES} strokeWidth={1.8} />
-              </DropdownMenuTrigger>
-            </TooltipTrigger>
-            <TooltipContent side="top">{t("common.more")}</TooltipContent>
-          </Tooltip>
-          <DropdownMenuContent align="end" sideOffset={4} size="sm" className="w-44">
-            <DropdownMenuGroup>
-              <DropdownMenuLabel className="text-muted-foreground">{t("common.tags")}</DropdownMenuLabel>
-              <DropdownMenuCheckboxItem checked={treeMode} onCheckedChange={setTreeMode} closeOnClick indicator="end">
-                <ListTreeIcon className="text-muted-foreground" strokeWidth={1.8} />
+        <Menu.Root modal={false} size="sm">
+          <Tooltip.Root>
+            <Tooltip.Trigger
+              render={
+                <Menu.Trigger
+                  aria-label={`${t("common.tags")}: ${t("common.more")}`}
+                  render={<Button variant="ghost" size="xs" icon={<MoreHorizontalIcon />} />}
+                />
+              }
+            />
+            <Tooltip.Popup side="top">{t("common.more")}</Tooltip.Popup>
+          </Tooltip.Root>
+          <Menu.Popup align="end" className="w-44">
+            <Menu.Group>
+              <Menu.GroupLabel>{t("common.tags")}</Menu.GroupLabel>
+              <Menu.CheckboxItem checked={treeMode} onCheckedChange={setTreeMode} closeOnClick icon={<ListTreeIcon />}>
                 {t("common.tree-mode")}
-              </DropdownMenuCheckboxItem>
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              </Menu.CheckboxItem>
+            </Menu.Group>
+          </Menu.Popup>
+        </Menu.Root>
       }
     >
       {treeMode ? (

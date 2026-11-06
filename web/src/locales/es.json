@@ -138,7 +138,24 @@
     "resize-panel": "Cambiar tamaño del panel",
     "resize-sidebar": "Cambiar tamaño de la barra lateral",
     "sign-in-to-memos": "Iniciar sesión en Memos",
-    "view-all": "Ver todo"
+    "open-navigation": "Abrir navegación",
+    "navigation": "Navegación",
+    "primary-navigation": "Principal",
+    "download": "Descargar",
+    "download-name": "Descargar {{name}}",
+    "open-name": "Abrir {{name}}",
+    "preview-name": "Vista previa de {{name}}",
+    "no-content": "Sin contenido",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "retry": "Reintentar",
+    "docs": "Documentación",
+    "calendar-for-month": "Calendario de {{month}}",
+    "date-at-time": "{{date}} a las {{time}}",
+    "selected-location": "Ubicación seleccionada",
+    "choose-location": "Elige una ubicación",
+    "unknown-error": "Error desconocido",
+    "error-occurred": "Se produjo un error"
   },
   "locale-picker": {
     "no-language-feedback": "¿Idioma no encontrado? Enviar comentarios"
@@ -256,7 +273,17 @@
       "alt-text-placeholder": "Describe la imagen…",
       "image-unavailable": "Imagen no disponible",
       "resize-image": "Cambiar tamaño de la imagen"
-    }
+    },
+    "attachments": {
+      "move-up": "Mover adjunto hacia arriba",
+      "move-down": "Mover adjunto hacia abajo",
+      "remove": "Quitar adjunto"
+    },
+    "remove-relation": "Quitar relación",
+    "remove-location": "Quitar ubicación",
+    "recording-unsupported": "Este navegador no admite la grabación de audio.",
+    "microphone-denied": "Se denegó el permiso del micrófono.",
+    "recording-failed": "No se pudo iniciar la grabación de audio."
   },
   "inbox": {
     "failed-to-load": "Error al cargar el elemento de bandeja de entrada",
@@ -265,7 +292,16 @@
     "unread": "No leído",
     "space-invitation": "Te invitó a unirte a un espacio.",
     "space-invitation-accepted": "Te uniste a este espacio.",
-    "space-invitation-open": "Espacio abierto"
+    "space-invitation-open": "Espacio abierto",
+    "commented-on-memo": "comentó tu nota",
+    "mentioned-in-comment": "te mencionó en un comentario",
+    "mentioned-in-memo": "te mencionó en una nota",
+    "original": "Original:",
+    "memo-label": "Nota:",
+    "comment-heading": "Comentario",
+    "memo-heading": "Nota",
+    "empty-memo": "Nota vacía",
+    "empty-comment": "Comentario vacío"
   },
   "live-update": {
     "connected": "Actualizaciones en vivo activas",
@@ -280,7 +316,10 @@
     "click-to-show-sensitive-content": "Haz clic para mostrar contenido sensible",
     "comment": {
       "self": "Comentarios",
-      "write-a-comment": "Escribe un comentario"
+      "write-a-comment": "Escribe un comentario",
+      "view-all-count_one": "Ver {{count}} comentario",
+      "view-all-count_many": "Ver los {{count}} comentarios",
+      "view-all-count_other": "Ver los {{count}} comentarios"
     },
     "copy-content": "Copiar contenido",
     "copy-link": "Copiar enlace",
@@ -294,7 +333,8 @@
       "has-image": "tiene imagen",
       "has-link": "tieneEnlace",
       "has-location": "tiene ubicación",
-      "has-task-list": "tieneListaTareas"
+      "has-task-list": "tieneListaTareas",
+      "remove": "Quitar filtro"
     },
     "compact-mode": "Modo compacto",
     "link-preview": "Vista previa de enlaces",
@@ -380,7 +420,9 @@
     "restored-successfully": "Restaurado con éxito",
     "succeed-copy-content": "Contenido copiado correctamente.",
     "succeed-copy-link": "Enlace copiado correctamente.",
-    "update-succeed": "Actualización exitosa"
+    "update-succeed": "Actualización exitosa",
+    "not-signed-in": "No has iniciado sesión.",
+    "invalid-datetime": "Fecha y hora no válidas. Usa el formato 2023-12-31 23:59:59."
   },
   "reference": {
     "no-memos-found": "No se encontraron memos",
@@ -450,7 +492,9 @@
       "usage-storage": "Storage",
       "usage-title": "Usage limits",
       "storage-usage-error": "El almacenamiento de archivos adjuntos no está disponible.",
-      "email-in-use": "Este correo electrónico ya está siendo utilizado por otra cuenta."
+      "email-in-use": "Este correo electrónico ya está siendo utilizado por otra cuenta.",
+      "avatar-too-large": "Elige una imagen de 2 MB o menos.",
+      "avatar-unreadable": "No se puede leer esta imagen. Prueba con otro archivo."
     },
     "instance": {
       "disallow-change-nickname": "No permitir cambiar apodo",
@@ -490,7 +534,10 @@
       "archived": "Archivada",
       "member-column": "Miembro",
       "summary-column": "Resumen",
-      "export-memos": "Exportar notas"
+      "export-memos": "Exportar notas",
+      "username-password-required": "El nombre de usuario y la contraseña no pueden estar vacíos",
+      "create-success": "Usuario creado",
+      "update-success": "Usuario actualizado"
     },
     "memo": {
       "label": "Memo",
@@ -524,7 +571,12 @@
       "theme-description": "Aplica el tema seleccionado inmediatamente en este dispositivo.",
       "theme": "Tema",
       "uploads-privacy-description": "Controlar la información confidencial enviada con los archivos multimedia cargados.",
-      "uploads-privacy-title": "Cargas y privacidad"
+      "uploads-privacy-title": "Cargas y privacidad",
+      "theme-system": "Sincronizar con el sistema",
+      "theme-system-short": "Sistema",
+      "theme-light": "Claro",
+      "theme-dark": "Oscuro",
+      "theme-paper": "Papel"
     },
     "editor": {
       "label": "Editor",
@@ -534,7 +586,118 @@
       "create": "Crear vista",
       "delete-confirm": "¿Estás seguro de que quieres eliminar la vista `{{title}}`?",
       "delete-success": "Vista `{{title}}` eliminada correctamente",
-      "change-icon": "Cambiar icono de vista"
+      "change-icon": "Cambiar icono de vista",
+      "page-description": "Crea vistas reutilizables con campos, operadores, funciones de tiempo y coincidencia de etiquetas. Parte de los ejemplos y valida antes de guardar.",
+      "edit": "Editar vista",
+      "form-description": "Ponle nombre a la vista y define la expresión de filtro de notas que debe aplicar.",
+      "title-placeholder": "Fijadas, Notas recientes, Trabajo",
+      "filter-help": "Combina expresiones con {{and}}, {{or}} y {{not}}. Los campos de tiempo son marcas de tiempo: usa {{now}}, {{duration}}, {{timestamp}} y accesores como {{year}}. Las etiquetas admiten {{sets}} y {{size}} mide la longitud.",
+      "validate": "Validar",
+      "all": "Todas las vistas",
+      "loading": "Cargando vistas…",
+      "load-failed": "No se pudieron cargar las vistas.",
+      "empty-title": "Aún no hay vistas",
+      "empty-description": "Guarda un filtro para volver rápidamente a las notas que necesitas.",
+      "examples-title": "Ejemplos de expresiones",
+      "fields-title": "Campos admitidos",
+      "title-filter-required": "El título y el filtro no pueden estar vacíos",
+      "filter-valid": "La expresión de filtro parece válida",
+      "create-success": "Vista creada",
+      "update-success": "Vista actualizada",
+      "examples": {
+        "pinned": {
+          "title": "Fijadas",
+          "description": "Solo notas fijadas."
+        },
+        "recent": {
+          "title": "Notas recientes",
+          "description": "Notas creadas en la última hora."
+        },
+        "public": {
+          "title": "Notas públicas",
+          "description": "Solo notas públicas."
+        },
+        "project-tags": {
+          "title": "Etiquetas de proyecto",
+          "description": "Coincide con una o más etiquetas exactas."
+        },
+        "untagged": {
+          "title": "Sin etiquetas",
+          "description": "Notas sin ninguna etiqueta."
+        },
+        "archive-tree": {
+          "title": "Árbol de archivo",
+          "description": "Coincide con etiquetas jerárquicas por prefijo."
+        },
+        "unassigned": {
+          "title": "Sin asignar",
+          "description": "Notas que no están en ningún espacio."
+        },
+        "one-space": {
+          "title": "En un espacio",
+          "description": "Notas ubicadas en un espacio. Usa el ID del espacio que aparece en su URL o en su configuración."
+        },
+        "open-tasks": {
+          "title": "Tareas pendientes",
+          "description": "Notas con tareas sin terminar."
+        },
+        "links-or-code": {
+          "title": "Enlaces o código",
+          "description": "Notas que contienen enlaces o bloques de código."
+        },
+        "no-location": {
+          "title": "Sin ubicación",
+          "description": "Notas sin una ubicación adjunta."
+        },
+        "with-attachments": {
+          "title": "Con adjuntos",
+          "description": "Notas con al menos un archivo adjunto."
+        },
+        "photos": {
+          "title": "Fotos",
+          "description": "Notas que muestran una imagen, en el contenido o como archivo adjunto."
+        },
+        "content-search": {
+          "title": "Búsqueda en el contenido",
+          "description": "Busca texto dentro del contenido de las notas."
+        },
+        "starts-with": {
+          "title": "Empieza por",
+          "description": "Notas cuyo contenido empieza con un texto (también endsWith)."
+        },
+        "regex": {
+          "title": "Coincidencia regex",
+          "description": "Compara el contenido con una expresión regular."
+        },
+        "all-tags-complete": {
+          "title": "Todas las etiquetas completadas",
+          "description": "Todas las etiquetas terminan en -done (solo notas con etiquetas)."
+        },
+        "one-project-tag": {
+          "title": "Una etiqueta de proyecto",
+          "description": "Exactamente una etiqueta cumple el predicado."
+        },
+        "any-tags": {
+          "title": "Cualquiera de estas etiquetas",
+          "description": "Las etiquetas se intersecan con el conjunto dado."
+        },
+        "exact-tags": {
+          "title": "Exactamente estas etiquetas",
+          "description": "Etiquetadas exactamente con este conjunto, nada más."
+        },
+        "year-2024": {
+          "title": "Notas de 2024",
+          "description": "Filtra por año natural."
+        },
+        "weekend": {
+          "title": "Notas de fin de semana",
+          "description": "Creadas en domingo o sábado (0 = domingo)."
+        },
+        "long": {
+          "title": "Notas largas",
+          "description": "Notas de más de 280 caracteres."
+        }
+      }
     },
     "configuration": {
       "label": "Configuración",
@@ -610,7 +773,9 @@
       "scopes-description": "Separe los ámbitos con espacios. La mayoría de los proveedores sólo necesitan un pequeño conjunto, como un perfil o acceso al correo electrónico.",
       "template-description": "Comience desde un proveedor preestablecido, luego ajuste las credenciales y los puntos finales para su inquilino.",
       "unlink-success": "{{name}} desvinculado.",
-      "update-sso-description": "Revise la configuración del proveedor y luego guarde los campos que deben cambiar."
+      "update-sso-description": "Revise la configuración del proveedor y luego guarde los campos que deben cambiar.",
+      "invalid-config": "La configuración del proveedor de identidad no es válida.",
+      "provider-id-placeholder": "p. ej., github, okta-corp"
     },
     "storage": {
       "accesskey": "Clave de acceso",
@@ -658,7 +823,8 @@
       "customize-server": {
         "description": "Descripción",
         "icon-url": "URL del icono",
-        "title": "Personalizar servidor"
+        "title": "Personalizar servidor",
+        "dialog-description": "Personaliza la apariencia y la configuración de tu instancia."
       },
       "label": "Sistema",
       "server-name": "Nombre del servidor",
@@ -978,7 +1144,8 @@
   },
   "tooltip": {
     "link-memo": "Vincular memo",
-    "select-location": "Ubicación"
+    "select-location": "Ubicación",
+    "link-memo-description": "Busca y selecciona una nota para vincularla"
   },
   "demo": {
     "banner-description": "Los cambios son temporales y pueden restablecerse.",
@@ -1081,7 +1248,12 @@
     "loading": "Cargando notas…",
     "new-here": "Escribe aquí",
     "saved-outside-filter": "Guardado. Esta nota está fuera de los resultados actuales del mapa.",
-    "open-memo": "Nota abierta"
+    "open-memo": "Nota abierta",
+    "open-in-google-maps": "Abrir en Google Maps",
+    "location-description": "Selecciona una ubicación en el mapa o introduce las coordenadas manualmente",
+    "latitude": "Latitud",
+    "longitude": "Longitud",
+    "place-placeholder": "Primero elige una posición."
   },
   "calendar": {
     "new-memo-on-day": "Nuevo memorándum en este día",
@@ -1180,5 +1352,47 @@
       "tag-reading": "lectura",
       "tag-ideas": "ideas"
     }
+  },
+  "error": {
+    "title": "Algo salió mal",
+    "description": "Se produjo un error inesperado. Puede deberse a un problema de red o de la aplicación.",
+    "description-update": "Se produjo un error inesperado. Puede deberse a un problema de red o a una actualización de la aplicación. Recargar suele solucionarlo.",
+    "details": "Detalles del error",
+    "reload": "Recargar la aplicación",
+    "not-found": "No se encuentra la página que buscas.",
+    "permission-denied": "Permiso denegado",
+    "too-many-requests": "Demasiadas solicitudes. Inténtalo de nuevo en {{wait}}.",
+    "wait-seconds": "{{count}} s",
+    "wait-minutes": "{{count}} min",
+    "wait-hours": "{{count}} h",
+    "challenge-required": "Completa la verificación e inténtalo de nuevo.",
+    "quota-memo-count": "Has alcanzado tu límite de {{limit}} notas. Elimina notas para crear otras nuevas.",
+    "quota-storage": "Esta subida superaría tu límite de almacenamiento de {{limit}}. Estás usando {{usage}}.",
+    "quota-upload": "Este archivo supera tu límite de {{limit}} por archivo.",
+    "quota-memo-content": "Esta nota supera tu límite de {{limit}} por nota. Acorta el contenido para guardarla.",
+    "quota-generic": "Has alcanzado un límite de uso.",
+    "sign-in-failed": "No se pudo iniciar sesión.",
+    "sign-up-failed": "No se pudo completar el registro",
+    "authenticate-failed": "No se pudo autenticar.",
+    "update-profile-failed": "No se pudo actualizar el perfil",
+    "unlink-identity-failed": "No se pudo desvincular el proveedor de identidad.",
+    "link-identity-failed": "No se pudo iniciar la vinculación de la cuenta. Inténtalo de nuevo."
+  },
+  "attachment-preview": {
+    "title": "Vista previa del adjunto",
+    "description": "Diálogo de vista previa de adjuntos. Pulsa Escape para cerrar, usa las flechas izquierda y derecha para cambiar de elemento y amplía las imágenes con los controles, la rueda del ratón, un doble toque o el gesto de pellizcar.",
+    "close": "Cerrar vista previa",
+    "previous": "Elemento anterior",
+    "next": "Elemento siguiente",
+    "reset-zoom": "Restablecer zoom",
+    "image-alt": "Vista previa de la imagen {{index}} de {{count}}",
+    "live-photo-alt": "Vista previa de la foto en vivo {{index}} de {{count}}",
+    "play-live-photo": "Pasa el cursor o pulsa para reproducir la foto en vivo"
+  },
+  "audio-player": {
+    "seek": "Desplazarse en {{name}}",
+    "back": "Retroceder {{seconds}} segundos",
+    "forward": "Avanzar {{seconds}} segundos",
+    "speed": "Velocidad de reproducción {{rate}}x"
   }
 }

@@ -1,21 +1,22 @@
+import { buttonClasses } from "@usememos/ui";
 import { DownloadIcon, ExternalLinkIcon, FileIcon, PlayIcon } from "lucide-react";
-import type { PropsWithChildren } from "react";
+import type { KeyboardEvent, PropsWithChildren } from "react";
 import { useMemo } from "react";
 import MotionPhotoPreview from "@/components/MotionPhotoPreview";
-import { buttonVariants } from "@/components/ui/button";
 import VideoPoster from "@/components/VideoPoster";
 import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import { getAttachmentUrl, isImage } from "@/utils/attachment";
+import { useTranslate } from "@/utils/i18n";
 import type { AttachmentVisualItem, PreviewMediaItem } from "@/utils/media-item";
 import { buildAttachmentVisualItems } from "@/utils/media-item";
 import {
   METADATA_ROW_BOX_CLASSES,
   METADATA_ROW_CLASSES,
+  METADATA_ROW_CONTENT_TEXT_CLASSES,
   METADATA_ROW_CONTROLS_CLASSES,
   METADATA_ROW_HINT_CLASSES,
   METADATA_ROW_LABEL_CLASSES,
-  METADATA_ROW_TEXT_CLASSES,
   MetadataRowDetail,
   MetadataRowIconSlot,
 } from "../MetadataSection";
@@ -47,8 +48,23 @@ const VisualTile = ({
   overlayLabel,
   children,
 }: PropsWithChildren<{ className?: string; onPreview?: () => void; overlayLabel?: string }>) => {
+  // A div, not a <button>: tiles hold block media. When it opens the viewer it takes the button
+  // role and keys, so keyboard users reach it too; its name comes from the media's alt text.
+  const interactive = onPreview
+    ? {
+        role: "button",
+        tabIndex: 0,
+        onClick: onPreview,
+        onKeyDown: (event: KeyboardEvent<HTMLDivElement>) => {
+          // Only the tile's own keys: a motion photo's Live badge inside it is a control too.
+          if (event.target !== event.currentTarget || (event.key !== "Enter" && event.key !== " ")) return;
+          event.preventDefault();
+          onPreview();
+        },
+      }
+    : undefined;
   return (
-    <div className={cn(VISUAL_TILE_BUTTON_CLASS, className)} onClick={onPreview}>
+    <div className={cn(VISUAL_TILE_BUTTON_CLASS, className)} {...interactive}>
       <div className={MEDIA_HOVER_SURFACE_CLASS}>
         {children}
         <div className={MEDIA_HOVER_GRADIENT_CLASS} aria-hidden />
@@ -61,7 +77,7 @@ const VisualTile = ({
 const VideoPlayBadge = ({ className, children }: PropsWithChildren<{ className?: string }>) => (
   <div
     className={cn(
-      "pointer-events-none absolute flex items-center justify-center rounded-full bg-background/80 text-foreground/70 shadow-sm backdrop-blur-sm",
+      "pointer-events-none absolute flex items-center justify-center rounded-full bg-mu-canvas/80 text-mu-ink/70 backdrop-blur-sm",
       className,
     )}
   >
@@ -88,7 +104,7 @@ const CollageVisualItem = ({
           <VideoPoster sourceUrl={item.sourceUrl} posterUrl={item.posterUrl} alt={item.filename} className={COVER_MEDIA_CLASS} />
           {!overlayLabel && (
             <VideoPlayBadge className={COLLAGE_VIDEO_PLAY_BADGE_CLASS}>
-              <PlayIcon className="h-3.5 w-3.5 fill-current" />
+              <PlayIcon className="mu-icon-sm fill-current" />
             </VideoPlayBadge>
           )}
         </>
@@ -131,7 +147,7 @@ const SingleVisualItem = ({ item, onPreview }: { item: VisualItem; onPreview?: (
           containerClassName="max-w-full"
           posterClassName={cn(NATURAL_MEDIA_CLASS, "object-contain")}
           videoClassName={SINGLE_MOTION_VIDEO_CLASS}
-          badgeClassName="left-2 top-2 px-2 py-0.5 text-[10px]"
+          badgeClassName="left-2 top-2 px-2 py-0.5 mu-caption"
         />
       </VisualTile>
     );
@@ -143,7 +159,7 @@ const SingleVisualItem = ({ item, onPreview }: { item: VisualItem; onPreview?: (
         <VideoPoster sourceUrl={item.sourceUrl} posterUrl={item.posterUrl} alt={item.filename} className={COVER_MEDIA_CLASS} />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/35 via-black/5 to-transparent" />
         <VideoPlayBadge className="bottom-3 right-3 h-9 w-9">
-          <PlayIcon className="h-4 w-4 fill-current" />
+          <PlayIcon className="mu-icon fill-current" />
         </VideoPlayBadge>
       </div>
     </VisualTile>
@@ -213,48 +229,61 @@ const isServedHere = (url: string) => {
  * the same edge as every other row's at rest.
  */
 const DocumentRow = ({ attachment }: { attachment: Attachment }) => {
+  const t = useTranslate();
   const { fileTypeLabel, fileSizeLabel } = getAttachmentMetadata(attachment);
   const url = getAttachmentUrl(attachment);
   const body = (
     <>
       <MetadataRowIconSlot icon={FileIcon} />
-      <span className={METADATA_ROW_TEXT_CLASSES}>{attachment.filename}</span>
+      <span className={METADATA_ROW_CONTENT_TEXT_CLASSES}>{attachment.filename}</span>
       <MetadataRowDetail parts={[fileTypeLabel, fileSizeLabel]} />
     </>
   );
 
   if (!isServedHere(url)) {
     return (
-      <a href={url} target="_blank" rel="noreferrer" title={`Open ${attachment.filename}`} className={METADATA_ROW_CLASSES}>
+      <a
+        href={url}
+        target="_blank"
+        rel="noreferrer"
+        title={t("common.open-name", { name: attachment.filename })}
+        className={METADATA_ROW_CLASSES}
+      >
         {body}
-        <ExternalLinkIcon aria-hidden="true" className={METADATA_ROW_HINT_CLASSES} strokeWidth={1.8} />
+        <ExternalLinkIcon aria-hidden="true" className={METADATA_ROW_HINT_CLASSES} />
       </a>
     );
   }
 
   if (!opensInline(attachment.type)) {
     return (
-      <a href={url} download title={`Download ${attachment.filename}`} className={METADATA_ROW_CLASSES}>
+      <a href={url} download title={t("common.download-name", { name: attachment.filename })} className={METADATA_ROW_CLASSES}>
         {body}
-        <DownloadIcon aria-hidden="true" className={METADATA_ROW_HINT_CLASSES} strokeWidth={1.8} />
+        <DownloadIcon aria-hidden="true" className={METADATA_ROW_HINT_CLASSES} />
       </a>
     );
   }
 
   return (
     <div className={METADATA_ROW_BOX_CLASSES}>
-      <a href={url} target="_blank" rel="noreferrer" title={`Open ${attachment.filename}`} className={METADATA_ROW_LABEL_CLASSES}>
+      <a
+        href={url}
+        target="_blank"
+        rel="noreferrer"
+        title={t("common.open-name", { name: attachment.filename })}
+        className={METADATA_ROW_LABEL_CLASSES}
+      >
         {body}
       </a>
       <div className={METADATA_ROW_CONTROLS_CLASSES}>
         <a
           href={url}
           download
-          title="Download"
-          aria-label={`Download ${attachment.filename}`}
-          className={buttonVariants({ variant: "quiet", size: "icon-sm" })}
+          title={t("common.download")}
+          aria-label={t("common.download-name", { name: attachment.filename })}
+          className={buttonClasses({ variant: "ghost", size: "xs", iconOnly: true })}
         >
-          <DownloadIcon className="size-3.5" strokeWidth={1.8} />
+          <DownloadIcon className="mu-icon-sm" />
         </a>
       </div>
     </div>

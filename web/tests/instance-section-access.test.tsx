@@ -60,7 +60,7 @@ describe("<InstanceSection> access setting", () => {
   it("saves public access through the dedicated ACCESS setting", async () => {
     render(<InstanceSection />);
 
-    fireEvent.click(screen.getAllByRole("switch")[0]);
+    fireEvent.click(screen.getAllByRole("checkbox")[0]);
     fireEvent.click(screen.getByRole("button", { name: "common.save" }));
 
     await waitFor(() => expect(instance.updateSetting).toHaveBeenCalledTimes(1));
@@ -100,10 +100,10 @@ describe("<InstanceSection> access setting", () => {
     });
     render(<InstanceSection />);
 
-    const switches = screen.getAllByRole("switch");
-    expect(switches[0]).not.toHaveAttribute("aria-disabled");
-    // Base UI switches are spans that report being disabled through ARIA.
-    expect(switches[1]).toHaveAttribute("aria-disabled", "true");
+    const checkboxes = screen.getAllByRole("checkbox");
+    expect(checkboxes[0]).not.toHaveAttribute("aria-disabled");
+    // Base UI checkboxes are spans that report being disabled through ARIA.
+    expect(checkboxes[1]).toHaveAttribute("aria-disabled", "true");
     expect(screen.getByRole("button", { name: "common.edit" })).toBeDisabled();
     expect(screen.getByPlaceholderText("setting.system.additional-style-placeholder")).not.toBeDisabled();
     expect(screen.getByPlaceholderText("setting.system.additional-script-placeholder")).toBeDisabled();

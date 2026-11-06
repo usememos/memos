@@ -1,7 +1,6 @@
 import { create } from "@bufbuild/protobuf";
+import { Select, Switch } from "@usememos/ui";
 import { useMemo } from "react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/contexts/AuthContext";
 import { updateDevicePreferences, useDevicePreferences } from "@/hooks/useDevicePreferences";
 import { useUpdateUserGeneralSetting } from "@/hooks/useUserQueries";
@@ -111,25 +110,25 @@ const PreferencesSection = () => {
             label={t("setting.preference.default-memo-visibility")}
             description={t("setting.preference.default-memo-visibility-description")}
           >
-            <Select
+            <Select.Root
               value={setting.memoVisibility || "PRIVATE"}
               items={visibilityOptions}
-              onValueChange={handleDefaultMemoVisibilityChanged}
+              onValueChange={(value) => value !== null && handleDefaultMemoVisibilityChanged(value)}
             >
-              <SelectTrigger className="min-w-fit">
+              <Select.Trigger className="min-w-fit">
                 <div className="flex items-center gap-2">
                   <VisibilityIcon visibility={convertVisibilityFromString(setting.memoVisibility)} />
-                  <SelectValue />
+                  <Select.Value />
                 </div>
-              </SelectTrigger>
-              <SelectContent>
+              </Select.Trigger>
+              <Select.Popup>
                 {visibilityOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value} className="whitespace-nowrap">
+                  <Select.Item key={option.value} value={option.value} className="whitespace-nowrap">
                     {option.label}
-                  </SelectItem>
+                  </Select.Item>
                 ))}
-              </SelectContent>
-            </Select>
+              </Select.Popup>
+            </Select.Root>
           </SettingListItem>
         </SettingList>
       </SettingGroup>

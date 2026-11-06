@@ -1,7 +1,7 @@
+import { Badge } from "@usememos/ui";
 import { BookOpenIcon, CodeXmlIcon, ExternalLinkIcon, GitForkIcon, GlobeIcon, HeartIcon, ScissorsIcon, SparklesIcon } from "lucide-react";
 import { useState } from "react";
 import MemosLogo from "@/components/MemosLogo";
-import { Badge } from "@/components/ui/badge";
 import { WelcomeGuideDialog } from "@/components/WelcomeGuide";
 import { useInstance } from "@/contexts/InstanceContext";
 import {
@@ -21,20 +21,15 @@ const DEFAULT_TITLE = "Memos";
 
 /** One card per project link; the welcome guide reopens from a button in the same frame. */
 const PROJECT_CARD_CLASSES =
-  "group flex h-full flex-col rounded-xl border border-border p-5 transition-colors hover:border-muted-foreground/40 hover:bg-muted/40 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring @min-[60rem]:p-6";
+  "group flex h-full flex-col rounded-mu-xl border border-mu-line p-5 transition-colors hover:border-mu-ink-muted/40 hover:bg-mu-hover mu-focus @min-[60rem]:p-6";
 
 const isCommitSha = (commit: string) => /^[0-9a-f]{7,40}$/i.test(commit);
 
 const Chip = ({ href, children }: { href?: string; children: React.ReactNode }) => {
-  const className = "inline-flex max-w-full items-center rounded-md bg-muted px-2 py-1 font-mono text-xs break-all text-foreground";
+  const className = "inline-flex max-w-full items-center rounded-mu-md bg-mu-well px-2 py-1 font-mono mu-caption break-all text-mu-ink";
   if (href) {
     return (
-      <a
-        className={`${className} hover:bg-accent focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring`}
-        href={href}
-        target="_blank"
-        rel="noreferrer"
-      >
+      <a className={`${className} hover:bg-mu-hover mu-focus`} href={href} target="_blank" rel="noreferrer">
         {children}
       </a>
     );
@@ -42,9 +37,7 @@ const Chip = ({ href, children }: { href?: string; children: React.ReactNode }) 
   return <span className={className}>{children}</span>;
 };
 
-const SectionLabel = ({ children }: { children: React.ReactNode }) => (
-  <h2 className="text-sm font-medium text-muted-foreground">{children}</h2>
-);
+const SectionLabel = ({ children }: { children: React.ReactNode }) => <h2 className="mu-label text-mu-ink-muted">{children}</h2>;
 
 const About = () => {
   const t = useTranslate();
@@ -66,7 +59,7 @@ const About = () => {
   if (isCustomBranded) {
     buildRows.push({
       label: t("about.distribution"),
-      value: <span className="text-[13px] text-muted-foreground">{t("about.powered-by")}</span>,
+      value: <span className="mu-caption text-mu-ink-muted">{t("about.powered-by")}</span>,
     });
   }
 
@@ -90,33 +83,33 @@ const About = () => {
     <section className="min-h-full w-full">
       <div className="@container mx-auto w-full max-w-5xl py-8 sm:py-16">
         <div className="grid gap-10 @min-[52rem]:grid-cols-[minmax(0,0.9fr)_minmax(0,1.5fr)] @min-[52rem]:gap-8">
-          <header className="min-w-0 @min-[52rem]:border-e @min-[52rem]:border-border @min-[52rem]:pe-8 @min-[52rem]:pt-7">
+          <header className="min-w-0 @min-[52rem]:border-e @min-[52rem]:border-mu-line @min-[52rem]:pe-8 @min-[52rem]:pt-7">
             <div className="space-y-3">
               <MemosLogo as="h1" size="hero" />
               {(profile.version || profile.demo) && (
                 <div className="flex min-w-0 flex-wrap items-center gap-2.5">
                   {profile.version && (
                     <Chip href={versionUrl || undefined}>
-                      <span className="sr-only">{t("common.version")} </span>
+                      <span className="mu-visually-hidden">{t("common.version")} </span>
                       {versionLabel}
                     </Chip>
                   )}
-                  {profile.demo && <Badge variant="warning">{t("about.demo")}</Badge>}
+                  {profile.demo && <Badge tone="warning">{t("about.demo")}</Badge>}
                 </div>
               )}
             </div>
-            <p className="mt-6 text-balance text-3xl leading-tight tracking-tight wrap-anywhere text-foreground sm:text-4xl">
+            <p className="mt-6 text-balance mu-heading wrap-anywhere text-mu-ink">
               {customProfile?.description || "Simple note-taking for your everyday thoughts."}
             </p>
-            <p className="mt-6 max-w-md text-base leading-relaxed text-muted-foreground @min-[60rem]:text-lg">{t("about.description")}</p>
+            <p className="mt-6 max-w-md mu-body text-mu-ink-muted">{t("about.description")}</p>
 
             {buildRows.length > 0 && (
-              <section className="mt-8 border-t border-border pt-5">
+              <section className="mt-8 border-t border-mu-line pt-5">
                 <SectionLabel>{t("about.build")}</SectionLabel>
                 <dl className="mt-3 flex flex-wrap gap-x-8 gap-y-4">
                   {buildRows.map((row) => (
                     <div key={row.label} className="min-w-0 max-w-full">
-                      <dt className="text-xs text-muted-foreground">{row.label}</dt>
+                      <dt className="mu-caption text-mu-ink-muted">{row.label}</dt>
                       <dd className="mt-2 flex min-h-6 items-center">{row.value}</dd>
                     </div>
                   ))}
@@ -132,25 +125,23 @@ const About = () => {
                 {projectLinks.map((link) => (
                   <li key={link.href} className="min-w-0">
                     <a className={PROJECT_CARD_CLASSES} href={link.href} target="_blank" rel="noreferrer">
-                      <span className="flex items-center justify-between text-muted-foreground">
-                        <link.icon aria-hidden="true" className="size-6 @min-[60rem]:size-7" strokeWidth={1.75} />
-                        <ExternalLinkIcon aria-hidden="true" className="size-4 transition-colors group-hover:text-foreground" />
+                      <span className="flex items-center justify-between text-mu-ink-muted">
+                        <link.icon aria-hidden="true" className="mu-icon size-6 @min-[60rem]:size-7" />
+                        <ExternalLinkIcon aria-hidden="true" className="mu-icon transition-colors group-hover:text-mu-ink" />
                       </span>
-                      <span className="mt-5 block text-base font-medium text-foreground @min-[60rem]:text-lg">{link.label}</span>
-                      <span className="mt-1 block text-sm leading-relaxed text-muted-foreground @min-[60rem]:text-base">{link.note}</span>
+                      <span className="mt-5 block mu-label text-mu-ink">{link.label}</span>
+                      <span className="mt-1 block mu-caption text-mu-ink-muted">{link.note}</span>
                     </a>
                   </li>
                 ))}
                 {!profile.demo && (
                   <li className="min-w-0">
                     <button type="button" className={`${PROJECT_CARD_CLASSES} w-full text-start`} onClick={() => setGuideOpen(true)}>
-                      <span className="flex items-center justify-between text-muted-foreground">
-                        <SparklesIcon aria-hidden="true" className="size-6 @min-[60rem]:size-7" strokeWidth={1.75} />
+                      <span className="flex items-center justify-between text-mu-ink-muted">
+                        <SparklesIcon aria-hidden="true" className="mu-icon size-6 @min-[60rem]:size-7" />
                       </span>
-                      <span className="mt-5 block text-base font-medium text-foreground @min-[60rem]:text-lg">{t("welcome.reopen")}</span>
-                      <span className="mt-1 block text-sm leading-relaxed text-muted-foreground @min-[60rem]:text-base">
-                        {t("welcome.reopen-note")}
-                      </span>
+                      <span className="mt-5 block mu-label text-mu-ink">{t("welcome.reopen")}</span>
+                      <span className="mt-1 block mu-caption text-mu-ink-muted">{t("welcome.reopen-note")}</span>
                     </button>
                   </li>
                 )}

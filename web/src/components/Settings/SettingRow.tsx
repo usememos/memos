@@ -1,44 +1,24 @@
-import { HelpCircleIcon } from "lucide-react";
-import React from "react";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Field } from "@usememos/ui";
+import type React from "react";
 import { cn } from "@/lib/utils";
 
 interface SettingRowProps {
   label: React.ReactNode;
   description?: string;
-  tooltip?: string;
   children: React.ReactNode;
-  className?: string;
   vertical?: boolean;
 }
 
-const SettingRow: React.FC<SettingRowProps> = ({ label, description, tooltip, children, className, vertical = false }) => {
+/** One setting: its label and description name the single control beside them. */
+const SettingRow: React.FC<SettingRowProps> = ({ label, description, children, vertical = false }) => {
   return (
-    <div
-      className={cn(
-        "flex w-full min-w-0 gap-3",
-        vertical ? "flex-col" : "flex-col sm:flex-row sm:items-center sm:justify-between",
-        className,
-      )}
-    >
+    <Field.Root className={cn("w-full gap-3", !vertical && "sm:flex-row sm:items-center sm:justify-between")}>
       <div className={cn("flex min-w-0 flex-col gap-1", vertical ? "w-full" : "flex-1")}>
-        <div className="flex items-center gap-1.5">
-          <div className={cn("text-sm", vertical ? "font-medium" : "")}>{label}</div>
-          {tooltip && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger render={<HelpCircleIcon className="w-4 h-4 text-muted-foreground cursor-help" />} />
-                <TooltipContent>
-                  <p className="max-w-xs">{tooltip}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
-        </div>
-        {description && <p className="text-xs text-muted-foreground">{description}</p>}
+        <Field.Label>{label}</Field.Label>
+        {description && <Field.Description>{description}</Field.Description>}
       </div>
       <div className={cn("flex min-w-0 items-center", vertical ? "w-full" : "w-full sm:w-auto sm:shrink-0")}>{children}</div>
-    </div>
+    </Field.Root>
   );
 };
 

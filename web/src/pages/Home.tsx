@@ -45,7 +45,7 @@ const Home = () => {
   });
 
   return (
-    <div className="w-full min-h-full bg-background text-foreground">
+    <div className="w-full min-h-full bg-mu-canvas text-mu-ink">
       <WelcomeGuideDialog open={welcomeGuide.open} onOpenChange={welcomeGuide.onOpenChange} />
       <NewMemoProvider>
         <PagedMemoList

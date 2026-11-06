@@ -1,8 +1,7 @@
+import { Badge, Button, buttonClasses, Popover, Tooltip } from "@usememos/ui";
+import { SmilePlusIcon } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import RelativeTime from "@/components/RelativeTime";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { FOCUS_VISIBLE_OUTLINE_CLASSES } from "@/components/ui/focus";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useNewMemo } from "@/contexts/NewMemoContext";
 import i18n from "@/i18n";
 import { cn } from "@/lib/utils";
@@ -21,8 +20,8 @@ import { createMemoNavigationState, isMemoDetailPath } from "../navigation";
 import type { MemoHeaderProps } from "../types";
 import MemoSpaceBadge from "./MemoSpaceBadge";
 
-/** The card's trailing actions are the kit's quiet 24px squares, whether or not they are kit buttons. */
-const MEMO_HEADER_ACTION_CLASSES = cn(buttonVariants({ variant: "quiet", size: "icon-sm" }));
+/** The card's trailing actions are the package's 24px ghost squares (`sm`), whether or not they are package buttons. */
+const MEMO_HEADER_ACTION_CLASSES = buttonClasses({ variant: "ghost", size: "sm", iconOnly: true });
 
 const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showCreator, showVisibility, showSpace }) => {
   const t = useTranslate();
@@ -58,21 +57,12 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showC
   const showsCreator = Boolean(showCreator && creator);
   const isNew = memo.name === newMemoName;
 
-  // While the card edits in place, the header keeps only identity. The time, visibility
-  // and Space show once, in their editable form, in the session below (its timestamp row
-  // and audience menu); reacting or opening the action menu makes no sense mid-edit, and
-  // the "new" mark is for finding the memo in the list, not for the person editing it.
-  // With no identity to show, the row goes and the session's timestamp row takes its place.
-  if (isEditing) {
-    if (!showsCreator || !creator) return null;
-    return (
-      <div className="flex h-6 w-full items-center gap-2">
-        <div data-slot="memo-header-meta" className="flex min-w-0 items-center gap-1.5 overflow-hidden">
-          <CreatorDisplay creator={creator} withSeparator={false} />
-        </div>
-      </div>
-    );
-  }
+  // While the card edits in place, the session's timestamp row is the header: the body
+  // hands it the identity (`CreatorDisplay`) to lead with, and the time, visibility and
+  // Space show once, in their editable form. Reacting or opening the action menu makes no
+  // sense mid-edit, and the "new" mark is for finding the memo in the list, not for the
+  // person editing it.
+  if (isEditing) return null;
 
   return (
     // A fixed 24px row, the height of its action squares, so the card's top edge never
@@ -94,21 +84,40 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showC
         {isNew && <NewBadge />}
       </div>
 
-      <div data-slot="memo-header-actions" className="flex shrink-0 select-none flex-row items-center justify-end gap-1">
+      <div
+        data-slot="memo-header-actions"
+        // The same 4px gaps on touch screens, so the actions read as one group. Each square's hit
+        // area keeps its 44px height but narrows to the 28px pitch, so neighbors meet halfway
+        // instead of a later square's area covering the edge of the one before it. The selector only
+        // resizes the package's touch-screen pseudo-element; Tailwind's `after:` would also create
+        // one on desktop, where it sits beside the icon and pushes it off center.
+        className="flex shrink-0 select-none flex-row items-center justify-end gap-1 [&_.mu-hit::after]:w-7"
+      >
         {currentUser && !isArchived && (
           // On desktop the picker's trigger shows only while the card is engaged or the picker is open.
           <span className="flex sm:hidden sm:group-hover:flex sm:group-focus-within:flex sm:has-[[data-popup-open]]:flex">
-            <ReactionSelector memo={memo} trigger={<Button variant="quiet" size="icon-sm" />} />
+            <ReactionSelector memo={memo} trigger={<Button variant="ghost" size="sm" icon={<SmilePlusIcon />} />} />
           </span>
         )}
 
         {showVisibility && memo.visibility !== Visibility.PRIVATE && (
-          <Tooltip>
-            <TooltipTrigger aria-label={visibilityOption && t(visibilityOption.labelKey)} className={MEMO_HEADER_ACTION_CLASSES}>
+          // The audience is information, not an action: a hover card that a click or tap also opens.
+          <Popover.Root>
+            <Popover.Trigger
+              openOnHover
+              delay={300}
+              aria-label={visibilityOption && t(visibilityOption.labelKey)}
+              className={MEMO_HEADER_ACTION_CLASSES}
+            >
               <VisibilityIcon visibility={memo.visibility} className="text-current" />
-            </TooltipTrigger>
-            <TooltipContent>{visibilityOption && t(visibilityOption.labelKey)}</TooltipContent>
-          </Tooltip>
+            </Popover.Trigger>
+            {visibilityOption && (
+              <Popover.Popup align="end" variant="list" className="w-(--mu-menu-width)">
+                <Popover.Title>{t(visibilityOption.labelKey)}</Popover.Title>
+                <Popover.Description>{t(visibilityOption.descriptionKey)}</Popover.Description>
+              </Popover.Popup>
+            )}
+          </Popover.Root>
         )}
 
         <MemoActionMenu memo={memo} parentPage={parentPage} readonly={readonly} onEdit={openEditor} />
@@ -120,23 +129,24 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showC
 const NewBadge = () => {
   const t = useTranslate();
   return (
-    <span className="shrink-0 rounded-full bg-primary/10 px-1.5 py-0.5 text-2xs font-medium leading-none text-primary">
+    <Badge tone="primary" className="shrink-0">
       {t("memo.new-badge")}
-    </span>
+    </Badge>
   );
 };
 
 /**
  * The author on one line with the time: a 20px avatar in a 20px slot, then the name in
  * medium 13px foreground ink. It is the identity, so it carries the weight; the time after
- * it is muted, and the separator before it goes when nothing follows.
+ * it is muted, after a separator. The editing session leads its timestamp row with it, so
+ * the card's header reads the same mid-edit.
  */
-const CreatorDisplay: React.FC<{ creator: User; withSeparator?: boolean }> = ({ creator, withSeparator = true }) => (
+export const CreatorDisplay: React.FC<{ creator: User }> = ({ creator }) => (
   <>
     <Link
       className={cn(
-        "flex min-w-0 shrink items-center gap-1.5 rounded-sm text-ui font-medium text-foreground transition-colors hover:text-foreground/80",
-        FOCUS_VISIBLE_OUTLINE_CLASSES,
+        "flex min-w-0 shrink items-center gap-1.5 rounded-mu-sm mu-label-sm text-mu-ink transition-colors hover:text-mu-ink/80",
+        "mu-focus",
       )}
       to={getCreatorHomePath(creator.username)}
       viewTransition
@@ -146,11 +156,9 @@ const CreatorDisplay: React.FC<{ creator: User; withSeparator?: boolean }> = ({ 
       </span>
       <span className="min-w-0 truncate">{creator.displayName || creator.username}</span>
     </Link>
-    {withSeparator && (
-      <span aria-hidden="true" className="shrink-0 text-muted-foreground/40">
-        ·
-      </span>
-    )}
+    <span aria-hidden="true" className="shrink-0 text-mu-ink-muted/40">
+      ·
+    </span>
   </>
 );
 
@@ -160,13 +168,13 @@ interface TimeTooltipContent {
 }
 
 const TimeTooltip = ({ children, content }: { children: React.ReactElement; content: TimeTooltipContent }) => (
-  <Tooltip>
-    <TooltipTrigger render={children} />
-    <TooltipContent align="start" className="flex flex-col items-start gap-0.5 whitespace-nowrap text-left">
+  <Tooltip.Root>
+    <Tooltip.Trigger render={children} />
+    <Tooltip.Popup align="start" className="flex flex-col items-start gap-0.5 whitespace-nowrap text-left">
       {content.createdAt && <span>{content.createdAt}</span>}
       {content.updatedAt && <span>{content.updatedAt}</span>}
-    </TooltipContent>
-  </Tooltip>
+    </Tooltip.Popup>
+  </Tooltip.Root>
 );
 
 interface TimeDisplayProps {
@@ -182,7 +190,7 @@ interface TimeDisplayProps {
 const TimeDisplay: React.FC<TimeDisplayProps> = ({ displayTime, timeTooltip, memoName, parentPage, isCurrentPage }) => (
   <TimeTooltip content={timeTooltip}>
     {isCurrentPage ? (
-      <span className="shrink-0 whitespace-nowrap text-ui text-muted-foreground select-none">{displayTime}</span>
+      <span className="shrink-0 whitespace-nowrap mu-caption text-mu-ink-muted select-none">{displayTime}</span>
     ) : (
       <Link
         className={cn(MEMO_TIME_CONTROL_CLASSES, "underline-offset-2 hover:underline")}

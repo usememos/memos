@@ -138,7 +138,24 @@
     "resize-sidebar": "Thay đổi kích thước thanh bên",
     "sign-in-to-memos": "Đăng nhập vào Memos",
     "unlink": "Hủy liên kết",
-    "view-all": "Xem tất cả"
+    "open-navigation": "Mở thanh điều hướng",
+    "navigation": "Điều hướng",
+    "primary-navigation": "Chính",
+    "download": "Tải xuống",
+    "download-name": "Tải xuống {{name}}",
+    "open-name": "Mở {{name}}",
+    "preview-name": "Xem trước {{name}}",
+    "no-content": "Không có nội dung",
+    "previous": "Trước",
+    "next": "Tiếp",
+    "retry": "Thử lại",
+    "docs": "Tài liệu",
+    "calendar-for-month": "Lịch {{month}}",
+    "date-at-time": "{{date}} lúc {{time}}",
+    "selected-location": "Vị trí đã chọn",
+    "choose-location": "Chọn một vị trí",
+    "unknown-error": "Lỗi không xác định",
+    "error-occurred": "Đã xảy ra lỗi"
   },
   "locale-picker": {
     "no-language-feedback": "Không tìm thấy ngôn ngữ? Gửi phản hồi"
@@ -256,7 +273,17 @@
       "alt-text-placeholder": "Mô tả hình ảnh…",
       "image-unavailable": "Hình ảnh không khả dụng",
       "resize-image": "Đổi kích thước hình ảnh"
-    }
+    },
+    "attachments": {
+      "move-up": "Di chuyển tệp đính kèm lên",
+      "move-down": "Di chuyển tệp đính kèm xuống",
+      "remove": "Xóa tệp đính kèm"
+    },
+    "remove-relation": "Xóa liên kết",
+    "remove-location": "Xóa vị trí",
+    "recording-unsupported": "Trình duyệt này không hỗ trợ ghi âm.",
+    "microphone-denied": "Quyền truy cập micrô đã bị từ chối.",
+    "recording-failed": "Không thể bắt đầu ghi âm."
   },
   "inbox": {
     "failed-to-load": "Không thể tải mục hộp thư",
@@ -265,7 +292,16 @@
     "unread": "Chưa đọc",
     "space-invitation": "Mời bạn tham gia không gian",
     "space-invitation-accepted": "Bạn đã tham gia không gian này.",
-    "space-invitation-open": "Không gian trống"
+    "space-invitation-open": "Không gian trống",
+    "commented-on-memo": "đã bình luận về ghi chú của bạn",
+    "mentioned-in-comment": "đã nhắc đến bạn trong một bình luận",
+    "mentioned-in-memo": "đã nhắc đến bạn trong một ghi chú",
+    "original": "Bản gốc:",
+    "memo-label": "Ghi chú:",
+    "comment-heading": "Bình luận",
+    "memo-heading": "Ghi chú",
+    "empty-memo": "Ghi chú trống",
+    "empty-comment": "Bình luận trống"
   },
   "memo": {
     "no-memos-yet": "Chưa có ghi chú nào",
@@ -275,7 +311,9 @@
     "click-to-show-sensitive-content": "Nhấp để hiện nội dung nhạy cảm",
     "comment": {
       "self": "Bình luận",
-      "write-a-comment": "Viết bình luận"
+      "write-a-comment": "Viết bình luận",
+      "view-all-count_one": "Xem tất cả {{count}} bình luận",
+      "view-all-count_other": "Xem tất cả {{count}} bình luận"
     },
     "copy-content": "Sao chép nội dung",
     "copy-link": "Sao chép liên kết",
@@ -289,7 +327,8 @@
       "has-image": "có hình ảnh",
       "has-link": "cóLiênKết",
       "has-location": "có vị trí",
-      "has-task-list": "cóDanhSáchViệc"
+      "has-task-list": "cóDanhSáchViệc",
+      "remove": "Xóa bộ lọc"
     },
     "compact-mode": "Chế độ thu gọn",
     "link-preview": "Xem trước liên kết",
@@ -375,7 +414,9 @@
     "restored-successfully": "Khôi phục thành công",
     "succeed-copy-content": "Đã sao chép nội dung thành công.",
     "succeed-copy-link": "Sao chép liên kết thành công.",
-    "update-succeed": "Cập nhật thành công"
+    "update-succeed": "Cập nhật thành công",
+    "not-signed-in": "Bạn chưa đăng nhập.",
+    "invalid-datetime": "Ngày giờ không hợp lệ. Hãy dùng định dạng 2023-12-31 23:59:59."
   },
   "reference": {
     "no-memos-found": "Không tìm thấy ghi chú",
@@ -411,7 +452,10 @@
       "member-column": "Thành viên",
       "active": "Đang hoạt động",
       "summary-column": "Tóm tắt",
-      "export-memos": "Xuất ghi chú"
+      "export-memos": "Xuất ghi chú",
+      "username-password-required": "Tên người dùng và mật khẩu không được để trống",
+      "create-success": "Đã tạo người dùng",
+      "update-success": "Đã cập nhật người dùng"
     },
     "my-account": {
       "label": "Tài khoản của tôi"
@@ -435,7 +479,12 @@
       "theme-description": "Áp dụng chủ đề đã chọn ngay lập tức trên thiết bị này.",
       "theme": "Giao diện",
       "uploads-privacy-description": "Kiểm soát thông tin nhạy cảm về quyền riêng tư được gửi kèm theo phương tiện đã tải lên.",
-      "uploads-privacy-title": "Tải lên & quyền riêng tư"
+      "uploads-privacy-title": "Tải lên & quyền riêng tư",
+      "theme-system": "Theo hệ thống",
+      "theme-system-short": "Hệ thống",
+      "theme-light": "Sáng",
+      "theme-dark": "Tối",
+      "theme-paper": "Giấy"
     },
     "editor": {
       "label": "Trình chỉnh sửa",
@@ -445,7 +494,118 @@
       "create": "Tạo chế độ xem",
       "delete-confirm": "Bạn có chắc chắn muốn xóa chế độ xem `{{title}}`?",
       "delete-success": "Đã xóa chế độ xem `{{title}}` thành công",
-      "change-icon": "Thay đổi biểu tượng xem"
+      "change-icon": "Thay đổi biểu tượng xem",
+      "page-description": "Tạo các chế độ xem dùng lại được với trường, toán tử, hàm thời gian và so khớp thẻ. Bắt đầu từ các ví dụ, rồi kiểm tra trước khi lưu.",
+      "edit": "Chỉnh sửa chế độ xem",
+      "form-description": "Đặt tên cho chế độ xem và xác định biểu thức lọc ghi chú mà nó sẽ áp dụng.",
+      "title-placeholder": "Đã ghim, Ghi chú gần đây, Công việc",
+      "filter-help": "Kết hợp biểu thức bằng {{and}}, {{or}} và {{not}}. Trường thời gian là dấu thời gian — dùng {{now}}, {{duration}}, {{timestamp}} và các hàm truy cập như {{year}}. Thẻ hỗ trợ {{sets}}, còn {{size}} đo độ dài.",
+      "validate": "Kiểm tra",
+      "all": "Tất cả chế độ xem",
+      "loading": "Đang tải chế độ xem…",
+      "load-failed": "Không thể tải chế độ xem.",
+      "empty-title": "Chưa có chế độ xem nào",
+      "empty-description": "Lưu một bộ lọc để nhanh chóng quay lại những ghi chú bạn cần.",
+      "examples-title": "Ví dụ biểu thức",
+      "fields-title": "Các trường được hỗ trợ",
+      "title-filter-required": "Tiêu đề và bộ lọc không được để trống",
+      "filter-valid": "Biểu thức lọc có vẻ hợp lệ",
+      "create-success": "Đã tạo chế độ xem",
+      "update-success": "Đã cập nhật chế độ xem",
+      "examples": {
+        "pinned": {
+          "title": "Đã ghim",
+          "description": "Chỉ các ghi chú đã ghim."
+        },
+        "recent": {
+          "title": "Ghi chú gần đây",
+          "description": "Ghi chú được tạo trong một giờ qua."
+        },
+        "public": {
+          "title": "Ghi chú công khai",
+          "description": "Chỉ các ghi chú công khai."
+        },
+        "project-tags": {
+          "title": "Thẻ dự án",
+          "description": "Khớp chính xác một hoặc nhiều thẻ."
+        },
+        "untagged": {
+          "title": "Không có thẻ",
+          "description": "Ghi chú không có thẻ nào."
+        },
+        "archive-tree": {
+          "title": "Cây lưu trữ",
+          "description": "Khớp thẻ phân cấp theo tiền tố."
+        },
+        "unassigned": {
+          "title": "Chưa gán",
+          "description": "Ghi chú không nằm trong không gian nào."
+        },
+        "one-space": {
+          "title": "Trong một không gian",
+          "description": "Ghi chú nằm trong một không gian. Dùng ID không gian từ URL hoặc phần cài đặt của không gian đó."
+        },
+        "open-tasks": {
+          "title": "Việc chưa xong",
+          "description": "Ghi chú có việc chưa hoàn thành."
+        },
+        "links-or-code": {
+          "title": "Liên kết hoặc mã",
+          "description": "Ghi chú chứa liên kết hoặc khối mã."
+        },
+        "no-location": {
+          "title": "Không có vị trí",
+          "description": "Ghi chú không đính kèm vị trí."
+        },
+        "with-attachments": {
+          "title": "Có tệp đính kèm",
+          "description": "Ghi chú có ít nhất một tệp đính kèm."
+        },
+        "photos": {
+          "title": "Ảnh",
+          "description": "Ghi chú hiển thị hình ảnh, trong nội dung hoặc dưới dạng tệp đính kèm."
+        },
+        "content-search": {
+          "title": "Tìm trong nội dung",
+          "description": "Tìm văn bản trong nội dung ghi chú."
+        },
+        "starts-with": {
+          "title": "Bắt đầu bằng",
+          "description": "Ghi chú có nội dung bắt đầu bằng một đoạn văn bản (cũng có endsWith)."
+        },
+        "regex": {
+          "title": "Khớp regex",
+          "description": "Khớp nội dung với biểu thức chính quy."
+        },
+        "all-tags-complete": {
+          "title": "Tất cả thẻ đã xong",
+          "description": "Mọi thẻ đều kết thúc bằng -done (chỉ ghi chú có thẻ)."
+        },
+        "one-project-tag": {
+          "title": "Một thẻ dự án",
+          "description": "Đúng một thẻ thỏa mãn điều kiện."
+        },
+        "any-tags": {
+          "title": "Bất kỳ thẻ nào trong số này",
+          "description": "Các thẻ giao với tập đã cho."
+        },
+        "exact-tags": {
+          "title": "Đúng các thẻ này",
+          "description": "Được gắn đúng tập thẻ này, không thêm thẻ nào khác."
+        },
+        "year-2024": {
+          "title": "Ghi chú năm 2024",
+          "description": "Lọc theo năm dương lịch."
+        },
+        "weekend": {
+          "title": "Ghi chú cuối tuần",
+          "description": "Được tạo vào Chủ nhật hoặc thứ Bảy (0 = Chủ nhật)."
+        },
+        "long": {
+          "title": "Ghi chú dài",
+          "description": "Ghi chú dài hơn 280 ký tự."
+        }
+      }
     },
     "configuration": {
       "label": "Cấu hình",
@@ -521,7 +681,9 @@
       "scopes-description": "Phân tách các phạm vi bằng dấu cách. Hầu hết các nhà cung cấp chỉ cần một tập hợp nhỏ như quyền truy cập hồ sơ hoặc email.",
       "template-description": "Bắt đầu từ một thiết lập sẵn của nhà cung cấp, sau đó điều chỉnh thông tin xác thực và điểm cuối cho người thuê của bạn.",
       "unlink-success": "Đã hủy liên kết {{name}}.",
-      "update-sso-description": "Xem lại cấu hình nhà cung cấp, sau đó lưu các trường cần thay đổi."
+      "update-sso-description": "Xem lại cấu hình nhà cung cấp, sau đó lưu các trường cần thay đổi.",
+      "invalid-config": "Cấu hình nhà cung cấp danh tính không hợp lệ.",
+      "provider-id-placeholder": "ví dụ: github, okta-corp"
     },
     "storage": {
       "accesskey": "Khóa truy cập",
@@ -569,7 +731,8 @@
       "customize-server": {
         "description": "Mô tả",
         "icon-url": "URL biểu tượng",
-        "title": "Tùy chỉnh máy chủ"
+        "title": "Tùy chỉnh máy chủ",
+        "dialog-description": "Tùy chỉnh giao diện và cài đặt của phiên bản."
       },
       "server-name": "Tên máy chủ",
       "label": "Hệ thống",
@@ -675,7 +838,9 @@
       "danger-area-description": "Các hành động tài khoản không thể đảo ngược nằm ở đây. Hãy xem xét kỹ trước khi tiếp tục.",
       "delete-account": "Xóa tài khoản",
       "delete-account-description": "Xóa vĩnh viễn tài khoản này và tất cả quyền truy cập liên quan khỏi phiên bản này. Hành động này không thể hoàn tác.",
-      "email-in-use": "Email này đã được sử dụng bởi một tài khoản khác."
+      "email-in-use": "Email này đã được sử dụng bởi một tài khoản khác.",
+      "avatar-too-large": "Chọn ảnh có dung lượng tối đa 2 MB.",
+      "avatar-unreadable": "Không thể đọc ảnh này. Hãy thử tệp khác."
     },
     "instance": {
       "disallow-change-nickname": "Không cho phép đổi biệt danh",
@@ -973,7 +1138,8 @@
   },
   "tooltip": {
     "link-memo": "Liên kết ghi chú",
-    "select-location": "Chọn vị trí"
+    "select-location": "Chọn vị trí",
+    "link-memo-description": "Tìm và chọn một ghi chú để liên kết"
   },
   "live-update": {
     "connected": "Cập nhật trực tiếp đang hoạt động",
@@ -1062,7 +1228,12 @@
     "loading": "Đang tải ghi chú…",
     "new-here": "Viết tại đây",
     "saved-outside-filter": "Đã lưu. Ghi chú này nằm ngoài kết quả bản đồ hiện tại.",
-    "open-memo": "Mở bản ghi nhớ"
+    "open-memo": "Mở bản ghi nhớ",
+    "open-in-google-maps": "Mở trong Google Maps",
+    "location-description": "Chọn một vị trí trên bản đồ hoặc nhập tọa độ thủ công",
+    "latitude": "Vĩ độ",
+    "longitude": "Kinh độ",
+    "place-placeholder": "Hãy chọn một vị trí trước."
   },
   "calendar": {
     "new-memo-on-day": "Ghi chú mới trong ngày này",
@@ -1180,5 +1351,47 @@
       "tag-reading": "đọc_sách",
       "tag-ideas": "ý_tưởng"
     }
+  },
+  "error": {
+    "title": "Đã xảy ra sự cố",
+    "description": "Đã xảy ra lỗi không mong muốn. Nguyên nhân có thể là sự cố mạng hoặc lỗi của ứng dụng.",
+    "description-update": "Đã xảy ra lỗi không mong muốn. Nguyên nhân có thể là sự cố mạng hoặc ứng dụng vừa được cập nhật. Tải lại thường sẽ khắc phục được.",
+    "details": "Chi tiết lỗi",
+    "reload": "Tải lại ứng dụng",
+    "not-found": "Không tìm thấy trang bạn đang tìm.",
+    "permission-denied": "Không có quyền truy cập",
+    "too-many-requests": "Quá nhiều yêu cầu. Hãy thử lại sau {{wait}}.",
+    "wait-seconds": "{{count}} giây",
+    "wait-minutes": "{{count}} phút",
+    "wait-hours": "{{count}} giờ",
+    "challenge-required": "Hãy hoàn tất bước xác minh rồi thử lại.",
+    "quota-memo-count": "Bạn đã đạt giới hạn {{limit}} ghi chú. Hãy xóa bớt ghi chú để tạo ghi chú mới.",
+    "quota-storage": "Tệp tải lên này sẽ vượt quá giới hạn lưu trữ {{limit}} của bạn. Bạn đang dùng {{usage}}.",
+    "quota-upload": "Tệp này lớn hơn giới hạn {{limit}} mỗi tệp của bạn.",
+    "quota-memo-content": "Ghi chú này lớn hơn giới hạn {{limit}} mỗi ghi chú của bạn. Hãy rút ngắn nội dung để lưu.",
+    "quota-generic": "Bạn đã đạt đến giới hạn sử dụng.",
+    "sign-in-failed": "Đăng nhập không thành công.",
+    "sign-up-failed": "Đăng ký không thành công",
+    "authenticate-failed": "Xác thực không thành công.",
+    "update-profile-failed": "Không thể cập nhật hồ sơ",
+    "unlink-identity-failed": "Không thể hủy liên kết nhà cung cấp danh tính.",
+    "link-identity-failed": "Không thể bắt đầu liên kết tài khoản. Vui lòng thử lại."
+  },
+  "attachment-preview": {
+    "title": "Xem trước tệp đính kèm",
+    "description": "Hộp thoại xem trước tệp đính kèm. Nhấn Escape để đóng, dùng phím mũi tên trái hoặc phải để chuyển mục, và phóng to hình ảnh bằng các nút điều khiển, con lăn chuột, chạm hai lần hoặc thao tác chụm.",
+    "close": "Đóng bản xem trước",
+    "previous": "Mục trước",
+    "next": "Mục tiếp theo",
+    "reset-zoom": "Đặt lại thu phóng",
+    "image-alt": "Xem trước hình ảnh {{index}}/{{count}}",
+    "live-photo-alt": "Xem trước ảnh trực tiếp {{index}}/{{count}}",
+    "play-live-photo": "Di chuột hoặc nhấn để phát ảnh trực tiếp"
+  },
+  "audio-player": {
+    "seek": "Tua {{name}}",
+    "back": "Lùi {{seconds}} giây",
+    "forward": "Tiến {{seconds}} giây",
+    "speed": "Tốc độ phát {{rate}}x"
   }
 }

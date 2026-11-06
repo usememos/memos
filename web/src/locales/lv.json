@@ -176,7 +176,24 @@
     "resize-panel": "Mainīt paneļa izmērus",
     "resize-sidebar": "Mainīt sānu joslas izmērus",
     "sign-in-to-memos": "Pierakstīties pakalpojumā Memos",
-    "view-all": "Skatīt visu"
+    "open-navigation": "Atvērt navigāciju",
+    "navigation": "Navigācija",
+    "primary-navigation": "Galvenā",
+    "download": "Lejupielādēt",
+    "download-name": "Lejupielādēt {{name}}",
+    "open-name": "Atvērt {{name}}",
+    "preview-name": "Priekšskatīt {{name}}",
+    "no-content": "Nav satura",
+    "previous": "Iepriekšējais",
+    "next": "Nākamais",
+    "retry": "Mēģināt vēlreiz",
+    "docs": "Dokumentācija",
+    "calendar-for-month": "Kalendārs: {{month}}",
+    "date-at-time": "{{date}} plkst. {{time}}",
+    "selected-location": "Atlasītā atrašanās vieta",
+    "choose-location": "Izvēlieties atrašanās vietu",
+    "unknown-error": "Nezināma kļūda",
+    "error-occurred": "Radās kļūda"
   },
   "locale-picker": {
     "no-language-feedback": "Valoda nav atrasta? Iesniedziet atsauksmes"
@@ -294,7 +311,17 @@
       "alt-text-placeholder": "Aprakstiet attēlu…",
       "image-unavailable": "Attēls nav pieejams",
       "resize-image": "Mainīt attēla izmēru"
-    }
+    },
+    "attachments": {
+      "move-up": "Pārvietot pielikumu augšup",
+      "move-down": "Pārvietot pielikumu lejup",
+      "remove": "Noņemt pielikumu"
+    },
+    "remove-relation": "Noņemt saiti",
+    "remove-location": "Noņemt atrašanās vietu",
+    "recording-unsupported": "Šī pārlūkprogramma neatbalsta audio ierakstīšanu.",
+    "microphone-denied": "Piekļuve mikrofonam tika liegta.",
+    "recording-failed": "Neizdevās sākt audio ierakstīšanu."
   },
   "inbox": {
     "failed-to-load": "Neizdevās ielādēt iesūtnes vienumu",
@@ -303,7 +330,16 @@
     "unread": "Nelasīts",
     "space-invitation": "uzaicināja jūs pievienoties telpai",
     "space-invitation-accepted": "Jūs pievienojāties šai telpai.",
-    "space-invitation-open": "Atvērta telpa"
+    "space-invitation-open": "Atvērta telpa",
+    "commented-on-memo": "komentēja jūsu piezīmi",
+    "mentioned-in-comment": "pieminēja jūs komentārā",
+    "mentioned-in-memo": "pieminēja jūs piezīmē",
+    "original": "Oriģināls:",
+    "memo-label": "Piezīme:",
+    "comment-heading": "Komentārs",
+    "memo-heading": "Piezīme",
+    "empty-memo": "Tukša piezīme",
+    "empty-comment": "Tukšs komentārs"
   },
   "live-update": {
     "connected": "Aktīvi tiešraides atjauninājumi",
@@ -318,7 +354,10 @@
     "click-to-show-sensitive-content": "Noklikšķiniet, lai parādītu sensitīvu saturu",
     "comment": {
       "self": "komentāri",
-      "write-a-comment": "Uzrakstiet komentāru"
+      "write-a-comment": "Uzrakstiet komentāru",
+      "view-all-count_zero": "Skatīt visus {{count}} komentārus",
+      "view-all-count_one": "Skatīt {{count}} komentāru",
+      "view-all-count_other": "Skatīt visus {{count}} komentārus"
     },
     "copy-content": "Kopēt saturu",
     "copy-link": "Kopēt saiti",
@@ -333,7 +372,8 @@
       "has-image": "ir attēls",
       "has-link": "hasLink",
       "has-location": "ir atrašanās vieta",
-      "has-task-list": "hasTaskList"
+      "has-task-list": "hasTaskList",
+      "remove": "Noņemt filtru"
     },
     "compact-mode": "Kompaktais režīms",
     "link-preview": "Saites priekšskatījums",
@@ -418,7 +458,9 @@
     "restored-successfully": "Veiksmīgi atjaunots",
     "succeed-copy-content": "Saturs ir veiksmīgi kopēts.",
     "succeed-copy-link": "Saite ir veiksmīgi nokopēta.",
-    "update-succeed": "Atjaunināšana izdevās"
+    "update-succeed": "Atjaunināšana izdevās",
+    "not-signed-in": "Jūs neesat pierakstījies.",
+    "invalid-datetime": "Nederīgs datums un laiks. Izmantojiet formātu 2023-12-31 23:59:59."
   },
   "reference": {
     "no-memos-found": "Nav atrasta neviena piezīme",
@@ -488,7 +530,9 @@
       "usage-storage": "Storage",
       "usage-title": "Usage limits",
       "storage-usage-error": "Jūsu pielikumu krātuve nav pieejama.",
-      "email-in-use": "Šo e-pastu jau izmanto cits konts."
+      "email-in-use": "Šo e-pastu jau izmanto cits konts.",
+      "avatar-too-large": "Izvēlieties attēlu, kas nav lielāks par 2 MB.",
+      "avatar-unreadable": "Šo attēlu nevar nolasīt. Mēģiniet citu failu."
     },
     "ai": {
       "add-provider": "Pievienojiet pakalpojumu sniedzēju",
@@ -571,7 +615,10 @@
       "summary-column": "Kopsavilkums",
       "user": "Lietotājs",
       "no-members-found": "Nav atrasts neviens dalībnieks",
-      "export-memos": "Eksportēt piezīmes"
+      "export-memos": "Eksportēt piezīmes",
+      "username-password-required": "Lietotājvārds un parole nedrīkst būt tukši",
+      "create-success": "Lietotājs izveidots",
+      "update-success": "Lietotājs atjaunināts"
     },
     "memo": {
       "add-reaction": "Pievienojiet reakciju",
@@ -640,7 +687,12 @@
       "theme-description": "Šajā ierīcē nekavējoties tiek lietots atlasītais motīvs.",
       "theme": "Tēma",
       "uploads-privacy-description": "Kontrolējiet konfidenciālu informāciju, kas iesniegta kopā ar augšupielādēto multividi.",
-      "uploads-privacy-title": "Augšupielādes un konfidencialitāte"
+      "uploads-privacy-title": "Augšupielādes un konfidencialitāte",
+      "theme-system": "Sinhronizēt ar sistēmu",
+      "theme-system-short": "Sistēma",
+      "theme-light": "Gaišs",
+      "theme-dark": "Tumšs",
+      "theme-paper": "Papīrs"
     },
     "editor": {
       "label": "Redaktors",
@@ -650,7 +702,118 @@
       "create": "Izveidot skatu",
       "delete-confirm": "Vai tiešām vēlaties dzēst skatu `{{title}}`?",
       "delete-success": "Skats `{{title}}` veiksmīgi izdzēsts",
-      "change-icon": "Mainīt skata ikonu"
+      "change-icon": "Mainīt skata ikonu",
+      "page-description": "Izveidojiet atkārtoti izmantojamus skatus ar laukiem, operatoriem, laika palīgfunkcijām un tagu atbilstību. Sāciet ar piemēriem un pirms saglabāšanas pārbaudiet.",
+      "edit": "Rediģēt skatu",
+      "form-description": "Nosauciet skatu un definējiet piezīmju filtra izteiksmi, kas tam jāpiemēro.",
+      "title-placeholder": "Piespraustās, Nesenās piezīmes, Darbs",
+      "filter-help": "Apvienojiet izteiksmes ar {{and}}, {{or}} un {{not}}. Laika lauki ir laikspiedoli — izmantojiet {{now}}, {{duration}}, {{timestamp}} un piekļuves funkcijas, piemēram, {{year}}. Tagi atbalsta {{sets}}, un {{size}} mēra garumu.",
+      "validate": "Pārbaudīt",
+      "all": "Visi skati",
+      "loading": "Ielādē skatus…",
+      "load-failed": "Neizdevās ielādēt skatus.",
+      "empty-title": "Vēl nav skatu",
+      "empty-description": "Saglabājiet filtru, lai ātri atgrieztos pie vajadzīgajām piezīmēm.",
+      "examples-title": "Izteiksmju piemēri",
+      "fields-title": "Atbalstītie lauki",
+      "title-filter-required": "Nosaukums un filtrs nedrīkst būt tukši",
+      "filter-valid": "Filtra izteiksme izskatās derīga",
+      "create-success": "Skats izveidots",
+      "update-success": "Skats atjaunināts",
+      "examples": {
+        "pinned": {
+          "title": "Piespraustās",
+          "description": "Tikai piespraustās piezīmes."
+        },
+        "recent": {
+          "title": "Nesenās piezīmes",
+          "description": "Pēdējās stundas laikā izveidotās piezīmes."
+        },
+        "public": {
+          "title": "Publiskās piezīmes",
+          "description": "Tikai publiskās piezīmes."
+        },
+        "project-tags": {
+          "title": "Projektu tagi",
+          "description": "Atbilst vienam vai vairākiem precīziem tagiem."
+        },
+        "untagged": {
+          "title": "Bez tagiem",
+          "description": "Piezīmes bez neviena taga."
+        },
+        "archive-tree": {
+          "title": "Arhīva koks",
+          "description": "Hierarhisko tagu atbilstība pēc prefiksa."
+        },
+        "unassigned": {
+          "title": "Nepiešķirtās",
+          "description": "Piezīmes, kas nav ievietotas nevienā telpā."
+        },
+        "one-space": {
+          "title": "Vienā telpā",
+          "description": "Telpā ievietotās piezīmes. Izmantojiet telpas ID no tās URL vai iestatījumiem."
+        },
+        "open-tasks": {
+          "title": "Atvērtie uzdevumi",
+          "description": "Piezīmes ar nepabeigtiem uzdevumiem."
+        },
+        "links-or-code": {
+          "title": "Saites vai kods",
+          "description": "Piezīmes, kurās ir saites vai koda bloki."
+        },
+        "no-location": {
+          "title": "Bez atrašanās vietas",
+          "description": "Piezīmes bez pievienotas atrašanās vietas."
+        },
+        "with-attachments": {
+          "title": "Ar pielikumiem",
+          "description": "Piezīmes ar vismaz vienu pievienotu failu."
+        },
+        "photos": {
+          "title": "Fotoattēli",
+          "description": "Piezīmes, kas rāda attēlu saturā vai kā pievienotu failu."
+        },
+        "content-search": {
+          "title": "Meklēšana saturā",
+          "description": "Meklējiet tekstu piezīmju saturā."
+        },
+        "starts-with": {
+          "title": "Sākas ar",
+          "description": "Piezīmes, kuru saturs sākas ar tekstu (arī endsWith)."
+        },
+        "regex": {
+          "title": "Regex atbilstība",
+          "description": "Satura atbilstība regulārajai izteiksmei."
+        },
+        "all-tags-complete": {
+          "title": "Visi tagi pabeigti",
+          "description": "Katrs tags beidzas ar -done (tikai piezīmes ar tagiem)."
+        },
+        "one-project-tag": {
+          "title": "Viens projekta tags",
+          "description": "Nosacījumam atbilst tieši viens tags."
+        },
+        "any-tags": {
+          "title": "Jebkurš no šiem tagiem",
+          "description": "Tagi pārklājas ar norādīto kopu."
+        },
+        "exact-tags": {
+          "title": "Tieši šie tagi",
+          "description": "Tagi tieši no šīs kopas, ne vairāk."
+        },
+        "year-2024": {
+          "title": "2024. gada piezīmes",
+          "description": "Filtrēt pēc kalendārā gada."
+        },
+        "weekend": {
+          "title": "Nedēļas nogales piezīmes",
+          "description": "Izveidotas svētdienā vai sestdienā (0 = svētdiena)."
+        },
+        "long": {
+          "title": "Garas piezīmes",
+          "description": "Piezīmes, kas garākas par 280 rakstzīmēm."
+        }
+      }
     },
     "configuration": {
       "label": "Konfigurācija",
@@ -726,7 +889,9 @@
       "token-endpoint": "Token galapunkts",
       "update-sso": "Atjauniniet SSO",
       "update-sso-description": "Pārskatiet nodrošinātāja konfigurāciju un pēc tam saglabājiet laukus, kas jāmaina.",
-      "user-endpoint": "Lietotāja galapunkts"
+      "user-endpoint": "Lietotāja galapunkts",
+      "invalid-config": "Identitātes nodrošinātāja konfigurācija nav derīga.",
+      "provider-id-placeholder": "piem., github, okta-corp"
     },
     "storage": {
       "accesskey": "Piekļuves atslēga",
@@ -777,7 +942,8 @@
       "customize-server": {
         "description": "Apraksts",
         "icon-url": "Ikona URL",
-        "title": "Pielāgot serveri"
+        "title": "Pielāgot serveri",
+        "dialog-description": "Pielāgojiet savas instances izskatu un iestatījumus."
       },
       "custom-code-description": "Izvēles instances mēroga CSS un JavaScript, kas tiek lietoti priekšgalā.",
       "custom-code-title": "Pielāgots kods",
@@ -1016,7 +1182,8 @@
   },
   "tooltip": {
     "link-memo": "Saites piezīme",
-    "select-location": "Atrašanās vieta"
+    "select-location": "Atrašanās vieta",
+    "link-memo-description": "Meklējiet un atlasiet piezīmi, ko saistīt"
   },
   "attachment-details": {
     "fields": {
@@ -1081,7 +1248,12 @@
     "loading": "Notiek piezīmju ielāde…",
     "new-here": "Rakstīt šeit",
     "saved-outside-filter": "Saglabāts. Šī piezīme atrodas ārpus pašreizējiem kartes rezultātiem.",
-    "open-memo": "Atvērt piezīmi"
+    "open-memo": "Atvērt piezīmi",
+    "open-in-google-maps": "Atvērt Google Maps",
+    "location-description": "Atlasiet atrašanās vietu kartē vai ievadiet koordinātas manuāli",
+    "latitude": "Platums",
+    "longitude": "Garums",
+    "place-placeholder": "Vispirms izvēlieties punktu."
   },
   "calendar": {
     "new-memo-on-day": "Jauna piezīme šajā dienā",
@@ -1180,5 +1352,47 @@
       "tag-reading": "lasīšana",
       "tag-ideas": "idejas"
     }
+  },
+  "error": {
+    "title": "Kaut kas nogāja greizi",
+    "description": "Radās neparedzēta kļūda. To var būt izraisījusi tīkla problēma vai lietotnes problēma.",
+    "description-update": "Radās neparedzēta kļūda. To var būt izraisījusi tīkla problēma vai lietotnes atjauninājums. Parasti palīdz lapas atkārtota ielāde.",
+    "details": "Kļūdas informācija",
+    "reload": "Pārlādēt lietotni",
+    "not-found": "Meklētā lapa netika atrasta.",
+    "permission-denied": "Piekļuve liegta",
+    "too-many-requests": "Pārāk daudz pieprasījumu. Mēģiniet vēlreiz pēc {{wait}}.",
+    "wait-seconds": "{{count}} s",
+    "wait-minutes": "{{count}} min",
+    "wait-hours": "{{count}} h",
+    "challenge-required": "Izpildiet verifikācijas uzdevumu un mēģiniet vēlreiz.",
+    "quota-memo-count": "Jūs esat sasniedzis {{limit}} piezīmju ierobežojumu. Izdzēsiet piezīmes, lai varētu izveidot jaunas.",
+    "quota-storage": "Šī augšupielāde pārsniegtu jūsu krātuves ierobežojumu {{limit}}. Pašlaik izmantojat {{usage}}.",
+    "quota-upload": "Šis fails ir lielāks par jūsu ierobežojumu {{limit}} vienam failam.",
+    "quota-memo-content": "Šī piezīme ir lielāka par jūsu ierobežojumu {{limit}} vienai piezīmei. Saīsiniet saturu, lai to saglabātu.",
+    "quota-generic": "Jūs esat sasniedzis lietojuma ierobežojumu.",
+    "sign-in-failed": "Neizdevās pierakstīties.",
+    "sign-up-failed": "Neizdevās reģistrēties",
+    "authenticate-failed": "Neizdevās autentificēties.",
+    "update-profile-failed": "Neizdevās atjaunināt profilu",
+    "unlink-identity-failed": "Neizdevās atsaistīt identitātes nodrošinātāju.",
+    "link-identity-failed": "Neizdevās sākt konta sasaisti. Mēģiniet vēlreiz."
+  },
+  "attachment-preview": {
+    "title": "Pielikuma priekšskatījums",
+    "description": "Pielikuma priekšskatījuma dialoglodziņš. Nospiediet Escape, lai aizvērtu, izmantojiet kreiso vai labo bultiņas taustiņu, lai pārslēgtu vienumus, un tuviniet attēlus ar vadīklām, peles ritenīti, dubultpieskārienu vai savilkšanas žestu.",
+    "close": "Aizvērt priekšskatījumu",
+    "previous": "Iepriekšējais vienums",
+    "next": "Nākamais vienums",
+    "reset-zoom": "Atiestatīt tālummaiņu",
+    "image-alt": "Priekšskatījuma attēls {{index}} no {{count}}",
+    "live-photo-alt": "Tiešraides fotoattēla priekšskatījums {{index}} no {{count}}",
+    "play-live-photo": "Novietojiet kursoru vai nospiediet, lai atskaņotu tiešraides fotoattēlu"
+  },
+  "audio-player": {
+    "seek": "Atskaņošanas vieta: {{name}}",
+    "back": "Atpakaļ {{seconds}} sekundes",
+    "forward": "Uz priekšu {{seconds}} sekundes",
+    "speed": "Atskaņošanas ātrums {{rate}}x"
   }
 }

@@ -18,7 +18,7 @@ export const LazyLocationPicker = ({ className, ...props }: LazyLocationPickerPr
       fallback={
         <div
           className={cn(
-            "memo-location-map relative isolate h-72 w-full overflow-hidden rounded-xl border border-border bg-muted/30 shadow-sm",
+            "memo-location-map relative isolate h-72 w-full overflow-hidden rounded-mu-xl border border-mu-line bg-mu-well/30 ",
             className,
           )}
         />

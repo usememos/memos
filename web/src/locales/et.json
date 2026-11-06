@@ -176,7 +176,24 @@
     "resize-panel": "Paneeli suuruse muutmine",
     "resize-sidebar": "Külgriba suuruse muutmine",
     "sign-in-to-memos": "Logi sisse Memos",
-    "view-all": "Kuva kõik"
+    "open-navigation": "Ava navigeerimine",
+    "navigation": "Navigeerimine",
+    "primary-navigation": "Peamine",
+    "download": "Laadi alla",
+    "download-name": "Laadi alla {{name}}",
+    "open-name": "Ava {{name}}",
+    "preview-name": "Eelvaade: {{name}}",
+    "no-content": "Sisu puudub",
+    "previous": "Eelmine",
+    "next": "Järgmine",
+    "retry": "Proovi uuesti",
+    "docs": "Dokumentatsioon",
+    "calendar-for-month": "Kalender: {{month}}",
+    "date-at-time": "{{date}} kell {{time}}",
+    "selected-location": "Valitud asukoht",
+    "choose-location": "Valige asukoht",
+    "unknown-error": "Tundmatu viga",
+    "error-occurred": "Ilmnes viga"
   },
   "locale-picker": {
     "no-language-feedback": "Keelt ei leitud? Esitage tagasisidet"
@@ -294,7 +311,17 @@
       "alt-text-placeholder": "Kirjelda pilti…",
       "image-unavailable": "Pilt pole saadaval",
       "resize-image": "Muuda pildi suurust"
-    }
+    },
+    "attachments": {
+      "move-up": "Liiguta manus üles",
+      "move-down": "Liiguta manus alla",
+      "remove": "Eemalda manus"
+    },
+    "remove-relation": "Eemalda seos",
+    "remove-location": "Eemalda asukoht",
+    "recording-unsupported": "See brauser ei toeta helisalvestust.",
+    "microphone-denied": "Mikrofoni luba keelati.",
+    "recording-failed": "Helisalvestuse alustamine ebaõnnestus."
   },
   "inbox": {
     "failed-to-load": "Postkasti üksuse laadimine ebaõnnestus",
@@ -303,7 +330,16 @@
     "unread": "Lugemata",
     "space-invitation": "kutsus teid ruumiga liituma",
     "space-invitation-accepted": "Liitusite selle ruumiga.",
-    "space-invitation-open": "Avatud ruum"
+    "space-invitation-open": "Avatud ruum",
+    "commented-on-memo": "kommenteeris teie memot",
+    "mentioned-in-comment": "mainis teid kommentaaris",
+    "mentioned-in-memo": "mainis teid memos",
+    "original": "Algne:",
+    "memo-label": "Memo:",
+    "comment-heading": "Kommentaar",
+    "memo-heading": "Memo",
+    "empty-memo": "Tühi memo",
+    "empty-comment": "Tühi kommentaar"
   },
   "live-update": {
     "connected": "Reaalajas värskendused on aktiivsed",
@@ -318,7 +354,9 @@
     "click-to-show-sensitive-content": "Tundliku sisu kuvamiseks klõpsake",
     "comment": {
       "self": "Kommentaarid",
-      "write-a-comment": "Kirjutage kommentaar"
+      "write-a-comment": "Kirjutage kommentaar",
+      "view-all-count_one": "Kuva {{count}} kommentaar",
+      "view-all-count_other": "Kuva kõik {{count}} kommentaari"
     },
     "copy-content": "Kopeeri sisu",
     "copy-link": "Kopeeri link",
@@ -333,7 +371,8 @@
       "has-image": "on pilt",
       "has-link": "hasLink",
       "has-location": "on asukoht",
-      "has-task-list": "hasTaskList"
+      "has-task-list": "hasTaskList",
+      "remove": "Eemalda filter"
     },
     "compact-mode": "Kompaktne režiim",
     "link-preview": "Lingi eelvaade",
@@ -418,7 +457,9 @@
     "restored-successfully": "Taastatud edukalt",
     "succeed-copy-content": "Sisu kopeerimine õnnestus.",
     "succeed-copy-link": "Link on edukalt kopeeritud.",
-    "update-succeed": "Värskendus õnnestus"
+    "update-succeed": "Värskendus õnnestus",
+    "not-signed-in": "Te pole sisse logitud.",
+    "invalid-datetime": "Vigane kuupäev ja kellaaeg. Kasutage vormingut 2023-12-31 23:59:59."
   },
   "reference": {
     "no-memos-found": "Memosid ei leitud",
@@ -488,7 +529,9 @@
       "usage-storage": "Storage",
       "usage-title": "Usage limits",
       "storage-usage-error": "Teie manuste salvestusruum pole saadaval.",
-      "email-in-use": "Seda e-posti aadressi kasutab juba teine ​​konto."
+      "email-in-use": "Seda e-posti aadressi kasutab juba teine ​​konto.",
+      "avatar-too-large": "Vali pilt, mille suurus on kuni 2 MB.",
+      "avatar-unreadable": "Seda pilti ei saa lugeda. Proovi mõnda teist faili."
     },
     "ai": {
       "add-provider": "Lisa teenusepakkuja",
@@ -571,7 +614,10 @@
       "summary-column": "Kokkuvõte",
       "user": "Kasutaja",
       "no-members-found": "Ühtegi liiget ei leitud",
-      "export-memos": "Ekspordi märkmed"
+      "export-memos": "Ekspordi märkmed",
+      "username-password-required": "Kasutajanimi ja parool ei tohi olla tühjad",
+      "create-success": "Kasutaja loodud",
+      "update-success": "Kasutaja uuendatud"
     },
     "memo": {
       "add-reaction": "Lisa reaktsioon",
@@ -640,7 +686,12 @@
       "theme-description": "Rakendab valitud teema kohe selles seadmes.",
       "theme": "Teema",
       "uploads-privacy-description": "Kontrolli üleslaaditud meediaga esitatud privaatsustundlikku teavet.",
-      "uploads-privacy-title": "Üleslaadimised ja privaatsus"
+      "uploads-privacy-title": "Üleslaadimised ja privaatsus",
+      "theme-system": "Süsteemi järgi",
+      "theme-system-short": "Süsteem",
+      "theme-light": "Hele",
+      "theme-dark": "Tume",
+      "theme-paper": "Paber"
     },
     "editor": {
       "label": "Redaktor",
@@ -650,7 +701,118 @@
       "create": "Loo vaade",
       "delete-confirm": "Kas olete kindel, et soovite vaate `{{title}}` kustutada?",
       "delete-success": "Vaade `{{title}}` kustutati edukalt",
-      "change-icon": "Muuda vaate ikooni"
+      "change-icon": "Muuda vaate ikooni",
+      "page-description": "Looge korduvkasutatavaid vaateid väljade, operaatorite, ajafunktsioonide ja siltide sobitamisega. Alustage näidetest ja kontrollige enne salvestamist.",
+      "edit": "Muuda vaadet",
+      "form-description": "Pange vaatele nimi ja määrake memofiltri avaldis, mida see rakendab.",
+      "title-placeholder": "Kinnitatud, Hiljutised märkmed, Töö",
+      "filter-help": "Kombineerige avaldisi operaatoritega {{and}}, {{or}} ja {{not}}. Ajaväljad on ajatemplid — kasutage {{now}}, {{duration}}, {{timestamp}} ja juurdepääsufunktsioone nagu {{year}}. Sildid toetavad {{sets}} ja {{size}} mõõdab pikkust.",
+      "validate": "Kontrolli",
+      "all": "Kõik vaated",
+      "loading": "Vaadete laadimine…",
+      "load-failed": "Vaateid ei õnnestunud laadida.",
+      "empty-title": "Vaateid veel pole",
+      "empty-description": "Salvestage filter, et vajalike memode juurde kiiresti naasta.",
+      "examples-title": "Avaldiste näited",
+      "fields-title": "Toetatud väljad",
+      "title-filter-required": "Pealkiri ja filter ei tohi olla tühjad",
+      "filter-valid": "Filtri avaldis tundub korrektne",
+      "create-success": "Vaade loodud",
+      "update-success": "Vaade uuendatud",
+      "examples": {
+        "pinned": {
+          "title": "Kinnitatud",
+          "description": "Ainult kinnitatud memod."
+        },
+        "recent": {
+          "title": "Hiljutised märkmed",
+          "description": "Viimase tunni jooksul loodud memod."
+        },
+        "public": {
+          "title": "Avalikud memod",
+          "description": "Ainult avalikud memod."
+        },
+        "project-tags": {
+          "title": "Projektisildid",
+          "description": "Sobitab ühe või mitu täpset silti."
+        },
+        "untagged": {
+          "title": "Sildita",
+          "description": "Memod, millel pole ühtegi silti."
+        },
+        "archive-tree": {
+          "title": "Arhiivipuu",
+          "description": "Sobitab hierarhilisi silte eesliite järgi."
+        },
+        "unassigned": {
+          "title": "Määramata",
+          "description": "Memod, mis pole üheski ruumis."
+        },
+        "one-space": {
+          "title": "Ühes ruumis",
+          "description": "Ruumi paigutatud memod. Kasutage ruumi ID-d selle URL-ist või seadetest."
+        },
+        "open-tasks": {
+          "title": "Avatud ülesanded",
+          "description": "Lõpetamata ülesannetega memod."
+        },
+        "links-or-code": {
+          "title": "Lingid või kood",
+          "description": "Linke või koodiplokke sisaldavad memod."
+        },
+        "no-location": {
+          "title": "Asukohata",
+          "description": "Memod, millele pole asukohta lisatud."
+        },
+        "with-attachments": {
+          "title": "Manustega",
+          "description": "Memod, millel on vähemalt üks manusfail."
+        },
+        "photos": {
+          "title": "Fotod",
+          "description": "Memod, mis näitavad pilti sisus või manusfailina."
+        },
+        "content-search": {
+          "title": "Sisuotsing",
+          "description": "Otsib teksti memo sisust."
+        },
+        "starts-with": {
+          "title": "Algab tekstiga",
+          "description": "Memod, mille sisu algab kindla tekstiga (ka endsWith)."
+        },
+        "regex": {
+          "title": "Regexi vaste",
+          "description": "Sobitab sisu regulaaravaldisega."
+        },
+        "all-tags-complete": {
+          "title": "Kõik sildid tehtud",
+          "description": "Iga silt lõpeb järelliitega -done (ainult siltidega memod)."
+        },
+        "one-project-tag": {
+          "title": "Üks projektisilt",
+          "description": "Tingimusele vastab täpselt üks silt."
+        },
+        "any-tags": {
+          "title": "Mõni neist siltidest",
+          "description": "Sildid lõikuvad antud hulgaga."
+        },
+        "exact-tags": {
+          "title": "Täpselt need sildid",
+          "description": "Täpselt see siltide hulk, mitte rohkem."
+        },
+        "year-2024": {
+          "title": "2024. aasta memod",
+          "description": "Filtreerib kalendriaasta järgi."
+        },
+        "weekend": {
+          "title": "Nädalavahetuse märkmed",
+          "description": "Loodud pühapäeval või laupäeval (0 = pühapäev)."
+        },
+        "long": {
+          "title": "Pikad märkmed",
+          "description": "Üle 280 tähemärgi pikkused memod."
+        }
+      }
     },
     "configuration": {
       "label": "Konfiguratsioon",
@@ -726,7 +888,9 @@
       "token-endpoint": "Märgi lõpp-punkt",
       "update-sso": "Värskendage SSO",
       "update-sso-description": "Vaadake üle teenusepakkuja konfiguratsioon ja seejärel salvestage väljad, mida tuleks muuta.",
-      "user-endpoint": "Kasutaja lõpp-punkt"
+      "user-endpoint": "Kasutaja lõpp-punkt",
+      "invalid-config": "Identiteedipakkuja seadistus on vigane.",
+      "provider-id-placeholder": "nt github, okta-corp"
     },
     "storage": {
       "accesskey": "Juurdepääsuvõti",
@@ -777,7 +941,8 @@
       "customize-server": {
         "description": "Kirjeldus",
         "icon-url": "Ikoon URL",
-        "title": "Serveri kohandamine"
+        "title": "Serveri kohandamine",
+        "dialog-description": "Kohandage oma eksemplari välimust ja seadeid."
       },
       "custom-code-description": "Valikuline kogu eksemplari hõlmav CSS ja JavaScript, mida rakendatakse esiservale.",
       "custom-code-title": "Kohandatud kood",
@@ -1016,7 +1181,8 @@
   },
   "tooltip": {
     "link-memo": "Link Memo",
-    "select-location": "Asukoht"
+    "select-location": "Asukoht",
+    "link-memo-description": "Otsige ja valige memo, mida linkida"
   },
   "attachment-details": {
     "fields": {
@@ -1081,7 +1247,12 @@
     "loading": "Memosid laaditakse…",
     "new-here": "Kirjuta siia",
     "saved-outside-filter": "Salvestatud. See memo on väljaspool praeguseid kaarditulemusi.",
-    "open-memo": "Ava memo"
+    "open-memo": "Ava memo",
+    "open-in-google-maps": "Ava Google Mapsis",
+    "location-description": "Valige kaardil asukoht või sisestage koordinaadid käsitsi",
+    "latitude": "Laiuskraad",
+    "longitude": "Pikkuskraad",
+    "place-placeholder": "Valige kõigepealt asukoht."
   },
   "calendar": {
     "new-memo-on-day": "Uus memo sel päeval",
@@ -1180,5 +1351,47 @@
       "tag-reading": "lugemine",
       "tag-ideas": "ideed"
     }
+  },
+  "error": {
+    "title": "Midagi läks valesti",
+    "description": "Ilmnes ootamatu viga. Selle põhjuseks võib olla võrguprobleem või rakenduse viga.",
+    "description-update": "Ilmnes ootamatu viga. Selle põhjuseks võib olla võrguprobleem või rakenduse uuendus. Tavaliselt aitab uuesti laadimine.",
+    "details": "Vea üksikasjad",
+    "reload": "Laadi rakendus uuesti",
+    "not-found": "Otsitavat lehte ei leitud.",
+    "permission-denied": "Juurdepääs keelatud",
+    "too-many-requests": "Liiga palju päringuid. Proovige uuesti {{wait}} pärast.",
+    "wait-seconds": "{{count}} s",
+    "wait-minutes": "{{count}} min",
+    "wait-hours": "{{count}} t",
+    "challenge-required": "Läbige kinnituskontroll ja proovige uuesti.",
+    "quota-memo-count": "Olete jõudnud oma {{limit}} memo piirini. Uute loomiseks kustutage mõned memod.",
+    "quota-storage": "See üleslaadimine ületaks teie {{limit}} salvestusruumi piiri. Kasutate praegu {{usage}}.",
+    "quota-upload": "See fail on suurem kui teie piir {{limit}} faili kohta.",
+    "quota-memo-content": "See memo on suurem kui teie piir {{limit}} memo kohta. Salvestamiseks lühendage sisu.",
+    "quota-generic": "Olete jõudnud kasutuspiirini.",
+    "sign-in-failed": "Sisselogimine ebaõnnestus.",
+    "sign-up-failed": "Registreerumine ebaõnnestus",
+    "authenticate-failed": "Autentimine ebaõnnestus.",
+    "update-profile-failed": "Profiili uuendamine ebaõnnestus",
+    "unlink-identity-failed": "Identiteedipakkuja lahtiühendamine ebaõnnestus.",
+    "link-identity-failed": "Konto sidumist ei õnnestunud alustada. Proovi uuesti."
+  },
+  "attachment-preview": {
+    "title": "Manuse eelvaade",
+    "description": "Manuse eelvaate dialoog. Sulgemiseks vajutage Escape, üksuste vahetamiseks kasutage vasak- ja paremnoolt ning suumige pilte nuppude, hiireratta, topeltpuudutuse või näpistusžestiga.",
+    "close": "Sulge eelvaade",
+    "previous": "Eelmine üksus",
+    "next": "Järgmine üksus",
+    "reset-zoom": "Lähtesta suum",
+    "image-alt": "Eelvaate pilt {{index}}/{{count}}",
+    "live-photo-alt": "Eelvaate Live Photo {{index}}/{{count}}",
+    "play-live-photo": "Live Photo esitamiseks liikuge kursoriga peale või vajutage"
+  },
+  "audio-player": {
+    "seek": "Keri faili {{name}}",
+    "back": "{{seconds}} sekundit tagasi",
+    "forward": "{{seconds}} sekundit edasi",
+    "speed": "Taasesituse kiirus {{rate}}x"
   }
 }

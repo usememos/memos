@@ -1,12 +1,10 @@
 import { useQueryClient } from "@tanstack/react-query";
+import { Button, Menu, Tooltip } from "@usememos/ui";
 import { MoreHorizontalIcon, PlusIcon } from "lucide-react";
 import { useState } from "react";
-import toast from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import MemoViewIcon from "@/components/MemoViewIcon";
-import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { userServiceClient } from "@/connect";
 import { useAppSidebar } from "@/contexts/AppSidebarContext";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
@@ -14,6 +12,7 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoViews, userKeys } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
 import { getMemoViewId, isMemoCollectionRoute } from "@/lib/memo-views";
+import { showErrorToast, toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { getCollectionHomePath, ROUTES } from "@/router/routes";
 import type { MemoView } from "@/types/proto/api/user_service_pb";
@@ -27,12 +26,12 @@ import SidebarRow, {
   sidebarRowStateAttributes,
   sidebarRowStateClasses,
 } from "./SidebarRow";
-import SidebarSection, { SIDEBAR_SECTION_ACTION_ICON_CLASSES } from "./SidebarSection";
+import SidebarSection from "./SidebarSection";
 
 /** The row's ⋯ menu: a trailing slot control that stays hidden until the row is engaged. */
 const VIEW_MENU_TRIGGER_CLASSES = cn(
   SIDEBAR_ROW_SLOT_BUTTON_CLASSES,
-  "text-muted-foreground transition-opacity md:opacity-0 md:group-hover/view:opacity-100 md:focus-visible:opacity-100 data-popup-open:opacity-100",
+  "text-mu-ink-muted transition-opacity md:opacity-0 md:group-hover/view:opacity-100 md:focus-visible:opacity-100 data-popup-open:opacity-100",
 );
 
 const ViewsSection = ({ manageActive = false }: { manageActive?: boolean }) => {
@@ -63,9 +62,9 @@ const ViewsSection = ({ manageActive = false }: { manageActive?: boolean }) => {
       await userServiceClient.deleteMemoView({ name: deleteTarget.name });
       await queryClient.invalidateQueries({ queryKey: userKeys.memoViews(currentUser?.name) });
       if (selectedMemoView === getMemoViewId(deleteTarget.name)) setMemoView(undefined);
-      toast.success(t("setting.memo-view.delete-success", { title: deleteTarget.title }));
+      toast.add({ title: t("setting.memo-view.delete-success", { title: deleteTarget.title }), type: "success" });
     } catch (error: unknown) {
-      handleError(error, toast.error, { context: "Delete memo view" });
+      handleError(error, showErrorToast, { context: "Delete memo view" });
     } finally {
       setDeleteTarget(undefined);
     }
@@ -77,9 +76,14 @@ const ViewsSection = ({ manageActive = false }: { manageActive?: boolean }) => {
       action={
         !manageActive &&
         (memoViews.length > 0 || isError) && (
-          <Button variant="quiet" size="icon-sm" onClick={handleCreate} aria-label={t("setting.memo-view.create")}>
-            <PlusIcon className={SIDEBAR_SECTION_ACTION_ICON_CLASSES} strokeWidth={1.8} />
-          </Button>
+          <Tooltip.Root>
+            <Tooltip.Trigger
+              render={
+                <Button variant="ghost" size="xs" onClick={handleCreate} aria-label={t("setting.memo-view.create")} icon={<PlusIcon />} />
+              }
+            />
+            <Tooltip.Popup>{t("setting.memo-view.create")}</Tooltip.Popup>
+          </Tooltip.Root>
         )
       }
     >
@@ -98,12 +102,12 @@ const ViewsSection = ({ manageActive = false }: { manageActive?: boolean }) => {
           >
             <button type="button" onClick={() => handleView(id)} aria-pressed={active || undefined} className={SIDEBAR_ROW_LABEL_CLASSES}>
               <span className={SIDEBAR_ROW_SLOT_CLASSES} aria-hidden="true">
-                <MemoViewIcon icon={memoView.icon} className={cn(SIDEBAR_ROW_ICON_CLASSES, "text-base")} />
+                <MemoViewIcon icon={memoView.icon} className={cn(SIDEBAR_ROW_ICON_CLASSES, "text-sm")} />
               </span>
               <span className="min-w-0 flex-1 truncate">{memoView.title}</span>
             </button>
-            <DropdownMenu>
-              <DropdownMenuTrigger
+            <Menu.Root modal={false} size="sm">
+              <Menu.Trigger
                 nativeButton={false}
                 render={
                   <span
@@ -114,22 +118,22 @@ const ViewsSection = ({ manageActive = false }: { manageActive?: boolean }) => {
                   />
                 }
               >
-                <MoreHorizontalIcon className="size-3.5" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" sideOffset={2} size="sm">
-                <DropdownMenuItem
+                <MoreHorizontalIcon className="mu-icon-sm" />
+              </Menu.Trigger>
+              <Menu.Popup align="end">
+                <Menu.Item
                   onClick={() => {
                     navigate(ROUTES.VIEWS, { state: { memoView } });
                     setMobileOpen(false);
                   }}
                 >
                   {t("common.edit")}
-                </DropdownMenuItem>
-                <DropdownMenuItem variant="destructive" onClick={() => setDeleteTarget(memoView)}>
+                </Menu.Item>
+                <Menu.Item onClick={() => setDeleteTarget(memoView)} danger>
                   {t("common.delete")}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                </Menu.Item>
+              </Menu.Popup>
+            </Menu.Root>
           </div>
         );
       })}
@@ -141,7 +145,7 @@ const ViewsSection = ({ manageActive = false }: { manageActive?: boolean }) => {
         confirmLabel={t("common.delete")}
         cancelLabel={t("common.cancel")}
         onConfirm={handleDelete}
-        confirmVariant="destructive"
+        confirmVariant="danger"
       />
     </SidebarSection>
   );

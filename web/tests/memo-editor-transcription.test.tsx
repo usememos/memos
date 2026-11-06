@@ -61,7 +61,8 @@ describe("existing memo audio transcription", () => {
     );
     await waitFor(() => expect(container.querySelector(".memo-editor-root")?.textContent).toBe(memo.content));
     fireEvent.click(screen.getByRole("button", { name: "Transcribe" }));
-    expect(screen.getByRole("button", { name: "Update" })).toBeDisabled();
+    // Blocked Save stays focusable so its tooltip can say why, so it is aria-disabled rather than disabled.
+    expect(screen.getByRole("button", { name: "Update" })).toHaveAttribute("aria-disabled", "true");
     await act(async () => {
       pending.resolve("Recognized meeting discussion");
       await pending.promise;

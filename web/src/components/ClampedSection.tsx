@@ -1,6 +1,6 @@
+import { Button } from "@usememos/ui";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { type ReactNode, useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 
@@ -54,17 +54,18 @@ const ClampedSection = ({ enabled, children }: ClampedSectionProps) => {
           {children}
         </div>
         {collapsed && (
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-linear-to-t from-card from-0% via-card/60 via-40% to-transparent to-100%" />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-linear-to-t from-mu-surface from-0% via-mu-surface/60 via-40% to-transparent to-100%" />
         )}
       </div>
       {clamped && (
-        <Button variant="quiet" size="sm" onClick={() => setExpanded((prev) => !prev)}>
+        <Button
+          variant="ghost"
+          size="sm"
+          aria-expanded={!collapsed}
+          iconEnd={collapsed ? <ChevronDownIcon /> : <ChevronUpIcon />}
+          onClick={() => setExpanded((prev) => !prev)}
+        >
           {t(collapsed ? "memo.show-more" : "memo.show-less")}
-          {collapsed ? (
-            <ChevronDownIcon className="size-3.5" strokeWidth={1.8} />
-          ) : (
-            <ChevronUpIcon className="size-3.5" strokeWidth={1.8} />
-          )}
         </Button>
       )}
     </>

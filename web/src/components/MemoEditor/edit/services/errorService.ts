@@ -1,4 +1,5 @@
 import { getQuotaExceededMessage } from "@/lib/error";
+import { translate } from "@/utils/i18n";
 
 export const errorService = {
   getErrorMessage(error: unknown): string {
@@ -8,18 +9,18 @@ export const errorService = {
     }
 
     if (error && typeof error === "object" && "rawMessage" in error) {
-      return (error as { rawMessage?: string }).rawMessage || "An error occurred";
+      return (error as { rawMessage?: string }).rawMessage || translate("common.error-occurred");
     }
 
     // Handle ConnectError or errors with details property
     if (error && typeof error === "object" && "details" in error) {
-      return (error as { details?: string }).details || "An error occurred";
+      return (error as { details?: string }).details || translate("common.error-occurred");
     }
 
     if (error instanceof Error) {
       return error.message;
     }
 
-    return "An unknown error occurred";
+    return translate("common.unknown-error");
   },
 };

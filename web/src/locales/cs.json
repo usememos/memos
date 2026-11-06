@@ -138,7 +138,24 @@
     "resize-panel": "Změnit velikost panelu",
     "resize-sidebar": "Změnit velikost postranního panelu",
     "sign-in-to-memos": "Přihlásit se do Memos",
-    "view-all": "Zobrazit vše"
+    "open-navigation": "Otevřít navigaci",
+    "navigation": "Navigace",
+    "primary-navigation": "Hlavní",
+    "download": "Stáhnout",
+    "download-name": "Stáhnout {{name}}",
+    "open-name": "Otevřít {{name}}",
+    "preview-name": "Náhled {{name}}",
+    "no-content": "Žádný obsah",
+    "previous": "Předchozí",
+    "next": "Další",
+    "retry": "Zkusit znovu",
+    "docs": "Dokumentace",
+    "calendar-for-month": "Kalendář pro {{month}}",
+    "date-at-time": "{{date}} v {{time}}",
+    "selected-location": "Vybrané místo",
+    "choose-location": "Vyberte místo",
+    "unknown-error": "Neznámá chyba",
+    "error-occurred": "Došlo k chybě"
   },
   "locale-picker": {
     "no-language-feedback": "Jazyk nenalezen? Odeslat zpětnou vazbu"
@@ -256,7 +273,17 @@
       "alt-text-placeholder": "Popište obrázek…",
       "image-unavailable": "Obrázek není k dispozici",
       "resize-image": "Změnit velikost obrázku"
-    }
+    },
+    "attachments": {
+      "move-up": "Posunout přílohu nahoru",
+      "move-down": "Posunout přílohu dolů",
+      "remove": "Odebrat přílohu"
+    },
+    "remove-relation": "Odebrat vazbu",
+    "remove-location": "Odebrat místo",
+    "recording-unsupported": "Tento prohlížeč nepodporuje nahrávání zvuku.",
+    "microphone-denied": "Přístup k mikrofonu byl odepřen.",
+    "recording-failed": "Nahrávání zvuku se nepodařilo spustit."
   },
   "inbox": {
     "failed-to-load": "Nepodařilo se načíst položku doručené pošty",
@@ -265,7 +292,16 @@
     "unread": "Nepřečtené",
     "space-invitation": "vás pozval k připojení k prostoru",
     "space-invitation-accepted": "Připojili jste se k tomuto prostoru.",
-    "space-invitation-open": "Otevřený prostor"
+    "space-invitation-open": "Otevřený prostor",
+    "commented-on-memo": "okomentoval(a) vaši poznámku",
+    "mentioned-in-comment": "vás zmínil(a) v komentáři",
+    "mentioned-in-memo": "vás zmínil(a) v poznámce",
+    "original": "Původní:",
+    "memo-label": "Poznámka:",
+    "comment-heading": "Komentář",
+    "memo-heading": "Poznámka",
+    "empty-memo": "Prázdná poznámka",
+    "empty-comment": "Prázdný komentář"
   },
   "live-update": {
     "connected": "Živé aktualizace jsou aktivní",
@@ -280,7 +316,11 @@
     "click-to-show-sensitive-content": "Klikněte pro zobrazení citlivého obsahu",
     "comment": {
       "self": "Komentáře",
-      "write-a-comment": "Napsat komentář"
+      "write-a-comment": "Napsat komentář",
+      "view-all-count_one": "Zobrazit {{count}} komentář",
+      "view-all-count_few": "Zobrazit všechny {{count}} komentáře",
+      "view-all-count_many": "Zobrazit všech {{count}} komentáře",
+      "view-all-count_other": "Zobrazit všech {{count}} komentářů"
     },
     "copy-content": "Kopírovat obsah",
     "copy-link": "Kopírovat odkaz",
@@ -294,7 +334,8 @@
       "has-image": "má obrázek",
       "has-link": "maOdkaz",
       "has-location": "má polohu",
-      "has-task-list": "maSeznamUkolu"
+      "has-task-list": "maSeznamUkolu",
+      "remove": "Odebrat filtr"
     },
     "compact-mode": "Kompaktní režim",
     "link-preview": "Náhled odkazu",
@@ -380,7 +421,9 @@
     "restored-successfully": "Úspěšně obnoveno",
     "succeed-copy-content": "Obsah úspěšně zkopírován.",
     "succeed-copy-link": "Odkaz byl úspěšně zkopírován.",
-    "update-succeed": "Aktualizace proběhla úspěšně"
+    "update-succeed": "Aktualizace proběhla úspěšně",
+    "not-signed-in": "Nejste přihlášeni.",
+    "invalid-datetime": "Neplatné datum a čas. Použijte formát 2023-12-31 23:59:59."
   },
   "reference": {
     "no-memos-found": "Žádné poznámky nenalezeny",
@@ -450,7 +493,9 @@
       "usage-storage": "Úložiště",
       "usage-title": "Limity využití",
       "storage-usage-error": "Vaše úložiště příloh není k dispozici.",
-      "email-in-use": "Tento e-mail je již používán jiným účtem."
+      "email-in-use": "Tento e-mail je již používán jiným účtem.",
+      "avatar-too-large": "Vyberte obrázek o velikosti nejvýše 2 MB.",
+      "avatar-unreadable": "Tento obrázek nelze načíst. Zkuste jiný soubor."
     },
     "instance": {
       "disallow-change-nickname": "Zakázat změnu přezdívky",
@@ -490,7 +535,10 @@
       "archived": "Archivováno",
       "member-column": "Člen",
       "summary-column": "Shrnutí",
-      "export-memos": "Exportovat poznámky"
+      "export-memos": "Exportovat poznámky",
+      "username-password-required": "Uživatelské jméno a heslo nesmí být prázdné",
+      "create-success": "Uživatel byl vytvořen",
+      "update-success": "Uživatel byl aktualizován"
     },
     "memo": {
       "label": "Poznámky",
@@ -524,7 +572,12 @@
       "theme-description": "Okamžitě použije vybraný motiv na tomto zařízení.",
       "theme": "Motiv",
       "uploads-privacy-description": "Ovládejte informace citlivé na ochranu soukromí odesílané s nahranými médii.",
-      "uploads-privacy-title": "Nahrávání a soukromí"
+      "uploads-privacy-title": "Nahrávání a soukromí",
+      "theme-system": "Podle systému",
+      "theme-system-short": "Systém",
+      "theme-light": "Světlý",
+      "theme-dark": "Tmavý",
+      "theme-paper": "Papír"
     },
     "editor": {
       "label": "Editor",
@@ -534,7 +587,118 @@
       "create": "Vytvořit pohled",
       "delete-confirm": "Jste si jisti, že chcete odstranit zobrazení `{{title}}`?",
       "delete-success": "Zobrazení `{{title}}` bylo úspěšně odstraněno",
-      "change-icon": "Změnit ikonu zobrazení"
+      "change-icon": "Změnit ikonu zobrazení",
+      "page-description": "Vytvářejte opakovaně použitelná zobrazení s poli, operátory, časovými funkcemi a porovnáváním štítků. Začněte od příkladů a před uložením je ověřte.",
+      "edit": "Upravit zobrazení",
+      "form-description": "Pojmenujte zobrazení a určete výraz filtru poznámek, který má používat.",
+      "title-placeholder": "Připnuté, Nedávné poznámky, Práce",
+      "filter-help": "Výrazy kombinujte pomocí {{and}}, {{or}} a {{not}}. Časová pole jsou časová razítka — použijte {{now}}, {{duration}}, {{timestamp}} a přístupové funkce jako {{year}}. Štítky podporují {{sets}} a {{size}} měří délku.",
+      "validate": "Ověřit",
+      "all": "Všechna zobrazení",
+      "loading": "Načítání zobrazení…",
+      "load-failed": "Zobrazení se nepodařilo načíst.",
+      "empty-title": "Zatím žádná zobrazení",
+      "empty-description": "Uložte filtr a rychle se vracejte k poznámkám, které potřebujete.",
+      "examples-title": "Příklady výrazů",
+      "fields-title": "Podporovaná pole",
+      "title-filter-required": "Název a filtr nesmí být prázdné",
+      "filter-valid": "Výraz filtru vypadá platně",
+      "create-success": "Zobrazení bylo vytvořeno",
+      "update-success": "Zobrazení bylo aktualizováno",
+      "examples": {
+        "pinned": {
+          "title": "Připnuté",
+          "description": "Pouze připnuté poznámky."
+        },
+        "recent": {
+          "title": "Nedávné poznámky",
+          "description": "Poznámky vytvořené za poslední hodinu."
+        },
+        "public": {
+          "title": "Veřejné poznámky",
+          "description": "Pouze veřejné poznámky."
+        },
+        "project-tags": {
+          "title": "Štítky projektů",
+          "description": "Shoda s jedním nebo více přesnými štítky."
+        },
+        "untagged": {
+          "title": "Bez štítků",
+          "description": "Poznámky bez jakýchkoli štítků."
+        },
+        "archive-tree": {
+          "title": "Strom archivu",
+          "description": "Shoda hierarchických štítků podle prefixu."
+        },
+        "unassigned": {
+          "title": "Nepřiřazené",
+          "description": "Poznámky, které nejsou v žádném prostoru."
+        },
+        "one-space": {
+          "title": "V jednom prostoru",
+          "description": "Poznámky umístěné v prostoru. Použijte ID prostoru z jeho URL nebo nastavení."
+        },
+        "open-tasks": {
+          "title": "Otevřené úkoly",
+          "description": "Poznámky s nedokončenými úkoly."
+        },
+        "links-or-code": {
+          "title": "Odkazy nebo kód",
+          "description": "Poznámky obsahující odkazy nebo bloky kódu."
+        },
+        "no-location": {
+          "title": "Bez místa",
+          "description": "Poznámky bez připojeného místa."
+        },
+        "with-attachments": {
+          "title": "S přílohami",
+          "description": "Poznámky s alespoň jedním přiloženým souborem."
+        },
+        "photos": {
+          "title": "Fotky",
+          "description": "Poznámky, které zobrazují obrázek, v obsahu nebo jako přiložený soubor."
+        },
+        "content-search": {
+          "title": "Hledání v obsahu",
+          "description": "Hledat text v obsahu poznámek."
+        },
+        "starts-with": {
+          "title": "Začíná na",
+          "description": "Poznámky, jejichž obsah začíná daným textem (také endsWith)."
+        },
+        "regex": {
+          "title": "Shoda s regexem",
+          "description": "Porovnat obsah s regulárním výrazem."
+        },
+        "all-tags-complete": {
+          "title": "Všechny štítky dokončené",
+          "description": "Každý štítek končí na -done (pouze poznámky se štítky)."
+        },
+        "one-project-tag": {
+          "title": "Jeden štítek projektu",
+          "description": "Podmínce odpovídá právě jeden štítek."
+        },
+        "any-tags": {
+          "title": "Kterýkoli z těchto štítků",
+          "description": "Štítky mají průnik se zadanou množinou."
+        },
+        "exact-tags": {
+          "title": "Přesně tyto štítky",
+          "description": "Označeno přesně touto množinou štítků, nic víc."
+        },
+        "year-2024": {
+          "title": "Poznámky z roku 2024",
+          "description": "Filtrovat podle kalendářního roku."
+        },
+        "weekend": {
+          "title": "Víkendové poznámky",
+          "description": "Vytvořeno v neděli nebo v sobotu (0 = neděle)."
+        },
+        "long": {
+          "title": "Dlouhé poznámky",
+          "description": "Poznámky delší než 280 znaků."
+        }
+      }
     },
     "configuration": {
       "label": "Konfigurace",
@@ -611,7 +775,9 @@
       "scopes-description": "Rozsahy oddělte mezerami. Většina poskytovatelů potřebuje pouze malou sadu, jako je přístup k profilu nebo e-mailu.",
       "template-description": "Začněte od přednastaveného poskytovatele a poté upravte přihlašovací údaje a koncové body pro svého tenanta.",
       "unlink-success": "Odpojeno {{name}}.",
-      "update-sso-description": "Zkontrolujte konfiguraci poskytovatele a poté uložte pole, která by se měla změnit."
+      "update-sso-description": "Zkontrolujte konfiguraci poskytovatele a poté uložte pole, která by se měla změnit.",
+      "invalid-config": "Konfigurace poskytovatele identity je neplatná.",
+      "provider-id-placeholder": "např. github, okta-corp"
     },
     "storage": {
       "accesskey": "Přístupový klíč",
@@ -659,7 +825,8 @@
       "customize-server": {
         "description": "Popis",
         "icon-url": "URL ikony",
-        "title": "Přizpůsobení serveru"
+        "title": "Přizpůsobení serveru",
+        "dialog-description": "Přizpůsobte si vzhled a nastavení své instance."
       },
       "label": "Systém",
       "server-name": "Název serveru",
@@ -979,7 +1146,8 @@
   },
   "tooltip": {
     "link-memo": "Propojit poznámku",
-    "select-location": "Umístění"
+    "select-location": "Umístění",
+    "link-memo-description": "Vyhledejte a vyberte poznámku k propojení"
   },
   "demo": {
     "banner-description": "Změny jsou dočasné a lze je resetovat.",
@@ -1082,7 +1250,12 @@
     "loading": "Načítání poznámek…",
     "new-here": "Pište sem",
     "saved-outside-filter": "Uloženo. Tato poznámka je mimo aktuální výsledky mapy.",
-    "open-memo": "Otevřít memorandum"
+    "open-memo": "Otevřít memorandum",
+    "open-in-google-maps": "Otevřít v Google Maps",
+    "location-description": "Vyberte místo na mapě nebo zadejte souřadnice ručně",
+    "latitude": "Zeměpisná šířka",
+    "longitude": "Zeměpisná délka",
+    "place-placeholder": "Nejprve vyberte polohu."
   },
   "calendar": {
     "new-memo-on-day": "Nová poznámka z tohoto dne",
@@ -1181,5 +1354,47 @@
       "tag-reading": "čtení",
       "tag-ideas": "nápady"
     }
+  },
+  "error": {
+    "title": "Něco se pokazilo",
+    "description": "Došlo k neočekávané chybě. Příčinou může být problém se sítí nebo s aplikací.",
+    "description-update": "Došlo k neočekávané chybě. Příčinou může být problém se sítí nebo aktualizace aplikace. Obvykle pomůže stránku znovu načíst.",
+    "details": "Podrobnosti chyby",
+    "reload": "Znovu načíst aplikaci",
+    "not-found": "Hledanou stránku se nepodařilo najít.",
+    "permission-denied": "Přístup odepřen",
+    "too-many-requests": "Příliš mnoho požadavků. Zkuste to znovu za {{wait}}.",
+    "wait-seconds": "{{count}} s",
+    "wait-minutes": "{{count}} min",
+    "wait-hours": "{{count}} h",
+    "challenge-required": "Dokončete ověření a zkuste to znovu.",
+    "quota-memo-count": "Dosáhli jste limitu {{limit}} poznámek. Chcete-li vytvořit nové, některé poznámky smažte.",
+    "quota-storage": "Toto nahrání by překročilo váš limit úložiště {{limit}}. Využíváte {{usage}}.",
+    "quota-upload": "Tento soubor je větší než váš limit {{limit}} na soubor.",
+    "quota-memo-content": "Tato poznámka je větší než váš limit {{limit}} na poznámku. Zkraťte obsah, abyste ji mohli uložit.",
+    "quota-generic": "Dosáhli jste limitu využití.",
+    "sign-in-failed": "Přihlášení se nezdařilo.",
+    "sign-up-failed": "Registrace se nezdařila",
+    "authenticate-failed": "Ověření se nezdařilo.",
+    "update-profile-failed": "Aktualizace profilu se nezdařila",
+    "unlink-identity-failed": "Odpojení poskytovatele identity se nezdařilo.",
+    "link-identity-failed": "Propojení účtu se nepodařilo zahájit. Zkuste to znovu."
+  },
+  "attachment-preview": {
+    "title": "Náhled přílohy",
+    "description": "Dialog náhledu přílohy. Stisknutím Escape jej zavřete, šipkami vlevo a vpravo přepínáte položky a obrázky můžete přibližovat ovládacími prvky, kolečkem myši, dvojitým klepnutím nebo gestem sevření prstů.",
+    "close": "Zavřít náhled",
+    "previous": "Předchozí položka",
+    "next": "Další položka",
+    "reset-zoom": "Obnovit přiblížení",
+    "image-alt": "Náhled obrázku {{index}} z {{count}}",
+    "live-photo-alt": "Náhled živé fotky {{index}} z {{count}}",
+    "play-live-photo": "Najeďte myší nebo stiskněte pro přehrání živé fotky"
+  },
+  "audio-player": {
+    "seek": "Posun v {{name}}",
+    "back": "Zpět o {{seconds}} sekund",
+    "forward": "Vpřed o {{seconds}} sekund",
+    "speed": "Rychlost přehrávání {{rate}}x"
   }
 }

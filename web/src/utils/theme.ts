@@ -1,40 +1,43 @@
-import defaultDarkThemeContent from "../themes/default-dark.css?raw";
-import paperThemeContent from "../themes/paper.css?raw";
+import type { Translations } from "@/utils/i18n";
 
 // ============================================================================
 // Types and Constants
 // ============================================================================
 
+/** The saved preference: the account setting `theme` and localStorage keep these values. */
 const VALID_THEMES = ["system", "default", "default-dark", "paper"] as const;
 
 export type Theme = (typeof VALID_THEMES)[number];
 export type ResolvedTheme = Exclude<Theme, "system">;
 
+/** The `data-theme` value on <html>: `light` and `dark` are @usememos/ui's themes, `paper` is memos' own. */
+export type Appearance = "light" | "dark" | "paper";
+
 export interface ThemeOption {
   value: string;
-  label: string;
+  labelKey: Translations;
 }
 
 const STORAGE_KEY = "memos-theme";
-const STYLE_ELEMENT_ID = "instance-theme";
 
-const THEME_CONTENT: Record<ResolvedTheme, string | null> = {
-  default: null,
-  "default-dark": defaultDarkThemeContent,
-  paper: paperThemeContent,
+const APPEARANCES: Record<ResolvedTheme, Appearance> = {
+  default: "light",
+  "default-dark": "dark",
+  paper: "paper",
 };
 
-const THEME_COLORS: Record<ResolvedTheme, string> = {
-  default: "#faf9f5",
-  "default-dark": "#1d1f23",
+/** Each theme's canvas, for the browser chrome on phones; the values in index.html match. */
+const THEME_COLORS: Record<Appearance, string> = {
+  light: "#fafafa",
+  dark: "#0f0f0f",
   paper: "#f5ede4",
 };
 
 export const THEME_OPTIONS: ThemeOption[] = [
-  { value: "system", label: "Sync with system" },
-  { value: "default", label: "Light" },
-  { value: "default-dark", label: "Dark" },
-  { value: "paper", label: "Paper" },
+  { value: "system", labelKey: "setting.preference.theme-system" },
+  { value: "default", labelKey: "setting.preference.theme-light" },
+  { value: "default-dark", labelKey: "setting.preference.theme-dark" },
+  { value: "paper", labelKey: "setting.preference.theme-paper" },
 ];
 
 // ============================================================================
@@ -43,7 +46,7 @@ export const THEME_OPTIONS: ThemeOption[] = [
 
 /**
  * Validates and normalizes a theme string to a valid theme.
- * Falls back to "default" for invalid themes.
+ * Falls back to "default" (Light) for unknown values.
  */
 const validateTheme = (theme: string): Theme => {
   return VALID_THEMES.includes(theme as Theme) ? (theme as Theme) : "default";
@@ -68,6 +71,11 @@ export const resolveTheme = (theme: string): ResolvedTheme => {
   const validTheme = validateTheme(theme);
   return validTheme === "system" ? getSystemTheme() : validTheme;
 };
+
+/** The `data-theme` value a resolved theme selects. */
+const toAppearance = (theme: ResolvedTheme): Appearance => APPEARANCES[theme];
+
+export const isDarkTheme = (theme: ResolvedTheme): boolean => toAppearance(theme) === "dark";
 
 // ============================================================================
 // LocalStorage Helpers
@@ -137,38 +145,11 @@ export const getThemeWithFallback = (userTheme?: string): Theme => {
 // ============================================================================
 
 /**
- * Removes the existing theme style element from the DOM.
+ * Sets the data-theme attribute on the document element. The stylesheets select the
+ * tokens and the `color-scheme` from it, and popups portaled to <body> inherit them.
  */
-const removeThemeStyle = (): void => {
-  document.getElementById(STYLE_ELEMENT_ID)?.remove();
-};
-
-/**
- * Injects theme CSS into the document head.
- * Skips injection for the default theme (uses base CSS).
- */
-const injectThemeStyle = (theme: ResolvedTheme): void => {
-  removeThemeStyle();
-
-  if (theme === "default") {
-    return; // Use base CSS for default theme
-  }
-
-  const css = THEME_CONTENT[theme];
-  if (css) {
-    const style = document.createElement("style");
-    style.id = STYLE_ELEMENT_ID;
-    style.textContent = css;
-    document.head.appendChild(style);
-  }
-};
-
-/**
- * Sets the data-theme attribute on the document element.
- * This allows CSS to react to the current theme.
- */
-const setThemeAttribute = (theme: ResolvedTheme): void => {
-  document.documentElement.setAttribute("data-theme", theme);
+const setThemeAttribute = (appearance: Appearance): void => {
+  document.documentElement.setAttribute("data-theme", appearance);
 };
 
 /**
@@ -181,33 +162,21 @@ const updateThemeColorMeta = (theme: Theme): void => {
 
   if (theme === "system") {
     if (lightMeta) {
-      lightMeta.content = THEME_COLORS.default;
+      lightMeta.content = THEME_COLORS.light;
     }
     if (darkMeta) {
-      darkMeta.content = THEME_COLORS["default-dark"];
+      darkMeta.content = THEME_COLORS.dark;
     }
     return;
   }
 
-  const resolvedTheme = resolveTheme(theme);
-  const color = THEME_COLORS[resolvedTheme];
+  const color = THEME_COLORS[toAppearance(resolveTheme(theme))];
   if (lightMeta) {
     lightMeta.content = color;
   }
   if (darkMeta) {
     darkMeta.content = color;
   }
-};
-
-export const isDarkTheme = (theme: ResolvedTheme): boolean => {
-  return theme.endsWith("-dark") || theme.endsWith(".dark");
-};
-
-/**
- * Updates the browser native control color scheme to match the current theme.
- */
-const updateColorScheme = (theme: ResolvedTheme): void => {
-  document.documentElement.style.colorScheme = isDarkTheme(theme) ? "dark" : "light";
 };
 
 // ============================================================================
@@ -219,19 +188,16 @@ const updateColorScheme = (theme: ResolvedTheme): void => {
  * This function:
  * 1. Validates the theme
  * 2. Resolves "system" to actual theme
- * 3. Injects theme CSS
- * 4. Sets data-theme attribute
- * 5. Updates browser native UI colors
- * 6. Persists to localStorage
+ * 3. Sets data-theme attribute
+ * 4. Updates browser native UI colors
+ * 5. Persists to localStorage
  */
 export const loadTheme = (themeName: string): void => {
   const validTheme = validateTheme(themeName);
   const resolvedTheme = resolveTheme(validTheme);
 
-  injectThemeStyle(resolvedTheme);
-  setThemeAttribute(resolvedTheme);
+  setThemeAttribute(toAppearance(resolvedTheme));
   updateThemeColorMeta(validTheme);
-  updateColorScheme(resolvedTheme);
   setStoredTheme(validTheme); // Store original theme preference (not resolved)
 };
 

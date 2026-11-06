@@ -138,7 +138,24 @@
     "resize-panel": "Cambiar tamaño do panel",
     "resize-sidebar": "Cambiar tamaño da barra lateral",
     "sign-in-to-memos": "Iniciar sesión en Memos",
-    "view-all": "Ver todo"
+    "open-navigation": "Abrir a navegación",
+    "navigation": "Navegación",
+    "primary-navigation": "Principal",
+    "download": "Descargar",
+    "download-name": "Descargar {{name}}",
+    "open-name": "Abrir {{name}}",
+    "preview-name": "Vista previa de {{name}}",
+    "no-content": "Sen contido",
+    "previous": "Anterior",
+    "next": "Seguinte",
+    "retry": "Tentar de novo",
+    "docs": "Documentación",
+    "calendar-for-month": "Calendario de {{month}}",
+    "date-at-time": "{{date}} ás {{time}}",
+    "selected-location": "Localización seleccionada",
+    "choose-location": "Escolle unha localización",
+    "unknown-error": "Erro descoñecido",
+    "error-occurred": "Produciuse un erro"
   },
   "locale-picker": {
     "no-language-feedback": "Non se atopou o idioma? Enviar comentarios"
@@ -256,7 +273,17 @@
       "alt-text-placeholder": "Describe a imaxe…",
       "image-unavailable": "Imaxe non dispoñible",
       "resize-image": "Cambiar o tamaño da imaxe"
-    }
+    },
+    "attachments": {
+      "move-up": "Mover o anexo cara arriba",
+      "move-down": "Mover o anexo cara abaixo",
+      "remove": "Quitar o anexo"
+    },
+    "remove-relation": "Quitar a relación",
+    "remove-location": "Quitar a localización",
+    "recording-unsupported": "Este navegador non admite a gravación de audio.",
+    "microphone-denied": "Denegouse o permiso do micrófono.",
+    "recording-failed": "Non se puido iniciar a gravación de audio."
   },
   "inbox": {
     "failed-to-load": "Fallou a carga do elemento da caixa de entrada",
@@ -265,7 +292,16 @@
     "unread": "Sen ler",
     "space-invitation": "convidoute a unirte a un espazo",
     "space-invitation-accepted": "Unícheste a este espazo.",
-    "space-invitation-open": "Abrir espazo"
+    "space-invitation-open": "Abrir espazo",
+    "commented-on-memo": "comentou a túa nota",
+    "mentioned-in-comment": "mencionoute nun comentario",
+    "mentioned-in-memo": "mencionoute nunha nota",
+    "original": "Orixinal:",
+    "memo-label": "Nota:",
+    "comment-heading": "Comentario",
+    "memo-heading": "Nota",
+    "empty-memo": "Nota baleira",
+    "empty-comment": "Comentario baleiro"
   },
   "live-update": {
     "connected": "Actualizacións en directo activas",
@@ -280,7 +316,9 @@
     "click-to-show-sensitive-content": "Preme para mostrar contido NSFW",
     "comment": {
       "self": "Comentarios",
-      "write-a-comment": "Escribe un comentario"
+      "write-a-comment": "Escribe un comentario",
+      "view-all-count_one": "Ver {{count}} comentario",
+      "view-all-count_other": "Ver os {{count}} comentarios"
     },
     "copy-content": "Copiar contido",
     "copy-link": "Copiar ligazón",
@@ -294,7 +332,8 @@
       "has-image": "ten imaxe",
       "has-link": "hasLink",
       "has-location": "ten localización",
-      "has-task-list": "hasTaskList"
+      "has-task-list": "hasTaskList",
+      "remove": "Quitar o filtro"
     },
     "compact-mode": "Modo compacto",
     "link-preview": "Vista previa de ligazóns",
@@ -380,7 +419,9 @@
     "restored-successfully": "Recuperación correcta",
     "succeed-copy-content": "Contido copiado correctamente.",
     "succeed-copy-link": "Ligazón copiada correctamente.",
-    "update-succeed": "Fíxose a actualización"
+    "update-succeed": "Fíxose a actualización",
+    "not-signed-in": "Non iniciaches sesión.",
+    "invalid-datetime": "Data e hora non válidas. Usa o formato 2023-12-31 23:59:59."
   },
   "reference": {
     "no-memos-found": "Non hai memos",
@@ -450,7 +491,9 @@
       "usage-storage": "Storage",
       "usage-title": "Usage limits",
       "storage-usage-error": "O teu almacenamento de anexos non está dispoñible.",
-      "email-in-use": "Este correo electrónico xa o usa outra conta."
+      "email-in-use": "Este correo electrónico xa o usa outra conta.",
+      "avatar-too-large": "Escolle unha imaxe de 2 MB ou menos.",
+      "avatar-unreadable": "Non se pode ler esta imaxe. Proba con outro ficheiro."
     },
     "instance": {
       "disallow-change-nickname": "Non permitir cambiar o alcume",
@@ -490,7 +533,10 @@
       "archived": "Arquivado",
       "member-column": "Membro",
       "summary-column": "Resumo",
-      "export-memos": "Exportar notas"
+      "export-memos": "Exportar notas",
+      "username-password-required": "O nome de usuario e o contrasinal non poden estar baleiros",
+      "create-success": "Usuario creado",
+      "update-success": "Usuario actualizado"
     },
     "memo": {
       "label": "Memo",
@@ -524,7 +570,12 @@
       "theme-description": "Aplica o tema seleccionado inmediatamente neste dispositivo.",
       "theme": "Decorado",
       "uploads-privacy-description": "Controla a información confidencial sobre a privacidade enviada cos medios cargados.",
-      "uploads-privacy-title": "Cargas e privacidade"
+      "uploads-privacy-title": "Cargas e privacidade",
+      "theme-system": "Sincronizar co sistema",
+      "theme-system-short": "Sistema",
+      "theme-light": "Claro",
+      "theme-dark": "Escuro",
+      "theme-paper": "Papel"
     },
     "editor": {
       "label": "Editor",
@@ -534,7 +585,118 @@
       "create": "Crear vista",
       "delete-confirm": "Tes certeza de querer eliminar a vista `{{title}}`?",
       "delete-success": "Eliminouse correctamente a vista `{{title}}`",
-      "change-icon": "Cambiar a icona da vista"
+      "change-icon": "Cambiar a icona da vista",
+      "page-description": "Crea vistas reutilizables con campos, operadores, funcións de tempo e coincidencia de etiquetas. Parte dos exemplos e valida antes de gardar.",
+      "edit": "Editar a vista",
+      "form-description": "Ponlle nome á vista e define a expresión de filtro de notas que debe aplicar.",
+      "title-placeholder": "Fixadas, Notas recentes, Traballo",
+      "filter-help": "Combina expresións con {{and}}, {{or}} e {{not}}. Os campos de tempo son marcas de tempo: usa {{now}}, {{duration}}, {{timestamp}} e accesores como {{year}}. As etiquetas admiten {{sets}} e {{size}} mide a lonxitude.",
+      "validate": "Validar",
+      "all": "Todas as vistas",
+      "loading": "Cargando vistas…",
+      "load-failed": "Non se puideron cargar as vistas.",
+      "empty-title": "Aínda non hai vistas",
+      "empty-description": "Garda un filtro para volver rapidamente ás notas que necesitas.",
+      "examples-title": "Exemplos de expresións",
+      "fields-title": "Campos admitidos",
+      "title-filter-required": "O título e o filtro non poden estar baleiros",
+      "filter-valid": "A expresión de filtro parece válida",
+      "create-success": "Vista creada",
+      "update-success": "Vista actualizada",
+      "examples": {
+        "pinned": {
+          "title": "Fixadas",
+          "description": "Só notas fixadas."
+        },
+        "recent": {
+          "title": "Notas recentes",
+          "description": "Notas creadas na última hora."
+        },
+        "public": {
+          "title": "Notas públicas",
+          "description": "Só notas públicas."
+        },
+        "project-tags": {
+          "title": "Etiquetas de proxecto",
+          "description": "Coincide cunha ou máis etiquetas exactas."
+        },
+        "untagged": {
+          "title": "Sen etiquetas",
+          "description": "Notas sen ningunha etiqueta."
+        },
+        "archive-tree": {
+          "title": "Árbore de arquivo",
+          "description": "Coincide con etiquetas xerárquicas por prefixo."
+        },
+        "unassigned": {
+          "title": "Sen asignar",
+          "description": "Notas que non están en ningún espazo."
+        },
+        "one-space": {
+          "title": "Nun espazo",
+          "description": "Notas situadas nun espazo. Usa o ID do espazo que aparece no seu URL ou na súa configuración."
+        },
+        "open-tasks": {
+          "title": "Tarefas pendentes",
+          "description": "Notas con tarefas sen rematar."
+        },
+        "links-or-code": {
+          "title": "Ligazóns ou código",
+          "description": "Notas que conteñen ligazóns ou bloques de código."
+        },
+        "no-location": {
+          "title": "Sen localización",
+          "description": "Notas sen unha localización anexa."
+        },
+        "with-attachments": {
+          "title": "Con anexos",
+          "description": "Notas con polo menos un ficheiro anexo."
+        },
+        "photos": {
+          "title": "Fotos",
+          "description": "Notas que mostran unha imaxe, no contido ou como ficheiro anexo."
+        },
+        "content-search": {
+          "title": "Busca no contido",
+          "description": "Busca texto dentro do contido das notas."
+        },
+        "starts-with": {
+          "title": "Comeza por",
+          "description": "Notas cuxo contido comeza cun texto (tamén endsWith)."
+        },
+        "regex": {
+          "title": "Coincidencia regex",
+          "description": "Compara o contido cunha expresión regular."
+        },
+        "all-tags-complete": {
+          "title": "Todas as etiquetas completadas",
+          "description": "Todas as etiquetas rematan en -done (só notas con etiquetas)."
+        },
+        "one-project-tag": {
+          "title": "Unha etiqueta de proxecto",
+          "description": "Exactamente unha etiqueta cumpre o predicado."
+        },
+        "any-tags": {
+          "title": "Calquera destas etiquetas",
+          "description": "As etiquetas teñen intersección co conxunto dado."
+        },
+        "exact-tags": {
+          "title": "Exactamente estas etiquetas",
+          "description": "Etiquetadas exactamente con este conxunto, nada máis."
+        },
+        "year-2024": {
+          "title": "Notas de 2024",
+          "description": "Filtra por ano natural."
+        },
+        "weekend": {
+          "title": "Notas da fin de semana",
+          "description": "Creadas en domingo ou sábado (0 = domingo)."
+        },
+        "long": {
+          "title": "Notas longas",
+          "description": "Notas de máis de 280 caracteres."
+        }
+      }
     },
     "configuration": {
       "label": "Configuración",
@@ -610,7 +772,9 @@
       "scopes-description": "Separa os ámbitos con espazos. A maioría dos provedores só necesitan un pequeno conxunto como o acceso ao perfil ou ao correo electrónico.",
       "template-description": "Comeza a partir dunha configuración predeterminada do provedor e, a continuación, axusta as credenciais e os puntos finais do teu inquilino.",
       "unlink-success": "{{name}} desvinculado.",
-      "update-sso-description": "Revisa a configuración do provedor e, a continuación, garda os campos que deberían cambiar."
+      "update-sso-description": "Revisa a configuración do provedor e, a continuación, garda os campos que deberían cambiar.",
+      "invalid-config": "A configuración do provedor de identidade non é válida.",
+      "provider-id-placeholder": "p. ex. github, okta-corp"
     },
     "storage": {
       "accesskey": "Clave de acceso",
@@ -658,7 +822,8 @@
       "customize-server": {
         "description": "Descrición",
         "icon-url": "URL da icona",
-        "title": "Personalizar servidor"
+        "title": "Personalizar servidor",
+        "dialog-description": "Personaliza o aspecto e a configuración da túa instancia."
       },
       "label": "Sistema",
       "server-name": "Nome do servidor",
@@ -978,7 +1143,8 @@
   },
   "tooltip": {
     "link-memo": "Ligazón á nota",
-    "select-location": "Localización"
+    "select-location": "Localización",
+    "link-memo-description": "Busca e selecciona unha nota para ligala"
   },
   "demo": {
     "banner-description": "Os cambios son temporais e pódense restablecer.",
@@ -1081,7 +1247,12 @@
     "loading": "Cargando notas…",
     "new-here": "Escribir aquí",
     "saved-outside-filter": "Gardado. Esta nota está fóra dos resultados actuais do mapa.",
-    "open-memo": "Abrir nota"
+    "open-memo": "Abrir nota",
+    "open-in-google-maps": "Abrir en Google Maps",
+    "location-description": "Selecciona unha localización no mapa ou introduce as coordenadas manualmente",
+    "latitude": "Latitude",
+    "longitude": "Lonxitude",
+    "place-placeholder": "Primeiro escolle unha posición."
   },
   "calendar": {
     "new-memo-on-day": "Nova nota neste día",
@@ -1180,5 +1351,47 @@
       "tag-reading": "lectura",
       "tag-ideas": "ideas"
     }
+  },
+  "error": {
+    "title": "Algo saíu mal",
+    "description": "Produciuse un erro inesperado. Pode deberse a un problema de rede ou da aplicación.",
+    "description-update": "Produciuse un erro inesperado. Pode deberse a un problema de rede ou a unha actualización da aplicación. Recargar adoita solucionalo.",
+    "details": "Detalles do erro",
+    "reload": "Recargar a aplicación",
+    "not-found": "Non se atopa a páxina que buscas.",
+    "permission-denied": "Permiso denegado",
+    "too-many-requests": "Demasiadas solicitudes. Téntao de novo en {{wait}}.",
+    "wait-seconds": "{{count}} s",
+    "wait-minutes": "{{count}} min",
+    "wait-hours": "{{count}} h",
+    "challenge-required": "Completa a verificación e téntao de novo.",
+    "quota-memo-count": "Alcanzaches o teu límite de {{limit}} notas. Elimina notas para crear outras novas.",
+    "quota-storage": "Esta subida superaría o teu límite de almacenamento de {{limit}}. Estás a usar {{usage}}.",
+    "quota-upload": "Este ficheiro supera o teu límite de {{limit}} por ficheiro.",
+    "quota-memo-content": "Esta nota supera o teu límite de {{limit}} por nota. Acurta o contido para gardala.",
+    "quota-generic": "Alcanzaches un límite de uso.",
+    "sign-in-failed": "Non se puido iniciar sesión.",
+    "sign-up-failed": "Non se puido completar o rexistro",
+    "authenticate-failed": "Non se puido autenticar.",
+    "update-profile-failed": "Non se puido actualizar o perfil",
+    "unlink-identity-failed": "Non se puido desvincular o provedor de identidade.",
+    "link-identity-failed": "Non se puido iniciar a vinculación da conta. Téntao de novo."
+  },
+  "attachment-preview": {
+    "title": "Vista previa do anexo",
+    "description": "Diálogo de vista previa de anexos. Preme Escape para pechar, usa as frechas esquerda e dereita para cambiar de elemento e amplía as imaxes cos controis, a roda do rato, un dobre toque ou o xesto de belisco.",
+    "close": "Pechar a vista previa",
+    "previous": "Elemento anterior",
+    "next": "Elemento seguinte",
+    "reset-zoom": "Restablecer o zoom",
+    "image-alt": "Vista previa da imaxe {{index}} de {{count}}",
+    "live-photo-alt": "Vista previa da foto en directo {{index}} de {{count}}",
+    "play-live-photo": "Pasa o cursor ou preme para reproducir a foto en directo"
+  },
+  "audio-player": {
+    "seek": "Desprazarse en {{name}}",
+    "back": "Retroceder {{seconds}} segundos",
+    "forward": "Avanzar {{seconds}} segundos",
+    "speed": "Velocidade de reprodución {{rate}}x"
   }
 }

@@ -1,3 +1,4 @@
+import { Button } from "@usememos/ui";
 import { EyeIcon } from "lucide-react";
 import { useMemo } from "react";
 import ClampedSection from "@/components/ClampedSection";
@@ -5,7 +6,6 @@ import { MemoEditor } from "@/components/MemoEditor/MemoEditor";
 import { AttachmentGallery, MemoMetadataRows } from "@/components/MemoMetadata";
 import { separateAttachments } from "@/components/MemoMetadata/Attachment/attachmentHelpers";
 import { isReferenceRelation } from "@/components/MemoMetadata/Relation/relationHelpers";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { filterInlineManagedAttachments } from "@/utils/managed-attachment";
@@ -13,22 +13,23 @@ import { MemoReactionListView } from "../../MemoReactionListView";
 import { useMemoHandlers } from "../hooks";
 import { useMemoViewContext } from "../MemoViewContext";
 import type { MemoBodyProps } from "../types";
+import { CreatorDisplay } from "./MemoHeader";
 
 const BlurOverlay: React.FC<{ onClick?: () => void }> = ({ onClick }) => {
   const t = useTranslate();
   return (
     <div className="absolute inset-0 z-10 flex items-center justify-center">
-      <Button type="button" variant="outline" size="sm" onClick={onClick}>
-        <EyeIcon className="size-3.5" strokeWidth={1.8} />
+      <Button type="button" variant="neutral" size="sm" onClick={onClick} icon={<EyeIcon />}>
         {t("memo.click-to-show-sensitive-content")}
       </Button>
     </div>
   );
 };
 
-const MemoBody: React.FC<MemoBodyProps> = ({ compact }) => {
+const MemoBody: React.FC<MemoBodyProps> = ({ compact, showCreator }) => {
   const {
     memo,
+    creator,
     parentPage,
     showBlurredContent,
     blurred,
@@ -53,6 +54,8 @@ const MemoBody: React.FC<MemoBodyProps> = ({ compact }) => {
 
   // Editing takes the body's place inside the card's own frame: the session brings its
   // attachments, metadata and toolbar, so the read-only rows and reactions step aside.
+  // Its timestamp row stands in for the header, leading with the creator when the
+  // header would have shown one.
   if (isEditing) {
     return (
       <div data-slot="memo-body" className="w-full">
@@ -60,6 +63,7 @@ const MemoBody: React.FC<MemoBodyProps> = ({ compact }) => {
           mode="edit"
           name={memo.name}
           frameless
+          timestampLead={showCreator && creator ? <CreatorDisplay creator={creator} /> : undefined}
           autoFocus
           onConfirm={closeEditor}
           onCancel={closeEditor}

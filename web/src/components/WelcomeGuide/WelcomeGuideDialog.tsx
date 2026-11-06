@@ -1,3 +1,4 @@
+import { Button, Dialog } from "@usememos/ui";
 import {
   CalendarDaysIcon,
   CodeXmlIcon,
@@ -14,8 +15,6 @@ import {
   UsersIcon,
 } from "lucide-react";
 import { type KeyboardEvent, type ReactNode, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { IntroHeader, KeepHeader, ShareHeader, WriteHeader } from "./headers";
@@ -112,86 +111,85 @@ const WelcomeGuideDialog = ({ open, onOpenChange }: Props) => {
   };
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent chrome="guide" showCloseButton={false} initialFocus={nextRef} onKeyDown={handleKeyDown}>
-        <div className="grid">
-          {pages.map((page, pageIndex) => {
-            const active = pageIndex === index;
-            return (
-              <section
-                key={page.title}
-                className={cn("col-start-1 row-start-1 flex flex-col", !active && "invisible")}
-                aria-hidden={!active}
-                inert={!active}
-              >
-                {page.header}
-                <div className="flex flex-col px-8 pt-5 pb-2">
-                  <div className="flex items-center gap-2.5">
-                    <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                      <page.icon className="size-4" strokeWidth={1.8} />
-                    </span>
+    <Dialog.Root open={open} onOpenChange={handleOpenChange}>
+      <Dialog.Popup variant="bare" sheet={false} initialFocus={nextRef} onKeyDown={handleKeyDown}>
+        {/* The guide's paper is the page background, not the popup surface. */}
+        <div className="flex flex-col bg-mu-canvas">
+          <div className="grid">
+            {pages.map((page, pageIndex) => {
+              const active = pageIndex === index;
+              return (
+                <section
+                  key={page.title}
+                  className={cn("col-start-1 row-start-1 flex flex-col", !active && "invisible")}
+                  aria-hidden={!active}
+                  inert={!active}
+                >
+                  {page.header}
+                  <div className="flex flex-col px-8 pt-5 pb-2">
+                    <div className="flex items-center gap-2.5">
+                      <span className="flex size-7 shrink-0 items-center justify-center rounded-mu-lg bg-mu-primary/10 text-mu-primary">
+                        <page.icon className="mu-icon" />
+                      </span>
+                      {active ? <Dialog.Title>{page.title}</Dialog.Title> : <span className="mu-title">{page.title}</span>}
+                    </div>
                     {active ? (
-                      <DialogTitle className="text-xl leading-[26px] tracking-[-0.012em]">{page.title}</DialogTitle>
+                      <Dialog.Description className="mt-1.5">{page.sub}</Dialog.Description>
                     ) : (
-                      <span className="text-xl leading-[26px] font-semibold tracking-[-0.012em]">{page.title}</span>
+                      <p className="mt-1.5 mu-body text-mu-ink-muted">{page.sub}</p>
                     )}
+                    <ul className="mt-5 flex flex-col gap-3.5">
+                      {page.rows.map((row) => (
+                        <li key={row.label} className="grid grid-cols-[104px_1fr] items-start gap-4 mu-body">
+                          <span className="flex items-center gap-1.5">
+                            <row.icon className="mu-icon shrink-0 text-mu-ink-muted" />
+                            <span className="font-medium text-mu-ink">{row.label}</span>
+                          </span>
+                          <p className="min-w-0 text-mu-ink">{row.text}</p>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                  {active ? (
-                    <DialogDescription className="mt-1.5 leading-[21px]">{page.sub}</DialogDescription>
-                  ) : (
-                    <p className="mt-1.5 text-sm leading-[21px] text-muted-foreground">{page.sub}</p>
-                  )}
-                  <ul className="mt-5 flex flex-col gap-3.5">
-                    {page.rows.map((row) => (
-                      <li key={row.label} className="grid grid-cols-[104px_1fr] items-start gap-4 text-sm leading-[21px]">
-                        <span className="flex items-center gap-1.5">
-                          <row.icon className="size-4 shrink-0 text-muted-foreground" strokeWidth={1.8} />
-                          <span className="font-medium text-foreground">{row.label}</span>
-                        </span>
-                        <p className="min-w-0 text-foreground">{row.text}</p>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </section>
-            );
-          })}
-        </div>
-        <div className="flex items-center gap-3 px-7 pt-4 pb-6">
-          <Button
-            variant="quiet"
-            size="sm"
-            className={cn(last && "invisible")}
-            tabIndex={last ? -1 : undefined}
-            onClick={() => handleOpenChange(false)}
-          >
-            {t("welcome.skip")}
-          </Button>
-          <div
-            className="flex flex-1 items-center justify-center gap-1.5"
-            role="group"
-            aria-label={t("welcome.page-of", { current: index + 1, total: pages.length })}
-          >
-            {pages.map((page, pageIndex) => (
-              <button
-                key={page.title}
-                type="button"
-                aria-label={page.title}
-                aria-current={pageIndex === index ? "step" : undefined}
-                className={cn(
-                  "size-1.5 rounded-full transition-colors",
-                  pageIndex === index ? "bg-foreground" : "bg-border hover:bg-muted-foreground/50",
-                )}
-                onClick={() => go(pageIndex)}
-              />
-            ))}
+                </section>
+              );
+            })}
           </div>
-          <Button ref={nextRef} onClick={() => (last ? handleOpenChange(false) : go(index + 1))}>
-            {last ? t("welcome.done") : t("welcome.next")}
-          </Button>
+          <div className="flex items-center gap-3 px-7 pt-4 pb-6">
+            <Button
+              variant="ghost"
+              size="sm"
+              className={cn(last && "invisible")}
+              tabIndex={last ? -1 : undefined}
+              onClick={() => handleOpenChange(false)}
+            >
+              {t("welcome.skip")}
+            </Button>
+            <div
+              className="flex flex-1 items-center justify-center gap-1.5"
+              role="group"
+              aria-label={t("welcome.page-of", { current: index + 1, total: pages.length })}
+            >
+              {pages.map((page, pageIndex) => (
+                <button
+                  key={page.title}
+                  type="button"
+                  aria-label={page.title}
+                  aria-current={pageIndex === index ? "step" : undefined}
+                  className={cn(
+                    "size-1.5 rounded-full transition-colors",
+                    pageIndex === index ? "bg-mu-ink" : "bg-mu-line hover:bg-mu-ink-muted/50",
+                  )}
+                  onClick={() => go(pageIndex)}
+                />
+              ))}
+            </div>
+            <Button variant="primary" ref={nextRef} onClick={() => (last ? handleOpenChange(false) : go(index + 1))}>
+              {last ? t("welcome.done") : t("welcome.next")}
+            </Button>
+          </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </Dialog.Popup>
+    </Dialog.Root>
   );
 };
 

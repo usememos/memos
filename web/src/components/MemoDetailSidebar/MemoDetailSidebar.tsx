@@ -1,3 +1,4 @@
+import { Menu } from "@usememos/ui";
 import copy from "copy-to-clipboard";
 import {
   ChevronDownIcon,
@@ -10,22 +11,26 @@ import {
   Share2Icon,
 } from "lucide-react";
 import { useMemo, useState } from "react";
-import toast from "react-hot-toast";
 import { Link, useLocation } from "react-router-dom";
-import SidebarRow, { SIDEBAR_ROW_CLASSES, SIDEBAR_ROW_COUNT_RAIL_CLASSES, SidebarRowIconSlot } from "@/components/AppSidebar/SidebarRow";
+import SidebarRow, {
+  SIDEBAR_ROW_CLASSES,
+  SIDEBAR_ROW_COUNT_RAIL_CLASSES,
+  SidebarRowIconSlot,
+  sidebarRowStateClasses,
+} from "@/components/AppSidebar/SidebarRow";
 import SidebarSection, { SIDEBAR_SECTION_STACK_CLASSES } from "@/components/AppSidebar/SidebarSection";
 import { extractHeadings } from "@/components/MemoEditor/view/headings";
 import { getRelationBuckets, getRelationMemo } from "@/components/MemoMetadata/Relation/relationHelpers";
 import { useResolvedRelationMemos } from "@/components/MemoMetadata/Relation/useResolvedRelationMemos";
 import MemoParentPlaceholder, { type MemoParentStatus } from "@/components/MemoParentPlaceholder";
 import { createMemoNavigationState } from "@/components/MemoView/navigation";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
 import { useOverflowTitle } from "@/hooks";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { MEMO_COMMENTS_ANCHOR_ID } from "@/lib/memo-comments";
 import { isMemoBlurred } from "@/lib/tag";
+import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { State } from "@/types/proto/api/common_pb";
 import { Memo, type MemoRelation, Visibility } from "@/types/proto/api/memo_service_pb";
@@ -73,7 +78,7 @@ const BacklinkRow = ({
   return (
     <Link
       aria-label={`${referencedByLabel}: ${snippet}`}
-      className={cn(SIDEBAR_ROW_CLASSES, "text-muted-foreground hover:bg-sidebar-accent/65 hover:text-foreground")}
+      className={cn(SIDEBAR_ROW_CLASSES, sidebarRowStateClasses("idle"))}
       to={`/${relatedMemo.name}`}
       state={parentPage ? createMemoNavigationState(parentPage) : undefined}
       title={title}
@@ -151,17 +156,17 @@ const MemoDetailSidebar = ({
     const host = (profile.instanceUrl || window.location.origin).replace(/\/+$/, "");
     const path = forceReadonly ? `${location.pathname}${location.search}` : `/${memo.name}`;
     copy(`${host}${path.startsWith("/") ? path : `/${path}`}`);
-    toast.success(t("message.succeed-copy-link"));
+    toast.add({ title: t("message.succeed-copy-link"), type: "success" });
   };
 
   return (
-    <div className={cn("relative w-full select-none", SIDEBAR_SECTION_STACK_CLASSES, className)}>
+    <div className={cn("mu-compact relative w-full select-none", SIDEBAR_SECTION_STACK_CLASSES, className)}>
       {showOnThisMemo && (
         <SidebarSection label={t("memo.on-this-memo")}>
           {headings.length > 1 && <MemoOutline headings={headings} memoName={memo.name} />}
           {showComments && (
             <a
-              className={cn(SIDEBAR_ROW_CLASSES, "text-muted-foreground hover:bg-sidebar-accent/65 hover:text-foreground")}
+              className={cn(SIDEBAR_ROW_CLASSES, sidebarRowStateClasses("idle"))}
               href={`#${MEMO_COMMENTS_ANCHOR_ID}`}
               onClick={(event) => {
                 if (!onCommentsOpen) return;
@@ -183,7 +188,7 @@ const MemoDetailSidebar = ({
           {!parentStatus && parentMemo && (
             <Link
               aria-label={parentSnippet ? `${t("memo.parent-memo")}: ${parentSnippet}` : t("memo.parent-memo")}
-              className={cn(SIDEBAR_ROW_CLASSES, "text-muted-foreground hover:bg-sidebar-accent/65 hover:text-foreground")}
+              className={cn(SIDEBAR_ROW_CLASSES, sidebarRowStateClasses("idle"))}
               to={`/${parentMemo.name}`}
               state={parentPage ? createMemoNavigationState(parentPage) : undefined}
               title={parentSnippet || undefined}
@@ -212,37 +217,35 @@ const MemoDetailSidebar = ({
       <SidebarSection label={t("common.actions")}>
         {canEdit && <SidebarRow icon={Edit3Icon} label={t("common.edit")} onClick={onEdit} />}
         {canComment && <SidebarRow icon={MessageSquarePlusIcon} label={t("memo.comment.write-a-comment")} onClick={onCommentCreate} />}
-        <DropdownMenu>
-          <DropdownMenuTrigger
+        <Menu.Root modal={false}>
+          <Menu.Trigger
             aria-label={t("common.share")}
             className={cn(
               SIDEBAR_ROW_CLASSES,
-              "text-muted-foreground hover:bg-sidebar-accent/65 hover:text-foreground data-popup-open:bg-sidebar-accent/65 data-popup-open:text-foreground",
+              sidebarRowStateClasses("idle"),
+              "data-popup-open:bg-mu-hover/65 data-popup-open:text-mu-ink",
             )}
           >
             <SidebarRowIconSlot icon={Share2Icon} />
             <span className="min-w-0 flex-1 truncate text-start">{t("common.share")}</span>
-            <ChevronDownIcon className="size-3.5 shrink-0 opacity-55" strokeWidth={1.8} />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" sideOffset={4} className="w-48">
-            <DropdownMenuItem onClick={handleCopyLink}>
-              <LinkIcon />
+            <ChevronDownIcon className="mu-icon-sm shrink-0 opacity-55" />
+          </Menu.Trigger>
+          <Menu.Popup align="start" className="w-48">
+            <Menu.Item onClick={handleCopyLink} icon={<LinkIcon />}>
               {t("memo.copy-link")}
-            </DropdownMenuItem>
+            </Menu.Item>
             {onShareImageOpen && (
-              <DropdownMenuItem onClick={onShareImageOpen}>
-                <ImageIcon />
+              <Menu.Item onClick={onShareImageOpen} icon={<ImageIcon />}>
                 {t("memo.share.open-image")}
-              </DropdownMenuItem>
+              </Menu.Item>
             )}
             {canManageShares && (
-              <DropdownMenuItem onClick={() => setSharePanelOpen(true)}>
-                <Share2Icon />
+              <Menu.Item onClick={() => setSharePanelOpen(true)} icon={<Share2Icon />}>
                 {t("memo.share.open-panel")}
-              </DropdownMenuItem>
+              </Menu.Item>
             )}
-          </DropdownMenuContent>
-        </DropdownMenu>
+          </Menu.Popup>
+        </Menu.Root>
       </SidebarSection>
 
       {sharePanelOpen && <MemoSharePanel memoName={memo.name} open={sharePanelOpen} onClose={() => setSharePanelOpen(false)} />}

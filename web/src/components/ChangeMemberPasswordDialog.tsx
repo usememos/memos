@@ -1,11 +1,9 @@
+import { Button, Dialog, Field, Input } from "@usememos/ui";
 import { useState } from "react";
-import { toast } from "react-hot-toast";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { useFieldErrors } from "@/hooks/useFieldErrors";
 import { useUpdateUser } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
+import { showErrorToast, toast } from "@/lib/toast";
 import { User } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
@@ -18,6 +16,7 @@ interface Props {
 
 function ChangeMemberPasswordDialog({ open, onOpenChange, user, onSuccess }: Props) {
   const t = useTranslate();
+  const fieldErrors = useFieldErrors<"newPassword" | "newPasswordAgain">();
   const { mutateAsync: updateUser } = useUpdateUser();
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordAgain, setNewPasswordAgain] = useState("");
@@ -27,6 +26,7 @@ function ChangeMemberPasswordDialog({ open, onOpenChange, user, onSuccess }: Pro
   };
 
   const handleNewPasswordChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
+    fieldErrors.clear("newPassword");
     const text = e.target.value as string;
     setNewPassword(text);
   };
@@ -34,18 +34,19 @@ function ChangeMemberPasswordDialog({ open, onOpenChange, user, onSuccess }: Pro
   const handleNewPasswordAgainChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value as string;
     setNewPasswordAgain(text);
+    fieldErrors.clear("newPasswordAgain");
   };
 
   const handleSaveBtnClick = async () => {
     if (!user) return;
 
     if (newPassword === "" || newPasswordAgain === "") {
-      toast.error(t("message.fill-all"));
+      fieldErrors.set(newPassword === "" ? "newPassword" : "newPasswordAgain", t("message.fill-all"));
       return;
     }
 
     if (newPassword !== newPasswordAgain) {
-      toast.error(t("message.new-password-not-match"));
+      fieldErrors.set("newPasswordAgain", t("message.new-password-not-match"));
       setNewPasswordAgain("");
       return;
     }
@@ -58,11 +59,11 @@ function ChangeMemberPasswordDialog({ open, onOpenChange, user, onSuccess }: Pro
         },
         updateMask: ["password"],
       });
-      toast(t("message.password-changed"));
+      toast.add({ title: t("message.password-changed") });
       onSuccess?.();
       onOpenChange(false);
     } catch (error: unknown) {
-      await handleError(error, toast.error, {
+      await handleError(error, showErrorToast, {
         context: "Change member password",
       });
     }
@@ -71,16 +72,14 @@ function ChangeMemberPasswordDialog({ open, onOpenChange, user, onSuccess }: Pro
   if (!user) return null;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>
-            {t("setting.account.change-password")} ({user.displayName})
-          </DialogTitle>
-        </DialogHeader>
+    <Dialog.Root open={open} onOpenChange={onOpenChange}>
+      <Dialog.Popup closeLabel={t("common.close")}>
+        <Dialog.Title>
+          {t("setting.account.change-password")} ({user.displayName})
+        </Dialog.Title>
         <div className="flex flex-col gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="newPassword">{t("auth.new-password")}</Label>
+          <Field.Root invalid={!!fieldErrors.errors.newPassword}>
+            <Field.Label>{t("auth.new-password")}</Field.Label>
             <Input
               id="newPassword"
               type="password"
@@ -88,9 +87,10 @@ function ChangeMemberPasswordDialog({ open, onOpenChange, user, onSuccess }: Pro
               value={newPassword}
               onChange={handleNewPasswordChanged}
             />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="newPasswordAgain">{t("auth.repeat-new-password")}</Label>
+            {fieldErrors.errors.newPassword && <Field.Error match>{fieldErrors.errors.newPassword}</Field.Error>}
+          </Field.Root>
+          <Field.Root invalid={!!fieldErrors.errors.newPasswordAgain}>
+            <Field.Label>{t("auth.repeat-new-password")}</Field.Label>
             <Input
               id="newPasswordAgain"
               type="password"
@@ -98,16 +98,19 @@ function ChangeMemberPasswordDialog({ open, onOpenChange, user, onSuccess }: Pro
               value={newPasswordAgain}
               onChange={handleNewPasswordAgainChanged}
             />
-          </div>
+            {fieldErrors.errors.newPasswordAgain && <Field.Error match>{fieldErrors.errors.newPasswordAgain}</Field.Error>}
+          </Field.Root>
         </div>
-        <DialogFooter>
+        <Dialog.Footer>
           <Button variant="ghost" onClick={handleCloseBtnClick}>
             {t("common.cancel")}
           </Button>
-          <Button onClick={handleSaveBtnClick}>{t("common.save")}</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          <Button variant="primary" onClick={handleSaveBtnClick}>
+            {t("common.save")}
+          </Button>
+        </Dialog.Footer>
+      </Dialog.Popup>
+    </Dialog.Root>
   );
 }
 

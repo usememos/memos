@@ -1,6 +1,5 @@
+import { AlertDialog, Button } from "@usememos/ui";
 import * as React from "react";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export interface ConfirmDialogProps {
   open: boolean;
@@ -10,9 +9,10 @@ export interface ConfirmDialogProps {
   confirmLabel: string;
   cancelLabel: string;
   onConfirm: () => void | Promise<void>;
-  confirmVariant?: "default" | "destructive";
+  confirmVariant?: "primary" | "danger";
 }
 
+/** Confirms an action; it closes only through its buttons, and stays open while the action runs. */
 export default function ConfirmDialog({
   open,
   onOpenChange,
@@ -21,7 +21,7 @@ export default function ConfirmDialog({
   confirmLabel,
   cancelLabel,
   onConfirm,
-  confirmVariant = "default",
+  confirmVariant = "primary",
 }: ConfirmDialogProps) {
   const [loading, setLoading] = React.useState(false);
 
@@ -39,21 +39,19 @@ export default function ConfirmDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={(o: boolean) => !loading && onOpenChange(o)}>
-      <DialogContent size="sm">
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          {description ? <DialogDescription>{description}</DialogDescription> : null}
-        </DialogHeader>
-        <DialogFooter>
+    <AlertDialog.Root open={open} onOpenChange={(o: boolean) => !loading && onOpenChange(o)}>
+      <AlertDialog.Popup>
+        <AlertDialog.Title>{title}</AlertDialog.Title>
+        {description ? <AlertDialog.Description>{description}</AlertDialog.Description> : null}
+        <AlertDialog.Footer>
           <Button variant="ghost" disabled={loading} onClick={() => onOpenChange(false)}>
             {cancelLabel}
           </Button>
-          <Button variant={confirmVariant} disabled={loading} onClick={handleConfirm} data-loading={loading}>
+          <Button variant={confirmVariant} loading={loading} loadingLabel={confirmLabel} onClick={handleConfirm}>
             {confirmLabel}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </AlertDialog.Footer>
+      </AlertDialog.Popup>
+    </AlertDialog.Root>
   );
 }

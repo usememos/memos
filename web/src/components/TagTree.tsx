@@ -42,7 +42,7 @@ interface TagTreeExpansion {
 const EMPTY_EXPANSION: TagTreeExpansion = { expanded: [] };
 
 // A structural row toggles like any other, so it hovers like one too — just quieter at rest.
-const STRUCTURAL_ROW_CLASSES = cn(sidebarRowStateClasses(), "font-medium text-muted-foreground/65");
+const STRUCTURAL_ROW_CLASSES = cn(sidebarRowStateClasses(), "font-medium text-mu-ink-muted/65");
 
 /** One announcement for a tag row in either layout, so tree and flat mode never drift apart. */
 export const tagRowAriaLabel = (t: ReturnType<typeof useTranslate>, tag: string, amount: number) =>
@@ -89,18 +89,18 @@ const parentPathsOf = (tag: string): string[] => {
 };
 
 const TagMark = ({ className }: { className?: string }) => (
-  <HashIcon aria-hidden="true" className={cn(SIDEBAR_ROW_ICON_CLASSES, className)} strokeWidth={1.8} />
+  <HashIcon aria-hidden="true" className={cn(SIDEBAR_ROW_ICON_CLASSES, className)} />
 );
 
 const Chevron = ({ open, className }: { open: boolean; className?: string }) => (
   <ChevronRightIcon
     aria-hidden="true"
     className={cn(
-      "me-auto size-3.5 shrink-0 text-muted-foreground/70 transition-transform",
+      "mu-icon-sm",
+      "me-auto shrink-0 text-mu-ink-muted/70 transition-transform",
       open ? "rotate-90" : "rtl:rotate-180",
       className,
     )}
-    strokeWidth={1.8}
   />
 );
 
@@ -135,7 +135,7 @@ const TagItem = ({ tag, depth, activeTag, expanded, onTagClick, onToggle }: TagI
         className={cn(
           SIDEBAR_ROW_BOX_CLASSES,
           isTag ? sidebarRowStateClasses(state) : STRUCTURAL_ROW_CLASSES,
-          isAncestorOfActiveTag && !isActive && "text-foreground/75",
+          isAncestorOfActiveTag && !isActive && "text-mu-ink/75",
         )}
         // Overrides the start half of the box's `px-2`, leaving the trailing 8px intact.
         // Same 12px step the memo outline indents by.
