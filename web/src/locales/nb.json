@@ -138,7 +138,24 @@
     "resize-panel": "Endre størrelse på panel",
     "resize-sidebar": "Endre størrelse på sidefelt",
     "sign-in-to-memos": "Logg på Memos",
-    "view-all": "Vis alle"
+    "open-navigation": "Åpne navigasjon",
+    "navigation": "Navigasjon",
+    "primary-navigation": "Hoved",
+    "download": "Last ned",
+    "download-name": "Last ned {{name}}",
+    "open-name": "Åpne {{name}}",
+    "preview-name": "Forhåndsvis {{name}}",
+    "no-content": "Ikke noe innhold",
+    "previous": "Forrige",
+    "next": "Neste",
+    "retry": "Prøv igjen",
+    "docs": "Dokumentasjon",
+    "calendar-for-month": "Kalender for {{month}}",
+    "date-at-time": "{{date}} kl. {{time}}",
+    "selected-location": "Valgt plassering",
+    "choose-location": "Velg en plassering",
+    "unknown-error": "Ukjent feil",
+    "error-occurred": "Det oppstod en feil"
   },
   "locale-picker": {
     "no-language-feedback": "Finner du ikke språket? Send tilbakemelding"
@@ -256,7 +273,17 @@
       "alt-text-placeholder": "Beskriv bildet…",
       "image-unavailable": "Bildet er ikke tilgjengelig",
       "resize-image": "Endre bildestørrelse"
-    }
+    },
+    "attachments": {
+      "move-up": "Flytt vedlegg opp",
+      "move-down": "Flytt vedlegg ned",
+      "remove": "Fjern vedlegg"
+    },
+    "remove-relation": "Fjern kobling",
+    "remove-location": "Fjern plassering",
+    "recording-unsupported": "Lydopptak støttes ikke i denne nettleseren.",
+    "microphone-denied": "Tilgang til mikrofonen ble avslått.",
+    "recording-failed": "Kunne ikke starte lydopptaket."
   },
   "inbox": {
     "failed-to-load": "Kunne ikke laste innbokselement",
@@ -265,7 +292,16 @@
     "unread": "Ulest",
     "space-invitation": "inviterte deg til å bli med i et rom",
     "space-invitation-accepted": "Du ble med i dette rommet.",
-    "space-invitation-open": "Åpent rom"
+    "space-invitation-open": "Åpent rom",
+    "commented-on-memo": "kommenterte notatet ditt",
+    "mentioned-in-comment": "nevnte deg i en kommentar",
+    "mentioned-in-memo": "nevnte deg i et notat",
+    "original": "Original:",
+    "memo-label": "Notat:",
+    "comment-heading": "Kommentar",
+    "memo-heading": "Notat",
+    "empty-memo": "Tomt notat",
+    "empty-comment": "Tom kommentar"
   },
   "live-update": {
     "connected": "Liveoppdateringer aktive",
@@ -280,7 +316,9 @@
     "click-to-show-sensitive-content": "Klikk for å vise NSFW-innhold",
     "comment": {
       "self": "Kommentarer",
-      "write-a-comment": "Skriv en kommentar"
+      "write-a-comment": "Skriv en kommentar",
+      "view-all-count_one": "Vis {{count}} kommentar",
+      "view-all-count_other": "Vis alle {{count}} kommentarer"
     },
     "copy-content": "Kopier innhold",
     "copy-link": "Kopier link",
@@ -294,7 +332,8 @@
       "has-image": "har bilde",
       "has-link": "harLink",
       "has-location": "har posisjon",
-      "has-task-list": "harGjøremålsListe"
+      "has-task-list": "harGjøremålsListe",
+      "remove": "Fjern filter"
     },
     "compact-mode": "Kompakt modus",
     "link-preview": "Forhåndsvisning av lenke",
@@ -380,7 +419,9 @@
     "restored-successfully": "Gjenoppretting vellykket",
     "succeed-copy-content": "Innhold kopiert vellykket.",
     "succeed-copy-link": "Link kopiert.",
-    "update-succeed": "Oppdatering vellykket"
+    "update-succeed": "Oppdatering vellykket",
+    "not-signed-in": "Du er ikke logget inn.",
+    "invalid-datetime": "Ugyldig dato og klokkeslett. Bruk formatet 2023-12-31 23:59:59."
   },
   "reference": {
     "no-memos-found": "Ingen memoer funnet",
@@ -450,7 +491,9 @@
       "usage-storage": "Storage",
       "usage-title": "Usage limits",
       "storage-usage-error": "Vedleggslagringen din er ikke tilgjengelig.",
-      "email-in-use": "Denne e-postadressen brukes allerede av en annen konto."
+      "email-in-use": "Denne e-postadressen brukes allerede av en annen konto.",
+      "avatar-too-large": "Velg et bilde på maks 2 MB.",
+      "avatar-unreadable": "Bildet kan ikke leses. Prøv en annen fil."
     },
     "instance": {
       "disallow-change-nickname": "Ikke tillat endring av kallenavn",
@@ -490,7 +533,10 @@
       "archived": "Arkivert",
       "member-column": "Medlem",
       "summary-column": "Sammendrag",
-      "export-memos": "Eksporter notater"
+      "export-memos": "Eksporter notater",
+      "username-password-required": "Brukernavn og passord kan ikke være tomme",
+      "create-success": "Bruker opprettet",
+      "update-success": "Bruker oppdatert"
     },
     "memo": {
       "label": "Memo",
@@ -524,7 +570,12 @@
       "theme-description": "Bruker det valgte temaet umiddelbart på denne enheten.",
       "theme": "Tema",
       "uploads-privacy-description": "Kontroller personvernsensitiv informasjon som sendes inn med opplastede medier.",
-      "uploads-privacy-title": "Opplastinger og personvern"
+      "uploads-privacy-title": "Opplastinger og personvern",
+      "theme-system": "Følg systemet",
+      "theme-system-short": "System",
+      "theme-light": "Lyst",
+      "theme-dark": "Mørkt",
+      "theme-paper": "Papir"
     },
     "editor": {
       "label": "Redigering",
@@ -534,7 +585,118 @@
       "create": "Opprett visning",
       "delete-confirm": "Er du sikker på at du vil slette visningen `{{title}}`?",
       "delete-success": "Visning `{{title}}` slettet vellykket",
-      "change-icon": "Endre visningsikon"
+      "change-icon": "Endre visningsikon",
+      "page-description": "Lag gjenbrukbare visninger med felt, operatorer, tidshjelpere og taggsamsvar. Bruk eksemplene som utgangspunkt, og valider før du lagrer.",
+      "edit": "Rediger visning",
+      "form-description": "Gi visningen et navn og definer notatfilteruttrykket den skal bruke.",
+      "title-placeholder": "Festet, Nylige notater, Jobb",
+      "filter-help": "Kombiner uttrykk med {{and}}, {{or}} og {{not}}. Tidsfelt er tidsstempler — bruk {{now}}, {{duration}}, {{timestamp}} og aksessorer som {{year}}. Tagger støtter {{sets}}, og {{size}} måler lengde.",
+      "validate": "Valider",
+      "all": "Alle visninger",
+      "loading": "Laster inn visninger …",
+      "load-failed": "Kunne ikke laste inn visninger.",
+      "empty-title": "Ingen visninger ennå",
+      "empty-description": "Lagre et filter for raskt å komme tilbake til notatene du trenger.",
+      "examples-title": "Eksempler på uttrykk",
+      "fields-title": "Støttede felt",
+      "title-filter-required": "Tittel og filter kan ikke være tomme",
+      "filter-valid": "Filteruttrykket ser gyldig ut",
+      "create-success": "Visning opprettet",
+      "update-success": "Visning oppdatert",
+      "examples": {
+        "pinned": {
+          "title": "Festet",
+          "description": "Bare festede notater."
+        },
+        "recent": {
+          "title": "Nylige notater",
+          "description": "Notater opprettet den siste timen."
+        },
+        "public": {
+          "title": "Offentlige notater",
+          "description": "Bare offentlige notater."
+        },
+        "project-tags": {
+          "title": "Prosjekttagger",
+          "description": "Samsvar med én eller flere eksakte tagger."
+        },
+        "untagged": {
+          "title": "Uten tagger",
+          "description": "Notater uten noen tagger."
+        },
+        "archive-tree": {
+          "title": "Arkivtre",
+          "description": "Samsvar med hierarkiske tagger etter prefiks."
+        },
+        "unassigned": {
+          "title": "Ikke tilordnet",
+          "description": "Notater som ikke ligger i noe rom."
+        },
+        "one-space": {
+          "title": "I ett rom",
+          "description": "Notater som ligger i et rom. Bruk rom-ID-en fra URL-en eller innstillingene."
+        },
+        "open-tasks": {
+          "title": "Åpne gjøremål",
+          "description": "Notater med uferdige gjøremål."
+        },
+        "links-or-code": {
+          "title": "Lenker eller kode",
+          "description": "Notater som inneholder lenker eller kodeblokker."
+        },
+        "no-location": {
+          "title": "Uten plassering",
+          "description": "Notater uten tilknyttet plassering."
+        },
+        "with-attachments": {
+          "title": "Med vedlegg",
+          "description": "Notater med minst én vedlagt fil."
+        },
+        "photos": {
+          "title": "Bilder",
+          "description": "Notater som viser et bilde, i innholdet eller som vedlagt fil."
+        },
+        "content-search": {
+          "title": "Innholdssøk",
+          "description": "Søk etter tekst i notatinnholdet."
+        },
+        "starts-with": {
+          "title": "Begynner med",
+          "description": "Notater der innholdet begynner med en tekst (også endsWith)."
+        },
+        "regex": {
+          "title": "Regex-samsvar",
+          "description": "Samsvar innhold med et regulært uttrykk."
+        },
+        "all-tags-complete": {
+          "title": "Alle tagger fullført",
+          "description": "Hver tagg slutter på -done (bare notater med tagger)."
+        },
+        "one-project-tag": {
+          "title": "Én prosjekttagg",
+          "description": "Nøyaktig én tagg oppfyller betingelsen."
+        },
+        "any-tags": {
+          "title": "Noen av disse taggene",
+          "description": "Taggene overlapper med det gitte settet."
+        },
+        "exact-tags": {
+          "title": "Nøyaktig disse taggene",
+          "description": "Tagget med nøyaktig dette settet, ingenting mer."
+        },
+        "year-2024": {
+          "title": "Notater fra 2024",
+          "description": "Filtrer etter kalenderår."
+        },
+        "weekend": {
+          "title": "Helgenotater",
+          "description": "Opprettet på en søndag eller lørdag (0 = søndag)."
+        },
+        "long": {
+          "title": "Lange notater",
+          "description": "Notater lengre enn 280 tegn."
+        }
+      }
     },
     "configuration": {
       "label": "Konfigurasjon",
@@ -610,7 +772,9 @@
       "scopes-description": "Separate skoper med mellomrom. De fleste tilbydere trenger bare et lite sett som profil eller e-posttilgang.",
       "template-description": "Start fra en forhåndsinnstilt leverandør, og juster deretter legitimasjonen og endepunktene for leietakeren din.",
       "unlink-success": "Frakoblet {{name}}.",
-      "update-sso-description": "Se gjennom leverandørkonfigurasjonen, og lagre deretter feltene som skal endres."
+      "update-sso-description": "Se gjennom leverandørkonfigurasjonen, og lagre deretter feltene som skal endres.",
+      "invalid-config": "Konfigurasjonen av identitetsleverandøren er ugyldig.",
+      "provider-id-placeholder": "f.eks. github, okta-corp"
     },
     "storage": {
       "accesskey": "Tilgangsnøkkel",
@@ -658,7 +822,8 @@
       "customize-server": {
         "description": "Beskrivelse",
         "icon-url": "Ikon-URL",
-        "title": "Tilpass server"
+        "title": "Tilpass server",
+        "dialog-description": "Tilpass utseendet og innstillingene til instansen din."
       },
       "label": "System",
       "server-name": "Servernavn",
@@ -978,7 +1143,8 @@
   },
   "tooltip": {
     "link-memo": "Lenke til memo",
-    "select-location": "Lokasjon"
+    "select-location": "Lokasjon",
+    "link-memo-description": "Søk etter og velg et notat å koble til"
   },
   "demo": {
     "banner-description": "Endringene er midlertidige og kan tilbakestilles.",
@@ -1081,7 +1247,12 @@
     "loading": "Laster inn notater…",
     "new-here": "Skriv her",
     "saved-outside-filter": "Lagret. Dette notatet er utenfor de nåværende kartresultatene.",
-    "open-memo": "Åpne notat"
+    "open-memo": "Åpne notat",
+    "open-in-google-maps": "Åpne i Google Maps",
+    "location-description": "Velg en plassering på kartet eller skriv inn koordinater manuelt",
+    "latitude": "Breddegrad",
+    "longitude": "Lengdegrad",
+    "place-placeholder": "Velg et punkt først."
   },
   "calendar": {
     "new-memo-on-day": "Nytt notat denne dagen",
@@ -1180,5 +1351,47 @@
       "tag-reading": "lesing",
       "tag-ideas": "ideer"
     }
+  },
+  "error": {
+    "title": "Noe gikk galt",
+    "description": "Det oppstod en uventet feil. Dette kan skyldes et nettverksproblem eller et problem med applikasjonen.",
+    "description-update": "Det oppstod en uventet feil. Dette kan skyldes et nettverksproblem eller en oppdatering av applikasjonen. Å laste inn siden på nytt løser det som regel.",
+    "details": "Feildetaljer",
+    "reload": "Last inn applikasjonen på nytt",
+    "not-found": "Finner ikke siden du leter etter.",
+    "permission-denied": "Ingen tilgang",
+    "too-many-requests": "For mange forespørsler. Prøv igjen om {{wait}}.",
+    "wait-seconds": "{{count}} s",
+    "wait-minutes": "{{count}} min",
+    "wait-hours": "{{count}} t",
+    "challenge-required": "Fullfør verifiseringen og prøv igjen.",
+    "quota-memo-count": "Du har nådd grensen din på {{limit}} notater. Slett notater for å opprette nye.",
+    "quota-storage": "Denne opplastingen ville overskride lagringsgrensen din på {{limit}}. Du bruker {{usage}}.",
+    "quota-upload": "Denne filen er større enn grensen din på {{limit}} per fil.",
+    "quota-memo-content": "Dette notatet er større enn grensen din på {{limit}} per notat. Gjør innholdet kortere for å lagre det.",
+    "quota-generic": "Du har nådd en bruksgrense.",
+    "sign-in-failed": "Kunne ikke logge inn.",
+    "sign-up-failed": "Registreringen mislyktes",
+    "authenticate-failed": "Autentiseringen mislyktes.",
+    "update-profile-failed": "Kunne ikke oppdatere profilen",
+    "unlink-identity-failed": "Kunne ikke koble fra identitetsleverandøren.",
+    "link-identity-failed": "Kunne ikke starte tilkobling av kontoen. Prøv igjen."
+  },
+  "attachment-preview": {
+    "title": "Forhåndsvisning av vedlegg",
+    "description": "Dialog for forhåndsvisning av vedlegg. Trykk Escape for å lukke, bruk venstre eller høyre piltast for å bytte element, og zoom inn på bilder med kontrollene, musehjulet, dobbelttrykk eller knipebevegelse.",
+    "close": "Lukk forhåndsvisning",
+    "previous": "Forrige element",
+    "next": "Neste element",
+    "reset-zoom": "Tilbakestill zoom",
+    "image-alt": "Forhåndsvisning av bilde {{index}} av {{count}}",
+    "live-photo-alt": "Forhåndsvisning av Live Foto {{index}} av {{count}}",
+    "play-live-photo": "Hold pekeren over eller trykk for å spille av Live Foto"
+  },
+  "audio-player": {
+    "seek": "Spol i {{name}}",
+    "back": "{{seconds}} sekunder tilbake",
+    "forward": "{{seconds}} sekunder frem",
+    "speed": "Avspillingshastighet {{rate}}x"
   }
 }

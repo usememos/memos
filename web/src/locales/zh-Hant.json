@@ -217,7 +217,24 @@
     "collapse-panel": "折疊面板",
     "expand-panel": "展開面板",
     "resize-panel": "調整面板大小",
-    "view-all": "查看全部"
+    "open-navigation": "開啟導覽",
+    "navigation": "導覽",
+    "primary-navigation": "主要導覽",
+    "download": "下載",
+    "download-name": "下載 {{name}}",
+    "open-name": "開啟 {{name}}",
+    "preview-name": "預覽 {{name}}",
+    "no-content": "沒有內容",
+    "previous": "上一個",
+    "next": "下一個",
+    "retry": "重試",
+    "docs": "文件",
+    "calendar-for-month": "{{month}}月曆",
+    "date-at-time": "{{date}} {{time}}",
+    "selected-location": "已選取的位置",
+    "choose-location": "選擇位置",
+    "unknown-error": "未知錯誤",
+    "error-occurred": "發生錯誤"
   },
   "locale-picker": {
     "no-language-feedback": "未找到語言？ 提交回饋"
@@ -335,7 +352,17 @@
       "alt-text-placeholder": "描述這張圖片…",
       "image-unavailable": "圖片無法顯示",
       "resize-image": "調整圖片大小"
-    }
+    },
+    "attachments": {
+      "move-up": "上移附件",
+      "move-down": "下移附件",
+      "remove": "移除附件"
+    },
+    "remove-relation": "移除關聯",
+    "remove-location": "移除位置",
+    "recording-unsupported": "此瀏覽器不支援錄音。",
+    "microphone-denied": "麥克風權限遭拒。",
+    "recording-failed": "無法開始錄音。"
   },
   "inbox": {
     "failed-to-load": "載入失敗",
@@ -344,7 +371,16 @@
     "unread": "未讀",
     "space-invitation": "已邀請您加入空間",
     "space-invitation-accepted": "您已加入此空間。",
-    "space-invitation-open": "開啟空間"
+    "space-invitation-open": "開啟空間",
+    "commented-on-memo": "在您的備忘錄留言",
+    "mentioned-in-comment": "在留言中提及您",
+    "mentioned-in-memo": "在備忘錄中提及您",
+    "original": "原文：",
+    "memo-label": "備忘錄：",
+    "comment-heading": "留言",
+    "memo-heading": "備忘錄",
+    "empty-memo": "空白備忘錄",
+    "empty-comment": "空白留言"
   },
   "live-update": {
     "connected": "即時更新已啟用",
@@ -359,7 +395,9 @@
     "click-to-show-sensitive-content": "點擊顯示敏感內容",
     "comment": {
       "self": "評論",
-      "write-a-comment": "寫下評論"
+      "write-a-comment": "寫下評論",
+      "view-all-count_one": "查看全部 {{count}} 則評論",
+      "view-all-count_other": "查看全部 {{count}} 則評論"
     },
     "copy-content": "複製內容",
     "copy-link": "複製連結",
@@ -374,7 +412,8 @@
       "has-image": "有圖片",
       "has-link": "有連結",
       "has-location": "有位置",
-      "has-task-list": "有待辦事項"
+      "has-task-list": "有待辦事項",
+      "remove": "移除篩選條件"
     },
     "compact-mode": "精簡模式",
     "grid-compact-hint": "網格版面一律使用精簡卡片。",
@@ -459,7 +498,9 @@
     "restored-successfully": "還原成功",
     "succeed-copy-content": "內容複製到剪貼簿成功。",
     "succeed-copy-link": "複製連結到剪貼簿成功。",
-    "update-succeed": "更新成功"
+    "update-succeed": "更新成功",
+    "not-signed-in": "您尚未登入。",
+    "invalid-datetime": "日期和時間無效。請使用 2023-12-31 23:59:59 格式。"
   },
   "reference": {
     "no-memos-found": "未找到任何備忘錄",
@@ -529,7 +570,9 @@
       "title": "帳號資訊",
       "update-information": "更新個人資訊",
       "username-note": "用於登入",
-      "email-in-use": "此信箱已被其他帳號使用。"
+      "email-in-use": "此信箱已被其他帳號使用。",
+      "avatar-too-large": "請選擇不超過 2 MB 的圖片。",
+      "avatar-unreadable": "無法讀取此圖片，請換一個檔案。"
     },
     "ai": {
       "add-provider": "新增服務供應商",
@@ -612,7 +655,10 @@
       "summary-column": "摘要",
       "user": "使用者",
       "no-members-found": "沒有找到成員",
-      "export-memos": "匯出備忘錄"
+      "export-memos": "匯出備忘錄",
+      "username-password-required": "使用者名稱和密碼不可為空白",
+      "create-success": "已建立使用者",
+      "update-success": "已更新使用者"
     },
     "memo": {
       "add-reaction": "新增表情回應",
@@ -681,7 +727,12 @@
       "theme-description": "立即在此裝置上套入選定的主題。",
       "theme": "主題",
       "uploads-privacy-description": "控制上傳媒體時提交的隱私敏感資訊。",
-      "uploads-privacy-title": "上傳與隱私"
+      "uploads-privacy-title": "上傳與隱私",
+      "theme-system": "跟隨系統",
+      "theme-system-short": "系統",
+      "theme-light": "淺色",
+      "theme-dark": "深色",
+      "theme-paper": "紙張"
     },
     "editor": {
       "label": "編輯器",
@@ -691,7 +742,118 @@
       "create": "建立檢視",
       "delete-confirm": "您確定要刪除檢視 `{{title}}` 嗎？",
       "delete-success": "檢視 `{{title}}` 刪除成功",
-      "change-icon": "變更檢視圖示"
+      "change-icon": "變更檢視圖示",
+      "page-description": "使用欄位、運算子、時間函式和標籤比對建立可重複使用的檢視。可從範例開始，儲存前先驗證。",
+      "edit": "編輯檢視",
+      "form-description": "為檢視命名，並定義它要套用的備忘錄篩選運算式。",
+      "title-placeholder": "已釘選、近期筆記、工作",
+      "filter-help": "使用 {{and}}、{{or}} 和 {{not}} 組合運算式。時間欄位是時間戳記——可使用 {{now}}、{{duration}}、{{timestamp}} 以及 {{year}} 等存取子。標籤支援 {{sets}}，{{size}} 則用於計算長度。",
+      "validate": "驗證",
+      "all": "所有檢視",
+      "loading": "正在載入檢視…",
+      "load-failed": "無法載入檢視。",
+      "empty-title": "尚無檢視",
+      "empty-description": "儲存篩選條件，以便快速回到需要的備忘錄。",
+      "examples-title": "運算式範例",
+      "fields-title": "支援的欄位",
+      "title-filter-required": "標題和篩選條件不可為空白",
+      "filter-valid": "篩選運算式看起來有效",
+      "create-success": "已建立檢視",
+      "update-success": "已更新檢視",
+      "examples": {
+        "pinned": {
+          "title": "已釘選",
+          "description": "僅限已釘選的備忘錄。"
+        },
+        "recent": {
+          "title": "近期筆記",
+          "description": "過去一小時內建立的備忘錄。"
+        },
+        "public": {
+          "title": "公開備忘錄",
+          "description": "僅限公開的備忘錄。"
+        },
+        "project-tags": {
+          "title": "專案標籤",
+          "description": "完全符合一個或多個標籤。"
+        },
+        "untagged": {
+          "title": "無標籤",
+          "description": "沒有任何標籤的備忘錄。"
+        },
+        "archive-tree": {
+          "title": "封存樹狀結構",
+          "description": "依前綴比對階層式標籤。"
+        },
+        "unassigned": {
+          "title": "未歸入空間",
+          "description": "未放入任何空間的備忘錄。"
+        },
+        "one-space": {
+          "title": "單一空間內",
+          "description": "放入某個空間的備忘錄。請使用該空間網址或設定中的空間 ID。"
+        },
+        "open-tasks": {
+          "title": "未完成的任務",
+          "description": "含有未完成任務的備忘錄。"
+        },
+        "links-or-code": {
+          "title": "連結或程式碼",
+          "description": "含有連結或程式碼區塊的備忘錄。"
+        },
+        "no-location": {
+          "title": "無位置",
+          "description": "未附加位置的備忘錄。"
+        },
+        "with-attachments": {
+          "title": "含附件",
+          "description": "至少附有一個檔案的備忘錄。"
+        },
+        "photos": {
+          "title": "相片",
+          "description": "在內容中或以附加檔案顯示圖片的備忘錄。"
+        },
+        "content-search": {
+          "title": "內容搜尋",
+          "description": "搜尋備忘錄內容中的文字。"
+        },
+        "starts-with": {
+          "title": "開頭符合",
+          "description": "內容以指定文字開頭的備忘錄（也可用 endsWith）。"
+        },
+        "regex": {
+          "title": "正規表示式比對",
+          "description": "以正規表示式比對內容。"
+        },
+        "all-tags-complete": {
+          "title": "所有標籤皆已完成",
+          "description": "每個標籤都以 -done 結尾（僅限有標籤的備忘錄）。"
+        },
+        "one-project-tag": {
+          "title": "單一專案標籤",
+          "description": "恰好有一個標籤符合條件。"
+        },
+        "any-tags": {
+          "title": "包含任一標籤",
+          "description": "標籤與指定集合有交集。"
+        },
+        "exact-tags": {
+          "title": "恰好這些標籤",
+          "description": "標籤恰好為此集合，不多也不少。"
+        },
+        "year-2024": {
+          "title": "2024 年的備忘錄",
+          "description": "依日曆年份篩選。"
+        },
+        "weekend": {
+          "title": "週末筆記",
+          "description": "建立於週日或週六（0 = 週日）。"
+        },
+        "long": {
+          "title": "長篇筆記",
+          "description": "超過 280 個字元的備忘錄。"
+        }
+      }
     },
     "configuration": {
       "label": "設定檔",
@@ -767,7 +929,9 @@
       "token-endpoint": "權杖端點（Token Endpoint）",
       "update-sso": "更新 SSO",
       "update-sso-description": "檢視身分識別提供者設定，然後儲存需要變更的欄位。",
-      "user-endpoint": "使用者端點（User Endpoint）"
+      "user-endpoint": "使用者端點（User Endpoint）",
+      "invalid-config": "身分提供者設定無效。",
+      "provider-id-placeholder": "例如 github, okta-corp"
     },
     "spaces": {
       "accept": "接受",
@@ -899,7 +1063,8 @@
       "customize-server": {
         "description": "說明",
         "icon-url": "圖示網址",
-        "title": "自訂伺服器"
+        "title": "自訂伺服器",
+        "dialog-description": "自訂執行個體的外觀與設定。"
       },
       "custom-code-description": "套用至前端的選擇性全實例 CSS 和 JavaScript。",
       "custom-code-title": "自訂代碼",
@@ -1092,7 +1257,8 @@
   },
   "tooltip": {
     "link-memo": "連結備忘錄",
-    "select-location": "位置"
+    "select-location": "位置",
+    "link-memo-description": "搜尋並選擇要連結的備忘錄"
   },
   "search": {
     "retry": "重試",
@@ -1124,7 +1290,12 @@
     "loading": "正在載入備忘錄…",
     "new-here": "在此記錄",
     "saved-outside-filter": "已儲存。此備忘錄不在目前的地圖結果中。",
-    "open-memo": "開啟備忘錄"
+    "open-memo": "開啟備忘錄",
+    "open-in-google-maps": "在 Google Maps 中開啟",
+    "location-description": "在地圖上選擇位置，或手動輸入座標",
+    "latitude": "緯度",
+    "longitude": "經度",
+    "place-placeholder": "請先選擇一個位置。"
   },
   "welcome": {
     "title": "歡迎使用 Memos",
@@ -1180,5 +1351,47 @@
       "tag-reading": "閱讀",
       "tag-ideas": "想法"
     }
+  },
+  "error": {
+    "title": "發生問題",
+    "description": "發生未預期的錯誤，可能是網路問題或應用程式出現問題。",
+    "description-update": "發生未預期的錯誤，可能是網路問題或應用程式已更新。重新載入通常即可解決。",
+    "details": "錯誤詳細資料",
+    "reload": "重新載入應用程式",
+    "not-found": "找不到您要找的頁面。",
+    "permission-denied": "權限不足",
+    "too-many-requests": "請求過於頻繁，請於 {{wait}} 後再試。",
+    "wait-seconds": "{{count}} 秒",
+    "wait-minutes": "{{count}} 分鐘",
+    "wait-hours": "{{count}} 小時",
+    "challenge-required": "請完成驗證後再試一次。",
+    "quota-memo-count": "您已達到 {{limit}} 則備忘錄的上限。請刪除部分備忘錄後再建立新的。",
+    "quota-storage": "這次上傳將超過您 {{limit}} 的儲存空間上限。您目前已使用 {{usage}}。",
+    "quota-upload": "此檔案超過每個檔案 {{limit}} 的上限。",
+    "quota-memo-content": "此備忘錄超過每則備忘錄 {{limit}} 的上限。請縮短內容後再儲存。",
+    "quota-generic": "您已達到使用量上限。",
+    "sign-in-failed": "登入失敗。",
+    "sign-up-failed": "註冊失敗",
+    "authenticate-failed": "驗證失敗。",
+    "update-profile-failed": "更新個人資料失敗",
+    "unlink-identity-failed": "解除身分提供者連結失敗。",
+    "link-identity-failed": "無法開始連結帳號，請再試一次。"
+  },
+  "attachment-preview": {
+    "title": "附件預覽",
+    "description": "附件預覽對話框。按 Esc 關閉，使用左右方向鍵切換項目，並可透過控制項、滑鼠滾輪、點兩下或雙指縮放手勢縮放圖片。",
+    "close": "關閉預覽",
+    "previous": "上一個項目",
+    "next": "下一個項目",
+    "reset-zoom": "重設縮放",
+    "image-alt": "預覽圖片 {{index}}/{{count}}",
+    "live-photo-alt": "預覽 Live Photo {{index}}/{{count}}",
+    "play-live-photo": "懸停或按下以播放 Live Photo"
+  },
+  "audio-player": {
+    "seek": "調整 {{name}} 的播放位置",
+    "back": "倒退 {{seconds}} 秒",
+    "forward": "快轉 {{seconds}} 秒",
+    "speed": "播放速度 {{rate}}x"
   }
 }

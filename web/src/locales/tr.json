@@ -15,7 +15,12 @@
     "loading": "Notlar yükleniyor…",
     "new-here": "Buraya yaz",
     "saved-outside-filter": "Kaydedildi. Bu not geçerli harita sonuçlarının dışında kalıyor.",
-    "open-memo": "Notu aç"
+    "open-memo": "Notu aç",
+    "open-in-google-maps": "Google Maps'te aç",
+    "location-description": "Haritada bir konum seçin veya koordinatları elle girin",
+    "latitude": "Enlem",
+    "longitude": "Boylam",
+    "place-placeholder": "Önce bir konum seçin."
   },
   "about": {
     "api-docs": "API Belgeleri",
@@ -160,11 +165,28 @@
     "username": "Kullanıcı adı",
     "version": "Sürüm",
     "visibility": "Görünürlük",
-    "view-all": "Tümünü gör",
     "views": "Görünümler",
     "yourself": "Kendiniz",
     "empty-placeholder": "Boş",
-    "unlink": "Bağlantıyı kaldır"
+    "unlink": "Bağlantıyı kaldır",
+    "open-navigation": "Gezinmeyi aç",
+    "navigation": "Gezinme",
+    "primary-navigation": "Ana",
+    "download": "İndir",
+    "download-name": "İndir: {{name}}",
+    "open-name": "Aç: {{name}}",
+    "preview-name": "Önizle: {{name}}",
+    "no-content": "İçerik yok",
+    "previous": "Önceki",
+    "next": "Sonraki",
+    "retry": "Yeniden dene",
+    "docs": "Belgeler",
+    "calendar-for-month": "Takvim: {{month}}",
+    "date-at-time": "{{date}}, {{time}}",
+    "selected-location": "Seçilen konum",
+    "choose-location": "Bir konum seçin",
+    "unknown-error": "Bilinmeyen hata",
+    "error-occurred": "Bir hata oluştu"
   },
   "locale-picker": {
     "no-language-feedback": "Dil bulunamadı mı? Geri bildirim gönder"
@@ -282,7 +304,17 @@
       "alt-text-placeholder": "Görseli açıklayın…",
       "image-unavailable": "Görsel kullanılamıyor",
       "resize-image": "Görseli yeniden boyutlandır"
-    }
+    },
+    "attachments": {
+      "move-up": "Eki yukarı taşı",
+      "move-down": "Eki aşağı taşı",
+      "remove": "Eki kaldır"
+    },
+    "remove-relation": "İlişkiyi kaldır",
+    "remove-location": "Konumu kaldır",
+    "recording-unsupported": "Bu tarayıcı ses kaydını desteklemiyor.",
+    "microphone-denied": "Mikrofon izni reddedildi.",
+    "recording-failed": "Ses kaydı başlatılamadı."
   },
   "inbox": {
     "failed-to-load": "Gelen kutusu öğesi yüklenemedi",
@@ -291,7 +323,16 @@
     "space-invitation": "sizi bir alana katılmaya davet etti",
     "space-invitation-accepted": "Bu alana katıldınız.",
     "space-invitation-open": "Alanı aç",
-    "unread": "Okunmamış"
+    "unread": "Okunmamış",
+    "commented-on-memo": "notunuza yorum yaptı",
+    "mentioned-in-comment": "bir yorumda sizden bahsetti",
+    "mentioned-in-memo": "bir notta sizden bahsetti",
+    "original": "Orijinal:",
+    "memo-label": "Not:",
+    "comment-heading": "Yorum",
+    "memo-heading": "Not",
+    "empty-memo": "Boş not",
+    "empty-comment": "Boş yorum"
   },
   "live-update": {
     "connected": "Canlı güncellemeler etkin",
@@ -312,7 +353,9 @@
     "click-to-show-sensitive-content": "Hassas içeriği göstermek için tıklayın",
     "comment": {
       "self": "Yorumlar",
-      "write-a-comment": "Yorum yaz"
+      "write-a-comment": "Yorum yaz",
+      "view-all-count_one": "{{count}} yorumu gör",
+      "view-all-count_other": "{{count}} yorumun tümünü gör"
     },
     "copy-content": "İçeriği kopyala",
     "copy-link": "Bağlantıyı Kopyala",
@@ -326,7 +369,8 @@
       "has-image": "Görsel içerir",
       "has-link": "Bağlantı içerir",
       "has-location": "Konum içerir",
-      "has-task-list": "Yapılacaklar listesi içerir"
+      "has-task-list": "Yapılacaklar listesi içerir",
+      "remove": "Filtreyi kaldır"
     },
     "compact-mode": "Kompakt mod",
     "connections": "Bağlantılar",
@@ -406,7 +450,9 @@
     "restored-successfully": "Başarıyla geri yüklendi",
     "succeed-copy-content": "İçerik başarıyla kopyalandı.",
     "succeed-copy-link": "Bağlantı başarıyla kopyalandı.",
-    "update-succeed": "Güncelleme başarılı"
+    "update-succeed": "Güncelleme başarılı",
+    "not-signed-in": "Giriş yapmadınız.",
+    "invalid-datetime": "Geçersiz tarih ve saat. 2023-12-31 23:59:59 biçimini kullanın."
   },
   "reference": {
     "no-memos-found": "Not bulunamadı",
@@ -490,7 +536,9 @@
       "danger-area-description": "Geri alınamayan hesap işlemleri burada gerçekleşir. Devam etmeden önce bunları dikkatlice inceleyin.",
       "delete-account": "Hesabı sil",
       "delete-account-description": "Bu hesabı ve ilişkili tüm erişimi bu örnekten kalıcı olarak kaldırın. Bu eylem geri alınamaz.",
-      "email-in-use": "Bu e-posta başka bir hesap tarafından kullanılıyor."
+      "email-in-use": "Bu e-posta başka bir hesap tarafından kullanılıyor.",
+      "avatar-too-large": "2 MB veya daha küçük bir görsel seçin.",
+      "avatar-unreadable": "Bu görsel okunamıyor. Başka bir dosya deneyin."
     },
     "instance": {
       "disallow-change-nickname": "Takma ad değiştirmeyi yasakla",
@@ -530,7 +578,10 @@
       "archived": "Arşivlendi",
       "member-column": "Üye",
       "summary-column": "Özet",
-      "export-memos": "Notları dışa aktar"
+      "export-memos": "Notları dışa aktar",
+      "username-password-required": "Kullanıcı adı ve parola boş olamaz",
+      "create-success": "Kullanıcı oluşturuldu",
+      "update-success": "Kullanıcı güncellendi"
     },
     "memo": {
       "label": "Not",
@@ -687,7 +738,12 @@
       "theme-description": "Seçilen temayı bu cihaza hemen uygular.",
       "theme": "Tema",
       "uploads-privacy-description": "Yüklenen medyayla birlikte gönderilen, gizlilik açısından hassas bilgileri denetleyin.",
-      "uploads-privacy-title": "Yüklemeler ve gizlilik"
+      "uploads-privacy-title": "Yüklemeler ve gizlilik",
+      "theme-system": "Sistemle eşitle",
+      "theme-system-short": "Sistem",
+      "theme-light": "Açık",
+      "theme-dark": "Koyu",
+      "theme-paper": "Kâğıt"
     },
     "editor": {
       "label": "Editör",
@@ -697,7 +753,118 @@
       "create": "Görünüm oluştur",
       "change-icon": "Görünüm simgesini değiştir",
       "delete-confirm": "`{{title}}` görünümünü silmek istediğinizden emin misiniz?",
-      "delete-success": "`{{title}}` görünümü başarıyla silindi"
+      "delete-success": "`{{title}}` görünümü başarıyla silindi",
+      "page-description": "Alanlar, operatörler, zaman yardımcıları ve etiket eşleştirmesiyle yeniden kullanılabilir görünümler oluşturun. Örneklerden başlayın, kaydetmeden önce doğrulayın.",
+      "edit": "Görünümü düzenle",
+      "form-description": "Görünüme bir ad verin ve uygulayacağı not filtresi ifadesini tanımlayın.",
+      "title-placeholder": "Sabitlenenler, Son notlar, İş",
+      "filter-help": "İfadeleri {{and}}, {{or}} ve {{not}} ile birleştirin. Zaman alanları zaman damgasıdır — {{now}}, {{duration}}, {{timestamp}} ve {{year}} gibi erişimcileri kullanın. Etiketler {{sets}} destekler, {{size}} ise uzunluğu ölçer.",
+      "validate": "Doğrula",
+      "all": "Tüm görünümler",
+      "loading": "Görünümler yükleniyor…",
+      "load-failed": "Görünümler yüklenemedi.",
+      "empty-title": "Henüz görünüm yok",
+      "empty-description": "İhtiyacınız olan notlara hızla dönmek için bir filtre kaydedin.",
+      "examples-title": "İfade örnekleri",
+      "fields-title": "Desteklenen alanlar",
+      "title-filter-required": "Başlık ve filtre boş olamaz",
+      "filter-valid": "Filtre ifadesi geçerli görünüyor",
+      "create-success": "Görünüm oluşturuldu",
+      "update-success": "Görünüm güncellendi",
+      "examples": {
+        "pinned": {
+          "title": "Sabitlenenler",
+          "description": "Yalnızca sabitlenmiş notlar."
+        },
+        "recent": {
+          "title": "Son notlar",
+          "description": "Son bir saatte oluşturulan notlar."
+        },
+        "public": {
+          "title": "Herkese açık notlar",
+          "description": "Yalnızca herkese açık notlar."
+        },
+        "project-tags": {
+          "title": "Proje etiketleri",
+          "description": "Bir veya daha fazla etiketle tam eşleşme."
+        },
+        "untagged": {
+          "title": "Etiketsiz",
+          "description": "Hiç etiketi olmayan notlar."
+        },
+        "archive-tree": {
+          "title": "Arşiv ağacı",
+          "description": "Hiyerarşik etiketleri önekle eşleştirin."
+        },
+        "unassigned": {
+          "title": "Atanmamış",
+          "description": "Hiçbir alana yerleştirilmemiş notlar."
+        },
+        "one-space": {
+          "title": "Tek bir alanda",
+          "description": "Bir alana yerleştirilmiş notlar. Alanın URL'sindeki veya ayarlarındaki alan kimliğini kullanın."
+        },
+        "open-tasks": {
+          "title": "Açık görevler",
+          "description": "Tamamlanmamış görevleri olan notlar."
+        },
+        "links-or-code": {
+          "title": "Bağlantılar veya kod",
+          "description": "Bağlantı veya kod bloğu içeren notlar."
+        },
+        "no-location": {
+          "title": "Konumsuz",
+          "description": "Konum eklenmemiş notlar."
+        },
+        "with-attachments": {
+          "title": "Ekli",
+          "description": "En az bir ekli dosyası olan notlar."
+        },
+        "photos": {
+          "title": "Fotoğraflar",
+          "description": "İçerikte veya ekli dosya olarak görsel gösteren notlar."
+        },
+        "content-search": {
+          "title": "İçerik araması",
+          "description": "Not içeriğinde metin arayın."
+        },
+        "starts-with": {
+          "title": "Şununla başlar",
+          "description": "İçeriği bir metinle başlayan notlar (endsWith da kullanılabilir)."
+        },
+        "regex": {
+          "title": "Regex eşleşmesi",
+          "description": "İçeriği düzenli ifadeyle eşleştirin."
+        },
+        "all-tags-complete": {
+          "title": "Tüm etiketler tamam",
+          "description": "Her etiket -done ile biter (yalnızca etiketli notlar)."
+        },
+        "one-project-tag": {
+          "title": "Tek proje etiketi",
+          "description": "Koşulu tam olarak bir etiket sağlar."
+        },
+        "any-tags": {
+          "title": "Bu etiketlerden herhangi biri",
+          "description": "Etiketler verilen kümeyle kesişir."
+        },
+        "exact-tags": {
+          "title": "Tam olarak bu etiketler",
+          "description": "Tam olarak bu kümeyle etiketlenmiş, fazlası değil."
+        },
+        "year-2024": {
+          "title": "2024 notları",
+          "description": "Takvim yılına göre filtreleyin."
+        },
+        "weekend": {
+          "title": "Hafta sonu notları",
+          "description": "Pazar veya cumartesi oluşturulanlar (0 = pazar)."
+        },
+        "long": {
+          "title": "Uzun notlar",
+          "description": "280 karakterden uzun notlar."
+        }
+      }
     },
     "configuration": {
       "label": "Yapılandırma",
@@ -773,7 +940,9 @@
       "scopes-description": "Kapsamları boşluklarla ayırın. Çoğu sağlayıcı, profil veya e-posta erişimi gibi yalnızca küçük bir sete ihtiyaç duyar.",
       "template-description": "Sağlayıcının ön ayarından başlayın, ardından kiracınızın kimlik bilgilerini ve uç noktalarını ayarlayın.",
       "unlink-success": "{{name}}'in bağlantısı kaldırıldı.",
-      "update-sso-description": "Sağlayıcı yapılandırmasını gözden geçirin ve ardından değişmesi gereken alanları kaydedin."
+      "update-sso-description": "Sağlayıcı yapılandırmasını gözden geçirin ve ardından değişmesi gereken alanları kaydedin.",
+      "invalid-config": "Kimlik sağlayıcı yapılandırması geçersiz.",
+      "provider-id-placeholder": "ör. github, okta-corp"
     },
     "storage": {
       "accesskey": "Erişim anahtarı",
@@ -821,7 +990,8 @@
       "customize-server": {
         "description": "Açıklama",
         "icon-url": "İkon URL'si",
-        "title": "Sunucuyu Özelleştir"
+        "title": "Sunucuyu Özelleştir",
+        "dialog-description": "Örneğinizin görünümünü ve ayarlarını özelleştirin."
       },
       "label": "Sistem",
       "server-name": "Sunucu Adı",
@@ -1053,7 +1223,8 @@
   },
   "tooltip": {
     "link-memo": "Notu Bağla",
-    "select-location": "Konum seç"
+    "select-location": "Konum seç",
+    "link-memo-description": "Bağlanacak notu arayıp seçin"
   },
   "demo": {
     "banner-description": "Değişiklikler geçicidir ve sıfırlanabilir.",
@@ -1180,5 +1351,47 @@
       "tag-reading": "okuma",
       "tag-ideas": "fikirler"
     }
+  },
+  "error": {
+    "title": "Bir şeyler ters gitti",
+    "description": "Beklenmeyen bir hata oluştu. Bunun nedeni bir ağ sorunu veya uygulamadaki bir sorun olabilir.",
+    "description-update": "Beklenmeyen bir hata oluştu. Bunun nedeni bir ağ sorunu veya bir uygulama güncellemesi olabilir. Yeniden yüklemek genellikle sorunu çözer.",
+    "details": "Hata ayrıntıları",
+    "reload": "Uygulamayı yeniden yükle",
+    "not-found": "Aradığınız sayfa bulunamadı.",
+    "permission-denied": "İzin reddedildi",
+    "too-many-requests": "Çok fazla istek. {{wait}} sonra yeniden deneyin.",
+    "wait-seconds": "{{count}} sn",
+    "wait-minutes": "{{count}} dk",
+    "wait-hours": "{{count}} sa",
+    "challenge-required": "Doğrulamayı tamamlayıp yeniden deneyin.",
+    "quota-memo-count": "{{limit}} notluk sınırınıza ulaştınız. Yeni not oluşturmak için not silin.",
+    "quota-storage": "Bu yükleme {{limit}} olan depolama sınırınızı aşacak. Şu anda {{usage}} kullanıyorsunuz.",
+    "quota-upload": "Bu dosya, dosya başına {{limit}} olan sınırınızdan büyük.",
+    "quota-memo-content": "Bu not, not başına {{limit}} olan sınırınızdan büyük. Kaydetmek için içeriği kısaltın.",
+    "quota-generic": "Bir kullanım sınırına ulaştınız.",
+    "sign-in-failed": "Giriş yapılamadı.",
+    "sign-up-failed": "Kayıt başarısız oldu",
+    "authenticate-failed": "Kimlik doğrulanamadı.",
+    "update-profile-failed": "Profil güncellenemedi",
+    "unlink-identity-failed": "Kimlik sağlayıcının bağlantısı kaldırılamadı.",
+    "link-identity-failed": "Hesap bağlama başlatılamadı. Lütfen tekrar deneyin."
+  },
+  "attachment-preview": {
+    "title": "Ek önizlemesi",
+    "description": "Ek önizleme penceresi. Kapatmak için Escape tuşuna basın, öğeler arasında geçiş yapmak için sol veya sağ ok tuşlarını kullanın ve görselleri kontrollerle, fare tekerleğiyle, çift dokunarak veya iki parmakla yakınlaştırın.",
+    "close": "Önizlemeyi kapat",
+    "previous": "Önceki öğe",
+    "next": "Sonraki öğe",
+    "reset-zoom": "Yakınlaştırmayı sıfırla",
+    "image-alt": "Görsel önizlemesi {{index}} / {{count}}",
+    "live-photo-alt": "Canlı fotoğraf önizlemesi {{index}} / {{count}}",
+    "play-live-photo": "Canlı fotoğrafı oynatmak için üzerine gelin veya basın"
+  },
+  "audio-player": {
+    "seek": "Sar: {{name}}",
+    "back": "{{seconds}} saniye geri",
+    "forward": "{{seconds}} saniye ileri",
+    "speed": "Oynatma hızı {{rate}}x"
   }
 }

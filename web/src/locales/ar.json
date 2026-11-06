@@ -138,7 +138,24 @@
     "resize-sidebar": "تغيير حجم الشريط الجانبي",
     "sign-in-to-memos": "تسجيل الدخول إلى Memos",
     "unlink": "إلغاء الارتباط",
-    "view-all": "عرض الكل"
+    "open-navigation": "فتح التنقل",
+    "navigation": "التنقل",
+    "primary-navigation": "رئيسي",
+    "download": "تنزيل",
+    "download-name": "تنزيل {{name}}",
+    "open-name": "فتح {{name}}",
+    "preview-name": "معاينة {{name}}",
+    "no-content": "لا يوجد محتوى",
+    "previous": "السابق",
+    "next": "التالي",
+    "retry": "إعادة المحاولة",
+    "docs": "التوثيق",
+    "calendar-for-month": "تقويم {{month}}",
+    "date-at-time": "{{date}} في {{time}}",
+    "selected-location": "الموقع المحدد",
+    "choose-location": "اختر موقعًا",
+    "unknown-error": "خطأ غير معروف",
+    "error-occurred": "حدث خطأ"
   },
   "locale-picker": {
     "no-language-feedback": "لم يتم العثور على اللغة؟ إرسال ردود الفعل"
@@ -256,7 +273,17 @@
       "alt-text-placeholder": "صِف الصورة…",
       "image-unavailable": "الصورة غير متاحة",
       "resize-image": "تغيير حجم الصورة"
-    }
+    },
+    "attachments": {
+      "move-up": "نقل المرفق لأعلى",
+      "move-down": "نقل المرفق لأسفل",
+      "remove": "إزالة المرفق"
+    },
+    "remove-relation": "إزالة العلاقة",
+    "remove-location": "إزالة الموقع",
+    "recording-unsupported": "تسجيل الصوت غير مدعوم في هذا المتصفح.",
+    "microphone-denied": "تم رفض إذن الميكروفون.",
+    "recording-failed": "فشل بدء تسجيل الصوت."
   },
   "inbox": {
     "failed-to-load": "فشل تحميل عنصر صندوق الوارد",
@@ -265,7 +292,16 @@
     "unread": "غير مقروء",
     "space-invitation": "تمت دعوتك للانضمام إلى مساحة",
     "space-invitation-accepted": "انضممتَ إلى هذه المساحة.",
-    "space-invitation-open": "مساحة متاحة"
+    "space-invitation-open": "مساحة متاحة",
+    "commented-on-memo": "علّق على مذكرتك",
+    "mentioned-in-comment": "أشار إليك في تعليق",
+    "mentioned-in-memo": "أشار إليك في مذكرة",
+    "original": "الأصل:",
+    "memo-label": "المذكرة:",
+    "comment-heading": "تعليق",
+    "memo-heading": "مذكرة",
+    "empty-memo": "مذكرة فارغة",
+    "empty-comment": "تعليق فارغ"
   },
   "memo": {
     "no-memos-yet": "لا توجد مذكرات بعد",
@@ -275,7 +311,13 @@
     "click-to-show-sensitive-content": "انقر لإظهار المحتوى الحساس",
     "comment": {
       "self": "التعليقات",
-      "write-a-comment": "اكتب تعليقاً"
+      "write-a-comment": "اكتب تعليقاً",
+      "view-all-count_zero": "عرض كل التعليقات ({{count}})",
+      "view-all-count_one": "عرض كل التعليقات ({{count}})",
+      "view-all-count_two": "عرض كل التعليقات ({{count}})",
+      "view-all-count_few": "عرض كل التعليقات ({{count}})",
+      "view-all-count_many": "عرض كل التعليقات ({{count}})",
+      "view-all-count_other": "عرض كل التعليقات ({{count}})"
     },
     "copy-content": "نسخ المحتوى",
     "copy-link": "نسخ الرابط",
@@ -289,7 +331,8 @@
       "has-image": "يحتوي على صورة",
       "has-link": "يحتوي على رابط",
       "has-location": "يحتوي على موقع",
-      "has-task-list": "يحتوي على قائمة مهام"
+      "has-task-list": "يحتوي على قائمة مهام",
+      "remove": "إزالة عامل التصفية"
     },
     "compact-mode": "الوضع المضغوط",
     "link-preview": "معاينة الرابط",
@@ -375,7 +418,9 @@
     "restored-successfully": "تمت الاستعادة بنجاح",
     "succeed-copy-content": "تم نسخ المحتوى بنجاح.",
     "succeed-copy-link": "تم نسخ الرابط بنجاح.",
-    "update-succeed": "تم التحديث بنجاح"
+    "update-succeed": "تم التحديث بنجاح",
+    "not-signed-in": "لم تسجّل الدخول.",
+    "invalid-datetime": "التاريخ والوقت غير صالحين. استخدم التنسيق 2023-12-31 23:59:59."
   },
   "reference": {
     "no-memos-found": "لم يتم العثور على مذكرات",
@@ -411,7 +456,10 @@
       "member-column": "عضو",
       "active": "نشط",
       "summary-column": "ملخص",
-      "export-memos": "تصدير الملاحظات"
+      "export-memos": "تصدير الملاحظات",
+      "username-password-required": "لا يمكن ترك اسم المستخدم وكلمة المرور فارغين",
+      "create-success": "تم إنشاء المستخدم",
+      "update-success": "تم تحديث المستخدم"
     },
     "my-account": {
       "label": "حسابي"
@@ -435,7 +483,12 @@
       "theme-description": "يُطبّق المظهر المُختار فورًا على هذا الجهاز.",
       "theme": "السمة",
       "uploads-privacy-description": "التحكم في المعلومات الحساسة المتعلقة بالخصوصية المُرسلة مع الوسائط المُحمّلة.",
-      "uploads-privacy-title": "التحميلات والخصوصية"
+      "uploads-privacy-title": "التحميلات والخصوصية",
+      "theme-system": "مطابقة النظام",
+      "theme-system-short": "النظام",
+      "theme-light": "فاتح",
+      "theme-dark": "داكن",
+      "theme-paper": "ورقي"
     },
     "editor": {
       "label": "المحرر",
@@ -445,7 +498,118 @@
       "create": "إنشاء عرض",
       "delete-confirm": "هل أنت متأكد من حذف طريقة العرض `{{title}}`؟",
       "delete-success": "تم حذف طريقة العرض `{{title}}` بنجاح",
-      "change-icon": "تغيير أيقونة العرض"
+      "change-icon": "تغيير أيقونة العرض",
+      "page-description": "أنشئ طرق عرض قابلة لإعادة الاستخدام باستخدام الحقول والعوامل ودوال الوقت ومطابقة العلامات. ابدأ من الأمثلة، ثم تحقّق من صحتها قبل الحفظ.",
+      "edit": "تعديل طريقة العرض",
+      "form-description": "سمِّ طريقة العرض وحدّد تعبير التصفية الذي ستطبقه على المذكرات.",
+      "title-placeholder": "مثبتة، ملاحظات حديثة، عمل",
+      "filter-help": "اجمع التعبيرات باستخدام {{and}} و{{or}} و{{not}}. حقول الوقت طوابع زمنية — استخدم {{now}} و{{duration}} و{{timestamp}} ودوال الوصول مثل {{year}}. تدعم العلامات {{sets}}، ويقيس {{size}} الطول.",
+      "validate": "تحقّق",
+      "all": "كل طرق العرض",
+      "loading": "جارٍ تحميل طرق العرض…",
+      "load-failed": "تعذّر تحميل طرق العرض.",
+      "empty-title": "لا توجد طرق عرض بعد",
+      "empty-description": "احفظ عامل تصفية للعودة بسرعة إلى المذكرات التي تحتاجها.",
+      "examples-title": "أمثلة على التعبيرات",
+      "fields-title": "الحقول المدعومة",
+      "title-filter-required": "لا يمكن ترك العنوان وعامل التصفية فارغين",
+      "filter-valid": "يبدو تعبير التصفية صالحًا",
+      "create-success": "تم إنشاء طريقة العرض",
+      "update-success": "تم تحديث طريقة العرض",
+      "examples": {
+        "pinned": {
+          "title": "المثبتة",
+          "description": "المذكرات المثبتة فقط."
+        },
+        "recent": {
+          "title": "ملاحظات حديثة",
+          "description": "المذكرات التي أُنشئت خلال الساعة الأخيرة."
+        },
+        "public": {
+          "title": "المذكرات العامة",
+          "description": "المذكرات العامة فقط."
+        },
+        "project-tags": {
+          "title": "علامات المشاريع",
+          "description": "مطابقة علامة واحدة أو أكثر بدقة."
+        },
+        "untagged": {
+          "title": "بدون علامات",
+          "description": "المذكرات التي لا تحمل أي علامة."
+        },
+        "archive-tree": {
+          "title": "شجرة الأرشيف",
+          "description": "مطابقة العلامات الهرمية حسب البادئة."
+        },
+        "unassigned": {
+          "title": "غير مخصصة",
+          "description": "المذكرات غير الموضوعة في أي مساحة."
+        },
+        "one-space": {
+          "title": "في مساحة واحدة",
+          "description": "المذكرات الموضوعة في مساحة. استخدم معرّف المساحة من رابطها أو إعداداتها."
+        },
+        "open-tasks": {
+          "title": "مهام مفتوحة",
+          "description": "المذكرات التي تحتوي على مهام غير منجزة."
+        },
+        "links-or-code": {
+          "title": "روابط أو شيفرة",
+          "description": "المذكرات التي تحتوي على روابط أو كتل شيفرة."
+        },
+        "no-location": {
+          "title": "بدون موقع",
+          "description": "المذكرات التي ليس لها موقع مرفق."
+        },
+        "with-attachments": {
+          "title": "مع مرفقات",
+          "description": "المذكرات التي تحتوي على ملف مرفق واحد على الأقل."
+        },
+        "photos": {
+          "title": "صور",
+          "description": "المذكرات التي تعرض صورة، في المحتوى أو كملف مرفق."
+        },
+        "content-search": {
+          "title": "البحث في المحتوى",
+          "description": "البحث عن نص داخل محتوى المذكرة."
+        },
+        "starts-with": {
+          "title": "يبدأ بـ",
+          "description": "المذكرات التي يبدأ محتواها بنص معين (وكذلك endsWith)."
+        },
+        "regex": {
+          "title": "مطابقة Regex",
+          "description": "مطابقة المحتوى باستخدام تعبير نمطي."
+        },
+        "all-tags-complete": {
+          "title": "كل العلامات مكتملة",
+          "description": "كل علامة تنتهي بـ -done (المذكرات ذات العلامات فقط)."
+        },
+        "one-project-tag": {
+          "title": "علامة مشروع واحدة",
+          "description": "علامة واحدة بالضبط تطابق الشرط."
+        },
+        "any-tags": {
+          "title": "أي من هذه العلامات",
+          "description": "العلامات تتقاطع مع المجموعة المحددة."
+        },
+        "exact-tags": {
+          "title": "هذه العلامات بالضبط",
+          "description": "تحمل هذه المجموعة من العلامات بالضبط، دون زيادة."
+        },
+        "year-2024": {
+          "title": "مذكرات 2024",
+          "description": "التصفية حسب السنة الميلادية."
+        },
+        "weekend": {
+          "title": "ملاحظات عطلة نهاية الأسبوع",
+          "description": "أُنشئت يوم الأحد أو السبت (0 = الأحد)."
+        },
+        "long": {
+          "title": "ملاحظات طويلة",
+          "description": "المذكرات التي يزيد طولها على 280 حرفًا."
+        }
+      }
     },
     "configuration": {
       "label": "الإعداد",
@@ -521,7 +685,9 @@
       "scopes-description": "افصل النطاقات بمسافات. معظم الموفرين يحتاجون فقط إلى مجموعة صغيرة مثل الوصول إلى الملف الشخصي أو البريد الإلكتروني.",
       "template-description": "ابدأ من إعداد مسبق للموفر، ثم عدّل بيانات الاعتماد ونقاط النهاية لمستأجرك.",
       "unlink-success": "{{name}} غير مرتبط.",
-      "update-sso-description": "راجع إعدادات الموفر، ثم احفظ الحقول التي يجب تغييرها."
+      "update-sso-description": "راجع إعدادات الموفر، ثم احفظ الحقول التي يجب تغييرها.",
+      "invalid-config": "إعدادات موفر الهوية غير صالحة.",
+      "provider-id-placeholder": "مثال: github, okta-corp"
     },
     "storage": {
       "accesskey": "مفتاح الوصول",
@@ -569,7 +735,8 @@
       "customize-server": {
         "description": "الوصف",
         "icon-url": "رابط الأيقونة",
-        "title": "تخصيص الخادم"
+        "title": "تخصيص الخادم",
+        "dialog-description": "خصّص مظهر النسخة وإعداداتها."
       },
       "server-name": "اسم الخادم",
       "label": "النظام",
@@ -675,7 +842,9 @@
       "danger-area-description": "توجد هنا إجراءات حساب لا رجعة فيها. راجعها بعناية قبل المتابعة.",
       "delete-account": "حذف الحساب",
       "delete-account-description": "إزالة هذا الحساب نهائيًا وجميع صلاحيات الوصول المرتبطة به من هذه النسخة. لا يمكن التراجع عن هذا الإجراء.",
-      "email-in-use": "هذا البريد الإلكتروني مستخدم بالفعل من قِبل حساب آخر."
+      "email-in-use": "هذا البريد الإلكتروني مستخدم بالفعل من قِبل حساب آخر.",
+      "avatar-too-large": "اختر صورة بحجم 2 ميغابايت أو أقل.",
+      "avatar-unreadable": "تعذّرت قراءة هذه الصورة. جرّب ملفًا آخر."
     },
     "instance": {
       "disallow-change-nickname": "عدم السماح بتغيير الاسم المستعار",
@@ -973,7 +1142,8 @@
   },
   "tooltip": {
     "link-memo": "ربط مذكرة",
-    "select-location": "الموقع"
+    "select-location": "الموقع",
+    "link-memo-description": "ابحث عن مذكرة واخترها لربطها"
   },
   "live-update": {
     "connected": "التحديثات الحية نشطة",
@@ -1062,7 +1232,12 @@
     "loading": "جارٍ تحميل المذكرات...",
     "new-here": "اكتب هنا",
     "saved-outside-filter": "تم الحفظ. هذه المذكرة خارج نتائج الخريطة الحالية.",
-    "open-memo": "فتح المذكرة"
+    "open-memo": "فتح المذكرة",
+    "open-in-google-maps": "فتح في Google Maps",
+    "location-description": "حدد موقعًا على الخريطة أو أدخل الإحداثيات يدويًا",
+    "latitude": "خط العرض",
+    "longitude": "خط الطول",
+    "place-placeholder": "اختر موضعًا أولًا."
   },
   "calendar": {
     "new-memo-on-day": "مذكرة جديدة في هذا اليوم",
@@ -1180,5 +1355,47 @@
       "tag-reading": "قراءة",
       "tag-ideas": "أفكار"
     }
+  },
+  "error": {
+    "title": "حدث خطأ ما",
+    "description": "حدث خطأ غير متوقع. قد يكون السبب مشكلة في الشبكة أو في التطبيق.",
+    "description-update": "حدث خطأ غير متوقع. قد يكون السبب مشكلة في الشبكة أو تحديثًا للتطبيق. عادةً ما تحل إعادة التحميل المشكلة.",
+    "details": "تفاصيل الخطأ",
+    "reload": "إعادة تحميل التطبيق",
+    "not-found": "تعذر العثور على الصفحة التي تبحث عنها.",
+    "permission-denied": "تم رفض الإذن",
+    "too-many-requests": "طلبات كثيرة جدًا. حاول مرة أخرى بعد {{wait}}.",
+    "wait-seconds": "{{count}} ث",
+    "wait-minutes": "{{count}} د",
+    "wait-hours": "{{count}} س",
+    "challenge-required": "أكمل اختبار التحقق ثم حاول مرة أخرى.",
+    "quota-memo-count": "لقد بلغت الحد الأقصى البالغ {{limit}} مذكرة. احذف بعض المذكرات لإنشاء مذكرات جديدة.",
+    "quota-storage": "سيتجاوز هذا الرفع حد التخزين البالغ {{limit}}. أنت تستخدم {{usage}}.",
+    "quota-upload": "هذا الملف أكبر من الحد المسموح به البالغ {{limit}} لكل ملف.",
+    "quota-memo-content": "هذه المذكرة أكبر من الحد المسموح به البالغ {{limit}} لكل مذكرة. اختصر المحتوى لحفظها.",
+    "quota-generic": "لقد بلغت أحد حدود الاستخدام.",
+    "sign-in-failed": "فشل تسجيل الدخول.",
+    "sign-up-failed": "فشل التسجيل",
+    "authenticate-failed": "فشلت المصادقة.",
+    "update-profile-failed": "فشل تحديث الملف الشخصي",
+    "unlink-identity-failed": "فشل إلغاء ربط موفر الهوية.",
+    "link-identity-failed": "تعذّر بدء ربط الحساب. حاول مرة أخرى."
+  },
+  "attachment-preview": {
+    "title": "معاينة المرفق",
+    "description": "نافذة معاينة المرفق. اضغط Escape للإغلاق، واستخدم مفتاحي السهم الأيسر والأيمن للتنقل بين العناصر، وكبّر الصور باستخدام أزرار التحكم أو عجلة الفأرة أو النقر المزدوج أو إيماءة القرص.",
+    "close": "إغلاق المعاينة",
+    "previous": "العنصر السابق",
+    "next": "العنصر التالي",
+    "reset-zoom": "إعادة ضبط التكبير",
+    "image-alt": "معاينة الصورة {{index}} من {{count}}",
+    "live-photo-alt": "معاينة الصورة المباشرة {{index}} من {{count}}",
+    "play-live-photo": "مرّر المؤشر أو اضغط لتشغيل الصورة المباشرة"
+  },
+  "audio-player": {
+    "seek": "التنقل في {{name}}",
+    "back": "الرجوع {{seconds}} ثوانٍ",
+    "forward": "التقدم {{seconds}} ثوانٍ",
+    "speed": "سرعة التشغيل {{rate}}x"
   }
 }
