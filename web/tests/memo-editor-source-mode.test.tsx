@@ -1,6 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { MemoEditor, preloadMemoEditing } from "@/components/MemoEditor";
 import { draftKeyFor } from "@/components/MemoEditor/edit/draftKey";
@@ -29,6 +29,21 @@ const editorSetting = vi.hoisted(() => {
     },
   };
 });
+const settingsReady = vi.hoisted(() => {
+  let ready = true;
+  const listeners = new Set<() => void>();
+  return {
+    get: () => ready,
+    set: (value: boolean) => {
+      ready = value;
+      for (const listener of listeners) listener();
+    },
+    subscribe: (listener: () => void) => {
+      listeners.add(listener);
+      return () => listeners.delete(listener);
+    },
+  };
+});
 const updateEditorSetting = vi.hoisted(() => vi.fn());
 vi.mock("@/hooks/useUserQueries", () => ({
   useTagCounts: () => ({ data: {} }),
@@ -42,6 +57,7 @@ vi.mock("@/contexts/AuthContext", async () => {
     useAuth: () => ({
       userGeneralSetting: {},
       userEditorSetting: useSyncExternalStore(editorSetting.subscribe, editorSetting.get),
+      isUserSettingsInitialized: useSyncExternalStore(settingsReady.subscribe, settingsReady.get),
       setUserEditorSetting: editorSetting.set,
     }),
   };
@@ -88,6 +104,7 @@ const sourceLines = (container: HTMLElement) =>
   Array.from(container.querySelectorAll(".mbe-source .mbe-source-line"), (line) => line.textContent).join("\n");
 
 afterEach(() => {
+  settingsReady.set(true);
   editorSetting.set(undefined);
   updateEditorSetting.mockReset();
   cacheService.clearAll();
@@ -99,6 +116,31 @@ const toggleSourceMode = () => {
 };
 
 describe("automatic focus mode", () => {
+  it.each([false, true])("waits for settings and respects manual toggling (%s)", async (manualToggle) => {
+    settingsReady.set(false);
+    const memo = create(MemoSchema, { name: "memos/existing", creator: "users/1", content: "Existing memo" });
+    const client = new QueryClient();
+    client.setQueryData(memoKeys.detail(memo.name), memo);
+    const { container } = render(
+      <QueryClientProvider client={client}>
+        <MemoEditor mode="edit" name={memo.name} />
+      </QueryClientProvider>,
+    );
+    expect(container.querySelector(".memo-editor-content")).not.toHaveAttribute("data-focus-mode");
+    if (manualToggle) {
+      fireEvent.click(screen.getByRole("button", { name: "common.add" }));
+      fireEvent.click(screen.getByRole("menuitem", { name: "editor.focus-mode" }));
+      fireEvent.click(screen.getByRole("button", { name: "editor.exit-focus-mode" }));
+    }
+    act(() => {
+      editorSetting.set({ sourceMode: false, autoFocusMode: true });
+      settingsReady.set(true);
+    });
+    await waitFor(() => {
+      if (manualToggle) expect(container.querySelector(".memo-editor-content")).not.toHaveAttribute("data-focus-mode");
+      else expect(container.querySelector(".memo-editor-content")).toHaveAttribute("data-focus-mode");
+    });
+  });
   it.each([false, true])("does not expand on focus or click (preference %s)", (autoFocusMode) => {
     editorSetting.set({ sourceMode: false, autoFocusMode });
     const { container } = mount();
@@ -113,7 +155,9 @@ describe("automatic focus mode", () => {
     editorSetting.set({ sourceMode: false, autoFocusMode });
     const { container } = mount();
     const editor = container.querySelector(".memo-editor-root") as HTMLElement;
-    fireEvent(editor, new InputEvent("beforeinput", { bubbles: true, inputType: "insertText", data: "a" }));
+    editor.focus();
+    fireEvent(editor, new InputEvent("beforeinput", { bubbles: true, cancelable: true, inputType: "insertText", data: "a" }));
+    await waitFor(() => expect(editor).toHaveTextContent("a"));
     if (autoFocusMode) {
       await waitFor(() => expect(container.querySelector(".memo-editor-content")).toHaveAttribute("data-focus-mode"));
       fireEvent.click(screen.getByRole("button", { name: "editor.exit-focus-mode" }));

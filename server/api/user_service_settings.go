@@ -158,6 +158,8 @@ func (s *APIService) UpdateUserSetting(ctx context.Context, request *apipb.Updat
 		if incomingEditor == nil {
 			return nil, status.Errorf(codes.InvalidArgument, "editor setting is required")
 		}
+		s.editorSettingMu.Lock()
+		defer s.editorSettingMu.Unlock()
 		existingUserSetting, err := s.Store.GetUserSetting(ctx, &store.FindUserSetting{UserID: &userID, Key: storeKey})
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to get existing editor setting: %v", err)

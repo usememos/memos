@@ -81,7 +81,7 @@ export const EditSession: React.FC<EditSessionProps> = ({
   }, [isFocusMode, onFocusModeChange]);
   const isSaving = useEditorSelector((s) => s.ui.isLoading.saving);
   const hasTimestamp = useEditorSelector((s) => Boolean(s.timestamps.createTime));
-  const { userGeneralSetting, userEditorSetting } = useAuth();
+  const { userGeneralSetting, userEditorSetting, isUserSettingsInitialized } = useAuth();
   // The inline composer remains mounted after saving, so reset this for the next memo.
   const autoFocusHandled = useRef(Boolean(memo || onFocusModeExit));
   const { aiSetting, fetchSetting } = useInstance();
@@ -129,12 +129,12 @@ export const EditSession: React.FC<EditSessionProps> = ({
   const initialAutoFocusEntered = useRef(false);
   // Enter focus mode for an existing memo after useFocusMode has measured its inline height.
   useLayoutEffect(() => {
-    if (initialAutoFocusEntered.current) return;
+    if (initialAutoFocusEntered.current || !isUserSettingsInitialized) return;
     initialAutoFocusEntered.current = true;
     if (memo && !onFocusModeExit && userEditorSetting?.autoFocusMode && !getState().ui.isFocusMode) {
       dispatch(actions.toggleFocusMode());
     }
-  }, [actions, dispatch, getState, memo, onFocusModeExit, userEditorSetting?.autoFocusMode]);
+  }, [actions, dispatch, getState, isUserSettingsInitialized, memo, onFocusModeExit, userEditorSetting?.autoFocusMode]);
 
   // Live-sync the draft's createTime/updateTime to the calendar-derived prop.
   // Only applies in create mode; edit mode owns its own timestamps. Runs after
@@ -256,6 +256,7 @@ export const EditSession: React.FC<EditSessionProps> = ({
   // Hosted: focus mode is the host's frame, so leaving it dismisses the host.
   // Inline: focus mode is a view this editor owns and toggles in place.
   const handleToggleFocusMode = () => {
+    initialAutoFocusEntered.current = true;
     autoFocusHandled.current = true;
     if (onFocusModeExit) {
       rememberCursor();
@@ -272,6 +273,7 @@ export const EditSession: React.FC<EditSessionProps> = ({
   // Dismissing the inline backdrop is temporary: typing can open focus mode again.
   // A hosted editor owns its frame and still dismisses the entire host.
   const handleBackdropClick = () => {
+    initialAutoFocusEntered.current = true;
     if (onFocusModeExit) {
       handleToggleFocusMode();
       return;
