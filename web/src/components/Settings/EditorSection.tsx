@@ -1,4 +1,4 @@
-import { Switch } from "@/components/ui/switch";
+import { Switch } from "@usememos/ui";
 import { useSourceMode } from "@/hooks/useSourceMode";
 import { useTranslate } from "@/utils/i18n";
 import { SettingList, SettingListItem } from "./SettingList";
@@ -10,7 +10,7 @@ const EditorSection = () => {
 
   return (
     <SettingSection title={t("setting.editor.label")}>
-      <SettingList>
+      <SettingList aria-label={t("setting.editor.label")}>
         <SettingListItem label={t("editor.markdown-mode")} description={t("setting.editor.markdown-mode-description")}>
           <Switch
             aria-label={t("editor.markdown-mode")}

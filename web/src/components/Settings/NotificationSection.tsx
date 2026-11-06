@@ -1,17 +1,14 @@
 import { create } from "@bufbuild/protobuf";
+import { Badge, Button, Checkbox, Input } from "@usememos/ui";
 import { isEqual } from "lodash-es";
 import type { ChangeEvent } from "react";
 import { useEffect, useMemo, useState } from "react";
-import { toast } from "react-hot-toast";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
 import { instanceServiceClient } from "@/connect";
 import { useInstance } from "@/contexts/InstanceContext";
 import { isFieldManaged, useManagedResource } from "@/hooks/useConfigurationQueries";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { handleError } from "@/lib/error";
+import { showErrorToast, toast } from "@/lib/toast";
 import {
   InstanceSetting_Key,
   InstanceSetting_NotificationSetting,
@@ -73,12 +70,7 @@ type Requirement = "required" | "optional" | "gmail" | "recommended";
 const FieldLabel = ({ label, requirementLabel, requirement }: { label: string; requirementLabel: string; requirement: Requirement }) => (
   <span className="inline-flex min-w-0 flex-wrap items-center gap-1.5">
     <span>{label}</span>
-    <Badge
-      variant={requirement === "optional" ? "outline" : "secondary"}
-      className="rounded-md px-1.5 py-0 text-[10px] font-normal leading-4 text-muted-foreground"
-    >
-      {requirementLabel}
-    </Badge>
+    <Badge tone={requirement === "optional" ? "outline" : "neutral"}>{requirementLabel}</Badge>
   </span>
 );
 
@@ -168,7 +160,7 @@ const NotificationSection = () => {
 
   const testEmailSetting = async () => {
     if (!currentUser?.email) {
-      toast.error(t("setting.notification.test-email-missing-recipient"));
+      showErrorToast(t("setting.notification.test-email-missing-recipient"));
       return;
     }
 
@@ -180,9 +172,9 @@ const NotificationSection = () => {
           recipientEmail: currentUser.email,
         }),
       );
-      toast.success(t("setting.notification.test-email-success", { email: currentUser.email }));
+      toast.add({ title: t("setting.notification.test-email-success", { email: currentUser.email }), type: "success" });
     } catch (error: unknown) {
-      await handleError(error, toast.error, { context: "Send test email" });
+      await handleError(error, showErrorToast, { context: "Send test email" });
     } finally {
       setIsTestingEmail(false);
     }
@@ -196,7 +188,7 @@ const NotificationSection = () => {
         actions={EMAIL_FIELDS.some(emailLocked) ? <ManagedByConfigurationChip resource={managed} /> : undefined}
       >
         <SettingRow label={t("setting.notification.email-enabled")} description={t("setting.notification.email-enabled-description")}>
-          <Switch
+          <Checkbox
             disabled={emailLocked("enabled")}
             checked={emailSetting.enabled}
             onCheckedChange={(enabled) => updateEmailSetting({ enabled })}
@@ -314,22 +306,22 @@ const NotificationSection = () => {
           label={fieldLabel(t("setting.notification.use-tls"), "recommended")}
           description={t("setting.notification.use-tls-description")}
         >
-          <Switch disabled={emailLocked("useTls")} checked={emailSetting.useTls} onCheckedChange={handleUseTLSChanged} />
+          <Checkbox disabled={emailLocked("useTls")} checked={emailSetting.useTls} onCheckedChange={handleUseTLSChanged} />
         </SettingRow>
 
         <SettingRow
           label={fieldLabel(t("setting.notification.use-ssl"), "optional")}
           description={t("setting.notification.use-ssl-description")}
         >
-          <Switch disabled={emailLocked("useSsl")} checked={emailSetting.useSsl} onCheckedChange={handleUseSSLChanged} />
+          <Checkbox disabled={emailLocked("useSsl")} checked={emailSetting.useSsl} onCheckedChange={handleUseSSLChanged} />
         </SettingRow>
       </SettingGroup>
 
       <div className="w-full flex flex-col justify-end gap-2 sm:flex-row">
-        <Button variant="outline" disabled={!canTestEmail || isTestingEmail} onClick={testEmailSetting}>
+        <Button variant="neutral" disabled={!canTestEmail || isTestingEmail} onClick={testEmailSetting}>
           {isTestingEmail ? t("setting.notification.test-email-sending") : t("setting.notification.test-email")}
         </Button>
-        <Button disabled={!allowSave} onClick={saveNotificationSetting}>
+        <Button variant="primary" disabled={!allowSave} onClick={saveNotificationSetting}>
           {t("common.save")}
         </Button>
       </div>

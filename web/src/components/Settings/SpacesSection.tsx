@@ -1,16 +1,6 @@
-import {
-  ArrowLeftIcon,
-  ChevronRightIcon,
-  Clock3Icon,
-  LoaderCircleIcon,
-  LogOutIcon,
-  PlusIcon,
-  ShieldCheckIcon,
-  Trash2Icon,
-  UserPlusIcon,
-} from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
-import toast from "react-hot-toast";
+import { Badge, Button, Field, Input, List, Select, Skeleton, Tabs, Textarea } from "@usememos/ui";
+import { ArrowLeftIcon, ChevronRightIcon, Clock3Icon, PlusIcon, ShieldCheckIcon, UserPlusIcon } from "lucide-react";
+import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import CreateSpaceDialog from "@/components/CreateSpaceDialog";
@@ -20,13 +10,6 @@ import SpaceIconPicker from "@/components/SpaceIconPicker";
 import SpaceMark from "@/components/SpaceMark";
 import SpaceRoleBadge from "@/components/SpaceRoleBadge";
 import UserAvatar from "@/components/UserAvatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Textarea } from "@/components/ui/textarea";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import {
   useAcceptSpaceInvitation,
@@ -46,6 +29,8 @@ import { customIconsEqual } from "@/lib/custom-icons";
 import { handleError } from "@/lib/error";
 import { extractUsernameFromName } from "@/lib/resource-names";
 import { extractSpaceUidFromName } from "@/lib/space-display";
+import { showErrorToast, toast } from "@/lib/toast";
+import { cn } from "@/lib/utils";
 import { ROUTES } from "@/router/routes";
 import { type Space, type SpaceInvitation, type SpaceMember, SpaceMember_Role } from "@/types/proto/api/space_service_pb";
 import type { User } from "@/types/proto/api/user_service_pb";
@@ -59,6 +44,28 @@ const getSpacesSettingsLocation = (spaceName?: string) => ({
   hash: "#spaces",
 });
 
+/** Three placeholder rows in the shape of a space, member or invitation row. */
+const SkeletonList = ({ label }: { label: string }) => (
+  <List.Root aria-busy aria-label={label}>
+    {[0, 1, 2].map((row) => (
+      <List.Item key={row} className="flex items-center gap-3">
+        <Skeleton round />
+        <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+          <Skeleton width="40%" />
+          <Skeleton width="25%" height={12} />
+        </div>
+      </List.Item>
+    ))}
+  </List.Root>
+);
+
+/** Shown in place of a list that has nothing to show: empty, or failed to load. */
+const ListMessage = ({ children, className }: { children: ReactNode; className?: string }) => (
+  <div className={cn("rounded-mu-lg border border-dashed border-mu-line px-3 text-center mu-body text-mu-ink-muted", className)}>
+    {children}
+  </div>
+);
+
 const MemberIdentity = ({ member, user, isCurrentUser }: { member: SpaceMember; user?: User; isCurrentUser?: boolean }) => {
   const t = useTranslate();
   const username = user?.username || extractUsernameFromName(member.user);
@@ -69,10 +76,10 @@ const MemberIdentity = ({ member, user, isCurrentUser }: { member: SpaceMember; 
       <UserAvatar className="size-10" avatarUrl={user?.avatarUrl} name={displayName} />
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-1.5">
-          <p className="truncate text-sm font-medium">{displayName}</p>
-          {isCurrentUser ? <span className="text-xs text-muted-foreground">{t("setting.spaces.you")}</span> : null}
+          <p className="truncate mu-label">{displayName}</p>
+          {isCurrentUser ? <span className="mu-caption text-mu-ink-muted">{t("setting.spaces.you")}</span> : null}
         </div>
-        <p className="mt-0.5 truncate text-xs text-muted-foreground">@{username}</p>
+        <p className="mt-0.5 truncate mu-caption text-mu-ink-muted">@{username}</p>
       </div>
     </div>
   );
@@ -86,8 +93,8 @@ const InvitationIdentity = ({ invitation, user }: { invitation: SpaceInvitation;
     <div className="flex min-w-0 items-center gap-3">
       <UserAvatar className="size-10" avatarUrl={user?.avatarUrl} name={displayName} />
       <div className="min-w-0">
-        <p className="truncate text-sm font-medium">{displayName}</p>
-        <p className="mt-0.5 truncate text-xs text-muted-foreground">@{username}</p>
+        <p className="truncate mu-label">{displayName}</p>
+        <p className="mt-0.5 truncate mu-caption text-mu-ink-muted">@{username}</p>
       </div>
     </div>
   );
@@ -126,28 +133,25 @@ const SpacesSection = () => {
       const spaceLabel = invitation.space
         ? `${invitation.space.title} (${extractSpaceUidFromName(invitation.space.name)})`
         : t("setting.spaces.label");
-      toast.success(t("setting.spaces.accept-success", { space: spaceLabel }));
+      toast.add({ title: t("setting.spaces.accept-success", { space: spaceLabel }), type: "success" });
     } catch (error) {
-      handleError(error, toast.error, { context: "Accept space invitation" });
+      handleError(error, showErrorToast, { context: "Accept space invitation" });
     }
   };
 
   const handleDeclineInvitation = async (invitation: SpaceInvitation) => {
     try {
       await declineInvitation.mutateAsync({ name: invitation.name });
-      toast.success(t("setting.spaces.decline-success"));
+      toast.add({ title: t("setting.spaces.decline-success"), type: "success" });
     } catch (error) {
-      handleError(error, toast.error, { context: "Decline space invitation" });
+      handleError(error, showErrorToast, { context: "Decline space invitation" });
     }
   };
 
   if (managedSpaceName && !managedSpace && spacesQuery.isLoading) {
     return (
       <SettingSection title={t("setting.spaces.title")} description={t("setting.spaces.description")}>
-        <div className="flex items-center justify-center gap-2 py-12 text-sm text-muted-foreground">
-          <LoaderCircleIcon className="size-4 animate-spin" />
-          {t("setting.spaces.loading")}
-        </div>
+        <SkeletonList label={t("setting.spaces.loading")} />
       </SettingSection>
     );
   }
@@ -165,8 +169,7 @@ const SpacesSection = () => {
         title={t("setting.spaces.title")}
         description={t("setting.spaces.description")}
         actions={
-          <Button size="sm" onClick={() => setCreateOpen(true)}>
-            <PlusIcon data-icon="inline-start" />
+          <Button variant="primary" onClick={() => setCreateOpen(true)} icon={<PlusIcon />}>
             {t("setting.spaces.create-space")}
           </Button>
         }
@@ -176,36 +179,36 @@ const SpacesSection = () => {
           {receivedInvitations.length > 0 ? (
             <section aria-labelledby="space-invitations-heading" className="space-y-2.5">
               <div className="flex items-center justify-between">
-                <h4 id="space-invitations-heading" className="text-sm font-medium">
+                <h4 id="space-invitations-heading" className="mu-label">
                   {t("setting.spaces.invitations")}
                 </h4>
-                <span className="text-xs text-muted-foreground">
+                <span className="mu-caption text-mu-ink-muted">
                   {t("setting.spaces.pending-count", { count: receivedInvitations.length })}
                 </span>
               </div>
-              <div className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-background">
+              <List.Root aria-labelledby="space-invitations-heading">
                 {receivedInvitations.map((invitation) => {
                   const uid = invitation.space ? extractSpaceUidFromName(invitation.space.name) : "";
                   const title = invitation.space?.title || t("setting.spaces.untitled");
 
                   return (
-                    <div key={invitation.name} className="flex min-w-0 flex-col gap-3 px-3 py-3 sm:flex-row sm:items-center">
+                    <List.Item key={invitation.name} className="flex flex-col gap-3 sm:flex-row sm:items-center">
                       <div className="flex min-w-0 flex-1 items-center gap-3">
                         <SpaceMark icon={invitation.space?.icon} size="lg" />
                         <div className="min-w-0">
                           <div className="flex flex-wrap items-center gap-2">
-                            <p className="truncate text-sm font-medium">{title}</p>
+                            <p className="truncate mu-label">{title}</p>
                             <SpaceRoleBadge role={invitation.role} />
                           </div>
                           {uid ? (
-                            <p className="mt-0.5 flex min-w-0 items-baseline gap-1 text-[11px] text-muted-foreground">
+                            <p className="mt-0.5 flex min-w-0 items-baseline gap-1 mu-caption text-mu-ink-muted">
                               <span className="shrink-0">{t("space.custom-id-label")}:</span>
                               <span title={uid} className="min-w-0 break-all font-mono">
                                 {uid}
                               </span>
                             </p>
                           ) : null}
-                          <p className="mt-1 truncate text-xs leading-5 text-muted-foreground">
+                          <p className="mt-1 truncate mu-caption text-mu-ink-muted">
                             {invitation.space?.description || t("setting.spaces.invited-to-join")}
                           </p>
                         </div>
@@ -221,6 +224,7 @@ const SpacesSection = () => {
                           {t("setting.spaces.decline")}
                         </Button>
                         <Button
+                          variant="neutral"
                           size="sm"
                           aria-label={uid ? `${t("setting.spaces.accept")} ${title} (${uid})` : undefined}
                           disabled={acceptInvitation.isPending || declineInvitation.isPending}
@@ -229,20 +233,20 @@ const SpacesSection = () => {
                           {t("setting.spaces.accept")}
                         </Button>
                       </div>
-                    </div>
+                    </List.Item>
                   );
                 })}
-              </div>
+              </List.Root>
             </section>
           ) : null}
 
           <section aria-labelledby="your-spaces-heading" className="space-y-2.5">
             <div className="flex items-center justify-between">
-              <h4 id="your-spaces-heading" className="text-sm font-medium">
+              <h4 id="your-spaces-heading" className="mu-label">
                 {t("setting.spaces.your-spaces")}
               </h4>
               {spaces.length > 0 ? (
-                <span className="text-xs text-muted-foreground">
+                <span className="mu-caption text-mu-ink-muted">
                   {spaces.length === 1
                     ? t("setting.spaces.space-count", { count: spaces.length })
                     : t("setting.spaces.spaces-count", { count: spaces.length })}
@@ -250,63 +254,58 @@ const SpacesSection = () => {
               ) : null}
             </div>
             {spacesQuery.isLoading ? (
-              <div className="flex items-center justify-center gap-2 rounded-lg border border-border py-10 text-sm text-muted-foreground">
-                <LoaderCircleIcon className="size-4 animate-spin" />
-                {t("setting.spaces.loading")}
-              </div>
+              <SkeletonList label={t("setting.spaces.loading")} />
             ) : spacesQuery.isError ? (
-              <div className="rounded-lg border border-border px-3 py-8 text-center text-sm text-muted-foreground">
-                {t("setting.spaces.load-error")}
-              </div>
+              <ListMessage className="py-8">{t("setting.spaces.load-error")}</ListMessage>
             ) : spaces.length === 0 ? (
-              <div className="rounded-lg border border-dashed border-border px-4 py-9 text-center">
-                <p className="text-sm font-medium">{t("setting.spaces.no-spaces")}</p>
-                <p className="mx-auto mt-1 max-w-md text-xs leading-5 text-muted-foreground">{t("setting.spaces.no-spaces-description")}</p>
-                <Button variant="outline" size="sm" className="mt-4" onClick={() => setCreateOpen(true)}>
-                  <PlusIcon data-icon="inline-start" />
+              <div className="rounded-mu-lg border border-dashed border-mu-line px-4 py-9 text-center">
+                <p className="mu-label">{t("setting.spaces.no-spaces")}</p>
+                <p className="mx-auto mt-1 max-w-md mu-caption text-mu-ink-muted">{t("setting.spaces.no-spaces-description")}</p>
+                <Button variant="neutral" className="mt-4" onClick={() => setCreateOpen(true)} icon={<PlusIcon />}>
                   {t("setting.spaces.create-space")}
                 </Button>
               </div>
             ) : (
-              <div className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-background">
+              <List.Root aria-labelledby="your-spaces-heading">
                 {spaces.map((space) => {
                   const uid = extractSpaceUidFromName(space.name);
                   const manageLabel = t("setting.spaces.manage-space", { space: space.title });
 
+                  // The whole row opens the space.
                   return (
-                    <button
-                      key={space.name}
-                      type="button"
-                      aria-label={uid ? `${manageLabel} (${uid})` : manageLabel}
-                      onClick={() => handleOpenSpace(space.name)}
-                      className="group flex w-full min-w-0 items-center gap-3 px-3 py-3 text-left transition-colors hover:bg-muted/35 focus-visible:bg-muted/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/45"
-                    >
-                      <SpaceMark icon={space.icon} size="lg" />
-                      <div className="min-w-0 flex-1">
-                        <div className="flex min-w-0 flex-wrap items-center gap-2">
-                          <p className="truncate text-sm font-medium">{space.title}</p>
-                          <SpaceRoleBadge role={space.currentUserRole} />
+                    <List.Item key={space.name}>
+                      <List.ItemButton
+                        aria-label={uid ? `${manageLabel} (${uid})` : manageLabel}
+                        onClick={() => handleOpenSpace(space.name)}
+                        className="group"
+                      >
+                        <SpaceMark icon={space.icon} size="lg" />
+                        <div className="min-w-0 flex-1">
+                          <div className="flex min-w-0 flex-wrap items-center gap-2">
+                            <p className="truncate mu-label">{space.title}</p>
+                            <SpaceRoleBadge role={space.currentUserRole} />
+                          </div>
+                          <p className="mt-0.5 flex min-w-0 items-baseline gap-1 mu-caption text-mu-ink-muted">
+                            <span className="shrink-0">{t("space.custom-id-label")}:</span>
+                            <span title={uid} className="min-w-0 break-all font-mono">
+                              {uid}
+                            </span>
+                          </p>
+                          <p className="mt-1 truncate mu-caption text-mu-ink-muted">
+                            {space.description || t("setting.spaces.no-description")}
+                          </p>
                         </div>
-                        <p className="mt-0.5 flex min-w-0 items-baseline gap-1 text-[11px] text-muted-foreground">
-                          <span className="shrink-0">{t("space.custom-id-label")}:</span>
-                          <span title={uid} className="min-w-0 break-all font-mono">
-                            {uid}
-                          </span>
-                        </p>
-                        <p className="mt-1 truncate text-xs text-muted-foreground">
-                          {space.description || t("setting.spaces.no-description")}
-                        </p>
-                      </div>
-                      <span className="hidden shrink-0 text-xs text-muted-foreground sm:inline">
-                        {space.memberCount === 1
-                          ? t("setting.spaces.member-count", { count: space.memberCount })
-                          : t("setting.spaces.members-count", { count: space.memberCount })}
-                      </span>
-                      <ChevronRightIcon className="size-4 shrink-0 text-muted-foreground/65 transition-transform group-hover:translate-x-0.5" />
-                    </button>
+                        <span className="hidden shrink-0 mu-caption text-mu-ink-muted sm:inline">
+                          {space.memberCount === 1
+                            ? t("setting.spaces.member-count", { count: space.memberCount })
+                            : t("setting.spaces.members-count", { count: space.memberCount })}
+                        </span>
+                        <ChevronRightIcon className="mu-icon shrink-0 text-mu-ink-muted/65 transition-transform group-hover:translate-x-0.5" />
+                      </List.ItemButton>
+                    </List.Item>
                   );
                 })}
-              </div>
+              </List.Root>
             )}
           </section>
         </div>
@@ -389,9 +388,9 @@ const SpaceDetail = ({ space, viewerName, onBack }: SpaceDetailProps) => {
         space: { name: space.name, title: trimmedTitle, description: description.trim(), ...(iconChanged ? { icon } : {}) },
         updateMask: ["title", "description", ...(iconChanged ? ["icon"] : [])],
       });
-      toast.success(t("setting.spaces.save-success"));
+      toast.add({ title: t("setting.spaces.save-success"), type: "success" });
     } catch (error) {
-      handleError(error, toast.error, { context: "Update space" });
+      handleError(error, showErrorToast, { context: "Update space" });
     }
   };
 
@@ -399,9 +398,9 @@ const SpaceDetail = ({ space, viewerName, onBack }: SpaceDetailProps) => {
     if (member.role === role || updateMember.isPending) return;
     try {
       await updateMember.mutateAsync({ spaceMember: { name: member.name, role }, updateMask: ["role"] });
-      toast.success(t("setting.spaces.role-update-success"));
+      toast.add({ title: t("setting.spaces.role-update-success"), type: "success" });
     } catch (error) {
-      handleError(error, toast.error, { context: "Update space member" });
+      handleError(error, showErrorToast, { context: "Update space member" });
     }
   };
 
@@ -409,10 +408,10 @@ const SpaceDetail = ({ space, viewerName, onBack }: SpaceDetailProps) => {
     if (!removeTarget) return;
     try {
       await deleteMember.mutateAsync({ name: removeTarget.name });
-      toast.success(t("setting.spaces.remove-success", { username: extractUsernameFromName(removeTarget.user) }));
+      toast.add({ title: t("setting.spaces.remove-success", { username: extractUsernameFromName(removeTarget.user) }), type: "success" });
       setRemoveTarget(undefined);
     } catch (error) {
-      handleError(error, toast.error, { context: "Remove space member" });
+      handleError(error, showErrorToast, { context: "Remove space member" });
       throw error;
     }
   };
@@ -421,10 +420,10 @@ const SpaceDetail = ({ space, viewerName, onBack }: SpaceDetailProps) => {
     if (!cancelInvitationTarget) return;
     try {
       await deleteInvitation.mutateAsync({ name: cancelInvitationTarget.name });
-      toast.success(t("setting.spaces.cancel-invitation-success"));
+      toast.add({ title: t("setting.spaces.cancel-invitation-success"), type: "success" });
       setCancelInvitationTarget(undefined);
     } catch (error) {
-      handleError(error, toast.error, { context: "Cancel space invitation" });
+      handleError(error, showErrorToast, { context: "Cancel space invitation" });
       throw error;
     }
   };
@@ -433,10 +432,10 @@ const SpaceDetail = ({ space, viewerName, onBack }: SpaceDetailProps) => {
     if (!currentMember) return;
     try {
       await deleteMember.mutateAsync({ name: currentMember.name });
-      toast.success(t("setting.spaces.leave-success", { space: disambiguatedSpaceTitle }));
+      toast.add({ title: t("setting.spaces.leave-success", { space: disambiguatedSpaceTitle }), type: "success" });
       onBack();
     } catch (error) {
-      handleError(error, toast.error, { context: "Leave space" });
+      handleError(error, showErrorToast, { context: "Leave space" });
       throw error;
     }
   };
@@ -444,159 +443,151 @@ const SpaceDetail = ({ space, viewerName, onBack }: SpaceDetailProps) => {
   const handleDeleteSpace = async () => {
     try {
       await deleteSpace.mutateAsync({ name: space.name });
-      toast.success(t("setting.spaces.delete-success", { space: disambiguatedSpaceTitle }));
+      toast.add({ title: t("setting.spaces.delete-success", { space: disambiguatedSpaceTitle }), type: "success" });
       onBack();
     } catch (error) {
-      handleError(error, toast.error, { context: "Delete space" });
+      handleError(error, showErrorToast, { context: "Delete space" });
       throw error;
     }
   };
 
   return (
     <section className="min-w-0">
-      <button
-        type="button"
-        onClick={onBack}
-        className="mb-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
-      >
-        <ArrowLeftIcon className="size-4" />
+      <button type="button" onClick={onBack} className="mb-4 inline-flex items-center gap-1.5 mu-body text-mu-ink-muted hover:text-mu-ink">
+        <ArrowLeftIcon className="mu-icon" />
         {t("setting.spaces.label")}
       </button>
 
-      <header className="flex min-w-0 flex-col gap-3 border-b border-border/70 pb-4 sm:flex-row sm:items-center">
+      <header className="flex min-w-0 flex-col gap-3 border-b border-mu-line/70 pb-4 sm:flex-row sm:items-center">
         <SpaceMark icon={space.icon} size="xl" />
         <div className="min-w-0 flex-1">
           <div className="flex min-w-0 flex-wrap items-center gap-2">
-            <h3 className="truncate text-lg font-semibold tracking-tight">{space.title}</h3>
+            <h1 className="truncate mu-heading">{space.title}</h1>
             <SpaceRoleBadge role={currentRole} />
           </div>
-          <p className="mt-1 flex min-w-0 items-baseline gap-1 text-xs text-muted-foreground">
+          <p className="mt-1 flex min-w-0 items-baseline gap-1 mu-caption text-mu-ink-muted">
             <span className="shrink-0">{t("space.custom-id-label")}:</span>
             <span title={spaceUid} className="min-w-0 break-all font-mono">
               {spaceUid}
             </span>
           </p>
-          <p className="mt-1 truncate text-sm text-muted-foreground">{space.description || t("setting.spaces.no-description")}</p>
+          <p className="mt-1 truncate mu-body text-mu-ink-muted">{space.description || t("setting.spaces.no-description")}</p>
         </div>
       </header>
 
-      <Tabs value={tab} onValueChange={(value) => setTab(value as DetailTab)} variant="underline" className="mt-2">
-        <TabsList className="w-full justify-start border-b border-border/70">
-          <TabsTrigger value="general" className="flex-none px-3">
-            {t("setting.spaces.general")}
-          </TabsTrigger>
-          <TabsTrigger value="members" className="flex-none px-3">
+      <Tabs.Root value={tab} onValueChange={(value) => setTab(value as DetailTab)} className="mt-2">
+        <Tabs.List activateOnFocus aria-label={t("setting.spaces.title")}>
+          <Tabs.Tab value="general">{t("setting.spaces.general")}</Tabs.Tab>
+          <Tabs.Tab value="members">
             {t("setting.spaces.members")}
-            <span className="text-xs font-normal text-muted-foreground">{members.length || space.memberCount}</span>
-          </TabsTrigger>
-        </TabsList>
-      </Tabs>
+            <span className="text-mu-ink-muted">{members.length || space.memberCount}</span>
+          </Tabs.Tab>
+        </Tabs.List>
+      </Tabs.Root>
 
       {tab === "general" ? (
         <div className="space-y-5 pt-3">
-          <section className="space-y-2.5">
+          <section aria-labelledby="space-details-heading" className="space-y-2.5">
             <div>
-              <h4 className="text-sm font-medium">{t("setting.spaces.space-details")}</h4>
-              <p className="mt-1 text-xs leading-5 text-muted-foreground">{t("setting.spaces.space-details-description")}</p>
+              <h4 id="space-details-heading" className="mu-label">
+                {t("setting.spaces.space-details")}
+              </h4>
+              <p className="mt-1 mu-caption text-mu-ink-muted">{t("setting.spaces.space-details-description")}</p>
             </div>
-            <div className="overflow-hidden rounded-lg border border-border bg-background">
-              <div className="grid gap-2 border-b border-border px-3 py-3 sm:grid-cols-[170px_1fr] sm:items-center">
-                <span className="text-sm font-medium">{t("space.custom-id-label")}</span>
-                <code className="min-w-0 break-all rounded-md bg-muted/35 px-3 py-2 font-mono text-xs leading-5 text-foreground/85">
+            <List.Root aria-labelledby="space-details-heading">
+              <List.Item className="grid gap-2 sm:grid-cols-[170px_1fr] sm:items-center">
+                <span className="mu-label">{t("space.custom-id-label")}</span>
+                <code className="min-w-0 break-all rounded-mu-md bg-mu-well/35 px-3 py-2 font-mono mu-caption text-mu-ink/85">
                   {spaceUid}
                 </code>
-              </div>
-              <div className="grid gap-2 border-b border-border px-3 py-3 sm:grid-cols-[170px_1fr] sm:items-center">
-                <Label htmlFor="space-settings-title">{t("common.name")}</Label>
+              </List.Item>
+              <List.Item className="grid gap-2 sm:grid-cols-[170px_1fr] sm:items-center">
+                <label htmlFor="space-settings-title" className="mu-label">
+                  {t("common.name")}
+                </label>
                 <div className="flex items-center gap-2">
                   {isAdmin ? (
                     <SpaceIconPicker value={icon} onChange={setIcon} disabled={updateSpace.isPending} />
                   ) : (
                     <SpaceMark icon={icon} size="lg" className="size-8" />
                   )}
-                  <Input
-                    id="space-settings-title"
-                    value={title}
-                    onChange={(event) => setTitle(event.target.value)}
+                  <Input id="space-settings-title" value={title} onChange={(event) => setTitle(event.target.value)} readOnly={!isAdmin} />
+                </div>
+              </List.Item>
+              <List.Item>
+                <Field.Root className="grid gap-2 sm:grid-cols-[170px_1fr] sm:items-start">
+                  <div>
+                    <Field.Label>{t("common.description")}</Field.Label>
+                    <Field.Description className="mt-1">{t("setting.spaces.description-help")}</Field.Description>
+                  </div>
+                  <Textarea
+                    id="space-settings-description"
+                    value={description}
+                    onChange={(event) => setDescription(event.target.value)}
                     readOnly={!isAdmin}
-                    className={!isAdmin ? "bg-muted/25" : undefined}
+                    className="min-h-20 resize-none"
                   />
-                </div>
+                </Field.Root>
+              </List.Item>
+            </List.Root>
+            {isAdmin ? (
+              <div className="flex justify-end">
+                <Button
+                  variant="primary"
+                  disabled={!title.trim() || !detailsChanged || updateSpace.isPending}
+                  onClick={() => void handleSave()}
+                >
+                  {t("setting.spaces.save-changes")}
+                </Button>
               </div>
-              <div className="grid gap-2 px-3 py-3 sm:grid-cols-[170px_1fr] sm:items-start">
-                <div>
-                  <Label htmlFor="space-settings-description">{t("common.description")}</Label>
-                  <p className="mt-1 text-xs leading-5 text-muted-foreground">{t("setting.spaces.description-help")}</p>
-                </div>
-                <Textarea
-                  id="space-settings-description"
-                  value={description}
-                  onChange={(event) => setDescription(event.target.value)}
-                  readOnly={!isAdmin}
-                  className={isAdmin ? "min-h-20 resize-none" : "min-h-20 resize-none bg-muted/25"}
-                />
-              </div>
-              {isAdmin ? (
-                <div className="flex justify-end border-t border-border bg-muted/20 px-3 py-2.5">
-                  <Button size="sm" disabled={!title.trim() || !detailsChanged || updateSpace.isPending} onClick={() => void handleSave()}>
-                    {t("setting.spaces.save-changes")}
-                  </Button>
-                </div>
-              ) : null}
-            </div>
+            ) : null}
           </section>
 
-          <section className="space-y-2.5">
-            <h4 className="text-sm font-medium">{t("setting.spaces.your-access")}</h4>
-            <div className="flex flex-col gap-3 rounded-lg border border-border px-3 py-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-start gap-2">
-                <ShieldCheckIcon className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium">{t("setting.spaces.role-in-space")}</p>
-                  <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                    {isAdmin ? t("setting.spaces.admin-role-description") : t("setting.spaces.user-role-description")}
-                  </p>
+          <section aria-labelledby="space-access-heading" className="space-y-2.5">
+            <h4 id="space-access-heading" className="mu-label">
+              {t("setting.spaces.your-access")}
+            </h4>
+            <List.Root aria-labelledby="space-access-heading">
+              <List.Item className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-start gap-2">
+                  <ShieldCheckIcon className="mu-icon mt-0.5 shrink-0 text-mu-ink-muted" />
+                  <div>
+                    <p className="mu-label">{t("setting.spaces.role-in-space")}</p>
+                    <p className="mt-1 mu-caption text-mu-ink-muted">
+                      {isAdmin ? t("setting.spaces.admin-role-description") : t("setting.spaces.user-role-description")}
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <SpaceRoleBadge role={currentRole} />
-            </div>
+                <SpaceRoleBadge role={currentRole} />
+              </List.Item>
+            </List.Root>
           </section>
 
-          <section className="rounded-xl border border-destructive/30 bg-destructive/5 p-4">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-              <div className="flex min-w-0 items-start gap-3">
-                <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive">
-                  <LogOutIcon className="size-4" />
-                </span>
-                <div>
-                  <h4 className="text-sm font-medium">{t("setting.spaces.leave-space")}</h4>
-                  <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                    {isLastAdmin ? t("setting.spaces.last-admin-leave-description") : t("setting.spaces.leave-description")}
-                  </p>
-                </div>
+          {/* Plain rows: red is kept for the confirm step, not the section that leads to it. */}
+          <section className="flex flex-col gap-4 border-t border-mu-line/70 pt-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="min-w-0">
+                <h4 className="mu-label">{t("setting.spaces.leave-space")}</h4>
+                <p className="mu-caption text-mu-ink-muted">
+                  {isLastAdmin ? t("setting.spaces.last-admin-leave-description") : t("setting.spaces.leave-description")}
+                </p>
               </div>
               <Button
-                variant="outline"
-                size="sm"
+                variant="neutral"
+                className="shrink-0 self-start sm:self-auto"
                 disabled={!currentMember || isLastAdmin}
-                className="border-destructive/35 text-destructive hover:bg-destructive/10"
                 onClick={() => setLeaveOpen(true)}
               >
                 {t("setting.spaces.leave-space")}
               </Button>
             </div>
             {isAdmin ? (
-              <div className="mt-4 flex flex-col gap-4 border-t border-destructive/20 pt-4 sm:flex-row sm:items-start sm:justify-between">
-                <div className="flex min-w-0 items-start gap-3">
-                  <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive">
-                    <Trash2Icon className="size-4" />
-                  </span>
-                  <div>
-                    <h4 className="text-sm font-medium">{t("setting.spaces.delete-space")}</h4>
-                    <p className="mt-1 text-xs leading-5 text-muted-foreground">{t("setting.spaces.delete-description")}</p>
-                  </div>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0">
+                  <h4 className="mu-label">{t("setting.spaces.delete-space")}</h4>
+                  <p className="mu-caption text-mu-ink-muted">{t("setting.spaces.delete-description")}</p>
                 </div>
-                <Button variant="destructive" size="sm" onClick={() => setDeleteOpen(true)}>
+                <Button variant="neutral" className="shrink-0 self-start sm:self-auto" onClick={() => setDeleteOpen(true)}>
                   {t("setting.spaces.delete-space")}
                 </Button>
               </div>
@@ -608,30 +599,28 @@ const SpaceDetail = ({ space, viewerName, onBack }: SpaceDetailProps) => {
           <section className="space-y-2.5">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <h4 className="text-sm font-medium">{t("setting.spaces.members")}</h4>
-                <p className="mt-1 text-xs leading-5 text-muted-foreground">{t("setting.spaces.members-description")}</p>
+                <h4 id="space-members-heading" className="mu-label">
+                  {t("setting.spaces.members")}
+                </h4>
+                <p className="mt-1 mu-caption text-mu-ink-muted">{t("setting.spaces.members-description")}</p>
               </div>
               {isAdmin ? (
-                <Button size="sm" onClick={() => setInviteOpen(true)}>
-                  <UserPlusIcon data-icon="inline-start" />
+                <Button variant="neutral" onClick={() => setInviteOpen(true)} icon={<UserPlusIcon />}>
                   {t("setting.spaces.invite-member")}
                 </Button>
               ) : null}
             </div>
 
-            <div className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-background">
-              {membersQuery.isLoading ? (
-                <div className="flex items-center justify-center gap-2 px-3 py-8 text-sm text-muted-foreground">
-                  <LoaderCircleIcon className="size-4 animate-spin" />
-                  {t("setting.spaces.loading-members")}
-                </div>
-              ) : membersQuery.isError ? (
-                <div className="px-3 py-8 text-center text-sm text-muted-foreground">{t("setting.spaces.members-load-error")}</div>
-              ) : (
-                members.map((member) => {
+            {membersQuery.isLoading ? (
+              <SkeletonList label={t("setting.spaces.loading-members")} />
+            ) : membersQuery.isError ? (
+              <ListMessage className="py-8">{t("setting.spaces.members-load-error")}</ListMessage>
+            ) : (
+              <List.Root aria-labelledby="space-members-heading">
+                {members.map((member) => {
                   const isCurrentUser = member.user === viewerName;
                   return (
-                    <div key={member.name} className="grid min-w-0 gap-3 px-3 py-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+                    <List.Item key={member.name} className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
                       <MemberIdentity
                         member={member}
                         user={usersByUsername.get(extractUsernameFromName(member.user))}
@@ -639,82 +628,70 @@ const SpaceDetail = ({ space, viewerName, onBack }: SpaceDetailProps) => {
                       />
                       <div className="flex min-w-0 flex-wrap items-center justify-end gap-2">
                         {isAdmin && !isCurrentUser ? (
-                          <Select
+                          <Select.Root
                             value={String(member.role)}
                             items={roleOptions}
                             disabled={updateMember.isPending}
                             onValueChange={(value) => void handleRoleChange(member, Number(value) as SpaceMember_Role)}
+                            size="sm"
                           >
-                            <SelectTrigger
-                              size="sm"
-                              className="w-[126px] rounded-md"
+                            <Select.Trigger
+                              className="w-[126px]"
                               aria-label={t("setting.spaces.change-role", { username: extractUsernameFromName(member.user) })}
                             >
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent align="end">
-                              <SelectItem value={String(SpaceMember_Role.USER)}>{t("setting.spaces.space-user")}</SelectItem>
-                              <SelectItem value={String(SpaceMember_Role.ADMIN)}>{t("setting.spaces.space-admin")}</SelectItem>
-                            </SelectContent>
-                          </Select>
+                              <Select.Value />
+                            </Select.Trigger>
+                            <Select.Popup align="end">
+                              <Select.Item value={String(SpaceMember_Role.USER)}>{t("setting.spaces.space-user")}</Select.Item>
+                              <Select.Item value={String(SpaceMember_Role.ADMIN)}>{t("setting.spaces.space-admin")}</Select.Item>
+                            </Select.Popup>
+                          </Select.Root>
                         ) : (
                           <SpaceRoleBadge role={member.role} />
                         )}
                         {isAdmin && !isCurrentUser ? (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-muted-foreground hover:text-destructive"
-                            onClick={() => setRemoveTarget(member)}
-                          >
+                          <Button variant="ghost" size="sm" onClick={() => setRemoveTarget(member)}>
                             {t("setting.spaces.remove")}
                           </Button>
                         ) : null}
                       </div>
-                    </div>
+                    </List.Item>
                   );
-                })
-              )}
-            </div>
+                })}
+              </List.Root>
+            )}
           </section>
 
           {isAdmin ? (
             <section className="space-y-2.5">
               <div className="flex items-center justify-between">
-                <h4 className="text-sm font-medium">{t("setting.spaces.pending-invitations")}</h4>
-                <span className="text-xs text-muted-foreground">{invitations.length}</span>
+                <h4 id="space-pending-invitations-heading" className="mu-label">
+                  {t("setting.spaces.pending-invitations")}
+                </h4>
+                <span className="mu-caption text-mu-ink-muted">{invitations.length}</span>
               </div>
-              <div className="divide-y divide-border overflow-hidden rounded-lg border border-border bg-background">
-                {invitationsQuery.isLoading ? (
-                  <div className="flex items-center justify-center gap-2 px-3 py-5 text-sm text-muted-foreground">
-                    <LoaderCircleIcon className="size-4 animate-spin" />
-                    {t("setting.spaces.loading-invitations")}
-                  </div>
-                ) : invitations.length === 0 ? (
-                  <div className="px-3 py-5 text-center text-sm text-muted-foreground">{t("setting.spaces.no-pending-invitations")}</div>
-                ) : (
-                  invitations.map((invitation) => (
-                    <div key={invitation.name} className="grid min-w-0 gap-3 px-3 py-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+              {invitationsQuery.isLoading ? (
+                <SkeletonList label={t("setting.spaces.loading-invitations")} />
+              ) : invitations.length === 0 ? (
+                <ListMessage className="py-5">{t("setting.spaces.no-pending-invitations")}</ListMessage>
+              ) : (
+                <List.Root aria-labelledby="space-pending-invitations-heading">
+                  {invitations.map((invitation) => (
+                    <List.Item key={invitation.name} className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
                       <InvitationIdentity invitation={invitation} user={usersByUsername.get(extractUsernameFromName(invitation.invitee))} />
                       <div className="flex min-w-0 flex-wrap items-center justify-end gap-2">
-                        <Badge variant="warning" shape="pill" className="h-5 px-2 font-normal">
-                          <Clock3Icon data-icon="inline-start" />
+                        <Badge tone="warning" icon={<Clock3Icon />}>
                           {t("setting.spaces.invitation-pending")}
                         </Badge>
                         <SpaceRoleBadge role={invitation.role} />
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-muted-foreground hover:text-destructive"
-                          onClick={() => setCancelInvitationTarget(invitation)}
-                        >
+                        <Button variant="ghost" size="sm" onClick={() => setCancelInvitationTarget(invitation)}>
                           {t("setting.spaces.cancel-invitation")}
                         </Button>
                       </div>
-                    </div>
-                  ))
-                )}
-              </div>
+                    </List.Item>
+                  ))}
+                </List.Root>
+              )}
             </section>
           ) : null}
         </div>
@@ -739,7 +716,7 @@ const SpaceDetail = ({ space, viewerName, onBack }: SpaceDetailProps) => {
         confirmLabel={t("setting.spaces.leave")}
         cancelLabel={t("common.cancel")}
         onConfirm={handleLeave}
-        confirmVariant="destructive"
+        confirmVariant="danger"
       />
       <ConfirmDialog
         open={deleteOpen}
@@ -751,7 +728,7 @@ const SpaceDetail = ({ space, viewerName, onBack }: SpaceDetailProps) => {
         confirmLabel={t("common.delete")}
         cancelLabel={t("common.cancel")}
         onConfirm={handleDeleteSpace}
-        confirmVariant="destructive"
+        confirmVariant="danger"
       />
       <ConfirmDialog
         open={Boolean(removeTarget)}
@@ -761,7 +738,7 @@ const SpaceDetail = ({ space, viewerName, onBack }: SpaceDetailProps) => {
         confirmLabel={t("setting.spaces.remove")}
         cancelLabel={t("common.cancel")}
         onConfirm={handleRemoveMember}
-        confirmVariant="destructive"
+        confirmVariant="danger"
       />
       <ConfirmDialog
         open={Boolean(cancelInvitationTarget)}
@@ -773,7 +750,7 @@ const SpaceDetail = ({ space, viewerName, onBack }: SpaceDetailProps) => {
         confirmLabel={t("setting.spaces.cancel-invitation")}
         cancelLabel={t("common.cancel")}
         onConfirm={handleCancelInvitation}
-        confirmVariant="destructive"
+        confirmVariant="danger"
       />
     </section>
   );

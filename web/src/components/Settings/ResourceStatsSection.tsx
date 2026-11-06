@@ -1,10 +1,10 @@
 import { useQueryClient } from "@tanstack/react-query";
+import { Button, List } from "@usememos/ui";
 import { RefreshCwIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { instanceKeys, useInstanceStats } from "@/hooks/useInstanceQueries";
 import { useTranslate } from "@/utils/i18n";
 import SettingGroup from "./SettingGroup";
-import { SettingList, SettingPanel, StatRow } from "./SettingList";
+import { SettingList, StatRow } from "./SettingList";
 import SettingSection from "./SettingSection";
 
 const formatBytes = (bytes: number | bigint): string => {
@@ -50,25 +50,26 @@ const ResourceStatsSection = () => {
       description={t("setting.resource-stats.description")}
       actions={
         <>
-          {generatedTime ? <span className="text-xs text-muted-foreground">{generatedTime}</span> : null}
+          {generatedTime ? <span className="mu-caption text-mu-ink-muted">{generatedTime}</span> : null}
           <Button
-            variant="outline"
-            size="sm"
+            variant="neutral"
             disabled={isFetching}
             onClick={() => void queryClient.invalidateQueries({ queryKey: instanceKeys.stats() })}
+            icon={<RefreshCwIcon />}
           >
-            <RefreshCwIcon className="mr-1 size-4" />
             {t("setting.resource-stats.refresh")}
           </Button>
         </>
       }
     >
-      {isError ? <div className="text-destructive text-sm">{t("setting.resource-stats.load-error")}</div> : null}
+      {isError ? <div className="text-mu-danger mu-body">{t("setting.resource-stats.load-error")}</div> : null}
 
       {isLoading && !data ? (
-        <SettingPanel>
-          <div className="px-3 py-3 text-sm text-muted-foreground">…</div>
-        </SettingPanel>
+        <SettingList aria-busy aria-label={t("setting.resource-stats.label")}>
+          <List.Item>
+            <span className="text-mu-ink-muted">…</span>
+          </List.Item>
+        </SettingList>
       ) : null}
 
       {data ? (

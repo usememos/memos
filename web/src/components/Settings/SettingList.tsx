@@ -1,76 +1,75 @@
-import { type ReactNode } from "react";
-import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
+import { Field, List, Textarea } from "@usememos/ui";
+import { createContext, type ReactNode, useContext } from "react";
+
+/** The id of the enclosing SettingGroup's title, so a SettingList inside it is named by that title. */
+export const SettingGroupTitleContext = createContext<string | undefined>(undefined);
 
 interface SettingListProps {
   children: ReactNode;
-  className?: string;
+  "aria-label"?: string;
+  "aria-labelledby"?: string;
+  "aria-busy"?: boolean;
 }
 
-export const SettingList = ({ children, className }: SettingListProps) => {
+/** A boxed list of settings or records. Named by the enclosing SettingGroup's title unless a name is given. */
+export const SettingList = ({ children, ...props }: SettingListProps) => {
+  const groupTitleId = useContext(SettingGroupTitleContext);
+  const labelledBy = props["aria-labelledby"] ?? (props["aria-label"] ? undefined : groupTitleId);
   return (
-    <div className={cn("overflow-hidden rounded-lg border border-border bg-background divide-y divide-border", className)}>{children}</div>
+    <List.Root {...props} aria-labelledby={labelledBy}>
+      {children}
+    </List.Root>
   );
 };
 
 interface SettingListItemProps {
   label: ReactNode;
   description?: ReactNode;
+  /** The row's one control, placed at the end of the row. */
   children?: ReactNode;
-  icon?: ReactNode;
-  className?: string;
-  contentClassName?: string;
-  controlClassName?: string;
-  vertical?: boolean;
 }
 
-export const SettingListItem = ({
-  label,
-  description,
-  children,
-  icon,
-  className,
-  contentClassName,
-  controlClassName,
-  vertical = false,
-}: SettingListItemProps) => {
+/** A settings row: a horizontal Field, so the label and description name the one control at the end. */
+export const SettingListItem = ({ label, description, children }: SettingListItemProps) => {
   return (
-    <div className={cn("flex min-w-0 flex-col gap-3 px-3 py-3", !vertical && "sm:flex-row sm:items-center sm:justify-between", className)}>
-      <div className={cn("flex min-w-0 gap-2", contentClassName)}>
-        {icon && <div className="mt-0.5 shrink-0 text-muted-foreground">{icon}</div>}
-        <div className="min-w-0">
-          <div className="text-sm font-medium text-foreground">{label}</div>
-          {description && <div className="mt-1 text-xs leading-5 text-muted-foreground">{description}</div>}
-        </div>
-      </div>
-      {children && <div className={cn("flex min-w-0 items-center", !vertical && "sm:shrink-0", controlClassName)}>{children}</div>}
-    </div>
+    <List.Item>
+      <Field.Root orientation="horizontal">
+        <Field.Label>{label}</Field.Label>
+        {description && <Field.Description>{description}</Field.Description>}
+        {children}
+      </Field.Root>
+    </List.Item>
   );
 };
 
 export const StatValue = ({ value }: { value: string }) => (
-  <span className="block min-w-0 max-w-full break-all text-right font-mono text-sm tabular-nums text-foreground">{value}</span>
+  <span className="block min-w-0 break-all text-right font-mono mu-body tabular-nums text-mu-ink">{value}</span>
 );
 
+/** A read-only figure: its name at the start, the value at the end. No control, so no Field. */
 export const StatRow = ({ label, value }: { label: string; value: string }) => (
-  <SettingListItem label={label} controlClassName="w-full justify-end sm:w-auto">
+  <List.Item className="flex items-baseline justify-between gap-4">
+    <span className="min-w-0 mu-body text-mu-ink">{label}</span>
     <StatValue value={value} />
-  </SettingListItem>
+  </List.Item>
 );
 
 interface SettingPanelProps {
   children: ReactNode;
-  className?: string;
   header?: ReactNode;
   footer?: ReactNode;
 }
 
-export const SettingPanel = ({ children, className, header, footer }: SettingPanelProps) => {
+/**
+ * A box around a small form with an optional header and footer row. It is not a List: its rows are a
+ * title, a form and a hint rather than settings or records. Padding matches a List row's.
+ */
+export const SettingPanel = ({ children, header, footer }: SettingPanelProps) => {
   return (
-    <div className={cn("overflow-hidden rounded-lg border border-border bg-background", className)}>
-      {header && <div className="border-b border-border px-3 py-2">{header}</div>}
-      {children}
-      {footer && <div className="border-t border-border bg-muted/20 px-3 py-2">{footer}</div>}
+    <div className="rounded-mu-lg border border-mu-line bg-mu-surface">
+      {header && <div className="border-b border-mu-line px-4 py-2">{header}</div>}
+      <div className="px-4 py-3">{children}</div>
+      {footer && <div className="border-t border-mu-line px-4 py-2">{footer}</div>}
     </div>
   );
 };
@@ -86,22 +85,17 @@ interface SettingCodeEditorProps {
 
 export const SettingCodeEditor = ({ label, description, value, placeholder, onChange, disabled }: SettingCodeEditorProps) => {
   return (
-    <SettingPanel
-      header={
-        <>
-          <div className="text-sm font-medium text-foreground">{label}</div>
-          <p className="mt-1 text-xs leading-5 text-muted-foreground">{description}</p>
-        </>
-      }
-    >
+    <Field.Root>
+      <Field.Label>{label}</Field.Label>
+      <Field.Description>{description}</Field.Description>
       <Textarea
-        className="min-h-24 rounded-none border-0 font-mono shadow-none focus-visible:ring-0"
+        className="font-mono"
         rows={4}
         placeholder={placeholder}
         value={value}
         disabled={disabled}
         onChange={(event) => onChange(event.target.value)}
       />
-    </SettingPanel>
+    </Field.Root>
   );
 };

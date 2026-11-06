@@ -1,7 +1,7 @@
 import { useState } from "react";
-import toast from "react-hot-toast";
 import { getErrorMessage } from "@/lib/error";
 import { exportMemos, MemoExportError } from "@/lib/memo-export";
+import { showErrorToast, toast } from "@/lib/toast";
 import { useTranslate } from "@/utils/i18n";
 
 // useExportMemos starts a memo export download for a username and reports the
@@ -14,12 +14,12 @@ export const useExportMemos = () => {
     setExporting(true);
     try {
       await exportMemos(username);
-      toast.success(t("setting.memo-export.export-success"));
+      toast.add({ title: t("setting.memo-export.export-success"), type: "success" });
     } catch (error) {
       if (error instanceof MemoExportError && error.status === 429) {
-        toast.error(t("setting.memo-export.export-busy"));
+        showErrorToast(t("setting.memo-export.export-busy"));
       } else {
-        toast.error(getErrorMessage(error, t("setting.memo-export.export-failed")));
+        showErrorToast(getErrorMessage(error, t("setting.memo-export.export-failed")));
       }
     } finally {
       setExporting(false);

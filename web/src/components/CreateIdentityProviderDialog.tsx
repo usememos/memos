@@ -1,15 +1,11 @@
 import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
+import { Button, Dialog, Field, Input, Select } from "@usememos/ui";
 import { type ReactNode, useEffect, useState } from "react";
-import { toast } from "react-hot-toast";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { identityProviderServiceClient } from "@/connect";
 import { absolutifyLink } from "@/lib/browser";
 import { handleError } from "@/lib/error";
+import { showErrorToast, toast } from "@/lib/toast";
 import {
   FieldMapping,
   FieldMappingSchema,
@@ -219,10 +215,10 @@ function buildDialogStateFromProvider(identityProvider: IdentityProvider) {
 
 function FormSection({ title, description, children }: { title: string; description?: string; children: ReactNode }) {
   return (
-    <section className="space-y-4 rounded-lg border bg-muted/20 p-4">
+    <section className="space-y-4 rounded-mu-lg border bg-mu-well/20 p-4">
       <div className="space-y-1">
-        <h3 className="text-sm font-semibold text-foreground">{title}</h3>
-        {description ? <p className="text-xs text-muted-foreground">{description}</p> : null}
+        <h3 className="mu-label text-mu-ink">{title}</h3>
+        {description ? <p className="mu-caption text-mu-ink-muted">{description}</p> : null}
       </div>
       <div className="space-y-4">{children}</div>
     </section>
@@ -243,14 +239,14 @@ function FormField({
   return (
     // flex gap, not space-y: fields wrap Select triggers, whose focus guards would otherwise
     // pick up the stack's margin and shift the field while the popup is open (see ui/popup.ts).
-    <div className="flex flex-col gap-2">
-      <Label>
+    <Field.Root>
+      <Field.Label>
         {label}
-        {required ? <span className="text-destructive">*</span> : null}
-      </Label>
+        {required ? <span className="text-mu-danger">*</span> : null}
+      </Field.Label>
       {children}
-      {description ? <p className="text-xs text-muted-foreground">{description}</p> : null}
-    </div>
+      {description ? <Field.Description>{description}</Field.Description> : null}
+    </Field.Root>
   );
 }
 
@@ -352,7 +348,7 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
             }),
           }),
         });
-        toast.success(t("setting.sso.sso-created", { name: basicInfo.title }));
+        toast.add({ title: t("setting.sso.sso-created", { name: basicInfo.title }), type: "success" });
       } else {
         await identityProviderServiceClient.updateIdentityProvider({
           identityProvider: create(IdentityProviderSchema, {
@@ -372,11 +368,11 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
           }),
           updateMask: create(FieldMaskSchema, { paths: ["title", "identifier_filter", "config"] }),
         });
-        toast.success(t("setting.sso.sso-updated", { name: basicInfo.title }));
+        toast.add({ title: t("setting.sso.sso-updated", { name: basicInfo.title }), type: "success" });
       }
     } catch (error: unknown) {
       setIsSubmitting(false);
-      await handleError(error, toast.error, {
+      await handleError(error, showErrorToast, {
         context: isCreating ? "Create identity provider" : "Update identity provider",
       });
       return;
@@ -404,51 +400,53 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
   };
 
   return (
-    <Dialog open={open} onOpenChange={handleDialogClose}>
-      <DialogContent size="2xl">
-        <DialogHeader>
-          <DialogTitle>{t(isCreating ? "setting.sso.create-sso" : "setting.sso.update-sso")}</DialogTitle>
-          <DialogDescription>
-            {t(isCreating ? "setting.sso.create-sso-description" : "setting.sso.update-sso-description")}
-          </DialogDescription>
-        </DialogHeader>
+    <Dialog.Root open={open} onOpenChange={handleDialogClose}>
+      <Dialog.Popup closeLabel={t("common.close")} style={{ "--mu-dialog-width": "42rem" } as React.CSSProperties}>
+        <Dialog.Title>{t(isCreating ? "setting.sso.create-sso" : "setting.sso.update-sso")}</Dialog.Title>
+        <Dialog.Description>
+          {t(isCreating ? "setting.sso.create-sso-description" : "setting.sso.update-sso-description")}
+        </Dialog.Description>
 
         <div className="space-y-4">
           <FormSection title={t("setting.sso.basic-settings")} description={t("setting.sso.basic-settings-description")}>
             {isCreating ? (
               <div className="grid gap-4 md:grid-cols-2">
                 <FormField label={t("common.type")} required>
-                  <Select
+                  <Select.Root
                     value={String(type)}
                     items={identityProviderTypeOptions}
                     onValueChange={(value) => setType(Number(value) as IdentityProvider_Type)}
                   >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
+                    <Select.Trigger>
+                      <Select.Value />
+                    </Select.Trigger>
+                    <Select.Popup>
                       {identityProviderTypeOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
+                        <Select.Item key={option.value} value={option.value}>
                           {option.label}
-                        </SelectItem>
+                        </Select.Item>
                       ))}
-                    </SelectContent>
-                  </Select>
+                    </Select.Popup>
+                  </Select.Root>
                 </FormField>
 
                 <FormField label={t("setting.sso.template")} required description={t("setting.sso.template-description")}>
-                  <Select value={selectedTemplate} items={templateOptions} onValueChange={setSelectedTemplate}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
+                  <Select.Root
+                    value={selectedTemplate}
+                    items={templateOptions}
+                    onValueChange={(value) => value !== null && setSelectedTemplate(value)}
+                  >
+                    <Select.Trigger>
+                      <Select.Value />
+                    </Select.Trigger>
+                    <Select.Popup>
                       {templateOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
+                        <Select.Item key={option.value} value={option.value}>
                           {option.label}
-                        </SelectItem>
+                        </Select.Item>
                       ))}
-                    </SelectContent>
-                  </Select>
+                    </Select.Popup>
+                  </Select.Root>
                 </FormField>
               </div>
             ) : null}
@@ -458,7 +456,7 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
                 <FormField label={t("setting.sso.provider-id")} required description={t("setting.sso.provider-id-description")}>
                   <Input
                     className="font-mono"
-                    placeholder="e.g. github, okta-corp"
+                    placeholder={t("setting.sso.provider-id-placeholder")}
                     maxLength={32}
                     value={basicInfo.identifier}
                     onChange={(e) =>
@@ -502,10 +500,10 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
           {type === IdentityProvider_Type.OAUTH2 ? (
             <>
               <FormSection title={t("setting.sso.oauth-configuration")} description={t("setting.sso.oauth-configuration-description")}>
-                <div className="rounded-md border bg-background px-3 py-3">
-                  <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("setting.sso.redirect-url")}</p>
-                  <p className="mt-2 break-all font-mono text-xs text-foreground sm:text-sm">{absolutifyLink("/auth/callback")}</p>
-                  <p className="mt-2 text-xs text-muted-foreground">{t("setting.sso.redirect-url-description")}</p>
+                <div className="rounded-mu-md border bg-mu-canvas px-3 py-3">
+                  <p className="mu-label-sm uppercase tracking-wide text-mu-ink-muted">{t("setting.sso.redirect-url")}</p>
+                  <p className="mt-2 break-all font-mono mu-caption text-mu-ink">{absolutifyLink("/auth/callback")}</p>
+                  <p className="mt-2 mu-caption text-mu-ink-muted">{t("setting.sso.redirect-url-description")}</p>
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2">
@@ -610,16 +608,16 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
           ) : null}
         </div>
 
-        <DialogFooter>
+        <Dialog.Footer>
           <Button variant="ghost" onClick={handleCloseBtnClick} disabled={isSubmitting}>
             {t("common.cancel")}
           </Button>
-          <Button onClick={handleConfirmBtnClick} disabled={!allowConfirmAction()}>
+          <Button variant="primary" onClick={handleConfirmBtnClick} disabled={!allowConfirmAction()}>
             {t(isCreating ? "common.create" : "common.update")}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </Dialog.Footer>
+      </Dialog.Popup>
+    </Dialog.Root>
   );
 }
 
