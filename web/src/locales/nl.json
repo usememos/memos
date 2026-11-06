@@ -165,6 +165,7 @@
     "add-your-comment-here": "Voeg hier je opmerking toe…",
     "any-thoughts": "Enkele gedachten…",
     "exit-focus-mode": "Focusmodus afsluiten",
+    "temporarily-collapse-focus-mode": "Tijdelijk inklappen",
     "focus-mode": "Focusmodus",
     "markdown-mode": "Markdown-modus",
     "insert-menu": {
@@ -579,6 +580,8 @@
     },
     "editor": {
       "label": "Editor",
+      "auto-focus-mode": "Automatische focusmodus",
+      "auto-focus-mode-description": "Schakel automatisch over naar de focusmodus bij het bewerken van een memo.",
       "markdown-mode-description": "Schrijf en bewerk memo's als Markdown-tekst in plaats van opgemaakte tekst."
     },
     "memo-view": {

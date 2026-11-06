@@ -203,6 +203,7 @@
     "add-your-comment-here": "Tilføj din kommentar her...",
     "any-thoughts": "Nogen tanker...",
     "exit-focus-mode": "Afslut fokustilstand",
+    "temporarily-collapse-focus-mode": "Skjul midlertidigt",
     "focus-mode": "Fokustilstand",
     "markdown-mode": "Markdown-tilstand",
     "insert-menu": {
@@ -695,6 +696,8 @@
     },
     "editor": {
       "label": "Editor",
+      "auto-focus-mode": "Automatisk fokustilstand",
+      "auto-focus-mode-description": "Gå automatisk i fokustilstand ved redigering af et notat.",
       "markdown-mode-description": "Skriv og rediger notater som Markdown-tekst i stedet for formateret tekst."
     },
     "memo-view": {

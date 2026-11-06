@@ -203,6 +203,7 @@
     "add-your-comment-here": "Adauga comentariul tau aici...",
     "any-thoughts": "Orice gânduri...",
     "exit-focus-mode": "Ieșiți din modul de focalizare",
+    "temporarily-collapse-focus-mode": "Restrânge temporar",
     "focus-mode": "Modul de focalizare",
     "markdown-mode": "Modul Markdown",
     "insert-menu": {
@@ -696,6 +697,8 @@
     },
     "editor": {
       "label": "Editor",
+      "auto-focus-mode": "Mod de focalizare automat",
+      "auto-focus-mode-description": "Intrați automat în modul de focalizare la editarea unei notițe.",
       "markdown-mode-description": "Scrieți și editați notițele ca text Markdown în loc de text formatat."
     },
     "memo-view": {

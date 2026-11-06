@@ -203,6 +203,7 @@
     "add-your-comment-here": "Добавете своя коментар тук...",
     "any-thoughts": "Някакви мисли...",
     "exit-focus-mode": "Излезте от режима на фокусиране",
+    "temporarily-collapse-focus-mode": "Временно свиване",
     "focus-mode": "Режим на фокусиране",
     "markdown-mode": "Режим Markdown",
     "insert-menu": {
@@ -695,6 +696,8 @@
     },
     "editor": {
       "label": "Редактор",
+      "auto-focus-mode": "Автоматичен режим на фокусиране",
+      "auto-focus-mode-description": "Автоматично влизане в режим на фокусиране при редактиране на бележка.",
       "markdown-mode-description": "Пишете и редактирайте бележки като Markdown текст вместо форматиран текст."
     },
     "memo-view": {

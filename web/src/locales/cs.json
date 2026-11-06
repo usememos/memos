@@ -165,6 +165,7 @@
     "add-your-comment-here": "Přidejte sem svůj komentář...",
     "any-thoughts": "Jakékoli myšlenky...",
     "exit-focus-mode": "Ukončit režim soustředění",
+    "temporarily-collapse-focus-mode": "Dočasně sbalit",
     "focus-mode": "Režim soustředění",
     "markdown-mode": "Režim Markdown",
     "insert-menu": {
@@ -581,6 +582,8 @@
     },
     "editor": {
       "label": "Editor",
+      "auto-focus-mode": "Automatický režim soustředění",
+      "auto-focus-mode-description": "Při úpravě poznámky automaticky přejít do režimu soustředění.",
       "markdown-mode-description": "Pište a upravujte poznámky jako text Markdown místo formátovaného textu."
     },
     "memo-view": {

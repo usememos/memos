@@ -165,6 +165,7 @@
     "add-your-comment-here": "Dodaj swój komentarz tutaj...",
     "any-thoughts": "Jakieś przemyślenia...",
     "exit-focus-mode": "Wyjdź z Trybu Skupienia",
+    "temporarily-collapse-focus-mode": "Zwiń tymczasowo",
     "focus-mode": "Tryb Skupienia",
     "markdown-mode": "Tryb Markdown",
     "format": {
@@ -581,6 +582,8 @@
     },
     "editor": {
       "label": "Edytor",
+      "auto-focus-mode": "Automatyczny Tryb Skupienia",
+      "auto-focus-mode-description": "Automatycznie przechodź do Trybu Skupienia podczas edycji notatki.",
       "markdown-mode-description": "Pisz i edytuj notatki jako tekst Markdown zamiast tekstu sformatowanego."
     },
     "memo-view": {

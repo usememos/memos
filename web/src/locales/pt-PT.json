@@ -165,6 +165,7 @@
     "add-your-comment-here": "Adicione o seu comentário aqui...",
     "any-thoughts": "Alguma ideia…",
     "exit-focus-mode": "Sair do Modo Foco",
+    "temporarily-collapse-focus-mode": "Recolher temporariamente",
     "focus-mode": "Modo Foco",
     "markdown-mode": "Modo Markdown",
     "insert-menu": {
@@ -580,6 +581,8 @@
     },
     "editor": {
       "label": "Editor",
+      "auto-focus-mode": "Modo Foco automático",
+      "auto-focus-mode-description": "Entrar no Modo Foco automaticamente ao editar um memorando.",
       "markdown-mode-description": "Escreva e edite memorandos como texto Markdown em vez de texto formatado."
     },
     "memo-view": {

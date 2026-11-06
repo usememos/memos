@@ -203,6 +203,7 @@
     "add-your-comment-here": "Lisa oma kommentaar siia...",
     "any-thoughts": "Mingid mõtted...",
     "exit-focus-mode": "Välju teravustamisrežiimist",
+    "temporarily-collapse-focus-mode": "Ahenda ajutiselt",
     "focus-mode": "Fookusrežiim",
     "markdown-mode": "Markdown-režiim",
     "insert-menu": {
@@ -695,6 +696,8 @@
     },
     "editor": {
       "label": "Redaktor",
+      "auto-focus-mode": "Automaatne fookusrežiim",
+      "auto-focus-mode-description": "Sisene memo muutmisel automaatselt fookusrežiimi.",
       "markdown-mode-description": "Kirjuta ja muuda memosid Markdown-tekstina vormindatud teksti asemel."
     },
     "memo-view": {

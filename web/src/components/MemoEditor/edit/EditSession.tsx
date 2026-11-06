@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -9,7 +9,15 @@ import { InstanceSetting_Key } from "@/types/proto/api/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString } from "@/utils/memo";
 
-import { AudioRecorderPanel, EditorContent, EditorMetadata, FocusModeExitButton, FocusModeOverlay, TimestampPopover } from "./components";
+import {
+  AudioRecorderPanel,
+  EditorContent,
+  EditorMetadata,
+  FocusModeExitButton,
+  FocusModeOverlay,
+  FocusModeTemporaryCollapseButton,
+  TimestampPopover,
+} from "./components";
 import { EditorSuggestions } from "./components/EditorSuggestions";
 import { FOCUS_MODE_STYLES } from "./constants";
 import type { EditorFileOrigin } from "./extensions";
@@ -73,7 +81,9 @@ export const EditSession: React.FC<EditSessionProps> = ({
   }, [isFocusMode, onFocusModeChange]);
   const isSaving = useEditorSelector((s) => s.ui.isLoading.saving);
   const hasTimestamp = useEditorSelector((s) => Boolean(s.timestamps.createTime));
-  const { userGeneralSetting } = useAuth();
+  const { userGeneralSetting, userEditorSetting, isUserSettingsInitialized } = useAuth();
+  // The inline composer remains mounted after saving, so reset this for the next memo.
+  const autoFocusHandled = useRef(Boolean(memo || onFocusModeExit));
   const { aiSetting, fetchSetting } = useInstance();
   const [isAudioRecorderOpen, setIsAudioRecorderOpen] = useState(false);
   const [isTranscribingAudio, setIsTranscribingAudio] = useState(false);
@@ -116,6 +126,15 @@ export const EditSession: React.FC<EditSessionProps> = ({
   const { discardDraft } = useAutoSave(draftKey, isInitialized && isDraftCacheEnabled);
 
   const { containerRef: editorContainerRef, placeholderHeight, animateFocusMode } = useFocusMode(isFocusMode);
+  const initialAutoFocusEntered = useRef(false);
+  // Enter focus mode for an existing memo after useFocusMode has measured its inline height.
+  useLayoutEffect(() => {
+    if (initialAutoFocusEntered.current || !isUserSettingsInitialized) return;
+    initialAutoFocusEntered.current = true;
+    if (memo && !onFocusModeExit && userEditorSetting?.autoFocusMode && !getState().ui.isFocusMode) {
+      dispatch(actions.toggleFocusMode());
+    }
+  }, [actions, dispatch, getState, isUserSettingsInitialized, memo, onFocusModeExit, userEditorSetting?.autoFocusMode]);
 
   // Live-sync the draft's createTime/updateTime to the calendar-derived prop.
   // Only applies in create mode; edit mode owns its own timestamps. Runs after
@@ -226,14 +245,47 @@ export const EditSession: React.FC<EditSessionProps> = ({
     }
   }, [draftKey, editorMode]);
 
+  const focusFrameRef = useRef(0);
+  useEffect(() => () => cancelAnimationFrame(focusFrameRef.current), []);
+  const focusEditor = () => {
+    cancelAnimationFrame(focusFrameRef.current);
+    editorRef.current?.focus();
+    focusFrameRef.current = requestAnimationFrame(() => editorRef.current?.focus());
+  };
+
   // Hosted: focus mode is the host's frame, so leaving it dismisses the host.
   // Inline: focus mode is a view this editor owns and toggles in place.
   const handleToggleFocusMode = () => {
+    initialAutoFocusEntered.current = true;
+    autoFocusHandled.current = true;
     if (onFocusModeExit) {
       rememberCursor();
       onFocusModeExit();
       return;
     }
+    const leavingFocusMode = getState().ui.isFocusMode;
+    animateFocusMode(() => dispatch(actions.toggleFocusMode()));
+    if (leavingFocusMode) {
+      focusEditor();
+    }
+  };
+
+  // Dismissing the inline backdrop is temporary: typing can open focus mode again.
+  // A hosted editor owns its frame and still dismisses the entire host.
+  const handleBackdropClick = () => {
+    initialAutoFocusEntered.current = true;
+    if (onFocusModeExit) {
+      handleToggleFocusMode();
+      return;
+    }
+    autoFocusHandled.current = false;
+    animateFocusMode(() => dispatch(actions.toggleFocusMode()));
+    focusEditor();
+  };
+
+  const handleUserTextInput = () => {
+    if (!userEditorSetting?.autoFocusMode || autoFocusHandled.current || getState().ui.isFocusMode) return;
+    autoFocusHandled.current = true;
     animateFocusMode(() => dispatch(actions.toggleFocusMode()));
   };
 
@@ -318,13 +370,16 @@ export const EditSession: React.FC<EditSessionProps> = ({
     defaultVisibility,
     defaultCreateTime,
     discardDraft,
-    onConfirm,
+    onConfirm: (name) => {
+      autoFocusHandled.current = Boolean(memo || onFocusModeExit);
+      onConfirm?.(name);
+    },
     onCancel: onCancel ? handleCancel : undefined,
   });
 
   return (
     <>
-      <FocusModeOverlay isActive={isFocusMode} onToggle={handleToggleFocusMode} />
+      <FocusModeOverlay isActive={isFocusMode} onToggle={handleBackdropClick} />
 
       {/*
         Layout structure:
@@ -369,7 +424,10 @@ export const EditSession: React.FC<EditSessionProps> = ({
             {timestampLead}
             <TimestampPopover />
             {isFocusMode && (
-              <div className="ms-auto -me-2">
+              <div className="ms-auto -me-2 flex items-center">
+                {!onFocusModeExit && userEditorSetting?.autoFocusMode && (
+                  <FocusModeTemporaryCollapseButton onCollapse={handleBackdropClick} />
+                )}
                 <FocusModeExitButton action={onFocusModeExit ? "close" : "minimize"} onExit={handleToggleFocusMode} />
               </div>
             )}
@@ -381,6 +439,7 @@ export const EditSession: React.FC<EditSessionProps> = ({
           ref={editorRef}
           placeholder={placeholder}
           sourceMode={sourceMode}
+          onUserTextInput={handleUserTextInput}
           onSubmit={handleSave}
           onFiles={handleEditorFiles}
         />

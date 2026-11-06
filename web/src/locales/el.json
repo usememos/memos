@@ -203,6 +203,7 @@
     "add-your-comment-here": "Προσθέστε το σχόλιό σας εδώ...",
     "any-thoughts": "Οποιαδήποτε σκέψη...",
     "exit-focus-mode": "Έξοδος από τη λειτουργία εστίασης",
+    "temporarily-collapse-focus-mode": "Προσωρινή σύμπτυξη",
     "focus-mode": "Λειτουργία εστίασης",
     "markdown-mode": "Λειτουργία Markdown",
     "insert-menu": {
@@ -695,6 +696,8 @@
     },
     "editor": {
       "label": "Πρόγραμμα επεξεργασίας",
+      "auto-focus-mode": "Αυτόματη λειτουργία εστίασης",
+      "auto-focus-mode-description": "Αυτόματη είσοδος στη λειτουργία εστίασης κατά την επεξεργασία μιας σημείωσης.",
       "markdown-mode-description": "Γράψτε και επεξεργαστείτε σημειώσεις ως κείμενο Markdown αντί για μορφοποιημένο κείμενο."
     },
     "memo-view": {

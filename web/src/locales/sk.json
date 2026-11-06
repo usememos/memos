@@ -203,6 +203,7 @@
     "add-your-comment-here": "Tu pridajte svoj komentár...",
     "any-thoughts": "Akékoľvek myšlienky...",
     "exit-focus-mode": "Ukončite režim zaostrenia",
+    "temporarily-collapse-focus-mode": "Dočasne zbaliť",
     "focus-mode": "Režim zaostrenia",
     "markdown-mode": "Režim Markdown",
     "insert-menu": {
@@ -697,6 +698,8 @@
     },
     "editor": {
       "label": "Editor",
+      "auto-focus-mode": "Automatický režim zaostrenia",
+      "auto-focus-mode-description": "Pri úprave poznámky automaticky prejsť do režimu zaostrenia.",
       "markdown-mode-description": "Píšte a upravujte poznámky ako text Markdown namiesto formátovaného textu."
     },
     "memo-view": {

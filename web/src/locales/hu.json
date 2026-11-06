@@ -165,6 +165,7 @@
     "add-your-comment-here": "Írd ide a megjegyzésed...",
     "any-thoughts": "Bármi ami a fejedben jár...",
     "exit-focus-mode": "Kilépés a fókusz módból",
+    "temporarily-collapse-focus-mode": "Ideiglenes összecsukás",
     "focus-mode": "Fókusz mód",
     "markdown-mode": "Markdown mód",
     "insert-menu": {
@@ -579,6 +580,8 @@
     },
     "editor": {
       "label": "Szerkesztő",
+      "auto-focus-mode": "Automatikus fókusz mód",
+      "auto-focus-mode-description": "Jegyzet szerkesztésekor automatikusan lépjen fókusz módba.",
       "markdown-mode-description": "Jegyzetek írása és szerkesztése Markdown szövegként formázott szöveg helyett."
     },
     "memo-view": {

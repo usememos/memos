@@ -165,6 +165,7 @@
     "add-your-comment-here": "ここにコメントを追加...",
     "any-thoughts": "今思ったことは...",
     "exit-focus-mode": "フォーカスを終了",
+    "temporarily-collapse-focus-mode": "一時的に折りたたむ",
     "focus-mode": "フォーカスモード",
     "markdown-mode": "Markdown モード",
     "no-changes-detected": "変更はありません",
@@ -579,6 +580,8 @@
     },
     "editor": {
       "label": "エディター",
+      "auto-focus-mode": "自動フォーカスモード",
+      "auto-focus-mode-description": "メモの編集時に自動的にフォーカスモードに入ります。",
       "markdown-mode-description": "メモを書式付きテキストではなく Markdown テキストとして作成・編集します。"
     },
     "memo-view": {

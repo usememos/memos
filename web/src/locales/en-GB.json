@@ -165,6 +165,7 @@
     "add-your-comment-here": "Add your comment here...",
     "any-thoughts": "Any thoughts...",
     "exit-focus-mode": "Exit Focus Mode",
+    "temporarily-collapse-focus-mode": "Temporarily collapse",
     "focus-mode": "Focus Mode",
     "markdown-mode": "Markdown mode",
     "insert-menu": {
@@ -579,6 +580,8 @@
     },
     "editor": {
       "label": "Editor",
+      "auto-focus-mode": "Automatic focus mode",
+      "auto-focus-mode-description": "Enter focus mode automatically when editing a memo.",
       "markdown-mode-description": "Write and edit memos as Markdown text instead of formatted text."
     },
     "memo-view": {

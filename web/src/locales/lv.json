@@ -203,6 +203,7 @@
     "add-your-comment-here": "Pievienojiet savu komentāru šeit...",
     "any-thoughts": "Jebkuras domas...",
     "exit-focus-mode": "Iziet no fokusa režīma",
+    "temporarily-collapse-focus-mode": "Īslaicīgi sakļaut",
     "focus-mode": "Fokusa režīms",
     "markdown-mode": "Markdown režīms",
     "insert-menu": {
@@ -696,6 +697,8 @@
     },
     "editor": {
       "label": "Redaktors",
+      "auto-focus-mode": "Automātiskais fokusa režīms",
+      "auto-focus-mode-description": "Rediģējot piezīmi, automātiski ieslēgt fokusa režīmu.",
       "markdown-mode-description": "Rakstiet un rediģējiet piezīmes kā Markdown tekstu, nevis formatētu tekstu."
     },
     "memo-view": {
