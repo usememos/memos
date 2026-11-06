@@ -20,10 +20,10 @@ const UserAvatar = (props: Props) => {
       className={cn(
         "flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full",
         avatarUrl
-          ? "border border-border"
+          ? "border border-mu-line"
           : title
-            ? "bg-[oklch(0.82_0.09_var(--avatar-hue))] text-[oklch(0.5_0.1_var(--avatar-hue))] [[data-theme=default-dark]_&]:bg-[oklch(0.42_0.09_var(--avatar-hue))] [[data-theme=default-dark]_&]:text-[oklch(0.85_0.06_var(--avatar-hue))]"
-            : "bg-muted text-muted-foreground",
+            ? "bg-[oklch(0.82_0.09_var(--avatar-hue))] text-[oklch(0.5_0.1_var(--avatar-hue))] [[data-theme=dark]_&]:bg-[oklch(0.42_0.09_var(--avatar-hue))] [[data-theme=dark]_&]:text-[oklch(0.85_0.06_var(--avatar-hue))]"
+            : "bg-mu-well text-mu-ink-muted",
         className,
       )}
       style={style}

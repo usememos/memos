@@ -1,8 +1,7 @@
+import { Toggle, ToggleGroup } from "@usememos/ui";
 import { FileAudioIcon, FileStackIcon, ImageIcon } from "lucide-react";
 import type { ComponentType } from "react";
-import { Button } from "@/components/ui/button";
 import type { AttachmentLibraryStats, AttachmentLibraryTab } from "@/hooks/useAttachmentLibrary";
-import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 
 interface AttachmentLibraryToolbarProps {
@@ -27,36 +26,21 @@ const AttachmentLibraryToolbar = ({ activeTab, onTabChange, stats }: AttachmentL
 
   return (
     <div className="-mx-1 overflow-x-auto px-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-      <div className="flex min-w-max items-center gap-1.5">
+      <ToggleGroup
+        aria-label={t("common.attachments")}
+        value={[activeTab]}
+        onValueChange={([next]: string[]) => next && onTabChange(next as AttachmentLibraryTab)}
+      >
         {TAB_CONFIG.map((tab) => {
           const Icon = tab.icon;
-          const isActive = activeTab === tab.key;
-
           return (
-            <Button
-              key={tab.key}
-              type="button"
-              variant="ghost"
-              className={cn(
-                "h-9 rounded-md px-2.5 text-sm font-medium sm:px-3",
-                isActive ? "bg-muted/60 text-foreground shadow-none" : "text-muted-foreground hover:bg-muted/40 hover:text-foreground",
-              )}
-              onClick={() => onTabChange(tab.key)}
-            >
-              <Icon className="h-4 w-4" />
-              <span>{t(`attachment-library.tabs.${tab.labelKey}`)}</span>
-              <span
-                className={cn(
-                  "rounded-full px-1.5 py-0.5 text-[11px]",
-                  isActive ? "bg-background text-muted-foreground" : "bg-muted/50 text-muted-foreground",
-                )}
-              >
-                {tab.count(stats)}
-              </span>
-            </Button>
+            <Toggle key={tab.key} value={tab.key} icon={<Icon />}>
+              {t(`attachment-library.tabs.${tab.labelKey}`)}
+              <span className="ms-1 tabular-nums text-mu-ink-muted">{tab.count(stats)}</span>
+            </Toggle>
           );
         })}
-      </div>
+      </ToggleGroup>
     </div>
   );
 };

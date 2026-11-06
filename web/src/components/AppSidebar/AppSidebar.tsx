@@ -1,4 +1,4 @@
-import { useDirection } from "@base-ui/react/direction-provider";
+import { Button, Drawer, Tooltip } from "@usememos/ui";
 import {
   ArchiveIcon,
   ArrowRightIcon,
@@ -25,9 +25,6 @@ import { MemoDetailSidebar } from "@/components/MemoDetailSidebar";
 import MemoDisplaySettingMenu from "@/components/MemoDisplaySettingMenu";
 import { DEFAULT_SETTING_SECTION, SETTINGS_SECTIONS } from "@/components/Settings/settingSections";
 import StatisticsView from "@/components/StatisticsView";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { type AttachmentSection, type InboxFilter, useAppSidebar } from "@/contexts/AppSidebarContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useGlobalMemoEditor } from "@/contexts/GlobalMemoEditorContext";
@@ -45,7 +42,7 @@ import { User_Role, UserNotification_Status } from "@/types/proto/api/user_servi
 import { useTranslate } from "@/utils/i18n";
 import CommonSidebarContent from "./CommonSidebarContent";
 import { getSidebarRouteKind } from "./routes";
-import SidebarRow, { SIDEBAR_ROW_CLASSES, SIDEBAR_ROW_FOCUS_CLASSES, SidebarRowIconSlot, sidebarRowStateClasses } from "./SidebarRow";
+import SidebarRow, { SIDEBAR_ROW_CLASSES, SidebarRowIconSlot, sidebarRowStateClasses } from "./SidebarRow";
 import SidebarSection, { SIDEBAR_SECTION_STACK_CLASSES } from "./SidebarSection";
 import SpaceSwitcher from "./SpaceSwitcher";
 import {
@@ -62,12 +59,12 @@ const NewMemoAction = ({ onClick }: { onClick: () => void }) => {
   const label = t("editor.new-memo");
 
   return (
-    <Tooltip>
-      <TooltipTrigger render={<Button variant="outline" size="icon-compact" onClick={onClick} aria-label={label} data-new-memo-trigger />}>
-        <SquarePenIcon className="size-4" strokeWidth={1.8} />
-      </TooltipTrigger>
-      <TooltipContent side="bottom">{label}</TooltipContent>
-    </Tooltip>
+    <Tooltip.Root>
+      <Tooltip.Trigger
+        render={<Button variant="neutral" onClick={onClick} aria-label={label} data-new-memo-trigger icon={<SquarePenIcon />} />}
+      />
+      <Tooltip.Popup side="bottom">{label}</Tooltip.Popup>
+    </Tooltip.Root>
   );
 };
 
@@ -307,16 +304,18 @@ const NavPill = ({ label, icon: Icon, to, onClick, active = false, expanded = fa
     "aria-current": active ? ("page" as const) : undefined,
     className: cn(
       sidebarSurfaceVariants({ role: "navPill" }),
-      SIDEBAR_ROW_FOCUS_CLASSES,
+      "mu-focus",
       sidebarRowStateClasses(active ? "current" : "idle"),
+      // The one pill with an open label gives way first, so the row always ends on the rail.
+      expanded && "min-w-0 shrink",
       className,
     ),
   };
   return (
-    <Tooltip disabled={expanded}>
-      <TooltipTrigger render={to ? <Link to={to} {...props} /> : <button type="button" {...props} />}>
+    <Tooltip.Root disabled={expanded}>
+      <Tooltip.Trigger render={to ? <Link to={to} {...props} /> : <button type="button" {...props} />}>
         <span className={SIDEBAR_NAV_LEADING_SLOT_CLASSES} aria-hidden="true">
-          <Icon className="size-4 opacity-75" strokeWidth={1.8} />
+          <Icon className="mu-icon" />
         </span>
         {/* The control carries its own aria-label; this text is decoration whether or not it is open. */}
         <span
@@ -327,14 +326,14 @@ const NavPill = ({ label, icon: Icon, to, onClick, active = false, expanded = fa
           )}
         >
           <span className="flex min-w-0 items-center overflow-hidden">
-            <span data-sidebar-label className="shrink-0 truncate text-[12px] leading-5">
+            <span data-sidebar-label className="min-w-0 truncate mu-body">
               {label}
             </span>
           </span>
         </span>
-      </TooltipTrigger>
-      <TooltipContent side="bottom">{label}</TooltipContent>
-    </Tooltip>
+      </Tooltip.Trigger>
+      <Tooltip.Popup side="bottom">{label}</Tooltip.Popup>
+    </Tooltip.Root>
   );
 };
 
@@ -352,9 +351,15 @@ const GlobalNavigation = () => {
   const navigationPath = (pathname: string) => collectionNavigationPath(pathname, location, currentUser?.username);
 
   return (
-    <TooltipProvider>
-      <nav className={cn("@container flex h-7 items-center gap-1", SIDEBAR_RAIL_CLASSES)} aria-label="Primary">
-        <div ref={timelineRef} className={cn("flex shrink-0 items-center rounded-md", timelineActive && sidebarRowStateClasses("current"))}>
+    <Tooltip.Provider>
+      <nav
+        className={cn("@container mu-s-md flex h-(--mu-row-height) items-center gap-1", SIDEBAR_RAIL_CLASSES)}
+        aria-label={t("common.primary-navigation")}
+      >
+        <div
+          ref={timelineRef}
+          className={cn("flex min-w-0 items-center rounded-mu-md", timelineActive && sidebarRowStateClasses("current"))}
+        >
           <NavPill
             to={navigationPath(ROUTES.HOME)}
             label={t("common.timeline")}
@@ -377,7 +382,7 @@ const GlobalNavigation = () => {
         ))}
         <NavPill label={t("common.search")} icon={SearchIcon} onClick={() => setQuickFindOpen(true)} className="ms-auto" />
       </nav>
-    </TooltipProvider>
+    </Tooltip.Provider>
   );
 };
 
@@ -387,36 +392,35 @@ const AppSidebar = ({ className }: { className?: string }) => {
   const { setMobileOpen } = useAppSidebar();
   const { canOpen: canCompose, openEditor } = useGlobalMemoEditor();
   return (
-    <aside className={cn("flex h-full w-full select-none flex-col bg-sidebar text-sidebar-foreground", className)}>
+    <aside className={cn("mu-compact flex h-full w-full select-none flex-col bg-mu-canvas text-mu-ink-muted", className)}>
       <div data-sidebar-header className={cn("flex h-13 shrink-0 items-center justify-between gap-2", SIDEBAR_RAIL_CLASSES)}>
         <SpaceSwitcher className="min-w-0" size="header" />
         {canCompose && <NewMemoAction onClick={openEditor} />}
       </div>
       <GlobalNavigation />
-      <div className="mx-3 mt-2 border-t border-border/70" />
+      <div className="mx-3 mt-2 border-t border-mu-line/70" />
       <div className={cn("min-h-0 flex-1 overflow-y-auto overflow-x-hidden pt-2 pb-3 [scrollbar-width:thin]", SIDEBAR_RAIL_CLASSES)}>
         <RouteSidebarContent />
       </div>
       {!currentUser && (
-        <footer className="shrink-0 border-t border-border/70">
+        <footer className="shrink-0 border-t border-mu-line/70">
           <Link
             to={ROUTES.AUTH}
             onClick={() => setMobileOpen(false)}
             className={cn(
               sidebarSurfaceVariants({ role: "account" }),
-              "group text-[13px] font-medium text-foreground transition-colors hover:bg-sidebar-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/50",
+              "group mu-label text-mu-ink transition-colors hover:bg-mu-hover mu-focus",
             )}
           >
             <span className={SIDEBAR_LEADING_SLOT_CLASSES}>
-              <UserRoundIcon className="me-auto size-4 text-muted-foreground" strokeWidth={1.8} />
+              <UserRoundIcon className="mu-icon me-auto text-mu-ink-muted" />
             </span>
             <span data-sidebar-label className="min-w-0 flex-1 truncate">
               {t("common.sign-in-to-memos")}
             </span>
             <ArrowRightIcon
               data-sidebar-trailing
-              className="size-3.5 shrink-0 text-muted-foreground/60 transition-transform group-hover:translate-x-0.5 rtl:rotate-180 rtl:group-hover:-translate-x-0.5"
-              strokeWidth={1.8}
+              className="mu-icon-sm shrink-0 text-mu-ink-muted/60 transition-transform group-hover:translate-x-0.5 rtl:rotate-180 rtl:group-hover:-translate-x-0.5"
             />
           </Link>
         </footer>
@@ -426,30 +430,39 @@ const AppSidebar = ({ className }: { className?: string }) => {
 };
 
 export const MobileAppHeader = () => {
+  const t = useTranslate();
   const { setMobileOpen } = useAppSidebar();
   return (
-    <header className="sticky top-0 z-20 flex h-12 w-full shrink-0 items-center justify-start gap-1 border-b border-border/70 bg-background/90 px-2 backdrop-blur-md md:hidden">
-      <Button variant="ghost" size="icon" onClick={() => setMobileOpen(true)} aria-label="Open navigation" data-mobile-navigation-trigger>
-        <MenuIcon className="size-[18px]" />
-      </Button>
+    <header className="sticky top-0 z-20 flex h-12 w-full shrink-0 items-center justify-start gap-1 border-b border-mu-line/70 bg-mu-canvas/90 px-2 backdrop-blur-md md:hidden">
+      <Tooltip.Root>
+        <Tooltip.Trigger
+          render={
+            <Button
+              variant="ghost"
+              onClick={() => setMobileOpen(true)}
+              aria-label={t("common.open-navigation")}
+              data-mobile-navigation-trigger
+              icon={<MenuIcon />}
+            />
+          }
+        />
+        <Tooltip.Popup side="bottom">{t("common.open-navigation")}</Tooltip.Popup>
+      </Tooltip.Root>
       <SpaceSwitcher className="max-w-[12rem]" size="md" />
     </header>
   );
 };
 
 export const MobileAppSidebar = () => {
-  const direction = useDirection();
+  const t = useTranslate();
   const { mobileOpen, setMobileOpen, completeMobileClose } = useAppSidebar();
   return (
-    <Sheet open={mobileOpen} onOpenChange={setMobileOpen} onOpenChangeComplete={completeMobileClose}>
-      <SheetContent
-        side={direction === "rtl" ? "right" : "left"}
-        className="w-[min(18rem,calc(100vw-2rem))] gap-0 border-border p-0 shadow-2xl [&>[data-slot=sheet-close]]:sr-only"
-      >
-        <SheetTitle className="sr-only">Navigation</SheetTitle>
+    <Drawer.Root side="start" open={mobileOpen} onOpenChange={setMobileOpen} onOpenChangeComplete={completeMobileClose}>
+      <Drawer.Popup variant="bare" closeLabel={t("common.close")} className="w-72 max-w-[calc(100%-2rem)]">
+        <Drawer.Title className="mu-visually-hidden">{t("common.navigation")}</Drawer.Title>
         <AppSidebar />
-      </SheetContent>
-    </Sheet>
+      </Drawer.Popup>
+    </Drawer.Root>
   );
 };
 

@@ -1,6 +1,7 @@
 import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
 import { useQueryClient } from "@tanstack/react-query";
+import { Badge, Button, Field, Input, Menu, Textarea, Tooltip } from "@usememos/ui";
 import {
   AstroidIcon,
   CheckCircle2Icon,
@@ -9,6 +10,7 @@ import {
   ExternalLinkIcon,
   FilterIcon,
   ImageIcon,
+  type LucideIcon,
   MapPinIcon,
   MoreVerticalIcon,
   PaperclipIcon,
@@ -24,17 +26,10 @@ import {
   XIcon,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import CustomIconPicker from "@/components/CustomIconPicker";
 import MemoViewIcon from "@/components/MemoViewIcon";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { userServiceClient } from "@/connect";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -42,147 +37,148 @@ import useLoading from "@/hooks/useLoading";
 import { useMemoViews, userKeys } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
 import { getMemoViewId } from "@/lib/memo-views";
+import { showErrorToast, toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { MemoView, MemoView_IconSchema, MemoViewSchema } from "@/types/proto/api/user_service_pb";
-import { useTranslate } from "@/utils/i18n";
+import { type Translations, useTranslate } from "@/utils/i18n";
 
-const memoViewExamples = [
+const memoViewExamples: { titleKey: Translations; filter: string; descriptionKey: Translations; icon: LucideIcon }[] = [
   {
-    title: "Pinned",
+    titleKey: "setting.memo-view.examples.pinned.title",
     filter: "pinned",
-    description: "Only pinned memos.",
+    descriptionKey: "setting.memo-view.examples.pinned.description",
     icon: PinIcon,
   },
   {
-    title: "Recent notes",
+    titleKey: "setting.memo-view.examples.recent.title",
     filter: 'created_ts >= now - duration("1h")',
-    description: "Memos created in the last hour.",
+    descriptionKey: "setting.memo-view.examples.recent.description",
     icon: Clock3Icon,
   },
   {
-    title: "Public memos",
+    titleKey: "setting.memo-view.examples.public.title",
     filter: 'visibility == "PUBLIC"',
-    description: "Only public memos.",
+    descriptionKey: "setting.memo-view.examples.public.description",
     icon: ShieldIcon,
   },
   {
-    title: "Project tags",
+    titleKey: "setting.memo-view.examples.project-tags.title",
     filter: 'tag in ["work", "personal"]',
-    description: "Match one or more exact tags.",
+    descriptionKey: "setting.memo-view.examples.project-tags.description",
     icon: TagsIcon,
   },
   {
-    title: "Untagged",
+    titleKey: "setting.memo-view.examples.untagged.title",
     filter: "size(tags) == 0",
-    description: "Memos without any tags.",
+    descriptionKey: "setting.memo-view.examples.untagged.description",
     icon: TagsIcon,
   },
   {
-    title: "Archive tree",
+    titleKey: "setting.memo-view.examples.archive-tree.title",
     filter: 'tags.exists(t, t.startsWith("archive"))',
-    description: "Match hierarchical tags by prefix.",
+    descriptionKey: "setting.memo-view.examples.archive-tree.description",
     icon: TagsIcon,
   },
   {
-    title: "Unassigned",
+    titleKey: "setting.memo-view.examples.unassigned.title",
     filter: "space == null",
-    description: "Memos that are not placed in any space.",
+    descriptionKey: "setting.memo-view.examples.unassigned.description",
     icon: AstroidIcon,
   },
   {
-    title: "In one space",
+    titleKey: "setting.memo-view.examples.one-space.title",
     filter: 'space == "spaces/your-space-id"',
-    description: "Memos placed in a space. Use the space ID from its URL or settings.",
+    descriptionKey: "setting.memo-view.examples.one-space.description",
     icon: AstroidIcon,
   },
   {
-    title: "Open tasks",
+    titleKey: "setting.memo-view.examples.open-tasks.title",
     filter: "has_task_list && has_incomplete_tasks",
-    description: "Memos with unfinished tasks.",
+    descriptionKey: "setting.memo-view.examples.open-tasks.description",
     icon: ClipboardCheckIcon,
   },
   {
-    title: "Links or code",
+    titleKey: "setting.memo-view.examples.links-or-code.title",
     filter: "has_link || has_code",
-    description: "Memos containing links or code blocks.",
+    descriptionKey: "setting.memo-view.examples.links-or-code.description",
     icon: FilterIcon,
   },
   {
-    title: "No location",
+    titleKey: "setting.memo-view.examples.no-location.title",
     filter: "!has_location",
-    description: "Memos without an attached location.",
+    descriptionKey: "setting.memo-view.examples.no-location.description",
     icon: MapPinIcon,
   },
   {
-    title: "With attachments",
+    titleKey: "setting.memo-view.examples.with-attachments.title",
     filter: "has_attachments",
-    description: "Memos with at least one attached file.",
+    descriptionKey: "setting.memo-view.examples.with-attachments.description",
     icon: PaperclipIcon,
   },
   {
-    title: "Photos",
+    titleKey: "setting.memo-view.examples.photos.title",
     filter: "has_image",
-    description: "Memos that show an image, in the content or as an attached file.",
+    descriptionKey: "setting.memo-view.examples.photos.description",
     icon: ImageIcon,
   },
   {
-    title: "Content search",
+    titleKey: "setting.memo-view.examples.content-search.title",
     filter: 'content.contains("TODO")',
-    description: "Search text inside memo content.",
+    descriptionKey: "setting.memo-view.examples.content-search.description",
     icon: SearchIcon,
   },
   {
-    title: "Starts with",
+    titleKey: "setting.memo-view.examples.starts-with.title",
     filter: 'content.startsWith("TODO")',
-    description: "Memos whose content begins with text (also endsWith).",
+    descriptionKey: "setting.memo-view.examples.starts-with.description",
     icon: SearchIcon,
   },
   {
-    title: "Regex match",
+    titleKey: "setting.memo-view.examples.regex.title",
     filter: 'content.matches("v[0-9]+")',
-    description: "Match content with a regular expression.",
+    descriptionKey: "setting.memo-view.examples.regex.description",
     icon: FilterIcon,
   },
   {
-    title: "All tags complete",
+    titleKey: "setting.memo-view.examples.all-tags-complete.title",
     filter: 'tags.all(t, t.endsWith("-done"))',
-    description: "Every tag ends in -done (tagged memos only).",
+    descriptionKey: "setting.memo-view.examples.all-tags-complete.description",
     icon: TagsIcon,
   },
   {
-    title: "One project tag",
+    titleKey: "setting.memo-view.examples.one-project-tag.title",
     filter: 'tags.exists_one(t, t.startsWith("project/"))',
-    description: "Exactly one tag matches the predicate.",
+    descriptionKey: "setting.memo-view.examples.one-project-tag.description",
     icon: TagsIcon,
   },
   {
-    title: "Any of these tags",
+    titleKey: "setting.memo-view.examples.any-tags.title",
     filter: 'sets.intersects(tags, ["work", "urgent"])',
-    description: "Tags intersect the given set.",
+    descriptionKey: "setting.memo-view.examples.any-tags.description",
     icon: TagsIcon,
   },
   {
-    title: "Exactly these tags",
+    titleKey: "setting.memo-view.examples.exact-tags.title",
     filter: 'sets.equivalent(tags, ["inbox"])',
-    description: "Tagged with exactly this set, nothing more.",
+    descriptionKey: "setting.memo-view.examples.exact-tags.description",
     icon: TagsIcon,
   },
   {
-    title: "Memos from 2024",
+    titleKey: "setting.memo-view.examples.year-2024.title",
     filter: "created_ts.getFullYear() == 2024",
-    description: "Filter by calendar year.",
+    descriptionKey: "setting.memo-view.examples.year-2024.description",
     icon: Clock3Icon,
   },
   {
-    title: "Weekend notes",
+    titleKey: "setting.memo-view.examples.weekend.title",
     filter: "created_ts.getDayOfWeek() == 0 || created_ts.getDayOfWeek() == 6",
-    description: "Created on a Sunday or Saturday (0 = Sunday).",
+    descriptionKey: "setting.memo-view.examples.weekend.description",
     icon: Clock3Icon,
   },
   {
-    title: "Long notes",
+    titleKey: "setting.memo-view.examples.long.title",
     filter: "size(content) > 280",
-    description: "Memos longer than 280 characters.",
+    descriptionKey: "setting.memo-view.examples.long.description",
     icon: FilterIcon,
   },
 ];
@@ -238,11 +234,43 @@ interface MemoViewsRouteState {
   memoView?: MemoView;
 }
 
+// Code snippets in the filter help; the translated sentence places each one, drawn in monospace.
+const FILTER_HELP_CODE: Record<string, string> = {
+  and: "&&",
+  or: "||",
+  not: "!",
+  now: "now",
+  duration: 'duration("24h")',
+  timestamp: "timestamp(...)",
+  year: "created_ts.getFullYear()",
+  sets: "sets.contains/intersects/equivalent",
+  size: "size(content)",
+};
+
+const FilterHelp = () => {
+  const t = useTranslate();
+  const marker = "\u0000";
+  const text = t(
+    "setting.memo-view.filter-help",
+    Object.fromEntries(Object.keys(FILTER_HELP_CODE).map((name) => [name, `${marker}${name}${marker}`])),
+  );
+  return text.split(marker).map((part, index) =>
+    index % 2 === 1 ? (
+      <span key={part} className="font-mono">
+        {FILTER_HELP_CODE[part]}
+      </span>
+    ) : (
+      part
+    ),
+  );
+};
+
 const MemoViewGuide = ({ onUseExample }: MemoViewGuideProps) => {
+  const t = useTranslate();
   return (
     <aside className="flex flex-col gap-5">
-      <div className="rounded-lg border border-border p-4">
-        <h2 className="text-sm font-semibold text-foreground">Expression examples</h2>
+      <div className="rounded-mu-lg border border-mu-line p-4">
+        <h2 className="mu-label text-mu-ink">{t("setting.memo-view.examples-title")}</h2>
         <div className="mt-3 flex flex-col gap-2">
           {memoViewExamples.map((example) => {
             const Icon = example.icon;
@@ -250,26 +278,26 @@ const MemoViewGuide = ({ onUseExample }: MemoViewGuideProps) => {
               <button
                 type="button"
                 key={example.filter}
-                className="group w-full cursor-pointer rounded-md border border-transparent p-2 text-left transition-colors hover:border-border hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+                className="group w-full cursor-pointer rounded-mu-md border border-transparent p-2 text-left transition-colors hover:border-mu-line hover:bg-mu-hover mu-focus"
                 onClick={() => onUseExample(example)}
               >
-                <span className="flex items-center gap-2 text-sm font-medium text-foreground">
-                  <Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
-                  {example.title}
+                <span className="flex items-center gap-2 mu-label text-mu-ink">
+                  <Icon className="mu-icon text-mu-ink-muted group-hover:text-mu-primary" />
+                  {t(example.titleKey)}
                 </span>
-                <span className="mt-1 block font-mono text-xs leading-5 text-muted-foreground">{example.filter}</span>
-                <span className="mt-1 block text-xs leading-5 text-muted-foreground">{example.description}</span>
+                <span className="mt-1 block font-mono mu-caption text-mu-ink-muted">{example.filter}</span>
+                <span className="mt-1 block mu-caption text-mu-ink-muted">{t(example.descriptionKey)}</span>
               </button>
             );
           })}
         </div>
       </div>
 
-      <div className="rounded-lg border border-border p-4">
-        <h2 className="text-sm font-semibold text-foreground">Supported fields</h2>
+      <div className="rounded-mu-lg border border-mu-line p-4">
+        <h2 className="mu-label text-mu-ink">{t("setting.memo-view.fields-title")}</h2>
         <div className="mt-3 flex flex-wrap gap-2">
           {filterFields.map((field) => (
-            <Badge key={field} variant="secondary" className="font-mono">
+            <Badge key={field} className="font-mono">
               {field}
             </Badge>
           ))}
@@ -326,7 +354,7 @@ const MemoViews = () => {
     setDraft(
       create(MemoViewSchema, {
         name: draft.name,
-        title: draft.title || example.title,
+        title: draft.title || t(example.titleKey),
         filter: example.filter,
         icon: draft.icon,
       }),
@@ -358,11 +386,11 @@ const MemoViews = () => {
 
   const validateDraft = async () => {
     if (!draft.title || !draft.filter) {
-      toast.error("Title and filter cannot be empty");
+      showErrorToast(t("setting.memo-view.title-filter-required"));
       return false;
     }
     if (!user?.name) {
-      toast.error("No current user");
+      showErrorToast(t("message.not-signed-in"));
       return false;
     }
 
@@ -374,10 +402,10 @@ const MemoViews = () => {
         validateOnly: true,
       });
       validateState.setFinish();
-      toast.success("Filter expression looks valid");
+      toast.add({ title: t("setting.memo-view.filter-valid"), type: "success" });
       return true;
     } catch (error: unknown) {
-      await handleError(error, toast.error, {
+      await handleError(error, showErrorToast, {
         context: "Validate memo view filter",
         onError: () => validateState.setError(),
       });
@@ -387,11 +415,11 @@ const MemoViews = () => {
 
   const handleCreateMemoView = async () => {
     if (!draft.title || !draft.filter) {
-      toast.error("Title and filter cannot be empty");
+      showErrorToast(t("setting.memo-view.title-filter-required"));
       return;
     }
     if (!user?.name) {
-      toast.error("No current user");
+      showErrorToast(t("message.not-signed-in"));
       return;
     }
 
@@ -405,9 +433,9 @@ const MemoViews = () => {
       createState.setFinish();
       setDraft(createEmptyMemoView());
       setIsCreateFormOpen(false);
-      toast.success("View created successfully");
+      toast.add({ title: t("setting.memo-view.create-success"), type: "success" });
     } catch (error: unknown) {
-      await handleError(error, toast.error, {
+      await handleError(error, showErrorToast, {
         context: "Create memo view",
         onError: () => createState.setError(),
       });
@@ -416,7 +444,7 @@ const MemoViews = () => {
 
   const handleUpdateMemoView = async () => {
     if (!draft.title || !draft.filter) {
-      toast.error("Title and filter cannot be empty");
+      showErrorToast(t("setting.memo-view.title-filter-required"));
       return;
     }
 
@@ -430,9 +458,9 @@ const MemoViews = () => {
       updateState.setFinish();
       setDraft(createEmptyMemoView());
       setIsCreateFormOpen(false);
-      toast.success("View updated successfully");
+      toast.add({ title: t("setting.memo-view.update-success"), type: "success" });
     } catch (error: unknown) {
-      await handleError(error, toast.error, {
+      await handleError(error, showErrorToast, {
         context: "Update memo view",
         onError: () => updateState.setError(),
       });
@@ -455,9 +483,9 @@ const MemoViews = () => {
       await userServiceClient.deleteMemoView({ name: deleteTarget.name });
       await queryClient.invalidateQueries({ queryKey: userKeys.memoViews(user?.name) });
       if (selectedMemoView === getMemoViewId(deleteTarget.name)) setMemoView(undefined);
-      toast.success(t("setting.memo-view.delete-success", { title: deleteTarget.title }));
+      toast.add({ title: t("setting.memo-view.delete-success", { title: deleteTarget.title }), type: "success" });
     } catch (error: unknown) {
-      await handleError(error, toast.error, {
+      await handleError(error, showErrorToast, {
         context: "Delete memo view",
       });
     } finally {
@@ -467,20 +495,20 @@ const MemoViews = () => {
 
   return (
     <section className="mx-auto flex w-full max-w-6xl flex-col gap-6 pb-10">
-      <div className="flex flex-col gap-2 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between">
+      <div className="flex flex-col gap-2 border-b border-mu-line pb-5 sm:flex-row sm:items-end sm:justify-between">
         <div className="space-y-1">
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <FilterIcon className="h-4 w-4" />
-            <span className="text-sm font-medium">{t("common.views")}</span>
+          <div className="flex items-center gap-2 text-mu-ink-muted">
+            <FilterIcon className="mu-icon" />
+            <span className="mu-label">{t("common.views")}</span>
           </div>
-          <h1 className="text-2xl font-semibold tracking-normal text-foreground">Views</h1>
-          <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-            Create reusable views with fields, operators, time helpers, and tag matching. Use examples as starting points, then validate
-            before saving.
-          </p>
+          <h1 className="mu-heading tracking-normal text-mu-ink">{t("common.views")}</h1>
+          <p className="max-w-2xl mu-body text-mu-ink-muted">{t("setting.memo-view.page-description")}</p>
         </div>
-        <Button onClick={isCreateFormOpen ? handleCloseForm : handleOpenCreateForm}>
-          {isCreateFormOpen ? <XIcon className="h-4 w-4" /> : <PlusIcon className="h-4 w-4" />}
+        <Button
+          variant="neutral"
+          onClick={isCreateFormOpen ? handleCloseForm : handleOpenCreateForm}
+          icon={isCreateFormOpen ? <XIcon /> : <PlusIcon />}
+        >
           {isCreateFormOpen ? t("common.cancel") : t("common.create")}
         </Button>
       </div>
@@ -490,30 +518,32 @@ const MemoViews = () => {
           <div
             inert={!isCreateFormOpen}
             className={cn(
-              "overflow-hidden rounded-lg border border-border bg-background transition-[max-height,opacity] duration-200",
+              "overflow-hidden rounded-mu-lg border border-mu-line bg-mu-canvas transition-[max-height,opacity] duration-200",
               isCreateFormOpen ? "max-h-[48rem] opacity-100" : "max-h-0 border-transparent opacity-0",
             )}
           >
             <div className="grid gap-5 p-4 sm:p-5">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <h2 className="text-base font-semibold text-foreground">{isEditing ? "Edit view" : "Create view"}</h2>
-                  <p className="mt-1 text-sm text-muted-foreground">Name the view and define the memo filter expression it should apply.</p>
+                  <h2 className="mu-label text-mu-ink">{isEditing ? t("setting.memo-view.edit") : t("setting.memo-view.create")}</h2>
+                  <p className="mt-1 mu-body text-mu-ink-muted">{t("setting.memo-view.form-description")}</p>
                 </div>
                 <a
-                  className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+                  className="inline-flex items-center gap-1 mu-label text-mu-accent hover:underline"
                   href="https://www.usememos.com/docs"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Docs
-                  <ExternalLinkIcon className="h-3.5 w-3.5" />
+                  {t("common.docs")}
+                  <ExternalLinkIcon className="mu-icon-sm" />
                 </a>
               </div>
 
               <div className="grid gap-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="view-title">{t("common.title")}</Label>
+                <div className="flex flex-col gap-1">
+                  <label htmlFor="view-title" className="mu-label">
+                    {t("common.title")}
+                  </label>
                   <div className="flex items-center gap-2">
                     <CustomIconPicker
                       value={draft.icon}
@@ -525,39 +555,37 @@ const MemoViews = () => {
                     <Input
                       id="view-title"
                       value={draft.title}
-                      placeholder="Pinned, Recent notes, Work"
+                      placeholder={t("setting.memo-view.title-placeholder")}
                       onChange={(event) => setDraftState({ title: event.target.value })}
                     />
                   </div>
                 </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="view-filter">{t("common.filter")}</Label>
+                <Field.Root>
+                  <Field.Label>{t("common.filter")}</Field.Label>
                   <Textarea
                     id="view-filter"
                     rows={5}
-                    className="font-mono text-sm"
+                    className="font-mono"
                     value={draft.filter}
                     placeholder='pinned && tag in ["work"]'
                     onChange={(event) => setDraftState({ filter: event.target.value })}
                   />
-                  <p className="text-xs leading-5 text-muted-foreground">
-                    Combine expressions with <span className="font-mono">&&</span>, <span className="font-mono">||</span>, and{" "}
-                    <span className="font-mono">!</span>. Time fields are timestamps — use <span className="font-mono">now</span>,{" "}
-                    <span className="font-mono">duration("24h")</span>, <span className="font-mono">timestamp(...)</span>, and accessors
-                    like <span className="font-mono">created_ts.getFullYear()</span>. Tags support{" "}
-                    <span className="font-mono">sets.contains/intersects/equivalent</span> and{" "}
-                    <span className="font-mono">size(content)</span> measures length.
-                  </p>
-                </div>
+                  <Field.Description>
+                    <FilterHelp />
+                  </Field.Description>
+                </Field.Root>
               </div>
 
               <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-                <Button variant="outline" disabled={validateState.isLoading || isSaving} onClick={validateDraft}>
-                  <CheckCircle2Icon className="h-4 w-4" />
-                  Validate
+                <Button
+                  variant="neutral"
+                  disabled={validateState.isLoading || isSaving}
+                  onClick={validateDraft}
+                  icon={<CheckCircle2Icon />}
+                >
+                  {t("setting.memo-view.validate")}
                 </Button>
-                <Button disabled={isSaving || validateState.isLoading} onClick={handleSaveMemoView}>
-                  <SaveIcon className="h-4 w-4" />
+                <Button variant="primary" disabled={isSaving || validateState.isLoading} onClick={handleSaveMemoView} icon={<SaveIcon />}>
                   {t("common.save")}
                 </Button>
               </div>
@@ -567,60 +595,71 @@ const MemoViews = () => {
           {!(memoViews.length === 0 && isCreateFormOpen) && (
             <div className="flex flex-col gap-3">
               <div className="flex items-center justify-between">
-                <h2 className="text-base font-semibold text-foreground">All views</h2>
-                {!isPending && !isError && <Badge variant="outline">{memoViews.length}</Badge>}
+                <h2 className="mu-label text-mu-ink">{t("setting.memo-view.all")}</h2>
+                {!isPending && !isError && <Badge tone="outline">{memoViews.length}</Badge>}
               </div>
 
               {isPending ? (
-                <p className="py-10 text-center text-sm text-muted-foreground">Loading views…</p>
+                <p className="py-10 text-center mu-body text-mu-ink-muted">{t("setting.memo-view.loading")}</p>
               ) : isError ? (
                 <div className="py-10 text-center">
-                  <p className="text-sm text-muted-foreground">Couldn’t load views.</p>
-                  <Button variant="outline" className="mt-4" onClick={() => void refetch()}>
-                    Retry
+                  <p className="mu-body text-mu-ink-muted">{t("setting.memo-view.load-failed")}</p>
+                  <Button variant="neutral" className="mt-4" onClick={() => void refetch()}>
+                    {t("common.retry")}
                   </Button>
                 </div>
               ) : memoViews.length === 0 ? (
-                <div className="rounded-lg border border-dashed border-border px-4 py-10 text-center">
-                  <p className="text-sm font-medium text-foreground">No views yet</p>
-                  <p className="mt-1 text-sm text-muted-foreground">Save a filter to quickly return to the memos you need.</p>
-                  <Button variant="outline" className="mt-4" onClick={handleOpenCreateForm}>
-                    <PlusIcon className="size-4" />
+                <div className="rounded-mu-lg border border-dashed border-mu-line px-4 py-10 text-center">
+                  <p className="mu-label text-mu-ink">{t("setting.memo-view.empty-title")}</p>
+                  <p className="mt-1 mu-body text-mu-ink-muted">{t("setting.memo-view.empty-description")}</p>
+                  <Button variant="neutral" className="mt-4" onClick={handleOpenCreateForm} icon={<PlusIcon />}>
                     {t("setting.memo-view.create")}
                   </Button>
                 </div>
               ) : (
-                <div className="divide-y divide-border overflow-hidden rounded-lg border border-border">
+                <div className="divide-y divide-mu-line overflow-hidden rounded-mu-lg border border-mu-line">
                   {memoViews.map((memoView) => (
                     <div
                       key={memoView.name}
-                      className="grid gap-3 bg-background px-4 py-3 sm:grid-cols-[minmax(10rem,14rem)_minmax(0,1fr)_2rem]"
+                      className="grid gap-3 bg-mu-canvas px-4 py-3 sm:grid-cols-[minmax(10rem,14rem)_minmax(0,1fr)_2rem]"
                     >
                       <div className="min-w-0">
-                        <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-                          <MemoViewIcon icon={memoView.icon} className="size-4 text-base" />
+                        <div className="flex items-center gap-2 mu-label text-mu-ink">
+                          <MemoViewIcon icon={memoView.icon} className="text-base" />
                           <span className="truncate">{memoView.title}</span>
                         </div>
-                        <div className="mt-1 font-mono text-xs text-muted-foreground">{getMemoViewId(memoView.name)}</div>
+                        <div className="mt-1 font-mono mu-caption text-mu-ink-muted">{getMemoViewId(memoView.name)}</div>
                       </div>
-                      <pre className="min-w-0 overflow-x-auto rounded-md bg-muted/50 px-3 py-2 font-mono text-xs leading-5 text-muted-foreground">
+                      <pre className="min-w-0 overflow-x-auto rounded-mu-md bg-mu-well/50 px-3 py-2 font-mono mu-caption text-mu-ink-muted">
                         {memoView.filter}
                       </pre>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="justify-self-end" />}>
-                          <MoreVerticalIcon className="h-4 w-4" />
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => handleEditMemoView(memoView)}>
-                            <PencilIcon className="h-4 w-4" />
+                      <Menu.Root modal={false}>
+                        <Tooltip.Root>
+                          <Tooltip.Trigger
+                            render={
+                              <Menu.Trigger
+                                render={
+                                  <Button
+                                    variant="ghost"
+                                    className="justify-self-end"
+                                    aria-label={`${t("common.more")}: ${memoView.title}`}
+                                    icon={<MoreVerticalIcon />}
+                                  />
+                                }
+                              />
+                            }
+                          />
+                          <Tooltip.Popup>{t("common.more")}</Tooltip.Popup>
+                        </Tooltip.Root>
+                        <Menu.Popup align="end">
+                          <Menu.Item onClick={() => handleEditMemoView(memoView)} icon={<PencilIcon />}>
                             {t("common.edit")}
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => setDeleteTarget(memoView)}>
-                            <Trash2Icon className="h-4 w-4" />
+                          </Menu.Item>
+                          <Menu.Item onClick={() => setDeleteTarget(memoView)} icon={<Trash2Icon />}>
                             {t("common.delete")}
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                          </Menu.Item>
+                        </Menu.Popup>
+                      </Menu.Root>
                     </div>
                   ))}
                 </div>
@@ -639,7 +678,7 @@ const MemoViews = () => {
         confirmLabel={t("common.delete")}
         cancelLabel={t("common.cancel")}
         onConfirm={confirmDeleteMemoView}
-        confirmVariant="destructive"
+        confirmVariant="danger"
       />
     </section>
   );

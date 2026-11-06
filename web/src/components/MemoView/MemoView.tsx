@@ -186,10 +186,11 @@ const MemoView = forwardRef<MemoViewHandle, MemoViewProps>((props, ref) => {
       ref={cardRef}
       tabIndex={readonly ? -1 : 0}
     >
-      {showPinned && memoData.pinned && <MemoPinnedMark />}
+      {/* The editing session's Markdown tag takes the pinned mark's corner. */}
+      {showPinned && memoData.pinned && !isEditing && <MemoPinnedMark />}
       <MemoHeader timeDisplay={timeDisplay} showCreator={showCreator} showVisibility={showVisibility} showSpace={showSpace} />
 
-      <MemoBody compact={compact} />
+      <MemoBody compact={compact} showCreator={showCreator} />
 
       {previewState.items.length > 0 && (
         <Suspense fallback={null}>

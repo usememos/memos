@@ -1,7 +1,7 @@
 import { uniqBy } from "lodash-es";
 import { type RefObject, useCallback, useEffect, useRef, useState } from "react";
-import { toast } from "react-hot-toast";
 import { v4 as uuidv4 } from "uuid";
+import { showErrorToast } from "@/lib/toast";
 import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import { isImage } from "@/utils/attachment";
 import { useTranslate } from "@/utils/i18n";
@@ -187,7 +187,7 @@ export const useInlineImageUpload = (editorRef: RefObject<EditorController | nul
 
       if (job.entries.some((entry) => !entry.attachment)) {
         editorRef.current?.updateUploadAnchor(descriptorFor(job, "failed"));
-        toast.error(errorService.getErrorMessage(lastError) || t("editor.insert-menu.image-upload-failed"));
+        showErrorToast(errorService.getErrorMessage(lastError) || t("editor.insert-menu.image-upload-failed"));
         return;
       }
 

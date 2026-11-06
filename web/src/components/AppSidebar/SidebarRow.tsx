@@ -1,8 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
-import { FOCUS_VISIBLE_OUTLINE_CLASSES } from "@/components/ui/focus";
 import { cn } from "@/lib/utils";
-import { SIDEBAR_LEADING_SLOT_CLASSES, sidebarSurfaceVariants } from "./sidebar-layout";
+import { SCOPE_PANEL_ICON_CLASSES, SIDEBAR_LEADING_SLOT_CLASSES, sidebarSurfaceVariants } from "./sidebar-layout";
 
 /**
  * The rail's row rhythm — height, type scale, radius, padding, gap. Every list in the
@@ -13,20 +12,19 @@ import { SIDEBAR_LEADING_SLOT_CLASSES, sidebarSurfaceVariants } from "./sidebar-
  */
 export const SIDEBAR_ROW_BOX_CLASSES = `${sidebarSurfaceVariants({ role: "row" })} group transition-colors`;
 
-/** Goes on whichever element in a row actually takes focus. */
-export const SIDEBAR_ROW_FOCUS_CLASSES = FOCUS_VISIBLE_OUTLINE_CLASSES;
+export const SIDEBAR_ROW_CLASSES = `${SIDEBAR_ROW_BOX_CLASSES} mu-focus`;
 
-export const SIDEBAR_ROW_CLASSES = `${SIDEBAR_ROW_BOX_CLASSES} ${SIDEBAR_ROW_FOCUS_CLASSES}`;
-
-export const SIDEBAR_ROW_ICON_CLASSES = "me-auto size-4 shrink-0 opacity-75 group-data-checked:text-primary group-data-checked:opacity-100";
-const SIDEBAR_ROW_COUNT_CLASSES = "text-2xs tabular-nums text-muted-foreground/60 group-data-checked:text-primary";
+export const SIDEBAR_ROW_ICON_CLASSES =
+  // The md row's 16px icon at the md stroke, beside its 14px label, in the row's own muted ink.
+  "mu-icon me-auto shrink-0 group-data-checked:text-mu-primary";
+const SIDEBAR_ROW_COUNT_CLASSES = "mu-caption tabular-nums text-mu-ink-muted group-data-checked:text-mu-primary";
 
 /**
  * The focusable body of a split row — rows whose box is a wrapper carrying other controls
  * put their label layout and focus ring here. The gap must stay equal to the box's own
  * `gap-1` or slot alignment breaks between one-control and split rows.
  */
-export const SIDEBAR_ROW_LABEL_CLASSES = `flex h-full min-w-0 flex-1 items-center gap-1 text-start ${SIDEBAR_ROW_FOCUS_CLASSES}`;
+export const SIDEBAR_ROW_LABEL_CLASSES = `flex h-full min-w-0 flex-1 items-center gap-1 text-start mu-focus`;
 
 /**
  * Fixed leading slot: a 20px column begins on the artwork rail. Small glyphs pin to its
@@ -36,7 +34,7 @@ export const SIDEBAR_ROW_LABEL_CLASSES = `flex h-full min-w-0 flex-1 items-cente
 export const SIDEBAR_ROW_SLOT_CLASSES = SIDEBAR_LEADING_SLOT_CLASSES;
 
 /** A slot that is itself a control (disclosure, row menu): same box plus the hover chip. */
-export const SIDEBAR_ROW_SLOT_BUTTON_CLASSES = `${SIDEBAR_ROW_SLOT_CLASSES} relative rounded hover:bg-sidebar-accent after:absolute after:-inset-0.5 after:content-[''] ${SIDEBAR_ROW_FOCUS_CLASSES}`;
+export const SIDEBAR_ROW_SLOT_BUTTON_CLASSES = `${SIDEBAR_ROW_SLOT_CLASSES} relative rounded hover:bg-mu-hover after:absolute after:-inset-0.5 after:content-[''] mu-focus`;
 
 /** Trailing rail for counts, wide enough that digits align down the list. */
 export const SIDEBAR_ROW_COUNT_RAIL_CLASSES = `${SIDEBAR_ROW_COUNT_CLASSES} min-w-[3ch] shrink-0 text-end`;
@@ -44,7 +42,17 @@ export const SIDEBAR_ROW_COUNT_RAIL_CLASSES = `${SIDEBAR_ROW_COUNT_CLASSES} min-
 /** The standard icon-in-slot pairing, so every list renders its glyphs identically. */
 export const SidebarRowIconSlot = ({ icon: Icon }: { icon: LucideIcon }) => (
   <span className={SIDEBAR_ROW_SLOT_CLASSES} aria-hidden="true">
-    <Icon className={SIDEBAR_ROW_ICON_CLASSES} strokeWidth={1.8} />
+    <Icon className={SIDEBAR_ROW_ICON_CLASSES} />
+  </span>
+);
+
+/**
+ * The scope panel's leading icon (see sidebar-layout): links, actions and submenu triggers in
+ * the panel share the 20px leading slot with the sidebar rows above them.
+ */
+export const ScopePanelRowIcon = ({ icon: Icon, className }: { icon: LucideIcon; className?: string }) => (
+  <span className={SIDEBAR_LEADING_SLOT_CLASSES} aria-hidden="true">
+    <Icon className={cn(SCOPE_PANEL_ICON_CLASSES, className)} />
   </span>
 );
 
@@ -56,15 +64,16 @@ export const SidebarRowIconSlot = ({ icon: Icon }: { icon: LucideIcon }) => (
  */
 export type SidebarRowState = "idle" | "current" | "checked";
 
-const SIDEBAR_ROW_HOVER_CLASSES = "hover:bg-sidebar-accent/65 hover:text-foreground";
+const SIDEBAR_ROW_HOVER_CLASSES = "hover:bg-mu-hover/65 hover:text-mu-ink";
 
 export const sidebarRowStateClasses = (state: SidebarRowState = "idle") => {
-  if (state === "current") return "bg-sidebar-accent font-medium text-sidebar-accent-foreground";
+  // Selection never changes weight (the type rules), so labels do not shift: fill and color carry it.
+  if (state === "current") return "bg-mu-hover text-mu-ink";
   if (state === "checked") {
     // The mark hangs in the rail's 12px inset so the label stays on its rail.
-    return `relative font-medium text-foreground ${SIDEBAR_ROW_HOVER_CLASSES} before:absolute before:inset-y-1.5 before:-start-3 before:w-0.5 before:rounded-e-full before:bg-primary before:content-['']`;
+    return `relative text-mu-ink ${SIDEBAR_ROW_HOVER_CLASSES} before:absolute before:inset-y-1.5 before:-start-3 before:w-0.5 before:rounded-e-full before:bg-mu-primary before:content-['']`;
   }
-  return `text-muted-foreground ${SIDEBAR_ROW_HOVER_CLASSES}`;
+  return `text-mu-ink-muted ${SIDEBAR_ROW_HOVER_CLASSES}`;
 };
 
 /** Goes on the row box so the icon slot and count rail inside it can take the checked colour. */

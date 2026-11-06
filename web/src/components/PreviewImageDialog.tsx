@@ -1,10 +1,8 @@
+import { Button, Dialog } from "@usememos/ui";
 import { ChevronLeft, ChevronRight, InfoIcon, RotateCcw, X, ZoomIn, ZoomOut } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import MediaMetadataDetails from "@/components/MediaMetadataDetails";
 import MotionPhotoPreview from "@/components/MotionPhotoPreview";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
-import { VisuallyHidden } from "@/components/ui/visually-hidden";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
@@ -314,7 +312,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
   }
 
   return (
-    <Dialog
+    <Dialog.Root
       open={open}
       onOpenChange={(nextOpen, eventDetails) => {
         if (!nextOpen && showDetails && eventDetails.reason === "escape-key") {
@@ -325,222 +323,191 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
         onOpenChange(nextOpen);
       }}
     >
-      <DialogContent
-        showCloseButton={false}
-        className="!h-dvh !w-[100vw] !max-h-dvh !max-w-[100vw] overflow-hidden rounded-none border-0 bg-black/92 p-0 shadow-none"
-        onKeyDown={handleKeyDown}
-      >
-        <VisuallyHidden>
-          <DialogTitle>{currentItem.filename || "Attachment preview"}</DialogTitle>
-          <DialogDescription>
-            Attachment preview dialog. Press Escape to close, use left or right arrow keys to switch items, and zoom images with the
-            controls, mouse wheel, double tap, or a pinch gesture.
-          </DialogDescription>
-        </VisuallyHidden>
+      <Dialog.Popup variant="bare" fullScreen onKeyDown={handleKeyDown}>
+        <div className="absolute inset-0 bg-black/92">
+          <div className="mu-visually-hidden">
+            <Dialog.Title>{currentItem.filename || t("attachment-preview.title")}</Dialog.Title>
+            <Dialog.Description>{t("attachment-preview.description")}</Dialog.Description>
+          </div>
 
-        <div
-          className={cn(
-            "absolute inset-x-0 top-0 z-50 bg-linear-to-b from-black/70 via-black/35 to-transparent px-3 pb-6 pt-3 sm:px-5 sm:pt-4",
-            showDetails && "lg:pr-[23rem]",
+          <div
+            className={cn(
+              "absolute inset-x-0 top-0 z-50 bg-linear-to-b from-black/70 via-black/35 to-transparent px-3 pb-6 pt-3 sm:px-5 sm:pt-4",
+              showDetails && "lg:pr-[23rem]",
+            )}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0 text-mu-ink" data-theme="dark">
+                <div className="truncate mu-label">{currentItem.filename || t("attachment-preview.title")}</div>
+                {hasMultiple && (
+                  <div className="mt-1 mu-caption text-mu-ink-muted">
+                    {safeIndex + 1} / {itemCount}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex shrink-0 items-center gap-1.5" data-theme="dark">
+                <Button
+                  onClick={() => setShowDetails((visible) => !visible)}
+                  aria-label={showDetails ? t("attachment-details.actions.hide") : t("attachment-details.actions.show")}
+                  aria-expanded={showDetails}
+                  aria-controls="attachment-media-details"
+                  icon={<InfoIcon />}
+                />
+                <Button onClick={handleClose} aria-label={t("attachment-preview.close")} icon={<X />} />
+              </div>
+            </div>
+          </div>
+
+          <div
+            ref={surfaceRef}
+            data-testid={isImagePreview ? "preview-zoom-surface" : undefined}
+            className={cn(
+              "flex h-full w-full items-center justify-center px-3 pb-20 pt-16 sm:px-16 sm:pb-8 sm:pt-20",
+              isImagePreview && !isZoomed && "cursor-zoom-in",
+              showDetails && "lg:pr-[26rem]",
+            )}
+            onWheel={handleWheel}
+            onClick={(event) => {
+              if (event.target === event.currentTarget && !isZoomed) {
+                if (showDetails) {
+                  setShowDetails(false);
+                } else {
+                  handleClose();
+                }
+              }
+            }}
+          >
+            <div className="flex max-h-full max-w-full items-center justify-center" onClick={(event) => event.stopPropagation()}>
+              {currentItem.kind === "video" ? (
+                <video
+                  key={currentItem.id}
+                  src={currentItem.sourceUrl}
+                  poster={currentItem.posterUrl}
+                  className={cn(
+                    "max-h-[calc(100dvh-8rem)] max-w-[calc(100vw-1.5rem)] rounded-mu-md object-contain sm:max-h-[calc(100dvh-7rem)] sm:max-w-[calc(100vw-8rem)]",
+                    showDetails && "lg:max-w-[calc(100vw-30rem)]",
+                  )}
+                  controls
+                  autoPlay
+                  playsInline
+                />
+              ) : currentItem.kind === "motion" ? (
+                <MotionPhotoPreview
+                  key={currentItem.id}
+                  posterUrl={currentItem.posterUrl}
+                  motionUrl={currentItem.motionUrl}
+                  alt={t("attachment-preview.live-photo-alt", { index: safeIndex + 1, count: itemCount })}
+                  presentationTimestampUs={currentItem.presentationTimestampUs}
+                  badgeClassName="left-3 top-3 sm:left-4 sm:top-4"
+                  mediaClassName={cn(
+                    "max-h-[calc(100dvh-8rem)] max-w-[calc(100vw-1.5rem)] rounded-mu-md object-contain sm:max-h-[calc(100dvh-7rem)] sm:max-w-[calc(100vw-8rem)]",
+                    showDetails && "lg:max-w-[calc(100vw-30rem)]",
+                  )}
+                />
+              ) : (
+                <img
+                  ref={imageRef}
+                  src={currentItem.sourceUrl}
+                  alt={t("attachment-preview.image-alt", { index: safeIndex + 1, count: itemCount })}
+                  className={cn(
+                    "max-h-[calc(100dvh-8rem)] max-w-[calc(100vw-1.5rem)] rounded-mu-md object-contain select-none sm:max-h-[calc(100dvh-7rem)] sm:max-w-[calc(100vw-8rem)]",
+                    showDetails && "lg:max-w-[calc(100vw-30rem)]",
+                    (isZoomed || hasMultiple) && (isInteracting ? "cursor-grabbing" : "cursor-grab"),
+                  )}
+                  style={{
+                    transform: `translate3d(${panOffset.x + swipeOffset}px, ${panOffset.y}px, 0) scale(${zoomScale})`,
+                    transition: isInteracting ? "none" : "transform 120ms ease-out",
+                    transformOrigin: "center center",
+                    touchAction: "none",
+                  }}
+                  onDoubleClick={handleDoubleClick}
+                  onPointerDown={handlePointerDown}
+                  onPointerMove={handlePointerMove}
+                  onPointerUp={handlePointerEnd}
+                  onPointerCancel={(event) => handlePointerEnd(event, true)}
+                  draggable={false}
+                  loading="eager"
+                  decoding="async"
+                />
+              )}
+            </div>
+          </div>
+
+          {isImagePreview && (
+            <div className={cn("absolute inset-x-0 bottom-0 z-30 px-3 pb-3 pt-6", showDetails && "hidden lg:block lg:pr-[22rem]")}>
+              {/* The bar keeps its glass so the counter and zoom readout stay legible over the photo. */}
+              <div
+                data-theme="dark"
+                className="mx-auto flex w-fit items-center gap-1 rounded-full bg-black/60 px-2 py-2 shadow-mu-pop backdrop-blur-sm"
+              >
+                {hasMultiple && !sm && (
+                  <>
+                    <Button
+                      aria-label={t("attachment-preview.previous")}
+                      onClick={handlePrevious}
+                      disabled={!canGoPrevious}
+                      icon={<ChevronLeft />}
+                    />
+                    <div className="min-w-9 px-1 text-center mu-label-sm tabular-nums text-mu-ink-muted">
+                      {safeIndex + 1}/{itemCount}
+                    </div>
+                    <Button aria-label={t("attachment-preview.next")} onClick={handleNext} disabled={!canGoNext} icon={<ChevronRight />} />
+                    <div className="mx-1 h-5 w-px bg-mu-line" />
+                  </>
+                )}
+                <Button aria-label={t("map.zoom-out")} onClick={handleZoomOut} disabled={zoomScale === MIN_ZOOM} icon={<ZoomOut />} />
+                <div className="min-w-12 px-2 text-center mu-label-sm tabular-nums text-mu-ink-muted">{zoomPercent}%</div>
+                <Button aria-label={t("map.zoom-in")} onClick={handleZoomIn} disabled={zoomScale === MAX_ZOOM} icon={<ZoomIn />} />
+                <div className="mx-1 h-5 w-px bg-mu-line" />
+                <Button aria-label={t("attachment-preview.reset-zoom")} onClick={resetZoom} disabled={!isZoomed} icon={<RotateCcw />} />
+              </div>
+            </div>
           )}
-        >
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0 text-white">
-              <div className="truncate text-sm font-medium">{currentItem.filename || "Attachment"}</div>
-              {hasMultiple && (
-                <div className="mt-1 text-xs text-white/70">
+
+          {hasMultiple && sm && (
+            <>
+              <NavButton
+                side="left"
+                disabled={!canGoPrevious}
+                label={t("attachment-preview.previous")}
+                onClick={handlePrevious}
+                icon={<ChevronLeft />}
+              />
+              <NavButton
+                side="right"
+                disabled={!canGoNext}
+                label={t("attachment-preview.next")}
+                onClick={handleNext}
+                icon={<ChevronRight />}
+                detailsOpen={showDetails}
+              />
+            </>
+          )}
+
+          {hasMultiple && !sm && !isImagePreview && !showDetails && (
+            <div className="absolute inset-x-0 bottom-0 z-20 px-3 pb-3 pt-6">
+              <div
+                data-theme="dark"
+                className="mx-auto flex max-w-xs items-center justify-between rounded-full bg-black/55 px-2 py-2 backdrop-blur-sm"
+              >
+                <Button size="sm" onClick={handlePrevious} disabled={!canGoPrevious}>
+                  {t("common.previous")}
+                </Button>
+                <div className="px-3 mu-caption text-mu-ink-muted">
                   {safeIndex + 1} / {itemCount}
                 </div>
-              )}
-            </div>
-
-            <div className="flex shrink-0 items-center gap-1.5">
-              <Button
-                type="button"
-                onClick={() => setShowDetails((visible) => !visible)}
-                variant="ghost"
-                size="icon"
-                className={cn("rounded-full text-white hover:bg-white/16 hover:text-white", showDetails ? "bg-white/18" : "bg-white/10")}
-                aria-label={showDetails ? t("attachment-details.actions.hide") : t("attachment-details.actions.show")}
-                aria-expanded={showDetails}
-                aria-controls="attachment-media-details"
-              >
-                <InfoIcon className="h-4 w-4" />
-              </Button>
-              <Button
-                type="button"
-                onClick={handleClose}
-                variant="ghost"
-                size="icon"
-                className="rounded-full bg-white/10 text-white hover:bg-white/16 hover:text-white"
-                aria-label="Close preview"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        <div
-          ref={surfaceRef}
-          data-testid={isImagePreview ? "preview-zoom-surface" : undefined}
-          className={cn(
-            "flex h-full w-full items-center justify-center px-3 pb-20 pt-16 sm:px-16 sm:pb-8 sm:pt-20",
-            isImagePreview && !isZoomed && "cursor-zoom-in",
-            showDetails && "lg:pr-[26rem]",
-          )}
-          onWheel={handleWheel}
-          onClick={(event) => {
-            if (event.target === event.currentTarget && !isZoomed) {
-              if (showDetails) {
-                setShowDetails(false);
-              } else {
-                handleClose();
-              }
-            }
-          }}
-        >
-          <div className="flex max-h-full max-w-full items-center justify-center" onClick={(event) => event.stopPropagation()}>
-            {currentItem.kind === "video" ? (
-              <video
-                key={currentItem.id}
-                src={currentItem.sourceUrl}
-                poster={currentItem.posterUrl}
-                className={cn(
-                  "max-h-[calc(100dvh-8rem)] max-w-[calc(100vw-1.5rem)] rounded-md object-contain sm:max-h-[calc(100dvh-7rem)] sm:max-w-[calc(100vw-8rem)]",
-                  showDetails && "lg:max-w-[calc(100vw-30rem)]",
-                )}
-                controls
-                autoPlay
-                playsInline
-              />
-            ) : currentItem.kind === "motion" ? (
-              <MotionPhotoPreview
-                key={currentItem.id}
-                posterUrl={currentItem.posterUrl}
-                motionUrl={currentItem.motionUrl}
-                alt={`Preview live photo ${safeIndex + 1} of ${itemCount}`}
-                presentationTimestampUs={currentItem.presentationTimestampUs}
-                badgeClassName="left-3 top-3 sm:left-4 sm:top-4"
-                mediaClassName={cn(
-                  "max-h-[calc(100dvh-8rem)] max-w-[calc(100vw-1.5rem)] rounded-md object-contain sm:max-h-[calc(100dvh-7rem)] sm:max-w-[calc(100vw-8rem)]",
-                  showDetails && "lg:max-w-[calc(100vw-30rem)]",
-                )}
-              />
-            ) : (
-              <img
-                ref={imageRef}
-                src={currentItem.sourceUrl}
-                alt={`Preview image ${safeIndex + 1} of ${itemCount}`}
-                className={cn(
-                  "max-h-[calc(100dvh-8rem)] max-w-[calc(100vw-1.5rem)] rounded-md object-contain select-none sm:max-h-[calc(100dvh-7rem)] sm:max-w-[calc(100vw-8rem)]",
-                  showDetails && "lg:max-w-[calc(100vw-30rem)]",
-                  (isZoomed || hasMultiple) && (isInteracting ? "cursor-grabbing" : "cursor-grab"),
-                )}
-                style={{
-                  transform: `translate3d(${panOffset.x + swipeOffset}px, ${panOffset.y}px, 0) scale(${zoomScale})`,
-                  transition: isInteracting ? "none" : "transform 120ms ease-out",
-                  transformOrigin: "center center",
-                  touchAction: "none",
-                }}
-                onDoubleClick={handleDoubleClick}
-                onPointerDown={handlePointerDown}
-                onPointerMove={handlePointerMove}
-                onPointerUp={handlePointerEnd}
-                onPointerCancel={(event) => handlePointerEnd(event, true)}
-                draggable={false}
-                loading="eager"
-                decoding="async"
-              />
-            )}
-          </div>
-        </div>
-
-        {isImagePreview && (
-          <div className={cn("absolute inset-x-0 bottom-0 z-30 px-3 pb-3 pt-6", showDetails && "hidden lg:block lg:pr-[22rem]")}>
-            <div className="mx-auto flex w-fit items-center gap-1 rounded-full bg-black/60 px-2 py-2 text-white shadow-lg backdrop-blur-sm">
-              {hasMultiple && !sm && (
-                <>
-                  <ZoomButton label="Previous item" onClick={handlePrevious} disabled={!canGoPrevious}>
-                    <ChevronLeft className="h-4 w-4" />
-                  </ZoomButton>
-                  <div className="min-w-9 px-1 text-center text-xs font-medium tabular-nums text-white/75">
-                    {safeIndex + 1}/{itemCount}
-                  </div>
-                  <ZoomButton label="Next item" onClick={handleNext} disabled={!canGoNext}>
-                    <ChevronRight className="h-4 w-4" />
-                  </ZoomButton>
-                  <div className="mx-1 h-5 w-px bg-white/18" />
-                </>
-              )}
-              <ZoomButton label="Zoom out" onClick={handleZoomOut} disabled={zoomScale === MIN_ZOOM}>
-                <ZoomOut className="h-4 w-4" />
-              </ZoomButton>
-              <div className="min-w-12 px-2 text-center text-xs font-medium tabular-nums text-white/80">{zoomPercent}%</div>
-              <ZoomButton label="Zoom in" onClick={handleZoomIn} disabled={zoomScale === MAX_ZOOM}>
-                <ZoomIn className="h-4 w-4" />
-              </ZoomButton>
-              <div className="mx-1 h-5 w-px bg-white/18" />
-              <ZoomButton label="Reset zoom" onClick={resetZoom} disabled={!isZoomed}>
-                <RotateCcw className="h-4 w-4" />
-              </ZoomButton>
-            </div>
-          </div>
-        )}
-
-        {hasMultiple && sm && (
-          <>
-            <NavButton
-              side="left"
-              disabled={!canGoPrevious}
-              label="Previous item"
-              onClick={handlePrevious}
-              icon={<ChevronLeft className="h-5 w-5" />}
-            />
-            <NavButton
-              side="right"
-              disabled={!canGoNext}
-              label="Next item"
-              onClick={handleNext}
-              icon={<ChevronRight className="h-5 w-5" />}
-              detailsOpen={showDetails}
-            />
-          </>
-        )}
-
-        {hasMultiple && !sm && !isImagePreview && !showDetails && (
-          <div className="absolute inset-x-0 bottom-0 z-20 px-3 pb-3 pt-6">
-            <div className="mx-auto flex max-w-xs items-center justify-between rounded-full bg-black/55 px-2 py-2 backdrop-blur-sm">
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={handlePrevious}
-                disabled={!canGoPrevious}
-                className="rounded-full px-3 text-white hover:bg-white/10 hover:text-white disabled:text-white/35"
-              >
-                Prev
-              </Button>
-              <div className="px-3 text-xs text-white/75">
-                {safeIndex + 1} / {itemCount}
+                <Button size="sm" onClick={handleNext} disabled={!canGoNext}>
+                  {t("common.next")}
+                </Button>
               </div>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={handleNext}
-                disabled={!canGoNext}
-                className="rounded-full px-3 text-white hover:bg-white/10 hover:text-white disabled:text-white/35"
-              >
-                Next
-              </Button>
             </div>
-          </div>
-        )}
+          )}
 
-        {showDetails && <MediaMetadataDetails id="attachment-media-details" item={currentItem} onClose={() => setShowDetails(false)} />}
-      </DialogContent>
-    </Dialog>
+          {showDetails && <MediaMetadataDetails id="attachment-media-details" item={currentItem} onClose={() => setShowDetails(false)} />}
+        </div>
+      </Dialog.Popup>
+    </Dialog.Root>
   );
 }
 
@@ -549,49 +516,21 @@ interface NavButtonProps {
   disabled: boolean;
   label: string;
   onClick: () => void;
-  icon: React.ReactNode;
+  icon: React.ReactElement;
   detailsOpen?: boolean;
 }
 
+/** Previous and next at the screen's sides; the wrapper places the key and makes it a dark key over the photo. */
 const NavButton = ({ side, disabled, label, onClick, icon, detailsOpen = false }: NavButtonProps) => (
-  <Button
-    type="button"
-    variant="ghost"
-    size="icon"
-    disabled={disabled}
-    onClick={onClick}
-    aria-label={label}
+  <div
+    data-theme="dark"
     className={cn(
-      "absolute top-1/2 z-20 hidden h-11 w-11 -translate-y-1/2 rounded-full bg-white/10 text-white backdrop-blur-sm hover:bg-white/16 hover:text-white disabled:opacity-25 sm:flex",
+      "absolute top-1/2 z-20 -translate-y-1/2",
       side === "left" ? "left-4" : detailsOpen ? "right-4 lg:right-[23rem]" : "right-4",
     )}
   >
-    {icon}
-  </Button>
-);
-
-const ZoomButton = ({
-  disabled,
-  label,
-  onClick,
-  children,
-}: {
-  disabled?: boolean;
-  label: string;
-  onClick: () => void;
-  children: React.ReactNode;
-}) => (
-  <Button
-    type="button"
-    variant="ghost"
-    size="icon"
-    disabled={disabled}
-    onClick={onClick}
-    aria-label={label}
-    className="h-9 w-9 rounded-full text-white hover:bg-white/12 hover:text-white disabled:text-white/35"
-  >
-    {children}
-  </Button>
+    <Button aria-label={label} onClick={onClick} disabled={disabled} icon={icon} />
+  </div>
 );
 
 export default PreviewImageDialog;

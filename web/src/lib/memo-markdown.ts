@@ -218,36 +218,36 @@ export const memoResolveUrl =
   };
 
 /**
- * The editor's look in memos' palette. Every color is one of the app's own CSS
- * variables, set once for both schemes (`colors`), since the variables already
- * follow the active memos theme; `inherit` follows the `color-scheme` memos sets
+ * The editor's look on @usememos/ui's tokens. Every color is one of the package's
+ * CSS variables, set once for both schemes (`colors`), since the variables already
+ * follow the active memos theme; `inherit` follows the `color-scheme` the theme sets
  * on the document. No `highlight` token: memos' HTML sanitizer drops `<mark>`, and
  * should it ever pass, the editor's yellow is what a highlighter means, where a
  * tint of the primary color would read as a tag pill or a selection.
  */
 export const MEMO_EDITOR_THEME: Theme = (() => {
   const colors = {
-    text: "var(--foreground)",
-    muted: "var(--muted-foreground)",
+    text: "var(--mu-ink)",
+    muted: "var(--mu-ink-muted)",
     background: "transparent",
-    accent: "var(--primary)",
-    link: "var(--primary)",
-    codeBackground: "var(--muted)",
-    border: "var(--border)",
-    popupBackground: "var(--popover)",
-    popupBorder: "var(--border)",
-    hover: "var(--accent)",
-    danger: "var(--destructive)",
+    accent: "var(--mu-accent)",
+    link: "var(--mu-accent)",
+    codeBackground: "var(--mu-well)",
+    border: "var(--mu-line)",
+    popupBackground: "var(--mu-surface)",
+    popupBorder: "var(--mu-line)",
+    hover: "var(--mu-hover)",
+    danger: "var(--mu-danger)",
   };
   return {
     colorScheme: "inherit",
     tokens: {
       colors,
       font: "inherit",
-      mono: "var(--font-mono, ui-monospace, monospace)",
+      mono: "var(--mu-font-mono)",
       fontSize: 16,
       lineHeight: 24,
-      radius: "calc(var(--radius) - 2px)",
+      radius: "var(--mu-radius-md)",
       blockGap: 8,
     },
     classes: {
@@ -255,7 +255,7 @@ export const MEMO_EDITOR_THEME: Theme = (() => {
       code: markdownStyles.inlineCode,
       link: markdownStyles.link,
       // The editor sizes and spaces its images; raw HTML images keep markdownStyles.image.
-      image: "rounded-lg",
+      image: "rounded-mu-lg",
     },
   };
 })();

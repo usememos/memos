@@ -46,12 +46,12 @@ const createFaceIcon = (face: Exclude<MapPinFace, { kind: "dot" }>, selected: bo
   const html = ReactDOMServer.renderToString(
     <div
       aria-hidden="true"
-      className={cn("grid place-items-center", selected && "bg-primary/20", face.kind === "photo" ? "rounded-[11px]" : "rounded-full")}
+      className={cn("grid place-items-center", selected && "bg-mu-primary/20", face.kind === "photo" ? "rounded-[11px]" : "rounded-full")}
       style={{ width: box, height: box }}
     >
       {face.kind === "photo" ? (
         <span
-          className={cn("block rounded-md bg-primary bg-cover bg-center", FACE_EDGE)}
+          className={cn("block rounded-mu-md bg-mu-primary bg-cover bg-center", FACE_EDGE)}
           style={{ width: side, height: side, backgroundImage: `url(${JSON.stringify(face.url)})` }}
         />
       ) : (
@@ -180,7 +180,7 @@ function Markers({ memos, pins, selected, onSelect }: Pick<Props, "memos" | "pin
       iconCreateFunction={(cluster: { getChildCount(): number; getAllChildMarkers(): L.Marker[] }) => {
         const active = cluster.getAllChildMarkers().some((marker) => selection.has(names.current.get(marker) ?? ""));
         return L.divIcon({
-          html: `<span class="grid size-7 place-items-center rounded-full border-[1.5px] border-background bg-primary text-primary-foreground text-xs font-medium tabular-nums shadow-[0_1px_3px_rgba(15,23,42,0.35)]${active ? " outline-[4px] outline-primary/20" : ""}">${cluster.getChildCount()}</span>`,
+          html: `<span class="grid size-7 place-items-center rounded-full border-[1.5px] border-mu-canvas bg-mu-primary text-mu-on-primary mu-label-sm tabular-nums shadow-[0_1px_3px_rgba(15,23,42,0.35)]${active ? " outline-[4px] outline-mu-primary/20" : ""}">${cluster.getChildCount()}</span>`,
           className: "",
           iconSize: [28, 28],
         });
@@ -229,7 +229,7 @@ export function MapCanvas(props: Props) {
       minZoom={0}
       zoomControl={false}
       attributionControl={false}
-      className="map-attribution-minimal absolute! inset-0 z-0 !bg-muted"
+      className="map-attribution-minimal absolute! inset-0 z-0 !bg-mu-well"
     >
       <BasemapLayer onTileError={props.onTileError} />
       <MinimalAttributionControl />

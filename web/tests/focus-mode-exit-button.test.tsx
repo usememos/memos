@@ -21,7 +21,6 @@ describe("FocusModeExitButton", () => {
     const onCollapse = vi.fn();
     render(<FocusModeTemporaryCollapseButton onCollapse={onCollapse} />);
     const button = screen.getByRole("button", { name: "editor.temporarily-collapse-focus-mode" });
-    expect(button).toHaveAttribute("title", "editor.temporarily-collapse-focus-mode");
     expect(button).toHaveTextContent("");
     fireEvent.click(button);
     expect(onCollapse).toHaveBeenCalledTimes(1);

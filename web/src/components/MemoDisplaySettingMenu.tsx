@@ -1,24 +1,12 @@
-import { useDirection } from "@base-ui/react/direction-provider";
+import { buttonClasses, Field, Popover, Select, Separator, Switch, Toggle, ToggleGroup, Tooltip } from "@usememos/ui";
 import { ChevronDownIcon, Columns2Icon, Columns3Icon, InfinityIcon, type LucideIcon, Rows3Icon } from "lucide-react";
-import type { ReactNode, RefObject } from "react";
-import { SIDEBAR_SECTION_ACTION_ICON_CLASSES } from "@/components/AppSidebar/SidebarSection";
-import { buttonVariants } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import type { RefObject } from "react";
 import { MAX_COLUMNS_VALUES, type MemoMaxColumns, useView } from "@/contexts/ViewContext";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 interface Props {
   anchor?: RefObject<HTMLElement | null>;
-}
-
-interface SettingRowProps {
-  label: string;
-  description?: string;
-  children: ReactNode;
 }
 
 // Keyed by the context's canonical value list, so adding a column option forces an icon and
@@ -31,142 +19,87 @@ const LAYOUT_OPTIONS: Record<MemoMaxColumns, { icon: LucideIcon; key: "layout-li
   0: { icon: InfinityIcon, key: "layout-auto" },
 };
 
-const SettingRow = ({ label, description, children }: SettingRowProps) => (
-  <div className="flex min-h-6 items-center justify-between gap-2">
-    <div className="min-w-0">
-      <p className="text-xs leading-4 text-foreground">{label}</p>
-      {description && <p className="text-[11px] leading-4 text-muted-foreground">{description}</p>}
-    </div>
-    {children}
-  </div>
-);
-
 function MemoDisplaySettingsContent() {
   const t = useTranslate();
-  const direction = useDirection();
   const { orderByTimeAsc, timeBasis, compactMode, maxColumns, setTimeBasis, setOrderByTimeAsc, setCompactMode, setMaxColumns } = useView();
   // Multi-column grids always render compact tiles, so the toggle is shown as on and locked
   // there; it only becomes a real choice at a single column.
   const compactLocked = maxColumns !== 1;
 
-  const timeBasisOptions = [
-    { value: "create_time", label: t("common.created-at") },
-    { value: "update_time", label: t("common.last-updated-at") },
-  ];
-  const sortOrderOptions = [
-    { value: "desc", label: t("memo.newest-first") },
-    { value: "asc", label: t("memo.oldest-first") },
-  ];
+  const timeBasisOptions = { create_time: t("common.created-at"), update_time: t("common.last-updated-at") };
+  const sortOrderOptions = { desc: t("memo.newest-first"), asc: t("memo.oldest-first") };
 
   return (
-    <div>
-      <section className="p-1.5">
-        <div
-          role="radiogroup"
-          aria-label={t("memo.layout")}
-          className="grid grid-cols-4 gap-0.5"
-          onKeyDown={(event) => {
-            const delta =
-              event.key === "ArrowRight"
-                ? direction === "rtl"
-                  ? -1
-                  : 1
-                : event.key === "ArrowLeft"
-                  ? direction === "rtl"
-                    ? 1
-                    : -1
-                  : event.key === "ArrowDown"
-                    ? 1
-                    : event.key === "ArrowUp"
-                      ? -1
-                      : 0;
-            if (delta === 0) return;
-            event.preventDefault();
-            const index = MAX_COLUMNS_VALUES.indexOf(maxColumns);
-            const next = MAX_COLUMNS_VALUES[(index + delta + MAX_COLUMNS_VALUES.length) % MAX_COLUMNS_VALUES.length];
-            setMaxColumns(next);
-            event.currentTarget.querySelector<HTMLButtonElement>(`[data-value="${next}"]`)?.focus();
-          }}
+    <div className="flex flex-col gap-3">
+      <ToggleGroup
+        size="sm"
+        fullWidth
+        aria-label={t("memo.layout")}
+        value={[String(maxColumns)]}
+        // One layout always stays chosen: pressing the chosen item again keeps it.
+        onValueChange={([next]) => next && setMaxColumns(Number(next) as MemoMaxColumns)}
+      >
+        {MAX_COLUMNS_VALUES.map((value) => {
+          const { icon: Icon, key } = LAYOUT_OPTIONS[value];
+          const label = t(`memo.${key}`, { n: value });
+          // Column counts show as a number; every option is spelled out on hover.
+          return (
+            <Tooltip.Root key={value}>
+              <Tooltip.Trigger
+                render={
+                  <Toggle value={String(value)} aria-label={label} icon={<Icon />}>
+                    {value > 1 ? value.toString() : label}
+                  </Toggle>
+                }
+              />
+              <Tooltip.Popup>{t(`memo.${key}-description`, { n: value })}</Tooltip.Popup>
+            </Tooltip.Root>
+          );
+        })}
+      </ToggleGroup>
+
+      {/* Selects, not segmented rows: the two labels of a pair don't fit side by side in every language. */}
+      <Field.Root orientation="horizontal" size="sm">
+        <Field.Label>{t("memo.order-by")}</Field.Label>
+        <Select.Root
+          items={timeBasisOptions}
+          value={timeBasis}
+          onValueChange={(value) => setTimeBasis(value === "update_time" ? "update_time" : "create_time")}
         >
-          {MAX_COLUMNS_VALUES.map((value) => {
-            const { icon: Icon, key } = LAYOUT_OPTIONS[value];
-            const label = t(`memo.${key}`, { n: value });
-            const description = t(`memo.${key}-description`, { n: value });
-            const shortLabel = value > 1 ? value.toString() : label;
-            const active = maxColumns === value;
-            return (
-              <button
-                key={value}
-                type="button"
-                role="radio"
-                aria-checked={active}
-                aria-label={label}
-                title={description}
-                tabIndex={active ? 0 : -1}
-                data-value={value}
-                onClick={() => setMaxColumns(value)}
-                className={cn(
-                  "flex h-6 min-w-0 items-center justify-center gap-1 rounded-sm px-1 text-[11px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
-                  active ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
-                )}
-              >
-                <Icon className="size-3.5 shrink-0" strokeWidth={1.8} />
-                <span className="truncate">{shortLabel}</span>
-              </button>
-            );
-          })}
-        </div>
-      </section>
+          <Select.Trigger className="min-w-36">
+            <Select.Value />
+          </Select.Trigger>
+          <Select.Popup>
+            <Select.Item value="create_time">{timeBasisOptions.create_time}</Select.Item>
+            <Select.Item value="update_time">{timeBasisOptions.update_time}</Select.Item>
+          </Select.Popup>
+        </Select.Root>
+      </Field.Root>
+      <Field.Root orientation="horizontal" size="sm">
+        <Field.Label>{t("memo.direction")}</Field.Label>
+        <Select.Root
+          items={sortOrderOptions}
+          value={orderByTimeAsc ? "asc" : "desc"}
+          onValueChange={(value) => setOrderByTimeAsc(value === "asc")}
+        >
+          <Select.Trigger className="min-w-36">
+            <Select.Value />
+          </Select.Trigger>
+          <Select.Popup>
+            <Select.Item value="desc">{sortOrderOptions.desc}</Select.Item>
+            <Select.Item value="asc">{sortOrderOptions.asc}</Select.Item>
+          </Select.Popup>
+        </Select.Root>
+      </Field.Root>
 
-      <section className="space-y-1 border-t border-border/60 px-2.5 py-2">
-        <SettingRow label={t("memo.order-by")}>
-          <Select
-            value={timeBasis}
-            items={timeBasisOptions}
-            onValueChange={(value) => setTimeBasis(value === "update_time" ? "update_time" : "create_time")}
-          >
-            <SelectTrigger size="xs" className="w-32" aria-label={t("memo.order-by")}>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {timeBasisOptions.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </SettingRow>
-        <SettingRow label={t("memo.direction")}>
-          <Select
-            value={orderByTimeAsc ? "asc" : "desc"}
-            items={sortOrderOptions}
-            onValueChange={(value) => setOrderByTimeAsc(value === "asc")}
-          >
-            <SelectTrigger size="xs" className="w-32" aria-label={t("memo.direction")}>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {sortOrderOptions.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </SettingRow>
-      </section>
+      <Separator />
 
-      <section className="space-y-1 border-t border-border/60 px-2.5 py-2">
-        <SettingRow label={t("memo.compact-mode")} description={compactLocked ? t("memo.grid-compact-hint") : undefined}>
-          <Switch
-            aria-label={t("memo.compact-mode")}
-            checked={compactLocked || compactMode}
-            onCheckedChange={setCompactMode}
-            disabled={compactLocked}
-          />
-        </SettingRow>
-      </section>
+      <Field.Root orientation="horizontal" size="sm">
+        <Field.Label>{t("memo.compact-mode")}</Field.Label>
+        {/* Wraps inside the width the controls set, so the hint never widens the popup. */}
+        {compactLocked && <Field.Description className="w-0 min-w-full">{t("memo.grid-compact-hint")}</Field.Description>}
+        <Switch checked={compactLocked || compactMode} onCheckedChange={setCompactMode} disabled={compactLocked} />
+      </Field.Root>
     </div>
   );
 }
@@ -176,27 +109,28 @@ function MemoDisplaySettingMenu({ anchor }: Props) {
   const label = `${t("common.timeline")} · ${t("memo.view-options")}`;
 
   return (
-    <Popover>
-      <Tooltip>
-        <TooltipTrigger
+    <Popover.Root>
+      <Tooltip.Root>
+        <Tooltip.Trigger
           render={
-            <PopoverTrigger
+            <Popover.Trigger
               aria-label={label}
               className={cn(
-                buttonVariants({ variant: "quiet", size: "icon-compact" }),
-                "w-auto rounded-s-none px-1.5 hover:bg-sidebar-accent data-popup-open:[&_svg]:rotate-180",
+                buttonClasses({ variant: "ghost", iconOnly: true }),
+                "w-auto rounded-s-none px-1.5 hover:bg-mu-hover data-popup-open:[&_svg]:rotate-180",
               )}
             />
           }
         >
-          <ChevronDownIcon className={cn(SIDEBAR_SECTION_ACTION_ICON_CLASSES, "transition-transform")} strokeWidth={1.8} />
-        </TooltipTrigger>
-        <TooltipContent side="bottom">{label}</TooltipContent>
-      </Tooltip>
-      <PopoverContent anchor={anchor} align="start" sideOffset={6} aria-label={label} className="w-56 p-0">
+          <ChevronDownIcon className="mu-icon-sm transition-transform" />
+        </Tooltip.Trigger>
+        <Tooltip.Popup side="bottom">{label}</Tooltip.Popup>
+      </Tooltip.Root>
+      {/* Grows to fit long translations such as "Automatisch" instead of truncating them; the full-width group then shares the room from its labels' natural widths. */}
+      <Popover.Popup anchor={anchor} align="start" aria-label={label} className="w-max min-w-(--mu-popover-width)">
         <MemoDisplaySettingsContent />
-      </PopoverContent>
-    </Popover>
+      </Popover.Popup>
+    </Popover.Root>
   );
 }
 

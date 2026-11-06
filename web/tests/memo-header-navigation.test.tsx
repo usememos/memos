@@ -26,7 +26,7 @@ vi.mock("@/components/MemoActionMenu", () => ({
 vi.mock("@/components/MemoReactionListView", () => ({
   // The header supplies the picker's trigger; the mock renders it with the picker's label.
   ReactionSelector: ({ trigger }: { trigger: React.ReactElement<{ "aria-label"?: string }> }) =>
-    React.cloneElement(trigger, { "aria-label": "add-reaction" }, "Add reaction"),
+    React.cloneElement(trigger, { "aria-label": "add-reaction" }),
 }));
 
 vi.mock("@/components/UserAvatar", () => ({
@@ -35,13 +35,6 @@ vi.mock("@/components/UserAvatar", () => ({
 
 vi.mock("@/components/MemoView/components/MemoSpaceBadge", () => ({
   default: ({ spaceName }: { spaceName?: string }) => <span data-testid="memo-space">{spaceName}</span>,
-}));
-
-vi.mock("@/components/ui/tooltip", () => ({
-  Tooltip: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  TooltipProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  TooltipTrigger: ({ children, render }: { children?: React.ReactNode; render?: React.ReactNode }) => <>{render || children}</>,
-  TooltipContent: () => null,
 }));
 
 vi.mock("@/contexts/NewMemoContext", () => ({
@@ -92,28 +85,20 @@ describe("MemoHeader navigation", () => {
     state.isEditing = false;
   });
 
-  it.each([false, true])("keeps only the creator while the card edits in place (showCreator=%s)", (showCreator) => {
+  it("steps aside while the card edits in place", () => {
     state.currentUser = { name: "users/alice" };
     state.creator = { username: "alice", displayName: "Alice", avatarUrl: "" };
     state.isEditing = true;
 
     const { container } = render(
       <MemoryRouter>
-        <MemoHeader showCreator={showCreator} showVisibility showSpace />
+        <MemoHeader showCreator showVisibility showSpace />
       </MemoryRouter>,
     );
 
-    // The session below shows the editable time, visibility and Space; reacting and the menu wait.
-    expect(screen.queryByRole("link", { name: "time" })).not.toBeInTheDocument();
-    expect(screen.queryByTestId("memo-space")).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "add-reaction" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "memo-actions" })).not.toBeInTheDocument();
-    if (showCreator) {
-      expect(screen.getByRole("link", { name: /Alice/ })).toBeInTheDocument();
-      expect(container).not.toHaveTextContent("·");
-    } else {
-      expect(container).toBeEmptyDOMElement();
-    }
+    // The session's timestamp row is the header now: it leads with the creator and shows
+    // the editable time, visibility and Space; reacting and the menu wait.
+    expect(container).toBeEmptyDOMElement();
   });
 
   it("uses one compact interaction surface for memo header actions", () => {
@@ -133,7 +118,7 @@ describe("MemoHeader navigation", () => {
     // The header shows the picker only while the card is engaged or the picker is open, and its
     // trigger is the same 24px quiet square as the other header actions.
     expect(reaction.parentElement).toHaveClass("sm:group-focus-within:flex", "sm:has-[[data-popup-open]]:flex");
-    expect(reaction).toHaveClass("size-6", "rounded-md", "text-muted-foreground/70");
+    expect(reaction).toHaveClass("mu-button", "mu-button-ghost", "mu-button-icon", "mu-s-sm");
     expect(reaction.className).not.toMatch(/border-none|rounded-full|ring-/);
   });
 

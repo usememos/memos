@@ -48,7 +48,7 @@ function MemosLogo({ collapsed, size = "md", as: Component = "div", className }:
           ) : (
             <MemosMark
               size={scale.mark}
-              className="text-primary"
+              className="text-mu-primary"
               label={collapsed ? title : undefined}
               // Like dotcom's lockup, trim transparent margins so the gap follows the visible bird.
               {...(!collapsed ? { viewBox: "112 32 288 448", width: Math.ceil((scale.mark * 288) / 448) } : {})}

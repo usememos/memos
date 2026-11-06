@@ -1,23 +1,19 @@
-import { Badge } from "@/components/ui/badge";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Badge, Popover } from "@usememos/ui";
 import { cn } from "@/lib/utils";
 
 interface Props {
   label: string;
   value: string;
+  /** Full text shown on hover or click, for values the chip truncates. */
   tooltip?: string;
   className?: string;
 }
 
 const InfoChip = ({ label, value, tooltip, className }: Props) => {
   const chip = (
-    <Badge
-      variant="outline"
-      shape="pill"
-      className={cn("max-w-full items-start gap-1.5 px-2.5 py-1 text-[11px] font-normal leading-4 whitespace-nowrap", className)}
-    >
-      <span className="text-muted-foreground">{label}</span>
-      <span className="max-w-[20rem] truncate text-foreground">{value}</span>
+    <Badge tone="outline" className={cn("max-w-full", className)}>
+      <span className="text-mu-ink-muted">{label}</span>
+      <span className="max-w-[20rem] truncate text-mu-ink">{value}</span>
     </Badge>
   );
 
@@ -25,11 +21,16 @@ const InfoChip = ({ label, value, tooltip, className }: Props) => {
     return chip;
   }
 
+  // The full value is something to read, so it opens as a hover card that a click or tap also opens, not a tooltip.
   return (
-    <Tooltip>
-      <TooltipTrigger render={<span className="inline-flex" tabIndex={0} aria-label={tooltip} />}>{chip}</TooltipTrigger>
-      <TooltipContent className="max-w-xs whitespace-pre-wrap break-words">{tooltip}</TooltipContent>
-    </Tooltip>
+    <Popover.Root>
+      <Popover.Trigger openOnHover delay={300} render={<button type="button" className="mu-focus inline-flex max-w-full rounded-mu-sm" />}>
+        {chip}
+      </Popover.Trigger>
+      <Popover.Popup aria-label={label}>
+        <p className="mu-body break-words">{tooltip}</p>
+      </Popover.Popup>
+    </Popover.Root>
   );
 };
 

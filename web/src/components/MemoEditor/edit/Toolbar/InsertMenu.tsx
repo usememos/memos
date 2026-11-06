@@ -1,18 +1,10 @@
+import { Button, Menu, Spinner, Tooltip } from "@usememos/ui";
 import { uniqBy } from "lodash-es";
-import { CodeXmlIcon, ImageIcon, LinkIcon, LoaderIcon, MapPinIcon, Maximize2Icon, MicIcon, PaperclipIcon, PlusIcon } from "lucide-react";
+import { CodeXmlIcon, ImageIcon, LinkIcon, MapPinIcon, Maximize2Icon, MicIcon, PaperclipIcon, PlusIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LinkMemoDialog, LocationDialog } from "@/components/MemoMetadata";
 import type { MapPoint } from "@/components/map/types";
 import { useReverseGeocoding } from "@/components/map/useReverseGeocoding";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { useDebouncedEffect } from "@/hooks";
 import type { MemoRelation } from "@/types/proto/api/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
@@ -141,40 +133,46 @@ const InsertMenu = (props: InsertMenuProps) => {
 
   return (
     <>
-      <DropdownMenu>
-        <DropdownMenuTrigger
-          render={<Button variant="outline" size="icon-compact" disabled={insertionDisabled} aria-label={t("common.add")} />}
-        >
-          {isUploading ? (
-            <LoaderIcon className="size-4 animate-spin" strokeWidth={1.8} />
-          ) : (
-            <PlusIcon className="size-4" strokeWidth={1.8} />
-          )}
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" size="sm">
+      <Menu.Root modal={false} size="sm">
+        <Tooltip.Root>
+          <Tooltip.Trigger
+            render={
+              <Menu.Trigger
+                render={
+                  <Button
+                    variant="neutral"
+                    size="md"
+                    disabled={insertionDisabled}
+                    aria-label={t("common.add")}
+                    icon={isUploading ? <Spinner label={t("editor.blocks.loading")} /> : <PlusIcon />}
+                  />
+                }
+              />
+            }
+          />
+          <Tooltip.Popup>{t("common.add")}</Tooltip.Popup>
+        </Tooltip.Root>
+        <Menu.Popup align="start">
           {insertItems.map((item) => (
-            <DropdownMenuItem key={item.key} onClick={item.onClick} disabled={props.isSaving}>
-              <item.icon />
+            <Menu.Item key={item.key} onClick={item.onClick} disabled={props.isSaving} icon={<item.icon />}>
               {item.label}
-            </DropdownMenuItem>
+            </Menu.Item>
           ))}
           {/* How the composer presents itself. Focus mode is absent when a host owns the
               editor's presentation; Markdown mode (the editor's source mode) only changes how
               the text is edited, so every composer has it. Checked while on, with a corner
               label in the composer. The code glyph says this mode shows the markup. */}
-          <DropdownMenuSeparator />
+          <Menu.Separator />
           {viewToggles && (
-            <DropdownMenuItem onClick={viewToggles.onToggleFocusMode}>
-              <Maximize2Icon />
+            <Menu.Item onClick={viewToggles.onToggleFocusMode} icon={<Maximize2Icon />}>
               {t("editor.focus-mode")}
-            </DropdownMenuItem>
+            </Menu.Item>
           )}
-          <DropdownMenuCheckboxItem checked={sourceMode.isSourceMode} onCheckedChange={sourceMode.onToggle} closeOnClick indicator="end">
-            <CodeXmlIcon />
+          <Menu.CheckboxItem checked={sourceMode.isSourceMode} onCheckedChange={sourceMode.onToggle} closeOnClick icon={<CodeXmlIcon />}>
             {t("editor.markdown-mode")}
-          </DropdownMenuCheckboxItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+          </Menu.CheckboxItem>
+        </Menu.Popup>
+      </Menu.Root>
 
       {/* Hidden file input */}
       <input

@@ -1,14 +1,10 @@
-import { AstroidIcon, type LucideIcon, RotateCcwIcon, SearchIcon } from "lucide-react";
-import { type KeyboardEvent, useId, useRef, useState } from "react";
+import { Button, Combobox, Popover, Toggle, ToggleGroup } from "@usememos/ui";
+import { AstroidIcon, type LucideIcon, RotateCcwIcon } from "lucide-react";
+import { useRef, useState } from "react";
 import CustomIcon from "@/components/CustomIcon";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { CustomIconValue } from "@/lib/custom-icons";
 import { CUSTOM_SYMBOLS, customIconsEqual } from "@/lib/custom-icons";
 import { SPACE_EMOJI } from "@/lib/space-emoji";
-import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { FULLY_QUALIFIED_EMOJI } from "@/utils/tag-unicode-data";
 
@@ -24,11 +20,20 @@ const symbolLabels: Record<string, string> = {
   "map-pin": "Location",
   "notebook-pen": "Notebook",
 };
-const symbols = Object.keys(CUSTOM_SYMBOLS).map((name) => ({
+interface IconOption {
+  label: string;
+  icon: CustomIconValue;
+}
+
+const GRID_COLUMNS = 8;
+const symbols: IconOption[] = Object.keys(CUSTOM_SYMBOLS).map((name) => ({
   label: symbolLabels[name] ?? name.replaceAll("-", " ").replace(/^./, (char) => char.toUpperCase()),
   icon: { value: { case: "lucide", value: name } } satisfies CustomIconValue,
 }));
-const emojis = SPACE_EMOJI.map(([emoji, label]) => ({ label, icon: { value: { case: "emoji", value: emoji } } satisfies CustomIconValue }));
+const emojis: IconOption[] = SPACE_EMOJI.map(([emoji, label]) => ({
+  label,
+  icon: { value: { case: "emoji", value: emoji } } satisfies CustomIconValue,
+}));
 
 interface Props {
   value?: CustomIconValue;
@@ -40,15 +45,12 @@ interface Props {
 
 function CustomIconPicker({ value, onChange, disabled, label, fallback = AstroidIcon }: Props) {
   const t = useTranslate();
-  const id = useId();
   const [open, setOpen] = useState(false);
   const [tab, setTab] = useState("icons");
   const [query, setQuery] = useState("");
-  const [focusedIndex, setFocusedIndex] = useState(0);
   const searchRef = useRef<HTMLInputElement>(null);
-  const gridRef = useRef<HTMLDivElement>(null);
   const search = query.trim().toLowerCase();
-  const options: { label: string; icon: CustomIconValue }[] = (tab === "icons" ? symbols : emojis).filter(
+  const options: IconOption[] = (tab === "icons" ? symbols : emojis).filter(
     (option) => option.label.toLowerCase().includes(search) || option.icon.value.value?.includes(search),
   );
   const customEmoji = query.trim() || (value?.value.case === "emoji" ? value.value.value : "");
@@ -58,6 +60,8 @@ function CustomIconPicker({ value, onChange, disabled, label, fallback = Astroid
       icon: { value: { case: "emoji", value: customEmoji } },
     });
   }
+  const rows: IconOption[][] = [];
+  for (let index = 0; index < options.length; index += GRID_COLUMNS) rows.push(options.slice(index, index + GRID_COLUMNS));
 
   const select = (icon?: CustomIconValue) => {
     onChange(icon);
@@ -66,22 +70,10 @@ function CustomIconPicker({ value, onChange, disabled, label, fallback = Astroid
   const changeTab = (next: string) => {
     setTab(next);
     setQuery("");
-    setFocusedIndex(0);
-  };
-  const moveFocus = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
-    const offsets: Record<string, number> = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -8, ArrowDown: 8 };
-    let next = index;
-    if (event.key in offsets) next = Math.max(0, Math.min(options.length - 1, index + offsets[event.key]));
-    else if (event.key === "Home") next = 0;
-    else if (event.key === "End") next = options.length - 1;
-    else return;
-    event.preventDefault();
-    setFocusedIndex(next);
-    gridRef.current?.querySelectorAll<HTMLButtonElement>("button")[next]?.focus();
   };
 
   return (
-    <Popover
+    <Popover.Root
       open={open}
       onOpenChange={(next) => {
         if (next) {
@@ -90,87 +82,98 @@ function CustomIconPicker({ value, onChange, disabled, label, fallback = Astroid
         setOpen(next);
       }}
     >
-      <PopoverTrigger
+      <Popover.Trigger
         render={
-          <Button type="button" variant="outline" size="icon" className="size-8 p-0" disabled={disabled} aria-label={label} title={label} />
+          <Button
+            type="button"
+            variant="neutral"
+            disabled={disabled}
+            aria-label={label}
+            title={label}
+            icon={<CustomIcon icon={value} fallback={fallback} className="size-5 text-xl" />}
+          />
         }
-      >
-        <CustomIcon icon={value} fallback={fallback} className="size-5 text-xl" />
-      </PopoverTrigger>
-      <PopoverContent align="start" className="w-[290px] max-w-[calc(100vw-2rem)] p-2" aria-label={label} initialFocus={searchRef}>
-        <Tabs value={tab} onValueChange={changeTab} size="sm">
-          <TabsList className="mb-2" aria-label={t("space.icon.kind")}>
-            {(["icons", "emoji"] as const).map((name) => (
-              <TabsTrigger key={name} id={`${id}-${name}`} value={name} aria-controls={`${id}-panel`} className="flex-1">
-                {t(`space.icon.${name}`)}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
-        <div id={`${id}-panel`} role="tabpanel" aria-labelledby={`${id}-${tab}`}>
-          <div className="relative mb-2">
-            <SearchIcon aria-hidden className="pointer-events-none absolute start-2 top-2 size-4 text-muted-foreground" />
-            <Input
+      />
+      <Popover.Popup align="start" className="w-[306px] max-w-[calc(100vw-2rem)]" aria-label={label} initialFocus={searchRef}>
+        <ToggleGroup
+          size="sm"
+          aria-label={t("space.icon.kind")}
+          value={[tab]}
+          onValueChange={([next]: string[]) => next && changeTab(next)}
+        >
+          {(["icons", "emoji"] as const).map((name) => (
+            <Toggle key={name} value={name}>
+              {t(`space.icon.${name}`)}
+            </Toggle>
+          ))}
+        </ToggleGroup>
+        <div>
+          {/* The rows are filtered here (labels and the glyph itself, plus a pasted emoji), so the
+              combobox's own filter is off and it only drives the 2-D highlight and Enter. */}
+          <Combobox.Root
+            items={options}
+            filter={null}
+            inline
+            grid
+            autoHighlight
+            value={value ? { label: "", icon: value } : null}
+            isItemEqualToValue={(item: IconOption, current: IconOption) => customIconsEqual(item.icon, current.icon)}
+            itemToStringLabel={(item: IconOption) => item.label}
+            onValueChange={(item: IconOption | null) => {
+              if (item) select(item.icon);
+            }}
+            inputValue={query}
+            onInputValueChange={(next, { reason }) => {
+              // Picking a cell would write its label into the search; the popup closes instead.
+              if (reason === "input-change" || reason === "input-clear") setQuery(next);
+            }}
+            onOpenChange={(next, { reason }) => {
+              if (!next && reason === "escape-key") setOpen(false);
+            }}
+          >
+            <Combobox.Input
               ref={searchRef}
-              value={query}
-              className="ps-8 text-sm"
+              className="mb-1"
               aria-label={t(tab === "icons" ? "space.icon.search-icons" : "space.icon.search-emoji")}
               placeholder={t(tab === "icons" ? "space.icon.search-icons" : "space.icon.search-emoji")}
-              onChange={(event) => {
-                setQuery(event.target.value);
-                setFocusedIndex(0);
-              }}
-              onKeyDown={(event) => {
-                if (event.nativeEvent.isComposing || event.keyCode === 229) return;
-                if (event.key === "Enter") {
-                  event.preventDefault();
-                  if (options[0]) select(options[0].icon);
-                } else if (event.key === "ArrowDown" && options.length) {
-                  event.preventDefault();
-                  setFocusedIndex(0);
-                  gridRef.current?.querySelector<HTMLButtonElement>("button")?.focus();
-                }
-              }}
             />
-          </div>
-          <div className="max-h-56 overflow-y-auto overscroll-contain" ref={gridRef}>
-            {options.length ? (
-              <div className="grid grid-cols-8 gap-0.5">
-                {options.map((option, index) => (
-                  <Button
-                    key={`${option.icon.value.case}:${option.icon.value.value}`}
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    aria-label={option.label}
-                    title={option.label}
-                    aria-pressed={customIconsEqual(value, option.icon)}
-                    tabIndex={index === Math.min(focusedIndex, options.length - 1) ? 0 : -1}
-                    onFocus={() => setFocusedIndex(index)}
-                    onKeyDown={(event) => moveFocus(event, index)}
-                    onClick={() => select(option.icon)}
-                    className={cn("rounded-md", customIconsEqual(value, option.icon) && "bg-accent ring-1 ring-inset ring-primary/40")}
-                  >
-                    <CustomIcon icon={option.icon} className={tab === "emoji" ? "size-5 text-xl" : "size-4"} />
-                  </Button>
-                ))}
-              </div>
-            ) : (
-              <p role="status" className="py-8 text-center text-xs text-muted-foreground">
-                {t("space.icon.no-results")}
-              </p>
-            )}
-          </div>
-          {tab === "emoji" && <p className="px-1 pt-2 text-xs leading-4 text-muted-foreground">{t("space.icon.emoji-help")}</p>}
+            <Combobox.Empty>{t("space.icon.no-results")}</Combobox.Empty>
+            {/* The list's own padding keeps highlighted cells clear of its scroll edge; the negative
+                margin lines the cells up with the search box as before. */}
+            <Combobox.List aria-label={t(`space.icon.${tab === "icons" ? "icons" : "emoji"}`)} className="-mx-1">
+              {rows.map((row) => (
+                <Combobox.Row key={`${row[0].icon.value.case}:${row[0].icon.value.value}`}>
+                  {row.map((option) => (
+                    <Combobox.Item
+                      key={`${option.icon.value.case}:${option.icon.value.value}`}
+                      value={option}
+                      aria-label={option.label}
+                      title={option.label}
+                    >
+                      <CustomIcon icon={option.icon} className={tab === "emoji" ? "size-5 text-xl" : undefined} />
+                    </Combobox.Item>
+                  ))}
+                </Combobox.Row>
+              ))}
+            </Combobox.List>
+          </Combobox.Root>
+          {tab === "emoji" && <p className="px-1 pt-2 mu-caption text-mu-ink-muted">{t("space.icon.emoji-help")}</p>}
         </div>
         <div className="mt-2 border-t pt-1.5">
-          <Button type="button" variant="quiet" size="sm" className="w-full justify-start" disabled={!value} onClick={() => select()}>
-            <RotateCcwIcon aria-hidden className="size-3.5" />
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="w-full justify-start"
+            disabled={!value}
+            onClick={() => select()}
+            icon={<RotateCcwIcon aria-hidden />}
+          >
             {t("space.icon.reset")}
           </Button>
         </div>
-      </PopoverContent>
-    </Popover>
+      </Popover.Popup>
+    </Popover.Root>
   );
 }
 

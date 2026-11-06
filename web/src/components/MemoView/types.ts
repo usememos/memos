@@ -33,4 +33,6 @@ export interface MemoHeaderProps {
 
 export interface MemoBodyProps {
   compact?: boolean;
+  /** Mirrors the header's: while editing, the session's timestamp row leads with the creator. */
+  showCreator?: boolean;
 }

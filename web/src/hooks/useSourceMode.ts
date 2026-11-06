@@ -1,10 +1,10 @@
 import { create } from "@bufbuild/protobuf";
 import type { EditorMode } from "@usememos/editor";
 import { useCallback } from "react";
-import { toast } from "react-hot-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUpdateUserEditorSetting } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
+import { showErrorToast } from "@/lib/toast";
 import { UserSetting_EditorSettingSchema } from "@/types/proto/api/user_service_pb";
 
 /**
@@ -30,7 +30,7 @@ export const useSourceMode = (): [EditorMode, (mode: EditorMode) => void] => {
             setUserEditorSetting((current) =>
               create(UserSetting_EditorSettingSchema, { autoFocusMode: current?.autoFocusMode, sourceMode: previous }),
             );
-            handleError(error, toast.error);
+            handleError(error, showErrorToast);
           },
         },
       );

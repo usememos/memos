@@ -46,7 +46,7 @@ vi.mock("@/contexts/AuthContext", async () => {
     }),
   };
 });
-vi.mock("react-hot-toast", () => ({ toast: { error: vi.fn(), success: vi.fn() } }));
+vi.mock("@/lib/toast", () => ({ toast: { add: vi.fn(), close: vi.fn() }, showErrorToast: vi.fn() }));
 vi.mock("@/contexts/InstanceContext", () => ({
   useInstance: () => ({ aiSetting: { providers: [], transcription: undefined }, fetchSetting: vi.fn().mockResolvedValue(undefined) }),
 }));
@@ -150,7 +150,7 @@ describe("automatic focus mode", () => {
 
     fireEvent.click(
       dismissal === "backdrop"
-        ? screen.getByLabelText("Exit focus mode")
+        ? screen.getByLabelText("editor.exit-focus-mode", { selector: "div" })
         : screen.getByRole("button", { name: "editor.temporarily-collapse-focus-mode" }),
     );
     expect(container.querySelector(".memo-editor-content")).not.toHaveAttribute("data-focus-mode");
@@ -192,7 +192,7 @@ describe("automatic focus mode", () => {
     expect(container.querySelector('[aria-hidden="true"]')).toHaveStyle({ height: "180px" });
     const dismissButton =
       dismissal === "backdrop"
-        ? screen.getByLabelText("Exit focus mode")
+        ? screen.getByLabelText("editor.exit-focus-mode", { selector: "div" })
         : screen.getByRole("button", {
             name: dismissal === "button" ? "editor.exit-focus-mode" : "editor.temporarily-collapse-focus-mode",
           });

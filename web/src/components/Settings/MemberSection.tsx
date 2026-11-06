@@ -1,25 +1,23 @@
 import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
+import { Badge, Button, Menu, Tooltip } from "@usememos/ui";
 import { sortBy } from "lodash-es";
 import { MoreVerticalIcon, PlusIcon } from "lucide-react";
 import { useMemo, useState } from "react";
-import toast from "react-hot-toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import InfoChip from "@/components/Settings/InfoChip";
 import UserAvatar from "@/components/UserAvatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { userServiceClient } from "@/connect";
 import { findManagedResource, useConfigurationStatus } from "@/hooks/useConfigurationQueries";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useDialog } from "@/hooks/useDialog";
 import { useDeleteUser, useListUsers } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
+import { showErrorToast, toast } from "@/lib/toast";
 import { State } from "@/types/proto/api/common_pb";
 import { User, User_Role } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import CreateUserDialog from "../CreateUserDialog";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import ManagedByConfigurationChip from "./ManagedByConfigurationChip";
 import SettingSection from "./SettingSection";
 import SettingTable from "./SettingTable";
@@ -66,10 +64,10 @@ const MemberSection = () => {
         },
         updateMask: create(FieldMaskSchema, { paths: ["state"] }),
       });
-      toast.success(t("setting.member.archive-success", { username }));
+      toast.add({ title: t("setting.member.archive-success", { username }), type: "success" });
       await refetchUsers();
     } catch (error: unknown) {
-      handleError(error, toast.error, { context: "Archive user" });
+      handleError(error, showErrorToast, { context: "Archive user" });
     }
     setArchiveTarget(undefined);
   };
@@ -84,10 +82,10 @@ const MemberSection = () => {
         },
         updateMask: create(FieldMaskSchema, { paths: ["state"] }),
       });
-      toast.success(t("setting.member.restore-success", { username }));
+      toast.add({ title: t("setting.member.restore-success", { username }), type: "success" });
       await refetchUsers();
     } catch (error: unknown) {
-      handleError(error, toast.error, { context: "Restore user" });
+      handleError(error, showErrorToast, { context: "Restore user" });
     }
   };
 
@@ -101,11 +99,11 @@ const MemberSection = () => {
     deleteUserMutation.mutate(name, {
       onSuccess: () => {
         setDeleteTarget(undefined);
-        toast.success(t("setting.member.delete-success", { username }));
+        toast.add({ title: t("setting.member.delete-success", { username }), type: "success" });
       },
       onError: (error) => {
         setDeleteTarget(undefined);
-        handleError(error, toast.error, { context: "Delete user" });
+        handleError(error, showErrorToast, { context: "Delete user" });
       },
     });
   };
@@ -114,8 +112,7 @@ const MemberSection = () => {
     <SettingSection
       title={t("setting.member.list-title")}
       actions={
-        <Button onClick={handleCreateUser}>
-          <PlusIcon className="w-4 h-4 mr-2" />
+        <Button variant="primary" onClick={handleCreateUser} icon={<PlusIcon />}>
           {t("common.create")}
         </Button>
       }
@@ -131,16 +128,12 @@ const MemberSection = () => {
                 <UserAvatar className="h-10 w-10 shrink-0" avatarUrl={user.avatarUrl} name={user.displayName || user.username} />
                 <div className="flex min-w-0 flex-1 flex-col">
                   <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                    <span
-                      className={
-                        user.displayName ? "text-sm font-medium text-foreground" : "text-sm font-medium text-muted-foreground italic"
-                      }
-                    >
+                    <span className={user.displayName ? "mu-label text-mu-ink" : "mu-label text-mu-ink-muted italic"}>
                       {user.displayName || t("common.empty-placeholder")}
                     </span>
-                    {currentUser?.name === user.name ? <span className="text-xs text-muted-foreground">{t("common.yourself")}</span> : null}
+                    {currentUser?.name === user.name ? <span className="mu-caption text-mu-ink-muted">{t("common.yourself")}</span> : null}
                   </div>
-                  <span className="truncate text-xs text-muted-foreground">@{user.username}</span>
+                  <span className="truncate mu-caption text-mu-ink-muted">@{user.username}</span>
                 </div>
               </div>
             ),
@@ -151,10 +144,8 @@ const MemberSection = () => {
             render: (_, user: User) => (
               <div className="flex min-w-[18rem] flex-col gap-2">
                 <div className="flex flex-wrap items-center gap-2">
-                  <Badge variant="neutral" shape="pill">
-                    {stringifyUserRole(user.role)}
-                  </Badge>
-                  <Badge variant={user.state === State.ARCHIVED ? "outline" : "neutral"} shape="pill">
+                  <Badge>{stringifyUserRole(user.role)}</Badge>
+                  <Badge tone={user.state === State.ARCHIVED ? "outline" : "neutral"}>
                     {user.state === State.ARCHIVED ? t("setting.member.archived") : t("setting.member.active")}
                   </Badge>
                 </div>
@@ -170,32 +161,42 @@ const MemberSection = () => {
           {
             key: "actions",
             header: "",
-            className: "w-px text-right",
+            className: "w-px",
+            alignEnd: true,
             render: (_, user: User) =>
               currentUser?.name === user.name ? null : (
-                <DropdownMenu>
-                  <DropdownMenuTrigger render={<Button variant="outline" size="sm" />}>
-                    <MoreVerticalIcon className="w-4 h-auto" />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" sideOffset={2}>
-                    <DropdownMenuItem onClick={() => handleEditUser(user)}>{t("common.update")}</DropdownMenuItem>
-                    <DropdownMenuItem disabled={exporting} onClick={() => exportMemos(user.username)}>
+                <Menu.Root modal={false}>
+                  <Tooltip.Root>
+                    <Tooltip.Trigger
+                      render={
+                        <Menu.Trigger
+                          render={
+                            <Button variant="ghost" aria-label={`${t("common.more")}: ${user.username}`} icon={<MoreVerticalIcon />} />
+                          }
+                        />
+                      }
+                    />
+                    <Tooltip.Popup>{t("common.more")}</Tooltip.Popup>
+                  </Tooltip.Root>
+                  <Menu.Popup align="end">
+                    <Menu.Item onClick={() => handleEditUser(user)}>{t("common.update")}</Menu.Item>
+                    <Menu.Item disabled={exporting} onClick={() => exportMemos(user.username)}>
                       {t("setting.member.export-memos")}
-                    </DropdownMenuItem>
+                    </Menu.Item>
                     {user.state === State.NORMAL ? (
-                      <DropdownMenuItem onClick={() => handleArchiveUserClick(user)}>{t("setting.member.archive-member")}</DropdownMenuItem>
+                      <Menu.Item onClick={() => handleArchiveUserClick(user)}>{t("setting.member.archive-member")}</Menu.Item>
                     ) : (
                       <>
-                        <DropdownMenuItem onClick={() => handleRestoreUserClick(user)}>{t("common.restore")}</DropdownMenuItem>
+                        <Menu.Item onClick={() => handleRestoreUserClick(user)}>{t("common.restore")}</Menu.Item>
                         {findManagedResource(configurationStatus, user.name) ? null : (
-                          <DropdownMenuItem onClick={() => handleDeleteUserClick(user)} className="text-destructive focus:text-destructive">
+                          <Menu.Item onClick={() => handleDeleteUserClick(user)} danger>
                             {t("setting.member.delete-member")}
-                          </DropdownMenuItem>
+                          </Menu.Item>
                         )}
                       </>
                     )}
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                  </Menu.Popup>
+                </Menu.Root>
               ),
           },
         ]}
@@ -218,7 +219,7 @@ const MemberSection = () => {
         confirmLabel={t("common.confirm")}
         cancelLabel={t("common.cancel")}
         onConfirm={confirmArchiveUser}
-        confirmVariant="default"
+        confirmVariant="primary"
       />
 
       <ConfirmDialog
@@ -229,7 +230,7 @@ const MemberSection = () => {
         confirmLabel={t("common.delete")}
         cancelLabel={t("common.cancel")}
         onConfirm={confirmDeleteUser}
-        confirmVariant="destructive"
+        confirmVariant="danger"
       />
     </SettingSection>
   );

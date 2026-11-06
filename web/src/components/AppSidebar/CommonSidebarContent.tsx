@@ -54,8 +54,7 @@ const CommonSidebarContent = () => {
             <span className="min-w-0 flex-1 truncate">{t(resource.labelKey)}</span>
             <ExternalLinkIcon
               aria-hidden="true"
-              className="size-3 shrink-0 text-muted-foreground/50 transition-colors group-hover:text-foreground/70"
-              strokeWidth={1.8}
+              className="mu-icon-xs shrink-0 text-mu-ink-muted/50 transition-colors group-hover:text-mu-ink/70"
             />
           </a>
         ))}

@@ -1,11 +1,7 @@
+import { Button, Combobox, Dialog, Field, Input } from "@usememos/ui";
 import { XIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import UserAvatar from "@/components/UserAvatar";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { UsageLimitEntry } from "@/hooks/useUsageLimitQueries";
 import { extractUsernameFromName } from "@/lib/resource-names";
 import type { User } from "@/types/proto/api/user_service_pb";
@@ -13,6 +9,11 @@ import { useTranslate } from "@/utils/i18n";
 import { newUsageLimitEntry, parseLimitInput, toLimitInput, USAGE_METRICS, type UsageMetric } from "./usageLimitValues";
 
 type Inputs = Record<UsageMetric, string>;
+
+interface CandidateItem {
+  value: string;
+  label: string;
+}
 
 interface Props {
   open: boolean;
@@ -54,7 +55,10 @@ function UsageLimitDialog({ open, onOpenChange, entry, defaults, users, saving, 
   }, [open, entry, sourceInputs]);
 
   const usersByName = useMemo(() => new Map(users.map((user) => [user.name, user])), [users]);
-  const candidateItems = users.filter((user) => !names.includes(user.name)).map((user) => ({ value: user.name, label: userLabel(user) }));
+  const candidateItems = useMemo((): CandidateItem[] => {
+    const taken = new Set(names);
+    return users.filter((user) => !taken.has(user.name)).map((user) => ({ value: user.name, label: userLabel(user) }));
+  }, [users, names]);
 
   const parsed = (metric: UsageMetric) => parseLimitInput(metric, inputs[metric]);
   const isInvalid = (metric: UsageMetric) => parsed(metric) === null;
@@ -86,15 +90,13 @@ function UsageLimitDialog({ open, onOpenChange, entry, defaults, users, saving, 
       : t("setting.usage-limits.add-title");
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-        </DialogHeader>
+    <Dialog.Root open={open} onOpenChange={onOpenChange}>
+      <Dialog.Popup closeLabel={t("common.close")}>
+        <Dialog.Title>{title}</Dialog.Title>
         <div className="flex flex-col gap-4">
           {!forAll && (
-            <div className="grid gap-2">
-              <Label>{t("setting.usage-limits.users")}</Label>
+            <Field.Root>
+              <Field.Label>{t("setting.usage-limits.users")}</Field.Label>
               {names.length > 0 && (
                 <ul className="flex flex-wrap gap-1.5">
                   {names.map((name) => {
@@ -103,77 +105,76 @@ function UsageLimitDialog({ open, onOpenChange, entry, defaults, users, saving, 
                     return (
                       <li
                         key={name}
-                        className="flex items-center gap-1.5 rounded-full border border-border bg-muted/40 py-0.5 pr-1 pl-0.5 text-xs"
+                        className="flex items-center gap-1.5 rounded-full border border-mu-line bg-mu-well/40 py-0.5 pr-1 pl-0.5 mu-caption"
                       >
                         <UserAvatar className="h-5 w-5 shrink-0" avatarUrl={user?.avatarUrl} name={label} />
                         <span className="max-w-40 truncate">{label}</span>
                         <button
                           type="button"
-                          className="rounded-full p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+                          className="rounded-full p-0.5 text-mu-ink-muted hover:bg-mu-hover hover:text-mu-ink"
                           aria-label={t("setting.usage-limits.remove-user", { name: label })}
                           onClick={() => setNames((current) => current.filter((item) => item !== name))}
                         >
-                          <XIcon className="h-3 w-3" />
+                          <XIcon className="mu-icon-xs" />
                         </button>
                       </li>
                     );
                   })}
                 </ul>
               )}
-              <Select value="" items={candidateItems} onValueChange={(name) => name && setNames((current) => [...current, name])}>
-                <SelectTrigger className="w-full" aria-label={t("setting.usage-limits.users")}>
-                  <SelectValue placeholder={t("setting.usage-limits.select-user")} />
-                </SelectTrigger>
-                <SelectContent>
-                  {candidateItems.map((item) => (
-                    <SelectItem key={item.value} value={item.value}>
-                      {item.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-muted-foreground">
+              {/* People type a name to find them: the instance may have many users. */}
+              <Combobox.Root
+                items={candidateItems}
+                value={null}
+                onValueChange={(item: CandidateItem | null) => item && setNames((current) => [...current, item.value])}
+                itemToStringLabel={(item: CandidateItem) => item.label}
+              >
+                <Combobox.Input placeholder={t("setting.usage-limits.select-user")} triggerLabel={t("setting.usage-limits.users")} />
+                <Combobox.Popup>
+                  <Combobox.Empty>{t("message.no-data")}</Combobox.Empty>
+                  <Combobox.List>
+                    {(item: CandidateItem) => (
+                      <Combobox.Item key={item.value} value={item}>
+                        {item.label}
+                      </Combobox.Item>
+                    )}
+                  </Combobox.List>
+                </Combobox.Popup>
+              </Combobox.Root>
+              <Field.Description>
                 {names.length === 0 ? t("setting.usage-limits.users-required") : t("setting.usage-limits.users-description")}
-              </p>
-            </div>
+              </Field.Description>
+            </Field.Root>
           )}
-          {fields.map(({ metric, label, help }) => {
-            const message = isInvalid(metric) ? t("setting.usage-limits.invalid") : help;
-            return (
-              <div key={metric} className="grid gap-2">
-                <Label htmlFor={`usage-limit-${metric}`}>{label}</Label>
-                <Input
-                  id={`usage-limit-${metric}`}
-                  className="font-mono"
-                  inputMode="decimal"
-                  placeholder={t("setting.usage-limits.unlimited")}
-                  value={inputs[metric]}
-                  aria-invalid={isInvalid(metric)}
-                  aria-describedby={message ? `usage-limit-help-${metric}` : undefined}
-                  onChange={(event) => setInputs((current) => ({ ...current, [metric]: event.target.value }))}
-                />
-                {message && (
-                  <p id={`usage-limit-help-${metric}`} className="text-xs text-muted-foreground">
-                    {message}
-                  </p>
-                )}
-              </div>
-            );
-          })}
-          <p className="text-xs text-muted-foreground">
+          {fields.map(({ metric, label, help }) => (
+            <Field.Root key={metric} invalid={isInvalid(metric)}>
+              <Field.Label>{label}</Field.Label>
+              <Input
+                id={`usage-limit-${metric}`}
+                className="font-mono"
+                inputMode="decimal"
+                placeholder={t("setting.usage-limits.unlimited")}
+                value={inputs[metric]}
+                onChange={(event) => setInputs((current) => ({ ...current, [metric]: event.target.value }))}
+              />
+              {help && <Field.Description>{help}</Field.Description>}
+              {isInvalid(metric) && <Field.Error match>{t("setting.usage-limits.invalid")}</Field.Error>}
+            </Field.Root>
+          ))}
+          <p className="mu-caption text-mu-ink-muted">
             {forAll ? t("setting.usage-limits.default-hint") : t("setting.usage-limits.entry-hint")}
           </p>
         </div>
-        <DialogFooter>
+        <Dialog.Footer>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
             {t("common.cancel")}
           </Button>
-          <Button disabled={!isValid || saving} onClick={handleSave}>
+          <Button variant="primary" disabled={!isValid || saving} onClick={handleSave}>
             {t("common.save")}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </Dialog.Footer>
+      </Dialog.Popup>
+    </Dialog.Root>
   );
 }
 

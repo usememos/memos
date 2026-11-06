@@ -108,7 +108,7 @@ describe("InsertMenu", () => {
     }
   });
 
-  test("exposes a localized save-blocking reason from a focusable wrapper", () => {
+  test("keeps the blocked Save focusable so its tooltip can say why", () => {
     const state = createInitialState();
     state.content = "memo";
     state.ui.pendingInlineImageInsertions = 1;
@@ -125,7 +125,9 @@ describe("InsertMenu", () => {
       </EditorProvider>,
     );
 
-    expect(screen.getByRole("button", { name: "editor.save" })).toBeDisabled();
-    expect(screen.getByLabelText("editor.validation.resolve-image-uploads")).toHaveAttribute("tabindex", "0");
+    const save = screen.getByRole("button", { name: "editor.save" });
+    expect(save).toHaveAttribute("aria-disabled", "true");
+    expect(save).not.toHaveAttribute("tabindex", "-1");
+    expect(save).toHaveAccessibleDescription("editor.validation.resolve-image-uploads");
   });
 });

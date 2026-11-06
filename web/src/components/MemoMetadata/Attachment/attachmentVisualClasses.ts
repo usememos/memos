@@ -1,15 +1,11 @@
-import { FOCUS_VISIBLE_OUTLINE_CLASSES } from "@/components/ui/focus";
-import { cn } from "@/lib/utils";
-
 /**
  * Tailwind class bundles for attachment visual tiles (`VisualTile`, collage, single image/video).
  * Hover uses `group/media` on {@link MEDIA_HOVER_SURFACE_CLASS} so scale/gradient track the media surface, not the outer button chrome.
  */
 
-export const VISUAL_TILE_BUTTON_CLASS = cn(
-  "relative block overflow-hidden rounded-md border border-border/70 bg-muted/30 p-0 text-left outline-none transition-colors",
-  FOCUS_VISIBLE_OUTLINE_CLASSES,
-);
+// No `outline-none`: as a utility it would override `mu-focus` and hide the keyboard outline.
+export const VISUAL_TILE_BUTTON_CLASS =
+  "relative block overflow-hidden rounded-mu-md border border-mu-line/70 bg-mu-well/30 p-0 text-left transition-colors mu-focus";
 
 export const MEDIA_HOVER_SURFACE_CLASS = "group/media relative h-full min-h-0 w-full overflow-hidden";
 
@@ -31,8 +27,8 @@ export const VISUAL_Z = {
   overflowMask: "z-[3]",
 } as const;
 
-export const MEDIA_HOVER_GRADIENT_CLASS = `pointer-events-none absolute inset-0 ${VISUAL_Z.gradient} bg-gradient-to-t from-foreground/15 via-transparent to-transparent opacity-0 transition-opacity group-hover/media:opacity-100`;
+export const MEDIA_HOVER_GRADIENT_CLASS = `pointer-events-none absolute inset-0 ${VISUAL_Z.gradient} bg-gradient-to-t from-mu-ink/15 via-transparent to-transparent opacity-0 transition-opacity group-hover/media:opacity-100`;
 
-export const COLLAGE_VIDEO_PLAY_BADGE_CLASS = `bottom-2 right-2 ${VISUAL_Z.badge} h-7 w-7 bg-background/80 text-foreground/70`;
+export const COLLAGE_VIDEO_PLAY_BADGE_CLASS = `bottom-2 right-2 ${VISUAL_Z.badge} h-7 w-7 bg-mu-canvas/80 text-mu-ink/70`;
 
-export const OVERFLOW_TILE_OVERLAY_CLASS = `pointer-events-none absolute inset-0 ${VISUAL_Z.overflowMask} flex items-center justify-center bg-black/45 text-2xl font-semibold text-white backdrop-blur-[2px]`;
+export const OVERFLOW_TILE_OVERLAY_CLASS = `pointer-events-none absolute inset-0 ${VISUAL_Z.overflowMask} flex items-center justify-center bg-black/45 mu-heading text-white backdrop-blur-[2px]`;

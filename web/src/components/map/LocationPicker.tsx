@@ -5,6 +5,7 @@ import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { MapContainer, Marker, useMap, useMapEvents } from "react-leaflet";
 import { cn } from "@/lib/utils";
+import { useTranslate } from "@/utils/i18n";
 import { BasemapLayer } from "./BasemapLayer";
 import { defaultMarkerIcon, MinimalAttributionControl } from "./map-utils";
 import type { MapPoint } from "./types";
@@ -62,10 +63,10 @@ const GlassButton = ({ icon, onClick, ariaLabel, title }: GlassButtonProps) => {
       aria-label={ariaLabel}
       title={title}
       className={cn(
-        "inline-flex items-center justify-center h-8 w-8 rounded-lg",
-        "border border-border/80 bg-background/88 text-foreground shadow-sm backdrop-blur-md",
-        "hover:scale-105 hover:bg-background hover:shadow-md active:scale-95",
-        "focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-1 focus-visible:ring-offset-background",
+        "inline-flex items-center justify-center h-8 w-8 rounded-mu-lg",
+        "border border-mu-line/80 bg-mu-canvas/88 text-mu-ink shadow-mu-key backdrop-blur-md",
+        "hover:scale-105 hover:bg-mu-canvas hover:shadow-mu-pop active:scale-95",
+        "mu-focus",
       )}
     >
       {icon}
@@ -82,18 +83,29 @@ interface ControlButtonsProps {
 }
 
 const ControlButtons = ({ position, onZoomIn, onZoomOut, onOpenGoogleMaps }: ControlButtonsProps) => {
+  const t = useTranslate();
   return (
     <div className="flex flex-col gap-1.5">
       {position && (
         <GlassButton
-          icon={<ExternalLinkIcon size={16} className="text-foreground" />}
+          icon={<ExternalLinkIcon size={16} className="text-mu-ink" />}
           onClick={onOpenGoogleMaps}
-          ariaLabel="Open location in Google Maps"
-          title="Open in Google Maps"
+          ariaLabel={t("map.open-in-google-maps")}
+          title={t("map.open-in-google-maps")}
         />
       )}
-      <GlassButton icon={<PlusIcon size={16} className="text-foreground" />} onClick={onZoomIn} ariaLabel="Zoom in" title="Zoom in" />
-      <GlassButton icon={<MinusIcon size={16} className="text-foreground" />} onClick={onZoomOut} ariaLabel="Zoom out" title="Zoom out" />
+      <GlassButton
+        icon={<PlusIcon size={16} className="text-mu-ink" />}
+        onClick={onZoomIn}
+        ariaLabel={t("map.zoom-in")}
+        title={t("map.zoom-in")}
+      />
+      <GlassButton
+        icon={<MinusIcon size={16} className="text-mu-ink" />}
+        onClick={onZoomOut}
+        ariaLabel={t("map.zoom-out")}
+        title={t("map.zoom-out")}
+      />
     </div>
   );
 };
@@ -205,17 +217,18 @@ const noopOnLocationChange = () => {};
 const LocationPicker = ({ readonly: readOnly = false, latlng, onChange = noopOnLocationChange, className }: LocationPickerProps) => {
   const mapCenter = useMemo(() => toLatLng(latlng ?? DEFAULT_CENTER), [latlng?.lat, latlng?.lng]);
   const markerPosition = latlng ? mapCenter : undefined;
-  const statusLabel = latlng ? "Selected location" : "Choose a location";
+  const t = useTranslate();
+  const statusLabel = latlng ? t("common.selected-location") : t("common.choose-location");
 
   return (
     <div
       className={cn(
-        "memo-location-map relative isolate h-72 w-full overflow-hidden rounded-xl border border-border bg-background shadow-sm",
+        "memo-location-map relative isolate h-72 w-full overflow-hidden rounded-mu-xl border border-mu-line bg-mu-canvas ",
         className,
       )}
     >
       <MapContainer
-        className="map-attribution-minimal h-full w-full !bg-muted"
+        className="map-attribution-minimal h-full w-full !bg-mu-well"
         center={mapCenter}
         zoom={13}
         scrollWheelZoom={false}
@@ -231,7 +244,7 @@ const LocationPicker = ({ readonly: readOnly = false, latlng, onChange = noopOnL
 
       {!readOnly && (
         <div className="pointer-events-none absolute left-3 top-3 z-[450] flex items-center gap-2">
-          <div className="rounded-full border border-border bg-background/92 px-2.5 py-1 text-[11px] font-medium tracking-[0.02em] text-foreground/80 shadow-sm backdrop-blur-sm">
+          <div className="rounded-full border border-mu-line bg-mu-canvas/92 px-2.5 py-1 mu-label-sm tracking-[0.02em] text-mu-ink/80 backdrop-blur-sm">
             {statusLabel}
           </div>
         </div>

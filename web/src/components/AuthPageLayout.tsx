@@ -1,3 +1,4 @@
+import { Skeleton } from "@usememos/ui";
 import { ArrowRightIcon, CompassIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useInstance } from "@/contexts/InstanceContext";
@@ -17,7 +18,7 @@ interface Props {
 }
 
 export const AuthChip = ({ children }: { children: React.ReactNode }) => (
-  <span className="inline-flex w-fit items-center gap-1.5 rounded-full border border-border bg-accent/50 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+  <span className="inline-flex w-fit items-center gap-1.5 rounded-full border border-mu-line bg-mu-hover/50 px-2.5 py-0.5 mu-label-sm uppercase tracking-widest text-mu-ink-muted">
     {children}
   </span>
 );
@@ -35,24 +36,24 @@ export const AuthEmptyState = ({
   children?: React.ReactNode;
 }) => (
   <div className="flex flex-col items-center py-2 text-center">
-    <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-accent text-muted-foreground">{icon}</div>
-    <p className="text-sm font-medium text-foreground">{title}</p>
-    <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+    <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-full bg-mu-hover text-mu-ink-muted">{icon}</div>
+    <p className="mu-label text-mu-ink">{title}</p>
+    <p className="mt-1 mu-body text-mu-ink-muted">{description}</p>
     {children}
   </div>
 );
 
 // "Already have an account? Sign in" style prompt for hopping between auth pages.
 export const AuthLinkPrompt = ({ prompt, to, label }: { prompt: string; to: string; label: string }) => (
-  <p className="mt-5 text-center text-sm text-muted-foreground">
+  <p className="mt-5 text-center mu-body text-mu-ink-muted">
     {prompt}{" "}
-    <Link to={to} className="text-primary hover:underline" viewTransition>
+    <Link to={to} className="text-mu-accent hover:underline" viewTransition>
       {label}
     </Link>
   </p>
 );
 
-export const AuthOptionsLoading = () => <div className="h-9 w-full animate-pulse rounded-md bg-muted/60" aria-hidden="true" />;
+export const AuthOptionsLoading = () => <Skeleton height={32} />;
 
 const AuthPageLayout = ({ chip, title, subtitle, hideExplore, children }: Props) => {
   const t = useTranslate();
@@ -62,22 +63,22 @@ const AuthPageLayout = ({ chip, title, subtitle, hideExplore, children }: Props)
   return (
     <div className="min-h-svh w-full flex flex-col items-center px-4 py-4 sm:py-8">
       <div className="w-full grow flex flex-col justify-center items-center">
-        <div className="w-90 max-w-full rounded-xl border border-border bg-card p-7 shadow-sm">
+        <div className="w-90 max-w-full rounded-mu-xl border border-mu-line bg-mu-surface p-7">
           <MemosLogo size="lg" className="mb-8" />
           {chip && <div className="mb-2">{chip}</div>}
-          <h1 className="text-lg font-semibold tracking-tight text-foreground">{title}</h1>
-          {subtitle && <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>}
+          <h1 className="mu-heading text-mu-ink">{title}</h1>
+          {subtitle && <p className="mt-1 mu-body text-mu-ink-muted">{subtitle}</p>}
           <div className="mt-6 w-full">{children}</div>
           {showExplore && (
-            <div className="-mx-7 -mb-7 mt-6 rounded-b-xl border-t border-border bg-background/60">
+            <div className="-mx-7 -mb-7 mt-6 rounded-b-mu-xl border-t border-mu-line bg-mu-canvas/60">
               <Link
                 to={ROUTES.EXPLORE}
-                className="group flex items-center justify-center gap-2 px-7 py-3 text-[13px] text-muted-foreground transition-colors hover:text-foreground"
+                className="group flex items-center justify-center gap-2 px-7 py-3 mu-caption text-mu-ink-muted transition-colors hover:text-mu-ink"
                 viewTransition
               >
-                <CompassIcon className="h-3.5 w-3.5" />
+                <CompassIcon className="mu-icon-sm" />
                 {t("auth.explore-public-memos")}
-                <ArrowRightIcon className="-ms-1 h-3.5 w-3.5 opacity-0 transition-all group-hover:ms-0 group-hover:opacity-100 rtl:rotate-180" />
+                <ArrowRightIcon className="mu-icon-sm -ms-1 opacity-0 transition-all group-hover:ms-0 group-hover:opacity-100 rtl:rotate-180" />
               </Link>
             </div>
           )}

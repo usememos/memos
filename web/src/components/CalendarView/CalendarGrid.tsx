@@ -116,7 +116,7 @@ export const CalendarGrid = ({
           floor that keeps the date and a short excerpt visible on short windows. */}
       <div
         ref={cellsRef}
-        className="grid auto-rows-fr grid-cols-7 overflow-hidden rounded-lg border border-border/70 bg-card md:[grid-auto-rows:9rem] xl:min-h-0 xl:flex-1 xl:[grid-auto-rows:minmax(5.5rem,1fr)]"
+        className="grid auto-rows-fr grid-cols-7 overflow-hidden rounded-mu-lg border border-mu-line/70 bg-mu-surface md:[grid-auto-rows:9rem] xl:min-h-0 xl:flex-1 xl:[grid-auto-rows:minmax(5.5rem,1fr)]"
       >
         {days.map((day, index) => (
           <CalendarDayCell

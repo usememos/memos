@@ -22,11 +22,11 @@
     flex: 1 0 auto;
   }
   & .memo-editor-root {
-    caret-color: var(--foreground);
+    caret-color: var(--mu-ink);
     outline: none;
   }
   & .memo-editor-root ::selection {
-    background: var(--accent);
+    background: var(--mu-selection);
   }
 }
 
@@ -40,7 +40,7 @@
   animation-duration: 280ms;
   animation-timing-function: cubic-bezier(0.2, 0, 0, 1);
   overflow: clip;
-  border-radius: var(--radius);
+  border-radius: var(--mu-radius-lg);
 }
 ::view-transition-old(memo-focus-mode),
 ::view-transition-new(memo-focus-mode) {
@@ -90,7 +90,7 @@
   left: 0;
   width: 2px;
   border-radius: 999px;
-  background: var(--primary);
+  background: var(--mu-primary);
 }
 
 .memo-upload-anchor-rail::after {
@@ -99,9 +99,9 @@
   left: -3px;
   width: 8px;
   height: 8px;
-  border: 2px solid var(--card);
+  border: 2px solid var(--mu-surface);
   border-radius: 999px;
-  background: var(--primary);
+  background: var(--mu-primary);
   content: "";
   transform: translateY(-50%);
 }
@@ -110,16 +110,16 @@
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
-  border-radius: calc(var(--radius) - 2px);
-  background: color-mix(in oklab, var(--primary) 8%, transparent);
+  border-radius: var(--mu-radius-md);
+  background: color-mix(in oklab, var(--mu-primary) 8%, transparent);
   padding: 0.25rem 0.5rem;
-  color: var(--primary);
+  color: var(--mu-primary);
   font-weight: 500;
 }
 
 .memo-upload-anchor[data-status="failed"] .memo-upload-anchor-badge {
-  background: color-mix(in oklab, var(--destructive) 8%, transparent);
-  color: var(--destructive);
+  background: color-mix(in oklab, var(--mu-danger) 8%, transparent);
+  color: var(--mu-danger);
 }
 
 .memo-upload-anchor-spinner {
@@ -137,16 +137,16 @@
 }
 
 .memo-upload-anchor-action {
-  border-radius: calc(var(--radius) - 2px);
+  border-radius: var(--mu-radius-md);
   padding: 0.25rem 0.5rem;
-  color: var(--muted-foreground);
+  color: var(--mu-ink-muted);
   font-weight: 500;
 }
 
 .memo-upload-anchor-action:hover,
 .memo-upload-anchor-action:focus-visible {
-  background: var(--accent);
-  color: var(--accent-foreground);
+  background: var(--mu-hover);
+  color: var(--mu-ink);
   outline: none;
 }
 
@@ -156,16 +156,34 @@
   }
 }
 
-/* The editor portals its own UI outside the composer. Match the app's floating
-   surfaces here without changing document typography or package internals. */
+/* The editor portals its own UI outside the composer. Its menus, toolbars and cards take the
+   @usememos/ui popup surface and its tooltips the package's tooltip, so they line up with the
+   app's own popups, without changing document typography or package internals. */
 .mbe-ui:is(.mbe-menu, .mbe-toolbar, .mbe-image-toolbar, .mbe-link-card, .mbe-input-popover) {
-  @apply rounded-lg border-border/70 bg-popover text-popover-foreground text-ui font-normal leading-5 tracking-normal shadow-float;
+  border: 0;
+  border-radius: var(--mu-radius-xl);
+  background: var(--mu-surface);
+  box-shadow: var(--mu-shadow-pop);
+  color: var(--mu-ink);
+  font: 400 13px / 18px var(--mu-font-sans);
+  letter-spacing: 0;
 }
 
 .mbe-ui.mbe-menu {
-  @apply p-1.5;
+  padding: var(--mu-space-1);
 }
 
 .mbe-ui.mbe-tooltip {
-  @apply max-w-[min(16rem,calc(100vw-1rem))] whitespace-normal rounded-md border border-border/70 bg-popover px-2 py-1 text-xs font-normal leading-4 tracking-normal text-popover-foreground text-pretty [overflow-wrap:anywhere] shadow-md;
+  max-width: min(var(--mu-tooltip-width), calc(100vw - 1rem));
+  padding: var(--mu-space-1) var(--mu-space-2);
+  border: 0;
+  border-radius: var(--mu-radius-md);
+  background: var(--mu-primary);
+  box-shadow: none;
+  color: var(--mu-on-primary);
+  font: 500 13px / 18px var(--mu-font-sans);
+  letter-spacing: 0;
+  white-space: normal;
+  text-wrap: pretty;
+  overflow-wrap: anywhere;
 }

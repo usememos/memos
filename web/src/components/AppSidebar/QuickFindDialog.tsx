@@ -1,11 +1,7 @@
+import { Button, Dialog, Textarea, Toggle, ToggleGroup, Tooltip } from "@usememos/ui";
 import { CornerDownLeftIcon, SearchIcon } from "lucide-react";
 import { type ChangeEvent, type FormEvent, type KeyboardEvent, useEffect, useId, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Textarea } from "@/components/ui/textarea";
 import { useAppSidebar } from "@/contexts/AppSidebarContext";
 import { getFilterSearch, isSearchFilter, type MemoFilter, useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { useSpaceContext } from "@/contexts/SpaceContext";
@@ -148,81 +144,88 @@ const QuickFindDialog = () => {
   };
 
   return (
-    <Dialog open={quickFindOpen} onOpenChange={setQuickFindOpen}>
-      <DialogContent
-        size="lg"
-        backdrop="subtle"
-        className="top-[12vh]! translate-y-0! overflow-hidden border-border/70 p-0! shadow-xl sm:top-[16vh]! [&>div:first-child]:gap-0!"
-        showCloseButton={false}
+    <Dialog.Root open={quickFindOpen} onOpenChange={setQuickFindOpen}>
+      {/* Anchored near the top, not centered, so switching modes grows the panel downward instead of shifting it. */}
+      <Dialog.Popup
+        variant="bare"
+        sheet={false}
+        className="w-lg self-start mt-[max(0px,calc(12vh-var(--mu-space-6)))] sm:mt-[max(0px,calc(16vh-var(--mu-space-6)))]"
       >
-        <DialogTitle className="sr-only">{t("common.search")}</DialogTitle>
-        <DialogDescription className="sr-only">
+        <Dialog.Title className="mu-visually-hidden">{t("common.search")}</Dialog.Title>
+        <Dialog.Description className="mu-visually-hidden">
           {t("common.search")} {scopeLabel}
-        </DialogDescription>
+        </Dialog.Description>
         <form onSubmit={handleSubmit}>
-          <div className="flex items-center justify-between gap-3 border-b border-border/50 px-4 py-2">
-            <span className="min-w-0 truncate text-xs text-muted-foreground" title={scopeLabel}>
+          <div className="flex items-center justify-between gap-3 border-b border-mu-line/50 px-4 py-2">
+            <span className="min-w-0 truncate mu-caption text-mu-ink-muted" title={scopeLabel}>
               {compactScopeLabel}
             </span>
-            <Tabs value={mode} onValueChange={(value) => setMode(value as QuickFindMode)} size="sm" className="shrink-0">
-              <TabsList
-                aria-label={t("search.mode")}
-                // Arrow navigation keeps focus on the tabs; clicking a mode focuses its field.
-                onKeyDownCapture={() => setAutoFocusField(false)}
-                onClickCapture={() => setAutoFocusField(true)}
-              >
-                {(["text", "cel"] as const).map((value) => (
-                  <TabsTrigger key={value} value={value}>
-                    {value === "cel" ? t("search.expression-mode") : t("search.text")}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
-            </Tabs>
+            <ToggleGroup
+              size="sm"
+              className="shrink-0"
+              aria-label={t("search.mode")}
+              value={[mode]}
+              onValueChange={([next]: string[]) => next && setMode(next as QuickFindMode)}
+              // Keyboard choices keep focus on the switch; clicking a mode focuses its field.
+              onKeyDownCapture={() => setAutoFocusField(false)}
+              onClickCapture={() => setAutoFocusField(true)}
+            >
+              {(["text", "cel"] as const).map((value) => (
+                <Toggle key={value} value={value}>
+                  {value === "cel" ? t("search.expression-mode") : t("search.text")}
+                </Toggle>
+              ))}
+            </ToggleGroup>
           </div>
           {mode === "cel" ? (
             <div className="space-y-3 p-4">
               <Textarea
                 {...fieldProps}
                 rows={3}
-                className="field-sizing-fixed max-h-[40dvh] resize-y font-mono text-sm leading-6"
+                className="field-sizing-fixed max-h-[40dvh] resize-y font-mono"
                 placeholder={'"work" in tags && !content.contains("GitHub")'}
                 aria-label={t("search.expression")}
                 aria-describedby={hintId}
               />
               <div className="flex items-end justify-between gap-3">
-                <div className="min-w-0 space-y-1 text-xs text-muted-foreground">
+                <div className="min-w-0 space-y-1 mu-caption text-mu-ink-muted">
                   <p id={hintId}>{t("search.keyboard-hint")}</p>
                   <a
                     href="https://usememos.com/docs/usage/shortcuts#filter-expression-syntax"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-block underline underline-offset-2 hover:text-foreground"
+                    className="inline-block underline underline-offset-2 hover:text-mu-ink"
                   >
                     {t("search.syntax-help")}
                   </a>
                 </div>
-                <Button type="submit" size="sm" className="shrink-0">
+                <Button variant="primary" type="submit" size="sm" className="shrink-0">
                   {t("common.search")}
                 </Button>
               </div>
             </div>
           ) : (
             <div className="flex h-[52px] shrink-0 items-center gap-2.5 px-4">
-              <SearchIcon className="size-[17px] shrink-0 text-muted-foreground" strokeWidth={1.8} />
-              <Input
+              <SearchIcon className="mu-icon size-[17px] shrink-0 text-mu-ink-muted" />
+              {/* The dialog's own field, focused whenever it is open: the caret marks focus, as in a
+                  command palette, so it draws no outline around the borderless header. */}
+              <input
                 {...fieldProps}
-                className="h-10 border-0 bg-transparent px-0 !text-[14px] focus-visible:outline-offset-2"
+                className="h-10 min-w-0 flex-1 bg-transparent mu-body outline-none placeholder:text-mu-ink-muted"
                 placeholder={`${t("common.search")} ${compactScopeLabel}`}
                 aria-label={`${t("common.search")} ${scopeLabel}`}
               />
-              <Button type="submit" variant="quiet" size="icon-compact" aria-label={t("common.search")}>
-                <CornerDownLeftIcon className="size-3.5" />
-              </Button>
+              <Tooltip.Root>
+                <Tooltip.Trigger
+                  render={<Button type="submit" variant="ghost" size="sm" aria-label={t("common.search")} icon={<CornerDownLeftIcon />} />}
+                />
+                <Tooltip.Popup>{t("common.search")}</Tooltip.Popup>
+              </Tooltip.Root>
             </div>
           )}
         </form>
-      </DialogContent>
-    </Dialog>
+      </Dialog.Popup>
+    </Dialog.Root>
   );
 };
 

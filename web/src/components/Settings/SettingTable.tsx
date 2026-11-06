@@ -1,10 +1,15 @@
-import React from "react";
+import { Table } from "@usememos/ui";
+import type React from "react";
 import { cn } from "@/lib/utils";
+import { useTranslate } from "@/utils/i18n";
 
 interface SettingTableColumn<T = Record<string, unknown>> {
   key: string;
   header: React.ReactNode;
+  /** Layout classes for the column's cells. */
   className?: string;
+  /** Lines the column's cells up at the end edge, like a Table's numeric column (actions, counts). */
+  alignEnd?: boolean;
   render?: (value: T[keyof T], row: T) => React.ReactNode;
 }
 
@@ -12,68 +17,62 @@ interface SettingTableProps<T = Record<string, unknown>> {
   columns: SettingTableColumn<T>[];
   data: T[];
   emptyMessage?: string;
-  className?: string;
   getRowKey?: (row: T, index: number) => string;
+  /** `info-flow` lets cells wrap and align to the top, for rows of mixed content. */
   variant?: "default" | "info-flow";
 }
 
+/** A settings list with columns: a bordered md Table, so it reads as one block among the page's other sections and its text lines up with a List row's. */
 const SettingTable = <T extends Record<string, unknown>>({
   columns,
   data,
-  emptyMessage = "No data",
-  className,
+  emptyMessage,
   getRowKey,
   variant = "default",
 }: SettingTableProps<T>) => {
+  const t = useTranslate();
   return (
-    <div className={cn("w-full overflow-x-auto", className)}>
-      <div className="inline-block min-w-full align-middle border border-border rounded-lg">
-        <table className="min-w-full divide-y divide-border">
-          <thead>
-            <tr className="text-sm font-semibold text-left text-foreground">
-              {columns.map((column) => (
-                <th key={column.key} scope="col" className={cn("px-3 py-2", column.className)}>
-                  {column.header}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border">
-            {data.length === 0 ? (
-              <tr>
-                <td colSpan={columns.length} className="px-3 py-4 text-center text-sm text-muted-foreground">
-                  {emptyMessage}
-                </td>
-              </tr>
-            ) : (
-              data.map((row, rowIndex) => {
-                const rowKey = getRowKey ? getRowKey(row, rowIndex) : rowIndex.toString();
-                return (
-                  <tr key={rowKey}>
-                    {columns.map((column) => {
-                      const value = row[column.key as keyof T] as T[keyof T];
-                      const content = column.render ? column.render(value, row) : (value as React.ReactNode);
-                      return (
-                        <td
-                          key={column.key}
-                          className={cn(
-                            "px-3 text-sm text-muted-foreground",
-                            variant === "default" ? "whitespace-nowrap py-2" : "py-3 align-top whitespace-normal",
-                            column.className,
-                          )}
-                        >
-                          {content}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <Table.Root bordered>
+      <Table.Header>
+        <Table.Row>
+          {columns.map((column) => (
+            <Table.Head key={column.key} num={column.alignEnd} className={column.className}>
+              {column.header}
+            </Table.Head>
+          ))}
+        </Table.Row>
+      </Table.Header>
+      <Table.Body>
+        {data.length === 0 ? (
+          <Table.Row>
+            <Table.Cell colSpan={columns.length} muted className="text-center">
+              {emptyMessage ?? t("message.no-data")}
+            </Table.Cell>
+          </Table.Row>
+        ) : (
+          data.map((row, rowIndex) => {
+            const rowKey = getRowKey ? getRowKey(row, rowIndex) : rowIndex.toString();
+            return (
+              <Table.Row key={rowKey}>
+                {columns.map((column) => {
+                  const value = row[column.key as keyof T] as T[keyof T];
+                  const content = column.render ? column.render(value, row) : (value as React.ReactNode);
+                  return (
+                    <Table.Cell
+                      key={column.key}
+                      num={column.alignEnd}
+                      className={cn(variant === "default" ? "whitespace-nowrap" : "whitespace-normal align-top", column.className)}
+                    >
+                      {content}
+                    </Table.Cell>
+                  );
+                })}
+              </Table.Row>
+            );
+          })
+        )}
+      </Table.Body>
+    </Table.Root>
   );
 };
 

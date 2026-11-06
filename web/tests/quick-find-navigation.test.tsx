@@ -104,7 +104,7 @@ describe("Quick Find navigation", () => {
     renderSearch();
     openQuickFind();
     fireEvent.change(await screen.findByRole("textbox"), { target: { value: "pinned || has_link" } });
-    fireEvent.click(screen.getByRole("tab", { name: "search.expression-mode" }));
+    fireEvent.click(screen.getByRole("button", { name: "search.expression-mode" }));
     const expression = screen.getByRole("textbox");
     expect(expression.tagName).toBe("TEXTAREA");
     expect(expression).toHaveValue("pinned || has_link");
@@ -116,20 +116,20 @@ describe("Quick Find navigation", () => {
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
   });
 
-  it("keeps keyboard focus on the mode tabs while preserving the draft", async () => {
+  it("moves keyboard focus across the mode switch without losing the draft", async () => {
     renderSearch();
     openQuickFind();
     fireEvent.change(await screen.findByRole("textbox"), { target: { value: "pinned" } });
-    const textTab = screen.getByRole("tab", { name: "search.text" });
-    act(() => textTab.focus());
-    fireEvent.keyDown(textTab, { key: "ArrowRight" });
-    const expressionTab = screen.getByRole("tab", { name: "search.expression-mode" });
-    await waitFor(() => expect(expressionTab).toHaveFocus());
-    expect(expressionTab).toHaveAttribute("aria-selected", "true");
+    const textMode = screen.getByRole("button", { name: "search.text" });
+    act(() => textMode.focus());
+    fireEvent.keyDown(textMode, { key: "ArrowRight" });
+    const expressionMode = screen.getByRole("button", { name: "search.expression-mode" });
+    await waitFor(() => expect(expressionMode).toHaveFocus());
+    // Arrow keys move focus; pressing a mode chooses it.
+    expect(textMode).toHaveAttribute("aria-pressed", "true");
+    fireEvent.click(expressionMode);
+    expect(expressionMode).toHaveAttribute("aria-pressed", "true");
     expect(screen.getByRole("textbox")).toHaveValue("pinned");
-    fireEvent.keyDown(expressionTab, { key: "ArrowLeft" });
-    await waitFor(() => expect(textTab).toHaveFocus());
-    expect(textTab).toHaveAttribute("aria-selected", "true");
   });
 
   it("restores the expression from its chip and discards cancelled changes", async () => {
@@ -141,23 +141,23 @@ describe("Quick Find navigation", () => {
     openQuickFind();
     const expression = await screen.findByRole("textbox");
     expect(expression).toHaveValue("pinned\n || has_code");
-    expect(screen.getByRole("tab", { name: "search.expression-mode" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("button", { name: "search.expression-mode" })).toHaveAttribute("aria-pressed", "true");
     fireEvent.change(expression, { target: { value: "has_link" } });
     fireEvent.keyDown(expression, { key: "Escape" });
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     expect(state.setFilters).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", { name: "search.edit-query" }));
     expect(await screen.findByRole("textbox")).toHaveValue("pinned\n || has_code");
-    fireEvent.click(screen.getByRole("tab", { name: "search.text" }));
+    fireEvent.click(screen.getByRole("button", { name: "search.text" }));
     expect(screen.getByRole("textbox")).toHaveValue("pinned || has_code");
-    fireEvent.click(screen.getByRole("tab", { name: "search.expression-mode" }));
+    fireEvent.click(screen.getByRole("button", { name: "search.expression-mode" }));
     expect(screen.getByRole("textbox")).toHaveValue("pinned\n || has_code");
   });
 
   it.each(["text", "cel"])("ignores Enter during IME composition in %s mode", async (mode) => {
     renderSearch();
     openQuickFind();
-    if (mode === "cel") fireEvent.click(screen.getByRole("tab", { name: "search.expression-mode" }));
+    if (mode === "cel") fireEvent.click(screen.getByRole("button", { name: "search.expression-mode" }));
     const input = await screen.findByRole("textbox");
     fireEvent.change(input, { target: { value: "pinned" } });
     const composingEnter = createEvent.keyDown(input, { key: "Enter", isComposing: true });
@@ -179,7 +179,7 @@ describe("Quick Find navigation", () => {
     openQuickFind();
     fireEvent.keyDown(await screen.findByRole("textbox"), { key: "Escape" });
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
-    const [removeCel] = screen.getAllByRole("button", { name: "Remove filter" });
+    const [removeCel] = screen.getAllByRole("button", { name: "memo.filters.remove" });
     fireEvent.click(removeCel);
     const predicate = state.removeFilter.mock.calls[0][0];
     expect(state.filters.filter((filter) => !predicate(filter))).toEqual([{ factor: "tagSearch", value: "work" }]);

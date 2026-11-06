@@ -1,22 +1,14 @@
+import { Badge, Button, Menu, Tooltip } from "@usememos/ui";
 import { ArrowDownIcon, ArrowUpIcon, MoreVerticalIcon, PlusIcon, UsersIcon } from "lucide-react";
 import { useMemo, useState } from "react";
-import { toast } from "react-hot-toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import UserAvatar from "@/components/UserAvatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { isFieldManaged, useManagedResource } from "@/hooks/useConfigurationQueries";
 import { type UsageLimitEntry, useSaveUsageLimits, useUsageLimits } from "@/hooks/useUsageLimitQueries";
 import { useListUsers } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
 import { extractUsernameFromName } from "@/lib/resource-names";
+import { showErrorToast, toast } from "@/lib/toast";
 import { InstanceSetting_Key } from "@/types/proto/api/instance_service_pb";
 import type { User } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
@@ -75,10 +67,10 @@ const UsageLimitsSection = () => {
   const replace = async (next: UsageLimitEntry[], successKey: "setting.usage-limits.saved" | "setting.usage-limits.removed") => {
     try {
       await save.mutateAsync(next);
-      toast.success(t(successKey));
+      toast.add({ title: t(successKey), type: "success" });
       return true;
     } catch (error) {
-      handleError(error, toast.error, { context: "Update usage limits" });
+      handleError(error, showErrorToast, { context: "Update usage limits" });
       return false;
     }
   };
@@ -119,7 +111,7 @@ const UsageLimitsSection = () => {
   const renderUser = (name: string, user: User | undefined) => {
     const label = user?.displayName || user?.username || extractUsernameFromName(name);
     return (
-      <li key={name} className="flex items-center gap-1.5 rounded-full border border-border bg-muted/40 py-0.5 pr-2 pl-0.5 text-xs">
+      <li key={name} className="flex items-center gap-1.5 rounded-full border border-mu-line bg-mu-well/40 py-0.5 pr-2 pl-0.5 mu-caption">
         <UserAvatar className="h-5 w-5 shrink-0" avatarUrl={user?.avatarUrl} name={label} />
         <span className="max-w-40 truncate">{label}</span>
       </li>
@@ -129,7 +121,7 @@ const UsageLimitsSection = () => {
   const renderLimit = (metric: UsageMetric) => (_: unknown, row: LimitRow) => {
     const value = row.entry[metric];
     return (
-      <span className={isLimited(value) ? "text-foreground" : "text-muted-foreground/70"}>
+      <span className={isLimited(value) ? "text-mu-ink" : "text-mu-ink-muted/70"}>
         {isLimited(value) ? formatLimitValue(metric, value) : t("setting.usage-limits.unlimited")}
       </span>
     );
@@ -142,21 +134,25 @@ const UsageLimitsSection = () => {
       actions={
         <>
           {locked ? <ManagedByConfigurationChip resource={managed} /> : null}
-          <Button disabled={locked || isLoading || !defaults} onClick={() => setDialog({ open: true })}>
-            <PlusIcon className="w-4 h-4 mr-2" />
+          <Button
+            variant="primary"
+            disabled={locked || isLoading || !defaults}
+            onClick={() => setDialog({ open: true })}
+            icon={<PlusIcon />}
+          >
             {t("setting.usage-limits.add-entry")}
           </Button>
         </>
       }
     >
-      <p className="text-sm text-muted-foreground">{t("setting.usage-limits.order-note")}</p>
+      <p className="mu-body text-mu-ink-muted">{t("setting.usage-limits.order-note")}</p>
       <SettingTable
         columns={[
           {
             key: "position",
             header: t("setting.usage-limits.position"),
-            className: "w-px font-mono text-muted-foreground",
-            render: (_, row: LimitRow) => <span className="font-mono text-muted-foreground">{row.index + 1}</span>,
+            className: "w-px font-mono text-mu-ink-muted",
+            render: (_, row: LimitRow) => <span className="font-mono text-mu-ink-muted">{row.index + 1}</span>,
           },
           {
             key: "users",
@@ -164,19 +160,19 @@ const UsageLimitsSection = () => {
             render: (_, row: LimitRow) =>
               row.entry.allUsers ? (
                 <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted">
-                    <UsersIcon className="h-4 w-4 text-muted-foreground" />
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-mu-well">
+                    <UsersIcon className="mu-icon text-mu-ink-muted" />
                   </div>
                   <div className="flex min-w-0 flex-col">
-                    <span className="text-sm font-medium text-foreground">{t("setting.usage-limits.all-users")}</span>
-                    <span className="text-xs text-muted-foreground">{t("setting.usage-limits.all-users-description")}</span>
+                    <span className="mu-label text-mu-ink">{t("setting.usage-limits.all-users")}</span>
+                    <span className="mu-caption text-mu-ink-muted">{t("setting.usage-limits.all-users-description")}</span>
                   </div>
                 </div>
               ) : (
                 <div className="flex flex-col gap-1.5">
                   <ul className="flex flex-wrap gap-1.5">{row.entry.users.map((name) => renderUser(name, usersByName.get(name)))}</ul>
                   {row.shadowed && (
-                    <Badge variant="warning" shape="pill" className="w-fit" title={t("setting.usage-limits.never-applies-description")}>
+                    <Badge tone="warning" className="w-fit" title={t("setting.usage-limits.never-applies-description")}>
                       {t("setting.usage-limits.never-applies")}
                     </Badge>
                   )}
@@ -187,45 +183,49 @@ const UsageLimitsSection = () => {
           {
             key: "actions",
             header: "",
-            className: "w-px text-right",
+            className: "w-px",
+            alignEnd: true,
             render: (_, row: LimitRow) => {
               const name = row.entry.allUsers ? t("setting.usage-limits.all-users") : String(row.index + 1);
               return (
-                <DropdownMenu>
-                  <DropdownMenuTrigger
-                    render={
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        disabled={locked || isLoading || save.isPending}
-                        aria-label={t("setting.usage-limits.row-actions", { name })}
-                      />
-                    }
-                  >
-                    <MoreVerticalIcon className="w-4 h-auto" />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" sideOffset={2}>
+                <Menu.Root modal={false}>
+                  <Tooltip.Root>
+                    <Tooltip.Trigger
+                      render={
+                        <Menu.Trigger
+                          render={
+                            <Button
+                              variant="ghost"
+                              disabled={locked || isLoading || save.isPending}
+                              aria-label={t("setting.usage-limits.row-actions", { name })}
+                              icon={<MoreVerticalIcon />}
+                            />
+                          }
+                        />
+                      }
+                    />
+                    <Tooltip.Popup>{t("common.more")}</Tooltip.Popup>
+                  </Tooltip.Root>
+                  <Menu.Popup align="end">
                     {!row.entry.allUsers && (
                       <>
-                        <DropdownMenuItem disabled={row.index === 0} onClick={() => move(row.index, -1)}>
-                          <ArrowUpIcon className="mr-2 h-4 w-4" />
+                        <Menu.Item disabled={row.index === 0} onClick={() => move(row.index, -1)} icon={<ArrowUpIcon />}>
                           {t("setting.usage-limits.move-up")}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem disabled={row.index >= lastMovable} onClick={() => move(row.index, 1)}>
-                          <ArrowDownIcon className="mr-2 h-4 w-4" />
+                        </Menu.Item>
+                        <Menu.Item disabled={row.index >= lastMovable} onClick={() => move(row.index, 1)} icon={<ArrowDownIcon />}>
                           {t("setting.usage-limits.move-down")}
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
+                        </Menu.Item>
+                        <Menu.Separator />
                       </>
                     )}
-                    <DropdownMenuItem onClick={() => setDialog({ open: true, index: row.index })}>{t("common.edit")}</DropdownMenuItem>
+                    <Menu.Item onClick={() => setDialog({ open: true, index: row.index })}>{t("common.edit")}</Menu.Item>
                     {!row.entry.allUsers && (
-                      <DropdownMenuItem onClick={() => setRemoveIndex(row.index)} className="text-destructive focus:text-destructive">
+                      <Menu.Item onClick={() => setRemoveIndex(row.index)} danger>
                         {t("setting.usage-limits.remove")}
-                      </DropdownMenuItem>
+                      </Menu.Item>
                     )}
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                  </Menu.Popup>
+                </Menu.Root>
               );
             },
           },
@@ -254,7 +254,7 @@ const UsageLimitsSection = () => {
         confirmLabel={t("setting.usage-limits.remove")}
         cancelLabel={t("common.cancel")}
         onConfirm={handleRemove}
-        confirmVariant="destructive"
+        confirmVariant="danger"
       />
     </SettingSection>
   );

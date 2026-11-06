@@ -33,7 +33,7 @@ describe("CalendarCell empty-day clickability", () => {
     const button = screen.getByRole("button", { name: /May 1, 2025/ });
     expect(button).toHaveAttribute("tabindex", "0");
     expect(button).toHaveAttribute("aria-disabled", "false");
-    expect(button).not.toHaveAttribute("data-slot", "tooltip-trigger");
+    expect(button).not.toHaveClass("mu-tooltip-trigger");
     expect(chipOf(button)).toHaveClass("bg-transparent");
   });
 
@@ -42,7 +42,7 @@ describe("CalendarCell empty-day clickability", () => {
     render(<CalendarCell day={makeDay({ count: 3 })} maxCount={5} tooltipText="May 1, 2025" onClick={onClick} />);
 
     const button = screen.getByRole("button", { name: /May 1, 2025/ });
-    expect(button).toHaveAttribute("data-slot", "tooltip-trigger");
+    expect(button).toHaveClass("mu-tooltip-trigger");
     fireEvent.click(button);
     expect(onClick).toHaveBeenCalledWith("2025-05-01");
   });
@@ -59,7 +59,8 @@ describe("CalendarCell empty-day clickability", () => {
     render(<CalendarCell day={makeDay({ isSelected: true })} maxCount={5} tooltipText="May 1, 2025" onClick={() => {}} />);
 
     const button = screen.getByRole("button", { name: /selected/ });
-    expect(chipOf(button)).toHaveClass("bg-primary", "text-primary-foreground", "font-medium");
+    expect(chipOf(button)).toHaveClass("bg-mu-primary", "text-mu-on-primary");
+    expect(chipOf(button)).not.toHaveClass("font-medium");
     expect(chipOf(button)).not.toHaveClass("ring-2", "ring-inset");
     expect(chipOf(button)).not.toHaveClass("font-semibold", "font-bold");
   });
@@ -68,9 +69,9 @@ describe("CalendarCell empty-day clickability", () => {
     render(<CalendarCell day={makeDay({ isSelected: true })} maxCount={5} tooltipText="May 1, 2025" onClick={() => {}} />);
 
     const chip = chipOf(screen.getByRole("button", { name: /selected/ }));
-    // The empty-cell hover tint would replace bg-primary on hover and strand the light numeral.
-    expect(chip).not.toHaveClass("group-hover/day:bg-muted/40", "bg-transparent");
-    expect(chip).toHaveClass("bg-primary");
+    // The empty-cell hover tint would replace bg-mu-primary on hover and strand the light numeral.
+    expect(chip).not.toHaveClass("group-hover/day:bg-mu-well/40", "bg-transparent");
+    expect(chip).toHaveClass("bg-mu-primary");
   });
 
   it("caps the chip so a wider container buys hit area, not calendar height", () => {
@@ -80,7 +81,7 @@ describe("CalendarCell empty-day clickability", () => {
     // The square lives on the capped chip. Putting it back on the button would make row
     // height track the column width again, which is what made a widened rail so tall.
     expect(button).not.toHaveClass("aspect-square");
-    expect(chipOf(button)).toHaveClass("aspect-square", "max-w-[30px]");
+    expect(chipOf(button)).toHaveClass("aspect-square", "max-w-7");
   });
 
   it("does not render out-of-month days as interactive (no role=button)", () => {

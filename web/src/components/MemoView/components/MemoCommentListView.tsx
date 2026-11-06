@@ -1,8 +1,10 @@
-import { ChevronRightIcon } from "lucide-react";
 import { Link } from "react-router-dom";
-import MetadataSection, { METADATA_COMPACT_ROW_CLASSES, METADATA_ROW_SLOT_CLASSES } from "@/components/MemoMetadata/MetadataSection";
+import {
+  METADATA_COMPACT_ROW_CLASSES,
+  METADATA_ROW_LIST_CLASSES,
+  METADATA_ROW_SLOT_CLASSES,
+} from "@/components/MemoMetadata/MetadataSection";
 import { MemoPreview } from "@/components/MemoPreview";
-import { FOCUS_VISIBLE_OUTLINE_CLASSES } from "@/components/ui/focus";
 import { useMemoComments } from "@/hooks/useMemoQueries";
 import { useNearViewport } from "@/hooks/useNearViewport";
 import { useUsersByNames } from "@/hooks/useUserQueries";
@@ -14,31 +16,29 @@ import UserAvatar from "../../UserAvatar";
 import { useMemoViewContext, useMemoViewDerived } from "../MemoViewContext";
 import { createMemoNavigationState } from "../navigation";
 
-/**
- * "View all" speaks at the header's scale: 11px muted ink in a box as tall as the compact
- * header, so it sits on the title's line instead of stretching it.
- */
-const VIEW_ALL_CLASSES = cn(
-  "inline-flex h-5 items-center gap-0.5 rounded-md px-2 text-2xs text-muted-foreground/60 transition-colors hover:bg-muted/60 hover:text-foreground",
-  FOCUS_VISIBLE_OUTLINE_CLASSES,
-);
+/** The strip previews this many comments; the rest are behind its trailing link. */
+const COMMENT_PREVIEW_LIMIT = 3;
+/** Rows are 24px with no gap, so the strip holds its height while the comments load. */
+const PREVIEW_MIN_HEIGHT_CLASSES = ["", "min-h-6", "min-h-12", "min-h-18"];
 
 /**
- * The comment strip hangs off the card's bottom edge: a compact titled list of up to three
- * comments, each a 24px row whose avatar sits in the leading slot on the card's text edge.
+ * The comment strip hangs off the card's bottom edge: up to three comments, each a 24px row
+ * whose avatar sits in the leading slot on the card's text edge, then a "View all N comments"
+ * row when there are more. No title: sitting outside the card already marks the strip as
+ * secondary, and every line is muted 13px/400 so it reads below the memo's own content.
  */
 const MemoCommentListView: React.FC = () => {
   const t = useTranslate();
   const { memo, parentPage } = useMemoViewContext();
   const { isInMemoDetailPage, commentAmount } = useMemoViewDerived();
-  const { ref: viewportRef, isNearViewport } = useNearViewport<HTMLDivElement>();
+  const { ref: viewportRef, isNearViewport } = useNearViewport<HTMLElement>();
 
   const { data } = useMemoComments(memo.name, {
     enabled: isNearViewport && !isInMemoDetailPage && commentAmount > 0,
-    pageSize: 3,
+    pageSize: COMMENT_PREVIEW_LIMIT,
   });
   const comments = data?.comments ?? [];
-  const displayedComments = comments.slice(0, 3);
+  const displayedComments = comments.slice(0, COMMENT_PREVIEW_LIMIT);
   const { data: commentCreators } = useUsersByNames(displayedComments.map((comment) => comment.creator));
 
   if (isInMemoDetailPage || commentAmount === 0) {
@@ -46,18 +46,12 @@ const MemoCommentListView: React.FC = () => {
   }
 
   return (
-    <div ref={viewportRef} className="rounded-b-lg border border-t-0 border-border/70 px-4 py-1">
-      <MetadataSection
-        title={t("memo.comment.self")}
-        count={commentAmount}
-        density="compact"
-        action={
-          <Link to={`/${memo.name}#${MEMO_COMMENTS_ANCHOR_ID}`} state={createMemoNavigationState(parentPage)} className={VIEW_ALL_CLASSES}>
-            {t("common.view-all")}
-            <ChevronRightIcon className="-me-0.5 size-3" strokeWidth={2} />
-          </Link>
-        }
-      >
+    <section
+      ref={viewportRef}
+      aria-label={t("memo.comment.self")}
+      className="rounded-b-mu-lg border border-t-0 border-mu-line/70 px-4 py-1"
+    >
+      <div className={cn(METADATA_ROW_LIST_CLASSES, "gap-0", PREVIEW_MIN_HEIGHT_CLASSES[Math.min(commentAmount, COMMENT_PREVIEW_LIMIT)])}>
         {displayedComments.map((comment) => {
           const uid = extractMemoIdFromName(comment.name);
           const creator = commentCreators?.get(comment.creator);
@@ -83,8 +77,18 @@ const MemoCommentListView: React.FC = () => {
             </Link>
           );
         })}
-      </MetadataSection>
-    </div>
+        {commentAmount > COMMENT_PREVIEW_LIMIT && (
+          <Link
+            to={`/${memo.name}#${MEMO_COMMENTS_ANCHOR_ID}`}
+            state={createMemoNavigationState(parentPage)}
+            viewTransition
+            className={METADATA_COMPACT_ROW_CLASSES}
+          >
+            {t("memo.comment.view-all-count", { count: commentAmount })}
+          </Link>
+        )}
+      </div>
+    </section>
   );
 };
 

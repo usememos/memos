@@ -132,9 +132,9 @@ const AuthCallback = () => {
         navigateTo(getSafeRedirectPath(returnUrl) ?? ROUTES.HOME);
       } catch (error: unknown) {
         handleError(error, () => {}, {
-          fallbackMessage: "Failed to authenticate.",
+          fallbackMessage: t("error.authenticate-failed"),
           onError: (err) => {
-            const message = err instanceof Error ? err.message : "Failed to authenticate.";
+            const message = err instanceof Error ? err.message : t("error.authenticate-failed");
             setState({
               loading: false,
               errorMessage: message,
@@ -154,7 +154,7 @@ const AuthCallback = () => {
         {state.errorMessage}
       </div>
       {state.errorMessage && (
-        <Link to={buildAuthRoute({ autoSignIn: false, redirect: state.returnUrl })} className="text-sm text-primary hover:underline">
+        <Link to={buildAuthRoute({ autoSignIn: false, redirect: state.returnUrl })} className="mu-body text-mu-accent hover:underline">
           {t("auth.back-to-sign-in")}
         </Link>
       )}

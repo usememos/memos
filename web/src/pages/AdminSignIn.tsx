@@ -12,7 +12,7 @@ const AdminSignIn = () => {
     <AuthPageLayout
       chip={
         <AuthChip>
-          <ShieldCheckIcon className="h-3 w-3" />
+          <ShieldCheckIcon className="mu-icon-xs" />
           {t("common.admin")}
         </AuthChip>
       }
@@ -20,9 +20,9 @@ const AdminSignIn = () => {
       subtitle={t("auth.admin-sign-in-tip")}
     >
       <PasswordSignInForm />
-      <p className="mt-5 text-center text-sm">
-        <Link to={ROUTES.AUTH} className="inline-flex items-center gap-1 text-primary hover:underline" viewTransition>
-          <ArrowLeftIcon className="h-3.5 w-3.5 rtl:rotate-180" />
+      <p className="mt-5 text-center mu-body">
+        <Link to={ROUTES.AUTH} className="inline-flex items-center gap-1 text-mu-accent hover:underline" viewTransition>
+          <ArrowLeftIcon className="mu-icon-sm rtl:rotate-180" />
           {t("auth.back-to-sign-in")}
         </Link>
       </p>

@@ -1,17 +1,13 @@
 import { create } from "@bufbuild/protobuf";
-import { CheckIcon, LoaderCircleIcon, SearchIcon } from "lucide-react";
+import { Button, Dialog, Field, Fieldset, Input, Radio, RadioGroup, Spinner } from "@usememos/ui";
+import { CheckIcon, SearchIcon } from "lucide-react";
 import { type FormEvent, useEffect, useState } from "react";
-import toast from "react-hot-toast";
 import UserAvatar from "@/components/UserAvatar";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCreateSpaceInvitation } from "@/hooks/useSpaceQueries";
 import { useUsersByUsernames } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
 import { extractSpaceUidFromName } from "@/lib/space-display";
+import { showErrorToast, toast } from "@/lib/toast";
 import { type Space, SpaceInvitationSchema, SpaceMember_Role } from "@/types/proto/api/space_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
@@ -35,8 +31,12 @@ const InviteSpaceMemberDialog = ({ open, onOpenChange, space, viewerName, member
   const [selectedUserName, setSelectedUserName] = useState("");
   const [role, setRole] = useState(SpaceMember_Role.USER);
   const roleOptions = [
-    { value: String(SpaceMember_Role.USER), label: t("setting.spaces.space-user") },
-    { value: String(SpaceMember_Role.ADMIN), label: t("setting.spaces.space-admin") },
+    { value: String(SpaceMember_Role.USER), label: t("setting.spaces.space-user"), description: t("setting.spaces.user-role-description") },
+    {
+      value: String(SpaceMember_Role.ADMIN),
+      label: t("setting.spaces.space-admin"),
+      description: t("setting.spaces.admin-role-description"),
+    },
   ];
   const normalizedUsername = query.trim().replace(/^@/, "");
   const lookupSettled = lookupUsername === normalizedUsername;
@@ -90,10 +90,10 @@ const InviteSpaceMemberDialog = ({ open, onOpenChange, space, viewerName, member
           role,
         }),
       });
-      toast.success(t("setting.spaces.invite-success", { username: candidate.username }));
+      toast.add({ title: t("setting.spaces.invite-success", { username: candidate.username }), type: "success" });
       onOpenChange(false);
     } catch (error) {
-      handleError(error, toast.error, { context: "Create space invitation" });
+      handleError(error, showErrorToast, { context: "Create space invitation" });
     }
   };
 
@@ -106,36 +106,29 @@ const InviteSpaceMemberDialog = ({ open, onOpenChange, space, viewerName, member
         : t("setting.spaces.active-user");
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent size="sm" data-critical-surface="invite-member-dialog">
+    <Dialog.Root open={open} onOpenChange={handleOpenChange}>
+      <Dialog.Popup data-critical-surface="invite-member-dialog" closeLabel={t("common.close")}>
         <form className="grid gap-4" onSubmit={handleSubmit}>
-          <DialogHeader>
-            <DialogTitle>{t("setting.spaces.invite-to", { space: space.title })}</DialogTitle>
-            <DialogDescription>
-              {t("setting.spaces.invite-description")}
-              <span className="mt-1 block text-xs">
-                {t("space.custom-id-label")}: <span className="break-all font-mono">{spaceUid}</span>
-              </span>
-            </DialogDescription>
-          </DialogHeader>
+          <Dialog.Title>{t("setting.spaces.invite-to", { space: space.title })}</Dialog.Title>
+          <Dialog.Description>
+            {t("setting.spaces.invite-description")}
+            <span className="mt-1 block mu-caption">
+              {t("space.custom-id-label")}: <span className="break-all font-mono">{spaceUid}</span>
+            </span>
+          </Dialog.Description>
 
-          <div className="grid gap-2">
-            <Label htmlFor="space-member-search">{t("setting.spaces.memos-user")}</Label>
-            <div className="relative">
-              <SearchIcon className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                id="space-member-search"
-                value={query}
-                onChange={(event) => handleQueryChange(event.target.value)}
-                autoFocus
-                autoComplete="off"
-                placeholder={t("setting.spaces.search-user-placeholder")}
-                className="pl-8"
-              />
-              {normalizedUsername && (!lookupSettled || usersQuery.isFetching) ? (
-                <LoaderCircleIcon className="absolute right-2.5 top-1/2 size-4 -translate-y-1/2 animate-spin text-muted-foreground" />
-              ) : null}
-            </div>
+          <Field.Root>
+            <Field.Label>{t("setting.spaces.memos-user")}</Field.Label>
+            <Input
+              id="space-member-search"
+              value={query}
+              onChange={(event) => handleQueryChange(event.target.value)}
+              autoFocus
+              autoComplete="off"
+              placeholder={t("setting.spaces.search-user-placeholder")}
+              prefix={<SearchIcon />}
+              suffix={normalizedUsername && (!lookupSettled || usersQuery.isFetching) ? <Spinner aria-hidden /> : undefined}
+            />
 
             {candidate && lookupSettled ? (
               <button
@@ -145,55 +138,56 @@ const InviteSpaceMemberDialog = ({ open, onOpenChange, space, viewerName, member
                 onClick={() => setSelectedUserName(isSelected ? "" : candidate.name)}
                 className={
                   isSelected
-                    ? "flex w-full items-center gap-3 rounded-lg border border-primary/35 bg-primary/5 px-3 py-2 text-left transition-colors"
-                    : "flex w-full items-center gap-3 rounded-lg border border-border px-3 py-2 text-left transition-colors hover:bg-muted/40 disabled:cursor-not-allowed disabled:opacity-60"
+                    ? "flex w-full items-center gap-3 rounded-mu-lg border border-mu-primary/35 bg-mu-primary/5 px-3 py-2 text-left transition-colors"
+                    : "flex w-full items-center gap-3 rounded-mu-lg border border-mu-line px-3 py-2 text-left transition-colors hover:bg-mu-hover disabled:cursor-not-allowed disabled:opacity-60"
                 }
               >
                 <UserAvatar className="size-8" avatarUrl={candidate.avatarUrl} name={candidate.displayName || candidate.username} />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium">{candidate.displayName || `@${candidate.username}`}</p>
-                  <p className="truncate text-xs text-muted-foreground">
+                  <p className="truncate mu-label">{candidate.displayName || `@${candidate.username}`}</p>
+                  <p className="truncate mu-caption text-mu-ink-muted">
                     @{candidate.username} · {resultStatus}
                   </p>
                 </div>
-                {isSelected ? <CheckIcon className="size-4 shrink-0 text-primary" /> : null}
+                {isSelected ? <CheckIcon className="mu-icon shrink-0 text-mu-primary" /> : null}
               </button>
             ) : null}
 
             {normalizedUsername && lookupSettled && usersQuery.isSuccess && !candidate ? (
-              <p className="text-xs leading-5 text-muted-foreground">
-                {t("setting.spaces.user-not-found", { username: normalizedUsername })}
-              </p>
+              <p className="mu-caption text-mu-ink-muted">{t("setting.spaces.user-not-found", { username: normalizedUsername })}</p>
             ) : null}
-          </div>
+          </Field.Root>
 
-          <div className="grid gap-2">
-            <Label>{t("common.role")}</Label>
-            <Select value={String(role)} items={roleOptions} onValueChange={(value) => setRole(Number(value) as SpaceMember_Role)}>
-              <SelectTrigger className="w-full" aria-label={t("common.role")}>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={String(SpaceMember_Role.USER)}>{t("setting.spaces.space-user")}</SelectItem>
-                <SelectItem value={String(SpaceMember_Role.ADMIN)}>{t("setting.spaces.space-admin")}</SelectItem>
-              </SelectContent>
-            </Select>
-            <p className="text-xs leading-5 text-muted-foreground">
-              {role === SpaceMember_Role.ADMIN ? t("setting.spaces.admin-role-description") : t("setting.spaces.user-role-description")}
-            </p>
-          </div>
+          <Field.Root>
+            <Fieldset.Root
+              render={<RadioGroup value={String(role)} onValueChange={(value) => setRole(Number(value) as SpaceMember_Role)} />}
+            >
+              <Fieldset.Legend>{t("common.role")}</Fieldset.Legend>
+              {roleOptions.map((option) => (
+                <Field.Item key={option.value}>
+                  <Field.Label className="items-start">
+                    <Radio value={option.value} className="mt-0.5" />
+                    <span className="flex flex-col gap-0.5">
+                      <span className="text-mu-ink">{option.label}</span>
+                      <span className="mu-caption text-mu-ink-muted">{option.description}</span>
+                    </span>
+                  </Field.Label>
+                </Field.Item>
+              ))}
+            </Fieldset.Root>
+          </Field.Root>
 
-          <DialogFooter>
+          <Dialog.Footer>
             <Button type="button" variant="ghost" disabled={createInvitation.isPending} onClick={() => onOpenChange(false)}>
               {t("common.cancel")}
             </Button>
-            <Button type="submit" disabled={!isSelected || !isCandidateAvailable || createInvitation.isPending}>
+            <Button variant="primary" type="submit" disabled={!isSelected || !isCandidateAvailable || createInvitation.isPending}>
               {t("setting.spaces.send-invitation")}
             </Button>
-          </DialogFooter>
+          </Dialog.Footer>
         </form>
-      </DialogContent>
-    </Dialog>
+      </Dialog.Popup>
+    </Dialog.Root>
   );
 };
 

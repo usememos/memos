@@ -23,9 +23,7 @@ const state = vi.hoisted(() => ({
   selectAmbientSpace: vi.fn(),
 }));
 
-vi.mock("react-hot-toast", () => ({
-  default: { error: vi.fn(), success: vi.fn() },
-}));
+vi.mock("@/lib/toast", () => ({ toast: { add: vi.fn(), close: vi.fn() }, showErrorToast: vi.fn() }));
 
 vi.mock("@/hooks/useCurrentUser", () => ({
   default: () => ({ name: state.viewerName, role: state.viewerInstanceRole }),
@@ -260,7 +258,7 @@ describe("SpacesSection", () => {
     state.members = [adminMember];
     renderSection("/setting?space=spaces%2Fproduct#spaces");
     fireEvent.click(screen.getByRole("button", { name: "space.icon.change" }));
-    fireEvent.click(await screen.findByRole("button", { name: "Leaf" }));
+    fireEvent.click(await screen.findByRole("gridcell", { name: "Leaf" }));
     expect(state.updateSpace).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", { name: "setting.spaces.save-changes" }));
     await waitFor(() =>
