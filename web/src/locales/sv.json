@@ -204,6 +204,10 @@
       "save-in-progress": "Spara pågår",
       "unsupported-attachment-image-url": "Bild-URL för bilaga som inte stöds: {{url}}",
       "wait-for-upload": "Vänta tills uppladdningen är klar"
+    },
+    "hide-until": {
+      "title": "Hide until",
+      "description": "The memo leaves the timeline and shows up again on this date."
     }
   },
   "inbox": {
@@ -317,7 +321,8 @@
     "layout-list-description": "En enda kolumn med läsbredd",
     "on-this-memo": "På detta PM",
     "parent-memo": "Överordnat PM",
-    "view-options": "Visningsalternativ"
+    "view-options": "Visningsalternativ",
+    "hidden-until": "Hidden until {{date}}"
   },
   "message": {
     "archived-successfully": "Arkiverad framgångsrikt",

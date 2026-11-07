@@ -204,6 +204,10 @@
       "save-in-progress": "Salvando em andamento",
       "unsupported-attachment-image-url": "URL de imagem de anexo não suportada: {{url}}",
       "wait-for-upload": "Aguardar a conclusão do upload"
+    },
+    "hide-until": {
+      "title": "Adiar até",
+      "description": "O memo sai da linha do tempo e volta a aparecer nesta data."
     }
   },
   "inbox": {
@@ -312,7 +316,8 @@
       "uncheck-all": "Desmarcar todas as tarefas",
       "updated": "Tarefas atualizadas"
     },
-    "view-options": "Opções de visualização"
+    "view-options": "Opções de visualização",
+    "hidden-until": "Adiado até {{date}}"
   },
   "message": {
     "archived-successfully": "Arquivado com êxito",

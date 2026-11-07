@@ -242,6 +242,10 @@
       "save-in-progress": "Vykdomas išsaugojimas",
       "unsupported-attachment-image-url": "Nepalaikomas priedo vaizdo URL: {{url}}",
       "wait-for-upload": "Palaukite, kol įkėlimas bus baigtas"
+    },
+    "hide-until": {
+      "title": "Hide until",
+      "description": "The memo leaves the timeline and shows up again on this date."
     }
   },
   "inbox": {
@@ -355,7 +359,8 @@
     "layout-list-description": "Vienas skaitymo pločio stulpelis",
     "on-this-memo": "Šiame priminime",
     "parent-memo": "Pagrindinis priminimas",
-    "view-options": "Peržiūros parinktys"
+    "view-options": "Peržiūros parinktys",
+    "hidden-until": "Hidden until {{date}}"
   },
   "message": {
     "archived-successfully": "Sėkmingai suarchyvuota",

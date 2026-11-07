@@ -242,6 +242,10 @@
       "save-in-progress": "Salvare în curs",
       "unsupported-attachment-image-url": "Adresa URL a imaginii atașate neacceptată: {{url}}",
       "wait-for-upload": "Așteptați finalizarea încărcării"
+    },
+    "hide-until": {
+      "title": "Hide until",
+      "description": "The memo leaves the timeline and shows up again on this date."
     }
   },
   "inbox": {
@@ -355,7 +359,8 @@
     "layout-list-description": "O singură coloană cu lățime de citire",
     "on-this-memo": "Pe această notă",
     "parent-memo": "Notă părinte",
-    "view-options": "Opțiuni de vizualizare"
+    "view-options": "Opțiuni de vizualizare",
+    "hidden-until": "Hidden until {{date}}"
   },
   "message": {
     "archived-successfully": "Arhivat cu succes",

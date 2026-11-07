@@ -204,6 +204,10 @@
       "save-in-progress": "جارٍ الحفظ",
       "unsupported-attachment-image-url": "رابط صورة المرفق غير مدعوم: {{url}}",
       "wait-for-upload": "انتظر حتى يكتمل التحميل"
+    },
+    "hide-until": {
+      "title": "Hide until",
+      "description": "The memo leaves the timeline and shows up again on this date."
     }
   },
   "inbox": {
@@ -312,7 +316,8 @@
       "uncheck-all": "إلغاء تحديد جميع المهام",
       "updated": "تم تحديث المهام"
     },
-    "view-options": "خيارات العرض"
+    "view-options": "خيارات العرض",
+    "hidden-until": "Hidden until {{date}}"
   },
   "message": {
     "archived-successfully": "تمت الأرشفة بنجاح",

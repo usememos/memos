@@ -229,6 +229,10 @@
       "transcribe-error": "Ses metne dönüştürülemedi",
       "transcribe-success": "Transkripsiyon eklendi",
       "transcribing": "Metne dönüştürülüyor..."
+    },
+    "hide-until": {
+      "title": "Hide until",
+      "description": "The memo leaves the timeline and shows up again on this date."
     }
   },
   "inbox": {
@@ -342,7 +346,8 @@
       "title": "Görevler",
       "uncheck-all": "Tüm görevlerin işaretini kaldırın",
       "updated": "Görevler güncellendi"
-    }
+    },
+    "hidden-until": "Hidden until {{date}}"
   },
   "message": {
     "archived-successfully": "Başarıyla arşivlendi",

@@ -204,6 +204,10 @@
       "save-in-progress": "Salvataggio in corso",
       "unsupported-attachment-image-url": "URL immagine allegato non supportato: {{url}}",
       "wait-for-upload": "Attendi il completamento del caricamento"
+    },
+    "hide-until": {
+      "title": "Hide until",
+      "description": "The memo leaves the timeline and shows up again on this date."
     }
   },
   "inbox": {
@@ -317,7 +321,8 @@
     "layout-list-description": "Una singola colonna a larghezza di lettura",
     "on-this-memo": "Su questo memo",
     "parent-memo": "Memo principale",
-    "view-options": "Opzioni di visualizzazione"
+    "view-options": "Opzioni di visualizzazione",
+    "hidden-until": "Hidden until {{date}}"
   },
   "message": {
     "archived-successfully": "Archiviato con successo",

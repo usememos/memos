@@ -204,6 +204,10 @@
       "save-in-progress": "Zapisywanie w toku",
       "unsupported-attachment-image-url": "Nieobsługiwany adres URL obrazu w załączniku: {{url}}",
       "wait-for-upload": "Poczekaj na zakończenie przesyłania"
+    },
+    "hide-until": {
+      "title": "Hide until",
+      "description": "The memo leaves the timeline and shows up again on this date."
     }
   },
   "inbox": {
@@ -317,7 +321,8 @@
     "layout-list-description": "Pojedyncza kolumna o szerokości odczytu",
     "on-this-memo": "W tej notatce",
     "parent-memo": "Notatka nadrzędna",
-    "view-options": "Opcje widoku"
+    "view-options": "Opcje widoku",
+    "hidden-until": "Hidden until {{date}}"
   },
   "message": {
     "archived-successfully": "Zarchiwizowano pomyślnie",

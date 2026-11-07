@@ -204,6 +204,10 @@
       "save-in-progress": "Đang lưu",
       "unsupported-attachment-image-url": "URL ảnh đính kèm không được hỗ trợ: {{url}}",
       "wait-for-upload": "Chờ quá trình tải lên hoàn tất"
+    },
+    "hide-until": {
+      "title": "Hide until",
+      "description": "The memo leaves the timeline and shows up again on this date."
     }
   },
   "inbox": {
@@ -312,7 +316,8 @@
       "uncheck-all": "Bỏ chọn tất cả nhiệm vụ",
       "updated": "Nhiệm vụ đã được cập nhật"
     },
-    "view-options": "Tùy chọn xem"
+    "view-options": "Tùy chọn xem",
+    "hidden-until": "Hidden until {{date}}"
   },
   "message": {
     "archived-successfully": "Lưu trữ thành công",

@@ -204,6 +204,10 @@
       "save-in-progress": "Penyimpanan sedang berlangsung",
       "unsupported-attachment-image-url": "URL gambar lampiran tidak didukung: {{url}}",
       "wait-for-upload": "Tunggu hingga unggahan selesai"
+    },
+    "hide-until": {
+      "title": "Hide until",
+      "description": "The memo leaves the timeline and shows up again on this date."
     }
   },
   "inbox": {
@@ -312,7 +316,8 @@
       "uncheck-all": "Hapus centang semua tugas",
       "updated": "Tugas diperbarui"
     },
-    "view-options": "Opsi tampilan"
+    "view-options": "Opsi tampilan",
+    "hidden-until": "Hidden until {{date}}"
   },
   "message": {
     "archived-successfully": "Berhasil diarsipkan",

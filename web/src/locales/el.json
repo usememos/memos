@@ -242,6 +242,10 @@
       "save-in-progress": "Αποθήκευση σε εξέλιξη",
       "unsupported-attachment-image-url": "Μη υποστηριζόμενη διεύθυνση URL εικόνας συνημμένου: {{url}}",
       "wait-for-upload": "Περιμένετε να ολοκληρωθεί η μεταφόρτωση"
+    },
+    "hide-until": {
+      "title": "Hide until",
+      "description": "The memo leaves the timeline and shows up again on this date."
     }
   },
   "inbox": {
@@ -355,7 +359,8 @@
     "layout-list-description": "Μία στήλη πλάτους ανάγνωσης",
     "on-this-memo": "Σε αυτό το σημείωμα",
     "parent-memo": "Γονικό σημείωμα",
-    "view-options": "Επιλογές προβολής"
+    "view-options": "Επιλογές προβολής",
+    "hidden-until": "Hidden until {{date}}"
   },
   "message": {
     "archived-successfully": "Αρχειοθετήθηκε με επιτυχία",

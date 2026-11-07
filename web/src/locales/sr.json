@@ -242,6 +242,10 @@
       "save-in-progress": "Чување у току",
       "unsupported-attachment-image-url": "Неподржана URL адреса слике прилога: {{url}}",
       "wait-for-upload": "Сачекај да се отпремање заврши"
+    },
+    "hide-until": {
+      "title": "Hide until",
+      "description": "The memo leaves the timeline and shows up again on this date."
     }
   },
   "inbox": {
@@ -355,7 +359,8 @@
     "layout-list-description": "Једна колона ширине читања",
     "on-this-memo": "На овој поруци",
     "parent-memo": "Надређена порука",
-    "view-options": "Опције приказа"
+    "view-options": "Опције приказа",
+    "hidden-until": "Hidden until {{date}}"
   },
   "message": {
     "archived-successfully": "Архивирано је успешно",

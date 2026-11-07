@@ -9,6 +9,7 @@ import { primaryModifierGlyph } from "@/utils/platform";
 import { validationService } from "../services";
 import { useEditorContext, useEditorSelector } from "../state";
 import type { EditorToolbarProps } from "../types";
+import HideUntilSelector from "./HideUntilSelector";
 import InsertMenu from "./InsertMenu";
 import VisibilitySelector from "./VisibilitySelector";
 
@@ -53,6 +54,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
   const isUploading = useEditorSelector((s) => s.ui.isLoading.uploading);
   const location = useEditorSelector((s) => s.metadata.location);
   const visibility = useEditorSelector((s) => s.metadata.visibility);
+  const hideUntil = useEditorSelector((s) => s.metadata.hideUntil);
   // The save transaction is in flight or its confirmation is holding the
   // editor open; either way the toolbar is frozen.
   const committing = isSaving || justSaved;
@@ -73,6 +75,10 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
 
   const handleVisibilityChange = (next: Visibility) => {
     dispatch(actions.setMetadata({ visibility: next }));
+  };
+
+  const handleHideUntilChange = (next?: Date) => {
+    dispatch(actions.setMetadata({ hideUntil: next }));
   };
 
   const commitButton = justSaved ? (
@@ -102,6 +108,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
           onInsertImages={onInsertImages}
         />
         <VisibilitySelector value={visibility} space={space} onChange={handleVisibilityChange} />
+        {!parentMemoName && <HideUntilSelector value={hideUntil} onChange={handleHideUntilChange} />}
       </div>
 
       <div className="flex flex-row items-center justify-end gap-1">

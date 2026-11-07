@@ -234,7 +234,11 @@
       "trigger": "录制音频"
     },
     "comment": "评论",
-    "saved": "已保存"
+    "saved": "已保存",
+    "hide-until": {
+      "title": "Hide until",
+      "description": "The memo leaves the timeline and shows up again on this date."
+    }
   },
   "inbox": {
     "failed-to-load": "加载失败",
@@ -342,7 +346,8 @@
       "success": "备忘录已移动",
       "space-audience": "{{space}} 的成员将可以阅读此备忘录。",
       "history": "现有表态会保留在此备忘录上。评论和关联的备忘录仍遵循各自的访问规则。"
-    }
+    },
+    "hidden-until": "Hidden until {{date}}"
   },
   "message": {
     "archived-successfully": "归档成功",

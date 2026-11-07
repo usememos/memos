@@ -204,6 +204,10 @@
       "save-in-progress": "กำลังบันทึก",
       "unsupported-attachment-image-url": "URL รูปภาพไฟล์แนบไม่รองรับ: {{url}}",
       "wait-for-upload": "รอจนกว่าการอัปโหลดจะเสร็จสมบูรณ์"
+    },
+    "hide-until": {
+      "title": "Hide until",
+      "description": "The memo leaves the timeline and shows up again on this date."
     }
   },
   "inbox": {
@@ -312,7 +316,8 @@
       "uncheck-all": "ยกเลิกการเลือกงานทั้งหมด",
       "updated": "อัปเดตงานแล้ว"
     },
-    "view-options": "ตัวเลือกการดู"
+    "view-options": "ตัวเลือกการดู",
+    "hidden-until": "Hidden until {{date}}"
   },
   "message": {
     "archived-successfully": "เก็บถาวรเรียบร้อยแล้ว",

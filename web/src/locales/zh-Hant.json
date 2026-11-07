@@ -282,7 +282,11 @@
       "trigger": "錄製音訊"
     },
     "comment": "評論",
-    "saved": "已儲存"
+    "saved": "已儲存",
+    "hide-until": {
+      "title": "Hide until",
+      "description": "The memo leaves the timeline and shows up again on this date."
+    }
   },
   "inbox": {
     "failed-to-load": "載入失敗",
@@ -395,7 +399,8 @@
     "connections": "關聯",
     "go-to": "轉到 {{source}}",
     "on-this-memo": "在此備忘錄中",
-    "parent-memo": "原始備忘錄"
+    "parent-memo": "原始備忘錄",
+    "hidden-until": "Hidden until {{date}}"
   },
   "message": {
     "archived-successfully": "封存成功",

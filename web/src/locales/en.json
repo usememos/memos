@@ -300,6 +300,10 @@
       "transcribe-success": "Transcription added",
       "transcribing": "Transcribing...",
       "trigger": "Record audio"
+    },
+    "hide-until": {
+      "title": "Hide until",
+      "description": "The memo leaves the timeline and shows up again on this date."
     }
   },
   "inbox": {
@@ -413,7 +417,8 @@
       "public-description": "Visible to everyone",
       "space": "Space",
       "space-description": "Visible to members of this space"
-    }
+    },
+    "hidden-until": "Hidden until {{date}}"
   },
   "message": {
     "archived-successfully": "Archived successfully",

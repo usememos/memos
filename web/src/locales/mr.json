@@ -204,6 +204,10 @@
       "save-in-progress": "जतन करण्याची प्रक्रिया सुरू आहे",
       "unsupported-attachment-image-url": "असमर्थित संलग्नक प्रतिमेचा URL: {{url}}",
       "wait-for-upload": "अपलोड पूर्ण होण्याची प्रतीक्षा करा"
+    },
+    "hide-until": {
+      "title": "Hide until",
+      "description": "The memo leaves the timeline and shows up again on this date."
     }
   },
   "inbox": {
@@ -312,7 +316,8 @@
       "uncheck-all": "सर्व कार्ये निवड रद्द करा",
       "updated": "कार्ये अद्यतनित केली"
     },
-    "view-options": "पाहण्याचे पर्याय"
+    "view-options": "पाहण्याचे पर्याय",
+    "hidden-until": "Hidden until {{date}}"
   },
   "message": {
     "archived-successfully": "यशस्वीरित्या संग्रहित केले",

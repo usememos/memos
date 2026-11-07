@@ -275,7 +275,11 @@
     },
     "comment": "תגובה",
     "new-memo": "תזכיר חדש",
-    "saved": "נשמר"
+    "saved": "נשמר",
+    "hide-until": {
+      "title": "Hide until",
+      "description": "The memo leaves the timeline and shows up again on this date."
+    }
   },
   "inbox": {
     "failed-to-load": "טעינת פריט מתיבת הדואר הנכנס נכשלה",
@@ -388,7 +392,8 @@
     "connections": "חיבורים",
     "go-to": "עבור אל {{source}}",
     "on-this-memo": "על תזכיר זה",
-    "parent-memo": "תזכיר אב"
+    "parent-memo": "תזכיר אב",
+    "hidden-until": "Hidden until {{date}}"
   },
   "message": {
     "archived-successfully": "הועבר לארכיון בהצלחה",

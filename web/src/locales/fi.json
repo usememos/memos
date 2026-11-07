@@ -242,6 +242,10 @@
       "save-in-progress": "Tallennus käynnissä",
       "unsupported-attachment-image-url": "Liitteenä olevan kuvan URL-osoitetta ei tueta: {{url}}",
       "wait-for-upload": "Odota latauksen valmistumista"
+    },
+    "hide-until": {
+      "title": "Hide until",
+      "description": "The memo leaves the timeline and shows up again on this date."
     }
   },
   "inbox": {
@@ -355,7 +359,8 @@
     "layout-list-description": "Yksi lukuleveyden sarake",
     "on-this-memo": "Tässä muistiossa",
     "parent-memo": "Ylämuistio",
-    "view-options": "Näytä asetukset"
+    "view-options": "Näytä asetukset",
+    "hidden-until": "Hidden until {{date}}"
   },
   "message": {
     "archived-successfully": "Arkistointi onnistui",

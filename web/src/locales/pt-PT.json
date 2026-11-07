@@ -204,6 +204,10 @@
       "save-in-progress": "Guardar em andamento",
       "unsupported-attachment-image-url": "URL de imagem de anexo não suportado: {{url}}",
       "wait-for-upload": "Aguardar conclusão do upload"
+    },
+    "hide-until": {
+      "title": "Adiar até",
+      "description": "O memo sai da cronologia e volta a aparecer nesta data."
     }
   },
   "inbox": {
@@ -317,7 +321,8 @@
     "layout-list-description": "Uma única coluna com uma largura de leitura",
     "on-this-memo": "Neste memorando",
     "parent-memo": "Memorando pai",
-    "view-options": "Opções de visualização"
+    "view-options": "Opções de visualização",
+    "hidden-until": "Adiado até {{date}}"
   },
   "message": {
     "archived-successfully": "Arquivado com sucesso",

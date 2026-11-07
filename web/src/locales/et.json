@@ -242,6 +242,10 @@
       "save-in-progress": "Salvestamine pooleli",
       "unsupported-attachment-image-url": "Toetamata manuse pildi URL: {{url}}",
       "wait-for-upload": "Oota üleslaadimise lõppemist"
+    },
+    "hide-until": {
+      "title": "Hide until",
+      "description": "The memo leaves the timeline and shows up again on this date."
     }
   },
   "inbox": {
@@ -355,7 +359,8 @@
     "layout-list-description": "Üks lugemislaiusega veerg",
     "on-this-memo": "Sellel memo peal",
     "parent-memo": "Ülemmemo",
-    "view-options": "Vaate valikud"
+    "view-options": "Vaate valikud",
+    "hidden-until": "Hidden until {{date}}"
   },
   "message": {
     "archived-successfully": "Arhiveerimine õnnestus",

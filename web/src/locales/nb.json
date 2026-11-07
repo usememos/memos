@@ -204,6 +204,10 @@
       "save-in-progress": "Lagring pågår",
       "unsupported-attachment-image-url": "Ustøttet vedleggsbilde-URL: {{url}}",
       "wait-for-upload": "Vent til opplastingen er fullført"
+    },
+    "hide-until": {
+      "title": "Hide until",
+      "description": "The memo leaves the timeline and shows up again on this date."
     }
   },
   "inbox": {
@@ -317,7 +321,8 @@
     "layout-list-description": "En enkelt kolonne med lesebredde",
     "on-this-memo": "På dette notatet",
     "parent-memo": "Overordnet notat",
-    "view-options": "Visningsalternativer"
+    "view-options": "Visningsalternativer",
+    "hidden-until": "Hidden until {{date}}"
   },
   "message": {
     "archived-successfully": "Arkivering vellykket",

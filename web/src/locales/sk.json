@@ -242,6 +242,10 @@
       "save-in-progress": "Prebieha ukladanie",
       "unsupported-attachment-image-url": "Nepodporovaná URL adresa obrázka prílohy: {{url}}",
       "wait-for-upload": "Počkajte na dokončenie nahrávania"
+    },
+    "hide-until": {
+      "title": "Hide until",
+      "description": "The memo leaves the timeline and shows up again on this date."
     }
   },
   "inbox": {
@@ -355,7 +359,8 @@
     "layout-list-description": "Jeden stĺpec na šírku čítania",
     "on-this-memo": "V tejto poznámke",
     "parent-memo": "Nadradená poznámka",
-    "view-options": "Možnosti zobrazenia"
+    "view-options": "Možnosti zobrazenia",
+    "hidden-until": "Hidden until {{date}}"
   },
   "message": {
     "archived-successfully": "Úspešne archivované",

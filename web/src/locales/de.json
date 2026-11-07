@@ -204,6 +204,10 @@
       "save-in-progress": "Speichern läuft",
       "unsupported-attachment-image-url": "Nicht unterstützte URL für Anhangsbild: {{url}}",
       "wait-for-upload": "Warten, bis der Upload abgeschlossen ist"
+    },
+    "hide-until": {
+      "title": "Hide until",
+      "description": "The memo leaves the timeline and shows up again on this date."
     }
   },
   "inbox": {
@@ -317,7 +321,8 @@
     "layout-list-description": "Eine einzelne Spalte in Lesebreite",
     "on-this-memo": "Zu diesem Memo",
     "parent-memo": "Übergeordnetes Memo",
-    "view-options": "Ansichtsoptionen"
+    "view-options": "Ansichtsoptionen",
+    "hidden-until": "Hidden until {{date}}"
   },
   "message": {
     "archived-successfully": "Erfolgreich archiviert",

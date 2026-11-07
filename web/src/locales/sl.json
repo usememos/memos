@@ -204,6 +204,10 @@
       "save-in-progress": "Shranjevanje v teku",
       "unsupported-attachment-image-url": "URL nepodprte slike priloge: {{url}}",
       "wait-for-upload": "Počakajte, da se nalaganje zaključi"
+    },
+    "hide-until": {
+      "title": "Hide until",
+      "description": "The memo leaves the timeline and shows up again on this date."
     }
   },
   "inbox": {
@@ -317,7 +321,8 @@
     "layout-list-description": "En sam stolpec za branje",
     "on-this-memo": "V tem zapisku",
     "parent-memo": "Nadrejeni zapisek",
-    "view-options": "Možnosti pogleda"
+    "view-options": "Možnosti pogleda",
+    "hidden-until": "Hidden until {{date}}"
   },
   "message": {
     "archived-successfully": "Uspešno arhivirano",

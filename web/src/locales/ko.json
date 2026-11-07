@@ -204,6 +204,10 @@
       "save-in-progress": "저장 중",
       "unsupported-attachment-image-url": "지원되지 않는 첨부 이미지 URL: {{url}}",
       "wait-for-upload": "업로드가 완료될 때까지 기다리세요"
+    },
+    "hide-until": {
+      "title": "Hide until",
+      "description": "The memo leaves the timeline and shows up again on this date."
     }
   },
   "inbox": {
@@ -312,7 +316,8 @@
       "uncheck-all": "모든 작업 선택 해제",
       "updated": "작업 업데이트됨"
     },
-    "view-options": "보기 옵션"
+    "view-options": "보기 옵션",
+    "hidden-until": "Hidden until {{date}}"
   },
   "message": {
     "archived-successfully": "성공적으로 보관되었습니다",

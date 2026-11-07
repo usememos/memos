@@ -300,6 +300,10 @@
       "transcribe-success": "Transkripsiya əlavə edildi",
       "transcribing": "Mətnə çevrilir...",
       "trigger": "Audio yaz"
+    },
+    "hide-until": {
+      "title": "Hide until",
+      "description": "The memo leaves the timeline and shows up again on this date."
     }
   },
   "inbox": {
@@ -413,7 +417,8 @@
       "public-description": "Hamıya görünür",
       "space": "Sahə",
       "space-description": "Bu sahənin üzvlərinə görünür"
-    }
+    },
+    "hidden-until": "Hidden until {{date}}"
   },
   "message": {
     "archived-successfully": "Uğurla arxivləndi",

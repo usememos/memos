@@ -204,6 +204,10 @@
       "save-in-progress": "در حال ذخیره در حال انجام است",
       "unsupported-attachment-image-url": "آدرس تصویر پیوست پشتیبانی نشده: {{url}}",
       "wait-for-upload": "منتظر بمانید تا آپلود کامل شود"
+    },
+    "hide-until": {
+      "title": "Hide until",
+      "description": "The memo leaves the timeline and shows up again on this date."
     }
   },
   "inbox": {
@@ -312,7 +316,8 @@
       "uncheck-all": "انتخاب همه وظایف را بردارید",
       "updated": "وظایف به‌روزرسانی شدند"
     },
-    "view-options": "گزینه‌های مشاهده"
+    "view-options": "گزینه‌های مشاهده",
+    "hidden-until": "Hidden until {{date}}"
   },
   "message": {
     "archived-successfully": "با موفقیت آرشیو شد",

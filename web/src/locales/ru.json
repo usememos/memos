@@ -204,7 +204,11 @@
     },
     "comment": "Комментарий",
     "new-memo": "Новая заметка",
-    "saved": "Сохранено"
+    "saved": "Сохранено",
+    "hide-until": {
+      "title": "Hide until",
+      "description": "The memo leaves the timeline and shows up again on this date."
+    }
   },
   "inbox": {
     "failed-to-load": "Не удалось загрузить элемент уведомления",
@@ -317,7 +321,8 @@
     "connections": "Подключения",
     "go-to": "Перейти к {{source}}",
     "on-this-memo": "К этой заметке",
-    "parent-memo": "Родительская заметка"
+    "parent-memo": "Родительская заметка",
+    "hidden-until": "Hidden until {{date}}"
   },
   "message": {
     "archived-successfully": "Перемещено в архив",

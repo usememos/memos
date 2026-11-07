@@ -204,6 +204,10 @@
       "save-in-progress": "Opslaan bezig",
       "unsupported-attachment-image-url": "Niet-ondersteunde URL voor bijlageafbeelding: {{url}}",
       "wait-for-upload": "Wachten tot de upload is voltooid"
+    },
+    "hide-until": {
+      "title": "Hide until",
+      "description": "The memo leaves the timeline and shows up again on this date."
     }
   },
   "inbox": {
@@ -317,7 +321,8 @@
     "layout-list-description": "Een enkele kolom met leesbreedte",
     "on-this-memo": "In deze memo",
     "parent-memo": "Hoofdmemo",
-    "view-options": "Weergaveopties"
+    "view-options": "Weergaveopties",
+    "hidden-until": "Hidden until {{date}}"
   },
   "message": {
     "archived-successfully": "Succesvol gearchiveerd",

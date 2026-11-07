@@ -204,6 +204,10 @@
       "save-in-progress": "Save in progress",
       "unsupported-attachment-image-url": "Unsupported attachment image URL: {{url}}",
       "wait-for-upload": "Wait for upload to complete"
+    },
+    "hide-until": {
+      "title": "Hide until",
+      "description": "The memo leaves the timeline and shows up again on this date."
     }
   },
   "inbox": {
@@ -317,7 +321,8 @@
     "new-badge": "New",
     "on-this-memo": "On this memo",
     "parent-memo": "Parent memo",
-    "view-options": "View options"
+    "view-options": "View options",
+    "hidden-until": "Hidden until {{date}}"
   },
   "message": {
     "archived-successfully": "Archived successfully",

@@ -242,6 +242,10 @@
       "save-in-progress": "Запазването е в процес",
       "unsupported-attachment-image-url": "Неподдържан URL адрес на прикаченото изображение: {{url}}",
       "wait-for-upload": "Изчакайте качването да завърши"
+    },
+    "hide-until": {
+      "title": "Hide until",
+      "description": "The memo leaves the timeline and shows up again on this date."
     }
   },
   "inbox": {
@@ -355,7 +359,8 @@
     "layout-list-description": "Една колона с ширина за четене",
     "on-this-memo": "В тази бележка",
     "parent-memo": "Родителска бележка",
-    "view-options": "Опции за преглед"
+    "view-options": "Опции за преглед",
+    "hidden-until": "Hidden until {{date}}"
   },
   "message": {
     "archived-successfully": "Архивиран успешно",
