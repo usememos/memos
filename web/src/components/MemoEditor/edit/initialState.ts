@@ -32,6 +32,8 @@ export interface InitialEditorStateOptions {
   defaultVisibility?: Visibility;
   defaultCreateTime?: Date;
   defaultLocation?: Location;
+  /** Markdown appended to the restored draft, such as an item shared from another app. */
+  seedContent?: string;
   /** Whether the draft may carry a Space of its own; a comment's Space is its parent's. */
   canChooseSpace?: boolean;
 }
@@ -39,7 +41,7 @@ export interface InitialEditorStateOptions {
 /**
  * The draft store's first state, computed once when editing starts: the memo's own
  * fields for an edit, otherwise the persisted draft under `draftKey` over the host's
- * defaults. A cached `null` location is one the user removed, so the default does not
+ * defaults, with `seedContent` appended as its own paragraph. A cached `null` location is one the user removed, so the default does not
  * come back.
  */
 export function initialEditorState({
@@ -49,6 +51,7 @@ export function initialEditorState({
   defaultVisibility,
   defaultCreateTime,
   defaultLocation,
+  seedContent,
   canChooseSpace = false,
 }: InitialEditorStateOptions): EditorState {
   const base = createInitialState(initialFocusMode);
@@ -60,7 +63,7 @@ export function initialEditorState({
   const visibility = draft.visibility ?? defaultVisibility ?? base.metadata.visibility;
   return {
     ...base,
-    content: draft.content,
+    content: appendParagraph(draft.content, seedContent),
     metadata: {
       ...base.metadata,
       attachments: draft.attachments.length > 0 ? draft.attachments : base.metadata.attachments,
@@ -71,3 +74,9 @@ export function initialEditorState({
     timestamps: defaultCreateTime ? { createTime: defaultCreateTime, updateTime: defaultCreateTime } : base.timestamps,
   };
 }
+
+const appendParagraph = (content: string, addition?: string): string => {
+  if (!addition?.trim()) return content;
+  const existing = content.trimEnd();
+  return existing ? `${existing}\n\n${addition}` : addition;
+};

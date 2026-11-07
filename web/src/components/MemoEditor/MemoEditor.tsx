@@ -65,6 +65,11 @@ export interface MemoDraftSeed {
    * while the draft is open, for a calendar whose selected day changes.
    */
   createTime?: Date;
+  /**
+   * Markdown appended once to the restored draft when the session starts, such as an
+   * item shared from another app. The draft then keeps it like anything typed.
+   */
+  content?: string;
 }
 
 export interface MemoEditingProps {
@@ -185,6 +190,7 @@ const MemoEditorDraft = ({ draft, ...editing }: MemoEditorDraftProps) => {
         defaultSpace={draft.space}
         defaultLocation={draft.location}
         defaultCreateTime={draft.createTime}
+        seedContent={draft.content}
         {...editing}
       />
     </Suspense>
@@ -198,6 +204,7 @@ interface EditingSessionProps extends MemoEditingProps {
   defaultSpace?: string;
   defaultLocation?: Location;
   defaultCreateTime?: Date;
+  seedContent?: string;
 }
 
 /** One session over one identity: the draft store is created once, so a new identity is a new key. */
@@ -208,6 +215,7 @@ const EditingSession = ({
   defaultSpace,
   defaultLocation,
   defaultCreateTime,
+  seedContent,
   ...editing
 }: EditingSessionProps) => {
   const currentUser = useCurrentUser();
@@ -224,6 +232,7 @@ const EditingSession = ({
       defaultVisibility: userGeneralSetting?.memoVisibility ? convertVisibilityFromString(userGeneralSetting.memoVisibility) : undefined,
       defaultCreateTime,
       defaultLocation,
+      seedContent,
       canChooseSpace: canChooseSpaceFor({ memo, currentUser, parentMemoName, defaultSpace }),
     });
   });

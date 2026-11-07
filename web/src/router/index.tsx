@@ -10,6 +10,7 @@ import { lazyWithReload } from "@/utils/lazy";
 import { RequireAuthRoute, RequireFullInitializationRoute, RequireGuestRoute, RequireInstanceInitializationRoute } from "./guards";
 import { LegacyProfileRedirect } from "./LegacyProfileRedirect";
 import { CALENDAR_ROUTE_PATTERN, getCollectionCreator, ROUTES, SPACE_ROUTE_PATTERN, withCollectionCreator } from "./routes";
+import { ShareTargetRoute } from "./ShareTargetRoute";
 import { SpaceRoute } from "./SpaceRoute";
 
 const AdminSignIn = lazyWithReload(() => import("@/pages/AdminSignIn"));
@@ -153,6 +154,8 @@ export const routeConfig: RouteObject[] = [
                   { path: Routes.ATTACHMENTS, element: <Attachments /> },
                   { path: Routes.INBOX, element: <Inboxes /> },
                   { path: Routes.SETTING, element: <Setting /> },
+                  // Web Share Target: signed-out visitors sign in first and come back here.
+                  { path: Routes.SHARE, element: <ShareTargetRoute /> },
                 ],
               },
             ],

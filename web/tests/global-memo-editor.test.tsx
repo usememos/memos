@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useState } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { MemoEditorDraftProps } from "@/components/MemoEditor";
@@ -361,5 +361,30 @@ describe("GlobalMemoEditorProvider", () => {
     expect(mocks.editorProps).toMatchObject({
       draft: { scope: "global", space: undefined },
     });
+  });
+
+  it("opens with shared content once composing becomes possible, and drops it on close", async () => {
+    let openWithContent!: (content: string) => void;
+    const Probe = () => {
+      openWithContent = useGlobalMemoEditor().openEditorWithContent;
+      return null;
+    };
+    mocks.isUserSettingsInitialized = false;
+    const { rerender } = renderProvider(<Probe />);
+    act(() => openWithContent("Shared link"));
+    expect(screen.queryByRole("dialog", DIALOG)).not.toBeInTheDocument();
+
+    mocks.isUserSettingsInitialized = true;
+    rerender(
+      <GlobalMemoEditorProvider>
+        <Probe />
+      </GlobalMemoEditorProvider>,
+    );
+
+    await screen.findByRole("dialog", DIALOG);
+    expect(mocks.editorProps).toMatchObject({ draft: { scope: "global", content: "Shared link" } });
+
+    fireEvent.click(screen.getByRole("button", { name: "Cancel editor" }));
+    await expectClosed();
   });
 });
