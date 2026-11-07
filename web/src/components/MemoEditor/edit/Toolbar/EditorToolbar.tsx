@@ -21,6 +21,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
   viewToggles,
   sourceMode,
   onInsertImages,
+  onDrawingClick,
 }) => {
   const t = useTranslate();
   const { actions, dispatch } = useEditorContext();
@@ -117,6 +118,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
           viewToggles={viewToggles}
           sourceMode={sourceMode}
           onInsertImages={onInsertImages}
+          onDrawingClick={onDrawingClick}
         />
         <AudienceMenu
           value={visibility}

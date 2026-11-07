@@ -13,6 +13,8 @@ export const EditorMetadata: FC<EditorMetadataProps> = ({
   onTranscribeAttachment,
   transcribingAttachment,
   transcriptionDisabled,
+  onEditDrawing,
+  openingDrawing,
 }) => {
   const { actions, dispatch } = useEditorContext();
   const attachments = useEditorSelector((s) => s.metadata.attachments);
@@ -41,6 +43,8 @@ export const EditorMetadata: FC<EditorMetadataProps> = ({
         onTranscribeAttachment={onTranscribeAttachment}
         transcribingAttachment={transcribingAttachment}
         transcriptionDisabled={transcriptionDisabled}
+        onEditDrawing={onEditDrawing}
+        openingDrawing={openingDrawing}
       />
 
       <RelationListEditor

@@ -45,10 +45,7 @@ type postgresAttachmentQueryRower interface {
 
 func insertPostgresAttachment(ctx context.Context, executor postgresAttachmentQueryRower, create *store.Attachment) (*store.Attachment, error) {
 	fields := []string{"uid", "filename", "blob", "type", "size", "creator_id", "memo_id", "storage_type", "reference", "payload"}
-	storageType := ""
-	if create.StorageType != storepb.AttachmentStorageType_ATTACHMENT_STORAGE_TYPE_UNSPECIFIED {
-		storageType = create.StorageType.String()
-	}
+	storageType := attachmentStorageTypeString(create.StorageType)
 	payloadString := "{}"
 	if create.Payload != nil {
 		bytes, err := protojson.Marshal(create.Payload)
@@ -271,6 +268,13 @@ func applyPostgresAttachmentUpdate(ctx context.Context, executor memoUpdateExece
 		}
 		set, args = append(set, "payload = "+placeholder(len(args)+1)), append(args, string(bytes))
 	}
+	if c := update.Content; c != nil {
+		columns := []string{"type", "size", "storage_type", "reference", "blob"}
+		values := []any{c.Type, c.Size, attachmentStorageTypeString(c.StorageType), c.Reference, c.Blob}
+		for i, column := range columns {
+			set, args = append(set, column+" = "+placeholder(len(args)+1)), append(args, values[i])
+		}
+	}
 
 	if len(set) == 0 {
 		return nil
@@ -330,4 +334,12 @@ func (d *DB) GetAttachmentStorageUsage(ctx context.Context, creatorID int32) (in
 		return 0, errors.Wrap(err, "failed to sum attachment sizes")
 	}
 	return size, nil
+}
+
+// attachmentStorageTypeString is the storage_type column value: the enum name, or empty for unspecified.
+func attachmentStorageTypeString(storageType storepb.AttachmentStorageType) string {
+	if storageType == storepb.AttachmentStorageType_ATTACHMENT_STORAGE_TYPE_UNSPECIFIED {
+		return ""
+	}
+	return storageType.String()
 }

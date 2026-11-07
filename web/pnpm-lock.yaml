@@ -38,12 +38,15 @@ importers:
       '@tanstack/react-query-devtools':
         specifier: ^5.100.9
         version: 5.100.9(@tanstack/react-query@5.100.9(react@19.2.6))(react@19.2.6)
+      '@usememos/canvas':
+        specifier: 26.11.2
+        version: 26.11.2(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@usememos/editor':
         specifier: 26.11.0
         version: 26.11.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@usememos/ui':
-        specifier: 26.11.7
-        version: 26.11.7(@base-ui/react@1.9.0(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(lucide-react@1.34.0(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        specifier: 26.11.9
+        version: 26.11.9(@base-ui/react@1.9.0(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(lucide-react@1.34.0(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -948,6 +951,17 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@usememos/canvas@26.11.2':
+    resolution: {integrity: sha512-sgFrRUSUz5qq3JMiVqPVsLd8NPL+nmWfuEG45mpjbvBbPRxHdKSzNVYc6DwokG/Z670zJI3gDc5Lfsi75QYvGw==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-dom:
+        optional: true
+
   '@usememos/editor@26.11.0':
     resolution: {integrity: sha512-8e0mcauyLH9ivn3oEKdwUO0cFeJdMjfMTfPgVvXf82D2IN4ekiBzaFjbVGjUbct4gDATVClywFPxQx9RreTbZw==}
     peerDependencies:
@@ -959,8 +973,8 @@ packages:
       react-dom:
         optional: true
 
-  '@usememos/ui@26.11.7':
-    resolution: {integrity: sha512-DwDZMoBSNLuPb841L9E6P9++URgAeoekKIRgqdPzDqZt7/gZsp8TtuaF6pkuQabC4yvXU4VsnPmU4/O0iwrB7g==}
+  '@usememos/ui@26.11.9':
+    resolution: {integrity: sha512-rO0rmjrSwjMO60ftTV6yrmzrctF0Xtdqd8iT77vTYtVhd2ehl2KIqwym46nCLeQcp44oYFFt8rjtI6+Eqj57Aw==}
     peerDependencies:
       '@base-ui/react': 1.9.0
       lucide-react: '>=1.0.0'
@@ -2368,12 +2382,17 @@ snapshots:
   '@typescript/typescript-win32-x64@7.0.2':
     optional: true
 
+  '@usememos/canvas@26.11.2(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
+    optionalDependencies:
+      react: 19.2.6
+      react-dom: 19.2.6(react@19.2.6)
+
   '@usememos/editor@26.11.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     optionalDependencies:
       react: 19.2.6
       react-dom: 19.2.6(react@19.2.6)
 
-  '@usememos/ui@26.11.7(@base-ui/react@1.9.0(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(lucide-react@1.34.0(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
+  '@usememos/ui@26.11.9(@base-ui/react@1.9.0(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(lucide-react@1.34.0(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
       '@base-ui/react': 1.9.0(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       lucide-react: 1.34.0(react@19.2.6)

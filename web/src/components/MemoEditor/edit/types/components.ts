@@ -4,7 +4,7 @@ import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import type { Location, Memo, Visibility } from "@/types/proto/api/memo_service_pb";
 import type { EditorFileOrigin } from "../extensions";
 import type { AudioRecorderStatus } from "../hooks/useAudioRecorder";
-import type { LocalFile } from "./attachment";
+import type { DrawingSource, LocalFile } from "./attachment";
 
 /** What MemoEditor hands an editing session: its subject, the host's defaults, and where the draft lives. */
 export interface EditSessionProps {
@@ -88,6 +88,8 @@ export interface EditorToolbarProps {
   viewToggles?: EditorViewToggles;
   sourceMode: EditorSourceModeToggle;
   onInsertImages: (files: File[]) => void;
+  /** Opens the drawing sheet for a new drawing. */
+  onDrawingClick?: () => void;
 }
 
 export interface EditorMetadataProps {
@@ -98,6 +100,10 @@ export interface EditorMetadataProps {
   uploadingLocalFileURLs: ReadonlySet<string>;
   onInsertAttachments: (attachments: Attachment[]) => void;
   onInsertLocalFiles: (localFiles: LocalFile[]) => void;
+  /** Opens a drawing attachment in the drawing sheet. */
+  onEditDrawing?: (source: DrawingSource) => void;
+  /** The attachment row whose drawing is being opened. */
+  openingDrawing?: string;
 }
 
 export interface AudioRecorderPanelProps {
@@ -132,6 +138,7 @@ export interface InsertMenuProps {
   viewToggles?: EditorViewToggles;
   sourceMode: EditorSourceModeToggle;
   onInsertImages: (files: File[]) => void;
+  onDrawingClick?: () => void;
 }
 
 export interface AudienceMenuProps {

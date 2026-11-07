@@ -21,6 +21,7 @@ export const uploadService = {
         mediaMetadata,
       }),
       totalSize: BigInt(file.size),
+      replaceAttachment: localFile.replaces ?? "",
     });
     // The spec call carries no data so that retrying it after a lost response
     // can at worst orphan an upload, never create a duplicate attachment.

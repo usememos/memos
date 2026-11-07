@@ -853,7 +853,7 @@ func (x *UploadAttachmentResponse) GetAttachment() *Attachment {
 	return nil
 }
 
-// UploadAttachmentSpec describes the attachment that a new upload creates.
+// UploadAttachmentSpec describes the attachment that a new upload creates, or whose content it replaces.
 type UploadAttachmentSpec struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. Metadata for the attachment to create. content must be empty; file bytes are sent in data.
@@ -862,9 +862,15 @@ type UploadAttachmentSpec struct {
 	// Format: ^[a-zA-Z0-9]([a-zA-Z0-9-]{0,34}[a-zA-Z0-9])?$
 	AttachmentId string `protobuf:"bytes,2,opt,name=attachment_id,json=attachmentId,proto3" json:"attachment_id,omitempty"`
 	// Optional. Total size of the file in bytes before media processing. Zero represents an empty file.
-	TotalSize     int64 `protobuf:"varint,3,opt,name=total_size,json=totalSize,proto3" json:"total_size,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	TotalSize int64 `protobuf:"varint,3,opt,name=total_size,json=totalSize,proto3" json:"total_size,omitempty"`
+	// Optional. The name of an existing attachment whose content the finished upload replaces, instead of creating one.
+	// The attachment keeps its name, memo and creation time; its filename, type, size and media metadata come from this
+	// upload, and its cached thumbnail is dropped. attachment_id and attachment.memo must be empty. Only the uploader of
+	// the attachment or an admin may replace it. An external link or part of a motion photo cannot be replaced.
+	// Format: attachments/{attachment}
+	ReplaceAttachment string `protobuf:"bytes,4,opt,name=replace_attachment,json=replaceAttachment,proto3" json:"replace_attachment,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *UploadAttachmentSpec) Reset() {
@@ -916,6 +922,13 @@ func (x *UploadAttachmentSpec) GetTotalSize() int64 {
 		return x.TotalSize
 	}
 	return 0
+}
+
+func (x *UploadAttachmentSpec) GetReplaceAttachment() string {
+	if x != nil {
+		return x.ReplaceAttachment
+	}
+	return ""
 }
 
 // MotionMedia links the parts of a motion photo.
@@ -1466,14 +1479,16 @@ const file_api_attachment_service_proto_rawDesc = "" +
 	"\x0emax_chunk_size\x18\x03 \x01(\x05R\fmaxChunkSize\x125\n" +
 	"\n" +
 	"attachment\x18\x04 \x01(\v2\x15.memos.api.AttachmentR\n" +
-	"attachment\"\xa0\x01\n" +
+	"attachment\"\xed\x01\n" +
 	"\x14UploadAttachmentSpec\x12:\n" +
 	"\n" +
 	"attachment\x18\x01 \x01(\v2\x15.memos.api.AttachmentB\x03\xe0A\x02R\n" +
 	"attachment\x12(\n" +
 	"\rattachment_id\x18\x02 \x01(\tB\x03\xe0A\x01R\fattachmentId\x12\"\n" +
 	"\n" +
-	"total_size\x18\x03 \x01(\x03B\x03\xe0A\x01R\ttotalSize\"\xf8\x01\n" +
+	"total_size\x18\x03 \x01(\x03B\x03\xe0A\x01R\ttotalSize\x12K\n" +
+	"\x12replace_attachment\x18\x04 \x01(\tB\x1c\xe0A\x01\xfaA\x16\n" +
+	"\x14memos.api/AttachmentR\x11replaceAttachment\"\xf8\x01\n" +
 	"\vMotionMedia\x124\n" +
 	"\x06family\x18\x01 \x01(\x0e2\x1c.memos.api.MotionMediaFamilyR\x06family\x12.\n" +
 	"\x04role\x18\x02 \x01(\x0e2\x1a.memos.api.MotionMediaRoleR\x04role\x12\x19\n" +
