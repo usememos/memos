@@ -47,8 +47,11 @@ export interface DrawingSheetProps {
   initialScene?: Scene;
   /** A picture to draw on: a file named like a drawing whose scene could not be read. */
   background?: Blob;
-  /** The finished drawing, a PNG with the scene embedded, named `drawing-YYYYMMDD-HHMMSS.canvas.png`. */
-  onDone: (file: File) => void;
+  /**
+   * The finished drawing, a PNG with the scene embedded, named `drawing-YYYYMMDD-HHMMSS.canvas.png`.
+   * A promise keeps Done busy until it settles; a rejection keeps the sheet open to retry.
+   */
+  onDone: (file: File) => void | Promise<void>;
   onClose: () => void;
 }
 
@@ -146,7 +149,7 @@ const DrawingSheet = ({ mode, initialScene, background, onDone, onClose }: Drawi
     try {
       const blob = await canvas.exportPng();
       canvas.markSaved();
-      onDone(new File([blob], drawingFileName(), { type: "image/png" }));
+      await onDone(new File([blob], drawingFileName(), { type: "image/png" }));
     } catch (error) {
       console.error(error);
       showErrorToast(t("editor.drawing.export-failed"));

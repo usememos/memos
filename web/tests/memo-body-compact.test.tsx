@@ -22,6 +22,8 @@ vi.mock("@/utils/i18n", () => ({
   useTranslate: () => (key: string) => key,
 }));
 
+vi.mock("@/hooks/useCurrentUser", () => ({ default: () => undefined }));
+
 vi.mock("@/contexts/MentionResolutionContext", () => ({
   useResolvedMentionUsernames: () => new Set<string>(),
 }));

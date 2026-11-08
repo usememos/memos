@@ -1,12 +1,13 @@
 import { buttonClasses } from "@usememos/ui";
 import { DownloadIcon, ExternalLinkIcon, FileIcon, PlayIcon } from "lucide-react";
 import type { KeyboardEvent, PropsWithChildren } from "react";
-import { useMemo } from "react";
-import { isDrawingFilename } from "@/components/DrawingSheet";
+import { Suspense, useMemo, useState } from "react";
+import { DrawingViewer, isDrawingFilename } from "@/components/DrawingSheet";
 import MotionPhotoPreview from "@/components/MotionPhotoPreview";
 import VideoPoster from "@/components/VideoPoster";
 import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/attachment_service_pb";
+import type { Memo } from "@/types/proto/api/memo_service_pb";
 import { getAttachmentUrl, isImage } from "@/utils/attachment";
 import { useTranslate } from "@/utils/i18n";
 import type { AttachmentVisualItem, PreviewMediaItem } from "@/utils/media-item";
@@ -175,12 +176,15 @@ const SingleVisualItem = ({ item, onPreview }: { item: VisualItem; onPreview?: (
 interface AttachmentGalleryProps {
   visual: Attachment[];
   onImagePreview?: (items: PreviewMediaItem[], index: number) => void;
+  /** Opens drawings in the drawing viewer instead of the image viewer, with Edit when `canEdit`. */
+  drawings?: { memo: Pick<Memo, "name" | "attachments">; canEdit: boolean };
 }
 
 /** The memo's images, motion photos and videos as the bare gallery, flush with the content. */
-export const AttachmentGallery = ({ visual, onImagePreview }: AttachmentGalleryProps) => {
+export const AttachmentGallery = ({ visual, onImagePreview, drawings }: AttachmentGalleryProps) => {
   const visualItems = useMemo(() => buildAttachmentVisualItems(visual), [visual]);
   const layout = resolveVisualGalleryLayout(visualItems);
+  const [openDrawing, setOpenDrawing] = useState<VisualItem>();
 
   if (!layout) {
     return null;
@@ -192,10 +196,32 @@ export const AttachmentGallery = ({ visual, onImagePreview }: AttachmentGalleryP
     onImagePreview?.(previewItems, index >= 0 ? index : 0);
   };
 
+  // A drawing opens as a drawing: in the read-only canvas, not the image viewer.
+  const openItem = (item: VisualItem) => {
+    if (drawings && isDrawing(item) && item.attachments[0]) setOpenDrawing(item);
+    else handlePreview(item.id);
+  };
+
+  const drawingViewer = drawings && openDrawing?.attachments[0] && (
+    <Suspense fallback={null}>
+      <DrawingViewer
+        attachment={openDrawing.attachments[0]}
+        memo={drawings.memo}
+        canEdit={drawings.canEdit}
+        onClose={() => setOpenDrawing(undefined)}
+        onNoScene={() => {
+          setOpenDrawing(undefined);
+          handlePreview(openDrawing.id);
+        }}
+      />
+    </Suspense>
+  );
+
   if (layout.mode === "single") {
     return (
       <div className="w-full">
-        <SingleVisualItem item={layout.item} onPreview={() => handlePreview(layout.item.id)} />
+        <SingleVisualItem item={layout.item} onPreview={() => openItem(layout.item)} />
+        {drawingViewer}
       </div>
     );
   }
@@ -203,14 +229,9 @@ export const AttachmentGallery = ({ visual, onImagePreview }: AttachmentGalleryP
   return (
     <div className={cn("w-full", layout.containerClassName)}>
       {layout.cells.map(({ item, className, overlayLabel }) => (
-        <CollageVisualItem
-          key={item.id}
-          item={item}
-          className={className}
-          overlayLabel={overlayLabel}
-          onPreview={() => handlePreview(item.id)}
-        />
+        <CollageVisualItem key={item.id} item={item} className={className} overlayLabel={overlayLabel} onPreview={() => openItem(item)} />
       ))}
+      {drawingViewer}
     </div>
   );
 };
