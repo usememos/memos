@@ -20,7 +20,7 @@ import { showErrorToast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { type Translations, useTranslate } from "@/utils/i18n";
 import { primaryModifierGlyph } from "@/utils/platform";
-import { DrawingDialogPopup, FloatingBar, FloatingRow } from "./DrawingFrame";
+import { DrawingDialogPopup, FloatingAction, FloatingBar, FloatingRow } from "./DrawingFrame";
 import { DRAWING_HUES, useCanvasTheme } from "./useCanvasTheme";
 
 const TOOLS: { name: ToolName; label: Translations; shortcut: string; icon: ReactElement }[] = [
@@ -65,6 +65,8 @@ export interface DrawingSheetProps {
 const DrawingSheet = ({ mode, initialScene, background, onDone, onClose }: DrawingSheetProps) => {
   const t = useTranslate();
   const isWide = useMediaQuery("sm");
+  // Small controls on a desktop; a phone keeps the 32px ones, 44px apart, for touch.
+  const size = isWide ? "sm" : undefined;
   const { theme, ink, fontFamily } = useCanvasTheme();
   const canvasRef = useRef<CanvasHandle | null>(null);
   const surfaceRef = useRef<HTMLDivElement>(null);
@@ -169,6 +171,7 @@ const DrawingSheet = ({ mode, initialScene, background, onDone, onClose }: Drawi
           <Tooltip.Trigger
             render={
               <Toggle
+                size={size}
                 aria-label={t(item.label)}
                 icon={item.icon}
                 pressed={tool === item.name}
@@ -192,6 +195,7 @@ const DrawingSheet = ({ mode, initialScene, background, onDone, onClose }: Drawi
               render={
                 <Button
                   variant="ghost"
+                  size={size}
                   aria-label={t("editor.drawing.style")}
                   icon={<CircleIcon style={{ color: currentColor, fill: currentColor }} />}
                 />
@@ -252,6 +256,7 @@ const DrawingSheet = ({ mode, initialScene, background, onDone, onClose }: Drawi
   const historyControls = (
     <>
       <IconAction
+        size={size}
         label={t("editor.drawing.undo")}
         shortcut={`${modifier} Z`}
         icon={<Undo2Icon />}
@@ -262,6 +267,7 @@ const DrawingSheet = ({ mode, initialScene, background, onDone, onClose }: Drawi
         }}
       />
       <IconAction
+        size={size}
         label={t("editor.drawing.redo")}
         shortcut={`⇧ ${modifier} Z`}
         icon={<Redo2Icon />}
@@ -275,17 +281,29 @@ const DrawingSheet = ({ mode, initialScene, background, onDone, onClose }: Drawi
   );
   const viewControls = (
     <>
-      <IconAction label={t("editor.drawing.zoom-to-fit")} icon={<ScanIcon />} onClick={() => canvasRef.current?.zoomToFit()} />
-      <IconAction label={t("editor.insert-menu.insert-image")} icon={<ImagePlusIcon />} onClick={() => fileInputRef.current?.click()} />
+      <IconAction size={size} label={t("editor.drawing.zoom-to-fit")} icon={<ScanIcon />} onClick={() => canvasRef.current?.zoomToFit()} />
+      <IconAction
+        size={size}
+        label={t("editor.insert-menu.insert-image")}
+        icon={<ImagePlusIcon />}
+        onClick={() => fileInputRef.current?.click()}
+      />
     </>
   );
   const cancelButton = (
-    <Button variant="ghost" onClick={requestClose}>
+    <Button variant="ghost" size={size} onClick={requestClose}>
       {t("common.cancel")}
     </Button>
   );
   const doneButton = (
-    <Button variant="primary" onClick={handleDone} disabled={isPreparing} loading={isExporting} loadingLabel={t("editor.drawing.done")}>
+    <Button
+      variant="primary"
+      size={size}
+      onClick={handleDone}
+      disabled={isPreparing}
+      loading={isExporting}
+      loadingLabel={t("editor.drawing.done")}
+    >
       {t("editor.drawing.done")}
     </Button>
   );
@@ -332,7 +350,7 @@ const DrawingSheet = ({ mode, initialScene, background, onDone, onClose }: Drawi
 
           {isWide ? (
             <FloatingRow edge="top">
-              <FloatingBar>{cancelButton}</FloatingBar>
+              <FloatingAction>{cancelButton}</FloatingAction>
               <FloatingBar>
                 {toolRow}
                 <Divider />
@@ -342,17 +360,17 @@ const DrawingSheet = ({ mode, initialScene, background, onDone, onClose }: Drawi
                 <Divider />
                 {viewControls}
               </FloatingBar>
-              <FloatingBar>{doneButton}</FloatingBar>
+              <FloatingAction>{doneButton}</FloatingAction>
             </FloatingRow>
           ) : (
             <>
               <FloatingRow edge="top">
-                <FloatingBar>{cancelButton}</FloatingBar>
+                <FloatingAction>{cancelButton}</FloatingAction>
                 <FloatingBar className="gap-3">
                   {historyControls}
                   {viewControls}
                 </FloatingBar>
-                <FloatingBar>{doneButton}</FloatingBar>
+                <FloatingAction>{doneButton}</FloatingAction>
               </FloatingRow>
               {/* The tools in thumb reach. Under 380px the divider goes and the bar nears the
                   edges, so a 360px screen keeps 44px between targets. */}
@@ -422,18 +440,20 @@ const CanvasMounted = ({ onMounted }: { onMounted: () => void }) => {
 const IconAction = ({
   label,
   icon,
+  size,
   shortcut,
   disabled,
   onClick,
 }: {
   label: string;
   icon: ReactElement;
+  size?: "sm";
   shortcut?: string;
   disabled?: boolean;
   onClick: () => void;
 }) => (
   <Tooltip.Root>
-    <Tooltip.Trigger render={<Button variant="ghost" aria-label={label} icon={icon} disabled={disabled} onClick={onClick} />} />
+    <Tooltip.Trigger render={<Button variant="ghost" size={size} aria-label={label} icon={icon} disabled={disabled} onClick={onClick} />} />
     <Tooltip.Popup shortcut={shortcut}>{label}</Tooltip.Popup>
   </Tooltip.Root>
 );

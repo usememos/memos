@@ -39,6 +39,8 @@ const DrawingViewer = ({ attachment: initialAttachment, memo, canEdit, onClose, 
   const t = useTranslate();
   const currentUser = useCurrentUser();
   const isWide = useMediaQuery("sm");
+  // Small controls on a desktop; a phone keeps the 32px ones for touch.
+  const size = isWide ? "sm" : undefined;
   const { theme, fontFamily } = useCanvasTheme();
   const { mutateAsync: updateMemo } = useUpdateMemo();
   const canvasRef = useRef<CanvasHandle>(null);
@@ -126,13 +128,19 @@ const DrawingViewer = ({ attachment: initialAttachment, memo, canEdit, onClose, 
           )}
           <FloatingRow edge="top">
             <FloatingBar className="pr-3">
-              <IconAction label={t("common.close")} icon={<XIcon />} onClick={onClose} />
+              <IconAction size={size} label={t("common.close")} icon={<XIcon />} onClick={onClose} />
               <Dialog.Title className="truncate mu-label text-mu-ink">{title}</Dialog.Title>
             </FloatingBar>
             <FloatingBar className={isWide ? undefined : "gap-3"}>
-              <IconAction label={t("editor.drawing.zoom-to-fit")} icon={<ScanIcon />} onClick={() => canvasRef.current?.zoomToFit()} />
+              <IconAction
+                size={size}
+                label={t("editor.drawing.zoom-to-fit")}
+                icon={<ScanIcon />}
+                onClick={() => canvasRef.current?.zoomToFit()}
+              />
               {canEdit && (
-                <Button variant="neutral" icon={<PencilLineIcon />} disabled={!scene} onClick={() => setIsEditing(true)}>
+                // Flat inside the bar: the bar is the one raised surface.
+                <Button variant="ghost" size={size} icon={<PencilLineIcon />} disabled={!scene} onClick={() => setIsEditing(true)}>
                   {t("common.edit")}
                 </Button>
               )}
@@ -145,9 +153,9 @@ const DrawingViewer = ({ attachment: initialAttachment, memo, canEdit, onClose, 
 };
 
 /** An icon-only ghost Button named by its Tooltip. */
-const IconAction = ({ label, icon, onClick }: { label: string; icon: ReactElement; onClick: () => void }) => (
+const IconAction = ({ label, icon, size, onClick }: { label: string; icon: ReactElement; size?: "sm"; onClick: () => void }) => (
   <Tooltip.Root>
-    <Tooltip.Trigger render={<Button variant="ghost" aria-label={label} icon={icon} onClick={onClick} />} />
+    <Tooltip.Trigger render={<Button variant="ghost" size={size} aria-label={label} icon={icon} onClick={onClick} />} />
     <Tooltip.Popup>{label}</Tooltip.Popup>
   </Tooltip.Root>
 );

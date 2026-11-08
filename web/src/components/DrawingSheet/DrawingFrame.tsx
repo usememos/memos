@@ -33,7 +33,7 @@ export const FloatingRow = ({ edge, className, children }: { edge: "top" | "bott
     className={cn(
       "pointer-events-none absolute inset-x-3 flex gap-2",
       edge === "top"
-        ? "top-[calc(12px+env(safe-area-inset-top))] items-start justify-between"
+        ? "top-[calc(12px+env(safe-area-inset-top))] items-center justify-between"
         : "bottom-[calc(12px+env(safe-area-inset-bottom))] justify-center",
       className,
     )}
@@ -42,7 +42,20 @@ export const FloatingRow = ({ edge, className, children }: { edge: "top" | "bott
   </div>
 );
 
-/** A cluster of controls floating on the paper: light in every theme, like the paper under it. */
+/**
+ * A lone action on the paper, without a bar: the button is its own surface. Light in every
+ * theme, like the paper under it.
+ */
+export const FloatingAction = ({ children }: { children: ReactNode }) => (
+  <div data-theme="light" className="pointer-events-auto">
+    {children}
+  </div>
+);
+
+/**
+ * A group of controls floating on the paper: one raised bar with flat controls inside, so no
+ * shadow sits inside another. Light in every theme, like the paper under it.
+ */
 export const FloatingBar = ({ className, children }: { className?: string; children: ReactNode }) => (
   <div
     data-theme="light"
