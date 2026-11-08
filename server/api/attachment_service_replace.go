@@ -118,12 +118,10 @@ func (s *APIService) finishAttachmentReplace(ctx context.Context, upload *attach
 	release := s.attachmentReplaces.lock(upload.state.uid)
 	defer release()
 	if upload.state.replaceCommitted {
-		// An earlier finish committed but failed afterwards: finish its cleanup and
-		// report the attachment as it is now, instead of applying this upload again.
-		if leftover := upload.state.replacedLeftover; leftover != nil {
-			if err := s.deleteReplacedContent(ctx, leftover); err != nil {
-				return nil, err
-			}
+		// An earlier finish committed but failed afterwards: report the attachment as
+		// it is now, instead of applying this upload again. The previous file's
+		// cleanup does not decide the result; when it fails, the next retry tries again.
+		if leftover := upload.state.replacedLeftover; leftover != nil && s.deleteReplacedContent(ctx, leftover) {
 			upload.state.replacedLeftover = nil
 		}
 		return s.GetAttachment(ctx, &apipb.GetAttachmentRequest{Name: "attachments/" + upload.state.uid})
@@ -240,25 +238,30 @@ func (s *APIService) finishAttachmentReplace(ctx context.Context, upload *attach
 // deleteReplacedContent deletes the file a committed replacement left behind,
 // unless the attachment's row still points at it (the replacement did not
 // commit after all). A row that is gone means the attachment was deleted, and
-// its file went with it.
-func (s *APIService) deleteReplacedContent(ctx context.Context, leftover *store.Attachment) error {
-	current, err := s.Store.GetAttachment(ctx, &store.FindAttachment{UID: &leftover.UID})
-	if err != nil {
-		return status.Errorf(codes.Internal, "failed to get attachment: %v", err)
-	}
-	if current == nil || hasSameManagedStorageObject(current, leftover) {
-		return nil
-	}
-	setting, err := s.Store.GetInstanceStorageSetting(ctx)
-	if err != nil {
-		return status.Errorf(codes.Internal, "failed to get storage setting: %v", err)
-	}
-	if err := s.Store.DeleteAttachmentStorageWithInstanceSetting(ctx, leftover, setting); err != nil {
-		slog.Warn("failed to delete replaced attachment content",
+// its file went with it. It reports whether the leftover needs no further
+// cleanup; a failure is logged and leaves the leftover for the next retry.
+func (s *APIService) deleteReplacedContent(ctx context.Context, leftover *store.Attachment) bool {
+	logFailure := func(msg string, err error) bool {
+		slog.Warn(msg,
 			slog.String("attachment_uid", leftover.UID),
 			slog.String("storage_type", leftover.StorageType.String()),
 			slog.Any("error", err),
 		)
+		return false
 	}
-	return nil
+	current, err := s.Store.GetAttachment(ctx, &store.FindAttachment{UID: &leftover.UID})
+	if err != nil {
+		return logFailure("failed to get attachment before deleting replaced content", err)
+	}
+	if current == nil || hasSameManagedStorageObject(current, leftover) {
+		return true
+	}
+	setting, err := s.Store.GetInstanceStorageSetting(ctx)
+	if err != nil {
+		return logFailure("failed to get storage setting before deleting replaced content", err)
+	}
+	if err := s.Store.DeleteAttachmentStorageWithInstanceSetting(ctx, leftover, setting); err != nil {
+		return logFailure("failed to delete replaced attachment content", err)
+	}
+	return true
 }

@@ -147,6 +147,84 @@ func TestReplaceAttachmentRetryDeletesLeftoverFile(t *testing.T) {
 	}
 }
 
+// A retry whose cleanup of the previous file fails still reports the committed
+// replacement, and keeps the file queued so the next retry deletes it.
+func TestReplaceAttachmentRetryKeepsLeftoverWhenDeleteFails(t *testing.T) {
+	svc := newIntegrationService(t)
+	t.Cleanup(svc.CloseUploads)
+	ctx := context.Background()
+	_, err := svc.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_STORAGE,
+		Value: &storepb.InstanceSetting_StorageSetting{StorageSetting: &storepb.InstanceStorageSetting{
+			Storages:         []*storepb.Storage{{Id: "local", Name: "Local", Type: storepb.StorageType_STORAGE_TYPE_LOCAL}},
+			DefaultStorageId: "local",
+		}},
+	})
+	require.NoError(t, err)
+	user := createSpaceTestUser(ctx, t, svc, "artist", store.RoleUser)
+	userCtx := userCtx(ctx, user.ID)
+	content := testutil.BuildPNG(4, 4)
+	attachment, err := svc.CreateAttachment(userCtx, &apipb.CreateAttachmentRequest{Attachment: &apipb.Attachment{
+		Filename: "drawing.canvas.png", Type: "image/png", Content: content,
+	}})
+	require.NoError(t, err)
+	uid, err := ExtractAttachmentUIDFromName(attachment.Name)
+	require.NoError(t, err)
+	current, err := svc.Store.GetAttachment(ctx, &store.FindAttachment{UID: &uid})
+	require.NoError(t, err)
+
+	// A non-empty directory in place of the previous file: removing it fails.
+	stuck := filepath.Join(filepath.Dir(localPath(svc.Profile.Data, current.Reference)), "previous.canvas.png")
+	require.NoError(t, os.MkdirAll(stuck, 0o755))
+	require.NoError(t, os.WriteFile(filepath.Join(stuck, "keep"), content, 0o644))
+	leftover := *current
+	leftover.Reference = stuck
+
+	started, err := svc.UploadAttachment(userCtx, &apipb.UploadAttachmentRequest{
+		Upload: &apipb.UploadAttachmentRequest_Spec{Spec: &apipb.UploadAttachmentSpec{
+			Attachment:        &apipb.Attachment{Filename: "drawing.canvas.png", Type: "image/png"},
+			TotalSize:         int64(len(content)),
+			ReplaceAttachment: attachment.Name,
+		}},
+		Data: content,
+	})
+	require.NoError(t, err)
+	upload, err := svc.attachmentUploads.resume(started.UploadId, user.ID)
+	require.NoError(t, err)
+	upload.state.replaceCommitted = true
+	upload.state.replacedLeftover = &leftover
+	upload.mu.Unlock()
+
+	retry := func() {
+		upload, err := svc.attachmentUploads.resume(started.UploadId, user.ID)
+		require.NoError(t, err)
+		upload.complete = false
+		upload.mu.Unlock()
+		retried, err := svc.UploadAttachment(userCtx, &apipb.UploadAttachmentRequest{
+			Upload:      &apipb.UploadAttachmentRequest_UploadId{UploadId: started.UploadId},
+			WriteOffset: int64(len(content)),
+			FinishWrite: true,
+		})
+		require.NoError(t, err, "a failed cleanup does not fail the committed replacement")
+		require.Equal(t, attachment.Name, retried.Attachment.Name)
+	}
+	pendingLeftover := func() *store.Attachment {
+		upload, err := svc.attachmentUploads.resume(started.UploadId, user.ID)
+		require.NoError(t, err)
+		defer upload.mu.Unlock()
+		return upload.state.replacedLeftover
+	}
+
+	retry()
+	require.DirExists(t, stuck)
+	require.NotNil(t, pendingLeftover(), "the previous file stays queued for the next retry")
+
+	require.NoError(t, os.Remove(filepath.Join(stuck, "keep")))
+	retry()
+	require.NoDirExists(t, stuck)
+	require.Nil(t, pendingLeftover())
+}
+
 func localPath(data, reference string) string {
 	path := filepath.FromSlash(reference)
 	if filepath.IsAbs(path) {
