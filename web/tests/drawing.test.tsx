@@ -292,7 +292,7 @@ describe("drawing attachments", () => {
     expect(result.current.drawing.session).toBe(fresh);
   });
 
-  it("saves an edit of someone else's drawing as a new attachment", async () => {
+  it("adds an edit of someone else's drawing beside it, keeping the original", async () => {
     auth.currentUser = create(UserSchema, { name: "users/author", role: User_Role.USER });
     vi.stubGlobal(
       "fetch",
@@ -304,8 +304,9 @@ describe("drawing attachments", () => {
     await act(() => result.current.drawing.openExisting({ kind: "attachment", attachment: drawingAttachment }));
     act(() => result.current.drawing.done(new File([fixturePng], "drawing-2.canvas.png", { type: "image/png" })));
 
+    // Only its uploader or an admin may remove it from the memo.
     const state = result.current.editor.getState();
-    expect(state.metadata.attachments).toEqual([]);
+    expect(state.metadata.attachments).toEqual([drawingAttachment]);
     expect(state.localFiles.map((item) => [item.file.name, item.replaces])).toEqual([["drawing-2.canvas.png", undefined]]);
   });
 

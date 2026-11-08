@@ -160,11 +160,13 @@ describe("DrawingViewer", () => {
     expect(mocks.canvasProps.at(-1)?.readOnly).toBe(true);
   });
 
-  it("saves an edit of someone else's drawing as a new attachment of the memo", async () => {
-    // The memo's author may change the memo but not replace a file someone else uploaded.
+  it("adds an edit of someone else's drawing beside it, and a retry reuses the uploaded copy", async () => {
+    // The memo's author may change the memo but not replace or remove a file someone else uploaded.
     const othersDrawing = create(AttachmentSchema, { ...drawing, creator: "users/other" });
+    const copy = create(AttachmentSchema, { name: "attachments/d2", filename: "drawing-2.canvas.png", type: "image/png" });
     handle.exportPng.mockResolvedValue(new Blob([await withScene()], { type: "image/png" }));
-    mocks.uploadFile.mockResolvedValue(create(AttachmentSchema, { name: "attachments/d2", filename: "drawing-2.canvas.png" }));
+    mocks.uploadFile.mockResolvedValue(copy);
+    mocks.updateMemo.mockRejectedValueOnce(new Error("offline"));
     render(
       <DrawingViewer
         attachment={othersDrawing}
@@ -176,13 +178,24 @@ describe("DrawingViewer", () => {
     );
 
     await startEditing();
-    fireEvent.click(await screen.findByRole("button", { name: "editor.drawing.done" }));
-
-    await waitFor(() => expect(mocks.updateMemo).toHaveBeenCalled());
+    const done = await screen.findByRole("button", { name: "editor.drawing.done" });
+    fireEvent.click(done);
+    await waitFor(() => expect(mocks.updateMemo).toHaveBeenCalledTimes(1));
     expect(mocks.uploadFile.mock.calls[0][0].replaces).toBeUndefined();
     const [{ update, updateMask }] = mocks.updateMemo.mock.calls[0];
     expect(updateMask).toEqual(["attachments"]);
-    expect(update.attachments.map((item: { name: string }) => item.name)).toEqual(["attachments/d2"]);
+    // Whole attachments, so the gallery keeps showing them while the update is pending.
+    expect(update.attachments.map((item: { name: string; filename: string }) => [item.name, item.filename])).toEqual([
+      [othersDrawing.name, othersDrawing.filename],
+      [copy.name, copy.filename],
+    ]);
+
+    // The memo update failed: the sheet stays open, and Done again replaces the copy it uploaded.
+    await waitFor(() => expect(done).toBeEnabled());
+    fireEvent.click(done);
+    await waitFor(() => expect(mocks.updateMemo).toHaveBeenCalledTimes(2));
+    expect(mocks.uploadFile.mock.calls[1][0].replaces).toBe(copy.name);
+    await waitFor(() => expect(screen.getByRole("link", { name: "common.download" })).toBeInTheDocument());
   });
 });
 

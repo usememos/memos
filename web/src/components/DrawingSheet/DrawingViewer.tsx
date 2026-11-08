@@ -1,16 +1,15 @@
-import { create } from "@bufbuild/protobuf";
 import type { CanvasHandle, Scene } from "@usememos/canvas";
 import { Canvas } from "@usememos/canvas/react";
 import { Button, buttonClasses, Dialog, Spinner, Tooltip } from "@usememos/ui";
 import { DownloadIcon, PencilLineIcon, ScanIcon, XIcon } from "lucide-react";
-import { type ReactElement, useEffect, useRef, useState } from "react";
+import { type ReactElement, useEffect, useEffectEvent, useRef, useState } from "react";
 import { uploadService } from "@/components/MemoEditor/edit/services/uploadService";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { useUpdateMemo } from "@/hooks/useMemoQueries";
 import { showErrorToast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-import { type Attachment, AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
+import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import type { Memo } from "@/types/proto/api/memo_service_pb";
 import { getAttachmentUrl } from "@/utils/attachment";
 import { useTranslate } from "@/utils/i18n";
@@ -34,7 +33,8 @@ export interface DrawingViewerProps {
  * A drawing opened from a memo: the canvas in its read-only mode (pan, zoom, copy), with
  * Zoom to fit, Download and, for whoever may change the memo, Edit. Edit turns the viewer
  * into the drawing sheet; Done replaces the drawing's file under the same name, stamps the
- * memo's update time and returns to viewing the new version.
+ * memo's update time and returns to viewing the new version. An edit of someone else's
+ * drawing is added to the memo beside it.
  */
 const DrawingViewer = ({ attachment: initialAttachment, memo, canEdit, onClose, onNoScene }: DrawingViewerProps) => {
   const t = useTranslate();
@@ -46,9 +46,15 @@ const DrawingViewer = ({ attachment: initialAttachment, memo, canEdit, onClose, 
   const [attachment, setAttachment] = useState(initialAttachment);
   const [scene, setScene] = useState<Scene>();
   const [isEditing, setIsEditing] = useState(false);
-  // The load runs once per attachment; it reports through the host's latest callbacks.
-  const host = useRef({ onClose, onNoScene, t });
-  host.current = { onClose, onNoScene, t };
+  // An edit saved as a copy whose memo update failed: the user's own, so a retry replaces it
+  // instead of uploading another.
+  const unlinkedCopy = useRef<Attachment>(undefined);
+  // The load runs once per attachment; it reports through the host's committed callbacks.
+  const showNoScene = useEffectEvent(onNoScene);
+  const failToOpen = useEffectEvent(() => {
+    showErrorToast(t("editor.drawing.open-failed"));
+    onClose();
+  });
 
   useEffect(() => {
     const controller = new AbortController();
@@ -57,29 +63,31 @@ const DrawingViewer = ({ attachment: initialAttachment, memo, canEdit, onClose, 
       .then((content) => {
         if (controller.signal.aborted) return;
         if (content.scene) setScene(content.scene);
-        else host.current.onNoScene();
+        else showNoScene();
       })
       .catch((error) => {
         if (controller.signal.aborted) return;
         console.error(error);
-        showErrorToast(host.current.t("editor.drawing.open-failed"));
-        host.current.onClose();
+        failToOpen();
       });
     return () => controller.abort();
   }, [initialAttachment]);
 
-  // Done in the sheet: the edit replaces the drawing's file, or, for a drawing someone else
-  // uploaded (which only they or an admin may replace), takes its place as a new attachment.
+  // Done in the sheet: the edit replaces the drawing's file. A drawing someone else uploaded
+  // stays, since only they or an admin may replace or remove it, and the edit joins the memo
+  // beside it.
   const saveEdit = async (file: File) => {
     const replace = canManageAttachment(attachment, currentUser);
-    const saved = await uploadService.uploadFile({ file, previewUrl: "", replaces: replace ? attachment.name : undefined });
+    const replaces = replace ? attachment.name : unlinkedCopy.current?.name;
+    const saved = await uploadService.uploadFile({ file, previewUrl: "", replaces });
     if (replace) {
       await updateMemo({ update: { name: memo.name }, updateMask: ["update_time"] });
     } else {
-      const attachments = memo.attachments.map((item) =>
-        create(AttachmentSchema, { name: item.name === attachment.name ? saved.name : item.name }),
-      );
+      unlinkedCopy.current = saved;
+      // Whole attachments, not names: the optimistic update shows them until the memo reloads.
+      const attachments = memo.attachments.flatMap((item) => (item.name === attachment.name ? [item, saved] : [item]));
       await updateMemo({ update: { name: memo.name, attachments }, updateMask: ["attachments"] });
+      unlinkedCopy.current = undefined;
     }
     const content = await readDrawing(file);
     setAttachment(saved);

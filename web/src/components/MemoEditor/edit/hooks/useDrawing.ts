@@ -10,8 +10,8 @@ import type { DrawingSource, LocalFile } from "../types/attachment";
 
 /**
  * Where the finished drawing goes: a new file in the draft, or in place of the one being
- * edited. A saved drawing the user may not replace (someone else uploaded it) is swapped
- * for a new attachment instead.
+ * edited. A saved drawing the user may not replace (someone else uploaded it) stays, and
+ * the edit is added as a new attachment.
  */
 type DrawingTarget = { kind: "new" } | { kind: "local"; previewUrl: string } | { kind: "attachment"; name: string; canReplace: boolean };
 
@@ -108,10 +108,8 @@ export const useDrawing = (toLocalFile: (file: File) => LocalFile) => {
           ]),
         );
       } else {
-        if (target.kind === "attachment") {
-          // Not the user's to replace: the edit becomes a new attachment in the drawing's stead.
-          dispatch(actions.setMetadata({ attachments: state.metadata.attachments.filter((item) => item.name !== target.name) }));
-        }
+        // A new drawing, or an edit of one the user may not replace (someone else uploaded it,
+        // and only they or an admin may remove it): the edit joins the memo beside it.
         dispatch(actions.addLocalFile(localFile));
       }
       setSession(undefined);

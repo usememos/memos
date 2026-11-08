@@ -148,8 +148,10 @@ const DrawingSheet = ({ mode, initialScene, background, onDone, onClose }: Drawi
     setIsExporting(true);
     try {
       const blob = await canvas.exportPng();
-      canvas.markSaved();
       await onDone(new File([blob], drawingFileName(), { type: "image/png" }));
+      // Only once Done went through: after a failed save, Cancel still asks before discarding.
+      // The host may have closed the sheet already.
+      canvasRef.current?.markSaved();
     } catch (error) {
       console.error(error);
       showErrorToast(t("editor.drawing.export-failed"));

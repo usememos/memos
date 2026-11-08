@@ -166,6 +166,17 @@ describe("DrawingSheet", () => {
     expect(screen.getByRole("img").parentElement).not.toHaveAttribute("aria-busy");
   });
 
+  it("stays dirty when saving fails, so Cancel still asks before discarding", async () => {
+    handle.exportPng.mockResolvedValue(new Blob(["png"], { type: "image/png" }));
+    const onDone = vi.fn().mockRejectedValue(new Error("offline"));
+    render(<DrawingSheet mode="new" onDone={onDone} onClose={vi.fn()} />);
+
+    fireEvent.click(await screen.findByRole("button", { name: "editor.drawing.done" }));
+    await waitFor(() => expect(onDone).toHaveBeenCalled());
+    await waitFor(() => expect(screen.getByRole("button", { name: "editor.drawing.done" })).toBeEnabled());
+    expect(handle.markSaved).not.toHaveBeenCalled();
+  });
+
   it("opens a picture without a scene as a locked background", async () => {
     const picture = new Blob(["png"], { type: "image/png" });
     render(<DrawingSheet mode="new" background={picture} onDone={vi.fn()} onClose={vi.fn()} />);
