@@ -8,6 +8,7 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { useUpdateMemo } from "@/hooks/useMemoQueries";
 import { showErrorToast } from "@/lib/toast";
+import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import type { Memo } from "@/types/proto/api/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
@@ -127,9 +128,11 @@ const DrawingViewer = ({ attachment: initialAttachment, memo, canEdit, onClose, 
             </div>
           )}
           <FloatingRow edge="top">
-            <FloatingBar className="pr-3">
+            {/* The caption matches the bar's button text: 13px beside small controls, 14px on a phone.
+                Not a Dialog.Title, whose heading type is 16px; the popup's aria-label names the dialog. */}
+            <FloatingBar className={isWide ? "pr-2" : "pr-3"}>
               <IconAction size={size} label={t("common.close")} icon={<XIcon />} onClick={onClose} />
-              <Dialog.Title className="truncate mu-label text-mu-ink">{title}</Dialog.Title>
+              <span className={cn("truncate text-mu-ink", isWide ? "mu-label-sm" : "mu-label")}>{title}</span>
             </FloatingBar>
             <FloatingBar className={isWide ? undefined : "gap-3"}>
               <IconAction
