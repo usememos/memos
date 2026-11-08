@@ -117,6 +117,11 @@ func (s *APIService) findReplaceableAttachment(ctx context.Context, name string)
 func (s *APIService) finishAttachmentReplace(ctx context.Context, upload *attachmentUpload) (*apipb.Attachment, error) {
 	release := s.attachmentReplaces.lock(upload.state.uid)
 	defer release()
+	if upload.state.replaceCommitted {
+		// An earlier finish committed but failed afterwards: report the attachment
+		// as it is now instead of applying this upload a second time.
+		return s.GetAttachment(ctx, &apipb.GetAttachmentRequest{Name: "attachments/" + upload.state.uid})
+	}
 	// Check again at finish: the attachment may have been deleted, linked to a
 	// memo the user can no longer write, or the limits may have changed.
 	replaced, user, err := s.findReplaceableAttachment(ctx, "attachments/"+upload.state.uid)
@@ -190,11 +195,14 @@ func (s *APIService) finishAttachmentReplace(ctx context.Context, upload *attach
 		discardContent("after the update failed")
 		return nil, mapMemoWriteError(err, "failed to replace attachment content")
 	}
+	upload.state.replaceCommitted = true
 
 	updated, err := s.Store.GetAttachment(ctx, &store.FindAttachment{UID: &replaced.UID})
 	if err != nil {
 		// The replacement committed; the previous object is left in place
-		// rather than risk deleting the one the row now points at.
+		// rather than risk deleting the one the row now points at. Its thumbnail
+		// is keyed by the UID, so it goes now.
+		s.Store.DeleteAttachmentDerivedCaches(replaced)
 		s.SSEHub.publishMemoChanged()
 		return nil, status.Errorf(codes.Internal, "attachment content was replaced but failed to reload: %v", err)
 	}

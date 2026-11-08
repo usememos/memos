@@ -1,13 +1,19 @@
 import type { Scene } from "@usememos/canvas";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { fetchDrawingFile, readDrawing } from "@/components/DrawingSheet";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import { showErrorToast } from "@/lib/toast";
 import { useTranslate } from "@/utils/i18n";
+import { canManageAttachment } from "@/utils/user";
 import { useEditorContext } from "../state";
 import type { DrawingSource, LocalFile } from "../types/attachment";
 
-/** Where the finished drawing goes: a new file in the draft, or in place of the one being edited. */
-type DrawingTarget = { kind: "new" } | { kind: "local"; previewUrl: string } | { kind: "attachment"; name: string };
+/**
+ * Where the finished drawing goes: a new file in the draft, or in place of the one being
+ * edited. A saved drawing the user may not replace (someone else uploaded it) is swapped
+ * for a new attachment instead.
+ */
+type DrawingTarget = { kind: "new" } | { kind: "local"; previewUrl: string } | { kind: "attachment"; name: string; canReplace: boolean };
 
 export interface DrawingSession {
   /** A new session is a new sheet, so the canvas reads its first scene again. */
@@ -28,6 +34,7 @@ export interface DrawingSession {
  */
 export const useDrawing = (toLocalFile: (file: File) => LocalFile) => {
   const t = useTranslate();
+  const currentUser = useCurrentUser();
   const { actions, dispatch, getState } = useEditorContext();
   const [session, setSession] = useState<DrawingSession>();
   // The row whose drawing is being downloaded and read.
@@ -38,6 +45,10 @@ export const useDrawing = (toLocalFile: (file: File) => LocalFile) => {
   useEffect(() => () => request.current?.abort(), []);
 
   const openNew = useCallback(() => {
+    // A drawing still downloading must not replace the new sheet when it arrives.
+    request.current?.abort();
+    request.current = undefined;
+    setOpening(undefined);
     setSession({ id: ++nextId.current, mode: "new", target: { kind: "new" } });
   }, []);
 
@@ -53,7 +64,9 @@ export const useDrawing = (toLocalFile: (file: File) => LocalFile) => {
         const content = await readDrawing(file);
         if (controller.signal.aborted) return;
         const target: DrawingTarget =
-          source.kind === "local" ? { kind: "local", previewUrl: sourceId } : { kind: "attachment", name: sourceId };
+          source.kind === "local"
+            ? { kind: "local", previewUrl: sourceId }
+            : { kind: "attachment", name: sourceId, canReplace: canManageAttachment(source.attachment, currentUser) };
         setSession(
           content.scene
             ? { id: ++nextId.current, mode: "edit", target, scene: content.scene }
@@ -65,11 +78,11 @@ export const useDrawing = (toLocalFile: (file: File) => LocalFile) => {
         console.error(error);
         showErrorToast(t("editor.drawing.open-failed"));
       } finally {
-        request.current = undefined;
+        if (request.current === controller) request.current = undefined;
         if (!controller.signal.aborted) setOpening(undefined);
       }
     },
-    [t],
+    [currentUser, t],
   );
 
   const close = useCallback(() => setSession(undefined), []);
@@ -86,7 +99,7 @@ export const useDrawing = (toLocalFile: (file: File) => LocalFile) => {
             state.localFiles.map((item) => (item.previewUrl === target.previewUrl ? { ...localFile, replaces: item.replaces } : item)),
           ),
         );
-      } else if (target.kind === "attachment") {
+      } else if (target.kind === "attachment" && target.canReplace) {
         // The saved drawing keeps its place; its edit uploads over it when the memo is saved.
         dispatch(
           actions.setLocalFiles([
@@ -95,6 +108,10 @@ export const useDrawing = (toLocalFile: (file: File) => LocalFile) => {
           ]),
         );
       } else {
+        if (target.kind === "attachment") {
+          // Not the user's to replace: the edit becomes a new attachment in the drawing's stead.
+          dispatch(actions.setMetadata({ attachments: state.metadata.attachments.filter((item) => item.name !== target.name) }));
+        }
         dispatch(actions.addLocalFile(localFile));
       }
       setSession(undefined);

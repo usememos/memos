@@ -28,7 +28,10 @@ type attachmentUploadState struct {
 	uid      string
 	// replace is set when the upload replaces the content of the existing
 	// attachment uid instead of creating it.
-	replace           bool
+	replace bool
+	// replaceCommitted is set once the replacement's row update committed, so
+	// a retried finish never applies this upload over a newer replacement.
+	replaceCommitted  bool
 	finalizeAttempted bool
 }
 

@@ -105,8 +105,11 @@ describe("replacing an attachment's content", () => {
 
       const result = await memoService.save(draft("changed"), { memoName: memo.name }, ops);
 
-      expect(order).toEqual(["update content,update_time", `upload over ${saved.name}`, "update attachments"]);
+      expect(order).toEqual(["update content,update_time", `upload over ${saved.name}`, "update update_time"]);
       expect(result.hasChanges).toBe(true);
+      // The refresh sends no attachment list, so an attachment added elsewhere meanwhile stays.
+      const [refresh] = vi.mocked(ops.updateMemo).mock.calls[1];
+      expect(refresh.attachments).toBeUndefined();
     });
 
     it("leaves the saved drawing untouched when the memo save is refused", async () => {
@@ -127,7 +130,7 @@ describe("replacing an attachment's content", () => {
 
       const result = await memoService.save(draft("hello"), { memoName: memo.name }, ops);
 
-      expect(order).toEqual([`upload over ${saved.name}`, "update attachments"]);
+      expect(order).toEqual([`upload over ${saved.name}`, "update update_time"]);
       expect(result.hasChanges).toBe(true);
     });
 

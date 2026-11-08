@@ -135,9 +135,11 @@ export const memoService = {
 
       let memo = mask.size > 0 ? await operations.updateMemo(patch, Array.from(mask)) : prevMemo;
       if (replacements.length > 0) {
-        allAttachments = mergeUploadedAttachments(allAttachments, await uploadService.uploadFiles(replacements, options.onFileUploaded));
-        // The replaced files changed under the same names: refresh every cached copy of the memo.
-        memo = await operations.updateMemo({ name: memo.name, attachments: toAttachmentReferences(allAttachments) }, ["attachments"]);
+        await uploadService.uploadFiles(replacements, options.onFileUploaded);
+        // A new drawing is an edit of the memo: stamp it, keeping a custom time the draft sets.
+        // The update returns the memo with its replaced files, which refreshes every cached copy;
+        // it sends no attachment list, so one added elsewhere meanwhile stays.
+        memo = await operations.updateMemo({ name: memo.name, updateTime: patch.updateTime }, ["update_time"]);
       }
       return { memoName: memo.name, hasChanges: true, moved: mask.has("space") };
     }

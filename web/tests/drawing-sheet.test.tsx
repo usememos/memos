@@ -25,8 +25,10 @@ const handle = {
 // Like the real component, the handle is attached before the engine exists and throws
 // until the component's own layout effect has created it.
 let mounted = false;
+let canvasProps: { initialScene?: unknown } = {};
 vi.mock("@usememos/canvas/react", () => ({
-  Canvas: forwardRef((props: { ariaLabel?: string }, ref) => {
+  Canvas: forwardRef((props: { ariaLabel?: string; initialScene?: unknown }, ref) => {
+    canvasProps = props;
     useImperativeHandle(
       ref,
       () =>
@@ -125,6 +127,29 @@ describe("DrawingSheet", () => {
     fireEvent.pointerUp(screen.getByRole("img", { name: "editor.drawing.new-title" }));
 
     expect(screen.getByRole("button", { name: "editor.drawing.undo" })).toBeEnabled();
+  });
+
+  it("opens the loaded scene in edit mode", () => {
+    const scene = { type: "memos-canvas", version: 1, elements: [], files: {}, appState: {} };
+    render(<DrawingSheet mode="edit" initialScene={scene as never} onDone={vi.fn()} onClose={vi.fn()} />);
+
+    expect(canvasProps.initialScene).toBe(scene);
+  });
+
+  it("holds drawing and Done until the background picture is in", async () => {
+    let finishInsert: (id: string) => void = () => undefined;
+    handle.insertImage.mockImplementation(() => new Promise((resolve) => (finishInsert = resolve)));
+    const onDone = vi.fn();
+    render(<DrawingSheet mode="new" background={new Blob(["png"], { type: "image/png" })} onDone={onDone} onClose={vi.fn()} />);
+
+    const done = screen.getByRole("button", { name: "editor.drawing.done" });
+    await waitFor(() => expect(handle.insertImage).toHaveBeenCalled());
+    expect(done).toBeDisabled();
+    expect(screen.getByRole("img").parentElement).toHaveAttribute("aria-busy", "true");
+
+    finishInsert("image1");
+    await waitFor(() => expect(done).toBeEnabled());
+    expect(screen.getByRole("img").parentElement).not.toHaveAttribute("aria-busy");
   });
 
   it("opens a picture without a scene as a locked background", async () => {

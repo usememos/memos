@@ -71,6 +71,8 @@ const DrawingSheet = ({ mode, initialScene, background, onDone, onClose }: Drawi
   const [width, setWidth] = useState(2);
   const [isExporting, setIsExporting] = useState(false);
   const [discardOpen, setDiscardOpen] = useState(false);
+  // Drawing waits for a background picture, so no stroke can land before it and be marked saved with it.
+  const [isPreparing, setIsPreparing] = useState(Boolean(background));
   const title = t(mode === "edit" ? "editor.drawing.edit" : "editor.drawing.new-title");
   const currentColor = color ?? ink;
 
@@ -88,7 +90,8 @@ const DrawingSheet = ({ mode, initialScene, background, onDone, onClose }: Drawi
         canvas.markSaved();
         canvas.zoomToFit();
       })
-      .catch(() => showErrorToast(t("editor.drawing.image-failed")));
+      .catch(() => showErrorToast(t("editor.drawing.image-failed")))
+      .finally(() => setIsPreparing(false));
   };
 
   const syncHistory = () => {
@@ -136,7 +139,7 @@ const DrawingSheet = ({ mode, initialScene, background, onDone, onClose }: Drawi
 
   const handleDone = async () => {
     const canvas = canvasRef.current;
-    if (!canvas || isExporting) return;
+    if (!canvas || isExporting || isPreparing) return;
     // Text still being typed is part of the drawing.
     canvas.commitText();
     setIsExporting(true);
@@ -275,7 +278,7 @@ const DrawingSheet = ({ mode, initialScene, background, onDone, onClose }: Drawi
     </Button>
   );
   const doneButton = (
-    <Button variant="primary" onClick={handleDone} loading={isExporting} loadingLabel={t("editor.drawing.done")}>
+    <Button variant="primary" onClick={handleDone} disabled={isPreparing} loading={isExporting} loadingLabel={t("editor.drawing.done")}>
       {t("editor.drawing.done")}
     </Button>
   );
@@ -321,7 +324,13 @@ const DrawingSheet = ({ mode, initialScene, background, onDone, onClose }: Drawi
           )}
 
           {/* Undo and redo follow every gesture and shortcut as it ends; onChange alone is debounced. */}
-          <div ref={surfaceRef} className="relative min-h-0 flex-1" onPointerUp={syncHistory} onKeyUp={syncHistory}>
+          <div
+            ref={surfaceRef}
+            className={cn("relative min-h-0 flex-1", isPreparing && "pointer-events-none")}
+            aria-busy={isPreparing || undefined}
+            onPointerUp={syncHistory}
+            onKeyUp={syncHistory}
+          >
             <Canvas
               ref={canvasRef}
               className="absolute inset-0"

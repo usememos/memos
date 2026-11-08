@@ -527,8 +527,11 @@ const AttachmentListEditor: FC<AttachmentListEditorProps> = ({
                   busy: isOpeningDrawing,
                 }
               : undefined;
+          // Inserting uploads at once, so a pending edit of a saved drawing would overwrite it before the memo is saved.
+          const isPendingReplacement = itemLocalFiles.some((localFile) => localFile.replaces);
           const canInsert =
-            (item.category === "image" || item.category === "motion") && (item.isLocal || itemAttachments.some(canInlineAttachment));
+            (item.category === "image" || item.category === "motion") &&
+            (item.isLocal ? !isPendingReplacement : itemAttachments.some(canInlineAttachment));
           const placementAction = canInsert
             ? {
                 label: t("editor.insert-menu.insert-image"),

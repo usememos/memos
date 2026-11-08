@@ -11,13 +11,20 @@ import { EditorProvider, useEditorContext } from "@/components/MemoEditor/edit/s
 import type { LocalFile } from "@/components/MemoEditor/edit/types/attachment";
 import AttachmentListEditor from "@/components/MemoMetadata/Attachment/AttachmentListEditor";
 import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
+import { User_Role, UserSchema } from "@/types/proto/api/user_service_pb";
 import { getAttachmentUrl } from "@/utils/attachment";
+
+const auth = vi.hoisted(() => ({ currentUser: undefined as unknown }));
+vi.mock("@/hooks/useCurrentUser", () => ({ default: () => auth.currentUser }));
 
 // A 4 × 4 PNG exported by @usememos/canvas (its tests/fixtures/png/v1.canvas.png).
 const fixturePng = new Uint8Array(readFileSync(resolve(__dirname, "fixtures/canvas/v1.canvas.png")));
 
+const artist = create(UserSchema, { name: "users/artist", role: User_Role.USER });
+
 const drawingAttachment = create(AttachmentSchema, {
   name: "attachments/drawing1",
+  creator: artist.name,
   filename: "drawing-20261106-101500.canvas.png",
   type: "image/png",
   size: BigInt(fixturePng.byteLength),
@@ -124,7 +131,10 @@ beforeAll(() => {
 
 afterEach(() => {
   vi.unstubAllGlobals();
+  auth.currentUser = artist;
 });
+
+auth.currentUser = artist;
 
 describe("drawing attachments", () => {
   it("recognizes drawings by their file name", () => {
@@ -244,6 +254,59 @@ describe("drawing attachments", () => {
     // Reordering the visible rows keeps the replaced drawing bound to the memo.
     fireEvent.click(screen.getAllByRole("button", { name: "Move attachment down" })[0]);
     expect(onAttachmentsChange).toHaveBeenLastCalledWith([drawingAttachment, map, photo]);
+  });
+
+  it("does not offer Insert image on a pending edit of a saved drawing", () => {
+    const edit: LocalFile = {
+      ...toLocalFile(new File([fixturePng], "drawing-20261106-130000.canvas.png", { type: "image/png" })),
+      replaces: drawingAttachment.name,
+    };
+    const fresh = toLocalFile(new File([fixturePng], "drawing-20261106-140000.canvas.png", { type: "image/png" }));
+    render(<AttachmentListEditor attachments={[drawingAttachment]} localFiles={[edit, fresh]} onInsertLocalFiles={vi.fn()} />);
+
+    // Inserting uploads at once, which would overwrite the saved drawing before the memo is saved.
+    expect(screen.getAllByRole("button", { name: "Insert image" })).toHaveLength(1);
+  });
+
+  it("starting a new drawing drops a drawing still downloading", async () => {
+    let finishDownload: (response: Response) => void = () => undefined;
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() => new Promise<Response>((resolve) => (finishDownload = resolve))),
+    );
+    const { result } = renderDrawing();
+
+    let opening: Promise<void> = Promise.resolve();
+    act(() => {
+      opening = result.current.drawing.openExisting({ kind: "attachment", attachment: drawingAttachment });
+    });
+    expect(result.current.drawing.opening).toBe(drawingAttachment.name);
+    act(() => result.current.drawing.openNew());
+    const fresh = result.current.drawing.session;
+    expect(result.current.drawing.opening).toBeUndefined();
+
+    await act(async () => {
+      finishDownload(new Response(await exportDrawing()));
+      await opening;
+    });
+    expect(result.current.drawing.session).toBe(fresh);
+  });
+
+  it("saves an edit of someone else's drawing as a new attachment", async () => {
+    auth.currentUser = create(UserSchema, { name: "users/author", role: User_Role.USER });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response(await exportDrawing())),
+    );
+    const { result } = renderDrawing();
+    act(() => result.current.editor.dispatch(result.current.editor.actions.setMetadata({ attachments: [drawingAttachment] })));
+
+    await act(() => result.current.drawing.openExisting({ kind: "attachment", attachment: drawingAttachment }));
+    act(() => result.current.drawing.done(new File([fixturePng], "drawing-2.canvas.png", { type: "image/png" })));
+
+    const state = result.current.editor.getState();
+    expect(state.metadata.attachments).toEqual([]);
+    expect(state.localFiles.map((item) => [item.file.name, item.replaces])).toEqual([["drawing-2.canvas.png", undefined]]);
   });
 
   it("swaps an edited local drawing in place and opens a picture without a scene as a background", async () => {

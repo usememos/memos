@@ -536,7 +536,7 @@ func TestAttachmentUpdateContent(t *testing.T) {
 		CreatorID: 101,
 		Filename:  "drawing.canvas.png",
 		Blob:      []byte("first drawing"),
-		Type:      "image/png",
+		Type:      "application/octet-stream",
 		Size:      13,
 	})
 	require.NoError(t, err)
@@ -555,6 +555,7 @@ func TestAttachmentUpdateContent(t *testing.T) {
 	found, err := ts.GetAttachment(ctx, &store.FindAttachment{ID: &attachment.ID, GetBlob: true})
 	require.NoError(t, err)
 	require.Equal(t, attachment.UID, found.UID)
+	require.Equal(t, "image/png", found.Type)
 	require.Equal(t, int64(2048), found.Size)
 	require.Equal(t, storepb.AttachmentStorageType_LOCAL, found.StorageType)
 	require.Equal(t, "assets/drawing.canvas.png", found.Reference)
