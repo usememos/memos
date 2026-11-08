@@ -75,6 +75,7 @@ export function initialEditorState({
   };
 }
 
+/** Appends `addition` to `content` as a paragraph of its own; a blank addition changes nothing. */
 const appendParagraph = (content: string, addition?: string): string => {
   if (!addition?.trim()) return content;
   const existing = content.trimEnd();
