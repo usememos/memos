@@ -16,6 +16,26 @@ describe("sharedDataToMarkdown", () => {
     );
   });
 
+  it("keeps a title the text contains only as part of a word", () => {
+    expect(sharedDataToMarkdown({ title: "Go", text: "Going home" })).toBe("Go\n\nGoing home");
+    expect(sharedDataToMarkdown({ title: "Go", text: "Learn Go today" })).toBe("Learn Go today");
+  });
+
+  it("keeps a URL the text contains only as the prefix of another link", () => {
+    expect(sharedDataToMarkdown({ text: "See https://example.com/ab", url: "https://example.com/a" })).toBe(
+      "See https://example.com/ab\n\nhttps://example.com/a",
+    );
+    expect(sharedDataToMarkdown({ text: "See https://example.com/a?b=1", url: "https://example.com/a" })).toBe(
+      "See https://example.com/a?b=1\n\nhttps://example.com/a",
+    );
+  });
+
+  it("drops a URL the text ends a link or sentence with", () => {
+    for (const text of ["Read https://example.com/a.", "(https://example.com/a)", "https://example.com/a, via a friend"]) {
+      expect(sharedDataToMarkdown({ text, url: "https://example.com/a" })).toBe(text);
+    }
+  });
+
   it("ignores missing and blank fields", () => {
     expect(sharedDataToMarkdown({ title: " ", text: null, url: "https://example.com/a" })).toBe("https://example.com/a");
     expect(sharedDataToMarkdown({})).toBe("");
