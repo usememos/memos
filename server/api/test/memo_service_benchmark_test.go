@@ -248,6 +248,24 @@ func BenchmarkListMemos(b *testing.B) {
 			}
 		}
 	})
+
+	// The attachment filters check attachment.memo_id once per candidate memo.
+	for _, filter := range []string{"has_attachments", "has_image"} {
+		b.Run("authenticated_"+filter, func(b *testing.B) {
+			req := &apipb.ListMemosRequest{PageSize: benchmarkPageSize, Filter: filter}
+			b.ReportAllocs()
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				resp, err := bench.Service.ListMemos(bench.authenticatedCtx, req)
+				if err != nil {
+					b.Fatalf("ListMemos failed: %v", err)
+				}
+				if len(resp.Memos) == 0 {
+					b.Fatalf("expected memos in %s benchmark response", filter)
+				}
+			}
+		})
+	}
 }
 
 func BenchmarkListMemoCommentsPreview(b *testing.B) {

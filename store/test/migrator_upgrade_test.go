@@ -126,7 +126,7 @@ func requireUpgradePreservesData(ctx context.Context, t *testing.T, previous *st
 		preservedAccess, err := candidate.GetInstanceAccessSetting(ctx)
 		require.NoError(t, err)
 		require.True(t, proto.Equal(access.GetAccessSetting(), preservedAccess), "explicit access mode must not be reset")
-		requireCreatorIndexes(ctx, t, candidate, candidateProfile.Driver)
+		requireLookupIndexes(ctx, t, candidate, candidateProfile.Driver)
 	}
 
 	driver, err := storedb.NewDBDriver(candidateProfile)

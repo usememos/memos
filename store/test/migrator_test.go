@@ -47,7 +47,7 @@ func TestFreshInstall(t *testing.T) {
 	// Verify migration completed successfully
 	currentSchemaVersion, err := ts.GetCurrentSchemaVersion()
 	require.NoError(t, err)
-	require.Equal(t, "26.10.1", currentSchemaVersion, "fresh install should record the latest migration")
+	require.Equal(t, "26.11.1", currentSchemaVersion, "fresh install should record the latest migration")
 
 	// Verify we can read instance settings (basic sanity check)
 	instanceSetting, err := ts.GetInstanceBasicSetting(ctx)
@@ -82,14 +82,16 @@ func TestFreshInstall(t *testing.T) {
 
 	requireQueryError(ctx, t, ts.GetDriver().GetDB(), "SELECT parent_memo_id, root_memo_id FROM memo LIMIT 0", "fresh memo schema must not contain canonical-root columns")
 	requireQueryError(ctx, t, ts.GetDriver().GetDB(), "SELECT row_status FROM space LIMIT 0", "fresh Space schema has no archived state")
-	requireCreatorIndexes(ctx, t, ts, driver)
+	requireLookupIndexes(ctx, t, ts, driver)
 }
 
-// requireCreatorIndexes checks the indexes that usage limit checks rely on to
-// count a user's memos and sum a user's attachment sizes.
-func requireCreatorIndexes(ctx context.Context, t *testing.T, ts *store.Store, driver string) {
+// requireLookupIndexes checks the indexes that usage limit checks rely on to
+// count a user's memos and sum a user's attachment sizes, and the index that
+// memo lists and the has_attachments and has_image filters use to find a
+// memo's attachments without reading attachment rows.
+func requireLookupIndexes(ctx context.Context, t *testing.T, ts *store.Store, driver string) {
 	t.Helper()
-	for _, indexName := range []string{"idx_memo_creator_id", "idx_attachment_creator_id"} {
+	for _, indexName := range []string{"idx_memo_creator_id", "idx_attachment_creator_id", "idx_attachment_memo_id_type"} {
 		var query string
 		switch driver {
 		case "sqlite":
