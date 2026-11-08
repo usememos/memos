@@ -51,16 +51,12 @@ const getMotionPreviewProps = (item: VisualItem) => ({
 /** A drawing (a `.canvas.png` image) shows as a sheet of paper instead of a framed photo. */
 const isDrawing = (item: VisualItem) => item.kind === "image" && isDrawingFilename(item.filename);
 
-const VisualTile = ({
-  className,
-  sheet = false,
-  onPreview,
-  overlayLabel,
-  children,
-}: PropsWithChildren<{ className?: string; sheet?: boolean; onPreview?: () => void; overlayLabel?: string }>) => {
-  // A div, not a <button>: tiles hold block media. When it opens the viewer it takes the button
-  // role and keys, so keyboard users reach it too; its name comes from the media's alt text.
-  const interactive = onPreview
+/**
+ * A tile is a div, not a <button>: it holds block media. When it opens the viewer it takes the
+ * button role and keys, so keyboard users reach it too; its name comes from the media's alt text.
+ */
+const tileInteraction = (onPreview?: () => void) =>
+  onPreview
     ? {
         role: "button",
         tabIndex: 0,
@@ -73,34 +69,73 @@ const VisualTile = ({
         },
       }
     : undefined;
-  if (sheet) {
-    // Paper beyond the drawing's edges is the same paper, so the sheet can be any size.
-    return (
-      <div className={cn(DRAWING_SHEET_TILE_CLASS, className)} style={{ background: DRAWING_PAPER }} {...interactive}>
-        {children}
-        {overlayLabel && <div className={OVERFLOW_TILE_OVERLAY_CLASS}>{overlayLabel}</div>}
-      </div>
-    );
+
+const VisualTile = ({
+  className,
+  onPreview,
+  overlayLabel,
+  children,
+}: PropsWithChildren<{ className?: string; onPreview?: () => void; overlayLabel?: string }>) => (
+  <div className={cn(VISUAL_TILE_BUTTON_CLASS, className)} {...tileInteraction(onPreview)}>
+    <div className={MEDIA_HOVER_SURFACE_CLASS}>
+      {children}
+      <div className={MEDIA_HOVER_GRADIENT_CLASS} aria-hidden />
+    </div>
+    {overlayLabel && <div className={OVERFLOW_TILE_OVERLAY_CLASS}>{overlayLabel}</div>}
+  </div>
+);
+
+/**
+ * The paper a drawing was made on. An export is opaque with the paper filling it, so its corner
+ * pixel is paper; a drawing made before the paper was fixed keeps its own. Undefined when the
+ * image can't be read.
+ */
+const readPaperColor = (img: HTMLImageElement): string | undefined => {
+  try {
+    const context = document.createElement("canvas").getContext("2d", { willReadFrequently: true });
+    if (!context) return undefined;
+    context.drawImage(img, 0, 0, 1, 1, 0, 0, 1, 1);
+    const [r, g, b] = context.getImageData(0, 0, 1, 1).data;
+    return `rgb(${r} ${g} ${b})`;
+  } catch {
+    return undefined;
   }
+};
+
+/**
+ * A drawing as a sheet of paper. The sheet extends the drawing's own paper beyond its edges, so
+ * it can be any size. The image is the original file at 2x: exports carry 2 pixels per drawn
+ * pixel, so it shows at the size it was drawn and keeps strokes and text sharp.
+ */
+const DrawingTile = ({
+  item,
+  className,
+  mediaClassName,
+  onPreview,
+  overlayLabel,
+}: {
+  item: VisualItem;
+  className: string;
+  mediaClassName: string;
+  onPreview?: () => void;
+  overlayLabel?: string;
+}) => {
+  const [paper, setPaper] = useState(DRAWING_PAPER);
   return (
-    <div className={cn(VISUAL_TILE_BUTTON_CLASS, className)} {...interactive}>
-      <div className={MEDIA_HOVER_SURFACE_CLASS}>
-        {children}
-        <div className={MEDIA_HOVER_GRADIENT_CLASS} aria-hidden />
-      </div>
+    <div className={cn(DRAWING_SHEET_TILE_CLASS, className)} style={{ background: paper }} {...tileInteraction(onPreview)}>
+      <img
+        src={item.sourceUrl}
+        srcSet={`${item.sourceUrl} 2x`}
+        alt={item.filename}
+        className={mediaClassName}
+        loading="lazy"
+        decoding="async"
+        onLoad={(event) => setPaper(readPaperColor(event.currentTarget) ?? DRAWING_PAPER)}
+      />
       {overlayLabel && <div className={OVERFLOW_TILE_OVERLAY_CLASS}>{overlayLabel}</div>}
     </div>
   );
 };
-
-/**
- * A drawing at the size it was drawn: exports carry 2 pixels per drawn pixel, so the 2x
- * descriptor sizes the image to the drawing. The original file, not the thumbnail, keeps
- * strokes and text sharp.
- */
-const DrawingImage = ({ item, className }: { item: VisualItem; className: string }) => (
-  <img src={item.sourceUrl} srcSet={`${item.sourceUrl} 2x`} alt={item.filename} className={className} loading="lazy" decoding="async" />
-);
 
 const VideoPlayBadge = ({ className, children }: PropsWithChildren<{ className?: string }>) => (
   <div
@@ -125,8 +160,19 @@ const CollageVisualItem = ({
   onPreview?: () => void;
 }) => {
   const motionPreviewProps = item.kind === "motion" ? getMotionPreviewProps(item) : undefined;
+  if (isDrawing(item)) {
+    return (
+      <DrawingTile
+        item={item}
+        className={cn("block h-full w-full", className)}
+        mediaClassName={DRAWING_SHEET_CELL_MEDIA_CLASS}
+        onPreview={onPreview}
+        overlayLabel={overlayLabel}
+      />
+    );
+  }
   return (
-    <VisualTile className={cn("block h-full w-full", className)} sheet={isDrawing(item)} onPreview={onPreview} overlayLabel={overlayLabel}>
+    <VisualTile className={cn("block h-full w-full", className)} onPreview={onPreview} overlayLabel={overlayLabel}>
       {item.kind === "video" ? (
         <>
           <VideoPoster sourceUrl={item.sourceUrl} posterUrl={item.posterUrl} alt={item.filename} className={COVER_MEDIA_CLASS} />
@@ -146,8 +192,6 @@ const CollageVisualItem = ({
           posterClassName={COVER_MEDIA_CLASS}
           videoClassName={COVER_MEDIA_CLASS}
         />
-      ) : isDrawing(item) ? (
-        <DrawingImage item={item} className={DRAWING_SHEET_CELL_MEDIA_CLASS} />
       ) : (
         <img src={item.posterUrl} alt={item.filename} className={COVER_MEDIA_CLASS} loading="lazy" decoding="async" />
       )}
@@ -160,9 +204,7 @@ const SingleVisualItem = ({ item, onPreview }: { item: VisualItem; onPreview?: (
 
   if (isDrawing(item)) {
     return (
-      <VisualTile className={DRAWING_SHEET_SINGLE_CLASS} sheet onPreview={onPreview}>
-        <DrawingImage item={item} className={DRAWING_SHEET_MEDIA_CLASS} />
-      </VisualTile>
+      <DrawingTile item={item} className={DRAWING_SHEET_SINGLE_CLASS} mediaClassName={DRAWING_SHEET_MEDIA_CLASS} onPreview={onPreview} />
     );
   }
 

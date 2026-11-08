@@ -1,5 +1,5 @@
 import { create } from "@bufbuild/protobuf";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { AttachmentGallery } from "@/components/MemoMetadata/Attachment/AttachmentListView";
 import {
@@ -38,6 +38,21 @@ describe("drawings in the memo gallery", () => {
     expect(img).toHaveAttribute("src", getAttachmentUrl(drawing));
     expect(img).toHaveAttribute("srcset", `${getAttachmentUrl(drawing)} 2x`);
     expect(img).toHaveClass(...classesOf(DRAWING_SHEET_MEDIA_CLASS));
+  });
+
+  it("extends the drawing's own paper, read from its corner pixel", () => {
+    const drawing = image("d", "drawing-20261106-101500.canvas.png");
+    const corner = vi.fn(() => ({ data: new Uint8ClampedArray([255, 255, 255, 255]) }));
+    const getContext = vi
+      .spyOn(HTMLCanvasElement.prototype, "getContext")
+      .mockReturnValue({ drawImage: vi.fn(), getImageData: corner } as unknown as CanvasRenderingContext2D);
+    render(<AttachmentGallery visual={[drawing]} onImagePreview={vi.fn()} />);
+
+    const sheet = screen.getByRole("button", { name: drawing.filename });
+    expect(sheet.style.background).toBe("rgb(251, 250, 247)");
+    fireEvent.load(screen.getByRole("img", { name: drawing.filename }));
+    expect(sheet.style.background).toBe("rgb(255, 255, 255)");
+    getContext.mockRestore();
   });
 
   it("fits a drawing inside its collage cell instead of cropping it, without the photo hover", () => {
