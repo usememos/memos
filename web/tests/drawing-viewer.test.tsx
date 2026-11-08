@@ -10,7 +10,6 @@ import { AttachmentGallery } from "@/components/MemoMetadata/Attachment/Attachme
 import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
 import { MemoSchema } from "@/types/proto/api/memo_service_pb";
 import { User_Role, UserSchema } from "@/types/proto/api/user_service_pb";
-import { getAttachmentUrl } from "@/utils/attachment";
 
 const mocks = vi.hoisted(() => ({
   canvasProps: [] as Array<{ readOnly?: boolean; initialScene?: { elements: unknown[] } }>,
@@ -115,14 +114,13 @@ afterEach(() => {
 });
 
 describe("DrawingViewer", () => {
-  it("shows the drawing read-only, with Download of the original and Edit for the author", async () => {
+  it("shows the drawing read-only, with Zoom to fit and Edit for the author", async () => {
     render(<DrawingViewer attachment={drawing} memo={memo} canEdit onClose={vi.fn()} onNoScene={vi.fn()} />);
 
     await waitFor(() => expect(mocks.canvasProps.at(-1)?.initialScene?.elements).toHaveLength(1));
     expect(mocks.canvasProps.at(-1)?.readOnly).toBe(true);
-    const download = screen.getByRole("link", { name: "common.download" });
-    expect(download).toHaveAttribute("href", getAttachmentUrl(drawing));
-    expect(download).toHaveAttribute("download", drawing.filename);
+    expect(screen.getByRole("button", { name: "editor.drawing.zoom-to-fit" })).toBeInTheDocument();
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "common.edit" })).toBeEnabled();
   });
 
@@ -156,7 +154,7 @@ describe("DrawingViewer", () => {
     await waitFor(() => expect(mocks.updateMemo).toHaveBeenCalledWith({ update: { name: memo.name }, updateMask: ["update_time"] }));
     expect(mocks.uploadFile.mock.calls[0][0].replaces).toBe(drawing.name);
     // Back in the viewer, read-only again.
-    await waitFor(() => expect(screen.getByRole("link", { name: "common.download" })).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole("button", { name: "editor.drawing.zoom-to-fit" })).toBeInTheDocument());
     expect(mocks.canvasProps.at(-1)?.readOnly).toBe(true);
   });
 
@@ -195,7 +193,7 @@ describe("DrawingViewer", () => {
     fireEvent.click(done);
     await waitFor(() => expect(mocks.updateMemo).toHaveBeenCalledTimes(2));
     expect(mocks.uploadFile.mock.calls[1][0].replaces).toBe(copy.name);
-    await waitFor(() => expect(screen.getByRole("link", { name: "common.download" })).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole("button", { name: "editor.drawing.zoom-to-fit" })).toBeInTheDocument());
   });
 });
 

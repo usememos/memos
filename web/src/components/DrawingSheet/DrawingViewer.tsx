@@ -1,7 +1,7 @@
 import type { CanvasHandle, Scene } from "@usememos/canvas";
 import { Canvas } from "@usememos/canvas/react";
-import { Button, buttonClasses, Dialog, Spinner, Tooltip } from "@usememos/ui";
-import { DownloadIcon, PencilLineIcon, ScanIcon, XIcon } from "lucide-react";
+import { Button, Dialog, Spinner, Tooltip } from "@usememos/ui";
+import { PencilLineIcon, ScanIcon, XIcon } from "lucide-react";
 import { type ReactElement, useEffect, useEffectEvent, useRef, useState } from "react";
 import { uploadService } from "@/components/MemoEditor/edit/services/uploadService";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -11,7 +11,6 @@ import { showErrorToast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import type { Memo } from "@/types/proto/api/memo_service_pb";
-import { getAttachmentUrl } from "@/utils/attachment";
 import { useTranslate } from "@/utils/i18n";
 import { canManageAttachment } from "@/utils/user";
 import DrawingSheet from "./DrawingSheet";
@@ -31,7 +30,7 @@ export interface DrawingViewerProps {
 
 /**
  * A drawing opened from a memo: the canvas in its read-only mode (pan, zoom, copy), with
- * Zoom to fit, Download and, for whoever may change the memo, Edit. Edit turns the viewer
+ * Zoom to fit and, for whoever may change the memo, Edit. Edit turns the viewer
  * into the drawing sheet; Done replaces the drawing's file under the same name, stamps the
  * memo's update time and returns to viewing the new version. An edit of someone else's
  * drawing is added to the memo beside it.
@@ -117,22 +116,6 @@ const DrawingViewer = ({ attachment: initialAttachment, memo, canEdit, onClose, 
             </div>
             <div className={cn("flex shrink-0 items-center", isWide ? "gap-0.5" : "gap-3")}>
               <IconAction label={t("editor.drawing.zoom-to-fit")} icon={<ScanIcon />} onClick={() => canvasRef.current?.zoomToFit()} />
-              {/* The original file: a plain image anywhere, editable again when opened in memos. */}
-              <Tooltip.Root>
-                <Tooltip.Trigger
-                  render={
-                    <a
-                      href={getAttachmentUrl(attachment)}
-                      download={attachment.filename}
-                      aria-label={t("common.download")}
-                      className={buttonClasses({ variant: "ghost", iconOnly: true })}
-                    >
-                      <DownloadIcon className="mu-icon" />
-                    </a>
-                  }
-                />
-                <Tooltip.Popup>{t("common.download")}</Tooltip.Popup>
-              </Tooltip.Root>
               {canEdit && (
                 <Button variant="neutral" icon={<PencilLineIcon />} disabled={!scene} onClick={() => setIsEditing(true)}>
                   {t("common.edit")}
