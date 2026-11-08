@@ -2,8 +2,14 @@ import { create } from "@bufbuild/protobuf";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { AttachmentGallery } from "@/components/MemoMetadata/Attachment/AttachmentListView";
-import { DRAWING_SHEET_TILE_CLASS, VISUAL_TILE_BUTTON_CLASS } from "@/components/MemoMetadata/Attachment/attachmentVisualClasses";
+import {
+  DRAWING_SHEET_MEDIA_CLASS,
+  DRAWING_SHEET_SINGLE_CLASS,
+  DRAWING_SHEET_TILE_CLASS,
+  VISUAL_TILE_BUTTON_CLASS,
+} from "@/components/MemoMetadata/Attachment/attachmentVisualClasses";
 import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
+import { getAttachmentUrl } from "@/utils/attachment";
 
 const image = (name: string, filename: string) => create(AttachmentSchema, { name: `attachments/${name}`, filename, type: "image/png" });
 const classesOf = (value: string) => value.split(" ").filter(Boolean);
@@ -21,9 +27,27 @@ describe("drawings in the memo gallery", () => {
     expect(photo).toHaveClass(...classesOf(VISUAL_TILE_BUTTON_CLASS));
   });
 
-  it("shows a single drawing as a sheet too", () => {
-    render(<AttachmentGallery visual={[image("d", "drawing-20261106-101500.canvas.png")]} onImagePreview={vi.fn()} />);
+  it("shows a lone drawing on a full-width sheet, at the size it was drawn", () => {
+    const drawing = image("d", "drawing-20261106-101500.canvas.png");
+    render(<AttachmentGallery visual={[drawing]} onImagePreview={vi.fn()} />);
 
-    expect(screen.getByRole("button", { name: "drawing-20261106-101500.canvas.png" })).toHaveClass("shadow-mu-raised");
+    const sheet = screen.getByRole("button", { name: drawing.filename });
+    expect(sheet).toHaveClass("shadow-mu-raised", ...classesOf(DRAWING_SHEET_SINGLE_CLASS));
+    // The original file at 2x, not the thumbnail, so it shows at drawn size and stays sharp.
+    const img = screen.getByRole("img", { name: drawing.filename });
+    expect(img).toHaveAttribute("src", getAttachmentUrl(drawing));
+    expect(img).toHaveAttribute("srcset", `${getAttachmentUrl(drawing)} 2x`);
+    expect(img).toHaveClass(...classesOf(DRAWING_SHEET_MEDIA_CLASS));
+  });
+
+  it("fits a drawing inside its collage cell instead of cropping it, without the photo hover", () => {
+    const drawing = image("d", "drawing-20261106-101500.canvas.png");
+    const { container } = render(<AttachmentGallery visual={[image("p", "beach.png"), drawing]} onImagePreview={vi.fn()} />);
+
+    expect(screen.getByRole("img", { name: drawing.filename })).toHaveClass("object-contain");
+    expect(screen.getByRole("img", { name: "beach.png" })).toHaveClass("object-cover");
+    const sheet = screen.getByRole("button", { name: drawing.filename });
+    expect(sheet.querySelector("[aria-hidden]")).toBeNull();
+    expect(container.querySelectorAll("[aria-hidden]")).toHaveLength(1);
   });
 });

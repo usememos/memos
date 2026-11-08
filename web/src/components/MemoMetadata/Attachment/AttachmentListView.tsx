@@ -2,7 +2,7 @@ import { buttonClasses } from "@usememos/ui";
 import { DownloadIcon, ExternalLinkIcon, FileIcon, PlayIcon } from "lucide-react";
 import type { KeyboardEvent, PropsWithChildren } from "react";
 import { Suspense, useMemo, useState } from "react";
-import { DrawingViewer, isDrawingFilename } from "@/components/DrawingSheet";
+import { DRAWING_PAPER, DrawingViewer, isDrawingFilename } from "@/components/DrawingSheet";
 import MotionPhotoPreview from "@/components/MotionPhotoPreview";
 import VideoPoster from "@/components/VideoPoster";
 import { cn } from "@/lib/utils";
@@ -27,6 +27,9 @@ import { getAttachmentMetadata } from "./attachmentHelpers";
 import {
   COLLAGE_VIDEO_PLAY_BADGE_CLASS,
   COVER_MEDIA_CLASS,
+  DRAWING_SHEET_CELL_MEDIA_CLASS,
+  DRAWING_SHEET_MEDIA_CLASS,
+  DRAWING_SHEET_SINGLE_CLASS,
   DRAWING_SHEET_TILE_CLASS,
   MEDIA_HOVER_GRADIENT_CLASS,
   MEDIA_HOVER_SURFACE_CLASS,
@@ -70,8 +73,17 @@ const VisualTile = ({
         },
       }
     : undefined;
+  if (sheet) {
+    // Paper beyond the drawing's edges is the same paper, so the sheet can be any size.
+    return (
+      <div className={cn(DRAWING_SHEET_TILE_CLASS, className)} style={{ background: DRAWING_PAPER }} {...interactive}>
+        {children}
+        {overlayLabel && <div className={OVERFLOW_TILE_OVERLAY_CLASS}>{overlayLabel}</div>}
+      </div>
+    );
+  }
   return (
-    <div className={cn(sheet ? DRAWING_SHEET_TILE_CLASS : VISUAL_TILE_BUTTON_CLASS, className)} {...interactive}>
+    <div className={cn(VISUAL_TILE_BUTTON_CLASS, className)} {...interactive}>
       <div className={MEDIA_HOVER_SURFACE_CLASS}>
         {children}
         <div className={MEDIA_HOVER_GRADIENT_CLASS} aria-hidden />
@@ -80,6 +92,15 @@ const VisualTile = ({
     </div>
   );
 };
+
+/**
+ * A drawing at the size it was drawn: exports carry 2 pixels per drawn pixel, so the 2x
+ * descriptor sizes the image to the drawing. The original file, not the thumbnail, keeps
+ * strokes and text sharp.
+ */
+const DrawingImage = ({ item, className }: { item: VisualItem; className: string }) => (
+  <img src={item.sourceUrl} srcSet={`${item.sourceUrl} 2x`} alt={item.filename} className={className} loading="lazy" decoding="async" />
+);
 
 const VideoPlayBadge = ({ className, children }: PropsWithChildren<{ className?: string }>) => (
   <div
@@ -125,6 +146,8 @@ const CollageVisualItem = ({
           posterClassName={COVER_MEDIA_CLASS}
           videoClassName={COVER_MEDIA_CLASS}
         />
+      ) : isDrawing(item) ? (
+        <DrawingImage item={item} className={DRAWING_SHEET_CELL_MEDIA_CLASS} />
       ) : (
         <img src={item.posterUrl} alt={item.filename} className={COVER_MEDIA_CLASS} loading="lazy" decoding="async" />
       )}
@@ -135,9 +158,17 @@ const CollageVisualItem = ({
 const SingleVisualItem = ({ item, onPreview }: { item: VisualItem; onPreview?: () => void }) => {
   const motionPreviewProps = item.kind === "motion" ? getMotionPreviewProps(item) : undefined;
 
+  if (isDrawing(item)) {
+    return (
+      <VisualTile className={DRAWING_SHEET_SINGLE_CLASS} sheet onPreview={onPreview}>
+        <DrawingImage item={item} className={DRAWING_SHEET_MEDIA_CLASS} />
+      </VisualTile>
+    );
+  }
+
   if (item.kind === "image") {
     return (
-      <VisualTile className="inline-block max-w-full" sheet={isDrawing(item)} onPreview={onPreview}>
+      <VisualTile className="inline-block max-w-full" onPreview={onPreview}>
         <img src={item.posterUrl} alt={item.filename} className={NATURAL_MEDIA_CLASS} loading="lazy" decoding="async" />
       </VisualTile>
     );
