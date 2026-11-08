@@ -14,12 +14,13 @@ import {
   TypeIcon,
   Undo2Icon,
 } from "lucide-react";
-import { type ClipboardEvent, type ReactElement, type ReactNode, useEffect, useRef, useState } from "react";
+import { type ClipboardEvent, type ReactElement, useEffect, useRef, useState } from "react";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { showErrorToast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { type Translations, useTranslate } from "@/utils/i18n";
 import { primaryModifierGlyph } from "@/utils/platform";
+import { DrawingDialogPopup, FloatingBar, FloatingRow } from "./DrawingFrame";
 import { DRAWING_HUES, useCanvasTheme } from "./useCanvasTheme";
 
 const TOOLS: { name: ToolName; label: Translations; shortcut: string; icon: ReactElement }[] = [
@@ -56,9 +57,10 @@ export interface DrawingSheetProps {
 }
 
 /**
- * The full-screen drawing sheet over the editor. `@usememos/canvas` draws and edits the
- * scene; everything around it (the bars, strings, theme, discard prompt) is memos'. On a
- * phone the tools move to a bottom bar, in thumb reach, with each control 44 px apart.
+ * The drawing sheet: the paper fills the drawing dialog, with the controls floating on it.
+ * `@usememos/canvas` draws and edits the scene; everything around it (the controls, strings,
+ * theme, discard prompt) is memos'. On a phone the tools float at the bottom, in thumb
+ * reach, with each control 44 px apart.
  */
 const DrawingSheet = ({ mode, initialScene, background, onDone, onClose }: DrawingSheetProps) => {
   const t = useTranslate();
@@ -300,38 +302,14 @@ const DrawingSheet = ({ mode, initialScene, background, onDone, onClose }: Drawi
         if (!escapeOnSurface) requestClose();
       }}
     >
-      <Dialog.Popup variant="bare" fullScreen aria-label={title}>
-        <div className="flex h-full w-full flex-col bg-mu-surface" onPaste={handlePaste}>
+      <DrawingDialogPopup label={title}>
+        <div className="relative h-full w-full" style={{ background: theme.paper }} onPaste={handlePaste}>
           <Dialog.Title className="mu-visually-hidden">{title}</Dialog.Title>
-          {isWide ? (
-            <Bar edge="top">
-              <div className="flex min-w-0 flex-1 items-center">{cancelButton}</div>
-              <div className="flex shrink-0 items-center gap-0.5">
-                {toolRow}
-                <Divider />
-                {styleControl}
-                <Divider />
-                {historyControls}
-                <Divider />
-                {viewControls}
-              </div>
-              <div className="flex min-w-0 flex-1 items-center justify-end">{doneButton}</div>
-            </Bar>
-          ) : (
-            <Bar edge="top">
-              {cancelButton}
-              <div className="flex items-center gap-3">
-                {historyControls}
-                {viewControls}
-              </div>
-              {doneButton}
-            </Bar>
-          )}
 
           {/* Undo and redo follow every gesture and shortcut as it ends; onChange alone is debounced. */}
           <div
             ref={surfaceRef}
-            className={cn("relative min-h-0 flex-1", isPreparing && "pointer-events-none")}
+            className={cn("absolute inset-0", isPreparing && "pointer-events-none")}
             aria-busy={isPreparing || undefined}
             onPointerUp={syncHistory}
             onKeyUp={syncHistory}
@@ -352,12 +330,40 @@ const DrawingSheet = ({ mode, initialScene, background, onDone, onClose }: Drawi
             <CanvasMounted onMounted={setUpCanvas} />
           </div>
 
-          {!isWide && (
-            <Bar edge="bottom">
-              {toolRow}
-              <Divider />
-              {styleControl}
-            </Bar>
+          {isWide ? (
+            <FloatingRow edge="top">
+              <FloatingBar>{cancelButton}</FloatingBar>
+              <FloatingBar>
+                {toolRow}
+                <Divider />
+                {styleControl}
+                <Divider />
+                {historyControls}
+                <Divider />
+                {viewControls}
+              </FloatingBar>
+              <FloatingBar>{doneButton}</FloatingBar>
+            </FloatingRow>
+          ) : (
+            <>
+              <FloatingRow edge="top">
+                <FloatingBar>{cancelButton}</FloatingBar>
+                <FloatingBar className="gap-3">
+                  {historyControls}
+                  {viewControls}
+                </FloatingBar>
+                <FloatingBar>{doneButton}</FloatingBar>
+              </FloatingRow>
+              {/* The tools in thumb reach. Under 380px the divider goes and the bar nears the
+                  edges, so a 360px screen keeps 44px between targets. */}
+              <FloatingRow edge="bottom" className="max-[380px]:inset-x-1.5">
+                <FloatingBar className="gap-3">
+                  {toolRow}
+                  <Divider className="mx-0 max-[380px]:hidden" />
+                  {styleControl}
+                </FloatingBar>
+              </FloatingRow>
+            </>
           )}
 
           <input
@@ -394,7 +400,7 @@ const DrawingSheet = ({ mode, initialScene, background, onDone, onClose }: Drawi
             </AlertDialog.Footer>
           </AlertDialog.Popup>
         </AlertDialog.Root>
-      </Dialog.Popup>
+      </DrawingDialogPopup>
     </Dialog.Root>
   );
 };
@@ -432,20 +438,8 @@ const IconAction = ({
   </Tooltip.Root>
 );
 
-const Divider = () => <span aria-hidden className="mx-1 h-5 w-px shrink-0 bg-mu-line" />;
-
-/** The sheet's chrome recedes: the paper's own color, a hairline, safe-area aware. */
-const Bar = ({ edge, children }: { edge: "top" | "bottom"; children: ReactNode }) => (
-  <div
-    className={cn(
-      "flex w-full shrink-0 items-center gap-2 bg-mu-surface px-3",
-      edge === "top"
-        ? "h-[calc(52px+env(safe-area-inset-top))] justify-between border-b border-mu-line pt-[env(safe-area-inset-top)]"
-        : "h-[calc(56px+env(safe-area-inset-bottom))] justify-center border-t border-mu-line pb-[env(safe-area-inset-bottom)]",
-    )}
-  >
-    {children}
-  </div>
+const Divider = ({ className }: { className?: string }) => (
+  <span aria-hidden className={cn("mx-1 h-5 w-px shrink-0 bg-mu-line", className)} />
 );
 
 export default DrawingSheet;

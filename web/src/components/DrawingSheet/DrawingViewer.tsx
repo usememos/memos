@@ -8,11 +8,11 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { useUpdateMemo } from "@/hooks/useMemoQueries";
 import { showErrorToast } from "@/lib/toast";
-import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import type { Memo } from "@/types/proto/api/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { canManageAttachment } from "@/utils/user";
+import { DrawingDialogPopup, FloatingBar, FloatingRow } from "./DrawingFrame";
 import DrawingSheet from "./DrawingSheet";
 import { fetchDrawingFile, readDrawing } from "./drawing";
 import { useCanvasTheme } from "./useCanvasTheme";
@@ -106,43 +106,40 @@ const DrawingViewer = ({ attachment: initialAttachment, memo, canEdit, onClose, 
         if (!open) onClose();
       }}
     >
-      <Dialog.Popup variant="bare" fullScreen aria-label={title}>
-        <div className="flex h-full w-full flex-col bg-mu-surface">
-          <div className="flex h-[calc(52px+env(safe-area-inset-top))] w-full shrink-0 items-center gap-2 border-b border-mu-line bg-mu-surface px-3 pt-[env(safe-area-inset-top)]">
-            <IconAction label={t("common.close")} icon={<XIcon />} onClick={onClose} />
-            <div className="flex min-w-0 flex-1 flex-col">
-              <Dialog.Title className="truncate mu-label text-mu-ink">{title}</Dialog.Title>
-              {isWide && <span className="truncate mu-caption text-mu-ink-muted">{attachment.filename}</span>}
+      <DrawingDialogPopup label={title}>
+        <div className="relative h-full w-full" style={{ background: theme.paper }}>
+          {scene ? (
+            // No autofocus: a viewer should not draw a focus ring around the page as it opens.
+            <Canvas
+              ref={canvasRef}
+              className="absolute inset-0"
+              readOnly
+              ariaLabel={title}
+              initialScene={scene}
+              theme={theme}
+              fontFamily={fontFamily}
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Spinner label={t("editor.blocks.loading")} />
             </div>
-            <div className={cn("flex shrink-0 items-center", isWide ? "gap-0.5" : "gap-3")}>
+          )}
+          <FloatingRow edge="top">
+            <FloatingBar className="pr-3">
+              <IconAction label={t("common.close")} icon={<XIcon />} onClick={onClose} />
+              <Dialog.Title className="truncate mu-label text-mu-ink">{title}</Dialog.Title>
+            </FloatingBar>
+            <FloatingBar className={isWide ? undefined : "gap-3"}>
               <IconAction label={t("editor.drawing.zoom-to-fit")} icon={<ScanIcon />} onClick={() => canvasRef.current?.zoomToFit()} />
               {canEdit && (
                 <Button variant="neutral" icon={<PencilLineIcon />} disabled={!scene} onClick={() => setIsEditing(true)}>
                   {t("common.edit")}
                 </Button>
               )}
-            </div>
-          </div>
-          <div className="relative min-h-0 flex-1" style={{ background: theme.paper }}>
-            {scene ? (
-              // No autofocus: a viewer should not draw a focus ring around the page as it opens.
-              <Canvas
-                ref={canvasRef}
-                className="absolute inset-0"
-                readOnly
-                ariaLabel={title}
-                initialScene={scene}
-                theme={theme}
-                fontFamily={fontFamily}
-              />
-            ) : (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Spinner label={t("editor.blocks.loading")} />
-              </div>
-            )}
-          </div>
+            </FloatingBar>
+          </FloatingRow>
         </div>
-      </Dialog.Popup>
+      </DrawingDialogPopup>
     </Dialog.Root>
   );
 };

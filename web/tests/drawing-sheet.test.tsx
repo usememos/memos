@@ -76,6 +76,15 @@ beforeEach(() => {
 });
 
 describe("DrawingSheet", () => {
+  it("opens as a near-full dialog with its controls floating on the paper, light in every theme", () => {
+    render(<DrawingSheet mode="new" onDone={vi.fn()} onClose={vi.fn()} />);
+
+    expect(screen.getByRole("dialog")).toHaveClass("w-[calc(100vw-48px)]", "h-[calc(100dvh-48px)]");
+    for (const name of ["common.cancel", "editor.drawing.tool-pen", "editor.drawing.undo", "editor.drawing.done"]) {
+      expect(screen.getByRole("button", { name }).closest("[data-theme]")).toHaveAttribute("data-theme", "light");
+    }
+  });
+
   it("keeps typed text, exports and hands back a named PNG on Done", async () => {
     const onDone = vi.fn();
     render(<DrawingSheet mode="new" onDone={onDone} onClose={vi.fn()} />);
