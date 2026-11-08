@@ -27,7 +27,7 @@ vi.mock("@/contexts/MentionResolutionContext", () => ({
 }));
 
 vi.mock("@/components/MemoEditor/MemoEditor", () => ({
-  MemoEditor: ({ name }: { name: string }) => <div>{mockState.memo.content ?? name}</div>,
+  MemoEditor: ({ name }: { name: string }) => <div data-testid="memo-text">{mockState.memo.content ?? name}</div>,
 }));
 
 vi.mock("@/hooks/useMemoQueries", () => ({
@@ -104,6 +104,16 @@ describe("<MemoBody /> compact body clamp", () => {
     rerender(<MemoBody compact={true} />);
 
     expect(screen.getByRole("button", { name: /memo\.show-less/ })).toBeInTheDocument();
+  });
+
+  it("renders no text view for a memo of attachments alone", () => {
+    mockState.memo = createMemo("  \n");
+    const { rerender } = render(<MemoBody />);
+    expect(screen.queryByTestId("memo-text")).not.toBeInTheDocument();
+
+    mockState.memo = createMemo("A caption");
+    rerender(<MemoBody />);
+    expect(screen.getByTestId("memo-text")).toHaveTextContent("A caption");
   });
 
   it("renders no clamp when compact is off", () => {
