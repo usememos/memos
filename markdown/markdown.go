@@ -295,9 +295,19 @@ func (s *service) GenerateSnippet(content []byte, maxLength int) (string, error)
 	}
 
 	var buf strings.Builder
+	var runeCount int
 	var lastNodeWasBlock bool
 	// The first line of a GitHub alert, such as "[!NOTE]", which renders as the callout's title.
 	var alertMarker text.Segment
+
+	writeBytes := func(b []byte) {
+		buf.Write(b)
+		runeCount += utf8.RuneCount(b)
+	}
+	writeByte := func(c byte) {
+		buf.WriteByte(c)
+		runeCount++
+	}
 
 	err = gast.Walk(root, func(n gast.Node, entering bool) (gast.WalkStatus, error) {
 		if entering {
@@ -317,7 +327,7 @@ func (s *service) GenerateSnippet(content []byte, maxLength int) (string, error)
 			switch n.Kind() {
 			case gast.KindParagraph, gast.KindHeading, gast.KindListItem, east.KindTableCell, east.KindTableRow, east.KindTableHeader:
 				if buf.Len() > 0 && lastNodeWasBlock {
-					buf.WriteByte(' ')
+					writeByte(' ')
 				}
 				lastNodeWasBlock = false
 			default:
@@ -352,35 +362,38 @@ func (s *service) GenerateSnippet(content []byte, maxLength int) (string, error)
 			if alertMarker.Len() > 0 && segment.Start >= alertMarker.Start && segment.Stop <= alertMarker.Stop {
 				return gast.WalkContinue, nil
 			}
-			buf.Write(segment.Value(content))
+			writeBytes(segment.Value(content))
 			if node.SoftLineBreak() || node.HardLineBreak() {
-				buf.WriteByte(' ')
+				writeByte(' ')
 			}
 		case *gast.AutoLink:
-			buf.Write(node.URL(content))
+			writeBytes(node.URL(content))
+			if runeCount > maxLength*2 {
+				return gast.WalkStop, nil
+			}
 			return gast.WalkSkipChildren, nil
 		case *mast.TagNode:
 			if len(node.Source) > 0 {
-				buf.Write(node.Source)
+				writeBytes(node.Source)
 			} else {
-				buf.WriteByte('#')
-				buf.Write(node.Tag)
+				writeByte('#')
+				writeBytes(node.Tag)
 			}
 		case *mast.GFMEmailNode:
-			buf.Write(node.Address)
+			writeBytes(node.Address)
 		case *mast.InlineMathNode:
-			buf.Write(node.Source)
+			writeBytes(node.Source)
 		case *mast.BlockMathNode:
-			buf.Write(node.Source)
+			writeBytes(node.Source)
 			return gast.WalkSkipChildren, nil
 		default:
 			// Ignore other node types.
 		}
 
 		// Stop walking if we've exceeded double the max length
-		// (we'll truncate precisely later). Count characters, not bytes,
+		// (we'll truncate precisely later). Count runes, not bytes,
 		// like truncateAtWord does, so multi-byte text isn't cut short.
-		if utf8.RuneCountInString(buf.String()) > maxLength*2 {
+		if runeCount > maxLength*2 {
 			return gast.WalkStop, nil
 		}
 
