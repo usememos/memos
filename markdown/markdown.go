@@ -356,6 +356,7 @@ func (s *service) GenerateSnippet(content []byte, maxLength int) (string, error)
 		}()
 
 		// Extract text from various node types
+		skipChildren := false
 		switch node := n.(type) {
 		case *gast.Text:
 			segment := node.Segment
@@ -368,10 +369,7 @@ func (s *service) GenerateSnippet(content []byte, maxLength int) (string, error)
 			}
 		case *gast.AutoLink:
 			writeBytes(node.URL(content))
-			if runeCount > maxLength*2 {
-				return gast.WalkStop, nil
-			}
-			return gast.WalkSkipChildren, nil
+			skipChildren = true
 		case *mast.TagNode:
 			if len(node.Source) > 0 {
 				writeBytes(node.Source)
@@ -385,7 +383,7 @@ func (s *service) GenerateSnippet(content []byte, maxLength int) (string, error)
 			writeBytes(node.Source)
 		case *mast.BlockMathNode:
 			writeBytes(node.Source)
-			return gast.WalkSkipChildren, nil
+			skipChildren = true
 		default:
 			// Ignore other node types.
 		}
@@ -395,6 +393,9 @@ func (s *service) GenerateSnippet(content []byte, maxLength int) (string, error)
 		// like truncateAtWord does, so multi-byte text isn't cut short.
 		if runeCount > maxLength*2 {
 			return gast.WalkStop, nil
+		}
+		if skipChildren {
+			return gast.WalkSkipChildren, nil
 		}
 
 		return gast.WalkContinue, nil
