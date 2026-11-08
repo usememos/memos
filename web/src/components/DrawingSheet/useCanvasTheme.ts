@@ -1,26 +1,20 @@
 import type { CanvasTheme } from "@usememos/canvas";
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 
-/** The tokens the drawing takes from memos' theme, read as the browser resolved them. */
-interface ThemeColors {
-  paper: string;
-  ink: string;
-  accent: string;
-  fontFamily: string;
-}
+/**
+ * Every drawing is a sheet of the same paper, whatever memos' theme: it reads the same on a
+ * light or a dark card, and anywhere its PNG goes. The paper is stored in the drawing, so a
+ * drawing made before keeps the paper it was made with.
+ */
+export const DRAWING_PAPER = "#fbfaf7";
 
-const readColors = (): ThemeColors => {
-  const style = getComputedStyle(document.documentElement);
-  const token = (name: string) => style.getPropertyValue(name).trim();
-  return {
-    paper: token("--mu-surface"),
-    ink: token("--mu-ink"),
-    accent: token("--mu-accent"),
-    fontFamily: token("--mu-font-sans"),
-  };
-};
+/** Dark ink for the light paper: the default pen and the palette's first color. */
+export const DRAWING_INK = "#1a1a1a";
 
-/** Seven hues that read on light and dark paper; the palette's first color is the theme's ink. */
+/** The light theme's accent, since selection and handles are drawn on the light paper. */
+const DRAWING_ACCENT = "oklch(0.5 0.13 255)";
+
+/** Seven hues that read on the paper; the palette's first color is the ink. */
 export const DRAWING_HUES = [
   { key: "gray", value: "#868e96" },
   { key: "red", value: "#e03131" },
@@ -31,32 +25,19 @@ export const DRAWING_HUES = [
   { key: "violet", value: "#7048e8" },
 ] as const;
 
+const DRAWING_THEME: CanvasTheme = {
+  paper: DRAWING_PAPER,
+  text: DRAWING_INK,
+  selection: DRAWING_ACCENT,
+  handle: DRAWING_ACCENT,
+  palette: [DRAWING_INK, ...DRAWING_HUES.map((hue) => hue.value)],
+};
+
 /**
- * The canvas theme from memos' current theme: paper is the surface, strokes and text
- * are the ink, selection and handles are the accent. It follows a theme switch while
- * the sheet is open. It watches `data-theme` on the document rather than the resolved
- * theme setting (`useResolvedTheme`): the tokens change when `loadTheme` sets the
- * attribute, which happens in an effect after this component's own effects run.
+ * The canvas theme: the fixed paper and ink, with text in memos' sans-serif stack as the
+ * browser resolved it. The sheet's own bars still follow memos' theme around the paper.
  */
 export const useCanvasTheme = () => {
-  const [colors, setColors] = useState(readColors);
-
-  useEffect(() => {
-    const observer = new MutationObserver(() => setColors(readColors()));
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
-    return () => observer.disconnect();
-  }, []);
-
-  const theme = useMemo<CanvasTheme>(
-    () => ({
-      paper: colors.paper,
-      text: colors.ink,
-      selection: colors.accent,
-      handle: colors.accent,
-      palette: [colors.ink, ...DRAWING_HUES.map((hue) => hue.value)],
-    }),
-    [colors],
-  );
-
-  return { theme, ink: colors.ink, fontFamily: colors.fontFamily };
+  const [fontFamily] = useState(() => getComputedStyle(document.documentElement).getPropertyValue("--mu-font-sans").trim());
+  return { theme: DRAWING_THEME, ink: DRAWING_INK, fontFamily };
 };

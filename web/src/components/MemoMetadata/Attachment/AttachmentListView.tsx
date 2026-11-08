@@ -2,6 +2,7 @@ import { buttonClasses } from "@usememos/ui";
 import { DownloadIcon, ExternalLinkIcon, FileIcon, PlayIcon } from "lucide-react";
 import type { KeyboardEvent, PropsWithChildren } from "react";
 import { useMemo } from "react";
+import { isDrawingFilename } from "@/components/DrawingSheet";
 import MotionPhotoPreview from "@/components/MotionPhotoPreview";
 import VideoPoster from "@/components/VideoPoster";
 import { cn } from "@/lib/utils";
@@ -25,6 +26,7 @@ import { getAttachmentMetadata } from "./attachmentHelpers";
 import {
   COLLAGE_VIDEO_PLAY_BADGE_CLASS,
   COVER_MEDIA_CLASS,
+  DRAWING_SHEET_TILE_CLASS,
   MEDIA_HOVER_GRADIENT_CLASS,
   MEDIA_HOVER_SURFACE_CLASS,
   NATURAL_MEDIA_CLASS,
@@ -42,12 +44,16 @@ const getMotionPreviewProps = (item: VisualItem) => ({
   presentationTimestampUs: item.previewItem.kind === "motion" ? item.previewItem.presentationTimestampUs : undefined,
 });
 
+/** A drawing (a `.canvas.png` image) shows as a sheet of paper instead of a framed photo. */
+const isDrawing = (item: VisualItem) => item.kind === "image" && isDrawingFilename(item.filename);
+
 const VisualTile = ({
   className,
+  sheet = false,
   onPreview,
   overlayLabel,
   children,
-}: PropsWithChildren<{ className?: string; onPreview?: () => void; overlayLabel?: string }>) => {
+}: PropsWithChildren<{ className?: string; sheet?: boolean; onPreview?: () => void; overlayLabel?: string }>) => {
   // A div, not a <button>: tiles hold block media. When it opens the viewer it takes the button
   // role and keys, so keyboard users reach it too; its name comes from the media's alt text.
   const interactive = onPreview
@@ -64,7 +70,7 @@ const VisualTile = ({
       }
     : undefined;
   return (
-    <div className={cn(VISUAL_TILE_BUTTON_CLASS, className)} {...interactive}>
+    <div className={cn(sheet ? DRAWING_SHEET_TILE_CLASS : VISUAL_TILE_BUTTON_CLASS, className)} {...interactive}>
       <div className={MEDIA_HOVER_SURFACE_CLASS}>
         {children}
         <div className={MEDIA_HOVER_GRADIENT_CLASS} aria-hidden />
@@ -98,7 +104,7 @@ const CollageVisualItem = ({
 }) => {
   const motionPreviewProps = item.kind === "motion" ? getMotionPreviewProps(item) : undefined;
   return (
-    <VisualTile className={cn("block h-full w-full", className)} onPreview={onPreview} overlayLabel={overlayLabel}>
+    <VisualTile className={cn("block h-full w-full", className)} sheet={isDrawing(item)} onPreview={onPreview} overlayLabel={overlayLabel}>
       {item.kind === "video" ? (
         <>
           <VideoPoster sourceUrl={item.sourceUrl} posterUrl={item.posterUrl} alt={item.filename} className={COVER_MEDIA_CLASS} />
@@ -130,7 +136,7 @@ const SingleVisualItem = ({ item, onPreview }: { item: VisualItem; onPreview?: (
 
   if (item.kind === "image") {
     return (
-      <VisualTile className="inline-block max-w-full" onPreview={onPreview}>
+      <VisualTile className="inline-block max-w-full" sheet={isDrawing(item)} onPreview={onPreview}>
         <img src={item.posterUrl} alt={item.filename} className={NATURAL_MEDIA_CLASS} loading="lazy" decoding="async" />
       </VisualTile>
     );

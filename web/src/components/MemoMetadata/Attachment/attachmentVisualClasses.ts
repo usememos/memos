@@ -7,6 +7,12 @@
 export const VISUAL_TILE_BUTTON_CLASS =
   "relative block overflow-hidden rounded-mu-md border border-mu-line/70 bg-mu-well/30 p-0 text-left transition-colors mu-focus";
 
+/**
+ * A drawing is a sheet of paper on the card rather than a photo in a frame: no tile border or
+ * well, just the package's raised edge and lift, the same in both themes.
+ */
+export const DRAWING_SHEET_TILE_CLASS = "relative block overflow-hidden rounded-mu-md p-0 text-left shadow-mu-raised mu-focus";
+
 export const MEDIA_HOVER_SURFACE_CLASS = "group/media relative h-full min-h-0 w-full overflow-hidden";
 
 export const COVER_MEDIA_CLASS = "h-full w-full rounded-none object-cover transition-transform duration-300 group-hover/media:scale-[1.02]";

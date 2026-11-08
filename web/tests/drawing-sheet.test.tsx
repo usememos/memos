@@ -25,9 +25,9 @@ const handle = {
 // Like the real component, the handle is attached before the engine exists and throws
 // until the component's own layout effect has created it.
 let mounted = false;
-let canvasProps: { initialScene?: unknown } = {};
+let canvasProps: { initialScene?: unknown; theme?: { paper?: string; text?: string } } = {};
 vi.mock("@usememos/canvas/react", () => ({
-  Canvas: forwardRef((props: { ariaLabel?: string; initialScene?: unknown }, ref) => {
+  Canvas: forwardRef((props: { ariaLabel?: string; initialScene?: unknown; theme?: { paper?: string; text?: string } }, ref) => {
     canvasProps = props;
     useImperativeHandle(
       ref,
@@ -127,6 +127,20 @@ describe("DrawingSheet", () => {
     fireEvent.pointerUp(screen.getByRole("img", { name: "editor.drawing.new-title" }));
 
     expect(screen.getByRole("button", { name: "editor.drawing.undo" })).toBeEnabled();
+  });
+
+  it("draws on the same paper with the same ink in the light and the dark theme", () => {
+    const themes: unknown[] = [];
+    for (const theme of ["light", "dark"]) {
+      document.documentElement.dataset.theme = theme;
+      const { unmount } = render(<DrawingSheet mode="new" onDone={vi.fn()} onClose={vi.fn()} />);
+      themes.push({ paper: canvasProps.theme?.paper, text: canvasProps.theme?.text });
+      unmount();
+    }
+    delete document.documentElement.dataset.theme;
+
+    expect(themes[0]).toEqual({ paper: "#fbfaf7", text: "#1a1a1a" });
+    expect(themes[1]).toEqual(themes[0]);
   });
 
   it("opens the loaded scene in edit mode", () => {
