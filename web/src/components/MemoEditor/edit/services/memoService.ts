@@ -95,6 +95,17 @@ function buildUpdateMask(
   return { mask, patch };
 }
 
+/**
+ * The memo's own changes saved, but uploading an edited drawing over its attachment
+ * failed afterwards. The edit stays in the draft, so saving again retries only it.
+ */
+export class DrawingNotSavedError extends Error {
+  constructor(cause: unknown) {
+    super("The memo was saved, but an edited drawing was not", { cause });
+    this.name = "DrawingNotSavedError";
+  }
+}
+
 /** The memo operations a save runs: the memo mutation hooks, so caches follow every save. */
 export interface MemoSaveOperations {
   /** The memo as the server has it now, to diff the draft against. */
@@ -135,7 +146,12 @@ export const memoService = {
 
       let memo = mask.size > 0 ? await operations.updateMemo(patch, Array.from(mask)) : prevMemo;
       if (replacements.length > 0) {
-        await uploadService.uploadFiles(replacements, options.onFileUploaded);
+        try {
+          await uploadService.uploadFiles(replacements, options.onFileUploaded);
+        } catch (error) {
+          // With nothing else to save, the save simply failed; otherwise say what did land.
+          throw mask.size > 0 ? new DrawingNotSavedError(error) : error;
+        }
         // A new drawing is an edit of the memo: stamp it, keeping a custom time the draft sets.
         // The update returns the memo with its replaced files, which refreshes every cached copy;
         // it sends no attachment list, so one added elsewhere meanwhile stays.

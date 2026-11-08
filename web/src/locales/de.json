@@ -217,7 +217,8 @@
       "discard": "Verwerfen",
       "open-failed": "Die Zeichnung konnte nicht geöffnet werden. Bitte versuchen Sie es erneut.",
       "export-failed": "Die Zeichnung konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.",
-      "image-failed": "Das Bild konnte der Zeichnung nicht hinzugefügt werden."
+      "image-failed": "Das Bild konnte der Zeichnung nicht hinzugefügt werden.",
+      "saved-without-drawing": "Die Notiz ist gespeichert, die Zeichnung jedoch nicht. Speichern Sie erneut, um es noch einmal zu versuchen."
     },
     "no-changes-detected": "Keine Änderungen erkannt",
     "save": "Speichern",

@@ -232,7 +232,8 @@
       "discard": "Odrzuć",
       "open-failed": "Nie udało się otworzyć rysunku. Spróbuj ponownie.",
       "export-failed": "Nie udało się zapisać rysunku. Spróbuj ponownie.",
-      "image-failed": "Nie udało się dodać obrazu do rysunku."
+      "image-failed": "Nie udało się dodać obrazu do rysunku.",
+      "saved-without-drawing": "Notatka została zapisana, ale rysunek nie. Zapisz ponownie, aby spróbować jeszcze raz."
     },
     "no-changes-detected": "Brak wykrytych zmian",
     "save": "Zapisz",

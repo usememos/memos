@@ -217,7 +217,8 @@
       "discard": "Zavrzi",
       "open-failed": "Risbe ni bilo mogoče odpreti. Poskusite znova.",
       "export-failed": "Risbe ni bilo mogoče shraniti. Poskusite znova.",
-      "image-failed": "Slike ni bilo mogoče dodati risbi."
+      "image-failed": "Slike ni bilo mogoče dodati risbi.",
+      "saved-without-drawing": "Beležka je shranjena, risba pa ne. Za ponoven poskus znova shranite."
     },
     "no-changes-detected": "Ni zaznanih sprememb",
     "save": "Shrani",

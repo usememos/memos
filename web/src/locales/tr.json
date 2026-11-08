@@ -266,7 +266,8 @@
       "discard": "Sil",
       "open-failed": "Çizim açılamadı. Yeniden deneyin.",
       "export-failed": "Çizim kaydedilemedi. Yeniden deneyin.",
-      "image-failed": "Görsel çizime eklenemedi."
+      "image-failed": "Görsel çizime eklenemedi.",
+      "saved-without-drawing": "Not kaydedildi ancak çizim kaydedilmedi. Yeniden denemek için tekrar kaydedin."
     },
     "new-memo": "Yeni not",
     "no-changes-detected": "Değişiklik yok",

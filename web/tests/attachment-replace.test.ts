@@ -9,7 +9,12 @@ vi.mock("@/connect", () => ({
   attachmentServiceClient: { uploadAttachment: mocks.uploadAttachment },
 }));
 
-import { type MemoSaveOperations, memoService, mergeUploadedAttachments } from "@/components/MemoEditor/edit/services/memoService";
+import {
+  DrawingNotSavedError,
+  type MemoSaveOperations,
+  memoService,
+  mergeUploadedAttachments,
+} from "@/components/MemoEditor/edit/services/memoService";
 import { uploadService } from "@/components/MemoEditor/edit/services/uploadService";
 import { createInitialState } from "@/components/MemoEditor/edit/state/types";
 import { type Memo, MemoSchema } from "@/types/proto/api/memo_service_pb";
@@ -132,6 +137,23 @@ describe("replacing an attachment's content", () => {
 
       expect(order).toEqual([`upload over ${saved.name}`, "update update_time"]);
       expect(result.hasChanges).toBe(true);
+    });
+
+    it("reports a drawing that failed after the rest of the memo saved", async () => {
+      mocks.uploadAttachment.mockRejectedValue(new Error("offline"));
+      const ops = operations(async () => create(MemoSchema, { ...memo, content: "changed" }));
+
+      await expect(memoService.save(draft("changed"), { memoName: memo.name }, ops)).rejects.toBeInstanceOf(DrawingNotSavedError);
+      expect(order).toEqual(["update content,update_time"]);
+    });
+
+    it("reports a plain failure when the drawing was the only change", async () => {
+      mocks.uploadAttachment.mockRejectedValue(new Error("offline"));
+      const ops = operations(async () => memo);
+
+      const saving = memoService.save(draft("hello"), { memoName: memo.name }, ops);
+      await expect(saving).rejects.toThrow("offline");
+      await expect(saving).rejects.not.toBeInstanceOf(DrawingNotSavedError);
     });
 
     it("replaces before creating a new memo, so a failed replacement creates nothing", async () => {

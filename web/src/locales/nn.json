@@ -326,7 +326,8 @@
       "discard": "Forkast",
       "open-failed": "Kunne ikkje opne teikninga. Prøv på nytt.",
       "export-failed": "Kunne ikkje lagre teikninga. Prøv på nytt.",
-      "image-failed": "Kunne ikkje leggje biletet til i teikninga."
+      "image-failed": "Kunne ikkje leggje biletet til i teikninga.",
+      "saved-without-drawing": "Notatet er lagra, men teikninga er ikkje det. Lagre på nytt for å prøve igjen."
     },
     "new-memo": "Nytt notat",
     "no-changes-detected": "Ingen endringar funne",

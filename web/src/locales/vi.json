@@ -219,7 +219,8 @@
       "discard": "Loại bỏ",
       "open-failed": "Không thể mở bản vẽ. Hãy thử lại.",
       "export-failed": "Không thể lưu bản vẽ. Hãy thử lại.",
-      "image-failed": "Không thể thêm ảnh vào bản vẽ."
+      "image-failed": "Không thể thêm ảnh vào bản vẽ.",
+      "saved-without-drawing": "Đã lưu ghi chú, nhưng chưa lưu bản vẽ. Hãy lưu lần nữa để thử lại."
     },
     "audio-recorder": {
       "attachment-label": "Ghi âm",

@@ -217,7 +217,8 @@
       "discard": "Descarta",
       "open-failed": "No s'ha pogut obrir el dibuix. Torneu-ho a intentar.",
       "export-failed": "No s'ha pogut desar el dibuix. Torneu-ho a intentar.",
-      "image-failed": "No s'ha pogut afegir la imatge al dibuix."
+      "image-failed": "No s'ha pogut afegir la imatge al dibuix.",
+      "saved-without-drawing": "La nota s'ha desat, però el dibuix no. Torneu a desar per tornar-ho a intentar."
     },
     "no-changes-detected": "No s'han detectat canvis",
     "save": "Guarda",

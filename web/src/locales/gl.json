@@ -217,7 +217,8 @@
       "discard": "Descartar",
       "open-failed": "Non se puido abrir o debuxo. Téntao de novo.",
       "export-failed": "Non se puido gardar o debuxo. Téntao de novo.",
-      "image-failed": "Non se puido engadir a imaxe ao debuxo."
+      "image-failed": "Non se puido engadir a imaxe ao debuxo.",
+      "saved-without-drawing": "A nota gardouse, pero o debuxo non. Garda de novo para tentalo outra vez."
     },
     "no-changes-detected": "Non se detectaron cambios",
     "save": "Gardar",

@@ -31,7 +31,10 @@ type attachmentUploadState struct {
 	replace bool
 	// replaceCommitted is set once the replacement's row update committed, so
 	// a retried finish never applies this upload over a newer replacement.
-	replaceCommitted  bool
+	replaceCommitted bool
+	// replacedLeftover is the attachment as it was before a committed
+	// replacement whose reload failed: its file still waits to be deleted.
+	replacedLeftover  *store.Attachment
 	finalizeAttempted bool
 }
 

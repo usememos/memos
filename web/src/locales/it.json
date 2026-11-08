@@ -217,7 +217,8 @@
       "discard": "Elimina",
       "open-failed": "Impossibile aprire il disegno. Riprova.",
       "export-failed": "Impossibile salvare il disegno. Riprova.",
-      "image-failed": "Impossibile aggiungere l'immagine al disegno."
+      "image-failed": "Impossibile aggiungere l'immagine al disegno.",
+      "saved-without-drawing": "Il memo è stato salvato, ma il disegno no. Salva di nuovo per riprovare."
     },
     "no-changes-detected": "Nessuna modifica rilevata",
     "save": "Salva",

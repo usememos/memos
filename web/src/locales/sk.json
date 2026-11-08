@@ -255,7 +255,8 @@
       "discard": "Zahodiť",
       "open-failed": "Kresbu sa nepodarilo otvoriť. Skúste to znova.",
       "export-failed": "Kresbu sa nepodarilo uložiť. Skúste to znova.",
-      "image-failed": "Obrázok sa nepodarilo pridať do kresby."
+      "image-failed": "Obrázok sa nepodarilo pridať do kresby.",
+      "saved-without-drawing": "Poznámka je uložená, ale kresba nie. Pre nový pokus uložte znova."
     },
     "no-changes-detected": "Nezistili sa žiadne zmeny",
     "save": "Uložiť",

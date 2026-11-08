@@ -219,7 +219,8 @@
       "discard": "삭제",
       "open-failed": "그림을 열 수 없습니다. 다시 시도하세요.",
       "export-failed": "그림을 저장할 수 없습니다. 다시 시도하세요.",
-      "image-failed": "이미지를 그림에 추가할 수 없습니다."
+      "image-failed": "이미지를 그림에 추가할 수 없습니다.",
+      "saved-without-drawing": "메모는 저장되었지만 그림은 저장되지 않았습니다. 재시도하려면 다시 저장하세요."
     },
     "audio-recorder": {
       "attachment-label": "오디오 녹음",

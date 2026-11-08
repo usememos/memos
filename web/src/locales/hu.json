@@ -217,7 +217,8 @@
       "discard": "Elvetés",
       "open-failed": "Nem sikerült megnyitni a rajzot. Próbálja újra.",
       "export-failed": "Nem sikerült menteni a rajzot. Próbálja újra.",
-      "image-failed": "Nem sikerült hozzáadni a képet a rajzhoz."
+      "image-failed": "Nem sikerült hozzáadni a képet a rajzhoz.",
+      "saved-without-drawing": "A jegyzet mentve, de a rajz nem. Mentse újra az újrapróbálkozáshoz."
     },
     "no-changes-detected": "Nincs változás",
     "save": "Mentés",

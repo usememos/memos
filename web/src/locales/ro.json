@@ -255,7 +255,8 @@
       "discard": "Renunțați",
       "open-failed": "Desenul nu a putut fi deschis. Încercați din nou.",
       "export-failed": "Desenul nu a putut fi salvat. Încercați din nou.",
-      "image-failed": "Imaginea nu a putut fi adăugată la desen."
+      "image-failed": "Imaginea nu a putut fi adăugată la desen.",
+      "saved-without-drawing": "Nota a fost salvată, dar desenul nu. Salvați din nou pentru a reîncerca."
     },
     "no-changes-detected": "Nu au fost detectate modificări",
     "save": "Salva",

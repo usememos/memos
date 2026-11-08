@@ -255,7 +255,8 @@
       "discard": "Atmest",
       "open-failed": "Neizdevās atvērt zīmējumu. Mēģiniet vēlreiz.",
       "export-failed": "Neizdevās saglabāt zīmējumu. Mēģiniet vēlreiz.",
-      "image-failed": "Neizdevās pievienot attēlu zīmējumam."
+      "image-failed": "Neizdevās pievienot attēlu zīmējumam.",
+      "saved-without-drawing": "Piezīme ir saglabāta, bet zīmējums nav. Saglabājiet vēlreiz, lai mēģinātu atkārtoti."
     },
     "no-changes-detected": "Izmaiņas nav konstatētas",
     "save": "Saglabāt",

@@ -118,8 +118,14 @@ func (s *APIService) finishAttachmentReplace(ctx context.Context, upload *attach
 	release := s.attachmentReplaces.lock(upload.state.uid)
 	defer release()
 	if upload.state.replaceCommitted {
-		// An earlier finish committed but failed afterwards: report the attachment
-		// as it is now instead of applying this upload a second time.
+		// An earlier finish committed but failed afterwards: finish its cleanup and
+		// report the attachment as it is now, instead of applying this upload again.
+		if leftover := upload.state.replacedLeftover; leftover != nil {
+			if err := s.deleteReplacedContent(ctx, leftover); err != nil {
+				return nil, err
+			}
+			upload.state.replacedLeftover = nil
+		}
 		return s.GetAttachment(ctx, &apipb.GetAttachmentRequest{Name: "attachments/" + upload.state.uid})
 	}
 	// Check again at finish: the attachment may have been deleted, linked to a
@@ -200,8 +206,10 @@ func (s *APIService) finishAttachmentReplace(ctx context.Context, upload *attach
 	updated, err := s.Store.GetAttachment(ctx, &store.FindAttachment{UID: &replaced.UID})
 	if err != nil {
 		// The replacement committed; the previous object is left in place
-		// rather than risk deleting the one the row now points at. Its thumbnail
-		// is keyed by the UID, so it goes now.
+		// rather than risk deleting the one the row now points at, and a retry
+		// deletes it once the row can be read. Its thumbnail is keyed by the
+		// UID, so it goes now.
+		upload.state.replacedLeftover = replaced
 		s.Store.DeleteAttachmentDerivedCaches(replaced)
 		s.SSEHub.publishMemoChanged()
 		return nil, status.Errorf(codes.Internal, "attachment content was replaced but failed to reload: %v", err)
@@ -227,4 +235,30 @@ func (s *APIService) finishAttachmentReplace(ctx context.Context, upload *attach
 		s.SSEHub.publishMemoChanged()
 	}
 	return convertAttachmentFromStore(updated), nil
+}
+
+// deleteReplacedContent deletes the file a committed replacement left behind,
+// unless the attachment's row still points at it (the replacement did not
+// commit after all). A row that is gone means the attachment was deleted, and
+// its file went with it.
+func (s *APIService) deleteReplacedContent(ctx context.Context, leftover *store.Attachment) error {
+	current, err := s.Store.GetAttachment(ctx, &store.FindAttachment{UID: &leftover.UID})
+	if err != nil {
+		return status.Errorf(codes.Internal, "failed to get attachment: %v", err)
+	}
+	if current == nil || hasSameManagedStorageObject(current, leftover) {
+		return nil
+	}
+	setting, err := s.Store.GetInstanceStorageSetting(ctx)
+	if err != nil {
+		return status.Errorf(codes.Internal, "failed to get storage setting: %v", err)
+	}
+	if err := s.Store.DeleteAttachmentStorageWithInstanceSetting(ctx, leftover, setting); err != nil {
+		slog.Warn("failed to delete replaced attachment content",
+			slog.String("attachment_uid", leftover.UID),
+			slog.String("storage_type", leftover.StorageType.String()),
+			slog.Any("error", err),
+		)
+	}
+	return nil
 }

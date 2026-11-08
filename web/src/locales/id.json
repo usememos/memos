@@ -219,7 +219,8 @@
       "discard": "Buang",
       "open-failed": "Tidak dapat membuka sketsa. Coba lagi.",
       "export-failed": "Tidak dapat menyimpan sketsa. Coba lagi.",
-      "image-failed": "Tidak dapat menambahkan gambar ke sketsa."
+      "image-failed": "Tidak dapat menambahkan gambar ke sketsa.",
+      "saved-without-drawing": "Memo tersimpan, tetapi sketsa belum. Simpan lagi untuk mencoba ulang."
     },
     "audio-recorder": {
       "attachment-label": "Rekaman audio",

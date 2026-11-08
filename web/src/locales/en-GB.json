@@ -217,7 +217,8 @@
       "discard": "Discard",
       "open-failed": "Couldn't open the drawing. Try again.",
       "export-failed": "Couldn't save the drawing. Try again.",
-      "image-failed": "Couldn't add the image to the drawing."
+      "image-failed": "Couldn't add the image to the drawing.",
+      "saved-without-drawing": "The memo is saved, but the drawing isn't. Save again to retry."
     },
     "no-changes-detected": "No changes detected",
     "save": "Save",

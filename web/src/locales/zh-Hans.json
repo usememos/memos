@@ -281,7 +281,8 @@
       "discard": "放弃",
       "open-failed": "无法打开绘图，请重试。",
       "export-failed": "无法保存绘图，请重试。",
-      "image-failed": "无法将图片添加到绘图中。"
+      "image-failed": "无法将图片添加到绘图中。",
+      "saved-without-drawing": "备忘录已保存，但绘图未保存。请再次保存以重试。"
     },
     "audio-recorder": {
       "attachment-label": "录音",

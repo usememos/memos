@@ -255,7 +255,8 @@
       "discard": "Loobu",
       "open-failed": "Joonistust ei õnnestunud avada. Proovige uuesti.",
       "export-failed": "Joonistust ei õnnestunud salvestada. Proovige uuesti.",
-      "image-failed": "Pilti ei õnnestunud joonistusele lisada."
+      "image-failed": "Pilti ei õnnestunud joonistusele lisada.",
+      "saved-without-drawing": "Memo on salvestatud, kuid joonistus mitte. Salvestage veel kord, et uuesti proovida."
     },
     "no-changes-detected": "Muudatusi ei tuvastatud",
     "save": "Salvesta",

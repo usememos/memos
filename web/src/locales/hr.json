@@ -217,7 +217,8 @@
       "discard": "Odbaci",
       "open-failed": "Crtež nije moguće otvoriti. Pokušajte ponovno.",
       "export-failed": "Crtež nije moguće spremiti. Pokušajte ponovno.",
-      "image-failed": "Sliku nije moguće dodati u crtež."
+      "image-failed": "Sliku nije moguće dodati u crtež.",
+      "saved-without-drawing": "Memo je spremljen, ali crtež nije. Sačuvajte ponovno za novi pokušaj."
     },
     "no-changes-detected": "Nema promjena",
     "save": "Sačuvaj",

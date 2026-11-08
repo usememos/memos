@@ -217,7 +217,8 @@
       "discard": "Abandonner",
       "open-failed": "Impossible d'ouvrir le dessin. Veuillez réessayer.",
       "export-failed": "Impossible d'enregistrer le dessin. Veuillez réessayer.",
-      "image-failed": "Impossible d'ajouter l'image au dessin."
+      "image-failed": "Impossible d'ajouter l'image au dessin.",
+      "saved-without-drawing": "Le mémo est enregistré, mais pas le dessin. Enregistrez à nouveau pour réessayer."
     },
     "no-changes-detected": "Aucun changement détecté",
     "save": "Enregistrer",

@@ -219,7 +219,8 @@
       "discard": "破棄",
       "open-failed": "描画を開けませんでした。もう一度お試しください。",
       "export-failed": "描画を保存できませんでした。もう一度お試しください。",
-      "image-failed": "画像を描画に追加できませんでした。"
+      "image-failed": "画像を描画に追加できませんでした。",
+      "saved-without-drawing": "メモは保存されましたが、描画は保存されていません。再試行するには、もう一度保存してください。"
     },
     "audio-recorder": {
       "attachment-label": "音声録音",
