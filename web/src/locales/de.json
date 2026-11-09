@@ -883,14 +883,14 @@
       "content-size": "Notizinhalt (KiB)",
       "content-size-column": "Notizinhalt",
       "content-size-description": "Die UTF-8-Größe des Inhalts einer Notiz, einschließlich Markdown.",
-      "default-hint": "Lass ein Feld leer, um kein Limit festzulegen.",
+      "default-hint": "Lassen Sie ein Feld leer, um kein Limit festzulegen.",
       "default-title": "Limits für alle Benutzer",
-      "description": "Halte diese Instanz schnell und zuverlässig, indem du begrenzt, was jeder Benutzer speichern kann. Jeder Eintrag ist ein vollständiger Satz von Limits für die darin genannten Benutzer.",
+      "description": "Halten Sie diese Instanz schnell und zuverlässig, indem Sie begrenzen, was jeder Benutzer speichern kann. Jeder Eintrag ist ein vollständiger Satz von Limits für die darin genannten Benutzer.",
       "edit-title": "Eintrag bearbeiten",
-      "entry-hint": "Lass ein Feld leer, um kein Limit festzulegen. Die Felder beginnen mit den Werten von Alle Benutzer.",
+      "entry-hint": "Lassen Sie ein Feld leer, um kein Limit festzulegen. Die Felder beginnen mit den Werten von Alle Benutzer.",
       "file-size": "Größte Datei (MiB)",
       "file-size-column": "Größte Datei",
-      "invalid": "Gib eine ganze Zahl von Notizen oder eine Größe in der angegebenen Einheit ein.",
+      "invalid": "Geben Sie eine ganze Zahl von Notizen oder eine Größe in der angegebenen Einheit ein.",
       "label": "Nutzungslimits",
       "memos": "Memos",
       "memos-description": "Einschließlich Kommentaren und archivierten Notizen.",
@@ -915,7 +915,7 @@
       "unlimited": "Unlimited",
       "users": "Users",
       "users-description": "Der Eintrag gilt für jeden dieser Benutzer.",
-      "users-required": "Nenne mindestens einen Benutzer."
+      "users-required": "Nennen Sie mindestens einen Benutzer."
     },
     "webhook": {
       "create-dialog": {
