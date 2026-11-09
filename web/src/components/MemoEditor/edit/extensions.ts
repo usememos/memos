@@ -3,7 +3,7 @@ import {
   type Extension,
   fileHandler,
   matchToken,
-  parseMarkdown,
+  paragraph,
   type SuggestionAllowContext,
   scanTags,
   suggestion,
@@ -64,22 +64,21 @@ export const allowTagSuggestion = ({ excluded, explicit, query, textBefore }: Su
 /**
  * A custom-scheme URI pasted at the caret becomes the link the editor's own paste rule
  * makes of an `http(s)://` or `mailto:` one, since that rule stops at those two schemes.
- * Pasted over a selection, it links that selection instead. Anything the policy refuses
- * stays plain text.
+ * Pasted over a selection, it links that selection instead. Anything the policy refuses,
+ * and every paste inside inline code, stays plain text.
  */
 const customSchemePaste = (): Extension => ({
   name: "customSchemePaste",
   handlePaste: ({ editor, event }) => {
     const data = event.clipboardData;
-    if (!data || data.files.length || !editor.isEditable || editor.mode === "source") return false;
+    if (!data || data.files.length || !editor.isEditable || editor.mode === "source" || editor.isActive("code")) return false;
     const url = data.getData("text/plain").trim();
     if (!isCustomSchemeUri(url)) return false;
     const { anchor, focus } = editor.selectionToJSON();
     const isCollapsed = JSON.stringify(anchor) === JSON.stringify(focus);
-    editor.run(
-      (state) => (isCollapsed ? commands.insertFragment(state, parseMarkdown(`[${url}](${url})`).blocks) : commands.setLink(state, url)),
-      "other",
-    );
+    // Built rather than parsed from Markdown, so a `)` or `]` in the URI stays in the link.
+    const block = paragraph([{ text: url, marks: [], link: url }]);
+    editor.run((state) => (isCollapsed ? commands.insertBlocks(state, [block]) : commands.setLink(state, url)), "other");
     return true;
   },
 });
