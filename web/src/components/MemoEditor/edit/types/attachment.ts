@@ -33,6 +33,11 @@ export interface LocalFile {
    * from a source with nothing to extract). The promise never rejects.
    */
   readonly mediaMetadata?: Promise<MediaMetadata | undefined>;
+  /**
+   * The saved attachment this file replaces the content of (an edited drawing).
+   * The attachment keeps its name and place; the file uploads over it on save.
+   */
+  readonly replaces?: string;
 }
 
 const AUDIO_RECORDING_FILENAME_RE = /^(?:voice-(?:recording|note)|audio-recording)-(\d{8})-(\d{4,6})/i;
@@ -203,3 +208,6 @@ export function separateMediaAndDocs(items: AttachmentItem[]): { media: Attachme
 
   return { media, docs };
 }
+
+/** A drawing "Edit drawing" opens: a file still in the draft, or a saved attachment. */
+export type DrawingSource = { kind: "local"; localFile: LocalFile } | { kind: "attachment"; attachment: Attachment };

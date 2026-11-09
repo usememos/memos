@@ -18,6 +18,17 @@ function toAttachmentReferences(attachments: Attachment[]): Attachment[] {
   return attachments.map((a) => create(AttachmentSchema, { name: a.name }));
 }
 
+/**
+ * Adds uploaded attachments to the draft's. An upload that replaced an
+ * attachment's content comes back under the same name and takes its place.
+ */
+export function mergeUploadedAttachments(attachments: Attachment[], uploaded: Attachment[]): Attachment[] {
+  const byName = new Map(uploaded.map((attachment) => [attachment.name, attachment]));
+  const merged = attachments.map((attachment) => byName.get(attachment.name) ?? attachment);
+  const existing = new Set(attachments.map((attachment) => attachment.name));
+  return [...merged, ...uploaded.filter((attachment) => !existing.has(attachment.name))];
+}
+
 function buildUpdateMask(
   prevMemo: Memo,
   state: EditorState,
@@ -84,6 +95,17 @@ function buildUpdateMask(
   return { mask, patch };
 }
 
+/**
+ * The memo's own changes saved, but uploading an edited drawing over its attachment
+ * failed afterwards. The edit stays in the draft, so saving again retries only it.
+ */
+export class DrawingNotSavedError extends Error {
+  constructor(cause: unknown) {
+    super("The memo was saved, but an edited drawing was not", { cause });
+    this.name = "DrawingNotSavedError";
+  }
+}
+
 /** The memo operations a save runs: the memo mutation hooks, so caches follow every save. */
 export interface MemoSaveOperations {
   /** The memo as the server has it now, to diff the draft against. */
@@ -105,24 +127,45 @@ export const memoService = {
     },
     operations: MemoSaveOperations,
   ): Promise<{ memoName: string; hasChanges: boolean; moved?: boolean }> {
-    // 1. Upload local files first
-    const newAttachments = await uploadService.uploadFiles(state.localFiles, options.onFileUploaded);
-    const allAttachments = [...state.metadata.attachments, ...newAttachments];
+    // 1. Upload new files first. Edits of saved drawings (`replaces`) upload over
+    // their attachment, which is visible at once, so they wait until the memo
+    // itself is saved: a refused save then leaves every saved drawing as it was.
+    const additions = state.localFiles.filter((file) => !file.replaces);
+    const replacements = state.localFiles.filter((file) => file.replaces);
+    const newAttachments = await uploadService.uploadFiles(additions, options.onFileUploaded);
+    let allAttachments = mergeUploadedAttachments(state.metadata.attachments, newAttachments);
 
     // 2. Update existing memo
     if (options.memoName) {
       const prevMemo = await operations.getMemo(options.memoName);
       const { mask, patch } = buildUpdateMask(prevMemo, state, allAttachments);
 
-      if (mask.size === 0) {
+      if (mask.size === 0 && replacements.length === 0) {
         return { memoName: prevMemo.name, hasChanges: false };
       }
 
-      const memo = await operations.updateMemo(patch, Array.from(mask));
+      let memo = mask.size > 0 ? await operations.updateMemo(patch, Array.from(mask)) : prevMemo;
+      if (replacements.length > 0) {
+        try {
+          await uploadService.uploadFiles(replacements, options.onFileUploaded);
+        } catch (error) {
+          // With nothing else to save, the save simply failed; otherwise say what did land.
+          throw mask.size > 0 ? new DrawingNotSavedError(error) : error;
+        }
+        // A new drawing is an edit of the memo: stamp it, keeping a custom time the draft sets.
+        // The update returns the memo with its replaced files, which refreshes every cached copy;
+        // it sends no attachment list, so one added elsewhere meanwhile stays.
+        memo = await operations.updateMemo({ name: memo.name, updateTime: patch.updateTime }, ["update_time"]);
+      }
       return { memoName: memo.name, hasChanges: true, moved: mask.has("space") };
     }
 
-    // 3. Create new memo or comment
+    // 3. Create new memo or comment. Its attachments are not visible to anyone
+    // until it exists, so replacements land before it is created; a failure then
+    // never leaves a created memo behind for a retry to duplicate.
+    if (replacements.length > 0) {
+      allAttachments = mergeUploadedAttachments(allAttachments, await uploadService.uploadFiles(replacements, options.onFileUploaded));
+    }
     const memoData = create(MemoSchema, {
       content: state.content,
       visibility: state.metadata.visibility,

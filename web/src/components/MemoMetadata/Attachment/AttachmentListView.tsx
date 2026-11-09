@@ -1,11 +1,13 @@
 import { buttonClasses } from "@usememos/ui";
 import { DownloadIcon, ExternalLinkIcon, FileIcon, PlayIcon } from "lucide-react";
 import type { KeyboardEvent, PropsWithChildren } from "react";
-import { useMemo } from "react";
+import { Suspense, useMemo, useState } from "react";
+import { DRAWING_PAPER, DrawingViewer, isDrawingFilename } from "@/components/DrawingSheet";
 import MotionPhotoPreview from "@/components/MotionPhotoPreview";
 import VideoPoster from "@/components/VideoPoster";
 import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/attachment_service_pb";
+import type { Memo } from "@/types/proto/api/memo_service_pb";
 import { getAttachmentUrl, isImage } from "@/utils/attachment";
 import { useTranslate } from "@/utils/i18n";
 import type { AttachmentVisualItem, PreviewMediaItem } from "@/utils/media-item";
@@ -25,6 +27,10 @@ import { getAttachmentMetadata } from "./attachmentHelpers";
 import {
   COLLAGE_VIDEO_PLAY_BADGE_CLASS,
   COVER_MEDIA_CLASS,
+  DRAWING_SHEET_CELL_MEDIA_CLASS,
+  DRAWING_SHEET_MEDIA_CLASS,
+  DRAWING_SHEET_SINGLE_CLASS,
+  DRAWING_SHEET_TILE_CLASS,
   MEDIA_HOVER_GRADIENT_CLASS,
   MEDIA_HOVER_SURFACE_CLASS,
   NATURAL_MEDIA_CLASS,
@@ -42,15 +48,15 @@ const getMotionPreviewProps = (item: VisualItem) => ({
   presentationTimestampUs: item.previewItem.kind === "motion" ? item.previewItem.presentationTimestampUs : undefined,
 });
 
-const VisualTile = ({
-  className,
-  onPreview,
-  overlayLabel,
-  children,
-}: PropsWithChildren<{ className?: string; onPreview?: () => void; overlayLabel?: string }>) => {
-  // A div, not a <button>: tiles hold block media. When it opens the viewer it takes the button
-  // role and keys, so keyboard users reach it too; its name comes from the media's alt text.
-  const interactive = onPreview
+/** A drawing (a `.canvas.png` image) shows as a sheet of paper instead of a framed photo. */
+const isDrawing = (item: VisualItem) => item.kind === "image" && isDrawingFilename(item.filename);
+
+/**
+ * A tile is a div, not a <button>: it holds block media. When it opens the viewer it takes the
+ * button role and keys, so keyboard users reach it too; its name comes from the media's alt text.
+ */
+const tileInteraction = (onPreview?: () => void) =>
+  onPreview
     ? {
         role: "button",
         tabIndex: 0,
@@ -63,12 +69,69 @@ const VisualTile = ({
         },
       }
     : undefined;
+
+const VisualTile = ({
+  className,
+  onPreview,
+  overlayLabel,
+  children,
+}: PropsWithChildren<{ className?: string; onPreview?: () => void; overlayLabel?: string }>) => (
+  <div className={cn(VISUAL_TILE_BUTTON_CLASS, className)} {...tileInteraction(onPreview)}>
+    <div className={MEDIA_HOVER_SURFACE_CLASS}>
+      {children}
+      <div className={MEDIA_HOVER_GRADIENT_CLASS} aria-hidden />
+    </div>
+    {overlayLabel && <div className={OVERFLOW_TILE_OVERLAY_CLASS}>{overlayLabel}</div>}
+  </div>
+);
+
+/**
+ * The paper a drawing was made on. An export is opaque with the paper filling it, so its corner
+ * pixel is paper; a drawing made before the paper was fixed keeps its own. Undefined when the
+ * image can't be read.
+ */
+const readPaperColor = (img: HTMLImageElement): string | undefined => {
+  try {
+    const context = document.createElement("canvas").getContext("2d", { willReadFrequently: true });
+    if (!context) return undefined;
+    context.drawImage(img, 0, 0, 1, 1, 0, 0, 1, 1);
+    const [r, g, b] = context.getImageData(0, 0, 1, 1).data;
+    return `rgb(${r} ${g} ${b})`;
+  } catch {
+    return undefined;
+  }
+};
+
+/**
+ * A drawing as a sheet of paper. The sheet extends the drawing's own paper beyond its edges, so
+ * it can be any size. The image is the original file at 2x: exports carry 2 pixels per drawn
+ * pixel, so it shows at the size it was drawn and keeps strokes and text sharp.
+ */
+const DrawingTile = ({
+  item,
+  className,
+  mediaClassName,
+  onPreview,
+  overlayLabel,
+}: {
+  item: VisualItem;
+  className: string;
+  mediaClassName: string;
+  onPreview?: () => void;
+  overlayLabel?: string;
+}) => {
+  const [paper, setPaper] = useState(DRAWING_PAPER);
   return (
-    <div className={cn(VISUAL_TILE_BUTTON_CLASS, className)} {...interactive}>
-      <div className={MEDIA_HOVER_SURFACE_CLASS}>
-        {children}
-        <div className={MEDIA_HOVER_GRADIENT_CLASS} aria-hidden />
-      </div>
+    <div className={cn(DRAWING_SHEET_TILE_CLASS, className)} style={{ background: paper }} {...tileInteraction(onPreview)}>
+      <img
+        src={item.sourceUrl}
+        srcSet={`${item.sourceUrl} 2x`}
+        alt={item.filename}
+        className={mediaClassName}
+        loading="lazy"
+        decoding="async"
+        onLoad={(event) => setPaper(readPaperColor(event.currentTarget) ?? DRAWING_PAPER)}
+      />
       {overlayLabel && <div className={OVERFLOW_TILE_OVERLAY_CLASS}>{overlayLabel}</div>}
     </div>
   );
@@ -97,6 +160,17 @@ const CollageVisualItem = ({
   onPreview?: () => void;
 }) => {
   const motionPreviewProps = item.kind === "motion" ? getMotionPreviewProps(item) : undefined;
+  if (isDrawing(item)) {
+    return (
+      <DrawingTile
+        item={item}
+        className={cn("block h-full w-full", className)}
+        mediaClassName={DRAWING_SHEET_CELL_MEDIA_CLASS}
+        onPreview={onPreview}
+        overlayLabel={overlayLabel}
+      />
+    );
+  }
   return (
     <VisualTile className={cn("block h-full w-full", className)} onPreview={onPreview} overlayLabel={overlayLabel}>
       {item.kind === "video" ? (
@@ -127,6 +201,12 @@ const CollageVisualItem = ({
 
 const SingleVisualItem = ({ item, onPreview }: { item: VisualItem; onPreview?: () => void }) => {
   const motionPreviewProps = item.kind === "motion" ? getMotionPreviewProps(item) : undefined;
+
+  if (isDrawing(item)) {
+    return (
+      <DrawingTile item={item} className={DRAWING_SHEET_SINGLE_CLASS} mediaClassName={DRAWING_SHEET_MEDIA_CLASS} onPreview={onPreview} />
+    );
+  }
 
   if (item.kind === "image") {
     return (
@@ -169,12 +249,15 @@ const SingleVisualItem = ({ item, onPreview }: { item: VisualItem; onPreview?: (
 interface AttachmentGalleryProps {
   visual: Attachment[];
   onImagePreview?: (items: PreviewMediaItem[], index: number) => void;
+  /** Opens drawings in the drawing viewer instead of the image viewer, with Edit when `canEdit`. */
+  drawings?: { memo: Pick<Memo, "name" | "attachments">; canEdit: boolean };
 }
 
 /** The memo's images, motion photos and videos as the bare gallery, flush with the content. */
-export const AttachmentGallery = ({ visual, onImagePreview }: AttachmentGalleryProps) => {
+export const AttachmentGallery = ({ visual, onImagePreview, drawings }: AttachmentGalleryProps) => {
   const visualItems = useMemo(() => buildAttachmentVisualItems(visual), [visual]);
   const layout = resolveVisualGalleryLayout(visualItems);
+  const [openDrawing, setOpenDrawing] = useState<VisualItem>();
 
   if (!layout) {
     return null;
@@ -186,10 +269,32 @@ export const AttachmentGallery = ({ visual, onImagePreview }: AttachmentGalleryP
     onImagePreview?.(previewItems, index >= 0 ? index : 0);
   };
 
+  // A drawing opens as a drawing: in the read-only canvas, not the image viewer.
+  const openItem = (item: VisualItem) => {
+    if (drawings && isDrawing(item) && item.attachments[0]) setOpenDrawing(item);
+    else handlePreview(item.id);
+  };
+
+  const drawingViewer = drawings && openDrawing?.attachments[0] && (
+    <Suspense fallback={null}>
+      <DrawingViewer
+        attachment={openDrawing.attachments[0]}
+        memo={drawings.memo}
+        canEdit={drawings.canEdit}
+        onClose={() => setOpenDrawing(undefined)}
+        onNoScene={() => {
+          setOpenDrawing(undefined);
+          handlePreview(openDrawing.id);
+        }}
+      />
+    </Suspense>
+  );
+
   if (layout.mode === "single") {
     return (
       <div className="w-full">
-        <SingleVisualItem item={layout.item} onPreview={() => handlePreview(layout.item.id)} />
+        <SingleVisualItem item={layout.item} onPreview={() => openItem(layout.item)} />
+        {drawingViewer}
       </div>
     );
   }
@@ -197,14 +302,9 @@ export const AttachmentGallery = ({ visual, onImagePreview }: AttachmentGalleryP
   return (
     <div className={cn("w-full", layout.containerClassName)}>
       {layout.cells.map(({ item, className, overlayLabel }) => (
-        <CollageVisualItem
-          key={item.id}
-          item={item}
-          className={className}
-          overlayLabel={overlayLabel}
-          onPreview={() => handlePreview(item.id)}
-        />
+        <CollageVisualItem key={item.id} item={item} className={className} overlayLabel={overlayLabel} onPreview={() => openItem(item)} />
       ))}
+      {drawingViewer}
     </div>
   );
 };

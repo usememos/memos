@@ -7,11 +7,13 @@ import {
   FileTextIcon,
   ImagePlusIcon,
   PauseIcon,
+  PencilLineIcon,
   PlayIcon,
   XIcon,
 } from "lucide-react";
 import { type FC, type MouseEvent, useMemo, useRef, useState } from "react";
-import type { AttachmentItem, LocalFile } from "@/components/MemoEditor/edit/types/attachment";
+import { isDrawingFilename } from "@/components/DrawingSheet";
+import type { AttachmentItem, DrawingSource, LocalFile } from "@/components/MemoEditor/edit/types/attachment";
 import { getAudioRecordingTimeLabel, toAttachmentItems } from "@/components/MemoEditor/edit/types/attachment";
 import MetadataSection, {
   METADATA_ROW_BOX_CLASSES,
@@ -22,6 +24,7 @@ import MetadataSection, {
   MetadataRowDetail,
 } from "@/components/MemoMetadata/MetadataSection";
 import PreviewImageDialog from "@/components/PreviewImageDialog";
+import useMediaQuery from "@/hooks/useMediaQuery";
 import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import { formatFileSize, getFileTypeLabel } from "@/utils/format";
@@ -47,22 +50,53 @@ interface AttachmentListEditorProps {
   onInsertLocalFiles?: (localFiles: LocalFile[]) => void;
   placementActionsDisabled?: boolean;
   uploadingLocalFileURLs?: ReadonlySet<string>;
+  /** Opens a drawing (a `.canvas.png` image) in the drawing sheet. */
+  onEditDrawing?: (source: DrawingSource) => void;
+  /** The row whose drawing is being opened. */
+  openingDrawing?: string;
+}
+
+interface RowAction {
+  label: string;
+  onClick: () => void;
+  disabled?: boolean;
+  busy?: boolean;
 }
 
 /** Trailing controls of an attachment row: quiet 24px squares that show once the row is engaged. */
 const AttachmentItemActions: FC<{
   transcriptionAction?: { label: string; onClick: () => void; disabled: boolean; busy: boolean };
+  drawingAction?: RowAction;
   placementAction?: { label: string; onClick: () => void; disabled?: boolean };
   onRemove?: () => void;
   onMoveUp?: () => void;
   onMoveDown?: () => void;
   canMoveUp?: boolean;
   canMoveDown?: boolean;
-}> = ({ transcriptionAction, placementAction, onRemove, onMoveUp, onMoveDown, canMoveUp = true, canMoveDown = true }) => {
+}> = ({ transcriptionAction, drawingAction, placementAction, onRemove, onMoveUp, onMoveDown, canMoveUp = true, canMoveDown = true }) => {
   const t = useTranslate();
+  // A drawing row already carries Insert image; on narrow rows its edit action keeps only the glyph.
+  const isWide = useMediaQuery("md");
   const stopPropagation = (event: MouseEvent) => {
     event.stopPropagation();
   };
+  const drawingButton = drawingAction && (
+    <Button
+      variant="ghost"
+      size={isWide ? "sm" : "xs"}
+      disabled={drawingAction.disabled}
+      loading={drawingAction.busy}
+      loadingLabel={drawingAction.label}
+      onClick={(event) => {
+        stopPropagation(event);
+        drawingAction.onClick();
+      }}
+      aria-label={isWide ? undefined : drawingAction.label}
+      icon={<PencilLineIcon />}
+    >
+      {isWide ? drawingAction.label : undefined}
+    </Button>
+  );
 
   return (
     <div className={METADATA_ROW_CONTROLS_CLASSES}>
@@ -82,6 +116,15 @@ const AttachmentItemActions: FC<{
           {transcriptionAction.label}
         </Button>
       )}
+      {drawingButton &&
+        (isWide ? (
+          drawingButton
+        ) : (
+          <Tooltip.Root>
+            <Tooltip.Trigger render={drawingButton} />
+            <Tooltip.Popup>{drawingAction?.label}</Tooltip.Popup>
+          </Tooltip.Root>
+        ))}
       {placementAction && (
         <Button
           variant="ghost"
@@ -163,6 +206,7 @@ const AttachmentItemActions: FC<{
 
 const AttachmentItemCard: FC<{
   transcriptionAction?: { label: string; onClick: () => void; disabled: boolean; busy: boolean };
+  drawingAction?: RowAction;
   item: AttachmentItem;
   onPreview?: () => void;
   onRemove?: () => void;
@@ -183,6 +227,7 @@ const AttachmentItemCard: FC<{
   isUploadingInline,
   placementAction,
   transcriptionAction,
+  drawingAction,
 }) => {
   const t = useTranslate();
   const { category, filename, thumbnailUrl, mimeType, size, sourceUrl, isVoiceNote, audioMeta } = item;
@@ -281,6 +326,7 @@ const AttachmentItemCard: FC<{
 
       <AttachmentItemActions
         transcriptionAction={transcriptionAction}
+        drawingAction={drawingAction}
         placementAction={placementAction}
         onRemove={onRemove}
         onMoveUp={onMoveUp}
@@ -306,22 +352,28 @@ const AttachmentListEditor: FC<AttachmentListEditorProps> = ({
   onTranscribeAttachment,
   transcribingAttachment,
   transcriptionDisabled = false,
+  onEditDrawing,
+  openingDrawing,
 }) => {
   const t = useTranslate();
   const [previewState, setPreviewState] = useState<{ open: boolean; initialIndex: number }>({ open: false, initialIndex: 0 });
   const attachmentsByName = useMemo(() => new Map(attachments.map((attachment) => [attachment.name, attachment])), [attachments]);
   const allItems = toAttachmentItems(attachments, localFiles);
-  const isInlineItem = (item: AttachmentItem) =>
+  // Saved drawings with an edit waiting to upload over them: the edit's row stands in for them.
+  const replacedAttachmentNames = new Set(localFiles.flatMap((localFile) => (localFile.replaces ? [localFile.replaces] : [])));
+  const isHiddenItem = (item: AttachmentItem) =>
     !item.isLocal &&
     collectMembers(attachmentsByName, item.memberIds).some((attachment) => {
+      if (replacedAttachmentNames.has(attachment.name)) return true;
       const uid = extractAttachmentUIDFromName(attachment.name);
       return uid ? inlineAttachmentUIDs.has(uid) : false;
     });
   // A managed image already has its placement represented in Markdown. Keep
   // the attachment bound to the memo, but do not repeat its logical media group
   // in the attachment section. Removing the Markdown reference makes it
-  // visible here again on the next render.
-  const items = allItems.filter((item) => !isInlineItem(item));
+  // visible here again on the next render. A replaced drawing stays bound too,
+  // and shows again if its pending edit is removed.
+  const items = allItems.filter((item) => !isHiddenItem(item));
   const allAttachmentItems = allItems.filter((item) => !item.isLocal);
   const attachmentItems = items.filter((item) => !item.isLocal);
   const localItems = items.filter((item) => item.isLocal);
@@ -387,7 +439,7 @@ const AttachmentListEditor: FC<AttachmentListEditorProps> = ({
     [reorderedItems[itemIndex], reorderedItems[targetIndex]] = [reorderedItems[targetIndex], reorderedItems[itemIndex]];
 
     let visibleIndex = 0;
-    const mergedItems = allAttachmentItems.map((item) => (isInlineItem(item) ? item : reorderedItems[visibleIndex++]!));
+    const mergedItems = allAttachmentItems.map((item) => (isHiddenItem(item) ? item : reorderedItems[visibleIndex++]!));
     onAttachmentsChange(mergedItems.flatMap((item) => collectMembers(attachmentsByName, item.memberIds)));
   };
 
@@ -456,8 +508,30 @@ const AttachmentListEditor: FC<AttachmentListEditorProps> = ({
                   busy: isTranscribing,
                 }
               : undefined;
+          // A drawing opens from the original file: a saved one is downloaded, so it must live on this server.
+          const drawingSource: DrawingSource | undefined =
+            item.category !== "image" || !isDrawingFilename(item.filename)
+              ? undefined
+              : item.isLocal
+                ? itemLocalFiles[0] && { kind: "local", localFile: itemLocalFiles[0] }
+                : itemAttachments[0] && !itemAttachments[0].externalLink
+                  ? { kind: "attachment", attachment: itemAttachments[0] }
+                  : undefined;
+          const isOpeningDrawing = openingDrawing !== undefined && item.memberIds.includes(openingDrawing);
+          const drawingAction =
+            drawingSource && onEditDrawing
+              ? {
+                  label: t("editor.drawing.edit"),
+                  onClick: () => onEditDrawing(drawingSource),
+                  disabled: placementActionsDisabled || Boolean(openingDrawing),
+                  busy: isOpeningDrawing,
+                }
+              : undefined;
+          // Inserting uploads at once, so a pending edit of a saved drawing would overwrite it before the memo is saved.
+          const isPendingReplacement = itemLocalFiles.some((localFile) => localFile.replaces);
           const canInsert =
-            (item.category === "image" || item.category === "motion") && (item.isLocal || itemAttachments.some(canInlineAttachment));
+            (item.category === "image" || item.category === "motion") &&
+            (item.isLocal ? !isPendingReplacement : itemAttachments.some(canInlineAttachment));
           const placementAction = canInsert
             ? {
                 label: t("editor.insert-menu.insert-image"),
@@ -474,6 +548,7 @@ const AttachmentListEditor: FC<AttachmentListEditorProps> = ({
               isUploadingInline={isUploadingInline}
               placementAction={placementAction}
               transcriptionAction={transcriptionAction}
+              drawingAction={drawingAction}
               onPreview={
                 item.category === "image" || item.category === "video" || item.category === "motion"
                   ? () => handlePreviewItem(item)

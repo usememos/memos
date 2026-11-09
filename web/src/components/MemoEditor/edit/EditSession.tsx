@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { DrawingSheet } from "@/components/DrawingSheet";
 import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -28,6 +29,7 @@ import {
   useAudioRecorder,
   useAutoSave,
   useBlobUrls,
+  useDrawing,
   useFocusMode,
   useInlineImageUpload,
   useMemoInit,
@@ -90,6 +92,11 @@ export const EditSession: React.FC<EditSessionProps> = ({
   const { createBlobUrl } = useBlobUrls();
   const saveMediaMetadata = userGeneralSetting?.saveMediaMetadata ?? false;
   const inlineImageUpload = useInlineImageUpload(editorRef);
+  const toDrawingFile = useCallback(
+    (file: File) => toLocalFiles([file], { createBlobUrl, saveMediaMetadata })[0],
+    [createBlobUrl, saveMediaMetadata],
+  );
+  const drawing = useDrawing(toDrawingFile);
 
   const memoName = memo?.name;
   const showTimestamp = Boolean(memoName || (!memo && hasTimestamp));
@@ -466,6 +473,8 @@ export const EditSession: React.FC<EditSessionProps> = ({
             onTranscribeAttachment={canTranscribe ? transcribeAttachment : undefined}
             transcribingAttachment={transcribingAttachment}
             transcriptionDisabled={isSaving || audioRecorder.isBusy || isTranscribingAudio}
+            onEditDrawing={drawing.openExisting}
+            openingDrawing={drawing.opening}
           />
           {!memo && !parentMemoName && isInitialized && suggestions.length > 0 && (
             <EditorSuggestions suggestions={suggestions} controllerRef={editorRef} space={editorSpace} />
@@ -481,9 +490,23 @@ export const EditSession: React.FC<EditSessionProps> = ({
             viewToggles={viewToggles}
             sourceMode={sourceMode}
             onInsertImages={handleInsertImages}
+            onDrawingClick={drawing.openNew}
           />
         </div>
       </div>
+
+      {drawing.session && (
+        <Suspense fallback={null}>
+          <DrawingSheet
+            key={drawing.session.id}
+            mode={drawing.session.mode}
+            initialScene={drawing.session.scene}
+            background={drawing.session.background}
+            onDone={drawing.done}
+            onClose={drawing.close}
+          />
+        </Suspense>
+      )}
     </>
   );
 };

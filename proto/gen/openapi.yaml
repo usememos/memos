@@ -5403,7 +5403,15 @@ components:
                 totalSize:
                     type: string
                     description: Optional. Total size of the file in bytes before media processing. Zero represents an empty file.
-            description: UploadAttachmentSpec describes the attachment that a new upload creates.
+                replaceAttachment:
+                    type: string
+                    description: |-
+                        Optional. The name of an existing attachment whose content the finished upload replaces, instead of creating one.
+                         The attachment keeps its name, memo and creation time; its filename, type, size and media metadata come from this
+                         upload, and its cached thumbnail is dropped. attachment_id and attachment.memo must be empty. Only the uploader of
+                         the attachment or an admin may replace it. An external link or part of a motion photo cannot be replaced.
+                         Format: attachments/{attachment}
+            description: UploadAttachmentSpec describes the attachment that a new upload creates, or whose content it replaces.
         UpsertMemoReactionRequest:
             required:
                 - parent

@@ -96,6 +96,7 @@ type APIService struct {
 
 	linkMetadataFetcher linkMetadataFetcher
 	attachmentUploads   attachmentUploads
+	attachmentReplaces  attachmentReplaceLocks
 	memoImports         memoImports
 }
 
