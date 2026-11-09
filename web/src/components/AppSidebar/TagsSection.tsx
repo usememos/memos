@@ -108,7 +108,7 @@ const TagsSection = ({ tagCount, onSelect, scope }: Props) => {
             />
             <Tooltip.Popup side="top">{t("common.more")}</Tooltip.Popup>
           </Tooltip.Root>
-          <Menu.Popup align="end" className="w-44">
+          <Menu.Popup align="end">
             <Menu.Group>
               <Menu.GroupLabel>{t("common.tags")}</Menu.GroupLabel>
               <Menu.CheckboxItem checked={treeMode} onCheckedChange={setTreeMode} closeOnClick icon={<ListTreeIcon />}>

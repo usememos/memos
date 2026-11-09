@@ -230,7 +230,7 @@ const MemoDetailSidebar = ({
             <span className="min-w-0 flex-1 truncate text-start">{t("common.share")}</span>
             <ChevronDownIcon className="mu-icon-sm shrink-0 opacity-55" />
           </Menu.Trigger>
-          <Menu.Popup align="start" className="w-48">
+          <Menu.Popup align="start">
             <Menu.Item onClick={handleCopyLink} icon={<LinkIcon />}>
               {t("memo.copy-link")}
             </Menu.Item>
