@@ -177,6 +177,12 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 			WHERE comment_relation.memo_id = memo.id AND comment_relation.type = 'COMMENT'
 		)`)
 	}
+	if find.ExcludeFutureHidden {
+		where = append(where, `(
+			memo.payload->>'hideUntil' IS NULL
+			OR (memo.payload->>'hideUntil')::timestamptz <= CURRENT_TIMESTAMP
+		)`)
+	}
 
 	order := "DESC"
 	if find.OrderByTimeAsc {

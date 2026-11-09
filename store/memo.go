@@ -84,6 +84,7 @@ type FindMemo struct {
 	Access               *MemoAccessScope
 	ExcludeContent       bool
 	ExcludeComments      bool
+	ExcludeFutureHidden  bool
 	Filters              []string
 
 	// Pagination

@@ -198,6 +198,12 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 			WHERE comment_relation.memo_id = memo.id AND comment_relation.type = 'COMMENT'
 		)`)
 	}
+	if find.ExcludeFutureHidden {
+		where = append(where, `(
+			JSON_EXTRACT(memo.payload, '$.hideUntil') IS NULL
+			OR CAST(REPLACE(REPLACE(JSON_UNQUOTE(JSON_EXTRACT(memo.payload, '$.hideUntil')), 'T', ' '), 'Z', '') AS DATETIME(6)) <= UTC_TIMESTAMP(6)
+		)`)
+	}
 
 	order := "DESC"
 	if find.OrderByTimeAsc {

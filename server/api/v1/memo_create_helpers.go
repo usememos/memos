@@ -75,6 +75,12 @@ func (s *APIV1Service) prepareMemoCreate(ctx context.Context, user *store.User, 
 	if input.Location != nil {
 		memo.Payload.Location = convertLocationToStore(input.Location)
 	}
+	if input.HideUntil != nil {
+		if !input.HideUntil.IsValid() {
+			return nil, status.Error(codes.InvalidArgument, "hide_until is invalid")
+		}
+		memo.Payload.HideUntil = input.HideUntil
+	}
 
 	attachments, err := s.prepareMemoAttachments(ctx, user, memo, input.Attachments)
 	if err != nil {

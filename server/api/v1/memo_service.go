@@ -82,7 +82,8 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosRequest) (*v1pb.ListMemosResponse, error) {
 	memoFind := &store.FindMemo{
 		// Exclude comments by default.
-		ExcludeComments: true,
+		ExcludeComments:     true,
+		ExcludeFutureHidden: true,
 	}
 	accessScope, currentUser, err := s.resolveMemoAccessScope(ctx)
 	if err != nil {
@@ -422,6 +423,19 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 				nextMemo.Payload = &storepb.MemoPayload{}
 			}
 			nextMemo.Payload.Location = convertLocationToStore(request.Memo.Location)
+			update.Payload = nextMemo.Payload
+		} else if path == "hide_until" {
+			if nextMemo.Payload == nil {
+				nextMemo.Payload = &storepb.MemoPayload{}
+			}
+			if request.Memo.HideUntil != nil {
+				if !request.Memo.HideUntil.IsValid() {
+					return nil, status.Errorf(codes.InvalidArgument, "hide_until is invalid")
+				}
+				nextMemo.Payload.HideUntil = request.Memo.HideUntil
+			} else {
+				nextMemo.Payload.HideUntil = nil
+			}
 			update.Payload = nextMemo.Payload
 		} else if path == "attachments" {
 			attachmentsUpdated = true

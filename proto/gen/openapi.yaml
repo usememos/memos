@@ -4205,6 +4205,12 @@ components:
                     description: |-
                         Optional. The space in which this memo is placed. Format: spaces/{space}.
                          Every memo, including a comment, owns its placement independently.
+                hideUntil:
+                    type: string
+                    description: |-
+                        Optional. The timestamp until which this memo is omitted from list results.
+                         The memo remains available through direct access to its resource name.
+                    format: date-time
         MemoImportIssue:
             type: object
             properties:

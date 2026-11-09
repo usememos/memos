@@ -280,6 +280,10 @@ message Memo {
     (google.api.resource_reference) = {type: "memos.api.v1/Space"}
   ];
 
+  // Optional. The timestamp until which this memo is omitted from list results.
+  // The memo remains available through direct access to its resource name.
+  optional google.protobuf.Timestamp hide_until = 20 [(google.api.field_behavior) = OPTIONAL];
+
   // Computed properties of a memo.
   message Property {
     bool has_link = 1;

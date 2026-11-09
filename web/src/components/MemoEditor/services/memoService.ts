@@ -8,6 +8,7 @@ import { AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
 import type { EditorState } from "../state";
+import { isSameHideUntil } from "../utils/hideUntil";
 import { uploadService } from "./uploadService";
 
 /**
@@ -51,9 +52,14 @@ function buildUpdateMask(
     mask.add("location");
     patch.location = state.metadata.location;
   }
+  const previousHideUntil = prevMemo.hideUntil ? timestampDate(prevMemo.hideUntil) : undefined;
+  if (!isSameHideUntil(state.metadata.hideUntil, previousHideUntil)) {
+    mask.add("hide_until");
+    patch.hideUntil = state.metadata.hideUntil ? timestampFromDate(state.metadata.hideUntil) : undefined;
+  }
 
   // Auto-update timestamp if content changed
-  if (["content", "attachments", "relations", "location"].some((key) => mask.has(key))) {
+  if (["content", "attachments", "relations", "location", "hide_until"].some((key) => mask.has(key))) {
     mask.add("update_time");
   }
 
@@ -112,6 +118,7 @@ export const memoService = {
       attachments: toAttachmentReferences(allAttachments),
       relations: state.metadata.relations,
       location: state.metadata.location,
+      hideUntil: state.metadata.hideUntil ? timestampFromDate(state.metadata.hideUntil) : undefined,
       createTime: state.timestamps.createTime ? timestampFromDate(state.timestamps.createTime) : undefined,
       updateTime: state.timestamps.updateTime ? timestampFromDate(state.timestamps.updateTime) : undefined,
       space: options.parentMemoName ? undefined : options.space,
@@ -140,6 +147,7 @@ export const memoService = {
         attachments: memo.attachments,
         relations: memo.relations,
         location: memo.location,
+        hideUntil: memo.hideUntil ? timestampDate(memo.hideUntil) : undefined,
       },
       timestamps: {
         createTime: memo.createTime ? timestampDate(memo.createTime) : undefined,

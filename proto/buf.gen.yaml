@@ -8,16 +8,16 @@ managed:
     - file_option: go_package_prefix
       value: github.com/usememos/memos/proto/gen
 plugins:
-  - remote: buf.build/protocolbuffers/go
+  - remote: buf.build/protocolbuffers/go:v1.36.12
     out: gen
     opt: paths=source_relative
-  - remote: buf.build/grpc/go
+  - remote: buf.build/grpc/go:v1.6.2
     out: gen
     opt: paths=source_relative
-  - remote: buf.build/connectrpc/go
+  - remote: buf.build/connectrpc/go:v1.18.1
     out: gen
     opt: paths=source_relative
-  - remote: buf.build/grpc-ecosystem/gateway
+  - remote: buf.build/grpc-ecosystem/gateway:v2.30.0
     out: gen
     opt: paths=source_relative
   - remote: buf.build/community/google-gnostic-openapi

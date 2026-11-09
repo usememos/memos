@@ -22,6 +22,7 @@ import { useMemoActions } from "../hooks";
 import { useMemoViewContext, useMemoViewDerived } from "../MemoViewContext";
 import { createMemoNavigationState } from "../navigation";
 import type { MemoHeaderProps } from "../types";
+import MemoHideUntilBadge from "./MemoHideUntilBadge";
 import MemoSpaceBadge from "./MemoSpaceBadge";
 
 /** The card's trailing actions are the kit's quiet 24px squares, whether or not they are kit buttons. */
@@ -75,6 +76,7 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showC
           {showCreator && creator && <CreatorDisplay creator={creator} />}
           <TimeDisplay displayTime={displayTime} timeTooltip={timeTooltip} onGotoDetail={handleGotoMemoDetailPage} />
           {spaceMetadata}
+          <MemoHideUntilBadge hideUntil={memo.hideUntil} />
         </div>
         {memo.name === newMemoName && (
           <span className="shrink-0 rounded-full bg-primary/10 px-1.5 py-0.5 text-2xs font-medium leading-none text-primary">
