@@ -1,7 +1,6 @@
 import {
   type Block,
   type Doc,
-  defaultResolveUrl,
   type Extension,
   footnotes,
   isPlainTextBlock,
@@ -26,6 +25,7 @@ import { colorToHex } from "@/lib/color";
 import { headingClasses, markdownStyles, mentionStyles, tagStyles } from "@/lib/markdownStyles";
 import { MEMO_MARKDOWN, MEMO_SYNTAX } from "@/lib/memo-ast";
 import { findTagMetadata } from "@/lib/tag";
+import { isAllowedLinkUrl } from "@/lib/url-policy";
 import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import type { UserSetting_TagsSetting } from "@/types/proto/api/user_service_pb";
@@ -205,8 +205,8 @@ const isAllowedImageSource = (src: string): boolean => !/^[a-z][a-z0-9+.-]*:/i.t
 /**
  * memos' URL policy: images the memo names load from relative or https URLs only, and
  * managed attachment images then resolve to their served URL, which is the instance's
- * own origin and may be plain http. Links also allow `sms:`, which hands off to another
- * app, beyond the editor's defaults.
+ * own origin and may be plain http. Links follow memos' link policy, which keeps a custom
+ * scheme such as `obsidian://` or `slack://` and drops the ones that run script.
  */
 export const memoResolveUrl =
   (attachments: readonly Attachment[] = []): ResolveUrl =>
@@ -214,7 +214,7 @@ export const memoResolveUrl =
     if (kind === "image") {
       return isAllowedImageSource(url) ? (resolveManagedAttachmentImageSource(url, [...attachments]) ?? url) : null;
     }
-    return /^sms:/i.test(url.trim()) ? url.trim() : defaultResolveUrl(url, kind);
+    return isAllowedLinkUrl(url.trim()) ? url.trim() : null;
   };
 
 /**

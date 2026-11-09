@@ -1,5 +1,15 @@
-import { type Extension, fileHandler, matchToken, type SuggestionAllowContext, scanTags, suggestion } from "@usememos/editor";
+import {
+  commands,
+  type Extension,
+  fileHandler,
+  matchToken,
+  parseMarkdown,
+  type SuggestionAllowContext,
+  scanTags,
+  suggestion,
+} from "@usememos/editor";
 import { emoji } from "@usememos/editor/emoji";
+import { isCustomSchemeUri } from "@/lib/url-policy";
 import type { EditorPosition } from "./types/editorController";
 
 /** The gesture that handed files to the editor: a drop lands at a document position, a paste has none. */
@@ -51,9 +61,33 @@ export const allowTagSuggestion = ({ excluded, explicit, query, textBefore }: Su
   return !(query === "" && /(^|\n)[ \t]*$/.test(textBefore));
 };
 
+/**
+ * A custom-scheme URI pasted at the caret becomes the link the editor's own paste rule
+ * makes of an `http(s)://` or `mailto:` one, since that rule stops at those two schemes.
+ * Pasted over a selection, it links that selection instead. Anything the policy refuses
+ * stays plain text.
+ */
+const customSchemePaste = (): Extension => ({
+  name: "customSchemePaste",
+  handlePaste: ({ editor, event }) => {
+    const data = event.clipboardData;
+    if (!data || data.files.length || !editor.isEditable || editor.mode === "source") return false;
+    const url = data.getData("text/plain").trim();
+    if (!isCustomSchemeUri(url)) return false;
+    const { anchor, focus } = editor.selectionToJSON();
+    const isCollapsed = JSON.stringify(anchor) === JSON.stringify(focus);
+    editor.run(
+      (state) => (isCollapsed ? commands.insertFragment(state, parseMarkdown(`[${url}](${url})`).blocks) : commands.setLink(state, url)),
+      "other",
+    );
+    return true;
+  },
+});
+
 /** What only the composer adds to the memo syntax MemoMarkdown already reads: autocomplete and file handling. */
 export function buildEditorExtensions({ getTags, onFiles, emojiLabel }: EditorExtensionsOptions): Extension[] {
   return [
+    customSchemePaste(),
     // The popup opens exactly where tags are highlighted: the matcher is built
     // from the same scanner as tags(). A pick writes "#work/planning ".
     suggestion({

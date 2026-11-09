@@ -286,6 +286,12 @@ describe("links", () => {
     expect(open).not.toHaveBeenCalled();
     expect(container.querySelector('a[href="sms:+44"]')).not.toBeNull();
   });
+
+  it("keeps a link whose scheme hands off to another app", () => {
+    const { container } = renderMemo("[vault](obsidian://open?vault=notes) [channel](slack://channel?team=T123)");
+    expect(container.querySelector('a[href="obsidian://open?vault=notes"]')).not.toBeNull();
+    expect(container.querySelector('a[href="slack://channel?team=T123"]')).not.toBeNull();
+  });
 });
 
 describe("images", () => {

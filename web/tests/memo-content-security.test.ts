@@ -132,6 +132,25 @@ describe("trusted iframe providers", () => {
   });
 });
 
+describe("link URL policy", () => {
+  const resolve = memoResolveUrl();
+
+  it("keeps links to web pages and to other apps, and drops the script-capable schemes", () => {
+    expect(resolve("/notes", "link")).toBe("/notes");
+    expect(resolve("https://example.com/a", "link")).toBe("https://example.com/a");
+    expect(resolve("obsidian://open?vault=notes", "link")).toBe("obsidian://open?vault=notes");
+    expect(resolve("slack://channel?team=T123", "link")).toBe("slack://channel?team=T123");
+    expect(resolve("sms:+44", "link")).toBe("sms:+44");
+    expect(resolve("javascript:alert(1)", "link")).toBeNull();
+    expect(resolve("data:text/html,<script>alert(1)</script>", "link")).toBeNull();
+  });
+
+  it("keeps a custom-scheme anchor's href in raw HTML", () => {
+    expect(renderHtml('<p><a href="obsidian://open?vault=notes">notes</a></p>')).toContain('href="obsidian://open?vault=notes"');
+    expect(renderHtml('<p><a href="javascript:alert(1)">x</a></p>')).not.toContain("javascript:");
+  });
+});
+
 describe("image URL policy", () => {
   const resolve = memoResolveUrl([create(AttachmentSchema, { name: "attachments/photo", filename: "photo.png", type: "image/png" })]);
 
