@@ -3,7 +3,7 @@ import { Code, ConnectError } from "@connectrpc/connect";
 import { aiServiceClient } from "@/connect";
 import { TranscribeRequestSchema, TranscriptionAudioSchema } from "@/types/proto/api/ai_service_pb";
 import type { Attachment } from "@/types/proto/api/attachment_service_pb";
-import { getAttachmentUrl } from "@/utils/attachment";
+import { fetchAttachmentFile } from "@/utils/attachment";
 
 // Mirrors maxTranscriptionAudioSizeBytes in server/api/ai_service.go so an
 // oversized attachment is rejected before it is downloaded, with the server's error.
@@ -35,8 +35,7 @@ const transcribe = async (content: Uint8Array, filename: string, contentType: st
 export const transcriptionService = {
   async transcribeAttachment(attachment: Attachment, signal?: AbortSignal): Promise<string> {
     checkAudioSize(Number(attachment.size));
-    const response = await fetch(getAttachmentUrl(attachment), { signal, credentials: "same-origin" });
-    if (!response.ok) throw new Error(`Failed to download audio (${response.status})`);
+    const response = await fetchAttachmentFile(attachment, signal);
     checkAudioSize(Number(response.headers.get("Content-Length")));
     const content = new Uint8Array(await response.arrayBuffer());
     checkAudioSize(content.byteLength);

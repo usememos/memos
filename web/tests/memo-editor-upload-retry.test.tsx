@@ -4,10 +4,11 @@ import { act, renderHook } from "@testing-library/react";
 import type { PropsWithChildren } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useMemoSave } from "@/components/MemoEditor/edit/hooks/useMemoSave";
-import { memoService } from "@/components/MemoEditor/edit/services/memoService";
+import { DrawingNotSavedError, memoService } from "@/components/MemoEditor/edit/services/memoService";
 import type { EditorState } from "@/components/MemoEditor/edit/state";
 import { createInitialState } from "@/components/MemoEditor/edit/state/types";
 import type { LocalFile } from "@/components/MemoEditor/edit/types/attachment";
+import { showErrorToast } from "@/lib/toast";
 import { type Attachment, AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
 import { clientSaveOperations as ops } from "./helpers/memo-save-operations";
 
@@ -126,5 +127,20 @@ describe("useMemoSave after a failed save", () => {
 
     expect(mocks.state.localFiles).toEqual([file]);
     expect(mocks.state.metadata.attachments).toEqual([]);
+  });
+
+  it("says the memo is saved when only an edited drawing failed, and keeps the edit for a retry", async () => {
+    const edit: LocalFile = { ...localFile("drawing.canvas.png"), replaces: "attachments/drawing" };
+    mocks.state = editorState([edit]);
+    mocks.save.mockRejectedValueOnce(new DrawingNotSavedError(new Error("offline")));
+
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const wrapper = ({ children }: PropsWithChildren) => <QueryClientProvider client={client}>{children}</QueryClientProvider>;
+    const { result } = renderHook(() => useMemoSave({ memoName: "memos/m", discardDraft: vi.fn() }), { wrapper });
+
+    await act(async () => result.current());
+
+    expect(showErrorToast).toHaveBeenCalledWith("editor.drawing.saved-without-drawing");
+    expect(mocks.state.localFiles).toEqual([edit]);
   });
 });

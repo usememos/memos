@@ -26,6 +26,12 @@ func (s *APIService) checkUploadQuota(ctx context.Context, userID int32, size in
 	return s.quotaError(ctx, userID, usagelimit.CheckUpload(ctx, s.Store, userID, size))
 }
 
+// checkReplaceQuota refuses replacing a stored file of replacedSize bytes with
+// one of size bytes when it breaks a limit of userID, the file's owner.
+func (s *APIService) checkReplaceQuota(ctx context.Context, userID int32, size, replacedSize int64) error {
+	return s.quotaError(ctx, userID, usagelimit.CheckReplace(ctx, s.Store, userID, size, replacedSize))
+}
+
 // checkFileSizeQuota refuses a file of size bytes that is larger than the
 // per-file limit of the user. It runs no count or sum query.
 func (s *APIService) checkFileSizeQuota(ctx context.Context, userID int32, size int64) error {

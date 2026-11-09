@@ -112,7 +112,7 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showC
               <VisibilityIcon visibility={memo.visibility} className="text-current" />
             </Popover.Trigger>
             {visibilityOption && (
-              <Popover.Popup align="end" variant="list" className="w-(--mu-menu-width)">
+              <Popover.Popup align="end" variant="list" className="w-56">
                 <Popover.Title>{t(visibilityOption.labelKey)}</Popover.Title>
                 <Popover.Description>{t(visibilityOption.descriptionKey)}</Popover.Description>
               </Popover.Popup>

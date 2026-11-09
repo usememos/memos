@@ -1,6 +1,16 @@
 import { Button, Menu, Spinner, Tooltip } from "@usememos/ui";
 import { uniqBy } from "lodash-es";
-import { CodeXmlIcon, ImageIcon, LinkIcon, MapPinIcon, Maximize2Icon, MicIcon, PaperclipIcon, PlusIcon } from "lucide-react";
+import {
+  CodeXmlIcon,
+  ImageIcon,
+  LinkIcon,
+  MapPinIcon,
+  Maximize2Icon,
+  MicIcon,
+  PaperclipIcon,
+  PencilLineIcon,
+  PlusIcon,
+} from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LinkMemoDialog, LocationDialog } from "@/components/MemoMetadata";
 import type { MapPoint } from "@/components/map/types";
@@ -126,6 +136,9 @@ const InsertMenu = (props: InsertMenuProps) => {
   const insertItems = [
     { key: "attachment", label: t("editor.insert-menu.add-attachment"), icon: PaperclipIcon, onClick: handleAttachmentUploadClick },
     { key: "inline-image", label: t("editor.insert-menu.insert-image"), icon: ImageIcon, onClick: handleInlineImageUploadClick },
+    ...(props.onDrawingClick
+      ? [{ key: "drawing", label: t("editor.insert-menu.drawing"), icon: PencilLineIcon, onClick: props.onDrawingClick }]
+      : []),
     { key: "audio", label: t("editor.audio-recorder.trigger"), icon: MicIcon, onClick: props.onAudioRecorderClick },
     { key: "link", label: t("editor.insert-menu.link-memo"), icon: LinkIcon, onClick: handleOpenLinkDialog },
     { key: "location", label: t("editor.insert-menu.add-location"), icon: MapPinIcon, onClick: handleLocationClick },

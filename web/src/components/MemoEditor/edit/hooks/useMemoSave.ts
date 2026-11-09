@@ -11,7 +11,7 @@ import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import type { Visibility } from "@/types/proto/api/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { errorService, memoService, validationService } from "../services";
-import type { MemoSaveOperations } from "../services/memoService";
+import { DrawingNotSavedError, type MemoSaveOperations, mergeUploadedAttachments } from "../services/memoService";
 import { useEditorContext } from "../state";
 import { restampDefaultCreateTime } from "../utils/deriveDefaultCreateTime";
 
@@ -77,7 +77,10 @@ export function useMemoSave({
       if (moved.length === 0) return;
       dispatch(
         actions.setMetadata({
-          attachments: [...current.metadata.attachments, ...moved.map((file) => uploaded.get(file.previewUrl) as Attachment)],
+          attachments: mergeUploadedAttachments(
+            current.metadata.attachments,
+            moved.map((file) => uploaded.get(file.previewUrl) as Attachment),
+          ),
         }),
       );
       dispatch(actions.setLocalFiles(current.localFiles.filter((file) => !uploaded.has(file.previewUrl))));
@@ -159,6 +162,12 @@ export function useMemoSave({
         // The uploads landed even though the save did not.
         void queryClient.invalidateQueries({ queryKey: attachmentKeys.lists() });
         void queryClient.invalidateQueries({ queryKey: userKeys.stats() });
+      }
+      if (error instanceof DrawingNotSavedError) {
+        // The rest of the memo is saved; only the drawing waits for another save.
+        console.error(error);
+        showErrorToast(t("editor.drawing.saved-without-drawing"));
+        return;
       }
       handleError(error, showErrorToast, {
         context: "Failed to save memo",

@@ -40,7 +40,7 @@ interface PreferenceSubmenuProps {
 
 /** A row that opens its choices beside the panel, like a submenu, and applies one on select. */
 const PreferenceSubmenu = ({ icon: Icon, label, value, options, onChange, className }: PreferenceSubmenuProps) => (
-  <Menu.Root modal={false} size="sm">
+  <Menu.Root modal={false}>
     <Menu.Trigger openOnHover className={SCOPE_PANEL_ROW_CLASSES}>
       <ScopePanelRowIcon icon={Icon} />
       <span className="shrink-0">{label}</span>
@@ -49,13 +49,14 @@ const PreferenceSubmenu = ({ icon: Icon, label, value, options, onChange, classN
       </span>
       <ChevronRightIcon aria-hidden="true" className={cn(SCOPE_PANEL_ICON_CLASSES, "rtl:rotate-180")} />
     </Menu.Trigger>
-    {/* Like a nested submenu: when neither side has room (narrow screens), drop below the row instead of overflowing. */}
+    {/* Like a nested submenu: its first row lines up with this one, and its rows match the panel's (`mu-compact`).
+        When neither side has room (narrow screens), it drops below the row instead of overflowing. */}
     <Menu.Popup
       side="inline-end"
       align="start"
       collisionAvoidance={{ fallbackAxisSide: "end" }}
       positionMethod="fixed"
-      className={className}
+      className={cn("mu-compact", className)}
     >
       <Menu.RadioGroup value={value} onValueChange={onChange}>
         {options.map((option) => (
