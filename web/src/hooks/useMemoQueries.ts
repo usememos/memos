@@ -3,6 +3,8 @@ import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
 import { Code, ConnectError } from "@connectrpc/connect";
 import {
   type InfiniteData,
+  type Mutation,
+  type MutationKey,
   type QueryClient,
   queryOptions,
   useInfiniteQuery,
@@ -323,21 +325,73 @@ export function useCreateMemo() {
   });
 }
 
-export function useUpdateMemo() {
+/**
+ * Resolves when the update made with `variables` is the oldest of its memo's updates still pending. A memo's updates
+ * are sent one at a time, in the order they were made: sent together, two quick updates of one memo (pin then unpin)
+ * can finish in either order, and the older reply would overwrite the newer change in the cache. React Query's
+ * `scope` orders mutations the same way, but holds a queued one while the page is hidden, so an update made just
+ * before leaving the tab would stay unsent until the return.
+ */
+function memoUpdateTurn(queryClient: QueryClient, mutationKey: MutationKey, variables: unknown): Promise<void> {
+  const cache = queryClient.getMutationCache();
+  // An update no longer in the cache (the client was cleared) has nothing left to wait for.
+  const isTurn = () =>
+    cache.findAll({ mutationKey, exact: true, status: "pending" }).findIndex((mutation) => mutation.state.variables === variables) <= 0;
+  if (isTurn()) return Promise.resolve();
+  return new Promise((resolve) => {
+    const unsubscribe = cache.subscribe(() => {
+      if (!isTurn()) return;
+      unsubscribe();
+      resolve();
+    });
+  });
+}
+
+/** What a memo update keeps while it is pending: the memo to roll back to, and its optimistic patch. */
+type MemoUpdateContext = { previousMemo?: Memo; memoPatch?: MemoPatch };
+
+/** Updates memo `name`; its updates share one queue. Only a caller with no memo to update yet passes `undefined`. */
+export function useUpdateMemo(name: string | undefined) {
   const queryClient = useQueryClient();
+  // A key per memo, which is what its queue is found by. A hook that moves to another memo detaches from its running
+  // update, which would otherwise take on the new key and leave its memo's queue.
+  const mutationKey = ["memo-update", name];
+  // This memo's updates queued behind the one settling now, oldest first. That one still counts as pending and is the oldest.
+  const queuedUpdates = () => queryClient.getMutationCache().findAll({ mutationKey, exact: true, status: "pending" }).slice(1);
+  // Puts the queued updates on `base`, the memo as the update settling now leaves it: each takes the memo under it as
+  // its rollback snapshot and adds its optimistic patch. A snapshot taken earlier holds the patches of the updates ahead
+  // of it, saved or not, and none of their replies. Returns the memo with every queued patch on it.
+  const rebaseQueued = (base: Memo, queued: Mutation[]) =>
+    queued.reduce((memo, { state }) => {
+      const context = state.context as MemoUpdateContext | undefined;
+      if (!context?.memoPatch) return memo;
+      context.previousMemo = memo;
+      return { ...memo, ...context.memoPatch };
+    }, base);
+  // Refetches what an update changes outside the memo itself: the lists it belongs to, and its parent's comments.
+  const invalidateAround = (memo: Memo) => {
+    queryClient.invalidateQueries({ queryKey: memoKeys.lists() });
+    if (memo.parent) {
+      // The parent's comment list, and the parent itself, which carries the comment relation.
+      queryClient.invalidateQueries({ queryKey: memoKeys.comments(memo.parent) });
+      queryClient.invalidateQueries({ queryKey: memoKeys.detail(memo.parent) });
+    }
+  };
 
   return useMutation({
-    mutationFn: async ({ update, updateMask }: { update: Partial<Memo>; updateMask: string[] }) => {
+    mutationKey,
+    mutationFn: async (variables: { update: Partial<Memo>; updateMask: string[] }) => {
+      await memoUpdateTurn(queryClient, mutationKey, variables);
       const memo = await memoServiceClient.updateMemo({
-        memo: create(MemoSchema, update as Record<string, unknown>),
-        updateMask: create(FieldMaskSchema, { paths: updateMask }),
+        memo: create(MemoSchema, variables.update as Record<string, unknown>),
+        updateMask: create(FieldMaskSchema, { paths: variables.updateMask }),
       });
       return memo;
     },
-    onMutate: async ({ update, updateMask }) => {
-      if (updateMask.includes("space")) return { previousMemo: undefined };
+    onMutate: async ({ update, updateMask }): Promise<MemoUpdateContext> => {
+      if (updateMask.includes("space")) return {};
       if (!update.name) {
-        return { previousMemo: undefined };
+        return {};
       }
 
       // Cancel outgoing refetches to prevent race conditions
@@ -354,35 +408,44 @@ export function useUpdateMemo() {
       }
       patchMemoInCollectionQueries(queryClient, memoPatch);
 
-      return { previousMemo };
+      return { previousMemo, memoPatch };
     },
-    onError: (_err, { update }, context) => {
-      // Rollback on error
-      if (context?.previousMemo && update.name) {
-        queryClient.setQueryData(memoKeys.detail(update.name), context.previousMemo);
-        patchMemoInCollectionQueries(queryClient, context.previousMemo);
-      } else {
-        queryClient.invalidateQueries({ queryKey: memoKeys.all });
+    onError: (_err, _variables, context) => {
+      const queued = queuedUpdates();
+      const previousMemo = context?.previousMemo;
+      // Roll back to the memo before this update, with the patches of the updates queued behind it kept on top
+      if (previousMemo) {
+        const restored = rebaseQueued(previousMemo, queued);
+        queryClient.setQueryData(memoKeys.detail(previousMemo.name), restored);
+        patchMemoInCollectionQueries(queryClient, restored);
       }
+      // A newer update queued behind this one refetches instead: a refetch sent now could answer after its reply.
+      if (queued.length > 0) return;
+      if (!previousMemo) {
+        queryClient.invalidateQueries({ queryKey: memoKeys.all });
+        return;
+      }
+      // The server's copy, in case it is what refused the update, and the refetches an update saved ahead of this one
+      // left to it.
+      queryClient.invalidateQueries({ queryKey: memoKeys.detail(previousMemo.name) });
+      invalidateAround(previousMemo);
     },
     onSuccess: (updatedMemo, { updateMask }) => {
       if (updateMask.includes("space")) {
         queryClient.invalidateQueries({ queryKey: memoKeys.all });
       }
-      // Update cache with server response
-      queryClient.setQueryData(memoKeys.detail(updatedMemo.name), updatedMemo);
-      patchMemoInCollectionQueries(queryClient, updatedMemo);
-      // Invalidate lists to refresh
-      queryClient.invalidateQueries({ queryKey: memoKeys.lists() });
-      if (updatedMemo.parent) {
-        // The parent's comment list, and the parent itself, which carries the comment relation.
-        queryClient.invalidateQueries({ queryKey: memoKeys.comments(updatedMemo.parent) });
-        queryClient.invalidateQueries({ queryKey: memoKeys.detail(updatedMemo.parent) });
-      }
       // Invalidate user stats
       queryClient.invalidateQueries({ queryKey: userKeys.stats() });
       // Placement changes move linked attachments between scoped libraries.
       queryClient.invalidateQueries({ queryKey: attachmentKeys.lists() });
+      // Update cache with server response, under the patches of the updates queued behind this one
+      const queued = queuedUpdates();
+      const memo = rebaseQueued(updatedMemo, queued);
+      queryClient.setQueryData(memoKeys.detail(updatedMemo.name), memo);
+      patchMemoInCollectionQueries(queryClient, memo);
+      // A newer update queued behind this one refetches instead: a refetch sent now could answer after its reply.
+      if (queued.length > 0) return;
+      invalidateAround(updatedMemo);
     },
   });
 }

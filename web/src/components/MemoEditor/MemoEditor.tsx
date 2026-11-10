@@ -126,7 +126,7 @@ export const MemoEditor = (props: MemoEditorProps) => {
 const MemoEditorView = ({ name, compact, parentPage, className, contentClassName, onClick, onDoubleClick }: MemoEditorViewProps) => {
   const { data: memo } = useMemoByName(name);
   const currentUser = useCurrentUser();
-  const { mutate: updateMemo } = useUpdateMemo();
+  const { mutate: updateMemo } = useUpdateMemo(name);
   if (!memo) return null;
 
   const handleTaskToggle = (content: string) => updateMemo({ update: { name, content }, updateMask: ["content", "update_time"] });

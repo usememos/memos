@@ -49,7 +49,7 @@ export function useMemoSave({
   const t = useTranslate();
   const queryClient = useQueryClient();
   const { mutateAsync: createMemo } = useCreateMemo();
-  const { mutateAsync: updateMemo } = useUpdateMemo();
+  const { mutateAsync: updateMemo } = useUpdateMemo(memoName);
   const { markNewMemo } = useNewMemo();
   const { actions, dispatch, getState } = useEditorContext();
 
