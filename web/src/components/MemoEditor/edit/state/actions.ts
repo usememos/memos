@@ -32,6 +32,11 @@ export const editorActions = {
     payload: files,
   }),
 
+  setAttachmentOrder: (order: string[]): EditorAction => ({
+    type: "SET_ATTACHMENT_ORDER",
+    payload: order,
+  }),
+
   toggleFocusMode: (): EditorAction => ({
     type: "TOGGLE_FOCUS_MODE",
   }),

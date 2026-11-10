@@ -5,7 +5,6 @@ import { AttachmentGallery } from "@/components/MemoMetadata/Attachment/Attachme
 import {
   DRAWING_SHEET_MEDIA_CLASS,
   DRAWING_SHEET_SINGLE_CLASS,
-  DRAWING_SHEET_TILE_CLASS,
   VISUAL_TILE_BUTTON_CLASS,
 } from "@/components/MemoMetadata/Attachment/attachmentVisualClasses";
 import { AttachmentSchema } from "@/types/proto/api/attachment_service_pb";
@@ -15,15 +14,16 @@ const image = (name: string, filename: string) => create(AttachmentSchema, { nam
 const classesOf = (value: string) => value.split(" ").filter(Boolean);
 
 describe("drawings in the memo gallery", () => {
-  it("shows a drawing as a sheet of paper and a photo in its framed tile", () => {
+  it("frames a drawing in a collage like the photos beside it", () => {
     render(
       <AttachmentGallery visual={[image("d", "drawing-20261106-101500.canvas.png"), image("p", "beach.png")]} onImagePreview={vi.fn()} />,
     );
 
+    // One grid, one edge: the drawing keeps its paper but takes the photos' hairline frame.
     const drawing = screen.getByRole("button", { name: "drawing-20261106-101500.canvas.png" });
     const photo = screen.getByRole("button", { name: "beach.png" });
-    expect(drawing).toHaveClass(...classesOf(DRAWING_SHEET_TILE_CLASS));
-    expect(drawing).not.toHaveClass("border");
+    expect(drawing).toHaveClass(...classesOf(VISUAL_TILE_BUTTON_CLASS));
+    expect(drawing).not.toHaveClass("shadow-mu-raised");
     expect(photo).toHaveClass(...classesOf(VISUAL_TILE_BUTTON_CLASS));
   });
 

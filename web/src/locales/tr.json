@@ -134,7 +134,6 @@
     "profile": "Profil",
     "referenced-by": "Referans Verilenler",
     "referencing": "Referans Verenler",
-    "relations": "İlişkiler",
     "resize-panel": "Paneli yeniden boyutlandır",
     "resize-sidebar": "Kenar çubuğunu yeniden boyutlandır",
     "resources": "Kaynaklar",
@@ -342,9 +341,11 @@
       "resize-image": "Görseli yeniden boyutlandır"
     },
     "attachments": {
-      "move-up": "Eki yukarı taşı",
-      "move-down": "Eki aşağı taşı",
-      "remove": "Eki kaldır"
+      "edited": "Düzenlendi",
+      "new": "Yeni",
+      "remove": "Eki kaldır",
+      "reorder": "{{name}} sırasını değiştir",
+      "reorder-hint": "Sürükleyin veya ok tuşlarını kullanın"
     },
     "remove-relation": "İlişkiyi kaldır",
     "remove-location": "Konumu kaldır",

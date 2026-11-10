@@ -97,7 +97,6 @@
     "profile": "Profil",
     "referenced-by": "Référencé par",
     "referencing": "Référence",
-    "relations": "Relations",
     "resources": "Ressources",
     "restore": "Restaurer",
     "role": "Rôle",
@@ -311,9 +310,11 @@
       "resize-image": "Redimensionner l'image"
     },
     "attachments": {
-      "move-up": "Monter la pièce jointe",
-      "move-down": "Descendre la pièce jointe",
-      "remove": "Retirer la pièce jointe"
+      "edited": "Modifié",
+      "new": "Nouveau",
+      "remove": "Retirer la pièce jointe",
+      "reorder": "Réordonner {{name}}",
+      "reorder-hint": "Faites glisser, ou utilisez les touches fléchées"
     },
     "remove-relation": "Retirer la relation",
     "remove-location": "Retirer l'emplacement",

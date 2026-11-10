@@ -97,7 +97,6 @@
     "profile": "Profil",
     "referenced-by": "Refererad av",
     "referencing": "Refererar",
-    "relations": "Relationer",
     "resources": "Resurser",
     "restore": "Återställ",
     "role": "Roll",
@@ -311,9 +310,11 @@
       "resize-image": "Ändra bildstorlek"
     },
     "attachments": {
-      "move-up": "Flytta bilaga uppåt",
-      "move-down": "Flytta bilaga nedåt",
-      "remove": "Ta bort bilaga"
+      "edited": "Redigerad",
+      "new": "Ny",
+      "remove": "Ta bort bilaga",
+      "reorder": "Flytta {{name}}",
+      "reorder-hint": "Dra, eller använd piltangenterna"
     },
     "remove-relation": "Ta bort koppling",
     "remove-location": "Ta bort plats",

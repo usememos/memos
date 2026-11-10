@@ -97,7 +97,6 @@
     "profile": "प्रोफाइल",
     "referenced-by": "याने संदर्भित",
     "referencing": "संदर्भ देत आहे",
-    "relations": "संबंध",
     "resources": "संसाधने",
     "restore": "पुनर्संचयित करा",
     "role": "भूमिका",
@@ -311,9 +310,11 @@
       "resize-image": "प्रतिमेचा आकार बदला"
     },
     "attachments": {
-      "move-up": "संलग्नक वर हलवा",
-      "move-down": "संलग्नक खाली हलवा",
-      "remove": "संलग्नक काढा"
+      "edited": "संपादित",
+      "new": "नवीन",
+      "remove": "संलग्नक काढा",
+      "reorder": "{{name}} चा क्रम बदला",
+      "reorder-hint": "ओढा, किंवा बाण कळा वापरा"
     },
     "remove-relation": "संबंध काढा",
     "remove-location": "स्थान काढा",

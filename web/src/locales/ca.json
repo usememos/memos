@@ -97,7 +97,6 @@
     "profile": "Perfil",
     "referenced-by": "Referenciat per",
     "referencing": "Referenciant",
-    "relations": "Relacions",
     "resources": "Recursos",
     "restore": "Restaura",
     "role": "Rol",
@@ -311,9 +310,11 @@
       "resize-image": "Canvia la mida de la imatge"
     },
     "attachments": {
-      "move-up": "Mou l'adjunt amunt",
-      "move-down": "Mou l'adjunt avall",
-      "remove": "Elimina l'adjunt"
+      "edited": "Editat",
+      "new": "Nou",
+      "remove": "Elimina l'adjunt",
+      "reorder": "Reordena {{name}}",
+      "reorder-hint": "Arrossega, o fes servir les tecles de fletxa"
     },
     "remove-relation": "Elimina la relació",
     "remove-location": "Elimina la ubicació",

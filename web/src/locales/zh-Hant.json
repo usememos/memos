@@ -181,7 +181,6 @@
     "profile": "個人檔案",
     "referenced-by": "被引用",
     "referencing": "引用",
-    "relations": "關聯",
     "resize-sidebar": "調整側邊欄寬度",
     "resources": "檔案",
     "restore": "還原",
@@ -390,9 +389,11 @@
       "resize-image": "調整圖片大小"
     },
     "attachments": {
-      "move-up": "上移附件",
-      "move-down": "下移附件",
-      "remove": "移除附件"
+      "edited": "已編輯",
+      "new": "新",
+      "remove": "移除附件",
+      "reorder": "調整 {{name}} 的順序",
+      "reorder-hint": "拖曳，或使用方向鍵"
     },
     "remove-relation": "移除關聯",
     "remove-location": "移除位置",

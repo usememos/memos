@@ -97,7 +97,6 @@
     "profile": "Hồ sơ",
     "referenced-by": "Được tham chiếu bởi",
     "referencing": "Đang tham chiếu",
-    "relations": "Liên kết",
     "resources": "Tài nguyên",
     "restore": "Khôi phục",
     "role": "Vai trò",
@@ -311,9 +310,11 @@
       "resize-image": "Đổi kích thước hình ảnh"
     },
     "attachments": {
-      "move-up": "Di chuyển tệp đính kèm lên",
-      "move-down": "Di chuyển tệp đính kèm xuống",
-      "remove": "Xóa tệp đính kèm"
+      "edited": "Đã sửa",
+      "new": "Mới",
+      "remove": "Xóa tệp đính kèm",
+      "reorder": "Sắp xếp lại {{name}}",
+      "reorder-hint": "Kéo, hoặc dùng các phím mũi tên"
     },
     "remove-relation": "Xóa liên kết",
     "remove-location": "Xóa vị trí",

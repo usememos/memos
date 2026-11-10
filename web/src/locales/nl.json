@@ -97,7 +97,6 @@
     "profile": "Profiel",
     "referenced-by": "Gerefereerd door",
     "referencing": "Verwijst naar",
-    "relations": "Relaties",
     "resources": "Bronnen",
     "restore": "Terugzetten",
     "role": "Rol",
@@ -311,9 +310,11 @@
       "resize-image": "Afbeeldingsgrootte wijzigen"
     },
     "attachments": {
-      "move-up": "Bijlage omhoog verplaatsen",
-      "move-down": "Bijlage omlaag verplaatsen",
-      "remove": "Bijlage verwijderen"
+      "edited": "Bewerkt",
+      "new": "Nieuw",
+      "remove": "Bijlage verwijderen",
+      "reorder": "{{name}} verplaatsen",
+      "reorder-hint": "Sleep, of gebruik de pijltjestoetsen"
     },
     "remove-relation": "Koppeling verwijderen",
     "remove-location": "Locatie verwijderen",

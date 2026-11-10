@@ -97,7 +97,6 @@
     "profile": "प्रोफ़ाइल",
     "referenced-by": "द्वारा संदर्भित",
     "referencing": "संदर्भित कर रहा है",
-    "relations": "संबंध",
     "resources": "संसाधन",
     "restore": "पुनर्स्थापित करें",
     "role": "भूमिका",
@@ -311,9 +310,11 @@
       "resize-image": "इमेज का आकार बदलें"
     },
     "attachments": {
-      "move-up": "अटैचमेंट ऊपर ले जाएँ",
-      "move-down": "अटैचमेंट नीचे ले जाएँ",
-      "remove": "अटैचमेंट हटाएँ"
+      "edited": "संपादित",
+      "new": "नया",
+      "remove": "अटैचमेंट हटाएँ",
+      "reorder": "{{name}} का क्रम बदलें",
+      "reorder-hint": "खींचें, या तीर कुंजियों का उपयोग करें"
     },
     "remove-relation": "संबंध हटाएँ",
     "remove-location": "स्थान हटाएँ",

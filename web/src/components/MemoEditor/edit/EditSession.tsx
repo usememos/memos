@@ -347,8 +347,7 @@ export const EditSession: React.FC<EditSessionProps> = ({
         ref={editorContainerRef}
         className={cn(
           "group w-full flex flex-col justify-between items-start gap-2",
-          // A card that is the frame already supplies the background, border and padding, and
-          // positions the Markdown tag in its own corner; a session floating over the page in
+          // A card that is the frame already supplies the background, border and padding; a session floating over the page in
           // focus mode always brings its own. The bottom is 16px like the sides: the toolbar's
           // hard edge needs more room than the text's soft top.
           (!frameless || isFocusMode) && "relative bg-mu-surface px-4 pt-3 pb-4 rounded-mu-lg border border-mu-line/70",
@@ -356,17 +355,6 @@ export const EditSession: React.FC<EditSessionProps> = ({
           !isFocusMode && className,
         )}
       >
-        {isSourceMode && (
-          <span
-            className={cn(
-              "pointer-events-none absolute end-0 top-0 rounded-es-mu-lg rounded-se-mu-lg border-s border-b border-mu-line/70 bg-mu-well/40 flex h-5 items-center px-1.5 select-none mu-label-xs font-mono text-mu-ink-muted",
-              isFocusMode && "border-mu-line",
-            )}
-            aria-label={t("editor.markdown-mode")}
-          >
-            Markdown
-          </span>
-        )}
         {/* Formatting is the editor's own: its toolbar appears over selected
             text, and the slash menu and Markdown shortcuts change block types.
             Focus mode always shows the memo's time ("Now" before it has one) and adds

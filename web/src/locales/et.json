@@ -136,7 +136,6 @@
     "profile": "Profiil",
     "referenced-by": "Viidatud",
     "referencing": "Viitamine",
-    "relations": "Suhted",
     "resources": "Vahendid",
     "restore": "Taasta",
     "role": "Roll",
@@ -349,9 +348,11 @@
       "resize-image": "Muuda pildi suurust"
     },
     "attachments": {
-      "move-up": "Liiguta manus üles",
-      "move-down": "Liiguta manus alla",
-      "remove": "Eemalda manus"
+      "edited": "Muudetud",
+      "new": "Uus",
+      "remove": "Eemalda manus",
+      "reorder": "Muuda järjekorda: {{name}}",
+      "reorder-hint": "Lohista või kasuta nooleklahve"
     },
     "remove-relation": "Eemalda seos",
     "remove-location": "Eemalda asukoht",

@@ -97,7 +97,6 @@
     "profile": "Profil",
     "referenced-by": "Nanaša se na",
     "referencing": "Nanašanje",
-    "relations": "Relacije",
     "resources": "Viri",
     "restore": "Obnovi",
     "role": "Vloga",
@@ -311,9 +310,11 @@
       "resize-image": "Spremeni velikost slike"
     },
     "attachments": {
-      "move-up": "Premakni prilogo gor",
-      "move-down": "Premakni prilogo dol",
-      "remove": "Odstrani prilogo"
+      "edited": "Urejeno",
+      "new": "Novo",
+      "remove": "Odstrani prilogo",
+      "reorder": "Prerazporedi {{name}}",
+      "reorder-hint": "Povlecite ali uporabite smerne tipke"
     },
     "remove-relation": "Odstrani povezavo",
     "remove-location": "Odstrani lokacijo",

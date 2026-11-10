@@ -173,7 +173,6 @@
     "profile": "פרופיל",
     "referenced-by": "מופנה אליו על ידי",
     "referencing": "מפנה אל",
-    "relations": "קשרים",
     "resize-sidebar": "שנה את גודל סרגל הצד",
     "resources": "משאבים",
     "restore": "שחזר",
@@ -382,9 +381,11 @@
       "resize-image": "שינוי גודל התמונה"
     },
     "attachments": {
-      "move-up": "הזזת הקובץ המצורף למעלה",
-      "move-down": "הזזת הקובץ המצורף למטה",
-      "remove": "הסרת הקובץ המצורף"
+      "edited": "נערך",
+      "new": "חדש",
+      "remove": "הסרת הקובץ המצורף",
+      "reorder": "שינוי סדר: {{name}}",
+      "reorder-hint": "גררו, או השתמשו במקשי החיצים"
     },
     "remove-relation": "הסרת הקישור",
     "remove-location": "הסרת המיקום",

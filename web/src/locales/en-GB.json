@@ -97,7 +97,6 @@
     "profile": "Profile",
     "referenced-by": "Referenced by",
     "referencing": "Referencing",
-    "relations": "Relations",
     "resources": "Resources",
     "restore": "Restore",
     "role": "Role",
@@ -311,9 +310,11 @@
       "resize-image": "Resize image"
     },
     "attachments": {
-      "move-up": "Move attachment up",
-      "move-down": "Move attachment down",
-      "remove": "Remove attachment"
+      "edited": "Edited",
+      "new": "New",
+      "remove": "Remove attachment",
+      "reorder": "Reorder {{name}}",
+      "reorder-hint": "Drag, or use the arrow keys"
     },
     "remove-relation": "Remove relation",
     "remove-location": "Remove location",

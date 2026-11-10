@@ -104,7 +104,8 @@ const readPaperColor = (img: HTMLImageElement): string | undefined => {
 
 /**
  * A drawing as a sheet of paper. The sheet extends the drawing's own paper beyond its edges, so
- * it can be any size. The image is the original file at 2x: exports carry 2 pixels per drawn
+ * it can be any size. On its own it is a raised sheet; in a collage (`framed`) it takes the photos'
+ * hairline frame, so every cell of the grid has the same edge. The image is the original file at 2x: exports carry 2 pixels per drawn
  * pixel, so it shows at the size it was drawn and keeps strokes and text sharp.
  */
 const DrawingTile = ({
@@ -113,16 +114,22 @@ const DrawingTile = ({
   mediaClassName,
   onPreview,
   overlayLabel,
+  framed = false,
 }: {
   item: VisualItem;
   className: string;
   mediaClassName: string;
   onPreview?: () => void;
   overlayLabel?: string;
+  framed?: boolean;
 }) => {
   const [paper, setPaper] = useState(DRAWING_PAPER);
   return (
-    <div className={cn(DRAWING_SHEET_TILE_CLASS, className)} style={{ background: paper }} {...tileInteraction(onPreview)}>
+    <div
+      className={cn(framed ? VISUAL_TILE_BUTTON_CLASS : DRAWING_SHEET_TILE_CLASS, className)}
+      style={{ background: paper }}
+      {...tileInteraction(onPreview)}
+    >
       <img
         src={item.sourceUrl}
         srcSet={`${item.sourceUrl} 2x`}
@@ -168,6 +175,7 @@ const CollageVisualItem = ({
         mediaClassName={DRAWING_SHEET_CELL_MEDIA_CLASS}
         onPreview={onPreview}
         overlayLabel={overlayLabel}
+        framed
       />
     );
   }

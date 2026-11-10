@@ -177,7 +177,6 @@
     "profile": "Profil",
     "referenced-by": "Vist til av",
     "referencing": "Viser til",
-    "relations": "Samband",
     "resize-panel": "Endre panelstorleik",
     "resize-sidebar": "Endre storleiken på sidestolpen",
     "resources": "Ressursar",
@@ -387,9 +386,11 @@
       "resize-image": "Endre biletstorleik"
     },
     "attachments": {
-      "move-up": "Flytt vedlegget opp",
-      "move-down": "Flytt vedlegget ned",
-      "remove": "Fjern vedlegget"
+      "edited": "Redigert",
+      "new": "Ny",
+      "remove": "Fjern vedlegget",
+      "reorder": "Flytt {{name}}",
+      "reorder-hint": "Dra, eller bruk piltastane"
     },
     "remove-relation": "Fjern koplinga",
     "remove-location": "Fjern staden",

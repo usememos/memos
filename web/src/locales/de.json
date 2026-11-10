@@ -97,7 +97,6 @@
     "profile": "Profil",
     "referenced-by": "Verknüpft mit",
     "referencing": "Verknüpft",
-    "relations": "Beziehungen",
     "resources": "Ressourcen",
     "restore": "Wiederherstellen",
     "role": "Rolle",
@@ -311,9 +310,11 @@
       "resize-image": "Bildgröße ändern"
     },
     "attachments": {
-      "move-up": "Anhang nach oben verschieben",
-      "move-down": "Anhang nach unten verschieben",
-      "remove": "Anhang entfernen"
+      "edited": "Bearbeitet",
+      "new": "Neu",
+      "remove": "Anhang entfernen",
+      "reorder": "{{name}} verschieben",
+      "reorder-hint": "Ziehen oder die Pfeiltasten verwenden"
     },
     "remove-relation": "Verknüpfung entfernen",
     "remove-location": "Standort entfernen",

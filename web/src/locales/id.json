@@ -97,7 +97,6 @@
     "profile": "Profil",
     "referenced-by": "Dirujuk oleh",
     "referencing": "Merujuk",
-    "relations": "Relasi",
     "resources": "Sumber Daya",
     "restore": "Pulihkan",
     "role": "Peran",
@@ -311,9 +310,11 @@
       "resize-image": "Ubah ukuran gambar"
     },
     "attachments": {
-      "move-up": "Pindahkan lampiran ke atas",
-      "move-down": "Pindahkan lampiran ke bawah",
-      "remove": "Hapus lampiran"
+      "edited": "Diedit",
+      "new": "Baru",
+      "remove": "Hapus lampiran",
+      "reorder": "Ubah urutan {{name}}",
+      "reorder-hint": "Seret, atau gunakan tombol panah"
     },
     "remove-relation": "Hapus relasi",
     "remove-location": "Hapus lokasi",

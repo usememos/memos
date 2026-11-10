@@ -157,7 +157,7 @@ describe("upload anchors", () => {
     c.updateUploadAnchor(descriptor("upload-three", { status: "failed", message: "Retrying soon", onRetry: fresh }));
 
     expect(container.querySelector(".memo-upload-anchor")).toHaveTextContent("Retrying soon");
-    container.querySelector<HTMLButtonElement>(".memo-upload-anchor-action")?.click();
+    container.querySelector<HTMLButtonElement>(".memo-upload-anchor button")?.click();
     expect(fresh).toHaveBeenCalledTimes(1);
     expect(stale).not.toHaveBeenCalled();
   });

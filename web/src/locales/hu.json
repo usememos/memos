@@ -97,7 +97,6 @@
     "profile": "Profil",
     "referenced-by": "Hivatkozta",
     "referencing": "Hivatkozik",
-    "relations": "Kapcsolatok",
     "resources": "Állományok",
     "restore": "Helyreállítás",
     "role": "Jogosultság",
@@ -311,9 +310,11 @@
       "resize-image": "Kép átméretezése"
     },
     "attachments": {
-      "move-up": "Melléklet mozgatása feljebb",
-      "move-down": "Melléklet mozgatása lejjebb",
-      "remove": "Melléklet eltávolítása"
+      "edited": "Szerkesztve",
+      "new": "Új",
+      "remove": "Melléklet eltávolítása",
+      "reorder": "{{name}} áthelyezése",
+      "reorder-hint": "Húzza, vagy használja a nyílbillentyűket"
     },
     "remove-relation": "Kapcsolat eltávolítása",
     "remove-location": "Hely eltávolítása",

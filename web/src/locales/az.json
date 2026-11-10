@@ -206,7 +206,6 @@
     "profile": "Profil",
     "referenced-by": "İstinad edənlər",
     "referencing": "İstinad edir",
-    "relations": "Əlaqələr",
     "resize-panel": "Panelin ölçüsünü dəyiş",
     "resize-sidebar": "Yan panelin ölçüsünü dəyiş",
     "resources": "Resurslar",
@@ -413,9 +412,11 @@
       "resize-image": "Şəklin ölçüsünü dəyiş"
     },
     "attachments": {
-      "move-up": "Qoşmanı yuxarı köçür",
-      "move-down": "Qoşmanı aşağı köçür",
-      "remove": "Qoşmanı çıxar"
+      "edited": "Düzəldilib",
+      "new": "Yeni",
+      "remove": "Qoşmanı çıxar",
+      "reorder": "{{name}} sırasını dəyiş",
+      "reorder-hint": "Sürüşdürün və ya ox düymələrindən istifadə edin"
     },
     "remove-relation": "Əlaqəni çıxar",
     "remove-location": "Məkanı çıxar",

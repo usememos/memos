@@ -97,7 +97,6 @@
     "profile": "Profil",
     "referenced-by": "Odkazováno",
     "referencing": "Odkazuje na",
-    "relations": "Souvislosti",
     "resources": "Zdroje",
     "restore": "Obnovit",
     "role": "Role",
@@ -311,9 +310,11 @@
       "resize-image": "Změnit velikost obrázku"
     },
     "attachments": {
-      "move-up": "Posunout přílohu nahoru",
-      "move-down": "Posunout přílohu dolů",
-      "remove": "Odebrat přílohu"
+      "edited": "Upraveno",
+      "new": "Nové",
+      "remove": "Odebrat přílohu",
+      "reorder": "Změnit pořadí: {{name}}",
+      "reorder-hint": "Přetáhněte, nebo použijte šipky"
     },
     "remove-relation": "Odebrat vazbu",
     "remove-location": "Odebrat místo",

@@ -97,7 +97,6 @@
     "profile": "프로필",
     "referenced-by": "참조됨",
     "referencing": "참조중",
-    "relations": "관계",
     "resources": "리소스",
     "restore": "복원",
     "role": "역할",
@@ -311,9 +310,11 @@
       "resize-image": "이미지 크기 조절"
     },
     "attachments": {
-      "move-up": "첨부파일 위로 이동",
-      "move-down": "첨부파일 아래로 이동",
-      "remove": "첨부파일 제거"
+      "edited": "편집됨",
+      "new": "새 항목",
+      "remove": "첨부파일 제거",
+      "reorder": "{{name}} 순서 변경",
+      "reorder-hint": "드래그하거나 화살표 키를 사용하세요"
     },
     "remove-relation": "연결 제거",
     "remove-location": "위치 제거",

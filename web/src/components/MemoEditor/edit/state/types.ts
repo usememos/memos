@@ -34,6 +34,9 @@ export interface EditorState {
     updateTime?: Date;
   };
   localFiles: LocalFile[];
+  /** The order of saved attachments and new files together, as keys (see utils/attachmentOrder).
+   *  Empty until the user reorders; the save keeps it. */
+  attachmentOrder: string[];
   /** Whether an audio recording is in flight; gates save. The recorder's full
    *  state lives in useAudioRecorder — only this shared bit reaches the store. */
   recorderBusy: boolean;
@@ -48,6 +51,7 @@ export type EditorAction =
   | { type: "ADD_LOCAL_FILE"; payload: LocalFile }
   | { type: "REMOVE_LOCAL_FILE"; payload: string }
   | { type: "SET_LOCAL_FILES"; payload: LocalFile[] }
+  | { type: "SET_ATTACHMENT_ORDER"; payload: string[] }
   | { type: "TOGGLE_FOCUS_MODE" }
   | { type: "SET_LOADING"; payload: { key: LoadingKey; value: boolean } }
   | { type: "SET_PENDING_INLINE_IMAGE_INSERTIONS"; payload: number }
@@ -82,6 +86,7 @@ const defaultState: EditorState = {
     updateTime: undefined,
   },
   localFiles: [],
+  attachmentOrder: [],
   recorderBusy: false,
   acceptedSuggestionIds: [],
 };

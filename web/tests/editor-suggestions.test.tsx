@@ -48,11 +48,12 @@ describe("editor suggestions", () => {
     expect(screen.queryByRole("group")).not.toBeInTheDocument();
   });
 
-  it("uses a payload-agnostic bar with dashed buttons", async () => {
+  it("uses a payload-agnostic bar of quiet pills", async () => {
     const onAccept = vi.fn();
     render(<SuggestionsBar suggestions={[{ id: "future:example", label: "Example" }]} disabled={false} onAccept={onAccept} />);
     const chip = screen.getByRole("button", { name: "Example" });
-    expect(chip).toHaveClass("border-dashed");
+    expect(chip).not.toHaveClass("border-dashed");
+    expect(chip).toHaveClass("bg-mu-hover/60");
     fireEvent.click(chip);
     expect(onAccept).toHaveBeenCalledWith("future:example");
   });

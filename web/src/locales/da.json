@@ -136,7 +136,6 @@
     "profile": "Profil",
     "referenced-by": "Refereret af",
     "referencing": "Referencer",
-    "relations": "Relationer",
     "resources": "Ressourcer",
     "restore": "Gendan",
     "role": "Rolle",
@@ -349,9 +348,11 @@
       "resize-image": "Tilpas billedets størrelse"
     },
     "attachments": {
-      "move-up": "Flyt vedhæftet fil op",
-      "move-down": "Flyt vedhæftet fil ned",
-      "remove": "Fjern vedhæftet fil"
+      "edited": "Redigeret",
+      "new": "Ny",
+      "remove": "Fjern vedhæftet fil",
+      "reorder": "Flyt {{name}}",
+      "reorder-hint": "Træk, eller brug piletasterne"
     },
     "remove-relation": "Fjern relation",
     "remove-location": "Fjern placering",

@@ -1,9 +1,7 @@
-import { buttonClasses } from "@usememos/ui";
 import { isEqual } from "lodash-es";
-import { ListTodoIcon, ZapIcon } from "lucide-react";
+import { ListTodoIcon, PlusIcon, ZapIcon } from "lucide-react";
 import { type RefObject, useEffect, useId, useState } from "react";
 import { MAX_MEMO_SUGGESTIONS, type MemoSuggestion, type SuggestionItem } from "@/lib/memo-suggestions";
-import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { getAssignableVisibilityOptions, getVisibilityOption } from "@/utils/memo";
 import { useEditorContext, useEditorSelector } from "../state";
@@ -24,7 +22,7 @@ export function SuggestionsBar({
   if (!suggestions.length) return null;
   return (
     <div role="group" aria-labelledby={labelId} className="flex w-full items-start gap-2 mu-caption">
-      <span id={labelId} className="inline-flex h-6 shrink-0 items-center gap-1.5 text-mu-ink-muted/70">
+      <span id={labelId} className="inline-flex h-6 shrink-0 items-center gap-1.5 text-mu-ink-muted">
         <ZapIcon className="mu-icon-sm" aria-hidden />
         {t("editor.suggestions")}
       </span>
@@ -35,13 +33,11 @@ export function SuggestionsBar({
             type="button"
             disabled={disabled}
             aria-label={suggestion.accessibleLabel ?? suggestion.label}
-            className={cn(
-              buttonClasses({ variant: "ghost", size: "sm" }),
-              "h-6 max-w-full gap-1 border border-dashed border-mu-ink-muted/30 px-1.5 text-mu-ink-muted hover:border-mu-ink-muted/50 has-[>svg]:px-1.5",
-            )}
+            // A quiet pill until hovered, then the tag pill's own fill and ink, so it never reads as a tag already added.
+            className="inline-flex h-6 max-w-full items-center gap-1 rounded-mu-md bg-mu-hover/60 ps-1.5 pe-2 text-mu-ink-muted transition-colors hover:bg-mu-well hover:text-mu-ink disabled:cursor-not-allowed disabled:opacity-45 mu-focus"
             onClick={() => onAccept(suggestion.id)}
           >
-            {suggestion.icon && <suggestion.icon className="size-3" aria-hidden />}
+            {suggestion.icon ? <suggestion.icon className="mu-icon-xs" aria-hidden /> : <PlusIcon className="mu-icon-xs" aria-hidden />}
             <span className="truncate">{suggestion.label}</span>
           </button>
         ))}

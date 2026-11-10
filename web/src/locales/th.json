@@ -97,7 +97,6 @@
     "profile": "ข้อมูลส่วนตัว",
     "referenced-by": "อ้างอิงโดย",
     "referencing": "กำลังอ้างอิง",
-    "relations": "ความสัมพันธ์",
     "resources": "แหล่งข้อมูล",
     "restore": "คืนค่า",
     "role": "บทบาท",
@@ -311,9 +310,11 @@
       "resize-image": "ปรับขนาดรูปภาพ"
     },
     "attachments": {
-      "move-up": "ย้ายไฟล์แนบขึ้น",
-      "move-down": "ย้ายไฟล์แนบลง",
-      "remove": "ลบไฟล์แนบ"
+      "edited": "แก้ไขแล้ว",
+      "new": "ใหม่",
+      "remove": "ลบไฟล์แนบ",
+      "reorder": "จัดลำดับ {{name}} ใหม่",
+      "reorder-hint": "ลาก หรือใช้ปุ่มลูกศร"
     },
     "remove-relation": "ลบความสัมพันธ์",
     "remove-location": "ลบตำแหน่ง",

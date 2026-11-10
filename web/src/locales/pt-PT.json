@@ -97,7 +97,6 @@
     "profile": "Perfil",
     "referenced-by": "Referenciado por",
     "referencing": "A referenciar",
-    "relations": "Relações",
     "resources": "Recursos",
     "restore": "Restaurar",
     "role": "Função",
@@ -311,9 +310,11 @@
       "resize-image": "Redimensionar imagem"
     },
     "attachments": {
-      "move-up": "Mover anexo para cima",
-      "move-down": "Mover anexo para baixo",
-      "remove": "Remover anexo"
+      "edited": "Editado",
+      "new": "Novo",
+      "remove": "Remover anexo",
+      "reorder": "Reordenar {{name}}",
+      "reorder-hint": "Arraste ou utilize as teclas de seta"
     },
     "remove-relation": "Remover ligação",
     "remove-location": "Remover local",

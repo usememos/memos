@@ -97,7 +97,6 @@
     "profile": "مشخصات",
     "referenced-by": "ارجاع داده شده توسط",
     "referencing": "ارجاع دادن",
-    "relations": "روابط",
     "resources": "منابع",
     "restore": "بازیابی",
     "role": "نقش",
@@ -311,9 +310,11 @@
       "resize-image": "تغییر اندازه تصویر"
     },
     "attachments": {
-      "move-up": "انتقال پیوست به بالا",
-      "move-down": "انتقال پیوست به پایین",
-      "remove": "حذف پیوست"
+      "edited": "ویرایش‌شده",
+      "new": "جدید",
+      "remove": "حذف پیوست",
+      "reorder": "جابه‌جایی {{name}}",
+      "reorder-hint": "بکشید یا از کلیدهای جهت‌نما استفاده کنید"
     },
     "remove-relation": "حذف ارتباط",
     "remove-location": "حذف مکان",

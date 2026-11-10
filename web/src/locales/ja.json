@@ -101,7 +101,6 @@
     "profile": "プロフィール",
     "referenced-by": "参照元",
     "referencing": "参照先",
-    "relations": "関連",
     "resize-sidebar": "サイドバーの幅を変更",
     "resources": "リソース",
     "restore": "復元",
@@ -311,9 +310,11 @@
       "resize-image": "画像のサイズを変更"
     },
     "attachments": {
-      "move-up": "添付ファイルを上へ移動",
-      "move-down": "添付ファイルを下へ移動",
-      "remove": "添付ファイルを削除"
+      "edited": "編集済み",
+      "new": "新規",
+      "remove": "添付ファイルを削除",
+      "reorder": "{{name}}を並べ替え",
+      "reorder-hint": "ドラッグするか、矢印キーを使います"
     },
     "remove-relation": "関連を削除",
     "remove-location": "場所を削除",

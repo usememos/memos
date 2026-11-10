@@ -136,7 +136,6 @@
     "profile": "Profils",
     "referenced-by": "Atsaucas",
     "referencing": "Atsauces",
-    "relations": "Attiecības",
     "resources": "Resursi",
     "restore": "Atjaunot",
     "role": "Loma",
@@ -349,9 +348,11 @@
       "resize-image": "Mainīt attēla izmēru"
     },
     "attachments": {
-      "move-up": "Pārvietot pielikumu augšup",
-      "move-down": "Pārvietot pielikumu lejup",
-      "remove": "Noņemt pielikumu"
+      "edited": "Rediģēts",
+      "new": "Jauns",
+      "remove": "Noņemt pielikumu",
+      "reorder": "Pārkārtot {{name}}",
+      "reorder-hint": "Velciet vai izmantojiet bulttaustiņus"
     },
     "remove-relation": "Noņemt saiti",
     "remove-location": "Noņemt atrašanās vietu",

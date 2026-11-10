@@ -97,7 +97,6 @@
     "profile": "الملف الشخصي",
     "referenced-by": "مشار إليه بواسطة",
     "referencing": "يشير إلى",
-    "relations": "العلاقات",
     "resources": "المصادر",
     "restore": "استعادة",
     "role": "الدور",
@@ -311,9 +310,11 @@
       "resize-image": "تغيير حجم الصورة"
     },
     "attachments": {
-      "move-up": "نقل المرفق لأعلى",
-      "move-down": "نقل المرفق لأسفل",
-      "remove": "إزالة المرفق"
+      "edited": "معدَّل",
+      "new": "جديد",
+      "remove": "إزالة المرفق",
+      "reorder": "إعادة ترتيب {{name}}",
+      "reorder-hint": "اسحب، أو استخدم مفاتيح الأسهم"
     },
     "remove-relation": "إزالة العلاقة",
     "remove-location": "إزالة الموقع",

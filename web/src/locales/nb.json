@@ -97,7 +97,6 @@
     "profile": "Profil",
     "referenced-by": "Referert til av",
     "referencing": "Refererer til",
-    "relations": "Relasjon",
     "resources": "Ressurser",
     "restore": "Gjenopprett",
     "role": "Rolle",
@@ -311,9 +310,11 @@
       "resize-image": "Endre bildestørrelse"
     },
     "attachments": {
-      "move-up": "Flytt vedlegg opp",
-      "move-down": "Flytt vedlegg ned",
-      "remove": "Fjern vedlegg"
+      "edited": "Redigert",
+      "new": "Ny",
+      "remove": "Fjern vedlegg",
+      "reorder": "Flytt {{name}}",
+      "reorder-hint": "Dra, eller bruk piltastene"
     },
     "remove-relation": "Fjern kobling",
     "remove-location": "Fjern plassering",

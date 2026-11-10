@@ -140,7 +140,6 @@
     "profile": "个人资料",
     "referenced-by": "被引用",
     "referencing": "引用",
-    "relations": "关系图",
     "resize-panel": "调整面板宽度",
     "resources": "资源库",
     "restore": "恢复",
@@ -347,9 +346,11 @@
       "resize-image": "调整图片大小"
     },
     "attachments": {
-      "move-up": "上移附件",
-      "move-down": "下移附件",
-      "remove": "移除附件"
+      "edited": "已编辑",
+      "new": "新",
+      "remove": "移除附件",
+      "reorder": "调整 {{name}} 的顺序",
+      "reorder-hint": "拖动，或使用方向键"
     },
     "remove-relation": "移除关联",
     "remove-location": "移除位置",
