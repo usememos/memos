@@ -12,6 +12,9 @@ export const AUTH_REASON_PARAM = "reason";
 /** Reason code signalling that the user hit a memo that requires authentication. */
 export const AUTH_REASON_PROTECTED_MEMO = "protected-memo";
 
+/** Reason code for a visitor sent from the sign-up page while registration is closed. */
+export const AUTH_REASON_SIGNUPS_CLOSED = "signups-closed";
+
 /**
  * Validates a post-authentication redirect target.
  *
