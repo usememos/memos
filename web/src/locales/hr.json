@@ -1437,6 +1437,8 @@
     "speed": "Brzina reprodukcije {{rate}}x"
   },
   "e2ee": {
+    "memo-title": "Naslov (neobavezno)",
+    "title-notice": "Naslovi nisu šifrirani. Nemojte uključivati osjetljive podatke.",
     "title": "Šifrirane bilješke",
     "passphrase": "Zaporka za šifriranje",
     "passphrase-help": "Upotrijebite zasebnu zaporku s najmanje 12 znakova.",

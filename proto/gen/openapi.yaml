@@ -940,7 +940,7 @@ paths:
                 - name: updateMask
                   in: query
                   description: |-
-                    Required. The fields to update. Supported paths: content, encrypted_content, visibility,
+                    Required. The fields to update. Supported paths: content, encrypted_content, encrypted_title, visibility,
                      space, pinned, state, create_time, update_time, location, attachments,
                      relations.
                   schema:
@@ -4748,6 +4748,12 @@ components:
                         Optional. Protocol v1 encrypted envelope as UTF-8 JSON, at most 1.5 MiB.
                          Mutually exclusive with content; only private, unassigned text memos support it.
                     format: bytes
+                encryptedTitle:
+                    type: string
+                    description: |-
+                        Optional plaintext title for encrypted memos only. Never encrypted or derived
+                         from the body. At most 256 Unicode characters, without control characters.
+                         Updates require encrypted_content and expected_encryption_revision together.
             description: Memo is a Markdown note written by a user.
         MemoRelation:
             required:

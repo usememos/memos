@@ -1436,6 +1436,8 @@
     "speed": "Toistonopeus {{rate}}x"
   },
   "e2ee": {
+    "memo-title": "Otsikko (valinnainen)",
+    "title-notice": "Otsikoita ei salata. Älä sisällytä arkaluonteisia tietoja.",
     "title": "Salatut muistiinpanot",
     "passphrase": "Salauksen salalause",
     "passphrase-help": "Käytä erillistä, vähintään 12 merkin pituista salalausetta.",

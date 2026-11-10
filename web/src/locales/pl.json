@@ -1438,6 +1438,8 @@
     "speed": "Prędkość odtwarzania {{rate}}x"
   },
   "e2ee": {
+    "memo-title": "Tytuł (opcjonalnie)",
+    "title-notice": "Tytuły nie są szyfrowane. Nie podawaj poufnych informacji.",
     "title": "Zaszyfrowane notatki",
     "passphrase": "Fraza hasła szyfrowania",
     "passphrase-help": "Użyj osobnej frazy hasła o długości co najmniej 12 znaków.",

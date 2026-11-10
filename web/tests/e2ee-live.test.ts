@@ -26,10 +26,15 @@ it.skipIf(!endpoint)("round-trips real client ciphertext through a local Memos s
   await call("UserService", "CreateEncryptionVault", { vault: Buffer.from(encodeRecord(vault.record)).toString("base64") });
   const envelope = await encryptMemo(vault.key, vault.record.id, "E2EE live smoke canary — 비공개 본문");
   const memo = await call("MemoService", "CreateMemo", {
-    memo: { visibility: "PRIVATE", encryptedContent: Buffer.from(encodeRecord(envelope)).toString("base64") },
+    memo: {
+      visibility: "PRIVATE",
+      encryptedTitle: "Visible title — 공개 제목",
+      encryptedContent: Buffer.from(encodeRecord(envelope)).toString("base64"),
+    },
   });
   expect(memo.content || "").toBe("");
   const stored = await call("MemoService", "GetMemo", { name: memo.name });
+  expect(stored.encryptedTitle).toBe("Visible title — 공개 제목");
   expect(JSON.stringify(stored)).not.toContain("비공개 본문");
   const otherDeviceVault = await call("UserService", "GetEncryptionVault", {});
   const otherDeviceKey = await unlockVault(
@@ -41,11 +46,12 @@ it.skipIf(!endpoint)("round-trips real client ciphertext through a local Memos s
   );
   const next = await encryptMemo(otherDeviceKey, vault.record.id, "E2EE edited canary", envelope.objectId);
   await call("MemoService", "UpdateMemo", {
-    memo: { name: memo.name, encryptedContent: Buffer.from(encodeRecord(next)).toString("base64") },
-    updateMask: "encryptedContent",
+    memo: { name: memo.name, encryptedTitle: "Edited title", encryptedContent: Buffer.from(encodeRecord(next)).toString("base64") },
+    updateMask: "encryptedContent,encryptedTitle",
     expectedEncryptionRevision: envelope.revisionId,
   });
   const updated = await call("MemoService", "GetMemo", { name: memo.name });
+  expect(updated.encryptedTitle).toBe("Edited title");
   expect(await decryptMemo(otherDeviceKey, decodeMemo(Buffer.from(updated.encryptedContent, "base64")))).toBe("E2EE edited canary");
   console.info(`Disposable UI fixture: ${username}`);
 });

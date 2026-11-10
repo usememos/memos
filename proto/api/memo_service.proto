@@ -287,6 +287,11 @@ message Memo {
   // Mutually exclusive with content; only private, unassigned text memos support it.
   bytes encrypted_content = 18 [(google.api.field_behavior) = OPTIONAL];
 
+  // Optional plaintext title for encrypted memos only. Never encrypted or derived
+  // from the body. At most 256 Unicode characters, without control characters.
+  // Updates require encrypted_content and expected_encryption_revision together.
+  string encrypted_title = 19 [(google.api.field_behavior) = OPTIONAL];
+
   // Property holds properties computed from the memo content.
   message Property {
     // The text of the H1 heading when it is the first block of the content.
@@ -395,7 +400,7 @@ message UpdateMemoRequest {
   // Required. The memo to update. Its name identifies the memo.
   Memo memo = 1 [(google.api.field_behavior) = REQUIRED];
 
-  // Required. The fields to update. Supported paths: content, encrypted_content, visibility,
+  // Required. The fields to update. Supported paths: content, encrypted_content, encrypted_title, visibility,
   // space, pinned, state, create_time, update_time, location, attachments,
   // relations.
   google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];

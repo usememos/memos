@@ -36,7 +36,7 @@ The remaining technical choices below are proposals by the author, not additiona
 
 Protect body text and its derived content against database, storage and backup disclosure, assuming a trusted client and a sufficiently strong
 passphrase. Preserve existing authorization as well: possession of ciphertext is not a reason to widen access.
-IDs, owner, timestamps, state, pinned status, ciphertext length, and access patterns remain visible to the server.
+IDs, owner, timestamps, state, pinned status, ciphertext length, access patterns, and the optional user-entered title remain visible to the server.
 
 This does not protect against malicious client code served by a compromised server, XSS, browser extensions with access, an infected device,
 or capture while unlocked. It does not provide cryptographic rollback detection or deletion from old backups.
@@ -189,3 +189,18 @@ Verified locally on 2026-11-10 using Go 1.27.3, Node 24.22.2, pnpm 11.25.0 and B
   on the unchanged baseline; the CI Node 24 suite is green.
 
 These checks do not replace an independent cryptographic security audit or exhaustive browser/device compatibility testing.
+
+## Optional plaintext title and creation affordance
+
+User-approved scope (2026-11-10): an optional plaintext title distinguishes locked memos. Never extract it from the body.
+Use `encrypted_title` on the API and existing typed JSON payload, with no SQL schema change. Empty means no title;
+show the translated “Encrypted memo” fallback. Titles are at most 256 Unicode characters, with no control characters.
+The input explicitly states that titles are not encrypted. Titles are neither encrypted nor cryptographically authenticated.
+They remain author-only under the existing read policy and are not added to search, snippets, exports or integrations.
+Updates include a fresh encrypted envelope and expected revision so title/body saves are atomic; old clients that omit the
+new update-mask path preserve the title. Ordinary memos cannot use this field.
+
+Locked memo content displays a lock icon and the title as one accessible button; clicking opens the existing unlock panel.
+Unlocked viewing also displays the title, while editing offers an optional title input. Body text and drafts remain ephemeral.
+The new encrypted memo action is a bordered, normal-size button with a lock icon above the ordinary composer, including
+hosted creation. Space/comment creation still excludes it.

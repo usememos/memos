@@ -50,6 +50,7 @@ func (s *APIService) convertMemoFromStoreWithCreators(ctx context.Context, memo 
 	}
 	if store.IsEncryptedMemo(memo) {
 		memoMessage.Content = ""
+		memoMessage.EncryptedTitle = memo.Payload.GetEncryptedTitle()
 		return memoMessage, nil
 	}
 	// An assigned memo needs a read context for its placement projection; an

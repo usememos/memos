@@ -112,3 +112,7 @@ and account changes. Saves encrypt before entering React Query mutations and inc
 Dirty encrypted sessions register presence only in `lib/e2ee/dirty.ts`. Modal hosts must call `confirmEncryptedDiscard` before dismissing;
 route and unload transitions are guarded within the editor. Automatic/logout/cross-tab locks intentionally discard ephemeral state.
 See [the design](../../../../docs/design/private-memo-e2ee.md) for key recovery, protocol limits and unsupported workflows.
+
+Encrypted memos may have an optional `encryptedTitle`, a plaintext label never extracted from the body. The editor explicitly
+labels it as unencrypted; locked records show a lock icon and this title (or the default encrypted memo label). Title and body
+updates use one revision-guarded save, while omitting the title update mask preserves titles for older clients.

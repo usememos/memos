@@ -1436,6 +1436,8 @@
     "speed": "Taasesituse kiirus {{rate}}x"
   },
   "e2ee": {
+    "memo-title": "Pealkiri (valikuline)",
+    "title-notice": "Pealkirju ei krüptita. Ärge lisage tundlikku teavet.",
     "title": "Krüptitud märkmed",
     "passphrase": "Krüptimise paroolifraas",
     "passphrase-help": "Kasuta eraldi, vähemalt 12 märgist koosnevat paroolifraasi.",

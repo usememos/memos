@@ -1436,6 +1436,8 @@
     "speed": "Wiedergabegeschwindigkeit {{rate}}x"
   },
   "e2ee": {
+    "memo-title": "Titel (optional)",
+    "title-notice": "Titel werden nicht verschlüsselt. Keine vertraulichen Informationen angeben.",
     "title": "Verschlüsselte Notizen",
     "passphrase": "Verschlüsselungspassphrase",
     "passphrase-help": "Verwende eine separate Passphrase mit mindestens 12 Zeichen.",

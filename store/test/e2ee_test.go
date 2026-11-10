@@ -47,7 +47,7 @@ func TestEncryptionPersistence(t *testing.T) {
 	require.ErrorIs(t, s.UpdateEncryptionVault(ctx, owner.ID, encryptedTestJSON(t, v), original), store.ErrEncryptionConflict)
 	envelope := store.EncryptedEnvelope{Version: 1, VaultID: v.ID, ObjectID: uuid.NewString(), RevisionID: uuid.NewString(), Body: encryptedTestCipher(), DataKey: encryptedTestCipher()}
 	payload := func() *storepb.MemoPayload {
-		return &storepb.MemoPayload{EncryptedContent: encryptedTestJSON(t, envelope)}
+		return &storepb.MemoPayload{EncryptedContent: encryptedTestJSON(t, envelope), EncryptedTitle: "공개 제목"}
 	}
 	m, err := s.CreateMemo(ctx, &store.Memo{UID: "encrypted-memo", CreatorID: owner.ID, Visibility: store.Private, Payload: payload()})
 	require.NoError(t, err)
@@ -61,12 +61,16 @@ func TestEncryptionPersistence(t *testing.T) {
 	envelope.RevisionID = uuid.NewString()
 	require.NoError(t, s.UpdateMemo(ctx, &store.UpdateMemo{ID: m.ID, Payload: payload(), ExpectedEncryptionRevision: original}))
 	require.ErrorIs(t, s.UpdateMemo(ctx, &store.UpdateMemo{ID: m.ID, Payload: payload(), ExpectedEncryptionRevision: original}), store.ErrEncryptionConflict)
+	invalidTitle := payload()
+	invalidTitle.EncryptedTitle = "invalid\ntitle"
+	require.ErrorIs(t, s.UpdateMemo(ctx, &store.UpdateMemo{ID: m.ID, Payload: invalidTitle, ExpectedEncryptionRevision: envelope.RevisionID}), store.ErrEncryptionPolicy)
 	original = envelope.RevisionID
 	envelope.ObjectID = uuid.NewString()
 	envelope.RevisionID = uuid.NewString()
 	require.ErrorIs(t, s.UpdateMemo(ctx, &store.UpdateMemo{ID: m.ID, Payload: payload(), ExpectedEncryptionRevision: original}), store.ErrEncryptionPolicy)
 	stored, err := s.GetMemo(ctx, &store.FindMemo{ID: &m.ID})
 	require.NoError(t, err)
+	require.Equal(t, "공개 제목", stored.Payload.EncryptedTitle)
 	require.Empty(t, stored.Content)
 	require.Empty(t, stored.Payload.Tags)
 	require.Nil(t, stored.Payload.Property)

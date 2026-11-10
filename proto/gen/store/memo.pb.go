@@ -24,12 +24,14 @@ const (
 type MemoPayload struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Versioned client-side encrypted envelope, encoded as UTF-8 JSON.
-	EncryptedContent []byte                `protobuf:"bytes,4,opt,name=encrypted_content,json=encryptedContent,proto3" json:"encrypted_content,omitempty"`
-	Property         *MemoPayload_Property `protobuf:"bytes,1,opt,name=property,proto3" json:"property,omitempty"`
-	Location         *MemoPayload_Location `protobuf:"bytes,2,opt,name=location,proto3" json:"location,omitempty"`
-	Tags             []string              `protobuf:"bytes,3,rep,name=tags,proto3" json:"tags,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	EncryptedContent []byte `protobuf:"bytes,4,opt,name=encrypted_content,json=encryptedContent,proto3" json:"encrypted_content,omitempty"`
+	// Optional plaintext label for encrypted memos; never derived from the body.
+	EncryptedTitle string                `protobuf:"bytes,5,opt,name=encrypted_title,json=encryptedTitle,proto3" json:"encrypted_title,omitempty"`
+	Property       *MemoPayload_Property `protobuf:"bytes,1,opt,name=property,proto3" json:"property,omitempty"`
+	Location       *MemoPayload_Location `protobuf:"bytes,2,opt,name=location,proto3" json:"location,omitempty"`
+	Tags           []string              `protobuf:"bytes,3,rep,name=tags,proto3" json:"tags,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *MemoPayload) Reset() {
@@ -67,6 +69,13 @@ func (x *MemoPayload) GetEncryptedContent() []byte {
 		return x.EncryptedContent
 	}
 	return nil
+}
+
+func (x *MemoPayload) GetEncryptedTitle() string {
+	if x != nil {
+		return x.EncryptedTitle
+	}
+	return ""
 }
 
 func (x *MemoPayload) GetProperty() *MemoPayload_Property {
@@ -241,9 +250,10 @@ var File_store_memo_proto protoreflect.FileDescriptor
 
 const file_store_memo_proto_rawDesc = "" +
 	"\n" +
-	"\x10store/memo.proto\x12\vmemos.store\"\x8d\x04\n" +
+	"\x10store/memo.proto\x12\vmemos.store\"\xb6\x04\n" +
 	"\vMemoPayload\x12+\n" +
-	"\x11encrypted_content\x18\x04 \x01(\fR\x10encryptedContent\x12=\n" +
+	"\x11encrypted_content\x18\x04 \x01(\fR\x10encryptedContent\x12'\n" +
+	"\x0fencrypted_title\x18\x05 \x01(\tR\x0eencryptedTitle\x12=\n" +
 	"\bproperty\x18\x01 \x01(\v2!.memos.store.MemoPayload.PropertyR\bproperty\x12=\n" +
 	"\blocation\x18\x02 \x01(\v2!.memos.store.MemoPayload.LocationR\blocation\x12\x12\n" +
 	"\x04tags\x18\x03 \x03(\tR\x04tags\x1a\xd6\x01\n" +

@@ -1436,6 +1436,8 @@
     "speed": "Playback speed {{rate}}x"
   },
   "e2ee": {
+    "memo-title": "Title (optional)",
+    "title-notice": "Titles are not encrypted. Do not include sensitive information.",
     "title": "Encrypted memos",
     "passphrase": "Encryption passphrase",
     "passphrase-help": "Use a separate passphrase of at least 12 characters.",

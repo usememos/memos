@@ -1438,6 +1438,8 @@
     "speed": "Hitrost predvajanja {{rate}}x"
   },
   "e2ee": {
+    "memo-title": "Naslov (neobvezno)",
+    "title-notice": "Naslovi niso šifrirani. Ne vključujte občutljivih podatkov.",
     "title": "Šifrirani zapiski",
     "passphrase": "Geselna fraza za šifriranje",
     "passphrase-help": "Uporabite ločeno geselno frazo z najmanj 12 znaki.",

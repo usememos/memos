@@ -1436,6 +1436,8 @@
     "speed": "Tốc độ phát {{rate}}x"
   },
   "e2ee": {
+    "memo-title": "Tiêu đề (không bắt buộc)",
+    "title-notice": "Tiêu đề không được mã hóa. Không đưa vào thông tin nhạy cảm.",
     "title": "Ghi chú được mã hóa",
     "passphrase": "Cụm mật khẩu mã hóa",
     "passphrase-help": "Sử dụng cụm mật khẩu riêng có ít nhất 12 ký tự.",

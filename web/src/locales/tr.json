@@ -1436,6 +1436,8 @@
     "speed": "Oynatma hızı {{rate}}x"
   },
   "e2ee": {
+    "memo-title": "Başlık (isteğe bağlı)",
+    "title-notice": "Başlıklar şifrelenmez. Hassas bilgiler eklemeyin.",
     "title": "Şifrelenmiş notlar",
     "passphrase": "Şifreleme parolası",
     "passphrase-help": "En az 12 karakterden oluşan ayrı bir parola kullanın.",

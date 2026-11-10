@@ -1436,6 +1436,8 @@
     "speed": "Afspeelsnelheid {{rate}}x"
   },
   "e2ee": {
+    "memo-title": "Titel (optioneel)",
+    "title-notice": "Titels worden niet versleuteld. Vermeld geen gevoelige informatie.",
     "title": "Versleutelde notities",
     "passphrase": "Wachtwoordzin voor versleuteling",
     "passphrase-help": "Gebruik een aparte wachtwoordzin van minstens 12 tekens.",

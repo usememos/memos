@@ -193,8 +193,12 @@ type Memo struct {
 	// Optional. Protocol v1 encrypted envelope as UTF-8 JSON, at most 1.5 MiB.
 	// Mutually exclusive with content; only private, unassigned text memos support it.
 	EncryptedContent []byte `protobuf:"bytes,18,opt,name=encrypted_content,json=encryptedContent,proto3" json:"encrypted_content,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	// Optional plaintext title for encrypted memos only. Never encrypted or derived
+	// from the body. At most 256 Unicode characters, without control characters.
+	// Updates require encrypted_content and expected_encryption_revision together.
+	EncryptedTitle string `protobuf:"bytes,19,opt,name=encrypted_title,json=encryptedTitle,proto3" json:"encrypted_title,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *Memo) Reset() {
@@ -351,6 +355,13 @@ func (x *Memo) GetEncryptedContent() []byte {
 		return x.EncryptedContent
 	}
 	return nil
+}
+
+func (x *Memo) GetEncryptedTitle() string {
+	if x != nil {
+		return x.EncryptedTitle
+	}
+	return ""
 }
 
 // Request message for MemoService.ListMemos.
@@ -641,7 +652,7 @@ type UpdateMemoRequest struct {
 	ExpectedEncryptionRevision string `protobuf:"bytes,3,opt,name=expected_encryption_revision,json=expectedEncryptionRevision,proto3" json:"expected_encryption_revision,omitempty"`
 	// Required. The memo to update. Its name identifies the memo.
 	Memo *Memo `protobuf:"bytes,1,opt,name=memo,proto3" json:"memo,omitempty"`
-	// Required. The fields to update. Supported paths: content, encrypted_content, visibility,
+	// Required. The fields to update. Supported paths: content, encrypted_content, encrypted_title, visibility,
 	// space, pinned, state, create_time, update_time, location, attachments,
 	// relations.
 	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
@@ -2413,7 +2424,7 @@ var File_api_memo_service_proto protoreflect.FileDescriptor
 
 const file_api_memo_service_proto_rawDesc = "" +
 	"\n" +
-	"\x16api/memo_service.proto\x12\tmemos.api\x1a\x1capi/attachment_service.proto\x1a\x10api/common.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa0\t\n" +
+	"\x16api/memo_service.proto\x12\tmemos.api\x1a\x1capi/attachment_service.proto\x1a\x10api/common.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xce\t\n" +
 	"\x04Memo\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x120\n" +
 	"\acreator\x18\x02 \x01(\tB\x16\xe0A\x03\xfaA\x10\n" +
@@ -2440,7 +2451,8 @@ const file_api_memo_service_proto_rawDesc = "" +
 	"createTime\x12@\n" +
 	"\vupdate_time\x18\x11 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\n" +
 	"updateTime\x120\n" +
-	"\x11encrypted_content\x18\x12 \x01(\fB\x03\xe0A\x01R\x10encryptedContent\x1a\xd6\x01\n" +
+	"\x11encrypted_content\x18\x12 \x01(\fB\x03\xe0A\x01R\x10encryptedContent\x12,\n" +
+	"\x0fencrypted_title\x18\x13 \x01(\tB\x03\xe0A\x01R\x0eencryptedTitle\x1a\xd6\x01\n" +
 	"\bProperty\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12\x19\n" +
 	"\bhas_link\x18\x02 \x01(\bR\ahasLink\x12\x19\n" +

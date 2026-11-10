@@ -1,4 +1,5 @@
 import { Button } from "@usememos/ui";
+import { LockKeyholeIcon } from "lucide-react";
 import { type ReactNode, Suspense, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -184,7 +185,7 @@ const MemoEditorDraft = ({ draft, ...editing }: MemoEditorDraftProps) => {
   return (
     <div className="w-full">
       {!draft.parent && !draft.space && (
-        <Button variant="ghost" size="sm" onClick={() => setEncrypted(true)}>
+        <Button variant="neutral" className="mb-3" icon={<LockKeyholeIcon />} onClick={() => setEncrypted(true)}>
           {t("e2ee.new-memo")}
         </Button>
       )}

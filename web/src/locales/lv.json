@@ -1437,6 +1437,8 @@
     "speed": "Atskaņošanas ātrums {{rate}}x"
   },
   "e2ee": {
+    "memo-title": "Virsraksts (neobligāts)",
+    "title-notice": "Virsraksti netiek šifrēti. Neiekļaujiet sensitīvu informāciju.",
     "title": "Šifrētas piezīmes",
     "passphrase": "Šifrēšanas paroles frāze",
     "passphrase-help": "Izmantojiet atsevišķu paroles frāzi ar vismaz 12 rakstzīmēm.",

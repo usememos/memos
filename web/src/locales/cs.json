@@ -1439,6 +1439,8 @@
     "speed": "Rychlost přehrávání {{rate}}x"
   },
   "e2ee": {
+    "memo-title": "Název (volitelné)",
+    "title-notice": "Názvy nejsou šifrované. Neuvádějte citlivé informace.",
     "title": "Šifrované poznámky",
     "passphrase": "Šifrovací heslová fráze",
     "passphrase-help": "Použijte samostatnou heslovou frázi o délce alespoň 12 znaků.",

@@ -1436,6 +1436,8 @@
     "speed": "Afspilningshastighed {{rate}}x"
   },
   "e2ee": {
+    "memo-title": "Titel (valgfri)",
+    "title-notice": "Titler er ikke krypterede. Medtag ikke følsomme oplysninger.",
     "title": "Krypterede noter",
     "passphrase": "Adgangssætning til kryptering",
     "passphrase-help": "Brug en særskilt adgangssætning på mindst 12 tegn.",

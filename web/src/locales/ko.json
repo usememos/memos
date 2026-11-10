@@ -1436,6 +1436,8 @@
     "speed": "재생 속도 {{rate}}x"
   },
   "e2ee": {
+    "memo-title": "제목 (선택 입력)",
+    "title-notice": "제목은 암호화되지 않습니다. 민감한 정보는 넣지 마세요.",
     "title": "암호화 메모",
     "passphrase": "암호화 암호",
     "passphrase-help": "로그인 암호와 다른 12자 이상의 암호를 사용하세요.",

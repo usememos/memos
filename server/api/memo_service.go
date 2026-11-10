@@ -328,12 +328,20 @@ func (s *APIService) UpdateMemo(ctx context.Context, request *apipb.UpdateMemoRe
 			return nil, status.Errorf(codes.PermissionDenied, "encrypted memos are author-only")
 		}
 		for path := range updatePaths {
-			if path != "encrypted_content" && path != "pinned" && path != "state" && path != "update_time" {
+			if path != "encrypted_content" && path != "encrypted_title" && path != "pinned" && path != "state" && path != "update_time" {
 				return nil, encryptionError(store.ErrEncryptionPolicy)
 			}
 		}
-	} else if updatePaths["encrypted_content"] {
+	} else if updatePaths["encrypted_content"] || updatePaths["encrypted_title"] {
 		return nil, encryptionError(store.ErrEncryptionPolicy)
+	}
+	if updatePaths["encrypted_title"] {
+		if !updatePaths["encrypted_content"] {
+			return nil, encryptionError(store.ErrEncryptionPolicy)
+		}
+		if err := store.ValidateEncryptedTitle(request.Memo.EncryptedTitle); err != nil {
+			return nil, encryptionError(err)
+		}
 	}
 	lifecycleOnly := updatePaths["space"]
 	for path := range updatePaths {
@@ -393,7 +401,7 @@ func (s *APIService) UpdateMemo(ctx context.Context, request *apipb.UpdateMemoRe
 	for _, path := range request.UpdateMask.Paths {
 		// Collaboration fields were validated together above so placement and
 		// audience transitions cannot be observed independently.
-		if path == "visibility" || path == "space" {
+		if path == "visibility" || path == "space" || path == "encrypted_title" {
 			continue
 		}
 		if path == "encrypted_content" {
@@ -404,7 +412,11 @@ func (s *APIService) UpdateMemo(ctx context.Context, request *apipb.UpdateMemoRe
 			if _, err := store.ParseEncryptedEnvelope(request.Memo.EncryptedContent); err != nil {
 				return nil, encryptionError(err)
 			}
-			nextMemo.Payload = &storepb.MemoPayload{EncryptedContent: request.Memo.EncryptedContent}
+			title := memo.Payload.GetEncryptedTitle()
+			if updatePaths["encrypted_title"] {
+				title = request.Memo.EncryptedTitle
+			}
+			nextMemo.Payload = &storepb.MemoPayload{EncryptedContent: request.Memo.EncryptedContent, EncryptedTitle: title}
 			update.Payload = nextMemo.Payload
 		} else if path == "content" {
 			contentUpdated = true

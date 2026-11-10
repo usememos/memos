@@ -1436,6 +1436,8 @@
     "speed": "Kecepatan putar {{rate}}x"
   },
   "e2ee": {
+    "memo-title": "Judul (opsional)",
+    "title-notice": "Judul tidak dienkripsi. Jangan sertakan informasi sensitif.",
     "title": "Memo terenkripsi",
     "passphrase": "Frasa sandi enkripsi",
     "passphrase-help": "Gunakan frasa sandi terpisah dengan minimal 12 karakter.",

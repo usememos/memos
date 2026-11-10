@@ -9,6 +9,8 @@ import (
 	"io"
 	"strconv"
 	"strings"
+	"unicode"
+	"unicode/utf8"
 
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
@@ -138,6 +140,14 @@ func ParseVaultRecord(data []byte) (*VaultRecord, error) {
 	return &v, nil
 }
 
+// ValidateEncryptedTitle bounds the optional plaintext label; it is never parsed as Markdown.
+func ValidateEncryptedTitle(title string) error {
+	if !utf8.ValidString(title) || utf8.RuneCountInString(title) > 256 || strings.ContainsFunc(title, func(r rune) bool { return unicode.IsControl(r) || r == '\u2028' || r == '\u2029' }) {
+		return ErrEncryptionPolicy
+	}
+	return nil
+}
+
 // IsEncryptedMemo reports the immutable encryption kind.
 func IsEncryptedMemo(m *Memo) bool { return m != nil && len(m.Payload.GetEncryptedContent()) > 0 }
 
@@ -162,7 +172,13 @@ func encryptionSQL(query string, postgres bool) string {
 // InsertMemoEncryption reserves an object identity in the memo creation transaction.
 func InsertMemoEncryption(ctx context.Context, tx EncryptionExecutor, m *Memo, postgres bool) error {
 	if !IsEncryptedMemo(m) {
+		if m.Payload.GetEncryptedTitle() != "" {
+			return ErrEncryptionPolicy
+		}
 		return nil
+	}
+	if err := ValidateEncryptedTitle(m.Payload.GetEncryptedTitle()); err != nil {
+		return err
 	}
 	e, err := ParseEncryptedEnvelope(m.Payload.EncryptedContent)
 	if err != nil {
@@ -194,7 +210,7 @@ func ValidateEncryptedUpdate(ctx context.Context, tx EncryptionExecutor, u *Upda
 		return err
 	}
 	if len(p.EncryptedContent) == 0 {
-		if len(u.Payload.GetEncryptedContent()) > 0 {
+		if len(u.Payload.GetEncryptedContent()) > 0 || u.Payload.GetEncryptedTitle() != "" {
 			return ErrEncryptionPolicy
 		}
 		return nil
@@ -205,7 +221,7 @@ func ValidateEncryptedUpdate(ctx context.Context, tx EncryptionExecutor, u *Upda
 	if u.Payload == nil {
 		return nil
 	}
-	if u.Payload.Location != nil || u.Payload.Property != nil || len(u.Payload.Tags) > 0 {
+	if ValidateEncryptedTitle(u.Payload.EncryptedTitle) != nil || u.Payload.Location != nil || u.Payload.Property != nil || len(u.Payload.Tags) > 0 {
 		return ErrEncryptionPolicy
 	}
 	old, err := ParseEncryptedEnvelope(p.EncryptedContent)

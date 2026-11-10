@@ -76,3 +76,26 @@ Interfaces: MemoDraftSeed encryption selection; encrypted records remain ciphert
 - Verification: browser creation, unlock, edit and lock passed; remote-image Markdown stayed inert. SQLite DB/WAL canary scan found no plaintext. Protocol golden vector and 1 MiB boundary checks pass.
 - Environment note: the existing memo-editor-transcription test failed under host Node 26, also on an unchanged baseline snapshot; it passes under the CI Node 24 toolchain. No unrelated transcription code/test was changed.
 - Backend evidence: server/core race suite, all three database suites, cross-driver concurrent-write tests, SQLite backup/restore and protobuf generation/lint/format. Final aggregate verification is recorded in the design's validation record.
+
+## Follow-up: optional plaintext titles (2026-11-10)
+
+Approved directly by the user; execute on the existing feature branch.
+- [x] Add compatible `encrypted_title` API/payload fields and regenerate; validate titles (256 Unicode characters, no controls), reject ordinary-memo usage, and preserve title when older clients update only the envelope.
+- [x] Test API round trips, clearing, invalid titles, old-client preservation and stale title/body updates; verify store persistence across drivers.
+- [x] Add optional labeled title input and plaintext notice; test saved title, title-only edits, locked title/fallback, inert title rendering and no plaintext body leakage.
+- [x] Make creation action a normal-size neutral button with lock icon and spacing; translate new copy into all locales.
+- [x] Run proto lint, server/core race tests, store tests, frontend lint/tests/build; review changes and refresh the running demo.
+
+Review focus: legacy title omission; empty title clearing; conflict atomicity; literal rendering of markup-like titles; lock during unsaved title edits.
+
+
+Follow-up verification: API/editor tests were observed failing before implementation, then passing. Server/core race suite,
+all three store drivers, proto lint/format, frontend lint/build and the full Node 24 frontend suite passed (1,702 tests;
+one opt-in live test skipped). The live test ran separately on disposable port 18082 and passed with plaintext title and
+ciphertext-only body round trips. The prior transcription test showed an intermittent failure also reproduced on the
+unchanged baseline; the final complete run passed. The running demo on port 13001/18081 uses the updated backend.
+
+Final review: independent reviewer found no blocking issues. Final: minor (deferred): HTML maxLength counts UTF-16 units,
+so emoji-heavy titles hit the editor limit before the server's 256-code-point cap; this is a conservative input restriction.
+Title/body conflict atomicity, legacy omission, explicit empty clearing, inert title rendering and title-only dirty handling
+are covered. Browser inspection confirmed existing locked records use the icon/default-title display.

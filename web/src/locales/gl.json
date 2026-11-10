@@ -1436,6 +1436,8 @@
     "speed": "Velocidade de reprodución {{rate}}x"
   },
   "e2ee": {
+    "memo-title": "Título (opcional)",
+    "title-notice": "Os títulos non están cifrados. Non inclúas información sensible.",
     "title": "Notas cifradas",
     "passphrase": "Frase de contrasinal de cifrado",
     "passphrase-help": "Usa unha frase de contrasinal distinta de polo menos 12 caracteres.",

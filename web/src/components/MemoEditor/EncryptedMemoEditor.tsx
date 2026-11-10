@@ -1,5 +1,6 @@
 import { create } from "@bufbuild/protobuf";
-import { Button, Textarea } from "@usememos/ui";
+import { Button, Field, Input, Textarea } from "@usememos/ui";
+import { LockKeyholeIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useBlocker } from "react-router-dom";
 import { VaultPanel } from "@/components/Encryption/VaultPanel";
@@ -40,13 +41,19 @@ function LockedText({ memo, onCancel }: Props) {
   const [open, setOpen] = useState(!memo);
   return (
     <div className="flex w-full flex-col gap-2">
-      {open ? (
-        <VaultPanel />
-      ) : (
-        <Button variant="neutral" onClick={() => setOpen(true)}>
-          {t("e2ee.unlock")}
+      {memo && (
+        <Button
+          variant="ghost"
+          icon={<LockKeyholeIcon />}
+          className="h-auto w-full justify-start gap-2 whitespace-normal py-3 text-left"
+          aria-label={`${t("e2ee.unlock")}: ${memo.encryptedTitle || t("e2ee.title")}`}
+          aria-expanded={open}
+          onClick={() => setOpen(!open)}
+        >
+          <span className="min-w-0 break-words">{memo.encryptedTitle || t("e2ee.title")}</span>
         </Button>
       )}
+      {open && <VaultPanel />}
       {onCancel && (
         <Button variant="ghost" onClick={onCancel}>
           {t("common.cancel")}
@@ -83,6 +90,8 @@ function UnlockedText({ memo, editing = false, onConfirm, onCancel, onSavingChan
   const source = editing ? initialMemo : memo;
   const [content, setContent] = useState("");
   const [saved, setSaved] = useState("");
+  const [title, setTitle] = useState(source?.encryptedTitle ?? "");
+  const [savedTitle, setSavedTitle] = useState(source?.encryptedTitle ?? "");
   const [ready, setReady] = useState(!source);
   const [failed, setFailed] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -90,7 +99,7 @@ function UnlockedText({ memo, editing = false, onConfirm, onCancel, onSavingChan
   const alive = useRef(true);
   const createMemo = useCreateMemo();
   const updateMemo = useUpdateMemo();
-  const dirty = editing && content !== saved;
+  const dirty = editing && (content !== saved || title !== savedTitle);
   useEffect(() => {
     alive.current = true;
     return () => {
@@ -109,6 +118,8 @@ function UnlockedText({ memo, editing = false, onConfirm, onCancel, onSavingChan
       const text = await decryptMemo(key, encrypted);
       if (active && session.current(ticket)) {
         baseline.current = encrypted;
+        setTitle(source.encryptedTitle);
+        setSavedTitle(source.encryptedTitle);
         setContent(text);
         setSaved(text);
         setReady(true);
@@ -132,16 +143,20 @@ function UnlockedText({ memo, editing = false, onConfirm, onCancel, onSavingChan
       const encryptedContent = encodeRecord(envelope);
       const result = memo
         ? await updateMemo.mutateAsync({
-            update: { name: memo.name, encryptedContent },
-            updateMask: ["encrypted_content", "update_time"],
+            update: { name: memo.name, encryptedContent, encryptedTitle: title },
+            updateMask: ["encrypted_content", "encrypted_title", "update_time"],
             expectedEncryptionRevision: baseline.current?.revisionId,
           })
-        : await createMemo.mutateAsync({ memo: create(MemoSchema, { content: "", encryptedContent, visibility: Visibility.PRIVATE }) });
+        : await createMemo.mutateAsync({
+            memo: create(MemoSchema, { content: "", encryptedContent, encryptedTitle: title, visibility: Visibility.PRIVATE }),
+          });
       if (session.current(ticket) && alive.current) {
         baseline.current = envelope;
         setSaved(memo ? content : "");
+        setSavedTitle(memo ? title : "");
         if (!memo) {
           setContent("");
+          setTitle("");
           baseline.current = undefined;
         }
         onConfirm?.(result.name);
@@ -163,6 +178,11 @@ function UnlockedText({ memo, editing = false, onConfirm, onCancel, onSavingChan
       ) : editing ? (
         <>
           <p className="mu-caption text-mu-ink-muted">{t("e2ee.limitations")}</p>
+          <Field.Root>
+            <Field.Label>{t("e2ee.memo-title")}</Field.Label>
+            <Input value={title} maxLength={256} disabled={saving} autoComplete="off" onChange={(event) => setTitle(event.target.value)} />
+            <Field.Description>{t("e2ee.title-notice")}</Field.Description>
+          </Field.Root>
           <Textarea
             aria-label={t("e2ee.title")}
             value={content}
@@ -190,7 +210,10 @@ function UnlockedText({ memo, editing = false, onConfirm, onCancel, onSavingChan
           </div>
         </>
       ) : (
-        <div className="mu-body whitespace-pre-wrap break-words">{content}</div>
+        <>
+          {source?.encryptedTitle && <p className="mu-label break-words">{source.encryptedTitle}</p>}
+          <div className="mu-body whitespace-pre-wrap break-words">{content}</div>
+        </>
       )}
       <Button
         variant="ghost"

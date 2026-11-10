@@ -1437,6 +1437,8 @@
     "speed": "Viteză de redare {{rate}}x"
   },
   "e2ee": {
+    "memo-title": "Titlu (opțional)",
+    "title-notice": "Titlurile nu sunt criptate. Nu includeți informații sensibile.",
     "title": "Notițe criptate",
     "passphrase": "Frază de acces pentru criptare",
     "passphrase-help": "Folosește o frază de acces separată, de cel puțin 12 caractere.",

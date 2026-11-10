@@ -1438,6 +1438,8 @@
     "speed": "Atkūrimo greitis {{rate}}x"
   },
   "e2ee": {
+    "memo-title": "Pavadinimas (neprivaloma)",
+    "title-notice": "Pavadinimai nėra šifruojami. Neįtraukite neskelbtinos informacijos.",
     "title": "Šifruoti užrašai",
     "passphrase": "Šifravimo slaptafrazė",
     "passphrase-help": "Naudokite atskirą, bent 12 ženklų ilgio slaptafrazę.",

@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"strings"
 	"testing"
 	"time"
 
@@ -45,8 +46,9 @@ func TestEncryptionAPI(t *testing.T) {
 		require.Equal(t, codes.NotFound, status.Code(err))
 	}
 	envelope := store.EncryptedEnvelope{Version: 1, VaultID: vault.ID, ObjectID: uuid.NewString(), RevisionID: uuid.NewString(), Body: cipher, DataKey: cipher}
-	memo, err := ts.Service.CreateMemo(ownerCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{Visibility: apipb.Visibility_PRIVATE, EncryptedContent: encode(envelope)}})
+	memo, err := ts.Service.CreateMemo(ownerCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{Visibility: apipb.Visibility_PRIVATE, EncryptedContent: encode(envelope), EncryptedTitle: "공개 제목"}})
 	require.NoError(t, err)
+	require.Equal(t, "공개 제목", memo.EncryptedTitle)
 	require.Empty(t, memo.Content)
 	require.Empty(t, memo.Snippet)
 	require.Empty(t, memo.Tags)
@@ -64,6 +66,35 @@ func TestEncryptionAPI(t *testing.T) {
 	require.NoError(t, err)
 	_, err = ts.Service.UpdateMemo(ownerCtx, req)
 	require.Equal(t, codes.Aborted, status.Code(err))
+
+	// Legacy clients updating only the envelope preserve the optional title.
+	fetched, err := ts.Service.GetMemo(ownerCtx, &apipb.GetMemoRequest{Name: memo.Name})
+	require.NoError(t, err)
+	require.Equal(t, "공개 제목", fetched.EncryptedTitle)
+	for _, title := range []string{"새 제목", ""} {
+		previous := envelope.RevisionID
+		envelope.RevisionID = uuid.NewString()
+		request := &apipb.UpdateMemoRequest{Memo: &apipb.Memo{Name: memo.Name, EncryptedContent: encode(envelope), EncryptedTitle: title}, UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"encrypted_title", "encrypted_content"}}, ExpectedEncryptionRevision: previous}
+		updated, err := ts.Service.UpdateMemo(ownerCtx, request)
+		require.NoError(t, err)
+		require.Equal(t, title, updated.EncryptedTitle)
+		request.Memo.EncryptedTitle = "stale title"
+		_, err = ts.Service.UpdateMemo(ownerCtx, request)
+		require.Equal(t, codes.Aborted, status.Code(err))
+		fetched, err = ts.Service.GetMemo(ownerCtx, &apipb.GetMemoRequest{Name: memo.Name})
+		require.NoError(t, err)
+		require.Equal(t, title, fetched.EncryptedTitle)
+	}
+	_, err = ts.Service.UpdateMemo(ownerCtx, &apipb.UpdateMemoRequest{Memo: &apipb.Memo{Name: memo.Name, EncryptedTitle: "unguarded"}, UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"encrypted_title"}}})
+	require.Equal(t, codes.InvalidArgument, status.Code(err))
+	for _, title := range []string{strings.Repeat("한", 257), "line\nbreak", "control\x00"} {
+		invalid := envelope
+		invalid.ObjectID = uuid.NewString()
+		_, err = ts.Service.CreateMemo(ownerCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{Visibility: apipb.Visibility_PRIVATE, EncryptedContent: encode(invalid), EncryptedTitle: title}})
+		require.Equal(t, codes.InvalidArgument, status.Code(err))
+	}
+	_, err = ts.Service.CreateMemo(ownerCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{Content: "plain", EncryptedTitle: "invalid"}})
+	require.Equal(t, codes.InvalidArgument, status.Code(err))
 
 	// Competing encrypted saves share a revision; exactly one commits and the
 	// loser receives an actionable conflict, never a silent overwrite.

@@ -1436,6 +1436,8 @@
     "speed": "播放速度 {{rate}}x"
   },
   "e2ee": {
+    "memo-title": "标题（可选）",
+    "title-notice": "标题不会加密。请勿包含敏感信息。",
     "title": "加密笔记",
     "passphrase": "加密口令",
     "passphrase-help": "请使用至少 12 个字符的独立口令。",

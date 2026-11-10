@@ -1436,6 +1436,8 @@
     "speed": "Uppspelningshastighet {{rate}}x"
   },
   "e2ee": {
+    "memo-title": "Titel (valfri)",
+    "title-notice": "Titlar krypteras inte. Ta inte med känslig information.",
     "title": "Krypterade anteckningar",
     "passphrase": "Lösenfras för kryptering",
     "passphrase-help": "Använd en separat lösenfras med minst 12 tecken.",

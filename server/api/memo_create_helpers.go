@@ -46,6 +46,12 @@ func (s *APIService) prepareMemoCreate(ctx context.Context, user *store.User, in
 		Content:    input.Content,
 		Visibility: visibility,
 	}
+	if err := store.ValidateEncryptedTitle(input.EncryptedTitle); err != nil {
+		return nil, encryptionError(err)
+	}
+	if len(input.EncryptedContent) == 0 && input.EncryptedTitle != "" {
+		return nil, encryptionError(store.ErrEncryptionPolicy)
+	}
 	if len(input.EncryptedContent) > 0 {
 		if input.Content != "" || visibility != store.Private || input.GetSpace() != "" || input.Location != nil || len(input.Attachments) > 0 || len(input.Relations) > 0 {
 			return nil, encryptionError(store.ErrEncryptionPolicy)
@@ -53,7 +59,7 @@ func (s *APIService) prepareMemoCreate(ctx context.Context, user *store.User, in
 		if _, err := store.ParseEncryptedEnvelope(input.EncryptedContent); err != nil {
 			return nil, encryptionError(err)
 		}
-		memo.Payload = &storepb.MemoPayload{EncryptedContent: input.EncryptedContent}
+		memo.Payload = &storepb.MemoPayload{EncryptedContent: input.EncryptedContent, EncryptedTitle: input.EncryptedTitle}
 	}
 	if input.Space != nil && input.GetSpace() != "" {
 		space, err := s.resolveSpaceForMemoPlacement(ctx, input.GetSpace(), user)

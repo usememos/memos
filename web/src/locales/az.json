@@ -1436,6 +1436,8 @@
     "speed": "Oynatma sürəti {{rate}}x"
   },
   "e2ee": {
+    "memo-title": "Başlıq (istəyə bağlı)",
+    "title-notice": "Başlıqlar şifrələnmir. Həssas məlumat daxil etməyin.",
     "title": "Şifrələnmiş qeydlər",
     "passphrase": "Şifrələmə parol ifadəsi",
     "passphrase-help": "Ən azı 12 simvoldan ibarət ayrıca parol ifadəsi istifadə edin.",

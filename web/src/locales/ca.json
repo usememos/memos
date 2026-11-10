@@ -1437,6 +1437,8 @@
     "speed": "Velocitat de reproducció {{rate}}x"
   },
   "e2ee": {
+    "memo-title": "Títol (opcional)",
+    "title-notice": "Els títols no estan xifrats. No hi inclogueu informació sensible.",
     "title": "Notes xifrades",
     "passphrase": "Frase de contrasenya de xifratge",
     "passphrase-help": "Utilitza una frase de contrasenya diferent de com a mínim 12 caràcters.",
