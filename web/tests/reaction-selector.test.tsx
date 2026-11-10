@@ -26,7 +26,7 @@ describe("ReactionSelector", () => {
 
     const trigger = screen.getByRole("button", { name: "setting.memo.add-reaction" });
     // The default trigger is a round quiet 28px face, closing the strip of reaction pills it follows.
-    expect(trigger).toHaveClass("size-7", "rounded-full", "focus-visible:outline-2");
+    expect(trigger).toHaveClass("size-5", "rounded-mu-sm", "mu-focus");
     expect(trigger.className).not.toMatch(/ring-/);
     expect(trigger).toHaveAttribute("aria-expanded", "false");
 

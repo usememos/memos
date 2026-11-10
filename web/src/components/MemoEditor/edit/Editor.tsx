@@ -84,7 +84,7 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
       data-focus-mode={isFocusMode || undefined}
       data-source-mode={mode === "source" || undefined}
     >
-      <div className={cn("memo-editor-scroller w-full text-base", isFocusMode && "min-h-0 flex-1")}>
+      <div className={cn("memo-editor-scroller w-full text-base leading-6", isFocusMode && "min-h-0 flex-1")}>
         <MemoMarkdown
           editorRef={editorRef}
           value={value}

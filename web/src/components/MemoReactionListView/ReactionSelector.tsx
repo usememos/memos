@@ -1,6 +1,6 @@
+import { Popover, Tooltip } from "@usememos/ui";
 import { SmilePlusIcon } from "lucide-react";
 import { type ReactElement, useState } from "react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useInstance } from "@/contexts/InstanceContext";
 import { cn } from "@/lib/utils";
 import type { Memo } from "@/types/proto/api/memo_service_pb";
@@ -30,28 +30,36 @@ const ReactionSelector = ({ memo, trigger }: Props) => {
   });
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger
-        aria-label={t("setting.memo.add-reaction")}
-        render={trigger ?? <button type="button" className={REACTION_ADD_CLASSES} />}
-      >
-        <SmilePlusIcon className="size-4" strokeWidth={1.8} />
-      </PopoverTrigger>
+    <Popover.Root open={open} onOpenChange={setOpen}>
+      <Tooltip.Root>
+        <Tooltip.Trigger
+          render={
+            <Popover.Trigger
+              aria-label={t("setting.memo.add-reaction")}
+              render={trigger ?? <button type="button" className={REACTION_ADD_CLASSES} />}
+              // A host trigger brings its own icon; the default button draws this one.
+              children={trigger ? undefined : <SmilePlusIcon className="mu-icon" />}
+            />
+          }
+        />
+        <Tooltip.Popup>{t("setting.memo.add-reaction")}</Tooltip.Popup>
+      </Tooltip.Root>
       {/*
        * The header trigger is intentionally hidden once its memo card is no
        * longer hovered. An exit transition would therefore outlive its anchor
        * and Base UI would briefly reposition the portal at (0, 0). Close this
        * picker immediately instead of animating an unanchored popup.
        */}
-      <PopoverContent align="center" className="max-w-[90vw] transition-none sm:max-w-md">
-        <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-1 max-h-64 overflow-y-auto">
+      {/* The list variant gives the grid a Menu's inset; each emoji is a cell with a menu row's height, radius and hover fill. */}
+      <Popover.Popup align="center" variant="list" className="max-w-[90vw] transition-none sm:max-w-md">
+        <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 max-h-64 overflow-y-auto">
           {memoRelatedSetting.reactions.map((reactionType) => (
             <button
               type="button"
               key={reactionType}
               className={cn(
-                "inline-flex w-auto text-base cursor-pointer rounded px-1 text-muted-foreground hover:opacity-80 transition-colors",
-                hasReacted(reactionType) && "bg-secondary text-secondary-foreground",
+                "inline-flex h-8 items-center justify-center rounded-mu-lg text-base cursor-pointer hover:bg-mu-hover",
+                hasReacted(reactionType) && "bg-mu-key",
               )}
               onClick={() => handleReactionClick(reactionType)}
             >
@@ -59,8 +67,8 @@ const ReactionSelector = ({ memo, trigger }: Props) => {
             </button>
           ))}
         </div>
-      </PopoverContent>
-    </Popover>
+      </Popover.Popup>
+    </Popover.Root>
   );
 };
 

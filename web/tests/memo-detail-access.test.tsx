@@ -27,7 +27,7 @@ vi.mock("@/contexts/MentionResolutionContext", () => ({
   MentionResolutionProvider: ({ children }: { children: ReactNode }) => children,
 }));
 vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
-vi.mock("react-hot-toast", () => ({ toast: { error: state.toastError } }));
+vi.mock("@/lib/toast", () => ({ toast: { add: state.toastError, close: vi.fn() }, showErrorToast: state.toastError }));
 
 function renderDetail(client: QueryClient, name = "memos/restored") {
   return render(

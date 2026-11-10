@@ -1,14 +1,13 @@
+import { Badge, Button } from "@usememos/ui";
 import { useEffect, useMemo, useState } from "react";
-import { toast } from "react-hot-toast";
 import InfoChip from "@/components/Settings/InfoChip";
 import { getIdentityProviderTypeLabel, getSSOProviderUid } from "@/components/Settings/sso-display";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { identityProviderServiceClient, userServiceClient } from "@/connect";
 import { findManagedResource, useConfigurationStatus } from "@/hooks/useConfigurationQueries";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { absolutifyLink } from "@/lib/browser";
 import { handleError } from "@/lib/error";
+import { showErrorToast, toast } from "@/lib/toast";
 import { IdentityProvider, IdentityProvider_Type } from "@/types/proto/api/idp_service_pb";
 import { LinkedIdentity } from "@/types/proto/api/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
@@ -52,7 +51,7 @@ const LinkedIdentitySection = () => {
       return;
     }
     fetchData().catch((error: unknown) => {
-      handleError(error, toast.error, {
+      handleError(error, showErrorToast, {
         context: "Load linked identities",
       });
     });
@@ -98,7 +97,7 @@ const LinkedIdentitySection = () => {
     const redirectUri = absolutifyLink("/auth/callback");
     const oauth2Config = identityProvider.config?.config?.case === "oauth2Config" ? identityProvider.config.config.value : undefined;
     if (!oauth2Config) {
-      toast.error("Identity provider configuration is invalid.");
+      showErrorToast(t("setting.sso.invalid-config"));
       return;
     }
 
@@ -118,9 +117,9 @@ const LinkedIdentitySection = () => {
 
       window.location.href = authUrl;
     } catch (error) {
-      handleError(error, toast.error, {
+      handleError(error, showErrorToast, {
         context: "Failed to initiate OAuth flow",
-        fallbackMessage: "Failed to initiate account linking. Please try again.",
+        fallbackMessage: t("error.link-identity-failed"),
       });
     }
   };
@@ -134,11 +133,11 @@ const LinkedIdentitySection = () => {
         name: row.linkedIdentity.name,
       });
       await fetchData();
-      toast.success(t("setting.sso.unlink-success", { name: row.title }));
+      toast.add({ title: t("setting.sso.unlink-success", { name: row.title }), type: "success" });
     } catch (error) {
-      handleError(error, toast.error, {
+      handleError(error, showErrorToast, {
         context: "Delete linked identity",
-        fallbackMessage: "Failed to unlink identity provider.",
+        fallbackMessage: t("error.unlink-identity-failed"),
       });
     }
   };
@@ -154,10 +153,8 @@ const LinkedIdentitySection = () => {
             render: (_, row: LinkedIdentityRow) => (
               <div className="flex min-w-[16rem] flex-col gap-2">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-sm font-medium text-foreground">{row.title}</span>
-                  <Badge variant="neutral" shape="pill">
-                    {row.typeLabel}
-                  </Badge>
+                  <span className="mu-label text-mu-ink">{row.title}</span>
+                  <Badge>{row.typeLabel}</Badge>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <InfoChip label={t("setting.sso.provider-uid")} value={row.providerUid} />
@@ -171,7 +168,7 @@ const LinkedIdentitySection = () => {
             render: (_, row: LinkedIdentityRow) => (
               <div className="flex min-w-[22rem] flex-col gap-2">
                 <div className="flex flex-wrap items-center gap-2">
-                  <Badge variant={row.isLinked ? "neutral" : "outline"} shape="pill">
+                  <Badge tone={row.isLinked ? "neutral" : "outline"}>
                     {row.isLinked ? t("setting.sso.linked") : t("setting.sso.not-linked")}
                   </Badge>
                   {row.isLinked && row.externalUid ? (
@@ -179,7 +176,7 @@ const LinkedIdentitySection = () => {
                   ) : null}
                   <ManagedByConfigurationChip resource={findManagedResource(configurationStatus, row.linkedIdentity?.name ?? "")} />
                 </div>
-                <p className="text-xs text-muted-foreground">
+                <p className="mu-caption text-mu-ink-muted">
                   {row.isLinked ? t("setting.sso.extern-uid-description") : t("setting.sso.not-linked-description")}
                 </p>
               </div>
@@ -188,17 +185,18 @@ const LinkedIdentitySection = () => {
           {
             key: "actions",
             header: "",
-            className: "w-px text-right",
+            className: "w-px",
+            alignEnd: true,
             render: (_, row: LinkedIdentityRow) =>
               row.linkedIdentity ? (
                 // A link the configuration declares is unlinked in its file, not here.
                 findManagedResource(configurationStatus, row.linkedIdentity.name) ? null : (
-                  <Button variant="outline" size="sm" onClick={() => handleUnlinkIdentityProvider(row)}>
+                  <Button variant="neutral" onClick={() => handleUnlinkIdentityProvider(row)}>
                     {t("common.unlink")}
                   </Button>
                 )
               ) : (
-                <Button variant="outline" size="sm" onClick={() => handleLinkIdentityProvider(row.identityProvider)}>
+                <Button variant="neutral" onClick={() => handleLinkIdentityProvider(row.identityProvider)}>
                   {t("common.link")}
                 </Button>
               ),

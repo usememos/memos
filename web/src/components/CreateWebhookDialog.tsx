@@ -1,17 +1,15 @@
 import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
+import { Button, Dialog, Field, Input, Tooltip } from "@usememos/ui";
 import copy from "copy-to-clipboard";
 import { CheckIcon, CopyIcon, EyeIcon } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { toast } from "react-hot-toast";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { userServiceClient } from "@/connect";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { useFieldErrors } from "@/hooks/useFieldErrors";
 import useLoading from "@/hooks/useLoading";
 import { handleError } from "@/lib/error";
+import { showErrorToast } from "@/lib/toast";
 import { useTranslate } from "@/utils/i18n";
 
 interface Props {
@@ -28,6 +26,7 @@ interface State {
 
 function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: Props) {
   const t = useTranslate();
+  const fieldErrors = useFieldErrors<"displayName" | "url">();
   const currentUser = useCurrentUser();
   const isCreating = webhookName === undefined;
   const [state, setState] = useState<State>({ displayName: "", url: "" });
@@ -65,10 +64,12 @@ function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: Pro
   }, [open, isCreating]);
 
   const handleTitleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    fieldErrors.clear("displayName");
     setState((prev) => ({ ...prev, displayName: e.target.value }));
   };
 
   const handleUrlInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    fieldErrors.clear("url");
     setState((prev) => ({ ...prev, url: e.target.value }));
   };
 
@@ -86,7 +87,7 @@ function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: Pro
       setRevealedSecret(signingSecret);
       secretState.setFinish();
     } catch (error: unknown) {
-      handleError(error, toast.error, { context: "Reveal signing secret", onError: () => secretState.setError() });
+      handleError(error, showErrorToast, { context: "Reveal signing secret", onError: () => secretState.setError() });
     }
   };
 
@@ -107,7 +108,7 @@ function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: Pro
       handleCopySecret(secret);
       secretState.setFinish();
     } catch (error: unknown) {
-      handleError(error, toast.error, { context: "Generate signing secret", onError: () => secretState.setError() });
+      handleError(error, showErrorToast, { context: "Generate signing secret", onError: () => secretState.setError() });
     }
   };
 
@@ -121,12 +122,12 @@ function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: Pro
 
   const handleSaveBtnClick = async () => {
     if (!state.displayName || !state.url) {
-      toast.error(t("message.fill-all-required-fields"));
+      fieldErrors.set(!state.displayName ? "displayName" : "url", t("message.fill-all-required-fields"));
       return;
     }
 
     if (!currentUser) {
-      toast.error("User not authenticated");
+      showErrorToast(t("message.not-signed-in"));
       return;
     }
 
@@ -163,7 +164,7 @@ function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: Pro
       onOpenChange(false);
       requestState.setFinish();
     } catch (error: unknown) {
-      handleError(error, toast.error, {
+      handleError(error, showErrorToast, {
         context: webhookName ? "Update webhook" : "Create webhook",
         onError: () => requestState.setError(),
       });
@@ -172,22 +173,27 @@ function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: Pro
 
   const renderSecretField = (secret: string) => (
     <div className="flex items-center gap-2">
-      <Input readOnly type="text" value={secret} className="flex-1 font-mono text-xs" />
-      <Button
-        type="button"
-        variant="outline"
-        size="icon"
-        onClick={() => handleCopySecret(secret)}
-        aria-label={t("setting.webhook.create-dialog.copy-secret")}
-      >
-        {secretCopied ? <CheckIcon className="h-4 w-4 text-success" /> : <CopyIcon className="h-4 w-4" />}
-      </Button>
+      <Input readOnly type="text" value={secret} className="flex-1 font-mono" />
+      <Tooltip.Root>
+        <Tooltip.Trigger
+          render={
+            <Button
+              type="button"
+              variant="neutral"
+              onClick={() => handleCopySecret(secret)}
+              aria-label={t("setting.webhook.create-dialog.copy-secret")}
+              icon={secretCopied ? <CheckIcon /> : <CopyIcon />}
+            />
+          }
+        />
+        <Tooltip.Popup>{t("setting.webhook.create-dialog.copy-secret")}</Tooltip.Popup>
+      </Tooltip.Root>
     </div>
   );
 
   const renderSigningSecret = () => {
     if (isCreating) {
-      return <span className="text-xs text-muted-foreground">{t("setting.webhook.create-dialog.signing-secret-auto-note")}</span>;
+      return <Field.Description>{t("setting.webhook.create-dialog.signing-secret-auto-note")}</Field.Description>;
     }
     if (revealedSecret !== undefined) {
       return renderSecretField(revealedSecret);
@@ -195,9 +201,15 @@ function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: Pro
     if (hasExistingSecret) {
       return (
         <div className="flex items-center gap-2">
-          <span className="flex-1 text-xs text-muted-foreground">{t("setting.webhook.create-dialog.signing-secret-configured")}</span>
-          <Button type="button" variant="outline" size="sm" onClick={handleRevealSecret} disabled={secretState.isLoading}>
-            <EyeIcon className="mr-1 h-3.5 w-3.5" />
+          <span className="flex-1 mu-caption text-mu-ink-muted">{t("setting.webhook.create-dialog.signing-secret-configured")}</span>
+          <Button
+            type="button"
+            variant="neutral"
+            size="sm"
+            onClick={handleRevealSecret}
+            disabled={secretState.isLoading}
+            icon={<EyeIcon />}
+          >
             {t("setting.webhook.create-dialog.reveal-secret")}
           </Button>
         </div>
@@ -205,8 +217,8 @@ function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: Pro
     }
     return (
       <div className="flex items-center gap-2">
-        <span className="flex-1 text-xs text-muted-foreground">{t("setting.webhook.create-dialog.signing-secret-not-configured")}</span>
-        <Button type="button" variant="outline" size="sm" onClick={handleGenerateSecret} disabled={secretState.isLoading}>
+        <span className="flex-1 mu-caption text-mu-ink-muted">{t("setting.webhook.create-dialog.signing-secret-not-configured")}</span>
+        <Button type="button" variant="neutral" onClick={handleGenerateSecret} disabled={secretState.isLoading}>
           {t("setting.webhook.create-dialog.generate-secret")}
         </Button>
       </div>
@@ -214,25 +226,23 @@ function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: Pro
   };
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>
-            {isCreating ? t("setting.webhook.create-dialog.create-webhook") : t("setting.webhook.create-dialog.edit-webhook")}
-          </DialogTitle>
-        </DialogHeader>
+    <Dialog.Root open={open} onOpenChange={handleOpenChange}>
+      <Dialog.Popup closeLabel={t("common.close")}>
+        <Dialog.Title>
+          {isCreating ? t("setting.webhook.create-dialog.create-webhook") : t("setting.webhook.create-dialog.edit-webhook")}
+        </Dialog.Title>
         {createdSecret !== undefined ? (
-          <div className="grid gap-2">
-            <Label>{t("setting.webhook.create-dialog.signing-secret")}</Label>
-            <span className="text-xs text-muted-foreground">{t("setting.webhook.create-dialog.signing-secret-created-note")}</span>
+          <Field.Root>
+            <Field.Label>{t("setting.webhook.create-dialog.signing-secret")}</Field.Label>
+            <Field.Description>{t("setting.webhook.create-dialog.signing-secret-created-note")}</Field.Description>
             {renderSecretField(createdSecret)}
-          </div>
+          </Field.Root>
         ) : (
           <div className="flex flex-col gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="displayName">
-                {t("setting.webhook.create-dialog.title")} <span className="text-destructive">*</span>
-              </Label>
+            <Field.Root invalid={!!fieldErrors.errors.displayName}>
+              <Field.Label>
+                {t("setting.webhook.create-dialog.title")} <span className="text-mu-danger">*</span>
+              </Field.Label>
               <Input
                 id="displayName"
                 type="text"
@@ -240,11 +250,12 @@ function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: Pro
                 value={state.displayName}
                 onChange={handleTitleInputChange}
               />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="url">
-                {t("setting.webhook.create-dialog.payload-url")} <span className="text-destructive">*</span>
-              </Label>
+              {fieldErrors.errors.displayName && <Field.Error match>{fieldErrors.errors.displayName}</Field.Error>}
+            </Field.Root>
+            <Field.Root invalid={!!fieldErrors.errors.url}>
+              <Field.Label>
+                {t("setting.webhook.create-dialog.payload-url")} <span className="text-mu-danger">*</span>
+              </Field.Label>
               <Input
                 id="url"
                 type="text"
@@ -252,29 +263,32 @@ function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: Pro
                 value={state.url}
                 onChange={handleUrlInputChange}
               />
-            </div>
-            <div className="grid gap-2">
-              <Label>{t("setting.webhook.create-dialog.signing-secret")}</Label>
+              {fieldErrors.errors.url && <Field.Error match>{fieldErrors.errors.url}</Field.Error>}
+            </Field.Root>
+            <Field.Root>
+              <Field.Label>{t("setting.webhook.create-dialog.signing-secret")}</Field.Label>
               {renderSigningSecret()}
-            </div>
+            </Field.Root>
           </div>
         )}
-        <DialogFooter>
+        <Dialog.Footer>
           {createdSecret !== undefined ? (
-            <Button onClick={() => handleOpenChange(false)}>{t("common.close")}</Button>
+            <Button variant="primary" onClick={() => handleOpenChange(false)}>
+              {t("common.close")}
+            </Button>
           ) : (
             <>
               <Button variant="ghost" disabled={requestState.isLoading} onClick={() => onOpenChange(false)}>
                 {t("common.cancel")}
               </Button>
-              <Button disabled={requestState.isLoading} onClick={handleSaveBtnClick}>
+              <Button variant="primary" disabled={requestState.isLoading} onClick={handleSaveBtnClick}>
                 {isCreating ? t("common.create") : t("common.save")}
               </Button>
             </>
           )}
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </Dialog.Footer>
+      </Dialog.Popup>
+    </Dialog.Root>
   );
 }
 

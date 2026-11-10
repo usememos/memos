@@ -1,19 +1,14 @@
 import { create } from "@bufbuild/protobuf";
+import { Badge, Button, Dialog, Field, Input, Menu, Select, Textarea, Tooltip } from "@usememos/ui";
 import { isEqual } from "lodash-es";
 import { MoreVerticalIcon, PlusIcon } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { toast } from "react-hot-toast";
 import { v4 as uuidv4 } from "uuid";
 import ConfirmDialog from "@/components/ConfirmDialog";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { useInstance } from "@/contexts/InstanceContext";
 import { isFieldManaged, useManagedResource } from "@/hooks/useConfigurationQueries";
+import { useFieldErrors } from "@/hooks/useFieldErrors";
+import { showErrorToast } from "@/lib/toast";
 import {
   InstanceSetting_AIProviderConfig,
   InstanceSetting_AIProviderConfigSchema,
@@ -27,7 +22,6 @@ import {
 import { useTranslate } from "@/utils/i18n";
 import ManagedByConfigurationChip from "./ManagedByConfigurationChip";
 import SettingGroup from "./SettingGroup";
-import { SettingPanel } from "./SettingList";
 import SettingSection from "./SettingSection";
 import SettingTable from "./SettingTable";
 import useInstanceSettingUpdater, { buildInstanceSettingName } from "./useInstanceSettingUpdater";
@@ -176,15 +170,6 @@ const AISection = () => {
     const title = provider.title.trim();
     const endpoint = provider.endpoint.trim();
 
-    if (!title) {
-      toast.error(t("setting.ai.provider-title-required"));
-      return;
-    }
-    if (!provider.apiKeySet && !provider.apiKey.trim()) {
-      toast.error(t("setting.ai.api-key-required"));
-      return;
-    }
-
     const normalizedProvider = { ...provider, title, endpoint };
     const exists = providers.some((item) => item.id === normalizedProvider.id);
     const nextProviders = exists
@@ -222,7 +207,7 @@ const AISection = () => {
 
   const handleSaveTranscription = async () => {
     if (transcription.providerId && !transcriptionProviderRef) {
-      toast.error(t("setting.ai.transcription-empty-providers"));
+      showErrorToast(t("setting.ai.transcription-empty-providers"));
       return;
     }
     await persistAISetting(providers, toTranscriptionConfig(transcription), "Update transcription");
@@ -232,31 +217,28 @@ const AISection = () => {
     <SettingSection
       title={t("setting.ai.label")}
       actions={
-        <Button disabled={providersLocked} onClick={handleCreateProvider}>
-          <PlusIcon className="w-4 h-4 mr-2" />
+        <Button variant="neutral" disabled={providersLocked} onClick={handleCreateProvider} icon={<PlusIcon />}>
           {t("setting.ai.add-provider")}
         </Button>
       }
     >
-      <SettingPanel className="bg-muted/30 px-4 py-3">
+      <div>
         <div className="flex max-w-3xl flex-col gap-2">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-md border border-border bg-background px-2 py-0.5 text-xs font-medium text-foreground">
-              {t("setting.ai.byok-label")}
-            </span>
-            <h4 className="text-sm font-semibold text-foreground">{t("setting.ai.byok-title")}</h4>
+            <Badge tone="outline">{t("setting.ai.byok-label")}</Badge>
+            <h4 className="mu-label text-mu-ink">{t("setting.ai.byok-title")}</h4>
           </div>
-          <p className="text-sm text-muted-foreground">{t("setting.ai.byok-description")}</p>
-          <ul className="space-y-1 text-sm text-muted-foreground">
+          <p className="mu-body text-mu-ink-muted">{t("setting.ai.byok-description")}</p>
+          <ul className="space-y-1 mu-body text-mu-ink-muted">
             {byokNotes.map((note) => (
               <li key={note} className="flex gap-2">
-                <span className="mt-2 size-1 rounded-full bg-muted-foreground/60" aria-hidden />
+                <span className="mt-2 size-1 rounded-full bg-mu-ink-muted/60" aria-hidden />
                 <span>{t(note)}</span>
               </li>
             ))}
           </ul>
         </div>
-      </SettingPanel>
+      </div>
 
       <SettingGroup
         title={t("setting.ai.integrations-title")}
@@ -270,8 +252,8 @@ const AISection = () => {
               header: t("common.name"),
               render: (_, provider: LocalAIProvider) => (
                 <div className="flex flex-col gap-0.5">
-                  <span className="text-foreground">{provider.title}</span>
-                  <span className="font-mono text-xs text-muted-foreground">{provider.id}</span>
+                  <span className="text-mu-ink">{provider.title}</span>
+                  <span className="font-mono mu-caption text-mu-ink-muted">{provider.id}</span>
                 </div>
               ),
             },
@@ -284,36 +266,45 @@ const AISection = () => {
               key: "endpoint",
               header: t("setting.ai.endpoint"),
               render: (_, provider: LocalAIProvider) => (
-                <span className="font-mono text-xs">{provider.endpoint || t("setting.ai.default-endpoint")}</span>
+                <span className="font-mono mu-caption">{provider.endpoint || t("setting.ai.default-endpoint")}</span>
               ),
             },
             {
               key: "apiKeySet",
               header: t("setting.ai.api-key"),
               render: (_, provider: LocalAIProvider) => (
-                <span className="font-mono text-xs">{provider.apiKeySet ? provider.apiKeyHint || t("setting.ai.configured") : "-"}</span>
+                <span className="font-mono mu-caption">{provider.apiKeySet ? provider.apiKeyHint || t("setting.ai.configured") : "-"}</span>
               ),
             },
             {
               key: "actions",
               header: "",
-              className: "text-right",
+              alignEnd: true,
               render: (_, provider: LocalAIProvider) => (
-                <DropdownMenu>
-                  <DropdownMenuTrigger render={<Button variant="outline" size="sm" />}>
-                    <MoreVerticalIcon className="w-4 h-auto" />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" sideOffset={2}>
-                    <DropdownMenuItem disabled={providersLocked} onClick={() => handleEditProvider(provider)}>
+                <Menu.Root modal={false}>
+                  <Tooltip.Root>
+                    <Tooltip.Trigger
+                      render={
+                        <Menu.Trigger
+                          render={
+                            <Button variant="ghost" aria-label={`${t("common.more")}: ${provider.title}`} icon={<MoreVerticalIcon />} />
+                          }
+                        />
+                      }
+                    />
+                    <Tooltip.Popup>{t("common.more")}</Tooltip.Popup>
+                  </Tooltip.Root>
+                  <Menu.Popup align="end">
+                    <Menu.Item disabled={providersLocked} onClick={() => handleEditProvider(provider)}>
                       {t("common.edit")}
-                    </DropdownMenuItem>
+                    </Menu.Item>
                     {providersLocked ? null : (
-                      <DropdownMenuItem onClick={() => setDeleteTarget(provider)} className="text-destructive focus:text-destructive">
+                      <Menu.Item onClick={() => setDeleteTarget(provider)} danger>
                         {t("common.delete")}
-                      </DropdownMenuItem>
+                      </Menu.Item>
                     )}
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                  </Menu.Popup>
+                </Menu.Root>
               ),
             },
           ]}
@@ -330,7 +321,7 @@ const AISection = () => {
         actions={
           <>
             {transcriptionLocked ? <ManagedByConfigurationChip resource={managed} /> : null}
-            <Button disabled={transcriptionLocked || !transcriptionHasChanges} onClick={handleSaveTranscription}>
+            <Button variant="primary" disabled={transcriptionLocked || !transcriptionHasChanges} onClick={handleSaveTranscription}>
               {t("common.save")}
             </Button>
           </>
@@ -358,7 +349,7 @@ const AISection = () => {
         confirmLabel={t("common.delete")}
         cancelLabel={t("common.cancel")}
         onConfirm={handleDeleteProvider}
-        confirmVariant="destructive"
+        confirmVariant="danger"
       />
     </SettingSection>
   );
@@ -398,33 +389,33 @@ const TranscriptionForm = ({ locked, providers, transcription, referencedProvide
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-3xl">
-      <div className="flex flex-col gap-1.5 sm:col-span-2">
-        <Label>{t("setting.ai.transcription-provider")}</Label>
-        <Select
+      <Field.Root className="sm:col-span-2">
+        <Field.Label>{t("setting.ai.transcription-provider")}</Field.Label>
+        <Select.Root
           value={transcription.providerId || "__none__"}
           items={providerOptions}
-          onValueChange={(value) => update({ providerId: value === "__none__" ? "" : value })}
+          onValueChange={(value) => update({ providerId: !value || value === "__none__" ? "" : value })}
           disabled={locked || noProviders}
         >
-          <SelectTrigger className="w-full">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
+          <Select.Trigger className="w-full">
+            <Select.Value />
+          </Select.Trigger>
+          <Select.Popup>
             {providerOptions.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
+              <Select.Item key={option.value} value={option.value}>
                 {option.label}
-              </SelectItem>
+              </Select.Item>
             ))}
-          </SelectContent>
-        </Select>
-        {noProviders && <p className="text-xs text-muted-foreground">{t("setting.ai.transcription-empty-providers")}</p>}
+          </Select.Popup>
+        </Select.Root>
+        {noProviders && <Field.Description>{t("setting.ai.transcription-empty-providers")}</Field.Description>}
         {referencedProvider && !referencedProvider.apiKeySet && (
-          <p className="text-xs text-destructive">{t("setting.ai.transcription-warning-no-key")}</p>
+          <p className="mu-caption text-mu-danger">{t("setting.ai.transcription-warning-no-key")}</p>
         )}
-      </div>
+      </Field.Root>
 
-      <div className="flex flex-col gap-1.5 sm:col-span-2">
-        <Label>{t("setting.ai.transcription-model")}</Label>
+      <Field.Root className="sm:col-span-2">
+        <Field.Label>{t("setting.ai.transcription-model")}</Field.Label>
         <Input
           value={transcription.model}
           onChange={(e) => update({ model: e.target.value })}
@@ -432,11 +423,11 @@ const TranscriptionForm = ({ locked, providers, transcription, referencedProvide
           disabled={fieldsDisabled}
           maxLength={256}
         />
-        <p className="text-xs text-muted-foreground">{t("setting.ai.transcription-model-help")}</p>
-      </div>
+        <Field.Description>{t("setting.ai.transcription-model-help")}</Field.Description>
+      </Field.Root>
 
-      <div className="flex flex-col gap-1.5">
-        <Label>{t("setting.ai.transcription-language")}</Label>
+      <Field.Root>
+        <Field.Label>{t("setting.ai.transcription-language")}</Field.Label>
         <Input
           value={transcription.language}
           onChange={(e) => update({ language: e.target.value })}
@@ -444,11 +435,11 @@ const TranscriptionForm = ({ locked, providers, transcription, referencedProvide
           disabled={fieldsDisabled}
           maxLength={32}
         />
-        <p className="text-xs text-muted-foreground">{t("setting.ai.transcription-language-help")}</p>
-      </div>
+        <Field.Description>{t("setting.ai.transcription-language-help")}</Field.Description>
+      </Field.Root>
 
-      <div className="flex flex-col gap-1.5 sm:col-span-2">
-        <Label>{t("setting.ai.transcription-prompt")}</Label>
+      <Field.Root className="sm:col-span-2">
+        <Field.Label>{t("setting.ai.transcription-prompt")}</Field.Label>
         <Textarea
           value={transcription.prompt}
           onChange={(e) => update({ prompt: e.target.value })}
@@ -457,8 +448,8 @@ const TranscriptionForm = ({ locked, providers, transcription, referencedProvide
           disabled={fieldsDisabled}
           maxLength={4096}
         />
-        <p className="text-xs text-muted-foreground">{t("setting.ai.transcription-prompt-help")}</p>
-      </div>
+        <Field.Description>{t("setting.ai.transcription-prompt-help")}</Field.Description>
+      </Field.Root>
     </div>
   );
 };
@@ -472,86 +463,111 @@ interface AIProviderDialogProps {
 const AIProviderDialog = ({ provider, onOpenChange, onSave }: AIProviderDialogProps) => {
   const t = useTranslate();
   const [draft, setDraft] = useState<LocalAIProvider>(() => provider ?? newProvider());
+  const fieldErrors = useFieldErrors<"title" | "apiKey">();
 
+  // A newly opened provider starts clean: its draft and no errors from the last one.
   useEffect(() => {
     const next = provider ?? newProvider();
     setDraft(next);
+    fieldErrors.clear("title");
+    fieldErrors.clear("apiKey");
   }, [provider]);
 
   const updateDraft = (partial: Partial<LocalAIProvider>) => {
     setDraft((prev) => ({ ...prev, ...partial }));
   };
 
+  // Missing fields show under the field, as in the other settings dialogs.
   const handleSave = () => {
+    if (!draft.title.trim()) {
+      fieldErrors.set("title", t("setting.ai.provider-title-required"));
+      return;
+    }
+    if (!draft.apiKeySet && !draft.apiKey.trim()) {
+      fieldErrors.set("apiKey", t("setting.ai.api-key-required"));
+      return;
+    }
     onSave(draft);
   };
 
   return (
-    <Dialog open={!!provider} onOpenChange={onOpenChange}>
-      <DialogContent size="2xl">
-        <DialogHeader>
-          <DialogTitle>{provider?.apiKeySet ? t("setting.ai.edit-provider") : t("setting.ai.add-provider")}</DialogTitle>
-          <DialogDescription>{t("setting.ai.dialog-description")}</DialogDescription>
-        </DialogHeader>
+    <Dialog.Root open={!!provider} onOpenChange={onOpenChange}>
+      <Dialog.Popup closeLabel={t("common.close")} style={{ "--mu-dialog-width": "42rem" } as React.CSSProperties}>
+        <Dialog.Title>{provider?.apiKeySet ? t("setting.ai.edit-provider") : t("setting.ai.add-provider")}</Dialog.Title>
+        <Dialog.Description>{t("setting.ai.dialog-description")}</Dialog.Description>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div className="flex flex-col gap-1.5">
-            <Label>{t("setting.ai.provider-title")}</Label>
-            <Input value={draft.title} onChange={(e) => updateDraft({ title: e.target.value })} placeholder="OpenAI" />
-          </div>
+          <Field.Root invalid={!!fieldErrors.errors.title}>
+            <Field.Label>{t("setting.ai.provider-title")}</Field.Label>
+            <Input
+              value={draft.title}
+              onChange={(e) => {
+                updateDraft({ title: e.target.value });
+                fieldErrors.clear("title");
+              }}
+              placeholder="OpenAI"
+            />
+            {fieldErrors.errors.title && <Field.Error match>{fieldErrors.errors.title}</Field.Error>}
+          </Field.Root>
 
-          <div className="flex flex-col gap-1.5">
-            <Label>{t("setting.ai.provider-type")}</Label>
-            <Select
+          <Field.Root>
+            <Field.Label>{t("setting.ai.provider-type")}</Field.Label>
+            <Select.Root
               value={String(draft.type)}
               items={providerTypeSelectOptions}
               onValueChange={(value) => updateDraft({ type: Number(value) as InstanceSetting_AIProviderType })}
             >
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
+              <Select.Trigger className="w-full">
+                <Select.Value />
+              </Select.Trigger>
+              <Select.Popup>
                 {providerTypeSelectOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
+                  <Select.Item key={option.value} value={option.value}>
                     {option.label}
-                  </SelectItem>
+                  </Select.Item>
                 ))}
-              </SelectContent>
-            </Select>
-          </div>
+              </Select.Popup>
+            </Select.Root>
+          </Field.Root>
 
-          <div className="flex flex-col gap-1.5 sm:col-span-2">
-            <Label>{t("setting.ai.endpoint")}</Label>
+          <Field.Root className="sm:col-span-2">
+            <Field.Label>{t("setting.ai.endpoint")}</Field.Label>
             <Input
               value={draft.endpoint}
               onChange={(e) => updateDraft({ endpoint: e.target.value })}
               placeholder={getDefaultEndpointPlaceholder(draft.type)}
             />
-            <p className="text-xs text-muted-foreground">{t("setting.ai.endpoint-hint")}</p>
-          </div>
+            <Field.Description>{t("setting.ai.endpoint-hint")}</Field.Description>
+          </Field.Root>
 
-          <div className="flex flex-col gap-1.5 sm:col-span-2">
-            <Label>{t("setting.ai.api-key")}</Label>
+          <Field.Root className="sm:col-span-2" invalid={!!fieldErrors.errors.apiKey}>
+            <Field.Label>{t("setting.ai.api-key")}</Field.Label>
             <Input
               type="password"
               value={draft.apiKey}
-              onChange={(e) => updateDraft({ apiKey: e.target.value })}
+              onChange={(e) => {
+                updateDraft({ apiKey: e.target.value });
+                fieldErrors.clear("apiKey");
+              }}
               placeholder={draft.apiKeySet ? t("setting.ai.keep-api-key") : ""}
             />
             {draft.apiKeySet && (
-              <p className="text-xs text-muted-foreground">{t("setting.ai.current-key", { key: draft.apiKeyHint || "-" })}</p>
+              <p className="mu-caption text-mu-ink-muted">{t("setting.ai.current-key", { key: draft.apiKeyHint || "-" })}</p>
             )}
-          </div>
+            {fieldErrors.errors.apiKey && <Field.Error match>{fieldErrors.errors.apiKey}</Field.Error>}
+          </Field.Root>
         </div>
 
-        <DialogFooter>
+        <Dialog.Footer>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
             {t("common.cancel")}
           </Button>
-          <Button onClick={handleSave}>{t("common.save")}</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          <Button variant="primary" onClick={handleSave}>
+            {t("common.save")}
+          </Button>
+        </Dialog.Footer>
+      </Dialog.Popup>
+    </Dialog.Root>
   );
 };
 

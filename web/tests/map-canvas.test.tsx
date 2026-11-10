@@ -125,7 +125,7 @@ describe("map pins", () => {
     expect(lastMarker("a").icon).toBe(lastMarker("b").icon);
     rerender(<MapCanvas {...props()} memos={[place("memos/a"), place("memos/b")]} pins={pins} selected={["memos/a"]} />);
     expect(lastMarker("a").icon).not.toBe(lastMarker("b").icon);
-    expect(lastMarker("a").icon.options.html).toContain("bg-primary/20");
+    expect(lastMarker("a").icon.options.html).toContain("bg-mu-primary/20");
   });
 
   it("writes a label that resolves after the first draw onto the live marker", () => {

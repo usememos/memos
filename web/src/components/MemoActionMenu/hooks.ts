@@ -1,7 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import copy from "copy-to-clipboard";
 import { useCallback } from "react";
-import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
 import { useInstance } from "@/contexts/InstanceContext";
 import { memoKeys, useDeleteMemo, useUpdateMemo } from "@/hooks/useMemoQueries";
@@ -9,6 +8,7 @@ import useNavigateTo from "@/hooks/useNavigateTo";
 import { userKeys } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
 import { extractMemoIdFromName } from "@/lib/resource-names";
+import { showErrorToast, toast } from "@/lib/toast";
 import { ROUTES } from "@/router/routes";
 import { State } from "@/types/proto/api/common_pb";
 import type { Memo } from "@/types/proto/api/memo_service_pb";
@@ -52,11 +52,11 @@ export const useMemoActionHandlers = ({ memo, parentPage, onEdit, setDeleteDialo
           },
           updateMask: ["content", "update_time"],
         });
-        toast.success(t("memo.task-actions.updated"));
+        toast.add({ title: t("memo.task-actions.updated"), type: "success" });
       } catch (error: unknown) {
-        handleError(error, toast.error, {
+        handleError(error, showErrorToast, {
           context,
-          fallbackMessage: "An error occurred",
+          fallbackMessage: t("common.error-occurred"),
         });
       }
     },
@@ -94,11 +94,11 @@ export const useMemoActionHandlers = ({ memo, parentPage, onEdit, setDeleteDialo
         },
         updateMask: ["state"],
       });
-      toast.success(message);
+      toast.add({ title: message, type: "success" });
     } catch (error: unknown) {
-      handleError(error, toast.error, {
+      handleError(error, showErrorToast, {
         context: `${isArchiving ? "Archive" : "Restore"} memo`,
-        fallbackMessage: "An error occurred",
+        fallbackMessage: t("common.error-occurred"),
       });
       return;
     }
@@ -117,12 +117,12 @@ export const useMemoActionHandlers = ({ memo, parentPage, onEdit, setDeleteDialo
     // A comment's link lands on the comment inside its parent memo, as the comment previews do.
     const path = memo.parent ? `${memo.parent}#${extractMemoIdFromName(memo.name)}` : memo.name;
     copy(`${host}/${path}`);
-    toast.success(t("message.succeed-copy-link"));
+    toast.add({ title: t("message.succeed-copy-link"), type: "success" });
   }, [memo.name, memo.parent, t, profile.instanceUrl]);
 
   const handleCopyContent = useCallback(() => {
     copy(memo.content);
-    toast.success(t("message.succeed-copy-content"));
+    toast.add({ title: t("message.succeed-copy-content"), type: "success" });
   }, [memo.content, t]);
 
   const handleCheckAllTaskListItemsClick = useCallback(async () => {
@@ -141,10 +141,10 @@ export const useMemoActionHandlers = ({ memo, parentPage, onEdit, setDeleteDialo
     try {
       await deleteMemo(memo.name);
     } catch (error: unknown) {
-      handleError(error, toast.error, { context: "Delete memo", fallbackMessage: "An error occurred" });
+      handleError(error, showErrorToast, { context: "Delete memo", fallbackMessage: t("common.error-occurred") });
       return;
     }
-    toast.success(t("message.deleted-successfully"));
+    toast.add({ title: t("message.deleted-successfully"), type: "success" });
     if (memo.parent) {
       queryClient.invalidateQueries({ queryKey: memoKeys.comments(memo.parent) });
       queryClient.invalidateQueries({ queryKey: memoKeys.detail(memo.parent) });

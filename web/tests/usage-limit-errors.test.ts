@@ -1,7 +1,8 @@
 import { BinaryWriter } from "@bufbuild/protobuf/wire";
 import { Code, ConnectError } from "@connectrpc/connect";
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { errorService } from "@/components/MemoEditor/edit/services/errorService";
+import i18n from "@/i18n";
 import { ERROR_REASON_QUOTA_EXCEEDED, getErrorMessage, getRetryAfterSeconds } from "@/lib/error";
 
 function quotaError(metadata: Record<string, string>): ConnectError {
@@ -18,6 +19,9 @@ function quotaError(metadata: Record<string, string>): ConnectError {
   error.details.push({ type: "google.rpc.ErrorInfo", value: writer.finish() });
   return error;
 }
+
+// The messages come from the English catalog, which loads on demand.
+beforeAll(() => i18n.changeLanguage("en"));
 
 describe("usage limit refusals", () => {
   it("names the memo limit", () => {

@@ -45,7 +45,7 @@ const finishElement = (element: Element): boolean => {
       if (!isTrustedIframeSrc(element.getAttribute("src") ?? "")) return false;
       // Share snippets without a size (Bilibili's) would otherwise render at the browser's 300×150.
       element.className = cn(
-        "max-w-full rounded-lg border border-border",
+        "max-w-full rounded-mu-lg border border-mu-line",
         !element.hasAttribute("width") && !element.hasAttribute("height") && "w-full aspect-video",
         element.className,
       );

@@ -261,12 +261,12 @@ const MemoDetail = () => {
             {!isShareMode && parentMemo && (
               <div className="w-auto inline-block mb-2 md:hidden">
                 <Link
-                  className="px-3 py-1 border border-border rounded-lg max-w-xs w-auto text-sm flex flex-row justify-start items-center flex-nowrap text-muted-foreground hover:shadow hover:opacity-80"
+                  className="px-3 py-1 border border-mu-line rounded-mu-lg max-w-xs w-auto mu-body flex flex-row justify-start items-center flex-nowrap text-mu-ink-muted hover:shadow hover:opacity-80"
                   to={`/${parentMemo.name}`}
                   state={createMemoNavigationState(parentPage)}
                   viewTransition
                 >
-                  <ArrowUpLeftFromCircleIcon className="w-4 h-auto shrink-0 opacity-60 mr-2" />
+                  <ArrowUpLeftFromCircleIcon className="mu-icon shrink-0 opacity-60 mr-2" />
                   <span className="truncate">{parentBlurred ? t("memo.parent-memo") : parentMemo.content}</span>
                 </Link>
               </div>

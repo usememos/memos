@@ -8,6 +8,7 @@ import type { Attachment } from "@/types/proto/api/attachment_service_pb";
 import { MemoSchema } from "@/types/proto/api/memo_service_pb";
 import type { User } from "@/types/proto/api/user_service_pb";
 import { getAttachmentType, isMotionAttachment } from "@/utils/attachment";
+import { useTranslate } from "@/utils/i18n";
 import { filterInlineManagedAttachments } from "@/utils/managed-attachment";
 import { buildAttachmentVisualItems, countLogicalAttachmentItems } from "@/utils/media-item";
 import { MemoViewContext, type MemoViewContextValue } from "../MemoView/MemoViewContext";
@@ -43,6 +44,7 @@ const STUB_CONTEXT: MemoViewContextValue = {
 };
 
 const AttachmentThumbnails = ({ attachments }: { attachments: Attachment[] }) => {
+  const t = useTranslate();
   const visualAttachments = attachments.filter(
     (attachment) =>
       getAttachmentType(attachment) === "image/*" || getAttachmentType(attachment) === "video/*" || isMotionAttachment(attachment),
@@ -58,20 +60,20 @@ const AttachmentThumbnails = ({ attachments }: { attachments: Attachment[] }) =>
           <img
             src={item.posterUrl}
             alt={item.filename}
-            className="w-10 h-10 rounded border border-border object-cover bg-muted/40"
+            className="w-10 h-10 rounded border border-mu-line object-cover bg-mu-well/40"
             loading="lazy"
             decoding="async"
           />
           {item.kind === "motion" && (
-            <span className="absolute left-1 top-1 rounded bg-black/70 px-1 py-0.5 text-[8px] font-semibold leading-none text-white">
-              LIVE
+            <span className="absolute left-1 top-1 rounded bg-black/70 px-1 py-0.5 text-[8px] font-medium uppercase leading-none text-white">
+              {t("attachment-library.labels.live")}
             </span>
           )}
         </div>
       ))}
       {others.map((item) => (
-        <div key={item.id} className="flex items-center gap-1 text-2xs text-muted-foreground">
-          <FileIcon className="size-3 shrink-0" strokeWidth={1.8} />
+        <div key={item.id} className="flex items-center gap-1 mu-caption text-mu-ink-muted">
+          <FileIcon className="mu-icon-xs shrink-0" />
           <span className="truncate max-w-[80px]">{item.filename}</span>
         </div>
       ))}
@@ -98,9 +100,9 @@ const PreviewMeta = ({
   }
 
   return (
-    <div className="flex min-w-0 shrink-0 items-center gap-1.5 text-ui leading-none text-muted-foreground">
-      {showMemoId && memoId && <span className="shrink-0 font-mono text-2xs text-muted-foreground/60">{memoId}</span>}
-      {showCreator && creatorName && <span className="max-w-32 truncate font-medium text-foreground">{creatorName}</span>}
+    <div className="flex min-w-0 shrink-0 items-center gap-1.5 mu-caption text-mu-ink-muted">
+      {showMemoId && memoId && <span className="shrink-0 font-mono mu-caption text-mu-ink-muted/60">{memoId}</span>}
+      {showCreator && creatorName && <span className="max-w-32 truncate">{creatorName}</span>}
     </div>
   );
 };
@@ -116,6 +118,7 @@ const MemoPreview = ({
   showMemoId = false,
   truncate = false,
 }: MemoPreviewProps) => {
+  const t = useTranslate();
   const hasContent = content.trim().length > 0;
   const attachmentOnlyItems = useMemo(() => filterInlineManagedAttachments(content, attachments), [content, attachments]);
   const hasAttachments = attachmentOnlyItems.length > 0;
@@ -128,9 +131,9 @@ const MemoPreview = ({
   const meta = <PreviewMeta creator={creator} showCreator={showCreator} memoName={name} showMemoId={showMemoId} />;
   const contentNode = truncate ? (
     hasContent ? (
-      <div className="min-w-0 truncate text-ui text-muted-foreground">{content}</div>
+      <div className="min-w-0 truncate mu-caption text-mu-ink-muted">{content}</div>
     ) : hasAttachments ? null : (
-      <div className="min-w-0 truncate text-ui text-muted-foreground">No content</div>
+      <div className="min-w-0 truncate mu-caption text-mu-ink-muted">{t("common.no-content")}</div>
     )
   ) : (
     // Previews are inert (pointer-events-none), so a static CSS bound replaces the
@@ -151,9 +154,9 @@ const MemoPreview = ({
         {contentNode}
         {hasAttachments &&
           (truncate ? (
-            <div className="inline-flex shrink-0 items-center justify-center gap-0.5 text-muted-foreground/60">
-              <FileIcon className="inline-block size-3" strokeWidth={1.8} />
-              <span className="text-2xs tabular-nums">{countLogicalAttachmentItems(attachmentOnlyItems)}</span>
+            <div className="inline-flex shrink-0 items-center justify-center gap-0.5 text-mu-ink-muted/60">
+              <FileIcon className="mu-icon-xs inline-block" />
+              <span className="mu-caption tabular-nums">{countLogicalAttachmentItems(attachmentOnlyItems)}</span>
             </div>
           ) : (
             <AttachmentThumbnails attachments={attachmentOnlyItems} />

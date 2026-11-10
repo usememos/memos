@@ -1,7 +1,8 @@
+import { Button } from "@usememos/ui";
 import { AlertCircle, RefreshCw } from "lucide-react";
 import { Component, type ErrorInfo, type ReactNode } from "react";
 import { useRouteError } from "react-router-dom";
-import { Button } from "./ui/button";
+import { translate } from "@/utils/i18n";
 
 interface Props {
   children: ReactNode;
@@ -39,27 +40,24 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="flex items-center justify-center min-h-screen bg-mu-canvas">
           <div className="max-w-md w-full p-6 space-y-4">
-            <div className="flex items-center gap-3 text-destructive">
-              <AlertCircle className="w-8 h-8" />
-              <h1 className="text-2xl font-bold">Something went wrong</h1>
+            <div className="flex items-center gap-3 text-mu-danger">
+              <AlertCircle className="mu-icon w-8 h-8" />
+              <h1 className="mu-heading">{translate("error.title")}</h1>
             </div>
 
-            <p className="text-foreground/70">
-              An unexpected error occurred. This could be due to a network issue or a problem with the application.
-            </p>
+            <p className="text-mu-ink/70">{translate("error.description")}</p>
 
             {this.state.error && (
-              <details className="bg-muted p-3 rounded-md text-sm">
-                <summary className="cursor-pointer font-medium mb-2">Error details</summary>
-                <pre className="whitespace-pre-wrap break-words text-xs text-foreground/60">{this.state.error.message}</pre>
+              <details className="bg-mu-well p-3 rounded-mu-md mu-body">
+                <summary className="cursor-pointer font-medium mb-2">{translate("error.details")}</summary>
+                <pre className="whitespace-pre-wrap break-words mu-caption text-mu-ink/60">{this.state.error.message}</pre>
               </details>
             )}
 
-            <Button onClick={this.handleReset} className="w-full gap-2">
-              <RefreshCw className="w-4 h-4" />
-              Reload Application
+            <Button variant="primary" onClick={this.handleReset} className="w-full" icon={<RefreshCw />}>
+              {translate("error.reload")}
             </Button>
           </div>
         </div>
@@ -75,27 +73,24 @@ export function ChunkLoadErrorFallback() {
   const error = useRouteError() as Error | undefined;
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background">
+    <div className="flex items-center justify-center min-h-screen bg-mu-canvas">
       <div className="max-w-md w-full p-6 space-y-4">
-        <div className="flex items-center gap-3 text-destructive">
-          <AlertCircle className="w-8 h-8" />
-          <h1 className="text-2xl font-bold">Something went wrong</h1>
+        <div className="flex items-center gap-3 text-mu-danger">
+          <AlertCircle className="mu-icon w-8 h-8" />
+          <h1 className="mu-heading">{translate("error.title")}</h1>
         </div>
 
-        <p className="text-foreground/70">
-          An unexpected error occurred. This could be due to a network issue or an application update. Reloading usually fixes it.
-        </p>
+        <p className="text-mu-ink/70">{translate("error.description-update")}</p>
 
         {error?.message && (
-          <details className="bg-muted p-3 rounded-md text-sm">
-            <summary className="cursor-pointer font-medium mb-2">Error details</summary>
-            <pre className="whitespace-pre-wrap break-words text-xs text-foreground/60">{error.message}</pre>
+          <details className="bg-mu-well p-3 rounded-mu-md mu-body">
+            <summary className="cursor-pointer font-medium mb-2">{translate("error.details")}</summary>
+            <pre className="whitespace-pre-wrap break-words mu-caption text-mu-ink/60">{error.message}</pre>
           </details>
         )}
 
-        <Button onClick={() => window.location.reload()} className="w-full gap-2">
-          <RefreshCw className="w-4 h-4" />
-          Reload Application
+        <Button variant="primary" onClick={() => window.location.reload()} className="w-full" icon={<RefreshCw />}>
+          {translate("error.reload")}
         </Button>
       </div>
     </div>

@@ -1,8 +1,8 @@
-import { LoaderCircleIcon, MessageCircleIcon } from "lucide-react";
+import { Button } from "@usememos/ui";
+import { MessageCircleIcon } from "lucide-react";
 import { forwardRef, useCallback, useImperativeHandle, useRef, useState } from "react";
 import { MemoEditor, preloadMemoEditing } from "@/components/MemoEditor";
 import MemoView from "@/components/MemoView";
-import { Button } from "@/components/ui/button";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { MEMO_COMMENTS_ANCHOR_ID } from "@/lib/memo-comments";
 import { extractMemoIdFromName } from "@/lib/resource-names";
@@ -67,34 +67,34 @@ const MemoCommentSection = forwardRef<MemoCommentSectionHandle, Props>(
 
     return (
       <div ref={sectionRef} className="pt-8 pb-16 w-full" data-memo-comments-section>
-        <h2 id={MEMO_COMMENTS_ANCHOR_ID} className="sr-only">
+        <h2 id={MEMO_COMMENTS_ANCHOR_ID} className="mu-visually-hidden">
           {t("memo.comment.self")}
         </h2>
         <div className="relative mx-auto grow w-full min-h-full flex flex-col justify-start items-start gap-y-1">
           {comments.length === 0 ? (
             showCreateButton && (
               <div className="w-full flex flex-row justify-center items-center py-6">
-                <Button variant="ghost" onPointerEnter={preloadEditor} onFocus={preloadEditor} onClick={openEditor}>
-                  <span className="text-muted-foreground">{t("memo.comment.write-a-comment")}</span>
-                  <MessageCircleIcon className="ml-2 w-5 h-auto text-muted-foreground" />
+                <Button
+                  variant="ghost"
+                  iconEnd={<MessageCircleIcon />}
+                  onPointerEnter={preloadEditor}
+                  onFocus={preloadEditor}
+                  onClick={openEditor}
+                >
+                  {t("memo.comment.write-a-comment")}
                 </Button>
               </div>
             )
           ) : (
             <div className="w-full flex flex-row justify-between items-center h-8 pl-3 mb-2">
               <div className="flex flex-row justify-start items-center">
-                <MessageCircleIcon className="w-5 h-auto text-muted-foreground mr-1" />
-                <span className="text-muted-foreground text-sm">{t("memo.comment.self")}</span>
-                <span className="text-muted-foreground text-sm ml-1">({commentCount})</span>
+                <MessageCircleIcon className="mu-icon w-5 h-auto text-mu-ink-muted mr-1" />
+                <span className="text-mu-ink-muted mu-body">{t("memo.comment.self")}</span>
+                {/* The count sits beside the label as a plain number, as it does on a card's comment strip and in the sidebar. */}
+                <span className="text-mu-ink-muted mu-caption tabular-nums ml-1.5">{commentCount}</span>
               </div>
               {showCreateButton && (
-                <Button
-                  variant="ghost"
-                  className="text-muted-foreground"
-                  onPointerEnter={preloadEditor}
-                  onFocus={preloadEditor}
-                  onClick={openEditor}
-                >
+                <Button variant="ghost" onPointerEnter={preloadEditor} onFocus={preloadEditor} onClick={openEditor}>
                   {t("memo.comment.write-a-comment")}
                 </Button>
               )}
@@ -118,8 +118,12 @@ const MemoCommentSection = forwardRef<MemoCommentSectionHandle, Props>(
           ))}
           {hasMoreComments && (
             <div className="w-full mt-4 flex justify-center">
-              <Button variant="outline" className="rounded-full px-4" onClick={onLoadMoreComments} disabled={isFetchingMoreComments}>
-                {isFetchingMoreComments && <LoaderCircleIcon className="h-4 w-4 animate-spin" />}
+              <Button
+                variant="neutral"
+                onClick={onLoadMoreComments}
+                loading={isFetchingMoreComments}
+                loadingLabel={t("resource.fetching-data")}
+              >
                 {t(isFetchingMoreComments ? "resource.fetching-data" : "memo.load-more")}
               </Button>
             </div>

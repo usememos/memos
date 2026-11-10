@@ -11,3 +11,6 @@ export const isSuperUser = (user: User | undefined) => {
 export const canManageMemo = (memo: { creator: string }, user: User | undefined): boolean => {
   return !!user && (memo.creator === user.name || !!isSuperUser(user));
 };
+
+/** Whether the user may change an attachment's content: its uploader, or an instance admin. */
+export const canManageAttachment = (attachment: { creator: string }, user: User | undefined): boolean => canManageMemo(attachment, user);

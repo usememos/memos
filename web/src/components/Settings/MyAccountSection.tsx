@@ -1,14 +1,14 @@
-import { AlertTriangleIcon, KeyRoundIcon, PenLineIcon } from "lucide-react";
+import { Button } from "@usememos/ui";
+import { KeyRoundIcon, PenLineIcon } from "lucide-react";
 import { useState } from "react";
-import toast from "react-hot-toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
-import { Button } from "@/components/ui/button";
 import { userServiceClient } from "@/connect";
 import { useAuth } from "@/contexts/AuthContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useDialog } from "@/hooks/useDialog";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { handleError } from "@/lib/error";
+import { showErrorToast, toast } from "@/lib/toast";
 import { ROUTES } from "@/router/routes";
 import { useTranslate } from "@/utils/i18n";
 import ChangeMemberPasswordDialog from "../ChangeMemberPasswordDialog";
@@ -36,10 +36,10 @@ const MyAccountSection = () => {
     try {
       await userServiceClient.deleteUser({ name: user.name });
       await logout();
-      toast.success(t("setting.member.delete-success", { username: user.username }));
+      toast.add({ title: t("setting.member.delete-success", { username: user.username }), type: "success" });
       navigateTo(ROUTES.AUTH, { replace: true });
     } catch (error) {
-      handleError(error, toast.error, { context: "Delete account" });
+      handleError(error, showErrorToast, { context: "Delete account" });
       throw error;
     }
   };
@@ -51,18 +51,16 @@ const MyAccountSection = () => {
           <UserAvatar className="shrink-0 w-12 h-12" avatarUrl={user?.avatarUrl} name={user?.displayName || user?.username} />
           <div className="flex-1 min-w-40 flex flex-col justify-center items-start gap-1">
             <div className="w-full">
-              <span className="text-lg font-semibold">{user?.displayName}</span>
-              <span className="ml-2 text-sm text-muted-foreground">@{user?.username}</span>
+              <span className="mu-label">{user?.displayName}</span>
+              <span className="ml-2 mu-body text-mu-ink-muted">@{user?.username}</span>
             </div>
-            {user?.description && <p className="w-full text-sm text-muted-foreground truncate">{user?.description}</p>}
+            {user?.description && <p className="w-full mu-body text-mu-ink-muted truncate">{user?.description}</p>}
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <Button variant="outline" size="sm" onClick={accountDialog.open}>
-              <PenLineIcon className="w-4 h-4 mr-1.5" />
+            <Button variant="neutral" onClick={accountDialog.open} icon={<PenLineIcon />}>
               {t("common.edit")}
             </Button>
-            <Button variant="outline" size="sm" onClick={passwordDialog.open}>
-              <KeyRoundIcon className="w-4 h-4 mr-1.5" />
+            <Button variant="neutral" onClick={passwordDialog.open} icon={<KeyRoundIcon />}>
               {t("setting.account.change-password")}
             </Button>
           </div>
@@ -76,21 +74,15 @@ const MyAccountSection = () => {
       <LinkedIdentitySection />
 
       <SettingGroup showSeparator title={t("setting.account.danger-area")} description={t("setting.account.danger-area-description")}>
-        <div className="flex flex-col gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4">
-          <div className="flex items-start gap-3">
-            <div className="rounded-full bg-destructive/10 p-2 text-destructive">
-              <AlertTriangleIcon className="h-4 w-4" />
-            </div>
-            <div className="flex-1 space-y-1">
-              <p className="text-sm font-medium text-foreground">{t("setting.account.delete-account")}</p>
-              <p className="text-sm text-muted-foreground">{t("setting.account.delete-account-description")}</p>
-            </div>
+        {/* A plain row: red is kept for the confirm step, not the section that leads to it. */}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <p className="mu-label text-mu-ink">{t("setting.account.delete-account")}</p>
+            <p className="mu-caption text-mu-ink-muted">{t("setting.account.delete-account-description")}</p>
           </div>
-          <div className="flex justify-end">
-            <Button variant="destructive" size="sm" onClick={() => setDeleteOpen(true)}>
-              {t("setting.account.delete-account")}
-            </Button>
-          </div>
+          <Button variant="neutral" className="shrink-0 self-start sm:self-auto" onClick={() => setDeleteOpen(true)}>
+            {t("setting.account.delete-account")}
+          </Button>
         </div>
       </SettingGroup>
 
@@ -108,7 +100,7 @@ const MyAccountSection = () => {
         confirmLabel={t("common.delete")}
         cancelLabel={t("common.cancel")}
         onConfirm={handleDeleteAccount}
-        confirmVariant="destructive"
+        confirmVariant="danger"
       />
     </SettingSection>
   );

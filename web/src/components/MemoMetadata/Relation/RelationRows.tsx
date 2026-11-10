@@ -2,10 +2,10 @@ import { LinkIcon, MilestoneIcon } from "lucide-react";
 import { useMemo } from "react";
 import type { MemoRelation } from "@/types/proto/api/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
-import { METADATA_ROW_DETAIL_CLASSES } from "../MetadataSection";
+import { MetadataRowDetail } from "../MetadataSection";
 import RelationRow from "./RelationRow";
 import { getRelationBuckets, getRelationMemo, getRelationMemoName, type RelationDirection } from "./relationHelpers";
-import { useResolvedRelationMemos } from "./useResolvedRelationMemos";
+import { useRelationMemoDates, useResolvedRelationMemos } from "./useResolvedRelationMemos";
 
 export interface RelationRowItem {
   relation: MemoRelation;
@@ -31,9 +31,9 @@ interface RelationRowsProps {
 }
 
 /**
- * Related memos are rows like the memo's files: a direction glyph in the slot, the
- * snippet, and the direction spelled out on the detail rail. No header or tabs, so the
- * list reads as part of the memo rather than a panel attached to it.
+ * Related memos are rows like the memo's files: a direction glyph in the slot (its title says
+ * which), the snippet, and the memo's date on the detail rail. No header or tabs, so the list
+ * reads as part of the memo rather than a panel attached to it.
  */
 const RelationRows = ({ items, parentPage, enabled }: RelationRowsProps) => {
   const t = useTranslate();
@@ -46,6 +46,7 @@ const RelationRows = ({ items, parentPage, enabled }: RelationRowsProps) => {
     [items],
   );
   const resolvedMemos = useResolvedRelationMemos(memoNames, { enabled });
+  const dates = useRelationMemoDates(memoNames, { enabled });
   const directionLabels: Record<RelationDirection, string> = {
     referencing: t("common.referencing"),
     referenced: t("common.referenced-by"),
@@ -64,7 +65,8 @@ const RelationRows = ({ items, parentPage, enabled }: RelationRowsProps) => {
             memo={resolvedMemos[memo.name] ?? memo}
             parentPage={parentPage}
             icon={DIRECTION_ICONS[direction]}
-            trailing={<span className={METADATA_ROW_DETAIL_CLASSES}>{directionLabels[direction]}</span>}
+            title={directionLabels[direction]}
+            trailing={<MetadataRowDetail parts={[dates[memo.name]]} />}
           />
         );
       })}

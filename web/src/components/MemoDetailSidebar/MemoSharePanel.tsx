@@ -1,12 +1,10 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { ConnectError } from "@connectrpc/connect";
-import { CheckIcon, CopyIcon, LinkIcon, Loader2Icon, Trash2Icon } from "lucide-react";
+import { Button, Dialog, Select, Skeleton, Tooltip } from "@usememos/ui";
+import { CheckIcon, CopyIcon, LinkIcon, Trash2Icon } from "lucide-react";
 import { useMemo, useState } from "react";
-import { toast } from "react-hot-toast";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getShareUrl, useCreateMemoShare, useDeleteMemoShare, useMemoShares } from "@/hooks/useMemoShareQueries";
+import { showErrorToast, toast } from "@/lib/toast";
 import type { MemoShare } from "@/types/proto/api/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
@@ -47,33 +45,49 @@ function ShareLinkRow({ share, memoName }: ShareLinkRowProps) {
   const handleRevoke = async () => {
     try {
       await deleteShare.mutateAsync({ name: share.name, memoName });
-      toast.success(t("memo.share.revoked"));
+      toast.add({ title: t("memo.share.revoked"), type: "success" });
     } catch (e) {
-      toast.error((e as ConnectError).message || t("memo.share.revoke-failed"));
+      showErrorToast((e as ConnectError).message || t("memo.share.revoke-failed"));
     }
   };
 
   return (
-    <div className="flex flex-col gap-1 rounded-md border border-border p-3">
+    <div className="flex flex-col gap-1 rounded-mu-md border border-mu-line p-3">
       <div className="flex items-center justify-between gap-2">
-        <span className="truncate font-mono text-xs text-muted-foreground">{url}</span>
+        <span className="truncate font-mono mu-caption text-mu-ink-muted">{url}</span>
         <div className="flex shrink-0 items-center gap-1">
-          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleCopy} title={t("memo.share.copy")}>
-            {copied ? <CheckIcon className="h-3.5 w-3.5 text-success" /> : <CopyIcon className="h-3.5 w-3.5" />}
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7 text-destructive hover:text-destructive"
-            onClick={handleRevoke}
-            disabled={deleteShare.isPending}
-            title={t("memo.share.revoke")}
-          >
-            <Trash2Icon className="h-3.5 w-3.5" />
-          </Button>
+          <Tooltip.Root>
+            <Tooltip.Trigger
+              render={
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleCopy}
+                  aria-label={t("memo.share.copy")}
+                  icon={copied ? <CheckIcon /> : <CopyIcon />}
+                />
+              }
+            />
+            <Tooltip.Popup>{t("memo.share.copy")}</Tooltip.Popup>
+          </Tooltip.Root>
+          <Tooltip.Root>
+            <Tooltip.Trigger
+              render={
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleRevoke}
+                  disabled={deleteShare.isPending}
+                  aria-label={t("memo.share.revoke")}
+                  icon={<Trash2Icon />}
+                />
+              }
+            />
+            <Tooltip.Popup>{t("memo.share.revoke")}</Tooltip.Popup>
+          </Tooltip.Root>
         </div>
       </div>
-      <p className="text-xs text-muted-foreground">{formatExpiry(share, t)}</p>
+      <p className="mu-caption text-mu-ink-muted">{formatExpiry(share, t)}</p>
     </div>
   );
 }
@@ -104,28 +118,28 @@ const MemoSharePanel = ({ open, onClose, memoName }: MemoSharePanelProps) => {
     try {
       await createShare.mutateAsync({ memoName, expireTime: getExpireDate(expiry) });
     } catch (e) {
-      toast.error((e as ConnectError).message || t("memo.share.create-failed"));
+      showErrorToast((e as ConnectError).message || t("memo.share.create-failed"));
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <LinkIcon className="h-4 w-4" />
-            {t("memo.share.title")}
-          </DialogTitle>
-        </DialogHeader>
+    <Dialog.Root open={open} onOpenChange={(v) => !v && onClose()}>
+      <Dialog.Popup closeLabel={t("common.close")}>
+        <Dialog.Title className="flex items-center gap-2">
+          <LinkIcon className="mu-icon" />
+          {t("memo.share.title")}
+        </Dialog.Title>
 
         <div className="flex flex-col gap-4 py-2">
           {/* Active links */}
           <div className="flex flex-col gap-2">
-            <p className="text-sm font-medium text-muted-foreground">{t("memo.share.active-links")}</p>
+            <p className="mu-label text-mu-ink-muted">{t("memo.share.active-links")}</p>
             {isLoading ? (
-              <Loader2Icon className="h-4 w-4 animate-spin text-muted-foreground" />
+              <div className="flex flex-col gap-2" aria-busy="true" aria-label={t("editor.blocks.loading")}>
+                <Skeleton height={32} />
+              </div>
             ) : shares.length === 0 ? (
-              <p className="text-sm text-muted-foreground">{t("memo.share.no-links")}</p>
+              <p className="mu-body text-mu-ink-muted">{t("memo.share.no-links")}</p>
             ) : (
               <div className="flex flex-col gap-2">
                 {shares.map((share) => (
@@ -137,32 +151,31 @@ const MemoSharePanel = ({ open, onClose, memoName }: MemoSharePanelProps) => {
 
           {/* Create new link */}
           <div className="flex items-center gap-2">
-            <Select value={expiry} items={expiryOptions} onValueChange={(v) => setExpiry(v as ExpiryOption)}>
-              <SelectTrigger className="w-36">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
+            <Select.Root value={expiry} items={expiryOptions} onValueChange={(v) => setExpiry(v as ExpiryOption)}>
+              <Select.Trigger className="w-36">
+                <Select.Value />
+              </Select.Trigger>
+              <Select.Popup>
                 {expiryOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
+                  <Select.Item key={option.value} value={option.value}>
                     {option.label}
-                  </SelectItem>
+                  </Select.Item>
                 ))}
-              </SelectContent>
-            </Select>
-            <Button onClick={handleCreate} disabled={createShare.isPending} className="flex-1">
-              {createShare.isPending ? (
-                <>
-                  <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
-                  {t("memo.share.creating")}
-                </>
-              ) : (
-                t("memo.share.create-link")
-              )}
+              </Select.Popup>
+            </Select.Root>
+            <Button
+              variant="primary"
+              onClick={handleCreate}
+              loading={createShare.isPending}
+              loadingLabel={t("memo.share.creating")}
+              className="flex-1"
+            >
+              {t("memo.share.create-link")}
             </Button>
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </Dialog.Popup>
+    </Dialog.Root>
   );
 };
 

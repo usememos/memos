@@ -1,115 +1,17 @@
-:root {
-  --background: oklch(0.9818 0.0054 95.0986);
-  --foreground: oklch(0.2438 0.0269 95.7226);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.1908 0.002 106.5859);
-  --control-thumb: var(--card);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.2671 0.0196 98.939);
-  --primary: oklch(0.45 0.08 250);
-  --primary-foreground: oklch(0.9818 0.0054 95.0986);
-  --secondary: oklch(0.9245 0.0138 92.9892);
-  --secondary-foreground: oklch(0.4334 0.0177 98.6048);
-  --muted: oklch(0.9341 0.0153 90.239);
-  --muted-foreground: oklch(0.5559 0.0075 97.4233);
-  --accent: oklch(0.9245 0.0138 92.9892);
-  --accent-foreground: oklch(0.2671 0.0196 98.939);
-  --destructive: oklch(0.5 0.12 25);
-  --destructive-foreground: oklch(1 0 0);
-  --success: oklch(0.55 0.13 150);
-  --success-foreground: oklch(0.98 0.01 150);
-  --warning: oklch(0.62 0.12 70);
-  --warning-foreground: oklch(0.25 0.03 75);
-  --border: oklch(0.8847 0.0069 97.3627);
-  --input: oklch(0.7621 0.0156 98.3528);
-  --ring: oklch(0.45 0.08 250);
-  /* Overlay - neutral scrim base behind dialogs, sheets, and focus mode.
-     Alpha comes from the utility (bg-overlay/50, bg-overlay/20), so every
-     theme dims rather than tinting with --foreground. */
-  --overlay: oklch(0 0 0);
-  --sidebar: oklch(0.9663 0.008 98.8792);
-  --sidebar-foreground: oklch(0.359 0.0051 106.6524);
-  --sidebar-accent: oklch(0.9245 0.0138 92.9892);
-  --sidebar-accent-foreground: oklch(0.325 0 0);
-  --font-sans:
-    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+/*
+ * memos' theme entries on top of @usememos/ui (read web/node_modules/@usememos/ui/llms.txt).
+ * Colors, radius and shadows are the package's tokens, used through its `mu-` utilities
+ * (`bg-mu-surface`, `rounded-mu-md`, `shadow-mu-pop`) and `var(--mu-*)`; Light and Dark come
+ * from its tokens.css and Paper from paper.css. This file only sets the text fonts to the
+ * package's and adds the serif face of the wordmark. App text uses the package's type classes
+ * (`mu-caption`, `mu-body`, `mu-label`, `mu-title`, `mu-heading`), not Tailwind text sizes.
+ * Memo text (the content view, the composer and its placeholder) stays 16px/24px at weight
+ * 400 with `text-base leading-6`: the scale has no regular 16px style, and `mu-title` is 500.
+ */
+@theme inline {
+  --font-sans: var(--mu-font-sans);
+  --font-mono: var(--mu-font-mono);
   /* The wordmark face: Source Serif where installed, then serifs of a similar transitional cut. */
   --font-serif:
     "Source Serif 4", "Source Serif Pro", "Source Serif", Charter, "Iowan Old Style", Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  --radius: 0.5rem;
-  --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
-  --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
-  --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
-  --shadow-md: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.1);
-  --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 4px 6px -1px hsl(0 0% 0% / 0.1);
-  --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 8px 10px -1px hsl(0 0% 0% / 0.1);
-  --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
-  /* A surface floating over page content: a soft contact edge plus a wide, faint ambient fall. */
-  --shadow-float: 0 1px 2px hsl(0 0% 0% / 0.05), 0 8px 24px -6px hsl(0 0% 0% / 0.1), 0 24px 56px -16px hsl(0 0% 0% / 0.14);
-}
-
-/* Tailwind v4 token mappings — compiled once at build time, shared by all themes.
-   Dynamic theme files only need to override :root variables; this block covers all of them. */
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-control-thumb: var(--control-thumb);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-success: var(--success);
-  --color-success-foreground: var(--success-foreground);
-  --color-warning: var(--warning);
-  --color-warning-foreground: var(--warning-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --color-overlay: var(--overlay);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-mono);
-  --font-serif: var(--font-serif);
-
-  /* Compact application chrome: captions and dense navigation rows. */
-  --text-2xs: 0.6875rem;
-  --text-2xs--line-height: 1rem;
-  --text-ui: 0.8125rem;
-  --text-ui--line-height: 1.125rem;
-
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-
-  --shadow-xs: var(--shadow-xs);
-  --shadow-sm: var(--shadow-sm);
-  --shadow: var(--shadow);
-  --shadow-md: var(--shadow-md);
-  --shadow-lg: var(--shadow-lg);
-  --shadow-xl: var(--shadow-xl);
-  --shadow-2xl: var(--shadow-2xl);
-  --shadow-float: var(--shadow-float);
-
-  /* Layering tiers — keep overlays/dropdowns/tooltips stacked consistently.
-     Used by the ui/ primitives via z-overlay / z-dropdown / z-tooltip. */
-  --z-index-overlay: 50;
-  --z-index-dropdown: 60;
-  --z-index-tooltip: 70;
 }

@@ -1,7 +1,9 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
+import { Spinner } from "@usememos/ui";
 import { useEffect, useRef, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { setAccessToken } from "@/auth-state";
+import AuthPageLayout, { AuthBackLink } from "@/components/AuthPageLayout";
 import { authServiceClient, userServiceClient } from "@/connect";
 import { useAuth } from "@/contexts/AuthContext";
 import useNavigateTo from "@/hooks/useNavigateTo";
@@ -13,7 +15,6 @@ import { useTranslate } from "@/utils/i18n";
 import { validateOAuthState } from "@/utils/oauth";
 
 interface State {
-  loading: boolean;
   errorMessage: string;
   returnUrl?: string;
 }
@@ -25,7 +26,6 @@ const AuthCallback = () => {
   const [searchParams] = useSearchParams();
   const handledRef = useRef(false);
   const [state, setState] = useState<State>({
-    loading: true,
     errorMessage: "",
   });
 
@@ -55,7 +55,6 @@ const AuthCallback = () => {
       }
 
       setState({
-        loading: false,
         errorMessage,
         returnUrl: validatedState?.returnUrl,
       });
@@ -67,7 +66,6 @@ const AuthCallback = () => {
 
     if (!code || !state) {
       setState({
-        loading: false,
         errorMessage: "Failed to authorize. Missing authorization code or state parameter.",
       });
       return;
@@ -77,7 +75,6 @@ const AuthCallback = () => {
     const validatedState = validateOAuthState(state);
     if (!validatedState) {
       setState({
-        loading: false,
         errorMessage: "Failed to authorize. Invalid or expired state parameter. This may indicate a CSRF attack attempt.",
       });
       return;
@@ -122,7 +119,6 @@ const AuthCallback = () => {
           }
         }
         setState({
-          loading: false,
           errorMessage: "",
         });
         await initialize();
@@ -132,11 +128,10 @@ const AuthCallback = () => {
         navigateTo(getSafeRedirectPath(returnUrl) ?? ROUTES.HOME);
       } catch (error: unknown) {
         handleError(error, () => {}, {
-          fallbackMessage: "Failed to authenticate.",
+          fallbackMessage: t("error.authenticate-failed"),
           onError: (err) => {
-            const message = err instanceof Error ? err.message : "Failed to authenticate.";
+            const message = err instanceof Error ? err.message : t("error.authenticate-failed");
             setState({
-              loading: false,
               errorMessage: message,
               returnUrl,
             });
@@ -146,19 +141,27 @@ const AuthCallback = () => {
     })();
   }, [currentUser?.name, initialize, isInitialized, navigateTo, searchParams]);
 
-  if (state.loading) return null;
+  // A success navigates away, so without an error the page only ever shows the wait.
+  if (!state.errorMessage) {
+    return (
+      <AuthPageLayout>
+        <div className="flex justify-center py-6 text-mu-ink-muted">
+          <Spinner />
+        </div>
+      </AuthPageLayout>
+    );
+  }
 
   return (
-    <div className="p-4 py-24 w-full h-full flex flex-col justify-center items-center gap-4">
-      <div className="max-w-lg font-mono whitespace-pre-wrap break-words opacity-80" role="alert">
+    <AuthPageLayout title={t("auth.callback-failed-title")}>
+      <pre
+        role="alert"
+        className="m-0 rounded-mu-md bg-mu-well px-2.5 py-2 font-mono mu-caption-xs whitespace-pre-wrap break-words text-mu-ink-muted"
+      >
         {state.errorMessage}
-      </div>
-      {state.errorMessage && (
-        <Link to={buildAuthRoute({ autoSignIn: false, redirect: state.returnUrl })} className="text-sm text-primary hover:underline">
-          {t("auth.back-to-sign-in")}
-        </Link>
-      )}
-    </div>
+      </pre>
+      <AuthBackLink to={buildAuthRoute({ autoSignIn: false, redirect: state.returnUrl })} />
+    </AuthPageLayout>
   );
 };
 

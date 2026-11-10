@@ -21,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "No s'ha pogut completar l'inici de sessió",
     "create-your-account": "Crea el teu compte",
+    "hide-password": "Amaga la contrasenya",
+    "incorrect-credentials": "Nom d'usuari o contrasenya incorrectes.",
     "new-password": "Nova contrasenya",
     "repeat-new-password": "Repeteix la contrasenya",
+    "show-password": "Mostra la contrasenya",
     "sign-in-tip": "Ja tens un compte?",
     "sign-up-tip": "Encara no tens un compte?",
     "admin-sign-in": "Inici de sessió d'administrador",
-    "admin-sign-in-tip": "L'inici de sessió amb contrasenya continua disponible per als administradors.",
     "back-to-sign-in": "Torna a iniciar la sessió",
     "continue-with": "Continua amb {{provider}}",
     "create-admin-account": "Crea un compte d'administrador",
-    "explore-public-memos": "Explora els memos públics en aquesta instància",
-    "first-run": "Primera execució",
     "setup-description": "Crea el compte d'administrador per a aquesta instància.",
-    "setup-note": "Aquest compte és el propietari de la configuració de la instància, els membres i els proveïdors d'identitat.",
     "setup-title": "Configura la teva instància",
     "signin-unavailable-description": "L'inici de sessió amb contrasenya està desactivat i no hi ha cap proveïdor d'identitat configurat. Demana al teu administrador que activi un mètode d'inici de sessió.",
     "signin-unavailable-title": "L'inici de sessió no està disponible",
-    "signup-unavailable-description": "Els comptes de contrasenya estan desactivats i no hi ha cap proveïdor d'identitat configurat. Demana al teu administrador accés.",
-    "signup-unavailable-title": "El registre no està disponible",
-    "signups-closed-description": "Els comptes nous estan desactivats en aquesta instància. Contacta amb el teu administrador si necessites accés.",
-    "signups-closed-title": "Els registres estan tancats",
-    "sso-signup-tip": "Inicia la sessió amb un proveïdor a continuació per crear el teu compte.",
-    "welcome-back": "Benvingut/da de nou."
+    "signups-closed-description": "Els comptes nous estan desactivats en aquesta instància. Contacta amb el teu administrador si necessites accés."
   },
   "common": {
     "about": "Quant a",
@@ -102,7 +97,6 @@
     "profile": "Perfil",
     "referenced-by": "Referenciat per",
     "referencing": "Referenciant",
-    "relations": "Relacions",
     "resources": "Recursos",
     "restore": "Restaura",
     "role": "Rol",
@@ -138,7 +132,24 @@
     "resize-panel": "Canvia la mida del panell",
     "resize-sidebar": "Canvia la mida de la barra lateral",
     "sign-in-to-memos": "Inicia la sessió a Memos",
-    "view-all": "Veure-ho tot"
+    "open-navigation": "Obre la navegació",
+    "navigation": "Navegació",
+    "primary-navigation": "Principal",
+    "download": "Baixa",
+    "download-name": "Baixa {{name}}",
+    "open-name": "Obre {{name}}",
+    "preview-name": "Previsualitza {{name}}",
+    "no-content": "Sense contingut",
+    "previous": "Anterior",
+    "next": "Següent",
+    "retry": "Torna-ho a provar",
+    "docs": "Documentació",
+    "calendar-for-month": "Calendari de {{month}}",
+    "date-at-time": "{{date}} a les {{time}}",
+    "selected-location": "Ubicació seleccionada",
+    "choose-location": "Tria una ubicació",
+    "unknown-error": "Error desconegut",
+    "error-occurred": "S'ha produït un error"
   },
   "locale-picker": {
     "no-language-feedback": "No s'ha trobat l'idioma? Envieu comentaris"
@@ -158,9 +169,50 @@
       "image-upload-failed": "No s'han pogut carregar algunes imatges. Torneu-ho a intentar o conserveu els fitxers carregats com a fitxers adjunts.",
       "image-upload-stopped": "La ​​càrrega d'imatges s'ha aturat {{completed}}/{{total}}",
       "insert-image": "Insereix una imatge",
+      "drawing": "Dibuix",
       "keep-as-attachments": "Desa com a fitxers adjunts",
       "uploading-inline-image": "S'està pujant al contingut",
       "uploading-images": "S'estan pujant imatges {{completed}}/{{total}}"
+    },
+    "drawing": {
+      "new-title": "Dibuix nou",
+      "edit": "Edita el dibuix",
+      "tools": "Eines",
+      "tool-select": "Selecciona",
+      "tool-pen": "Llapis",
+      "tool-eraser": "Goma",
+      "tool-rectangle": "Rectangle",
+      "tool-ellipse": "El·lipse",
+      "tool-arrow": "Fletxa",
+      "tool-text": "Text",
+      "style": "Color i gruix",
+      "color": "Color",
+      "width": "Gruix",
+      "width-thin": "Fi",
+      "width-medium": "Mitjà",
+      "width-thick": "Gruixut",
+      "color-ink": "Tinta",
+      "color-gray": "Gris",
+      "color-red": "Vermell",
+      "color-orange": "Taronja",
+      "color-green": "Verd",
+      "color-teal": "Verd blavós",
+      "color-blue": "Blau",
+      "color-violet": "Violeta",
+      "undo": "Desfés",
+      "redo": "Refés",
+      "zoom-to-fit": "Ajusta a la pantalla",
+      "done": "Fet",
+      "discard-title": "Voleu descartar aquest dibuix?",
+      "discard-description": "Encara no s'ha afegit a la nota.",
+      "discard-edit-title": "Voleu descartar els canvis?",
+      "discard-edit-description": "El dibuix es queda com estava abans d'obrir-lo.",
+      "keep-drawing": "Continua dibuixant",
+      "discard": "Descarta",
+      "open-failed": "No s'ha pogut obrir el dibuix. Torneu-ho a intentar.",
+      "export-failed": "No s'ha pogut desar el dibuix. Torneu-ho a intentar.",
+      "image-failed": "No s'ha pogut afegir la imatge al dibuix.",
+      "saved-without-drawing": "La nota s'ha desat, però el dibuix no. Torneu a desar per tornar-ho a intentar."
     },
     "no-changes-detected": "No s'han detectat canvis",
     "save": "Guarda",
@@ -256,7 +308,19 @@
       "alt-text-placeholder": "Descriu la imatge…",
       "image-unavailable": "Imatge no disponible",
       "resize-image": "Canvia la mida de la imatge"
-    }
+    },
+    "attachments": {
+      "edited": "Editat",
+      "new": "Nou",
+      "remove": "Elimina l'adjunt",
+      "reorder": "Reordena {{name}}",
+      "reorder-hint": "Arrossega, o fes servir les tecles de fletxa"
+    },
+    "remove-relation": "Elimina la relació",
+    "remove-location": "Elimina la ubicació",
+    "recording-unsupported": "Aquest navegador no admet l'enregistrament d'àudio.",
+    "microphone-denied": "S'ha denegat el permís del micròfon.",
+    "recording-failed": "No s'ha pogut iniciar l'enregistrament d'àudio."
   },
   "inbox": {
     "failed-to-load": "Error en carregar la bústia",
@@ -265,7 +329,16 @@
     "unread": "No llegit",
     "space-invitation": "t'ha convidat a unir-te a un espai",
     "space-invitation-accepted": "T'has unit a aquest espai.",
-    "space-invitation-open": "Espai obert"
+    "space-invitation-open": "Espai obert",
+    "commented-on-memo": "ha comentat el teu memo",
+    "mentioned-in-comment": "t'ha esmentat en un comentari",
+    "mentioned-in-memo": "t'ha esmentat en un memo",
+    "original": "Original:",
+    "memo-label": "Memo:",
+    "comment-heading": "Comentari",
+    "memo-heading": "Memo",
+    "empty-memo": "Memo buit",
+    "empty-comment": "Comentari buit"
   },
   "live-update": {
     "connected": "Actualitzacions en directe actives",
@@ -280,7 +353,10 @@
     "click-to-show-sensitive-content": "Fes clic per mostrar contingut sensible",
     "comment": {
       "self": "Comentaris",
-      "write-a-comment": "Escriu un comentari"
+      "write-a-comment": "Escriu un comentari",
+      "view-all-count_one": "Veure {{count}} comentari",
+      "view-all-count_many": "Veure els {{count}} comentaris",
+      "view-all-count_other": "Veure els {{count}} comentaris"
     },
     "copy-content": "Copia el contingut",
     "copy-link": "Copia l'enllaç",
@@ -294,7 +370,8 @@
       "has-image": "té imatge",
       "has-link": "téEnllaç",
       "has-location": "té ubicació",
-      "has-task-list": "téLlistaTasques"
+      "has-task-list": "téLlistaTasques",
+      "remove": "Elimina el filtre"
     },
     "compact-mode": "Mode compacte",
     "link-preview": "Previsualització d'enllaços",
@@ -380,7 +457,9 @@
     "restored-successfully": "Restaurat correctament",
     "succeed-copy-content": "Contingut copiat correctament.",
     "succeed-copy-link": "Enllaç copiat correctament.",
-    "update-succeed": "Actualització correcta"
+    "update-succeed": "Actualització correcta",
+    "not-signed-in": "No has iniciat la sessió.",
+    "invalid-datetime": "Data i hora no vàlides. Fes servir el format 2023-12-31 23:59:59."
   },
   "reference": {
     "no-memos-found": "No s'han trobat notes",
@@ -450,7 +529,9 @@
       "usage-storage": "Storage",
       "usage-title": "Usage limits",
       "storage-usage-error": "El vostre emmagatzematge de fitxers adjunts no està disponible.",
-      "email-in-use": "Aquest correu electrònic ja l'utilitza un altre compte."
+      "email-in-use": "Aquest correu electrònic ja l'utilitza un altre compte.",
+      "avatar-too-large": "Trieu una imatge de 2 MB o menys.",
+      "avatar-unreadable": "No es pot llegir aquesta imatge. Proveu un altre fitxer."
     },
     "instance": {
       "disallow-change-nickname": "No permetis canviar el sobrenom",
@@ -490,7 +571,10 @@
       "archived": "Arxivat",
       "member-column": "Membre",
       "summary-column": "Resum",
-      "export-memos": "Exportar notes"
+      "export-memos": "Exportar notes",
+      "username-password-required": "El nom d'usuari i la contrasenya no poden estar buits",
+      "create-success": "S'ha creat l'usuari",
+      "update-success": "S'ha actualitzat l'usuari"
     },
     "memo": {
       "label": "Nota",
@@ -524,7 +608,12 @@
       "theme-description": "Aplica el tema seleccionat immediatament en aquest dispositiu.",
       "theme": "Tema",
       "uploads-privacy-description": "Controla la informació sensible a la privadesa enviada amb els continguts multimèdia carregats.",
-      "uploads-privacy-title": "Càrregues i privadesa"
+      "uploads-privacy-title": "Càrregues i privadesa",
+      "theme-system": "Segueix el sistema",
+      "theme-system-short": "Sistema",
+      "theme-light": "Clar",
+      "theme-dark": "Fosc",
+      "theme-paper": "Paper"
     },
     "editor": {
       "label": "Editor",
@@ -534,7 +623,118 @@
       "create": "Crea una vista",
       "delete-confirm": "Estàs segur que vols eliminar la vista `{{title}}`?",
       "delete-success": "Vista `{{title}}` eliminada correctament",
-      "change-icon": "Canvia la icona de vista"
+      "change-icon": "Canvia la icona de vista",
+      "page-description": "Crea vistes reutilitzables amb camps, operadors, funcions de temps i coincidència d'etiquetes. Parteix dels exemples i valida-les abans de desar.",
+      "edit": "Edita la vista",
+      "form-description": "Posa nom a la vista i defineix l'expressió de filtre de memos que ha d'aplicar.",
+      "title-placeholder": "Fixats, Notes recents, Feina",
+      "filter-help": "Combina expressions amb {{and}}, {{or}} i {{not}}. Els camps de temps són marques de temps: fes servir {{now}}, {{duration}}, {{timestamp}} i accessors com {{year}}. Les etiquetes admeten {{sets}} i {{size}} en mesura la longitud.",
+      "validate": "Valida",
+      "all": "Totes les vistes",
+      "loading": "S'estan carregant les vistes…",
+      "load-failed": "No s'han pogut carregar les vistes.",
+      "empty-title": "Encara no hi ha vistes",
+      "empty-description": "Desa un filtre per tornar ràpidament als memos que necessites.",
+      "examples-title": "Exemples d'expressions",
+      "fields-title": "Camps admesos",
+      "title-filter-required": "El títol i el filtre no poden estar buits",
+      "filter-valid": "L'expressió de filtre sembla vàlida",
+      "create-success": "S'ha creat la vista",
+      "update-success": "S'ha actualitzat la vista",
+      "examples": {
+        "pinned": {
+          "title": "Fixats",
+          "description": "Només memos fixats."
+        },
+        "recent": {
+          "title": "Notes recents",
+          "description": "Memos creats durant l'última hora."
+        },
+        "public": {
+          "title": "Memos públics",
+          "description": "Només memos públics."
+        },
+        "project-tags": {
+          "title": "Etiquetes de projecte",
+          "description": "Coincideix amb una o més etiquetes exactes."
+        },
+        "untagged": {
+          "title": "Sense etiquetes",
+          "description": "Memos sense cap etiqueta."
+        },
+        "archive-tree": {
+          "title": "Arbre d'arxiu",
+          "description": "Coincideix amb etiquetes jeràrquiques per prefix."
+        },
+        "unassigned": {
+          "title": "Sense assignar",
+          "description": "Memos que no són a cap espai."
+        },
+        "one-space": {
+          "title": "En un espai",
+          "description": "Memos d'un espai. Fes servir l'ID de l'espai que surt a l'URL o a la configuració."
+        },
+        "open-tasks": {
+          "title": "Tasques pendents",
+          "description": "Memos amb tasques sense acabar."
+        },
+        "links-or-code": {
+          "title": "Enllaços o codi",
+          "description": "Memos que contenen enllaços o blocs de codi."
+        },
+        "no-location": {
+          "title": "Sense ubicació",
+          "description": "Memos sense cap ubicació adjunta."
+        },
+        "with-attachments": {
+          "title": "Amb adjunts",
+          "description": "Memos amb almenys un fitxer adjunt."
+        },
+        "photos": {
+          "title": "Fotos",
+          "description": "Memos que mostren una imatge, al contingut o com a fitxer adjunt."
+        },
+        "content-search": {
+          "title": "Cerca al contingut",
+          "description": "Cerca text dins del contingut dels memos."
+        },
+        "starts-with": {
+          "title": "Comença per",
+          "description": "Memos el contingut dels quals comença amb un text (també endsWith)."
+        },
+        "regex": {
+          "title": "Coincidència regex",
+          "description": "Fes coincidir el contingut amb una expressió regular."
+        },
+        "all-tags-complete": {
+          "title": "Totes les etiquetes completades",
+          "description": "Totes les etiquetes acaben en -done (només memos amb etiquetes)."
+        },
+        "one-project-tag": {
+          "title": "Una etiqueta de projecte",
+          "description": "Exactament una etiqueta compleix el predicat."
+        },
+        "any-tags": {
+          "title": "Qualsevol d'aquestes etiquetes",
+          "description": "Les etiquetes tenen intersecció amb el conjunt donat."
+        },
+        "exact-tags": {
+          "title": "Exactament aquestes etiquetes",
+          "description": "Etiquetats exactament amb aquest conjunt, res més."
+        },
+        "year-2024": {
+          "title": "Memos del 2024",
+          "description": "Filtra per any natural."
+        },
+        "weekend": {
+          "title": "Notes del cap de setmana",
+          "description": "Creats en diumenge o dissabte (0 = diumenge)."
+        },
+        "long": {
+          "title": "Notes llargues",
+          "description": "Memos de més de 280 caràcters."
+        }
+      }
     },
     "configuration": {
       "label": "Configuració",
@@ -610,7 +810,9 @@
       "scopes-description": "Separeu els àmbits amb espais. La majoria de proveïdors només necessiten un petit conjunt, com ara l'accés al perfil o al correu electrònic.",
       "template-description": "Comenceu des d'una configuració predeterminada del proveïdor i, a continuació, ajusteu les credencials i els punts finals del vostre inquilí.",
       "unlink-success": "{{name}} desenllaçat.",
-      "update-sso-description": "Reviseu la configuració del proveïdor i deseu els camps que haurien de canviar."
+      "update-sso-description": "Reviseu la configuració del proveïdor i deseu els camps que haurien de canviar.",
+      "invalid-config": "La configuració del proveïdor d'identitat no és vàlida.",
+      "provider-id-placeholder": "p. ex. github, okta-corp"
     },
     "storage": {
       "accesskey": "Clau d'accés",
@@ -658,7 +860,8 @@
       "customize-server": {
         "description": "Descripció",
         "icon-url": "URL de la icona",
-        "title": "Personalitza el servidor"
+        "title": "Personalitza el servidor",
+        "dialog-description": "Personalitza l'aparença i la configuració de la teva instància."
       },
       "label": "Sistema",
       "server-name": "Nom del servidor",
@@ -978,7 +1181,8 @@
   },
   "tooltip": {
     "link-memo": "Enllaça nota",
-    "select-location": "Ubicació"
+    "select-location": "Ubicació",
+    "link-memo-description": "Cerca i selecciona un memo per enllaçar-lo"
   },
   "demo": {
     "banner-description": "Els canvis són temporals i es poden restablir.",
@@ -1081,7 +1285,12 @@
     "loading": "S'estan carregant les notes…",
     "new-here": "Escriu aquí",
     "saved-outside-filter": "Desat. Aquesta nota està fora dels resultats actuals del mapa.",
-    "open-memo": "Obre el memoràndum"
+    "open-memo": "Obre el memoràndum",
+    "open-in-google-maps": "Obre a Google Maps",
+    "location-description": "Selecciona una ubicació al mapa o introdueix les coordenades manualment",
+    "latitude": "Latitud",
+    "longitude": "Longitud",
+    "place-placeholder": "Primer tria una posició."
   },
   "calendar": {
     "new-memo-on-day": "Nova nota en aquest dia",
@@ -1180,5 +1389,47 @@
       "tag-reading": "lectura",
       "tag-ideas": "idees"
     }
+  },
+  "error": {
+    "title": "Alguna cosa ha anat malament",
+    "description": "S'ha produït un error inesperat. Pot ser degut a un problema de xarxa o de l'aplicació.",
+    "description-update": "S'ha produït un error inesperat. Pot ser degut a un problema de xarxa o a una actualització de l'aplicació. Normalment es resol tornant a carregar.",
+    "details": "Detalls de l'error",
+    "reload": "Torna a carregar l'aplicació",
+    "not-found": "No s'ha trobat la pàgina que cerques.",
+    "permission-denied": "Permís denegat",
+    "too-many-requests": "Massa sol·licituds. Torna-ho a provar d'aquí a {{wait}}.",
+    "wait-seconds": "{{count}} s",
+    "wait-minutes": "{{count}} min",
+    "wait-hours": "{{count}} h",
+    "challenge-required": "Completa la verificació i torna-ho a provar.",
+    "quota-memo-count": "Has arribat al límit de {{limit}} memos. Elimina'n alguns per crear-ne de nous.",
+    "quota-storage": "Aquesta pujada superaria el teu límit d'emmagatzematge de {{limit}}. Estàs fent servir {{usage}}.",
+    "quota-upload": "Aquest fitxer supera el teu límit de {{limit}} per fitxer.",
+    "quota-memo-content": "Aquest memo supera el teu límit de {{limit}} per memo. Escurça el contingut per desar-lo.",
+    "quota-generic": "Has arribat a un límit d'ús.",
+    "sign-in-failed": "No s'ha pogut iniciar la sessió.",
+    "sign-up-failed": "No s'ha pogut completar el registre",
+    "authenticate-failed": "No s'ha pogut autenticar.",
+    "update-profile-failed": "No s'ha pogut actualitzar el perfil",
+    "unlink-identity-failed": "No s'ha pogut desvincular el proveïdor d'identitat.",
+    "link-identity-failed": "No s'ha pogut iniciar la vinculació del compte. Torna-ho a provar."
+  },
+  "attachment-preview": {
+    "title": "Previsualització de l'adjunt",
+    "description": "Diàleg de previsualització d'adjunts. Prem Escape per tancar, fes servir les fletxes esquerra i dreta per canviar d'element i amplia les imatges amb els controls, la roda del ratolí, un doble toc o pinçant amb els dits.",
+    "close": "Tanca la previsualització",
+    "previous": "Element anterior",
+    "next": "Element següent",
+    "reset-zoom": "Restableix el zoom",
+    "image-alt": "Imatge de previsualització {{index}} de {{count}}",
+    "live-photo-alt": "Foto en directe de previsualització {{index}} de {{count}}",
+    "play-live-photo": "Passa el cursor o prem per reproduir la foto en directe"
+  },
+  "audio-player": {
+    "seek": "Desplaça't per {{name}}",
+    "back": "Enrere {{seconds}} segons",
+    "forward": "Endavant {{seconds}} segons",
+    "speed": "Velocitat de reproducció {{rate}}x"
   }
 }

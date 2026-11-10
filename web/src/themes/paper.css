@@ -1,39 +1,46 @@
-:root {
-  --background: oklch(0.95 0.015 75);
-  --foreground: oklch(0.25 0.02 65);
-  --card: oklch(0.98 0.008 80);
-  --card-foreground: oklch(0.22 0.015 68);
-  --popover: oklch(0.98 0.008 80);
-  --popover-foreground: oklch(0.25 0.02 65);
-  --primary: oklch(0.45 0.08 45);
-  --primary-foreground: oklch(0.98 0.008 80);
-  --secondary: oklch(0.92 0.025 70);
-  --secondary-foreground: oklch(0.35 0.03 60);
-  --muted: oklch(0.9 0.025 75);
-  --muted-foreground: oklch(0.5 0.02 68);
-  --accent: oklch(0.88 0.035 55);
-  --accent-foreground: oklch(0.25 0.02 65);
-  --destructive: oklch(0.48 0.15 25);
-  --destructive-foreground: oklch(0.98 0.008 80);
-  --success: oklch(0.55 0.13 150);
-  --success-foreground: oklch(0.98 0.01 150);
-  --warning: oklch(0.6 0.12 65);
-  --warning-foreground: oklch(0.25 0.03 70);
-  --border: oklch(0.85 0.025 72);
-  --input: oklch(0.8 0.03 75);
-  --ring: oklch(0.45 0.08 45);
-  /* Overlay - neutral scrim; alpha comes from the utility (bg-overlay/50) */
-  --overlay: oklch(0 0 0);
-  --sidebar: oklch(0.9647 0.0118 83.7892);
-  --sidebar-foreground: oklch(0.2941 0.0196 67.6524);
-  --sidebar-accent: oklch(0.9412 0.0196 78.9456);
-  --sidebar-accent-foreground: oklch(0.2647 0.0157 71.2341);
-  --shadow-xs: 0 1px 3px 0px hsl(34 12% 15% / 0.04);
-  --shadow-sm: 0 1px 3px 0px hsl(34 12% 15% / 0.08), 0 1px 2px -1px hsl(34 12% 15% / 0.08);
-  --shadow: 0 1px 3px 0px hsl(34 12% 15% / 0.08), 0 1px 2px -1px hsl(34 12% 15% / 0.08);
-  --shadow-md: 0 1px 3px 0px hsl(34 12% 15% / 0.08), 0 2px 4px -1px hsl(34 12% 15% / 0.08);
-  --shadow-lg: 0 1px 3px 0px hsl(34 12% 15% / 0.08), 0 4px 6px -1px hsl(34 12% 15% / 0.08);
-  --shadow-xl: 0 1px 3px 0px hsl(34 12% 15% / 0.08), 0 8px 10px -1px hsl(34 12% 15% / 0.08);
-  --shadow-2xl: 0 1px 3px 0px hsl(34 12% 15% / 0.18);
-  --shadow-float: 0 1px 2px hsl(34 12% 15% / 0.05), 0 8px 24px -6px hsl(34 12% 15% / 0.09), 0 24px 56px -16px hsl(34 12% 15% / 0.12);
+/*
+ * Paper: memos' warm app theme on @usememos/ui's tokens. It sets all 32 names in the
+ * package's `themeTokens` (27 colors and 5 shadows); tests/paper-theme.test.ts checks
+ * that and the contrast of every text pair. Primary stays ink, warm at chroma about 0.02.
+ */
+[data-theme="paper"] {
+  color-scheme: light;
+  --mu-canvas: #f5ede4;
+  --mu-surface: #fbf6f0;
+  --mu-well: #e7dccf;
+  --mu-hover: #ede3d7;
+  --mu-key: #fdf9f4;
+  --mu-key-hover: #f8f1e9;
+  --mu-key-sheen: rgba(255, 255, 255, 0.18);
+  --mu-edge: #d3c5b4;
+  --mu-line: #e0d4c5;
+  --mu-overlay: rgba(40, 28, 18, 0.32);
+  --mu-ink: #2b2219;
+  --mu-ink-muted: #5d5044;
+  --mu-primary: #2f251c;
+  --mu-primary-hover: #44372a;
+  --mu-on-primary: #fbf6f0;
+  --mu-accent: oklch(0.5 0.13 255);
+  --mu-selection: rgba(40, 99, 171, 0.18);
+  --mu-success: oklch(0.5 0.13 150);
+  --mu-success-soft: #e5eedc;
+  --mu-warning: oklch(0.48 0.11 70);
+  --mu-warning-soft: #f5e7cf;
+  --mu-danger: oklch(0.51 0.19 27);
+  --mu-danger-key: oklch(0.51 0.19 27);
+  --mu-danger-soft: #f6e1d9;
+  --mu-on-danger: #ffffff;
+  --mu-focus: var(--mu-primary);
+  --mu-focus-edge: var(--mu-ink);
+  --mu-shadow-track: inset 0 1px 2px hsl(30 30% 15% / 0.12);
+  --mu-shadow-key:
+    0 1px 2px hsl(30 30% 15% / 0.16), 0 2px 6px hsl(30 30% 15% / 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 hsl(30 30% 15% / 0.05);
+  --mu-shadow-raised:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25), inset 0 -1px 0 hsl(30 30% 15% / 0.1), 0 0 0 0.5px hsl(30 30% 15% / 0.14),
+    0 1px 2px hsl(30 30% 15% / 0.12);
+  --mu-shadow-pressed: inset 0 1px 3px hsl(30 30% 15% / 0.22), 0 0 0 0.5px hsl(30 30% 15% / 0.12);
+  --mu-shadow-pop:
+    0 8px 24px hsl(30 30% 15% / 0.1), 0 1px 3px hsl(30 30% 15% / 0.08), 0 0 0 0.5px hsl(30 30% 15% / 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }

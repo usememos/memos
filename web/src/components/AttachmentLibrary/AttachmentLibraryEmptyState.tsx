@@ -41,15 +41,15 @@ const AttachmentLibraryEmptyState = ({ className, tab }: AttachmentLibraryEmptyS
   return (
     <div
       className={cn(
-        "flex min-h-[18rem] flex-col items-center justify-center rounded-[28px] border border-dashed border-border/70 bg-background/80 px-6 py-16 text-center",
+        "flex min-h-[18rem] flex-col items-center justify-center rounded-[28px] border border-dashed border-mu-line/70 bg-mu-canvas/80 px-6 py-16 text-center",
         className,
       )}
     >
-      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted/45 text-muted-foreground">
-        <Icon className="h-7 w-7" />
+      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-mu-well/45 text-mu-ink-muted">
+        <Icon className="mu-icon size-7" />
       </div>
-      <div className="mt-5 text-sm font-medium text-foreground">{t(titleKey)}</div>
-      <p className="mt-2 max-w-sm text-sm leading-6 text-muted-foreground">{t(descriptionKey)}</p>
+      <div className="mt-5 mu-label text-mu-ink">{t(titleKey)}</div>
+      <p className="mt-2 max-w-sm mu-body text-mu-ink-muted">{t(descriptionKey)}</p>
     </div>
   );
 };

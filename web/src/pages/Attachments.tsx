@@ -1,7 +1,7 @@
 import { create } from "@bufbuild/protobuf";
-import { LoaderCircleIcon, Trash2Icon } from "lucide-react";
+import { Button } from "@usememos/ui";
+import { Trash2Icon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { toast } from "react-hot-toast";
 import {
   AttachmentAudioRows,
   AttachmentDocumentRows,
@@ -13,7 +13,6 @@ import {
 } from "@/components/AttachmentLibrary";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import PreviewImageDialog from "@/components/PreviewImageDialog";
-import { Button } from "@/components/ui/button";
 import { attachmentServiceClient } from "@/connect";
 import { useAppSidebar } from "@/contexts/AppSidebarContext";
 import { useSpaceContext } from "@/contexts/SpaceContext";
@@ -25,6 +24,7 @@ import { useUsersByNames } from "@/hooks/useUserQueries";
 import i18n from "@/i18n";
 import { combineCELFilters } from "@/lib/cel-filter";
 import { handleError } from "@/lib/error";
+import { showErrorToast, toast } from "@/lib/toast";
 import { ListAttachmentsRequestSchema } from "@/types/proto/api/attachment_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
@@ -137,10 +137,10 @@ const Attachments = () => {
         await batchDeleteAttachments(chunk);
       }
 
-      toast.success(t("resource.delete-all-unused-success"));
+      toast.add({ title: t("resource.delete-all-unused-success"), type: "success" });
       await Promise.all([refetch(), refetchUnused()]);
     } catch (deleteError) {
-      handleError(deleteError, toast.error, {
+      handleError(deleteError, showErrorToast, {
         context: "Failed to delete unused attachments",
         fallbackMessage: t("resource.delete-all-unused-error"),
       });
@@ -160,21 +160,22 @@ const Attachments = () => {
       }
 
       return completeUnusedItems.length === 0 ? (
-        <div className="py-12 text-center text-sm text-muted-foreground">{t("message.no-data")}</div>
+        <div className="py-12 text-center mu-body text-mu-ink-muted">{t("message.no-data")}</div>
       ) : (
         <div className="space-y-4">
-          <div className="flex flex-col gap-3 rounded-xl border border-warning/30 bg-warning/5 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-3 rounded-mu-xl border border-mu-warning/30 bg-mu-warning-soft p-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-sm font-medium text-foreground">{t("attachment-library.unused.title")}</h2>
-              <p className="mt-1 text-sm text-muted-foreground">{t("attachment-library.unused.description")}</p>
+              <h2 className="mu-label text-mu-ink">{t("attachment-library.unused.title")}</h2>
+              <p className="mt-1 mu-body text-mu-ink-muted">{t("attachment-library.unused.description")}</p>
             </div>
             <Button
-              variant="destructive"
+              variant="neutral"
               className="shrink-0"
               onClick={() => deleteUnusedAttachmentsDialog.open()}
-              disabled={isDeletingUnused}
+              loading={isDeletingUnused}
+              loadingLabel={t("resource.delete-all-unused")}
+              icon={<Trash2Icon />}
             >
-              {isDeletingUnused ? <LoaderCircleIcon className="size-4 animate-spin" /> : <Trash2Icon className="size-4" />}
               {t("resource.delete-all-unused")}
             </Button>
           </div>
@@ -193,24 +194,24 @@ const Attachments = () => {
 
     if (attachmentSection === "all") {
       const total = stats.media + stats.documents + stats.audio;
-      if (total === 0) return <div className="py-16 text-center text-sm text-muted-foreground">{t("attachment-library.empty.all")}</div>;
+      if (total === 0) return <div className="py-16 text-center mu-body text-mu-ink-muted">{t("attachment-library.empty.all")}</div>;
       return (
         <div className="space-y-9">
           {stats.media > 0 && (
             <section className="space-y-3">
-              <h2 className="text-sm font-medium text-foreground">{t("attachment-library.tabs.media")}</h2>
+              <h2 className="mu-label text-mu-ink">{t("attachment-library.tabs.media")}</h2>
               <AttachmentMediaGrid groups={mediaGroups} creators={creators} onPreview={handlePreview} />
             </section>
           )}
           {stats.documents > 0 && (
             <section className="space-y-3">
-              <h2 className="text-sm font-medium text-foreground">{t("attachment-library.tabs.documents")}</h2>
+              <h2 className="mu-label text-mu-ink">{t("attachment-library.tabs.documents")}</h2>
               <AttachmentDocumentRows items={documentItems} creators={creators} />
             </section>
           )}
           {stats.audio > 0 && (
             <section className="space-y-3">
-              <h2 className="text-sm font-medium text-foreground">{t("attachment-library.tabs.audio")}</h2>
+              <h2 className="mu-label text-mu-ink">{t("attachment-library.tabs.audio")}</h2>
               <AttachmentAudioRows items={audioItems} creators={creators} />
             </section>
           )}
@@ -244,15 +245,19 @@ const Attachments = () => {
 
           {attachmentSection !== "unused" && hasNextPage && (
             <div className="mt-6 flex justify-center">
-              <Button variant="outline" className="rounded-full px-4" onClick={() => fetchNextPage()} disabled={isFetchingNextPage}>
-                {isFetchingNextPage ? <LoaderCircleIcon className="h-4 w-4 animate-spin" /> : null}
+              <Button
+                variant="neutral"
+                onClick={() => fetchNextPage()}
+                loading={isFetchingNextPage}
+                loadingLabel={t("resource.fetching-data")}
+              >
                 {isFetchingNextPage ? t("resource.fetching-data") : t("memo.load-more")}
               </Button>
             </div>
           )}
 
           {!isLoading && isFetching && !isFetchingNextPage && (
-            <div className="mt-4 text-center text-xs text-muted-foreground">{t("resource.fetching-data")}</div>
+            <div className="mt-4 text-center mu-caption text-mu-ink-muted">{t("resource.fetching-data")}</div>
           )}
         </div>
       </div>
@@ -265,7 +270,7 @@ const Attachments = () => {
         confirmLabel={t("common.delete")}
         cancelLabel={t("common.cancel")}
         onConfirm={handleDeleteUnusedAttachments}
-        confirmVariant="destructive"
+        confirmVariant="danger"
       />
 
       <PreviewImageDialog

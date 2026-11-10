@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Link } from "@usememos/ui";
 
 interface Props {
   message: string;
@@ -12,14 +12,12 @@ interface Props {
  * empty timeline never reads as a failed search.
  */
 const EmptyLine = ({ message, action, onAction }: Props) => (
-  <div className="flex w-full flex-wrap items-center justify-center gap-x-1 py-10 text-sm text-muted-foreground">
+  <div className="flex w-full flex-wrap items-center justify-center gap-x-1 py-10 mu-body text-mu-ink-muted">
     <span>{message}</span>
     {action && onAction && (
       <>
         <span aria-hidden="true">·</span>
-        <Button variant="link" size="sm" onClick={onAction}>
-          {action}
-        </Button>
+        <Link render={<button type="button" onClick={onAction} />}>{action}</Link>
       </>
     )}
   </div>

@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { toast } from "react-hot-toast";
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { DrawingSheet } from "@/components/DrawingSheet";
 import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useSourceMode } from "@/hooks/useSourceMode";
+import { showErrorToast, toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { InstanceSetting_Key } from "@/types/proto/api/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
@@ -20,6 +21,7 @@ import {
   useAudioRecorder,
   useAutoSave,
   useBlobUrls,
+  useDrawing,
   useFocusMode,
   useInlineImageUpload,
   useMemoInit,
@@ -45,6 +47,7 @@ export const EditSession: React.FC<EditSessionProps> = ({
   className,
   draftKey,
   frameless,
+  timestampLead,
   memo,
   parentMemoName,
   suggestions = [],
@@ -79,6 +82,11 @@ export const EditSession: React.FC<EditSessionProps> = ({
   const { createBlobUrl } = useBlobUrls();
   const saveMediaMetadata = userGeneralSetting?.saveMediaMetadata ?? false;
   const inlineImageUpload = useInlineImageUpload(editorRef);
+  const toDrawingFile = useCallback(
+    (file: File) => toLocalFiles([file], { createBlobUrl, saveMediaMetadata })[0],
+    [createBlobUrl, saveMediaMetadata],
+  );
+  const drawing = useDrawing(toDrawingFile);
 
   const memoName = memo?.name;
   const showTimestamp = Boolean(memoName || (!memo && hasTimestamp));
@@ -157,15 +165,15 @@ export const EditSession: React.FC<EditSessionProps> = ({
         const text = (await transcriptionService.transcribeFile(localFile.file)).trim();
         if (!text) {
           dispatch(actions.addLocalFile(localFile));
-          toast.error(t("editor.audio-recorder.transcribe-empty"));
+          showErrorToast(t("editor.audio-recorder.transcribe-empty"));
           return;
         }
 
         insertTranscribedText(text);
-        toast.success(t("editor.audio-recorder.transcribe-success"));
+        toast.add({ title: t("editor.audio-recorder.transcribe-success"), type: "success" });
       } catch (error) {
         console.error(error);
-        toast.error(errorService.getErrorMessage(error) || t("editor.audio-recorder.transcribe-error"));
+        showErrorToast(errorService.getErrorMessage(error) || t("editor.audio-recorder.transcribe-error"));
         dispatch(actions.addLocalFile(localFile));
       } finally {
         setIsTranscribingAudio(false);
@@ -188,7 +196,7 @@ export const EditSession: React.FC<EditSessionProps> = ({
     onRecordingEmpty: (mode) => {
       if (mode === "transcribe") {
         setIsTranscribingAudio(false);
-        toast.error(t("editor.audio-recorder.transcribe-empty"));
+        showErrorToast(t("editor.audio-recorder.transcribe-empty"));
       }
       setIsAudioRecorderOpen(false);
     },
@@ -213,7 +221,7 @@ export const EditSession: React.FC<EditSessionProps> = ({
     }
 
     if (audioRecorder.status === "error" || audioRecorder.status === "unsupported") {
-      toast.error(audioRecorder.error || t("editor.audio-recorder.error-description"));
+      showErrorToast(audioRecorder.error || t("editor.audio-recorder.error-description"));
       setIsAudioRecorderOpen(false);
     }
   }, [isAudioRecorderOpen, audioRecorder.error, audioRecorder.status, t]);
@@ -338,31 +346,22 @@ export const EditSession: React.FC<EditSessionProps> = ({
       <div
         ref={editorContainerRef}
         className={cn(
-          "group relative w-full flex flex-col justify-between items-start gap-2",
-          // A card that is the frame already supplies the background, border and padding; a
-          // session floating over the page in focus mode always brings its own.
-          (!frameless || isFocusMode) && "bg-card px-4 py-3 rounded-lg border border-border/70",
+          "group w-full flex flex-col justify-between items-start gap-2",
+          // A card that is the frame already supplies the background, border and padding; a session floating over the page in
+          // focus mode always brings its own. The bottom is 16px like the sides: the toolbar's
+          // hard edge needs more room than the text's soft top.
+          (!frameless || isFocusMode) && "relative bg-mu-surface px-4 pt-3 pb-4 rounded-mu-lg border border-mu-line/70",
           isFocusMode && cn(FOCUS_MODE_STYLES.container.base, FOCUS_MODE_STYLES.container.spacing),
           !isFocusMode && className,
         )}
       >
-        {isSourceMode && (
-          <span
-            className={cn(
-              "pointer-events-none absolute end-0 top-0 rounded-es-lg rounded-se-lg border-s border-b border-border/70 bg-muted/40 px-1.5 py-1 select-none font-mono text-[10px] font-medium leading-3 text-muted-foreground [text-box:trim-both_cap_alphabetic]",
-              isFocusMode && "border-border py-px leading-none",
-            )}
-            aria-label={t("editor.markdown-mode")}
-          >
-            Markdown
-          </span>
-        )}
         {/* Formatting is the editor's own: its toolbar appears over selected
             text, and the slash menu and Markdown shortcuts change block types.
             Focus mode always shows the memo's time ("Now" before it has one) and adds
             the button that leaves the current frame — minimize inline, close when hosted. */}
         {(showTimestamp || isFocusMode) && (
-          <div className={cn("flex w-full items-center", isFocusMode ? "h-10" : "h-6")}>
+          <div className={cn("flex w-full items-center gap-1.5", isFocusMode ? "h-10" : "h-6")}>
+            {timestampLead}
             <TimestampPopover />
             {isFocusMode && (
               <div className="ms-auto -me-2">
@@ -403,6 +402,8 @@ export const EditSession: React.FC<EditSessionProps> = ({
             onTranscribeAttachment={canTranscribe ? transcribeAttachment : undefined}
             transcribingAttachment={transcribingAttachment}
             transcriptionDisabled={isSaving || audioRecorder.isBusy || isTranscribingAudio}
+            onEditDrawing={drawing.openExisting}
+            openingDrawing={drawing.opening}
           />
           {!memo && !parentMemoName && isInitialized && suggestions.length > 0 && (
             <EditorSuggestions suggestions={suggestions} controllerRef={editorRef} space={editorSpace} />
@@ -418,9 +419,23 @@ export const EditSession: React.FC<EditSessionProps> = ({
             viewToggles={viewToggles}
             sourceMode={sourceMode}
             onInsertImages={handleInsertImages}
+            onDrawingClick={drawing.openNew}
           />
         </div>
       </div>
+
+      {drawing.session && (
+        <Suspense fallback={null}>
+          <DrawingSheet
+            key={drawing.session.id}
+            mode={drawing.session.mode}
+            initialScene={drawing.session.scene}
+            background={drawing.session.background}
+            onDone={drawing.done}
+            onClose={drawing.close}
+          />
+        </Suspense>
+      )}
     </>
   );
 };

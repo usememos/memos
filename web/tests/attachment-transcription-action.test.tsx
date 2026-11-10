@@ -36,7 +36,8 @@ describe("attachment transcription action", () => {
         onAttachmentsChange={vi.fn()}
       />,
     );
-    expect(screen.getByRole("button", { name: "Transcribing..." })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Transcribing..." })).toHaveAttribute("aria-busy", "true");
+    expect(screen.getByRole("button", { name: "Transcribing..." })).toHaveAttribute("aria-disabled", "true");
     expect(screen.queryByRole("button", { name: "Remove attachment" })).not.toBeInTheDocument();
     expect(screen.getByText("voice.wav")).toBeInTheDocument();
   });

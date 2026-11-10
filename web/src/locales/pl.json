@@ -21,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Nie udało się dokończyć logowania",
     "create-your-account": "Utwórz konto",
+    "hide-password": "Ukryj hasło",
+    "incorrect-credentials": "Nieprawidłowa nazwa użytkownika lub hasło.",
     "new-password": "Nowe hasło",
     "repeat-new-password": "Powtórz nowe hasło",
+    "show-password": "Pokaż hasło",
     "sign-in-tip": "Masz już konto?",
     "sign-up-tip": "Nie masz jeszcze konta?",
     "admin-sign-in": "Logowanie administratora",
-    "admin-sign-in-tip": "Logowanie za pomocą hasła pozostaje dostępne dla administratorów.",
     "back-to-sign-in": "Powrót do logowania",
     "continue-with": "Kontynuuj z {{provider}}",
     "create-admin-account": "Utwórz konto administratora",
-    "explore-public-memos": "Przeglądaj publiczne notatki dotyczące tej instancji",
-    "first-run": "Pierwsze uruchomienie",
     "setup-description": "Utwórz konto administratora dla tej instancji.",
-    "setup-note": "To konto jest właścicielem ustawień instancji, członków i dostawców tożsamości.",
     "setup-title": "Skonfiguruj swoją instancję",
     "signin-unavailable-description": "Logowanie za pomocą hasła jest wyłączone i nie skonfigurowano żadnych dostawców tożsamości. Poproś administratora o włączenie metody logowania.",
     "signin-unavailable-title": "Logowanie jest niedostępne",
-    "signup-unavailable-description": "Konta haseł są wyłączone i nie skonfigurowano żadnych dostawców tożsamości. Poproś administratora o dostęp.",
-    "signup-unavailable-title": "Rejestracja jest niedostępna",
-    "signups-closed-description": "Nowe konta są wyłączone w tej instancji. Skontaktuj się z administratorem, jeśli potrzebujesz dostępu.",
-    "signups-closed-title": "Rejestracja zamknięta",
-    "sso-signup-tip": "Zaloguj się u dostawcy poniżej, aby utworzyć konto.",
-    "welcome-back": "Witamy ponownie."
+    "signups-closed-description": "Nowe konta są wyłączone w tej instancji. Skontaktuj się z administratorem, jeśli potrzebujesz dostępu."
   },
   "common": {
     "about": "O nas",
@@ -102,7 +97,6 @@
     "profile": "Profil",
     "referenced-by": "Wspomniane przez",
     "referencing": "Odwołuje się do",
-    "relations": "Relacje",
     "resources": "Zasoby",
     "restore": "Przywróć",
     "role": "Rola",
@@ -138,7 +132,24 @@
     "resize-panel": "Zmień rozmiar panelu",
     "resize-sidebar": "Zmień rozmiar paska bocznego",
     "sign-in-to-memos": "Zaloguj się do Memos",
-    "view-all": "Wyświetl wszystko"
+    "open-navigation": "Otwórz nawigację",
+    "navigation": "Nawigacja",
+    "primary-navigation": "Główna",
+    "download": "Pobierz",
+    "download-name": "Pobierz {{name}}",
+    "open-name": "Otwórz {{name}}",
+    "preview-name": "Podgląd {{name}}",
+    "no-content": "Brak treści",
+    "previous": "Poprzedni",
+    "next": "Następny",
+    "retry": "Spróbuj ponownie",
+    "docs": "Dokumentacja",
+    "calendar-for-month": "Kalendarz: {{month}}",
+    "date-at-time": "{{date}} o {{time}}",
+    "selected-location": "Wybrana lokalizacja",
+    "choose-location": "Wybierz lokalizację",
+    "unknown-error": "Nieznany błąd",
+    "error-occurred": "Wystąpił błąd"
   },
   "locale-picker": {
     "no-language-feedback": "Nie znaleziono języka? Prześlij opinię"
@@ -173,9 +184,50 @@
       "image-upload-failed": "Niektórych obrazów nie udało się przesłać. Spróbuj ponownie lub zachowaj przesłane pliki jako załączniki.",
       "image-upload-stopped": "Zatrzymano przesyłanie obrazu {{completed}}/{{total}}",
       "insert-image": "Wstaw obraz",
+      "drawing": "Rysunek",
       "keep-as-attachments": "Zachowaj jako załącznik",
       "uploading-inline-image": "Przesyłanie do treści",
       "uploading-images": "Przesyłanie obrazów {{completed}}/{{total}}"
+    },
+    "drawing": {
+      "new-title": "Nowy rysunek",
+      "edit": "Edytuj rysunek",
+      "tools": "Narzędzia",
+      "tool-select": "Zaznacz",
+      "tool-pen": "Pióro",
+      "tool-eraser": "Gumka",
+      "tool-rectangle": "Prostokąt",
+      "tool-ellipse": "Elipsa",
+      "tool-arrow": "Strzałka",
+      "tool-text": "Tekst",
+      "style": "Kolor i grubość",
+      "color": "Kolor",
+      "width": "Grubość",
+      "width-thin": "Cienka",
+      "width-medium": "Średnia",
+      "width-thick": "Gruba",
+      "color-ink": "Atrament",
+      "color-gray": "Szary",
+      "color-red": "Czerwony",
+      "color-orange": "Pomarańczowy",
+      "color-green": "Zielony",
+      "color-teal": "Morski",
+      "color-blue": "Niebieski",
+      "color-violet": "Fioletowy",
+      "undo": "Cofnij",
+      "redo": "Ponów",
+      "zoom-to-fit": "Dopasuj do ekranu",
+      "done": "Gotowe",
+      "discard-title": "Odrzucić ten rysunek?",
+      "discard-description": "Nie został jeszcze dodany do notatki.",
+      "discard-edit-title": "Odrzucić zmiany?",
+      "discard-edit-description": "Rysunek pozostanie taki, jak przed otwarciem.",
+      "keep-drawing": "Rysuj dalej",
+      "discard": "Odrzuć",
+      "open-failed": "Nie udało się otworzyć rysunku. Spróbuj ponownie.",
+      "export-failed": "Nie udało się zapisać rysunku. Spróbuj ponownie.",
+      "image-failed": "Nie udało się dodać obrazu do rysunku.",
+      "saved-without-drawing": "Notatka została zapisana, ale rysunek nie. Zapisz ponownie, aby spróbować jeszcze raz."
     },
     "no-changes-detected": "Brak wykrytych zmian",
     "save": "Zapisz",
@@ -256,7 +308,19 @@
       "alt-text-placeholder": "Opisz obraz…",
       "image-unavailable": "Obraz niedostępny",
       "resize-image": "Zmień rozmiar obrazu"
-    }
+    },
+    "attachments": {
+      "edited": "Edytowany",
+      "new": "Nowy",
+      "remove": "Usuń załącznik",
+      "reorder": "Zmień kolejność: {{name}}",
+      "reorder-hint": "Przeciągnij lub użyj klawiszy strzałek"
+    },
+    "remove-relation": "Usuń powiązanie",
+    "remove-location": "Usuń lokalizację",
+    "recording-unsupported": "Ta przeglądarka nie obsługuje nagrywania dźwięku.",
+    "microphone-denied": "Odmówiono dostępu do mikrofonu.",
+    "recording-failed": "Nie udało się rozpocząć nagrywania dźwięku."
   },
   "inbox": {
     "failed-to-load": "Nie udało się załadować elementu skrzynki odbiorczej",
@@ -265,7 +329,16 @@
     "unread": "Nieprzeczytane",
     "space-invitation": "zaproszono Cię do dołączenia przestrzeń",
     "space-invitation-accepted": "Dołączyłeś do tej przestrzeni.",
-    "space-invitation-open": "Otwarta przestrzeń"
+    "space-invitation-open": "Otwarta przestrzeń",
+    "commented-on-memo": "skomentował(a) Twoją notatkę",
+    "mentioned-in-comment": "wspomniał(a) o Tobie w komentarzu",
+    "mentioned-in-memo": "wspomniał(a) o Tobie w notatce",
+    "original": "Oryginał:",
+    "memo-label": "Notatka:",
+    "comment-heading": "Komentarz",
+    "memo-heading": "Notatka",
+    "empty-memo": "Pusta notatka",
+    "empty-comment": "Pusty komentarz"
   },
   "live-update": {
     "connected": "Aktywne aktualizacje na żywo",
@@ -280,7 +353,11 @@
     "click-to-show-sensitive-content": "Kliknij, aby pokazać treści NSFW",
     "comment": {
       "self": "Komentarze",
-      "write-a-comment": "Napisz komentarz"
+      "write-a-comment": "Napisz komentarz",
+      "view-all-count_one": "Wyświetl {{count}} komentarz",
+      "view-all-count_few": "Wyświetl wszystkie {{count}} komentarze",
+      "view-all-count_many": "Wyświetl wszystkie {{count}} komentarzy",
+      "view-all-count_other": "Wyświetl wszystkie {{count}} komentarza"
     },
     "copy-content": "Kopiuj treść",
     "copy-link": "Kopiuj link",
@@ -294,7 +371,8 @@
       "has-image": "ma obraz",
       "has-link": "ma link",
       "has-location": "ma lokalizację",
-      "has-task-list": "ma listę zadań"
+      "has-task-list": "ma listę zadań",
+      "remove": "Usuń filtr"
     },
     "compact-mode": "Tryb kompaktowy",
     "link-preview": "Podgląd linków",
@@ -380,7 +458,9 @@
     "restored-successfully": "Przywrócono pomyślnie",
     "succeed-copy-content": "Treść została pomyślnie skopiowana.",
     "succeed-copy-link": "Link skopiowany pomyślnie.",
-    "update-succeed": "Aktualizacja zakończona sukcesem"
+    "update-succeed": "Aktualizacja zakończona sukcesem",
+    "not-signed-in": "Nie jesteś zalogowany.",
+    "invalid-datetime": "Nieprawidłowa data i godzina. Użyj formatu 2023-12-31 23:59:59."
   },
   "reference": {
     "no-memos-found": "Nie znaleziono notatek",
@@ -450,7 +530,9 @@
       "usage-storage": "Storage",
       "usage-title": "Usage limits",
       "storage-usage-error": "Twoja pamięć na załączniki jest niedostępna.",
-      "email-in-use": "Ten adres e-mail jest już używany przez inne konto."
+      "email-in-use": "Ten adres e-mail jest już używany przez inne konto.",
+      "avatar-too-large": "Wybierz obraz o rozmiarze do 2 MB.",
+      "avatar-unreadable": "Nie można odczytać tego obrazu. Spróbuj innego pliku."
     },
     "instance": {
       "disallow-change-nickname": "Zabroń zmiany pseudonimu",
@@ -490,7 +572,10 @@
       "archived": "Zarchiwizowane",
       "member-column": "Członek",
       "summary-column": "Streszczenie",
-      "export-memos": "Eksportuj notatki"
+      "export-memos": "Eksportuj notatki",
+      "username-password-required": "Nazwa użytkownika i hasło nie mogą być puste",
+      "create-success": "Utworzono użytkownika",
+      "update-success": "Zaktualizowano użytkownika"
     },
     "memo": {
       "label": "Notatki",
@@ -524,7 +609,12 @@
       "theme-description": "Natychmiast stosuje wybrany motyw na tym urządzeniu.",
       "theme": "Motyw",
       "uploads-privacy-description": "Kontroluj informacje wrażliwe dotyczące prywatności przesyłane wraz z przesłanymi multimediami.",
-      "uploads-privacy-title": "Przesyłanie i prywatność"
+      "uploads-privacy-title": "Przesyłanie i prywatność",
+      "theme-system": "Zgodnie z systemem",
+      "theme-system-short": "Systemowy",
+      "theme-light": "Jasny",
+      "theme-dark": "Ciemny",
+      "theme-paper": "Papier"
     },
     "editor": {
       "label": "Edytor",
@@ -534,7 +624,118 @@
       "create": "Utwórz widok",
       "delete-confirm": "Czy na pewno chcesz usunąć widok `{{title}}`?",
       "delete-success": "Widok `{{title}}` usunięty pomyślnie",
-      "change-icon": "Zmień ikonę widoku"
+      "change-icon": "Zmień ikonę widoku",
+      "page-description": "Twórz widoki wielokrotnego użytku z polami, operatorami, funkcjami czasu i dopasowaniem tagów. Zacznij od przykładów, a przed zapisaniem sprawdź poprawność.",
+      "edit": "Edytuj widok",
+      "form-description": "Nazwij widok i określ wyrażenie filtra notatek, które ma stosować.",
+      "title-placeholder": "Przypięte, Ostatnie notatki, Praca",
+      "filter-help": "Łącz wyrażenia za pomocą {{and}}, {{or}} i {{not}}. Pola czasu są znacznikami czasu — używaj {{now}}, {{duration}}, {{timestamp}} i akcesorów takich jak {{year}}. Tagi obsługują {{sets}}, a {{size}} mierzy długość.",
+      "validate": "Sprawdź",
+      "all": "Wszystkie widoki",
+      "loading": "Ładowanie widoków…",
+      "load-failed": "Nie udało się załadować widoków.",
+      "empty-title": "Brak widoków",
+      "empty-description": "Zapisz filtr, aby szybko wracać do potrzebnych notatek.",
+      "examples-title": "Przykłady wyrażeń",
+      "fields-title": "Obsługiwane pola",
+      "title-filter-required": "Tytuł i filtr nie mogą być puste",
+      "filter-valid": "Wyrażenie filtra wygląda poprawnie",
+      "create-success": "Utworzono widok",
+      "update-success": "Zaktualizowano widok",
+      "examples": {
+        "pinned": {
+          "title": "Przypięte",
+          "description": "Tylko przypięte notatki."
+        },
+        "recent": {
+          "title": "Ostatnie notatki",
+          "description": "Notatki utworzone w ciągu ostatniej godziny."
+        },
+        "public": {
+          "title": "Publiczne notatki",
+          "description": "Tylko publiczne notatki."
+        },
+        "project-tags": {
+          "title": "Tagi projektu",
+          "description": "Dopasuj jeden lub więcej dokładnych tagów."
+        },
+        "untagged": {
+          "title": "Bez tagów",
+          "description": "Notatki bez żadnych tagów."
+        },
+        "archive-tree": {
+          "title": "Drzewo archiwum",
+          "description": "Dopasuj tagi hierarchiczne po prefiksie."
+        },
+        "unassigned": {
+          "title": "Nieprzypisane",
+          "description": "Notatki, które nie należą do żadnej przestrzeni."
+        },
+        "one-space": {
+          "title": "W jednej przestrzeni",
+          "description": "Notatki w przestrzeni. Użyj identyfikatora przestrzeni z jej adresu URL lub ustawień."
+        },
+        "open-tasks": {
+          "title": "Otwarte zadania",
+          "description": "Notatki z nieukończonymi zadaniami."
+        },
+        "links-or-code": {
+          "title": "Linki lub kod",
+          "description": "Notatki zawierające linki lub bloki kodu."
+        },
+        "no-location": {
+          "title": "Bez lokalizacji",
+          "description": "Notatki bez dołączonej lokalizacji."
+        },
+        "with-attachments": {
+          "title": "Z załącznikami",
+          "description": "Notatki z co najmniej jednym załączonym plikiem."
+        },
+        "photos": {
+          "title": "Zdjęcia",
+          "description": "Notatki z obrazem w treści lub jako załączonym plikiem."
+        },
+        "content-search": {
+          "title": "Wyszukiwanie w treści",
+          "description": "Wyszukaj tekst w treści notatek."
+        },
+        "starts-with": {
+          "title": "Zaczyna się od",
+          "description": "Notatki, których treść zaczyna się od tekstu (również endsWith)."
+        },
+        "regex": {
+          "title": "Dopasowanie regex",
+          "description": "Dopasuj treść za pomocą wyrażenia regularnego."
+        },
+        "all-tags-complete": {
+          "title": "Wszystkie tagi ukończone",
+          "description": "Każdy tag kończy się na -done (tylko notatki z tagami)."
+        },
+        "one-project-tag": {
+          "title": "Jeden tag projektu",
+          "description": "Dokładnie jeden tag spełnia predykat."
+        },
+        "any-tags": {
+          "title": "Dowolny z tych tagów",
+          "description": "Tagi mają część wspólną z podanym zbiorem."
+        },
+        "exact-tags": {
+          "title": "Dokładnie te tagi",
+          "description": "Oznaczone dokładnie tym zbiorem tagów, bez innych."
+        },
+        "year-2024": {
+          "title": "Notatki z 2024",
+          "description": "Filtruj według roku kalendarzowego."
+        },
+        "weekend": {
+          "title": "Notatki weekendowe",
+          "description": "Utworzone w niedzielę lub sobotę (0 = niedziela)."
+        },
+        "long": {
+          "title": "Długie notatki",
+          "description": "Notatki dłuższe niż 280 znaków."
+        }
+      }
     },
     "configuration": {
       "label": "Konfiguracja",
@@ -610,7 +811,9 @@
       "scopes-description": "Oddziel zakresy spacjami. Większość dostawców potrzebuje jedynie niewielkiego zestawu, takiego jak dostęp do profilu lub poczty e-mail.",
       "template-description": "Zacznij od ustawień wstępnych dostawcy, a następnie dostosuj poświadczenia i punkty końcowe dla dzierżawy.",
       "unlink-success": "Odłączono {{name}}.",
-      "update-sso-description": "Przejrzyj konfigurację dostawcy, a następnie zapisz pola, które powinny zostać zmienione."
+      "update-sso-description": "Przejrzyj konfigurację dostawcy, a następnie zapisz pola, które powinny zostać zmienione.",
+      "invalid-config": "Konfiguracja dostawcy tożsamości jest nieprawidłowa.",
+      "provider-id-placeholder": "np. github, okta-corp"
     },
     "storage": {
       "accesskey": "Klucz dostępu",
@@ -658,7 +861,8 @@
       "customize-server": {
         "description": "Opis",
         "icon-url": "URL ikony",
-        "title": "Dostosuj serwer"
+        "title": "Dostosuj serwer",
+        "dialog-description": "Dostosuj wygląd i ustawienia swojej instancji."
       },
       "label": "System",
       "server-name": "Nazwa serwera",
@@ -978,7 +1182,8 @@
   },
   "tooltip": {
     "link-memo": "Podlinkuj Notatkę",
-    "select-location": "Lokalizacja"
+    "select-location": "Lokalizacja",
+    "link-memo-description": "Wyszukaj i wybierz notatkę do powiązania"
   },
   "demo": {
     "banner-description": "Zmiany mają charakter tymczasowy i mogą zostać zresetowane.",
@@ -1081,7 +1286,12 @@
     "loading": "Ładowanie notatek…",
     "new-here": "Napisz tutaj",
     "saved-outside-filter": "Zapisano. Ta notatka znajduje się poza bieżącymi wynikami mapy.",
-    "open-memo": "Otwórz notatkę"
+    "open-memo": "Otwórz notatkę",
+    "open-in-google-maps": "Otwórz w Google Maps",
+    "location-description": "Wybierz lokalizację na mapie lub wpisz współrzędne ręcznie",
+    "latitude": "Szerokość geograficzna",
+    "longitude": "Długość geograficzna",
+    "place-placeholder": "Najpierw wybierz położenie."
   },
   "calendar": {
     "new-memo-on-day": "Nowa notatka z tego dnia",
@@ -1180,5 +1390,47 @@
       "tag-reading": "czytanie",
       "tag-ideas": "pomysły"
     }
+  },
+  "error": {
+    "title": "Coś poszło nie tak",
+    "description": "Wystąpił nieoczekiwany błąd. Może to być spowodowane problemem z siecią lub błędem aplikacji.",
+    "description-update": "Wystąpił nieoczekiwany błąd. Może to być spowodowane problemem z siecią lub aktualizacją aplikacji. Zwykle pomaga ponowne załadowanie.",
+    "details": "Szczegóły błędu",
+    "reload": "Załaduj aplikację ponownie",
+    "not-found": "Nie można znaleźć szukanej strony.",
+    "permission-denied": "Brak uprawnień",
+    "too-many-requests": "Zbyt wiele żądań. Spróbuj ponownie za {{wait}}.",
+    "wait-seconds": "{{count}} s",
+    "wait-minutes": "{{count}} min",
+    "wait-hours": "{{count}} godz.",
+    "challenge-required": "Ukończ weryfikację i spróbuj ponownie.",
+    "quota-memo-count": "Osiągnięto limit {{limit}} notatek. Usuń notatki, aby tworzyć nowe.",
+    "quota-storage": "Ten plik przekroczyłby limit miejsca wynoszący {{limit}}. Wykorzystujesz {{usage}}.",
+    "quota-upload": "Ten plik przekracza limit {{limit}} na plik.",
+    "quota-memo-content": "Ta notatka przekracza limit {{limit}} na notatkę. Skróć treść, aby ją zapisać.",
+    "quota-generic": "Osiągnięto limit użycia.",
+    "sign-in-failed": "Nie udało się zalogować.",
+    "sign-up-failed": "Rejestracja nie powiodła się",
+    "authenticate-failed": "Uwierzytelnianie nie powiodło się.",
+    "update-profile-failed": "Nie udało się zaktualizować profilu",
+    "unlink-identity-failed": "Nie udało się odłączyć dostawcy tożsamości.",
+    "link-identity-failed": "Nie udało się rozpocząć łączenia konta. Spróbuj ponownie."
+  },
+  "attachment-preview": {
+    "title": "Podgląd załącznika",
+    "description": "Okno podglądu załącznika. Naciśnij Escape, aby zamknąć, użyj strzałek w lewo i w prawo, aby przełączać elementy, a obrazy powiększaj przyciskami, kółkiem myszy, dwukrotnym dotknięciem lub gestem szczypania.",
+    "close": "Zamknij podgląd",
+    "previous": "Poprzedni element",
+    "next": "Następny element",
+    "reset-zoom": "Resetuj powiększenie",
+    "image-alt": "Podgląd obrazu {{index}} z {{count}}",
+    "live-photo-alt": "Podgląd zdjęcia na żywo {{index}} z {{count}}",
+    "play-live-photo": "Najedź lub naciśnij, aby odtworzyć zdjęcie na żywo"
+  },
+  "audio-player": {
+    "seek": "Przewiń {{name}}",
+    "back": "Do tyłu o {{seconds}} s",
+    "forward": "Do przodu o {{seconds}} s",
+    "speed": "Prędkość odtwarzania {{rate}}x"
   }
 }

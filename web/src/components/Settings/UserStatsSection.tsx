@@ -16,7 +16,7 @@ const UserStatsSection = () => {
   return (
     <SettingGroup showSeparator title={t("common.statistics")}>
       {isError ? (
-        <p className="text-sm text-muted-foreground" role="status">
+        <p className="mu-body text-mu-ink-muted" role="status">
           {t("setting.account.storage-usage-error")}
         </p>
       ) : (

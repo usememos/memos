@@ -1,21 +1,24 @@
+import { buttonClasses } from "@usememos/ui";
 import { DownloadIcon, ExternalLinkIcon, FileIcon, PlayIcon } from "lucide-react";
-import type { PropsWithChildren } from "react";
-import { useMemo } from "react";
+import type { KeyboardEvent, PropsWithChildren } from "react";
+import { Suspense, useMemo, useState } from "react";
+import { DRAWING_PAPER, DrawingViewer, isDrawingFilename } from "@/components/DrawingSheet";
 import MotionPhotoPreview from "@/components/MotionPhotoPreview";
-import { buttonVariants } from "@/components/ui/button";
 import VideoPoster from "@/components/VideoPoster";
 import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/attachment_service_pb";
+import type { Memo } from "@/types/proto/api/memo_service_pb";
 import { getAttachmentUrl, isImage } from "@/utils/attachment";
+import { useTranslate } from "@/utils/i18n";
 import type { AttachmentVisualItem, PreviewMediaItem } from "@/utils/media-item";
 import { buildAttachmentVisualItems } from "@/utils/media-item";
 import {
   METADATA_ROW_BOX_CLASSES,
   METADATA_ROW_CLASSES,
+  METADATA_ROW_CONTENT_TEXT_CLASSES,
   METADATA_ROW_CONTROLS_CLASSES,
   METADATA_ROW_HINT_CLASSES,
   METADATA_ROW_LABEL_CLASSES,
-  METADATA_ROW_TEXT_CLASSES,
   MetadataRowDetail,
   MetadataRowIconSlot,
 } from "../MetadataSection";
@@ -24,6 +27,10 @@ import { getAttachmentMetadata } from "./attachmentHelpers";
 import {
   COLLAGE_VIDEO_PLAY_BADGE_CLASS,
   COVER_MEDIA_CLASS,
+  DRAWING_SHEET_CELL_MEDIA_CLASS,
+  DRAWING_SHEET_MEDIA_CLASS,
+  DRAWING_SHEET_SINGLE_CLASS,
+  DRAWING_SHEET_TILE_CLASS,
   MEDIA_HOVER_GRADIENT_CLASS,
   MEDIA_HOVER_SURFACE_CLASS,
   NATURAL_MEDIA_CLASS,
@@ -41,18 +48,97 @@ const getMotionPreviewProps = (item: VisualItem) => ({
   presentationTimestampUs: item.previewItem.kind === "motion" ? item.previewItem.presentationTimestampUs : undefined,
 });
 
+/** A drawing (a `.canvas.png` image) shows as a sheet of paper instead of a framed photo. */
+const isDrawing = (item: VisualItem) => item.kind === "image" && isDrawingFilename(item.filename);
+
+/**
+ * A tile is a div, not a <button>: it holds block media. When it opens the viewer it takes the
+ * button role and keys, so keyboard users reach it too; its name comes from the media's alt text.
+ */
+const tileInteraction = (onPreview?: () => void) =>
+  onPreview
+    ? {
+        role: "button",
+        tabIndex: 0,
+        onClick: onPreview,
+        onKeyDown: (event: KeyboardEvent<HTMLDivElement>) => {
+          // Only the tile's own keys: a motion photo's Live badge inside it is a control too.
+          if (event.target !== event.currentTarget || (event.key !== "Enter" && event.key !== " ")) return;
+          event.preventDefault();
+          onPreview();
+        },
+      }
+    : undefined;
+
 const VisualTile = ({
   className,
   onPreview,
   overlayLabel,
   children,
-}: PropsWithChildren<{ className?: string; onPreview?: () => void; overlayLabel?: string }>) => {
+}: PropsWithChildren<{ className?: string; onPreview?: () => void; overlayLabel?: string }>) => (
+  <div className={cn(VISUAL_TILE_BUTTON_CLASS, className)} {...tileInteraction(onPreview)}>
+    <div className={MEDIA_HOVER_SURFACE_CLASS}>
+      {children}
+      <div className={MEDIA_HOVER_GRADIENT_CLASS} aria-hidden />
+    </div>
+    {overlayLabel && <div className={OVERFLOW_TILE_OVERLAY_CLASS}>{overlayLabel}</div>}
+  </div>
+);
+
+/**
+ * The paper a drawing was made on. An export is opaque with the paper filling it, so its corner
+ * pixel is paper; a drawing made before the paper was fixed keeps its own. Undefined when the
+ * image can't be read.
+ */
+const readPaperColor = (img: HTMLImageElement): string | undefined => {
+  try {
+    const context = document.createElement("canvas").getContext("2d", { willReadFrequently: true });
+    if (!context) return undefined;
+    context.drawImage(img, 0, 0, 1, 1, 0, 0, 1, 1);
+    const [r, g, b] = context.getImageData(0, 0, 1, 1).data;
+    return `rgb(${r} ${g} ${b})`;
+  } catch {
+    return undefined;
+  }
+};
+
+/**
+ * A drawing as a sheet of paper. The sheet extends the drawing's own paper beyond its edges, so
+ * it can be any size. On its own it is a raised sheet; in a collage (`framed`) it takes the photos'
+ * hairline frame, so every cell of the grid has the same edge. The image is the original file at 2x: exports carry 2 pixels per drawn
+ * pixel, so it shows at the size it was drawn and keeps strokes and text sharp.
+ */
+const DrawingTile = ({
+  item,
+  className,
+  mediaClassName,
+  onPreview,
+  overlayLabel,
+  framed = false,
+}: {
+  item: VisualItem;
+  className: string;
+  mediaClassName: string;
+  onPreview?: () => void;
+  overlayLabel?: string;
+  framed?: boolean;
+}) => {
+  const [paper, setPaper] = useState(DRAWING_PAPER);
   return (
-    <div className={cn(VISUAL_TILE_BUTTON_CLASS, className)} onClick={onPreview}>
-      <div className={MEDIA_HOVER_SURFACE_CLASS}>
-        {children}
-        <div className={MEDIA_HOVER_GRADIENT_CLASS} aria-hidden />
-      </div>
+    <div
+      className={cn(framed ? VISUAL_TILE_BUTTON_CLASS : DRAWING_SHEET_TILE_CLASS, className)}
+      style={{ background: paper }}
+      {...tileInteraction(onPreview)}
+    >
+      <img
+        src={item.sourceUrl}
+        srcSet={`${item.sourceUrl} 2x`}
+        alt={item.filename}
+        className={mediaClassName}
+        loading="lazy"
+        decoding="async"
+        onLoad={(event) => setPaper(readPaperColor(event.currentTarget) ?? DRAWING_PAPER)}
+      />
       {overlayLabel && <div className={OVERFLOW_TILE_OVERLAY_CLASS}>{overlayLabel}</div>}
     </div>
   );
@@ -61,7 +147,7 @@ const VisualTile = ({
 const VideoPlayBadge = ({ className, children }: PropsWithChildren<{ className?: string }>) => (
   <div
     className={cn(
-      "pointer-events-none absolute flex items-center justify-center rounded-full bg-background/80 text-foreground/70 shadow-sm backdrop-blur-sm",
+      "pointer-events-none absolute flex items-center justify-center rounded-full bg-mu-canvas/80 text-mu-ink/70 backdrop-blur-sm",
       className,
     )}
   >
@@ -81,6 +167,18 @@ const CollageVisualItem = ({
   onPreview?: () => void;
 }) => {
   const motionPreviewProps = item.kind === "motion" ? getMotionPreviewProps(item) : undefined;
+  if (isDrawing(item)) {
+    return (
+      <DrawingTile
+        item={item}
+        className={cn("block h-full w-full", className)}
+        mediaClassName={DRAWING_SHEET_CELL_MEDIA_CLASS}
+        onPreview={onPreview}
+        overlayLabel={overlayLabel}
+        framed
+      />
+    );
+  }
   return (
     <VisualTile className={cn("block h-full w-full", className)} onPreview={onPreview} overlayLabel={overlayLabel}>
       {item.kind === "video" ? (
@@ -88,7 +186,7 @@ const CollageVisualItem = ({
           <VideoPoster sourceUrl={item.sourceUrl} posterUrl={item.posterUrl} alt={item.filename} className={COVER_MEDIA_CLASS} />
           {!overlayLabel && (
             <VideoPlayBadge className={COLLAGE_VIDEO_PLAY_BADGE_CLASS}>
-              <PlayIcon className="h-3.5 w-3.5 fill-current" />
+              <PlayIcon className="mu-icon-sm fill-current" />
             </VideoPlayBadge>
           )}
         </>
@@ -112,6 +210,12 @@ const CollageVisualItem = ({
 const SingleVisualItem = ({ item, onPreview }: { item: VisualItem; onPreview?: () => void }) => {
   const motionPreviewProps = item.kind === "motion" ? getMotionPreviewProps(item) : undefined;
 
+  if (isDrawing(item)) {
+    return (
+      <DrawingTile item={item} className={DRAWING_SHEET_SINGLE_CLASS} mediaClassName={DRAWING_SHEET_MEDIA_CLASS} onPreview={onPreview} />
+    );
+  }
+
   if (item.kind === "image") {
     return (
       <VisualTile className="inline-block max-w-full" onPreview={onPreview}>
@@ -131,7 +235,7 @@ const SingleVisualItem = ({ item, onPreview }: { item: VisualItem; onPreview?: (
           containerClassName="max-w-full"
           posterClassName={cn(NATURAL_MEDIA_CLASS, "object-contain")}
           videoClassName={SINGLE_MOTION_VIDEO_CLASS}
-          badgeClassName="left-2 top-2 px-2 py-0.5 text-[10px]"
+          badgeClassName="left-2 top-2 px-2 py-0.5 mu-caption"
         />
       </VisualTile>
     );
@@ -143,7 +247,7 @@ const SingleVisualItem = ({ item, onPreview }: { item: VisualItem; onPreview?: (
         <VideoPoster sourceUrl={item.sourceUrl} posterUrl={item.posterUrl} alt={item.filename} className={COVER_MEDIA_CLASS} />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/35 via-black/5 to-transparent" />
         <VideoPlayBadge className="bottom-3 right-3 h-9 w-9">
-          <PlayIcon className="h-4 w-4 fill-current" />
+          <PlayIcon className="mu-icon fill-current" />
         </VideoPlayBadge>
       </div>
     </VisualTile>
@@ -153,12 +257,15 @@ const SingleVisualItem = ({ item, onPreview }: { item: VisualItem; onPreview?: (
 interface AttachmentGalleryProps {
   visual: Attachment[];
   onImagePreview?: (items: PreviewMediaItem[], index: number) => void;
+  /** Opens drawings in the drawing viewer instead of the image viewer, with Edit when `canEdit`. */
+  drawings?: { memo: Pick<Memo, "name" | "attachments">; canEdit: boolean };
 }
 
 /** The memo's images, motion photos and videos as the bare gallery, flush with the content. */
-export const AttachmentGallery = ({ visual, onImagePreview }: AttachmentGalleryProps) => {
+export const AttachmentGallery = ({ visual, onImagePreview, drawings }: AttachmentGalleryProps) => {
   const visualItems = useMemo(() => buildAttachmentVisualItems(visual), [visual]);
   const layout = resolveVisualGalleryLayout(visualItems);
+  const [openDrawing, setOpenDrawing] = useState<VisualItem>();
 
   if (!layout) {
     return null;
@@ -170,10 +277,32 @@ export const AttachmentGallery = ({ visual, onImagePreview }: AttachmentGalleryP
     onImagePreview?.(previewItems, index >= 0 ? index : 0);
   };
 
+  // A drawing opens as a drawing: in the read-only canvas, not the image viewer.
+  const openItem = (item: VisualItem) => {
+    if (drawings && isDrawing(item) && item.attachments[0]) setOpenDrawing(item);
+    else handlePreview(item.id);
+  };
+
+  const drawingViewer = drawings && openDrawing?.attachments[0] && (
+    <Suspense fallback={null}>
+      <DrawingViewer
+        attachment={openDrawing.attachments[0]}
+        memo={drawings.memo}
+        canEdit={drawings.canEdit}
+        onClose={() => setOpenDrawing(undefined)}
+        onNoScene={() => {
+          setOpenDrawing(undefined);
+          handlePreview(openDrawing.id);
+        }}
+      />
+    </Suspense>
+  );
+
   if (layout.mode === "single") {
     return (
       <div className="w-full">
-        <SingleVisualItem item={layout.item} onPreview={() => handlePreview(layout.item.id)} />
+        <SingleVisualItem item={layout.item} onPreview={() => openItem(layout.item)} />
+        {drawingViewer}
       </div>
     );
   }
@@ -181,14 +310,9 @@ export const AttachmentGallery = ({ visual, onImagePreview }: AttachmentGalleryP
   return (
     <div className={cn("w-full", layout.containerClassName)}>
       {layout.cells.map(({ item, className, overlayLabel }) => (
-        <CollageVisualItem
-          key={item.id}
-          item={item}
-          className={className}
-          overlayLabel={overlayLabel}
-          onPreview={() => handlePreview(item.id)}
-        />
+        <CollageVisualItem key={item.id} item={item} className={className} overlayLabel={overlayLabel} onPreview={() => openItem(item)} />
       ))}
+      {drawingViewer}
     </div>
   );
 };
@@ -213,48 +337,61 @@ const isServedHere = (url: string) => {
  * the same edge as every other row's at rest.
  */
 const DocumentRow = ({ attachment }: { attachment: Attachment }) => {
+  const t = useTranslate();
   const { fileTypeLabel, fileSizeLabel } = getAttachmentMetadata(attachment);
   const url = getAttachmentUrl(attachment);
   const body = (
     <>
       <MetadataRowIconSlot icon={FileIcon} />
-      <span className={METADATA_ROW_TEXT_CLASSES}>{attachment.filename}</span>
+      <span className={METADATA_ROW_CONTENT_TEXT_CLASSES}>{attachment.filename}</span>
       <MetadataRowDetail parts={[fileTypeLabel, fileSizeLabel]} />
     </>
   );
 
   if (!isServedHere(url)) {
     return (
-      <a href={url} target="_blank" rel="noreferrer" title={`Open ${attachment.filename}`} className={METADATA_ROW_CLASSES}>
+      <a
+        href={url}
+        target="_blank"
+        rel="noreferrer"
+        title={t("common.open-name", { name: attachment.filename })}
+        className={METADATA_ROW_CLASSES}
+      >
         {body}
-        <ExternalLinkIcon aria-hidden="true" className={METADATA_ROW_HINT_CLASSES} strokeWidth={1.8} />
+        <ExternalLinkIcon aria-hidden="true" className={METADATA_ROW_HINT_CLASSES} />
       </a>
     );
   }
 
   if (!opensInline(attachment.type)) {
     return (
-      <a href={url} download title={`Download ${attachment.filename}`} className={METADATA_ROW_CLASSES}>
+      <a href={url} download title={t("common.download-name", { name: attachment.filename })} className={METADATA_ROW_CLASSES}>
         {body}
-        <DownloadIcon aria-hidden="true" className={METADATA_ROW_HINT_CLASSES} strokeWidth={1.8} />
+        <DownloadIcon aria-hidden="true" className={METADATA_ROW_HINT_CLASSES} />
       </a>
     );
   }
 
   return (
     <div className={METADATA_ROW_BOX_CLASSES}>
-      <a href={url} target="_blank" rel="noreferrer" title={`Open ${attachment.filename}`} className={METADATA_ROW_LABEL_CLASSES}>
+      <a
+        href={url}
+        target="_blank"
+        rel="noreferrer"
+        title={t("common.open-name", { name: attachment.filename })}
+        className={METADATA_ROW_LABEL_CLASSES}
+      >
         {body}
       </a>
       <div className={METADATA_ROW_CONTROLS_CLASSES}>
         <a
           href={url}
           download
-          title="Download"
-          aria-label={`Download ${attachment.filename}`}
-          className={buttonVariants({ variant: "quiet", size: "icon-sm" })}
+          title={t("common.download")}
+          aria-label={t("common.download-name", { name: attachment.filename })}
+          className={buttonClasses({ variant: "ghost", size: "xs", iconOnly: true })}
         >
-          <DownloadIcon className="size-3.5" strokeWidth={1.8} />
+          <DownloadIcon className="mu-icon-sm" />
         </a>
       </div>
     </div>

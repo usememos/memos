@@ -191,10 +191,21 @@ type attachmentSource interface {
 // the content, and creates the database row. create.Size must hold the source
 // length on entry; it is updated when stripping re-encodes the image.
 func (s *APIService) processAndSaveAttachment(ctx context.Context, create *store.Attachment, instanceStorageSetting *storepb.InstanceStorageSetting, source attachmentSource) (*apipb.Attachment, error) {
-	if create.Payload.GetMotionMedia() == nil && (create.Type == "image/jpeg" || create.Type == "image/jpg") {
+	if err := s.processAndStoreContent(ctx, create, instanceStorageSetting, source, true); err != nil {
+		return nil, err
+	}
+	return s.persistAttachment(ctx, create, instanceStorageSetting)
+}
+
+// processAndStoreContent strips EXIF metadata and writes the content to the
+// default storage, filling in create's storage fields. With detectMotion, a
+// JPEG that is an Android motion photo becomes a motion container and keeps
+// its embedded video unstripped. It creates no database row.
+func (s *APIService) processAndStoreContent(ctx context.Context, create *store.Attachment, instanceStorageSetting *storepb.InstanceStorageSetting, source attachmentSource, detectMotion bool) error {
+	if detectMotion && create.Payload.GetMotionMedia() == nil && (create.Type == "image/jpeg" || create.Type == "image/jpg") {
 		detected, err := motionphoto.DetectJPEGReader(source, create.Size)
 		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to inspect motion photo: %v", err)
+			return status.Errorf(codes.Internal, "failed to inspect motion photo: %v", err)
 		}
 		if detected != nil {
 			create.Payload = ensureAttachmentPayload(create.Payload)
@@ -215,12 +226,12 @@ func (s *APIService) processAndSaveAttachment(ctx context.Context, create *store
 	// client cannot skip stripping by labeling a JPEG as something else.
 	needsExifStrip, err := shouldStripExifContent(source, create.Type)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to inspect attachment content: %v", err)
+		return status.Errorf(codes.Internal, "failed to inspect attachment content: %v", err)
 	}
 	if needsExifStrip && !isAndroidMotionContainer(create.Payload.GetMotionMedia()) {
 		release, err := s.acquireImageProcessingSlot(ctx)
 		if err != nil {
-			return nil, status.Errorf(codes.ResourceExhausted, "too many image processing requests")
+			return status.Errorf(codes.ResourceExhausted, "too many image processing requests")
 		}
 		stripped, stripErr := stripImageExif(source, create.Type)
 		release()
@@ -237,12 +248,12 @@ func (s *APIService) processAndSaveAttachment(ctx context.Context, create *store
 	}
 
 	if _, err := content.Seek(0, io.SeekStart); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to rewind attachment content: %v", err)
+		return status.Errorf(codes.Internal, "failed to rewind attachment content: %v", err)
 	}
 	if err := saveAttachmentContent(ctx, s.Profile, s.Store, create, instanceStorageSetting, content); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to save attachment blob: %v", err)
+		return status.Errorf(codes.Internal, "failed to save attachment blob: %v", err)
 	}
-	return s.persistAttachment(ctx, create, instanceStorageSetting)
+	return nil
 }
 
 func (s *APIService) persistAttachment(ctx context.Context, create *store.Attachment, instanceStorageSetting *storepb.InstanceStorageSetting) (*apipb.Attachment, error) {

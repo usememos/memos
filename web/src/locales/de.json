@@ -21,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Anmeldung konnte nicht abgeschlossen werden",
     "create-your-account": "Benutzerkonto anlegen",
+    "hide-password": "Passwort verbergen",
+    "incorrect-credentials": "Benutzername oder Passwort ist falsch.",
     "new-password": "Neues Passwort",
     "repeat-new-password": "Neues Passwort wiederholen",
+    "show-password": "Passwort anzeigen",
     "sign-in-tip": "Bereits ein Benutzerkonto?",
     "sign-up-tip": "Noch kein Benutzerkonto?",
     "admin-sign-in": "Administrator-Anmeldung",
-    "admin-sign-in-tip": "Passwortbasierte Anmeldung bleibt für Administratoren verfügbar.",
     "back-to-sign-in": "Zurück zur Anmeldung",
     "continue-with": "Weiter mit {{provider}}",
     "create-admin-account": "Administratorkonto erstellen",
-    "explore-public-memos": "Öffentliche Memos dieser Instanz ansehen",
-    "first-run": "Erster Start",
     "setup-description": "Administratorkonto für diese Instanz erstellen.",
-    "setup-note": "Dieses Konto verwaltet Instanzeinstellungen, Mitglieder und Identitätsanbieter.",
     "setup-title": "Instanz einrichten",
     "signin-unavailable-description": "Die Anmeldung mit Passwort ist deaktiviert und es sind keine Identitätsanbieter konfiguriert. Bitten Sie Ihren Administrator, eine Anmeldemethode zu aktivieren.",
     "signin-unavailable-title": "Anmeldung nicht verfügbar",
-    "signup-unavailable-description": "Passwortkonten sind deaktiviert und es sind keine Identitätsanbieter konfiguriert. Bitten Sie Ihren Administrator um Zugriff.",
-    "signup-unavailable-title": "Registrierung nicht verfügbar",
-    "signups-closed-description": "Neue Konten sind auf dieser Instanz deaktiviert. Wenden Sie sich an Ihren Administrator, wenn Sie Zugriff benötigen.",
-    "signups-closed-title": "Anmeldungen sind geschlossen.",
-    "sso-signup-tip": "Melden Sie sich unten mit einem Anbieter an, um Ihr Konto zu erstellen.",
-    "welcome-back": "Willkommen zurück."
+    "signups-closed-description": "Neue Konten sind auf dieser Instanz deaktiviert. Wenden Sie sich an Ihren Administrator, wenn Sie Zugriff benötigen."
   },
   "common": {
     "about": "Über",
@@ -102,7 +97,6 @@
     "profile": "Profil",
     "referenced-by": "Verknüpft mit",
     "referencing": "Verknüpft",
-    "relations": "Beziehungen",
     "resources": "Ressourcen",
     "restore": "Wiederherstellen",
     "role": "Rolle",
@@ -138,7 +132,24 @@
     "resize-panel": "Bedienfeldgröße ändern",
     "resize-sidebar": "Seitenleiste vergrößern/verkleinern",
     "sign-in-to-memos": "Anmelden bei Memos",
-    "view-all": "Alle anzeigen"
+    "open-navigation": "Navigation öffnen",
+    "navigation": "Navigation",
+    "primary-navigation": "Primär",
+    "download": "Herunterladen",
+    "download-name": "{{name}} herunterladen",
+    "open-name": "{{name}} öffnen",
+    "preview-name": "Vorschau von {{name}}",
+    "no-content": "Kein Inhalt",
+    "previous": "Zurück",
+    "next": "Weiter",
+    "retry": "Erneut versuchen",
+    "docs": "Dokumentation",
+    "calendar-for-month": "Kalender für {{month}}",
+    "date-at-time": "{{date}} um {{time}}",
+    "selected-location": "Ausgewählter Ort",
+    "choose-location": "Ort auswählen",
+    "unknown-error": "Unbekannter Fehler",
+    "error-occurred": "Ein Fehler ist aufgetreten"
   },
   "locale-picker": {
     "no-language-feedback": "Sprache nicht gefunden? Geben Sie Feedback ab"
@@ -158,9 +169,50 @@
       "image-upload-failed": "Einige Bilder konnten nicht hochgeladen werden. Bitte versuchen Sie es erneut oder behalten Sie die hochgeladenen Dateien als Anhänge bei.",
       "image-upload-stopped": "Bild-Upload gestoppt {{completed}}/{{total}}",
       "insert-image": "Bild einfügen",
+      "drawing": "Zeichnung",
       "keep-as-attachments": "Als Anhänge beibehalten",
       "uploading-inline-image": "Inhalt wird hochgeladen",
       "uploading-images": "Bilder werden hochgeladen {{completed}}/{{total}}"
+    },
+    "drawing": {
+      "new-title": "Neue Zeichnung",
+      "edit": "Zeichnung bearbeiten",
+      "tools": "Werkzeuge",
+      "tool-select": "Auswählen",
+      "tool-pen": "Stift",
+      "tool-eraser": "Radierer",
+      "tool-rectangle": "Rechteck",
+      "tool-ellipse": "Ellipse",
+      "tool-arrow": "Pfeil",
+      "tool-text": "Text",
+      "style": "Farbe und Stärke",
+      "color": "Farbe",
+      "width": "Stärke",
+      "width-thin": "Dünn",
+      "width-medium": "Mittel",
+      "width-thick": "Dick",
+      "color-ink": "Tinte",
+      "color-gray": "Grau",
+      "color-red": "Rot",
+      "color-orange": "Orange",
+      "color-green": "Grün",
+      "color-teal": "Türkis",
+      "color-blue": "Blau",
+      "color-violet": "Violett",
+      "undo": "Rückgängig",
+      "redo": "Wiederholen",
+      "zoom-to-fit": "Einpassen",
+      "done": "Fertig",
+      "discard-title": "Diese Zeichnung verwerfen?",
+      "discard-description": "Sie wurde der Notiz noch nicht hinzugefügt.",
+      "discard-edit-title": "Änderungen verwerfen?",
+      "discard-edit-description": "Die Zeichnung bleibt so, wie sie vor dem Öffnen war.",
+      "keep-drawing": "Weiterzeichnen",
+      "discard": "Verwerfen",
+      "open-failed": "Die Zeichnung konnte nicht geöffnet werden. Bitte versuchen Sie es erneut.",
+      "export-failed": "Die Zeichnung konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.",
+      "image-failed": "Das Bild konnte der Zeichnung nicht hinzugefügt werden.",
+      "saved-without-drawing": "Die Notiz ist gespeichert, die Zeichnung jedoch nicht. Speichern Sie erneut, um es noch einmal zu versuchen."
     },
     "no-changes-detected": "Keine Änderungen erkannt",
     "save": "Speichern",
@@ -256,7 +308,19 @@
       "alt-text-placeholder": "Bild beschreiben…",
       "image-unavailable": "Bild nicht verfügbar",
       "resize-image": "Bildgröße ändern"
-    }
+    },
+    "attachments": {
+      "edited": "Bearbeitet",
+      "new": "Neu",
+      "remove": "Anhang entfernen",
+      "reorder": "{{name}} verschieben",
+      "reorder-hint": "Ziehen oder die Pfeiltasten verwenden"
+    },
+    "remove-relation": "Verknüpfung entfernen",
+    "remove-location": "Standort entfernen",
+    "recording-unsupported": "Audioaufnahme wird in diesem Browser nicht unterstützt.",
+    "microphone-denied": "Der Zugriff auf das Mikrofon wurde verweigert.",
+    "recording-failed": "Audioaufnahme konnte nicht gestartet werden."
   },
   "inbox": {
     "failed-to-load": "Fehler beim Laden des Eintrags",
@@ -265,7 +329,16 @@
     "unread": "Ungelesen",
     "space-invitation": "Sie wurden eingeladen, einem Bereich beizutreten.",
     "space-invitation-accepted": "Sie sind diesem Bereich beigetreten.",
-    "space-invitation-open": "Bereich öffnen"
+    "space-invitation-open": "Bereich öffnen",
+    "commented-on-memo": "hat Ihr Memo kommentiert",
+    "mentioned-in-comment": "hat Sie in einem Kommentar erwähnt",
+    "mentioned-in-memo": "hat Sie in einem Memo erwähnt",
+    "original": "Original:",
+    "memo-label": "Memo:",
+    "comment-heading": "Kommentar",
+    "memo-heading": "Memo",
+    "empty-memo": "Leeres Memo",
+    "empty-comment": "Leerer Kommentar"
   },
   "live-update": {
     "connected": "Live-Updates aktiv",
@@ -280,7 +353,9 @@
     "click-to-show-sensitive-content": "Klicken, um sensible Inhalte anzuzeigen",
     "comment": {
       "self": "Kommentare",
-      "write-a-comment": "Schreibe einen Kommentar"
+      "write-a-comment": "Schreibe einen Kommentar",
+      "view-all-count_one": "{{count}} Kommentar anzeigen",
+      "view-all-count_other": "Alle {{count}} Kommentare anzeigen"
     },
     "copy-content": "Inhalt kopieren",
     "copy-link": "Link kopieren",
@@ -294,7 +369,8 @@
       "has-image": "hat Bild",
       "has-link": "hatLink",
       "has-location": "hat Standort",
-      "has-task-list": "hatAufgabenliste"
+      "has-task-list": "hatAufgabenliste",
+      "remove": "Filter entfernen"
     },
     "compact-mode": "Kompaktmodus",
     "link-preview": "Linkvorschau",
@@ -380,7 +456,9 @@
     "restored-successfully": "Erfolgreich wiederhergestellt",
     "succeed-copy-content": "Inhalt erfolgreich kopiert.",
     "succeed-copy-link": "Link erfolgreich kopiert",
-    "update-succeed": "Update erfolgreich"
+    "update-succeed": "Update erfolgreich",
+    "not-signed-in": "Sie sind nicht angemeldet.",
+    "invalid-datetime": "Ungültiges Datum und ungültige Uhrzeit. Verwenden Sie das Format 2023-12-31 23:59:59."
   },
   "reference": {
     "no-memos-found": "Keine Notizen gefunden",
@@ -443,14 +521,16 @@
       "delete-account": "Konto löschen",
       "delete-account-description": "Entfernen Sie dieses Konto und alle damit verbundenen Zugriffe dauerhaft von dieser Instanz. Diese Aktion kann nicht rückgängig gemacht werden.",
       "attachment-storage": "Aktueller Objektspeicher",
-      "usage-description": "Limits set by the admin of this instance. Comments and archived memos count as memos.",
-      "usage-file-size": "Largest file",
-      "usage-memos": "Memos",
-      "usage-of": "{{usage}} of {{limit}}",
-      "usage-storage": "Storage",
-      "usage-title": "Usage limits",
+      "usage-description": "Vom Administrator dieser Instanz festgelegte Limits. Kommentare und archivierte Notizen zählen als Notizen.",
+      "usage-file-size": "Maximale Dateigröße",
+      "usage-memos": "Notizen",
+      "usage-of": "{{usage}} von {{limit}}",
+      "usage-storage": "Speicher",
+      "usage-title": "Nutzungslimits",
       "storage-usage-error": "Ihr Speicher für Anhänge ist nicht verfügbar.",
-      "email-in-use": "Diese E-Mail-Adresse wird bereits von einem anderen Konto verwendet."
+      "email-in-use": "Diese E-Mail-Adresse wird bereits von einem anderen Konto verwendet.",
+      "avatar-too-large": "Wähle ein Bild mit höchstens 2 MB.",
+      "avatar-unreadable": "Dieses Bild kann nicht gelesen werden. Versuche eine andere Datei."
     },
     "instance": {
       "disallow-change-nickname": "Ändern des Spitznamens verbieten",
@@ -490,7 +570,10 @@
       "archived": "Archiviert",
       "member-column": "Mitglied",
       "summary-column": "Zusammenfassung",
-      "export-memos": "Memos exportieren"
+      "export-memos": "Memos exportieren",
+      "username-password-required": "Benutzername und Passwort dürfen nicht leer sein",
+      "create-success": "Benutzer erstellt",
+      "update-success": "Benutzer aktualisiert"
     },
     "memo": {
       "label": "Notiz",
@@ -524,7 +607,12 @@
       "theme-description": "Wendet das ausgewählte Thema sofort auf diesem Gerät an.",
       "theme": "Design",
       "uploads-privacy-description": "Kontrolle über datenschutzrelevante Informationen, die mit hochgeladenen Medien übermittelt werden.",
-      "uploads-privacy-title": "Uploads & Datenschutz"
+      "uploads-privacy-title": "Uploads & Datenschutz",
+      "theme-system": "Mit System synchronisieren",
+      "theme-system-short": "System",
+      "theme-light": "Hell",
+      "theme-dark": "Dunkel",
+      "theme-paper": "Papier"
     },
     "editor": {
       "label": "Editor",
@@ -534,7 +622,118 @@
       "create": "Ansicht erstellen",
       "delete-confirm": "Bist du sicher, dass du die Ansicht `{{title}}` löschen möchtest?",
       "delete-success": "Ansicht `{{title}}` erfolgreich gelöscht",
-      "change-icon": "Ansichtssymbol ändern"
+      "change-icon": "Ansichtssymbol ändern",
+      "page-description": "Erstellen Sie wiederverwendbare Ansichten mit Feldern, Operatoren, Zeitfunktionen und Tag-Abgleich. Nutzen Sie die Beispiele als Ausgangspunkt und prüfen Sie vor dem Speichern.",
+      "edit": "Ansicht bearbeiten",
+      "form-description": "Benennen Sie die Ansicht und legen Sie den Memo-Filterausdruck fest, den sie anwenden soll.",
+      "title-placeholder": "Angeheftet, Neueste Notizen, Arbeit",
+      "filter-help": "Kombinieren Sie Ausdrücke mit {{and}}, {{or}} und {{not}}. Zeitfelder sind Zeitstempel — verwenden Sie {{now}}, {{duration}}, {{timestamp}} und Zugriffsfunktionen wie {{year}}. Tags unterstützen {{sets}}, und {{size}} misst die Länge.",
+      "validate": "Prüfen",
+      "all": "Alle Ansichten",
+      "loading": "Ansichten werden geladen…",
+      "load-failed": "Ansichten konnten nicht geladen werden.",
+      "empty-title": "Noch keine Ansichten",
+      "empty-description": "Speichern Sie einen Filter, um schnell zu den Memos zurückzukehren, die Sie brauchen.",
+      "examples-title": "Beispielausdrücke",
+      "fields-title": "Unterstützte Felder",
+      "title-filter-required": "Titel und Filter dürfen nicht leer sein",
+      "filter-valid": "Der Filterausdruck scheint gültig zu sein",
+      "create-success": "Ansicht erstellt",
+      "update-success": "Ansicht aktualisiert",
+      "examples": {
+        "pinned": {
+          "title": "Angeheftet",
+          "description": "Nur angeheftete Memos."
+        },
+        "recent": {
+          "title": "Neueste Notizen",
+          "description": "Memos, die in der letzten Stunde erstellt wurden."
+        },
+        "public": {
+          "title": "Öffentliche Memos",
+          "description": "Nur öffentliche Memos."
+        },
+        "project-tags": {
+          "title": "Projekt-Tags",
+          "description": "Einen oder mehrere exakte Tags abgleichen."
+        },
+        "untagged": {
+          "title": "Ohne Tags",
+          "description": "Memos ohne Tags."
+        },
+        "archive-tree": {
+          "title": "Archivbaum",
+          "description": "Hierarchische Tags anhand des Präfixes abgleichen."
+        },
+        "unassigned": {
+          "title": "Nicht zugeordnet",
+          "description": "Memos, die keinem Bereich zugeordnet sind."
+        },
+        "one-space": {
+          "title": "In einem Bereich",
+          "description": "Memos in einem Bereich. Verwenden Sie die Bereichs-ID aus der URL oder den Einstellungen des Bereichs."
+        },
+        "open-tasks": {
+          "title": "Offene Aufgaben",
+          "description": "Memos mit unerledigten Aufgaben."
+        },
+        "links-or-code": {
+          "title": "Links oder Code",
+          "description": "Memos mit Links oder Codeblöcken."
+        },
+        "no-location": {
+          "title": "Ohne Standort",
+          "description": "Memos ohne angehängten Standort."
+        },
+        "with-attachments": {
+          "title": "Mit Anhängen",
+          "description": "Memos mit mindestens einer angehängten Datei."
+        },
+        "photos": {
+          "title": "Fotos",
+          "description": "Memos, die ein Bild zeigen – im Inhalt oder als angehängte Datei."
+        },
+        "content-search": {
+          "title": "Inhaltssuche",
+          "description": "Text im Memo-Inhalt suchen."
+        },
+        "starts-with": {
+          "title": "Beginnt mit",
+          "description": "Memos, deren Inhalt mit einem Text beginnt (auch endsWith)."
+        },
+        "regex": {
+          "title": "Regex-Abgleich",
+          "description": "Inhalt mit einem regulären Ausdruck abgleichen."
+        },
+        "all-tags-complete": {
+          "title": "Alle Tags erledigt",
+          "description": "Jedes Tag endet auf -done (nur Memos mit Tags)."
+        },
+        "one-project-tag": {
+          "title": "Ein Projekt-Tag",
+          "description": "Genau ein Tag erfüllt die Bedingung."
+        },
+        "any-tags": {
+          "title": "Eines dieser Tags",
+          "description": "Tags überschneiden sich mit der angegebenen Menge."
+        },
+        "exact-tags": {
+          "title": "Genau diese Tags",
+          "description": "Mit genau dieser Menge getaggt, nicht mehr."
+        },
+        "year-2024": {
+          "title": "Memos aus 2024",
+          "description": "Nach Kalenderjahr filtern."
+        },
+        "weekend": {
+          "title": "Wochenendnotizen",
+          "description": "An einem Sonntag oder Samstag erstellt (0 = Sonntag)."
+        },
+        "long": {
+          "title": "Lange Notizen",
+          "description": "Memos mit mehr als 280 Zeichen."
+        }
+      }
     },
     "configuration": {
       "label": "Konfiguration",
@@ -610,7 +809,9 @@
       "scopes-description": "Trennen Sie Bereiche durch Leerzeichen. Die meisten Anbieter benötigen nur einen kleinen Satz wie Profil- oder E-Mail-Zugang.",
       "template-description": "Beginnen Sie mit einer Anbietervoreinstellung und passen Sie dann die Anmeldeinformationen und Endpunkte für Ihren Mandanten an.",
       "unlink-success": "Nicht verknüpftes {{name}}.",
-      "update-sso-description": "Überprüfen Sie die Anbieterkonfiguration und speichern Sie dann die Felder, die geändert werden sollen."
+      "update-sso-description": "Überprüfen Sie die Anbieterkonfiguration und speichern Sie dann die Felder, die geändert werden sollen.",
+      "invalid-config": "Die Konfiguration des Identitätsanbieters ist ungültig.",
+      "provider-id-placeholder": "z. B. github, okta-corp"
     },
     "storage": {
       "accesskey": "Zugangsschlüssel",
@@ -658,7 +859,8 @@
       "customize-server": {
         "description": "Beschreibung",
         "icon-url": "Icon-URL",
-        "title": "Server anpassen"
+        "title": "Server anpassen",
+        "dialog-description": "Passen Sie das Aussehen und die Einstellungen Ihrer Instanz an."
       },
       "label": "System",
       "server-name": "Servername",
@@ -669,47 +871,47 @@
       "custom-code-title": "Benutzerdefinierter Code"
     },
     "usage-limits": {
-      "add-entry": "Add entry",
-      "add-title": "Add entry",
-      "all-users": "All users",
-      "all-users-description": "Everyone not named above. This is the default.",
-      "applies-to": "Applies to",
-      "content-size": "Memo content (KiB)",
-      "content-size-column": "Memo content",
-      "content-size-description": "The UTF-8 size of one memo body, including Markdown.",
-      "default-hint": "Leave a field empty for no limit.",
-      "default-title": "Limits for all users",
-      "description": "Keep this instance fast and reliable by capping what each user can store. Each entry is a complete set of limits for the users it names.",
-      "edit-title": "Edit entry",
-      "entry-hint": "Leave a field empty for no limit. Fields start from the All users values.",
-      "file-size": "Largest file (MiB)",
-      "file-size-column": "Largest file",
-      "invalid": "Enter a whole number of memos, or a size in the indicated unit.",
-      "label": "Usage limits",
-      "memos": "Memos",
-      "memos-description": "Includes comments and archived memos.",
-      "move-down": "Move down",
-      "move-up": "Move up",
-      "never-applies": "Never applies",
-      "never-applies-description": "Every user named here is caught by an earlier entry.",
-      "order-note": "Entries are checked from top to bottom. The first entry that names a user is that user's limits; later entries are ignored for them. The last entry applies to everyone else.",
+      "add-entry": "Eintrag hinzufügen",
+      "add-title": "Eintrag hinzufügen",
+      "all-users": "Alle Benutzer",
+      "all-users-description": "Alle, die oben nicht genannt sind. Dies ist die Standardeinstellung.",
+      "applies-to": "Gilt für",
+      "content-size": "Notizinhalt (KiB)",
+      "content-size-column": "Notizinhalt",
+      "content-size-description": "Die UTF-8-Größe des Inhalts einer Notiz, einschließlich Markdown.",
+      "default-hint": "Lassen Sie ein Feld leer, um kein Limit festzulegen.",
+      "default-title": "Limits für alle Benutzer",
+      "description": "Halten Sie diese Instanz schnell und zuverlässig, indem Sie begrenzen, was jeder Benutzer speichern kann. Jeder Eintrag ist ein vollständiger Satz von Limits für die darin genannten Benutzer.",
+      "edit-title": "Eintrag bearbeiten",
+      "entry-hint": "Lassen Sie ein Feld leer, um kein Limit festzulegen. Die Felder beginnen mit den Werten von Alle Benutzer.",
+      "file-size": "Maximale Dateigröße (MiB)",
+      "file-size-column": "Maximale Dateigröße",
+      "invalid": "Geben Sie eine ganze Zahl von Notizen oder eine Größe in der angegebenen Einheit ein.",
+      "label": "Nutzungslimits",
+      "memos": "Notizen",
+      "memos-description": "Einschließlich Kommentaren und archivierten Notizen.",
+      "move-down": "Nach unten verschieben",
+      "move-up": "Nach oben verschieben",
+      "never-applies": "Greift nie",
+      "never-applies-description": "Jeder hier genannte Benutzer wird bereits von einem früheren Eintrag erfasst.",
+      "order-note": "Einträge werden von oben nach unten geprüft. Der erste Eintrag, der einen Benutzer nennt, bestimmt dessen Limits; spätere Einträge werden für ihn ignoriert. Der letzte Eintrag gilt für alle anderen.",
       "position": "#",
-      "remove": "Remove",
-      "remove-description": "The users it names will use the next entry that names them, or the All users entry.",
-      "remove-title": "Remove this entry?",
-      "remove-user": "Remove {{name}}",
-      "removed": "Entry removed",
-      "row-actions": "Actions for entry {{name}}",
-      "saved": "Usage limits saved",
-      "select-user": "Add a user",
-      "storage": "Storage (MiB)",
-      "storage-column": "Storage",
-      "storage-description": "The total size of uploads. External links do not count.",
-      "title": "Usage limits",
-      "unlimited": "Unlimited",
-      "users": "Users",
-      "users-description": "The entry applies to each of these users.",
-      "users-required": "Name at least one user."
+      "remove": "Entfernen",
+      "remove-description": "Die darin genannten Benutzer verwenden den nächsten Eintrag, der sie nennt, oder den Eintrag Alle Benutzer.",
+      "remove-title": "Diesen Eintrag entfernen?",
+      "remove-user": "{{name}} entfernen",
+      "removed": "Eintrag entfernt",
+      "row-actions": "Aktionen für den Eintrag {{name}}",
+      "saved": "Nutzungslimits gespeichert",
+      "select-user": "Benutzer hinzufügen",
+      "storage": "Speicher (MiB)",
+      "storage-column": "Speicher",
+      "storage-description": "Die Gesamtgröße der Uploads. Externe Links zählen nicht.",
+      "title": "Nutzungslimits",
+      "unlimited": "Unbegrenzt",
+      "users": "Benutzer",
+      "users-description": "Der Eintrag gilt für jeden dieser Benutzer.",
+      "users-required": "Nennen Sie mindestens einen Benutzer."
     },
     "webhook": {
       "create-dialog": {
@@ -978,7 +1180,8 @@
   },
   "tooltip": {
     "link-memo": "Link Memo",
-    "select-location": "Ort"
+    "select-location": "Ort",
+    "link-memo-description": "Suchen und wählen Sie ein Memo zum Verknüpfen aus"
   },
   "demo": {
     "banner-description": "Änderungen sind vorübergehend und können zurückgesetzt werden.",
@@ -1081,7 +1284,12 @@
     "loading": "Notizen werden geladen…",
     "new-here": "Hier schreiben",
     "saved-outside-filter": "Gespeichert. Diese Notiz liegt außerhalb der aktuellen Kartenergebnisse.",
-    "open-memo": "Memo öffnen"
+    "open-memo": "Memo öffnen",
+    "open-in-google-maps": "In Google Maps öffnen",
+    "location-description": "Wählen Sie einen Ort auf der Karte aus oder geben Sie Koordinaten manuell ein",
+    "latitude": "Breitengrad",
+    "longitude": "Längengrad",
+    "place-placeholder": "Wählen Sie zuerst eine Position aus."
   },
   "calendar": {
     "new-memo-on-day": "Neue Notiz an diesem Tag",
@@ -1180,5 +1388,47 @@
       "tag-reading": "lesen",
       "tag-ideas": "ideen"
     }
+  },
+  "error": {
+    "title": "Etwas ist schiefgelaufen",
+    "description": "Ein unerwarteter Fehler ist aufgetreten. Ursache kann ein Netzwerkproblem oder ein Problem mit der Anwendung sein.",
+    "description-update": "Ein unerwarteter Fehler ist aufgetreten. Ursache kann ein Netzwerkproblem oder ein Update der Anwendung sein. Neu laden behebt das meist.",
+    "details": "Fehlerdetails",
+    "reload": "Anwendung neu laden",
+    "not-found": "Die gesuchte Seite wurde nicht gefunden.",
+    "permission-denied": "Zugriff verweigert",
+    "too-many-requests": "Zu viele Anfragen. Versuchen Sie es in {{wait}} erneut.",
+    "wait-seconds": "{{count}} s",
+    "wait-minutes": "{{count}} Min.",
+    "wait-hours": "{{count}} Std.",
+    "challenge-required": "Schließen Sie die Überprüfung ab und versuchen Sie es erneut.",
+    "quota-memo-count": "Sie haben Ihr Limit von {{limit}} Memos erreicht. Löschen Sie Memos, um neue zu erstellen.",
+    "quota-storage": "Dieser Upload würde Ihr Speicherlimit von {{limit}} überschreiten. Sie nutzen {{usage}}.",
+    "quota-upload": "Diese Datei ist größer als Ihr Limit von {{limit}} pro Datei.",
+    "quota-memo-content": "Dieses Memo ist größer als Ihr Limit von {{limit}} pro Memo. Kürzen Sie den Inhalt, um es zu speichern.",
+    "quota-generic": "Sie haben ein Nutzungslimit erreicht.",
+    "sign-in-failed": "Anmeldung fehlgeschlagen.",
+    "sign-up-failed": "Registrierung fehlgeschlagen",
+    "authenticate-failed": "Authentifizierung fehlgeschlagen.",
+    "update-profile-failed": "Profil konnte nicht aktualisiert werden",
+    "unlink-identity-failed": "Verknüpfung mit dem Identitätsanbieter konnte nicht aufgehoben werden.",
+    "link-identity-failed": "Kontoverknüpfung konnte nicht gestartet werden. Bitte versuche es erneut."
+  },
+  "attachment-preview": {
+    "title": "Anhangvorschau",
+    "description": "Dialog zur Anhangvorschau. Drücken Sie Escape zum Schließen, wechseln Sie mit den Pfeiltasten links und rechts zwischen Elementen und zoomen Sie Bilder mit den Steuerelementen, dem Mausrad, Doppeltippen oder einer Zwei-Finger-Geste.",
+    "close": "Vorschau schließen",
+    "previous": "Vorheriges Element",
+    "next": "Nächstes Element",
+    "reset-zoom": "Zoom zurücksetzen",
+    "image-alt": "Vorschaubild {{index}} von {{count}}",
+    "live-photo-alt": "Live-Foto-Vorschau {{index}} von {{count}}",
+    "play-live-photo": "Zeigen oder drücken, um das Live-Foto abzuspielen"
+  },
+  "audio-player": {
+    "seek": "In {{name}} spulen",
+    "back": "{{seconds}} Sekunden zurück",
+    "forward": "{{seconds}} Sekunden vor",
+    "speed": "Wiedergabegeschwindigkeit {{rate}}x"
   }
 }

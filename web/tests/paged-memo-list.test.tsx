@@ -65,6 +65,7 @@ vi.mock("@/contexts/ViewContext", () => ({
 
 vi.mock("@/utils/i18n", () => ({
   useTranslate: () => (key: string) => (key === "message.no-data" ? "No data found." : key),
+  translate: (key: string) => key,
 }));
 
 vi.mock("@/contexts/MentionResolutionContext", () => ({
@@ -229,11 +230,11 @@ describe("<PagedMemoList>", () => {
       feed.isLoading = true;
       const { container } = renderList();
 
-      expect(container.querySelector(".animate-spin")).not.toBeInTheDocument();
+      expect(container.querySelector(".mu-skeleton")).not.toBeInTheDocument();
       await act(async () => vi.advanceTimersByTimeAsync(249));
-      expect(container.querySelector(".animate-spin")).not.toBeInTheDocument();
+      expect(container.querySelector(".mu-skeleton")).not.toBeInTheDocument();
       await act(async () => vi.advanceTimersByTimeAsync(1));
-      expect(container.querySelector(".animate-spin")).toBeInTheDocument();
+      expect(container.querySelector(".mu-skeleton")).toBeInTheDocument();
     } finally {
       vi.useRealTimers();
     }

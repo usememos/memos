@@ -11,6 +11,8 @@ vi.mock("@/connect", () => ({ authServiceClient: { signIn: mocks.signIn }, userS
 vi.mock("@/auth-state", () => ({ clearAccessToken: vi.fn(), setAccessToken: vi.fn() }));
 vi.mock("@/hooks/useNavigateTo", () => ({ default: () => mocks.navigateTo }));
 vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
+vi.mock("@/contexts/InstanceContext", () => ({ useInstance: () => ({ generalSetting: {} }) }));
+vi.mock("@/components/AuthFooter", () => ({ default: () => null }));
 
 const renderCallback = (search: string) =>
   render(

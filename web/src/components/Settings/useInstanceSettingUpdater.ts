@@ -1,7 +1,7 @@
 import { useCallback } from "react";
-import { toast } from "react-hot-toast";
 import { useInstance } from "@/contexts/InstanceContext";
 import { handleError } from "@/lib/error";
+import { showErrorToast, toast } from "@/lib/toast";
 import { InstanceSetting, InstanceSetting_Key } from "@/types/proto/api/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
@@ -28,11 +28,11 @@ const useInstanceSettingUpdater = () => {
           await fetchSetting(key);
         }
         if (showSuccessToast) {
-          toast.success(t("message.update-succeed"));
+          toast.add({ title: t("message.update-succeed"), type: "success" });
         }
         return true;
       } catch (error: unknown) {
-        await handleError(error, toast.error, { context: errorContext });
+        await handleError(error, showErrorToast, { context: errorContext });
         return false;
       }
     },

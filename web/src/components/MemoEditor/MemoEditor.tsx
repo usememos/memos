@@ -1,4 +1,4 @@
-import { Suspense, useState } from "react";
+import { type ReactNode, Suspense, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoByName, useUpdateMemo } from "@/hooks/useMemoQueries";
@@ -76,6 +76,8 @@ export interface MemoEditingProps {
   className?: string;
   /** Inside a card that is the frame already: no background, border or padding of its own outside focus mode. */
   frameless?: boolean;
+  /** Leads the timestamp row, before the time: the card's creator while it edits in place. */
+  timestampLead?: ReactNode;
   /**
    * Marks the instance as hosted: a host (the global composer dialog) presents the
    * editor in the focus-mode layout and owns that frame. The editor mounts straight
@@ -166,8 +168,11 @@ const MemoEditorDraft = ({ draft, ...editing }: MemoEditorDraftProps) => {
   // placeholder line and the toolbar's height, so the page below does not move when the
   // session takes its place.
   const fallback = editing.frameless ? null : (
-    <div aria-hidden className={cn("flex w-full flex-col gap-2 rounded-lg border border-border/70 bg-card px-4 py-3", editing.className)}>
-      <div className="w-full text-base leading-6 text-muted-foreground">{editing.placeholder ?? " "}</div>
+    <div
+      aria-hidden
+      className={cn("flex w-full flex-col gap-2 rounded-mu-lg border border-mu-line/70 bg-mu-surface px-4 py-3", editing.className)}
+    >
+      <div className="w-full text-base leading-6 text-mu-ink-muted">{editing.placeholder ?? " "}</div>
       <div className="h-9 w-full" />
     </div>
   );

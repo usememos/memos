@@ -67,8 +67,9 @@ describe("MemoEditor paste", () => {
     const event = paste(content, [pdf, image]);
 
     expect(event.defaultPrevented).toBe(true);
-    await waitFor(() => expect(container.textContent).toContain(image.name));
-    expect(container.textContent).toContain(pdf.name);
+    // The image joins the gallery as a tile; the PDF is a row with its name.
+    await waitFor(() => expect(container.textContent).toContain(pdf.name));
+    expect(container.querySelectorAll("[data-reorder-key] img")).toHaveLength(1);
     // A paste has no placement gesture: the image is attached rather than
     // inlined, so no inline upload starts and the text stays untouched.
     expect(content.textContent).toBe("");

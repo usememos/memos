@@ -1,6 +1,6 @@
-import { ArrowUpIcon, LoaderCircleIcon } from "lucide-react";
+import { Button, Skeleton } from "@usememos/ui";
+import { ArrowUpIcon } from "lucide-react";
 import { type ReactElement, type ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
 import { useAppSidebar } from "@/contexts/AppSidebarContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { isSearchFilter, useMemoFilterContext } from "@/contexts/MemoFilterContext";
@@ -18,6 +18,7 @@ import type { Memo } from "@/types/proto/api/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import ColumnGrid, { ColumnGridUntrappedProvider, columnCountForWidth, GRID_GAP } from "../ColumnGrid";
 import MemoFilters from "../MemoFilters";
+import { MEMO_CARD_BASE_CLASSES } from "../MemoView/constants";
 import Placeholder from "../Placeholder";
 import EmptyLine from "./EmptyLine";
 import MemoListError from "./MemoListError";
@@ -32,11 +33,21 @@ export const getMemoKey = (memo: Memo) => memo.name;
 // grid centers in the leftover space instead of filling it.
 const MAX_COLUMN_WIDTH = 420;
 
-const Loader = () => (
-  <div className="w-full flex flex-row justify-center items-center py-8">
-    <LoaderCircleIcon className="h-6 w-6 animate-spin text-muted-foreground" />
-  </div>
-);
+/** Memos still loading: skeleton cards in the shape of the memos about to appear. */
+const Loader = ({ count = 3 }: { count?: number }) => {
+  const t = useTranslate();
+  return (
+    <div className="flex w-full flex-col" aria-busy="true" aria-label={t("editor.blocks.loading")}>
+      {Array.from({ length: count }, (_, index) => (
+        <div key={index} className={MEMO_CARD_BASE_CLASSES}>
+          <Skeleton width="30%" height={12} />
+          <Skeleton />
+          <Skeleton width="70%" />
+        </div>
+      ))}
+    </div>
+  );
+};
 
 interface Props {
   renderer: (memo: Memo, options: { compact: boolean }) => ReactElement;
@@ -278,7 +289,7 @@ const PagedMemoList = (props: Props) => {
   const footer = (
     <>
       {pageError}
-      {isFetchingNextPage && <Loader />}
+      {isFetchingNextPage && <Loader count={1} />}
       {!isFetchingNextPage && (hasNextPage || displayMemoList.length > 0) && <BackToTop />}
     </>
   );
@@ -352,9 +363,8 @@ const BackToTop = () => {
 
   return (
     <div className="my-4 flex w-full flex-row items-center justify-center opacity-70">
-      <Button variant="ghost" onClick={scrollToTop}>
+      <Button variant="ghost" iconEnd={<ArrowUpIcon />} onClick={scrollToTop}>
         {t("router.back-to-top")}
-        <ArrowUpIcon className="ml-1 w-4 h-auto" />
       </Button>
     </div>
   );

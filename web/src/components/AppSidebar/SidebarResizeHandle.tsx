@@ -42,13 +42,13 @@ interface Props {
 const INDICATORS = {
   line: {
     base: "h-full w-0.5 transition-colors",
-    dragging: "bg-primary/70",
-    rest: "bg-transparent group-hover:bg-border group-focus-visible:bg-primary/70",
+    dragging: "bg-mu-primary/70",
+    rest: "bg-transparent group-hover:bg-mu-line group-focus-visible:bg-mu-primary/70",
   },
   grip: {
     base: "h-8 w-1 rounded-full transition-[background-color,opacity] duration-150",
-    dragging: "bg-primary/70 opacity-100",
-    rest: "bg-muted-foreground/50 opacity-0 group-hover:opacity-100 group-focus-visible:bg-primary/70 group-focus-visible:opacity-100",
+    dragging: "bg-mu-primary/70 opacity-100",
+    rest: "bg-mu-ink-muted/50 opacity-0 group-hover:opacity-100 group-focus-visible:bg-mu-primary/70 group-focus-visible:opacity-100",
   },
 } as const;
 
