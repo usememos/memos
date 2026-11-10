@@ -14,6 +14,10 @@ behavior; a design document does not have to.
 
 ## Index
 
+Draft:
+
+- [Private text memo E2EE](private-memo-e2ee.md)
+
 Implemented and frozen:
 
 - [API abuse controls](api-abuse-controls.md)
