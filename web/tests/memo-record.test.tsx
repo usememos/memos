@@ -1,5 +1,5 @@
 import { create } from "@bufbuild/protobuf";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { focusManager, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, renderHook, waitFor } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -258,6 +258,48 @@ describe("useUpdateMemo", () => {
     await answer("oldest");
     await waitFor(() => expect(client.isMutating()).toBe(0));
     expect(result.current.record?.pinned).toBe(false);
+  });
+
+  it("sends the queued update when the older reply lands while the page is hidden", async () => {
+    const { client, result, answer } = pinThenUnpin();
+    await waitFor(() => expect(api.updateMemo).toHaveBeenCalledTimes(1));
+
+    // The tab is left right after the second click: the unpin must not wait for the return.
+    focusManager.setFocused(false);
+    try {
+      await answer("oldest");
+      await waitFor(() => expect(api.updateMemo).toHaveBeenCalledTimes(2));
+      await answer("oldest");
+      await waitFor(() => expect(client.isMutating()).toBe(0));
+    } finally {
+      focusManager.setFocused(undefined);
+    }
+    expect(result.current.record?.pinned).toBe(false);
+  });
+
+  it("sends a memo's updates in the order they were made, whatever each does before it is sent", async () => {
+    const { client, wrapper } = setup();
+    const target = memo("memos/x");
+    client.setQueryData(memoKeys.detail(target.name), target);
+    const replies: Array<() => void> = [];
+    api.updateMemo.mockImplementation(
+      ({ memo: update }: { memo: Memo }) =>
+        new Promise<Memo>((done) => replies.push(() => done(create(MemoSchema, { ...target, ...update })))),
+    );
+    const { result } = renderHook(() => useUpdateMemo(target.name), { wrapper });
+
+    // A move patches nothing before it is sent, so it is ready to send before the pin made ahead of it.
+    act(() => {
+      result.current.mutate({ update: { name: target.name, pinned: true }, updateMask: ["pinned"] });
+      result.current.mutate({ update: { name: target.name, space: "spaces/b" }, updateMask: ["space"] });
+    });
+    await waitFor(() => expect(api.updateMemo).toHaveBeenCalledTimes(1));
+    await act(async () => replies[0]());
+    await waitFor(() => expect(api.updateMemo).toHaveBeenCalledTimes(2));
+    await act(async () => replies[1]());
+    await waitFor(() => expect(client.isMutating()).toBe(0));
+
+    expect(api.updateMemo.mock.calls.map(([request]) => request.updateMask.paths)).toEqual([["pinned"], ["space"]]);
   });
 
   // A detail page and a list on screen, and a fake server that answers both from what it has saved.

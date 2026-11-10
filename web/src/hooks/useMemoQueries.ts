@@ -4,6 +4,7 @@ import { Code, ConnectError } from "@connectrpc/connect";
 import {
   type InfiniteData,
   type Mutation,
+  type MutationKey,
   type QueryClient,
   queryOptions,
   useInfiniteQuery,
@@ -324,14 +325,36 @@ export function useCreateMemo() {
   });
 }
 
+/**
+ * Resolves when the update made with `variables` is the oldest of its memo's updates still pending. A memo's updates
+ * are sent one at a time, in the order they were made: sent together, two quick updates of one memo (pin then unpin)
+ * can finish in either order, and the older reply would overwrite the newer change in the cache. React Query's
+ * `scope` orders mutations the same way, but holds a queued one while the page is hidden, so an update made just
+ * before leaving the tab would stay unsent until the return.
+ */
+function memoUpdateTurn(queryClient: QueryClient, mutationKey: MutationKey, variables: unknown): Promise<void> {
+  const cache = queryClient.getMutationCache();
+  // An update no longer in the cache (the client was cleared) has nothing left to wait for.
+  const isTurn = () =>
+    cache.findAll({ mutationKey, exact: true, status: "pending" }).findIndex((mutation) => mutation.state.variables === variables) <= 0;
+  if (isTurn()) return Promise.resolve();
+  return new Promise((resolve) => {
+    const unsubscribe = cache.subscribe(() => {
+      if (!isTurn()) return;
+      unsubscribe();
+      resolve();
+    });
+  });
+}
+
 /** What a memo update keeps while it is pending: the memo to roll back to, and its optimistic patch. */
 type MemoUpdateContext = { previousMemo?: Memo; memoPatch?: MemoPatch };
 
 /** Updates memo `name`; its updates share one queue. Only a caller with no memo to update yet passes `undefined`. */
 export function useUpdateMemo(name: string | undefined) {
   const queryClient = useQueryClient();
-  // A key per memo: a hook that moves to another memo detaches from its running update, which would otherwise take on
-  // the new scope and leave the updates queued behind it unsent.
+  // A key per memo, which is what its queue is found by. A hook that moves to another memo detaches from its running
+  // update, which would otherwise take on the new key and leave its memo's queue.
   const mutationKey = ["memo-update", name];
   // This memo's updates queued behind the one settling now, oldest first. That one still counts as pending and is the oldest.
   const queuedUpdates = () => queryClient.getMutationCache().findAll({ mutationKey, exact: true, status: "pending" }).slice(1);
@@ -356,14 +379,12 @@ export function useUpdateMemo(name: string | undefined) {
   };
 
   return useMutation({
-    // A memo's updates run one at a time, in the order they were made. Sent together, two quick updates of one memo
-    // (pin then unpin) can finish in either order, and the older reply would overwrite the newer change in the cache.
-    scope: { id: `memo-update:${name}` },
     mutationKey,
-    mutationFn: async ({ update, updateMask }: { update: Partial<Memo>; updateMask: string[] }) => {
+    mutationFn: async (variables: { update: Partial<Memo>; updateMask: string[] }) => {
+      await memoUpdateTurn(queryClient, mutationKey, variables);
       const memo = await memoServiceClient.updateMemo({
-        memo: create(MemoSchema, update as Record<string, unknown>),
-        updateMask: create(FieldMaskSchema, { paths: updateMask }),
+        memo: create(MemoSchema, variables.update as Record<string, unknown>),
+        updateMask: create(FieldMaskSchema, { paths: variables.updateMask }),
       });
       return memo;
     },
