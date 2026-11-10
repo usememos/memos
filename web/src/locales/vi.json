@@ -1436,6 +1436,7 @@
     "speed": "Tốc độ phát {{rate}}x"
   },
   "e2ee": {
+    "unlock-other": "Các cách mở khóa khác",
     "passkey-add": "Thêm khóa truy cập",
     "passkey-unlock": "Mở khóa bằng khóa truy cập",
     "passkey-remove": "Xóa liên kết khóa truy cập",

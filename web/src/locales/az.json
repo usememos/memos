@@ -1436,6 +1436,7 @@
     "speed": "Oynatma sürəti {{rate}}x"
   },
   "e2ee": {
+    "unlock-other": "Kilidi açmağın digər yolları",
     "passkey-add": "Keçid açarı əlavə et",
     "passkey-unlock": "Keçid açarı ilə kilidi aç",
     "passkey-remove": "Keçid açarı bağlantısını sil",

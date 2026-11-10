@@ -1437,6 +1437,7 @@
     "speed": "Velocità di riproduzione {{rate}}x"
   },
   "e2ee": {
+    "unlock-other": "Altri modi per sbloccare",
     "passkey-add": "Aggiungi passkey",
     "passkey-unlock": "Sblocca con passkey",
     "passkey-remove": "Rimuovi il collegamento della passkey",

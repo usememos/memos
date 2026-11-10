@@ -1436,6 +1436,7 @@
     "speed": "Afspilningshastighed {{rate}}x"
   },
   "e2ee": {
+    "unlock-other": "Andre måder at låse op på",
     "passkey-add": "Tilføj adgangsnøgle",
     "passkey-unlock": "Lås op med adgangsnøgle",
     "passkey-remove": "Fjern tilknytning til adgangsnøgle",

@@ -105,90 +105,97 @@ function VaultForm() {
     }
   };
 
+  const controls = loadFailed ? (
+    <p role="alert">{t("e2ee.failed")}</p>
+  ) : record === undefined ? (
+    <p>{t("editor.validation.loading-content")}</p>
+  ) : (
+    <form
+      className="flex flex-col gap-3"
+      onSubmit={(event) => {
+        event.preventDefault();
+        void submit();
+      }}
+    >
+      {pending ? (
+        <>
+          <p className="mu-caption">{t("e2ee.recovery-warning")}</p>
+          <Field.Root>
+            <Field.Label>{t("e2ee.recovery-key")}</Field.Label>
+            <Textarea readOnly value={pending.recoverySecret} />
+          </Field.Root>
+          <Field.Root invalid={!!fields.errors.secret}>
+            <Field.Label>{t("e2ee.confirm-recovery")}</Field.Label>
+            <Input
+              autoComplete="off"
+              value={secret}
+              onChange={(event) => {
+                setSecret(event.target.value);
+                fields.clear("secret");
+              }}
+            />
+            {fields.errors.secret && <Field.Error match>{fields.errors.secret}</Field.Error>}
+          </Field.Root>
+        </>
+      ) : recovery && !key ? (
+        <Field.Root>
+          <Field.Label>{t("e2ee.recovery-key")}</Field.Label>
+          <Input type="password" autoComplete="off" value={secret} onChange={(event) => setSecret(event.target.value)} />
+        </Field.Root>
+      ) : (
+        <Field.Root invalid={!!fields.errors.password}>
+          <Field.Label>{key ? t("e2ee.change-passphrase") : t("e2ee.passphrase")}</Field.Label>
+          <Input
+            type="password"
+            autoComplete={record && !key ? "current-password" : "new-password"}
+            value={password}
+            onChange={(event) => {
+              setPassword(event.target.value);
+              fields.clear("password");
+            }}
+          />
+          <Field.Description>{t("e2ee.passphrase-help")}</Field.Description>
+          {fields.errors.password && <Field.Error match>{fields.errors.password}</Field.Error>}
+        </Field.Root>
+      )}
+      <div className="flex flex-wrap gap-2">
+        <Button type="submit" disabled={busy} variant="primary">
+          {pending ? t("common.confirm") : key ? t("common.save") : record ? t("e2ee.unlock") : t("e2ee.setup")}
+        </Button>
+        {!key && record && !pending && (
+          <Button
+            type="button"
+            variant="neutral"
+            disabled={busy}
+            onClick={() => {
+              setRecovery(!recovery);
+              setPassword("");
+              setSecret("");
+            }}
+          >
+            {recovery ? t("e2ee.passphrase") : t("e2ee.recovery-key")}
+          </Button>
+        )}
+        {(key || pending) && (
+          <Button type="button" variant="neutral" onClick={() => lockEncryption(t("e2ee.unsaved"))}>
+            {t("e2ee.lock")}
+          </Button>
+        )}
+      </div>
+    </form>
+  );
+
   return (
     <section className="flex w-full flex-col gap-3 rounded-mu-md border border-mu-line p-3">
       <h3 className="mu-label">{t("e2ee.title")}</h3>
       <p className="mu-caption text-mu-ink-muted">{t("e2ee.limitations")}</p>
-      {loadFailed ? (
-        <p role="alert">{t("e2ee.failed")}</p>
-      ) : record === undefined ? (
-        <p>{t("editor.validation.loading-content")}</p>
+      {record && !pending ? (
+        <PasskeyPanel key={record.id} vaultId={record.id}>
+          {controls}
+        </PasskeyPanel>
       ) : (
-        <form
-          className="flex flex-col gap-3"
-          onSubmit={(event) => {
-            event.preventDefault();
-            void submit();
-          }}
-        >
-          {pending ? (
-            <>
-              <p className="mu-caption">{t("e2ee.recovery-warning")}</p>
-              <Field.Root>
-                <Field.Label>{t("e2ee.recovery-key")}</Field.Label>
-                <Textarea readOnly value={pending.recoverySecret} />
-              </Field.Root>
-              <Field.Root invalid={!!fields.errors.secret}>
-                <Field.Label>{t("e2ee.confirm-recovery")}</Field.Label>
-                <Input
-                  autoComplete="off"
-                  value={secret}
-                  onChange={(event) => {
-                    setSecret(event.target.value);
-                    fields.clear("secret");
-                  }}
-                />
-                {fields.errors.secret && <Field.Error match>{fields.errors.secret}</Field.Error>}
-              </Field.Root>
-            </>
-          ) : recovery && !key ? (
-            <Field.Root>
-              <Field.Label>{t("e2ee.recovery-key")}</Field.Label>
-              <Input type="password" autoComplete="off" value={secret} onChange={(event) => setSecret(event.target.value)} />
-            </Field.Root>
-          ) : (
-            <Field.Root invalid={!!fields.errors.password}>
-              <Field.Label>{key ? t("e2ee.change-passphrase") : t("e2ee.passphrase")}</Field.Label>
-              <Input
-                type="password"
-                autoComplete={record && !key ? "current-password" : "new-password"}
-                value={password}
-                onChange={(event) => {
-                  setPassword(event.target.value);
-                  fields.clear("password");
-                }}
-              />
-              <Field.Description>{t("e2ee.passphrase-help")}</Field.Description>
-              {fields.errors.password && <Field.Error match>{fields.errors.password}</Field.Error>}
-            </Field.Root>
-          )}
-          <div className="flex flex-wrap gap-2">
-            <Button type="submit" disabled={busy} variant="primary">
-              {pending ? t("common.confirm") : key ? t("common.save") : record ? t("e2ee.unlock") : t("e2ee.setup")}
-            </Button>
-            {!key && record && !pending && (
-              <Button
-                type="button"
-                variant="neutral"
-                disabled={busy}
-                onClick={() => {
-                  setRecovery(!recovery);
-                  setPassword("");
-                  setSecret("");
-                }}
-              >
-                {recovery ? t("e2ee.passphrase") : t("e2ee.recovery-key")}
-              </Button>
-            )}
-            {(key || pending) && (
-              <Button type="button" variant="neutral" onClick={() => lockEncryption(t("e2ee.unsaved"))}>
-                {t("e2ee.lock")}
-              </Button>
-            )}
-          </div>
-        </form>
+        controls
       )}
-      {record && !pending && <PasskeyPanel key={record.id} vaultId={record.id} />}
     </section>
   );
 }

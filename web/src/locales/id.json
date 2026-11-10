@@ -1436,6 +1436,7 @@
     "speed": "Kecepatan putar {{rate}}x"
   },
   "e2ee": {
+    "unlock-other": "Cara lain untuk membuka kunci",
     "passkey-add": "Tambahkan kunci sandi",
     "passkey-unlock": "Buka kunci dengan kunci sandi",
     "passkey-remove": "Hapus tautan kunci sandi",

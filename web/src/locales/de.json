@@ -1436,6 +1436,7 @@
     "speed": "Wiedergabegeschwindigkeit {{rate}}x"
   },
   "e2ee": {
+    "unlock-other": "Andere Entsperrmethoden",
     "passkey-add": "Passkey hinzufügen",
     "passkey-unlock": "Mit Passkey entsperren",
     "passkey-remove": "Passkey-Verknüpfung entfernen",

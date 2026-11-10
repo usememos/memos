@@ -1436,6 +1436,7 @@
     "speed": "재생 속도 {{rate}}x"
   },
   "e2ee": {
+    "unlock-other": "다른 방법으로 잠금 해제",
     "passkey-add": "패스키 등록",
     "passkey-unlock": "패스키로 잠금 해제",
     "passkey-remove": "패스키 연결 해제",

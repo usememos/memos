@@ -249,3 +249,8 @@ Encrypted memo cards use a subtle theme-aware well background (`bg-mu-well/50`) 
 states, so encrypted records remain recognizable while browsing. Dark mode uses the full well background, a higher-contrast
 border and a 3px start edge. The lock action uses a normal-size neutral button with a lock icon, matching the encrypted
 creation action. Ordinary memo card styling is unchanged.
+
+
+When a compatible passkey is registered for the current site, unlock prioritizes the passkey action. Password/recovery
+controls are behind “Other ways to unlock”; absent or unsupported credentials and PRF failures show those controls directly.
+The same fallback remains accessible while registrations are loading, so a stalled list request cannot block password unlock.

@@ -1437,6 +1437,7 @@
     "speed": "Brzina reprodukcije {{rate}}x"
   },
   "e2ee": {
+    "unlock-other": "Drugi načini otključavanja",
     "passkey-add": "Dodaj pristupni ključ",
     "passkey-unlock": "Otključaj pristupnim ključem",
     "passkey-remove": "Ukloni vezu pristupnog ključa",

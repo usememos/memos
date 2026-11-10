@@ -1,6 +1,6 @@
 import { Button } from "@usememos/ui";
 import { FingerprintIcon, Trash2Icon } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useId, useRef, useState } from "react";
 import { useVaultSession } from "@/contexts/E2EEContext";
 import { useCreateEncryptionPasskey, useDeleteEncryptionPasskey, useEncryptionPasskeys } from "@/hooks/useEncryptionPasskeyQueries";
 import { encodeRecord } from "@/lib/e2ee/crypto";
@@ -16,12 +16,14 @@ import { showErrorToast } from "@/lib/toast";
 import { useTranslate } from "@/utils/i18n";
 
 /** Only encrypted wrappers cross the mutation boundary; credentials stay local. */
-export function PasskeyPanel({ vaultId }: { vaultId: string }) {
+export function PasskeyPanel({ vaultId, children }: { vaultId: string; children?: ReactNode }) {
   const t = useTranslate();
   const { session, owner, key } = useVaultSession();
   const query = useEncryptionPasskeys(owner);
   const add = useCreateEncryptionPasskey(owner);
   const remove = useDeleteEncryptionPasskey(owner);
+  const [showAlternatives, setShowAlternatives] = useState(false);
+  const alternativesId = useId();
   const [busy, setBusy] = useState(false);
   const [unavailable, setUnavailable] = useState(false);
   const active = useRef(true);
@@ -68,10 +70,36 @@ export function PasskeyPanel({ vaultId }: { vaultId: string }) {
       if (active.current && session.current(ticket)) setBusy(false);
     }
   };
-  if (query.isPending) return null;
-  if (query.isError || invalid) return <p className="mu-caption text-mu-ink-muted">{t("e2ee.passkey-failed")}</p>;
+  const preferPasskey = !key && supported && eligible.length > 0 && !unavailable;
+  if (query.isPending)
+    return (
+      <div className="flex flex-col gap-3">
+        <p>{t("editor.validation.loading-content")}</p>
+        {!key && children && (
+          <Button
+            type="button"
+            variant="ghost"
+            className="self-start"
+            aria-expanded={showAlternatives}
+            aria-controls={alternativesId}
+            onClick={() => setShowAlternatives(!showAlternatives)}
+          >
+            {t("e2ee.unlock-other")}
+          </Button>
+        )}
+        <div id={alternativesId}>{(key || showAlternatives) && children}</div>
+      </div>
+    );
+  if (query.isError || invalid)
+    return (
+      <>
+        <p className="mu-caption text-mu-ink-muted">{t("e2ee.passkey-failed")}</p>
+        {children}
+      </>
+    );
   return (
-    <div className="flex flex-col gap-3 border-t border-mu-line pt-3">
+    <div className="flex flex-col gap-3">
+      {key && children}
       <p className="mu-caption text-mu-ink-muted">{t("e2ee.passkey-help")}</p>
       {(!supported || unavailable) && (
         <p role="status" className="mu-caption text-mu-ink-muted">
@@ -93,6 +121,24 @@ export function PasskeyPanel({ vaultId }: { vaultId: string }) {
         >
           {t("e2ee.passkey-unlock")}
         </Button>
+      )}
+      {!key && (
+        <>
+          {preferPasskey && children && (
+            <Button
+              type="button"
+              variant="ghost"
+              className="self-start"
+              disabled={busy}
+              aria-expanded={showAlternatives}
+              aria-controls={alternativesId}
+              onClick={() => setShowAlternatives(!showAlternatives)}
+            >
+              {t("e2ee.unlock-other")}
+            </Button>
+          )}
+          <div id={alternativesId}>{(!preferPasskey || showAlternatives) && children}</div>
+        </>
       )}
       {key && (
         <>

@@ -1436,6 +1436,7 @@
     "speed": "播放速度 {{rate}}x"
   },
   "e2ee": {
+    "unlock-other": "其他解鎖方式",
     "passkey-add": "新增通行金鑰",
     "passkey-unlock": "使用通行金鑰解鎖",
     "passkey-remove": "解除通行金鑰連結",

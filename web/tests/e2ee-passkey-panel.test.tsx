@@ -103,3 +103,42 @@ it("accepts a current passkey unlock result", async () => {
   fireEvent.click(screen.getByRole("button", { name: "e2ee.passkey-unlock" }));
   await waitFor(() => expect(mocks.session.getSnapshot().key).toBe(vault.key));
 });
+
+it("prioritizes a registered passkey and reveals fallback methods only on request", async () => {
+  const vault = await createVault("separate private passphrase");
+  mocks.records = [encodeRecord(record(vault.record.id))];
+  render(
+    <PasskeyPanel vaultId={vault.record.id}>
+      <input aria-label="fallback password" />
+    </PasskeyPanel>,
+  );
+  expect(screen.getByRole("button", { name: "e2ee.passkey-unlock" })).toBeInTheDocument();
+  expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "e2ee.unlock-other" }));
+  expect(screen.getByLabelText("fallback password")).toBeInTheDocument();
+});
+it.each(["unsupported", "no-registration"])("shows fallback immediately for %s", (reason) => {
+  mocks.supported = reason !== "unsupported";
+  render(
+    <PasskeyPanel vaultId={crypto.randomUUID()}>
+      <input aria-label="fallback password" />
+    </PasskeyPanel>,
+  );
+  expect(screen.getByLabelText("fallback password")).toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "e2ee.unlock-other" })).not.toBeInTheDocument();
+});
+
+it("reveals fallback automatically when the device cannot evaluate PRF", async () => {
+  const vault = await createVault("separate private passphrase");
+  mocks.records = [encodeRecord(record(vault.record.id))];
+  const { PasskeyUnavailableError } = await import("../src/lib/e2ee/passkey");
+  mocks.unlock.mockRejectedValue(new PasskeyUnavailableError());
+  render(
+    <PasskeyPanel vaultId={vault.record.id}>
+      <input aria-label="fallback password" />
+    </PasskeyPanel>,
+  );
+  fireEvent.click(screen.getByRole("button", { name: "e2ee.passkey-unlock" }));
+  expect(await screen.findByLabelText("fallback password")).toBeInTheDocument();
+  expect(screen.getByText("e2ee.passkey-unavailable")).toBeInTheDocument();
+});

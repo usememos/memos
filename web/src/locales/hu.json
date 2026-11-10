@@ -1436,6 +1436,7 @@
     "speed": "Lejátszási sebesség: {{rate}}x"
   },
   "e2ee": {
+    "unlock-other": "Egyéb feloldási módok",
     "passkey-add": "Hozzáférési kulcs hozzáadása",
     "passkey-unlock": "Feloldás hozzáférési kulccsal",
     "passkey-remove": "Hozzáférési kulcs kapcsolatának eltávolítása",

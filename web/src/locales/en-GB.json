@@ -1436,6 +1436,7 @@
     "speed": "Playback speed {{rate}}x"
   },
   "e2ee": {
+    "unlock-other": "Other ways to unlock",
     "passkey-add": "Add passkey",
     "passkey-unlock": "Unlock with passkey",
     "passkey-remove": "Remove passkey connection",

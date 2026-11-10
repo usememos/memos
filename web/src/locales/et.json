@@ -1436,6 +1436,7 @@
     "speed": "Taasesituse kiirus {{rate}}x"
   },
   "e2ee": {
+    "unlock-other": "Muud avamisviisid",
     "passkey-add": "Lisa pääsuvõti",
     "passkey-unlock": "Ava pääsuvõtmega",
     "passkey-remove": "Eemalda pääsuvõtme seos",

@@ -1437,6 +1437,7 @@
     "speed": "Viteză de redare {{rate}}x"
   },
   "e2ee": {
+    "unlock-other": "Alte metode de deblocare",
     "passkey-add": "Adaugă o cheie de acces",
     "passkey-unlock": "Deblochează cu cheia de acces",
     "passkey-remove": "Elimină asocierea cheii de acces",

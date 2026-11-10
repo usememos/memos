@@ -1438,6 +1438,7 @@
     "speed": "Atkūrimo greitis {{rate}}x"
   },
   "e2ee": {
+    "unlock-other": "Kiti atrakinimo būdai",
     "passkey-add": "Pridėti prieigos raktą",
     "passkey-unlock": "Atrakinti prieigos raktu",
     "passkey-remove": "Pašalinti prieigos rakto susiejimą",

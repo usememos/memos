@@ -1438,6 +1438,7 @@
     "speed": "Rýchlosť prehrávania {{rate}}x"
   },
   "e2ee": {
+    "unlock-other": "Ďalšie spôsoby odomknutia",
     "passkey-add": "Pridať prístupový kľúč",
     "passkey-unlock": "Odomknúť prístupovým kľúčom",
     "passkey-remove": "Odstrániť prepojenie prístupového kľúča",

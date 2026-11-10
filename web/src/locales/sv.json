@@ -1436,6 +1436,7 @@
     "speed": "Uppspelningshastighet {{rate}}x"
   },
   "e2ee": {
+    "unlock-other": "Andra sätt att låsa upp",
     "passkey-add": "Lägg till passnyckel",
     "passkey-unlock": "Lås upp med passnyckel",
     "passkey-remove": "Ta bort kopplingen till passnyckeln",

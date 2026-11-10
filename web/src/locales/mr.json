@@ -1436,6 +1436,7 @@
     "speed": "प्लेबॅक वेग {{rate}}x"
   },
   "e2ee": {
+    "unlock-other": "अनलॉक करण्याचे इतर मार्ग",
     "passkey-add": "पासकी जोडा",
     "passkey-unlock": "पासकीने अनलॉक करा",
     "passkey-remove": "पासकीची जोडणी काढा",

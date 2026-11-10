@@ -1436,6 +1436,7 @@
     "speed": "Toistonopeus {{rate}}x"
   },
   "e2ee": {
+    "unlock-other": "Muut avaustavat",
     "passkey-add": "Lisää pääsyavain",
     "passkey-unlock": "Avaa lukitus pääsyavaimella",
     "passkey-remove": "Poista pääsyavaimen liitos",

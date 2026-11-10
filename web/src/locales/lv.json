@@ -1437,6 +1437,7 @@
     "speed": "Atskaņošanas ātrums {{rate}}x"
   },
   "e2ee": {
+    "unlock-other": "Citi atbloķēšanas veidi",
     "passkey-add": "Pievienot piekļuves atslēgu",
     "passkey-unlock": "Atbloķēt ar piekļuves atslēgu",
     "passkey-remove": "Noņemt piekļuves atslēgas saistījumu",

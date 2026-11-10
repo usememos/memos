@@ -5,7 +5,14 @@ import { VaultPanel } from "../src/components/Encryption/VaultPanel";
 import { createVault, decodeVault, encodeRecord, unlockVault } from "../src/lib/e2ee/crypto";
 import { VaultSession } from "../src/lib/e2ee/session";
 
-vi.mock("../src/components/Encryption/PasskeyPanel", () => ({ PasskeyPanel: () => <div>passkey-controls</div> }));
+vi.mock("../src/components/Encryption/PasskeyPanel", () => ({
+  PasskeyPanel: ({ children }: { children?: import("react").ReactNode }) => (
+    <div>
+      {children}
+      <span>passkey-controls</span>
+    </div>
+  ),
+}));
 
 const api = vi.hoisted(() => ({ getEncryptionVault: vi.fn(), createEncryptionVault: vi.fn(), updateEncryptionVault: vi.fn() }));
 const state = vi.hoisted(() => ({ session: undefined as unknown as VaultSession }));

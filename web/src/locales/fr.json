@@ -1437,6 +1437,7 @@
     "speed": "Vitesse de lecture {{rate}}x"
   },
   "e2ee": {
+    "unlock-other": "Autres méthodes de déverrouillage",
     "passkey-add": "Ajouter une clé d’accès",
     "passkey-unlock": "Déverrouiller avec une clé d’accès",
     "passkey-remove": "Supprimer l’association de la clé d’accès",

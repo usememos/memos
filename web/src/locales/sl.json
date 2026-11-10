@@ -1438,6 +1438,7 @@
     "speed": "Hitrost predvajanja {{rate}}x"
   },
   "e2ee": {
+    "unlock-other": "Drugi načini odklepanja",
     "passkey-add": "Dodaj ključ za dostop",
     "passkey-unlock": "Odkleni s ključem za dostop",
     "passkey-remove": "Odstrani povezavo ključa za dostop",
