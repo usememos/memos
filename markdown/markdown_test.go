@@ -199,6 +199,18 @@ func TestGenerateSnippet(t *testing.T) {
 			maxLength: 100,
 			expected:  "Check out https://usememos.com for more info.",
 		},
+		{
+			name:      "zero max length",
+			content:   "Hello world",
+			maxLength: 0,
+			expected:  "",
+		},
+		{
+			name:      "negative max length",
+			content:   "Hello world",
+			maxLength: -1,
+			expected:  "",
+		},
 	}
 
 	for _, tt := range tests {
@@ -1096,6 +1108,18 @@ func TestTruncateAtWord(t *testing.T) {
 			input:     "这是中文mixed with English文字",
 			maxLength: 10,
 			expected:  "这是中文mixed ...",
+		},
+		{
+			name:      "zero max length",
+			input:     "Hello world",
+			maxLength: 0,
+			expected:  "",
+		},
+		{
+			name:      "negative max length",
+			input:     "Hello world",
+			maxLength: -1,
+			expected:  "",
 		},
 	}
 
