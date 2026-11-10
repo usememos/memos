@@ -4,10 +4,10 @@ import { act, renderHook, waitFor } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useReactionActions } from "@/components/MemoReactionListView/hooks";
-import { memoDetailQueryOptions, memoKeys } from "@/hooks/useMemoQueries";
-import { type Memo, MemoSchema, ReactionSchema } from "@/types/proto/api/memo_service_pb";
+import { memoDetailQueryOptions, memoKeys, useInfiniteMemos, useMemoByName } from "@/hooks/useMemoQueries";
+import { ListMemosResponseSchema, type Memo, MemoSchema, ReactionSchema } from "@/types/proto/api/memo_service_pb";
 
-const api = vi.hoisted(() => ({ getMemo: vi.fn(), upsertMemoReaction: vi.fn(), deleteMemoReaction: vi.fn() }));
+const api = vi.hoisted(() => ({ getMemo: vi.fn(), listMemos: vi.fn(), upsertMemoReaction: vi.fn(), deleteMemoReaction: vi.fn() }));
 vi.mock("@/connect", () => ({ memoServiceClient: api }));
 vi.mock("@/hooks/useCurrentUser", () => ({ default: () => ({ name: "users/me" }) }));
 vi.mock("@/contexts/MentionResolutionContext", () => ({ useResolvedUsersByNames: () => new Map() }));
@@ -61,5 +61,36 @@ describe("useReactionActions", () => {
     await waitFor(() => expect(client.isFetching()).toBe(0));
     expect(saved).toEqual(["👍", "❤️"]);
     expect(result.current.memo.reactions.map((reaction) => reaction.reactionType)).toEqual(["👍", "❤️"]);
+  });
+
+  it("shows a reaction on a card in a list without waiting for the list's refetch", async () => {
+    const { client, wrapper } = setup();
+    const name = "memos/x";
+    const listed = create(MemoSchema, { name, reactions: [] });
+    client.setQueryData(memoKeys.list({}), { pages: [create(ListMemosResponseSchema, { memos: [listed] })], pageParams: [""] });
+    api.upsertMemoReaction.mockImplementation(async ({ reaction }: { reaction: { reactionType: string } }) =>
+      create(ReactionSchema, { reactionType: reaction.reactionType }),
+    );
+    api.getMemo.mockResolvedValue(create(MemoSchema, { name, reactions: [{ reactionType: "👍", creator: "users/me" }] }));
+    // The list's refetch is slow: every loaded page is fetched again before any of them shows.
+    api.listMemos.mockImplementation(() => new Promise(() => {}));
+
+    // A card: the memo is the list's copy, and the card's own detail query is disabled.
+    const { result } = renderHook(
+      () => {
+        useInfiniteMemos();
+        const memo = useMemoByName(name).data as Memo;
+        return { memo, actions: useReactionActions({ memo }) };
+      },
+      { wrapper },
+    );
+    expect(result.current.memo).toBe(listed);
+    await act(async () => {
+      await result.current.actions.handleReactionClick("👍");
+    });
+
+    expect(api.getMemo).toHaveBeenCalledTimes(1);
+    expect(api.listMemos).toHaveBeenCalledTimes(1);
+    expect(result.current.memo.reactions.map((reaction) => reaction.reactionType)).toEqual(["👍"]);
   });
 });
