@@ -9,6 +9,7 @@ import (
 
 	"github.com/usememos/memos/core/memopayload"
 	apipb "github.com/usememos/memos/proto/gen/api"
+	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
 
@@ -44,6 +45,15 @@ func (s *APIService) prepareMemoCreate(ctx context.Context, user *store.User, in
 		CreatorID:  user.ID,
 		Content:    input.Content,
 		Visibility: visibility,
+	}
+	if len(input.EncryptedContent) > 0 {
+		if input.Content != "" || visibility != store.Private || input.GetSpace() != "" || input.Location != nil || len(input.Attachments) > 0 || len(input.Relations) > 0 {
+			return nil, encryptionError(store.ErrEncryptionPolicy)
+		}
+		if _, err := store.ParseEncryptedEnvelope(input.EncryptedContent); err != nil {
+			return nil, encryptionError(err)
+		}
+		memo.Payload = &storepb.MemoPayload{EncryptedContent: input.EncryptedContent}
 	}
 	if input.Space != nil && input.GetSpace() != "" {
 		space, err := s.resolveSpaceForMemoPlacement(ctx, input.GetSpace(), user)

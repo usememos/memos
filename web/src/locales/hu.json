@@ -1434,5 +1434,22 @@
     "back": "{{seconds}} másodperc vissza",
     "forward": "{{seconds}} másodperc előre",
     "speed": "Lejátszási sebesség: {{rate}}x"
+  },
+  "e2ee": {
+    "title": "Titkosított jegyzetek",
+    "passphrase": "Titkosítási jelmondat",
+    "passphrase-help": "Használjon külön, legalább 12 karakteres jelmondatot.",
+    "setup": "Titkosítás beállítása",
+    "unlock": "Feloldás",
+    "lock": "Zárolás",
+    "change-passphrase": "Titkosítási jelmondat módosítása",
+    "recovery-key": "Helyreállítási kulcs",
+    "confirm-recovery": "Adja meg újra a helyreállítási kulcsot annak megerősítéséhez, hogy elmentette",
+    "recovery-warning": "Tárolja ezt a kulcsot a Memos alkalmazáson kívül. Ha a jelmondatot és ezt a kulcsot is elveszíti, senki sem tudja helyreállítani a jegyzeteit.",
+    "limitations": "Csak privát szöveg. Nincs megosztás, melléklet, keresés vagy exportálás. A piszkozatokat nem menti a rendszer. Zárolás 15 perc tétlenség után.",
+    "new-memo": "Új titkosított jegyzet",
+    "idle-warning": "A titkosított jegyzetek egy perc múlva zárolódnak. Mentse a módosításokat.",
+    "unsaved": "A nem mentett titkosított szöveg elvész. Folytatja?",
+    "failed": "A titkosítási művelet sikertelen. Ellenőrizze a jelmondatot vagy a kulcsot, vagy töltse újra az oldalt a legújabb verzió lekéréséhez."
   }
 }

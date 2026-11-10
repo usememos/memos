@@ -127,6 +127,13 @@ func (s *Store) UpsertMemoRelation(ctx context.Context, create *MemoRelation) (*
 	if create == nil || create.Type != MemoRelationReference {
 		return nil, errors.New("only REFERENCE memo relations may be persisted")
 	}
+	if err := s.RequirePlaintextMemo(ctx, create.MemoID); err != nil {
+		return nil, err
+	}
+	if err := s.RequirePlaintextMemo(ctx, create.RelatedMemoID); err != nil {
+		return nil, err
+	}
+
 	return s.driver.UpsertMemoRelation(ctx, create)
 }
 

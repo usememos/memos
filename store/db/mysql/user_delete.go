@@ -145,7 +145,7 @@ func deleteUserTargetsTx(ctx context.Context, tx *sql.Tx, userID int32, targets 
 }
 
 func listDeleteUserMemos(ctx context.Context, tx *sql.Tx, userID int32) ([]int32, error) {
-	return queryDeleteUserMemoIDs(ctx, tx, `SELECT id FROM memo WHERE creator_id = ? ORDER BY id`, userID)
+	return queryDeleteUserMemoIDs(ctx, tx, `SELECT id FROM memo WHERE creator_id = ? ORDER BY id FOR UPDATE`, userID)
 }
 
 func queryDeleteUserMemoIDs(ctx context.Context, tx *sql.Tx, query string, args ...any) ([]int32, error) {
@@ -369,6 +369,9 @@ func deleteMemoRelationsTx(ctx context.Context, tx *sql.Tx, memoIDs []int32) err
 func deleteMemosTx(ctx context.Context, tx *sql.Tx, memoIDs []int32) error {
 	for _, batch := range deleteUserBatches(memoIDs, deleteUserBatchSize) {
 		clause, args := deleteUserInClause(1, batch)
+		if _, err := tx.ExecContext(ctx, `DELETE FROM memo_encryption WHERE memo_id IN `+clause, args...); err != nil {
+			return err
+		}
 		if _, err := tx.ExecContext(ctx, `DELETE FROM memo WHERE id IN `+clause, args...); err != nil {
 			return err
 		}
@@ -377,6 +380,9 @@ func deleteMemosTx(ctx context.Context, tx *sql.Tx, memoIDs []int32) error {
 }
 
 func deleteUserRowTx(ctx context.Context, tx *sql.Tx, userID int32) error {
+	if _, err := tx.ExecContext(ctx, "DELETE FROM encryption_vault WHERE user_id = ?", userID); err != nil {
+		return err
+	}
 	_, err := tx.ExecContext(ctx, "DELETE FROM `user` WHERE id = "+deleteUserPlaceholder(1), userID)
 	return err
 }

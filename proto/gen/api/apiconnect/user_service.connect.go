@@ -34,6 +34,15 @@ const (
 // reflection-formatted method names, remove the leading slash and convert the remaining slash to a
 // period.
 const (
+	// UserServiceGetEncryptionVaultProcedure is the fully-qualified name of the UserService's
+	// GetEncryptionVault RPC.
+	UserServiceGetEncryptionVaultProcedure = "/memos.api.UserService/GetEncryptionVault"
+	// UserServiceCreateEncryptionVaultProcedure is the fully-qualified name of the UserService's
+	// CreateEncryptionVault RPC.
+	UserServiceCreateEncryptionVaultProcedure = "/memos.api.UserService/CreateEncryptionVault"
+	// UserServiceUpdateEncryptionVaultProcedure is the fully-qualified name of the UserService's
+	// UpdateEncryptionVault RPC.
+	UserServiceUpdateEncryptionVaultProcedure = "/memos.api.UserService/UpdateEncryptionVault"
 	// UserServiceListUsersProcedure is the fully-qualified name of the UserService's ListUsers RPC.
 	UserServiceListUsersProcedure = "/memos.api.UserService/ListUsers"
 	// UserServiceGetUserProcedure is the fully-qualified name of the UserService's GetUser RPC.
@@ -130,6 +139,12 @@ const (
 
 // UserServiceClient is a client for the memos.api.UserService service.
 type UserServiceClient interface {
+	// Reads only the authenticated caller's encryption vault.
+	GetEncryptionVault(context.Context, *connect.Request[api.GetEncryptionVaultRequest]) (*connect.Response[api.EncryptionVault], error)
+	// Creates the caller's vault once, after local recovery confirmation.
+	CreateEncryptionVault(context.Context, *connect.Request[api.CreateEncryptionVaultRequest]) (*connect.Response[api.EncryptionVault], error)
+	// Replaces wrappers using an expected revision, preserving vault identity.
+	UpdateEncryptionVault(context.Context, *connect.Request[api.UpdateEncryptionVaultRequest]) (*connect.Response[api.EncryptionVault], error)
 	// ListUsers lists users in every state. Only admins may call it.
 	ListUsers(context.Context, *connect.Request[api.ListUsersRequest]) (*connect.Response[api.ListUsersResponse], error)
 	// GetUser gets a user by resource name.
@@ -246,6 +261,24 @@ func NewUserServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 	baseURL = strings.TrimRight(baseURL, "/")
 	userServiceMethods := api.File_api_user_service_proto.Services().ByName("UserService").Methods()
 	return &userServiceClient{
+		getEncryptionVault: connect.NewClient[api.GetEncryptionVaultRequest, api.EncryptionVault](
+			httpClient,
+			baseURL+UserServiceGetEncryptionVaultProcedure,
+			connect.WithSchema(userServiceMethods.ByName("GetEncryptionVault")),
+			connect.WithClientOptions(opts...),
+		),
+		createEncryptionVault: connect.NewClient[api.CreateEncryptionVaultRequest, api.EncryptionVault](
+			httpClient,
+			baseURL+UserServiceCreateEncryptionVaultProcedure,
+			connect.WithSchema(userServiceMethods.ByName("CreateEncryptionVault")),
+			connect.WithClientOptions(opts...),
+		),
+		updateEncryptionVault: connect.NewClient[api.UpdateEncryptionVaultRequest, api.EncryptionVault](
+			httpClient,
+			baseURL+UserServiceUpdateEncryptionVaultProcedure,
+			connect.WithSchema(userServiceMethods.ByName("UpdateEncryptionVault")),
+			connect.WithClientOptions(opts...),
+		),
 		listUsers: connect.NewClient[api.ListUsersRequest, api.ListUsersResponse](
 			httpClient,
 			baseURL+UserServiceListUsersProcedure,
@@ -449,6 +482,9 @@ func NewUserServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 
 // userServiceClient implements UserServiceClient.
 type userServiceClient struct {
+	getEncryptionVault          *connect.Client[api.GetEncryptionVaultRequest, api.EncryptionVault]
+	createEncryptionVault       *connect.Client[api.CreateEncryptionVaultRequest, api.EncryptionVault]
+	updateEncryptionVault       *connect.Client[api.UpdateEncryptionVaultRequest, api.EncryptionVault]
 	listUsers                   *connect.Client[api.ListUsersRequest, api.ListUsersResponse]
 	getUser                     *connect.Client[api.GetUserRequest, api.User]
 	batchGetUsers               *connect.Client[api.BatchGetUsersRequest, api.BatchGetUsersResponse]
@@ -482,6 +518,21 @@ type userServiceClient struct {
 	createPersonalAccessToken   *connect.Client[api.CreatePersonalAccessTokenRequest, api.CreatePersonalAccessTokenResponse]
 	deletePersonalAccessToken   *connect.Client[api.DeletePersonalAccessTokenRequest, emptypb.Empty]
 	importMemos                 *connect.Client[api.ImportMemosRequest, api.ImportMemosResponse]
+}
+
+// GetEncryptionVault calls memos.api.UserService.GetEncryptionVault.
+func (c *userServiceClient) GetEncryptionVault(ctx context.Context, req *connect.Request[api.GetEncryptionVaultRequest]) (*connect.Response[api.EncryptionVault], error) {
+	return c.getEncryptionVault.CallUnary(ctx, req)
+}
+
+// CreateEncryptionVault calls memos.api.UserService.CreateEncryptionVault.
+func (c *userServiceClient) CreateEncryptionVault(ctx context.Context, req *connect.Request[api.CreateEncryptionVaultRequest]) (*connect.Response[api.EncryptionVault], error) {
+	return c.createEncryptionVault.CallUnary(ctx, req)
+}
+
+// UpdateEncryptionVault calls memos.api.UserService.UpdateEncryptionVault.
+func (c *userServiceClient) UpdateEncryptionVault(ctx context.Context, req *connect.Request[api.UpdateEncryptionVaultRequest]) (*connect.Response[api.EncryptionVault], error) {
+	return c.updateEncryptionVault.CallUnary(ctx, req)
 }
 
 // ListUsers calls memos.api.UserService.ListUsers.
@@ -651,6 +702,12 @@ func (c *userServiceClient) ImportMemos(ctx context.Context, req *connect.Reques
 
 // UserServiceHandler is an implementation of the memos.api.UserService service.
 type UserServiceHandler interface {
+	// Reads only the authenticated caller's encryption vault.
+	GetEncryptionVault(context.Context, *connect.Request[api.GetEncryptionVaultRequest]) (*connect.Response[api.EncryptionVault], error)
+	// Creates the caller's vault once, after local recovery confirmation.
+	CreateEncryptionVault(context.Context, *connect.Request[api.CreateEncryptionVaultRequest]) (*connect.Response[api.EncryptionVault], error)
+	// Replaces wrappers using an expected revision, preserving vault identity.
+	UpdateEncryptionVault(context.Context, *connect.Request[api.UpdateEncryptionVaultRequest]) (*connect.Response[api.EncryptionVault], error)
 	// ListUsers lists users in every state. Only admins may call it.
 	ListUsers(context.Context, *connect.Request[api.ListUsersRequest]) (*connect.Response[api.ListUsersResponse], error)
 	// GetUser gets a user by resource name.
@@ -763,6 +820,24 @@ type UserServiceHandler interface {
 // and JSON codecs. They also support gzip compression.
 func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
 	userServiceMethods := api.File_api_user_service_proto.Services().ByName("UserService").Methods()
+	userServiceGetEncryptionVaultHandler := connect.NewUnaryHandler(
+		UserServiceGetEncryptionVaultProcedure,
+		svc.GetEncryptionVault,
+		connect.WithSchema(userServiceMethods.ByName("GetEncryptionVault")),
+		connect.WithHandlerOptions(opts...),
+	)
+	userServiceCreateEncryptionVaultHandler := connect.NewUnaryHandler(
+		UserServiceCreateEncryptionVaultProcedure,
+		svc.CreateEncryptionVault,
+		connect.WithSchema(userServiceMethods.ByName("CreateEncryptionVault")),
+		connect.WithHandlerOptions(opts...),
+	)
+	userServiceUpdateEncryptionVaultHandler := connect.NewUnaryHandler(
+		UserServiceUpdateEncryptionVaultProcedure,
+		svc.UpdateEncryptionVault,
+		connect.WithSchema(userServiceMethods.ByName("UpdateEncryptionVault")),
+		connect.WithHandlerOptions(opts...),
+	)
 	userServiceListUsersHandler := connect.NewUnaryHandler(
 		UserServiceListUsersProcedure,
 		svc.ListUsers,
@@ -963,6 +1038,12 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 	)
 	return "/memos.api.UserService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
+		case UserServiceGetEncryptionVaultProcedure:
+			userServiceGetEncryptionVaultHandler.ServeHTTP(w, r)
+		case UserServiceCreateEncryptionVaultProcedure:
+			userServiceCreateEncryptionVaultHandler.ServeHTTP(w, r)
+		case UserServiceUpdateEncryptionVaultProcedure:
+			userServiceUpdateEncryptionVaultHandler.ServeHTTP(w, r)
 		case UserServiceListUsersProcedure:
 			userServiceListUsersHandler.ServeHTTP(w, r)
 		case UserServiceGetUserProcedure:
@@ -1037,6 +1118,18 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 
 // UnimplementedUserServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedUserServiceHandler struct{}
+
+func (UnimplementedUserServiceHandler) GetEncryptionVault(context.Context, *connect.Request[api.GetEncryptionVaultRequest]) (*connect.Response[api.EncryptionVault], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.GetEncryptionVault is not implemented"))
+}
+
+func (UnimplementedUserServiceHandler) CreateEncryptionVault(context.Context, *connect.Request[api.CreateEncryptionVaultRequest]) (*connect.Response[api.EncryptionVault], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.CreateEncryptionVault is not implemented"))
+}
+
+func (UnimplementedUserServiceHandler) UpdateEncryptionVault(context.Context, *connect.Request[api.UpdateEncryptionVaultRequest]) (*connect.Response[api.EncryptionVault], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.UpdateEncryptionVault is not implemented"))
+}
 
 func (UnimplementedUserServiceHandler) ListUsers(context.Context, *connect.Request[api.ListUsersRequest]) (*connect.Response[api.ListUsersResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.ListUsers is not implemented"))

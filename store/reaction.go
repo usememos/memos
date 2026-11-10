@@ -47,9 +47,14 @@ func (s *Store) UpsertReaction(ctx context.Context, upsert *Reaction) (*Reaction
 	if upsert == nil {
 		return nil, errors.New("reaction is required")
 	}
+
 	if err := validateReactionWritePolicy(upsert); err != nil {
 		return nil, err
 	}
+	if err := s.RequirePlaintextMemo(ctx, upsert.MemoID); err != nil {
+		return nil, err
+	}
+
 	if upsert.Policy == nil {
 		return s.driver.UpsertReaction(ctx, upsert)
 	}

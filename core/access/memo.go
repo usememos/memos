@@ -71,6 +71,9 @@ func IsInstanceAdmin(user *store.User) bool {
 // CanManageMemo reports whether the actor may perform author-level operations
 // on the memo: the active author, or an instance administrator.
 func CanManageMemo(actor *store.User, memo *store.Memo) bool {
+	if store.IsEncryptedMemo(memo) {
+		return IsActiveUser(actor) && actor.ID == memo.CreatorID
+	}
 	return memo != nil && ownsOrAdministers(actor, memo.CreatorID)
 }
 
@@ -103,6 +106,15 @@ func CheckMemoReadContext(ctx MemoReadContext) MemoReadDecision {
 
 	if memo.RowStatus != store.Normal && memo.RowStatus != store.Archived {
 		return MemoReadDecision{Denial: MemoReadDenialNotFound}
+	}
+	if store.IsEncryptedMemo(memo) {
+		if !IsActiveUser(ctx.Viewer) {
+			return MemoReadDecision{Denial: MemoReadDenialUnauthenticated}
+		}
+		if ctx.Viewer.ID != memo.CreatorID {
+			return MemoReadDecision{Denial: MemoReadDenialPermission}
+		}
+		return MemoReadDecision{Class: MemoReadClassPrivate}
 	}
 	// A structurally valid memo is readable by name to an instance
 	// administrator regardless of audience, placement, or lifecycle state.

@@ -55,6 +55,11 @@ func (s *APIService) PlanMemoImport(ctx context.Context, user *store.User, archi
 	if err != nil {
 		return nil, err
 	}
+	for _, memo := range existing {
+		if memo.CreatorID == user.ID && store.IsEncryptedMemo(memo) {
+			return nil, errors.New("encrypted memos cannot be imported or replaced")
+		}
+	}
 	for _, record := range archive.Memos {
 		switch memo := existing[record.UID]; {
 		case memo == nil:
@@ -143,6 +148,11 @@ func (s *APIService) ImportMemoExport(ctx context.Context, user *store.User, arc
 	existing, err := s.findMemosByUID(ctx, archive, false)
 	if err != nil {
 		return nil, err
+	}
+	for _, memo := range existing {
+		if memo.CreatorID == user.ID && store.IsEncryptedMemo(memo) {
+			return nil, errors.New("encrypted memos cannot be imported or replaced")
+		}
 	}
 	importer := &memoImporter{
 		service:        s,

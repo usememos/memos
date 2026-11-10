@@ -28,6 +28,9 @@ func (d *DB) ApplyMemoMutation(ctx context.Context, mutation *store.MemoMutation
 			_, _ = conn.ExecContext(context.WithoutCancel(ctx), "ROLLBACK")
 		}
 	}()
+	if err := store.ValidateEncryptedMutationEndpoints(ctx, conn, mutation, false); err != nil {
+		return err
+	}
 	if err := validateSQLiteMemoRelationEndpoints(ctx, conn, mutation); err != nil {
 		return err
 	}
@@ -185,10 +188,14 @@ func replaceMemoReferenceRelations(ctx context.Context, executor memoUpdateExece
 }
 
 type memoUpdateExecer interface {
+	QueryRowContext(context.Context, string, ...any) *sql.Row
 	ExecContext(context.Context, string, ...any) (sql.Result, error)
 }
 
 func applyMemoUpdate(ctx context.Context, executor memoUpdateExecer, update *store.UpdateMemo) error {
+	if err := store.ValidateEncryptedUpdate(ctx, executor, update, false); err != nil {
+		return err
+	}
 	set, args := []string{}, []any{}
 	if v := update.UID; v != nil {
 		set, args = append(set, "`uid` = ?"), append(args, *v)

@@ -174,7 +174,7 @@ const MemoDetail = () => {
     hasNextPage: hasNextComments,
     isFetchingNextPage: isFetchingNextComments,
   } = useInfiniteMemoComments(memoName, {
-    enabled: !isShareMode && !!memo,
+    enabled: !isShareMode && !!memo && !memo.encryptedContent?.length,
   });
   const commentCount = memo ? Math.max(computeCommentAmount(memo), comments.length) : 0;
 
@@ -286,7 +286,7 @@ const MemoDetail = () => {
               showSpace
               onShareImageDialogOpenChange={setShareImageDialogOpen}
             />
-            {!isShareMode && (
+            {!isShareMode && !displayMemo.encryptedContent?.length && (
               <MemoCommentSection
                 ref={commentSectionRef}
                 memo={displayMemo}

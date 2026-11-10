@@ -10,6 +10,7 @@ import { Toast, Tooltip } from "@usememos/ui";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { refreshAccessToken } from "@/connect";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { E2EEProvider } from "@/contexts/E2EEContext";
 import { InstanceProvider, useInstance } from "@/contexts/InstanceContext";
 import { useLiveMemoRefresh } from "@/hooks/useLiveMemoRefresh";
 import { useTokenRefreshOnFocus } from "@/hooks/useTokenRefreshOnFocus";
@@ -73,7 +74,9 @@ function Main() {
             <Tooltip.Provider>
               <AppInitializer>
                 <Toast.Provider toastManager={toast}>
-                  <RouterProvider router={router} />
+                  <E2EEProvider>
+                    <RouterProvider router={router} />
+                  </E2EEProvider>
                   <ToastViewport />
                 </Toast.Provider>
               </AppInitializer>

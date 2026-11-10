@@ -1435,5 +1435,22 @@
     "back": "Reculer de {{seconds}} secondes",
     "forward": "Avancer de {{seconds}} secondes",
     "speed": "Vitesse de lecture {{rate}}x"
+  },
+  "e2ee": {
+    "title": "Notes chiffrées",
+    "passphrase": "Phrase secrète de chiffrement",
+    "passphrase-help": "Utilisez une phrase secrète distincte d’au moins 12 caractères.",
+    "setup": "Configurer le chiffrement",
+    "unlock": "Déverrouiller",
+    "lock": "Verrouiller",
+    "change-passphrase": "Modifier la phrase secrète de chiffrement",
+    "recovery-key": "Clé de récupération",
+    "confirm-recovery": "Saisissez à nouveau la clé de récupération pour confirmer que vous l’avez sauvegardée",
+    "recovery-warning": "Conservez cette clé en dehors de Memos. Si vous perdez à la fois la phrase secrète et cette clé, personne ne pourra récupérer vos notes.",
+    "limitations": "Texte privé uniquement. Aucun partage, pièce jointe, recherche ou exportation. Les brouillons ne sont pas enregistrés. Verrouillage après 15 minutes d’inactivité.",
+    "new-memo": "Nouvelle note chiffrée",
+    "idle-warning": "Les notes chiffrées seront verrouillées dans une minute. Enregistrez vos modifications.",
+    "unsaved": "Le texte chiffré non enregistré sera perdu. Continuer ?",
+    "failed": "L’opération de chiffrement a échoué. Vérifiez votre phrase secrète ou votre clé, ou rechargez pour obtenir la dernière version."
   }
 }

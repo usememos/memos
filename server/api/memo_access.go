@@ -168,6 +168,9 @@ func memoWritePolicy(actorUserID int32, lifecycleOnly bool) *store.MemoWritePoli
 }
 
 func mapMemoWriteError(err error, operation string) error {
+	if stderrors.Is(err, store.ErrEncryptionPolicy) || stderrors.Is(err, store.ErrEncryptionConflict) {
+		return encryptionError(err)
+	}
 	switch {
 	case stderrors.Is(err, store.ErrMemoMutationConflict):
 		return status.Errorf(codes.FailedPrecondition, "memo state changed: %v", err)

@@ -116,7 +116,7 @@ const MemoDetailSidebar = ({
 
   const readonly = forceReadonly || !canManageMemo(memo, currentUser);
   const canEdit = !!onEdit && !readonly && memo.state === State.NORMAL;
-  const canComment = !!onCommentCreate && !forceReadonly && !!currentUser && memo.state === State.NORMAL;
+  const canComment = !memo.encryptedContent?.length && !!onCommentCreate && !forceReadonly && !!currentUser && memo.state === State.NORMAL;
   const canManageShares =
     !forceReadonly &&
     !memo.parent &&
@@ -217,35 +217,37 @@ const MemoDetailSidebar = ({
       <SidebarSection label={t("common.actions")}>
         {canEdit && <SidebarRow icon={Edit3Icon} label={t("common.edit")} onClick={onEdit} />}
         {canComment && <SidebarRow icon={MessageSquarePlusIcon} label={t("memo.comment.write-a-comment")} onClick={onCommentCreate} />}
-        <Menu.Root modal={false}>
-          <Menu.Trigger
-            aria-label={t("common.share")}
-            className={cn(
-              SIDEBAR_ROW_CLASSES,
-              sidebarRowStateClasses("idle"),
-              "data-popup-open:bg-mu-hover/65 data-popup-open:text-mu-ink",
-            )}
-          >
-            <SidebarRowIconSlot icon={Share2Icon} />
-            <span className="min-w-0 flex-1 truncate text-start">{t("common.share")}</span>
-            <ChevronDownIcon className="mu-icon-sm shrink-0 opacity-55" />
-          </Menu.Trigger>
-          <Menu.Popup align="start">
-            <Menu.Item onClick={handleCopyLink} icon={<LinkIcon />}>
-              {t("memo.copy-link")}
-            </Menu.Item>
-            {onShareImageOpen && (
-              <Menu.Item onClick={onShareImageOpen} icon={<ImageIcon />}>
-                {t("memo.share.open-image")}
+        {!memo.encryptedContent?.length && (
+          <Menu.Root modal={false}>
+            <Menu.Trigger
+              aria-label={t("common.share")}
+              className={cn(
+                SIDEBAR_ROW_CLASSES,
+                sidebarRowStateClasses("idle"),
+                "data-popup-open:bg-mu-hover/65 data-popup-open:text-mu-ink",
+              )}
+            >
+              <SidebarRowIconSlot icon={Share2Icon} />
+              <span className="min-w-0 flex-1 truncate text-start">{t("common.share")}</span>
+              <ChevronDownIcon className="mu-icon-sm shrink-0 opacity-55" />
+            </Menu.Trigger>
+            <Menu.Popup align="start">
+              <Menu.Item onClick={handleCopyLink} icon={<LinkIcon />}>
+                {t("memo.copy-link")}
               </Menu.Item>
-            )}
-            {canManageShares && (
-              <Menu.Item onClick={() => setSharePanelOpen(true)} icon={<Share2Icon />}>
-                {t("memo.share.open-panel")}
-              </Menu.Item>
-            )}
-          </Menu.Popup>
-        </Menu.Root>
+              {onShareImageOpen && (
+                <Menu.Item onClick={onShareImageOpen} icon={<ImageIcon />}>
+                  {t("memo.share.open-image")}
+                </Menu.Item>
+              )}
+              {canManageShares && (
+                <Menu.Item onClick={() => setSharePanelOpen(true)} icon={<Share2Icon />}>
+                  {t("memo.share.open-panel")}
+                </Menu.Item>
+              )}
+            </Menu.Popup>
+          </Menu.Root>
+        )}
       </SidebarSection>
 
       {sharePanelOpen && <MemoSharePanel memoName={memo.name} open={sharePanelOpen} onClose={() => setSharePanelOpen(false)} />}

@@ -1434,5 +1434,22 @@
     "back": "Bakåt {{seconds}} sekunder",
     "forward": "Framåt {{seconds}} sekunder",
     "speed": "Uppspelningshastighet {{rate}}x"
+  },
+  "e2ee": {
+    "title": "Krypterade anteckningar",
+    "passphrase": "Lösenfras för kryptering",
+    "passphrase-help": "Använd en separat lösenfras med minst 12 tecken.",
+    "setup": "Konfigurera kryptering",
+    "unlock": "Lås upp",
+    "lock": "Lås",
+    "change-passphrase": "Ändra lösenfras för kryptering",
+    "recovery-key": "Återställningsnyckel",
+    "confirm-recovery": "Ange återställningsnyckeln igen för att bekräfta att du har sparat den",
+    "recovery-warning": "Förvara den här nyckeln utanför Memos. Om du förlorar både lösenfrasen och den här nyckeln kan ingen återställa dina anteckningar.",
+    "limitations": "Endast privat text. Ingen delning, bilagor, sökning eller export. Utkast sparas inte. Låses efter 15 minuters inaktivitet.",
+    "new-memo": "Ny krypterad anteckning",
+    "idle-warning": "Krypterade anteckningar låses om en minut. Spara dina ändringar.",
+    "unsaved": "Osparad krypterad text kommer att kastas. Fortsätta?",
+    "failed": "Krypteringen misslyckades. Kontrollera din lösenfras eller nyckel, eller ladda om för att hämta den senaste versionen."
   }
 }

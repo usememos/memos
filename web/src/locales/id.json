@@ -1434,5 +1434,22 @@
     "back": "Mundur {{seconds}} detik",
     "forward": "Maju {{seconds}} detik",
     "speed": "Kecepatan putar {{rate}}x"
+  },
+  "e2ee": {
+    "title": "Memo terenkripsi",
+    "passphrase": "Frasa sandi enkripsi",
+    "passphrase-help": "Gunakan frasa sandi terpisah dengan minimal 12 karakter.",
+    "setup": "Siapkan enkripsi",
+    "unlock": "Buka kunci",
+    "lock": "Kunci",
+    "change-passphrase": "Ubah frasa sandi enkripsi",
+    "recovery-key": "Kunci pemulihan",
+    "confirm-recovery": "Masukkan kembali kunci pemulihan untuk mengonfirmasi bahwa Anda telah menyimpannya",
+    "recovery-warning": "Simpan kunci ini di luar Memos. Jika Anda kehilangan frasa sandi dan kunci ini, tidak ada yang dapat memulihkan memo Anda.",
+    "limitations": "Hanya teks pribadi. Tanpa berbagi, lampiran, pencarian, atau ekspor. Draf tidak disimpan. Terkunci setelah 15 menit tanpa aktivitas.",
+    "new-memo": "Memo terenkripsi baru",
+    "idle-warning": "Memo terenkripsi akan terkunci dalam satu menit. Simpan perubahan Anda.",
+    "unsaved": "Teks terenkripsi yang belum disimpan akan dibuang. Lanjutkan?",
+    "failed": "Operasi enkripsi gagal. Periksa frasa sandi atau kunci Anda, atau muat ulang untuk mendapatkan versi terbaru."
   }
 }

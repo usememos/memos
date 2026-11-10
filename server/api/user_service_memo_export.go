@@ -89,6 +89,9 @@ func (s *APIService) loadMemoExportData(ctx context.Context, user *store.User) (
 	}
 	memoIDs := make([]int32, 0, len(memos))
 	for _, memo := range memos {
+		if store.IsEncryptedMemo(memo) {
+			return nil, errors.New("encrypted memos cannot be exported; use a full server backup")
+		}
 		memoIDs = append(memoIDs, memo.ID)
 		export.memoUIDs[memo.ID] = memo.UID
 		if memo.SpaceID != nil {

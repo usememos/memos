@@ -1434,5 +1434,22 @@
     "back": "{{seconds}} saniyə geri",
     "forward": "{{seconds}} saniyə irəli",
     "speed": "Oynatma sürəti {{rate}}x"
+  },
+  "e2ee": {
+    "title": "Şifrələnmiş qeydlər",
+    "passphrase": "Şifrələmə parol ifadəsi",
+    "passphrase-help": "Ən azı 12 simvoldan ibarət ayrıca parol ifadəsi istifadə edin.",
+    "setup": "Şifrələməni qur",
+    "unlock": "Kilidi aç",
+    "lock": "Kilidlə",
+    "change-passphrase": "Şifrələmə parol ifadəsini dəyiş",
+    "recovery-key": "Bərpa açarı",
+    "confirm-recovery": "Saxladığınızı təsdiqləmək üçün bərpa açarını yenidən daxil edin",
+    "recovery-warning": "Bu açarı Memos-dan kənarda saxlayın. Həm parol ifadəsini, həm də bu açarı itirsəniz, heç kim qeydlərinizi bərpa edə bilməz.",
+    "limitations": "Yalnız şəxsi mətn. Paylaşma, əlavələr, axtarış və ixrac yoxdur. Qaralamalar saxlanılmır. 15 dəqiqə fəaliyyətsizlikdən sonra kilidlənir.",
+    "new-memo": "Yeni şifrələnmiş qeyd",
+    "idle-warning": "Şifrələnmiş qeydlər bir dəqiqə sonra kilidlənəcək. Dəyişikliklərinizi saxlayın.",
+    "unsaved": "Saxlanılmamış şifrələnmiş mətn silinəcək. Davam edilsin?",
+    "failed": "Şifrələmə əməliyyatı uğursuz oldu. Parol ifadəsini və ya açarı yoxlayın, yaxud ən son versiyanı almaq üçün yenidən yükləyin."
   }
 }

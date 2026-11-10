@@ -152,8 +152,8 @@ type Memo struct {
 	// comment, owns its placement independently.
 	// Format: spaces/{space}
 	Space *string `protobuf:"bytes,3,opt,name=space,proto3,oneof" json:"space,omitempty"`
-	// Required. The content of the memo in Markdown. Must not exceed the
-	// instance's content length limit.
+	// Optional. The plaintext content in Markdown. Must be empty when
+	// encrypted_content is supplied; otherwise the instance content limit applies.
 	Content string `protobuf:"bytes,4,opt,name=content,proto3" json:"content,omitempty"`
 	// Optional. The location of the memo.
 	Location *Location `protobuf:"bytes,5,opt,name=location,proto3,oneof" json:"location,omitempty"`
@@ -189,9 +189,12 @@ type Memo struct {
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,16,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	// Optional. The last update time. Defaults to the current time when unset on
 	// creation.
-	UpdateTime    *timestamppb.Timestamp `protobuf:"bytes,17,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,17,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
+	// Optional. Protocol v1 encrypted envelope as UTF-8 JSON, at most 1.5 MiB.
+	// Mutually exclusive with content; only private, unassigned text memos support it.
+	EncryptedContent []byte `protobuf:"bytes,18,opt,name=encrypted_content,json=encryptedContent,proto3" json:"encrypted_content,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *Memo) Reset() {
@@ -339,6 +342,13 @@ func (x *Memo) GetCreateTime() *timestamppb.Timestamp {
 func (x *Memo) GetUpdateTime() *timestamppb.Timestamp {
 	if x != nil {
 		return x.UpdateTime
+	}
+	return nil
+}
+
+func (x *Memo) GetEncryptedContent() []byte {
+	if x != nil {
+		return x.EncryptedContent
 	}
 	return nil
 }
@@ -627,9 +637,11 @@ func (x *CreateMemoRequest) GetMemoId() string {
 // Request message for MemoService.UpdateMemo.
 type UpdateMemoRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required when updating encrypted_content; rejects concurrent changes.
+	ExpectedEncryptionRevision string `protobuf:"bytes,3,opt,name=expected_encryption_revision,json=expectedEncryptionRevision,proto3" json:"expected_encryption_revision,omitempty"`
 	// Required. The memo to update. Its name identifies the memo.
 	Memo *Memo `protobuf:"bytes,1,opt,name=memo,proto3" json:"memo,omitempty"`
-	// Required. The fields to update. Supported paths: content, visibility,
+	// Required. The fields to update. Supported paths: content, encrypted_content, visibility,
 	// space, pinned, state, create_time, update_time, location, attachments,
 	// relations.
 	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
@@ -665,6 +677,13 @@ func (x *UpdateMemoRequest) ProtoReflect() protoreflect.Message {
 // Deprecated: Use UpdateMemoRequest.ProtoReflect.Descriptor instead.
 func (*UpdateMemoRequest) Descriptor() ([]byte, []int) {
 	return file_api_memo_service_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *UpdateMemoRequest) GetExpectedEncryptionRevision() string {
+	if x != nil {
+		return x.ExpectedEncryptionRevision
+	}
+	return ""
 }
 
 func (x *UpdateMemoRequest) GetMemo() *Memo {
@@ -2394,14 +2413,14 @@ var File_api_memo_service_proto protoreflect.FileDescriptor
 
 const file_api_memo_service_proto_rawDesc = "" +
 	"\n" +
-	"\x16api/memo_service.proto\x12\tmemos.api\x1a\x1capi/attachment_service.proto\x1a\x10api/common.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xee\b\n" +
+	"\x16api/memo_service.proto\x12\tmemos.api\x1a\x1capi/attachment_service.proto\x1a\x10api/common.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa0\t\n" +
 	"\x04Memo\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x120\n" +
 	"\acreator\x18\x02 \x01(\tB\x16\xe0A\x03\xfaA\x10\n" +
 	"\x0ememos.api/UserR\acreator\x122\n" +
 	"\x05space\x18\x03 \x01(\tB\x17\xe0A\x01\xfaA\x11\n" +
 	"\x0fmemos.api/SpaceH\x00R\x05space\x88\x01\x01\x12\x1d\n" +
-	"\acontent\x18\x04 \x01(\tB\x03\xe0A\x02R\acontent\x129\n" +
+	"\acontent\x18\x04 \x01(\tB\x03\xe0A\x01R\acontent\x129\n" +
 	"\blocation\x18\x05 \x01(\v2\x13.memos.api.LocationB\x03\xe0A\x01H\x01R\blocation\x88\x01\x01\x12:\n" +
 	"\n" +
 	"visibility\x18\x06 \x01(\x0e2\x15.memos.api.VisibilityB\x03\xe0A\x02R\n" +
@@ -2420,7 +2439,8 @@ const file_api_memo_service_proto_rawDesc = "" +
 	"\vcreate_time\x18\x10 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\n" +
 	"createTime\x12@\n" +
 	"\vupdate_time\x18\x11 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\n" +
-	"updateTime\x1a\xd6\x01\n" +
+	"updateTime\x120\n" +
+	"\x11encrypted_content\x18\x12 \x01(\fB\x03\xe0A\x01R\x10encryptedContent\x1a\xd6\x01\n" +
 	"\bProperty\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12\x19\n" +
 	"\bhas_link\x18\x02 \x01(\bR\ahasLink\x12\x19\n" +
@@ -2448,8 +2468,9 @@ const file_api_memo_service_proto_rawDesc = "" +
 	"\x0ememos.api/MemoR\x04name\"[\n" +
 	"\x11CreateMemoRequest\x12(\n" +
 	"\x04memo\x18\x01 \x01(\v2\x0f.memos.api.MemoB\x03\xe0A\x02R\x04memo\x12\x1c\n" +
-	"\amemo_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x06memoId\"\x7f\n" +
-	"\x11UpdateMemoRequest\x12(\n" +
+	"\amemo_id\x18\x02 \x01(\tB\x03\xe0A\x01R\x06memoId\"\xc6\x01\n" +
+	"\x11UpdateMemoRequest\x12E\n" +
+	"\x1cexpected_encryption_revision\x18\x03 \x01(\tB\x03\xe0A\x01R\x1aexpectedEncryptionRevision\x12(\n" +
 	"\x04memo\x18\x01 \x01(\v2\x0f.memos.api.MemoB\x03\xe0A\x02R\x04memo\x12@\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
 	"updateMask\"Z\n" +

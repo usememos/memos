@@ -1434,5 +1434,22 @@
     "back": "倒退 {{seconds}} 秒",
     "forward": "快轉 {{seconds}} 秒",
     "speed": "播放速度 {{rate}}x"
+  },
+  "e2ee": {
+    "title": "加密筆記",
+    "passphrase": "加密通行片語",
+    "passphrase-help": "請使用至少 12 個字元的獨立通行片語。",
+    "setup": "設定加密",
+    "unlock": "解鎖",
+    "lock": "鎖定",
+    "change-passphrase": "變更加密通行片語",
+    "recovery-key": "復原金鑰",
+    "confirm-recovery": "再次輸入復原金鑰，以確認你已儲存該金鑰",
+    "recovery-warning": "請將此金鑰保存在 Memos 之外。如果同時遺失通行片語和此金鑰，任何人都無法復原你的筆記。",
+    "limitations": "僅支援私人文字。不支援分享、附件、搜尋或匯出。草稿不會儲存。閒置 15 分鐘後自動鎖定。",
+    "new-memo": "新增加密筆記",
+    "idle-warning": "加密筆記將在一分鐘後鎖定。請儲存變更。",
+    "unsaved": "未儲存的加密文字將被捨棄。是否繼續？",
+    "failed": "加密操作失敗。請檢查通行片語或金鑰，或重新載入以取得最新版本。"
   }
 }

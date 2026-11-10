@@ -9,6 +9,7 @@ import { useSpaceContext } from "@/contexts/SpaceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { useMemoSuggestions } from "@/hooks/useMemoSuggestions";
+import { confirmEncryptedDiscard } from "@/lib/e2ee/dirty";
 import { useTranslate } from "@/utils/i18n";
 
 interface GlobalMemoEditorContextValue {
@@ -82,8 +83,8 @@ export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) 
     setOpened(undefined);
   }, []);
   const requestCloseEditor = useCallback(() => {
-    if (!isSavingRef.current) closeEditor();
-  }, [closeEditor]);
+    if (!isSavingRef.current && confirmEncryptedDiscard(t("e2ee.unsaved"))) closeEditor();
+  }, [closeEditor, t]);
   const reportSaving = useCallback((saving: boolean) => {
     isSavingRef.current = saving;
   }, []);
@@ -136,7 +137,7 @@ export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) 
       <DialogPrimitive.Root
         open={editorIsOpen}
         onOpenChange={(open, eventDetails) => {
-          if (!open && isSavingRef.current) {
+          if (!open && (isSavingRef.current || !confirmEncryptedDiscard(t("e2ee.unsaved")))) {
             eventDetails.cancel();
             return;
           }

@@ -20,6 +20,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
+	UserService_GetEncryptionVault_FullMethodName          = "/memos.api.UserService/GetEncryptionVault"
+	UserService_CreateEncryptionVault_FullMethodName       = "/memos.api.UserService/CreateEncryptionVault"
+	UserService_UpdateEncryptionVault_FullMethodName       = "/memos.api.UserService/UpdateEncryptionVault"
 	UserService_ListUsers_FullMethodName                   = "/memos.api.UserService/ListUsers"
 	UserService_GetUser_FullMethodName                     = "/memos.api.UserService/GetUser"
 	UserService_BatchGetUsers_FullMethodName               = "/memos.api.UserService/BatchGetUsers"
@@ -63,6 +66,12 @@ const (
 // memo views, notifications, webhooks, linked identities, personal access
 // tokens, and memo export files.
 type UserServiceClient interface {
+	// Reads only the authenticated caller's encryption vault.
+	GetEncryptionVault(ctx context.Context, in *GetEncryptionVaultRequest, opts ...grpc.CallOption) (*EncryptionVault, error)
+	// Creates the caller's vault once, after local recovery confirmation.
+	CreateEncryptionVault(ctx context.Context, in *CreateEncryptionVaultRequest, opts ...grpc.CallOption) (*EncryptionVault, error)
+	// Replaces wrappers using an expected revision, preserving vault identity.
+	UpdateEncryptionVault(ctx context.Context, in *UpdateEncryptionVaultRequest, opts ...grpc.CallOption) (*EncryptionVault, error)
 	// ListUsers lists users in every state. Only admins may call it.
 	ListUsers(ctx context.Context, in *ListUsersRequest, opts ...grpc.CallOption) (*ListUsersResponse, error)
 	// GetUser gets a user by resource name.
@@ -174,6 +183,36 @@ type userServiceClient struct {
 
 func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
 	return &userServiceClient{cc}
+}
+
+func (c *userServiceClient) GetEncryptionVault(ctx context.Context, in *GetEncryptionVaultRequest, opts ...grpc.CallOption) (*EncryptionVault, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(EncryptionVault)
+	err := c.cc.Invoke(ctx, UserService_GetEncryptionVault_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) CreateEncryptionVault(ctx context.Context, in *CreateEncryptionVaultRequest, opts ...grpc.CallOption) (*EncryptionVault, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(EncryptionVault)
+	err := c.cc.Invoke(ctx, UserService_CreateEncryptionVault_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) UpdateEncryptionVault(ctx context.Context, in *UpdateEncryptionVaultRequest, opts ...grpc.CallOption) (*EncryptionVault, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(EncryptionVault)
+	err := c.cc.Invoke(ctx, UserService_UpdateEncryptionVault_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *userServiceClient) ListUsers(ctx context.Context, in *ListUsersRequest, opts ...grpc.CallOption) (*ListUsersResponse, error) {
@@ -514,6 +553,12 @@ func (c *userServiceClient) ImportMemos(ctx context.Context, in *ImportMemosRequ
 // memo views, notifications, webhooks, linked identities, personal access
 // tokens, and memo export files.
 type UserServiceServer interface {
+	// Reads only the authenticated caller's encryption vault.
+	GetEncryptionVault(context.Context, *GetEncryptionVaultRequest) (*EncryptionVault, error)
+	// Creates the caller's vault once, after local recovery confirmation.
+	CreateEncryptionVault(context.Context, *CreateEncryptionVaultRequest) (*EncryptionVault, error)
+	// Replaces wrappers using an expected revision, preserving vault identity.
+	UpdateEncryptionVault(context.Context, *UpdateEncryptionVaultRequest) (*EncryptionVault, error)
 	// ListUsers lists users in every state. Only admins may call it.
 	ListUsers(context.Context, *ListUsersRequest) (*ListUsersResponse, error)
 	// GetUser gets a user by resource name.
@@ -627,6 +672,15 @@ type UserServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedUserServiceServer struct{}
 
+func (UnimplementedUserServiceServer) GetEncryptionVault(context.Context, *GetEncryptionVaultRequest) (*EncryptionVault, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetEncryptionVault not implemented")
+}
+func (UnimplementedUserServiceServer) CreateEncryptionVault(context.Context, *CreateEncryptionVaultRequest) (*EncryptionVault, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateEncryptionVault not implemented")
+}
+func (UnimplementedUserServiceServer) UpdateEncryptionVault(context.Context, *UpdateEncryptionVaultRequest) (*EncryptionVault, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpdateEncryptionVault not implemented")
+}
 func (UnimplementedUserServiceServer) ListUsers(context.Context, *ListUsersRequest) (*ListUsersResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListUsers not implemented")
 }
@@ -745,6 +799,60 @@ func RegisterUserServiceServer(s grpc.ServiceRegistrar, srv UserServiceServer) {
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&UserService_ServiceDesc, srv)
+}
+
+func _UserService_GetEncryptionVault_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetEncryptionVaultRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetEncryptionVault(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_GetEncryptionVault_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetEncryptionVault(ctx, req.(*GetEncryptionVaultRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_CreateEncryptionVault_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateEncryptionVaultRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).CreateEncryptionVault(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_CreateEncryptionVault_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).CreateEncryptionVault(ctx, req.(*CreateEncryptionVaultRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_UpdateEncryptionVault_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateEncryptionVaultRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UpdateEncryptionVault(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_UpdateEncryptionVault_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UpdateEncryptionVault(ctx, req.(*UpdateEncryptionVaultRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _UserService_ListUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -1348,6 +1456,18 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "memos.api.UserService",
 	HandlerType: (*UserServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GetEncryptionVault",
+			Handler:    _UserService_GetEncryptionVault_Handler,
+		},
+		{
+			MethodName: "CreateEncryptionVault",
+			Handler:    _UserService_CreateEncryptionVault_Handler,
+		},
+		{
+			MethodName: "UpdateEncryptionVault",
+			Handler:    _UserService_UpdateEncryptionVault_Handler,
+		},
 		{
 			MethodName: "ListUsers",
 			Handler:    _UserService_ListUsers_Handler,

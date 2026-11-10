@@ -1434,5 +1434,22 @@
     "back": "Back {{seconds}} seconds",
     "forward": "Forward {{seconds}} seconds",
     "speed": "Playback speed {{rate}}x"
+  },
+  "e2ee": {
+    "title": "Encrypted memos",
+    "passphrase": "Encryption passphrase",
+    "passphrase-help": "Use a separate passphrase of at least 12 characters.",
+    "setup": "Set up encryption",
+    "unlock": "Unlock",
+    "lock": "Lock",
+    "change-passphrase": "Change encryption passphrase",
+    "recovery-key": "Recovery key",
+    "confirm-recovery": "Enter the recovery key again to confirm you saved it",
+    "recovery-warning": "Keep this key outside Memos. If you lose both the passphrase and this key, nobody can recover your memos.",
+    "limitations": "Private text only. No sharing, attachments, search or export. Drafts are not saved. Locks after 15 minutes of inactivity.",
+    "new-memo": "New encrypted memo",
+    "idle-warning": "Encrypted memos will lock in one minute. Save your changes.",
+    "unsaved": "Unsaved encrypted text will be discarded. Continue?",
+    "failed": "Encryption operation failed. Check your secret or reload to get the latest version."
   }
 }

@@ -1434,5 +1434,22 @@
     "back": "后退 {{seconds}} 秒",
     "forward": "前进 {{seconds}} 秒",
     "speed": "播放速度 {{rate}}x"
+  },
+  "e2ee": {
+    "title": "加密笔记",
+    "passphrase": "加密口令",
+    "passphrase-help": "请使用至少 12 个字符的独立口令。",
+    "setup": "设置加密",
+    "unlock": "解锁",
+    "lock": "锁定",
+    "change-passphrase": "更改加密口令",
+    "recovery-key": "恢复密钥",
+    "confirm-recovery": "再次输入恢复密钥，以确认你已保存该密钥",
+    "recovery-warning": "请将此密钥保存在 Memos 之外。如果同时丢失口令和此密钥，任何人都无法恢复你的笔记。",
+    "limitations": "仅支持私密文本。不支持分享、附件、搜索或导出。草稿不会保存。闲置 15 分钟后自动锁定。",
+    "new-memo": "新建加密笔记",
+    "idle-warning": "加密笔记将在一分钟后锁定。请保存更改。",
+    "unsaved": "未保存的加密文本将被丢弃。是否继续？",
+    "failed": "加密操作失败。请检查口令或密钥，或重新加载以获取最新版本。"
   }
 }

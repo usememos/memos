@@ -1434,5 +1434,22 @@
     "back": "{{seconds}} seconden terug",
     "forward": "{{seconds}} seconden vooruit",
     "speed": "Afspeelsnelheid {{rate}}x"
+  },
+  "e2ee": {
+    "title": "Versleutelde notities",
+    "passphrase": "Wachtwoordzin voor versleuteling",
+    "passphrase-help": "Gebruik een aparte wachtwoordzin van minstens 12 tekens.",
+    "setup": "Versleuteling instellen",
+    "unlock": "Ontgrendelen",
+    "lock": "Vergrendelen",
+    "change-passphrase": "Wachtwoordzin voor versleuteling wijzigen",
+    "recovery-key": "Herstelsleutel",
+    "confirm-recovery": "Voer de herstelsleutel opnieuw in om te bevestigen dat je deze hebt opgeslagen",
+    "recovery-warning": "Bewaar deze sleutel buiten Memos. Als je zowel de wachtwoordzin als deze sleutel verliest, kan niemand je notities herstellen.",
+    "limitations": "Alleen privétekst. Delen, bijlagen, zoeken en exporteren zijn niet beschikbaar. Concepten worden niet opgeslagen. Wordt vergrendeld na 15 minuten inactiviteit.",
+    "new-memo": "Nieuwe versleutelde notitie",
+    "idle-warning": "Versleutelde notities worden over één minuut vergrendeld. Sla je wijzigingen op.",
+    "unsaved": "Niet-opgeslagen versleutelde tekst wordt verwijderd. Doorgaan?",
+    "failed": "De versleutelingsbewerking is mislukt. Controleer je wachtwoordzin of sleutel, of laad opnieuw om de nieuwste versie op te halen."
   }
 }

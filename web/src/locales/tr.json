@@ -1434,5 +1434,22 @@
     "back": "{{seconds}} saniye geri",
     "forward": "{{seconds}} saniye ileri",
     "speed": "Oynatma hızı {{rate}}x"
+  },
+  "e2ee": {
+    "title": "Şifrelenmiş notlar",
+    "passphrase": "Şifreleme parolası",
+    "passphrase-help": "En az 12 karakterden oluşan ayrı bir parola kullanın.",
+    "setup": "Şifrelemeyi ayarla",
+    "unlock": "Kilidi aç",
+    "lock": "Kilitle",
+    "change-passphrase": "Şifreleme parolasını değiştir",
+    "recovery-key": "Kurtarma anahtarı",
+    "confirm-recovery": "Kaydettiğinizi doğrulamak için kurtarma anahtarını tekrar girin",
+    "recovery-warning": "Bu anahtarı Memos dışında saklayın. Hem parolayı hem de bu anahtarı kaybederseniz notlarınızı kimse kurtaramaz.",
+    "limitations": "Yalnızca özel metin. Paylaşım, ek, arama veya dışa aktarma yoktur. Taslaklar kaydedilmez. 15 dakika işlem yapılmadığında kilitlenir.",
+    "new-memo": "Yeni şifrelenmiş not",
+    "idle-warning": "Şifrelenmiş notlar bir dakika içinde kilitlenecek. Değişikliklerinizi kaydedin.",
+    "unsaved": "Kaydedilmemiş şifrelenmiş metin silinecek. Devam edilsin mi?",
+    "failed": "Şifreleme işlemi başarısız oldu. Parolanızı veya anahtarınızı kontrol edin ya da en son sürümü almak için yeniden yükleyin."
   }
 }

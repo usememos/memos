@@ -93,7 +93,7 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ timeDisplay = "relative", showC
         // one on desktop, where it sits beside the icon and pushes it off center.
         className="flex shrink-0 select-none flex-row items-center justify-end gap-1 [&_.mu-hit::after]:w-7"
       >
-        {currentUser && !isArchived && (
+        {currentUser && !isArchived && !memo.encryptedContent?.length && (
           // On desktop the picker's trigger shows only while the card is engaged or the picker is open.
           <span className="flex sm:hidden sm:group-hover:flex sm:group-focus-within:flex sm:has-[[data-popup-open]]:flex">
             <ReactionSelector memo={memo} trigger={<Button variant="ghost" size="sm" icon={<SmilePlusIcon />} />} />

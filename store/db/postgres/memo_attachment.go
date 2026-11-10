@@ -30,6 +30,9 @@ func (d *DB) ApplyMemoMutation(ctx context.Context, mutation *store.MemoMutation
 			return errors.Wrap(err, "failed to lock comment context memo")
 		}
 	}
+	if err := store.ValidateEncryptedMutationEndpoints(ctx, tx, mutation, true); err != nil {
+		return err
+	}
 	if err := validatePostgresMemoRelationEndpoints(ctx, tx, mutation); err != nil {
 		return err
 	}
@@ -186,10 +189,14 @@ func replaceMemoReferenceRelations(ctx context.Context, tx *sql.Tx, memoID int32
 }
 
 type memoUpdateExecer interface {
+	QueryRowContext(context.Context, string, ...any) *sql.Row
 	ExecContext(context.Context, string, ...any) (sql.Result, error)
 }
 
 func applyMemoUpdate(ctx context.Context, executor memoUpdateExecer, update *store.UpdateMemo) error {
+	if err := store.ValidateEncryptedUpdate(ctx, executor, update, true); err != nil {
+		return err
+	}
 	set, args := []string{}, []any{}
 	appendValue := func(column string, value any) {
 		args = append(args, value)

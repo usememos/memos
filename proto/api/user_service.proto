@@ -19,6 +19,25 @@ option go_package = "gen/api";
 // memo views, notifications, webhooks, linked identities, personal access
 // tokens, and memo export files.
 service UserService {
+  // Reads only the authenticated caller's encryption vault.
+  rpc GetEncryptionVault(GetEncryptionVaultRequest) returns (EncryptionVault) {
+    option (google.api.http) = {get: "/api/v1/encryptionVault"};
+  }
+  // Creates the caller's vault once, after local recovery confirmation.
+  rpc CreateEncryptionVault(CreateEncryptionVaultRequest) returns (EncryptionVault) {
+    option (google.api.http) = {
+      post: "/api/v1/encryptionVault"
+      body: "*"
+    };
+  }
+  // Replaces wrappers using an expected revision, preserving vault identity.
+  rpc UpdateEncryptionVault(UpdateEncryptionVaultRequest) returns (EncryptionVault) {
+    option (google.api.http) = {
+      patch: "/api/v1/encryptionVault"
+      body: "*"
+    };
+  }
+
   // ListUsers lists users in every state. Only admins may call it.
   rpc ListUsers(ListUsersRequest) returns (ListUsersResponse) {
     option (google.api.http) = {get: "/api/users"};
@@ -1441,4 +1460,20 @@ message ImportMemosIssue {
 
   // A description of the issue.
   string message = 2;
+}
+
+// EncryptionVault carries only wrapped keys as versioned UTF-8 JSON.
+message EncryptionVault {
+  bytes vault = 1;
+}
+// GetEncryptionVaultRequest addresses the authenticated caller only.
+message GetEncryptionVaultRequest {}
+// CreateEncryptionVaultRequest supplies the initial wrapped-key record.
+message CreateEncryptionVaultRequest {
+  bytes vault = 1;
+}
+// UpdateEncryptionVaultRequest atomically replaces the wrapped-key record.
+message UpdateEncryptionVaultRequest {
+  bytes vault = 1;
+  string expected_revision = 2;
 }

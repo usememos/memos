@@ -162,5 +162,12 @@ func (s *Store) ApplyMemoMutation(ctx context.Context, mutation *MemoMutation) e
 			seenRelatedMemoIDs[relation.RelatedMemoID] = struct{}{}
 		}
 	}
-	return s.driver.ApplyMemoMutation(ctx, mutation)
+	if err := s.validateEncryptedMutation(ctx, mutation); err != nil {
+		return err
+	}
+	err := s.driver.ApplyMemoMutation(ctx, mutation)
+	if err != nil && mutation.MemoUpdate != nil && mutation.MemoUpdate.ExpectedEncryptionRevision != "" && s.driver.IsRetryableTransactionError(err) {
+		return ErrEncryptionConflict
+	}
+	return err
 }

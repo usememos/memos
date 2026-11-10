@@ -1435,5 +1435,22 @@
     "back": "Înapoi {{seconds}} secunde",
     "forward": "Înainte {{seconds}} secunde",
     "speed": "Viteză de redare {{rate}}x"
+  },
+  "e2ee": {
+    "title": "Notițe criptate",
+    "passphrase": "Frază de acces pentru criptare",
+    "passphrase-help": "Folosește o frază de acces separată, de cel puțin 12 caractere.",
+    "setup": "Configurează criptarea",
+    "unlock": "Deblochează",
+    "lock": "Blochează",
+    "change-passphrase": "Schimbă fraza de acces pentru criptare",
+    "recovery-key": "Cheie de recuperare",
+    "confirm-recovery": "Introdu din nou cheia de recuperare pentru a confirma că ai salvat-o",
+    "recovery-warning": "Păstrează această cheie în afara Memos. Dacă pierzi atât fraza de acces, cât și această cheie, nimeni nu îți va putea recupera notițele.",
+    "limitations": "Doar text privat. Fără partajare, atașamente, căutare sau export. Ciornele nu sunt salvate. Se blochează după 15 minute de inactivitate.",
+    "new-memo": "Notiță criptată nouă",
+    "idle-warning": "Notițele criptate se vor bloca într-un minut. Salvează modificările.",
+    "unsaved": "Textul criptat nesalvat va fi eliminat. Continui?",
+    "failed": "Operația de criptare a eșuat. Verifică fraza de acces sau cheia ori reîncarcă pentru a obține cea mai recentă versiune."
   }
 }

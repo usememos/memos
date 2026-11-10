@@ -1434,5 +1434,22 @@
     "back": "{{seconds}} sekunder tilbake",
     "forward": "{{seconds}} sekunder frem",
     "speed": "Avspillingshastighet {{rate}}x"
+  },
+  "e2ee": {
+    "title": "Krypterte notater",
+    "passphrase": "Passfrase for kryptering",
+    "passphrase-help": "Bruk en egen passfrase med minst 12 tegn.",
+    "setup": "Sett opp kryptering",
+    "unlock": "Lås opp",
+    "lock": "Lås",
+    "change-passphrase": "Endre passfrase for kryptering",
+    "recovery-key": "Gjenopprettingsnøkkel",
+    "confirm-recovery": "Skriv inn gjenopprettingsnøkkelen på nytt for å bekrefte at du har lagret den",
+    "recovery-warning": "Oppbevar denne nøkkelen utenfor Memos. Hvis du mister både passfrasen og denne nøkkelen, kan ingen gjenopprette notatene dine.",
+    "limitations": "Bare privat tekst. Ingen deling, vedlegg, søk eller eksport. Utkast lagres ikke. Låses etter 15 minutter uten aktivitet.",
+    "new-memo": "Nytt kryptert notat",
+    "idle-warning": "Krypterte notater låses om ett minutt. Lagre endringene dine.",
+    "unsaved": "Ulagret kryptert tekst vil bli forkastet. Fortsette?",
+    "failed": "Krypteringen mislyktes. Kontroller passfrasen eller nøkkelen, eller last inn på nytt for å hente den nyeste versjonen."
   }
 }

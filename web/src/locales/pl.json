@@ -1436,5 +1436,22 @@
     "back": "Do tyłu o {{seconds}} s",
     "forward": "Do przodu o {{seconds}} s",
     "speed": "Prędkość odtwarzania {{rate}}x"
+  },
+  "e2ee": {
+    "title": "Zaszyfrowane notatki",
+    "passphrase": "Fraza hasła szyfrowania",
+    "passphrase-help": "Użyj osobnej frazy hasła o długości co najmniej 12 znaków.",
+    "setup": "Skonfiguruj szyfrowanie",
+    "unlock": "Odblokuj",
+    "lock": "Zablokuj",
+    "change-passphrase": "Zmień frazę hasła szyfrowania",
+    "recovery-key": "Klucz odzyskiwania",
+    "confirm-recovery": "Wpisz ponownie klucz odzyskiwania, aby potwierdzić jego zapisanie",
+    "recovery-warning": "Przechowuj ten klucz poza Memos. Jeśli utracisz zarówno frazę hasła, jak i ten klucz, nikt nie będzie mógł odzyskać Twoich notatek.",
+    "limitations": "Tylko tekst prywatny. Bez udostępniania, załączników, wyszukiwania i eksportu. Szkice nie są zapisywane. Blokada po 15 minutach bezczynności.",
+    "new-memo": "Nowa zaszyfrowana notatka",
+    "idle-warning": "Zaszyfrowane notatki zostaną zablokowane za minutę. Zapisz zmiany.",
+    "unsaved": "Niezapisany zaszyfrowany tekst zostanie odrzucony. Kontynuować?",
+    "failed": "Operacja szyfrowania nie powiodła się. Sprawdź frazę hasła lub klucz albo odśwież stronę, aby pobrać najnowszą wersję."
   }
 }

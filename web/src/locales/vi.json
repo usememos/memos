@@ -1434,5 +1434,22 @@
     "back": "Lùi {{seconds}} giây",
     "forward": "Tiến {{seconds}} giây",
     "speed": "Tốc độ phát {{rate}}x"
+  },
+  "e2ee": {
+    "title": "Ghi chú được mã hóa",
+    "passphrase": "Cụm mật khẩu mã hóa",
+    "passphrase-help": "Sử dụng cụm mật khẩu riêng có ít nhất 12 ký tự.",
+    "setup": "Thiết lập mã hóa",
+    "unlock": "Mở khóa",
+    "lock": "Khóa",
+    "change-passphrase": "Đổi cụm mật khẩu mã hóa",
+    "recovery-key": "Khóa khôi phục",
+    "confirm-recovery": "Nhập lại khóa khôi phục để xác nhận bạn đã lưu khóa",
+    "recovery-warning": "Hãy lưu khóa này ở ngoài Memos. Nếu bạn mất cả cụm mật khẩu lẫn khóa này, không ai có thể khôi phục ghi chú của bạn.",
+    "limitations": "Chỉ hỗ trợ văn bản riêng tư. Không chia sẻ, đính kèm, tìm kiếm hay xuất dữ liệu. Bản nháp không được lưu. Tự khóa sau 15 phút không hoạt động.",
+    "new-memo": "Ghi chú được mã hóa mới",
+    "idle-warning": "Các ghi chú được mã hóa sẽ khóa sau một phút. Hãy lưu các thay đổi.",
+    "unsaved": "Văn bản mã hóa chưa lưu sẽ bị loại bỏ. Tiếp tục?",
+    "failed": "Thao tác mã hóa thất bại. Hãy kiểm tra cụm mật khẩu hoặc khóa, hoặc tải lại để lấy phiên bản mới nhất."
   }
 }

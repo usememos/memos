@@ -1435,5 +1435,22 @@
     "back": "Enrere {{seconds}} segons",
     "forward": "Endavant {{seconds}} segons",
     "speed": "Velocitat de reproducció {{rate}}x"
+  },
+  "e2ee": {
+    "title": "Notes xifrades",
+    "passphrase": "Frase de contrasenya de xifratge",
+    "passphrase-help": "Utilitza una frase de contrasenya diferent de com a mínim 12 caràcters.",
+    "setup": "Configura el xifratge",
+    "unlock": "Desbloqueja",
+    "lock": "Bloqueja",
+    "change-passphrase": "Canvia la frase de contrasenya de xifratge",
+    "recovery-key": "Clau de recuperació",
+    "confirm-recovery": "Torna a introduir la clau de recuperació per confirmar que l’has desada",
+    "recovery-warning": "Desa aquesta clau fora de Memos. Si perds tant la frase de contrasenya com aquesta clau, ningú no podrà recuperar les teves notes.",
+    "limitations": "Només text privat. Sense compartició, fitxers adjunts, cerca ni exportació. Els esborranys no es desen. Es bloqueja després de 15 minuts d’inactivitat.",
+    "new-memo": "Nota xifrada nova",
+    "idle-warning": "Les notes xifrades es bloquejaran d’aquí a un minut. Desa els canvis.",
+    "unsaved": "Es descartarà el text xifrat sense desar. Vols continuar?",
+    "failed": "L’operació de xifratge ha fallat. Comprova la frase de contrasenya o la clau, o torna a carregar per obtenir la versió més recent."
   }
 }

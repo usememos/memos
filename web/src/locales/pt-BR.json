@@ -1435,5 +1435,22 @@
     "back": "Voltar {{seconds}} segundos",
     "forward": "Avançar {{seconds}} segundos",
     "speed": "Velocidade de reprodução {{rate}}x"
+  },
+  "e2ee": {
+    "title": "Notas criptografadas",
+    "passphrase": "Frase secreta de criptografia",
+    "passphrase-help": "Use uma frase secreta separada com pelo menos 12 caracteres.",
+    "setup": "Configurar criptografia",
+    "unlock": "Desbloquear",
+    "lock": "Bloquear",
+    "change-passphrase": "Alterar frase secreta de criptografia",
+    "recovery-key": "Chave de recuperação",
+    "confirm-recovery": "Digite a chave de recuperação novamente para confirmar que você a salvou",
+    "recovery-warning": "Guarde esta chave fora do Memos. Se você perder a frase secreta e esta chave, ninguém poderá recuperar suas notas.",
+    "limitations": "Somente texto privado. Sem compartilhamento, anexos, pesquisa ou exportação. Os rascunhos não são salvos. Bloqueia após 15 minutos de inatividade.",
+    "new-memo": "Nova nota criptografada",
+    "idle-warning": "As notas criptografadas serão bloqueadas em um minuto. Salve suas alterações.",
+    "unsaved": "O texto criptografado não salvo será descartado. Continuar?",
+    "failed": "A operação de criptografia falhou. Verifique sua frase secreta ou chave, ou recarregue para obter a versão mais recente."
   }
 }

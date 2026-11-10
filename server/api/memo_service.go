@@ -316,11 +316,24 @@ func (s *APIService) UpdateMemo(ctx context.Context, request *apipb.UpdateMemoRe
 	}
 
 	update := &store.UpdateMemo{
-		ID: memo.ID,
+		ID:                         memo.ID,
+		ExpectedEncryptionRevision: request.ExpectedEncryptionRevision,
 	}
 	updatePaths := make(map[string]bool, len(request.UpdateMask.Paths))
 	for _, path := range request.UpdateMask.Paths {
 		updatePaths[path] = true
+	}
+	if store.IsEncryptedMemo(memo) {
+		if user.ID != memo.CreatorID {
+			return nil, status.Errorf(codes.PermissionDenied, "encrypted memos are author-only")
+		}
+		for path := range updatePaths {
+			if path != "encrypted_content" && path != "pinned" && path != "state" && path != "update_time" {
+				return nil, encryptionError(store.ErrEncryptionPolicy)
+			}
+		}
+	} else if updatePaths["encrypted_content"] {
+		return nil, encryptionError(store.ErrEncryptionPolicy)
 	}
 	lifecycleOnly := updatePaths["space"]
 	for path := range updatePaths {
@@ -383,7 +396,17 @@ func (s *APIService) UpdateMemo(ctx context.Context, request *apipb.UpdateMemoRe
 		if path == "visibility" || path == "space" {
 			continue
 		}
-		if path == "content" {
+		if path == "encrypted_content" {
+			contentUpdated = true
+			if request.Memo.Content != "" {
+				return nil, encryptionError(store.ErrEncryptionPolicy)
+			}
+			if _, err := store.ParseEncryptedEnvelope(request.Memo.EncryptedContent); err != nil {
+				return nil, encryptionError(err)
+			}
+			nextMemo.Payload = &storepb.MemoPayload{EncryptedContent: request.Memo.EncryptedContent}
+			update.Payload = nextMemo.Payload
+		} else if path == "content" {
 			contentUpdated = true
 			if err := s.checkMemoContentQuota(ctx, memo.CreatorID, request.Memo.Content); err != nil {
 				return nil, err

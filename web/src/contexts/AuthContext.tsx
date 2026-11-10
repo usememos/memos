@@ -155,6 +155,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [fetchUserSettings, queryClient]);
 
   const logout = useCallback(async () => {
+    window.dispatchEvent(new Event("memos-e2ee-lock"));
     try {
       await authServiceClient.signOut({});
     } catch (error) {

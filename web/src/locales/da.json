@@ -1434,5 +1434,22 @@
     "back": "{{seconds}} sekunder tilbage",
     "forward": "{{seconds}} sekunder frem",
     "speed": "Afspilningshastighed {{rate}}x"
+  },
+  "e2ee": {
+    "title": "Krypterede noter",
+    "passphrase": "Adgangssætning til kryptering",
+    "passphrase-help": "Brug en særskilt adgangssætning på mindst 12 tegn.",
+    "setup": "Opsæt kryptering",
+    "unlock": "Lås op",
+    "lock": "Lås",
+    "change-passphrase": "Skift adgangssætning til kryptering",
+    "recovery-key": "Gendannelsesnøgle",
+    "confirm-recovery": "Indtast gendannelsesnøglen igen for at bekræfte, at du har gemt den",
+    "recovery-warning": "Opbevar denne nøgle uden for Memos. Hvis du mister både adgangssætningen og denne nøgle, kan ingen gendanne dine noter.",
+    "limitations": "Kun privat tekst. Ingen deling, vedhæftninger, søgning eller eksport. Kladder gemmes ikke. Låses efter 15 minutters inaktivitet.",
+    "new-memo": "Ny krypteret note",
+    "idle-warning": "Krypterede noter låses om ét minut. Gem dine ændringer.",
+    "unsaved": "Ikke-gemt krypteret tekst vil blive kasseret. Fortsæt?",
+    "failed": "Krypteringshandlingen mislykkedes. Kontrollér din adgangssætning eller nøgle, eller genindlæs for at hente den nyeste version."
   }
 }

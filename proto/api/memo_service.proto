@@ -228,9 +228,9 @@ message Memo {
     (google.api.resource_reference) = {type: "memos.api/Space"}
   ];
 
-  // Required. The content of the memo in Markdown. Must not exceed the
-  // instance's content length limit.
-  string content = 4 [(google.api.field_behavior) = REQUIRED];
+  // Optional. The plaintext content in Markdown. Must be empty when
+  // encrypted_content is supplied; otherwise the instance content limit applies.
+  string content = 4 [(google.api.field_behavior) = OPTIONAL];
 
   // Optional. The location of the memo.
   optional Location location = 5 [(google.api.field_behavior) = OPTIONAL];
@@ -282,6 +282,10 @@ message Memo {
   // Optional. The last update time. Defaults to the current time when unset on
   // creation.
   google.protobuf.Timestamp update_time = 17 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Protocol v1 encrypted envelope as UTF-8 JSON, at most 1.5 MiB.
+  // Mutually exclusive with content; only private, unassigned text memos support it.
+  bytes encrypted_content = 18 [(google.api.field_behavior) = OPTIONAL];
 
   // Property holds properties computed from the memo content.
   message Property {
@@ -386,10 +390,12 @@ message CreateMemoRequest {
 
 // Request message for MemoService.UpdateMemo.
 message UpdateMemoRequest {
+  // Required when updating encrypted_content; rejects concurrent changes.
+  string expected_encryption_revision = 3 [(google.api.field_behavior) = OPTIONAL];
   // Required. The memo to update. Its name identifies the memo.
   Memo memo = 1 [(google.api.field_behavior) = REQUIRED];
 
-  // Required. The fields to update. Supported paths: content, visibility,
+  // Required. The fields to update. Supported paths: content, encrypted_content, visibility,
   // space, pinned, state, create_time, update_time, location, attachments,
   // relations.
   google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];

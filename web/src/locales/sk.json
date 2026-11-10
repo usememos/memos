@@ -1436,5 +1436,22 @@
     "back": "Späť o {{seconds}} sekúnd",
     "forward": "Dopredu o {{seconds}} sekúnd",
     "speed": "Rýchlosť prehrávania {{rate}}x"
+  },
+  "e2ee": {
+    "title": "Šifrované poznámky",
+    "passphrase": "Šifrovacia heslová fráza",
+    "passphrase-help": "Použite samostatnú heslovú frázu s dĺžkou aspoň 12 znakov.",
+    "setup": "Nastaviť šifrovanie",
+    "unlock": "Odomknúť",
+    "lock": "Zamknúť",
+    "change-passphrase": "Zmeniť šifrovaciu heslovú frázu",
+    "recovery-key": "Kľúč na obnovenie",
+    "confirm-recovery": "Zadajte kľúč na obnovenie znova a potvrďte tak, že ste si ho uložili",
+    "recovery-warning": "Uchovávajte tento kľúč mimo Memos. Ak stratíte heslovú frázu aj tento kľúč, nikto nebude môcť obnoviť vaše poznámky.",
+    "limitations": "Iba súkromný text. Bez zdieľania, príloh, vyhľadávania a exportu. Koncepty sa neukladajú. Uzamkne sa po 15 minútach nečinnosti.",
+    "new-memo": "Nová šifrovaná poznámka",
+    "idle-warning": "Šifrované poznámky sa o minútu uzamknú. Uložte zmeny.",
+    "unsaved": "Neuložený šifrovaný text sa zahodí. Pokračovať?",
+    "failed": "Operácia šifrovania zlyhala. Skontrolujte heslovú frázu alebo kľúč, prípadne znova načítajte stránku, aby ste získali najnovšiu verziu."
   }
 }

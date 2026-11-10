@@ -1,6 +1,6 @@
 # Private text memo E2EE
 
-Status: Draft — scope agreed; detailed design pending review and approval.
+Status: Draft — implemented on the contribution branch; not shipped in a tagged release.
 
 Date: 2026-11-10
 
@@ -55,10 +55,10 @@ Use a versioned protocol with established primitives, no bespoke cryptography. P
   completes. Independently wrap the same vault key using that secret. Never send or persist the recovery secret or passphrase in plaintext.
 - Generate a fresh 256-bit data key for each saved content revision. Encrypt UTF-8 Markdown with AES-256-GCM, a fresh random 96-bit nonce and
   a 128-bit authentication tag. Wrap the data key under the vault key using a separate AES-GCM operation and fresh nonce.
-- Authenticate a canonical, length-delimited context: protocol version, purpose (`body`, `data-key`, or vault wrapper type), immutable vault ID,
+- Authenticate a canonical JSON-array context: protocol version, purpose (`body`, `data-key`, or vault wrapper type), immutable vault ID,
   immutable encrypted-object ID, and revision ID where applicable. Never use mutable usernames as cryptographic identity.
 - The client generates encrypted-object and revision IDs before create. The server enforces object-ID uniqueness within a vault and immutability
-  of object/vault identity on update. Bind the body and wrapped data key to the same revision. Define exact encodings and golden vectors before code.
+  of object/vault identity on update. Bind the body and wrapped data key to the same revision. The exact AAD is UTF-8 JSON `["memos-e2ee",1,purpose,vaultId,objectId,revisionId]`; absent object/revision IDs are empty strings.
 
 Sources: [RFC 9106](https://www.rfc-editor.org/rfc/rfc9106.html) for Argon2id and
 [W3C Web Cryptography](https://www.w3.org/TR/webcrypto/) for AES-GCM and authenticated additional data.
@@ -87,7 +87,7 @@ Adjust the content-required API annotation/validation to express this conditiona
 Unknown envelope versions fail closed. Generated clients lacking E2EE support receive no readable body and cannot overwrite encrypted bodies
 through legacy content writes. Encryption kind is immutable in V1.
 
-The envelope contains protocol/version IDs, key ID, object/revision IDs, body ciphertext/tag/nonce, and wrapped data key/tag/nonce.
+The envelope contains protocol version, vault/object/revision IDs, body ciphertext/tag/nonce, and wrapped data key/tag/nonce.
 Store vault wrappers separately from ordinary user settings so list-users, admin settings, exports, logs and telemetry cannot expose them accidentally.
 Never return wrappers through public routes. Do not add E2EE endpoints to the unauthenticated ACL list.
 
@@ -141,4 +141,51 @@ Reuse `MemoEditor`, design-system controls, field validation and translated stri
    `cd web && pnpm lint && pnpm test && pnpm build`. Review API compatibility and generated diffs.
 
 Security review is a release prerequisite; unit tests alone do not establish the cryptographic protocol's security.
-This document is a proposal, not evidence of an implemented or independently audited E2EE feature.
+This implementation has local tests and code review; it has not received an independent cryptographic security audit.
+
+## Implementation notes (2026-11-10)
+
+- API messages carry protocol JSON as `encrypted_content` bytes and vault records as `vault` bytes. Strict validation rejects unknown,
+  duplicate, incorrectly cased keys, non-v4 UUIDs, noncanonical base64 and oversized values. The encrypted memo payload is separate from plaintext content.
+- `encryption_vault` stores one wrapped-key record per owner. `memo_encryption` enforces object uniqueness and revision CAS in the same SQL
+  transaction as each memo write. Both tables ship in the three drivers' `26.11/00` migrations and `LATEST.sql`.
+- Protocol v1 fixes the Argon2id profile above. `hash-wasm` 4.12.0 provides it in a Web Worker (approximately 28 kB minified worker in the local
+  production build). AES-GCM uses Web Crypto. Recovery keys contain a 32-byte random secret and a four-byte SHA-256 checksum, encoded as hex.
+- The client requires HTTPS (or localhost), Web Crypto, Web Workers and WebAssembly. Encryption controls live in account settings and the new-memo composer. Existing encrypted memos render and edit through the restricted text
+  mode inside MemoEditor: all Markdown is inert text, including links. No separate rich-text runtime or persistent draft is mounted.
+- Explicit lock and modal dismissal check the shared dirty-editor registry. Route/unload navigation warns before losing unsaved text.
+  Inactivity, logout, account changes and received cross-tab lock signals force locking. Each tab unlocks independently.
+- MCP responses redact encrypted bodies; successful metadata-only changes remain successful. Content filters exclude encrypted records,
+  including negative content/tag/property predicates. Plaintext exports reject a user selection containing encrypted memos before writing output.
+- No login or token behavior changed. Existing plaintext memos cannot be converted, and encrypted memos cannot be converted back in V1.
+
+### Reproducible live smoke check
+
+Against a fresh disposable localhost instance only (the test creates a user, vault and memo):
+
+```bash
+go run -buildvcs=true ./cmd/memos --port 18081 --data /tmp/memos-e2ee-smoke
+# In another terminal:
+cd web && E2EE_SMOKE_URL=http://localhost:18081 pnpm test tests/e2ee-live.test.ts
+```
+
+The opt-in test exercises real browser-compatible encryption, authenticated RPC persistence, a second client unlock and revision updates.
+It is skipped in the normal frontend suite because it requires that separate disposable server. No production credentials or data are used.
+
+### Validation record
+
+Verified locally on 2026-11-10 using Go 1.27.3, Node 24.22.2, pnpm 11.25.0 and Buf 1.75.0:
+
+- `go test -v -race ./server/... ./core/...`: passed.
+- `go test -v ./store/...`: passed, including SQLite, MySQL and PostgreSQL TestContainers runs.
+- Cross-driver concurrent encrypted mutation regressions with `-race`: passed, with exactly one successful revision and one conflict.
+- SQLite backup/restore and account/memo encryption cleanup tests: passed. MySQL's deterministic concurrent-create/delete regression passed.
+- `cd proto && buf generate && buf lint` and `buf format --diff --exit-code`: passed.
+- `cd web && pnpm lint && pnpm test && pnpm build` with Node 24 first in PATH: passed; 1,697 frontend tests, one intentionally skipped live-server test.
+- The opt-in live-server test passed separately. Browser smoke verified create, edit, lock and unlock with real Web Crypto and the Argon2 worker.
+- Tests cover malformed records, authentication failures, fixed interoperability vectors, maximum body size, recovery, passphrase changes,
+  plaintext-free save requests, inactive drafts, modal close guards and late save completion after identity changes.
+- Production build retains chunk-size/plugin-timing warnings. Host Node 26 exposes an existing audio-transcription test failure also reproduced
+  on the unchanged baseline; the CI Node 24 suite is green.
+
+These checks do not replace an independent cryptographic security audit or exhaustive browser/device compatibility testing.

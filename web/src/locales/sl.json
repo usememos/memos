@@ -1436,5 +1436,22 @@
     "back": "Nazaj za {{seconds}} sekund",
     "forward": "Naprej za {{seconds}} sekund",
     "speed": "Hitrost predvajanja {{rate}}x"
+  },
+  "e2ee": {
+    "title": "Šifrirani zapiski",
+    "passphrase": "Geselna fraza za šifriranje",
+    "passphrase-help": "Uporabite ločeno geselno frazo z najmanj 12 znaki.",
+    "setup": "Nastavi šifriranje",
+    "unlock": "Odkleni",
+    "lock": "Zakleni",
+    "change-passphrase": "Spremeni geselno frazo za šifriranje",
+    "recovery-key": "Obnovitveni ključ",
+    "confirm-recovery": "Znova vnesite obnovitveni ključ in potrdite, da ste ga shranili",
+    "recovery-warning": "Ta ključ hranite zunaj aplikacije Memos. Če izgubite geselno frazo in ta ključ, nihče ne bo mogel obnoviti vaših zapiskov.",
+    "limitations": "Samo zasebno besedilo. Brez skupne rabe, prilog, iskanja ali izvoza. Osnutki se ne shranjujejo. Zaklene se po 15 minutah nedejavnosti.",
+    "new-memo": "Nov šifriran zapisek",
+    "idle-warning": "Šifrirani zapiski se bodo zaklenili čez eno minuto. Shranite spremembe.",
+    "unsaved": "Neshranjeno šifrirano besedilo bo zavrženo. Želite nadaljevati?",
+    "failed": "Šifriranje ni uspelo. Preverite geselno frazo ali ključ oziroma znova naložite stran za najnovejšo različico."
   }
 }

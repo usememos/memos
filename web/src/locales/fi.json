@@ -1434,5 +1434,22 @@
     "back": "{{seconds}} sekuntia taaksepäin",
     "forward": "{{seconds}} sekuntia eteenpäin",
     "speed": "Toistonopeus {{rate}}x"
+  },
+  "e2ee": {
+    "title": "Salatut muistiinpanot",
+    "passphrase": "Salauksen salalause",
+    "passphrase-help": "Käytä erillistä, vähintään 12 merkin pituista salalausetta.",
+    "setup": "Ota salaus käyttöön",
+    "unlock": "Avaa lukitus",
+    "lock": "Lukitse",
+    "change-passphrase": "Vaihda salauksen salalause",
+    "recovery-key": "Palautusavain",
+    "confirm-recovery": "Vahvista palautusavaimen tallentaminen syöttämällä se uudelleen",
+    "recovery-warning": "Säilytä tämä avain Memosin ulkopuolella. Jos kadotat sekä salalauseen että tämän avaimen, kukaan ei voi palauttaa muistiinpanojasi.",
+    "limitations": "Vain yksityistä tekstiä. Ei jakamista, liitteitä, hakua tai vientiä. Luonnoksia ei tallenneta. Lukittuu 15 minuutin käyttämättömyyden jälkeen.",
+    "new-memo": "Uusi salattu muistiinpano",
+    "idle-warning": "Salatut muistiinpanot lukitaan minuutin kuluttua. Tallenna muutokset.",
+    "unsaved": "Tallentamaton salattu teksti hylätään. Jatketaanko?",
+    "failed": "Salaustoiminto epäonnistui. Tarkista salalause tai avain tai lataa sivu uudelleen saadaksesi uusimman version."
   }
 }

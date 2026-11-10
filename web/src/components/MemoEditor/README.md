@@ -101,3 +101,14 @@ MemoEditor/
 - `tests/memo-content-view.test.tsx`, `tests/editor.test.tsx`: the surfaces over the binding.
 - `tests/use-memo-init.test.tsx`, `tests/draft-key.test.ts`, `tests/use-auto-save.test.tsx`: drafts and keys.
 - `tests/use-memo-save.test.tsx`, `tests/memo-editor-*.test.ts*`: the session and its save path. Tests that mount the session call `await preloadMemoEditing()` first so it renders without suspending.
+
+## Encrypted private text
+
+`MemoDraftSeed.encrypted` starts a new private unassigned text memo; the composer also offers an explicit encrypted creation choice.
+`EncryptedMemoEditor` is MemoEditor's restricted text mode for records with `encryptedContent`. It never mounts the Markdown runtime,
+attachment commands, ordinary draft persistence or plaintext query records. A separate ephemeral vault session fences async results across locks
+and account changes. Saves encrypt before entering React Query mutations and include the expected encryption revision on updates.
+
+Dirty encrypted sessions register presence only in `lib/e2ee/dirty.ts`. Modal hosts must call `confirmEncryptedDiscard` before dismissing;
+route and unload transitions are guarded within the editor. Automatic/logout/cross-tab locks intentionally discard ephemeral state.
+See [the design](../../../../docs/design/private-memo-e2ee.md) for key recovery, protocol limits and unsupported workflows.

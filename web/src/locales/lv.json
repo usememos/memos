@@ -1435,5 +1435,22 @@
     "back": "Atpakaļ {{seconds}} sekundes",
     "forward": "Uz priekšu {{seconds}} sekundes",
     "speed": "Atskaņošanas ātrums {{rate}}x"
+  },
+  "e2ee": {
+    "title": "Šifrētas piezīmes",
+    "passphrase": "Šifrēšanas paroles frāze",
+    "passphrase-help": "Izmantojiet atsevišķu paroles frāzi ar vismaz 12 rakstzīmēm.",
+    "setup": "Iestatīt šifrēšanu",
+    "unlock": "Atbloķēt",
+    "lock": "Bloķēt",
+    "change-passphrase": "Mainīt šifrēšanas paroles frāzi",
+    "recovery-key": "Atkopšanas atslēga",
+    "confirm-recovery": "Ievadiet atkopšanas atslēgu vēlreiz, lai apstiprinātu, ka esat to saglabājis",
+    "recovery-warning": "Glabājiet šo atslēgu ārpus Memos. Ja zaudēsiet gan paroles frāzi, gan šo atslēgu, neviens nevarēs atjaunot jūsu piezīmes.",
+    "limitations": "Tikai privāts teksts. Bez kopīgošanas, pielikumiem, meklēšanas vai eksportēšanas. Melnraksti netiek saglabāti. Tiek bloķēts pēc 15 minūšu neaktivitātes.",
+    "new-memo": "Jauna šifrēta piezīme",
+    "idle-warning": "Šifrētās piezīmes tiks bloķētas pēc vienas minūtes. Saglabājiet izmaiņas.",
+    "unsaved": "Nesaglabātais šifrētais teksts tiks atmests. Vai turpināt?",
+    "failed": "Šifrēšanas darbība neizdevās. Pārbaudiet paroles frāzi vai atslēgu vai pārlādējiet, lai iegūtu jaunāko versiju."
   }
 }

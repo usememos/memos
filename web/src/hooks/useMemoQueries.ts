@@ -327,10 +327,19 @@ export function useUpdateMemo() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ update, updateMask }: { update: Partial<Memo>; updateMask: string[] }) => {
+    mutationFn: async ({
+      update,
+      updateMask,
+      expectedEncryptionRevision,
+    }: {
+      update: Partial<Memo>;
+      updateMask: string[];
+      expectedEncryptionRevision?: string;
+    }) => {
       const memo = await memoServiceClient.updateMemo({
         memo: create(MemoSchema, update as Record<string, unknown>),
         updateMask: create(FieldMaskSchema, { paths: updateMask }),
+        expectedEncryptionRevision,
       });
       return memo;
     },

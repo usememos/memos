@@ -1435,5 +1435,22 @@
     "back": "Indietro di {{seconds}} secondi",
     "forward": "Avanti di {{seconds}} secondi",
     "speed": "Velocità di riproduzione {{rate}}x"
+  },
+  "e2ee": {
+    "title": "Note crittografate",
+    "passphrase": "Passphrase di crittografia",
+    "passphrase-help": "Usa una passphrase separata di almeno 12 caratteri.",
+    "setup": "Configura la crittografia",
+    "unlock": "Sblocca",
+    "lock": "Blocca",
+    "change-passphrase": "Modifica la passphrase di crittografia",
+    "recovery-key": "Chiave di recupero",
+    "confirm-recovery": "Inserisci di nuovo la chiave di recupero per confermare di averla salvata",
+    "recovery-warning": "Conserva questa chiave al di fuori di Memos. Se perdi sia la passphrase sia questa chiave, nessuno potrà recuperare le tue note.",
+    "limitations": "Solo testo privato. Nessuna condivisione, allegato, ricerca o esportazione. Le bozze non vengono salvate. Si blocca dopo 15 minuti di inattività.",
+    "new-memo": "Nuova nota crittografata",
+    "idle-warning": "Le note crittografate verranno bloccate tra un minuto. Salva le modifiche.",
+    "unsaved": "Il testo crittografato non salvato verrà eliminato. Continuare?",
+    "failed": "Operazione di crittografia non riuscita. Controlla la passphrase o la chiave, oppure ricarica per ottenere la versione più recente."
   }
 }

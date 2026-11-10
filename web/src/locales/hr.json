@@ -1435,5 +1435,22 @@
     "back": "Natrag {{seconds}} sekundi",
     "forward": "Naprijed {{seconds}} sekundi",
     "speed": "Brzina reprodukcije {{rate}}x"
+  },
+  "e2ee": {
+    "title": "Šifrirane bilješke",
+    "passphrase": "Zaporka za šifriranje",
+    "passphrase-help": "Upotrijebite zasebnu zaporku s najmanje 12 znakova.",
+    "setup": "Postavi šifriranje",
+    "unlock": "Otključaj",
+    "lock": "Zaključaj",
+    "change-passphrase": "Promijeni zaporku za šifriranje",
+    "recovery-key": "Ključ za oporavak",
+    "confirm-recovery": "Ponovno unesite ključ za oporavak kako biste potvrdili da ste ga spremili",
+    "recovery-warning": "Čuvajte ovaj ključ izvan aplikacije Memos. Ako izgubite i zaporku i ovaj ključ, nitko neće moći oporaviti vaše bilješke.",
+    "limitations": "Samo privatni tekst. Bez dijeljenja, privitaka, pretraživanja i izvoza. Skice se ne spremaju. Zaključava se nakon 15 minuta neaktivnosti.",
+    "new-memo": "Nova šifrirana bilješka",
+    "idle-warning": "Šifrirane bilješke zaključat će se za jednu minutu. Spremite promjene.",
+    "unsaved": "Nespremljeni šifrirani tekst bit će odbačen. Nastaviti?",
+    "failed": "Postupak šifriranja nije uspio. Provjerite zaporku ili ključ ili ponovno učitajte za najnoviju verziju."
   }
 }

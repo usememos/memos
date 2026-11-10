@@ -1436,5 +1436,22 @@
     "back": "Atgal {{seconds}} sekundžių",
     "forward": "Pirmyn {{seconds}} sekundžių",
     "speed": "Atkūrimo greitis {{rate}}x"
+  },
+  "e2ee": {
+    "title": "Šifruoti užrašai",
+    "passphrase": "Šifravimo slaptafrazė",
+    "passphrase-help": "Naudokite atskirą, bent 12 ženklų ilgio slaptafrazę.",
+    "setup": "Nustatyti šifravimą",
+    "unlock": "Atrakinti",
+    "lock": "Užrakinti",
+    "change-passphrase": "Keisti šifravimo slaptafrazę",
+    "recovery-key": "Atkūrimo raktas",
+    "confirm-recovery": "Dar kartą įveskite atkūrimo raktą, kad patvirtintumėte, jog jį išsaugojote",
+    "recovery-warning": "Laikykite šį raktą ne „Memos“ programoje. Jei prarasite ir slaptafrazę, ir šį raktą, niekas negalės atkurti jūsų užrašų.",
+    "limitations": "Tik privatus tekstas. Be bendrinimo, priedų, paieškos ar eksporto. Juodraščiai neišsaugomi. Užrakinama po 15 minučių neveiklumo.",
+    "new-memo": "Naujas šifruotas užrašas",
+    "idle-warning": "Šifruoti užrašai bus užrakinti po minutės. Išsaugokite pakeitimus.",
+    "unsaved": "Neišsaugotas šifruotas tekstas bus atmestas. Tęsti?",
+    "failed": "Šifravimo operacija nepavyko. Patikrinkite slaptafrazę ar raktą arba įkelkite iš naujo, kad gautumėte naujausią versiją."
   }
 }

@@ -1435,5 +1435,22 @@
     "back": "Recuar {{seconds}} segundos",
     "forward": "Avançar {{seconds}} segundos",
     "speed": "Velocidade de reprodução {{rate}}x"
+  },
+  "e2ee": {
+    "title": "Notas encriptadas",
+    "passphrase": "Frase-passe de encriptação",
+    "passphrase-help": "Utilize uma frase-passe separada com pelo menos 12 caracteres.",
+    "setup": "Configurar encriptação",
+    "unlock": "Desbloquear",
+    "lock": "Bloquear",
+    "change-passphrase": "Alterar frase-passe de encriptação",
+    "recovery-key": "Chave de recuperação",
+    "confirm-recovery": "Introduza novamente a chave de recuperação para confirmar que a guardou",
+    "recovery-warning": "Guarde esta chave fora do Memos. Se perder a frase-passe e esta chave, ninguém poderá recuperar as suas notas.",
+    "limitations": "Apenas texto privado. Sem partilha, anexos, pesquisa ou exportação. Os rascunhos não são guardados. Bloqueia após 15 minutos de inatividade.",
+    "new-memo": "Nova nota encriptada",
+    "idle-warning": "As notas encriptadas serão bloqueadas dentro de um minuto. Guarde as alterações.",
+    "unsaved": "O texto encriptado não guardado será descartado. Continuar?",
+    "failed": "A operação de encriptação falhou. Verifique a sua frase-passe ou chave, ou recarregue para obter a versão mais recente."
   }
 }

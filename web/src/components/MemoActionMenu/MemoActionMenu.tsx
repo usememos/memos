@@ -87,9 +87,11 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
         <Menu.Item onClick={handleCopyLink} icon={<LinkIcon />}>
           {t("memo.copy-link")}
         </Menu.Item>
-        <Menu.Item onClick={handleCopyContent} icon={<FileTextIcon />}>
-          {t("memo.copy-content")}
-        </Menu.Item>
+        {!memo.encryptedContent?.length && (
+          <Menu.Item onClick={handleCopyContent} icon={<FileTextIcon />}>
+            {t("memo.copy-content")}
+          </Menu.Item>
+        )}
       </Menu.Popup>
     </Menu.SubmenuRoot>
   );

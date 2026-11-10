@@ -3,6 +3,7 @@ import { useState } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { MemoEditorDraftProps } from "@/components/MemoEditor";
 import { GlobalMemoEditorProvider, useGlobalMemoEditor } from "@/contexts/GlobalMemoEditorContext";
+import { registerEncryptedDraft } from "@/lib/e2ee/dirty";
 
 const DIALOG = { name: "editor.new-memo" };
 
@@ -130,6 +131,20 @@ mocks.renderEditor = (props) => <MockMemoEditor {...props} />;
 const expectClosed = () => waitFor(() => expect(screen.queryByRole("dialog", DIALOG)).not.toBeInTheDocument());
 
 describe("GlobalMemoEditorProvider", () => {
+  it("keeps a dirty encrypted composer open when Escape discard is declined", async () => {
+    await openViaTrigger();
+    const release = registerEncryptedDraft();
+    const confirm = vi.spyOn(window, "confirm").mockReturnValue(false);
+    try {
+      fireEvent.keyDown(screen.getByRole("dialog", DIALOG), { key: "Escape" });
+      await waitFor(() => expect(confirm).toHaveBeenCalledWith("e2ee.unsaved"));
+      expect(screen.getByRole("dialog", DIALOG)).toBeInTheDocument();
+    } finally {
+      release();
+      confirm.mockRestore();
+    }
+  });
+
   beforeEach(() => {
     mocks.currentUser = { name: "users/test" };
     mocks.isUserSettingsInitialized = true;

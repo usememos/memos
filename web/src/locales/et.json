@@ -1434,5 +1434,22 @@
     "back": "{{seconds}} sekundit tagasi",
     "forward": "{{seconds}} sekundit edasi",
     "speed": "Taasesituse kiirus {{rate}}x"
+  },
+  "e2ee": {
+    "title": "Krüptitud märkmed",
+    "passphrase": "Krüptimise paroolifraas",
+    "passphrase-help": "Kasuta eraldi, vähemalt 12 märgist koosnevat paroolifraasi.",
+    "setup": "Seadista krüptimine",
+    "unlock": "Ava lukustus",
+    "lock": "Lukusta",
+    "change-passphrase": "Muuda krüptimise paroolifraasi",
+    "recovery-key": "Taastevõti",
+    "confirm-recovery": "Sisesta taastevõti uuesti, et kinnitada selle salvestamist",
+    "recovery-warning": "Hoia seda võtit väljaspool Memost. Kui kaotad nii paroolifraasi kui ka selle võtme, ei saa keegi sinu märkmeid taastada.",
+    "limitations": "Ainult privaatne tekst. Jagamine, manused, otsing ja eksport pole saadaval. Mustandeid ei salvestata. Lukustub pärast 15-minutilist tegevusetust.",
+    "new-memo": "Uus krüptitud märge",
+    "idle-warning": "Krüptitud märkmed lukustuvad ühe minuti pärast. Salvesta muudatused.",
+    "unsaved": "Salvestamata krüptitud tekst visatakse ära. Kas jätkata?",
+    "failed": "Krüptimistoiming ebaõnnestus. Kontrolli oma paroolifraasi või võtit või laadi leht uuesti, et saada uusim versioon."
   }
 }

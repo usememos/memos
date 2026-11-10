@@ -1434,5 +1434,22 @@
     "back": "Retroceder {{seconds}} segundos",
     "forward": "Avanzar {{seconds}} segundos",
     "speed": "Velocidade de reprodución {{rate}}x"
+  },
+  "e2ee": {
+    "title": "Notas cifradas",
+    "passphrase": "Frase de contrasinal de cifrado",
+    "passphrase-help": "Usa unha frase de contrasinal distinta de polo menos 12 caracteres.",
+    "setup": "Configurar o cifrado",
+    "unlock": "Desbloquear",
+    "lock": "Bloquear",
+    "change-passphrase": "Cambiar a frase de contrasinal de cifrado",
+    "recovery-key": "Chave de recuperación",
+    "confirm-recovery": "Introduce de novo a chave de recuperación para confirmar que a gardaches",
+    "recovery-warning": "Garda esta chave fóra de Memos. Se perdes tanto a frase de contrasinal como esta chave, ninguén poderá recuperar as túas notas.",
+    "limitations": "Só texto privado. Sen compartir, anexos, buscas nin exportacións. Os borradores non se gardan. Bloquéase tras 15 minutos de inactividade.",
+    "new-memo": "Nova nota cifrada",
+    "idle-warning": "As notas cifradas bloquearanse nun minuto. Garda os cambios.",
+    "unsaved": "Descartarase o texto cifrado sen gardar. Continuar?",
+    "failed": "Fallou a operación de cifrado. Comproba a frase de contrasinal ou a chave, ou recarga para obter a última versión."
   }
 }

@@ -1,0 +1,19 @@
+{
+  "description": "Public test vector generated independently using Node OpenSSL AES-256-GCM. Never use these keys/nonces outside tests.",
+  "vaultKey": "0101010101010101010101010101010101010101010101010101010101010101",
+  "plaintext": "E2EE protocol v1 — 고정 벡터",
+  "envelope": {
+    "version": 1,
+    "vaultId": "11111111-1111-4111-8111-111111111111",
+    "objectId": "22222222-2222-4222-8222-222222222222",
+    "revisionId": "33333333-3333-4333-8333-333333333333",
+    "body": {
+      "nonce": "AwMDAwMDAwMDAwMD",
+      "ciphertext": "gM++bDePCx6pyidf7qc/hCApk8weG/yfFPSKuotdR4BO40B9iMT5adHmhAmDle7yPfY="
+    },
+    "dataKey": {
+      "nonce": "BAQEBAQEBAQEBAQE",
+      "ciphertext": "7aNZQpu6uUulTpy+kleugHca66UuLuc2yYH/v8E6uRePbIHiMHFONpxe3EfLLSon"
+    }
+  }
+}

@@ -127,6 +127,11 @@ func WithCreateAttachmentPostCommitFailpoint(ctx context.Context) context.Contex
 }
 
 func (s *Store) CreateAttachment(ctx context.Context, create *Attachment) (*Attachment, error) {
+	if create.MemoID != nil {
+		if err := s.RequirePlaintextMemo(ctx, *create.MemoID); err != nil {
+			return nil, err
+		}
+	}
 	if !identifier.UIDMatcher.MatchString(create.UID) {
 		return nil, errors.New("invalid uid")
 	}
@@ -190,6 +195,11 @@ func (s *Store) GetAttachment(ctx context.Context, find *FindAttachment) (*Attac
 }
 
 func (s *Store) UpdateAttachment(ctx context.Context, update *UpdateAttachment) error {
+	if update.MemoID != nil {
+		if err := s.RequirePlaintextMemo(ctx, *update.MemoID); err != nil {
+			return err
+		}
+	}
 	if update.UID != nil && !identifier.UIDMatcher.MatchString(*update.UID) {
 		return errors.New("invalid uid")
 	}
