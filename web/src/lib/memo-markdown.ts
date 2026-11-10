@@ -256,6 +256,10 @@ export const MEMO_EDITOR_THEME: Theme = (() => {
       link: markdownStyles.link,
       // The editor sizes and spaces its images; raw HTML images keep markdownStyles.image.
       image: "rounded-mu-lg",
+      // The editor's marker is one indent wide, which fits "9." but not "10.", and the root wraps anywhere,
+      // so the number broke across lines. It grows with its number instead and never wraps; `!` because
+      // the editor's stylesheet is unlayered and would otherwise win over utilities.
+      orderedList: "[&>.mbe-marker]:w-auto! [&>.mbe-marker]:min-w-(--mbe-indent-size)! [&>.mbe-marker]:whitespace-nowrap!",
     },
   };
 })();
