@@ -243,3 +243,7 @@ eligible for this passkey UI. Sign in with the existing account at the localhost
 Production deployments require a stable HTTPS hostname. Registration and PRF evaluation must be confirmed on the user's
 own authenticator; automated tests simulate WebAuthn and separately exercise real Web Crypto/server persistence.
 Reference: [WebAuthn PRF extension](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API/WebAuthn_extensions#prf).
+
+
+Encrypted memo cards use a subtle theme-aware well background (`bg-mu-well/50`) and edge border in both locked and unlocked
+states, so encrypted records remain recognizable while browsing. Ordinary memo card styling is unchanged.
