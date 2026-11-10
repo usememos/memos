@@ -216,8 +216,9 @@ function UnlockedText({ memo, editing = false, onConfirm, onCancel, onSavingChan
         </>
       )}
       <Button
-        variant="ghost"
-        size="sm"
+        variant="neutral"
+        icon={<LockKeyholeIcon />}
+        className="self-start"
         onClick={() => {
           lockEncryption(t("e2ee.unsaved"));
         }}

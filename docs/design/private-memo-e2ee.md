@@ -246,4 +246,6 @@ Reference: [WebAuthn PRF extension](https://developer.mozilla.org/en-US/docs/Web
 
 
 Encrypted memo cards use a subtle theme-aware well background (`bg-mu-well/50`) and edge border in both locked and unlocked
-states, so encrypted records remain recognizable while browsing. Ordinary memo card styling is unchanged.
+states, so encrypted records remain recognizable while browsing. Dark mode uses the full well background, a higher-contrast
+border and a 3px start edge. The lock action uses a normal-size neutral button with a lock icon, matching the encrypted
+creation action. Ordinary memo card styling is unchanged.
