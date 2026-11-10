@@ -1437,6 +1437,15 @@
     "speed": "Atskaņošanas ātrums {{rate}}x"
   },
   "e2ee": {
+    "passkey-add": "Pievienot piekļuves atslēgu",
+    "passkey-unlock": "Atbloķēt ar piekļuves atslēgu",
+    "passkey-remove": "Noņemt piekļuves atslēgas saistījumu",
+    "passkey-help": "Piekļuves atslēgas darbojas tikai šajā vietnē. Jūsu ieejas frāze un atkopšanas atslēga paliek pieejamas.",
+    "passkey-unavailable": "Šajā vidē atbloķēšana ar piekļuves atslēgu nav pieejama. Izmantojiet ieejas frāzi vai atkopšanas atslēgu.",
+    "passkey-failed": "Neizdevās pabeigt darbību ar piekļuves atslēgu. Mēģiniet vēlreiz vai izmantojiet ieejas frāzi vai atkopšanas atslēgu.",
+    "passkey-remove-confirm": "Noņemt šīs piekļuves atslēgas saistījumu? Piekļuves atslēga netiks dzēsta no jūsu ierīces. Jūsu ieejas frāze un atkopšanas atslēga paliek pieejamas.",
+    "passkey-label": "Piekļuves atslēga {{number}}",
+    "passkey-limit": "Varat reģistrēt līdz 10 piekļuves atslēgām.",
     "memo-title": "Virsraksts (neobligāts)",
     "title-notice": "Virsraksti netiek šifrēti. Neiekļaujiet sensitīvu informāciju.",
     "title": "Šifrētas piezīmes",

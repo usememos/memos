@@ -15,7 +15,7 @@ package store
 // (prepared statement needs to be re-prepared) in full-store deletion tests;
 // explicit cleanup follows the existing driver lifecycle pattern.
 //
-// A full database backup must include encryption_vault, memo_encryption, and
+// A full database backup must include encryption_vault, encryption_passkey, memo_encryption, and
 // memo together. Restores preserve vault/object IDs exactly. Portable memo
 // export/import intentionally does not support encrypted records.
 //
@@ -26,3 +26,10 @@ package store
 // 3 iterations, 4 lanes, a 16-byte salt, and 32-byte output. The server validates
 // shape, bounds, identity, and revision; it cannot authenticate ciphertext or
 // enforce plaintext semantics.
+//
+// Optional passkey wrappers live separately so v1 vault readers and passphrase
+// changes preserve them. Enrollment locks the user before checking vault identity,
+// uniqueness and the ten-record cap. Passkey JSON is capped at 4096 bytes and
+// includes a canonical unpadded base64url credential ID (1–1024 decoded bytes),
+// a lowercase ASCII hostname RP ID, and a 32-byte standard-base64 PRF salt. The server
+// never receives PRF output and adds no WebAuthn login or signature verification.

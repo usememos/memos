@@ -1437,6 +1437,15 @@
     "speed": "Velocidade de reprodução {{rate}}x"
   },
   "e2ee": {
+    "passkey-add": "Adicionar chave de acesso",
+    "passkey-unlock": "Desbloquear com chave de acesso",
+    "passkey-remove": "Remover vínculo da chave de acesso",
+    "passkey-help": "As chaves de acesso funcionam apenas neste site. Sua frase secreta e sua chave de recuperação continuam disponíveis.",
+    "passkey-unavailable": "O desbloqueio com chave de acesso não está disponível neste ambiente. Use sua frase secreta ou sua chave de recuperação.",
+    "passkey-failed": "Não foi possível concluir a operação com a chave de acesso. Tente novamente ou use sua frase secreta ou sua chave de recuperação.",
+    "passkey-remove-confirm": "Remover o vínculo desta chave de acesso? Isso não exclui a chave de acesso do seu dispositivo. Sua frase secreta e sua chave de recuperação continuam disponíveis.",
+    "passkey-label": "Chave de acesso {{number}}",
+    "passkey-limit": "Você pode cadastrar até 10 chaves de acesso.",
     "memo-title": "Título (opcional)",
     "title-notice": "Os títulos não são criptografados. Não inclua informações confidenciais.",
     "title": "Notas criptografadas",

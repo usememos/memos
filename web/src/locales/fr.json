@@ -1437,6 +1437,15 @@
     "speed": "Vitesse de lecture {{rate}}x"
   },
   "e2ee": {
+    "passkey-add": "Ajouter une clé d’accès",
+    "passkey-unlock": "Déverrouiller avec une clé d’accès",
+    "passkey-remove": "Supprimer l’association de la clé d’accès",
+    "passkey-help": "Les clés d’accès fonctionnent uniquement sur ce site. Votre phrase secrète et votre clé de récupération restent disponibles.",
+    "passkey-unavailable": "Le déverrouillage par clé d’accès n’est pas disponible dans cet environnement. Utilisez votre phrase secrète ou votre clé de récupération.",
+    "passkey-failed": "L’opération avec la clé d’accès n’a pas pu être terminée. Réessayez ou utilisez votre phrase secrète ou votre clé de récupération.",
+    "passkey-remove-confirm": "Supprimer l’association de cette clé d’accès ? Cela ne supprime pas la clé d’accès de votre appareil. Votre phrase secrète et votre clé de récupération restent disponibles.",
+    "passkey-label": "Clé d’accès {{number}}",
+    "passkey-limit": "Vous pouvez enregistrer jusqu’à 10 clés d’accès.",
     "memo-title": "Titre (facultatif)",
     "title-notice": "Les titres ne sont pas chiffrés. N’y incluez pas d’informations sensibles.",
     "title": "Notes chiffrées",

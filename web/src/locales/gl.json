@@ -1436,6 +1436,15 @@
     "speed": "Velocidade de reprodución {{rate}}x"
   },
   "e2ee": {
+    "passkey-add": "Engadir chave de acceso",
+    "passkey-unlock": "Desbloquear coa chave de acceso",
+    "passkey-remove": "Eliminar a vinculación da chave de acceso",
+    "passkey-help": "As chaves de acceso só funcionan neste sitio. A túa frase de contrasinal e a túa chave de recuperación seguen dispoñibles.",
+    "passkey-unavailable": "O desbloqueo coa chave de acceso non está dispoñible neste contorno. Usa a túa frase de contrasinal ou a túa chave de recuperación.",
+    "passkey-failed": "Non se puido completar a operación coa chave de acceso. Téntao de novo ou usa a túa frase de contrasinal ou a túa chave de recuperación.",
+    "passkey-remove-confirm": "Eliminar a vinculación desta chave de acceso? Isto non elimina a chave de acceso do teu dispositivo. A túa frase de contrasinal e a túa chave de recuperación seguen dispoñibles.",
+    "passkey-label": "Chave de acceso {{number}}",
+    "passkey-limit": "Podes rexistrar ata 10 chaves de acceso.",
     "memo-title": "Título (opcional)",
     "title-notice": "Os títulos non están cifrados. Non inclúas información sensible.",
     "title": "Notas cifradas",

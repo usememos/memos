@@ -1436,6 +1436,15 @@
     "speed": "Avspelingsfart {{rate}}x"
   },
   "e2ee": {
+    "passkey-add": "Legg til passnøkkel",
+    "passkey-unlock": "Lås opp med passnøkkel",
+    "passkey-remove": "Fjern tilknyting til passnøkkel",
+    "passkey-help": "Passnøklar verkar berre på denne nettstaden. Passfrasen og gjenopprettingsnøkkelen din er framleis tilgjengelege.",
+    "passkey-unavailable": "Opplåsing med passnøkkel er ikkje tilgjengeleg i dette miljøet. Bruk passfrasen eller gjenopprettingsnøkkelen din.",
+    "passkey-failed": "Handlinga med passnøkkelen kunne ikkje fullførast. Prøv igjen, eller bruk passfrasen eller gjenopprettingsnøkkelen din.",
+    "passkey-remove-confirm": "Vil du fjerne tilknytinga til denne passnøkkelen? Dette slettar ikkje passnøkkelen frå eininga di. Passfrasen og gjenopprettingsnøkkelen din er framleis tilgjengelege.",
+    "passkey-label": "Passnøkkel {{number}}",
+    "passkey-limit": "Du kan registrere opptil 10 passnøklar.",
     "memo-title": "Tittel (valfritt)",
     "title-notice": "Titlar er ikkje krypterte. Ikkje ta med sensitiv informasjon.",
     "title": "Krypterte notat",

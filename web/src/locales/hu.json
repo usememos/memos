@@ -1436,6 +1436,15 @@
     "speed": "Lejátszási sebesség: {{rate}}x"
   },
   "e2ee": {
+    "passkey-add": "Hozzáférési kulcs hozzáadása",
+    "passkey-unlock": "Feloldás hozzáférési kulccsal",
+    "passkey-remove": "Hozzáférési kulcs kapcsolatának eltávolítása",
+    "passkey-help": "A hozzáférési kulcsok csak ezen a webhelyen működnek. A jelmondat és a helyreállítási kulcs továbbra is használható.",
+    "passkey-unavailable": "Ebben a környezetben nem érhető el a hozzáférési kulccsal történő feloldás. Használja a jelmondatát vagy a helyreállítási kulcsát.",
+    "passkey-failed": "A hozzáférési kulccsal végzett művelet nem fejeződött be. Próbálja újra, vagy használja a jelmondatát vagy a helyreállítási kulcsát.",
+    "passkey-remove-confirm": "Eltávolítja ennek a hozzáférési kulcsnak a kapcsolatát? Ez nem törli a hozzáférési kulcsot az eszközről. A jelmondat és a helyreállítási kulcs továbbra is használható.",
+    "passkey-label": "Hozzáférési kulcs {{number}}",
+    "passkey-limit": "Legfeljebb 10 hozzáférési kulcsot regisztrálhat.",
     "memo-title": "Cím (nem kötelező)",
     "title-notice": "A címek nincsenek titkosítva. Ne adjon meg érzékeny adatokat.",
     "title": "Titkosított jegyzetek",

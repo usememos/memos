@@ -1438,6 +1438,15 @@
     "speed": "Prędkość odtwarzania {{rate}}x"
   },
   "e2ee": {
+    "passkey-add": "Dodaj klucz dostępu",
+    "passkey-unlock": "Odblokuj kluczem dostępu",
+    "passkey-remove": "Usuń powiązanie klucza dostępu",
+    "passkey-help": "Klucze dostępu działają tylko w tej witrynie. Twoje hasło i klucz odzyskiwania pozostają dostępne.",
+    "passkey-unavailable": "Odblokowywanie kluczem dostępu nie jest dostępne w tym środowisku. Użyj hasła lub klucza odzyskiwania.",
+    "passkey-failed": "Nie udało się ukończyć operacji klucza dostępu. Spróbuj ponownie lub użyj hasła bądź klucza odzyskiwania.",
+    "passkey-remove-confirm": "Usunąć powiązanie tego klucza dostępu? Nie spowoduje to usunięcia klucza dostępu z urządzenia. Twoje hasło i klucz odzyskiwania pozostają dostępne.",
+    "passkey-label": "Klucz dostępu {{number}}",
+    "passkey-limit": "Możesz zarejestrować do 10 kluczy dostępu.",
     "memo-title": "Tytuł (opcjonalnie)",
     "title-notice": "Tytuły nie są szyfrowane. Nie podawaj poufnych informacji.",
     "title": "Zaszyfrowane notatki",

@@ -1436,6 +1436,15 @@
     "speed": "Taasesituse kiirus {{rate}}x"
   },
   "e2ee": {
+    "passkey-add": "Lisa pääsuvõti",
+    "passkey-unlock": "Ava pääsuvõtmega",
+    "passkey-remove": "Eemalda pääsuvõtme seos",
+    "passkey-help": "Pääsuvõtmed töötavad ainult sellel saidil. Sinu paroolifraas ja taastevõti jäävad kasutatavaks.",
+    "passkey-unavailable": "Pääsuvõtmega avamine pole selles keskkonnas saadaval. Kasuta paroolifraasi või taastevõtit.",
+    "passkey-failed": "Pääsuvõtme toimingut ei saanud lõpule viia. Proovi uuesti või kasuta paroolifraasi või taastevõtit.",
+    "passkey-remove-confirm": "Kas eemaldada selle pääsuvõtme seos? See ei kustuta pääsuvõtit sinu seadmest. Sinu paroolifraas ja taastevõti jäävad kasutatavaks.",
+    "passkey-label": "Pääsuvõti {{number}}",
+    "passkey-limit": "Saad registreerida kuni 10 pääsuvõtit.",
     "memo-title": "Pealkiri (valikuline)",
     "title-notice": "Pealkirju ei krüptita. Ärge lisage tundlikku teavet.",
     "title": "Krüptitud märkmed",

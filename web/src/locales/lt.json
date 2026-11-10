@@ -1438,6 +1438,15 @@
     "speed": "Atkūrimo greitis {{rate}}x"
   },
   "e2ee": {
+    "passkey-add": "Pridėti prieigos raktą",
+    "passkey-unlock": "Atrakinti prieigos raktu",
+    "passkey-remove": "Pašalinti prieigos rakto susiejimą",
+    "passkey-help": "Prieigos raktai veikia tik šioje svetainėje. Jūsų slaptafrazė ir atkūrimo raktas lieka pasiekiami.",
+    "passkey-unavailable": "Šioje aplinkoje atrakinimas prieigos raktu negalimas. Naudokite slaptafrazę arba atkūrimo raktą.",
+    "passkey-failed": "Nepavyko užbaigti prieigos rakto operacijos. Bandykite dar kartą arba naudokite slaptafrazę ar atkūrimo raktą.",
+    "passkey-remove-confirm": "Pašalinti šio prieigos rakto susiejimą? Prieigos raktas nebus ištrintas iš jūsų įrenginio. Jūsų slaptafrazė ir atkūrimo raktas lieka pasiekiami.",
+    "passkey-label": "Prieigos raktas {{number}}",
+    "passkey-limit": "Galite užregistruoti iki 10 prieigos raktų.",
     "memo-title": "Pavadinimas (neprivaloma)",
     "title-notice": "Pavadinimai nėra šifruojami. Neįtraukite neskelbtinos informacijos.",
     "title": "Šifruoti užrašai",

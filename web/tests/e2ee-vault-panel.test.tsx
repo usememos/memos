@@ -1,9 +1,11 @@
 import { Code, ConnectError } from "@connectrpc/connect";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, expect, it, vi } from "vitest";
 import { VaultPanel } from "../src/components/Encryption/VaultPanel";
 import { createVault, decodeVault, encodeRecord, unlockVault } from "../src/lib/e2ee/crypto";
 import { VaultSession } from "../src/lib/e2ee/session";
+
+vi.mock("../src/components/Encryption/PasskeyPanel", () => ({ PasskeyPanel: () => <div>passkey-controls</div> }));
 
 const api = vi.hoisted(() => ({ getEncryptionVault: vi.fn(), createEncryptionVault: vi.fn(), updateEncryptionVault: vi.fn() }));
 const state = vi.hoisted(() => ({ session: undefined as unknown as VaultSession }));
@@ -51,4 +53,16 @@ it("unlocks using a recovery key without sending that key to the server", async 
   await waitFor(() => expect(state.session.getSnapshot().key).toBeDefined());
   expect(api.createEncryptionVault).not.toHaveBeenCalled();
   expect(api.updateEncryptionVault).not.toHaveBeenCalled();
+});
+
+it("clears password and recovery input when another unlock method opens the vault", async () => {
+  const created = await createVault("separate private passphrase");
+  api.getEncryptionVault.mockResolvedValue({ vault: encodeRecord(created.record) });
+  render(<VaultPanel />);
+  const password = await screen.findByLabelText("e2ee.passphrase");
+  fireEvent.change(password, { target: { value: "abandoned password attempt" } });
+  await act(async () => {
+    state.session.accept(state.session.ticket(), created.key, created.record.id);
+  });
+  expect(screen.getByLabelText("e2ee.change-passphrase")).toHaveValue("");
 });

@@ -1436,6 +1436,15 @@
     "speed": "Kecepatan putar {{rate}}x"
   },
   "e2ee": {
+    "passkey-add": "Tambahkan kunci sandi",
+    "passkey-unlock": "Buka kunci dengan kunci sandi",
+    "passkey-remove": "Hapus tautan kunci sandi",
+    "passkey-help": "Kunci sandi hanya berfungsi di situs ini. Frasa sandi dan kunci pemulihan Anda tetap tersedia.",
+    "passkey-unavailable": "Buka kunci dengan kunci sandi tidak tersedia di lingkungan ini. Gunakan frasa sandi atau kunci pemulihan Anda.",
+    "passkey-failed": "Operasi kunci sandi tidak dapat diselesaikan. Coba lagi atau gunakan frasa sandi atau kunci pemulihan Anda.",
+    "passkey-remove-confirm": "Hapus tautan kunci sandi ini? Tindakan ini tidak menghapus kunci sandi dari perangkat Anda. Frasa sandi dan kunci pemulihan Anda tetap tersedia.",
+    "passkey-label": "Kunci sandi {{number}}",
+    "passkey-limit": "Anda dapat mendaftarkan hingga 10 kunci sandi.",
     "memo-title": "Judul (opsional)",
     "title-notice": "Judul tidak dienkripsi. Jangan sertakan informasi sensitif.",
     "title": "Memo terenkripsi",

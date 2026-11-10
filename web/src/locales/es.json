@@ -1437,6 +1437,15 @@
     "speed": "Velocidad de reproducción {{rate}}x"
   },
   "e2ee": {
+    "passkey-add": "Añadir clave de acceso",
+    "passkey-unlock": "Desbloquear con clave de acceso",
+    "passkey-remove": "Eliminar vínculo de la clave de acceso",
+    "passkey-help": "Las claves de acceso solo funcionan en este sitio. Tu frase de contraseña y tu clave de recuperación siguen disponibles.",
+    "passkey-unavailable": "El desbloqueo con clave de acceso no está disponible en este entorno. Usa tu frase de contraseña o tu clave de recuperación.",
+    "passkey-failed": "No se pudo completar la operación con la clave de acceso. Inténtalo de nuevo o usa tu frase de contraseña o tu clave de recuperación.",
+    "passkey-remove-confirm": "¿Eliminar el vínculo de esta clave de acceso? Esto no elimina la clave de acceso de tu dispositivo. Tu frase de contraseña y tu clave de recuperación siguen disponibles.",
+    "passkey-label": "Clave de acceso {{number}}",
+    "passkey-limit": "Puedes registrar hasta 10 claves de acceso.",
     "memo-title": "Título (opcional)",
     "title-notice": "Los títulos no están cifrados. No incluyas información sensible.",
     "title": "Notas cifradas",

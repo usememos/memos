@@ -1436,6 +1436,15 @@
     "speed": "Uppspelningshastighet {{rate}}x"
   },
   "e2ee": {
+    "passkey-add": "Lägg till passnyckel",
+    "passkey-unlock": "Lås upp med passnyckel",
+    "passkey-remove": "Ta bort kopplingen till passnyckeln",
+    "passkey-help": "Passnycklar fungerar bara på den här webbplatsen. Din lösenfras och återställningsnyckel är fortfarande tillgängliga.",
+    "passkey-unavailable": "Upplåsning med passnyckel är inte tillgänglig i den här miljön. Använd din lösenfras eller återställningsnyckel.",
+    "passkey-failed": "Åtgärden med passnyckeln kunde inte slutföras. Försök igen eller använd din lösenfras eller återställningsnyckel.",
+    "passkey-remove-confirm": "Vill du ta bort kopplingen till den här passnyckeln? Det tar inte bort passnyckeln från din enhet. Din lösenfras och återställningsnyckel är fortfarande tillgängliga.",
+    "passkey-label": "Passnyckel {{number}}",
+    "passkey-limit": "Du kan registrera upp till 10 passnycklar.",
     "memo-title": "Titel (valfri)",
     "title-notice": "Titlar krypteras inte. Ta inte med känslig information.",
     "title": "Krypterade anteckningar",

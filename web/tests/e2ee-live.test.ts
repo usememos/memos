@@ -2,6 +2,8 @@
 import { expect, it } from "vitest";
 import { createVault, decodeMemo, decodeVault, decryptMemo, encodeRecord, encryptMemo, unlockVault } from "../src/lib/e2ee/crypto";
 
+import { decodePasskey, unwrapPasskey, wrapPasskey } from "../src/lib/e2ee/passkey";
+
 // Opt-in against a disposable local instance, never the user's database.
 const endpoint = process.env.E2EE_SMOKE_URL;
 it.skipIf(!endpoint)("round-trips real client ciphertext through a local Memos server", async () => {
@@ -53,5 +55,29 @@ it.skipIf(!endpoint)("round-trips real client ciphertext through a local Memos s
   const updated = await call("MemoService", "GetMemo", { name: memo.name });
   expect(updated.encryptedTitle).toBe("Edited title");
   expect(await decryptMemo(otherDeviceKey, decodeMemo(Buffer.from(updated.encryptedContent, "base64")))).toBe("E2EE edited canary");
+  // The PRF is synthetic here; this test does not exercise real WebAuthn/device prompts.
+  const prf = crypto.getRandomValues(new Uint8Array(32));
+  const passkey = await wrapPasskey(
+    otherDeviceKey,
+    {
+      version: 1,
+      id: crypto.randomUUID(),
+      vaultId: vault.record.id,
+      credentialId: Buffer.from(crypto.getRandomValues(new Uint8Array(32))).toString("base64url"),
+      rpId: "localhost",
+      salt: Buffer.from(crypto.getRandomValues(new Uint8Array(32))).toString("base64"),
+    },
+    prf,
+  );
+  await call("UserService", "CreateEncryptionPasskey", { passkey: Buffer.from(encodeRecord(passkey)).toString("base64") });
+  const wrappers = await call("UserService", "ListEncryptionPasskeys", {});
+  expect(wrappers.passkeys).toHaveLength(1);
+  const returned = decodePasskey(Buffer.from(wrappers.passkeys[0], "base64"));
+  const passkeyKey = await unwrapPasskey(returned, prf);
+  expect(await decryptMemo(passkeyKey, decodeMemo(Buffer.from(updated.encryptedContent, "base64")))).toBe("E2EE edited canary");
+  await call("UserService", "DeleteEncryptionPasskey", { id: returned.id });
+  const afterDelete = await call("UserService", "ListEncryptionPasskeys", {});
+  expect(afterDelete.passkeys ?? []).toHaveLength(0);
+  prf.fill(0);
   console.info(`Disposable UI fixture: ${username}`);
 });

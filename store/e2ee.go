@@ -71,6 +71,9 @@ func decodeRecord(data []byte, out any, limit int) error {
 	case *EncryptedEnvelope:
 		required = []string{"version", "vaultId", "objectId", "revisionId", "body", "dataKey"}
 		wrappers = []string{"body", "dataKey"}
+	case *PasskeyRecord:
+		required = []string{"version", "id", "vaultId", "credentialId", "rpId", "salt", "key"}
+		wrappers = []string{"key"}
 	case *VaultRecord:
 		required = []string{"version", "id", "revision", "salt", "passphraseKey", "recoveryKey"}
 		wrappers = []string{"passphraseKey", "recoveryKey"}

@@ -116,3 +116,7 @@ See [the design](../../../../docs/design/private-memo-e2ee.md) for key recovery,
 Encrypted memos may have an optional `encryptedTitle`, a plaintext label never extracted from the body. The editor explicitly
 labels it as unencrypted; locked records show a lock icon and this title (or the default encrypted memo label). Title and body
 updates use one revision-guarded save, while omitting the title update mask preserves titles for older clients.
+
+VaultPanel also offers passkey enrollment/removal when unlocked and passkey unlock when registered. `PasskeyPanel` uses
+React Query only for credential locators and encrypted wrappers; WebAuthn PRF output and vault keys stay in local memory.
+WebAuthn and PRF support are detected by the actual ceremony. Password and recovery remain available on unsupported devices.

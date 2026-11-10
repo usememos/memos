@@ -1437,6 +1437,15 @@
     "speed": "Velocitat de reproducció {{rate}}x"
   },
   "e2ee": {
+    "passkey-add": "Afegeix una clau d'accés",
+    "passkey-unlock": "Desbloqueja amb una clau d'accés",
+    "passkey-remove": "Elimina la vinculació de la clau d'accés",
+    "passkey-help": "Les claus d'accés només funcionen en aquest lloc. La frase de contrasenya i la clau de recuperació continuen disponibles.",
+    "passkey-unavailable": "El desbloqueig amb clau d'accés no està disponible en aquest entorn. Utilitza la frase de contrasenya o la clau de recuperació.",
+    "passkey-failed": "No s'ha pogut completar l'operació amb la clau d'accés. Torna-ho a provar o utilitza la frase de contrasenya o la clau de recuperació.",
+    "passkey-remove-confirm": "Vols eliminar la vinculació d'aquesta clau d'accés? Això no elimina la clau d'accés del dispositiu. La frase de contrasenya i la clau de recuperació continuen disponibles.",
+    "passkey-label": "Clau d'accés {{number}}",
+    "passkey-limit": "Pots registrar fins a 10 claus d'accés.",
     "memo-title": "Títol (opcional)",
     "title-notice": "Els títols no estan xifrats. No hi inclogueu informació sensible.",
     "title": "Notes xifrades",

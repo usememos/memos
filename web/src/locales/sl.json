@@ -1438,6 +1438,15 @@
     "speed": "Hitrost predvajanja {{rate}}x"
   },
   "e2ee": {
+    "passkey-add": "Dodaj ključ za dostop",
+    "passkey-unlock": "Odkleni s ključem za dostop",
+    "passkey-remove": "Odstrani povezavo ključa za dostop",
+    "passkey-help": "Ključi za dostop delujejo samo na tem spletnem mestu. Vaša geselna fraza in obnovitveni ključ ostajata na voljo.",
+    "passkey-unavailable": "Odklepanje s ključem za dostop v tem okolju ni na voljo. Uporabite geselno frazo ali obnovitveni ključ.",
+    "passkey-failed": "Dejanja s ključem za dostop ni bilo mogoče dokončati. Poskusite znova ali uporabite geselno frazo ali obnovitveni ključ.",
+    "passkey-remove-confirm": "Odstranim povezavo tega ključa za dostop? S tem ključ za dostop ne bo izbrisan iz vaše naprave. Vaša geselna fraza in obnovitveni ključ ostajata na voljo.",
+    "passkey-label": "Ključ za dostop {{number}}",
+    "passkey-limit": "Registrirate lahko največ 10 ključev za dostop.",
     "memo-title": "Naslov (neobvezno)",
     "title-notice": "Naslovi niso šifrirani. Ne vključujte občutljivih podatkov.",
     "title": "Šifrirani zapiski",

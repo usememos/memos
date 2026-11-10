@@ -1436,6 +1436,15 @@
     "speed": "播放速度 {{rate}}x"
   },
   "e2ee": {
+    "passkey-add": "添加通行密钥",
+    "passkey-unlock": "使用通行密钥解锁",
+    "passkey-remove": "解除通行密钥关联",
+    "passkey-help": "通行密钥仅适用于此网站。你仍可使用密码短语和恢复密钥。",
+    "passkey-unavailable": "此环境不支持使用通行密钥解锁。请使用密码短语或恢复密钥。",
+    "passkey-failed": "无法完成通行密钥操作。请重试，或使用密码短语或恢复密钥。",
+    "passkey-remove-confirm": "解除此通行密钥的关联？这不会删除设备上的通行密钥。你仍可使用密码短语和恢复密钥。",
+    "passkey-label": "通行密钥 {{number}}",
+    "passkey-limit": "最多可注册 10 个通行密钥。",
     "memo-title": "标题（可选）",
     "title-notice": "标题不会加密。请勿包含敏感信息。",
     "title": "加密笔记",

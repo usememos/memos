@@ -34,6 +34,15 @@ const (
 // reflection-formatted method names, remove the leading slash and convert the remaining slash to a
 // period.
 const (
+	// UserServiceListEncryptionPasskeysProcedure is the fully-qualified name of the UserService's
+	// ListEncryptionPasskeys RPC.
+	UserServiceListEncryptionPasskeysProcedure = "/memos.api.UserService/ListEncryptionPasskeys"
+	// UserServiceCreateEncryptionPasskeyProcedure is the fully-qualified name of the UserService's
+	// CreateEncryptionPasskey RPC.
+	UserServiceCreateEncryptionPasskeyProcedure = "/memos.api.UserService/CreateEncryptionPasskey"
+	// UserServiceDeleteEncryptionPasskeyProcedure is the fully-qualified name of the UserService's
+	// DeleteEncryptionPasskey RPC.
+	UserServiceDeleteEncryptionPasskeyProcedure = "/memos.api.UserService/DeleteEncryptionPasskey"
 	// UserServiceGetEncryptionVaultProcedure is the fully-qualified name of the UserService's
 	// GetEncryptionVault RPC.
 	UserServiceGetEncryptionVaultProcedure = "/memos.api.UserService/GetEncryptionVault"
@@ -139,6 +148,12 @@ const (
 
 // UserServiceClient is a client for the memos.api.UserService service.
 type UserServiceClient interface {
+	// Lists only the authenticated caller's wrapped passkey keys.
+	ListEncryptionPasskeys(context.Context, *connect.Request[api.ListEncryptionPasskeysRequest]) (*connect.Response[api.ListEncryptionPasskeysResponse], error)
+	// Adds a wrapped key to the authenticated caller's existing vault.
+	CreateEncryptionPasskey(context.Context, *connect.Request[api.CreateEncryptionPasskeyRequest]) (*connect.Response[api.EncryptionPasskey], error)
+	// Removes only the caller's wrapper; device credentials remain unchanged.
+	DeleteEncryptionPasskey(context.Context, *connect.Request[api.DeleteEncryptionPasskeyRequest]) (*connect.Response[emptypb.Empty], error)
 	// Reads only the authenticated caller's encryption vault.
 	GetEncryptionVault(context.Context, *connect.Request[api.GetEncryptionVaultRequest]) (*connect.Response[api.EncryptionVault], error)
 	// Creates the caller's vault once, after local recovery confirmation.
@@ -261,6 +276,24 @@ func NewUserServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 	baseURL = strings.TrimRight(baseURL, "/")
 	userServiceMethods := api.File_api_user_service_proto.Services().ByName("UserService").Methods()
 	return &userServiceClient{
+		listEncryptionPasskeys: connect.NewClient[api.ListEncryptionPasskeysRequest, api.ListEncryptionPasskeysResponse](
+			httpClient,
+			baseURL+UserServiceListEncryptionPasskeysProcedure,
+			connect.WithSchema(userServiceMethods.ByName("ListEncryptionPasskeys")),
+			connect.WithClientOptions(opts...),
+		),
+		createEncryptionPasskey: connect.NewClient[api.CreateEncryptionPasskeyRequest, api.EncryptionPasskey](
+			httpClient,
+			baseURL+UserServiceCreateEncryptionPasskeyProcedure,
+			connect.WithSchema(userServiceMethods.ByName("CreateEncryptionPasskey")),
+			connect.WithClientOptions(opts...),
+		),
+		deleteEncryptionPasskey: connect.NewClient[api.DeleteEncryptionPasskeyRequest, emptypb.Empty](
+			httpClient,
+			baseURL+UserServiceDeleteEncryptionPasskeyProcedure,
+			connect.WithSchema(userServiceMethods.ByName("DeleteEncryptionPasskey")),
+			connect.WithClientOptions(opts...),
+		),
 		getEncryptionVault: connect.NewClient[api.GetEncryptionVaultRequest, api.EncryptionVault](
 			httpClient,
 			baseURL+UserServiceGetEncryptionVaultProcedure,
@@ -482,6 +515,9 @@ func NewUserServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 
 // userServiceClient implements UserServiceClient.
 type userServiceClient struct {
+	listEncryptionPasskeys      *connect.Client[api.ListEncryptionPasskeysRequest, api.ListEncryptionPasskeysResponse]
+	createEncryptionPasskey     *connect.Client[api.CreateEncryptionPasskeyRequest, api.EncryptionPasskey]
+	deleteEncryptionPasskey     *connect.Client[api.DeleteEncryptionPasskeyRequest, emptypb.Empty]
 	getEncryptionVault          *connect.Client[api.GetEncryptionVaultRequest, api.EncryptionVault]
 	createEncryptionVault       *connect.Client[api.CreateEncryptionVaultRequest, api.EncryptionVault]
 	updateEncryptionVault       *connect.Client[api.UpdateEncryptionVaultRequest, api.EncryptionVault]
@@ -518,6 +554,21 @@ type userServiceClient struct {
 	createPersonalAccessToken   *connect.Client[api.CreatePersonalAccessTokenRequest, api.CreatePersonalAccessTokenResponse]
 	deletePersonalAccessToken   *connect.Client[api.DeletePersonalAccessTokenRequest, emptypb.Empty]
 	importMemos                 *connect.Client[api.ImportMemosRequest, api.ImportMemosResponse]
+}
+
+// ListEncryptionPasskeys calls memos.api.UserService.ListEncryptionPasskeys.
+func (c *userServiceClient) ListEncryptionPasskeys(ctx context.Context, req *connect.Request[api.ListEncryptionPasskeysRequest]) (*connect.Response[api.ListEncryptionPasskeysResponse], error) {
+	return c.listEncryptionPasskeys.CallUnary(ctx, req)
+}
+
+// CreateEncryptionPasskey calls memos.api.UserService.CreateEncryptionPasskey.
+func (c *userServiceClient) CreateEncryptionPasskey(ctx context.Context, req *connect.Request[api.CreateEncryptionPasskeyRequest]) (*connect.Response[api.EncryptionPasskey], error) {
+	return c.createEncryptionPasskey.CallUnary(ctx, req)
+}
+
+// DeleteEncryptionPasskey calls memos.api.UserService.DeleteEncryptionPasskey.
+func (c *userServiceClient) DeleteEncryptionPasskey(ctx context.Context, req *connect.Request[api.DeleteEncryptionPasskeyRequest]) (*connect.Response[emptypb.Empty], error) {
+	return c.deleteEncryptionPasskey.CallUnary(ctx, req)
 }
 
 // GetEncryptionVault calls memos.api.UserService.GetEncryptionVault.
@@ -702,6 +753,12 @@ func (c *userServiceClient) ImportMemos(ctx context.Context, req *connect.Reques
 
 // UserServiceHandler is an implementation of the memos.api.UserService service.
 type UserServiceHandler interface {
+	// Lists only the authenticated caller's wrapped passkey keys.
+	ListEncryptionPasskeys(context.Context, *connect.Request[api.ListEncryptionPasskeysRequest]) (*connect.Response[api.ListEncryptionPasskeysResponse], error)
+	// Adds a wrapped key to the authenticated caller's existing vault.
+	CreateEncryptionPasskey(context.Context, *connect.Request[api.CreateEncryptionPasskeyRequest]) (*connect.Response[api.EncryptionPasskey], error)
+	// Removes only the caller's wrapper; device credentials remain unchanged.
+	DeleteEncryptionPasskey(context.Context, *connect.Request[api.DeleteEncryptionPasskeyRequest]) (*connect.Response[emptypb.Empty], error)
 	// Reads only the authenticated caller's encryption vault.
 	GetEncryptionVault(context.Context, *connect.Request[api.GetEncryptionVaultRequest]) (*connect.Response[api.EncryptionVault], error)
 	// Creates the caller's vault once, after local recovery confirmation.
@@ -820,6 +877,24 @@ type UserServiceHandler interface {
 // and JSON codecs. They also support gzip compression.
 func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
 	userServiceMethods := api.File_api_user_service_proto.Services().ByName("UserService").Methods()
+	userServiceListEncryptionPasskeysHandler := connect.NewUnaryHandler(
+		UserServiceListEncryptionPasskeysProcedure,
+		svc.ListEncryptionPasskeys,
+		connect.WithSchema(userServiceMethods.ByName("ListEncryptionPasskeys")),
+		connect.WithHandlerOptions(opts...),
+	)
+	userServiceCreateEncryptionPasskeyHandler := connect.NewUnaryHandler(
+		UserServiceCreateEncryptionPasskeyProcedure,
+		svc.CreateEncryptionPasskey,
+		connect.WithSchema(userServiceMethods.ByName("CreateEncryptionPasskey")),
+		connect.WithHandlerOptions(opts...),
+	)
+	userServiceDeleteEncryptionPasskeyHandler := connect.NewUnaryHandler(
+		UserServiceDeleteEncryptionPasskeyProcedure,
+		svc.DeleteEncryptionPasskey,
+		connect.WithSchema(userServiceMethods.ByName("DeleteEncryptionPasskey")),
+		connect.WithHandlerOptions(opts...),
+	)
 	userServiceGetEncryptionVaultHandler := connect.NewUnaryHandler(
 		UserServiceGetEncryptionVaultProcedure,
 		svc.GetEncryptionVault,
@@ -1038,6 +1113,12 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 	)
 	return "/memos.api.UserService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
+		case UserServiceListEncryptionPasskeysProcedure:
+			userServiceListEncryptionPasskeysHandler.ServeHTTP(w, r)
+		case UserServiceCreateEncryptionPasskeyProcedure:
+			userServiceCreateEncryptionPasskeyHandler.ServeHTTP(w, r)
+		case UserServiceDeleteEncryptionPasskeyProcedure:
+			userServiceDeleteEncryptionPasskeyHandler.ServeHTTP(w, r)
 		case UserServiceGetEncryptionVaultProcedure:
 			userServiceGetEncryptionVaultHandler.ServeHTTP(w, r)
 		case UserServiceCreateEncryptionVaultProcedure:
@@ -1118,6 +1199,18 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 
 // UnimplementedUserServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedUserServiceHandler struct{}
+
+func (UnimplementedUserServiceHandler) ListEncryptionPasskeys(context.Context, *connect.Request[api.ListEncryptionPasskeysRequest]) (*connect.Response[api.ListEncryptionPasskeysResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.ListEncryptionPasskeys is not implemented"))
+}
+
+func (UnimplementedUserServiceHandler) CreateEncryptionPasskey(context.Context, *connect.Request[api.CreateEncryptionPasskeyRequest]) (*connect.Response[api.EncryptionPasskey], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.CreateEncryptionPasskey is not implemented"))
+}
+
+func (UnimplementedUserServiceHandler) DeleteEncryptionPasskey(context.Context, *connect.Request[api.DeleteEncryptionPasskeyRequest]) (*connect.Response[emptypb.Empty], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.DeleteEncryptionPasskey is not implemented"))
+}
 
 func (UnimplementedUserServiceHandler) GetEncryptionVault(context.Context, *connect.Request[api.GetEncryptionVaultRequest]) (*connect.Response[api.EncryptionVault], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.UserService.GetEncryptionVault is not implemented"))

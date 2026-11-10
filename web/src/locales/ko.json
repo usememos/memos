@@ -1436,6 +1436,15 @@
     "speed": "재생 속도 {{rate}}x"
   },
   "e2ee": {
+    "passkey-add": "패스키 등록",
+    "passkey-unlock": "패스키로 잠금 해제",
+    "passkey-remove": "패스키 연결 해제",
+    "passkey-help": "패스키는 이 사이트에서만 사용할 수 있습니다. 암호와 복구 키는 계속 사용할 수 있습니다.",
+    "passkey-unavailable": "이 환경에서는 패스키로 잠금을 해제할 수 없습니다. 암호 또는 복구 키를 사용하세요.",
+    "passkey-failed": "패스키 작업을 완료하지 못했습니다. 다시 시도하거나 암호 또는 복구 키를 사용하세요.",
+    "passkey-remove-confirm": "이 패스키 연결을 해제할까요? 기기의 패스키는 삭제되지 않습니다. 암호와 복구 키는 계속 사용할 수 있습니다.",
+    "passkey-label": "패스키 {{number}}",
+    "passkey-limit": "패스키는 최대 10개까지 등록할 수 있습니다.",
     "memo-title": "제목 (선택 입력)",
     "title-notice": "제목은 암호화되지 않습니다. 민감한 정보는 넣지 마세요.",
     "title": "암호화 메모",

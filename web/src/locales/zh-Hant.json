@@ -1436,6 +1436,15 @@
     "speed": "播放速度 {{rate}}x"
   },
   "e2ee": {
+    "passkey-add": "新增通行金鑰",
+    "passkey-unlock": "使用通行金鑰解鎖",
+    "passkey-remove": "解除通行金鑰連結",
+    "passkey-help": "通行金鑰僅適用於此網站。你仍可使用密碼片語和復原金鑰。",
+    "passkey-unavailable": "此環境不支援使用通行金鑰解鎖。請使用密碼片語或復原金鑰。",
+    "passkey-failed": "無法完成通行金鑰操作。請重試，或使用密碼片語或復原金鑰。",
+    "passkey-remove-confirm": "解除此通行金鑰的連結？這不會刪除裝置上的通行金鑰。你仍可使用密碼片語和復原金鑰。",
+    "passkey-label": "通行金鑰 {{number}}",
+    "passkey-limit": "最多可註冊 10 個通行金鑰。",
     "memo-title": "標題（選填）",
     "title-notice": "標題不會加密。請勿包含敏感資訊。",
     "title": "加密筆記",

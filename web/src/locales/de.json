@@ -1436,6 +1436,15 @@
     "speed": "Wiedergabegeschwindigkeit {{rate}}x"
   },
   "e2ee": {
+    "passkey-add": "Passkey hinzufügen",
+    "passkey-unlock": "Mit Passkey entsperren",
+    "passkey-remove": "Passkey-Verknüpfung entfernen",
+    "passkey-help": "Passkeys funktionieren nur auf dieser Website. Deine Passphrase und dein Wiederherstellungsschlüssel bleiben verfügbar.",
+    "passkey-unavailable": "Das Entsperren mit Passkey ist in dieser Umgebung nicht verfügbar. Verwende deine Passphrase oder deinen Wiederherstellungsschlüssel.",
+    "passkey-failed": "Der Passkey-Vorgang konnte nicht abgeschlossen werden. Versuche es erneut oder verwende deine Passphrase oder deinen Wiederherstellungsschlüssel.",
+    "passkey-remove-confirm": "Diese Passkey-Verknüpfung entfernen? Der Passkey wird dadurch nicht von deinem Gerät gelöscht. Deine Passphrase und dein Wiederherstellungsschlüssel bleiben verfügbar.",
+    "passkey-label": "Passkey {{number}}",
+    "passkey-limit": "Du kannst bis zu 10 Passkeys registrieren.",
     "memo-title": "Titel (optional)",
     "title-notice": "Titel werden nicht verschlüsselt. Keine vertraulichen Informationen angeben.",
     "title": "Verschlüsselte Notizen",

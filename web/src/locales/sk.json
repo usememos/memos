@@ -1438,6 +1438,15 @@
     "speed": "Rýchlosť prehrávania {{rate}}x"
   },
   "e2ee": {
+    "passkey-add": "Pridať prístupový kľúč",
+    "passkey-unlock": "Odomknúť prístupovým kľúčom",
+    "passkey-remove": "Odstrániť prepojenie prístupového kľúča",
+    "passkey-help": "Prístupové kľúče fungujú iba na tejto stránke. Vaša prístupová fráza a kľúč na obnovenie zostávajú dostupné.",
+    "passkey-unavailable": "Odomknutie prístupovým kľúčom nie je v tomto prostredí dostupné. Použite prístupovú frázu alebo kľúč na obnovenie.",
+    "passkey-failed": "Operáciu s prístupovým kľúčom sa nepodarilo dokončiť. Skúste to znova alebo použite prístupovú frázu či kľúč na obnovenie.",
+    "passkey-remove-confirm": "Odstrániť prepojenie tohto prístupového kľúča? Prístupový kľúč sa tým zo zariadenia neodstráni. Vaša prístupová fráza a kľúč na obnovenie zostávajú dostupné.",
+    "passkey-label": "Prístupový kľúč {{number}}",
+    "passkey-limit": "Môžete zaregistrovať najviac 10 prístupových kľúčov.",
     "memo-title": "Názov (voliteľné)",
     "title-notice": "Názvy nie sú šifrované. Neuvádzajte citlivé informácie.",
     "title": "Šifrované poznámky",

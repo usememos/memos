@@ -380,6 +380,9 @@ func deleteMemosTx(ctx context.Context, tx *sql.Tx, memoIDs []int32) error {
 }
 
 func deleteUserRowTx(ctx context.Context, tx *sql.Tx, userID int32) error {
+	if _, err := tx.ExecContext(ctx, "DELETE FROM encryption_passkey WHERE user_id = ?", userID); err != nil {
+		return err
+	}
 	if _, err := tx.ExecContext(ctx, "DELETE FROM encryption_vault WHERE user_id = ?", userID); err != nil {
 		return err
 	}

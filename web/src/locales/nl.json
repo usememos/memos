@@ -1436,6 +1436,15 @@
     "speed": "Afspeelsnelheid {{rate}}x"
   },
   "e2ee": {
+    "passkey-add": "Passkey toevoegen",
+    "passkey-unlock": "Ontgrendelen met passkey",
+    "passkey-remove": "Passkey-koppeling verwijderen",
+    "passkey-help": "Passkeys werken alleen op deze site. Je wachtwoordzin en herstelsleutel blijven beschikbaar.",
+    "passkey-unavailable": "Ontgrendelen met een passkey is niet beschikbaar in deze omgeving. Gebruik je wachtwoordzin of herstelsleutel.",
+    "passkey-failed": "De passkey-bewerking kon niet worden voltooid. Probeer het opnieuw of gebruik je wachtwoordzin of herstelsleutel.",
+    "passkey-remove-confirm": "Deze passkey-koppeling verwijderen? Hiermee wordt de passkey niet van je apparaat verwijderd. Je wachtwoordzin en herstelsleutel blijven beschikbaar.",
+    "passkey-label": "Passkey {{number}}",
+    "passkey-limit": "Je kunt maximaal 10 passkeys registreren.",
     "memo-title": "Titel (optioneel)",
     "title-notice": "Titels worden niet versleuteld. Vermeld geen gevoelige informatie.",
     "title": "Versleutelde notities",

@@ -3201,6 +3201,71 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/v1/encryptionPasskeys:
+        get:
+            tags:
+                - UserService
+            description: Lists only the authenticated caller's wrapped passkey keys.
+            operationId: UserService_ListEncryptionPasskeys
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListEncryptionPasskeysResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - UserService
+            description: Adds a wrapped key to the authenticated caller's existing vault.
+            operationId: UserService_CreateEncryptionPasskey
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateEncryptionPasskeyRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/EncryptionPasskey'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/encryptionPasskeys/{id}:
+        delete:
+            tags:
+                - UserService
+            description: Removes only the caller's wrapper; device credentials remain unchanged.
+            operationId: UserService_DeleteEncryptionPasskey
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/encryptionVault:
         get:
             tags:
@@ -3619,6 +3684,13 @@ components:
                         type: string
                     description: The managed field paths the configuration does not write after creation, so the API accepts edits to them.
             description: ManagedResource is one resource the configuration manages.
+        CreateEncryptionPasskeyRequest:
+            type: object
+            properties:
+                passkey:
+                    type: string
+                    format: bytes
+            description: CreateEncryptionPasskeyRequest supplies an immutable wrapped-key record.
         CreateEncryptionVaultRequest:
             type: object
             properties:
@@ -3696,6 +3768,13 @@ components:
                         Required. The resource name of the invitation.
                          Format: spaces/{space}/invitations/{invitation}
             description: Request message for SpaceService.DeclineSpaceInvitation.
+        EncryptionPasskey:
+            type: object
+            properties:
+                passkey:
+                    type: string
+                    format: bytes
+            description: EncryptionPasskey carries a versioned JSON wrapped key, never PRF output.
         EncryptionVault:
             type: object
             properties:
@@ -4356,6 +4435,15 @@ components:
                     type: string
                     description: A token to retrieve the next page. Empty when there are no more pages.
             description: Response message for AttachmentService.ListAttachments.
+        ListEncryptionPasskeysResponse:
+            type: object
+            properties:
+                passkeys:
+                    type: array
+                    items:
+                        type: string
+                        format: bytes
+            description: ListEncryptionPasskeysResponse contains the caller's bounded registrations.
         ListIdentityProvidersResponse:
             type: object
             properties:

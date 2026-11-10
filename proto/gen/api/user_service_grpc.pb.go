@@ -20,6 +20,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
+	UserService_ListEncryptionPasskeys_FullMethodName      = "/memos.api.UserService/ListEncryptionPasskeys"
+	UserService_CreateEncryptionPasskey_FullMethodName     = "/memos.api.UserService/CreateEncryptionPasskey"
+	UserService_DeleteEncryptionPasskey_FullMethodName     = "/memos.api.UserService/DeleteEncryptionPasskey"
 	UserService_GetEncryptionVault_FullMethodName          = "/memos.api.UserService/GetEncryptionVault"
 	UserService_CreateEncryptionVault_FullMethodName       = "/memos.api.UserService/CreateEncryptionVault"
 	UserService_UpdateEncryptionVault_FullMethodName       = "/memos.api.UserService/UpdateEncryptionVault"
@@ -66,6 +69,12 @@ const (
 // memo views, notifications, webhooks, linked identities, personal access
 // tokens, and memo export files.
 type UserServiceClient interface {
+	// Lists only the authenticated caller's wrapped passkey keys.
+	ListEncryptionPasskeys(ctx context.Context, in *ListEncryptionPasskeysRequest, opts ...grpc.CallOption) (*ListEncryptionPasskeysResponse, error)
+	// Adds a wrapped key to the authenticated caller's existing vault.
+	CreateEncryptionPasskey(ctx context.Context, in *CreateEncryptionPasskeyRequest, opts ...grpc.CallOption) (*EncryptionPasskey, error)
+	// Removes only the caller's wrapper; device credentials remain unchanged.
+	DeleteEncryptionPasskey(ctx context.Context, in *DeleteEncryptionPasskeyRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Reads only the authenticated caller's encryption vault.
 	GetEncryptionVault(ctx context.Context, in *GetEncryptionVaultRequest, opts ...grpc.CallOption) (*EncryptionVault, error)
 	// Creates the caller's vault once, after local recovery confirmation.
@@ -183,6 +192,36 @@ type userServiceClient struct {
 
 func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
 	return &userServiceClient{cc}
+}
+
+func (c *userServiceClient) ListEncryptionPasskeys(ctx context.Context, in *ListEncryptionPasskeysRequest, opts ...grpc.CallOption) (*ListEncryptionPasskeysResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListEncryptionPasskeysResponse)
+	err := c.cc.Invoke(ctx, UserService_ListEncryptionPasskeys_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) CreateEncryptionPasskey(ctx context.Context, in *CreateEncryptionPasskeyRequest, opts ...grpc.CallOption) (*EncryptionPasskey, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(EncryptionPasskey)
+	err := c.cc.Invoke(ctx, UserService_CreateEncryptionPasskey_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) DeleteEncryptionPasskey(ctx context.Context, in *DeleteEncryptionPasskeyRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, UserService_DeleteEncryptionPasskey_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *userServiceClient) GetEncryptionVault(ctx context.Context, in *GetEncryptionVaultRequest, opts ...grpc.CallOption) (*EncryptionVault, error) {
@@ -553,6 +592,12 @@ func (c *userServiceClient) ImportMemos(ctx context.Context, in *ImportMemosRequ
 // memo views, notifications, webhooks, linked identities, personal access
 // tokens, and memo export files.
 type UserServiceServer interface {
+	// Lists only the authenticated caller's wrapped passkey keys.
+	ListEncryptionPasskeys(context.Context, *ListEncryptionPasskeysRequest) (*ListEncryptionPasskeysResponse, error)
+	// Adds a wrapped key to the authenticated caller's existing vault.
+	CreateEncryptionPasskey(context.Context, *CreateEncryptionPasskeyRequest) (*EncryptionPasskey, error)
+	// Removes only the caller's wrapper; device credentials remain unchanged.
+	DeleteEncryptionPasskey(context.Context, *DeleteEncryptionPasskeyRequest) (*emptypb.Empty, error)
 	// Reads only the authenticated caller's encryption vault.
 	GetEncryptionVault(context.Context, *GetEncryptionVaultRequest) (*EncryptionVault, error)
 	// Creates the caller's vault once, after local recovery confirmation.
@@ -672,6 +717,15 @@ type UserServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedUserServiceServer struct{}
 
+func (UnimplementedUserServiceServer) ListEncryptionPasskeys(context.Context, *ListEncryptionPasskeysRequest) (*ListEncryptionPasskeysResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListEncryptionPasskeys not implemented")
+}
+func (UnimplementedUserServiceServer) CreateEncryptionPasskey(context.Context, *CreateEncryptionPasskeyRequest) (*EncryptionPasskey, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateEncryptionPasskey not implemented")
+}
+func (UnimplementedUserServiceServer) DeleteEncryptionPasskey(context.Context, *DeleteEncryptionPasskeyRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteEncryptionPasskey not implemented")
+}
 func (UnimplementedUserServiceServer) GetEncryptionVault(context.Context, *GetEncryptionVaultRequest) (*EncryptionVault, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetEncryptionVault not implemented")
 }
@@ -799,6 +853,60 @@ func RegisterUserServiceServer(s grpc.ServiceRegistrar, srv UserServiceServer) {
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&UserService_ServiceDesc, srv)
+}
+
+func _UserService_ListEncryptionPasskeys_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListEncryptionPasskeysRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).ListEncryptionPasskeys(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_ListEncryptionPasskeys_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).ListEncryptionPasskeys(ctx, req.(*ListEncryptionPasskeysRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_CreateEncryptionPasskey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateEncryptionPasskeyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).CreateEncryptionPasskey(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_CreateEncryptionPasskey_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).CreateEncryptionPasskey(ctx, req.(*CreateEncryptionPasskeyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_DeleteEncryptionPasskey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteEncryptionPasskeyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).DeleteEncryptionPasskey(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_DeleteEncryptionPasskey_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).DeleteEncryptionPasskey(ctx, req.(*DeleteEncryptionPasskeyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _UserService_GetEncryptionVault_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -1456,6 +1564,18 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "memos.api.UserService",
 	HandlerType: (*UserServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "ListEncryptionPasskeys",
+			Handler:    _UserService_ListEncryptionPasskeys_Handler,
+		},
+		{
+			MethodName: "CreateEncryptionPasskey",
+			Handler:    _UserService_CreateEncryptionPasskey_Handler,
+		},
+		{
+			MethodName: "DeleteEncryptionPasskey",
+			Handler:    _UserService_DeleteEncryptionPasskey_Handler,
+		},
 		{
 			MethodName: "GetEncryptionVault",
 			Handler:    _UserService_GetEncryptionVault_Handler,

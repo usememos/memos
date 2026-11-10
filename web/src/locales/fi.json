@@ -1436,6 +1436,15 @@
     "speed": "Toistonopeus {{rate}}x"
   },
   "e2ee": {
+    "passkey-add": "Lisää pääsyavain",
+    "passkey-unlock": "Avaa lukitus pääsyavaimella",
+    "passkey-remove": "Poista pääsyavaimen liitos",
+    "passkey-help": "Pääsyavaimet toimivat vain tällä sivustolla. Salalauseesi ja palautusavaimesi pysyvät käytettävissä.",
+    "passkey-unavailable": "Lukituksen avaaminen pääsyavaimella ei ole käytettävissä tässä ympäristössä. Käytä salalausettasi tai palautusavaintasi.",
+    "passkey-failed": "Pääsyavaintoimintoa ei voitu suorittaa loppuun. Yritä uudelleen tai käytä salalausettasi tai palautusavaintasi.",
+    "passkey-remove-confirm": "Poistetaanko tämän pääsyavaimen liitos? Tämä ei poista pääsyavainta laitteeltasi. Salalauseesi ja palautusavaimesi pysyvät käytettävissä.",
+    "passkey-label": "Pääsyavain {{number}}",
+    "passkey-limit": "Voit rekisteröidä enintään 10 pääsyavainta.",
     "memo-title": "Otsikko (valinnainen)",
     "title-notice": "Otsikoita ei salata. Älä sisällytä arkaluonteisia tietoja.",
     "title": "Salatut muistiinpanot",

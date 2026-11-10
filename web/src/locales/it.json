@@ -1437,6 +1437,15 @@
     "speed": "Velocità di riproduzione {{rate}}x"
   },
   "e2ee": {
+    "passkey-add": "Aggiungi passkey",
+    "passkey-unlock": "Sblocca con passkey",
+    "passkey-remove": "Rimuovi il collegamento della passkey",
+    "passkey-help": "Le passkey funzionano solo su questo sito. La frase segreta e la chiave di recupero restano disponibili.",
+    "passkey-unavailable": "Lo sblocco con passkey non è disponibile in questo ambiente. Usa la frase segreta o la chiave di recupero.",
+    "passkey-failed": "Impossibile completare l’operazione con la passkey. Riprova oppure usa la frase segreta o la chiave di recupero.",
+    "passkey-remove-confirm": "Rimuovere il collegamento di questa passkey? La passkey non verrà eliminata dal dispositivo. La frase segreta e la chiave di recupero restano disponibili.",
+    "passkey-label": "Passkey {{number}}",
+    "passkey-limit": "Puoi registrare fino a 10 passkey.",
     "memo-title": "Titolo (facoltativo)",
     "title-notice": "I titoli non sono crittografati. Non includere informazioni sensibili.",
     "title": "Note crittografate",

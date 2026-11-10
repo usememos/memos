@@ -204,3 +204,42 @@ Locked memo content displays a lock icon and the title as one accessible button;
 Unlocked viewing also displays the title, while editing offers an optional title input. Body text and drafts remain ephemeral.
 The new encrypted memo action is a bordered, normal-size button with a lock icon above the ordinary composer, including
 hosted creation. Space/comment creation still excludes it.
+
+## Passkey unlock (2026-11-10, user-approved follow-up)
+
+Keep sign-in, passphrase and recovery behavior unchanged. Add WebAuthn PRF as an optional vault unlock method.
+Use a separate per-user `encryption_passkey` table so older clients can still parse the unchanged v1 vault record and
+passphrase changes cannot accidentally remove passkeys. No server signature-based authentication is added: WebAuthn
+here supplies local key material, not login authorization. Existing authenticated API access controls each wrapper.
+
+A version-1 passkey record is strict JSON with keys `version`, `id`, `vaultId`, `credentialId`, `rpId`, `salt`, `key`.
+`id`/`vaultId` are UUIDv4; `credentialId` is canonical unpadded base64url (1–1024 decoded bytes); `rpId` is a lowercase bounded
+hostname (at most 253 ASCII characters); `salt` is 32 bytes in padded standard base64; `key` is an AES-GCM Sealed value
+with 12-byte nonce and 48-byte ciphertext. Maximum JSON size is 4096 bytes, maximum registrations is 10 per account.
+ID is immutable; registrations are add/delete only. Creation verifies vault ownership/identity transactionally.
+User deletion removes associated wrappers on all drivers. Public APIs/admin listings never return wrappers.
+
+Client creates a discoverable credential with userVerification=required, attestation=none and PRF requested. Existing
+credential IDs are excluded and each registration gets a fresh random user handle, preventing replacement even with a stale list. A fresh
+random 32-byte salt selects a stable PRF result. An explicit get() with that credential and required verification proves
+PRF output is available. HKDF-SHA256 derives a 256-bit AES-GCM wrapping key from the 32-byte PRF output, using the record
+salt and UTF-8 JSON context `["memos-e2ee",1,"passkey-key",vaultId,id,credentialId,rpId]` as info and AES-GCM AAD.
+The client wraps the existing vault key, decrypts it again and compares before registering. PRF output and unwrapped keys
+are never sent to API/logs or local storage. Challenge bytes are random; the server does not authenticate WebAuthn assertions.
+No plaintext vault-key persistence or biometric bypass is added. The vault key must already be unlocked for enrollment.
+
+Unlock lists only wrappers matching location.hostname and the current vault. The browser chooses among registered
+credential IDs using per-credential PRF salts. The result selects its matching wrapper, verifies its metadata through AAD,
+then accepts the key only if the existing session ticket is current. Both create/get have cancellation and bounded timeouts;
+component unmount/lock/account changes abort outstanding operations. Cancellation leaves the password form available.
+Browsers/authenticators without PRF fall back to the existing password/recovery UI; no support is assumed from passkey support
+alone. Domain/RP changes require enrollment on the new domain after password/recovery unlock; localhost and 127.0.0.1 are
+not interchangeable. Registration/removal UI explains that removing a wrapper does not delete the credential in the device's
+password manager and cannot revoke a key already obtained by another device. Recovery/password remain available.
+
+
+Local verification: use `http://localhost:13001` for the development UI. IP-address origins such as `127.0.0.1` are not
+eligible for this passkey UI. Sign in with the existing account at the localhost origin; browser sessions are origin-specific.
+Production deployments require a stable HTTPS hostname. Registration and PRF evaluation must be confirmed on the user's
+own authenticator; automated tests simulate WebAuthn and separately exercise real Web Crypto/server persistence.
+Reference: [WebAuthn PRF extension](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API/WebAuthn_extensions#prf).

@@ -7,6 +7,7 @@ import { useFieldErrors } from "@/hooks/useFieldErrors";
 import { changePassphrase, createVault, decodeVault, encodeRecord, recoverVault, unlockVault, type VaultRecord } from "@/lib/e2ee/crypto";
 import { showErrorToast } from "@/lib/toast";
 import { useTranslate } from "@/utils/i18n";
+import { PasskeyPanel } from "./PasskeyPanel";
 
 /** Secrets remain in this mounted form; only wrapped records enter the API client. */
 export function VaultPanel() {
@@ -24,6 +25,15 @@ function VaultForm() {
   const [pending, setPending] = useState<Awaited<ReturnType<typeof createVault>>>();
   const [busy, setBusy] = useState(false);
   const fields = useFieldErrors<"password" | "secret">();
+  // Passkey unlock can accept the key from a sibling control. Do not carry an
+  // abandoned unlock attempt into the now-visible change-passphrase form.
+  useEffect(() => {
+    if (key) {
+      setPassword("");
+      setSecret("");
+      setRecovery(false);
+    }
+  }, [key]);
   useEffect(() => {
     let active = true;
     userServiceClient
@@ -178,6 +188,7 @@ function VaultForm() {
           </div>
         </form>
       )}
+      {record && !pending && <PasskeyPanel key={record.id} vaultId={record.id} />}
     </section>
   );
 }

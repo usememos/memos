@@ -1436,6 +1436,15 @@
     "speed": "Playback speed {{rate}}x"
   },
   "e2ee": {
+    "passkey-add": "Add passkey",
+    "passkey-unlock": "Unlock with passkey",
+    "passkey-remove": "Remove passkey connection",
+    "passkey-help": "Passkeys work only on this site. Your passphrase and recovery key remain available.",
+    "passkey-unavailable": "Passkey unlock is unavailable in this environment. Use your passphrase or recovery key.",
+    "passkey-failed": "Could not complete the passkey operation. Try again or use your passphrase or recovery key.",
+    "passkey-remove-confirm": "Remove this passkey connection? This does not delete the passkey from your device. Your passphrase and recovery key remain available.",
+    "passkey-label": "Passkey {{number}}",
+    "passkey-limit": "You can register up to 10 passkeys.",
     "memo-title": "Title (optional)",
     "title-notice": "Titles are not encrypted. Do not include sensitive information.",
     "title": "Encrypted memos",

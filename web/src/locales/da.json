@@ -1436,6 +1436,15 @@
     "speed": "Afspilningshastighed {{rate}}x"
   },
   "e2ee": {
+    "passkey-add": "Tilføj adgangsnøgle",
+    "passkey-unlock": "Lås op med adgangsnøgle",
+    "passkey-remove": "Fjern tilknytning til adgangsnøgle",
+    "passkey-help": "Adgangsnøgler virker kun på dette websted. Din adgangssætning og gendannelsesnøgle er stadig tilgængelige.",
+    "passkey-unavailable": "Oplåsning med adgangsnøgle er ikke tilgængelig i dette miljø. Brug din adgangssætning eller gendannelsesnøgle.",
+    "passkey-failed": "Handlingen med adgangsnøglen kunne ikke fuldføres. Prøv igen, eller brug din adgangssætning eller gendannelsesnøgle.",
+    "passkey-remove-confirm": "Vil du fjerne tilknytningen til denne adgangsnøgle? Det sletter ikke adgangsnøglen fra din enhed. Din adgangssætning og gendannelsesnøgle er stadig tilgængelige.",
+    "passkey-label": "Adgangsnøgle {{number}}",
+    "passkey-limit": "Du kan registrere op til 10 adgangsnøgler.",
     "memo-title": "Titel (valgfri)",
     "title-notice": "Titler er ikke krypterede. Medtag ikke følsomme oplysninger.",
     "title": "Krypterede noter",

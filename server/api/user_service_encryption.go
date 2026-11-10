@@ -7,6 +7,7 @@ import (
 	"connectrpc.com/connect"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/emptypb"
 
 	apipb "github.com/usememos/memos/proto/gen/api"
 	"github.com/usememos/memos/store"
@@ -89,6 +90,73 @@ func (s *ConnectServiceHandler) CreateEncryptionVault(ctx context.Context, r *co
 
 func (s *ConnectServiceHandler) UpdateEncryptionVault(ctx context.Context, r *connect.Request[apipb.UpdateEncryptionVaultRequest]) (*connect.Response[apipb.EncryptionVault], error) {
 	resp, err := s.APIService.UpdateEncryptionVault(ctx, r.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+// ListEncryptionPasskeys operates only on the authenticated caller's passkey wrappers.
+func (s *APIService) ListEncryptionPasskeys(ctx context.Context, r *apipb.ListEncryptionPasskeysRequest) (*apipb.ListEncryptionPasskeysResponse, error) {
+	u, err := s.fetchCurrentUser(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if u == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "sign in required")
+	}
+	data, err := s.Store.ListEncryptionPasskeys(ctx, u.ID)
+	if err != nil {
+		return nil, encryptionError(err)
+	}
+	return &apipb.ListEncryptionPasskeysResponse{Passkeys: data}, nil
+}
+func (s *ConnectServiceHandler) ListEncryptionPasskeys(ctx context.Context, r *connect.Request[apipb.ListEncryptionPasskeysRequest]) (*connect.Response[apipb.ListEncryptionPasskeysResponse], error) {
+	resp, err := s.APIService.ListEncryptionPasskeys(ctx, r.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+// CreateEncryptionPasskey operates only on the authenticated caller's passkey wrappers.
+func (s *APIService) CreateEncryptionPasskey(ctx context.Context, r *apipb.CreateEncryptionPasskeyRequest) (*apipb.EncryptionPasskey, error) {
+	u, err := s.fetchCurrentUser(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if u == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "sign in required")
+	}
+	if err := s.Store.CreateEncryptionPasskey(ctx, u.ID, r.Passkey); err != nil {
+		return nil, encryptionError(err)
+	}
+	return &apipb.EncryptionPasskey{Passkey: r.Passkey}, nil
+}
+func (s *ConnectServiceHandler) CreateEncryptionPasskey(ctx context.Context, r *connect.Request[apipb.CreateEncryptionPasskeyRequest]) (*connect.Response[apipb.EncryptionPasskey], error) {
+	resp, err := s.APIService.CreateEncryptionPasskey(ctx, r.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+// DeleteEncryptionPasskey operates only on the authenticated caller's passkey wrappers.
+func (s *APIService) DeleteEncryptionPasskey(ctx context.Context, r *apipb.DeleteEncryptionPasskeyRequest) (*emptypb.Empty, error) {
+	u, err := s.fetchCurrentUser(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if u == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "sign in required")
+	}
+	if err := s.Store.DeleteEncryptionPasskey(ctx, u.ID, r.Id); err != nil {
+		return nil, encryptionError(err)
+	}
+	return &emptypb.Empty{}, nil
+}
+func (s *ConnectServiceHandler) DeleteEncryptionPasskey(ctx context.Context, r *connect.Request[apipb.DeleteEncryptionPasskeyRequest]) (*connect.Response[emptypb.Empty], error) {
+	resp, err := s.APIService.DeleteEncryptionPasskey(ctx, r.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}

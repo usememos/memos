@@ -99,3 +99,30 @@ Final review: independent reviewer found no blocking issues. Final: minor (defer
 so emoji-heavy titles hit the editor limit before the server's 256-code-point cap; this is a conservative input restriction.
 Title/body conflict atomicity, legacy omission, explicit empty clearing, inert title rendering and title-only dirty handling
 are covered. Browser inspection confirmed existing locked records use the icon/default-title display.
+
+## Follow-up: passkey unlock (2026-11-10)
+
+Goal: optional WebAuthn PRF local vault unlock; login and existing secrets unchanged. User approved this approach and implementation.
+- [x] Backend: List/Create/DeleteEncryptionPasskey RPCs, bounded strict wrapper validation, owner-only table and all-driver migrations, transactional cap/ownership and deletion cleanup. Tests: authentication/isolation, invalid records, duplicate/cap, deletion, passphrase preservation.
+- [x] Browser: local PRF registration/unlock, HKDF/AES-GCM key wrapping, exact validation and capability fallback. Tests: cryptographic round trip, wrong PRF/tampering, required UV, RP filtering, cancellation and malformed outputs.
+- [x] UI: unlocked registration/removal and locked passkey unlock alongside password/recovery; stale session/unmount guard, localized guidance and errors. Tests: no secret API transmission, cancellation fallback, cross-account results ignored.
+- [x] Verification: proto generation/lint, server/core race/store tests, frontend lint/test/build, fresh independent security review; retain branch locally.
+
+Review focus: PRF never serialized into requests; RP/vault/credential substitution; unsupported authenticators; stale async operations;
+older-client compatibility and account-deletion races. Real passkey registration requires the user's device prompt; automated tests
+use fake WebAuthn responses plus real Web Crypto and do not claim hardware verification.
+
+
+Verification: frontend lint/build passed; full Node 24 suite passed 1,715 tests with one opt-in live test skipped.
+The separate live test passed, exercising real client HKDF/AES-GCM wrappers against server CRUD and decrypting the memo
+with the retrieved wrapper. PRF bytes in that live test are synthetic, not an attestation of hardware/browser support.
+Server/core race tests and the full store suite passed across SQLite, MySQL, PostgreSQL. Incremental migration,
+SQLite backup restore, cap races and account deletion races passed; repeated driver-specific race tests passed.
+Proto generation/lint/format and scoped go fix -diff passed.
+
+Independent review found one substantive enrollment risk: discoverable credentials could replace existing credentials.
+Fixed after a failing regression test: supply excludeCredentials plus a fresh random per-enrollment user handle, so stale
+lists and concurrent abandoned enrollments cannot replace a working credential. Also aligned lowercase RP validation.
+An additional failing regression showed abandoned password input surviving passkey unlock; accepting a key now clears it.
+No unresolved review findings remain for this follow-up. Physical device/PRF interoperability remains user-device validation;
+unsupported environments keep password/recovery available. Existing login and tokens are unchanged.

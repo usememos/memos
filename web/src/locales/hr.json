@@ -1437,6 +1437,15 @@
     "speed": "Brzina reprodukcije {{rate}}x"
   },
   "e2ee": {
+    "passkey-add": "Dodaj pristupni ključ",
+    "passkey-unlock": "Otključaj pristupnim ključem",
+    "passkey-remove": "Ukloni vezu pristupnog ključa",
+    "passkey-help": "Pristupni ključevi rade samo na ovoj stranici. Vaša zaporka i ključ za oporavak ostaju dostupni.",
+    "passkey-unavailable": "Otključavanje pristupnim ključem nije dostupno u ovom okruženju. Upotrijebite zaporku ili ključ za oporavak.",
+    "passkey-failed": "Radnju s pristupnim ključem nije bilo moguće dovršiti. Pokušajte ponovno ili upotrijebite zaporku ili ključ za oporavak.",
+    "passkey-remove-confirm": "Ukloniti vezu ovog pristupnog ključa? Time se pristupni ključ ne briše s vašeg uređaja. Vaša zaporka i ključ za oporavak ostaju dostupni.",
+    "passkey-label": "Pristupni ključ {{number}}",
+    "passkey-limit": "Možete registrirati najviše 10 pristupnih ključeva.",
     "memo-title": "Naslov (neobavezno)",
     "title-notice": "Naslovi nisu šifrirani. Nemojte uključivati osjetljive podatke.",
     "title": "Šifrirane bilješke",

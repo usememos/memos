@@ -1437,6 +1437,15 @@
     "speed": "Viteză de redare {{rate}}x"
   },
   "e2ee": {
+    "passkey-add": "Adaugă o cheie de acces",
+    "passkey-unlock": "Deblochează cu cheia de acces",
+    "passkey-remove": "Elimină asocierea cheii de acces",
+    "passkey-help": "Cheile de acces funcționează doar pe acest site. Fraza de acces și cheia de recuperare rămân disponibile.",
+    "passkey-unavailable": "Deblocarea cu cheia de acces nu este disponibilă în acest mediu. Folosește fraza de acces sau cheia de recuperare.",
+    "passkey-failed": "Operațiunea cu cheia de acces nu a putut fi finalizată. Încearcă din nou sau folosește fraza de acces ori cheia de recuperare.",
+    "passkey-remove-confirm": "Elimini asocierea acestei chei de acces? Cheia de acces nu va fi ștearsă de pe dispozitiv. Fraza de acces și cheia de recuperare rămân disponibile.",
+    "passkey-label": "Cheie de acces {{number}}",
+    "passkey-limit": "Poți înregistra până la 10 chei de acces.",
     "memo-title": "Titlu (opțional)",
     "title-notice": "Titlurile nu sunt criptate. Nu includeți informații sensibile.",
     "title": "Notițe criptate",
