@@ -93,7 +93,7 @@ describe("useMemoRecord", () => {
         }),
     );
 
-    const { result } = renderHook(() => ({ record: useMemoRecord(before.name), update: useUpdateMemo() }), { wrapper });
+    const { result } = renderHook(() => ({ record: useMemoRecord(before.name), update: useUpdateMemo(before.name) }), { wrapper });
     expect(result.current.record?.content).toBe("before");
 
     act(() => {
@@ -117,7 +117,7 @@ describe("useMemoRecord", () => {
     client.setQueryData(key, create(ListMemoCommentsResponseSchema, { comments: [comment] }));
     api.updateMemo.mockImplementation(async ({ memo: update }: { memo: Memo }) => ({ ...comment, ...update }));
 
-    const { result } = renderHook(() => useUpdateMemo(), { wrapper });
+    const { result } = renderHook(() => useUpdateMemo(comment.name), { wrapper });
     act(() => result.current.mutate({ update: { name: comment.name, content: "after" }, updateMask: ["content"] }));
     await waitFor(() => expect(client.getQueryData<{ comments: Memo[] }>(key)?.comments[0].content).toBe("after"));
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -358,6 +358,34 @@ describe("useUpdateMemo", () => {
     await act(async () => pinReply[0]());
     await waitFor(() => expect(client.isMutating()).toBe(0));
     expect(result.current.detail.data).toMatchObject({ content: before.content, pinned: true });
+  });
+
+  it("rolls back to the memo as it was when two updates in a row fail and the refetch fails too", async () => {
+    const before = memo("memos/x");
+    const { client, result } = await onScreen(before);
+    api.updateMemo.mockRejectedValue(new Error("down"));
+    api.getMemo.mockRejectedValue(new Error("down"));
+    api.listMemos.mockRejectedValue(new Error("down"));
+    const invalidate = vi.spyOn(client, "invalidateQueries");
+
+    // The second update's snapshot is taken over the first one's optimistic patch.
+    act(() => {
+      result.current.update.mutate({ update: { name: before.name, content: "edited" }, updateMask: ["content"] });
+      result.current.update.mutate({
+        update: { name: before.name, content: "edited again", pinned: true },
+        updateMask: ["content", "pinned"],
+      });
+    });
+    await waitFor(() => expect(client.isMutating()).toBe(0));
+    await waitFor(() => expect(client.isFetching()).toBe(0));
+
+    expect(result.current.detail.data).toMatchObject({ content: before.content, pinned: false });
+    expect(result.current.list.data?.memos[0]).toMatchObject({ content: before.content, pinned: false });
+    // A failed update refetches the memo and what lists it, not every query under the memo root.
+    const keys = invalidate.mock.calls.map(([filters]) => filters?.queryKey);
+    expect(keys).toContainEqual(memoKeys.detail(before.name));
+    expect(keys).toContainEqual(memoKeys.lists());
+    expect(keys).not.toContainEqual(memoKeys.all);
   });
 
   it("sends an update of another memo while one memo's update is unanswered", async () => {
