@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import type { Editor } from "@usememos/editor";
 import { createRef } from "react";
@@ -297,5 +299,27 @@ describe("images", () => {
     expect(sources[2] ?? "").not.toContain("tracker.example");
     expect(container.querySelector("img")).toHaveAttribute("referrerpolicy", "no-referrer");
     expect(container.querySelector("img")).toHaveAttribute("loading", "lazy");
+  });
+});
+
+describe("ordered lists", () => {
+  it("allows multi-digit ordered list markers to expand without wrapping", () => {
+    const markdown = Array.from({ length: 12 }, (_, index) => `${index + 1}. Item ${index + 1}`).join("\n");
+    const { container } = renderMemo(markdown);
+    const markers = Array.from(
+      container.querySelectorAll('.mbe-list-item[data-list-type="ordered"] > .mbe-marker'),
+      (marker) => marker.textContent,
+    );
+    expect(markers).toHaveLength(12);
+    expect(markers[9]).toBe("10.");
+    expect(markers[11]).toBe("12.");
+
+    // Vitest replaces CSS imports with empty stubs, so inspect the stylesheet directly.
+    const css = readFileSync(resolve(import.meta.dirname, "../src/components/MemoEditor/MemoMarkdown.css"), "utf8");
+    const rule = css.match(/\.mbe-root\s+\.mbe-list-item\[data-list-type="ordered"\]\s*>\s*\.mbe-marker\s*\{([^}]*)\}/);
+    expect(rule).not.toBeNull();
+    expect(rule?.[1]).toMatch(/width:\s*auto\s*;/);
+    expect(rule?.[1]).toMatch(/min-width:\s*var\(--mbe-indent-size\)\s*;/);
+    expect(rule?.[1]).toMatch(/white-space:\s*nowrap\s*;/);
   });
 });
