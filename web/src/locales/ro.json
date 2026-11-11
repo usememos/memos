@@ -1433,6 +1433,9 @@
     "speed": "Viteză de redare {{rate}}x"
   },
   "e2ee": {
+    "conflict": "Nota a fost modificată în altă parte. Ciorna este păstrată. Verifică ultima versiune înainte de a salva din nou.",
+    "conflict-review": "Verifică ultima versiune",
+    "conflict-continue": "Păstrează ciorna și continuă",
     "unlock-other": "Alte metode de deblocare",
     "passkey-add": "Adaugă o cheie de acces",
     "passkey-unlock": "Deblochează cu cheia de acces",

@@ -1435,6 +1435,9 @@
     "speed": "Rychlost přehrávání {{rate}}x"
   },
   "e2ee": {
+    "conflict": "Poznámka byla změněna jinde. Koncept zůstal zachován. Před dalším uložením zkontrolujte nejnovější verzi.",
+    "conflict-review": "Zkontrolovat nejnovější verzi",
+    "conflict-continue": "Ponechat koncept a pokračovat",
     "unlock-other": "Další způsoby odemčení",
     "passkey-add": "Přidat přístupový klíč",
     "passkey-unlock": "Odemknout přístupovým klíčem",

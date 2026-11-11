@@ -1433,6 +1433,9 @@
     "speed": "Velocidad de reproducción {{rate}}x"
   },
   "e2ee": {
+    "conflict": "Esta nota cambió en otro lugar. Tu borrador se conserva. Revisa la última versión antes de guardar de nuevo.",
+    "conflict-review": "Revisar la última versión",
+    "conflict-continue": "Conservar mi borrador y seguir editando",
     "unlock-other": "Otras formas de desbloquear",
     "passkey-add": "Añadir clave de acceso",
     "passkey-unlock": "Desbloquear con clave de acceso",

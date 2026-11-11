@@ -1432,6 +1432,9 @@
     "speed": "Oynatma hızı {{rate}}x"
   },
   "e2ee": {
+    "conflict": "Bu not başka bir yerde değiştirildi. Taslağınız korundu. Yeniden kaydetmeden önce son sürümü inceleyin.",
+    "conflict-review": "Son sürümü incele",
+    "conflict-continue": "Taslağımı koru ve düzenlemeye devam et",
     "unlock-other": "Diğer kilit açma yöntemleri",
     "passkey-add": "Geçiş anahtarı ekle",
     "passkey-unlock": "Geçiş anahtarıyla kilidi aç",

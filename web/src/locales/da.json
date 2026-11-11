@@ -1432,6 +1432,9 @@
     "speed": "Afspilningshastighed {{rate}}x"
   },
   "e2ee": {
+    "conflict": "Noten er ændret et andet sted. Din kladde er bevaret. Gennemse den nyeste version, før du gemmer igen.",
+    "conflict-review": "Gennemse nyeste version",
+    "conflict-continue": "Behold min kladde og fortsæt",
     "unlock-other": "Andre måder at låse op på",
     "passkey-add": "Tilføj adgangsnøgle",
     "passkey-unlock": "Lås op med adgangsnøgle",

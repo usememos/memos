@@ -35,6 +35,8 @@ func ParsePasskeyRecord(data []byte) (*PasskeyRecord, error) {
 	}
 	return &p, nil
 }
+
+// validRPID validates the lowercase hostname stored with a passkey wrapper.
 func validRPID(s string) bool {
 	if len(s) == 0 || len(s) > 253 {
 		return false

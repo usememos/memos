@@ -10,6 +10,7 @@ export interface PasskeyRecord {
   salt: string;
   key: Sealed;
 }
+/** Rejects malformed passkey records without including sensitive input in the error. */
 const invalid = (): never => {
   throw new Error("Invalid passkey wrapper");
 };
@@ -20,17 +21,23 @@ export class PasskeyUnavailableError extends Error {
 }
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 const hostname = /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*$/;
+/** Accepts record objects while rejecting arrays and null. */
 const object = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null && !Array.isArray(v);
+/** Requires the exact fields of a supported passkey record. */
 const exact = (v: unknown, keys: string[]): v is Record<string, unknown> =>
   object(v) && Object.keys(v).length === keys.length && keys.every((key) => Object.hasOwn(v, key));
+/** Encodes the bounded salt and wrapped-key bytes as padded base64. */
 const b64 = (bytes: Uint8Array) => btoa(String.fromCharCode(...bytes));
+/** Decodes canonical padded base64 for protocol fields. */
 const from64 = (s: string): Uint8Array<ArrayBuffer> => {
   if (typeof s !== "string" || !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(s)) invalid();
   const bytes = Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
   if (b64(bytes) !== s) invalid();
   return bytes;
 };
+/** Encodes credential identifiers using unpadded base64url. */
 const url64 = (bytes: Uint8Array) => b64(bytes).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+/** Decodes and bounds canonical unpadded credential identifiers. */
 const fromURL64 = (s: string): Uint8Array<ArrayBuffer> => {
   if (typeof s !== "string" || !/^[A-Za-z0-9_-]{1,1366}$/.test(s)) invalid();
   const padded = s
@@ -41,6 +48,7 @@ const fromURL64 = (s: string): Uint8Array<ArrayBuffer> => {
   if (bytes.length < 1 || bytes.length > 1024 || url64(bytes) !== s) invalid();
   return bytes;
 };
+/** Validates the version, identifiers, RP hostname, salt, and wrapped-key sizes. */
 export function decodePasskey(bytes: Uint8Array): PasskeyRecord {
   if (bytes.length > 4096) invalid();
   const v = JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes));
@@ -67,7 +75,9 @@ export function decodePasskey(bytes: Uint8Array): PasskeyRecord {
   fromURL64(v.credentialId as string);
   return v as unknown as PasskeyRecord;
 }
+/** Binds a wrapper to its vault, credential, RP, and enrollment identity. */
 const context = (r: Omit<PasskeyRecord, "key">) => encodeRecord(["memos-e2ee", 1, "passkey-key", r.vaultId, r.id, r.credentialId, r.rpId]);
+/** Derives a local AES-GCM wrapping key from PRF output and enrollment context. */
 const wrappingKey = async (r: Omit<PasskeyRecord, "key">, prf: Uint8Array<ArrayBuffer>) => {
   if (prf.length !== 32) invalid();
   const input = await crypto.subtle.importKey("raw", prf, "HKDF", false, ["deriveKey"]);
@@ -79,6 +89,7 @@ const wrappingKey = async (r: Omit<PasskeyRecord, "key">, prf: Uint8Array<ArrayB
     ["encrypt", "decrypt"],
   );
 };
+/** Wraps and verifies a vault key locally without serializing the PRF output. */
 export async function wrapPasskey(key: CryptoKey, meta: Omit<PasskeyRecord, "key">, prf: Uint8Array<ArrayBuffer>): Promise<PasskeyRecord> {
   const nonce = crypto.getRandomValues(new Uint8Array(12));
   const raw = new Uint8Array(await crypto.subtle.exportKey("raw", key));
@@ -100,6 +111,7 @@ export async function wrapPasskey(key: CryptoKey, meta: Omit<PasskeyRecord, "key
     raw.fill(0);
   }
 }
+/** Authenticates and unwraps the vault key using the credential PRF output. */
 export async function unwrapPasskey(record: PasskeyRecord, prf: Uint8Array<ArrayBuffer>): Promise<CryptoKey> {
   const r = decodePasskey(encodeRecord(record));
   const raw = new Uint8Array(
@@ -129,6 +141,7 @@ export function canUsePasskeys(): boolean {
     !/^\d+(\.\d+){3}$/.test(location.hostname)
   );
 }
+/** Requires a public-key credential result from the browser. */
 function credentialResult(value: Credential | null): PublicKeyCredential {
   if (!value || value.type !== "public-key") throw new PasskeyUnavailableError();
   const credential = value as PublicKeyCredential;
@@ -136,12 +149,14 @@ function credentialResult(value: Credential | null): PublicKeyCredential {
   fromURL64(credential.id);
   return credential;
 }
+/** Requires a supported PRF result of the expected key length. */
 function prfResult(credential: PublicKeyCredential): Uint8Array<ArrayBuffer> {
   const output = credential.getClientExtensionResults() as { prf?: { results?: { first?: ArrayBuffer } } };
   if (!(output.prf?.results?.first instanceof ArrayBuffer) || output.prf.results.first.byteLength !== 32)
     throw new PasskeyUnavailableError();
   return new Uint8Array(output.prf.results.first).slice();
 }
+/** Combines caller cancellation with a timeout and cleans up credential-request listeners. */
 async function request<T>(signal: AbortSignal | undefined, operation: (signal: AbortSignal) => Promise<T>): Promise<T> {
   signal?.throwIfAborted();
   const controller = new AbortController();
@@ -157,6 +172,7 @@ async function request<T>(signal: AbortSignal | undefined, operation: (signal: A
     signal?.removeEventListener("abort", abort);
   }
 }
+/** Enrolls and verifies a discoverable PRF credential before returning its wrapped vault key. */
 export async function createPasskey(
   key: CryptoKey,
   vaultId: string,
@@ -216,6 +232,7 @@ export async function createPasskey(
     verified.output.fill(0);
   }
 }
+/** Requests user verification for eligible credentials and identifies the returned PRF output. */
 async function getPRF(records: Omit<PasskeyRecord, "key">[], signal?: AbortSignal) {
   const evalByCredential = Object.fromEntries(records.map((r) => [r.credentialId, { first: from64(r.salt) }]));
   const selected = credentialResult(
@@ -237,6 +254,7 @@ async function getPRF(records: Omit<PasskeyRecord, "key">[], signal?: AbortSigna
   if (!record) return invalid();
   return { id: record.id, output: prfResult(selected) };
 }
+/** Selects current-site vault credentials and unwraps the key after user verification. */
 export async function unlockWithPasskey(records: PasskeyRecord[], vaultId: string, signal?: AbortSignal): Promise<CryptoKey> {
   if (!canUsePasskeys()) throw new PasskeyUnavailableError();
   if (records.length > 10) invalid();

@@ -1,4 +1,5 @@
 import { create } from "@bufbuild/protobuf";
+import { Code, ConnectError } from "@connectrpc/connect";
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, expect, it, vi } from "vitest";
 import { EncryptedMemoEditor } from "../src/components/MemoEditor/EncryptedMemoEditor";
@@ -6,7 +7,14 @@ import { createVault, decodeMemo, decryptMemo, encodeRecord, encryptMemo } from 
 import { VaultSession } from "../src/lib/e2ee/session";
 import { MemoSchema } from "../src/types/proto/api/memo_service_pb";
 
-const mocks = vi.hoisted(() => ({ session: undefined as unknown as VaultSession, create: vi.fn(), update: vi.fn(), updateHook: vi.fn() }));
+const mocks = vi.hoisted(() => ({
+  session: undefined as unknown as VaultSession,
+  create: vi.fn(),
+  update: vi.fn(),
+  updateHook: vi.fn(),
+  get: vi.fn(),
+}));
+vi.mock("../src/connect", () => ({ memoServiceClient: { getMemo: mocks.get } }));
 vi.mock("../src/contexts/E2EEContext", async () => {
   const { useSyncExternalStore } = await import("react");
   return {
@@ -29,6 +37,7 @@ beforeEach(() => {
   mocks.session.setOwner("users/alice");
   mocks.create.mockReset();
   mocks.update.mockReset();
+  mocks.get.mockReset();
   mocks.updateHook.mockClear();
   localStorage.clear();
 });
@@ -157,4 +166,71 @@ it("guards a title-only draft against cancellation and discards it on lock", asy
   expect(screen.getByRole("button", { name: "e2ee.unlock: Saved title" })).toBeInTheDocument();
   expect(screen.queryByText("Unsaved title")).not.toBeInTheDocument();
   confirm.mockRestore();
+});
+
+it("preserves the draft across a conflict and explicitly adopts the reviewed revision", async () => {
+  const vault = await createVault("a separate strong encryption password");
+  mocks.session.accept(mocks.session.ticket(), vault.key, vault.record.id);
+  const original = await encryptMemo(vault.key, vault.record.id, "original");
+  const remote = await encryptMemo(vault.key, vault.record.id, "newer remote body", original.objectId);
+  const memo = create(MemoSchema, { name: "memos/conflict", encryptedContent: encodeRecord(original) });
+  const refreshed = create(MemoSchema, { ...memo, encryptedTitle: "remote title", encryptedContent: encodeRecord(remote) });
+  mocks.update
+    .mockRejectedValueOnce(new ConnectError("stale revision", Code.Aborted))
+    .mockRejectedValueOnce(new ConnectError("changed again", Code.Aborted))
+    .mockResolvedValue(refreshed);
+  mocks.get.mockResolvedValue(refreshed);
+  const view = render(<EncryptedMemoEditor memo={memo} editing />);
+  const body = () => screen.getByRole("textbox", { name: "e2ee.title" });
+  await waitFor(() => expect(body()).toHaveValue("original"));
+  fireEvent.change(body(), { target: { value: "my draft" } });
+  fireEvent.change(screen.getByRole("textbox", { name: "e2ee.memo-title" }), { target: { value: "my title" } });
+  fireEvent.click(screen.getByRole("button", { name: "common.save" }));
+  await screen.findByText("e2ee.conflict");
+  view.rerender(<EncryptedMemoEditor memo={refreshed} editing />);
+  expect(body()).toHaveValue("my draft");
+  expect(screen.getByRole("button", { name: "common.save" })).toBeDisabled();
+  expect(mocks.get).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button", { name: "e2ee.conflict-review" }));
+  await screen.findByText("newer remote body");
+  expect(body()).toHaveValue("my draft");
+  expect(screen.getByRole("textbox", { name: "e2ee.memo-title" })).toHaveValue("my title");
+  fireEvent.click(screen.getByRole("button", { name: "e2ee.conflict-continue" }));
+  expect(mocks.update).toHaveBeenCalledTimes(1);
+  expect(body()).toHaveValue("my draft");
+  fireEvent.click(screen.getByRole("button", { name: "common.save" }));
+  await waitFor(() => expect(mocks.update).toHaveBeenCalledTimes(2));
+  const request = mocks.update.mock.calls[1][0];
+  expect(request.expectedEncryptionRevision).toBe(remote.revisionId);
+  expect(request.update.encryptedTitle).toBe("my title");
+  expect(await decryptMemo(vault.key, decodeMemo(request.update.encryptedContent))).toBe("my draft");
+  await screen.findByText("e2ee.conflict");
+  expect(body()).toHaveValue("my draft");
+  const newest = await encryptMemo(vault.key, vault.record.id, "changed during review", original.objectId);
+  mocks.get.mockResolvedValue(create(MemoSchema, { ...refreshed, encryptedContent: encodeRecord(newest) }));
+  fireEvent.click(screen.getByRole("button", { name: "e2ee.conflict-review" }));
+  await screen.findByText("changed during review");
+  fireEvent.click(screen.getByRole("button", { name: "e2ee.conflict-continue" }));
+  fireEvent.click(screen.getByRole("button", { name: "common.save" }));
+  await waitFor(() => expect(mocks.update).toHaveBeenCalledTimes(3));
+  expect(mocks.update.mock.calls[2][0].expectedEncryptionRevision).toBe(newest.revisionId);
+});
+
+it("does not revive a conflict preview after locking during its fetch", async () => {
+  const vault = await createVault("a separate strong encryption password");
+  mocks.session.accept(mocks.session.ticket(), vault.key, vault.record.id);
+  const envelope = await encryptMemo(vault.key, vault.record.id, "original");
+  const memo = create(MemoSchema, { name: "memos/conflict", encryptedContent: encodeRecord(envelope) });
+  mocks.update.mockRejectedValue(new ConnectError("stale revision", Code.Aborted));
+  const pending = Promise.withResolvers<typeof memo>();
+  mocks.get.mockReturnValue(pending.promise);
+  render(<EncryptedMemoEditor memo={memo} editing />);
+  await waitFor(() => expect(screen.getByRole("textbox", { name: "e2ee.title" })).toHaveValue("original"));
+  fireEvent.click(screen.getByRole("button", { name: "common.save" }));
+  await screen.findByText("e2ee.conflict");
+  fireEvent.click(screen.getByRole("button", { name: "e2ee.conflict-review" }));
+  act(() => mocks.session.lock());
+  await act(async () => pending.resolve(memo));
+  expect(screen.queryByText("original")).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "e2ee.conflict-continue" })).not.toBeInTheDocument();
 });

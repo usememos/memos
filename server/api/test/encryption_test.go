@@ -53,6 +53,10 @@ func TestEncryptionAPI(t *testing.T) {
 	require.Empty(t, memo.Snippet)
 	require.Empty(t, memo.Tags)
 	require.Equal(t, encode(envelope), memo.EncryptedContent)
+	// Reusing an encrypted object under a different memo ID is a revision conflict, not a memo ID collision.
+	_, err = ts.Service.CreateMemo(ownerCtx, &apipb.CreateMemoRequest{Memo: &apipb.Memo{Visibility: apipb.Visibility_PRIVATE, EncryptedContent: encode(envelope)}})
+	require.Equal(t, codes.Aborted, status.Code(err))
+
 	for _, other := range []context.Context{peerCtx, adminCtx} {
 		_, err = ts.Service.GetMemo(other, &apipb.GetMemoRequest{Name: memo.Name})
 		require.Equal(t, codes.PermissionDenied, status.Code(err))

@@ -1433,6 +1433,9 @@
     "speed": "Velocità di riproduzione {{rate}}x"
   },
   "e2ee": {
+    "conflict": "Questa nota è stata modificata altrove. La bozza è conservata. Controlla la versione più recente prima di salvare di nuovo.",
+    "conflict-review": "Controlla la versione più recente",
+    "conflict-continue": "Mantieni la bozza e continua",
     "unlock-other": "Altri modi per sbloccare",
     "passkey-add": "Aggiungi passkey",
     "passkey-unlock": "Sblocca con passkey",

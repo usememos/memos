@@ -1432,6 +1432,9 @@
     "speed": "Playback speed {{rate}}x"
   },
   "e2ee": {
+    "conflict": "This memo changed elsewhere. Your draft is kept. Review the latest version before saving again.",
+    "conflict-review": "Review latest version",
+    "conflict-continue": "Keep my draft and continue editing",
     "unlock-other": "Other ways to unlock",
     "passkey-add": "Add passkey",
     "passkey-unlock": "Unlock with passkey",

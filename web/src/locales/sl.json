@@ -1434,6 +1434,9 @@
     "speed": "Hitrost predvajanja {{rate}}x"
   },
   "e2ee": {
+    "conflict": "Beležka je bila spremenjena drugje. Osnutek je ohranjen. Pred ponovnim shranjevanjem preglejte najnovejšo različico.",
+    "conflict-review": "Preglej najnovejšo različico",
+    "conflict-continue": "Ohrani osnutek in nadaljuj",
     "unlock-other": "Drugi načini odklepanja",
     "passkey-add": "Dodaj ključ za dostop",
     "passkey-unlock": "Odkleni s ključem za dostop",

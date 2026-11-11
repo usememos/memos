@@ -1,9 +1,11 @@
 import { create } from "@bufbuild/protobuf";
+import { Code, ConnectError } from "@connectrpc/connect";
 import { Button, Field, Input, Textarea } from "@usememos/ui";
 import { LockKeyholeIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useBlocker } from "react-router-dom";
 import { VaultPanel } from "@/components/Encryption/VaultPanel";
+import { memoServiceClient } from "@/connect";
 import { lockEncryption, useVaultSession } from "@/contexts/E2EEContext";
 import { useCreateMemo, useUpdateMemo } from "@/hooks/useMemoQueries";
 import { decodeMemo, decryptMemo, type EncryptedMemo, encodeRecord, encryptMemo } from "@/lib/e2ee/crypto";
@@ -90,7 +92,11 @@ function UnsavedGuard() {
 function UnlockedText({ memo, editing = false, onConfirm, onCancel, onSavingChange }: Props) {
   const t = useTranslate();
   const { session, key, vaultId } = useVaultSession();
-  const [initialMemo] = useState(memo);
+  const [initialMemo, setInitialMemo] = useState(memo);
+  const adoptedSource = useRef<Memo | undefined>(undefined);
+  const [conflict, setConflict] = useState(false);
+  const [reviewing, setReviewing] = useState(false);
+  const [latest, setLatest] = useState<{ memo: Memo; envelope: EncryptedMemo; content: string }>();
   const source = editing ? initialMemo : memo;
   const [content, setContent] = useState("");
   const [saved, setSaved] = useState("");
@@ -113,7 +119,7 @@ function UnlockedText({ memo, editing = false, onConfirm, onCancel, onSavingChan
   useEffect(() => {
     let active = true;
     const ticket = session.ticket();
-    if (!source || !key) return;
+    if (!source || !key || source === adoptedSource.current) return;
     setReady(false);
     setFailed(false);
     /** Applies plaintext only while this memo and its unlocked vault session are still current. */
@@ -137,9 +143,39 @@ function UnlockedText({ memo, editing = false, onConfirm, onCancel, onSavingChan
       active = false;
     };
   }, [source, key, vaultId, session]);
+  /** Fetches and decrypts a competing revision without replacing the unsaved draft. */
+  const reviewLatest = async () => {
+    if (!memo || !key || reviewing) return;
+    const ticket = session.ticket();
+    setReviewing(true);
+    setLatest(undefined);
+    try {
+      const refreshed = await memoServiceClient.getMemo({ name: memo.name });
+      const envelope = decodeMemo(refreshed.encryptedContent);
+      if (envelope.vaultId !== vaultId || envelope.objectId !== baseline.current?.objectId) throw new Error("Vault or object mismatch");
+      const text = await decryptMemo(key, envelope);
+      if (!alive.current || !session.current(ticket)) return;
+      setLatest({ memo: refreshed, envelope, content: text });
+    } catch {
+      if (alive.current && session.current(ticket)) showErrorToast(t("e2ee.failed"));
+    } finally {
+      if (alive.current) setReviewing(false);
+    }
+  };
+  /** Adopts only the reviewed baseline; the user's title and body remain available for editing. */
+  const acceptLatest = () => {
+    if (!latest) return;
+    adoptedSource.current = latest.memo;
+    baseline.current = latest.envelope;
+    setInitialMemo(latest.memo);
+    setSaved(latest.content);
+    setSavedTitle(latest.memo.encryptedTitle);
+    setConflict(false);
+    setLatest(undefined);
+  };
   /** Encrypts the current draft and ignores results belonging to a locked or replaced session. */
   const save = async () => {
-    if (!key || !vaultId || !ready || saving || !content.trim()) return;
+    if (!key || !vaultId || !ready || saving || conflict || reviewing || !content.trim()) return;
     const ticket = session.ticket();
     setSaving(true);
     onSavingChange?.(true);
@@ -167,8 +203,13 @@ function UnlockedText({ memo, editing = false, onConfirm, onCancel, onSavingChan
         }
         onConfirm?.(result.name);
       }
-    } catch {
-      if (session.current(ticket) && alive.current) showErrorToast(t("e2ee.failed"));
+    } catch (error) {
+      if (session.current(ticket) && alive.current) {
+        if (memo && ConnectError.from(error).code === Code.Aborted) {
+          setConflict(true);
+          setLatest(undefined);
+        } else showErrorToast(t("e2ee.failed"));
+      }
     } finally {
       if (alive.current) setSaving(false);
       onSavingChange?.(false);
@@ -184,6 +225,25 @@ function UnlockedText({ memo, editing = false, onConfirm, onCancel, onSavingChan
       ) : editing ? (
         <>
           <p className="mu-caption text-mu-ink-muted">{t("e2ee.limitations")}</p>
+          {conflict && (
+            <div className="flex flex-col gap-2 rounded-mu-md border border-mu-line bg-mu-well p-3">
+              <p role="alert" className="mu-body">
+                {t("e2ee.conflict")}
+              </p>
+              <Button variant="neutral" disabled={reviewing} onClick={() => void reviewLatest()}>
+                {t("e2ee.conflict-review")}
+              </Button>
+              {latest && (
+                <>
+                  <p className="mu-label break-words">{latest.memo.encryptedTitle || t("e2ee.title")}</p>
+                  <div className="mu-body whitespace-pre-wrap break-words">{latest.content}</div>
+                  <Button variant="neutral" onClick={acceptLatest}>
+                    {t("e2ee.conflict-continue")}
+                  </Button>
+                </>
+              )}
+            </div>
+          )}
           <Field.Root>
             <Field.Label>{t("e2ee.memo-title")}</Field.Label>
             <Input value={title} maxLength={256} disabled={saving} autoComplete="off" onChange={(event) => setTitle(event.target.value)} />
@@ -199,7 +259,7 @@ function UnlockedText({ memo, editing = false, onConfirm, onCancel, onSavingChan
             onChange={(event) => setContent(event.target.value)}
           />
           <div className="flex gap-2">
-            <Button variant="primary" disabled={saving || !content.trim()} onClick={() => void save()}>
+            <Button variant="primary" disabled={saving || conflict || reviewing || !content.trim()} onClick={() => void save()}>
               {t("common.save")}
             </Button>
             {onCancel && (

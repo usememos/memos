@@ -1433,6 +1433,9 @@
     "speed": "Vitesse de lecture {{rate}}x"
   },
   "e2ee": {
+    "conflict": "Cette note a été modifiée ailleurs. Votre brouillon est conservé. Consultez la dernière version avant de réenregistrer.",
+    "conflict-review": "Consulter la dernière version",
+    "conflict-continue": "Garder mon brouillon et continuer",
     "unlock-other": "Autres méthodes de déverrouillage",
     "passkey-add": "Ajouter une clé d’accès",
     "passkey-unlock": "Déverrouiller avec une clé d’accès",

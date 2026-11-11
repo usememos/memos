@@ -1434,6 +1434,9 @@
     "speed": "Prędkość odtwarzania {{rate}}x"
   },
   "e2ee": {
+    "conflict": "Notatkę zmieniono gdzie indziej. Szkic został zachowany. Przejrzyj najnowszą wersję przed ponownym zapisem.",
+    "conflict-review": "Przejrzyj najnowszą wersję",
+    "conflict-continue": "Zachowaj szkic i kontynuuj",
     "unlock-other": "Inne sposoby odblokowania",
     "passkey-add": "Dodaj klucz dostępu",
     "passkey-unlock": "Odblokuj kluczem dostępu",

@@ -1433,6 +1433,9 @@
     "speed": "Atskaņošanas ātrums {{rate}}x"
   },
   "e2ee": {
+    "conflict": "Piezīme mainīta citur. Melnraksts ir saglabāts. Pirms atkārtotas saglabāšanas pārskatiet jaunāko versiju.",
+    "conflict-review": "Pārskatīt jaunāko versiju",
+    "conflict-continue": "Paturēt melnrakstu un turpināt",
     "unlock-other": "Citi atbloķēšanas veidi",
     "passkey-add": "Pievienot piekļuves atslēgu",
     "passkey-unlock": "Atbloķēt ar piekļuves atslēgu",

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 
+	mysqldriver "github.com/go-sql-driver/mysql"
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/encoding/protojson"
 
@@ -83,7 +84,7 @@ func insertMySQLMemo(ctx context.Context, tx *sql.Tx, create *store.Memo) (*stor
 		return nil, errors.Wrap(err, "failed to unmarshal payload")
 	}
 	if err := store.InsertMemoEncryption(ctx, tx, memo, false); err != nil {
-		return nil, err
+		return nil, memoEncryptionError(err)
 	}
 	return memo, nil
 }
@@ -385,4 +386,13 @@ func (d *DB) RefreshMemoDerivedPayload(ctx context.Context, refresh *store.Refre
 		return errors.Wrap(err, "failed to refresh memo payload")
 	}
 	return nil
+}
+
+// memoEncryptionError distinguishes a reused encrypted object from other database failures.
+func memoEncryptionError(err error) error {
+	var duplicate *mysqldriver.MySQLError
+	if errors.As(err, &duplicate) && duplicate.Number == 1062 && (strings.HasSuffix(duplicate.Message, "for key 'memo_encryption.vault_id'") || strings.HasSuffix(duplicate.Message, "for key 'vault_id'")) {
+		return store.ErrEncryptionConflict
+	}
+	return err
 }

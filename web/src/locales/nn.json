@@ -1432,6 +1432,9 @@
     "speed": "Avspelingsfart {{rate}}x"
   },
   "e2ee": {
+    "conflict": "Notatet er endra ein annan stad. Utkastet er teke vare på. Sjå gjennom siste versjon før du lagrar på nytt.",
+    "conflict-review": "Sjå gjennom siste versjon",
+    "conflict-continue": "Behald utkastet og hald fram",
     "unlock-other": "Andre måtar å låse opp på",
     "passkey-add": "Legg til passnøkkel",
     "passkey-unlock": "Lås opp med passnøkkel",

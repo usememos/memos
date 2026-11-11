@@ -1433,6 +1433,9 @@
     "speed": "Velocidade de reprodução {{rate}}x"
   },
   "e2ee": {
+    "conflict": "Esta nota foi alterada noutro local. O rascunho foi preservado. Reveja a versão mais recente antes de guardar novamente.",
+    "conflict-review": "Rever versão mais recente",
+    "conflict-continue": "Manter o rascunho e continuar",
     "unlock-other": "Outras formas de desbloquear",
     "passkey-add": "Adicionar chave de acesso",
     "passkey-unlock": "Desbloquear com chave de acesso",

@@ -1433,6 +1433,9 @@
     "speed": "Velocitat de reproducció {{rate}}x"
   },
   "e2ee": {
+    "conflict": "Aquesta nota ha canviat en un altre lloc. Es conserva l’esborrany. Revisa la darrera versió abans de tornar a desar.",
+    "conflict-review": "Revisa la darrera versió",
+    "conflict-continue": "Conserva l’esborrany i continua",
     "unlock-other": "Altres maneres de desbloquejar",
     "passkey-add": "Afegeix una clau d'accés",
     "passkey-unlock": "Desbloqueja amb una clau d'accés",

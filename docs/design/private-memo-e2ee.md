@@ -92,7 +92,14 @@ Store vault wrappers separately from ordinary user settings so list-users, admin
 Never return wrappers through public routes. Do not add E2EE endpoints to the unauthenticated ACL list.
 
 Content writes require the expected revision ID; conflicts preserve the local edit and require refetch/reconciliation. Reject stale writes rather than
-silently overwriting ciphertext. Apply envelope shape/size checks and bounded quotas server-side; the server cannot validate plaintext length.
+silently overwriting ciphertext. The editor keeps the local title and body after a revision conflict and blocks further saves
+until the user explicitly reviews the latest server version. The review decrypts a separate preview in component memory;
+accepting it updates the source and expected revision without replacing or automatically saving the draft. A subsequent
+concurrent write produces another conflict. Locking or changing accounts invalidates pending previews.
+Object-identity constraint violations return an encryption conflict; memo-ID collisions and other database failures retain
+their original error classification.
+
+Apply envelope shape/size checks and bounded quotas server-side; the server cannot validate plaintext length.
 Use a documented ciphertext byte cap, accounting for encryption overhead, without trusting client-reported plaintext sizes.
 
 Add migrations and fresh-install equivalents for SQLite, MySQL and PostgreSQL. Update proto sources and regenerate all outputs with `buf generate`.

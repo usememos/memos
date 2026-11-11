@@ -65,7 +65,7 @@ func insertSQLiteMemo(ctx context.Context, tx dbExecutor, create *store.Memo) er
 	); err != nil {
 		return err
 	}
-	return store.InsertMemoEncryption(ctx, tx, create, false)
+	return memoEncryptionError(store.InsertMemoEncryption(ctx, tx, create, false))
 }
 
 func validateSQLiteMemoCreate(ctx context.Context, tx dbExecutor, create *store.Memo) error {
@@ -344,4 +344,12 @@ func (d *DB) RefreshMemoDerivedPayload(ctx context.Context, refresh *store.Refre
 		return errors.Wrap(err, "failed to refresh memo payload")
 	}
 	return nil
+}
+
+// memoEncryptionError distinguishes a reused encrypted object from other database failures.
+func memoEncryptionError(err error) error {
+	if isSQLiteUniqueViolation(err) && strings.Contains(err.Error(), "UNIQUE constraint failed: memo_encryption.vault_id, memo_encryption.object_id (") {
+		return store.ErrEncryptionConflict
+	}
+	return err
 }

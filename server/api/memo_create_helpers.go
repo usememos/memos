@@ -13,6 +13,7 @@ import (
 	"github.com/usememos/memos/store"
 )
 
+// mapMemoCreateError distinguishes memo identifier collisions from other create failures.
 func mapMemoCreateError(err error, uid, operation string) error {
 	errMessage := err.Error()
 	if strings.Contains(errMessage, "UNIQUE constraint failed") ||

@@ -13,6 +13,7 @@ import (
 	"github.com/usememos/memos/store"
 )
 
+// encryptionError maps vault policy and revision errors to public RPC statuses.
 func encryptionError(err error) error {
 	if errors.Is(err, store.ErrEncryptionConflict) {
 		return status.Errorf(codes.Aborted, "%s", err.Error())
@@ -72,6 +73,7 @@ func (s *APIService) UpdateEncryptionVault(ctx context.Context, r *apipb.UpdateE
 	return &apipb.EncryptionVault{Vault: r.Vault}, nil
 }
 
+// GetEncryptionVault adapts the authenticated encryption service result to Connect.
 func (s *ConnectServiceHandler) GetEncryptionVault(ctx context.Context, r *connect.Request[apipb.GetEncryptionVaultRequest]) (*connect.Response[apipb.EncryptionVault], error) {
 	resp, err := s.APIService.GetEncryptionVault(ctx, r.Msg)
 	if err != nil {
@@ -80,6 +82,7 @@ func (s *ConnectServiceHandler) GetEncryptionVault(ctx context.Context, r *conne
 	return connect.NewResponse(resp), nil
 }
 
+// CreateEncryptionVault adapts the authenticated encryption service result to Connect.
 func (s *ConnectServiceHandler) CreateEncryptionVault(ctx context.Context, r *connect.Request[apipb.CreateEncryptionVaultRequest]) (*connect.Response[apipb.EncryptionVault], error) {
 	resp, err := s.APIService.CreateEncryptionVault(ctx, r.Msg)
 	if err != nil {
@@ -88,6 +91,7 @@ func (s *ConnectServiceHandler) CreateEncryptionVault(ctx context.Context, r *co
 	return connect.NewResponse(resp), nil
 }
 
+// UpdateEncryptionVault adapts the authenticated encryption service result to Connect.
 func (s *ConnectServiceHandler) UpdateEncryptionVault(ctx context.Context, r *connect.Request[apipb.UpdateEncryptionVaultRequest]) (*connect.Response[apipb.EncryptionVault], error) {
 	resp, err := s.APIService.UpdateEncryptionVault(ctx, r.Msg)
 	if err != nil {
@@ -111,6 +115,8 @@ func (s *APIService) ListEncryptionPasskeys(ctx context.Context, r *apipb.ListEn
 	}
 	return &apipb.ListEncryptionPasskeysResponse{Passkeys: data}, nil
 }
+
+// ListEncryptionPasskeys adapts the authenticated encryption service result to Connect.
 func (s *ConnectServiceHandler) ListEncryptionPasskeys(ctx context.Context, r *connect.Request[apipb.ListEncryptionPasskeysRequest]) (*connect.Response[apipb.ListEncryptionPasskeysResponse], error) {
 	resp, err := s.APIService.ListEncryptionPasskeys(ctx, r.Msg)
 	if err != nil {
@@ -133,6 +139,8 @@ func (s *APIService) CreateEncryptionPasskey(ctx context.Context, r *apipb.Creat
 	}
 	return &apipb.EncryptionPasskey{Passkey: r.Passkey}, nil
 }
+
+// CreateEncryptionPasskey adapts the authenticated encryption service result to Connect.
 func (s *ConnectServiceHandler) CreateEncryptionPasskey(ctx context.Context, r *connect.Request[apipb.CreateEncryptionPasskeyRequest]) (*connect.Response[apipb.EncryptionPasskey], error) {
 	resp, err := s.APIService.CreateEncryptionPasskey(ctx, r.Msg)
 	if err != nil {
@@ -155,6 +163,8 @@ func (s *APIService) DeleteEncryptionPasskey(ctx context.Context, r *apipb.Delet
 	}
 	return &emptypb.Empty{}, nil
 }
+
+// DeleteEncryptionPasskey adapts the authenticated encryption service result to Connect.
 func (s *ConnectServiceHandler) DeleteEncryptionPasskey(ctx context.Context, r *connect.Request[apipb.DeleteEncryptionPasskeyRequest]) (*connect.Response[emptypb.Empty], error) {
 	resp, err := s.APIService.DeleteEncryptionPasskey(ctx, r.Msg)
 	if err != nil {

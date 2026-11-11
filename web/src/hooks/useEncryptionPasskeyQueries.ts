@@ -12,6 +12,7 @@ export function useEncryptionPasskeys(owner: string) {
     retry: false,
   });
 }
+/** Registers a wrapped credential and refreshes the account’s passkey list. */
 export function useCreateEncryptionPasskey(owner: string) {
   const client = useQueryClient();
   return useMutation({
@@ -19,6 +20,7 @@ export function useCreateEncryptionPasskey(owner: string) {
     onSuccess: () => client.invalidateQueries({ queryKey: passkeyKey(owner) }),
   });
 }
+/** Removes a server wrapper and refreshes the account’s passkey list. */
 export function useDeleteEncryptionPasskey(owner: string) {
   const client = useQueryClient();
   return useMutation({

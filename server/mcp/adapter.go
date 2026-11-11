@@ -288,6 +288,7 @@ func hasEncryptedMemo(value any) bool {
 	return false
 }
 
+// redactEncryptedMemos recursively removes encrypted bodies and plaintext titles from integration responses.
 func redactEncryptedMemos(value any) {
 	switch v := value.(type) {
 	case map[string]any:

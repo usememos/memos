@@ -1432,6 +1432,9 @@
     "speed": "Lejátszási sebesség: {{rate}}x"
   },
   "e2ee": {
+    "conflict": "A jegyzetet máshol módosították. A piszkozat megmaradt. Mentés előtt nézze át a legújabb verziót.",
+    "conflict-review": "Legújabb verzió áttekintése",
+    "conflict-continue": "Piszkozat megtartása és folytatás",
     "unlock-other": "Egyéb feloldási módok",
     "passkey-add": "Hozzáférési kulcs hozzáadása",
     "passkey-unlock": "Feloldás hozzáférési kulccsal",

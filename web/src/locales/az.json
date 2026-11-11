@@ -1432,6 +1432,9 @@
     "speed": "Oynatma sürəti {{rate}}x"
   },
   "e2ee": {
+    "conflict": "Bu qeyd başqa yerdə dəyişdirilib. Qaralamanız saxlanılıb. Yenidən yadda saxlamazdan əvvəl son versiyanı nəzərdən keçirin.",
+    "conflict-review": "Son versiyanı nəzərdən keçir",
+    "conflict-continue": "Qaralamamı saxla və davam et",
     "unlock-other": "Kilidi açmağın digər yolları",
     "passkey-add": "Keçid açarı əlavə et",
     "passkey-unlock": "Keçid açarı ilə kilidi aç",

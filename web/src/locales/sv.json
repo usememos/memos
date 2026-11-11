@@ -1432,6 +1432,9 @@
     "speed": "Uppspelningshastighet {{rate}}x"
   },
   "e2ee": {
+    "conflict": "Anteckningen ändrades på annat håll. Ditt utkast finns kvar. Granska senaste versionen innan du sparar igen.",
+    "conflict-review": "Granska senaste versionen",
+    "conflict-continue": "Behåll mitt utkast och fortsätt",
     "unlock-other": "Andra sätt att låsa upp",
     "passkey-add": "Lägg till passnyckel",
     "passkey-unlock": "Lås upp med passnyckel",

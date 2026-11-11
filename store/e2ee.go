@@ -55,6 +55,7 @@ type VaultRecord struct {
 	RecoveryKey   Ciphertext `json:"recoveryKey"`
 }
 
+// decodeRecord bounds and validates exact protocol JSON fields before decoding.
 func decodeRecord(data []byte, out any, limit int) error {
 	if len(data) == 0 || len(data) > limit {
 		return ErrEncryptionPolicy
@@ -107,14 +108,20 @@ func decodeRecord(data []byte, out any, limit int) error {
 	}
 	return nil
 }
+
+// validID accepts canonical lowercase UUIDv4 identifiers.
 func validID(s string) bool {
 	u, e := uuid.Parse(s)
 	return e == nil && u.String() == s && u.Version() == 4 && u.Variant() == uuid.RFC4122
 }
+
+// validBase64 checks canonical encoding and decoded byte bounds.
 func validBase64(s string, minimum, maximum int) bool {
 	b, e := base64.StdEncoding.Strict().DecodeString(s)
 	return e == nil && len(b) >= minimum && len(b) <= maximum && base64.StdEncoding.EncodeToString(b) == s
 }
+
+// validCipher checks nonce size and bounded authenticated ciphertext.
 func validCipher(c Ciphertext, maximum int) bool {
 	return validBase64(c.Nonce, 12, 12) && validBase64(c.Ciphertext, 16, maximum)
 }
@@ -160,6 +167,7 @@ type EncryptionExecutor interface {
 	QueryRowContext(context.Context, string, ...any) *sql.Row
 }
 
+// encryptionSQL adapts positional placeholders for PostgreSQL.
 func encryptionSQL(query string, postgres bool) string {
 	if !postgres {
 		return query
@@ -264,6 +272,8 @@ func (s *Store) GetEncryptionVault(ctx context.Context, userID int32) ([]byte, e
 	}
 	return data, err
 }
+
+// encryptionQuery selects the placeholder format for the configured driver.
 func (s *Store) encryptionQuery(q string) string {
 	return encryptionSQL(q, s.profile.Driver == "postgres")
 }
@@ -343,6 +353,8 @@ func (s *Store) RequirePlaintextMemo(ctx context.Context, id int32) error {
 	}
 	return nil
 }
+
+// validateEncryptedMutation rejects integrations and bindings that cannot operate on encrypted memos.
 func (s *Store) validateEncryptedMutation(ctx context.Context, m *MemoMutation) error {
 	encrypted := IsEncryptedMemo(m.MemoCreate)
 	if m.MemoCreate == nil {
@@ -469,6 +481,8 @@ func hasEncryptedContentFilter(ctx context.Context, expressions []string) (bool,
 	}
 	return false, nil
 }
+
+// encryptedContentField identifies content-derived fields in filter expressions.
 func encryptedContentField(value any) bool {
 	field := func(name string) bool {
 		return name == "content" || name == "tags" || name == "tag" || strings.HasPrefix(name, "has_")

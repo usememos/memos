@@ -1432,6 +1432,9 @@
     "speed": "Toistonopeus {{rate}}x"
   },
   "e2ee": {
+    "conflict": "Muistiinpanoa muutettiin muualla. Luonnoksesi säilyy. Tarkista uusin versio ennen tallentamista uudelleen.",
+    "conflict-review": "Tarkista uusin versio",
+    "conflict-continue": "Säilytä luonnos ja jatka",
     "unlock-other": "Muut avaustavat",
     "passkey-add": "Lisää pääsyavain",
     "passkey-unlock": "Avaa lukitus pääsyavaimella",

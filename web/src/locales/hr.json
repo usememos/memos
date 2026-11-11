@@ -1433,6 +1433,9 @@
     "speed": "Brzina reprodukcije {{rate}}x"
   },
   "e2ee": {
+    "conflict": "Bilješka je izmijenjena drugdje. Nacrt je sačuvan. Pregledajte najnoviju verziju prije ponovnog spremanja.",
+    "conflict-review": "Pregledaj najnoviju verziju",
+    "conflict-continue": "Zadrži nacrt i nastavi",
     "unlock-other": "Drugi načini otključavanja",
     "passkey-add": "Dodaj pristupni ključ",
     "passkey-unlock": "Otključaj pristupnim ključem",

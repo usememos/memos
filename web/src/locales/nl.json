@@ -1432,6 +1432,9 @@
     "speed": "Afspeelsnelheid {{rate}}x"
   },
   "e2ee": {
+    "conflict": "Deze notitie is elders gewijzigd. Je concept blijft behouden. Bekijk de nieuwste versie voordat je opnieuw opslaat.",
+    "conflict-review": "Nieuwste versie bekijken",
+    "conflict-continue": "Mijn concept behouden en doorgaan",
     "unlock-other": "Andere manieren om te ontgrendelen",
     "passkey-add": "Passkey toevoegen",
     "passkey-unlock": "Ontgrendelen met passkey",

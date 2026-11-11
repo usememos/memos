@@ -1432,6 +1432,9 @@
     "speed": "再生速度 {{rate}}x"
   },
   "e2ee": {
+    "conflict": "別の場所でメモが変更されました。下書きは保持されています。再保存する前に最新版を確認してください。",
+    "conflict-review": "最新版を確認",
+    "conflict-continue": "下書きを保持して編集を続ける",
     "unlock-other": "他の方法でロック解除",
     "passkey-add": "パスキーを追加",
     "passkey-unlock": "パスキーでロック解除",

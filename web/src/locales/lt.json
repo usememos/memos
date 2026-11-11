@@ -1434,6 +1434,9 @@
     "speed": "Atkūrimo greitis {{rate}}x"
   },
   "e2ee": {
+    "conflict": "Pastaba pakeista kitur. Juodraštis išsaugotas. Prieš išsaugodami dar kartą peržiūrėkite naujausią versiją.",
+    "conflict-review": "Peržiūrėti naujausią versiją",
+    "conflict-continue": "Palikti juodraštį ir tęsti",
     "unlock-other": "Kiti atrakinimo būdai",
     "passkey-add": "Pridėti prieigos raktą",
     "passkey-unlock": "Atrakinti prieigos raktu",

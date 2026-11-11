@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/lib/pq"
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/encoding/protojson"
 
@@ -63,7 +64,7 @@ func insertPostgresMemo(ctx context.Context, tx *sql.Tx, create *store.Memo) err
 	); err != nil {
 		return err
 	}
-	return store.InsertMemoEncryption(ctx, tx, create, true)
+	return memoEncryptionError(store.InsertMemoEncryption(ctx, tx, create, true))
 }
 
 func validatePostgresMemoCreate(ctx context.Context, tx *sql.Tx, create *store.Memo) error {
@@ -350,4 +351,13 @@ func (d *DB) RefreshMemoDerivedPayload(ctx context.Context, refresh *store.Refre
 		return errors.Wrap(err, "failed to refresh memo payload")
 	}
 	return nil
+}
+
+// memoEncryptionError distinguishes a reused encrypted object from other database failures.
+func memoEncryptionError(err error) error {
+	var duplicate *pq.Error
+	if errors.As(err, &duplicate) && duplicate.Code == "23505" && duplicate.Constraint == "memo_encryption_vault_id_object_id_key" {
+		return store.ErrEncryptionConflict
+	}
+	return err
 }

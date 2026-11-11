@@ -1432,6 +1432,9 @@
     "speed": "Kecepatan putar {{rate}}x"
   },
   "e2ee": {
+    "conflict": "Catatan ini diubah di tempat lain. Draf Anda tetap disimpan. Tinjau versi terbaru sebelum menyimpan lagi.",
+    "conflict-review": "Tinjau versi terbaru",
+    "conflict-continue": "Pertahankan draf dan lanjutkan",
     "unlock-other": "Cara lain untuk membuka kunci",
     "passkey-add": "Tambahkan kunci sandi",
     "passkey-unlock": "Buka kunci dengan kunci sandi",

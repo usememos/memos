@@ -7,6 +7,7 @@ import { useTranslate } from "@/utils/i18n";
 
 const VaultContext = createContext<VaultSession | undefined>(undefined);
 const emptySession = new VaultSession();
+/** Owns the ephemeral vault session and applies account, inactivity, and cross-tab locks. */
 export function E2EEProvider({ children }: { children: ReactNode }) {
   const { currentUser } = useAuth();
   const [session] = useState(() => new VaultSession());
@@ -67,11 +68,13 @@ export function E2EEProvider({ children }: { children: ReactNode }) {
   }, [session]);
   return <VaultContext.Provider value={session}>{children}</VaultContext.Provider>;
 }
+/** Subscribes to the current vault state without persisting unwrapped keys. */
 export function useVaultSession() {
   const session = useContext(VaultContext) ?? emptySession;
   const snapshot = useSyncExternalStore(session.subscribe, session.getSnapshot);
   return { session, ...snapshot };
 }
+/** Locks all local editors after confirming disposal of dirty encrypted drafts. */
 export function lockEncryption(discardMessage: string) {
   if (!confirmEncryptedDiscard(discardMessage)) return;
   window.dispatchEvent(new Event("memos-e2ee-lock"));

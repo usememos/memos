@@ -1432,6 +1432,9 @@
     "speed": "Wiedergabegeschwindigkeit {{rate}}x"
   },
   "e2ee": {
+    "conflict": "Diese Notiz wurde anderswo geändert. Ihr Entwurf bleibt erhalten. Prüfen Sie vor dem Speichern die neueste Version.",
+    "conflict-review": "Neueste Version prüfen",
+    "conflict-continue": "Entwurf behalten und weiterbearbeiten",
     "unlock-other": "Andere Entsperrmethoden",
     "passkey-add": "Passkey hinzufügen",
     "passkey-unlock": "Mit Passkey entsperren",

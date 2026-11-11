@@ -1432,6 +1432,9 @@
     "speed": "Tốc độ phát {{rate}}x"
   },
   "e2ee": {
+    "conflict": "Ghi chú đã được sửa ở nơi khác. Bản nháp được giữ lại. Hãy xem bản mới nhất trước khi lưu lại.",
+    "conflict-review": "Xem bản mới nhất",
+    "conflict-continue": "Giữ bản nháp và tiếp tục sửa",
     "unlock-other": "Các cách mở khóa khác",
     "passkey-add": "Thêm khóa truy cập",
     "passkey-unlock": "Mở khóa bằng khóa truy cập",

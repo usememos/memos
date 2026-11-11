@@ -14,6 +14,7 @@ export function VaultPanel() {
   const { owner, epoch } = useVaultSession();
   return <VaultForm key={`${owner}:${epoch}`} />;
 }
+/** Handles vault setup, recovery, and passphrase changes while keeping secrets in form state. */
 function VaultForm() {
   const t = useTranslate();
   const { session, key, owner } = useVaultSession();

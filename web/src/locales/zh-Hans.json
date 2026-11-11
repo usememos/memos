@@ -1432,6 +1432,9 @@
     "speed": "播放速度 {{rate}}x"
   },
   "e2ee": {
+    "conflict": "此笔记已在其他地方修改。草稿已保留，请在再次保存前查看最新版本。",
+    "conflict-review": "查看最新版本",
+    "conflict-continue": "保留草稿并继续编辑",
     "unlock-other": "其他解锁方式",
     "passkey-add": "添加通行密钥",
     "passkey-unlock": "使用通行密钥解锁",

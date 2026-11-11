@@ -1432,6 +1432,9 @@
     "speed": "Taasesituse kiirus {{rate}}x"
   },
   "e2ee": {
+    "conflict": "Märget muudeti mujal. Mustand säilitati. Enne uuesti salvestamist vaata uusim versioon üle.",
+    "conflict-review": "Vaata uusim versioon üle",
+    "conflict-continue": "Säilita mustand ja jätka",
     "unlock-other": "Muud avamisviisid",
     "passkey-add": "Lisa pääsuvõti",
     "passkey-unlock": "Ava pääsuvõtmega",
