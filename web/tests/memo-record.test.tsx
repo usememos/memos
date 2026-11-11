@@ -209,6 +209,28 @@ describe("useCreateMemo", () => {
 describe("useUpdateMemo", () => {
   beforeEach(() => vi.resetAllMocks());
 
+  it("forwards encrypted revision checks through the memo update queue", async () => {
+    const { wrapper } = setup();
+    const target = memo("memos/encrypted");
+    api.updateMemo.mockResolvedValue(target);
+    const { result } = renderHook(() => useUpdateMemo(target.name), { wrapper });
+    const encryptedContent = new Uint8Array([1, 2, 3]);
+    await act(async () => {
+      await result.current.mutateAsync({
+        update: { name: target.name, encryptedContent },
+        updateMask: ["encrypted_content"],
+        expectedEncryptionRevision: "previous-revision",
+      });
+    });
+    expect(api.updateMemo).toHaveBeenCalledWith(
+      expect.objectContaining({
+        memo: expect.objectContaining({ name: target.name, encryptedContent }),
+        updateMask: expect.objectContaining({ paths: ["encrypted_content"] }),
+        expectedEncryptionRevision: "previous-revision",
+      }),
+    );
+  });
+
   // Pin, then unpin before the first reply: two updates of one memo in flight, as a quick second click makes them.
   const pinThenUnpin = () => {
     const { client, wrapper } = setup();

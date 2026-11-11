@@ -6,7 +6,7 @@ import { createVault, decodeMemo, decryptMemo, encodeRecord, encryptMemo } from 
 import { VaultSession } from "../src/lib/e2ee/session";
 import { MemoSchema } from "../src/types/proto/api/memo_service_pb";
 
-const mocks = vi.hoisted(() => ({ session: undefined as unknown as VaultSession, create: vi.fn(), update: vi.fn() }));
+const mocks = vi.hoisted(() => ({ session: undefined as unknown as VaultSession, create: vi.fn(), update: vi.fn(), updateHook: vi.fn() }));
 vi.mock("../src/contexts/E2EEContext", async () => {
   const { useSyncExternalStore } = await import("react");
   return {
@@ -16,7 +16,10 @@ vi.mock("../src/contexts/E2EEContext", async () => {
 });
 vi.mock("../src/hooks/useMemoQueries", () => ({
   useCreateMemo: () => ({ mutateAsync: mocks.create }),
-  useUpdateMemo: () => ({ mutateAsync: mocks.update }),
+  useUpdateMemo: (name?: string) => {
+    mocks.updateHook(name);
+    return { mutateAsync: mocks.update };
+  },
 }));
 vi.mock("../src/components/Encryption/VaultPanel", () => ({ VaultPanel: () => <div>vault-locked</div> }));
 vi.mock("../src/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
@@ -26,6 +29,7 @@ beforeEach(() => {
   mocks.session.setOwner("users/alice");
   mocks.create.mockReset();
   mocks.update.mockReset();
+  mocks.updateHook.mockClear();
   localStorage.clear();
 });
 it("keeps locked memos opaque", () => {
@@ -122,6 +126,7 @@ it("clears an existing title with the same revision-guarded body save", async ()
   expect(request.update.encryptedTitle).toBe("");
   expect(request.updateMask).toContain("encrypted_title");
   expect(request.expectedEncryptionRevision).toBe(envelope.revisionId);
+  expect(mocks.updateHook).toHaveBeenLastCalledWith(memo.name);
   expect(await decryptMemo(vault.key, decodeMemo(request.update.encryptedContent))).toBe("existing secret");
 });
 

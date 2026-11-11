@@ -36,6 +36,7 @@ export function EncryptedMemoEditor(props: Props) {
     </div>
   );
 }
+/** Shows the plaintext title and offers vault unlock without exposing the encrypted body. */
 function LockedText({ memo, onCancel }: Props) {
   const t = useTranslate();
   const [open, setOpen] = useState(!memo);
@@ -63,11 +64,13 @@ function LockedText({ memo, onCancel }: Props) {
   );
 }
 
+/** Warns before navigation or tab closure can discard an unsaved encrypted draft. */
 function UnsavedGuard() {
   const t = useTranslate();
   const blocker = useBlocker(true);
   useEffect(() => registerEncryptedDraft(), []);
   useEffect(() => {
+    /** Requests the browser confirmation before an unsaved draft is unloaded. */
     const leave = (event: BeforeUnloadEvent) => {
       event.preventDefault();
       event.returnValue = "";
@@ -83,6 +86,7 @@ function UnsavedGuard() {
   }, [blocker, t]);
   return null;
 }
+/** Keeps decrypted text in component memory and saves ciphertext with revision checks. */
 function UnlockedText({ memo, editing = false, onConfirm, onCancel, onSavingChange }: Props) {
   const t = useTranslate();
   const { session, key, vaultId } = useVaultSession();
@@ -98,7 +102,7 @@ function UnlockedText({ memo, editing = false, onConfirm, onCancel, onSavingChan
   const baseline = useRef<EncryptedMemo | undefined>(undefined);
   const alive = useRef(true);
   const createMemo = useCreateMemo();
-  const updateMemo = useUpdateMemo();
+  const updateMemo = useUpdateMemo(memo?.name);
   const dirty = editing && (content !== saved || title !== savedTitle);
   useEffect(() => {
     alive.current = true;
@@ -112,6 +116,7 @@ function UnlockedText({ memo, editing = false, onConfirm, onCancel, onSavingChan
     if (!source || !key) return;
     setReady(false);
     setFailed(false);
+    /** Applies plaintext only while this memo and its unlocked vault session are still current. */
     const decrypt = async () => {
       const encrypted = decodeMemo(source.encryptedContent);
       if (encrypted.vaultId !== vaultId) throw new Error("Vault mismatch");
@@ -132,6 +137,7 @@ function UnlockedText({ memo, editing = false, onConfirm, onCancel, onSavingChan
       active = false;
     };
   }, [source, key, vaultId, session]);
+  /** Encrypts the current draft and ignores results belonging to a locked or replaced session. */
   const save = async () => {
     if (!key || !vaultId || !ready || saving || !content.trim()) return;
     const ticket = session.ticket();
