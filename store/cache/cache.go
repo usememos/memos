@@ -50,6 +50,10 @@ type Config struct {
 	MaxItems int
 
 	// OnEviction is called when an item is evicted from the cache.
+	// It runs synchronously in the goroutine performing the eviction, which may
+	// be the background cleanup goroutine. It must not call Close synchronously:
+	// Close waits for that goroutine to exit. To request closure from a callback,
+	// start Close in a separate goroutine and return without waiting for it.
 	OnEviction func(key string, value any)
 }
 
@@ -203,11 +207,13 @@ func (c *Cache) Size() int64 {
 }
 
 // Close stops the cache cleanup goroutine.
+// Every caller waits for cleanup to finish. Close must not be called
+// synchronously from OnEviction; see Config.OnEviction.
 func (c *Cache) Close() error {
 	if c.closed.CompareAndSwap(false, true) {
 		close(c.stopChan)
-		<-c.closedChan // Wait for cleanup goroutine to exit
 	}
+	<-c.closedChan // Every caller waits for the cleanup goroutine to exit.
 	return nil
 }
 
