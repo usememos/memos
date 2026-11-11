@@ -46,6 +46,22 @@ const renderPage = (path = "/auth", element = <SignIn />) => {
   );
   return router;
 };
+// Sign-up hands some visitors to sign-in, so these render both routes.
+const renderAuthRoutes = (path: string) => {
+  const router = createMemoryRouter(
+    [
+      { path: "/auth", element: <SignIn /> },
+      { path: "/auth/signup", element: <SignUp /> },
+    ],
+    { initialEntries: [path] },
+  );
+  render(
+    <StrictMode>
+      <RouterProvider router={router} />
+    </StrictMode>,
+  );
+  return router;
+};
 describe("automatic SSO auth pages", () => {
   beforeEach(() => {
     mocks.instance.generalSetting = { disallowPasswordAuth: true, disallowUserRegistration: false };
@@ -58,10 +74,10 @@ describe("automatic SSO auth pages", () => {
     vi.mocked(signInWithSSO).mockResolvedValue();
   });
   it.each([
-    { path: "/auth", element: <SignIn /> },
-    { path: "/auth/signup", element: <SignUp /> },
-  ])("starts once on $path and replaces the entry with a bypass preserving the destination", async ({ path, element }) => {
-    const router = renderPage(`${path}?redirect=%2Fmemos%2Fexample&reason=protected-memo`, element);
+    { path: "/auth", render: (url: string) => renderPage(url) },
+    { path: "/auth/signup", render: (url: string) => renderAuthRoutes(url) },
+  ])("starts once on $path and replaces the entry with a bypass preserving the destination", async ({ path, render }) => {
+    const router = render(`${path}?redirect=%2Fmemos%2Fexample&reason=protected-memo`);
     await waitFor(() => expect(signInWithSSO).toHaveBeenCalledOnce());
     expect(signInWithSSO).toHaveBeenCalledWith(provider, "/memos/example");
     expect(router.state.historyAction).toBe("REPLACE");
@@ -140,10 +156,13 @@ describe("automatic SSO auth pages", () => {
     renderPage();
     await waitFor(() => expect(signInWithSSO).toHaveBeenCalledOnce());
   });
-  it("keeps closed sign-up out of automatic SSO", () => {
+  it("keeps closed sign-up out of automatic SSO", async () => {
     mocks.instance.generalSetting.disallowUserRegistration = true;
-    renderPage("/auth/signup", <SignUp />);
-    expect(screen.getByText("auth.signups-closed-title")).toBeInTheDocument();
+    const router = renderAuthRoutes("/auth/signup?redirect=%2Fmemos%2Fexample");
+    expect(await screen.findByText("auth.signups-closed-description")).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe("/auth");
+    expect(new URLSearchParams(router.state.location.search).get("redirect")).toBe("/memos/example");
+    await act(async () => {});
     expect(signInWithSSO).not.toHaveBeenCalled();
   });
   it("keeps administrator sign-in out of automatic SSO", () => {

@@ -22,28 +22,23 @@
   },
   "auth": {
     "admin-sign-in": "管理員登入",
-    "admin-sign-in-tip": "管理員仍可使用密碼登入。",
     "back-to-sign-in": "返回登入",
+    "callback-failed-title": "無法完成登入",
     "continue-with": "使用 {{provider}} 繼續",
     "create-admin-account": "建立管理員帳號",
     "create-your-account": "建立您的帳號",
-    "explore-public-memos": "瀏覽此實例的公開備忘錄",
-    "first-run": "初次啟動",
+    "hide-password": "隱藏密碼",
+    "incorrect-credentials": "使用者名稱或密碼錯誤。",
     "new-password": "新密碼",
     "repeat-new-password": "再次輸入新密碼",
     "setup-description": "為此實例建立管理員帳號。",
-    "setup-note": "此帳號擁有實例設定、成員與身分識別提供者的管理權限。",
     "setup-title": "設定您的實例",
+    "show-password": "顯示密碼",
     "sign-in-tip": "已經有帳戶了嗎？",
     "sign-up-tip": "還沒有帳戶嗎？",
     "signin-unavailable-description": "已停用密碼登入，且尚未設定任何身分識別提供者。請要求管理員啟用登入方式。",
     "signin-unavailable-title": "無法登入",
-    "signup-unavailable-description": "已停用使用密碼註冊，且尚未設定任何身分識別提供者。請聯絡管理員以取得存取權限。",
-    "signup-unavailable-title": "無法註冊",
-    "signups-closed-description": "此實例已停用新帳號註冊。如需存取權限，請聯絡管理員。",
-    "signups-closed-title": "已關閉註冊",
-    "sso-signup-tip": "使用下方提供者登入以建立帳號。",
-    "welcome-back": "歡迎回來。"
+    "signups-closed-description": "此實例已停用新帳號註冊。如需存取權限，請聯絡管理員。"
   },
   "calendar": {
     "new-memo-on-day": "在這一天新增備忘錄",
@@ -186,7 +181,6 @@
     "profile": "個人檔案",
     "referenced-by": "被引用",
     "referencing": "引用",
-    "relations": "關聯",
     "resize-sidebar": "調整側邊欄寬度",
     "resources": "檔案",
     "restore": "還原",
@@ -395,9 +389,11 @@
       "resize-image": "調整圖片大小"
     },
     "attachments": {
-      "move-up": "上移附件",
-      "move-down": "下移附件",
-      "remove": "移除附件"
+      "edited": "已編輯",
+      "new": "新",
+      "remove": "移除附件",
+      "reorder": "調整 {{name}} 的順序",
+      "reorder-hint": "拖曳，或使用方向鍵"
     },
     "remove-relation": "移除關聯",
     "remove-location": "移除位置",

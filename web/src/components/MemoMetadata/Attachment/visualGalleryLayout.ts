@@ -70,3 +70,29 @@ export const resolveVisualGalleryLayout = (items: AttachmentVisualItem[]): Visua
     })),
   };
 };
+
+/** The composer's gallery height: the saved mosaic's arrangement, short enough to keep the toolbar near the text. */
+const EDITOR_GRID_HEIGHT_CLASS = "h-40";
+
+/**
+ * The editor's gallery: the same arrangement as the saved memo's collage for up to six items, at
+ * the composer's height. Every item stays visible (no `+N`), since each one can be edited.
+ */
+export const resolveEditorGalleryLayout = (
+  count: number,
+): { containerClassName: string; cellClassName: (index: number) => string | undefined } => {
+  if (count <= 1) return { containerClassName: cn("grid grid-cols-1 gap-1.5", EDITOR_GRID_HEIGHT_CLASS), cellClassName: () => undefined };
+  if (count === 2) return { containerClassName: cn("grid grid-cols-2 gap-1.5", EDITOR_GRID_HEIGHT_CLASS), cellClassName: () => undefined };
+  if (count === 3) {
+    return {
+      containerClassName: cn("grid grid-cols-2 grid-rows-2 gap-1.5", EDITOR_GRID_HEIGHT_CLASS),
+      cellClassName: (index) => (index === 0 ? "row-span-2" : undefined),
+    };
+  }
+  if (count === 4)
+    return { containerClassName: cn("grid grid-cols-2 grid-rows-2 gap-1.5", EDITOR_GRID_HEIGHT_CLASS), cellClassName: () => undefined };
+  if (count <= COLLAGE_MAX_VISIBLE_CELLS) {
+    return { containerClassName: cn("grid grid-cols-3 grid-rows-2 gap-1.5", EDITOR_GRID_HEIGHT_CLASS), cellClassName: () => undefined };
+  }
+  return { containerClassName: "grid grid-cols-3 auto-rows-[4.875rem] gap-1.5", cellClassName: () => undefined };
+};

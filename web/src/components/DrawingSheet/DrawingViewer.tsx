@@ -43,7 +43,7 @@ const DrawingViewer = ({ attachment: initialAttachment, memo, canEdit, onClose, 
   // Small controls on a desktop; a phone keeps the 32px ones for touch.
   const size = isWide ? "sm" : undefined;
   const { theme, fontFamily } = useCanvasTheme();
-  const { mutateAsync: updateMemo } = useUpdateMemo();
+  const { mutateAsync: updateMemo } = useUpdateMemo(memo.name);
   const canvasRef = useRef<CanvasHandle>(null);
   const [attachment, setAttachment] = useState(initialAttachment);
   const [scene, setScene] = useState<Scene>();

@@ -45,28 +45,23 @@
   },
   "auth": {
     "admin-sign-in": "管理员登录",
-    "admin-sign-in-tip": "管理员始终可以使用密码登录。",
     "back-to-sign-in": "返回登录",
+    "callback-failed-title": "无法完成登录",
     "continue-with": "使用 {{provider}} 继续",
     "create-admin-account": "创建管理员账号",
     "create-your-account": "创建您的账户",
-    "explore-public-memos": "浏览此实例上的公开 Memo",
-    "first-run": "首次运行",
+    "hide-password": "隐藏密码",
+    "incorrect-credentials": "用户名或密码错误。",
     "new-password": "新密码",
     "repeat-new-password": "重复新密码",
     "setup-description": "为此实例创建管理员账号。",
-    "setup-note": "该账号拥有实例设置、成员与身份提供商的管理权限。",
     "setup-title": "初始化实例",
+    "show-password": "显示密码",
     "sign-in-tip": "已有账户？",
     "sign-up-tip": "还没有账户？",
     "signin-unavailable-description": "密码登录已关闭，且未配置身份提供商。请联系管理员启用登录方式。",
     "signin-unavailable-title": "无法登录",
-    "signup-unavailable-description": "密码账号已关闭，且未配置身份提供商。如需访问，请联系管理员。",
-    "signup-unavailable-title": "无法注册",
-    "signups-closed-description": "此实例已禁用新账号注册。如需访问，请联系管理员。",
-    "signups-closed-title": "注册已关闭",
-    "sso-signup-tip": "使用以下登录方式即可创建账号。",
-    "welcome-back": "欢迎回来。"
+    "signups-closed-description": "此实例已禁用新账号注册。如需访问，请联系管理员。"
   },
   "calendar": {
     "new-memo-on-day": "在这一天新建备忘录",
@@ -145,7 +140,6 @@
     "profile": "个人资料",
     "referenced-by": "被引用",
     "referencing": "引用",
-    "relations": "关系图",
     "resize-panel": "调整面板宽度",
     "resources": "资源库",
     "restore": "恢复",
@@ -352,9 +346,11 @@
       "resize-image": "调整图片大小"
     },
     "attachments": {
-      "move-up": "上移附件",
-      "move-down": "下移附件",
-      "remove": "移除附件"
+      "edited": "已编辑",
+      "new": "新",
+      "remove": "移除附件",
+      "reorder": "调整 {{name}} 的顺序",
+      "reorder-hint": "拖动，或使用方向键"
     },
     "remove-relation": "移除关联",
     "remove-location": "移除位置",

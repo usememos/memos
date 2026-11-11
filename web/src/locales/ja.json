@@ -22,28 +22,23 @@
   },
   "auth": {
     "admin-sign-in": "管理者サインイン",
-    "admin-sign-in-tip": "管理者はパスワードでのサインインを引き続き利用できます。",
     "back-to-sign-in": "サインインに戻る",
+    "callback-failed-title": "サインインを完了できませんでした",
     "continue-with": "{{provider}}で続行",
     "create-admin-account": "管理者アカウントを作成",
     "create-your-account": "アカウントを作成",
-    "explore-public-memos": "このインスタンスの公開メモを見る",
-    "first-run": "初回起動",
+    "hide-password": "パスワードを隠す",
+    "incorrect-credentials": "ユーザーネームまたはパスワードが正しくありません。",
     "new-password": "新しいパスワード",
     "repeat-new-password": "新しいパスワードを再入力",
     "setup-description": "このインスタンスの管理者アカウントを作成します。",
-    "setup-note": "このアカウントはインスタンスの設定、メンバー、IDプロバイダーを管理します。",
     "setup-title": "インスタンスをセットアップ",
+    "show-password": "パスワードを表示",
     "sign-in-tip": "すでにアカウントを持っていますか?",
     "sign-up-tip": "アカウントを持っていませんか?",
     "signin-unavailable-description": "パスワードでのサインインが無効になっており、IDプロバイダーも設定されていません。サインイン方法を有効にするよう管理者に依頼してください。",
     "signin-unavailable-title": "サインインは利用できません",
-    "signup-unavailable-description": "パスワードアカウントが無効になっており、IDプロバイダーも設定されていません。アクセスが必要な場合は管理者にお問い合わせください。",
-    "signup-unavailable-title": "登録は利用できません",
-    "signups-closed-description": "このインスタンスでは新規アカウントの作成が無効になっています。アクセスが必要な場合は管理者にお問い合わせください。",
-    "signups-closed-title": "新規登録は受け付けていません",
-    "sso-signup-tip": "以下のプロバイダーでサインインしてアカウントを作成してください。",
-    "welcome-back": "おかえりなさい。"
+    "signups-closed-description": "このインスタンスでは新規アカウントの作成が無効になっています。アクセスが必要な場合は管理者にお問い合わせください。"
   },
   "common": {
     "about": "Memos について",
@@ -106,7 +101,6 @@
     "profile": "プロフィール",
     "referenced-by": "参照元",
     "referencing": "参照先",
-    "relations": "関連",
     "resize-sidebar": "サイドバーの幅を変更",
     "resources": "リソース",
     "restore": "復元",
@@ -316,9 +310,11 @@
       "resize-image": "画像のサイズを変更"
     },
     "attachments": {
-      "move-up": "添付ファイルを上へ移動",
-      "move-down": "添付ファイルを下へ移動",
-      "remove": "添付ファイルを削除"
+      "edited": "編集済み",
+      "new": "新規",
+      "remove": "添付ファイルを削除",
+      "reorder": "{{name}}を並べ替え",
+      "reorder-hint": "ドラッグするか、矢印キーを使います"
     },
     "remove-relation": "関連を削除",
     "remove-location": "場所を削除",

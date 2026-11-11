@@ -21,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Kunne ikke fullføre innloggingen",
     "create-your-account": "Opprett konto",
+    "hide-password": "Skjul passord",
+    "incorrect-credentials": "Feil brukernavn eller passord.",
     "new-password": "Nytt passord",
     "repeat-new-password": "Gjenta det nye passordet",
+    "show-password": "Vis passord",
     "sign-in-tip": "Har du allerede en konto?",
     "sign-up-tip": "Har du ikke en konto enda?",
     "admin-sign-in": "Administratorpålogging",
-    "admin-sign-in-tip": "Passordpålogging forblir tilgjengelig for administratorer.",
     "back-to-sign-in": "Tilbake til pålogging",
     "continue-with": "Fortsett med {{provider}}",
     "create-admin-account": "Opprett administratorkonto",
-    "explore-public-memos": "Utforsk offentlige notater på denne instansen",
-    "first-run": "Første kjøring",
     "setup-description": "Opprett administratorkontoen for denne instansen.",
-    "setup-note": "Denne kontoen eier instansinnstillinger, medlemmer og identitetsleverandører.",
     "setup-title": "Konfigurer instansen din",
     "signin-unavailable-description": "Passordpålogging er slått av, og ingen identitetsleverandører er konfigurert. Be administratoren din om å aktivere en påloggingsmetode.",
     "signin-unavailable-title": "Pålogging er ikke tilgjengelig",
-    "signup-unavailable-description": "Passordkontoer er slått av, og ingen identitetsleverandører er konfigurert. Be administratoren din om tilgang.",
-    "signup-unavailable-title": "Registrering er ikke tilgjengelig",
-    "signups-closed-description": "Nye kontoer er deaktivert på denne instansen. Kontakt administratoren din hvis du trenger tilgang.",
-    "signups-closed-title": "Registreringer er stengt",
-    "sso-signup-tip": "Logg inn med en leverandør nedenfor for å opprette kontoen din.",
-    "welcome-back": "Velkommen tilbake."
+    "signups-closed-description": "Nye kontoer er deaktivert på denne instansen. Kontakt administratoren din hvis du trenger tilgang."
   },
   "common": {
     "about": "Om",
@@ -102,7 +97,6 @@
     "profile": "Profil",
     "referenced-by": "Referert til av",
     "referencing": "Refererer til",
-    "relations": "Relasjon",
     "resources": "Ressurser",
     "restore": "Gjenopprett",
     "role": "Rolle",
@@ -316,9 +310,11 @@
       "resize-image": "Endre bildestørrelse"
     },
     "attachments": {
-      "move-up": "Flytt vedlegg opp",
-      "move-down": "Flytt vedlegg ned",
-      "remove": "Fjern vedlegg"
+      "edited": "Redigert",
+      "new": "Ny",
+      "remove": "Fjern vedlegg",
+      "reorder": "Flytt {{name}}",
+      "reorder-hint": "Dra, eller bruk piltastene"
     },
     "remove-relation": "Fjern kobling",
     "remove-location": "Fjern plassering",

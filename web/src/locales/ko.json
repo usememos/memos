@@ -21,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "로그인을 완료하지 못했습니다",
     "create-your-account": "계정 만들기",
+    "hide-password": "비밀번호 숨기기",
+    "incorrect-credentials": "사용자 이름 또는 비밀번호가 올바르지 않습니다.",
     "new-password": "새 비밀번호",
     "repeat-new-password": "새 비밀번호 재확인",
+    "show-password": "비밀번호 표시",
     "sign-in-tip": "이미 계정이 있으신가요?",
     "sign-up-tip": "아직 계정이 없으신가요?",
     "admin-sign-in": "관리자 로그인",
-    "admin-sign-in-tip": "관리자는 비밀번호 로그인을 계속 사용할 수 있습니다.",
     "back-to-sign-in": "로그인으로 돌아가기",
     "continue-with": "{{provider}}으로 계속 진행",
     "create-admin-account": "관리자 계정 생성",
-    "explore-public-memos": "이 인스턴스의 공개 메모 보기",
-    "first-run": "첫 실행",
     "setup-description": "이 인스턴스의 관리자 계정을 생성합니다.",
-    "setup-note": "이 계정은 인스턴스 설정, 멤버 및 ID 공급자를 소유합니다.",
     "setup-title": "인스턴스 설정",
     "signin-unavailable-description": "암호 로그인이 비활성화되어 있고 ID 공급자가 구성되어 있지 않습니다. 관리자에게 로그인 방법을 활성화하도록 요청하십시오.",
     "signin-unavailable-title": "로그인할 수 없습니다.",
-    "signup-unavailable-description": "암호 계정이 비활성화되어 있고 ID 공급자가 구성되어 있지 않습니다. 관리자에게 액세스 권한을 요청하십시오.",
-    "signup-unavailable-title": "가입할 수 없습니다.",
-    "signups-closed-description": "이 인스턴스에서 새 계정이 비활성화되어 있습니다. 액세스가 필요한 경우 관리자에게 문의하십시오.",
-    "signups-closed-title": "가입이 마감되었습니다.",
-    "sso-signup-tip": "아래 제공업체로 로그인하여 계정을 만드세요.",
-    "welcome-back": "다시 오신 것을 환영합니다."
+    "signups-closed-description": "이 인스턴스에서 새 계정이 비활성화되어 있습니다. 액세스가 필요한 경우 관리자에게 문의하십시오."
   },
   "common": {
     "about": "정보",
@@ -102,7 +97,6 @@
     "profile": "프로필",
     "referenced-by": "참조됨",
     "referencing": "참조중",
-    "relations": "관계",
     "resources": "리소스",
     "restore": "복원",
     "role": "역할",
@@ -316,9 +310,11 @@
       "resize-image": "이미지 크기 조절"
     },
     "attachments": {
-      "move-up": "첨부파일 위로 이동",
-      "move-down": "첨부파일 아래로 이동",
-      "remove": "첨부파일 제거"
+      "edited": "편집됨",
+      "new": "새 항목",
+      "remove": "첨부파일 제거",
+      "reorder": "{{name}} 순서 변경",
+      "reorder-hint": "드래그하거나 화살표 키를 사용하세요"
     },
     "remove-relation": "연결 제거",
     "remove-location": "위치 제거",

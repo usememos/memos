@@ -21,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Inloggen kon niet worden voltooid",
     "create-your-account": "Maak je account",
+    "hide-password": "Wachtwoord verbergen",
+    "incorrect-credentials": "Onjuiste gebruikersnaam of onjuist wachtwoord.",
     "new-password": "Nieuw wachtwoord",
     "repeat-new-password": "Nieuw wachtwoord herhalen",
+    "show-password": "Wachtwoord tonen",
     "sign-in-tip": "Al een account?",
     "sign-up-tip": "Nog geen account?",
     "admin-sign-in": "Aanmelden als beheerder",
-    "admin-sign-in-tip": "Aanmelden met wachtwoord blijft beschikbaar voor beheerders.",
     "back-to-sign-in": "Terug naar aanmelden",
     "continue-with": "Doorgaan met {{provider}}",
     "create-admin-account": "Beheerdersaccount aanmaken",
-    "explore-public-memos": "Openbare memo's op deze instantie bekijken",
-    "first-run": "Eerste keer uitvoeren",
     "setup-description": "Maak het beheerdersaccount voor deze instantie aan.",
-    "setup-note": "Dit account beheert de instantie-instellingen, leden en identiteitsproviders.",
     "setup-title": "Stel uw instantie in",
     "signin-unavailable-description": "Aanmelden met wachtwoord is uitgeschakeld en er zijn geen identiteitsproviders geconfigureerd. Vraag uw beheerder om een ​​aanmeldmethode in te schakelen.",
     "signin-unavailable-title": "Aanmelden is niet beschikbaar",
-    "signup-unavailable-description": "Wachtwoordaccounts zijn uitgeschakeld en er zijn geen identiteitsproviders geconfigureerd. Vraag uw beheerder om toegang.",
-    "signup-unavailable-title": "Registreren is niet beschikbaar",
-    "signups-closed-description": "Nieuwe accounts zijn uitgeschakeld op deze instantie. Neem contact op met uw beheerder als u toegang nodig hebt.",
-    "signups-closed-title": "Aanmelden is gesloten",
-    "sso-signup-tip": "Meld u hieronder aan met een provider om uw account aan te maken.",
-    "welcome-back": "Welkom terug."
+    "signups-closed-description": "Nieuwe accounts zijn uitgeschakeld op deze instantie. Neem contact op met uw beheerder als u toegang nodig hebt."
   },
   "common": {
     "about": "Over",
@@ -102,7 +97,6 @@
     "profile": "Profiel",
     "referenced-by": "Gerefereerd door",
     "referencing": "Verwijst naar",
-    "relations": "Relaties",
     "resources": "Bronnen",
     "restore": "Terugzetten",
     "role": "Rol",
@@ -316,9 +310,11 @@
       "resize-image": "Afbeeldingsgrootte wijzigen"
     },
     "attachments": {
-      "move-up": "Bijlage omhoog verplaatsen",
-      "move-down": "Bijlage omlaag verplaatsen",
-      "remove": "Bijlage verwijderen"
+      "edited": "Bewerkt",
+      "new": "Nieuw",
+      "remove": "Bijlage verwijderen",
+      "reorder": "{{name}} verplaatsen",
+      "reorder-hint": "Sleep, of gebruik de pijltjestoetsen"
     },
     "remove-relation": "Koppeling verwijderen",
     "remove-location": "Locatie verwijderen",

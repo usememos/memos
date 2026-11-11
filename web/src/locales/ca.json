@@ -21,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "No s'ha pogut completar l'inici de sessió",
     "create-your-account": "Crea el teu compte",
+    "hide-password": "Amaga la contrasenya",
+    "incorrect-credentials": "Nom d'usuari o contrasenya incorrectes.",
     "new-password": "Nova contrasenya",
     "repeat-new-password": "Repeteix la contrasenya",
+    "show-password": "Mostra la contrasenya",
     "sign-in-tip": "Ja tens un compte?",
     "sign-up-tip": "Encara no tens un compte?",
     "admin-sign-in": "Inici de sessió d'administrador",
-    "admin-sign-in-tip": "L'inici de sessió amb contrasenya continua disponible per als administradors.",
     "back-to-sign-in": "Torna a iniciar la sessió",
     "continue-with": "Continua amb {{provider}}",
     "create-admin-account": "Crea un compte d'administrador",
-    "explore-public-memos": "Explora els memos públics en aquesta instància",
-    "first-run": "Primera execució",
     "setup-description": "Crea el compte d'administrador per a aquesta instància.",
-    "setup-note": "Aquest compte és el propietari de la configuració de la instància, els membres i els proveïdors d'identitat.",
     "setup-title": "Configura la teva instància",
     "signin-unavailable-description": "L'inici de sessió amb contrasenya està desactivat i no hi ha cap proveïdor d'identitat configurat. Demana al teu administrador que activi un mètode d'inici de sessió.",
     "signin-unavailable-title": "L'inici de sessió no està disponible",
-    "signup-unavailable-description": "Els comptes de contrasenya estan desactivats i no hi ha cap proveïdor d'identitat configurat. Demana al teu administrador accés.",
-    "signup-unavailable-title": "El registre no està disponible",
-    "signups-closed-description": "Els comptes nous estan desactivats en aquesta instància. Contacta amb el teu administrador si necessites accés.",
-    "signups-closed-title": "Els registres estan tancats",
-    "sso-signup-tip": "Inicia la sessió amb un proveïdor a continuació per crear el teu compte.",
-    "welcome-back": "Benvingut/da de nou."
+    "signups-closed-description": "Els comptes nous estan desactivats en aquesta instància. Contacta amb el teu administrador si necessites accés."
   },
   "common": {
     "about": "Quant a",
@@ -102,7 +97,6 @@
     "profile": "Perfil",
     "referenced-by": "Referenciat per",
     "referencing": "Referenciant",
-    "relations": "Relacions",
     "resources": "Recursos",
     "restore": "Restaura",
     "role": "Rol",
@@ -316,9 +310,11 @@
       "resize-image": "Canvia la mida de la imatge"
     },
     "attachments": {
-      "move-up": "Mou l'adjunt amunt",
-      "move-down": "Mou l'adjunt avall",
-      "remove": "Elimina l'adjunt"
+      "edited": "Editat",
+      "new": "Nou",
+      "remove": "Elimina l'adjunt",
+      "reorder": "Reordena {{name}}",
+      "reorder-hint": "Arrossega, o fes servir les tecles de fletxa"
     },
     "remove-relation": "Elimina la relació",
     "remove-location": "Elimina la ubicació",

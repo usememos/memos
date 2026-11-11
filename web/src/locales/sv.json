@@ -21,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Inloggningen kunde inte slutföras",
     "create-your-account": "Skapa ditt konto",
+    "hide-password": "Dölj lösenord",
+    "incorrect-credentials": "Fel användarnamn eller lösenord.",
     "new-password": "Nytt lösenord",
     "repeat-new-password": "Upprepa det nya lösenordet",
+    "show-password": "Visa lösenord",
     "sign-in-tip": "Har du redan ett konto?",
     "sign-up-tip": "Har du inget konto än?",
     "admin-sign-in": "Administratörsinloggning",
-    "admin-sign-in-tip": "Lösenordsinloggning förblir tillgänglig för administratörer.",
     "back-to-sign-in": "Tillbaka till inloggning",
     "continue-with": "Fortsätt med {{provider}}",
     "create-admin-account": "Skapa administratörskonto",
-    "explore-public-memos": "Utforska offentliga meddelanden på den här instansen",
-    "first-run": "Första körningen",
     "setup-description": "Skapa administratörskontot för den här instansen.",
-    "setup-note": "Det här kontot äger instansinställningar, medlemmar och identitetsleverantörer.",
     "setup-title": "Konfigurera din instans",
     "signin-unavailable-description": "Lösenordsinloggning är avstängd och inga identitetsleverantörer är konfigurerade. Be administratören att aktivera en inloggningsmetod.",
     "signin-unavailable-title": "Inloggning är inte tillgänglig",
-    "signup-unavailable-description": "Lösenordskonton är avstängda och inga identitetsleverantörer är konfigurerade. Be administratören om åtkomst.",
-    "signup-unavailable-title": "Registrering är inte tillgänglig",
-    "signups-closed-description": "Nya konton är inaktiverade på den här instansen. Kontakta administratören om du behöver åtkomst.",
-    "signups-closed-title": "Registreringar är stängda",
-    "sso-signup-tip": "Logga in med en leverantör nedan för att skapa ditt konto.",
-    "welcome-back": "Välkommen tillbaka."
+    "signups-closed-description": "Nya konton är inaktiverade på den här instansen. Kontakta administratören om du behöver åtkomst."
   },
   "common": {
     "about": "Om",
@@ -102,7 +97,6 @@
     "profile": "Profil",
     "referenced-by": "Refererad av",
     "referencing": "Refererar",
-    "relations": "Relationer",
     "resources": "Resurser",
     "restore": "Återställ",
     "role": "Roll",
@@ -316,9 +310,11 @@
       "resize-image": "Ändra bildstorlek"
     },
     "attachments": {
-      "move-up": "Flytta bilaga uppåt",
-      "move-down": "Flytta bilaga nedåt",
-      "remove": "Ta bort bilaga"
+      "edited": "Redigerad",
+      "new": "Ny",
+      "remove": "Ta bort bilaga",
+      "reorder": "Flytta {{name}}",
+      "reorder-hint": "Dra, eller använd piltangenterna"
     },
     "remove-relation": "Ta bort koppling",
     "remove-location": "Ta bort plats",

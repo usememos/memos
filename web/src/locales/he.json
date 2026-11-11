@@ -22,28 +22,23 @@
   },
   "auth": {
     "admin-sign-in": "התחברות מנהל",
-    "admin-sign-in-tip": "התחברות באמצעות סיסמה נשארת זמינה למנהלים.",
     "back-to-sign-in": "חזרה להתחברות",
+    "callback-failed-title": "לא ניתן היה להשלים את הכניסה",
     "continue-with": "המשיכו עם {{provider}}",
     "create-admin-account": "צור חשבון מנהל",
     "create-your-account": "צרו את החשבון שלכם",
-    "explore-public-memos": "עיינו בפתקים הציבוריים במופע הזה",
-    "first-run": "הפעלה ראשונה",
+    "hide-password": "הסתרת הסיסמה",
+    "incorrect-credentials": "שם משתמש או סיסמה שגויים.",
     "new-password": "סיסמה חדשה",
     "repeat-new-password": "הקלידו שוב את הסיסמה החדשה",
     "setup-description": "צרו את חשבון המנהל עבור המופע הזה.",
-    "setup-note": "חשבון זה מנהל את הגדרות המופע, החברים וספקי הזהות.",
     "setup-title": "הגדירו את המופע שלכם",
+    "show-password": "הצגת הסיסמה",
     "sign-in-tip": "כבר יש לכם חשבון?",
     "sign-up-tip": "עדיין אין לכם חשבון?",
     "signin-unavailable-description": "התחברות באמצעות סיסמה מושבתת ולא הוגדרו ספקי זהות. בקשו מהמנהל להפעיל שיטת התחברות.",
     "signin-unavailable-title": "לא ניתן להתחבר",
-    "signup-unavailable-description": "חשבונות באמצעות סיסמה מושבתים ולא הוגדרו ספקי זהות. בקשו מהמנהל גישה.",
-    "signup-unavailable-title": "לא ניתן להירשם",
-    "signups-closed-description": "חשבונות חדשים מושבתים במופע הזה. פנו למנהל אם אתם זקוקים לגישה.",
-    "signups-closed-title": "ההרשמה סגורה",
-    "sso-signup-tip": "התחברו באמצעות ספק למטה כדי ליצור את החשבון שלכם.",
-    "welcome-back": "ברוכים הבאים."
+    "signups-closed-description": "חשבונות חדשים מושבתים במופע הזה. פנו למנהל אם אתם זקוקים לגישה."
   },
   "demo": {
     "banner-description": "אתם מוזמנים לסייר! ההדגמה מתאפסת מעת לעת.",
@@ -178,7 +173,6 @@
     "profile": "פרופיל",
     "referenced-by": "מופנה אליו על ידי",
     "referencing": "מפנה אל",
-    "relations": "קשרים",
     "resize-sidebar": "שנה את גודל סרגל הצד",
     "resources": "משאבים",
     "restore": "שחזר",
@@ -387,9 +381,11 @@
       "resize-image": "שינוי גודל התמונה"
     },
     "attachments": {
-      "move-up": "הזזת הקובץ המצורף למעלה",
-      "move-down": "הזזת הקובץ המצורף למטה",
-      "remove": "הסרת הקובץ המצורף"
+      "edited": "נערך",
+      "new": "חדש",
+      "remove": "הסרת הקובץ המצורף",
+      "reorder": "שינוי סדר: {{name}}",
+      "reorder-hint": "גררו, או השתמשו במקשי החיצים"
     },
     "remove-relation": "הסרת הקישור",
     "remove-location": "הסרת המיקום",

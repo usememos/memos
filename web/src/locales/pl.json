@@ -21,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Nie udało się dokończyć logowania",
     "create-your-account": "Utwórz konto",
+    "hide-password": "Ukryj hasło",
+    "incorrect-credentials": "Nieprawidłowa nazwa użytkownika lub hasło.",
     "new-password": "Nowe hasło",
     "repeat-new-password": "Powtórz nowe hasło",
+    "show-password": "Pokaż hasło",
     "sign-in-tip": "Masz już konto?",
     "sign-up-tip": "Nie masz jeszcze konta?",
     "admin-sign-in": "Logowanie administratora",
-    "admin-sign-in-tip": "Logowanie za pomocą hasła pozostaje dostępne dla administratorów.",
     "back-to-sign-in": "Powrót do logowania",
     "continue-with": "Kontynuuj z {{provider}}",
     "create-admin-account": "Utwórz konto administratora",
-    "explore-public-memos": "Przeglądaj publiczne notatki dotyczące tej instancji",
-    "first-run": "Pierwsze uruchomienie",
     "setup-description": "Utwórz konto administratora dla tej instancji.",
-    "setup-note": "To konto jest właścicielem ustawień instancji, członków i dostawców tożsamości.",
     "setup-title": "Skonfiguruj swoją instancję",
     "signin-unavailable-description": "Logowanie za pomocą hasła jest wyłączone i nie skonfigurowano żadnych dostawców tożsamości. Poproś administratora o włączenie metody logowania.",
     "signin-unavailable-title": "Logowanie jest niedostępne",
-    "signup-unavailable-description": "Konta haseł są wyłączone i nie skonfigurowano żadnych dostawców tożsamości. Poproś administratora o dostęp.",
-    "signup-unavailable-title": "Rejestracja jest niedostępna",
-    "signups-closed-description": "Nowe konta są wyłączone w tej instancji. Skontaktuj się z administratorem, jeśli potrzebujesz dostępu.",
-    "signups-closed-title": "Rejestracja zamknięta",
-    "sso-signup-tip": "Zaloguj się u dostawcy poniżej, aby utworzyć konto.",
-    "welcome-back": "Witamy ponownie."
+    "signups-closed-description": "Nowe konta są wyłączone w tej instancji. Skontaktuj się z administratorem, jeśli potrzebujesz dostępu."
   },
   "common": {
     "about": "O nas",
@@ -102,7 +97,6 @@
     "profile": "Profil",
     "referenced-by": "Wspomniane przez",
     "referencing": "Odwołuje się do",
-    "relations": "Relacje",
     "resources": "Zasoby",
     "restore": "Przywróć",
     "role": "Rola",
@@ -316,9 +310,11 @@
       "resize-image": "Zmień rozmiar obrazu"
     },
     "attachments": {
-      "move-up": "Przenieś załącznik w górę",
-      "move-down": "Przenieś załącznik w dół",
-      "remove": "Usuń załącznik"
+      "edited": "Edytowany",
+      "new": "Nowy",
+      "remove": "Usuń załącznik",
+      "reorder": "Zmień kolejność: {{name}}",
+      "reorder-hint": "Przeciągnij lub użyj klawiszy strzałek"
     },
     "remove-relation": "Usuń powiązanie",
     "remove-location": "Usuń lokalizację",

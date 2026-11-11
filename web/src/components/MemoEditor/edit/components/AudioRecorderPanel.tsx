@@ -2,7 +2,6 @@ import { Button, Spinner, Tooltip } from "@usememos/ui";
 import { AudioWaveformIcon, SquareIcon, XIcon } from "lucide-react";
 import type { FC } from "react";
 import { formatAudioTime } from "@/components/MemoMetadata/Attachment/attachmentHelpers";
-import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { useAudioWaveform } from "../hooks/useAudioWaveform";
 import type { AudioRecorderPanelProps } from "../types";
@@ -31,14 +30,14 @@ export const AudioRecorderPanel: FC<AudioRecorderPanelProps> = ({
       : t("editor.audio-recorder.recording");
 
   return (
-    <div
-      className={cn(
-        "flex w-full items-center justify-between gap-2 rounded-mu-lg border border-mu-line bg-mu-well/30 px-2.5 py-1.5",
-        "dark:bg-mu-well/20",
-      )}
-    >
+    // A 28px row on the text edge, like the toolbar under it: no box inside the composer's box.
+    <div className="mu-compact flex h-7 w-full items-center justify-between gap-2">
       <div className="flex min-w-0 flex-1 items-center gap-2">
-        {isRequestingPermission || isTranscribing ? <Spinner size="sm" aria-hidden className="shrink-0 text-mu-ink-muted" /> : null}
+        {isRequestingPermission || isTranscribing ? (
+          <Spinner size="sm" aria-hidden className="shrink-0 text-mu-ink-muted" />
+        ) : (
+          <span aria-hidden className="size-2 shrink-0 rounded-full bg-mu-danger motion-safe:animate-pulse" />
+        )}
         <span className="mu-visually-hidden">{srStatusText}</span>
         <VoiceWaveform levels={waveformLevels} className="max-w-[200px] overflow-hidden" />
         <span className="shrink-0 font-mono mu-caption tabular-nums text-mu-ink-muted">
@@ -46,7 +45,7 @@ export const AudioRecorderPanel: FC<AudioRecorderPanelProps> = ({
         </span>
       </div>
 
-      <div className="flex shrink-0 items-center gap-1 border-s border-mu-line/60 ps-2">
+      <div className="flex shrink-0 items-center gap-1">
         <Tooltip.Root>
           <Tooltip.Trigger
             render={

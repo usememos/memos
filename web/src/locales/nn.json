@@ -88,28 +88,23 @@
   },
   "auth": {
     "admin-sign-in": "Administratorinnlogging",
-    "admin-sign-in-tip": "Administratorar kan framleis logge inn med passord.",
     "back-to-sign-in": "Attende til innlogging",
+    "callback-failed-title": "Kunne ikkje fullføre innlogginga",
     "continue-with": "Hald fram med {{provider}}",
     "create-admin-account": "Opprett administratorkonto",
     "create-your-account": "Opprett kontoen din",
-    "explore-public-memos": "Utforsk offentlege notat på denne instansen",
-    "first-run": "Fyrste oppstart",
+    "hide-password": "Skjul passord",
+    "incorrect-credentials": "Feil brukarnamn eller passord.",
     "new-password": "Nytt passord",
     "repeat-new-password": "Skriv det nye passordet ein gong til",
     "setup-description": "Opprett administratorkontoen for denne instansen.",
-    "setup-note": "Denne kontoen rår over instansinnstillingar, medlemer og identitetstilbydarar.",
     "setup-title": "Set opp instansen din",
+    "show-password": "Vis passord",
     "sign-in-tip": "Har du alt ein konto?",
     "sign-up-tip": "Har du ikkje konto enno?",
     "signin-unavailable-description": "Passordinnlogging er slått av, og ingen identitetstilbydarar er sette opp. Be administratoren din om å slå på ein innloggingsmåte.",
     "signin-unavailable-title": "Innlogging er ikkje tilgjengeleg",
-    "signup-unavailable-description": "Passordkontoar er slått av, og ingen identitetstilbydarar er sette opp. Be administratoren din om åtgang.",
-    "signup-unavailable-title": "Registrering er ikkje tilgjengeleg",
-    "signups-closed-description": "Nye kontoar er ikkje tillatne på denne instansen. Ta kontakt med administratoren din dersom du treng åtgang.",
-    "signups-closed-title": "Registreringa er stengd",
-    "sso-signup-tip": "Logg inn med ein tilbydar nedanfor for å opprette kontoen din.",
-    "welcome-back": "Velkomen attende."
+    "signups-closed-description": "Nye kontoar er ikkje tillatne på denne instansen. Ta kontakt med administratoren din dersom du treng åtgang."
   },
   "calendar": {
     "new-memo-on-day": "Nytt notat på denne dagen",
@@ -182,7 +177,6 @@
     "profile": "Profil",
     "referenced-by": "Vist til av",
     "referencing": "Viser til",
-    "relations": "Samband",
     "resize-panel": "Endre panelstorleik",
     "resize-sidebar": "Endre storleiken på sidestolpen",
     "resources": "Ressursar",
@@ -392,9 +386,11 @@
       "resize-image": "Endre biletstorleik"
     },
     "attachments": {
-      "move-up": "Flytt vedlegget opp",
-      "move-down": "Flytt vedlegget ned",
-      "remove": "Fjern vedlegget"
+      "edited": "Redigert",
+      "new": "Ny",
+      "remove": "Fjern vedlegget",
+      "reorder": "Flytt {{name}}",
+      "reorder-hint": "Dra, eller bruk piltastane"
     },
     "remove-relation": "Fjern koplinga",
     "remove-location": "Fjern staden",

@@ -21,29 +21,24 @@
     "web-clipper-platforms": "„Chrome“ + „Firefox“"
   },
   "auth": {
+    "callback-failed-title": "Nepavyko užbaigti prisijungimo",
     "create-your-account": "Susikurkite paskyrą",
+    "hide-password": "Slėpti slaptažodį",
+    "incorrect-credentials": "Neteisingas naudotojo vardas arba slaptažodis.",
     "new-password": "Naujas slaptažodis",
     "repeat-new-password": "Pakartokite naują slaptažodį",
+    "show-password": "Rodyti slaptažodį",
     "sign-in-tip": "Jau turite paskyrą?",
     "sign-up-tip": "Dar neturite paskyros?",
     "admin-sign-in": "Administratoriaus prisijungimas",
-    "admin-sign-in-tip": "Administratoriai gali prisijungti naudodami slaptažodį.",
     "back-to-sign-in": "Grįžti prie prisijungimo",
     "continue-with": "Tęsti su {{provider}}",
     "create-admin-account": "Sukurti administratoriaus paskyrą",
-    "explore-public-memos": "Naršyti viešus pranešimus šioje instancijoje",
-    "first-run": "Pirmas paleidimas",
     "setup-description": "Sukurti administratoriaus paskyrą šiai instancijai.",
-    "setup-note": "Šiai paskyrai priklauso instancijos nustatymai, nariai ir tapatybės teikėjai.",
     "setup-title": "Nustatyti savo instanciją",
     "signin-unavailable-description": "Prisijungimas slaptažodžiu išjungtas ir nesukonfigūruoti jokie tapatybės teikėjai. Paprašykite administratoriaus įjungti prisijungimo metodą.",
     "signin-unavailable-title": "Prisijungimas negalimas",
-    "signup-unavailable-description": "Slaptažodžio paskyros išjungtos ir nesukonfigūruoti jokie tapatybės teikėjai. Paprašykite administratoriaus prieigos.",
-    "signup-unavailable-title": "Registracija negalima",
-    "signups-closed-description": "Naujos paskyros šioje instancijoje išjungtos. Jei reikia prieigos, susisiekite su administratoriumi.",
-    "signups-closed-title": "Registracija baigta",
-    "sso-signup-tip": "Prisijunkite naudodami toliau nurodytą tiekėją, kad sukurtumėte paskyrą.",
-    "welcome-back": "Sveiki sugrįžę."
+    "signups-closed-description": "Naujos paskyros šioje instancijoje išjungtos. Jei reikia prieigos, susisiekite su administratoriumi."
   },
   "demo": {
     "banner-description": "Pakeitimai yra laikini ir gali būti nustatyti iš naujo.",
@@ -141,7 +136,6 @@
     "profile": "Profilis",
     "referenced-by": "Nurodyta",
     "referencing": "Nuoroda",
-    "relations": "Santykiai",
     "resources": "Ištekliai",
     "restore": "Atkurti",
     "role": "Vaidmuo",
@@ -354,9 +348,11 @@
       "resize-image": "Keisti paveikslėlio dydį"
     },
     "attachments": {
-      "move-up": "Perkelti priedą aukštyn",
-      "move-down": "Perkelti priedą žemyn",
-      "remove": "Pašalinti priedą"
+      "edited": "Redaguotas",
+      "new": "Naujas",
+      "remove": "Pašalinti priedą",
+      "reorder": "Pertvarkyti {{name}}",
+      "reorder-hint": "Vilkite arba naudokite rodyklių klavišus"
     },
     "remove-relation": "Pašalinti ryšį",
     "remove-location": "Pašalinti vietą",

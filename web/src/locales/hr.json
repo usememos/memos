@@ -21,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Prijava nije dovršena",
     "create-your-account": "Stvori svoj račun",
+    "hide-password": "Sakrij lozinku",
+    "incorrect-credentials": "Netočno korisničko ime ili lozinka.",
     "new-password": "Nova lozinka",
     "repeat-new-password": "Ponovi novu lozinku",
+    "show-password": "Prikaži lozinku",
     "sign-in-tip": "Račun već postoji?",
     "sign-up-tip": "Još nemaš račun?",
     "admin-sign-in": "Prijava administratora",
-    "admin-sign-in-tip": "Prijava lozinkom ostaje dostupna administratorima.",
     "back-to-sign-in": "Natrag na prijavu",
     "continue-with": "Nastavi s {{provider}}",
     "create-admin-account": "Izradi administratorski račun",
-    "explore-public-memos": "Istraži javne bilješke o ovoj instanci",
-    "first-run": "Prvo pokretanje",
     "setup-description": "Izradi administratorski račun za ovu instancu.",
-    "setup-note": "Ovaj račun posjeduje postavke instance, članove i pružatelje identiteta.",
     "setup-title": "Postavi svoju instancu",
     "signin-unavailable-description": "Prijava lozinkom je isključena i nisu konfigurirani pružatelji identiteta. Zamolite administratora da omogući metodu prijave.",
     "signin-unavailable-title": "Prijava nije dostupna",
-    "signup-unavailable-description": "Računi lozinkom su isključeni i nisu konfigurirani pružatelji identiteta. Zamolite administratora za pristup.",
-    "signup-unavailable-title": "Registracija nije dostupna",
-    "signups-closed-description": "Novi računi su onemogućeni na ovoj instanci. Obratite se administratoru ako vam je potreban pristup.",
-    "signups-closed-title": "Prijave su zatvorene",
-    "sso-signup-tip": "Prijavite se s davateljem usluga u nastavku kako biste stvorili svoj račun.",
-    "welcome-back": "Dobrodošli natrag."
+    "signups-closed-description": "Novi računi su onemogućeni na ovoj instanci. Obratite se administratoru ako vam je potreban pristup."
   },
   "common": {
     "about": "O aplikaciji",
@@ -102,7 +97,6 @@
     "profile": "Profil",
     "referenced-by": "Referencirano od",
     "referencing": "Referencira",
-    "relations": "Odnosi",
     "resources": "Resursi",
     "restore": "Vrati",
     "role": "Uloga",
@@ -316,9 +310,11 @@
       "resize-image": "Promijeni veličinu slike"
     },
     "attachments": {
-      "move-up": "Pomakni privitak gore",
-      "move-down": "Pomakni privitak dolje",
-      "remove": "Ukloni privitak"
+      "edited": "Uređeno",
+      "new": "Novo",
+      "remove": "Ukloni privitak",
+      "reorder": "Promijeni redoslijed: {{name}}",
+      "reorder-hint": "Povucite ili upotrijebite tipke sa strelicama"
     },
     "remove-relation": "Ukloni poveznicu",
     "remove-location": "Ukloni lokaciju",

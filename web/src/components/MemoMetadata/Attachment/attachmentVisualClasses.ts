@@ -8,9 +8,10 @@ export const VISUAL_TILE_BUTTON_CLASS =
   "relative block overflow-hidden rounded-mu-md border border-mu-line/70 bg-mu-well/30 p-0 text-left transition-colors mu-focus";
 
 /**
- * A drawing is a sheet of paper on the card rather than a photo in a frame: no tile border or
+ * A lone drawing is a sheet of paper on the card rather than a photo in a frame: no tile border or
  * well, just the package's raised edge, the same in both themes. Hover lifts it a little more
- * instead of the photo scrim and zoom.
+ * instead of the photo scrim and zoom. In a collage a drawing takes the photos' hairline frame
+ * instead, so one grid never mixes two edges.
  */
 export const DRAWING_SHEET_TILE_CLASS =
   "relative block overflow-hidden rounded-mu-md p-0 text-left shadow-mu-raised transition-shadow hover:shadow-mu-key mu-focus";
@@ -49,3 +50,10 @@ export const MEDIA_HOVER_GRADIENT_CLASS = `pointer-events-none absolute inset-0 
 export const COLLAGE_VIDEO_PLAY_BADGE_CLASS = `bottom-2 right-2 ${VISUAL_Z.badge} h-7 w-7 bg-mu-canvas/80 text-mu-ink/70`;
 
 export const OVERFLOW_TILE_OVERLAY_CLASS = `pointer-events-none absolute inset-0 ${VISUAL_Z.overflowMask} flex items-center justify-center bg-black/45 mu-heading text-white backdrop-blur-[2px]`;
+
+/**
+ * A state label on an editor tile ("Live", "New", "Edited"): the same frosted pill as a saved
+ * motion photo's Live badge, but not a control.
+ */
+export const TILE_BADGE_CLASS =
+  "pointer-events-none absolute select-none rounded-full border border-mu-line/45 bg-mu-canvas/65 px-2 py-0.5 mu-label-xs uppercase tracking-wide text-mu-ink backdrop-blur-sm";

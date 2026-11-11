@@ -21,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Pieteikšanos neizdevās pabeigt",
     "create-your-account": "Izveidojiet savu kontu",
+    "hide-password": "Slēpt paroli",
+    "incorrect-credentials": "Nepareizs lietotājvārds vai parole.",
     "new-password": "Jauna parole",
     "repeat-new-password": "Atkārtojiet jauno paroli",
+    "show-password": "Rādīt paroli",
     "sign-in-tip": "Vai jums jau ir konts?",
     "sign-up-tip": "Vai jums vēl nav konta?",
     "admin-sign-in": "Administratora pieteikšanās",
-    "admin-sign-in-tip": "Administratoriem joprojām ir pieejama pieteikšanās ar paroli.",
     "back-to-sign-in": "Atpakaļ, lai pierakstītos",
     "continue-with": "Turpināt ar {{provider}}",
     "create-admin-account": "Izveidot administratora kontu",
-    "explore-public-memos": "Izpētīt publiskās piezīmes šajā instancē",
-    "first-run": "Pirmā palaišana",
     "setup-description": "Izveidojiet administratora kontu šai instancei.",
-    "setup-note": "Šim kontam pieder instances iestatījumi, dalībnieki un identitātes nodrošinātāji.",
     "setup-title": "Iestatiet savu instanci",
     "signin-unavailable-description": "Paroles pierakstīšanās ir izslēgta, un nav konfigurēti identitātes nodrošinātāji. Lūdziet administratoram iespējot pierakstīšanās metodi.",
     "signin-unavailable-title": "Pierakstīšanās nav pieejama",
-    "signup-unavailable-description": "Paroles konti ir izslēgti, un nav konfigurēti identitātes nodrošinātāji. Lūdziet administratoram piekļuvi.",
-    "signup-unavailable-title": "Reģistrēšanās nav pieejama",
-    "signups-closed-description": "Šajā instancē ir atspējoti jauni konti. Ja nepieciešama piekļuve, sazinieties ar administratoru.",
-    "signups-closed-title": "Reģistrācija ir slēgta",
-    "sso-signup-tip": "Pierakstieties, izmantojot tālāk norādīto pakalpojumu sniedzēju, lai izveidotu savu kontu.",
-    "welcome-back": "Laipni lūdzam atpakaļ."
+    "signups-closed-description": "Šajā instancē ir atspējoti jauni konti. Ja nepieciešama piekļuve, sazinieties ar administratoru."
   },
   "demo": {
     "banner-description": "Izmaiņas ir īslaicīgas un var tikt atiestatītas.",
@@ -141,7 +136,6 @@
     "profile": "Profils",
     "referenced-by": "Atsaucas",
     "referencing": "Atsauces",
-    "relations": "Attiecības",
     "resources": "Resursi",
     "restore": "Atjaunot",
     "role": "Loma",
@@ -354,9 +348,11 @@
       "resize-image": "Mainīt attēla izmēru"
     },
     "attachments": {
-      "move-up": "Pārvietot pielikumu augšup",
-      "move-down": "Pārvietot pielikumu lejup",
-      "remove": "Noņemt pielikumu"
+      "edited": "Rediģēts",
+      "new": "Jauns",
+      "remove": "Noņemt pielikumu",
+      "reorder": "Pārkārtot {{name}}",
+      "reorder-hint": "Velciet vai izmantojiet bulttaustiņus"
     },
     "remove-relation": "Noņemt saiti",
     "remove-location": "Noņemt atrašanās vietu",

@@ -21,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Impossibile completare l'accesso",
     "create-your-account": "Crea il tuo account",
+    "hide-password": "Nascondi password",
+    "incorrect-credentials": "Nome utente o password non corretti.",
     "new-password": "Nuova password",
     "repeat-new-password": "Ripeti la nuova password",
+    "show-password": "Mostra password",
     "sign-in-tip": "Hai già un account?",
     "sign-up-tip": "Non hai ancora un account?",
     "admin-sign-in": "Accesso amministratore",
-    "admin-sign-in-tip": "L'accesso tramite password rimane disponibile per gli amministratori.",
     "back-to-sign-in": "Torna alla pagina di accesso",
     "continue-with": "Continua con {{provider}}",
     "create-admin-account": "Crea un account amministratore",
-    "explore-public-memos": "Esplora i memo pubblici su questa istanza",
-    "first-run": "Prima esecuzione",
     "setup-description": "Crea l'account amministratore per questa istanza.",
-    "setup-note": "Questo account è proprietario delle impostazioni dell'istanza, dei membri e dei provider di identità.",
     "setup-title": "Configura la tua istanza",
     "signin-unavailable-description": "L'accesso tramite password è disabilitato e non sono configurati provider di identità. Chiedi al tuo amministratore di abilitare un metodo di accesso.",
     "signin-unavailable-title": "Accesso non disponibile",
-    "signup-unavailable-description": "Gli account con password sono disabilitati e non sono configurati provider di identità. Chiedi al tuo amministratore l'accesso.",
-    "signup-unavailable-title": "Registrazione non disponibile",
-    "signups-closed-description": "La creazione di nuovi account è disabilitata su questa istanza. Contatta il tuo amministratore se hai bisogno di accedere.",
-    "signups-closed-title": "Le iscrizioni sono chiuse",
-    "sso-signup-tip": "Accedi con un provider qui sotto per creare il tuo account.",
-    "welcome-back": "Bentornato."
+    "signups-closed-description": "La creazione di nuovi account è disabilitata su questa istanza. Contatta il tuo amministratore se hai bisogno di accedere."
   },
   "common": {
     "about": "Informazioni",
@@ -102,7 +97,6 @@
     "profile": "Profilo",
     "referenced-by": "Referenziato da",
     "referencing": "Referenzia",
-    "relations": "Relazioni",
     "resources": "Risorse",
     "restore": "Ripristina",
     "role": "Ruolo",
@@ -316,9 +310,11 @@
       "resize-image": "Ridimensiona immagine"
     },
     "attachments": {
-      "move-up": "Sposta allegato in alto",
-      "move-down": "Sposta allegato in basso",
-      "remove": "Rimuovi allegato"
+      "edited": "Modificato",
+      "new": "Nuovo",
+      "remove": "Rimuovi allegato",
+      "reorder": "Riordina {{name}}",
+      "reorder-hint": "Trascina o usa i tasti freccia"
     },
     "remove-relation": "Rimuovi collegamento",
     "remove-location": "Rimuovi posizione",

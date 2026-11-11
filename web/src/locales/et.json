@@ -21,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Sisselogimist ei õnnestunud lõpetada",
     "create-your-account": "Looge oma konto",
+    "hide-password": "Peida parool",
+    "incorrect-credentials": "Vale kasutajanimi või parool.",
     "new-password": "Uus parool",
     "repeat-new-password": "Korrake uut parooli",
+    "show-password": "Näita parooli",
     "sign-in-tip": "Kas teil on juba konto?",
     "sign-up-tip": "Kas teil pole veel kontot?",
     "admin-sign-in": "Administraatori sisselogimine",
-    "admin-sign-in-tip": "Parooliga sisselogimine jääb administraatoritele kättesaadavaks.",
     "back-to-sign-in": "Tagasi sisselogimiseks",
     "continue-with": "Jätka {{provider}}-ga",
     "create-admin-account": "Loo administraatori konto",
-    "explore-public-memos": "Avasta selle eksemplari avalikke memosid",
-    "first-run": "Esimene käivitus",
     "setup-description": "Loo selle eksemplari jaoks administraatori konto.",
-    "setup-note": "See konto omab eksemplari seadeid, liikmeid ja identiteedipakkujaid.",
     "setup-title": "Seadistage oma eksemplar",
     "signin-unavailable-description": "Parooliga sisselogimine on välja lülitatud ja ühtegi identiteedipakkujat pole konfigureeritud. Paluge administraatoril sisselogimismeetod lubada.",
     "signin-unavailable-title": "Sisselogimine pole saadaval",
-    "signup-unavailable-description": "Paroolikontod on välja lülitatud ja ühtegi identiteedipakkujat pole konfigureeritud. Küsige administraatorilt juurdepääsu.",
-    "signup-unavailable-title": "Registreerumine pole saadaval",
-    "signups-closed-description": "Uued kontod on selles eksemplaris keelatud. Kui vajate juurdepääsu, võtke ühendust administraatoriga.",
-    "signups-closed-title": "Registreerumine on suletud",
-    "sso-signup-tip": "Konto loomiseks logige sisse alloleva teenusepakkujaga.",
-    "welcome-back": "Tere tulemast tagasi."
+    "signups-closed-description": "Uued kontod on selles eksemplaris keelatud. Kui vajate juurdepääsu, võtke ühendust administraatoriga."
   },
   "demo": {
     "banner-description": "Muudatused on ajutised ja neid võidakse lähtestada.",
@@ -141,7 +136,6 @@
     "profile": "Profiil",
     "referenced-by": "Viidatud",
     "referencing": "Viitamine",
-    "relations": "Suhted",
     "resources": "Vahendid",
     "restore": "Taasta",
     "role": "Roll",
@@ -354,9 +348,11 @@
       "resize-image": "Muuda pildi suurust"
     },
     "attachments": {
-      "move-up": "Liiguta manus üles",
-      "move-down": "Liiguta manus alla",
-      "remove": "Eemalda manus"
+      "edited": "Muudetud",
+      "new": "Uus",
+      "remove": "Eemalda manus",
+      "reorder": "Muuda järjekorda: {{name}}",
+      "reorder-hint": "Lohista või kasuta nooleklahve"
     },
     "remove-relation": "Eemalda seos",
     "remove-location": "Eemalda asukoht",

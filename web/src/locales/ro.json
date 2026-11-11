@@ -21,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Autentificarea nu a putut fi finalizată",
     "create-your-account": "Creați-vă contul",
+    "hide-password": "Ascunde parola",
+    "incorrect-credentials": "Nume de utilizator sau parolă incorectă.",
     "new-password": "Parolă Nouă",
     "repeat-new-password": "Repetați noua parolă",
+    "show-password": "Afișează parola",
     "sign-in-tip": "Aveți deja un cont?",
     "sign-up-tip": "Nu aveți încă un cont?",
     "admin-sign-in": "Conectare administrator",
-    "admin-sign-in-tip": "Conectarea cu parolă rămâne disponibilă pentru administratori.",
     "back-to-sign-in": "Înapoi la conectare",
     "continue-with": "Continuați cu {{provider}}",
     "create-admin-account": "Creați cont de administrator",
-    "explore-public-memos": "Explorați notițele publice pe această instanță",
-    "first-run": "Prima rulare",
     "setup-description": "Creați contul de administrator pentru această instanță.",
-    "setup-note": "Acest cont deține setările instanței, membrii și furnizorii de identitate.",
     "setup-title": "Configurați instanța",
     "signin-unavailable-description": "Conectarea prin parolă este dezactivată și nu sunt configurați furnizori de identitate. Solicitați administratorului să activeze o metodă de conectare.",
     "signin-unavailable-title": "Conectarea nu este disponibilă",
-    "signup-unavailable-description": "Conturile cu parolă sunt dezactivate și nu sunt configurați furnizori de identitate. Solicitați administratorului acces.",
-    "signup-unavailable-title": "Înregistrarea nu este disponibilă",
-    "signups-closed-description": "Conturile noi sunt dezactivate pe această instanță. Contactați administratorul dacă aveți nevoie de acces.",
-    "signups-closed-title": "Înscrierile sunt închise",
-    "sso-signup-tip": "Conectați-vă cu un furnizor de mai jos pentru a vă crea contul.",
-    "welcome-back": "Bine ați revenit."
+    "signups-closed-description": "Conturile noi sunt dezactivate pe această instanță. Contactați administratorul dacă aveți nevoie de acces."
   },
   "demo": {
     "banner-description": "Modificările sunt temporare și pot fi resetate.",
@@ -141,7 +136,6 @@
     "profile": "Profil",
     "referenced-by": "Referit de",
     "referencing": "Referire",
-    "relations": "Relaţii",
     "resources": "Resurse",
     "restore": "Restabili",
     "role": "Rol",
@@ -354,9 +348,11 @@
       "resize-image": "Redimensionează imaginea"
     },
     "attachments": {
-      "move-up": "Mutați atașamentul în sus",
-      "move-down": "Mutați atașamentul în jos",
-      "remove": "Eliminați atașamentul"
+      "edited": "Editat",
+      "new": "Nou",
+      "remove": "Eliminați atașamentul",
+      "reorder": "Reordonează {{name}}",
+      "reorder-hint": "Trage sau folosește tastele săgeți"
     },
     "remove-relation": "Eliminați legătura",
     "remove-location": "Eliminați locația",

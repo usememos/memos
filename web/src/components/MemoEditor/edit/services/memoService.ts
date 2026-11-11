@@ -8,6 +8,7 @@ import type { Memo } from "@/types/proto/api/memo_service_pb";
 import { MemoSchema } from "@/types/proto/api/memo_service_pb";
 import type { EditorState } from "../state";
 import type { LocalFile } from "../types/attachment";
+import { orderAttachments } from "../utils/attachmentOrder";
 import { uploadService } from "./uploadService";
 
 /**
@@ -133,7 +134,13 @@ export const memoService = {
     const additions = state.localFiles.filter((file) => !file.replaces);
     const replacements = state.localFiles.filter((file) => file.replaces);
     const newAttachments = await uploadService.uploadFiles(additions, options.onFileUploaded);
-    let allAttachments = mergeUploadedAttachments(state.metadata.attachments, newAttachments);
+    // New files take the places the draft gave them among the saved ones.
+    const uploadedByPreviewUrl = new Map(additions.map((file, index) => [file.previewUrl, newAttachments[index]]));
+    let allAttachments = orderAttachments(
+      mergeUploadedAttachments(state.metadata.attachments, newAttachments),
+      uploadedByPreviewUrl,
+      state.attachmentOrder,
+    );
 
     // 2. Update existing memo
     if (options.memoName) {

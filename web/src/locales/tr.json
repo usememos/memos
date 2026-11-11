@@ -45,28 +45,23 @@
   },
   "auth": {
     "admin-sign-in": "Yönetici girişi",
-    "admin-sign-in-tip": "Parolayla giriş yöneticiler için kullanılabilir kalır.",
     "back-to-sign-in": "Girişe dön",
+    "callback-failed-title": "Oturum açma tamamlanamadı",
     "continue-with": "{{provider}} ile devam et",
     "create-admin-account": "Yönetici hesabı oluştur",
     "create-your-account": "Hesabınızı oluşturun",
-    "explore-public-memos": "Bu sunucudaki herkese açık notları keşfedin",
-    "first-run": "İlk çalıştırma",
+    "hide-password": "Parolayı gizle",
+    "incorrect-credentials": "Kullanıcı adı veya parola hatalı.",
     "new-password": "Yeni şifre",
     "repeat-new-password": "Yeni şifreyi tekrar girin",
     "setup-description": "Bu sunucu için yönetici hesabını oluşturun.",
-    "setup-note": "Bu hesap sunucu ayarlarının, üyelerin ve kimlik sağlayıcıların sahibidir.",
     "setup-title": "Sunucunuzu kurun",
+    "show-password": "Parolayı göster",
     "sign-in-tip": "Zaten hesabınız var mı?",
     "sign-up-tip": "Henüz hesabınız yok mu?",
     "signin-unavailable-description": "Parolayla giriş kapalı ve yapılandırılmış bir kimlik sağlayıcı yok. Yöneticinizden bir giriş yöntemi etkinleştirmesini isteyin.",
     "signin-unavailable-title": "Giriş kullanılamıyor",
-    "signup-unavailable-description": "Parolalı hesaplar kapalı ve yapılandırılmış bir kimlik sağlayıcı yok. Erişim için yöneticinize başvurun.",
-    "signup-unavailable-title": "Kayıt kullanılamıyor",
-    "signups-closed-description": "Bu sunucuda yeni hesap oluşturma devre dışı. Erişime ihtiyacınız varsa yöneticinizle iletişime geçin.",
-    "signups-closed-title": "Kayıtlar kapalı",
-    "sso-signup-tip": "Hesabınızı oluşturmak için aşağıdaki sağlayıcılardan biriyle giriş yapın.",
-    "welcome-back": "Tekrar hoş geldiniz."
+    "signups-closed-description": "Bu sunucuda yeni hesap oluşturma devre dışı. Erişime ihtiyacınız varsa yöneticinizle iletişime geçin."
   },
   "calendar": {
     "new-memo-on-day": "Bu güne yeni not",
@@ -139,7 +134,6 @@
     "profile": "Profil",
     "referenced-by": "Referans Verilenler",
     "referencing": "Referans Verenler",
-    "relations": "İlişkiler",
     "resize-panel": "Paneli yeniden boyutlandır",
     "resize-sidebar": "Kenar çubuğunu yeniden boyutlandır",
     "resources": "Kaynaklar",
@@ -347,9 +341,11 @@
       "resize-image": "Görseli yeniden boyutlandır"
     },
     "attachments": {
-      "move-up": "Eki yukarı taşı",
-      "move-down": "Eki aşağı taşı",
-      "remove": "Eki kaldır"
+      "edited": "Düzenlendi",
+      "new": "Yeni",
+      "remove": "Eki kaldır",
+      "reorder": "{{name}} sırasını değiştir",
+      "reorder-hint": "Sürükleyin veya ok tuşlarını kullanın"
     },
     "remove-relation": "İlişkiyi kaldır",
     "remove-location": "Konumu kaldır",

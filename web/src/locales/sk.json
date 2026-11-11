@@ -21,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Prihlásenie sa nepodarilo dokončiť",
     "create-your-account": "Vytvorte si účet",
+    "hide-password": "Skryť heslo",
+    "incorrect-credentials": "Nesprávne používateľské meno alebo heslo.",
     "new-password": "Nové heslo",
     "repeat-new-password": "Zopakujte nové heslo",
+    "show-password": "Zobraziť heslo",
     "sign-in-tip": "Už máte účet?",
     "sign-up-tip": "Ešte nemáte účet?",
     "admin-sign-in": "Prihlásenie správcu",
-    "admin-sign-in-tip": "Prihlásenie heslom zostáva pre správcov k dispozícii.",
     "back-to-sign-in": "Späť na prihlásenie",
     "continue-with": "Pokračovať s {{provider}}",
     "create-admin-account": "Vytvoriť administrátorský účet",
-    "explore-public-memos": "Preskúmať verejné poznámky v tejto inštancii",
-    "first-run": "Prvé spustenie",
     "setup-description": "Vytvoriť administrátorský účet pre túto inštanciu.",
-    "setup-note": "Tento účet vlastní nastavenia inštancie, členov a poskytovateľov identít.",
     "setup-title": "Nastavte si inštanciu",
     "signin-unavailable-description": "Prihlásenie heslom je vypnuté a nie sú nakonfigurovaní žiadni poskytovatelia identít. Požiadajte svojho administrátora o povolenie metódy prihlásenia.",
     "signin-unavailable-title": "Prihlásenie nie je k dispozícii",
-    "signup-unavailable-description": "Účty s heslom sú vypnuté a nie sú nakonfigurovaní žiadni poskytovatelia identít. Požiadajte svojho administrátora o prístup.",
-    "signup-unavailable-title": "Registrácia nie je k dispozícii",
-    "signups-closed-description": "Nové účty sú v tejto inštancii zakázané. Ak potrebujete prístup, kontaktujte svojho administrátora.",
-    "signups-closed-title": "Registrácie sú uzavreté",
-    "sso-signup-tip": "Prihláste sa pomocou poskytovateľa nižšie a vytvorte si účet.",
-    "welcome-back": "Vitajte späť."
+    "signups-closed-description": "Nové účty sú v tejto inštancii zakázané. Ak potrebujete prístup, kontaktujte svojho administrátora."
   },
   "demo": {
     "banner-description": "Zmeny sú dočasné a možno ich resetovať.",
@@ -141,7 +136,6 @@
     "profile": "Profil",
     "referenced-by": "Odkazuje",
     "referencing": "Odkazovanie",
-    "relations": "Vzťahy",
     "resources": "Zdroje",
     "restore": "Obnoviť",
     "role": "Role",
@@ -354,9 +348,11 @@
       "resize-image": "Zmeniť veľkosť obrázka"
     },
     "attachments": {
-      "move-up": "Posunúť prílohu nahor",
-      "move-down": "Posunúť prílohu nadol",
-      "remove": "Odstrániť prílohu"
+      "edited": "Upravené",
+      "new": "Nové",
+      "remove": "Odstrániť prílohu",
+      "reorder": "Zmeniť poradie: {{name}}",
+      "reorder-hint": "Potiahnite alebo použite šípky"
     },
     "remove-relation": "Odstrániť prepojenie",
     "remove-location": "Odstrániť polohu",

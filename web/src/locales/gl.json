@@ -21,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Non se puido completar o inicio de sesión",
     "create-your-account": "Crea a túa conta",
+    "hide-password": "Agochar o contrasinal",
+    "incorrect-credentials": "Nome de usuario ou contrasinal incorrectos.",
     "new-password": "Novo contrasinal",
     "repeat-new-password": "Repite o novo contrasinal",
+    "show-password": "Amosar o contrasinal",
     "sign-in-tip": "Xa tes unha conta?",
     "sign-up-tip": "Aínda non tes unha conta?",
     "admin-sign-in": "Inicio de sesión do administrador",
-    "admin-sign-in-tip": "O inicio de sesión con contrasinal permanece dispoñible para os administradores.",
     "back-to-sign-in": "Volver ao inicio de sesión",
     "continue-with": "Continuar con {{provider}}",
     "create-admin-account": "Crear conta de administrador",
-    "explore-public-memos": "Explorar as notas públicas nesta instancia",
-    "first-run": "Primeira execución",
     "setup-description": "Crear a conta de administrador para esta instancia.",
-    "setup-note": "Esta conta posúe a configuración da instancia, os membros e os provedores de identidade.",
     "setup-title": "Configurar a túa instancia",
     "signin-unavailable-description": "O inicio de sesión con contrasinal está desactivado e non hai ningún provedor de identidade configurado. Pídelle ao teu administrador que active un método de inicio de sesión.",
     "signin-unavailable-title": "O inicio de sesión non está dispoñible",
-    "signup-unavailable-description": "As contas con contrasinal están desactivadas e non hai ningún provedor de identidade configurado. Pídelle ao teu administrador que che dea acceso.",
-    "signup-unavailable-title": "O rexistro non está dispoñible",
-    "signups-closed-description": "As novas contas están desactivadas nesta instancia. Ponte en contacto co teu administrador se necesitas acceso.",
-    "signups-closed-title": "Os rexistros están pechados",
-    "sso-signup-tip": "Inicia sesión cun provedor a continuación para crear a túa conta.",
-    "welcome-back": "Benvido/a de novo."
+    "signups-closed-description": "As novas contas están desactivadas nesta instancia. Ponte en contacto co teu administrador se necesitas acceso."
   },
   "common": {
     "about": "Sobre",
@@ -102,7 +97,6 @@
     "profile": "Perfil",
     "referenced-by": "Referida por",
     "referencing": "Referindo",
-    "relations": "Relacións",
     "resources": "Recursos",
     "restore": "Recuperar",
     "role": "Rol",
@@ -316,9 +310,11 @@
       "resize-image": "Cambiar o tamaño da imaxe"
     },
     "attachments": {
-      "move-up": "Mover o anexo cara arriba",
-      "move-down": "Mover o anexo cara abaixo",
-      "remove": "Quitar o anexo"
+      "edited": "Editado",
+      "new": "Novo",
+      "remove": "Quitar o anexo",
+      "reorder": "Reordenar {{name}}",
+      "reorder-hint": "Arrastra ou usa as teclas de frecha"
     },
     "remove-relation": "Quitar a relación",
     "remove-location": "Quitar a localización",

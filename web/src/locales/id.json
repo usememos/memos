@@ -21,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Tidak dapat menyelesaikan proses masuk",
     "create-your-account": "Buat akun Anda",
+    "hide-password": "Sembunyikan kata sandi",
+    "incorrect-credentials": "Nama pengguna atau kata sandi salah.",
     "new-password": "Kata sandi baru",
     "repeat-new-password": "Ulangi kata sandi baru",
+    "show-password": "Tampilkan kata sandi",
     "sign-in-tip": "Sudah memiliki akun?",
     "sign-up-tip": "Belum memiliki akun?",
     "admin-sign-in": "Masuk administrator",
-    "admin-sign-in-tip": "Masuk dengan kata sandi tetap tersedia untuk administrator.",
     "back-to-sign-in": "Kembali ke halaman masuk",
     "continue-with": "Lanjutkan dengan {{provider}}",
     "create-admin-account": "Buat akun admin",
-    "explore-public-memos": "Jelajahi memo publik pada instance ini",
-    "first-run": "Jalankan pertama kali",
     "setup-description": "Buat akun administrator untuk instance ini.",
-    "setup-note": "Akun ini memiliki pengaturan instance, anggota, dan penyedia identitas.",
     "setup-title": "Siapkan instance Anda",
     "signin-unavailable-description": "Masuk dengan kata sandi dimatikan dan tidak ada penyedia identitas yang dikonfigurasi. Minta administrator Anda untuk mengaktifkan metode masuk.",
     "signin-unavailable-title": "Masuk tidak tersedia",
-    "signup-unavailable-description": "Akun kata sandi dimatikan dan tidak ada penyedia identitas yang dikonfigurasi. Minta administrator Anda untuk akses.",
-    "signup-unavailable-title": "Pendaftaran tidak tersedia",
-    "signups-closed-description": "Akun baru dinonaktifkan pada instance ini. Hubungi administrator Anda jika Anda memerlukan akses.",
-    "signups-closed-title": "Pendaftaran ditutup",
-    "sso-signup-tip": "Masuk dengan penyedia di bawah ini untuk membuat akun Anda.",
-    "welcome-back": "Selamat datang kembali."
+    "signups-closed-description": "Akun baru dinonaktifkan pada instance ini. Hubungi administrator Anda jika Anda memerlukan akses."
   },
   "common": {
     "about": "Tentang",
@@ -102,7 +97,6 @@
     "profile": "Profil",
     "referenced-by": "Dirujuk oleh",
     "referencing": "Merujuk",
-    "relations": "Relasi",
     "resources": "Sumber Daya",
     "restore": "Pulihkan",
     "role": "Peran",
@@ -316,9 +310,11 @@
       "resize-image": "Ubah ukuran gambar"
     },
     "attachments": {
-      "move-up": "Pindahkan lampiran ke atas",
-      "move-down": "Pindahkan lampiran ke bawah",
-      "remove": "Hapus lampiran"
+      "edited": "Diedit",
+      "new": "Baru",
+      "remove": "Hapus lampiran",
+      "reorder": "Ubah urutan {{name}}",
+      "reorder-hint": "Seret, atau gunakan tombol panah"
     },
     "remove-relation": "Hapus relasi",
     "remove-location": "Hapus lokasi",

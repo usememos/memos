@@ -21,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Prijave ni bilo mogoče dokončati",
     "create-your-account": "Ustvari nov račun",
+    "hide-password": "Skrij geslo",
+    "incorrect-credentials": "Napačno uporabniško ime ali geslo.",
     "new-password": "Novo geslo",
     "repeat-new-password": "Ponovi novo geslo",
+    "show-password": "Pokaži geslo",
     "sign-in-tip": "Že imaš račun?",
     "sign-up-tip": "Še nimaš računa?",
     "admin-sign-in": "Prijava skrbnika",
-    "admin-sign-in-tip": "Prijava z geslom ostane na voljo skrbnikom.",
     "back-to-sign-in": "Nazaj na prijavo",
     "continue-with": "Nadaljuj z {{provider}}",
     "create-admin-account": "Ustvari skrbniški račun",
-    "explore-public-memos": "Razišči javne zapiske v tem primerku",
-    "first-run": "Prvi zagon",
     "setup-description": "Ustvari skrbniški račun za ta primerek.",
-    "setup-note": "Ta račun je lastnik nastavitev primerka, članov in ponudnikov identitete.",
     "setup-title": "Nastavi svoj primerek",
     "signin-unavailable-description": "Prijava z geslom je izklopljena in noben ponudnik identitete ni konfiguriran. Prosite skrbnika, da omogoči način prijave.",
     "signin-unavailable-title": "Prijava ni na voljo",
-    "signup-unavailable-description": "Računi z geslom so izklopljeni in noben ponudnik identitete ni konfiguriran. Prosite skrbnika za dostop.",
-    "signup-unavailable-title": "Registracija ni na voljo",
-    "signups-closed-description": "Novi računi so v tem primerku onemogočeni. Če potrebujete dostop, se obrnite na skrbnika.",
-    "signups-closed-title": "Prijave so zaprte",
-    "sso-signup-tip": "Prijavite se s spodnjim ponudnikom, da ustvarite svoj račun.",
-    "welcome-back": "Dobrodošli nazaj."
+    "signups-closed-description": "Novi računi so v tem primerku onemogočeni. Če potrebujete dostop, se obrnite na skrbnika."
   },
   "common": {
     "about": "O programu",
@@ -102,7 +97,6 @@
     "profile": "Profil",
     "referenced-by": "Nanaša se na",
     "referencing": "Nanašanje",
-    "relations": "Relacije",
     "resources": "Viri",
     "restore": "Obnovi",
     "role": "Vloga",
@@ -316,9 +310,11 @@
       "resize-image": "Spremeni velikost slike"
     },
     "attachments": {
-      "move-up": "Premakni prilogo gor",
-      "move-down": "Premakni prilogo dol",
-      "remove": "Odstrani prilogo"
+      "edited": "Urejeno",
+      "new": "Novo",
+      "remove": "Odstrani prilogo",
+      "reorder": "Prerazporedi {{name}}",
+      "reorder-hint": "Povlecite ali uporabite smerne tipke"
     },
     "remove-relation": "Odstrani povezavo",
     "remove-location": "Odstrani lokacijo",

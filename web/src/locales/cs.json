@@ -21,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Přihlášení se nepodařilo dokončit",
     "create-your-account": "Založit nový účet",
+    "hide-password": "Skrýt heslo",
+    "incorrect-credentials": "Nesprávné uživatelské jméno nebo heslo.",
     "new-password": "Nové heslo",
     "repeat-new-password": "Zopakujte nové heslo",
+    "show-password": "Zobrazit heslo",
     "sign-in-tip": "Už máte účet?",
     "sign-up-tip": "Ještě nemáte účet?",
     "admin-sign-in": "Přihlášení správce",
-    "admin-sign-in-tip": "Přihlášení heslem zůstává pro správce k dispozici.",
     "back-to-sign-in": "Zpět k přihlášení",
     "continue-with": "Pokračovat s {{provider}}",
     "create-admin-account": "Vytvořit administrátorský účet",
-    "explore-public-memos": "Prozkoumat veřejné poznámky v této instanci",
-    "first-run": "První spuštění",
     "setup-description": "Vytvořit administrátorský účet pro tuto instanci.",
-    "setup-note": "Tento účet vlastní nastavení instance, členy a poskytovatele identity.",
     "setup-title": "Nastavení instance",
     "signin-unavailable-description": "Přihlašování heslem je vypnuto a nejsou nakonfigurováni žádní poskytovatelé identity. Požádejte administrátora o povolení metody přihlašování.",
     "signin-unavailable-title": "Přihlášení není k dispozici",
-    "signup-unavailable-description": "Účty s heslem jsou vypnuty a nejsou nakonfigurováni žádní poskytovatelé identity. Požádejte administrátora o přístup.",
-    "signup-unavailable-title": "Registrace není k dispozici",
-    "signups-closed-description": "Nové účty jsou v této instanci zakázány. Pokud potřebujete přístup, obraťte se na administrátora.",
-    "signups-closed-title": "Registrace jsou uzavřeny",
-    "sso-signup-tip": "Přihlaste se k níže uvedenému poskytovateli a vytvořte si účet.",
-    "welcome-back": "Vítejte zpět."
+    "signups-closed-description": "Nové účty jsou v této instanci zakázány. Pokud potřebujete přístup, obraťte se na administrátora."
   },
   "common": {
     "about": "O aplikaci",
@@ -102,7 +97,6 @@
     "profile": "Profil",
     "referenced-by": "Odkazováno",
     "referencing": "Odkazuje na",
-    "relations": "Souvislosti",
     "resources": "Zdroje",
     "restore": "Obnovit",
     "role": "Role",
@@ -316,9 +310,11 @@
       "resize-image": "Změnit velikost obrázku"
     },
     "attachments": {
-      "move-up": "Posunout přílohu nahoru",
-      "move-down": "Posunout přílohu dolů",
-      "remove": "Odebrat přílohu"
+      "edited": "Upraveno",
+      "new": "Nové",
+      "remove": "Odebrat přílohu",
+      "reorder": "Změnit pořadí: {{name}}",
+      "reorder-hint": "Přetáhněte, nebo použijte šipky"
     },
     "remove-relation": "Odebrat vazbu",
     "remove-location": "Odebrat místo",

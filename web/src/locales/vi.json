@@ -21,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Không thể hoàn tất đăng nhập",
     "create-your-account": "Tạo tài khoản của bạn",
+    "hide-password": "Ẩn mật khẩu",
+    "incorrect-credentials": "Tên người dùng hoặc mật khẩu không đúng.",
     "new-password": "Mật khẩu mới",
     "repeat-new-password": "Nhập lại mật khẩu mới",
+    "show-password": "Hiện mật khẩu",
     "sign-in-tip": "Đã có tài khoản?",
     "sign-up-tip": "Chưa có tài khoản?",
     "admin-sign-in": "Đăng nhập quản trị viên",
-    "admin-sign-in-tip": "Đăng nhập bằng mật khẩu vẫn khả dụng cho quản trị viên.",
     "back-to-sign-in": "Quay lại trang đăng nhập",
     "continue-with": "Tiếp tục với {{provider}}",
     "create-admin-account": "Tạo tài khoản quản trị viên",
-    "explore-public-memos": "Khám phá các ghi chú công khai trên phiên bản này",
-    "first-run": "Lần chạy đầu tiên",
     "setup-description": "Tạo tài khoản quản trị viên cho phiên bản này.",
-    "setup-note": "Tài khoản này sở hữu cài đặt phiên bản, thành viên và nhà cung cấp danh tính.",
     "setup-title": "Thiết lập phiên bản của bạn",
     "signin-unavailable-description": "Đăng nhập bằng mật khẩu đã bị tắt và không có nhà cung cấp danh tính nào được cấu hình. Hãy yêu cầu quản trị viên của bạn bật phương thức đăng nhập.",
     "signin-unavailable-title": "Đăng nhập không khả dụng",
-    "signup-unavailable-description": "Tài khoản mật khẩu đã bị tắt và không có nhà cung cấp danh tính nào được cấu hình. Hãy yêu cầu quản trị viên của bạn cấp quyền truy cập.",
-    "signup-unavailable-title": "Đăng ký không khả dụng",
-    "signups-closed-description": "Tài khoản mới bị vô hiệu hóa trên phiên bản này. Liên hệ với quản trị viên của bạn nếu bạn cần quyền truy cập.",
-    "signups-closed-title": "Đăng ký đã đóng",
-    "sso-signup-tip": "Đăng nhập bằng nhà cung cấp bên dưới để tạo tài khoản của bạn.",
-    "welcome-back": "Chào mừng bạn trở lại."
+    "signups-closed-description": "Tài khoản mới bị vô hiệu hóa trên phiên bản này. Liên hệ với quản trị viên của bạn nếu bạn cần quyền truy cập."
   },
   "common": {
     "about": "Giới thiệu",
@@ -102,7 +97,6 @@
     "profile": "Hồ sơ",
     "referenced-by": "Được tham chiếu bởi",
     "referencing": "Đang tham chiếu",
-    "relations": "Liên kết",
     "resources": "Tài nguyên",
     "restore": "Khôi phục",
     "role": "Vai trò",
@@ -316,9 +310,11 @@
       "resize-image": "Đổi kích thước hình ảnh"
     },
     "attachments": {
-      "move-up": "Di chuyển tệp đính kèm lên",
-      "move-down": "Di chuyển tệp đính kèm xuống",
-      "remove": "Xóa tệp đính kèm"
+      "edited": "Đã sửa",
+      "new": "Mới",
+      "remove": "Xóa tệp đính kèm",
+      "reorder": "Sắp xếp lại {{name}}",
+      "reorder-hint": "Kéo, hoặc dùng các phím mũi tên"
     },
     "remove-relation": "Xóa liên kết",
     "remove-location": "Xóa vị trí",

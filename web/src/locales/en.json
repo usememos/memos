@@ -45,28 +45,23 @@
   },
   "auth": {
     "admin-sign-in": "Administrator sign-in",
-    "admin-sign-in-tip": "Password sign-in stays available for administrators.",
     "back-to-sign-in": "Back to sign in",
+    "callback-failed-title": "Couldn't finish signing in",
     "continue-with": "Continue with {{provider}}",
     "create-admin-account": "Create admin account",
     "create-your-account": "Create your account",
-    "explore-public-memos": "Explore public memos on this instance",
-    "first-run": "First run",
+    "hide-password": "Hide password",
+    "incorrect-credentials": "Incorrect username or password.",
     "new-password": "New password",
     "repeat-new-password": "Repeat the new password",
     "setup-description": "Create the administrator account for this instance.",
-    "setup-note": "This account owns instance settings, members, and identity providers.",
     "setup-title": "Set up your instance",
+    "show-password": "Show password",
     "sign-in-tip": "Already have an account?",
     "sign-up-tip": "Don't have an account yet?",
     "signin-unavailable-description": "Password sign-in is turned off and no identity providers are configured. Ask your administrator to enable a sign-in method.",
     "signin-unavailable-title": "Sign-in is unavailable",
-    "signup-unavailable-description": "Password accounts are turned off and no identity providers are configured. Ask your administrator for access.",
-    "signup-unavailable-title": "Sign-up is unavailable",
-    "signups-closed-description": "New accounts are disabled on this instance. Contact your administrator if you need access.",
-    "signups-closed-title": "Sign-ups are closed",
-    "sso-signup-tip": "Sign in with a provider below to create your account.",
-    "welcome-back": "Welcome back."
+    "signups-closed-description": "New accounts are disabled on this instance. Contact your administrator if you need access."
   },
   "calendar": {
     "new-memo-on-day": "New memo on this day",
@@ -211,7 +206,6 @@
     "profile": "Profile",
     "referenced-by": "Referenced by",
     "referencing": "Referencing",
-    "relations": "Relations",
     "resize-panel": "Resize panel",
     "resize-sidebar": "Resize sidebar",
     "resources": "Resources",
@@ -418,9 +412,11 @@
       "resize-image": "Resize image"
     },
     "attachments": {
-      "move-up": "Move attachment up",
-      "move-down": "Move attachment down",
-      "remove": "Remove attachment"
+      "edited": "Edited",
+      "new": "New",
+      "remove": "Remove attachment",
+      "reorder": "Reorder {{name}}",
+      "reorder-hint": "Drag, or use the arrow keys"
     },
     "remove-relation": "Remove relation",
     "remove-location": "Remove location",

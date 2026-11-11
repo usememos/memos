@@ -21,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Não foi possível concluir o início de sessão",
     "create-your-account": "Crie a sua conta",
+    "hide-password": "Ocultar palavra-passe",
+    "incorrect-credentials": "Nome de utilizador ou palavra-passe incorretos.",
     "new-password": "Nova palavra-passe",
     "repeat-new-password": "Repita a nova palavra-passe",
+    "show-password": "Mostrar palavra-passe",
     "sign-in-tip": "Já tem uma conta?",
     "sign-up-tip": "Ainda não tem uma conta?",
     "admin-sign-in": "Login de administrador",
-    "admin-sign-in-tip": "O login com palavra-passe continua disponível para os administradores.",
     "back-to-sign-in": "Voltar para iniciar sessão",
     "continue-with": "Continuar com {{provider}}",
     "create-admin-account": "Criar conta de administrador",
-    "explore-public-memos": "Explorar memorandos públicos nesta instância",
-    "first-run": "Primeira execução",
     "setup-description": "Criar a conta de administrador para esta instância.",
-    "setup-note": "Esta conta é proprietária das definições da instância, dos membros e dos fornecedores de identidade.",
     "setup-title": "Configurar a sua instância",
     "signin-unavailable-description": "O login com palavra-passe está desativado e não está configurado nenhum fornecedor de identidade. Peça ao seu administrador para ativar um método de início de sessão.",
     "signin-unavailable-title": "O login não está disponível",
-    "signup-unavailable-description": "As contas com palavra-passe estão desativadas e não está configurado nenhum fornecedor de identidade. Solicite o acesso ao seu administrador.",
-    "signup-unavailable-title": "O registo não está disponível",
-    "signups-closed-description": "As novas contas estão desativadas nesta instância. Contacte o seu administrador se precisar de acesso.",
-    "signups-closed-title": "Os registos estão encerrados",
-    "sso-signup-tip": "Inicie sessão com um fornecedor abaixo para criar a sua conta.",
-    "welcome-back": "Bem-vindo(a) de volta."
+    "signups-closed-description": "As novas contas estão desativadas nesta instância. Contacte o seu administrador se precisar de acesso."
   },
   "common": {
     "about": "Sobre",
@@ -102,7 +97,6 @@
     "profile": "Perfil",
     "referenced-by": "Referenciado por",
     "referencing": "A referenciar",
-    "relations": "Relações",
     "resources": "Recursos",
     "restore": "Restaurar",
     "role": "Função",
@@ -316,9 +310,11 @@
       "resize-image": "Redimensionar imagem"
     },
     "attachments": {
-      "move-up": "Mover anexo para cima",
-      "move-down": "Mover anexo para baixo",
-      "remove": "Remover anexo"
+      "edited": "Editado",
+      "new": "Novo",
+      "remove": "Remover anexo",
+      "reorder": "Reordenar {{name}}",
+      "reorder-hint": "Arraste ou utilize as teclas de seta"
     },
     "remove-relation": "Remover ligação",
     "remove-location": "Remover local",

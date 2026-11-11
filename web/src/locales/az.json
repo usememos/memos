@@ -45,28 +45,23 @@
   },
   "auth": {
     "admin-sign-in": "Administrator girişi",
-    "admin-sign-in-tip": "Parolla giriş administratorlar üçün açıq qalır.",
     "back-to-sign-in": "Girişə qayıt",
+    "callback-failed-title": "Giriş tamamlana bilmədi",
     "continue-with": "{{provider}} ilə davam et",
     "create-admin-account": "Admin hesabı yarat",
     "create-your-account": "Hesabınızı yaradın",
-    "explore-public-memos": "Bu instansdakı ictimai qeydləri kəşf edin",
-    "first-run": "İlk işə salma",
+    "hide-password": "Şifrəni gizlət",
+    "incorrect-credentials": "İstifadəçi adı və ya şifrə yanlışdır.",
     "new-password": "Yeni parol",
     "repeat-new-password": "Yeni parolu təkrarlayın",
     "setup-description": "Bu instans üçün administrator hesabı yaradın.",
-    "setup-note": "Bu hesab instans parametrlərinə, üzvlərə və kimlik provayderlərinə sahib olur.",
     "setup-title": "İnstansınızı qurun",
+    "show-password": "Şifrəni göstər",
     "sign-in-tip": "Artıq hesabınız var?",
     "sign-up-tip": "Hələ hesabınız yoxdur?",
     "signin-unavailable-description": "Parolla giriş deaktiv edilib və heç bir kimlik provayderi tənzimlənməyib. Giriş üsulunu aktivləşdirmək üçün administratorunuza müraciət edin.",
     "signin-unavailable-title": "Giriş əlçatan deyil",
-    "signup-unavailable-description": "Parollu hesablar deaktiv edilib və heç bir kimlik provayderi tənzimlənməyib. Giriş üçün administratorunuza müraciət edin.",
-    "signup-unavailable-title": "Qeydiyyat əlçatan deyil",
-    "signups-closed-description": "Bu instansda yeni hesablar deaktiv edilib. Giriş lazımdırsa, administratorunuzla əlaqə saxlayın.",
-    "signups-closed-title": "Qeydiyyat bağlıdır",
-    "sso-signup-tip": "Hesabınızı yaratmaq üçün aşağıdakı provayderlərdən biri ilə daxil olun.",
-    "welcome-back": "Yenidən xoş gəlmisiniz."
+    "signups-closed-description": "Bu instansda yeni hesablar deaktiv edilib. Giriş lazımdırsa, administratorunuzla əlaqə saxlayın."
   },
   "calendar": {
     "new-memo-on-day": "Bu gün üçün yeni qeyd",
@@ -211,7 +206,6 @@
     "profile": "Profil",
     "referenced-by": "İstinad edənlər",
     "referencing": "İstinad edir",
-    "relations": "Əlaqələr",
     "resize-panel": "Panelin ölçüsünü dəyiş",
     "resize-sidebar": "Yan panelin ölçüsünü dəyiş",
     "resources": "Resurslar",
@@ -418,9 +412,11 @@
       "resize-image": "Şəklin ölçüsünü dəyiş"
     },
     "attachments": {
-      "move-up": "Qoşmanı yuxarı köçür",
-      "move-down": "Qoşmanı aşağı köçür",
-      "remove": "Qoşmanı çıxar"
+      "edited": "Düzəldilib",
+      "new": "Yeni",
+      "remove": "Qoşmanı çıxar",
+      "reorder": "{{name}} sırasını dəyiş",
+      "reorder-hint": "Sürüşdürün və ya ox düymələrindən istifadə edin"
     },
     "remove-relation": "Əlaqəni çıxar",
     "remove-location": "Məkanı çıxar",

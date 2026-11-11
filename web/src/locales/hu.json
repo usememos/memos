@@ -21,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "A bejelentkezést nem sikerült befejezni",
     "create-your-account": "Fiók létrehozása",
+    "hide-password": "Jelszó elrejtése",
+    "incorrect-credentials": "Hibás felhasználónév vagy jelszó.",
     "new-password": "Új jelszó",
     "repeat-new-password": "Jelszó ismét",
+    "show-password": "Jelszó megjelenítése",
     "sign-in-tip": "Már van fiókod?",
     "sign-up-tip": "Még nincs fiókod?",
     "admin-sign-in": "Rendszergazdai bejelentkezés",
-    "admin-sign-in-tip": "A jelszóval történő bejelentkezés továbbra is elérhető a rendszergazdák számára.",
     "back-to-sign-in": "Vissza a bejelentkezéshez",
     "continue-with": "Folytatás ezzel: {{provider}}",
     "create-admin-account": "Rendszergazdai fiók létrehozása",
-    "explore-public-memos": "Nyilvános feljegyzések megtekintése ezen a példányon",
-    "first-run": "Első futtatás",
     "setup-description": "Rendszergazdai fiók létrehozása ehhez a példányhoz.",
-    "setup-note": "Ez a fiók birtokolja a példánybeállításokat, a tagokat és az identitásszolgáltatókat.",
     "setup-title": "Példány beállítása",
     "signin-unavailable-description": "A jelszóval történő bejelentkezés ki van kapcsolva, és nincsenek identitásszolgáltatók konfigurálva. Kérje meg a rendszergazdát, hogy engedélyezze a bejelentkezési módszert.",
     "signin-unavailable-title": "Bejelentkezés nem érhető el",
-    "signup-unavailable-description": "A jelszóval védett fiókok ki vannak kapcsolva, és nincsenek identitásszolgáltatók konfigurálva. Kérje meg a rendszergazdát a hozzáférésért.",
-    "signup-unavailable-title": "A regisztráció nem érhető el",
-    "signups-closed-description": "Az új fiókok le vannak tiltva ezen a példányon. Hozzáférés esetén forduljon a rendszergazdához.",
-    "signups-closed-title": "A regisztráció lezárult.",
-    "sso-signup-tip": "Jelentkezzen be az alábbi szolgáltatóval a fiók létrehozásához.",
-    "welcome-back": "Üdvözöljük ismét."
+    "signups-closed-description": "Az új fiókok le vannak tiltva ezen a példányon. Hozzáférés esetén forduljon a rendszergazdához."
   },
   "common": {
     "about": "Névjegy",
@@ -102,7 +97,6 @@
     "profile": "Profil",
     "referenced-by": "Hivatkozta",
     "referencing": "Hivatkozik",
-    "relations": "Kapcsolatok",
     "resources": "Állományok",
     "restore": "Helyreállítás",
     "role": "Jogosultság",
@@ -316,9 +310,11 @@
       "resize-image": "Kép átméretezése"
     },
     "attachments": {
-      "move-up": "Melléklet mozgatása feljebb",
-      "move-down": "Melléklet mozgatása lejjebb",
-      "remove": "Melléklet eltávolítása"
+      "edited": "Szerkesztve",
+      "new": "Új",
+      "remove": "Melléklet eltávolítása",
+      "reorder": "{{name}} áthelyezése",
+      "reorder-hint": "Húzza, vagy használja a nyílbillentyűket"
     },
     "remove-relation": "Kapcsolat eltávolítása",
     "remove-location": "Hely eltávolítása",

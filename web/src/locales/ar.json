@@ -21,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "تعذّر إكمال تسجيل الدخول",
     "create-your-account": "أنشئ حسابك",
+    "hide-password": "إخفاء كلمة المرور",
+    "incorrect-credentials": "اسم المستخدم أو كلمة المرور غير صحيحة.",
     "new-password": "كلمة المرور الجديدة",
     "repeat-new-password": "أعد كلمة المرور الجديدة",
+    "show-password": "إظهار كلمة المرور",
     "sign-in-tip": "هل لديك حساب بالفعل؟",
     "sign-up-tip": "ليس لديك حساب بعد؟",
     "admin-sign-in": "تسجيل دخول المسؤول",
-    "admin-sign-in-tip": "يبقى تسجيل الدخول بكلمة المرور متاحًا للمسؤولين.",
     "back-to-sign-in": "العودة إلى صفحة تسجيل الدخول",
     "continue-with": "المتابعة مع {{provider}}",
     "create-admin-account": "إنشاء حساب مدير",
-    "explore-public-memos": "استعراض المذكرات العامة على هذه النسخة",
-    "first-run": "التشغيل الأول",
     "setup-description": "إنشاء حساب المدير لهذه النسخة.",
-    "setup-note": "يمتلك هذا الحساب إعدادات النسخة، والأعضاء، وموفري الهوية.",
     "setup-title": "إعداد النسخة",
     "signin-unavailable-description": "تم تعطيل تسجيل الدخول بكلمة المرور، ولم يتم تكوين أي موفر هوية. اطلب من مدير النظام تفعيل طريقة تسجيل الدخول.",
     "signin-unavailable-title": "تسجيل الدخول غير متاح",
-    "signup-unavailable-description": "تم تعطيل حسابات كلمة المرور، ولم يتم تكوين أي موفر هوية. اطلب من مدير النظام الوصول.",
-    "signup-unavailable-title": "التسجيل غير متاح",
-    "signups-closed-description": "تم تعطيل الحسابات الجديدة على هذه النسخة. تواصل مع مدير النظام إذا كنت بحاجة إلى الوصول.",
-    "signups-closed-title": "تم إغلاق التسجيل",
-    "sso-signup-tip": "سجّل الدخول باستخدام أحد مزودي الخدمة أدناه لإنشاء حسابك.",
-    "welcome-back": "أهلاً بعودتك."
+    "signups-closed-description": "تم تعطيل الحسابات الجديدة على هذه النسخة. تواصل مع مدير النظام إذا كنت بحاجة إلى الوصول."
   },
   "common": {
     "about": "حول",
@@ -102,7 +97,6 @@
     "profile": "الملف الشخصي",
     "referenced-by": "مشار إليه بواسطة",
     "referencing": "يشير إلى",
-    "relations": "العلاقات",
     "resources": "المصادر",
     "restore": "استعادة",
     "role": "الدور",
@@ -316,9 +310,11 @@
       "resize-image": "تغيير حجم الصورة"
     },
     "attachments": {
-      "move-up": "نقل المرفق لأعلى",
-      "move-down": "نقل المرفق لأسفل",
-      "remove": "إزالة المرفق"
+      "edited": "معدَّل",
+      "new": "جديد",
+      "remove": "إزالة المرفق",
+      "reorder": "إعادة ترتيب {{name}}",
+      "reorder-hint": "اسحب، أو استخدم مفاتيح الأسهم"
     },
     "remove-relation": "إزالة العلاقة",
     "remove-location": "إزالة الموقع",

@@ -21,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Login kunne ikke fuldføres",
     "create-your-account": "Opret din konto",
+    "hide-password": "Skjul adgangskode",
+    "incorrect-credentials": "Forkert brugernavn eller adgangskode.",
     "new-password": "Ny adgangskode",
     "repeat-new-password": "Gentag den nye adgangskode",
+    "show-password": "Vis adgangskode",
     "sign-in-tip": "Har du allerede en konto?",
     "sign-up-tip": "Har du ikke en konto endnu?",
     "admin-sign-in": "Administratorlogin",
-    "admin-sign-in-tip": "Adgangskodelogin forbliver tilgængelig for administratorer.",
     "back-to-sign-in": "Tilbage til login",
     "continue-with": "Fortsæt med {{provider}}",
     "create-admin-account": "Opret administratorkonto",
-    "explore-public-memos": "Udforsk offentlige notater på denne instans",
-    "first-run": "Første kørsel",
     "setup-description": "Opret administratorkontoen for denne instans.",
-    "setup-note": "Denne konto ejer instansindstillinger, medlemmer og identitetsudbydere.",
     "setup-title": "Konfigurer din instans",
     "signin-unavailable-description": "Adgangskodelogin er deaktiveret, og der er ingen konfigurerede identitetsudbydere. Bed din administrator om at aktivere en loginmetode.",
     "signin-unavailable-title": "Login er ikke tilgængelig",
-    "signup-unavailable-description": "Adgangskodekonti er deaktiveret, og der er ingen konfigurerede identitetsudbydere. Bed din administrator om adgang.",
-    "signup-unavailable-title": "Tilmelding er ikke tilgængelig",
-    "signups-closed-description": "Nye konti er deaktiveret på denne instans. Kontakt din administrator, hvis du har brug for adgang.",
-    "signups-closed-title": "Tilmeldinger er lukket",
-    "sso-signup-tip": "Log ind med en udbyder nedenfor for at oprette din konto.",
-    "welcome-back": "Velkommen tilbage."
+    "signups-closed-description": "Nye konti er deaktiveret på denne instans. Kontakt din administrator, hvis du har brug for adgang."
   },
   "demo": {
     "banner-description": "Ændringer er midlertidige og kan blive nulstillet.",
@@ -141,7 +136,6 @@
     "profile": "Profil",
     "referenced-by": "Refereret af",
     "referencing": "Referencer",
-    "relations": "Relationer",
     "resources": "Ressourcer",
     "restore": "Gendan",
     "role": "Rolle",
@@ -354,9 +348,11 @@
       "resize-image": "Tilpas billedets størrelse"
     },
     "attachments": {
-      "move-up": "Flyt vedhæftet fil op",
-      "move-down": "Flyt vedhæftet fil ned",
-      "remove": "Fjern vedhæftet fil"
+      "edited": "Redigeret",
+      "new": "Ny",
+      "remove": "Fjern vedhæftet fil",
+      "reorder": "Flyt {{name}}",
+      "reorder-hint": "Træk, eller brug piletasterne"
     },
     "remove-relation": "Fjern relation",
     "remove-location": "Fjern placering",

@@ -1,25 +1,28 @@
 import { create } from "@bufbuild/protobuf";
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { Button } from "@usememos/ui";
-import { InfoIcon, LockIcon, SparklesIcon, UserRoundXIcon } from "lucide-react";
 import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Navigate, useSearchParams } from "react-router-dom";
 import { setAccessToken } from "@/auth-state";
-import AuthPageLayout, { AuthChip, AuthEmptyState, AuthLinkPrompt, AuthOptionsLoading } from "@/components/AuthPageLayout";
+import AuthNotice from "@/components/AuthNotice";
+import AuthPageLayout, { AuthLinkPrompt } from "@/components/AuthPageLayout";
 import ChallengeWidget, { CHALLENGE_TOKEN_HEADER } from "@/components/ChallengeWidget";
 import CredentialFields from "@/components/CredentialFields";
-import IdentityProviderButtons from "@/components/IdentityProviderButtons";
 import { authServiceClient, userServiceClient } from "@/connect";
 import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
-import { useIdentityProviderList } from "@/hooks/useIdentityProviderQueries";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { ERROR_REASON_CHALLENGE_REQUIRED, handleError, hasErrorReason } from "@/lib/error";
-import { showErrorToast } from "@/lib/toast";
+import { ERROR_REASON_CHALLENGE_REQUIRED, getErrorMessage, hasErrorReason } from "@/lib/error";
 import { ROUTES } from "@/router/routes";
 import { User_Role, UserSchema } from "@/types/proto/api/user_service_pb";
-import { AUTH_REDIRECT_PARAM, appendSearchParams, getSafeRedirectPath } from "@/utils/auth-redirect";
+import {
+  AUTH_REASON_PARAM,
+  AUTH_REASON_SIGNUPS_CLOSED,
+  AUTH_REDIRECT_PARAM,
+  appendSearchParams,
+  getSafeRedirectPath,
+} from "@/utils/auth-redirect";
 import { useTranslate } from "@/utils/i18n";
 
 const SignUp = () => {
@@ -28,10 +31,11 @@ const SignUp = () => {
   const actionBtnLoadingState = useLoading(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [challengeToken, setChallengeToken] = useState<string | null>(null);
   const [challengeResetKey, setChallengeResetKey] = useState(0);
   const { initialize: initAuth } = useAuth();
-  const { generalSetting: instanceGeneralSetting, profile, profileLoaded, isInitialized, initialize: initInstance } = useInstance();
+  const { generalSetting: instanceGeneralSetting, profile, initialize: initInstance } = useInstance();
   const [searchParams] = useSearchParams();
   const redirectTarget = getSafeRedirectPath(searchParams.get(AUTH_REDIRECT_PARAM));
   const signInPath = appendSearchParams(ROUTES.AUTH, searchParams);
@@ -39,13 +43,6 @@ const SignUp = () => {
   const passwordAuthAllowed = !instanceGeneralSetting.disallowPasswordAuth;
   const registrationOpen = !instanceGeneralSetting.disallowUserRegistration;
   const needsSetup = profile.needsSetup;
-  // Provider buttons only render on the SSO-provisioned branch below; skip the request elsewhere.
-  const {
-    identityProviderList,
-    isLoading: identityProvidersLoading,
-    isSuccess: identityProvidersLoaded,
-  } = useIdentityProviderList(!needsSetup && registrationOpen && !passwordAuthAllowed);
-  const hasIdentityProviders = identityProviderList.length > 0;
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -60,6 +57,7 @@ const SignUp = () => {
 
     try {
       actionBtnLoadingState.setLoading();
+      setErrorMessage("");
       const user = create(UserSchema, {
         username,
         password,
@@ -88,109 +86,54 @@ const SignUp = () => {
       await initInstance();
       navigateTo(redirectTarget || ROUTES.HOME, { replace: true });
     } catch (error: unknown) {
+      console.error(error);
       if (hasErrorReason(error, ERROR_REASON_CHALLENGE_REQUIRED)) {
         setChallengeResetKey((key) => key + 1);
       }
-      handleError(error, showErrorToast, {
-        fallbackMessage: t("error.sign-up-failed"),
-      });
+      setErrorMessage(getErrorMessage(error, t("error.sign-up-failed")));
     }
     actionBtnLoadingState.setFinish();
   };
 
-  const signUpForm = (
-    <form className="flex w-full flex-col gap-4" onSubmit={handleFormSubmit}>
-      <CredentialFields
-        idPrefix="signup"
-        username={username}
-        password={password}
-        passwordAutoComplete="new-password"
-        readOnly={actionBtnLoadingState.isLoading}
-        onUsernameChange={setUsername}
-        onPasswordChange={setPassword}
-      />
-      {!needsSetup && <ChallengeWidget onToken={setChallengeToken} resetKey={challengeResetKey} />}
-      <Button
-        variant="primary"
-        type="submit"
-        loading={actionBtnLoadingState.isLoading}
-        loadingLabel={needsSetup ? t("auth.create-admin-account") : t("common.sign-up")}
-      >
-        {needsSetup ? t("auth.create-admin-account") : t("common.sign-up")}
-      </Button>
-    </form>
-  );
-
-  const signInPrompt = <AuthLinkPrompt prompt={t("auth.sign-in-tip")} to={signInPath} label={t("common.sign-in")} />;
-
-  // First run: create the instance owner account.
-  if (needsSetup) {
-    return (
-      <AuthPageLayout
-        chip={
-          <AuthChip>
-            <SparklesIcon className="mu-icon-xs" />
-            {t("auth.first-run")}
-          </AuthChip>
-        }
-        title={t("auth.setup-title")}
-        subtitle={t("auth.setup-description")}
-        hideExplore
-      >
-        {signUpForm}
-        <div className="mt-4 flex items-start gap-2 rounded-mu-lg border border-mu-line bg-mu-hover/50 px-3 py-2 mu-caption text-mu-ink-muted">
-          <InfoIcon className="mu-icon-sm mt-0.5 shrink-0" />
-          {t("auth.setup-note")}
-        </div>
-      </AuthPageLayout>
-    );
+  // Without password accounts, an identity provider creates the account on first sign-in, so sign-up is sign-in.
+  if (!needsSetup && (!registrationOpen || !passwordAuthAllowed)) {
+    const params = new URLSearchParams(searchParams);
+    if (!registrationOpen) {
+      params.set(AUTH_REASON_PARAM, AUTH_REASON_SIGNUPS_CLOSED);
+    }
+    return <Navigate to={appendSearchParams(ROUTES.AUTH, params)} replace />;
   }
 
-  // Registration closed.
-  if (!registrationOpen) {
-    return (
-      <AuthPageLayout title={t("auth.create-your-account")}>
-        <AuthEmptyState
-          icon={<UserRoundXIcon />}
-          title={t("auth.signups-closed-title")}
-          description={t("auth.signups-closed-description")}
-        />
-        {signInPrompt}
-      </AuthPageLayout>
-    );
-  }
+  const submitLabel = needsSetup ? t("auth.create-admin-account") : t("common.sign-up");
 
-  // Password sign-up disallowed: accounts come from the identity provider.
-  if (!passwordAuthAllowed) {
-    // Shared by the subtitle and the body branch so they can't disagree.
-    const showSsoOptions = identityProvidersLoading || hasIdentityProviders;
-    return (
-      <AuthPageLayout title={t("auth.create-your-account")} subtitle={showSsoOptions ? t("auth.sso-signup-tip") : undefined}>
-        {identityProvidersLoading ? (
-          <AuthOptionsLoading />
-        ) : showSsoOptions ? (
-          <IdentityProviderButtons
-            identityProviderList={identityProviderList}
-            redirectTarget={redirectTarget}
-            autoSignIn={isInitialized && profileLoaded && identityProvidersLoaded}
-          />
-        ) : (
-          <AuthEmptyState
-            icon={<LockIcon />}
-            title={t("auth.signup-unavailable-title")}
-            description={t("auth.signup-unavailable-description")}
-          />
-        )}
-        {signInPrompt}
-      </AuthPageLayout>
-    );
-  }
-
-  // Open registration.
   return (
-    <AuthPageLayout title={t("auth.create-your-account")}>
-      {signUpForm}
-      {signInPrompt}
+    <AuthPageLayout
+      title={needsSetup ? t("auth.setup-title") : t("auth.create-your-account")}
+      description={needsSetup ? t("auth.setup-description") : undefined}
+    >
+      <form className="flex w-full flex-col gap-4" onSubmit={handleFormSubmit}>
+        <CredentialFields
+          idPrefix="signup"
+          username={username}
+          password={password}
+          passwordAutoComplete="new-password"
+          readOnly={actionBtnLoadingState.isLoading}
+          onUsernameChange={(value) => {
+            setUsername(value);
+            setErrorMessage("");
+          }}
+          onPasswordChange={(value) => {
+            setPassword(value);
+            setErrorMessage("");
+          }}
+        />
+        {!needsSetup && <ChallengeWidget onToken={setChallengeToken} resetKey={challengeResetKey} />}
+        {errorMessage && <AuthNotice tone="error">{errorMessage}</AuthNotice>}
+        <Button variant="primary" type="submit" loading={actionBtnLoadingState.isLoading} loadingLabel={submitLabel}>
+          {submitLabel}
+        </Button>
+      </form>
+      {!needsSetup && <AuthLinkPrompt prompt={t("auth.sign-in-tip")} to={signInPath} label={t("common.sign-in")} />}
     </AuthPageLayout>
   );
 };

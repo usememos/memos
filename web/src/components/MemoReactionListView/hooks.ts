@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { memoServiceClient } from "@/connect";
 import { useResolvedUsersByNames } from "@/contexts/MentionResolutionContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { memoKeys } from "@/hooks/useMemoQueries";
+import { memoDetailQueryOptions, memoKeys } from "@/hooks/useMemoQueries";
 import type { Memo, Reaction } from "@/types/proto/api/memo_service_pb";
 import type { User } from "@/types/proto/api/user_service_pb";
 
@@ -55,9 +55,11 @@ export const useReactionActions = ({ memo, onComplete }: UseReactionActionsOptio
           reaction: { reactionType },
         });
       }
-      // Refetch the memo to get updated reactions and invalidate cache
-      const updatedMemo = await memoServiceClient.getMemo({ name: memo.name });
-      queryClient.setQueryData(memoKeys.detail(memo.name), updatedMemo);
+      // Fetch the memo into its detail query, which every surface showing the memo reads, a card in a list included.
+      // Cancelling the fetch in flight first keeps an older copy of the reactions (an earlier click's) from landing
+      // after this one.
+      await queryClient.cancelQueries({ queryKey: memoKeys.detail(memo.name) });
+      await queryClient.fetchQuery({ ...memoDetailQueryOptions(memo.name), staleTime: 0 });
       queryClient.invalidateQueries({ queryKey: memoKeys.lists() });
       // If this memo is a comment, refresh the parent's comments list so the comment's reactions update in the UI
       if (memo.parent) {

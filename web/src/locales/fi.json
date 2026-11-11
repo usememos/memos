@@ -21,29 +21,24 @@
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
+    "callback-failed-title": "Kirjautumista ei voitu viimeistellä",
     "create-your-account": "Luo tili",
+    "hide-password": "Piilota salasana",
+    "incorrect-credentials": "Väärä käyttäjänimi tai salasana.",
     "new-password": "Uusi salasana",
     "repeat-new-password": "Toista uusi salasana",
+    "show-password": "Näytä salasana",
     "sign-in-tip": "Onko sinulla jo tili?",
     "sign-up-tip": "Eikö sinulla ole vielä tiliä?",
     "admin-sign-in": "Järjestelmänvalvojan kirjautuminen",
-    "admin-sign-in-tip": "Salasanakirjakirjautuminen on edelleen käytettävissä järjestelmänvalvojille.",
     "back-to-sign-in": "Takaisin sisäänkirjautumiseen",
     "continue-with": "Jatka kohdasta {{provider}}",
     "create-admin-account": "Luo järjestelmänvalvojan tili",
-    "explore-public-memos": "Tutustu julkisiin muistioihin tässä instanssissa",
-    "first-run": "Ensimmäinen käyttökerta",
     "setup-description": "Luo järjestelmänvalvojan tili tälle instanssille.",
-    "setup-note": "Tämä tili omistaa instanssin asetukset, jäsenet ja identiteetintarjoajat.",
     "setup-title": "Määritä instanssisi",
     "signin-unavailable-description": "Salasanakirjautuminen on poistettu käytöstä eikä identiteetintarjoajia ole määritetty. Pyydä järjestelmänvalvojaasi ottamaan sisäänkirjautumismenetelmä käyttöön.",
     "signin-unavailable-title": "Kirjautuminen ei ole käytettävissä",
-    "signup-unavailable-description": "Salasanatilit on poistettu käytöstä eikä identiteetintarjoajia ole määritetty. Pyydä järjestelmänvalvojaasi käyttöoikeutta.",
-    "signup-unavailable-title": "Rekisteröityminen ei ole käytettävissä",
-    "signups-closed-description": "Uudet tilit on poistettu käytöstä tässä instanssissa. Ota yhteyttä järjestelmänvalvojaasi, jos tarvitset käyttöoikeutta.",
-    "signups-closed-title": "Rekisteröitymiset ovat päättyneet",
-    "sso-signup-tip": "Kirjaudu sisään alla olevalla palveluntarjoajalla luodaksesi tilisi.",
-    "welcome-back": "Tervetuloa takaisin."
+    "signups-closed-description": "Uudet tilit on poistettu käytöstä tässä instanssissa. Ota yhteyttä järjestelmänvalvojaasi, jos tarvitset käyttöoikeutta."
   },
   "demo": {
     "banner-description": "Muutokset ovat väliaikaisia ​​ja ne voidaan nollata.",
@@ -141,7 +136,6 @@
     "profile": "Profiili",
     "referenced-by": "Viittannut",
     "referencing": "Viittaus",
-    "relations": "Suhteet",
     "resources": "Resurssit",
     "restore": "Palauttaa",
     "role": "Rooli",
@@ -354,9 +348,11 @@
       "resize-image": "Muuta kuvan kokoa"
     },
     "attachments": {
-      "move-up": "Siirrä liitettä ylöspäin",
-      "move-down": "Siirrä liitettä alaspäin",
-      "remove": "Poista liite"
+      "edited": "Muokattu",
+      "new": "Uusi",
+      "remove": "Poista liite",
+      "reorder": "Siirrä {{name}}",
+      "reorder-hint": "Vedä tai käytä nuolinäppäimiä"
     },
     "remove-relation": "Poista linkitys",
     "remove-location": "Poista sijainti",
