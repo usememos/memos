@@ -21,34 +21,34 @@ option go_package = "gen/api";
 service UserService {
   // Lists only the authenticated caller's wrapped passkey keys.
   rpc ListEncryptionPasskeys(ListEncryptionPasskeysRequest) returns (ListEncryptionPasskeysResponse) {
-    option (google.api.http) = {get: "/api/v1/encryptionPasskeys"};
+    option (google.api.http) = {get: "/api/encryptionPasskeys"};
   }
   // Adds a wrapped key to the authenticated caller's existing vault.
   rpc CreateEncryptionPasskey(CreateEncryptionPasskeyRequest) returns (EncryptionPasskey) {
     option (google.api.http) = {
-      post: "/api/v1/encryptionPasskeys"
+      post: "/api/encryptionPasskeys"
       body: "*"
     };
   }
   // Removes only the caller's wrapper; device credentials remain unchanged.
   rpc DeleteEncryptionPasskey(DeleteEncryptionPasskeyRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {delete: "/api/v1/encryptionPasskeys/{id}"};
+    option (google.api.http) = {delete: "/api/encryptionPasskeys/{id}"};
   }
   // Reads only the authenticated caller's encryption vault.
   rpc GetEncryptionVault(GetEncryptionVaultRequest) returns (EncryptionVault) {
-    option (google.api.http) = {get: "/api/v1/encryptionVault"};
+    option (google.api.http) = {get: "/api/encryptionVault"};
   }
   // Creates the caller's vault once, after local recovery confirmation.
   rpc CreateEncryptionVault(CreateEncryptionVaultRequest) returns (EncryptionVault) {
     option (google.api.http) = {
-      post: "/api/v1/encryptionVault"
+      post: "/api/encryptionVault"
       body: "*"
     };
   }
   // Replaces wrappers using an expected revision, preserving vault identity.
   rpc UpdateEncryptionVault(UpdateEncryptionVaultRequest) returns (EncryptionVault) {
     option (google.api.http) = {
-      patch: "/api/v1/encryptionVault"
+      patch: "/api/encryptionVault"
       body: "*"
     };
   }

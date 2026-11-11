@@ -183,18 +183,21 @@ const MemoEditorDraft = ({ draft, ...editing }: MemoEditorDraftProps) => {
       />
     );
   return (
-    <div className="w-full">
-      {!draft.parent && !draft.space && (
-        <Button variant="neutral" className="mb-3" icon={<LockKeyholeIcon />} onClick={() => setEncrypted(true)}>
-          {t("e2ee.new-memo")}
-        </Button>
-      )}
-      <PlainMemoEditorDraft draft={draft} {...editing} />
-    </div>
+    <PlainMemoEditorDraft
+      draft={draft}
+      {...editing}
+      draftAction={
+        !draft.parent && !draft.space ? (
+          <Button variant="neutral" className="mb-3" icon={<LockKeyholeIcon />} onClick={() => setEncrypted(true)}>
+            {t("e2ee.new-memo")}
+          </Button>
+        ) : undefined
+      }
+    />
   );
 };
 
-const PlainMemoEditorDraft = ({ draft, ...editing }: MemoEditorDraftProps) => {
+const PlainMemoEditorDraft = ({ draft, ...editing }: MemoEditorDraftProps & { draftAction?: ReactNode }) => {
   const identity: MemoEditIdentity = draft.parent
     ? { kind: "comment", parent: draft.parent }
     : { kind: "new", scope: draft.scope ?? "default", space: draft.space };
@@ -226,6 +229,7 @@ const PlainMemoEditorDraft = ({ draft, ...editing }: MemoEditorDraftProps) => {
 };
 
 interface EditingSessionProps extends MemoEditingProps {
+  draftAction?: ReactNode;
   identity: MemoEditIdentity;
   memo?: Parameters<typeof initialEditorState>[0]["memo"];
   parentMemoName?: string;

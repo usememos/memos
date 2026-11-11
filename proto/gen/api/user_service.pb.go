@@ -5810,14 +5810,14 @@ const file_api_user_service_proto_rawDesc = "" +
 	"\x1eCreateEncryptionPasskeyRequest\x12\x18\n" +
 	"\apasskey\x18\x01 \x01(\fR\apasskey\"0\n" +
 	"\x1eDeleteEncryptionPasskeyRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id2\xbd*\n" +
-	"\vUserService\x12\x91\x01\n" +
-	"\x16ListEncryptionPasskeys\x12(.memos.api.ListEncryptionPasskeysRequest\x1a).memos.api.ListEncryptionPasskeysResponse\"\"\x82\xd3\xe4\x93\x02\x1c\x12\x1a/api/v1/encryptionPasskeys\x12\x89\x01\n" +
-	"\x17CreateEncryptionPasskey\x12).memos.api.CreateEncryptionPasskeyRequest\x1a\x1c.memos.api.EncryptionPasskey\"%\x82\xd3\xe4\x93\x02\x1f:\x01*\"\x1a/api/v1/encryptionPasskeys\x12\x85\x01\n" +
-	"\x17DeleteEncryptionPasskey\x12).memos.api.DeleteEncryptionPasskeyRequest\x1a\x16.google.protobuf.Empty\"'\x82\xd3\xe4\x93\x02!*\x1f/api/v1/encryptionPasskeys/{id}\x12w\n" +
-	"\x12GetEncryptionVault\x12$.memos.api.GetEncryptionVaultRequest\x1a\x1a.memos.api.EncryptionVault\"\x1f\x82\xd3\xe4\x93\x02\x19\x12\x17/api/v1/encryptionVault\x12\x80\x01\n" +
-	"\x15CreateEncryptionVault\x12'.memos.api.CreateEncryptionVaultRequest\x1a\x1a.memos.api.EncryptionVault\"\"\x82\xd3\xe4\x93\x02\x1c:\x01*\"\x17/api/v1/encryptionVault\x12\x80\x01\n" +
-	"\x15UpdateEncryptionVault\x12'.memos.api.UpdateEncryptionVaultRequest\x1a\x1a.memos.api.EncryptionVault\"\"\x82\xd3\xe4\x93\x02\x1c:\x01*2\x17/api/v1/encryptionVault\x12Z\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id2\xa9*\n" +
+	"\vUserService\x12\x8e\x01\n" +
+	"\x16ListEncryptionPasskeys\x12(.memos.api.ListEncryptionPasskeysRequest\x1a).memos.api.ListEncryptionPasskeysResponse\"\x1f\x82\xd3\xe4\x93\x02\x19\x12\x17/api/encryptionPasskeys\x12\x86\x01\n" +
+	"\x17CreateEncryptionPasskey\x12).memos.api.CreateEncryptionPasskeyRequest\x1a\x1c.memos.api.EncryptionPasskey\"\"\x82\xd3\xe4\x93\x02\x1c:\x01*\"\x17/api/encryptionPasskeys\x12\x82\x01\n" +
+	"\x17DeleteEncryptionPasskey\x12).memos.api.DeleteEncryptionPasskeyRequest\x1a\x16.google.protobuf.Empty\"$\x82\xd3\xe4\x93\x02\x1e*\x1c/api/encryptionPasskeys/{id}\x12t\n" +
+	"\x12GetEncryptionVault\x12$.memos.api.GetEncryptionVaultRequest\x1a\x1a.memos.api.EncryptionVault\"\x1c\x82\xd3\xe4\x93\x02\x16\x12\x14/api/encryptionVault\x12}\n" +
+	"\x15CreateEncryptionVault\x12'.memos.api.CreateEncryptionVaultRequest\x1a\x1a.memos.api.EncryptionVault\"\x1f\x82\xd3\xe4\x93\x02\x19:\x01*\"\x14/api/encryptionVault\x12}\n" +
+	"\x15UpdateEncryptionVault\x12'.memos.api.UpdateEncryptionVaultRequest\x1a\x1a.memos.api.EncryptionVault\"\x1f\x82\xd3\xe4\x93\x02\x19:\x01*2\x14/api/encryptionVault\x12Z\n" +
 	"\tListUsers\x12\x1b.memos.api.ListUsersRequest\x1a\x1c.memos.api.ListUsersResponse\"\x12\x82\xd3\xe4\x93\x02\f\x12\n" +
 	"/api/users\x12Y\n" +
 	"\aGetUser\x12\x19.memos.api.GetUserRequest\x1a\x0f.memos.api.User\"\"\xdaA\x04name\x82\xd3\xe4\x93\x02\x15\x12\x13/api/{name=users/*}\x12r\n" +

@@ -209,7 +209,7 @@ func ValidateEncryptedUpdate(ctx context.Context, tx EncryptionExecutor, u *Upda
 		return err
 	}
 	p := &storepb.MemoPayload{}
-	if err := protojson.Unmarshal(raw, p); err != nil {
+	if err := (protojson.UnmarshalOptions{DiscardUnknown: true}).Unmarshal(raw, p); err != nil {
 		return err
 	}
 	if len(p.EncryptedContent) == 0 {

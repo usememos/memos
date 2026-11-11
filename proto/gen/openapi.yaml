@@ -356,6 +356,138 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/encryptionPasskeys:
+        get:
+            tags:
+                - UserService
+            description: Lists only the authenticated caller's wrapped passkey keys.
+            operationId: UserService_ListEncryptionPasskeys
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListEncryptionPasskeysResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - UserService
+            description: Adds a wrapped key to the authenticated caller's existing vault.
+            operationId: UserService_CreateEncryptionPasskey
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateEncryptionPasskeyRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/EncryptionPasskey'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/encryptionPasskeys/{id}:
+        delete:
+            tags:
+                - UserService
+            description: Removes only the caller's wrapper; device credentials remain unchanged.
+            operationId: UserService_DeleteEncryptionPasskey
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/encryptionVault:
+        get:
+            tags:
+                - UserService
+            description: Reads only the authenticated caller's encryption vault.
+            operationId: UserService_GetEncryptionVault
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/EncryptionVault'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - UserService
+            description: Creates the caller's vault once, after local recovery confirmation.
+            operationId: UserService_CreateEncryptionVault
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateEncryptionVaultRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/EncryptionVault'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        patch:
+            tags:
+                - UserService
+            description: Replaces wrappers using an expected revision, preserving vault identity.
+            operationId: UserService_UpdateEncryptionVault
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateEncryptionVaultRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/EncryptionVault'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/identity-providers:
         get:
             tags:
@@ -3195,138 +3327,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/BatchGetUsersResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /api/v1/encryptionPasskeys:
-        get:
-            tags:
-                - UserService
-            description: Lists only the authenticated caller's wrapped passkey keys.
-            operationId: UserService_ListEncryptionPasskeys
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/ListEncryptionPasskeysResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-        post:
-            tags:
-                - UserService
-            description: Adds a wrapped key to the authenticated caller's existing vault.
-            operationId: UserService_CreateEncryptionPasskey
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/CreateEncryptionPasskeyRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/EncryptionPasskey'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /api/v1/encryptionPasskeys/{id}:
-        delete:
-            tags:
-                - UserService
-            description: Removes only the caller's wrapper; device credentials remain unchanged.
-            operationId: UserService_DeleteEncryptionPasskey
-            parameters:
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                    type: string
-            responses:
-                "200":
-                    description: OK
-                    content: {}
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /api/v1/encryptionVault:
-        get:
-            tags:
-                - UserService
-            description: Reads only the authenticated caller's encryption vault.
-            operationId: UserService_GetEncryptionVault
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/EncryptionVault'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-        post:
-            tags:
-                - UserService
-            description: Creates the caller's vault once, after local recovery confirmation.
-            operationId: UserService_CreateEncryptionVault
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/CreateEncryptionVaultRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/EncryptionVault'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-        patch:
-            tags:
-                - UserService
-            description: Replaces wrappers using an expected revision, preserving vault identity.
-            operationId: UserService_UpdateEncryptionVault
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/UpdateEncryptionVaultRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/EncryptionVault'
                 default:
                     description: Default error response
                     content:

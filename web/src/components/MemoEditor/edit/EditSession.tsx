@@ -46,6 +46,7 @@ import type { EditorController, EditorPosition } from "./types/editorController"
 export const EditSession: React.FC<EditSessionProps> = ({
   className,
   draftKey,
+  draftAction,
   frameless,
   timestampLead,
   memo,
@@ -356,6 +357,7 @@ export const EditSession: React.FC<EditSessionProps> = ({
           !isFocusMode && className,
         )}
       >
+        {draftAction}
         {isSourceMode && (
           <span
             className={cn(

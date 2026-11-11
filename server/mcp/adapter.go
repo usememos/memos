@@ -300,6 +300,8 @@ func redactEncryptedMemos(value any) {
 		}
 		if encrypted {
 			v["content"] = "[Encrypted memo: open in Memos to unlock]"
+			delete(v, "encryptedTitle")
+			delete(v, "encrypted_title")
 			delete(v, "snippet")
 			delete(v, "property")
 			delete(v, "tags")

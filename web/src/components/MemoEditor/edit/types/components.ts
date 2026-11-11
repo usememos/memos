@@ -8,6 +8,8 @@ import type { DrawingSource, LocalFile } from "./attachment";
 
 /** What MemoEditor hands an editing session: its subject, the host's defaults, and where the draft lives. */
 export interface EditSessionProps {
+  /** Draft creation action inside the session frame, including focus mode. */
+  draftAction?: ReactNode;
   className?: string;
   /** The draft and caret storage key, derived from what is edited; see `draftKeyFor`. */
   draftKey: string;

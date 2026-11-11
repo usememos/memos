@@ -51,6 +51,19 @@ func TestEncryptionPersistence(t *testing.T) {
 	}
 	m, err := s.CreateMemo(ctx, &store.Memo{UID: "encrypted-memo", CreatorID: owner.ID, Visibility: store.Private, Payload: payload()})
 	require.NoError(t, err)
+	// Stored payloads can contain fields unknown to this server version.
+	rawPayload, err := protojson.Marshal(payload())
+	require.NoError(t, err)
+	var persisted map[string]any
+	require.NoError(t, json.Unmarshal(rawPayload, &persisted))
+	persisted["futureField"] = "preserve encryption checks"
+	query := "UPDATE memo SET payload = ? WHERE id = ?"
+	if os.Getenv("DRIVER") == "postgres" {
+		query = "UPDATE memo SET payload = $1 WHERE id = $2"
+	}
+	_, err = s.GetDriver().GetDB().ExecContext(ctx, query, string(encryptedTestJSON(t, persisted)), m.ID)
+	require.NoError(t, err)
+	require.NoError(t, s.UpdateMemo(ctx, &store.UpdateMemo{ID: m.ID, Pinned: new(true)}))
 	_, err = s.CreateMemo(ctx, &store.Memo{UID: "duplicate-object", CreatorID: owner.ID, Visibility: store.Private, Payload: payload()})
 	require.Error(t, err)
 	_, err = s.CreateMemo(ctx, &store.Memo{UID: "foreign-vault", CreatorID: peer.ID, Visibility: store.Private, Payload: payload()})

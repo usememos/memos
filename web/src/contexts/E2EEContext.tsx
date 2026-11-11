@@ -1,4 +1,4 @@
-import { createContext, type ReactNode, useContext, useEffect, useLayoutEffect, useState, useSyncExternalStore } from "react";
+import { createContext, type ReactNode, useContext, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { confirmEncryptedDiscard } from "@/lib/e2ee/dirty";
 import { VaultSession } from "@/lib/e2ee/session";
@@ -11,6 +11,10 @@ export function E2EEProvider({ children }: { children: ReactNode }) {
   const { currentUser } = useAuth();
   const [session] = useState(() => new VaultSession());
   const t = useTranslate();
+  const tRef = useRef(t);
+  useLayoutEffect(() => {
+    tRef.current = t;
+  }, [t]);
   useLayoutEffect(() => {
     session.setOwner(currentUser?.name ?? "");
   }, [session, currentUser?.name]);
@@ -40,7 +44,7 @@ export function E2EEProvider({ children }: { children: ReactNode }) {
         activity();
       } else if (idle >= 14 * 60 * 1000 && !warned) {
         warned = true;
-        toast.add({ title: t("e2ee.idle-warning"), timeout: 60000 });
+        toast.add({ title: tRef.current("e2ee.idle-warning"), timeout: 60000 });
       }
     };
     const active = () => {
@@ -60,7 +64,7 @@ export function E2EEProvider({ children }: { children: ReactNode }) {
       document.removeEventListener("visibilitychange", check);
       for (const event of ["keydown", "pointerdown"]) window.removeEventListener(event, active);
     };
-  }, [session, t]);
+  }, [session]);
   return <VaultContext.Provider value={session}>{children}</VaultContext.Provider>;
 }
 export function useVaultSession() {

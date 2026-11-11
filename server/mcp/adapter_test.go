@@ -403,3 +403,13 @@ func TestEncryptedMetadataMutationReturnsRedactedSuccess(t *testing.T) {
 	require.NotContains(t, string(encoded), "secret-ciphertext")
 	require.Contains(t, string(encoded), `"pinned":true`)
 }
+
+func TestEncryptedMemoRedactsBothTitleSpellings(t *testing.T) {
+	for _, field := range []string{"encryptedContent", "encrypted_content"} {
+		memo := map[string]any{field: "ciphertext", "encryptedTitle": "title", "encrypted_title": "title", "snippet": "snippet", "property": map[string]any{}, "tags": []any{"tag"}, "name": "memos/a"}
+		plain := map[string]any{"content": "ordinary"}
+		redactEncryptedMemos(map[string]any{"memos": []any{memo, plain}})
+		require.Equal(t, map[string]any{"name": "memos/a", "content": "[Encrypted memo: open in Memos to unlock]"}, memo)
+		require.Equal(t, map[string]any{"content": "ordinary"}, plain)
+	}
+}

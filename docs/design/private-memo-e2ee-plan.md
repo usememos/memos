@@ -1,7 +1,5 @@
 # Private memo E2EE Implementation Plan
 
-> **For agentic workers:** Use superpowers:subagent-driven-development for backend/localization work and inline implementation for the client. Track verification below.
-
 **Goal:** Implement optional encrypted private text memos with independent passphrase/recovery-key unlock.
 **Architecture:** Store versioned ciphertext envelopes in memo payloads and wrapped vault keys in a dedicated table. Keep ordinary content empty for encrypted records. Enforce immutable encryption kind and restrictions at persistence/transport boundaries; decrypt only in ephemeral client state owned by MemoEditor.
 **Tech Stack:** Existing Go/Connect/protobuf/SQL and React stack; Web Crypto AES-GCM, browser Argon2id.
@@ -61,11 +59,10 @@ Interfaces: MemoDraftSeed encryption selection; encrypted records remain ciphert
 - [x] Run go test -v -race ./server/... ./core/... and go test -v ./store/...; proto generation/lint; frontend lint/test/build.
 - [x] Verify backup restore preserves vault identity and encrypted memos, canary plaintext never reaches persistence/network/integrations, and two-client round-trip.
 - [x] Fresh reviewer inspects full diff for security/correctness, fix findings with regression tests.
-- [x] Update design/README with actual behavior and limits; leave branch local without publishing.
+- [x] Update design/README with actual behavior and limits.
 
-## Execution ledger
+## Implementation decisions and verification
 
-- 2026-11-10: User approved design and requested implementation. Execute directly on the existing clean codex/e2ee feature branch; no additional approval handoff.
 - Ruling: Store encrypted envelope in the existing typed memo payload rather than add a second body column; SQL mutation checks must inspect the payload atomically. Dedicated vault storage still requires all-driver migrations.
 
 - Task 1–4: implemented, reviewed and verified. Final commit is consolidated after cross-layer checks because the protobuf/store/client changes form one feature.
@@ -79,21 +76,20 @@ Interfaces: MemoDraftSeed encryption selection; encrypted records remain ciphert
 
 ## Follow-up: optional plaintext titles (2026-11-10)
 
-Approved directly by the user; execute on the existing feature branch.
 - [x] Add compatible `encrypted_title` API/payload fields and regenerate; validate titles (256 Unicode characters, no controls), reject ordinary-memo usage, and preserve title when older clients update only the envelope.
 - [x] Test API round trips, clearing, invalid titles, old-client preservation and stale title/body updates; verify store persistence across drivers.
 - [x] Add optional labeled title input and plaintext notice; test saved title, title-only edits, locked title/fallback, inert title rendering and no plaintext body leakage.
 - [x] Make creation action a normal-size neutral button with lock icon and spacing; translate new copy into all locales.
-- [x] Run proto lint, server/core race tests, store tests, frontend lint/tests/build; review changes and refresh the running demo.
+- [x] Run proto lint, server/core race tests, store tests, frontend lint/tests/build; review changes.
 
 Review focus: legacy title omission; empty title clearing; conflict atomicity; literal rendering of markup-like titles; lock during unsaved title edits.
 
 
 Follow-up verification: API/editor tests were observed failing before implementation, then passing. Server/core race suite,
 all three store drivers, proto lint/format, frontend lint/build and the full Node 24 frontend suite passed (1,702 tests;
-one opt-in live test skipped). The live test ran separately on disposable port 18082 and passed with plaintext title and
+one opt-in live test skipped). The live test ran separately against a disposable instance and passed with plaintext title and
 ciphertext-only body round trips. The prior transcription test showed an intermittent failure also reproduced on the
-unchanged baseline; the final complete run passed. The running demo on port 13001/18081 uses the updated backend.
+unchanged baseline; the final complete run passed.
 
 Final review: independent reviewer found no blocking issues. Final: minor (deferred): HTML maxLength counts UTF-16 units,
 so emoji-heavy titles hit the editor limit before the server's 256-code-point cap; this is a conservative input restriction.
@@ -106,7 +102,7 @@ Goal: optional WebAuthn PRF local vault unlock; login and existing secrets uncha
 - [x] Backend: List/Create/DeleteEncryptionPasskey RPCs, bounded strict wrapper validation, owner-only table and all-driver migrations, transactional cap/ownership and deletion cleanup. Tests: authentication/isolation, invalid records, duplicate/cap, deletion, passphrase preservation.
 - [x] Browser: local PRF registration/unlock, HKDF/AES-GCM key wrapping, exact validation and capability fallback. Tests: cryptographic round trip, wrong PRF/tampering, required UV, RP filtering, cancellation and malformed outputs.
 - [x] UI: unlocked registration/removal and locked passkey unlock alongside password/recovery; stale session/unmount guard, localized guidance and errors. Tests: no secret API transmission, cancellation fallback, cross-account results ignored.
-- [x] Verification: proto generation/lint, server/core race/store tests, frontend lint/test/build, fresh independent security review; retain branch locally.
+- [x] Verification: proto generation/lint, server/core race/store tests, frontend lint/test/build, fresh independent security review.
 
 Review focus: PRF never serialized into requests; RP/vault/credential substitution; unsupported authenticators; stale async operations;
 older-client compatibility and account-deletion races. Real passkey registration requires the user's device prompt; automated tests

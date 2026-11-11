@@ -12,7 +12,7 @@ The user approved a separate encryption passphrase plus a recovery key; login cr
 
 V1 excludes attachments, image uploads, drawings, audio input, comments, share links, Space placement, public/protected audiences,
 and conversion between existing plaintext memos and encrypted memos. Both API validation and UI enforce these restrictions.
-No new authentication/token behavior, release workflow, or dependency installation is included in this design-only change.
+The implementation adds `hash-wasm` 4.12.0 for browser-side Argon2id. Authentication/token behavior and release workflows are unchanged.
 
 ## Approaches
 
@@ -96,7 +96,8 @@ silently overwriting ciphertext. Apply envelope shape/size checks and bounded qu
 Use a documented ciphertext byte cap, accounting for encryption overhead, without trusting client-reported plaintext sizes.
 
 Add migrations and fresh-install equivalents for SQLite, MySQL and PostgreSQL. Update proto sources and regenerate all outputs with `buf generate`.
-Centralize encryption restrictions in `core/` and enforce them from every write transport, including MCP and import paths.
+Transaction-sensitive encryption restrictions are implemented in `store/e2ee.go` and driver mutation paths, with
+`core/access` and `core/memopayload` integrations and transport checks for MCP and import paths.
 
 ## Restricted features and metadata
 

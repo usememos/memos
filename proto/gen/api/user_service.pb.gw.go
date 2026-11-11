@@ -1834,7 +1834,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/ListEncryptionPasskeys", runtime.WithHTTPPathPattern("/api/v1/encryptionPasskeys"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/ListEncryptionPasskeys", runtime.WithHTTPPathPattern("/api/encryptionPasskeys"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1854,7 +1854,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/CreateEncryptionPasskey", runtime.WithHTTPPathPattern("/api/v1/encryptionPasskeys"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/CreateEncryptionPasskey", runtime.WithHTTPPathPattern("/api/encryptionPasskeys"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1874,7 +1874,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/DeleteEncryptionPasskey", runtime.WithHTTPPathPattern("/api/v1/encryptionPasskeys/{id}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/DeleteEncryptionPasskey", runtime.WithHTTPPathPattern("/api/encryptionPasskeys/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1894,7 +1894,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/GetEncryptionVault", runtime.WithHTTPPathPattern("/api/v1/encryptionVault"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/GetEncryptionVault", runtime.WithHTTPPathPattern("/api/encryptionVault"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1914,7 +1914,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/CreateEncryptionVault", runtime.WithHTTPPathPattern("/api/v1/encryptionVault"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/CreateEncryptionVault", runtime.WithHTTPPathPattern("/api/encryptionVault"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -1934,7 +1934,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/UpdateEncryptionVault", runtime.WithHTTPPathPattern("/api/v1/encryptionVault"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.UserService/UpdateEncryptionVault", runtime.WithHTTPPathPattern("/api/encryptionVault"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2652,7 +2652,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/ListEncryptionPasskeys", runtime.WithHTTPPathPattern("/api/v1/encryptionPasskeys"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/ListEncryptionPasskeys", runtime.WithHTTPPathPattern("/api/encryptionPasskeys"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2669,7 +2669,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/CreateEncryptionPasskey", runtime.WithHTTPPathPattern("/api/v1/encryptionPasskeys"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/CreateEncryptionPasskey", runtime.WithHTTPPathPattern("/api/encryptionPasskeys"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2686,7 +2686,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/DeleteEncryptionPasskey", runtime.WithHTTPPathPattern("/api/v1/encryptionPasskeys/{id}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/DeleteEncryptionPasskey", runtime.WithHTTPPathPattern("/api/encryptionPasskeys/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2703,7 +2703,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/GetEncryptionVault", runtime.WithHTTPPathPattern("/api/v1/encryptionVault"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/GetEncryptionVault", runtime.WithHTTPPathPattern("/api/encryptionVault"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2720,7 +2720,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/CreateEncryptionVault", runtime.WithHTTPPathPattern("/api/v1/encryptionVault"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/CreateEncryptionVault", runtime.WithHTTPPathPattern("/api/encryptionVault"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -2737,7 +2737,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/UpdateEncryptionVault", runtime.WithHTTPPathPattern("/api/v1/encryptionVault"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.UserService/UpdateEncryptionVault", runtime.WithHTTPPathPattern("/api/encryptionVault"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -3315,12 +3315,12 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 }
 
 var (
-	pattern_UserService_ListEncryptionPasskeys_0      = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "v1", "encryptionPasskeys"}, ""))
-	pattern_UserService_CreateEncryptionPasskey_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "v1", "encryptionPasskeys"}, ""))
-	pattern_UserService_DeleteEncryptionPasskey_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v1", "encryptionPasskeys", "id"}, ""))
-	pattern_UserService_GetEncryptionVault_0          = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "v1", "encryptionVault"}, ""))
-	pattern_UserService_CreateEncryptionVault_0       = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "v1", "encryptionVault"}, ""))
-	pattern_UserService_UpdateEncryptionVault_0       = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "v1", "encryptionVault"}, ""))
+	pattern_UserService_ListEncryptionPasskeys_0      = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "encryptionPasskeys"}, ""))
+	pattern_UserService_CreateEncryptionPasskey_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "encryptionPasskeys"}, ""))
+	pattern_UserService_DeleteEncryptionPasskey_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "encryptionPasskeys", "id"}, ""))
+	pattern_UserService_GetEncryptionVault_0          = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "encryptionVault"}, ""))
+	pattern_UserService_CreateEncryptionVault_0       = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "encryptionVault"}, ""))
+	pattern_UserService_UpdateEncryptionVault_0       = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "encryptionVault"}, ""))
 	pattern_UserService_ListUsers_0                   = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "users"}, ""))
 	pattern_UserService_GetUser_0                     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 2, 5, 2}, []string{"api", "users", "name"}, ""))
 	pattern_UserService_BatchGetUsers_0               = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "users"}, "batchGet"))
