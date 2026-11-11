@@ -38,14 +38,20 @@ func (s *APIService) convertMemoFromStoreWithCreators(ctx context.Context, memo 
 		return nil, errMemoCreatorNotFound
 	}
 	memoMessage := &apipb.Memo{
-		Name:       name,
-		State:      convertStateFromStore(memo.RowStatus),
-		Creator:    BuildUserName(creator.Username),
-		CreateTime: timestamppb.New(time.Unix(memo.CreatedTs, 0)),
-		UpdateTime: timestamppb.New(time.Unix(memo.UpdatedTs, 0)),
-		Content:    memo.Content,
-		Visibility: convertVisibilityFromStore(memo.Visibility),
-		Pinned:     memo.Pinned,
+		Name:             name,
+		State:            convertStateFromStore(memo.RowStatus),
+		Creator:          BuildUserName(creator.Username),
+		CreateTime:       timestamppb.New(time.Unix(memo.CreatedTs, 0)),
+		UpdateTime:       timestamppb.New(time.Unix(memo.UpdatedTs, 0)),
+		Content:          memo.Content,
+		EncryptedContent: memo.Payload.GetEncryptedContent(),
+		Visibility:       convertVisibilityFromStore(memo.Visibility),
+		Pinned:           memo.Pinned,
+	}
+	if store.IsEncryptedMemo(memo) {
+		memoMessage.Content = ""
+		memoMessage.EncryptedTitle = memo.Payload.GetEncryptedTitle()
+		return memoMessage, nil
 	}
 	// An assigned memo needs a read context for its placement projection; an
 	// unassigned memo needs none.

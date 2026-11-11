@@ -111,6 +111,9 @@ func (s *APIService) shouldSkipMentionInbox(ctx context.Context, facts *mentionC
 }
 
 func (s *APIService) dispatchMemoMentionNotifications(ctx context.Context, memo *store.Memo, relatedMemo *store.Memo, previousContent string) error {
+	if store.IsEncryptedMemo(memo) {
+		return nil
+	}
 	if memo == nil {
 		return nil
 	}

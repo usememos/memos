@@ -5,6 +5,10 @@ package memos.store;
 option go_package = "gen/store";
 
 message MemoPayload {
+  // Versioned client-side encrypted envelope, encoded as UTF-8 JSON.
+  bytes encrypted_content = 4;
+  // Optional plaintext label for encrypted memos; never derived from the body.
+  string encrypted_title = 5;
   Property property = 1;
 
   Location location = 2;

@@ -84,6 +84,9 @@ func (s *APIService) DispatchMemoCommentCreatedWebhook(
 }
 
 func (s *APIService) dispatchMemoRelatedWebhook(ctx context.Context, memo *apipb.Memo, activityType string) error {
+	if len(memo.GetEncryptedContent()) > 0 {
+		return nil
+	}
 	creator, err := ResolveUserByName(ctx, s.Store, memo.Creator)
 	if err != nil {
 		return status.Errorf(codes.InvalidArgument, "invalid memo creator")

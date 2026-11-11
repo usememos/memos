@@ -380,3 +380,36 @@ func TestExecuteOperationConvertsAPIErrorsToToolErrors(t *testing.T) {
 	require.Contains(t, text.Text, "404")
 	require.Contains(t, text.Text, "missing memo")
 }
+
+func TestEncryptedMemoToolBoundary(t *testing.T) {
+	require.True(t, hasEncryptedMemo(map[string]any{"memos": []any{map[string]any{"encryptedContent": "ciphertext"}}}))
+	require.True(t, hasEncryptedMemo(map[string]any{"body": map[string]any{"encrypted_content": "ciphertext"}}))
+	require.False(t, hasEncryptedMemo(map[string]any{"memos": []any{map[string]any{"content": "plain"}}}))
+}
+
+func TestEncryptedMetadataMutationReturnsRedactedSuccess(t *testing.T) {
+	writes := 0
+	adapter := newAPIAdapter(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		writes++
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"name":"memos/a","pinned":true,"encryptedContent":"secret-ciphertext"}`))
+	}))
+	result, err := adapter.execute(context.Background(), &openAPIOperation{Method: "PATCH", Path: "/api/v1/memos/a"}, map[string]any{}, "")
+	require.NoError(t, err)
+	require.False(t, result.IsError)
+	require.Equal(t, 1, writes)
+	encoded, err := json.Marshal(result.StructuredContent)
+	require.NoError(t, err)
+	require.NotContains(t, string(encoded), "secret-ciphertext")
+	require.Contains(t, string(encoded), `"pinned":true`)
+}
+
+func TestEncryptedMemoRedactsBothTitleSpellings(t *testing.T) {
+	for _, field := range []string{"encryptedContent", "encrypted_content"} {
+		memo := map[string]any{field: "ciphertext", "encryptedTitle": "title", "encrypted_title": "title", "snippet": "snippet", "property": map[string]any{}, "tags": []any{"tag"}, "name": "memos/a"}
+		plain := map[string]any{"content": "ordinary"}
+		redactEncryptedMemos(map[string]any{"memos": []any{memo, plain}})
+		require.Equal(t, map[string]any{"name": "memos/a", "content": "[Encrypted memo: open in Memos to unlock]"}, memo)
+		require.Equal(t, map[string]any{"content": "ordinary"}, plain)
+	}
+}

@@ -25,6 +25,13 @@ instead, and update `core/configuration/testdata/compat/` in the same change. Af
 - `Memo.unassigned`: use an unset `Memo.space`. Removed in a later release.
 ```
 
+## Unreleased
+
+### Breaking
+
+- Correct the six draft encryption vault/passkey REST routes from `/api/v1/encryptionVault` and
+  `/api/v1/encryptionPasskeys` (including `/{id}`) to the `/api/` prefix. RPC names are unchanged.
+
 ## 26.10.0
 
 ### Breaking

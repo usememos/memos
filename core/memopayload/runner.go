@@ -98,6 +98,9 @@ func (r *Runner) RunOnce(ctx context.Context) error {
 			return errors.Wrap(err, "failed to list memos")
 		}
 		for _, memo := range memos {
+			if store.IsEncryptedMemo(memo) {
+				continue
+			}
 			data, err := r.MarkdownService.ExtractAll([]byte(memo.Content))
 			if err != nil {
 				slog.Warn("skipping memo payload rebuild", slog.Int("memoID", int(memo.ID)), slog.String("error", err.Error()))
@@ -143,6 +146,9 @@ func (r *Runner) listMemoIDs(ctx context.Context) ([]int32, error) {
 			return nil, errors.Wrap(err, "failed to list memo IDs")
 		}
 		for _, memo := range memos {
+			if store.IsEncryptedMemo(memo) {
+				continue
+			}
 			ids = append(ids, memo.ID)
 		}
 		if len(memos) < batchSize {
@@ -153,6 +159,9 @@ func (r *Runner) listMemoIDs(ctx context.Context) ([]int32, error) {
 
 // RebuildMemoPayload sets the memo's tags and property from its content.
 func RebuildMemoPayload(_ context.Context, memo *store.Memo, markdownService markdown.Service) error {
+	if store.IsEncryptedMemo(memo) {
+		return nil
+	}
 	if memo.Payload == nil {
 		memo.Payload = &storepb.MemoPayload{}
 	}

@@ -30,6 +30,9 @@ func (d *DB) ApplyMemoMutation(ctx context.Context, mutation *store.MemoMutation
 			return errors.Wrap(err, "failed to lock comment context memo")
 		}
 	}
+	if err := store.ValidateEncryptedMutationEndpoints(ctx, tx, mutation, false); err != nil {
+		return err
+	}
 	if err := validateMySQLMemoRelationEndpoints(ctx, tx, mutation); err != nil {
 		return err
 	}
@@ -187,10 +190,14 @@ func replaceMemoReferenceRelations(ctx context.Context, tx *sql.Tx, memoID int32
 }
 
 type memoUpdateExecer interface {
+	QueryRowContext(context.Context, string, ...any) *sql.Row
 	ExecContext(context.Context, string, ...any) (sql.Result, error)
 }
 
 func applyMemoUpdate(ctx context.Context, executor memoUpdateExecer, update *store.UpdateMemo) error {
+	if err := store.ValidateEncryptedUpdate(ctx, executor, update, false); err != nil {
+		return err
+	}
 	set, args := []string{}, []any{}
 	if v := update.UID; v != nil {
 		set, args = append(set, "`uid` = ?"), append(args, *v)

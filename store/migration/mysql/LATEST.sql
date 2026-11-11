@@ -154,3 +154,26 @@ CREATE TABLE `user_identity` (
 );
 
 CREATE INDEX `idx_user_identity_user_id` ON `user_identity`(`user_id`);
+
+CREATE TABLE encryption_vault (
+  user_id INTEGER PRIMARY KEY,
+  vault_id VARCHAR(36) NOT NULL UNIQUE,
+  revision VARCHAR(36) NOT NULL,
+  record TEXT NOT NULL
+);
+CREATE TABLE memo_encryption (
+  memo_id INTEGER PRIMARY KEY,
+  vault_id VARCHAR(36) NOT NULL,
+  object_id VARCHAR(36) NOT NULL,
+  revision VARCHAR(36) NOT NULL,
+  UNIQUE (vault_id, object_id)
+);
+
+CREATE TABLE encryption_passkey (
+  user_id INTEGER NOT NULL,
+  id VARCHAR(36) NOT NULL,
+  credential_id VARCHAR(1366) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+  record TEXT NOT NULL,
+  PRIMARY KEY (user_id, id),
+  UNIQUE (user_id, credential_id)
+);

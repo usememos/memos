@@ -91,6 +91,12 @@ func TestGatewayRouteResolverResolvesKnownRoutes(t *testing.T) {
 		path       string
 		procedure  string
 	}{
+		{http.MethodGet, "/api/encryptionPasskeys", "/api/encryptionPasskeys", "/memos.api.UserService/ListEncryptionPasskeys"},
+		{http.MethodPost, "/api/encryptionPasskeys", "/api/encryptionPasskeys", "/memos.api.UserService/CreateEncryptionPasskey"},
+		{http.MethodDelete, "/api/encryptionPasskeys/{id}", "/api/encryptionPasskeys/test-id", "/memos.api.UserService/DeleteEncryptionPasskey"},
+		{http.MethodGet, "/api/encryptionVault", "/api/encryptionVault", "/memos.api.UserService/GetEncryptionVault"},
+		{http.MethodPost, "/api/encryptionVault", "/api/encryptionVault", "/memos.api.UserService/CreateEncryptionVault"},
+		{http.MethodPatch, "/api/encryptionVault", "/api/encryptionVault", "/memos.api.UserService/UpdateEncryptionVault"},
 		{http.MethodPost, "/api/auth/signin", "/api/auth/signin", "/memos.api.AuthService/SignIn"},
 		{http.MethodGet, "/api/instance/profile", "/api/instance/profile", "/memos.api.InstanceService/GetInstanceProfile"},
 		{http.MethodPost, "/api/users", "/api/users", "/memos.api.UserService/CreateUser"},

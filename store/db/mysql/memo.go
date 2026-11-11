@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 
+	mysqldriver "github.com/go-sql-driver/mysql"
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/encoding/protojson"
 
@@ -82,10 +83,20 @@ func insertMySQLMemo(ctx context.Context, tx *sql.Tx, create *store.Memo) (*stor
 	if err := protojsonUnmarshaler.Unmarshal(payloadBytes, memo.Payload); err != nil {
 		return nil, errors.Wrap(err, "failed to unmarshal payload")
 	}
+	if err := store.InsertMemoEncryption(ctx, tx, memo, false); err != nil {
+		return nil, memoEncryptionError(err)
+	}
 	return memo, nil
 }
 
 func validateMySQLMemoCreate(ctx context.Context, tx *sql.Tx, create *store.Memo) error {
+	if store.IsEncryptedMemo(create) {
+		var ownerID int32
+		if err := tx.QueryRowContext(ctx, "SELECT id FROM user WHERE id = ? AND row_status = 'NORMAL' FOR UPDATE", create.CreatorID).Scan(&ownerID); err != nil {
+			return store.ErrMemoPermissionDenied
+		}
+	}
+
 	actor, err := readMySQLMemoActor(ctx, tx, create.CreatorID)
 	if err != nil {
 		return err
@@ -133,6 +144,9 @@ func validateMySQLMemoSpaceMember(ctx context.Context, tx *sql.Tx, spaceID, user
 
 func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo, error) {
 	where, having, args := []string{"1 = 1"}, []string{"1 = 1"}, []any{}
+	if find.ExcludeEncrypted {
+		where = append(where, "NOT EXISTS (SELECT 1 FROM memo_encryption WHERE memo_encryption.memo_id = memo.id)")
+	}
 
 	engine, err := filter.DefaultEngine()
 	if err != nil {
@@ -317,16 +331,15 @@ func (d *DB) CountUserMemos(ctx context.Context, creatorID int32) (int64, error)
 }
 
 func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
-	if update.Policy == nil {
-		return applyMemoUpdate(ctx, d.db, update)
-	}
 	tx, err := d.db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
 	}
 	defer func() { _ = tx.Rollback() }()
-	if _, err := validateMySQLMemoWritePolicy(ctx, tx, update.ID, update.Policy, update); err != nil {
-		return err
+	if update.Policy != nil {
+		if _, err := validateMySQLMemoWritePolicy(ctx, tx, update.ID, update.Policy, update); err != nil {
+			return err
+		}
 	}
 	if err := applyMemoUpdate(ctx, tx, update); err != nil {
 		return err
@@ -343,6 +356,9 @@ func (d *DB) DeleteMemo(ctx context.Context, delete *store.DeleteMemo) error {
 		_ = tx.Rollback()
 	}()
 
+	if _, err := tx.ExecContext(ctx, "DELETE FROM memo_encryption WHERE memo_id = ?", delete.ID); err != nil {
+		return err
+	}
 	if _, err := tx.ExecContext(ctx, "DELETE FROM `memo` WHERE `id` = ?", delete.ID); err != nil {
 		return errors.Wrap(err, "failed to delete memo")
 	}
@@ -370,4 +386,13 @@ func (d *DB) RefreshMemoDerivedPayload(ctx context.Context, refresh *store.Refre
 		return errors.Wrap(err, "failed to refresh memo payload")
 	}
 	return nil
+}
+
+// memoEncryptionError distinguishes a reused encrypted object from other database failures.
+func memoEncryptionError(err error) error {
+	var duplicate *mysqldriver.MySQLError
+	if errors.As(err, &duplicate) && duplicate.Number == 1062 && (strings.HasSuffix(duplicate.Message, "for key 'memo_encryption.vault_id'") || strings.HasSuffix(duplicate.Message, "for key 'vault_id'")) {
+		return store.ErrEncryptionConflict
+	}
+	return err
 }

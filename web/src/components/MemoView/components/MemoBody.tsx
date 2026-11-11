@@ -47,7 +47,7 @@ const MemoBody: React.FC<MemoBodyProps> = ({ compact, showCreator }) => {
   const { handleMemoContentClick, handleMemoContentDoubleClick } = useMemoHandlers({ readonly, openEditor, openPreview });
 
   const referencedMemos = memo.relations.filter(isReferenceRelation);
-  const hasText = memo.content.trim() !== "";
+  const hasText = memo.content.trim() !== "" || !!memo.encryptedContent?.length;
   const currentUser = useCurrentUser();
   // Memoized so AttachmentListView's own useMemo chain keeps its cache across body renders.
   const attachmentOnlyItems = useMemo(
@@ -118,7 +118,7 @@ const MemoBody: React.FC<MemoBodyProps> = ({ compact, showCreator }) => {
         {blurred && !showBlurredContent && <BlurOverlay onClick={toggleBlurVisibility} />}
       </div>
 
-      <MemoReactionListView memo={memo} reactions={memo.reactions} />
+      {!memo.encryptedContent?.length && <MemoReactionListView memo={memo} reactions={memo.reactions} />}
     </div>
   );
 };

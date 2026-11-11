@@ -85,6 +85,7 @@ type FindMemo struct {
 	CommentContextMemoID *int32
 	Access               *MemoAccessScope
 	ExcludeContent       bool
+	ExcludeEncrypted     bool
 	ExcludeComments      bool
 	Filters              []string
 
@@ -140,17 +141,18 @@ func (r *RefreshMemoDerivedPayload) JSON() (tags string, property string, err er
 }
 
 type UpdateMemo struct {
-	ID         int32
-	UID        *string
-	CreatedTs  *int64
-	UpdatedTs  *int64
-	RowStatus  *RowStatus
-	Content    *string
-	Visibility *Visibility
-	Pinned     *bool
-	Payload    *storepb.MemoPayload
-	SpaceID    *int32
-	ClearSpace bool
+	ExpectedEncryptionRevision string
+	ID                         int32
+	UID                        *string
+	CreatedTs                  *int64
+	UpdatedTs                  *int64
+	RowStatus                  *RowStatus
+	Content                    *string
+	Visibility                 *Visibility
+	Pinned                     *bool
+	Payload                    *storepb.MemoPayload
+	SpaceID                    *int32
+	ClearSpace                 bool
 	// Policy is set by transport-facing author mutations. Drivers revalidate it
 	// in the same transaction as the update; nil preserves trusted internal and
 	// migration callers.
@@ -260,6 +262,15 @@ func validateMemoCreate(create *Memo) error {
 }
 
 func (s *Store) ListMemos(ctx context.Context, find *FindMemo) ([]*Memo, error) {
+	excluded, err := hasEncryptedContentFilter(ctx, find.Filters)
+	if err != nil {
+		return nil, err
+	}
+	if excluded {
+		copy := *find
+		copy.ExcludeEncrypted = true
+		find = &copy
+	}
 	return s.driver.ListMemos(ctx, find)
 }
 
@@ -295,10 +306,11 @@ func (s *Store) UpdateMemo(ctx context.Context, update *UpdateMemo) error {
 	if err := validateMemoWritePolicy(update.Policy); err != nil {
 		return err
 	}
-	if update.Policy == nil {
-		return s.driver.UpdateMemo(ctx, update)
+	err := s.driver.UpdateMemo(ctx, update)
+	if err != nil && update.ExpectedEncryptionRevision != "" && s.driver.IsRetryableTransactionError(err) {
+		return ErrEncryptionConflict
 	}
-	return s.driver.UpdateMemo(ctx, update)
+	return err
 }
 
 // RefreshMemoDerivedPayload rewrites a memo's payload tags and property in
@@ -307,6 +319,9 @@ func (s *Store) UpdateMemo(ctx context.Context, update *UpdateMemo) error {
 // they are, so a background rebuild can never undo a concurrent edit. A memo
 // that was edited or deleted in the meantime is left alone.
 func (s *Store) RefreshMemoDerivedPayload(ctx context.Context, refresh *RefreshMemoDerivedPayload) error {
+	if err := s.RequirePlaintextMemo(ctx, refresh.ID); err != nil {
+		return err
+	}
 	return s.driver.RefreshMemoDerivedPayload(ctx, refresh)
 }
 

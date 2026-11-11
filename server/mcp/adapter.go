@@ -27,6 +27,9 @@ func newAPIAdapter(handler http.Handler) *apiAdapter {
 }
 
 func (a *apiAdapter) execute(ctx context.Context, operation *openAPIOperation, arguments map[string]any, authorization string) (*sdkmcp.CallToolResult, error) {
+	if hasEncryptedMemo(arguments) {
+		return newToolErrorResult("encrypted memos are unavailable through MCP; open them in Memos"), nil
+	}
 	req, err := buildAPIRequest(ctx, operation, arguments, authorization)
 	if err != nil {
 		return newToolErrorResult(err.Error()), nil
@@ -42,6 +45,7 @@ func (a *apiAdapter) execute(ctx context.Context, operation *openAPIOperation, a
 	if recorder.Code < http.StatusOK || recorder.Code >= http.StatusMultipleChoices {
 		return newToolErrorResult(apiErrorMessage(recorder.Code, value)), nil
 	}
+	redactEncryptedMemos(value)
 	return newStructuredToolResult(value)
 }
 
@@ -260,4 +264,55 @@ func apiErrorMessage(statusCode int, value any) string {
 		}
 	}
 	return status
+}
+
+// hasEncryptedMemo prevents encrypted memo payloads from entering tool contexts.
+func hasEncryptedMemo(value any) bool {
+	switch v := value.(type) {
+	case map[string]any:
+		for k, x := range v {
+			if (k == "encryptedContent" || k == "encrypted_content") && x != nil && x != "" {
+				return true
+			}
+			if hasEncryptedMemo(x) {
+				return true
+			}
+		}
+	case []any:
+		for _, x := range v {
+			if hasEncryptedMemo(x) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// redactEncryptedMemos recursively removes encrypted bodies and plaintext titles from integration responses.
+func redactEncryptedMemos(value any) {
+	switch v := value.(type) {
+	case map[string]any:
+		encrypted := false
+		for _, key := range []string{"encryptedContent", "encrypted_content"} {
+			if x, ok := v[key]; ok && x != nil && x != "" {
+				encrypted = true
+				delete(v, key)
+			}
+		}
+		if encrypted {
+			v["content"] = "[Encrypted memo: open in Memos to unlock]"
+			delete(v, "encryptedTitle")
+			delete(v, "encrypted_title")
+			delete(v, "snippet")
+			delete(v, "property")
+			delete(v, "tags")
+		}
+		for _, x := range v {
+			redactEncryptedMemos(x)
+		}
+	case []any:
+		for _, x := range v {
+			redactEncryptedMemos(x)
+		}
+	}
 }

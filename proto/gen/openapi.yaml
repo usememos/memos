@@ -356,6 +356,138 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/encryptionPasskeys:
+        get:
+            tags:
+                - UserService
+            description: Lists only the authenticated caller's wrapped passkey keys.
+            operationId: UserService_ListEncryptionPasskeys
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListEncryptionPasskeysResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - UserService
+            description: Adds a wrapped key to the authenticated caller's existing vault.
+            operationId: UserService_CreateEncryptionPasskey
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateEncryptionPasskeyRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/EncryptionPasskey'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/encryptionPasskeys/{id}:
+        delete:
+            tags:
+                - UserService
+            description: Removes only the caller's wrapper; device credentials remain unchanged.
+            operationId: UserService_DeleteEncryptionPasskey
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/encryptionVault:
+        get:
+            tags:
+                - UserService
+            description: Reads only the authenticated caller's encryption vault.
+            operationId: UserService_GetEncryptionVault
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/EncryptionVault'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - UserService
+            description: Creates the caller's vault once, after local recovery confirmation.
+            operationId: UserService_CreateEncryptionVault
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateEncryptionVaultRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/EncryptionVault'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        patch:
+            tags:
+                - UserService
+            description: Replaces wrappers using an expected revision, preserving vault identity.
+            operationId: UserService_UpdateEncryptionVault
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateEncryptionVaultRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/EncryptionVault'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/identity-providers:
         get:
             tags:
@@ -932,10 +1064,15 @@ paths:
                   required: true
                   schema:
                     type: string
+                - name: expectedEncryptionRevision
+                  in: query
+                  description: Required when updating encrypted_content; rejects concurrent changes.
+                  schema:
+                    type: string
                 - name: updateMask
                   in: query
                   description: |-
-                    Required. The fields to update. Supported paths: content, visibility,
+                    Required. The fields to update. Supported paths: content, encrypted_content, encrypted_title, visibility,
                      space, pinned, state, create_time, update_time, location, attachments,
                      relations.
                   schema:
@@ -3547,6 +3684,20 @@ components:
                         type: string
                     description: The managed field paths the configuration does not write after creation, so the API accepts edits to them.
             description: ManagedResource is one resource the configuration manages.
+        CreateEncryptionPasskeyRequest:
+            type: object
+            properties:
+                passkey:
+                    type: string
+                    format: bytes
+            description: CreateEncryptionPasskeyRequest supplies an immutable wrapped-key record.
+        CreateEncryptionVaultRequest:
+            type: object
+            properties:
+                vault:
+                    type: string
+                    format: bytes
+            description: CreateEncryptionVaultRequest supplies the initial wrapped-key record.
         CreateLinkedIdentityRequest:
             required:
                 - parent
@@ -3617,6 +3768,20 @@ components:
                         Required. The resource name of the invitation.
                          Format: spaces/{space}/invitations/{invitation}
             description: Request message for SpaceService.DeclineSpaceInvitation.
+        EncryptionPasskey:
+            type: object
+            properties:
+                passkey:
+                    type: string
+                    format: bytes
+            description: EncryptionPasskey carries a versioned JSON wrapped key, never PRF output.
+        EncryptionVault:
+            type: object
+            properties:
+                vault:
+                    type: string
+                    format: bytes
+            description: EncryptionVault carries only wrapped keys as versioned UTF-8 JSON.
         FieldMapping:
             type: object
             properties:
@@ -4270,6 +4435,15 @@ components:
                     type: string
                     description: A token to retrieve the next page. Empty when there are no more pages.
             description: Response message for AttachmentService.ListAttachments.
+        ListEncryptionPasskeysResponse:
+            type: object
+            properties:
+                passkeys:
+                    type: array
+                    items:
+                        type: string
+                        format: bytes
+            description: ListEncryptionPasskeysResponse contains the caller's bounded registrations.
         ListIdentityProvidersResponse:
             type: object
             properties:
@@ -4545,7 +4719,6 @@ components:
                  The service validates and stores this data but does not extract it from the media file.
         Memo:
             required:
-                - content
                 - visibility
                 - state
             type: object
@@ -4571,8 +4744,8 @@ components:
                 content:
                     type: string
                     description: |-
-                        Required. The content of the memo in Markdown. Must not exceed the
-                         instance's content length limit.
+                        Optional. The plaintext content in Markdown. Must be empty when
+                         encrypted_content is supplied; otherwise the instance content limit applies.
                 location:
                     allOf:
                         - $ref: '#/components/schemas/Location'
@@ -4657,6 +4830,18 @@ components:
                         Optional. The last update time. Defaults to the current time when unset on
                          creation.
                     format: date-time
+                encryptedContent:
+                    type: string
+                    description: |-
+                        Optional. Protocol v1 encrypted envelope as UTF-8 JSON, at most 1.5 MiB.
+                         Mutually exclusive with content; only private, unassigned text memos support it.
+                    format: bytes
+                encryptedTitle:
+                    type: string
+                    description: |-
+                        Optional plaintext title for encrypted memos only. Never encrypted or derived
+                         from the body. At most 256 Unicode characters, without control characters.
+                         Updates require encrypted_content and expected_encryption_revision together.
             description: Memo is a Markdown note written by a user.
         MemoRelation:
             required:
@@ -5339,6 +5524,15 @@ components:
                     type: string
                     description: Optional. The MIME type of the audio. If empty, the service detects it from the content.
             description: TranscriptionAudio is the audio input for a transcription.
+        UpdateEncryptionVaultRequest:
+            type: object
+            properties:
+                vault:
+                    type: string
+                    format: bytes
+                expectedRevision:
+                    type: string
+            description: UpdateEncryptionVaultRequest atomically replaces the wrapped-key record.
         UploadAttachmentRequest:
             required:
                 - writeOffset

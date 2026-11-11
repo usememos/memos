@@ -65,7 +65,7 @@ func insertSQLiteMemo(ctx context.Context, tx dbExecutor, create *store.Memo) er
 	); err != nil {
 		return err
 	}
-	return nil
+	return memoEncryptionError(store.InsertMemoEncryption(ctx, tx, create, false))
 }
 
 func validateSQLiteMemoCreate(ctx context.Context, tx dbExecutor, create *store.Memo) error {
@@ -117,6 +117,9 @@ func validateSQLiteMemoSpaceMember(ctx context.Context, tx dbExecutor, spaceID, 
 
 func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo, error) {
 	where, args := []string{"1 = 1"}, []any{}
+	if find.ExcludeEncrypted {
+		where = append(where, "NOT EXISTS (SELECT 1 FROM memo_encryption WHERE memo_encryption.memo_id = memo.id)")
+	}
 
 	engine, err := filter.DefaultEngine()
 	if err != nil {
@@ -287,16 +290,15 @@ func (d *DB) CountUserMemos(ctx context.Context, creatorID int32) (int64, error)
 }
 
 func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
-	if update.Policy == nil {
-		return applyMemoUpdate(ctx, d.db, update)
-	}
 	tx, err := d.db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
 	}
 	defer func() { _ = tx.Rollback() }()
-	if _, err := validateSQLiteMemoWritePolicy(ctx, tx, update.ID, update.Policy, update); err != nil {
-		return err
+	if update.Policy != nil {
+		if _, err := validateSQLiteMemoWritePolicy(ctx, tx, update.ID, update.Policy, update); err != nil {
+			return err
+		}
 	}
 	if err := applyMemoUpdate(ctx, tx, update); err != nil {
 		return err
@@ -313,6 +315,9 @@ func (d *DB) DeleteMemo(ctx context.Context, delete *store.DeleteMemo) error {
 		_ = tx.Rollback()
 	}()
 
+	if _, err := tx.ExecContext(ctx, "DELETE FROM memo_encryption WHERE memo_id = ?", delete.ID); err != nil {
+		return err
+	}
 	if _, err := tx.ExecContext(ctx, "DELETE FROM `memo` WHERE `id` = ?", delete.ID); err != nil {
 		return errors.Wrap(err, "failed to delete memo")
 	}
@@ -339,4 +344,12 @@ func (d *DB) RefreshMemoDerivedPayload(ctx context.Context, refresh *store.Refre
 		return errors.Wrap(err, "failed to refresh memo payload")
 	}
 	return nil
+}
+
+// memoEncryptionError distinguishes a reused encrypted object from other database failures.
+func memoEncryptionError(err error) error {
+	if isSQLiteUniqueViolation(err) && strings.Contains(err.Error(), "UNIQUE constraint failed: memo_encryption.vault_id, memo_encryption.object_id (") {
+		return store.ErrEncryptionConflict
+	}
+	return err
 }

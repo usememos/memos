@@ -380,11 +380,13 @@ export function useUpdateMemo(name: string | undefined) {
 
   return useMutation({
     mutationKey,
-    mutationFn: async (variables: { update: Partial<Memo>; updateMask: string[] }) => {
+    mutationFn: async (variables: { update: Partial<Memo>; updateMask: string[]; expectedEncryptionRevision?: string }) => {
       await memoUpdateTurn(queryClient, mutationKey, variables);
+      const { update, updateMask, expectedEncryptionRevision } = variables;
       const memo = await memoServiceClient.updateMemo({
-        memo: create(MemoSchema, variables.update as Record<string, unknown>),
-        updateMask: create(FieldMaskSchema, { paths: variables.updateMask }),
+        memo: create(MemoSchema, update as Record<string, unknown>),
+        updateMask: create(FieldMaskSchema, { paths: updateMask }),
+        expectedEncryptionRevision,
       });
       return memo;
     },

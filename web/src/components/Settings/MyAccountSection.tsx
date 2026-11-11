@@ -2,6 +2,7 @@ import { Button } from "@usememos/ui";
 import { KeyRoundIcon, PenLineIcon } from "lucide-react";
 import { useState } from "react";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import { VaultPanel } from "@/components/Encryption/VaultPanel";
 import { userServiceClient } from "@/connect";
 import { useAuth } from "@/contexts/AuthContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -72,6 +73,8 @@ const MyAccountSection = () => {
       <UsageSection />
 
       <LinkedIdentitySection />
+
+      <VaultPanel />
 
       <SettingGroup showSeparator title={t("setting.account.danger-area")} description={t("setting.account.danger-area-description")}>
         {/* A plain row: red is kept for the confirm step, not the section that leads to it. */}

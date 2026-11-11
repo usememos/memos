@@ -46,6 +46,7 @@ import type { EditorController, EditorPosition } from "./types/editorController"
 export const EditSession: React.FC<EditSessionProps> = ({
   className,
   draftKey,
+  draftAction,
   frameless,
   timestampLead,
   memo,
@@ -355,6 +356,18 @@ export const EditSession: React.FC<EditSessionProps> = ({
           !isFocusMode && className,
         )}
       >
+        {draftAction}
+        {isSourceMode && (
+          <span
+            className={cn(
+              "pointer-events-none absolute end-0 top-0 rounded-es-mu-lg rounded-se-mu-lg border-s border-b border-mu-line/70 bg-mu-well/40 flex h-5 items-center px-1.5 select-none mu-label-xs font-mono text-mu-ink-muted",
+              isFocusMode && "border-mu-line",
+            )}
+            aria-label={t("editor.markdown-mode")}
+          >
+            Markdown
+          </span>
+        )}
         {/* Formatting is the editor's own: its toolbar appears over selected
             text, and the slash menu and Markdown shortcuts change block types.
             Focus mode always shows the memo's time ("Now" before it has one) and adds

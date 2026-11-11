@@ -175,3 +175,13 @@ describe("MemoEditor source mode", () => {
     else expect(container.querySelector(".memo-editor-root input[type=checkbox]")).not.toBeNull();
   });
 });
+
+it("keeps encrypted memo creation inside the focused editor frame", async () => {
+  render(
+    <QueryClientProvider client={new QueryClient()}>
+      <MemoEditor draft={{ scope: "encrypted-focus" }} onFocusModeExit={() => undefined} />
+    </QueryClientProvider>,
+  );
+  const button = await screen.findByRole("button", { name: "e2ee.new-memo" });
+  expect(button.closest(".group")?.className).toContain("fixed");
+});

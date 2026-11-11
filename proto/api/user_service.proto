@@ -19,6 +19,40 @@ option go_package = "gen/api";
 // memo views, notifications, webhooks, linked identities, personal access
 // tokens, and memo export files.
 service UserService {
+  // Lists only the authenticated caller's wrapped passkey keys.
+  rpc ListEncryptionPasskeys(ListEncryptionPasskeysRequest) returns (ListEncryptionPasskeysResponse) {
+    option (google.api.http) = {get: "/api/encryptionPasskeys"};
+  }
+  // Adds a wrapped key to the authenticated caller's existing vault.
+  rpc CreateEncryptionPasskey(CreateEncryptionPasskeyRequest) returns (EncryptionPasskey) {
+    option (google.api.http) = {
+      post: "/api/encryptionPasskeys"
+      body: "*"
+    };
+  }
+  // Removes only the caller's wrapper; device credentials remain unchanged.
+  rpc DeleteEncryptionPasskey(DeleteEncryptionPasskeyRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/api/encryptionPasskeys/{id}"};
+  }
+  // Reads only the authenticated caller's encryption vault.
+  rpc GetEncryptionVault(GetEncryptionVaultRequest) returns (EncryptionVault) {
+    option (google.api.http) = {get: "/api/encryptionVault"};
+  }
+  // Creates the caller's vault once, after local recovery confirmation.
+  rpc CreateEncryptionVault(CreateEncryptionVaultRequest) returns (EncryptionVault) {
+    option (google.api.http) = {
+      post: "/api/encryptionVault"
+      body: "*"
+    };
+  }
+  // Replaces wrappers using an expected revision, preserving vault identity.
+  rpc UpdateEncryptionVault(UpdateEncryptionVaultRequest) returns (EncryptionVault) {
+    option (google.api.http) = {
+      patch: "/api/encryptionVault"
+      body: "*"
+    };
+  }
+
   // ListUsers lists users in every state. Only admins may call it.
   rpc ListUsers(ListUsersRequest) returns (ListUsersResponse) {
     option (google.api.http) = {get: "/api/users"};
@@ -1441,4 +1475,39 @@ message ImportMemosIssue {
 
   // A description of the issue.
   string message = 2;
+}
+
+// EncryptionVault carries only wrapped keys as versioned UTF-8 JSON.
+message EncryptionVault {
+  bytes vault = 1;
+}
+// GetEncryptionVaultRequest addresses the authenticated caller only.
+message GetEncryptionVaultRequest {}
+// CreateEncryptionVaultRequest supplies the initial wrapped-key record.
+message CreateEncryptionVaultRequest {
+  bytes vault = 1;
+}
+// UpdateEncryptionVaultRequest atomically replaces the wrapped-key record.
+message UpdateEncryptionVaultRequest {
+  bytes vault = 1;
+  string expected_revision = 2;
+}
+
+// EncryptionPasskey carries a versioned JSON wrapped key, never PRF output.
+message EncryptionPasskey {
+  bytes passkey = 1;
+}
+// ListEncryptionPasskeysRequest addresses the authenticated caller only.
+message ListEncryptionPasskeysRequest {}
+// ListEncryptionPasskeysResponse contains the caller's bounded registrations.
+message ListEncryptionPasskeysResponse {
+  repeated bytes passkeys = 1;
+}
+// CreateEncryptionPasskeyRequest supplies an immutable wrapped-key record.
+message CreateEncryptionPasskeyRequest {
+  bytes passkey = 1;
+}
+// DeleteEncryptionPasskeyRequest identifies a caller-owned registration.
+message DeleteEncryptionPasskeyRequest {
+  string id = 1;
 }

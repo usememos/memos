@@ -1,3 +1,5 @@
+import { Button } from "@usememos/ui";
+import { LockKeyholeIcon } from "lucide-react";
 import { type ReactNode, Suspense, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -5,9 +7,11 @@ import { useMemoByName, useUpdateMemo } from "@/hooks/useMemoQueries";
 import type { MemoSuggestion } from "@/lib/memo-suggestions";
 import { cn } from "@/lib/utils";
 import type { Location } from "@/types/proto/api/memo_service_pb";
+import { useTranslate } from "@/utils/i18n";
 import { lazyWithReload } from "@/utils/lazy";
 import { convertVisibilityFromString } from "@/utils/memo";
 import { canManageMemo } from "@/utils/user";
+import { EncryptedMemoEditor } from "./EncryptedMemoEditor";
 import { draftKeyFor, type MemoEditIdentity, migrateLegacyDraft } from "./edit/draftKey";
 import { canChooseSpaceFor, initialEditorState } from "./edit/initialState";
 import { cacheService } from "./edit/services/cacheService";
@@ -51,6 +55,8 @@ export interface MemoEditorViewProps {
 export interface MemoDraftSeed {
   /** The memo this draft comments on. A comment has no scope, Space or timestamps of its own. */
   parent?: string;
+  /** Start a new private, unassigned encrypted text memo. */
+  encrypted?: boolean;
   /**
    * Where a new memo is composed, such as `home`, `global`, `calendar:<date>` or
    * `map:<key>`. Each scope keeps its own draft, per Space.
@@ -128,6 +134,7 @@ const MemoEditorView = ({ name, compact, parentPage, className, contentClassName
   const currentUser = useCurrentUser();
   const { mutate: updateMemo } = useUpdateMemo(name);
   if (!memo) return null;
+  if (memo.encryptedContent?.length) return <EncryptedMemoEditor memo={memo} />;
 
   const handleTaskToggle = (content: string) => updateMemo({ update: { name, content }, updateMask: ["content", "update_time"] });
 
@@ -152,6 +159,7 @@ const MemoEditorEdit = ({ name, ...editing }: MemoEditorEditProps) => {
   // The memo stays readable while the session's code loads, and until the memo itself has.
   const fallback = <MemoEditorView name={name} className={editing.className} />;
   if (!memo) return fallback;
+  if (memo.encryptedContent?.length) return <EncryptedMemoEditor memo={memo} editing {...editing} />;
   const identity: MemoEditIdentity = { kind: "edit", name };
   return (
     <Suspense fallback={fallback}>
@@ -161,6 +169,35 @@ const MemoEditorEdit = ({ name, ...editing }: MemoEditorEditProps) => {
 };
 
 const MemoEditorDraft = ({ draft, ...editing }: MemoEditorDraftProps) => {
+  const t = useTranslate();
+  const [encrypted, setEncrypted] = useState(draft.encrypted ?? false);
+  if (encrypted && !draft.parent && !draft.space)
+    return (
+      <EncryptedMemoEditor
+        editing
+        {...editing}
+        onCancel={() => {
+          setEncrypted(false);
+          editing.onCancel?.();
+        }}
+      />
+    );
+  return (
+    <PlainMemoEditorDraft
+      draft={draft}
+      {...editing}
+      draftAction={
+        !draft.parent && !draft.space ? (
+          <Button variant="neutral" className="mb-3" icon={<LockKeyholeIcon />} onClick={() => setEncrypted(true)}>
+            {t("e2ee.new-memo")}
+          </Button>
+        ) : undefined
+      }
+    />
+  );
+};
+
+const PlainMemoEditorDraft = ({ draft, ...editing }: MemoEditorDraftProps & { draftAction?: ReactNode }) => {
   const identity: MemoEditIdentity = draft.parent
     ? { kind: "comment", parent: draft.parent }
     : { kind: "new", scope: draft.scope ?? "default", space: draft.space };
@@ -192,6 +229,7 @@ const MemoEditorDraft = ({ draft, ...editing }: MemoEditorDraftProps) => {
 };
 
 interface EditingSessionProps extends MemoEditingProps {
+  draftAction?: ReactNode;
   identity: MemoEditIdentity;
   memo?: Parameters<typeof initialEditorState>[0]["memo"];
   parentMemoName?: string;

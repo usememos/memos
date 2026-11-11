@@ -105,3 +105,22 @@ MemoEditor/
 - `tests/memo-content-view.test.tsx`, `tests/editor.test.tsx`: the surfaces over the binding.
 - `tests/use-memo-init.test.tsx`, `tests/draft-key.test.ts`, `tests/use-auto-save.test.tsx`: drafts and keys.
 - `tests/use-memo-save.test.tsx`, `tests/memo-editor-*.test.ts*`: the session and its save path. Tests that mount the session call `await preloadMemoEditing()` first so it renders without suspending.
+
+## Encrypted private text
+
+`MemoDraftSeed.encrypted` starts a new private unassigned text memo; the composer also offers an explicit encrypted creation choice.
+`EncryptedMemoEditor` is MemoEditor's restricted text mode for records with `encryptedContent`. It never mounts the Markdown runtime,
+attachment commands, ordinary draft persistence or plaintext query records. A separate ephemeral vault session fences async results across locks
+and account changes. Saves encrypt before entering React Query mutations and include the expected encryption revision on updates.
+
+Dirty encrypted sessions register presence only in `lib/e2ee/dirty.ts`. Modal hosts must call `confirmEncryptedDiscard` before dismissing;
+route and unload transitions are guarded within the editor. Automatic/logout/cross-tab locks intentionally discard ephemeral state.
+See [the design](../../../../docs/design/private-memo-e2ee.md) for key recovery, protocol limits and unsupported workflows.
+
+Encrypted memos may have an optional `encryptedTitle`, a plaintext label never extracted from the body. The editor explicitly
+labels it as unencrypted; locked records show a lock icon and this title (or the default encrypted memo label). Title and body
+updates use one revision-guarded save, while omitting the title update mask preserves titles for older clients.
+
+VaultPanel also offers passkey enrollment/removal when unlocked and passkey unlock when registered. `PasskeyPanel` uses
+React Query only for credential locators and encrypted wrappers; WebAuthn PRF output and vault keys stay in local memory.
+WebAuthn and PRF support are detected by the actual ceremony. Password and recovery remain available on unsupported devices.

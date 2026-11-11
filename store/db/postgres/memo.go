@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/lib/pq"
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/encoding/protojson"
 
@@ -63,7 +64,7 @@ func insertPostgresMemo(ctx context.Context, tx *sql.Tx, create *store.Memo) err
 	); err != nil {
 		return err
 	}
-	return nil
+	return memoEncryptionError(store.InsertMemoEncryption(ctx, tx, create, true))
 }
 
 func validatePostgresMemoCreate(ctx context.Context, tx *sql.Tx, create *store.Memo) error {
@@ -114,6 +115,9 @@ func validatePostgresMemoSpaceMember(ctx context.Context, tx *sql.Tx, spaceID, u
 
 func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo, error) {
 	where, args := []string{"1 = 1"}, []any{}
+	if find.ExcludeEncrypted {
+		where = append(where, "NOT EXISTS (SELECT 1 FROM memo_encryption WHERE memo_encryption.memo_id = memo.id)")
+	}
 
 	engine, err := filter.DefaultEngine()
 	if err != nil {
@@ -296,16 +300,15 @@ func (d *DB) CountUserMemos(ctx context.Context, creatorID int32) (int64, error)
 }
 
 func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
-	if update.Policy == nil {
-		return applyMemoUpdate(ctx, d.db, update)
-	}
 	tx, err := d.db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
 	}
 	defer func() { _ = tx.Rollback() }()
-	if _, err := validatePostgresMemoWritePolicy(ctx, tx, update.ID, update.Policy, update); err != nil {
-		return err
+	if update.Policy != nil {
+		if _, err := validatePostgresMemoWritePolicy(ctx, tx, update.ID, update.Policy, update); err != nil {
+			return err
+		}
 	}
 	if err := applyMemoUpdate(ctx, tx, update); err != nil {
 		return err
@@ -348,4 +351,13 @@ func (d *DB) RefreshMemoDerivedPayload(ctx context.Context, refresh *store.Refre
 		return errors.Wrap(err, "failed to refresh memo payload")
 	}
 	return nil
+}
+
+// memoEncryptionError distinguishes a reused encrypted object from other database failures.
+func memoEncryptionError(err error) error {
+	var duplicate *pq.Error
+	if errors.As(err, &duplicate) && duplicate.Code == "23505" && duplicate.Constraint == "memo_encryption_vault_id_object_id_key" {
+		return store.ErrEncryptionConflict
+	}
+	return err
 }

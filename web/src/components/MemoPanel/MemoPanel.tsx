@@ -4,6 +4,7 @@ import { XIcon } from "lucide-react";
 import { type ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { type PersistedWidthConfig, SidebarResizeHandle, usePersistedWidth, useSidebarWidth } from "@/components/AppSidebar";
 import useMediaQuery from "@/hooks/useMediaQuery";
+import { confirmEncryptedDiscard } from "@/lib/e2ee/dirty";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 
@@ -115,7 +116,7 @@ export function MemoPanel({ open, title, subtitle, reservedWidth, busy = false, 
       disablePointerDismissal
       onOpenChange={(next, details) => {
         if (!next) {
-          if (busy) details.cancel();
+          if (busy || !confirmEncryptedDiscard(t("e2ee.unsaved"))) details.cancel();
           else onClose();
         }
       }}

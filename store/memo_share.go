@@ -39,9 +39,14 @@ func (s *Store) CreateMemoShare(ctx context.Context, create *MemoShare) (*MemoSh
 	if create == nil {
 		return nil, errors.New("memo share is required")
 	}
+
 	if err := validateMemoWritePolicy(create.Policy); err != nil {
 		return nil, err
 	}
+	if err := s.RequirePlaintextMemo(ctx, create.MemoID); err != nil {
+		return nil, err
+	}
+
 	if create.Policy == nil {
 		return s.driver.CreateMemoShare(ctx, create)
 	}
